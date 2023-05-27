@@ -9,8 +9,12 @@ import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.iterator
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.jni.JavaScriptModuleObject
+import expo.modules.kotlin.jni.JavaScriptObject
 import expo.modules.kotlin.recycle
 import expo.modules.kotlin.types.AnyType
+import kotlin.reflect.KType
+import kotlin.reflect.full.isSubtypeOf
+import kotlin.reflect.typeOf
 
 /**
  * Base class of all exported functions
@@ -21,6 +25,16 @@ abstract class AnyFunction(
 ) {
   internal val argsCount get() = desiredArgsTypes.size
 
+  internal var canTakeOwner: Boolean = false
+
+  @PublishedApi
+  internal var ownerType: KType? = null
+
+  internal val takesOwner: Boolean
+    get() = canTakeOwner &&
+      desiredArgsTypes.firstOrNull()?.kType?.isSubtypeOf(typeOf<JavaScriptObject>()) == true ||
+      (ownerType != null && desiredArgsTypes.firstOrNull()?.kType?.isSubtypeOf(ownerType!!) == true)
+
   /**
    * A minimum number of arguments the functions needs which equals to `argumentsCount` reduced by the number of trailing optional arguments.
    */
@@ -29,7 +43,7 @@ abstract class AnyFunction(
       .reversed()
       .indexOfFirst { !it.kType.isMarkedNullable }
     if (nonNullableArgIndex < 0) {
-      return@run desiredArgsTypes.size
+      return@run 0
     }
 
     return@run desiredArgsTypes.size - nonNullableArgIndex
@@ -69,7 +83,7 @@ abstract class AnyFunction(
    * @throws `CodedException` if conversion isn't possible
    */
   @Throws(CodedException::class)
-  protected fun convertArgs(args: Array<Any?>): Array<out Any?> {
+  protected fun convertArgs(args: Array<Any?>, appContext: AppContext? = null): Array<out Any?> {
     if (requiredArgumentsCount > args.size || args.size > desiredArgsTypes.size) {
       throw InvalidArgsNumberException(args.size, desiredArgsTypes.size, requiredArgumentsCount)
     }
@@ -82,7 +96,7 @@ abstract class AnyFunction(
       exceptionDecorator({ cause ->
         ArgumentCastException(desiredType.kType, index, element?.javaClass.toString(), cause)
       }) {
-        finalArgs[index] = desiredType.convert(element)
+        finalArgs[index] = desiredType.convert(element, appContext)
       }
     }
     return finalArgs

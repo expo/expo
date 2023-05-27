@@ -51,7 +51,7 @@ const Home = () => {
   return (
     <ScreenClassProvider>
       <DocumentationPage tocVisible={false} hideFromSearch>
-        <div css={imageMasksContainerStyle}>
+        <div className="h-0">
           <DevicesImageMasks />
           <CodecademyImageMasks />
         </div>
@@ -71,15 +71,10 @@ const Home = () => {
                   }),
                 ]}
               />
-              <div
-                css={{
-                  position: 'relative',
-                  zIndex: 1,
-                }}>
+              <div className="flex flex-col gap-4 relative z-10">
                 <RawH2>
                   <QuickStartIcon /> Quick Start
                 </RawH2>
-                <br />
                 <Terminal includeMargin={false} cmd={['$ npx create-expo-app my-app']} />
               </div>
             </GridCell>
@@ -189,7 +184,7 @@ const Home = () => {
               </P>
               <HomeButton
                 className="bg-palette-green11 border-palette-green11 text-palette-green2 hocus:bg-palette-green11 hocus:opacity-80"
-                href="/introduction/faq"
+                href="/faq"
                 rightSlot={<ArrowRightIcon className="text-palette-green2 icon-md" />}>
                 Read
               </HomeButton>
@@ -255,7 +250,6 @@ export function JoinTheCommunity() {
             description="View our SDK, submit a PR, or report an issue."
             link="https://github.com/expo/expo"
             icon={<GithubIcon className="icon-lg text-palette-white" />}
-            css={communityCellStyle}
           />
           <CommunityGridCell
             title="Discord"
@@ -263,7 +257,6 @@ export function JoinTheCommunity() {
             link="https://chat.expo.dev"
             icon={<DiscordIcon className="icon-lg text-palette-white" />}
             iconBackground="#3131E8"
-            css={communityCellStyle}
           />
         </Row>
         <Row>
@@ -273,14 +266,12 @@ export function JoinTheCommunity() {
             link="https://twitter.com/expo"
             icon={<TwitterIcon className="icon-lg text-palette-white" />}
             iconBackground="#1E8EF0"
-            css={communityCellStyle}
           />
           <CommunityGridCell
             title="Forums"
             description="Ask or answer a question on the forums."
             link="https://forums.expo.dev/"
             icon={<DiscourseIcon className="icon-lg text-palette-white" />}
-            css={communityCellStyle}
           />
         </Row>
         <Row>
@@ -290,7 +281,6 @@ export function JoinTheCommunity() {
             link="https://www.reddit.com/r/expo"
             icon={<RedditIcon className="icon-lg text-palette-white" />}
             iconBackground="#FC471E"
-            css={communityCellStyle}
           />
         </Row>
       </CellContainer>
@@ -336,14 +326,6 @@ const tutorialCellStyle = css({
   [`@media screen and (max-width: ${breakpoints.medium}px)`]: {
     minHeight: 200,
   },
-});
-
-const imageMasksContainerStyle = css({
-  height: 0,
-});
-
-const communityCellStyle = css({
-  minHeight: 'unset',
 });
 
 export default Home;

@@ -27,15 +27,15 @@ static NSString *modulesHostObjectLegacyPropertyName = @"ExpoModules";
 
 @implementation EXJavaScriptRuntimeManager
 
-+ (nullable EXJavaScriptRuntime *)runtimeFromBridge:(nonnull RCTBridge *)bridge
++ (nullable ExpoRuntime *)runtimeFromBridge:(nonnull RCTBridge *)bridge
 {
   jsi::Runtime *jsiRuntime = [bridge respondsToSelector:@selector(runtime)] ? reinterpret_cast<jsi::Runtime *>(bridge.runtime) : nullptr;
-  return jsiRuntime ? [[EXJavaScriptRuntime alloc] initWithRuntime:jsiRuntime callInvoker:bridge.jsCallInvoker] : nil;
+  return jsiRuntime ? [[ExpoRuntime alloc] initWithRuntime:jsiRuntime callInvoker:bridge.jsCallInvoker] : nil;
 }
 
 + (BOOL)installExpoModulesHostObject:(nonnull EXAppContext *)appContext
 {
-  EXJavaScriptRuntime *runtime = [appContext runtime];
+  ExpoRuntime *runtime = [appContext _runtime];
 
   // The runtime may be unavailable, e.g. remote debugger is enabled or it hasn't been set yet.
   if (!runtime) {
@@ -43,9 +43,9 @@ static NSString *modulesHostObjectLegacyPropertyName = @"ExpoModules";
   }
 
   EXJavaScriptObject *global = [runtime global];
-  EXJavaScriptObject *mainObject = [runtime mainObject];
+  EXJavaScriptObject *coreObject = [runtime coreObject];
 
-  if ([mainObject hasProperty:modulesHostObjectPropertyName]) {
+  if ([coreObject hasProperty:modulesHostObjectPropertyName]) {
     return false;
   }
 
@@ -53,7 +53,7 @@ static NSString *modulesHostObjectLegacyPropertyName = @"ExpoModules";
   EXJavaScriptObject *modulesHostObject = [runtime createHostObject:modulesHostObjectPtr];
 
   // Define the `global.expo.modules` object as a non-configurable, read-only and enumerable property.
-  [mainObject defineProperty:modulesHostObjectPropertyName
+  [coreObject defineProperty:modulesHostObjectPropertyName
                        value:modulesHostObject
                      options:EXJavaScriptObjectPropertyDescriptorEnumerable];
 

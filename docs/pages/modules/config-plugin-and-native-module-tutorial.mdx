@@ -4,9 +4,6 @@ sidebar_title: Create a module with a config plugin
 description: A tutorial on creating a native module with a config plugin using Expo modules API.
 ---
 
-import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
-import { PlatformTag } from '~/ui/components/Tag';
-import { APIBox } from '~/components/plugins/APIBox';
 import { Terminal } from '~/ui/components/Snippet';
 
 Config plugins allow you to customize native Android and iOS projects when they are generated with `npx expo prebuild`. It is often useful to add properties in native config files, to copy assets to native projects, and for advanced configurations such as adding an app extension target. As an app developer, applying customizations not exposed in the default [Expo config](/workflow/configuration) can be helpful. As a library author, it allows you to configure native projects for the developers using your library automatically.
@@ -188,7 +185,7 @@ Now when running `npx expo prebuild` inside our **example** folder we should see
 
 <Terminal cmd={['$ cd example', '$ npx expo prebuild --clean']} />
 
-To inject our custom API keys into **AndroidManifest.xml** and **Info.plist** we can use a few helper [`mods` provided by `expo/config-plugins`](/guides/config-plugins/#mod-plugins), which makes it easy to modify native files. In our example, we will use two of them, `withAndroidManifest` and `withInfoPlist`.
+To inject our custom API keys into **AndroidManifest.xml** and **Info.plist** we can use a few helper [`mods` provided by `expo/config-plugins`](/config-plugins/plugins-and-mods/#what-are-mods), which makes it easy to modify native files. In our example, we will use two of them, `withAndroidManifest` and `withInfoPlist`.
 
 As the name suggests, `withInfoPlist` allows us to read and modify **Info.plist** values. Using the `modResults` property, we can add custom values as demonstrated in the code snippet below:
 

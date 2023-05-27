@@ -15,8 +15,7 @@ object ManifestFactory {
 
   @Throws(Exception::class)
   fun getManifest(manifestJson: JSONObject, responseHeaderData: ResponseHeaderData, extensions: JSONObject?, configuration: UpdatesConfiguration?): UpdateManifest {
-    val expoProtocolVersion = responseHeaderData.protocolVersion
-    return when (expoProtocolVersion?.let { Integer.valueOf(it) }) {
+    return when (val expoProtocolVersion = responseHeaderData.protocolVersion) {
       null -> {
         LegacyUpdateManifest.fromLegacyManifest(LegacyManifest(manifestJson), configuration!!)
       }

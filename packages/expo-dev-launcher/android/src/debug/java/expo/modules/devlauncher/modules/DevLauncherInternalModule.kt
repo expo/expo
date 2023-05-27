@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter
 import expo.modules.core.utilities.EmulatorUtilities
@@ -26,7 +25,6 @@ private const val ON_NEW_DEEP_LINK_EVENT = "expo.modules.devlauncher.onnewdeepli
 private const val CLIENT_PACKAGE_NAME = "host.exp.exponent"
 private val CLIENT_HOME_QR_SCANNER_DEEP_LINK = Uri.parse("expo-home://qr-scanner")
 private const val LAUNCHER_NAVIGATION_STATE_KEY = "expo.modules.devlauncher.navigation-state"
-
 
 class DevLauncherInternalModule(reactContext: ReactApplicationContext?) :
   ReactContextBaseJavaModule(reactContext), DevLauncherKoinComponent {
@@ -49,8 +47,6 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) :
   }
 
   override fun getName() = "EXDevLauncherInternal"
-
-  override fun hasConstants(): Boolean = true
 
   override fun getConstants(): Map<String, Any> {
     val isRunningOnEmulator = EmulatorUtilities.isRunningOnEmulator()
@@ -89,7 +85,13 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) :
   }
 
   private fun sanitizeUrlString(url: String): Uri {
-    return Uri.parse(url.trim())
+    var sanitizedUrl = url.trim()
+    // If the url does contain a scheme use "http://"
+    if(!sanitizedUrl.contains("://")) {
+      sanitizedUrl = "http://" + sanitizedUrl
+    }
+
+    return Uri.parse(sanitizedUrl)
   }
 
   @ReactMethod
@@ -130,7 +132,7 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) :
 
     for (recentlyOpenedApp in controller.getRecentlyOpenedApps()) {
       val app = Arguments.createMap()
-      
+
       app.putDouble("timestamp", recentlyOpenedApp.timestamp.toDouble())
       app.putString("name", recentlyOpenedApp.name)
       app.putString("url", recentlyOpenedApp.url)

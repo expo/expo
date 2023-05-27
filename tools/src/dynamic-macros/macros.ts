@@ -14,6 +14,11 @@ import { getHomeSDKVersionAsync } from '../ProjectVersions';
 interface Manifest {
   id: string;
   name: string;
+  extra?: {
+    expoClient?: {
+      name: string;
+    };
+  };
 }
 
 // some files are absent on turtle builders and we don't want log errors there
@@ -167,7 +172,7 @@ export default {
     try {
       const manifest = await getManifestAsync(url, platform, null);
 
-      if (manifest.name !== 'expo-home') {
+      if (manifest.extra?.expoClient?.name !== 'expo-home') {
         console.log(
           `Manifest at ${url} is not expo-home; using published kernel manifest instead...`
         );

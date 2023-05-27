@@ -13,15 +13,8 @@ const DIFF_CONTENT = fs.readFileSync(path.join(dirname, '../../../public', DIFF_
 
 const validateDiffContent = (screen: Screen) => {
   expect(screen.getByText('ios/MyApp/AppDelegate.h')).toBeInTheDocument();
-  expect(screen.getByText('ios/MyApp/AppDelegate.mm')).toBeInTheDocument();
   expect(screen.getByText('ios/Podfile')).toBeInTheDocument();
-
   expect(screen.getByText('#import <UIKit/UIKit.h>')).toBeInTheDocument();
-  expect(
-    screen.getByText(
-      '@interface AppDelegate : UIResponder <UIApplicationDelegate, RCTBridgeDelegate>'
-    )
-  ).toBeInTheDocument();
   expect(screen.getByText('#import <Expo/Expo.h>')).toBeInTheDocument();
 };
 

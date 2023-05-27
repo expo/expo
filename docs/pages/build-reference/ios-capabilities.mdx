@@ -4,7 +4,6 @@ description: Learn about built-in iOS capabilities supported in EAS Build and ho
 ---
 
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
-import { Terminal } from '~/ui/components/Snippet';
 
 When you make a change to your iOS entitlements, this change needs to be updated remotely on Apple's servers before making a production build. EAS Build automatically synchronizes capabilities on the Apple Developer Console with your local entitlements configuration when you run `eas build`. Capabilities are web services provided by Apple, think of them like AWS or Firebase services.
 
@@ -12,9 +11,9 @@ When you make a change to your iOS entitlements, this change needs to be updated
 
 ## Entitlements
 
-In bare workflow apps, the entitlements are read from your __ios/**/*.entitlements__ file.
+In the managed workflow, the entitlements are read from the introspected app config. To edit them, see the [`ios.entitlements`](/versions/latest/config/app/#entitlements) field in your app config file. You can see your introspected config by running `npx expo config --type introspect` in your project and then look for the `ios.entitlements` object for the results.
 
-In the managed workflow, the entitlements are read from the introspected Expo config. You can see what your introspected config looks like by running `npx expo config --type introspect` in your project, then look for the `ios.entitlements` object for the results.
+In bare workflow apps, the entitlements are read from your __ios/**/*.entitlements__ file.
 
 ## Enabling
 

@@ -23,7 +23,7 @@ class UpdateSpec : ExpoSpec {
         ]
         
         let responseHeaderData = ResponseHeaderData(
-          protocolVersion: nil,
+          protocolVersionRaw: nil,
           serverDefinedHeadersRaw: nil,
           manifestFiltersRaw: nil,
           manifestSignature: nil
@@ -50,7 +50,7 @@ class UpdateSpec : ExpoSpec {
         ]
         
         let responseHeaderData = ResponseHeaderData(
-          protocolVersion: "0",
+          protocolVersionRaw: "0",
           serverDefinedHeadersRaw: nil,
           manifestFiltersRaw: nil,
           manifestSignature: nil
@@ -77,7 +77,7 @@ class UpdateSpec : ExpoSpec {
         ]
         
         let responseHeaderData = ResponseHeaderData(
-          protocolVersion: "2",
+          protocolVersionRaw: "2",
           serverDefinedHeadersRaw: nil,
           manifestFiltersRaw: nil,
           manifestSignature: nil

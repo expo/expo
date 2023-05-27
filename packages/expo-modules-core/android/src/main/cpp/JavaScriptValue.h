@@ -5,6 +5,7 @@
 #include "JSIObjectWrapper.h"
 #include "WeakRuntimeHolder.h"
 #include "JavaScriptTypedArray.h"
+#include "JNIDeallocator.h"
 
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
@@ -21,16 +22,24 @@ class JavaScriptObject;
 
 class JavaScriptTypedArray;
 
+class JavaScriptFunction;
+
 /**
  * Represents any JavaScript value. Its purpose is to expose the `jsi::Value` API back to Kotlin.
  */
-class JavaScriptValue : public jni::HybridClass<JavaScriptValue>, JSIValueWrapper {
+class JavaScriptValue : public jni::HybridClass<JavaScriptValue, Destructible>, JSIValueWrapper {
 public:
   static auto constexpr
     kJavaDescriptor = "Lexpo/modules/kotlin/jni/JavaScriptValue;";
   static auto constexpr TAG = "JavaScriptValue";
 
   static void registerNatives();
+
+  static jni::local_ref<JavaScriptValue::javaobject> newInstance(
+    JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+    std::weak_ptr<JavaScriptRuntime> runtime,
+    std::shared_ptr<jsi::Value> jsValue
+  );
 
   JavaScriptValue(
     std::weak_ptr<JavaScriptRuntime> runtime,
@@ -72,11 +81,13 @@ public:
 
   std::string getString();
 
-  jni::local_ref<jni::HybridClass<JavaScriptObject>::javaobject> getObject();
+  jni::local_ref<jni::HybridClass<JavaScriptObject, Destructible>::javaobject> getObject();
 
   jni::local_ref<jni::JArrayClass<JavaScriptValue::javaobject>> getArray();
 
   jni::local_ref<JavaScriptTypedArray::javaobject> getTypedArray();
+
+  jni::local_ref<jni::HybridClass<JavaScriptFunction, Destructible>::javaobject> jniGetFunction();
 
 private:
   friend HybridBase;

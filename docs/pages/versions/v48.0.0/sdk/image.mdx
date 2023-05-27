@@ -27,22 +27,22 @@ import { YesIcon, NoIcon, PendingIcon } from '~/ui/components/DocIcons';
 
 #### Supported image formats
 
-| Format | Android | iOS | Web |
-|:---:|:---:|:---:|:---:|
-| WebP | <YesIcon /> | <YesIcon /> | <YesIcon /> [~96% adoption](https://caniuse.com/webp) |
+|   Format   |   Android   |     iOS     |                                 Web                                 |
+| :--------: | :---------: | :---------: | :-----------------------------------------------------------------: |
+|    WebP    | <YesIcon /> | <YesIcon /> |        <YesIcon /> [~96% adoption](https://caniuse.com/webp)        |
 | PNG / APNG | <YesIcon /> | <YesIcon /> | <YesIcon /> / <YesIcon /> [~96% adoption](https://caniuse.com/apng) |
-| AVIF | <YesIcon /> | <YesIcon /> | <PendingIcon /> [~79% adoption](https://caniuse.com/avif) |
-| HEIC | <YesIcon /> | <YesIcon /> | <NoIcon /> [not adopted yet](https://caniuse.com/heif) |
-| JPEG | <YesIcon /> | <YesIcon /> | <YesIcon /> |
-| GIF | <YesIcon /> | <YesIcon /> | <YesIcon /> |
-| SVG | <YesIcon /> | <YesIcon /> | <YesIcon /> |
-| ICO | <YesIcon /> | <YesIcon /> | <YesIcon /> |
-| ICNS | <NoIcon /> | <YesIcon /> | <NoIcon /> |
+|    AVIF    | <YesIcon /> (No support for animated AVIFs) | <YesIcon /> |      <PendingIcon /> [~79% adoption](https://caniuse.com/avif)      |
+|    HEIC    | <YesIcon /> | <YesIcon /> |       <NoIcon /> [not adopted yet](https://caniuse.com/heif)        |
+|    JPEG    | <YesIcon /> | <YesIcon /> |                             <YesIcon />                             |
+|    GIF     | <YesIcon /> | <YesIcon /> |                             <YesIcon />                             |
+|    SVG     | <YesIcon /> | <YesIcon /> |                             <YesIcon />                             |
+|    ICO     | <YesIcon /> | <YesIcon /> |                             <YesIcon />                             |
+|    ICNS    | <NoIcon />  | <YesIcon /> |                             <NoIcon />                              |
 
 ## Installation
 
-> **Info** Currently `expo-image` can be used only with [development builds](/development/create-development-builds/) and bare React Native apps with [configured Expo modules](/bare/installing-expo-modules/).
-> It is not available in Expo Go and Snack yet.
+> **Info** Currently `expo-image` can be used only with [development builds](/develop/development-builds/create-a-build/), in Expo Go and bare React Native apps with [configured Expo modules](/bare/installing-expo-modules/).
+> It is not available with Snack yet.
 
 <APIInstallSection />
 
@@ -107,12 +107,12 @@ Next, import all required functions from installed packages and initialize `mult
 ```js
 // Multer is a middleware for handling `multipart/form-data`.
 const multer = require('multer');
-// Sharp allows you to recieve a data buffer from the uploaded image.
+// Sharp allows you to receive a data buffer from the uploaded image.
 const sharp = require('sharp');
 // Import the encode function from the blurhash package.
 const { encode } = require('blurhash');
 
-// Initilize `multer`.
+// Initialize `multer`.
 const upload = multer();
 ```
 

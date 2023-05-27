@@ -7,11 +7,17 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
+- Updated `react-native-gesture-handler` from `2.9.0` to `2.10.1`. ([#22621](https://github.com/expo/expo/pull/22621) by [@kudo](https://github.com/kudo))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+### ⚠️ Notices
+
+- Removed the `Remote JS debugger` option from Expo Go menu when using SDK 49 or above. ([#22027](https://github.com/expo/expo/pull/22027) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 48.0.0 — 2023-02-09
 

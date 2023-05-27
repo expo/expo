@@ -214,14 +214,14 @@ export default function App() {
 
           // Handle URL from expo push notifications
           const response = await Notifications.getLastNotificationResponseAsync();
-                         
+
           return response?.notification.request.content.data.url;
         },
         subscribe(listener) {
           const onReceiveURL = ({ url }: { url: string }) => listener(url);
 
           // Listen to incoming links from deep linking
-          Linking.addEventListener('url', onReceiveURL);
+          const eventListenerSubscription = Linking.addEventListener('url', onReceiveURL);
 
           // Listen to expo push notifications
           const subscription = Notifications.addNotificationResponseReceivedListener(response => {
@@ -236,7 +236,7 @@ export default function App() {
 
           return () => {
             // Clean up the event listeners
-            Linking.removeEventListener('url', onReceiveURL);
+            eventListenerSubscription.remove()
             subscription.remove();
           };
         },
@@ -263,7 +263,7 @@ To register your iOS device and automatically enable push notifications for your
 
 ### Expo config
 
-To configure `expo-notifications`, use the built-in [config plugin](/guides/config-plugins) in the Expo config (**app.json** or **app.config.js**) for [EAS Build](/build/introduction) or with `npx expo run:[android|ios]`. The plugin allows you to configure the following properties that cannot be set at runtime and require building a new app binary to take effect:
+To configure `expo-notifications`, use the built-in [config plugin](/config-plugins/introduction/) in the Expo config (**app.json** or **app.config.js**) for [EAS Build](/build/introduction) or with `npx expo run:[android|ios]`. The plugin allows you to configure the following properties that cannot be set at runtime and require building a new app binary to take effect:
 
 <ConfigPluginProperties
   properties={[
@@ -510,10 +510,9 @@ by specifying the `categoryIdentifier` in the [`NotificationContent`](#notificat
   alt="Image of notification categories on Android and iOS"
 />
 
-On iOS, notification categories also allow you to customize your notifications further. With each category, not only can you set interactive actions a user can take,
-but you can also configure things like the placeholder text to display when the user disables notification previews for your app.wd1
+On iOS, notification categories also allow you to customize your notifications further. With each category, not only can you set interactive actions a user can take, but you can also configure things like the placeholder text to display when the user disables notification previews for your app.
 
-> Notification categories are not supported on thew web, all related methods will result in noop.
+> Notification categories are not supported on the web and all related methods will result in noop.
 
 ## Platform specific guides
 

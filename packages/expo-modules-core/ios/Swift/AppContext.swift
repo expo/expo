@@ -8,7 +8,7 @@ public final class AppContext: NSObject {
   internal static func create() -> AppContext {
     let appContext = AppContext()
 
-    appContext.runtime = JavaScriptRuntime()
+    appContext._runtime = ExpoRuntime()
     return appContext
   }
 
@@ -41,23 +41,39 @@ public final class AppContext: NSObject {
   public internal(set) weak var reactBridge: RCTBridge?
 
   /**
-   JSI runtime of the running app.
+   Underlying JSI runtime of the running app.
    */
   @objc
-  public var runtime: JavaScriptRuntime? {
+  public var _runtime: ExpoRuntime? {
     didSet {
-      if runtime == nil {
+      if _runtime == nil {
         // When the runtime is unpinned from the context (e.g. deallocated),
         // we should make sure to release all JS objects from the memory.
         // Otherwise the JSCRuntime asserts may fail on deallocation.
         releaseRuntimeObjects()
-      } else if runtime != oldValue {
-        // Try to install ExpoModules host object automatically when the runtime changes.
-        // TODO: Should we uninstall in the old runtime? (@tsapeta)
-        try? installExpoModulesHostObject()
+      } else if _runtime != oldValue {
+        // Try to install the core object automatically when the runtime changes.
+        try? prepareRuntime()
       }
     }
   }
+
+  /**
+   JSI runtime of the running app.
+   */
+  public var runtime: ExpoRuntime {
+    get throws {
+      if let runtime = _runtime {
+        return runtime
+      }
+      throw Exceptions.RuntimeLost()
+    }
+  }
+
+  /**
+   The core module that defines the `expo` object in the global scope of Expo runtime.
+   */
+  internal private(set) lazy var coreModule = CoreModule(appContext: self)
 
   /**
    Designated initializer without modules provider.
@@ -98,6 +114,30 @@ public final class AppContext: NSObject {
    */
   public func executeOnJavaScriptThread(runBlock: @escaping (() -> Void)) {
     reactBridge?.dispatchBlock(runBlock, queue: RCTJSThread)
+  }
+
+  // MARK: - Classes
+
+  /**
+   A registry containing references to JavaScript classes.
+   - ToDo: Make one registry per module, not the entire app context.
+   Perhaps it should be kept by the `ModuleHolder`.
+   */
+  internal let classRegistry = ClassRegistry()
+
+  /**
+   Creates a new JavaScript object with the class prototype associated with the given native class.
+   - ToDo: Move this to `ModuleHolder` along the `classRegistry` property.
+   */
+  internal func newObject(nativeClassId: ObjectIdentifier) throws -> JavaScriptObject? {
+    guard let jsClass = classRegistry.getJavaScriptClass(nativeClassId: nativeClassId) else {
+      // TODO: Define a JS class for SharedRef in the CoreModule and then use it here instead of a raw object (?)
+      return try runtime.createObject()
+    }
+    let prototype = try jsClass.getProperty("prototype").asObject()
+    let object = try runtime.createObject(withPrototype: prototype)
+
+    return object
   }
 
   // MARK: - Legacy modules
@@ -307,10 +347,14 @@ public final class AppContext: NSObject {
 
   // MARK: - Runtime
 
-  internal func installExpoModulesHostObject() throws {
-    guard runtime != nil else {
-      throw RuntimeLostException()
-    }
+  internal func prepareRuntime() throws {
+    let runtime = try runtime
+    let coreObject = try coreModule.definition().build(appContext: self)
+
+    // Initialize `global.expo`.
+    try runtime.initializeCoreObject(coreObject)
+
+    // Install the modules host object as the `global.expo.modules`.
     EXJavaScriptRuntimeManager.installExpoModulesHostObject(self)
   }
 
@@ -318,6 +362,11 @@ public final class AppContext: NSObject {
    Unsets runtime objects that we hold for each module.
    */
   private func releaseRuntimeObjects() {
+    // FIXME: Release objects only from the current context.
+    // Making the registry non-global (similarly to the class registry) would fix it.
+    SharedObjectRegistry.clear()
+    classRegistry.clear()
+
     for module in moduleRegistry {
       module.javaScriptObject = nil
     }

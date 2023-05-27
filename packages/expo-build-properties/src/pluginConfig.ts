@@ -67,6 +67,11 @@ export interface PluginConfigTypeAndroid {
    */
   enableProguardInReleaseBuilds?: boolean;
   /**
+   * Enable [`shrinkResources`](https://developer.android.com/studio/build/shrink-code#shrink-resources) in release builds to remove unused resources from the app.
+   * This property should be used in combination with `enableProguardInReleaseBuilds`.
+   */
+  enableShrinkResourcesInReleaseBuilds?: boolean;
+  /**
    * Append custom [Proguard rules](https://www.guardsquare.com/manual/configuration/usage) to **android/app/proguard-rules.pro**.
    */
   extraProguardRules?: string;
@@ -83,6 +88,12 @@ export interface PluginConfigTypeAndroid {
    * semver string and specify an alternate Flipper version.
    */
   flipper?: string;
+
+  /**
+   * Enable the experimental Network Inspector for [Development builds](https://docs.expo.dev/develop/development-builds/introduction/).
+   * SDK 49+ is required.
+   */
+  unstable_networkInspector?: boolean;
 }
 
 /**
@@ -120,6 +131,12 @@ export interface PluginConfigTypeIos {
    * doing so will generate an error.
    */
   flipper?: boolean | string;
+
+  /**
+   * Enable the experimental Network Inspector for [Development builds](https://docs.expo.dev/develop/development-builds/introduction/).
+   * SDK 49+ is required.
+   */
+  unstable_networkInspector?: boolean;
 }
 
 /**
@@ -159,6 +176,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
         kotlinVersion: { type: 'string', nullable: true },
 
         enableProguardInReleaseBuilds: { type: 'boolean', nullable: true },
+        enableShrinkResourcesInReleaseBuilds: { type: 'boolean', nullable: true },
         extraProguardRules: { type: 'string', nullable: true },
 
         flipper: {
@@ -176,6 +194,8 @@ const schema: JSONSchemaType<PluginConfigType> = {
           },
           nullable: true,
         },
+
+        unstable_networkInspector: { type: 'boolean', nullable: true },
       },
       nullable: true,
     },
@@ -190,6 +210,8 @@ const schema: JSONSchemaType<PluginConfigType> = {
           type: ['boolean', 'string'],
           nullable: true,
         },
+
+        unstable_networkInspector: { type: 'boolean', nullable: true },
       },
       nullable: true,
     },
@@ -264,8 +286,17 @@ export function validateConfig(config: any): PluginConfigType {
 
   // explicitly block using use_frameworks and Flipper in iOS
   // https://github.com/facebook/flipper/issues/2414
-  if (config?.ios?.flipper !== undefined && config?.ios?.useFrameworks !== undefined) {
+  if (Boolean(config.ios?.flipper) && config.ios?.useFrameworks !== undefined) {
     throw new Error('`ios.flipper` cannot be enabled when `ios.useFrameworks` is set.');
+  }
+
+  if (
+    config.android?.enableShrinkResourcesInReleaseBuilds === true &&
+    config.android?.enableProguardInReleaseBuilds !== true
+  ) {
+    throw new Error(
+      '`android.enableShrinkResourcesInReleaseBuilds` requires `android.enableProguardInReleaseBuilds` to be enabled.'
+    );
   }
 
   return config;

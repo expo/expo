@@ -11,17 +11,19 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.DynamicNull
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.toCodedException
+import expo.modules.kotlin.functions.BaseAsyncFunctionComponent
 import expo.modules.kotlin.logger
 import expo.modules.kotlin.recycle
 
 class ViewManagerDefinition(
   private val viewFactory: (Context, AppContext) -> View,
-  private val viewType: Class<out View>,
-  private val props: Map<String, AnyViewProp>,
+  internal val viewType: Class<out View>,
+  internal val props: Map<String, AnyViewProp>,
   val onViewDestroys: ((View) -> Unit)? = null,
   val callbacksDefinition: CallbacksDefinition? = null,
   val viewGroupDefinition: ViewGroupDefinition? = null,
-  val onViewDidUpdateProps: ((View) -> Unit)? = null
+  val onViewDidUpdateProps: ((View) -> Unit)? = null,
+  val asyncFunctions: List<BaseAsyncFunctionComponent> = emptyList()
 ) {
 
   fun createView(context: Context, appContext: AppContext): View = viewFactory(context, appContext)

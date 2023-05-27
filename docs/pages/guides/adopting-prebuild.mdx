@@ -12,7 +12,7 @@ There are [many advantages](/workflow/prebuild#pitch) of using [Expo Prebuild][p
 
 {/* NOTE: Update the version when we bump support */}
 
-<Terminal cmd={['$ npx react-native init --version 0.69.4']} />
+<Terminal cmd={['$ npx react-native init ProjectName --version 0.71.7']} />
 
 This will create a new React Native project.
 
@@ -20,7 +20,7 @@ This will create a new React Native project.
 
 ## Install the `expo` package
 
-The `expo` package contains the [`npx expo prebuild`](/workflow/expo-cli#prebuild) command and indicates which [prebuild template](/workflow/prebuild#templates) to use:
+The `expo` package contains the [`npx expo prebuild`](/more/expo-cli/#prebuild) command and indicates which [prebuild template](/workflow/prebuild#templates) to use:
 
 <Terminal cmd={['$ yarn add expo']} />
 
@@ -65,7 +65,7 @@ You can test that everything worked by building the projects locally:
   ]}
 />
 
-> Learn more about [compiling native apps](/workflow/expo-cli#compiling).
+> Learn more about [compiling native apps](/more/expo-cli/#compiling).
 
 ## Extra changes
 
@@ -95,7 +95,7 @@ See: [Customizing Metro](/guides/customizing-metro.mdx)
 
 **package.json**
 
-You may want to change the scripts to use the [Expo CLI](/workflow/expo-cli#compiling) run commands:
+You may want to change the scripts to use the [Expo CLI](/more/expo-cli/#compiling) run commands:
 
 ```diff
   "scripts": {
@@ -116,7 +116,7 @@ If your project has any native modifications (changes to the `ios` or `android` 
 - Check to see if your changes overlap with the built-in [Expo config fields](/versions/latest/config/app/). For example, if you have an app icon, be sure to define it as `expo.icon` in the `app.json` then re-run `npx expo prebuild`.
 - Look up if any of the packages you're using require an [Expo Config Plugin][config-plugins]. If a package in your project required additional changes inside of the `ios/` or `android/` folders, then you will probably need a Config Plugin. Some plugins can be automatically added by running `npx expo install` with all of the packages in your `package.json` `dependencies`. If a package requires a plugin but doesn't supply one, then you can try checking the community plugins at [`expo/config-plugins`](https://github.com/expo/config-plugins) to see if one already exists.
 - You can use the [VS Code Expo extension][vs-code-expo] to introspect your changes and debug if prebuild is generating the native code you expect. Just press <kbd>Cmd ⌘</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd>, type "Expo: Preview Modifier", and select the native file you wish to introspect.
-- Additionally, you can develop local config plugins to fit your needs. [Learn more](/guides/config-plugins#developing-a-plugin).
+- Additionally, you can develop local config plugins to fit your needs. [Learn more](/config-plugins/development-and-debugging/#develop-a-plugin).
 
 ## Adding More Features
 
@@ -128,10 +128,10 @@ Prebuild is the tip of the automation iceberg, here are some features you can ad
 - [Expo Dev Client][dev-client]: Create your own personal "Expo Go" type app around your native runtime.
 - [Expo native module API][expo-modules-core]: Write modules with Swift and Kotlin. This is automatically supported when using `npx expo prebuild`.
 
-[vs-code-expo]: https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo
+[vs-code-expo]: https://marketplace.visualstudio.com/items?itemName=expo.vscode-expo-tools
 [expo-modules-core]: /modules/module-api
-[dev-client]: /development/introduction
-[config-plugins]: /guides/config-plugins
+[dev-client]: /develop/development-builds/introduction/
+[config-plugins]: /config-plugins/introduction/
 [prebuild]: /workflow/prebuild
-[cli]: /workflow/expo-cli
-[version-support]: /versions/latest/index#each-expo-sdk-version-depends-on-a-react-native-version
+[cli]: /more/expo-cli/
+[version-support]: /versions/latest/#each-expo-sdk-version-depends-on-a-react-native-version

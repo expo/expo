@@ -1,9 +1,11 @@
 // Copyright © 2021-present 650 Industries, Inc. (aka Expo)
 
 #include "ExpoModulesHostObject.h"
+#include "LazyObject.h"
 
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
+#include <react/bridging/LongLivedObject.h>
 
 namespace jsi = facebook::jsi;
 
@@ -16,20 +18,38 @@ ExpoModulesHostObject::ExpoModulesHostObject(JSIInteropModuleRegistry *installer
  * Clears jsi references held by JSRegistry and JavaScriptRuntime. 
  */
 ExpoModulesHostObject::~ExpoModulesHostObject() {
+  facebook::react::LongLivedObjectCollection::get().clear();
   installer->jsRegistry.reset();
   installer->runtimeHolder.reset();
+  installer->jsInvoker.reset();
+  installer->nativeInvoker.reset();
+  installer->jniDeallocator.reset();
 }
 
 jsi::Value ExpoModulesHostObject::get(jsi::Runtime &runtime, const jsi::PropNameID &name) {
   auto cName = name.utf8(runtime);
-  auto module = installer->getModule(cName);
-  if (module == nullptr) {
+
+  if (!installer->hasModule(cName)) {
+    modulesCache.erase(cName);
     return jsi::Value::undefined();
   }
+  if (UniqueJSIObject &cachedObject = modulesCache[cName]) {
+    return jsi::Value(runtime, *cachedObject);
+  }
 
-  module->cthis()->jsiInteropModuleRegistry = installer;
-  auto jsiObject = module->cthis()->getJSIObject(runtime);
-  return jsi::Value(runtime, *jsiObject);
+  // Create a lazy object for the specific module. It defers initialization of the final module object.
+  LazyObject::Shared moduleLazyObject = std::make_shared<LazyObject>(
+    [this, cName](jsi::Runtime &rt) {
+      auto module = installer->getModule(cName);
+      module->cthis()->jsiInteropModuleRegistry = installer;
+      return module->cthis()->getJSIObject(rt);
+    });
+
+  // Save the module's lazy host object for later use.
+  modulesCache[cName] = std::make_unique<jsi::Object>(
+    jsi::Object::createFromHostObject(runtime, moduleLazyObject));
+
+  return jsi::Value(runtime, *modulesCache[cName]);
 }
 
 void ExpoModulesHostObject::set(jsi::Runtime &runtime, const jsi::PropNameID &name,

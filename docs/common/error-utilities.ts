@@ -133,24 +133,56 @@ function endsInNull(path: string) {
 // Simple remapping of renamed pages, similar to in deploy.sh but in some cases,
 // for reasons I'm not totally clear on, those redirects do not work
 const RENAMED_PAGES: Record<string, string> = {
-  '/introduction/project-lifecycle/': '/introduction/managed-vs-bare/',
-  '/guides/': '/workflow/exploring-managed-workflow/',
+  // Redirects after creating /home route
+  '/next-steps/additional-resources/': '/additional-resources/',
+  // TODO: (@aman) Uncomment the two lines below when we've removed third-party libraries from Reference
+  // '/versions/latest/sdk/safe-area-context/': '/develop/user-interface/safe-areas',
+  // '/versions/latest/sdk/async-storage/': '/develop/user-interface/store-data/#async-storage',
+  '/get-started/create-a-new-app/': '/get-started/create-a-project',
+  '/guides/config-plugins/': '/config-plugins/introduction/',
+  '/workflow/debugging/': '/debugging/runtime-issues/',
+  '/guides/userinterface/': '/ui-programming/user-interface-libraries/',
+  '/introduction/expo/': '/core-concepts/',
+  '/introduction/why-not-expo/': '/faq/#limitations',
+  '/introduction/faq/': '/faq/',
+  '/next-steps/community/': '/',
+  '/introduction/managed-vs-bare/': '/archive/managed-vs-bare/',
+  '/workflow/expo-go/': '/get-started/expo-go/',
+  '/guides/splash-screens/': '/develop/user-interface/splash-screen/',
+  '/guides/app-icons/': '/develop/user-interface/app-icons/',
+  '/guides/color-schemes/': '/develop/user-interface/color-themes/',
+  '/guides/using-custom-fonts/': '/develop/user-interface/fonts/',
+  '/development/introduction/': '/develop/development-builds/introduction/',
+  '/development/create-development-builds/': '/develop/development-builds/create-a-build/',
+  '/development/use-development-builds/': '/develop/development-builds/use-development-builds/',
+  '/development/development-workflows/': '/develop/development-builds/development-workflows/',
+  '/workflow/expo-cli/': '/more/expo-cli/',
+  '/versions/latest/workflow/expo-cli/': '/more/expo-cli/',
+  '/debugging/': '/debugging/runtime-issues/',
+  '/debugging/runtime-issue/': '/debugging/runtime-issues/',
+  '/guides/testing-with-jest/': '/develop/unit-testing/',
+  '/workflow/glossary-of-terms/': '/more/glossary-of-terms/',
+  '/development/installation/': '/develop/development-builds/installation/',
+  '/get-started/errors/': '/debugging/errors-and-warnings/',
+
+  // Old redirects
+  '/introduction/project-lifecycle/': '/archive/managed-vs-bare/',
   '/versions/latest/sdk/': '/versions/latest/',
   '/versions/latest/sdk/overview/': '/versions/latest/',
   '/guides/building-standalone-apps/': '/archive/classic-updates/building-standalone-apps/',
   '/distribution/building-standalone-apps/': '/archive/classic-updates/building-standalone-apps/',
   '/guides/genymotion/': '/workflow/android-studio-emulator/',
   '/workflow/upgrading-expo/': '/workflow/upgrading-expo-sdk-walkthrough/',
-  '/workflow/create-react-native-app/': '/workflow/glossary-of-terms/#create-react-native-app',
+  '/workflow/create-react-native-app/': '/more/glossary-of-terms/#create-react-native-app',
   '/expokit/': '/archive/glossary/#expokit/',
 
   // Development builds redirects
-  '/development/build/': '/development/create-development-builds/',
-  '/development/getting-started/': '/development/create-development-builds/',
-  '/development/troubleshooting/': '/development/introduction/',
-  '/development/upgrading/': '/development/introduction/',
-  '/development/extensions/': '/development/development-workflows/',
-  '/development/develop-your-project': '/development/use-development-builds',
+  '/development/build/': '/develop/development-builds/create-a-build/',
+  '/development/getting-started/': '/develop/development-builds/create-a-build/',
+  '/development/troubleshooting/': '/develop/development-builds/introduction/',
+  '/development/upgrading/': '/develop/development-builds/introduction/',
+  '/development/extensions/': '/develop/development-builds/development-workflows/',
+  '/development/develop-your-project': '/develop/development-builds/use-development-builds/',
 
   // Consolidate workflow page
   '/bare/customizing/': '/workflow/customizing/',
@@ -162,7 +194,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/workflow/publishing/': '/archive/classic-updates/publishing/',
   '/guides/linking/': '/workflow/linking/',
   '/guides/up-and-running/': '/get-started/installation/',
-  '/guides/debugging/': '/workflow/debugging/',
+  '/guides/debugging/': '/debugging/runtime-issues/',
   '/guides/logging/': '/workflow/logging/',
   '/introduction/troubleshooting-proxies/': '/guides/troubleshooting-proxies/',
   '/introduction/running-in-the-browser/': '/guides/running-in-the-browser/',
@@ -184,7 +216,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/v37.0.0/sdk/overview/': '/versions/v37.0.0/',
 
   // Errors and debugging is better suited for getting started than tutorial
-  '/tutorial/errors/': '/get-started/errors/',
+  '/tutorial/errors/': '/debugging/errors-and-warnings/',
 
   // Redirects based on Next 9 upgrade (09/11/2020)
   '/api/': '/versions/latest/',
@@ -266,7 +298,7 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Deleted or removed guides
   '/guides/setup-native-firebase/': '/guides/using-firebase/',
-  '/guides/using-clojurescript/': '/',
+  '/guides/using-clojurescript/': '/guides/',
 
   // Redirects from old to new tutorial
   '/tutorial/planning/': '/tutorial/introduction/',
@@ -279,6 +311,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/expokit/eject/': '/archive/glossary/#eject',
   '/expokit/expokit/': '/archive/glossary/#expokit',
   '/submit/classic-builds/': '/submit/introduction/',
+  '/archive/adhoc-builds/': '/develop/development-builds/introduction/',
 
   // Redirects for removed API docs based on Sentry
   '/versions/latest/sdk/facebook/': '/guides/authentication/',
@@ -300,4 +333,15 @@ const RENAMED_PAGES: Record<string, string> = {
   // Push notifications
   '/push-notifications/using-fcm/': '/push-notifications/push-notifications-setup',
   '/config/app/': '/workflow/configuration/',
+  '/versions/latest/sdk/settings/': '/versions/latest/',
+  '/archive/expokit/eject/': '/archive/glossary/#eject',
+  '/versions/latest/sdk/admob/': '/versions/latest/',
+  '/versions/latest/sdk/payments/': '/versions/latest/sdk/stripe/',
+  '/distribution/app-icons/': '/develop/user-interface/app-icons/',
+  '/guides/using-libraries/': '/workflow/using-libraries/',
+  '/tutorial/': '/tutorial/introduction/',
+  // Note (@aman): The following redirect is temporary until Guides section has an overview
+  '/guides/': '/workflow/customizing/',
+  '/archive/workflow/customizing/': '/workflow/customizing/',
+  '/errors-and-warnings/': '/debugging/errors-and-warnings/',
 };

@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -41,7 +41,6 @@
 		2F7A50E095D6492596EA0B26 /* RNSharedElementNode.m in Sources */ = {isa = PBXBuildFile; fileRef = D29BDFCEEA8F4701829ADCD1 /* RNSharedElementNode.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		312D2ED2234DF2DC002F4049 /* EXScopedFacebook.m in Sources */ = {isa = PBXBuildFile; fileRef = 312D2ED1234DF2DC002F4049 /* EXScopedFacebook.m */; };
 		31361A5A2260B2F600662769 /* EXScopedSecureStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 31361A592260B2F600662769 /* EXScopedSecureStore.m */; };
-		31361A5D2260B9A400662769 /* EXScopedAmplitude.m in Sources */ = {isa = PBXBuildFile; fileRef = 31361A5C2260B9A400662769 /* EXScopedAmplitude.m */; };
 		31361A612261C65A00662769 /* EXPermissionsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31361A602261C65A00662769 /* EXPermissionsManager.m */; };
 		31361A642261C6CB00662769 /* EXScopedPermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = 31361A632261C6CB00662769 /* EXScopedPermissions.m */; };
 		314791F02551CF2A00A81BA1 /* EXScopedServerRegistrationModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 314791EF2551CF2A00A81BA1 /* EXScopedServerRegistrationModule.m */; };
@@ -144,6 +143,8 @@
 		A1C33FE52667F6E70091644A /* EXSplashScreenHUDButton.m in Sources */ = {isa = PBXBuildFile; fileRef = A1C33FDB2667F6E70091644A /* EXSplashScreenHUDButton.m */; };
 		B0D21CC221E6488D8EDA79EA /* RNSharedElementTransitionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9033E268A74098A882CCEB /* RNSharedElementTransitionManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		B21115F8246C1B47005BA616 /* EXScopedNotificationBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = B21115F7246C1B47005BA616 /* EXScopedNotificationBuilder.m */; };
+		B216039C2A017E490003168A /* EXExpoGoLauncherSelectionPolicyFilterAware.swift in Sources */ = {isa = PBXBuildFile; fileRef = B216039B2A017E490003168A /* EXExpoGoLauncherSelectionPolicyFilterAware.swift */; };
+		B216039D2A017E490003168A /* EXExpoGoLauncherSelectionPolicyFilterAware.swift in Sources */ = {isa = PBXBuildFile; fileRef = B216039B2A017E490003168A /* EXExpoGoLauncherSelectionPolicyFilterAware.swift */; };
 		B22BB0342366F3F400EE04EC /* EXScopedErrorRecoveryModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B22BB0322366F3F400EE04EC /* EXScopedErrorRecoveryModule.m */; };
 		B236C4F324740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B236C4F224740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m */; };
 		B23D9AA324758C6600D09AC8 /* EXScopedNotificationPresentationModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B23D9AA224758C6600D09AC8 /* EXScopedNotificationPresentationModule.m */; };
@@ -174,7 +175,6 @@
 		B5854EEB20D07D4D001D2F6E /* EXLinkingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B5854EEA20D07D4D001D2F6E /* EXLinkingTests.m */; };
 		B58F125C20B73455003E13F1 /* EXEnvironment.m in Sources */ = {isa = PBXBuildFile; fileRef = B58F125B20B73455003E13F1 /* EXEnvironment.m */; };
 		B59B59491F6369480083850D /* EXTestEnvironment.plist in Resources */ = {isa = PBXBuildFile; fileRef = B59B59481F6369480083850D /* EXTestEnvironment.plist */; };
-		B5A358621C7E6C4300D1BE67 /* EXAnalytics.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A358611C7E6C4300D1BE67 /* EXAnalytics.m */; };
 		B5A473DA204A66F70035C61C /* EXAppViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A473D4204A66F60035C61C /* EXAppViewController.m */; };
 		B5A473DC204A66F70035C61C /* EXErrorView.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A473D6204A66F60035C61C /* EXErrorView.m */; };
 		B5A72C2020A0D13E00974CCE /* EXManifestResource.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C1D20A0D13E00974CCE /* EXManifestResource.m */; };
@@ -251,7 +251,6 @@
 		F14217E7262CB68600BB97E6 /* AIRGoogleMapCircleManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99CA2285B51000F19090 /* AIRGoogleMapCircleManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F14217E9262CB68600BB97E6 /* AIRMapLocalTileOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD9A152285B52E00F19090 /* AIRMapLocalTileOverlay.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F14217EA262CB68600BB97E6 /* EXScopedNotificationCategoriesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = FCA11CA524C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m */; };
-		F14217F0262CB68600BB97E6 /* EXAnalytics.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A358611C7E6C4300D1BE67 /* EXAnalytics.m */; };
 		F14217F1262CB68600BB97E6 /* EXViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5D0D65B204F152D00DDFC99 /* EXViewController.m */; };
 		F14217F2262CB68600BB97E6 /* AIRWeakTimerReference.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD9A292285B53000F19090 /* AIRWeakTimerReference.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F14217F4262CB68600BB97E6 /* AIRMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99F72285B52C00F19090 /* AIRMap.m */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -324,7 +323,6 @@
 		F142185D262CB68600BB97E6 /* EXScopedFilePermissionModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2520E83921ABEEF100D900A4 /* EXScopedFilePermissionModule.m */; };
 		F142185F262CB68600BB97E6 /* EXApiV2Result.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D82529204F826700CBD9D9 /* EXApiV2Result.m */; };
 		F1421860262CB68600BB97E6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1F7433D24ABECD500EA5023 /* AppDelegate.swift */; };
-		F1421861262CB68600BB97E6 /* EXScopedAmplitude.m in Sources */ = {isa = PBXBuildFile; fileRef = 31361A5C2260B9A400662769 /* EXScopedAmplitude.m */; };
 		F1421863262CB68600BB97E6 /* EXDevMenuManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F1D6AF63244720E100AC1C74 /* EXDevMenuManager.m */; };
 		F1421864262CB68600BB97E6 /* EXDevMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B56C65CB204769F9002B2424 /* EXDevMenuViewController.m */; };
 		F1421865262CB68600BB97E6 /* EXKernel.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC398E1E95A90B00540AA7 /* EXKernel.m */; };
@@ -570,8 +568,6 @@
 		312D2ED3234DF2F6002F4049 /* EXScopedFacebook.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedFacebook.h; sourceTree = "<group>"; };
 		31361A582260B2F600662769 /* EXScopedSecureStore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedSecureStore.h; sourceTree = "<group>"; };
 		31361A592260B2F600662769 /* EXScopedSecureStore.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedSecureStore.m; sourceTree = "<group>"; };
-		31361A5B2260B9A400662769 /* EXScopedAmplitude.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedAmplitude.h; sourceTree = "<group>"; };
-		31361A5C2260B9A400662769 /* EXScopedAmplitude.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedAmplitude.m; sourceTree = "<group>"; };
 		31361A5F2261C65A00662769 /* EXPermissionsManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXPermissionsManager.h; sourceTree = "<group>"; };
 		31361A602261C65A00662769 /* EXPermissionsManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXPermissionsManager.m; sourceTree = "<group>"; };
 		31361A622261C6CB00662769 /* EXScopedPermissions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedPermissions.h; sourceTree = "<group>"; };
@@ -775,6 +771,7 @@
 		AF530F40E8F84F5FB7D7C181 /* RNSharedElementTransition.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementTransition.h; sourceTree = "<group>"; };
 		B21115F6246C1B47005BA616 /* EXScopedNotificationBuilder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationBuilder.h; sourceTree = "<group>"; };
 		B21115F7246C1B47005BA616 /* EXScopedNotificationBuilder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationBuilder.m; sourceTree = "<group>"; };
+		B216039B2A017E490003168A /* EXExpoGoLauncherSelectionPolicyFilterAware.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EXExpoGoLauncherSelectionPolicyFilterAware.swift; sourceTree = "<group>"; };
 		B22BB0322366F3F400EE04EC /* EXScopedErrorRecoveryModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedErrorRecoveryModule.m; sourceTree = "<group>"; };
 		B22BB0332366F3F400EE04EC /* EXScopedErrorRecoveryModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedErrorRecoveryModule.h; sourceTree = "<group>"; };
 		B236C4F124740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationSchedulerModule.h; sourceTree = "<group>"; };
@@ -831,8 +828,6 @@
 		B58F125A20B73455003E13F1 /* EXEnvironment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXEnvironment.h; sourceTree = "<group>"; };
 		B58F125B20B73455003E13F1 /* EXEnvironment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXEnvironment.m; sourceTree = "<group>"; };
 		B59B59481F6369480083850D /* EXTestEnvironment.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = EXTestEnvironment.plist; sourceTree = "<group>"; };
-		B5A358601C7E6C4300D1BE67 /* EXAnalytics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAnalytics.h; sourceTree = "<group>"; };
-		B5A358611C7E6C4300D1BE67 /* EXAnalytics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAnalytics.m; sourceTree = "<group>"; };
 		B5A473D4204A66F60035C61C /* EXAppViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppViewController.m; sourceTree = "<group>"; };
 		B5A473D6204A66F60035C61C /* EXErrorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXErrorView.m; sourceTree = "<group>"; };
 		B5A473D8204A66F60035C61C /* EXAppViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAppViewController.h; sourceTree = "<group>"; };
@@ -1133,8 +1128,6 @@
 				317168F9213DA0E000766458 /* EXScopedReactNativeAdapter.m */,
 				31361A582260B2F600662769 /* EXScopedSecureStore.h */,
 				31361A592260B2F600662769 /* EXScopedSecureStore.m */,
-				31361A5B2260B9A400662769 /* EXScopedAmplitude.h */,
-				31361A5C2260B9A400662769 /* EXScopedAmplitude.m */,
 				BBE8539222B98828001FF9C2 /* EXScopedFontLoader.h */,
 				BBE8539322B98828001FF9C2 /* EXScopedFontLoader.m */,
 				31571B282265DC9700358D65 /* EXScopedSegment.h */,
@@ -1241,7 +1234,6 @@
 		78CEE2C21ACD07D70095B124 /* Exponent */ = {
 			isa = PBXGroup;
 			children = (
-				B53BB2851C7E6C1E00D52FBD /* Analytics */,
 				B526B5031E6A543500606CAB /* ExpoKit */,
 				B5AC398B1E95A90B00540AA7 /* Kernel */,
 				B5E49B521D1346FA00AA6436 /* Supporting */,
@@ -1412,15 +1404,6 @@
 				B5D0D65B204F152D00DDFC99 /* EXViewController.m */,
 			);
 			path = ExpoKit;
-			sourceTree = "<group>";
-		};
-		B53BB2851C7E6C1E00D52FBD /* Analytics */ = {
-			isa = PBXGroup;
-			children = (
-				B5A358601C7E6C4300D1BE67 /* EXAnalytics.h */,
-				B5A358611C7E6C4300D1BE67 /* EXAnalytics.m */,
-			);
-			path = Analytics;
 			sourceTree = "<group>";
 		};
 		B56C65BF20476834002B2424 /* Client */ = {
@@ -1670,6 +1653,7 @@
 				B26DF25528048DB80071B0CD /* EXAppLoaderHelpers.swift */,
 				2D5265E9294998B5001BB2BB /* EXHomeLoader.h */,
 				2D5265EA294998B5001BB2BB /* EXHomeLoader.m */,
+				B216039B2A017E490003168A /* EXExpoGoLauncherSelectionPolicyFilterAware.swift */,
 			);
 			path = AppLoader;
 			sourceTree = "<group>";
@@ -2356,10 +2340,8 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go-Expo Go (versioned)/Pods-Expo Go-Expo Go (versioned)-resources.sh",
-				"${PODS_ROOT}/Amplitude/Sources/Amplitude/ComodoRsaDomainValidationCA.der",
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
 				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.framework/Resources/GoogleMaps.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/MLKitFaceDetection/GoogleMVFaceDetectorResources.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/Stripe/Stripe.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/StripeCore/StripeCore.bundle",
@@ -2377,10 +2359,8 @@
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ComodoRsaDomainValidationCA.der",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXConstants.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleMaps.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleMVFaceDetectorResources.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Stripe.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripeCore.bundle",
@@ -2468,10 +2448,8 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go-Expo Go (unversioned)/Pods-Expo Go-Expo Go (unversioned)-resources.sh",
-				"${PODS_ROOT}/Amplitude/Sources/Amplitude/ComodoRsaDomainValidationCA.der",
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
 				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.framework/Resources/GoogleMaps.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/MLKitFaceDetection/GoogleMVFaceDetectorResources.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/Stripe/Stripe.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/StripeCore/StripeCore.bundle",
@@ -2484,10 +2462,8 @@
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ComodoRsaDomainValidationCA.der",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXConstants.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleMaps.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleMVFaceDetectorResources.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Stripe.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripeCore.bundle",
@@ -2607,10 +2583,8 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go-Tests/Pods-Expo Go-Tests-resources.sh",
-				"${PODS_ROOT}/Amplitude/Sources/Amplitude/ComodoRsaDomainValidationCA.der",
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
 				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.framework/Resources/GoogleMaps.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/MLKitFaceDetection/GoogleMVFaceDetectorResources.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/Stripe/Stripe.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/StripeCore/StripeCore.bundle",
@@ -2623,10 +2597,8 @@
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ComodoRsaDomainValidationCA.der",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXConstants.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleMaps.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleMVFaceDetectorResources.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Stripe.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripeCore.bundle",
@@ -2712,7 +2684,6 @@
 				31AD99EA2285B51100F19090 /* AIRGoogleMapCircleManager.m in Sources */,
 				31AD9A422285B53100F19090 /* AIRMapLocalTileOverlay.m in Sources */,
 				FCA11CA724C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m in Sources */,
-				B5A358621C7E6C4300D1BE67 /* EXAnalytics.m in Sources */,
 				B5D0D65C204F152D00DDFC99 /* EXViewController.m in Sources */,
 				31AD9A4A2285B53100F19090 /* AIRWeakTimerReference.m in Sources */,
 				31AD9A342285B53100F19090 /* AIRMap.m in Sources */,
@@ -2786,7 +2757,6 @@
 				2520E83A21ABEEF100D900A4 /* EXScopedFilePermissionModule.m in Sources */,
 				78D8252A204F826700CBD9D9 /* EXApiV2Result.m in Sources */,
 				F1F7433E24ABECD500EA5023 /* AppDelegate.swift in Sources */,
-				31361A5D2260B9A400662769 /* EXScopedAmplitude.m in Sources */,
 				F1D6AF64244720E100AC1C74 /* EXDevMenuManager.m in Sources */,
 				B56C65CC204769F9002B2424 /* EXDevMenuViewController.m in Sources */,
 				B5AC39A71E95A90B00540AA7 /* EXKernel.m in Sources */,
@@ -2879,6 +2849,7 @@
 				31E44FBF20C975BB008AA62F /* EXScopedModuleRegistryDelegate.m in Sources */,
 				B5FB74EA1FF6DADC001C764B /* EXScopedModuleRegistry.m in Sources */,
 				2F7A50E095D6492596EA0B26 /* RNSharedElementNode.m in Sources */,
+				B216039C2A017E490003168A /* EXExpoGoLauncherSelectionPolicyFilterAware.swift in Sources */,
 				2CFE1F25CD524A7ABFCAA366 /* RNSharedElementNodeManager.m in Sources */,
 				50659F05B6314F5192BC2215 /* RNSharedElementStyle.m in Sources */,
 				BE23D5E5DA574BA3A73C19C3 /* RNSharedElementTransition.m in Sources */,
@@ -2949,7 +2920,6 @@
 				F14217E7262CB68600BB97E6 /* AIRGoogleMapCircleManager.m in Sources */,
 				F14217E9262CB68600BB97E6 /* AIRMapLocalTileOverlay.m in Sources */,
 				F14217EA262CB68600BB97E6 /* EXScopedNotificationCategoriesModule.m in Sources */,
-				F14217F0262CB68600BB97E6 /* EXAnalytics.m in Sources */,
 				F14217F1262CB68600BB97E6 /* EXViewController.m in Sources */,
 				F14217F2262CB68600BB97E6 /* AIRWeakTimerReference.m in Sources */,
 				F14217F4262CB68600BB97E6 /* AIRMap.m in Sources */,
@@ -3025,7 +2995,6 @@
 				F142185D262CB68600BB97E6 /* EXScopedFilePermissionModule.m in Sources */,
 				F142185F262CB68600BB97E6 /* EXApiV2Result.m in Sources */,
 				F1421860262CB68600BB97E6 /* AppDelegate.swift in Sources */,
-				F1421861262CB68600BB97E6 /* EXScopedAmplitude.m in Sources */,
 				F1421863262CB68600BB97E6 /* EXDevMenuManager.m in Sources */,
 				F1421864262CB68600BB97E6 /* EXDevMenuViewController.m in Sources */,
 				F1421865262CB68600BB97E6 /* EXKernel.m in Sources */,
@@ -3084,6 +3053,7 @@
 				2D5265EC294998B5001BB2BB /* EXHomeLoader.m in Sources */,
 				F14218B3262CB68600BB97E6 /* EXKernelAppRegistry.m in Sources */,
 				F14218B4262CB68600BB97E6 /* EXErrorRecoveryManager.m in Sources */,
+				B216039D2A017E490003168A /* EXExpoGoLauncherSelectionPolicyFilterAware.swift in Sources */,
 				F14218B9262CB68600BB97E6 /* AIRMapUrlTile.m in Sources */,
 				F14218BA262CB68600BB97E6 /* AIRMapCircle.m in Sources */,
 				F14218BB262CB68600BB97E6 /* EXScopedBranch.m in Sources */,
@@ -3334,7 +3304,10 @@
 				);
 				INFOPLIST_FILE = Exponent/Supporting/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
@@ -3355,7 +3328,10 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "Exponent-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				SYSTEM_HEADER_SEARCH_PATHS = "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\"";
+				SYSTEM_HEADER_SEARCH_PATHS = (
+					"\"$(PODS_ROOT)/boost\"",
+					"\"$(PODS_ROOT)/RCT-Folly\"",
+				);
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -3395,7 +3371,10 @@
 				);
 				INFOPLIST_FILE = Exponent/Supporting/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
@@ -3415,7 +3394,10 @@
 				STRIP_STYLE = "non-global";
 				SWIFT_OBJC_BRIDGING_HEADER = "Exponent-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
-				SYSTEM_HEADER_SEARCH_PATHS = "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\"";
+				SYSTEM_HEADER_SEARCH_PATHS = (
+					"\"$(PODS_ROOT)/boost\"",
+					"\"$(PODS_ROOT)/RCT-Folly\"",
+				);
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -3439,7 +3421,11 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = Tests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = host.exp.Tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -3467,7 +3453,11 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = Tests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = host.exp.Tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -3487,7 +3477,11 @@
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = ExponentIntegrationTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = host.exp.ExponentIntegrationTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -3506,7 +3500,11 @@
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = ExponentIntegrationTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = host.exp.ExponentIntegrationTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -3550,7 +3548,10 @@
 				);
 				INFOPLIST_FILE = Exponent/Supporting/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
@@ -3571,7 +3572,10 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "Exponent-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				SYSTEM_HEADER_SEARCH_PATHS = "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\"";
+				SYSTEM_HEADER_SEARCH_PATHS = (
+					"\"$(PODS_ROOT)/boost\"",
+					"\"$(PODS_ROOT)/RCT-Folly\"",
+				);
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -3612,7 +3616,10 @@
 				);
 				INFOPLIST_FILE = Exponent/Supporting/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
@@ -3632,7 +3639,10 @@
 				STRIP_STYLE = "non-global";
 				SWIFT_OBJC_BRIDGING_HEADER = "Exponent-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
-				SYSTEM_HEADER_SEARCH_PATHS = "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\"";
+				SYSTEM_HEADER_SEARCH_PATHS = (
+					"\"$(PODS_ROOT)/boost\"",
+					"\"$(PODS_ROOT)/RCT-Folly\"",
+				);
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -3659,7 +3669,11 @@
 				);
 				INFOPLIST_FILE = ExpoNotificationServiceExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.2;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				OTHER_LDFLAGS = "";
@@ -3693,7 +3707,11 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = ExpoNotificationServiceExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.2;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
 				MTL_FAST_MATH = YES;
 				OTHER_LDFLAGS = "";
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
@@ -3701,8 +3719,9 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "match AppStore host.exp.Exponent.ExpoNotificationServiceExtension";
 				SKIP_INSTALL = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OBJC_BRIDGING_HEADER = "ExpoNotificationServiceExtension/ExpoNotificationServiceExtension-Bridging-Header.h";
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

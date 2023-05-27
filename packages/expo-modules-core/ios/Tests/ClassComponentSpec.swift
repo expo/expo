@@ -32,9 +32,9 @@ class ClassComponentSpec: ExpoSpec {
       }
 
       it("builds a class") {
-        let runtime = JavaScriptRuntime()
+        let appContext = AppContext.create()
         let klass = Class("") {}
-        let object = klass.build(inRuntime: runtime)
+        let object = try klass.build(appContext: appContext)
 
         expect(object.hasProperty("prototype")) == true
         expect(object.getProperty("prototype").kind) == .object
@@ -43,7 +43,7 @@ class ClassComponentSpec: ExpoSpec {
 
     describe("module") {
       let appContext = AppContext.create()
-      let runtime = appContext.runtime
+      let runtime = try! appContext.runtime
 
       beforeSuite {
         class ClassTestModule: Module {
@@ -67,72 +67,72 @@ class ClassComponentSpec: ExpoSpec {
       }
 
       it("is a function") {
-        let klass = try runtime?.eval("expo.modules.ClassTest.MyClass")
-        expect(klass?.isFunction()) == true
+        let klass = try runtime.eval("expo.modules.ClassTest.MyClass")
+        expect(klass.isFunction()) == true
       }
 
       it("has a name") {
-        let klass = try runtime?.eval("expo.modules.ClassTest.MyClass.name")
-        expect(klass?.getString()) == "MyClass"
+        let klass = try runtime.eval("expo.modules.ClassTest.MyClass.name")
+        expect(klass.getString()) == "MyClass"
       }
 
       it("has a prototype") {
-        let prototype = try runtime?.eval("expo.modules.ClassTest.MyClass.prototype")
-        expect(prototype?.isObject()) == true
+        let prototype = try runtime.eval("expo.modules.ClassTest.MyClass.prototype")
+        expect(prototype.isObject()) == true
       }
 
       it("has keys in prototype") {
-        let prototypeKeys = try runtime?.eval("Object.keys(expo.modules.ClassTest.MyClass.prototype)")
+        let prototypeKeys = try runtime.eval("Object.keys(expo.modules.ClassTest.MyClass.prototype)")
           .getArray()
-          .map { $0.getString() } ?? []
+          .map { $0.getString() }
 
         expect(prototypeKeys).to(contain("myFunction"))
         expect(prototypeKeys).notTo(contain("__native_constructor__"))
       }
 
       it("is an instance of") {
-        let isInstanceOf = try runtime?.eval([
+        let isInstanceOf = try runtime.eval([
           "myObject = new expo.modules.ClassTest.MyClass()",
           "myObject instanceof expo.modules.ClassTest.MyClass",
         ])
 
-        expect(isInstanceOf?.getBool()) == true
+        expect(isInstanceOf.getBool()) == true
       }
 
       it("defines properties on initialization") {
         // The properties are not specified in the prototype, but defined during initialization.
-        let object = try runtime?.eval("new expo.modules.ClassTest.MyClass()").asObject()
-        expect(object?.getPropertyNames()).to(contain("foo"))
-        expect(object?.getProperty("foo").getString()) == "bar"
+        let object = try runtime.eval("new expo.modules.ClassTest.MyClass()").asObject()
+        expect(object.getPropertyNames()).to(contain("foo"))
+        expect(object.getProperty("foo").getString()) == "bar"
       }
     }
 
     describe("class with associated type") {
       let appContext = AppContext.create()
-      let runtime = appContext.runtime
+      let runtime = try! appContext.runtime
 
       beforeSuite {
         appContext.moduleRegistry.register(moduleType: ModuleWithCounterClass.self)
       }
       it("is defined") {
-        let isDefined = try! runtime!.eval("'Counter' in expo.modules.TestModule")
+        let isDefined = try runtime.eval("'Counter' in expo.modules.TestModule")
 
         expect(isDefined.getBool()) == true
       }
       it("creates shared object") {
-        let jsObject = try! runtime!.eval("new expo.modules.TestModule.Counter(0)").getObject()
+        let jsObject = try runtime.eval("new expo.modules.TestModule.Counter(0)").getObject()
         let nativeObject = SharedObjectRegistry.toNativeObject(jsObject)
 
         expect(nativeObject).notTo(beNil())
       }
       it("registers shared object") {
         let oldSize = SharedObjectRegistry.size
-        try! runtime?.eval("object = new expo.modules.TestModule.Counter(0)")
+        try runtime.eval("object = new expo.modules.TestModule.Counter(0)")
 
         expect(SharedObjectRegistry.size) == oldSize + 1
       }
       it("calls function with owner") {
-        try runtime?.eval([
+        try runtime.eval([
           "object = new expo.modules.TestModule.Counter(0)",
           "object.increment(1)",
         ])
@@ -140,7 +140,7 @@ class ClassComponentSpec: ExpoSpec {
       }
       it("creates with initial value") {
         let initialValue = Int.random(in: 1..<100)
-        let value = try runtime!.eval([
+        let value = try runtime.eval([
           "object = new expo.modules.TestModule.Counter(\(initialValue))",
           "object.getValue()",
         ])
@@ -149,7 +149,7 @@ class ClassComponentSpec: ExpoSpec {
         expect(value.getInt()) == initialValue
       }
       it("gets shared object value") {
-        let value = try runtime!.eval([
+        let value = try runtime.eval([
           "object = new expo.modules.TestModule.Counter(0)",
           "object.getValue()",
         ])
@@ -158,10 +158,10 @@ class ClassComponentSpec: ExpoSpec {
         expect(value.isNumber()) == true
       }
       it("changes shared object") {
-        try! runtime?.eval("object = new expo.modules.TestModule.Counter(0)")
+        try runtime.eval("object = new expo.modules.TestModule.Counter(0)")
         let incrementBy = Int.random(in: 1..<100)
-        let value = try runtime!.eval("object.getValue()").asInt()
-        let newValue = try runtime!.eval([
+        let value = try runtime.eval("object.getValue()").asInt()
+        let newValue = try runtime.eval([
           "object.increment(\(incrementBy))",
           "object.getValue()",
         ])
@@ -172,13 +172,21 @@ class ClassComponentSpec: ExpoSpec {
 
       it("gets value from the dynamic property") {
         let initialValue = Int.random(in: 1..<100)
-        let value = try runtime!.eval([
+        let value = try runtime.eval([
           "object = new expo.modules.TestModule.Counter(\(initialValue))",
           "object.currentValue"
         ])
 
         expect(value.kind) == .number
         expect(value.getInt()) == initialValue
+      }
+
+      it("initializes the shared object from native") {
+        let initialValue = Int.random(in: 1..<100)
+        let value = try runtime.eval("expo.modules.TestModule.newCounter(\(initialValue))")
+
+        expect(value.kind) == .object
+        expect(value.getObject().getProperty("currentValue").getInt()) == initialValue
       }
     }
   }
@@ -190,6 +198,10 @@ class ClassComponentSpec: ExpoSpec {
 fileprivate final class ModuleWithCounterClass: Module {
   func definition() -> ModuleDefinition {
     Name("TestModule")
+
+    Function("newCounter") { (initialValue: Int) in
+      return Counter(initialValue: initialValue)
+    }
 
     Class(Counter.self) {
       Constructor { (initialValue: Int) in

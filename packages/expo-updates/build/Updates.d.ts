@@ -1,5 +1,5 @@
 import { EventSubscription } from 'fbemitter';
-import { LocalAssets, Manifest, UpdateCheckResult, UpdateEvent, UpdateFetchResult, UpdatesLogEntry } from './Updates.types';
+import { LocalAssets, Manifest, UpdateCheckResult, UpdateEvent, UpdateFetchResult, UpdatesCheckAutomaticallyValue, UpdatesLogEntry } from './Updates.types';
 export * from './Updates.types';
 /**
  * The UUID that uniquely identifies the currently running update if `expo-updates` is enabled. The
@@ -21,6 +21,10 @@ export declare const channel: string | null;
  * The runtime version of the current build.
  */
 export declare const runtimeVersion: string | null;
+/**
+ * Determines if and when expo-updates checks for and downloads updates automatically on startup.
+ */
+export declare const checkAutomatically: UpdatesCheckAutomaticallyValue | null;
 /**
  * @hidden
  */
@@ -46,8 +50,9 @@ export declare const isEmbeddedLaunch: boolean;
 export declare const isUsingEmbeddedAssets: boolean;
 /**
  * If `expo-updates` is enabled, this is the
- * [manifest](/workflow/expo-go#manifest) object for the update that's currently
- * running.
+ * [manifest](/versions/latest/sdk/constants/#manifest) (or
+ * [classic manifest](/versions/latest/sdk/constants/#appmanifest))
+ * object for the update that's currently running.
  *
  * In development mode, or any other environment in which `expo-updates` is disabled, this object is
  * empty.
@@ -101,6 +106,24 @@ export declare function reloadAsync(): Promise<void>;
  * timeout communicating with the server.
  */
 export declare function checkForUpdateAsync(): Promise<UpdateCheckResult>;
+/**
+ * Retrieves the current extra params.
+ */
+export declare function getExtraParamsAsync(): Promise<{
+    [key: string]: string;
+}>;
+/**
+ * Sets an extra param if value is non-null, otherwise unsets the param.
+ * Extra params are sent in a header of update requests.
+ * The update server may use these params when evaluating logic to determine which update to serve.
+ * EAS Update merges these params into the fields used to evaluate channel–branch mapping logic.
+ *
+ * @example An app may want to add a feature where users can opt-in to beta updates. In this instance,
+ * extra params could be set to `{userType: 'beta'}`, and then the server can use this information
+ * when deciding which update to serve. If using EAS Update, the channel-branch mapping can be set to
+ * discriminate branches based on the `userType`.
+ */
+export declare function setExtraParamAsync(key: string, value: string | null | undefined): Promise<void>;
 /**
  * Retrieves the most recent expo-updates log entries.
  *

@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef RCT_NEW_ARCH_ENABLED
+#include <react/fabric/JFabricUIManager.h>
+#endif
+
 #include <ReactCommon/CallInvokerHolder.h>
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
@@ -28,7 +32,7 @@ using namespace facebook::jni;
 class AnimationFrameCallback : public HybridClass<AnimationFrameCallback> {
  public:
   static auto constexpr kJavaDescriptor =
-      "Lcom/swmansion/reanimated/NativeProxy$AnimationFrameCallback;";
+      "Lcom/swmansion/reanimated/nativeProxy/AnimationFrameCallback;";
 
   void onAnimationFrame(double timestampMs) {
     callback_(timestampMs);
@@ -53,24 +57,12 @@ class AnimationFrameCallback : public HybridClass<AnimationFrameCallback> {
 class EventHandler : public HybridClass<EventHandler> {
  public:
   static auto constexpr kJavaDescriptor =
-      "Lcom/swmansion/reanimated/NativeProxy$EventHandler;";
+      "Lcom/swmansion/reanimated/nativeProxy/EventHandler;";
 
   void receiveEvent(
       jni::alias_ref<JString> eventKey,
       jni::alias_ref<react::WritableMap> event) {
-    std::string eventAsString = "{NativeMap:null}";
-    if (event != nullptr) {
-      try {
-        eventAsString = event->toString();
-      } catch (std::exception &) {
-        // Events from other libraries may contain NaN or INF values which
-        // cannot be represented in JSON. See
-        // https://github.com/software-mansion/react-native-reanimated/issues/1776
-        // for details.
-        return;
-      }
-    }
-    handler_(eventKey->toString(), eventAsString);
+    handler_(eventKey, event);
   }
 
   static void registerNatives() {
@@ -82,25 +74,29 @@ class EventHandler : public HybridClass<EventHandler> {
  private:
   friend HybridBase;
 
-  explicit EventHandler(std::function<void(std::string, std::string)> handler)
+  explicit EventHandler(std::function<void(
+                            jni::alias_ref<JString>,
+                            jni::alias_ref<react::WritableMap>)> handler)
       : handler_(std::move(handler)) {}
 
-  std::function<void(std::string, std::string)> handler_;
+  std::function<
+      void(jni::alias_ref<JString>, jni::alias_ref<react::WritableMap>)>
+      handler_;
 };
 
 class SensorSetter : public HybridClass<SensorSetter> {
  public:
   static auto constexpr kJavaDescriptor =
-      "Lcom/swmansion/reanimated/NativeProxy$SensorSetter;";
+      "Lcom/swmansion/reanimated/nativeProxy/SensorSetter;";
 
-  void sensorSetter(jni::alias_ref<JArrayFloat> value) {
+  void sensorSetter(jni::alias_ref<JArrayFloat> value, int orientationDegrees) {
     size_t size = value->size();
     auto elements = value->getRegion(0, size);
     double array[7];
     for (int i = 0; i < size; i++) {
       array[i] = elements[i];
     }
-    callback_(array);
+    callback_(array, orientationDegrees);
   }
 
   static void registerNatives() {
@@ -112,16 +108,16 @@ class SensorSetter : public HybridClass<SensorSetter> {
  private:
   friend HybridBase;
 
-  explicit SensorSetter(std::function<void(double[])> callback)
+  explicit SensorSetter(std::function<void(double[], int)> callback)
       : callback_(std::move(callback)) {}
 
-  std::function<void(double[])> callback_;
+  std::function<void(double[], int)> callback_;
 };
 
 class KeyboardEventDataUpdater : public HybridClass<KeyboardEventDataUpdater> {
  public:
   static auto constexpr kJavaDescriptor =
-      "Lcom/swmansion/reanimated/NativeProxy$KeyboardEventDataUpdater;";
+      "Lcom/swmansion/reanimated/nativeProxy/KeyboardEventDataUpdater;";
 
   void keyboardEventDataUpdater(int keyboardState, int height) {
     callback_(keyboardState, height);
@@ -154,7 +150,13 @@ class NativeProxy : public jni::HybridClass<NativeProxy> {
       jni::alias_ref<facebook::react::CallInvokerHolder::javaobject>
           jsCallInvokerHolder,
       jni::alias_ref<AndroidScheduler::javaobject> scheduler,
-      jni::alias_ref<LayoutAnimations::javaobject> layoutAnimations);
+      jni::alias_ref<LayoutAnimations::javaobject> layoutAnimations
+#ifdef RCT_NEW_ARCH_ENABLED
+      ,
+      jni::alias_ref<facebook::react::JFabricUIManager::javaobject>
+          fabricUIManager
+#endif
+      /**/);
   static void registerNatives();
 
   ~NativeProxy();
@@ -164,38 +166,110 @@ class NativeProxy : public jni::HybridClass<NativeProxy> {
   jni::global_ref<NativeProxy::javaobject> javaPart_;
   jsi::Runtime *runtime_;
   std::shared_ptr<facebook::react::CallInvoker> jsCallInvoker_;
-  std::shared_ptr<NativeReanimatedModule> _nativeReanimatedModule;
+  std::shared_ptr<NativeReanimatedModule> nativeReanimatedModule_;
+  jni::global_ref<LayoutAnimations::javaobject> layoutAnimations_;
   std::shared_ptr<Scheduler> scheduler_;
-  jni::global_ref<LayoutAnimations::javaobject> layoutAnimations;
+#ifdef RCT_NEW_ARCH_ENABLED
+  std::shared_ptr<NewestShadowNodesRegistry> newestShadowNodesRegistry_;
 
-  void installJSIBindings();
+// removed temporary, new event listener mechanism need fix on the RN side
+// std::shared_ptr<facebook::react::Scheduler> reactScheduler_;
+// std::shared_ptr<EventListener> eventListener_;
+#endif
+#ifdef RCT_NEW_ARCH_ENABLED
+  void installJSIBindings(
+      jni::alias_ref<JavaMessageQueueThread::javaobject> messageQueueThread,
+      jni::alias_ref<JFabricUIManager::javaobject> fabricUIManager);
+  void synchronouslyUpdateUIProps(
+      jsi::Runtime &rt,
+      Tag viewTag,
+      const jsi::Value &uiProps);
+#else
+  void installJSIBindings(
+      jni::alias_ref<JavaMessageQueueThread::javaobject> messageQueueThread);
+#endif
+  PlatformDepMethodsHolder getPlatformDependentMethods();
+  void setGlobalProperties(
+      jsi::Runtime &jsRuntime,
+      const std::shared_ptr<jsi::Runtime> &reanimatedRuntime);
+  void setupLayoutAnimations();
+
+  double getCurrentTime();
   bool isAnyHandlerWaitingForEvent(std::string);
-  void requestRender(std::function<void(double)> onRender);
-  void registerEventHandler(
-      std::function<void(std::string, std::string)> handler);
-  void updateProps(jsi::Runtime &rt, int viewTag, const jsi::Object &props);
-  void scrollTo(int viewTag, double x, double y, bool animated);
+  void performOperations();
+  void requestRender(std::function<void(double)> onRender, jsi::Runtime &rt);
+  void registerEventHandler();
+  void maybeFlushUIUpdatesQueue();
   void setGestureState(int handlerTag, int newState);
-  std::vector<std::pair<std::string, double>> measure(int viewTag);
   int registerSensor(
       int sensorType,
       int interval,
-      std::function<void(double[])> setter);
+      int iosReferenceFrame,
+      std::function<void(double[], int)> setter);
   void unregisterSensor(int sensorId);
+  int subscribeForKeyboardEvents(
+      std::function<void(int, int)> keyboardEventDataUpdater,
+      bool isStatusBarTranslucent);
+  void unsubscribeFromKeyboardEvents(int listenerId);
+#ifdef RCT_NEW_ARCH_ENABLED
+  // nothing
+#else
+  jsi::Value
+  obtainProp(jsi::Runtime &rt, const int viewTag, const jsi::String &propName);
   void configureProps(
       jsi::Runtime &rt,
       const jsi::Value &uiProps,
       const jsi::Value &nativeProps);
-  int subscribeForKeyboardEvents(
-      std::function<void(int, int)> keyboardEventDataUpdater);
-  void unsubscribeFromKeyboardEvents(int listenerId);
+  void updateProps(
+      jsi::Runtime &rt,
+      int viewTag,
+      const jsi::Value &viewName,
+      const jsi::Object &props);
+  void scrollTo(int viewTag, double x, double y, bool animated);
+  std::vector<std::pair<std::string, double>> measure(int viewTag);
+#endif
+  void handleEvent(
+      jni::alias_ref<JString> eventKey,
+      jni::alias_ref<react::WritableMap> event);
+
+  void progressLayoutAnimation(
+      int tag,
+      const jsi::Object &newProps,
+      bool isSharedTransition);
+
+  /***
+   * Wraps a method of `NativeProxy` in a function object capturing `this`
+   * @tparam TReturn return type of passed method
+   * @tparam TParams paramater types of passed method
+   * @param methodPtr pointer to method to be wrapped
+   * @return a function object with the same signature as the method, calling
+   * that method on `this`
+   */
+  template <class TReturn, class... TParams>
+  std::function<TReturn(TParams...)> bindThis(
+      TReturn (NativeProxy::*methodPtr)(TParams...)) {
+    return [this, methodPtr](TParams &&...args) {
+      return (this->*methodPtr)(std::forward<TParams>(args)...);
+    };
+  }
+
+  template <class Signature>
+  JMethod<Signature> getJniMethod(std::string const &methodName) {
+    return javaPart_->getClass()->getMethod<Signature>(methodName.c_str());
+  }
 
   explicit NativeProxy(
       jni::alias_ref<NativeProxy::jhybridobject> jThis,
       jsi::Runtime *rt,
       std::shared_ptr<facebook::react::CallInvoker> jsCallInvoker,
       std::shared_ptr<Scheduler> scheduler,
-      jni::global_ref<LayoutAnimations::javaobject> _layoutAnimations);
+      jni::global_ref<LayoutAnimations::javaobject> _layoutAnimations
+#ifdef RCT_NEW_ARCH_ENABLED
+      ,
+      jni::alias_ref<facebook::react::JFabricUIManager::javaobject>
+          fabricUIManager
+#endif
+      /**/);
 };
 
 } // namespace reanimated

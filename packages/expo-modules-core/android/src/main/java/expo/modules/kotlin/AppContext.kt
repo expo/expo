@@ -35,9 +35,11 @@ import expo.modules.kotlin.events.EventName
 import expo.modules.kotlin.events.KEventEmitterWrapper
 import expo.modules.kotlin.events.KModuleEventEmitterWrapper
 import expo.modules.kotlin.events.OnActivityResultPayload
+import expo.modules.kotlin.jni.JNIDeallocator
 import expo.modules.kotlin.jni.JSIInteropModuleRegistry
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.providers.CurrentActivityProvider
+import expo.modules.kotlin.sharedobjects.SharedObjectRegistry
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -58,10 +60,21 @@ class AppContext(
   // We postpone creating the `JSIInteropModuleRegistry` to not load so files in unit tests.
   private lateinit var jsiInterop: JSIInteropModuleRegistry
 
+  internal val sharedObjectRegistry = SharedObjectRegistry()
+
   private val modulesQueueDispatcher = HandlerThread("expo.modules.AsyncFunctionQueue")
     .apply { start() }
     .looper.let { Handler(it) }
     .asCoroutineDispatcher()
+
+  /**
+   * A scope used to dispatch all background work.
+   */
+  val backgroundCoroutineScope = CoroutineScope(
+    Dispatchers.IO +
+      SupervisorJob() +
+      CoroutineName("expo.modules.BackgroundCoroutineScope")
+  )
 
   /**
    * A queue used to dispatch all async methods that are called via JSI.
@@ -77,6 +90,8 @@ class AppContext(
       SupervisorJob() +
       CoroutineName("expo.modules.MainQueue")
   )
+
+  val jniDeallocator: JNIDeallocator = JNIDeallocator()
 
   internal var legacyModulesProxyHolder: WeakReference<NativeModulesProxy>? = null
 
@@ -117,6 +132,7 @@ class AppContext(
         ?.let {
           jsiInterop.installJSI(
             it,
+            jniDeallocator,
             jsContextProvider.jsCallInvokerHolder,
             catalystInstance.nativeCallInvokerHolder as CallInvokerHolderImpl
           )
@@ -261,6 +277,8 @@ class AppContext(
     registry.cleanUp()
     modulesQueue.cancel(ContextDestroyedException())
     mainQueue.cancel(ContextDestroyedException())
+    backgroundCoroutineScope.cancel(ContextDestroyedException())
+    jniDeallocator.deallocate()
     logger.info("✅ AppContext was destroyed")
   }
 

@@ -8,6 +8,15 @@
 
 ### 🐛 Bug fixes
 
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- Fix deadlock when creating and destroying GLViews in a quick succession. ([#22484](https://github.com/expo/expo/pull/22484) by [@wkozyra95](https://github.com/wkozyra95))
+
+### 💡 Others
+
+## 12.5.0 — 2023-05-08
+
+### 🐛 Bug fixes
+
 - Fixed leaking GL context. ([#21247](https://github.com/expo/expo/pull/21247) by [@wkozyra95](https://github.com/wkozyra95))
 
 ### 💡 Others

@@ -41,9 +41,10 @@ internal protocol AnyFunction: AnyDefinition, JavaScriptObjectBuilder {
       - args: An array of arguments to pass to the function. They could be Swift primitives
       when invoked through the bridge and in unit tests or `JavaScriptValue`s
       when the function is called through the JSI.
+      - appContext: An app context where the function is being executed.
       - callback: A callback that receives a result of the function execution.
    */
-  func call(by owner: AnyObject?, withArguments args: [Any], callback: @escaping (FunctionCallResult) -> ())
+  func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> ())
 }
 
 extension AnyFunction {
@@ -65,12 +66,12 @@ extension AnyFunction {
   }
 
   /**
-   Calls the function just like `call(by:withArguments:callback:)`, but without an owner
+   Calls the function just like `call(by:withArguments:appContext:callback:)`, but without an owner
    and with an empty callback. Might be useful when you only want to call the function,
    but don't care about the result.
    */
-  func call(withArguments args: [Any]) {
-    call(by: nil, withArguments: args, callback: { _ in })
+  func call(withArguments args: [Any], appContext: AppContext) {
+    call(by: nil, withArguments: args, appContext: appContext, callback: { _ in })
   }
 }
 

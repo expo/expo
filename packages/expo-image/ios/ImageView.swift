@@ -134,7 +134,7 @@ public final class ImageView: ExpoView {
       context[.originalStoreCacheType] = sdCacheType
     } else {
       context[.originalQueryCacheType] = SDImageCacheType.none.rawValue
-      context[.originalQueryCacheType] = SDImageCacheType.none.rawValue
+      context[.originalStoreCacheType] = SDImageCacheType.none.rawValue
     }
     // Set which cache can be used to query and store the downloaded image.
     // We want to store only original images (without transformations).
@@ -265,7 +265,7 @@ public final class ImageView: ExpoView {
       return
     }
     var context = SDWebImageContext()
-    let isBlurhash = placeholder.isBlurhash
+    let isPlaceholderHash = placeholder.isBlurhash || placeholder.isThumbhash
 
     context[.imageScaleFactor] = placeholder.scale
     context[.cacheKeyFilter] = createCacheKeyFilter(placeholder.cacheKey)
@@ -285,7 +285,7 @@ public final class ImageView: ExpoView {
         return
       }
       self.placeholderImage = placeholder
-      self.placeholderContentFit = isBlurhash ? self.contentFit : self.placeholderContentFit
+      self.placeholderContentFit = isPlaceholderHash ? self.contentFit : self.placeholderContentFit
       self.displayPlaceholderIfNecessary()
     }
   }

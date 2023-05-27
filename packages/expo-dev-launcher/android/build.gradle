@@ -36,11 +36,12 @@ buildscript {
 
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 33)
+  namespace "expo.modules.devlauncher"
   defaultConfig {
     minSdkVersion safeExtGet('minSdkVersion', 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 9
-    versionName "2.1.4"
+    versionName "2.3.0"
   }
 
   lintOptions {
@@ -70,26 +71,13 @@ android {
   sourceSets {
     debug {
       java {
-        def expoPackageVersion = getExpoPackageVersion()
-        if (expoPackageVersion >= versionToNumber(45, 0, 0)) {
-          srcDirs += "src/expo-45"
-        } else {
-          srcDirs += "src/expo-44"
-        }
+        srcDirs += "src/expo-45"
 
         def rnVersion = getRNVersion()
         if (rnVersion >= versionToNumber(0, 72, 0)) {
           srcDirs += "src/react-native-72"
         } else if (rnVersion >= versionToNumber(0, 69, 0)) {
           srcDirs += "src/react-native-69"
-        } else if (rnVersion >= versionToNumber(0, 67, 0)) {
-          srcDirs += "src/react-native-67"
-        } else if (rnVersion >= versionToNumber(0, 66, 0)) {
-          srcDirs += "src/react-native-66"
-        } else if (rnVersion >= versionToNumber(0, 65, 0)) {
-          srcDirs += "src/react-native-65"
-        } else {
-          srcDirs += 'src/react-native-64'
         }
 
         if (projectIncludesExpoUpdates()) {
@@ -106,6 +94,11 @@ android {
 
   buildFeatures {
     viewBinding true
+  }
+  publishing {
+    singleVariant("release") {
+      withSourcesJar()
+    }
   }
 }
 
@@ -162,7 +155,7 @@ dependencies {
   testImplementation "io.insert-koin:koin-test:3.1.2"
   testImplementation "io.insert-koin:koin-test-junit4:3.1.2"
   testImplementation 'io.mockk:mockk:1.12.3'
-  testImplementation "org.robolectric:robolectric:4.7.3"
+  testImplementation "org.robolectric:robolectric:4.10"
 }
 
 // Koin uses a different version of Kotlin under the hood.
@@ -180,7 +173,7 @@ def versionToNumber(major, minor, patch) {
 }
 
 def getNodeModulesPackageVersion(packageName, overridePropName) {
-  def nodeModulesVersion = ["node", "-e", "console.log(require('$packageName/package.json').version);"].execute([], projectDir).text.trim()
+  def nodeModulesVersion = ["node", "-e", "console.log(require('$packageName/package.json').version);"].execute(null, projectDir).text.trim()
   def version = safeExtGet(overridePropName, nodeModulesVersion)
 
   def coreVersion = version.split("-")[0]

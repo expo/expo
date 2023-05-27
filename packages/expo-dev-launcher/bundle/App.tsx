@@ -31,7 +31,7 @@ export function App(props: LauncherAppProps) {
         <AppProviders>
           <Stack.Navigator
             initialRouteName="Main"
-            screenOptions={{ presentation: 'modal' }}
+            screenOptions={{ presentation: 'modal', gestureEnabled: false }}
             detachInactiveScreens={false}>
             <Stack.Screen name="Main" component={Main} options={{ headerShown: false }} />
 
@@ -51,7 +51,7 @@ export function App(props: LauncherAppProps) {
 
 const Main = () => {
   return (
-    <Tab.Navigator screenOptions={{ tabBarHideOnKeyboard: true }} detachInactiveScreens={false}>
+    <Tab.Navigator detachInactiveScreens={false}>
       <Tab.Screen
         name="Home"
         component={HomeScreen}

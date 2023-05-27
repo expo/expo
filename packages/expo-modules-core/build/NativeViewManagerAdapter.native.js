@@ -1,5 +1,14 @@
 import React from 'react';
-import { NativeModules, requireNativeComponent } from 'react-native';
+import { findNodeHandle, NativeModules, requireNativeComponent } from 'react-native';
+import { requireNativeModule } from './requireNativeModule';
+// To make the transition from React Native's `requireNativeComponent` to Expo's
+// `requireNativeViewManager` as easy as possible, `requireNativeViewManager` is a drop-in
+// replacement for `requireNativeComponent`.
+//
+// For each view manager, we create a wrapper component that accepts all of the props available to
+// the author of the universal module. This wrapper component splits the props into two sets: props
+// passed to React Native's View (ex: style, testID) and custom view props, which are passed to the
+// adapter view component in a prop called `proxiedProperties`.
 /**
  * A map that caches registered native components.
  */
@@ -32,29 +41,33 @@ export function requireNativeViewManager(viewName) {
     // manager
     const reactNativeViewName = `ViewManagerAdapter_${viewName}`;
     const ReactNativeComponent = requireCachedNativeComponent(reactNativeViewName);
-    const proxiedPropsNames = viewManagerConfig?.propsNames ?? [];
-    // Define a component for universal-module authors to access their native view manager
-    const NativeComponentAdapter = React.forwardRef((props, ref) => {
-        const nativeProps = omit(props, proxiedPropsNames);
-        const proxiedProps = pick(props, proxiedPropsNames);
-        return React.createElement(ReactNativeComponent, { ...nativeProps, proxiedProperties: proxiedProps, ref: ref });
-    });
-    NativeComponentAdapter.displayName = `Adapter<${viewName}>`;
-    return NativeComponentAdapter;
-}
-function omit(props, propNames) {
-    const copied = { ...props };
-    for (const propName of propNames) {
-        delete copied[propName];
-    }
-    return copied;
-}
-function pick(props, propNames) {
-    return propNames.reduce((prev, curr) => {
-        if (curr in props) {
-            prev[curr] = props[curr];
+    class NativeComponent extends React.PureComponent {
+        static displayName = viewName;
+        // This will be accessed from native when the prototype functions are called,
+        // in order to find the associated native view.
+        nativeTag = null;
+        componentDidMount() {
+            this.nativeTag = findNodeHandle(this);
         }
-        return prev;
-    }, {});
+        render() {
+            return React.createElement(ReactNativeComponent, { ...this.props });
+        }
+    }
+    try {
+        const nativeModule = requireNativeModule(viewName);
+        const nativeViewPrototype = nativeModule.ViewPrototype;
+        if (nativeViewPrototype) {
+            // Assign native view functions to the component prototype so they can be accessed from the ref.
+            Object.assign(NativeComponent.prototype, nativeViewPrototype);
+        }
+    }
+    catch {
+        // `requireNativeModule` may throw an error when the native module cannot be found.
+        // In some tests we don't mock the entire modules, but we do want to mock native views. For now,
+        // until we still have to support the legacy modules proxy and don't have better ways to mock,
+        // let's just gracefully skip assigning the prototype functions.
+        // See: https://github.com/expo/expo/blob/main/packages/expo-modules-core/src/__tests__/NativeViewManagerAdapter-test.native.tsx
+    }
+    return NativeComponent;
 }
 //# sourceMappingURL=NativeViewManagerAdapter.native.js.map

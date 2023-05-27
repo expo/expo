@@ -154,15 +154,11 @@ export interface ExpoConfig {
         silentLaunch?: boolean;
     };
     /**
-     * **Standalone Apps Only**. URL scheme to link into your app. For example, if we set this to `'demo'`, then demo:// URLs would open your app when tapped.
+     * **Custom Builds Only**. URL scheme(s) to link into your app. For example, if we set this to `'demo'`, then demo:// URLs would open your app when tapped.
      */
-    scheme?: string;
+    scheme?: string | string[];
     /**
-     * @deprecated Use a `main` field in the project `package.json` instead.
-     */
-    entryPoint?: string;
-    /**
-     * Any extra fields you want to pass to your experience. Values are accessible via `Expo.Constants.manifest.extra` ([Learn more](https://docs.expo.dev/versions/latest/sdk/constants/#constantsmanifest))
+     * Any extra fields you want to pass to your experience. Values are accessible via `Constants.expoConfig.extra` ([Learn more](https://docs.expo.dev/versions/latest/sdk/constants/#constantsmanifest))
      */
     extra?: {
         [k: string]: any;
@@ -182,9 +178,9 @@ export interface ExpoConfig {
          */
         enabled?: boolean;
         /**
-         * By default, Expo will check for updates every time the app is loaded. Set this to `ON_ERROR_RECOVERY` to disable automatic checking unless recovering from an error. Must be one of `ON_LOAD` or `ON_ERROR_RECOVERY`
+         * By default, Expo will check for updates every time the app is loaded. Set this to `ON_ERROR_RECOVERY` to disable automatic checking unless recovering from an error. Set this to `NEVER` to completely disable automatic checking. Must be one of `ON_LOAD` (default value), `ON_ERROR_RECOVERY`, `WIFI_ONLY`, or `NEVER`
          */
-        checkAutomatically?: 'ON_ERROR_RECOVERY' | 'ON_LOAD';
+        checkAutomatically?: 'ON_ERROR_RECOVERY' | 'ON_LOAD' | 'WIFI_ONLY' | 'NEVER';
         /**
          * How long (in ms) to allow for fetching OTA updates before falling back to a cached version of the app. Defaults to 0. Must be between 0 and 300000 (5 minutes).
          */
@@ -216,6 +212,10 @@ export interface ExpoConfig {
         requestHeaders?: {
             [k: string]: any;
         };
+        /**
+         * Whether to use deprecated Classic Updates when developing with the local Expo CLI and creating builds. Omitting this or setting it to false affects the behavior of APIs like `Constants.manifest`. SDK 49 is the last SDK version that supports Classic Updates.
+         */
+        useClassicUpdates?: boolean;
     };
     /**
      * Provide overrides by locale for System Dialog prompts like Permissions Boxes
@@ -262,6 +262,10 @@ export interface ExpoConfig {
      * Enable experimental features that may be unstable, unsupported, or removed without deprecation notices.
      */
     experiments?: {
+        /**
+         * Enable tsconfig/jsconfig `compilerOptions.paths` and `compilerOptions.baseUrl` support for import aliases in Metro.
+         */
+        tsconfigPaths?: boolean;
         /**
          * Enables Turbo Modules, which are a type of native modules that use a different way of communicating between JS and platform code. When installing a Turbo Module you will need to enable this experimental option (the library still needs to be a part of Expo SDK already, like react-native-reanimated v2). Turbo Modules do not support remote debugging and enabling this option will disable remote debugging.
          */
@@ -459,7 +463,7 @@ export interface IOS {
         [k: string]: any;
     };
     /**
-     * Specifies the JavaScript engine for iOS apps. Supported only on EAS Build. Defaults to `jsc`. Valid values: `hermes`, `jsc`.
+     * Specifies the JavaScript engine for iOS apps. Supported only on EAS Build. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
      */
     jsEngine?: 'hermes' | 'jsc';
     /**
@@ -735,7 +739,7 @@ export interface Android {
      */
     softwareKeyboardLayoutMode?: 'resize' | 'pan';
     /**
-     * Specifies the JavaScript engine for Android apps. Supported only on EAS Build and in Expo Go. Defaults to `jsc`. Valid values: `hermes`, `jsc`.
+     * Specifies the JavaScript engine for Android apps. Supported only on EAS Build and in Expo Go. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
      */
     jsEngine?: 'hermes' | 'jsc';
     /**
@@ -782,6 +786,10 @@ export interface AndroidIntentFiltersData {
  * Configuration that is specific to the web platform.
  */
 export interface Web {
+    /**
+     * Sets the rendering method for the web app for both `expo start` and `expo export`. `static` statically renders HTML files for every route in the `app/` directory, which is available only in Expo Router apps. `single` outputs a Single Page Application (SPA), with a single `index.html` in the output folder, and has no statically indexable HTML. Defaults to `single`.
+     */
+    output?: 'single' | 'static';
     /**
      * Relative path of an image to use for your app's favicon.
      */

@@ -40,12 +40,12 @@ This renders an `<a />` on web and a interactive `<Text />` which uses the `Link
 
 There are some URL schemes for core functionality that exist on every platform. The following is a non-exhaustive list, but covers the most commonly used schemes.
 
-| Scheme           | Description                                   |
-| ---------------- | --------------------------------------------- |
-| `https` / `http` | Open web browser app, eg: `https://expo.dev`  |
-| `mailto`         | Open mail app, eg: `mailto: support@expo.dev` |
-| `tel`            | Open phone app, eg: `tel:+123456789`          |
-| `sms`            | Open SMS app, eg: `sms:+123456789`            |
+| Scheme           | Description                                  |
+| ---------------- | -------------------------------------------- |
+| `https` / `http` | Open web browser app, eg: `https://expo.dev` |
+| `mailto`         | Open mail app, eg: `mailto:support@expo.dev` |
+| `tel`            | Open phone app, eg: `tel:+123456789`         |
+| `sms`            | Open SMS app, eg: `sms:+123456789`           |
 
 ### Custom URL schemes
 
@@ -71,7 +71,7 @@ On iOS, `Linking.canOpenURL` requires additional configuration to query other ap
 }
 ```
 
-If you don't specify this list, `Linking.canOpenURL` may return `false` regardless of whether the device has the app installed. Note that this configuration can only be tested in [development builds](/development/introduction), because it requires native changes that will not be applied when testing in [Expo Go][expo-go].
+If you don't specify this list, `Linking.canOpenURL` may return `false` regardless of whether the device has the app installed. Note that this configuration can only be tested in [development builds](/develop/development-builds/introduction/), because it requires native changes that will not be applied when testing in [Expo Go][expo-go].
 
 ### Creating URLs
 
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
 
 ## Linking to your app
 
-To link to your [development build](/development/introduction) or standalone app, you need to specify a custom URL scheme for your app. You can register a scheme in your Expo config (**app.json**, **app.config.js**) by adding a string under the `scheme` key:
+To link to your [development build](/develop/development-builds/introduction/) or standalone app, you need to specify a custom URL scheme for your app. You can register a scheme in your Expo config (**app.json**, **app.config.js**) by adding a string under the `scheme` key:
 
 ```json
 {
@@ -179,11 +179,11 @@ You can test it to ensure it works like this:
 <Terminal
   cmd={[
     '# Rebuild the native apps, be sure to use an emulator',
-    'yarn android',
-    'yarn ios',
+    '$ yarn android',
+    '$ yarn ios',
     '',
     '# Open a URI scheme',
-    'npx uri-scheme open myapp://some/redirect',
+    '$ npx uri-scheme open myapp://some/redirect',
   ]}
   cmdCopy="yarn android && yarn ios && npx uri-scheme open myapp://some/redirect"
 />

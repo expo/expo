@@ -19,7 +19,8 @@ module.exports = {
       'whitelist': [
         'diff-.+',
         'anchor-icon',
-        'react-player'
+        'react-player',
+        'dark-theme'
       ]
     }]
   },

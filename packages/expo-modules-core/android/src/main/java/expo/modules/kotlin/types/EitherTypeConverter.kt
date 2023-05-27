@@ -1,5 +1,6 @@
 package expo.modules.kotlin.types
 
+import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.jni.SingleType
@@ -21,7 +22,7 @@ class EitherTypeConverter<FirstType : Any, SecondType : Any>(
   private val firstType = firstTypeConverter.getCppRequiredTypes()
   private val secondType = secondTypeConverter.getCppRequiredTypes()
 
-  override fun convertNonOptional(value: Any): Either<FirstType, SecondType> {
+  override fun convertNonOptional(value: Any, context: AppContext?): Either<FirstType, SecondType> {
     val convertValueIfNeeded = Convert@{ types: Array<out SingleType>, converter: TypeConverter<*> ->
       for (singleType in types) {
         if (singleType.expectedCppType.clazz.isInstance(value)) {
@@ -46,6 +47,8 @@ class EitherTypeConverter<FirstType : Any, SecondType : Any>(
   }
 
   override fun getCppRequiredTypes(): ExpectedType = firstType + secondType
+
+  override fun isTrivial(): Boolean = false
 }
 
 @EitherType
@@ -69,7 +72,7 @@ class EitherOfThreeTypeConverter<FirstType : Any, SecondType : Any, ThirdType : 
   private val secondType = secondTypeConverter.getCppRequiredTypes()
   private val thirdType = thirdTypeConverter.getCppRequiredTypes()
 
-  override fun convertNonOptional(value: Any): EitherOfThree<FirstType, SecondType, ThirdType> {
+  override fun convertNonOptional(value: Any, context: AppContext?): EitherOfThree<FirstType, SecondType, ThirdType> {
     val convertValueIfNeeded = Convert@{ types: Array<out SingleType>, converter: TypeConverter<*> ->
       for (singleType in types) {
         if (singleType.expectedCppType.clazz.isInstance(value)) {
@@ -125,7 +128,7 @@ class EitherOfFourTypeConverter<FirstType : Any, SecondType : Any, ThirdType : A
   private val thirdType = thirdTypeConverter.getCppRequiredTypes()
   private val fourthType = fourthTypeConverter.getCppRequiredTypes()
 
-  override fun convertNonOptional(value: Any): EitherOfFour<FirstType, SecondType, ThirdType, FourthType> {
+  override fun convertNonOptional(value: Any, context: AppContext?): EitherOfFour<FirstType, SecondType, ThirdType, FourthType> {
     val convertValueIfNeeded = Convert@{ types: Array<out SingleType>, converter: TypeConverter<*> ->
       for (singleType in types) {
         if (singleType.expectedCppType.clazz.isInstance(value)) {

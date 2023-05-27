@@ -3,10 +3,8 @@ title: Localization
 description: Learn about getting started and configuring localization in an Expo project using expo-localization.
 ---
 
-import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 import { SnackInline } from '~/ui/components/Snippet';
 import { Terminal } from '~/ui/components/Snippet';
-import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 
 If you want your app to be easy to use for users who speak different languages or come from different cultures, you should localize it.
@@ -76,7 +74,7 @@ On iOS, when a user changes the device's language, the app will reset. This mean
 
 ```tsx
 import { View, StyleSheet, Text } from 'react-native';
-import { getLocales } from 'expo-localization';
+import * as Localization from 'expo-localization';
 import { I18n } from 'i18n-js';
 
 // Set the key-value pairs for the different languages you want to support.
@@ -101,7 +99,7 @@ export default function App() {
         {i18n.t('welcome')} {i18n.t('name')}
       </Text>
       <Text>Current locale: {i18n.locale}</Text>
-      <Text>Device locale: {getLocales()[0].languageCode}</Text>
+      <Text>Device locale: {Localization.getLocales()[0].languageCode}</Text>
     </View>
   );
 }
@@ -179,7 +177,7 @@ Now, iOS knows to set the display name of your app to `こんにちは` whenever
 
 Several regions around the world write text from right to left. If you want to localize your app, so it looks as expected in RTL languages, you need to make sure your app handles these layout and text direction changes accordingly.
 
-To enable RTL support in your application using SDK 48 or later, install the `expo-localization` package and add the following properties in Expo config: 
+To enable RTL support in your application using SDK 48 or later, install the `expo-localization` package and add the following properties in Expo config:
 
 <Terminal cmd={['$ npx expo install expo-localization']} />
 
@@ -194,7 +192,7 @@ To enable RTL support in your application using SDK 48 or later, install the `ex
 }
 ```
 
-This enables RTL when your app is loaded in Expo Go, in Expo dev Client, and in applications built using EAS Build or `expo prebuild`.
+This enables RTL when your app is loaded in Expo Go, in Expo dev Client, and in applications built using EAS Build or `npx expo prebuild`.
 
 When an application starts, Expo checks if the current device locale should render in RTL layout to look correctly. For example, an app marked to support RTL in the Expo config file will render in RTL mode in Hebrew or Arabic locale.
 

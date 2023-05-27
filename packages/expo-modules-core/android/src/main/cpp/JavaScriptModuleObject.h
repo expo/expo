@@ -4,7 +4,6 @@
 
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
-#include <react/bridging/LongLivedObject.h>
 #include <react/jni/ReadableNativeArray.h>
 #include <jni/JCallback.h>
 
@@ -20,6 +19,29 @@ namespace react = facebook::react;
 
 namespace expo {
 class JSIInteropModuleRegistry;
+
+class JavaScriptModuleObject;
+
+void decorateObjectWithFunctions(
+  jsi::Runtime &runtime,
+  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+  jsi::Object *jsObject,
+  JavaScriptModuleObject *objectData
+);
+
+void decorateObjectWithProperties(
+  jsi::Runtime &runtime,
+  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+  jsi::Object *jsObject,
+  JavaScriptModuleObject *objectData
+);
+
+void decorateObjectWithConstants(
+  jsi::Runtime &runtime,
+  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+  jsi::Object *jsObject,
+  JavaScriptModuleObject *objectData
+);
 
 /**
  * A CPP part of the module.
@@ -60,6 +82,7 @@ public:
    */
   void registerSyncFunction(
     jni::alias_ref<jstring> name,
+    jboolean takesOwner,
     jint args,
     jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
     jni::alias_ref<JNIFunctionBody::javaobject> body
@@ -71,9 +94,23 @@ public:
    */
   void registerAsyncFunction(
     jni::alias_ref<jstring> name,
+    jboolean takesOwner,
     jint args,
     jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
     jni::alias_ref<JNIAsyncFunctionBody::javaobject> body
+  );
+
+  void registerClass(
+    jni::alias_ref<jstring> name,
+    jni::alias_ref<JavaScriptModuleObject::javaobject> classObject,
+    jboolean takesOwner,
+    jint args,
+    jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
+    jni::alias_ref<JNIFunctionBody::javaobject> body
+  );
+
+  void registerViewPrototype(
+    jni::alias_ref<JavaScriptModuleObject::javaobject> viewPrototype
   );
 
   /**
@@ -90,41 +127,35 @@ public:
     jni::alias_ref<JNIFunctionBody::javaobject> setter
   );
 
-  /**
-   * An inner class of the `JavaScriptModuleObject` that is exported to the JS.
-   * It's an additional communication layer between JS and Kotlin.
-   * So the high-level view on accessing the exported function will look like this:
-   * `JS` --get function--> `JavaScriptModuleObject::HostObject` --access module metadata--> `JavaScriptModuleObject`
-   *  --create JSI function--> `MethodMetadata`
-   *
-   * This abstraction wasn't necessary. However, it makes the management of ownership much easier -
-   * `JavaScriptModuleObject` is held by the ModuleHolder and `JavaScriptModuleObject::HostObject` is stored in the JS runtime.
-   * Without this distinction the `JavaScriptModuleObject` would have to turn into `HostObject` and `HybridObject` at the same time.
-   */
-  class HostObject : public jsi::HostObject {
-  public:
-    HostObject(JavaScriptModuleObject *);
-
-    ~HostObject() override;
-
-    jsi::Value get(jsi::Runtime &, const jsi::PropNameID &name) override;
-
-    void set(jsi::Runtime &, const jsi::PropNameID &name, const jsi::Value &value) override;
-
-    std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime &rt) override;
-
-    jni::global_ref<jobject> jObjectRef;
-  private:
-    JavaScriptModuleObject *jsModule;
-  };
-
 private:
   explicit JavaScriptModuleObject(jni::alias_ref<jhybridobject> jThis);
 
 private:
   friend HybridBase;
+
+  friend void decorateObjectWithFunctions(
+    jsi::Runtime &runtime,
+    JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+    jsi::Object *jsObject,
+    JavaScriptModuleObject *objectData
+  );
+
+  friend void decorateObjectWithProperties(
+    jsi::Runtime &runtime,
+    JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+    jsi::Object *jsObject,
+    JavaScriptModuleObject *objectData
+  );
+
+  friend void decorateObjectWithConstants(
+    jsi::Runtime &runtime,
+    JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+    jsi::Object *jsObject,
+    JavaScriptModuleObject *objectData
+  );
+
   /**
-   * A reference to the `JavaScriptModuleObject::HostObject`.
+   * A reference to the `jsi::Object`.
    * Simple we cached that value to return the same object each time.
    * It's a weak reference because the JS runtime holds the actual object. 
    * Doing that allows the runtime to deallocate jsi::Object if it's not needed anymore.
@@ -148,9 +179,11 @@ private:
    */
   std::map<std::string, std::pair<MethodMetadata, MethodMetadata>> properties;
 
-  /**
-   * The `LongLivedObjectCollection` to hold `LongLivedObject` (callbacks or promises) for this module.
-   */
-  std::shared_ptr<react::LongLivedObjectCollection> longLivedObjectCollection_;
+  std::map<
+    std::string,
+    std::pair<jni::global_ref<JavaScriptModuleObject::javaobject>, MethodMetadata>
+  > classes;
+
+  jni::global_ref<JavaScriptModuleObject::javaobject> viewPrototype;
 };
 } // namespace expo

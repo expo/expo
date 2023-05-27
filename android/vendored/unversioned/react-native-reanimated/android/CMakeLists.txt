@@ -22,12 +22,12 @@ if(${IS_NEW_ARCHITECTURE_ENABLED})
     string(APPEND CMAKE_CXX_FLAGS " -DRCT_NEW_ARCH_ENABLED")
 endif()
 
-if(${CMAKE_BUILD_TYPE} STREQUAL "Debug" AND NOT ${REANIMATED_PACKAGE_BUILD} STREQUAL "1")
-    string(APPEND CMAKE_CXX_FLAGS " -DDEBUG")
+if(${IS_REANIMATED_EXAMPLE_APP})
+    string(APPEND CMAKE_CXX_FLAGS " -DIS_REANIMATED_EXAMPLE_APP")
 endif()
 
-if(${REANIMATED_PACKAGE_BUILD} STREQUAL "1")
-    string(REPLACE "-g " "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+    string(APPEND CMAKE_CXX_FLAGS " -DDEBUG")
 endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -60,7 +60,7 @@ else()
             set (FBJNI_HEADERS_DIR "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/first-party/fbjni/headers")
         endif()
     else()
-        set (RN_SO_DIR "${REACT_NATIVE_DIR}/ReactAndroid/build/intermediates/library_*/*/jni")
+        set (RN_SO_DIR "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/first-party/react/jni")
         set (FBJNI_HEADERS_DIR "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/first-party/fbjni/headers")
     endif()
     file (GLOB LIBRN_DIR "${RN_SO_DIR}/${ANDROID_ABI}")
@@ -100,39 +100,39 @@ target_include_directories(
 
 if(${REACT_NATIVE_MINOR_VERSION} GREATER_EQUAL 71)
     target_include_directories(
-            ${PACKAGE_NAME}
-            PRIVATE
-            "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/react/turbomodule"
-            "${REACT_NATIVE_DIR}/ReactCommon"
-            "${REACT_NATIVE_DIR}/ReactCommon/callinvoker"
-            "${REACT_NATIVE_DIR}/ReactCommon/react/renderer/graphics/platform/cxx"
-            "${REACT_NATIVE_DIR}/ReactCommon/runtimeexecutor"
-            "${REACT_NATIVE_DIR}/ReactCommon/yoga"
+        ${PACKAGE_NAME}
+        PRIVATE
+        "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/react/turbomodule"
+        "${REACT_NATIVE_DIR}/ReactCommon"
+        "${REACT_NATIVE_DIR}/ReactCommon/callinvoker"
+        "${REACT_NATIVE_DIR}/ReactCommon/react/renderer/graphics/platform/cxx"
+        "${REACT_NATIVE_DIR}/ReactCommon/runtimeexecutor"
+        "${REACT_NATIVE_DIR}/ReactCommon/yoga"
     )
 else()
     file(GLOB LIBFBJNI_INCLUDE_DIR ${FBJNI_HEADERS_DIR})
     target_include_directories(
-            ${PACKAGE_NAME}
-            PRIVATE
-            "${LIBFBJNI_INCLUDE_DIR}"
-            "${BUILD_DIR}/third-party-ndk/boost/boost_${BOOST_VERSION}"
-            "${BUILD_DIR}/third-party-ndk/double-conversion"
-            "${BUILD_DIR}/third-party-ndk/folly"
-            "${BUILD_DIR}/third-party-ndk/glog/exported"
-            "${REACT_NATIVE_DIR}/React"
-            "${REACT_NATIVE_DIR}/React/Base"
-            "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni"
-            "${REACT_NATIVE_DIR}/ReactAndroid/src/main/java/com/facebook/react/turbomodule/core/jni"
-            "${REACT_NATIVE_DIR}/ReactAndroid/src/main/java/com/facebook/react/fabric/jni"
-            "${REACT_NATIVE_DIR}/ReactCommon"
-            "${REACT_NATIVE_DIR}/ReactCommon/callinvoker"
-            "${REACT_NATIVE_DIR}/ReactCommon/jsi"
-            "${REACT_NATIVE_DIR}/ReactCommon/hermes"
-            "${REACT_NATIVE_DIR}/ReactCommon/react/renderer/graphics/platform/cxx"
-            "${REACT_NATIVE_DIR}/ReactCommon/runtimeexecutor"
-            "${REACT_NATIVE_DIR}/ReactCommon/turbomodule/core"
-            "${REACT_NATIVE_DIR}/ReactCommon/turbomodule"
-            "${REACT_NATIVE_DIR}/ReactCommon/yoga"
+        ${PACKAGE_NAME}
+        PRIVATE
+        "${LIBFBJNI_INCLUDE_DIR}"
+        "${BUILD_DIR}/third-party-ndk/boost/boost_${BOOST_VERSION}"
+        "${BUILD_DIR}/third-party-ndk/double-conversion"
+        "${BUILD_DIR}/third-party-ndk/folly"
+        "${BUILD_DIR}/third-party-ndk/glog/exported"
+        "${REACT_NATIVE_DIR}/React"
+        "${REACT_NATIVE_DIR}/React/Base"
+        "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni"
+        "${REACT_NATIVE_DIR}/ReactAndroid/src/main/java/com/facebook/react/turbomodule/core/jni"
+        "${REACT_NATIVE_DIR}/ReactAndroid/src/main/java/com/facebook/react/fabric/jni"
+        "${REACT_NATIVE_DIR}/ReactCommon"
+        "${REACT_NATIVE_DIR}/ReactCommon/callinvoker"
+        "${REACT_NATIVE_DIR}/ReactCommon/jsi"
+        "${REACT_NATIVE_DIR}/ReactCommon/hermes"
+        "${REACT_NATIVE_DIR}/ReactCommon/react/renderer/graphics/platform/cxx"
+        "${REACT_NATIVE_DIR}/ReactCommon/runtimeexecutor"
+        "${REACT_NATIVE_DIR}/ReactCommon/turbomodule/core"
+        "${REACT_NATIVE_DIR}/ReactCommon/turbomodule"
+        "${REACT_NATIVE_DIR}/ReactCommon/yoga"
     )
 endif()
 
@@ -141,19 +141,19 @@ endif()
 set_target_properties(${PACKAGE_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 
 target_link_libraries(
-        ${PACKAGE_NAME}
-        log
-        android
+    ${PACKAGE_NAME}
+    log
+    android
 )
 
 if(${REACT_NATIVE_MINOR_VERSION} GREATER_EQUAL 71)
     target_link_libraries(
-            ${PACKAGE_NAME}
-            ReactAndroid::folly_runtime
-            ReactAndroid::glog
-            ReactAndroid::jsi
-            ReactAndroid::reactnativejni
-            fbjni::fbjni
+        ${PACKAGE_NAME}
+        ReactAndroid::folly_runtime
+        ReactAndroid::glog
+        ReactAndroid::jsi
+        ReactAndroid::reactnativejni
+        fbjni::fbjni
     )
 else()
     if(${REACT_NATIVE_MINOR_VERSION} LESS 66)
@@ -211,17 +211,16 @@ else()
     )
 
     target_link_libraries(
-            ${PACKAGE_NAME}
-            ${JSI_LIB}
-            ${GLOG_LIB}
-            ${FBJNI_LIB}
-            ${FOLLY_LIB}
-            ${REACTNATIVEJNI_LIB}
+        ${PACKAGE_NAME}
+        ${JSI_LIB}
+        ${GLOG_LIB}
+        ${FBJNI_LIB}
+        ${FOLLY_LIB}
+        ${REACTNATIVEJNI_LIB}
     )
 endif()
 
 if(${JS_RUNTIME} STREQUAL "hermes")
-    find_package(hermes-engine REQUIRED CONFIG)
     string(APPEND CMAKE_CXX_FLAGS " -DJS_RUNTIME_HERMES=1")
     if(${REACT_NATIVE_MINOR_VERSION} GREATER_EQUAL 71)
         # From prefab from module `com.facebook.react:hermes-android`
@@ -229,24 +228,24 @@ if(${JS_RUNTIME} STREQUAL "hermes")
     elseif(${REACT_NATIVE_MINOR_VERSION} GREATER_EQUAL 69)
         # Bundled Hermes from module `com.facebook.react:hermes-engine` or project `:ReactAndroid:hermes-engine`
         target_include_directories(
-                ${PACKAGE_NAME}
-                PRIVATE
-                "${JS_RUNTIME_DIR}/API"
-                "${JS_RUNTIME_DIR}/public"
+            ${PACKAGE_NAME}
+            PRIVATE
+            "${JS_RUNTIME_DIR}/API"
+            "${JS_RUNTIME_DIR}/public"
         )
-        set(HERMES_LIB hermes-engine::libhermes)
+        set(HERMES_LIB "${BUILD_DIR}/third-party-ndk/hermes/jni/${ANDROID_ABI}/libhermes.so")
     else()
         # From `hermes-engine` npm package
         target_include_directories(
-                ${PACKAGE_NAME}
-                PRIVATE
-                "${JS_RUNTIME_DIR}/android/include"
+            ${PACKAGE_NAME}
+            PRIVATE
+            "${JS_RUNTIME_DIR}/android/include"
         )
-        set(HERMES_LIB hermes-engine::libhermes)
+        set(HERMES_LIB "${BUILD_DIR}/third-party-ndk/hermes/jni/${ANDROID_ABI}/libhermes.so")
     endif()
     target_link_libraries(
-            ${PACKAGE_NAME}
-            ${HERMES_LIB}
+        ${PACKAGE_NAME}
+        ${HERMES_LIB}
     )
     if (${HERMES_ENABLE_DEBUGGER})
         if(${REACT_NATIVE_MINOR_VERSION} GREATER_EQUAL 71)
@@ -258,6 +257,19 @@ if(${JS_RUNTIME} STREQUAL "hermes")
                 PATHS ${LIBRN_DIR}
                 NO_DEFAULT_PATH
                 NO_CMAKE_FIND_ROOT_PATH
+            )
+        endif()
+        if(${REACT_NATIVE_MINOR_VERSION} LESS_EQUAL 67)
+            find_library(
+                    HERMES_INSPECTOR_LIB
+                    hermes-inspector
+                    PATHS ${LIBRN_DIR}
+                    NO_DEFAULT_PATH
+                    NO_CMAKE_FIND_ROOT_PATH
+            )
+            target_link_libraries(
+                    ${PACKAGE_NAME}
+                    ${HERMES_INSPECTOR_LIB}
             )
         endif()
         target_link_libraries(
@@ -304,14 +316,14 @@ endif()
 
 if(${IS_NEW_ARCHITECTURE_ENABLED})
     target_link_libraries(
-            ${PACKAGE_NAME}
-            ReactAndroid::fabricjni
-            ReactAndroid::react_debug
-            ReactAndroid::react_render_core
-            ReactAndroid::react_render_mounting
-            ReactAndroid::react_render_scheduler
-            ReactAndroid::react_render_uimanager
-            ReactAndroid::rrc_view
+        ${PACKAGE_NAME}
+        ReactAndroid::fabricjni
+        ReactAndroid::react_debug
+        ReactAndroid::react_render_core
+        ReactAndroid::react_render_mounting
+        ReactAndroid::react_render_scheduler
+        ReactAndroid::react_render_uimanager
+        ReactAndroid::rrc_view
     )
 endif()
 

@@ -2,7 +2,7 @@ import { css } from '@emotion/react';
 import { theme, typography, LinkBase } from '@expo/styleguide';
 import { spacing } from '@expo/styleguide-base';
 import { ArrowUpRightIcon } from '@expo/styleguide-icons';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/compat/router';
 import type { PropsWithChildren } from 'react';
 import { useEffect, useRef } from 'react';
 
@@ -26,19 +26,22 @@ const isLinkInViewport = (element: HTMLAnchorElement) => {
 };
 
 export const SidebarLink = ({ info, children }: SidebarLinkProps) => {
-  const { asPath, pathname } = useRouter();
+  const router = useRouter();
   const ref = useRef<HTMLAnchorElement>(null);
 
   const checkSelection = () => {
     // Special case for root url
     if (info.name === 'Introduction') {
-      if (asPath.match(/\/versions\/[\w.]+\/$/) || asPath === '/versions/latest/') {
+      if (router?.asPath.match(/\/versions\/[\w.]+\/$/) || router?.asPath === '/versions/latest/') {
         return true;
       }
     }
 
     const linkUrl = stripVersionFromPath(info.as || info.href);
-    return linkUrl === stripVersionFromPath(pathname) || linkUrl === stripVersionFromPath(asPath);
+    return (
+      linkUrl === stripVersionFromPath(router?.pathname) ||
+      linkUrl === stripVersionFromPath(router?.asPath)
+    );
   };
 
   const isSelected = checkSelection();
@@ -65,7 +68,7 @@ export const SidebarLink = ({ info, children }: SidebarLinkProps) => {
         ref={ref}
         css={[STYLES_LINK, isSelected && STYLES_LINK_ACTIVE]}
         {...customDataAttributes}>
-        {isSelected && <div css={STYLES_ACTIVE_BULLET} />}
+        <div css={[STYLES_BULLET, isSelected && STYLES_ACTIVE_BULLET]} />
         {children}
         {isExternal && <ArrowUpRightIcon className="icon-sm text-icon-secondary ml-auto" />}
       </LinkBase>
@@ -81,9 +84,10 @@ const STYLES_LINK = css`
   color: ${theme.text.secondary};
   transition: 50ms ease color;
   align-items: center;
-  padding-left: ${spacing[4] + spacing[0.5]}px;
+  padding-left: ${spacing[2]}px;
   scroll-margin: 60px;
   width: 100%;
+  margin-left: -${spacing[4] + spacing[0.5]}px;
 
   &:hover {
     color: ${theme.text.link};
@@ -96,7 +100,6 @@ const STYLES_LINK = css`
 
 const STYLES_LINK_ACTIVE = css`
   color: ${theme.text.link};
-  padding-left: 0;
 `;
 
 const STYLES_CONTAINER = css`
@@ -107,12 +110,16 @@ const STYLES_CONTAINER = css`
   padding-right: ${spacing[2]}px;
 `;
 
-const STYLES_ACTIVE_BULLET = css`
+const STYLES_BULLET = css`
   height: 6px;
   width: 6px;
   min-height: 6px;
   min-width: 6px;
-  background-color: ${theme.text.link};
   border-radius: 100%;
   margin: ${spacing[2]}px ${spacing[1.5]}px;
+  align-self: self-start;
+`;
+
+const STYLES_ACTIVE_BULLET = css`
+  background-color: ${theme.text.link};
 `;

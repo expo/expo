@@ -6,6 +6,8 @@ import android.app.Activity
 import android.content.Intent
 import android.view.View
 import expo.modules.kotlin.activityresult.AppContextActivityResultCaller
+import expo.modules.kotlin.classcomponent.ClassComponentBuilder
+import expo.modules.kotlin.classcomponent.ClassDefinitionData
 import expo.modules.kotlin.events.BasicEventListener
 import expo.modules.kotlin.events.EventListener
 import expo.modules.kotlin.events.EventListenerWithPayload
@@ -13,9 +15,11 @@ import expo.modules.kotlin.events.EventListenerWithSenderAndPayload
 import expo.modules.kotlin.events.EventName
 import expo.modules.kotlin.events.OnActivityResultPayload
 import expo.modules.kotlin.objects.ObjectDefinitionBuilder
+import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.views.ViewDefinitionBuilder
 import expo.modules.kotlin.views.ViewManagerDefinition
 import kotlin.reflect.KClass
+import kotlin.reflect.typeOf
 
 @DefinitionMarker
 class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null) : ObjectDefinitionBuilder() {
@@ -30,6 +34,9 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
   @PublishedApi
   internal var registerContracts: (suspend AppContextActivityResultCaller.() -> Unit)? = null
 
+  @PublishedApi
+  internal var classData = mutableListOf<ClassDefinitionData>()
+
   fun buildModule(): ModuleDefinitionData {
     val moduleName = name ?: module?.javaClass?.simpleName
 
@@ -38,7 +45,8 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
       buildObject(),
       viewManagerDefinition,
       eventListeners,
-      registerContracts
+      registerContracts,
+      classData
     )
   }
 
@@ -52,10 +60,10 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
   /**
    * Creates the view manager definition that scopes other view-related definitions.
    */
-  inline fun <T : View> View(viewType: KClass<T>, body: ViewDefinitionBuilder<T>.() -> Unit) {
+  inline fun <reified T : View> View(viewClass: KClass<T>, body: ViewDefinitionBuilder<T>.() -> Unit) {
     require(viewManagerDefinition == null) { "The module definition may have exported only one view manager." }
 
-    val viewDefinitionBuilder = ViewDefinitionBuilder(viewType)
+    val viewDefinitionBuilder = ViewDefinitionBuilder(viewClass, typeOf<T>())
     body.invoke(viewDefinitionBuilder)
     viewManagerDefinition = viewDefinitionBuilder.build()
   }
@@ -115,5 +123,20 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
   inline fun OnActivityResult(crossinline body: (Activity, OnActivityResultPayload) -> Unit) {
     eventListeners[EventName.ON_ACTIVITY_RESULT] =
       EventListenerWithSenderAndPayload<Activity, OnActivityResultPayload>(EventName.ON_ACTIVITY_RESULT) { sender, payload -> body(sender, payload) }
+  }
+
+  inline fun Class(name: String, body: ClassComponentBuilder<Unit>.() -> Unit = {}) {
+    val clazzBuilder = ClassComponentBuilder(name, Unit::class, typeOf<Unit>())
+    body.invoke(clazzBuilder)
+    classData.add(clazzBuilder.buildClass())
+  }
+
+  inline fun <reified SharedObjectType : SharedObject> Class(
+    sharedObjectClass: KClass<SharedObjectType>,
+    body: ClassComponentBuilder<SharedObjectType>.() -> Unit = {}
+  ) {
+    val clazzBuilder = ClassComponentBuilder(sharedObjectClass.java.simpleName, sharedObjectClass, typeOf<SharedObjectType>())
+    body.invoke(clazzBuilder)
+    classData.add(clazzBuilder.buildClass())
   }
 }

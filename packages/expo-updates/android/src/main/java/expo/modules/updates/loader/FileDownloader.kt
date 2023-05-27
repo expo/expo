@@ -5,6 +5,7 @@ import expo.modules.jsonutils.require
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.entity.AssetEntity
+import expo.modules.structuredheaders.Dictionary
 import expo.modules.updates.launcher.NoDatabaseLauncher
 import expo.modules.updates.selectionpolicy.SelectionPolicies
 import okhttp3.*
@@ -21,6 +22,7 @@ import java.io.ByteArrayOutputStream
 import expo.modules.easclient.EASClientID
 import okhttp3.Headers.Companion.toHeaders
 import expo.modules.jsonutils.getNullable
+import expo.modules.structuredheaders.StringItem
 import expo.modules.updates.codesigning.ValidationResult
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.UpdateEntity
@@ -91,6 +93,38 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
   }
 
   internal fun parseRemoteUpdateResponse(response: Response, configuration: UpdatesConfiguration, callback: RemoteUpdateDownloadCallback) {
+    val responseHeaders = response.headers
+    val responseHeaderData = ResponseHeaderData(
+      protocolVersionRaw = responseHeaders["expo-protocol-version"],
+      manifestFiltersRaw = responseHeaders["expo-manifest-filters"],
+      serverDefinedHeadersRaw = responseHeaders["expo-server-defined-headers"],
+      manifestSignature = responseHeaders["expo-manifest-signature"],
+    )
+    val responseBody = response.body
+
+    if (response.code == 204 || responseBody == null) {
+      // If the protocol version greater than 0, we support returning a 204 and no body to mean no-op.
+      // A 204 has no content-type.
+      if (responseHeaderData.protocolVersion != null && responseHeaderData.protocolVersion > 0) {
+        callback.onSuccess(
+          UpdateResponse(
+            responseHeaderData = responseHeaderData,
+            manifestUpdateResponsePart = null,
+            directiveUpdateResponsePart = null
+          )
+        )
+        return
+      }
+
+      val message = "Missing body in remote update"
+      logger.error(message, UpdatesErrorCode.UpdateFailedToLoad)
+      callback.onFailure(
+        message,
+        IOException(message)
+      )
+      return
+    }
+
     val contentType = response.header("content-type") ?: ""
     val isMultipart = contentType.startsWith("multipart/", ignoreCase = true)
     if (isMultipart) {
@@ -105,17 +139,8 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
         return
       }
 
-      parseMultipartRemoteUpdateResponse(response, boundaryParameter, configuration, callback)
+      parseMultipartRemoteUpdateResponse(responseBody, responseHeaderData, boundaryParameter, configuration, callback)
     } else {
-      val responseHeaders = response.headers
-
-      val responseHeaderData = ResponseHeaderData(
-        protocolVersion = responseHeaders["expo-protocol-version"],
-        manifestFiltersRaw = responseHeaders["expo-manifest-filters"],
-        serverDefinedHeadersRaw = responseHeaders["expo-server-defined-headers"],
-        manifestSignature = responseHeaders["expo-manifest-signature"]
-      )
-
       val manifestResponseInfo = ResponsePartInfo(
         responseHeaderData = responseHeaderData,
         responsePartHeaderData = ResponsePartHeaderData(
@@ -163,13 +188,13 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
     return headers.toHeaders()
   }
 
-  private fun parseMultipartRemoteUpdateResponse(response: Response, boundary: String, configuration: UpdatesConfiguration, callback: RemoteUpdateDownloadCallback) {
+  private fun parseMultipartRemoteUpdateResponse(responseBody: ResponseBody, responseHeaderData: ResponseHeaderData, boundary: String, configuration: UpdatesConfiguration, callback: RemoteUpdateDownloadCallback) {
     var manifestPartBodyAndHeaders: Pair<String, Headers>? = null
     var extensionsBody: String? = null
     var certificateChainString: String? = null
     var directivePartBodyAndHeaders: Pair<String, Headers>? = null
 
-    val multipartStream = MultipartStream(response.body!!.byteStream(), boundary.toByteArray())
+    val multipartStream = MultipartStream(responseBody.byteStream(), boundary.toByteArray())
 
     try {
       var nextPart = multipartStream.skipPreamble()
@@ -224,14 +249,6 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
       callback.onFailure(message, IOException(message))
       return
     }
-
-    val responseHeaders = response.headers
-    val responseHeaderData = ResponseHeaderData(
-      protocolVersion = responseHeaders["expo-protocol-version"],
-      manifestFiltersRaw = responseHeaders["expo-manifest-filters"],
-      serverDefinedHeadersRaw = responseHeaders["expo-server-defined-headers"],
-      manifestSignature = responseHeaders["expo-manifest-signature"],
-    )
 
     val manifestResponseInfo = manifestPartBodyAndHeaders?.let {
       ResponsePartInfo(
@@ -800,7 +817,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
       return File(context.cacheDir, "okhttp")
     }
 
-    fun getExtraHeaders(
+    fun getExtraHeadersForRemoteUpdateRequest(
       database: UpdatesDatabase,
       configuration: UpdatesConfiguration,
       launchedUpdate: UpdateEntity?,
@@ -808,6 +825,10 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
     ): JSONObject {
       val extraHeaders =
         ManifestMetadata.getServerDefinedHeaders(database, configuration) ?: JSONObject()
+
+      ManifestMetadata.getExtraParams(database, configuration)?.let {
+        extraHeaders.put("Expo-Extra-Params", Dictionary.valueOf(it.mapValues { elem -> StringItem.valueOf(elem.value) }))
+      }
 
       launchedUpdate?.let {
         extraHeaders.put("Expo-Current-Update-ID", it.id.toString().lowercase())

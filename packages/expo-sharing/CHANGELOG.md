@@ -8,7 +8,31 @@
 
 ### 🐛 Bug fixes
 
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
+
+## 11.4.0 — 2023-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 11.3.2 — 2023-04-20
+
+### 🐛 Bug fixes
+
+- On iOS, fix crash when share menu is presented on iPad. ([#22193](https://github.com/expo/expo/pull/22193) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 11.3.1 — 2023-04-14
+
+### 🐛 Bug fixes
+
+- On iOS, fixed an issue where file permissions were not checked correctly. ([#22112](https://github.com/expo/expo/pull/22112) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 11.3.0 — 2023-04-12
+
+### 🎉 New features
+
+- On iOS, switched from using `UIDocumentInteractionController` to `UIActivityViewController` which provides more features. ([#22012](https://github.com/expo/expo/pull/22012) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 11.2.1 — 2023-02-09
 
@@ -24,7 +48,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
-- Migrated Android implementation to Expo Modules API. ([#20112](https://github.com/expo/expo/pull/20112) by [@alanhughes](https://github.com/alanjhughes))
+- Migrated module to Expo Modules API. ([#20112](https://github.com/expo/expo/pull/20112) and ([#20969](https://github.com/expo/expo/pull/20969) by [@alanhughes](https://github.com/alanjhughes))
 
 ## 11.0.1 — 2022-10-27
 

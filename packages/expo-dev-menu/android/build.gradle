@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '2.1.2'
+version = '3.0.0'
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -35,19 +35,11 @@ buildscript {
   }
 }
 
-// Creating sources with comments
-task androidSourcesJar(type: Jar) {
-  classifier = 'sources'
-  from android.sourceSets.main.java.srcDirs
-}
-
 afterEvaluate {
   publishing {
     publications {
       release(MavenPublication) {
         from components.release
-        // Add additional sourcesJar to artifacts
-        artifact(androidSourcesJar)
       }
     }
     repositories {
@@ -70,11 +62,12 @@ android {
     jvmTarget = JavaVersion.VERSION_11.majorVersion
   }
 
+  namespace "expo.modules.devmenu"
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 10
-    versionName '2.1.2'
+    versionName '3.0.0'
   }
   lintOptions {
     abortOnError false
@@ -104,6 +97,11 @@ android {
 
     releaseWithDevMenu {
       setRoot 'src/debug'
+    }
+  }
+  publishing {
+    singleVariant("release") {
+      withSourcesJar()
     }
   }
 }
@@ -165,7 +163,7 @@ dependencies {
   api "androidx.browser:browser:1.2.0"
 
   testImplementation "com.google.truth:truth:1.1.2"
-  testImplementation "org.robolectric:robolectric:4.3.1"
+  testImplementation "org.robolectric:robolectric:4.10"
   testImplementation 'com.squareup.okhttp3:mockwebserver:4.3.1'
   testImplementation 'androidx.test:core:1.4.0'
 }
@@ -175,7 +173,7 @@ def versionToNumber(major, minor, patch) {
 }
 
 def getNodeModulesPackageVersion(packageName, overridePropName) {
-  def nodeModulesVersion = ["node", "-e", "console.log(require('$packageName/package.json').version);"].execute([], projectDir).text.trim()
+  def nodeModulesVersion = ["node", "-e", "console.log(require('$packageName/package.json').version);"].execute(null, projectDir).text.trim()
   def version = safeExtGet(overridePropName, nodeModulesVersion)
 
   def coreVersion = version.split("-")[0]

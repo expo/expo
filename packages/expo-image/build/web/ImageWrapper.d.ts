@@ -11,11 +11,12 @@ declare const ImageWrapper: React.ForwardRefExoticComponent<{
         onMount?: ((() => void) | null | undefined)[] | undefined;
     } | undefined;
     contentPosition?: ImageContentPositionObject | undefined;
-    blurhashContentPosition?: ImageContentPositionObject | undefined;
+    hashPlaceholderContentPosition?: ImageContentPositionObject | undefined;
     priority?: string | null | undefined;
     style: CSSProperties;
-    blurhashStyle?: React.CSSProperties | undefined;
+    hashPlaceholderStyle?: React.CSSProperties | undefined;
     className?: string | undefined;
+    accessibilityLabel?: string | undefined;
 } & React.RefAttributes<HTMLImageElement>>;
 export default ImageWrapper;
 //# sourceMappingURL=ImageWrapper.d.ts.map

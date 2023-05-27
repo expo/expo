@@ -64,10 +64,15 @@ export function getAnimatorFromTransition(transition) {
         duration: transition?.duration || 0,
     };
 }
-export default function AnimationManager({ children: renderFunction, initial, transition, }) {
+export default function AnimationManager({ children: renderFunction, initial, transition, recyclingKey, }) {
     const animation = getAnimatorFromTransition(transition);
     const initialNode = useAnimationManagerNode(initial, 'active');
     const [nodes, setNodes] = React.useState(initialNode ? [initialNode] : []);
+    const [prevRecyclingKey, setPrevRecyclingKey] = React.useState(recyclingKey ?? '');
+    if (prevRecyclingKey !== (recyclingKey ?? '')) {
+        setPrevRecyclingKey(recyclingKey ?? '');
+        setNodes(initialNode ? [initialNode] : []);
+    }
     const removeAllNodesOfKeyExceptShowing = (key) => {
         setNodes((n) => n.filter((node) => (key ? node.animationKey !== key : false) ||
             node.status === 'in' ||
@@ -81,9 +86,14 @@ export default function AnimationManager({ children: renderFunction, initial, tr
             }
             const existingNodeIndex = n.findIndex((node) => node.animationKey === newNode.animationKey);
             if (existingNodeIndex >= 0) {
-                const copy = [...n];
-                copy.splice(existingNodeIndex, 1, newNode);
-                return copy;
+                if (animation) {
+                    return n.map((n2) => n2.animationKey === newNode.animationKey
+                        ? { ...newNode, status: 'in' }
+                        : { ...n2, status: 'out' });
+                }
+                else {
+                    return [{ ...newNode, status: 'in' }];
+                }
             }
             return [...n, newNode];
         });

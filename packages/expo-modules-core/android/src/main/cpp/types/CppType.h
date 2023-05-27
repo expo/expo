@@ -22,6 +22,9 @@ enum CppType {
   TYPED_ARRAY = 1 << 10,
   PRIMITIVE_ARRAY = 1 << 11,
   LIST = 1 << 12,
-  MAP = 1 << 13
+  MAP = 1 << 13,
+  VIEW_TAG = 1 << 14,
+  SHARED_OBJECT_ID = 1 << 15,
+  JS_FUNCTION = 1 << 16
 };
 } // namespace expo

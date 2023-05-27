@@ -60,6 +60,8 @@ class RecordTypeConverter<T : Record>(
 
   override fun getCppRequiredTypes(): ExpectedType = ExpectedType(CppType.READABLE_MAP)
 
+  override fun isTrivial(): Boolean = false
+
   private fun convertFromReadableMap(jsMap: ReadableMap): T {
     val kClass = type.classifier as KClass<*>
     val instance = getObjectConstructor(kClass.java).construct()

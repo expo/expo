@@ -9,7 +9,7 @@ When using the default Version Control Systems (VCS) workflow, the content of yo
 
 ## Submodules initialization
 
-To initialize a submodule on EAS Build worker:
+To initialize a submodule on EAS Build builder:
 
 <Step label="1">
 
@@ -21,7 +21,7 @@ Create a [secret](/build-reference/variables/#using-secrets-in-environment-varia
 
 Add an [`eas-build-pre-install` npm hook](/build-reference/npm-hooks/) to check out those submodules, for example:
 
-```bash
+```bash eas-build-pre-install.sh
 #!/usr/bin/env bash
 
 mkdir -p ~/.ssh

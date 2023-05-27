@@ -22,12 +22,20 @@ export function getExpoUpdatesPackageVersion(projectRoot: string): string | null
   return packageJson.version;
 }
 
+function shouldDefaultToClassicUpdates(config: Pick<ExpoConfigUpdates, 'updates'>): boolean {
+  return !!config.updates?.useClassicUpdates;
+}
+
 export function getUpdateUrl(
   config: Pick<ExpoConfigUpdates, 'owner' | 'slug' | 'updates'>,
   username: string | null
 ): string | null {
   if (config.updates?.url) {
     return config.updates?.url;
+  }
+
+  if (!shouldDefaultToClassicUpdates(config)) {
+    return null;
   }
 
   const user = typeof config.owner === 'string' ? config.owner : username;
@@ -142,8 +150,17 @@ export function getSDKVersion(config: Pick<ExpoConfigUpdates, 'sdkVersion'>): st
   return typeof config.sdkVersion === 'string' ? config.sdkVersion : null;
 }
 
-export function getUpdatesEnabled(config: Pick<ExpoConfigUpdates, 'updates'>): boolean {
-  return config.updates?.enabled !== false;
+export function getUpdatesEnabled(
+  config: Pick<ExpoConfigUpdates, 'owner' | 'slug' | 'updates'>,
+  username: string | null
+): boolean {
+  // allow override of enabled property
+  if (config.updates?.enabled !== undefined) {
+    return config.updates.enabled;
+  }
+
+  // enable if URL is set (which respects shouldDefaultToClassicUpdates)
+  return getUpdateUrl(config, username) !== null;
 }
 
 export function getUpdatesTimeout(config: Pick<ExpoConfigUpdates, 'updates'>): number {
@@ -153,7 +170,7 @@ export function getUpdatesTimeout(config: Pick<ExpoConfigUpdates, 'updates'>): n
 export function getUpdatesCheckOnLaunch(
   config: Pick<ExpoConfigUpdates, 'updates'>,
   expoUpdatesPackageVersion?: string | null
-): 'NEVER' | 'ERROR_RECOVERY_ONLY' | 'ALWAYS' {
+): 'NEVER' | 'ERROR_RECOVERY_ONLY' | 'ALWAYS' | 'WIFI_ONLY' {
   if (config.updates?.checkAutomatically === 'ON_ERROR_RECOVERY') {
     // native 'ERROR_RECOVERY_ONLY' option was only introduced in 0.11.x
     if (expoUpdatesPackageVersion && semver.gte(expoUpdatesPackageVersion, '0.11.0')) {
@@ -162,6 +179,10 @@ export function getUpdatesCheckOnLaunch(
     return 'NEVER';
   } else if (config.updates?.checkAutomatically === 'ON_LOAD') {
     return 'ALWAYS';
+  } else if (config.updates?.checkAutomatically === 'WIFI_ONLY') {
+    return 'WIFI_ONLY';
+  } else if (config.updates?.checkAutomatically === 'NEVER') {
+    return 'NEVER';
   }
   return 'ALWAYS';
 }

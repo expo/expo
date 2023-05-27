@@ -6,9 +6,9 @@ import android.util.Log
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.JSBundleLoader
+import com.facebook.react.devsupport.DevLauncherInternalSettings
 import expo.interfaces.devmenu.annotations.ContainsDevMenuExtension
 import expo.modules.devlauncher.react.DevLauncherDevSupportManagerSwapper
-import expo.modules.devlauncher.react.DevLauncherInternalSettings
 import okhttp3.HttpUrl
 
 fun injectReactInterceptor(
