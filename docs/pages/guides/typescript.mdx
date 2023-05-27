@@ -67,18 +67,14 @@ Certain language features may require additional configuration, for example if y
 
 ## Starting from scratch: using a TypeScript template
 
-<Terminal
-  cmd={['$ npx create-expo-app -t expo-template-blank-typescript']}
-  cmdCopy="npx create-expo-app -t expo-template-blank-typescript"
-/>
+<Terminal cmd={['$ npx create-expo-app -t expo-template-blank-typescript']} />
 
 The easiest way to get started is to initialize your new project using a TypeScript template, then run `yarn tsc` or `npx tsc` to "typecheck" the project.
 
 When you create new source files in your project you should use the **.ts** extension or the **.tsx** if the file includes React components.
 
-{/*
-
-## Path Aliases
+{/* prettier-ignore */}
+{/* ## Path Aliases
 
 > Available since SDK 49.
 
@@ -163,9 +159,7 @@ The base directory can be modified in the **tsconfig.json** (or **jsconfig.json*
 - Absolute imports are Metro-only (including Metro web) and not supported by `@expo/webpack-config`.
 - This feature requires additional setup in bare projects. See the [versioned Metro setup guide](/versions/latest/config/metro#bare-workflow-setup) for more information.
 
-[baseurl]: https://www.typescriptlang.org/docs/handbook/module-resolution.html#base-url
-
-*/}
+[baseurl]: https://www.typescriptlang.org/docs/handbook/module-resolution.html#base-url \*/}
 
 ## TypeScript for config files
 

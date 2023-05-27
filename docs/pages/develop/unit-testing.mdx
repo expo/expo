@@ -5,7 +5,7 @@ description: Learn how to set up and configure the jest-expo package to write un
 
 import { Terminal } from '~/ui/components/Snippet';
 import { BoxLink } from '~/ui/components/BoxLink';
-import { FileTree } from "~/ui/components/FileTree";
+import { FileTree } from '~/ui/components/FileTree';
 
 [Jest](https://jestjs.io) is the most widely used JavaScript unit testing framework. In this guide, you'll learn how to set up Jest in your project, write a unit test, write a snapshot test, and best practices for structuring your tests when using Jest with React Native.
 
@@ -82,33 +82,34 @@ Right now, you have a single test file in the project directory. Adding more tes
 
 An example structure is shown below:
 
-<FileTree files={[
-  '__tests__/components/button.test.js',
-  '__tests__/navigation/mainstack.test.js',
-  '__tests__/screens/home.test.js',
-  'src/components/button.js',
-  'src/navigation/mainstack.js',
-  'src/screens/home.js'
-]}/>
+<FileTree
+  files={[
+    '__tests__/components/button.test.js',
+    '__tests__/navigation/mainstack.test.js',
+    '__tests__/screens/home.test.js',
+    'src/components/button.js',
+    'src/navigation/mainstack.js',
+    'src/screens/home.js',
+  ]}
+/>
 
 However, this approach causes a lot of long import paths, such as `../../src/components/button`.
 
 Alternatively, you can have multiple **\_\_tests\_\_** sub-directories for different areas of your project. For example, create a separate test directory for **components**, **navigation**, and so on:
 
-<FileTree files={[
-  'src/components/button.js',
-  'src/components/__tests__/button.test.js'
-]}/>
+<FileTree files={['src/components/button.js', 'src/components/__tests__/button.test.js']} />
 
 Now, if you move **\_\_tests\_\_** within the **components** directory, the import path of `<Button>` in the the **button.test.js** will be `../button`.
 
 Another option for test/file structure:
 
-<FileTree files={[
-  'src/components/button.js',
-  'src/components/button.style.js',
-  'src/components/button.test.js',
-]}/>
+<FileTree
+  files={[
+    'src/components/button.js',
+    'src/components/button.style.js',
+    'src/components/button.test.js',
+  ]}
+/>
 
 It's all about preferences and up to you to decide how you want to organize your project directory.
 

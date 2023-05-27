@@ -13,7 +13,7 @@ When you make a change to your iOS entitlements, this change needs to be updated
 
 In the managed workflow, the entitlements are read from the introspected app config. To edit them, see the [`ios.entitlements`](/versions/latest/config/app/#entitlements) field in your app config file. You can see your introspected config by running `npx expo config --type introspect` in your project and then look for the `ios.entitlements` object for the results.
 
-In bare workflow apps, the entitlements are read from your __ios/**/*.entitlements__ file.
+In bare workflow apps, the entitlements are read from your **ios/[APP_NAME]/\*.entitlements** file.
 
 ## Enabling
 

@@ -2,24 +2,24 @@
 title: Rollouts
 hideTOC: true
 ---
-import { Terminal } from '~/ui/components/Snippet';
 
+import { Terminal } from '~/ui/components/Snippet';
 
 Rollouts allow deploying a new branch to a specific channel incrementally. With rollouts, we can roll out one branch to a percentage of end users and leave the remaining percentage of users on the current branch. This is useful when testing a new feature to minimize the risk of introducing bugs or other issues to your production environment.
 
 To initiate a rollout, use the following command:
 
-<Terminal cmd={["eas channel:rollout [channel]"]} />
+<Terminal cmd={['eas channel:rollout [channel]']} />
 
 The interactive prompts will guide you through choosing a channel, a branch to begin rolling out, and the percentage of your users to rollout to. To increase or decrease the rollout amount, run the `eas channel:rollout [channel]` command again to adjust the rollout percentage.
 
 Once you feel confident with your new branch, or if you want to revert to your original branch, you can end the rollout with the `--end` flag:
 
-<Terminal cmd={["eas channel:rollout [channel] --end"]} />
+<Terminal cmd={['eas channel:rollout [channel] --end']} />
 
 Facts that will help you when working with rollouts:
+
 - You can only have one branch rolling out on a channel at a single time.
 - To see the state of the rollout, use the `eas channel:view [channel]` command.
 - When a rollout is in progress, you can publish updates to both branches by running `eas update --branch [branch]`, for example.
 - You cannot use `eas update --channel [channel]` when a rollout is in progress, since it cannot know which branch to associate the update with.
-

@@ -163,19 +163,19 @@ Here are the parts of the deployment process above that make up this flow:
 5. Use the website or EAS CLI to point the "staging" channel at the EAS Update branch "version-1". Test the update by opening the apps on TestFlight and the Play Store Internal Track.
 6. When ready, use the website or EAS CLI to point the "production-rtv-1" channel at the EAS Update branch "version-1".
 7. Then, there are two update scenarios you may encounter:
-    - A new release does not require a new runtime version:
-        1. Create another GitHub branch named "version-2".
-        2. Use the website or EAS CLI to point the "staging" channel at the EAS Update branch "version-2".
-        3. Merge commits into the "version-2" branch until the new features and fixes are ready and stable.
-        4. Use the website or EAS CLI to point the "production-rtv-1" channel at the EAS Update branch "version-2". This will mean that everyone with a production build (users who downloaded the app from the app stores) will now get the latest update on the "version-2" branch.
-    - A new release requires a new runtime version (for example, when new native libraries are added or SDK version is upgraded):
-        1. Bump your runtime version from "1" to "2".
-        2. Create a new "staging" build with the new runtime version.
-        3. Create another GitHub branch named "version-2".
-        4. Use the website or EAS CLI to point the "staging" channel at the EAS Update branch "version-2".
-        5. Merge commits into the "version-2" branch until the new features and fixes are ready and stable.
-        6. Create a new build with channel named "production-rtv-2", which will eventually get reviewed and become available on app stores.
-        7. Use the website or EAS CLI to point the "production-rtv-2" channel at the EAS Update branch "version-2". This will mean that everyone who previously had a production build (users who downloaded the app from the app stores) will continue to get the latest update on EAS Update branch "version-1" until they download the new version of the app from the app store, at which time they will get the latest update on EAS Update branch "version-2".
+   - A new release does not require a new runtime version:
+     1. Create another GitHub branch named "version-2".
+     2. Use the website or EAS CLI to point the "staging" channel at the EAS Update branch "version-2".
+     3. Merge commits into the "version-2" branch until the new features and fixes are ready and stable.
+     4. Use the website or EAS CLI to point the "production-rtv-1" channel at the EAS Update branch "version-2". This will mean that everyone with a production build (users who downloaded the app from the app stores) will now get the latest update on the "version-2" branch.
+   - A new release requires a new runtime version (for example, when new native libraries are added or SDK version is upgraded):
+     1. Bump your runtime version from "1" to "2".
+     2. Create a new "staging" build with the new runtime version.
+     3. Create another GitHub branch named "version-2".
+     4. Use the website or EAS CLI to point the "staging" channel at the EAS Update branch "version-2".
+     5. Merge commits into the "version-2" branch until the new features and fixes are ready and stable.
+     6. Create a new build with channel named "production-rtv-2", which will eventually get reviewed and become available on app stores.
+     7. Use the website or EAS CLI to point the "production-rtv-2" channel at the EAS Update branch "version-2". This will mean that everyone who previously had a production build (users who downloaded the app from the app stores) will continue to get the latest update on EAS Update branch "version-1" until they download the new version of the app from the app store, at which time they will get the latest update on EAS Update branch "version-2".
 
 #### Advantages of this flow
 
