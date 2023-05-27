@@ -5,19 +5,19 @@ struct ExpoCameraUtils {
   static func device(with mediaType: AVMediaType, preferring position: AVCaptureDevice.Position) -> AVCaptureDevice? {
     return AVCaptureDevice.default(.builtInWideAngleCamera, for: mediaType, position: position)
   }
-  
+
   static func deviceOrientation(for accelerometerData: CMAccelerometerData, defaultOrientation: UIDeviceOrientation) -> UIDeviceOrientation {
     if accelerometerData.acceleration.x >= 0.75 {
-        return .landscapeRight
+      return .landscapeRight
     }
     if accelerometerData.acceleration.x <= -0.75 {
-        return .landscapeLeft
+      return .landscapeLeft
     }
     if accelerometerData.acceleration.y <= -0.75 {
-        return .portrait
+      return .portrait
     }
     if accelerometerData.acceleration.y >= 0.75 {
-        return .portraitUpsideDown
+      return .portraitUpsideDown
     }
 
     return defaultOrientation

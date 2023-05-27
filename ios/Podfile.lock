@@ -1819,7 +1819,6 @@ DEPENDENCIES:
   - EXBarCodeScanner (from `../packages/expo-barcode-scanner/ios`)
   - EXBranch (from `../packages/expo-branch/ios`)
   - EXCalendar (from `../packages/expo-calendar/ios`)
-  - EXCamera (from `../packages/expo-camera/ios`)
   - EXConstants (from `../packages/expo-constants/ios`)
   - EXContacts (from `../packages/expo-contacts/ios`)
   - EXFont (from `../packages/expo-font/ios`)
@@ -1838,6 +1837,7 @@ DEPENDENCIES:
   - ExpoBattery (from `../packages/expo-battery/ios`)
   - ExpoBlur (from `../packages/expo-blur/ios`)
   - ExpoBrightness (from `../packages/expo-brightness/ios`)
+  - ExpoCamera (from `../packages/expo-camera/ios`)
   - ExpoCellular (from `../packages/expo-cellular/ios`)
   - ExpoClipboard (from `../packages/expo-clipboard/ios`)
   - ExpoClipboard/Tests (from `../packages/expo-clipboard/ios`)
@@ -2249,8 +2249,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-branch/ios"
   EXCalendar:
     :path: "../packages/expo-calendar/ios"
-  EXCamera:
-    :path: "../packages/expo-camera/ios"
   EXConstants:
     :path: "../packages/expo-constants/ios"
   EXContacts:
@@ -2283,6 +2281,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-blur/ios"
   ExpoBrightness:
     :path: "../packages/expo-brightness/ios"
+  ExpoCamera:
+    :path: "../packages/expo-camera/ios"
   ExpoCellular:
     :path: "../packages/expo-cellular/ios"
   ExpoClipboard:
@@ -2610,6 +2610,7 @@ SPEC CHECKSUMS:
   Branch: 23b6b9351d5574377e7a764841cfb13a70c2799b
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
+<<<<<<< HEAD
   EASClient: e40ec588adaaed075128bebdcd852e1fe749ea02
   EXAV: 99e41d9fd39a5d17eb66d822197a249d80140d56
   EXBarCodeScanner: 9d23a7823c1dda81249aa8d494bae6130e312ab1
@@ -2679,6 +2680,149 @@ SPEC CHECKSUMS:
   FBReactNativeSpec: 91188c438ac0700baec9b0722333884f5986f347
   FBSDKCoreKit: f94e107ae84a6f4c0d9edfd06ed989b084bfa5bb
   FBSDKCoreKit_Basics: 8123411ba15df07f9a8da760630f4cdfeeaea6a7
+||||||| parent of 608c64faf5 ([ios][camera] rebase)
+  EASClient: 950674e1098ebc09c4c2cf064a61e42e84d9d4c6
+  EXApplication: 45c662ace096520d412e8f2c956482c8ffac1436
+  EXAV: c661e742e2ee1986f5a6a030b48d9d3a3507d2f0
+  EXBackgroundFetch: 10be318c278cabef5f89777002637e5f8ea3d447
+  EXBarCodeScanner: 28ad66f3f57c8ae00f988956835ab472688643ca
+  EXBranch: 5530d282683c19ba72db83cc39e87f05c4893c1d
+  EXCalendar: 9de1bd96a9468021c11d561ae7612d67eadf7421
+  EXCamera: f231ff0f85e84dc6e8167f4a8e2881d2e4260e5c
+  EXConstants: 29269f841ed8786d483b753021953264ac04818f
+  EXContacts: 16af1b3017380e1d09a63c61ac7d664c2b1b5c88
+  EXFileSystem: 0b4a2c08c2dc92146849772145d61c1773144283
+  EXFont: 6a9d36ba12a7156095a251097a5f7136f37f975b
+  EXImageLoader: 9d209a8231962d4aafa60ca40380b02a398f07b9
+  EXJSONUtils: babb80f7eab885b0135ae00b633d2d52b4a44fff
+  EXLocation: 0d7331f0385de210c677313a6a1512099b455347
+  EXManifests: 37a0bb3514806cf432f6538fcc9825107fc23436
+  EXMediaLibrary: 2e91d1eb14df5c6af1ddfe183a8c8ee7eaf557d8
+  EXNotifications: 900919e062523f6b399a20fc55b03c8921ec28d7
+  EXPermissions: ee60d7978aba135b8b391185b039d78f151c376a
+  Expo: 0b569a9cefb602d6cb80633c990153ab921aa652
+  ExpoAppleAuthentication: 7bdf1a2962ebfe9b00eb4183a17b78d736e57185
+  ExpoBattery: 783da560bbf6a64f558afd5a693f10729211ed15
+  ExpoBlur: 83186055c9c5c7ea564d04c6ed766ef7896889ed
+  ExpoBrightness: 13a6108d77641ad310b7873438a0260f9eedfe5c
+  ExpoCellular: c83881caef249154449532eb2245e98fdbac1d14
+  ExpoClipboard: 872ae8ea230649404705b7cc09a155531e74b7bb
+  ExpoCrypto: 1582deaebe922a39f18bf28ec4723ef18d12b13e
+  ExpoDevice: 516146e17529c3eae3f5c2c09e826efc9ffc6938
+  ExpoDocumentPicker: 2dfcc5935532a3193818017da5e2f3dfda0dbf3b
+  ExpoGL: 66d0342641c28a0abbe382e2ca905c556442c7fc
+  ExpoHaptics: fb64dfe302cba07591bf1679ecb9531dadfc13cf
+  ExpoImage: f19f918d2ff1c9c9fbedc266e6a28d10aa335800
+  ExpoImageManipulator: b8d510b4d15689d8f276dff3482df5707836035b
+  ExpoImagePicker: 432af66697986cc210bc814dee782a07b2037a61
+  ExpoKeepAwake: 6604830433e76ce03306b82054e634e81a6b9bbb
+  ExpoLinearGradient: c206f987c810bf988b1896db8fa88db31b4687d6
+  ExpoLocalAuthentication: de5f50fae4fa643a3fc6b404d61a2ab36b5acf20
+  ExpoLocalization: c1201ba5cfcfb187972138e58c07cc708c5399db
+  ExpoMailComposer: b9a4871714550d5b4e26d1873f0572e350c86478
+  ExpoModulesCore: b7865a95e88b5731893e177bbf82f6a05f3f92d9
+  ExpoModulesTestCore: 42fce831c9601dcfaba09fe7a03dfe99e25754a4
+  ExpoNetwork: ef59bebcdbeb6ea188157a8fc88e9ceafbff1f89
+  ExpoPrint: 92311a7545d66959c6f3884e085bf336ba6c7c48
+  ExpoRandom: 2b8cb73f02f534b083a1f79b10b89ca0f0111b55
+  ExpoSecureStore: 69a8b8e66e53afbd1c88b97a95a22af7fde9f99b
+  ExpoSharing: 3e3efb3d93e169dcce0f749aa8427317c033639f
+  ExpoSMS: c360a9e17e3590f2b2f95adc57f5143baeec2793
+  ExpoSpeech: 3ba0e08a0dfa8533f82e1c4ad21b8df93bd9dc4a
+  ExpoSQLite: 9710adce5dc48ee6c58515cce2185f6837b88b7c
+  ExpoStoreReview: 69f68b07656f26540f2b38f971527609860930c8
+  ExpoSystemUI: d11bbe88d97a59cf691ccab325ee99ac655d1135
+  ExpoTrackingTransparency: 28cb4ba43e61231c4173507ba05b3ce8c777f173
+  ExpoVideoThumbnails: 4c5aa4a1ed34041844da7f8ba2967630d2573bdc
+  ExpoWebBrowser: eac23f0fd2b8ad7ec7056fc208091722bba17952
+  EXScreenCapture: c55e42588fb2dc985a02b4b6aa1fb6e83157c653
+  EXScreenOrientation: d6f2277d20a76206f1ec5268d6c727e758e10d05
+  EXSensors: 6422e6bf51cfeee632d9cb61536d6038b680acfb
+  EXSplashScreen: 7a22faa7ef6e1e6fc57ce98f4941a73147d6c19c
+  EXStructuredHeaders: f3a6d417d5d12ef369fd1a31320d1c188a1b0f4b
+  EXTaskManager: a7a387c4e222176988261341680aa7e3f621a335
+  EXUpdates: 3db8e104828f682f6db46130ff8fc929e5d373cb
+  EXUpdatesInterface: c08eaa7e4d1fdafff3820e0539a6d42a75fa0258
+  FBAEMKit: c7f82b5145d446bcbbcd50485c032689032fc6a2
+  FBAudienceNetwork: e0fcc9091fced34910ed0b6da06f129db46ac9e6
+  FBLazyVector: a89a0525bc7ca174675045c2b492b5280d5a2470
+  FBReactNativeSpec: 3851f344cf03f0cff3020fbf627e520a10fdfd32
+  FBSDKCoreKit: 7542746fc63a2a38dd6a865eeb54268341f37b83
+  FBSDKCoreKit_Basics: 92d6b26c0bed30ab09bbdd96dccaa26e6c9978d1
+  Firebase: 800f16f07af493d98d017446a315c27af0552f41
+  FirebaseAnalytics: 1b60984a408320dda637306f3f733699ef8473d7
+=======
+  EASClient: 950674e1098ebc09c4c2cf064a61e42e84d9d4c6
+  EXApplication: 45c662ace096520d412e8f2c956482c8ffac1436
+  EXAV: c661e742e2ee1986f5a6a030b48d9d3a3507d2f0
+  EXBackgroundFetch: 10be318c278cabef5f89777002637e5f8ea3d447
+  EXBarCodeScanner: 28ad66f3f57c8ae00f988956835ab472688643ca
+  EXBranch: 5530d282683c19ba72db83cc39e87f05c4893c1d
+  EXCalendar: 9de1bd96a9468021c11d561ae7612d67eadf7421
+  EXConstants: 29269f841ed8786d483b753021953264ac04818f
+  EXContacts: 16af1b3017380e1d09a63c61ac7d664c2b1b5c88
+  EXFileSystem: 0b4a2c08c2dc92146849772145d61c1773144283
+  EXFont: 6a9d36ba12a7156095a251097a5f7136f37f975b
+  EXImageLoader: 9d209a8231962d4aafa60ca40380b02a398f07b9
+  EXJSONUtils: babb80f7eab885b0135ae00b633d2d52b4a44fff
+  EXLocation: 0d7331f0385de210c677313a6a1512099b455347
+  EXManifests: 37a0bb3514806cf432f6538fcc9825107fc23436
+  EXMediaLibrary: 2e91d1eb14df5c6af1ddfe183a8c8ee7eaf557d8
+  EXNotifications: 900919e062523f6b399a20fc55b03c8921ec28d7
+  EXPermissions: ee60d7978aba135b8b391185b039d78f151c376a
+  Expo: 0b569a9cefb602d6cb80633c990153ab921aa652
+  ExpoAppleAuthentication: 7bdf1a2962ebfe9b00eb4183a17b78d736e57185
+  ExpoBattery: 783da560bbf6a64f558afd5a693f10729211ed15
+  ExpoBlur: 83186055c9c5c7ea564d04c6ed766ef7896889ed
+  ExpoBrightness: 13a6108d77641ad310b7873438a0260f9eedfe5c
+  ExpoCamera: e59f5cf80e9424e89fad98ceaba694ae3feed107
+  ExpoCellular: c83881caef249154449532eb2245e98fdbac1d14
+  ExpoClipboard: 872ae8ea230649404705b7cc09a155531e74b7bb
+  ExpoCrypto: 1582deaebe922a39f18bf28ec4723ef18d12b13e
+  ExpoDevice: 516146e17529c3eae3f5c2c09e826efc9ffc6938
+  ExpoDocumentPicker: 2dfcc5935532a3193818017da5e2f3dfda0dbf3b
+  ExpoGL: 66d0342641c28a0abbe382e2ca905c556442c7fc
+  ExpoHaptics: fb64dfe302cba07591bf1679ecb9531dadfc13cf
+  ExpoImage: f19f918d2ff1c9c9fbedc266e6a28d10aa335800
+  ExpoImageManipulator: b8d510b4d15689d8f276dff3482df5707836035b
+  ExpoImagePicker: 432af66697986cc210bc814dee782a07b2037a61
+  ExpoKeepAwake: 6604830433e76ce03306b82054e634e81a6b9bbb
+  ExpoLinearGradient: c206f987c810bf988b1896db8fa88db31b4687d6
+  ExpoLocalAuthentication: de5f50fae4fa643a3fc6b404d61a2ab36b5acf20
+  ExpoLocalization: c1201ba5cfcfb187972138e58c07cc708c5399db
+  ExpoMailComposer: b9a4871714550d5b4e26d1873f0572e350c86478
+  ExpoModulesCore: b7865a95e88b5731893e177bbf82f6a05f3f92d9
+  ExpoModulesTestCore: 42fce831c9601dcfaba09fe7a03dfe99e25754a4
+  ExpoNetwork: ef59bebcdbeb6ea188157a8fc88e9ceafbff1f89
+  ExpoPrint: 92311a7545d66959c6f3884e085bf336ba6c7c48
+  ExpoRandom: 2b8cb73f02f534b083a1f79b10b89ca0f0111b55
+  ExpoSecureStore: 69a8b8e66e53afbd1c88b97a95a22af7fde9f99b
+  ExpoSharing: 3e3efb3d93e169dcce0f749aa8427317c033639f
+  ExpoSMS: c360a9e17e3590f2b2f95adc57f5143baeec2793
+  ExpoSpeech: 3ba0e08a0dfa8533f82e1c4ad21b8df93bd9dc4a
+  ExpoSQLite: 9710adce5dc48ee6c58515cce2185f6837b88b7c
+  ExpoStoreReview: 69f68b07656f26540f2b38f971527609860930c8
+  ExpoSystemUI: d11bbe88d97a59cf691ccab325ee99ac655d1135
+  ExpoTrackingTransparency: 28cb4ba43e61231c4173507ba05b3ce8c777f173
+  ExpoVideoThumbnails: 4c5aa4a1ed34041844da7f8ba2967630d2573bdc
+  ExpoWebBrowser: eac23f0fd2b8ad7ec7056fc208091722bba17952
+  EXScreenCapture: c55e42588fb2dc985a02b4b6aa1fb6e83157c653
+  EXScreenOrientation: d6f2277d20a76206f1ec5268d6c727e758e10d05
+  EXSensors: 6422e6bf51cfeee632d9cb61536d6038b680acfb
+  EXSplashScreen: 7a22faa7ef6e1e6fc57ce98f4941a73147d6c19c
+  EXStructuredHeaders: f3a6d417d5d12ef369fd1a31320d1c188a1b0f4b
+  EXTaskManager: a7a387c4e222176988261341680aa7e3f621a335
+  EXUpdates: 3db8e104828f682f6db46130ff8fc929e5d373cb
+  EXUpdatesInterface: c08eaa7e4d1fdafff3820e0539a6d42a75fa0258
+  FBAEMKit: c7f82b5145d446bcbbcd50485c032689032fc6a2
+  FBAudienceNetwork: e0fcc9091fced34910ed0b6da06f129db46ac9e6
+  FBLazyVector: a89a0525bc7ca174675045c2b492b5280d5a2470
+  FBReactNativeSpec: 3851f344cf03f0cff3020fbf627e520a10fdfd32
+  FBSDKCoreKit: 7542746fc63a2a38dd6a865eeb54268341f37b83
+  FBSDKCoreKit_Basics: 92d6b26c0bed30ab09bbdd96dccaa26e6c9978d1
+  Firebase: 800f16f07af493d98d017446a315c27af0552f41
+  FirebaseAnalytics: 1b60984a408320dda637306f3f733699ef8473d7
+>>>>>>> 608c64faf5 ([ios][camera] rebase)
   FirebaseCore: 25c0400b670fd1e2f2104349cd3b5dcce8d9418f
   FirebaseCoreDiagnostics: 99a495094b10a57eeb3ae8efa1665700ad0bdaa6
   FirebaseCoreInternal: bca76517fe1ed381e989f5e7d8abb0da8d85bed3

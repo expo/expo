@@ -376,7 +376,7 @@ public class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
   func updateResponsiveOrientation() {
     if responsiveWhenOrientationLocked {
       motionManager.startAccelerometerUpdates(to: OperationQueue()) { [weak self] _, error in
-        guard let self else {
+        guard let self, let accelerometerData = self.motionManager.accelerometerData else {
           return
         }
 
@@ -384,9 +384,10 @@ public class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
           self.motionManager.stopAccelerometerUpdates()
           return
         }
+        
 
         let deviceOrientation = ExpoCameraUtils.deviceOrientation(
-          for: self.motionManager.accelerometerData!,
+          for: accelerometerData,
           defaultOrientation: physicalOrientation)
         if deviceOrientation != self.physicalOrientation {
           self.physicalOrientation = deviceOrientation
