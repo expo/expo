@@ -294,13 +294,15 @@ private func generatePictureForSimulator(appContext: AppContext?, options: TakeP
   }
   let path = fs.generatePath(inDirectory: fs.cachesDirectory.appending("/Camera"), withExtension: ".jpg")
   let generatedPhoto = ExpoCameraUtils.generatePhoto(of: CGSize(width: 200, height: 200))
-  let photoData = generatedPhoto.jpegData(compressionQuality: options.quality)
+  guard let photoData = generatedPhoto.jpegData(compressionQuality: options.quality) else {
+    throw CameraInvalidPhotoData()
+  }
 
   return [
-    "uri": EXCameraUtils.writeImage(photoData, toPath: path),
+    "uri": ExpoCameraUtils.write(data: photoData, to: path),
     "width": generatedPhoto.size.width,
     "height": generatedPhoto.size.height,
-    "base64": options.base64 ? photoData?.base64EncodedString() : nil
+    "base64": options.base64 ? photoData.base64EncodedString() : nil
   ]
 }
 

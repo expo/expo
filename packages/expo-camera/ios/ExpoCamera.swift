@@ -3,11 +3,11 @@ import ExpoModulesCore
 import CoreMotion
 
 // swiftlint:disable:next type_body_length
-class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
+public class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
   AVCaptureFileOutputRecordingDelegate, AVCaptureMetadataOutputObjectsDelegate,
   AVCapturePhotoCaptureDelegate {
-  internal var session = AVCaptureSession()
-  internal var sessionQueue = DispatchQueue(label: "captureSessionQueue")
+  public var session = AVCaptureSession()
+  public var sessionQueue = DispatchQueue(label: "captureSessionQueue")
   private var motionManager = CMMotionManager()
   private var physicalOrientation: UIDeviceOrientation = .unknown
 
@@ -342,7 +342,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
     }
   }
 
-  func onAppForegrounded() {
+  public func onAppForegrounded() {
     if !session.isRunning && isSessionRunning {
       isSessionRunning = false
       sessionQueue.async {
@@ -352,7 +352,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
     }
   }
 
-  func onAppBackgrounded() {
+  public func onAppBackgrounded() {
     if session.isRunning && !isSessionRunning {
       isSessionRunning = true
       sessionQueue.async {
@@ -385,8 +385,8 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
           return
         }
 
-        let deviceOrientation = EXCameraUtils.deviceOrientation(
-          for: self.motionManager.accelerometerData,
+        let deviceOrientation = ExpoCameraUtils.deviceOrientation(
+          for: self.motionManager.accelerometerData!,
           defaultOrientation: physicalOrientation)
         if deviceOrientation != self.physicalOrientation {
           self.physicalOrientation = deviceOrientation
@@ -441,7 +441,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
     }
   }
 
-  func photoOutput(
+  public func photoOutput(
     _ output: AVCapturePhotoOutput,
     didFinishProcessingRawPhoto rawSampleBuffer: CMSampleBuffer?,
     previewPhoto previewPhotoSampleBuffer: CMSampleBuffer?,
@@ -478,7 +478,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
     self.handleCapturedImageData(imageData: imageData, metadata: metadata, options: options, promise: promise)
   }
 
-  func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
+  public func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
     guard let promise = photoCapturedPromise, let options = photoCaptureOptions else {
       return
     }
@@ -488,11 +488,6 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
 
     if error != nil {
       promise.reject(CameraImageCaptureException())
-      return
-    }
-
-    if fileSystem == nil {
-      promise.reject(Exceptions.FileSystemModuleNotFound())
       return
     }
 
@@ -529,9 +524,11 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
 
     takenImage = ExpoCameraUtils.crop(image: takenImage, to: croppedSize)
 
-    let path = fileSystem?.generatePath(
+    guard let path = fileSystem?.generatePath(
       inDirectory: fileSystem?.cachesDirectory.appending("/Camera"),
-      withExtension: ".jpg")
+      withExtension: ".jpg") else {
+      return
+    }
 
     let width = takenImage.size.width
     let height = takenImage.size.height
@@ -540,20 +537,22 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
     var response: [String: Any] = [:]
 
     if options.exif {
-      let exifDict = metadata[kCGImagePropertyExifDictionary as String] as? [String: Any]
-      var updatedExif = EXCameraUtils.updateExifMetadata(
-        exifDict,
-        withAdditionalData: ["Orientation": ExpoCameraUtils.export(orientation: takenImage.imageOrientation)]
+      guard let exifDict = metadata[kCGImagePropertyExifDictionary as String] as? NSDictionary else {
+        return
+      }
+      var updatedExif = ExpoCameraUtils.updateExif(
+        metadata: exifDict,
+        with: ["Orientation": ExpoCameraUtils.export(orientation: takenImage.imageOrientation)]
       )
 
-      updatedExif?[kCGImagePropertyExifPixelYDimension] = width
-      updatedExif?[kCGImagePropertyExifPixelXDimension] = height
+      updatedExif[kCGImagePropertyExifPixelYDimension] = width
+      updatedExif[kCGImagePropertyExifPixelXDimension] = height
       response["exif"] = updatedExif
 
       var updatedMetadata = metadata
 
       if let additionalExif = options.additionalExif {
-        updatedExif?.addEntries(from: additionalExif)
+        updatedExif.addEntries(from: additionalExif)
         var gpsDict = [String: Any]()
 
         let gpsLatitude = additionalExif["GPSLatitude"] as? Double
@@ -585,10 +584,10 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
       }
 
       updatedMetadata[kCGImagePropertyExifDictionary as String] = updatedExif
-      processedImageData = EXCameraUtils.data(
+      processedImageData = ExpoCameraUtils.data(
         from: takenImage,
-        withMetadata: updatedMetadata,
-        imageQuality: Float(options.quality))
+        with: updatedMetadata as NSDictionary,
+        quality: Float(options.quality))
     } else {
       processedImageData = takenImage.jpegData(compressionQuality: options.quality)
     }
@@ -598,7 +597,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
       return
     }
 
-    response["uri"] = EXCameraUtils.writeImage(processedImageData, toPath: path)
+    response["uri"] = ExpoCameraUtils.write(data: processedImageData, to: path)
     response["width"] = width
     response["height"] = height
 
@@ -752,7 +751,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
     }
   }
 
-  override func layoutSubviews() {
+  public override func layoutSubviews() {
     previewLayer?.frame = self.bounds
     self.backgroundColor = .black
     if let previewLayer {
@@ -760,7 +759,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
     }
   }
 
-  override func removeFromSuperview() {
+  public override func removeFromSuperview() {
     lifecycleManager?.unregisterAppLifecycleListener(self)
     self.stopSession()
     super.removeFromSuperview()
@@ -773,7 +772,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
     }
   }
 
-  func fileOutput(
+  public func fileOutput(
     _ output: AVCaptureFileOutput,
     didFinishRecordingTo outputFileURL: URL,
     from connections: [AVCaptureConnection],
