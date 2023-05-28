@@ -123,7 +123,7 @@ struct ExpoCameraUtils {
     }
   }
 
-  static func data(from image: UIImage, with metadata: NSDictionary, quality: Float) -> Data? {
+  static func data(from image: UIImage, with metadata: [String: Any], quality: Float) -> Data? {
     guard let sourceCGImageRef = image.cgImage,
     let sourceData = image.jpegData(compressionQuality: 1.0) as CFData?,
     let sourceCGImageSourceRef = CGImageSourceCreateWithData(sourceData, nil),

@@ -3,8 +3,7 @@ import ExpoModulesCore
 import CoreMotion
 
 // swiftlint:disable:next type_body_length
-public class ExpoCamera: ExpoView, EXCameraInterface, AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCaptureDelegate {
-
+public class ExpoCamera: ExpoView, EXCameraInterface, EXAppLifecycleListener, AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCaptureDelegate {
   public var session = AVCaptureSession()
   public var sessionQueue = DispatchQueue(label: "captureSessionQueue")
   private var motionManager = CMMotionManager()
@@ -150,6 +149,25 @@ public class ExpoCamera: ExpoView, EXCameraInterface, AVCaptureFileOutputRecordi
       self.initializeCaptureSessionInput()
       if !self.session.isRunning {
         self.startSession()
+      }
+    }
+  }
+
+  public func onAppForegrounded() {
+    if !session.isRunning && isSessionRunning {
+      isSessionRunning = false
+      sessionQueue.async {
+        self.session.startRunning()
+        self.ensureSessionConfiguration()
+      }
+    }
+  }
+
+  public func onAppBackgrounded() {
+    if session.isRunning && !isSessionRunning {
+      isSessionRunning = true
+      sessionQueue.async {
+        self.session.stopRunning()
       }
     }
   }
@@ -518,7 +536,7 @@ public class ExpoCamera: ExpoView, EXCameraInterface, AVCaptureFileOutputRecordi
     let height = takenImage.size.height
     var processedImageData: Data?
 
-    var response: [String: Any] = [:]
+    var response = [String: Any]()
 
     if options.exif {
       guard let exifDict = metadata[kCGImagePropertyExifDictionary as String] as? NSDictionary else {
@@ -553,7 +571,7 @@ public class ExpoCamera: ExpoView, EXCameraInterface, AVCaptureFileOutputRecordi
 
         let gpsAltitude = additionalExif["GPSAltitude"] as? Double
         if let altitude = gpsAltitude {
-          gpsDict[kCGImagePropertyGPSLongitude as String] = fabs(altitude)
+          gpsDict[kCGImagePropertyGPSLongitude as String] = abs(altitude)
           gpsDict[kCGImagePropertyGPSLongitudeRef as String] = altitude >= 0 ? 0 : 1
         }
 
@@ -570,7 +588,7 @@ public class ExpoCamera: ExpoView, EXCameraInterface, AVCaptureFileOutputRecordi
       updatedMetadata[kCGImagePropertyExifDictionary as String] = updatedExif
       processedImageData = ExpoCameraUtils.data(
         from: takenImage,
-        with: updatedMetadata as NSDictionary,
+        with: updatedMetadata,
         quality: Float(options.quality))
     } else {
       processedImageData = takenImage.jpegData(compressionQuality: options.quality)
@@ -957,27 +975,6 @@ public class ExpoCamera: ExpoView, EXCameraInterface, AVCaptureFileOutputRecordi
 
     if let errorNotification {
       NotificationCenter.default.removeObserver(errorNotification)
-    }
-  }
-}
-
-extension ExpoCamera: EXAppLifecycleListener {
-  public func onAppForegrounded() {
-    if !session.isRunning && isSessionRunning {
-      isSessionRunning = false
-      sessionQueue.async {
-        self.session.startRunning()
-        self.ensureSessionConfiguration()
-      }
-    }
-  }
-
-  public func onAppBackgrounded() {
-    if session.isRunning && !isSessionRunning {
-      isSessionRunning = true
-      sessionQueue.async {
-        self.session.stopRunning()
-      }
     }
   }
 }
