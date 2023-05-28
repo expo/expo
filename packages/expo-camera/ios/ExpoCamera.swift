@@ -3,7 +3,7 @@ import ExpoModulesCore
 import CoreMotion
 
 // swiftlint:disable:next type_body_length
-class ExpoCamera: ExpoView, EXCameraInterface, AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCaptureDelegate {
+public class ExpoCamera: ExpoView, EXCameraInterface, AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCaptureDelegate {
 
   public var session = AVCaptureSession()
   public var sessionQueue = DispatchQueue(label: "captureSessionQueue")
