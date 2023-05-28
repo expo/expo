@@ -1,0 +1,59 @@
+---
+title: Create pages with Expo Router
+description: Learn about the file-based routing convention used by Expo Router.
+hideFromSearch: true
+sidebar_title: Create pages
+---
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { BookOpen02Icon } from '@expo/styleguide-icons';
+
+The file-based routing convention enables developers to structure their apps logically and intuitively. Expo Router uses this convention to optimize the app by generating native deep links and web routes automatically.
+
+The convention is based on the concept of nesting routes inside each other to create shared UI elements, such as tab bars and headers across multiple children. This format should feel familiar to React developers.
+
+File-based routing enables URLs for every page in your app. All routes must be created within the root **app** directory. You can create routes within this directory by defining files using the route name.
+
+- **app/home.js** matches `/home`
+- **app/settings/index.js** matches `/settings`
+- **app/[user].js** matches any unmatched path like `/evanbacon` or `/expo`
+
+## Pages
+
+Pages are defined by exporting a React component as the default value from a file in the **app** directory. The file they are exported from must use one of the `.js`, `.jsx`, `.tsx`, `.ts` extensions.
+
+For example, create the **app** directory in your project and then create a file **index.js** inside it. Then, add the following snippet:
+
+```js app/index.js
+import { Text } from 'react-native';
+
+export default function Page() {
+  return <Text>Home page</Text>;
+}
+```
+
+The above example will match the `/` route in the app and the browser Files named **index** adds no path segment to the URL. The route file named **index** at the route of the directory is automatically considered the "index" route for that directory. For example, **app/settings/index.js** will match `/settings` in the app.
+
+> Metro platform extensions (for example, **.ios.js**, **.native.ts**) are not supported. The page can re-export a component from a platform extension file.
+
+## Dynamic routes
+
+Dynamic routes match any unmatched path at a given segment level.
+
+| Route                     | Matched URL          |
+| ------------------------- | -------------------- |
+| **app/blog/[slug].js**    | `/blog/123`          |
+| **app/blog/[...rest].js** | `/blog/123/settings` |
+
+Routes with higher specificity will be matched before a dynamic route. For example, `/blog/bacon` will match **blog/bacon.js** before **blog/[id].js**.
+
+Multiple slugs can be matched in a single route by using the rest syntax (`...`). For example, **app/blog/[...id].js** will match `/blog/123/settings`.
+
+## Next steps
+
+<BoxLink
+  title="Navigate between pages"
+  Icon={BookOpen02Icon}
+  description="Learn how to use Expo Router library to navigate between different pages."
+  href="/routing/navigating-pages/"
+/>

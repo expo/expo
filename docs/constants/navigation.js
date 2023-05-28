@@ -20,7 +20,7 @@ const archiveDirectories = ['archive'];
 /** Manual list of directories to categorize as "Reference" */
 const referenceDirectories = ['versions', 'technical-specs', 'more'];
 /** Private preview section which isn't linked in the documentation */
-const previewDirectories = ['feature-preview', 'preview'];
+const previewDirectories = ['feature-preview', 'preview', 'routing'];
 /** All other unlisted directories */
 const generalDirectories = fs
   .readdirSync(PAGES_DIR, { withFileTypes: true })
@@ -366,6 +366,15 @@ const preview = [
     makeGroup('Custom builds', [
       makePage('preview/custom-build-config.mdx'),
       makePage('preview/custom-build-config-schema.mdx'),
+    ]),
+    makeGroup('Routing', [
+      makePage('routing/introduction.mdx'),
+      makePage('routing/installation.mdx'),
+      makePage('routing/create-pages.mdx'),
+      makePage('routing/shared-routes-and-layouts.mdx'),
+      makePage('routing/appearance.mdx'),
+      makePage('routing/styling.mdx'),
+      makePage('routing/error-handling.mdx'),
     ]),
     { expanded: true },
   ]),
