@@ -364,7 +364,7 @@ A config plugin in a node module (without an **app.plugin.js**) will use the `ma
 - <NoIcon /> `'expo-splash-screen/build/index'`
 
 ```
-╭── app.config.js ➡️ app config
+╭── app.config.js ➡️ App config
 ╰── node_modules/expo-splash-screen/ ➡️ Module installed from NPM (works with Yarn workspaces as well).
     ├── package.json ➡️ The `main` file points to **build/index.js**
     ╰── build/index.js ➡️  ✅ Node resolves to this module.
@@ -379,7 +379,7 @@ A config plugin in a node module (without an **app.plugin.js**) will use the `ma
 This is different to how Node modules work because **app.plugin.js** won't be resolved by default in a directory. You'll have to manually specify `./my-config-plugin/app.plugin.js` to use it, otherwise **index.js** in the directory will be used.
 
 ```
-╭── app.config.js ➡️ app config
+╭── app.config.js ➡️ App config
 ╰── my-config-plugin/ ➡️ Folder containing plugin code
     ╰── index.js ➡️ ✅ By default, Node resolves a folder's index.js file as the main file.
 ```
@@ -394,7 +394,7 @@ We support this to make testing, and plugin authoring easier, but we don't expec
 - <NoIcon /> `'expo-splash-screen/build'`
 
 ```
-╭── app.config.js ➡️ app config
+╭── app.config.js ➡️ App config
 ╰── node_modules/expo-splash-screen/ ➡️ Module installed from npm (works with Yarn workspaces as well).
     ├── package.json ➡️ The `main` file will be used if **app.plugin.js** doesn't exist.
     ├── app.plugin.js ➡️ ❌ Ignored because the reference reaches into the package internals.
