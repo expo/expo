@@ -2,6 +2,7 @@
 
 // swiftlint:disable force_unwrapping
 // swiftlint:disable type_body_length
+// swiftlint:disable function_body_length
 // swiftlint:disable closure_body_length
 
 import Foundation
@@ -24,7 +25,6 @@ public final class UpdatesUtils: NSObject {
   private static let EXUpdatesEventName = "Expo.nativeUpdatesEvent"
   private static let EXUpdatesUtilsErrorDomain = "EXUpdatesUtils"
   public static let methodQueue = DispatchQueue(label: "expo.modules.EXUpdatesQueue")
-  private static let delegate: (any AppControllerJSAPIDelegate) = AppController.sharedInstance
 
   // MARK: - Public methods
 
@@ -58,9 +58,10 @@ public final class UpdatesUtils: NSObject {
    The UpdatesService is passed in when this is called from JS through UpdatesModule
    */
   public static func checkForUpdate(_ updatesService: (any EXUpdatesModuleInterface)?, _ block: @escaping ([String: Any]) -> Void) {
-    delegate.didStartCheckingForUpdate()
+    postUpdateEventNotification(AppController.CheckForUpdate_StartEventName)
     do {
       let constants = try startAPICall(updatesService)
+
       var extraHeaders: [String: Any] = [:]
       constants.database.databaseQueue.sync {
         extraHeaders = FileDownloader.extraHeadersForRemoteUpdateRequest(
@@ -81,26 +82,24 @@ public final class UpdatesUtils: NSObject {
         if let updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective {
           switch updateDirective {
           case is NoUpdateAvailableUpdateDirective:
-            let body: [String: Any] = [:]
-            delegate.didFinishCheckingForUpdate(body)
-            block(body)
+            block([:])
+            postUpdateEventNotification(AppController.CheckForUpdate_Complete_NoUpdateAvailableEventName)
             return
           case is RollBackToEmbeddedUpdateDirective:
             let body = [
               "isRollBackToEmbedded": true
             ]
-            delegate.didFinishCheckingForUpdate(body)
             block(body)
+            postUpdateEventNotification(AppController.CheckForUpdate_Complete_UpdateAvailableEventName, body: body)
             return
           default:
-            return handleCheckForUpdateError(UpdatesUnsupportedDirectiveException(), block: block)
+            return handleAPIError(UpdatesUnsupportedDirectiveException(), block: block)
           }
         }
 
         guard let update = updateResponse.manifestUpdateResponsePart?.updateManifest else {
-          let body: [String: Any] = [:]
-          delegate.didFinishCheckingForUpdate(body)
-          block(body)
+          block([:])
+          postUpdateEventNotification(AppController.CheckForUpdate_Complete_NoUpdateAvailableEventName)
           return
         }
 
@@ -112,18 +111,17 @@ public final class UpdatesUtils: NSObject {
           let body = [
             "manifest": update.manifest.rawManifestJSON()
           ]
-          delegate.didFinishCheckingForUpdate(body)
           block(body)
+          postUpdateEventNotification(AppController.CheckForUpdate_Complete_UpdateAvailableEventName, body: body)
         } else {
-          let body: [String: Any] = [:]
-          delegate.didFinishCheckingForUpdate(body)
-          block(body)
+          block([:])
+          postUpdateEventNotification(AppController.CheckForUpdate_Complete_NoUpdateAvailableEventName)
         }
       } errorBlock: { error in
-        return handleCheckForUpdateError(error, block: block)
+        return handleAPIError(error, block: block)
       }
     } catch {
-      return handleCheckForUpdateError(error, block: block)
+      return handleAPIError(error, block: block)
     }
   }
 
@@ -132,7 +130,7 @@ public final class UpdatesUtils: NSObject {
    The UpdatesService is passed in when this is called from JS through UpdatesModule
    */
   public static func fetchUpdate(_ updatesService: (any EXUpdatesModuleInterface)?, _ block: @escaping ([String: Any]) -> Void) {
-    delegate.didStartLoadingUpdate()
+    postUpdateEventNotification(AppController.FetchUpdate_StartEventName)
     do {
       let constants = try startAPICall(updatesService)
       let remoteAppLoader = RemoteAppLoader(
@@ -168,15 +166,22 @@ public final class UpdatesUtils: NSObject {
           filters: updateResponse.responseHeaderData?.manifestFilters
         )
       } asset: { asset, successfulAssetCount, failedAssetCount, totalAssetCount in
-        delegate.didLoadAsset(asset: asset, successfulAssetCount: successfulAssetCount, failedAssetCount: failedAssetCount, totalAssetCount: totalAssetCount)
+        postUpdateEventNotification(AppController.FetchUpdate_AssetDownloadedEventName, body: [
+          "assetInfo": [
+            "assetName": asset.filename,
+            "successfulAssetCount": successfulAssetCount,
+            "failedAssetCount": failedAssetCount,
+            "totalAssetCount": totalAssetCount
+          ]
+        ])
       } success: { updateResponse in
         if updateResponse?.directiveUpdateResponsePart?.updateDirective is RollBackToEmbeddedUpdateDirective {
           let body = [
             "isNew": false,
             "isRollBackToEmbedded": true
           ]
-          delegate.didFinishLoadingUpdate(body)
           block(body)
+          postUpdateEventNotification(AppController.FetchUpdate_CompleteEventName, body: body)
           return
         } else {
           if let update = updateResponse?.manifestUpdateResponsePart?.updateManifest {
@@ -190,24 +195,24 @@ public final class UpdatesUtils: NSObject {
               "isRollBackToEmbedded": false,
               "manifest": update.manifest.rawManifestJSON()
             ]
-            delegate.didFinishLoadingUpdate(body)
             block(body)
+            postUpdateEventNotification(AppController.FetchUpdate_CompleteEventName, body: body)
             return
           } else {
             let body = [
               "isNew": false,
               "isRollBackToEmbedded": false
             ]
-            delegate.didFinishLoadingUpdate(body)
             block(body)
+            postUpdateEventNotification(AppController.FetchUpdate_CompleteEventName, body: body)
             return
           }
         }
       } error: { error in
-        return handleFetchUpdateError(error, block: block)
+        return handleAPIError(error, block: block)
       }
     } catch {
-      handleFetchUpdateError(error, block: block)
+      handleAPIError(error, block: block)
     }
   }
 
@@ -233,6 +238,10 @@ public final class UpdatesUtils: NSObject {
       // check will happen later on if there's an error
       return false
     }
+  }
+
+  internal static func postUpdateEventNotification(_ type: String, body: [AnyHashable: Any] = [:]) {
+    AppController.sharedInstance.postUpdateEventNotification(type, body: body)
   }
 
   internal static func getRuntimeVersion(withConfig config: UpdatesConfig) -> String {
@@ -310,18 +319,12 @@ public final class UpdatesUtils: NSObject {
   // MARK: - Private methods used by API calls
 
   /**
-   If any error occurs in checkForUpdate() or fetchUpdate(), these will call the
-   completion block and the AppController delegate
+   If any error occurs in checkForUpdate() or fetchUpdate(), this will call the
+   completion block and fire the error notification
    */
-  private static func handleCheckForUpdateError(_ error: Error, block: @escaping ([String: Any]) -> Void) {
+  private static func handleAPIError(_ error: Error, block: @escaping ([String: Any]) -> Void) {
     let body = ["message": error.localizedDescription]
-    delegate.didFinishCheckingForUpdate(body)
-    block(body)
-  }
-
-  private static func handleFetchUpdateError(_ error: Error, block: @escaping ([String: Any]) -> Void) {
-    let body = ["message": error.localizedDescription]
-    delegate.didFinishLoadingUpdate(body)
+    postUpdateEventNotification(AppController.ErrorEventName, body: body)
     block(body)
   }
 

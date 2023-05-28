@@ -16,14 +16,6 @@ public protocol AppControllerDelegate: AnyObject {
   func appController(_ appController: AppController, didStartWithSuccess success: Bool)
 }
 
-public protocol AppControllerJSAPIDelegate: AnyObject {
-  func didStartCheckingForUpdate()
-  func didFinishCheckingForUpdate(_ result: [String: Any])
-  func didStartLoadingUpdate()
-  func didLoadAsset(asset: UpdateAsset, successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int)
-  func didFinishLoadingUpdate(_ result: [String: Any])
-}
-
 /**
  * Main entry point to expo-updates in normal release builds (development clients, including Expo
  * Go, use a different entry point). Singleton that keeps track of updates state, holds references
@@ -43,7 +35,7 @@ public protocol AppControllerJSAPIDelegate: AnyObject {
  */
 @objc(EXUpdatesAppController)
 @objcMembers
-public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelegate, AppControllerJSAPIDelegate {
+public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelegate {
   private static let ErrorDomain = "EXUpdatesAppController"
   private static let EXUpdatesEventName = "Expo.nativeUpdatesEvent"
 
@@ -409,7 +401,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
   }
 
   public func handleUpdateEventNotification(notification: Notification) {
-    guard let body = notification.userInfo?["body"] as? [String: Any],
+    guard let body = notification.userInfo?["body"] as? [AnyHashable: Any],
       let type = notification.userInfo?["type"] as? String else {
       return
     }
@@ -425,56 +417,12 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     }
   }
 
-  public func postUpdateEventNotification(_ type: String, body: [String: Any] = [:]) {
+  public func postUpdateEventNotification(_ type: String, body: [AnyHashable: Any] = [:]) {
     NotificationCenter.default.post(
       name: Notification.Name(AppController.UpdateEventNotificationName),
       object: nil,
       userInfo: ["type": type, "body": body]
     )
-  }
-
-  // MARK: - AppControllerJSAPIDelegate
-
-  public func didStartCheckingForUpdate() {
-    postUpdateEventNotification(AppController.CheckForUpdate_StartEventName)
-  }
-
-  public func didFinishCheckingForUpdate(_ result: [String: Any]) {
-    if result["message"] != nil {
-      postUpdateEventNotification(AppController.CheckForUpdate_ErrorEventName, body: result)
-    } else if let manifest = result["manifest"] {
-      postUpdateEventNotification(AppController.CheckForUpdate_Complete_UpdateAvailableEventName, body: [
-        "isAvailable": true,
-        "manifest": manifest
-      ])
-    } else if result["isRollBackToEmbedded"] != nil {
-      postUpdateEventNotification(AppController.CheckForUpdate_Complete_UpdateAvailableEventName, body: result)
-    } else {
-      postUpdateEventNotification(AppController.CheckForUpdate_Complete_NoUpdateAvailableEventName)
-    }
-  }
-
-  public func didStartLoadingUpdate() {
-    postUpdateEventNotification(AppController.FetchUpdate_StartEventName)
-  }
-
-  public func didLoadAsset(asset: UpdateAsset, successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int) {
-    postUpdateEventNotification(AppController.FetchUpdate_AssetDownloadedEventName, body: [
-      "assetInfo": [
-        "assetName": asset.filename,
-        "successfulAssetCount": successfulAssetCount,
-        "failedAssetCount": failedAssetCount,
-        "totalAssetCount": totalAssetCount
-      ]
-    ])
-  }
-
-  public func didFinishLoadingUpdate(_ result: [String: Any]) {
-    if result["message"] != nil {
-      postUpdateEventNotification(AppController.FetchUpdate_ErrorEventName, body: result)
-    } else {
-      postUpdateEventNotification(AppController.FetchUpdate_CompleteEventName, body: result)
-    }
   }
 
   // MARK: - AppLoaderTaskDelegate
@@ -483,11 +431,11 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     return true
   }
 
-  public func appLoaderTask(_: AppLoaderTask, didStartCheckingForUpdate _: [String: Any]) {
+  public func appLoaderTask(_: AppLoaderTask, didStartCheckingForUpdate _: [AnyHashable: Any]) {
     postUpdateEventNotification(AppController.CheckOnLaunch_StartCheckEventName)
   }
 
-  public func appLoaderTask(_: AppLoaderTask, didFinishCheckingForUpdate body: [String: Any]) {
+  public func appLoaderTask(_: AppLoaderTask, didFinishCheckingForUpdate body: [AnyHashable: Any]) {
     postUpdateEventNotification(AppController.CheckOnLaunch_CompleteCheckEventName, body: body )
   }
 
