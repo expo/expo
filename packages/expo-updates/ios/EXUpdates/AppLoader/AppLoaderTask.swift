@@ -19,8 +19,8 @@ public protocol AppLoaderTaskDelegate: AnyObject {
    * AppLoaderTask proceed as usual.
    */
   func appLoaderTask(_: AppLoaderTask, didLoadCachedUpdate update: Update) -> Bool
-  func appLoaderTask(_: AppLoaderTask, didStartCheckingForUpdate body:[AnyHashable: Any])
-  func appLoaderTask(_: AppLoaderTask, didFinishCheckingForUpdate body: [AnyHashable: Any])
+  func appLoaderTask(_: AppLoaderTask, didStartCheckingForUpdate body:[String: Any])
+  func appLoaderTask(_: AppLoaderTask, didFinishCheckingForUpdate body: [String: Any])
   func appLoaderTask(_: AppLoaderTask, didStartLoadingUpdate update: Update)
   func appLoaderTask(_: AppLoaderTask, didLoadAsset asset: UpdateAsset, successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int)
   func appLoaderTask(_: AppLoaderTask, didFinishWithLauncher launcher: AppLauncher, isUpToDate: Bool)

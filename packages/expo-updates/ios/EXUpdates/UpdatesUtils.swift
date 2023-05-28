@@ -58,7 +58,7 @@ public final class UpdatesUtils: NSObject {
    The UpdatesService is passed in when this is called from JS through UpdatesModule
    */
   public static func checkForUpdate(_ block: @escaping ([String: Any]) -> Void) {
-    postUpdateEventNotification(AppController.CheckForUpdate_StartEventName)
+    sendStateEvent(AppController.CheckForUpdate_StartEventName)
     do {
       let constants = try startAPICall()
 
@@ -83,14 +83,14 @@ public final class UpdatesUtils: NSObject {
           switch updateDirective {
           case is NoUpdateAvailableUpdateDirective:
             block([:])
-            postUpdateEventNotification(AppController.CheckForUpdate_Complete_NoUpdateAvailableEventName)
+            sendStateEvent(AppController.CheckForUpdate_Complete_NoUpdateAvailableEventName)
             return
           case is RollBackToEmbeddedUpdateDirective:
             let body = [
               "isRollBackToEmbedded": true
             ]
             block(body)
-            postUpdateEventNotification(AppController.CheckForUpdate_Complete_UpdateAvailableEventName, body: body)
+            sendStateEvent(AppController.CheckForUpdate_Complete_UpdateAvailableEventName, body: body)
             return
           default:
             return handleAPIError(UpdatesUnsupportedDirectiveException(), block: block)
@@ -99,7 +99,7 @@ public final class UpdatesUtils: NSObject {
 
         guard let update = updateResponse.manifestUpdateResponsePart?.updateManifest else {
           block([:])
-          postUpdateEventNotification(AppController.CheckForUpdate_Complete_NoUpdateAvailableEventName)
+          sendStateEvent(AppController.CheckForUpdate_Complete_NoUpdateAvailableEventName)
           return
         }
 
@@ -112,10 +112,10 @@ public final class UpdatesUtils: NSObject {
             "manifest": update.manifest.rawManifestJSON()
           ]
           block(body)
-          postUpdateEventNotification(AppController.CheckForUpdate_Complete_UpdateAvailableEventName, body: body)
+          sendStateEvent(AppController.CheckForUpdate_Complete_UpdateAvailableEventName, body: body)
         } else {
           block([:])
-          postUpdateEventNotification(AppController.CheckForUpdate_Complete_NoUpdateAvailableEventName)
+          sendStateEvent(AppController.CheckForUpdate_Complete_NoUpdateAvailableEventName)
         }
       } errorBlock: { error in
         return handleAPIError(error, block: block)
@@ -130,7 +130,7 @@ public final class UpdatesUtils: NSObject {
    The UpdatesService is passed in when this is called from JS through UpdatesModule
    */
   public static func fetchUpdate(_ block: @escaping ([String: Any]) -> Void) {
-    postUpdateEventNotification(AppController.FetchUpdate_StartEventName)
+    sendStateEvent(AppController.FetchUpdate_StartEventName)
     do {
       let constants = try startAPICall()
       let remoteAppLoader = RemoteAppLoader(
@@ -166,7 +166,7 @@ public final class UpdatesUtils: NSObject {
           filters: updateResponse.responseHeaderData?.manifestFilters
         )
       } asset: { asset, successfulAssetCount, failedAssetCount, totalAssetCount in
-        postUpdateEventNotification(AppController.FetchUpdate_AssetDownloadedEventName, body: [
+        sendStateEvent(AppController.FetchUpdate_AssetDownloadedEventName, body: [
           "assetInfo": [
             "assetName": asset.filename,
             "successfulAssetCount": successfulAssetCount,
@@ -181,7 +181,7 @@ public final class UpdatesUtils: NSObject {
             "isRollBackToEmbedded": true
           ]
           block(body)
-          postUpdateEventNotification(AppController.FetchUpdate_CompleteEventName, body: body)
+          sendStateEvent(AppController.FetchUpdate_CompleteEventName, body: body)
           return
         } else {
           if let update = updateResponse?.manifestUpdateResponsePart?.updateManifest {
@@ -192,7 +192,7 @@ public final class UpdatesUtils: NSObject {
               "manifest": update.manifest.rawManifestJSON()
             ] as [String : Any]
             block(body)
-            postUpdateEventNotification(AppController.FetchUpdate_CompleteEventName, body: body)
+            sendStateEvent(AppController.FetchUpdate_CompleteEventName, body: body)
             return
           } else {
             let body = [
@@ -200,7 +200,7 @@ public final class UpdatesUtils: NSObject {
               "isRollBackToEmbedded": false
             ]
             block(body)
-            postUpdateEventNotification(AppController.FetchUpdate_CompleteEventName, body: body)
+            sendStateEvent(AppController.FetchUpdate_CompleteEventName, body: body)
             return
           }
         }
@@ -236,8 +236,8 @@ public final class UpdatesUtils: NSObject {
     }
   }
 
-  internal static func postUpdateEventNotification(_ type: String, body: [AnyHashable: Any] = [:]) {
-    AppController.sharedInstance.postUpdateEventNotification(type, body: body)
+  internal static func sendStateEvent(_ type: String, body: [String: Any] = [:]) {
+    AppController.sharedInstance.state.handleEvent(type, body: body)
   }
 
   internal static func getRuntimeVersion(withConfig config: UpdatesConfig) -> String {
@@ -320,7 +320,7 @@ public final class UpdatesUtils: NSObject {
    */
   private static func handleAPIError(_ error: Error, block: @escaping ([String: Any]) -> Void) {
     let body = ["message": error.localizedDescription]
-    postUpdateEventNotification(AppController.ErrorEventName, body: body)
+    sendStateEvent(AppController.ErrorEventName, body: body)
     block(body)
   }
 

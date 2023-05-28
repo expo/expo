@@ -117,6 +117,8 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
   internal let assetFilesQueue: DispatchQueue
   public internal(set) var isStarted: Bool
 
+  public var state: UpdatesState
+
   private var loaderTask: AppLoaderTask?
   private var candidateLauncher: AppLauncher?
 
@@ -154,10 +156,13 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     self.isEmergencyLaunch = false
     self.logger = UpdatesLogger()
     self.logger.info(message: "AppController sharedInstance created")
+    self.state = UpdatesState()
 
     super.init()
 
     self.errorRecovery.delegate = self
+    self.state.appController = self
+
   }
 
   /**
@@ -263,7 +268,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     isStarted = true
 
     purgeUpdatesLogsOlderThanOneDay()
-    initializeUpdateEventNotificationHandler()
+
     initializeShouldCheckForUpdateNotificationHandler()
 
     do {
@@ -380,68 +385,23 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     )
   }
 
-  // MARK: - Notifications for UpdateEvents
-
-  /**
-   Observer for notifications that events of interest have occurred during a
-   check for update or downloading an update.
-
-   For now, we only have the three types of events that occur during the app startup
-   check for updates, and we immediately send the event to the JS bridge as an
-   UpdateEvent, so there is no functional change. This means that the notifications
-   are only used at present by the AppLoaderTask delegate method didFinishBackgroundUpdateWithStatus().
-
-   In future, these notifications will support more event types and will be used
-   to help construct the complete state of the updates module in a form that can be
-   read at the JS layer.
-   */
-  private func initializeUpdateEventNotificationHandler() {
-    // Use notifications to allow other parts of expo-updates to send UpdateEvents
-    NotificationCenter.default.addObserver(self, selector: #selector(handleUpdateEventNotification(notification:)), name: Notification.Name(AppController.UpdateEventNotificationName), object: nil)
-  }
-
-  public func handleUpdateEventNotification(notification: Notification) {
-    guard let body = notification.userInfo?["body"] as? [AnyHashable: Any],
-      let type = notification.userInfo?["type"] as? String else {
-      return
-    }
-    if type == AppController.UpdateAvailableEventName ||
-      type == AppController.NoUpdateAvailableEventName ||
-      type == AppController.ErrorEventName {
-      // For the three legacy UpdateEvent types, we send the events to JS
-      sendEventToBridge(type, body: body)
-    } else {
-      // TODO: use these events to construct the state
-      // For now, log the other events
-      logger.info(message: "UpdateEvent notification \(type), body = \(body)")
-    }
-  }
-
-  public func postUpdateEventNotification(_ type: String, body: [AnyHashable: Any] = [:]) {
-    NotificationCenter.default.post(
-      name: Notification.Name(AppController.UpdateEventNotificationName),
-      object: nil,
-      userInfo: ["type": type, "body": body]
-    )
-  }
-
   // MARK: - AppLoaderTaskDelegate
 
   public func appLoaderTask(_: AppLoaderTask, didLoadCachedUpdate update: Update) -> Bool {
     return true
   }
 
-  public func appLoaderTask(_: AppLoaderTask, didStartCheckingForUpdate _: [AnyHashable: Any]) {
-    postUpdateEventNotification(AppController.CheckOnLaunch_StartCheckEventName)
+  public func appLoaderTask(_: AppLoaderTask, didStartCheckingForUpdate _: [String: Any]) {
+    state.handleEvent(AppController.CheckOnLaunch_StartCheckEventName)
   }
 
-  public func appLoaderTask(_: AppLoaderTask, didFinishCheckingForUpdate body: [AnyHashable: Any]) {
-    postUpdateEventNotification(AppController.CheckOnLaunch_CompleteCheckEventName, body: body )
+  public func appLoaderTask(_: AppLoaderTask, didFinishCheckingForUpdate body: [String: Any]) {
+    state.handleEvent(AppController.CheckOnLaunch_CompleteCheckEventName, body: body )
   }
 
   public func appLoaderTask(_: AppLoaderTask, didStartLoadingUpdate update: Update) {
     logger.info(message: "AppController appLoaderTask didStartLoadingUpdate", code: .none, updateId: update.loggingId(), assetId: nil)
-    postUpdateEventNotification(AppController.CheckOnLaunch_StartDownloadEventName)
+    state.handleEvent(AppController.CheckOnLaunch_StartDownloadEventName)
     remoteLoadStatus = .Loading
   }
 
@@ -484,7 +444,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
       updateId: nil,
       assetId: asset.contentHash
     )
-    postUpdateEventNotification(AppController.CheckOnLaunch_AssetDownloadedEventName, body: body)
+    state.handleEvent(AppController.CheckOnLaunch_AssetDownloadedEventName, body: body)
   }
 
   public func appLoaderTask(_: AppLoaderTask, didFinishWithError error: Error) {
@@ -493,9 +453,9 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     let body = [
       "message": error.localizedDescription
     ]
-    postUpdateEventNotification(AppController.CheckOnLaunch_ErrorEventName, body: body)
+    state.handleEvent(AppController.CheckOnLaunch_ErrorEventName, body: body)
     // Until state is implemented, we fire the notification below to send UpdateEvents to JS
-    postUpdateEventNotification(AppController.ErrorEventName, body: body)
+    state.handleEvent(AppController.ErrorEventName, body: body)
     emergencyLaunch(fatalError: error as NSError)
   }
 
@@ -520,9 +480,9 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
       let body = [
         "message": error.localizedDescription
       ]
-      postUpdateEventNotification(AppController.CheckOnLaunch_ErrorEventName, body: body)
+      state.handleEvent(AppController.CheckOnLaunch_ErrorEventName, body: body)
       // Until state is implemented, we fire the notification below to send UpdateEvents to JS
-      postUpdateEventNotification(AppController.ErrorEventName, body: body)
+      state.handleEvent(AppController.ErrorEventName, body: body)
     case .updateAvailable:
       remoteLoadStatus = .NewUpdateLoaded
       guard let update = update else {
@@ -537,9 +497,9 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
       let body = [
         "manifest": update.manifest.rawManifestJSON()
       ]
-      postUpdateEventNotification(AppController.CheckOnLaunch_CompleteDownloadEventName, body: body)
+      state.handleEvent(AppController.CheckOnLaunch_CompleteDownloadEventName, body: body)
       // Until state is implemented, we fire the notification below to send UpdateEvents to JS
-      postUpdateEventNotification(AppController.UpdateAvailableEventName, body: body)
+      state.handleEvent(AppController.UpdateAvailableEventName, body: body)
     case .noUpdateAvailable:
       remoteLoadStatus = .Idle
       logger.info(
@@ -549,7 +509,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
         assetId: nil
       )
       // Until state is implemented, we fire the notification below to send UpdateEvents to JS
-      postUpdateEventNotification(AppController.NoUpdateAvailableEventName)
+      state.handleEvent(AppController.NoUpdateAvailableEventName)
     }
 
     errorRecovery.notify(newRemoteLoadStatus: remoteLoadStatus)
