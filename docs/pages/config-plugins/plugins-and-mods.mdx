@@ -65,7 +65,7 @@ You may want to create a plugin in a different file, here's how:
 Consider the following example that changes the config name:
 
 ```
-╭── app.config.js ➡️ app Config
+╭── app.config.js ➡️ App config
 ╰── my-plugin.js ➡️ Our custom plugin file
 ```
 
@@ -348,7 +348,7 @@ If an **app.plugin.js** file is present in the root of a Node module's folder, i
 - <NoIcon /> `'expo-splash-screen/app.plugin.js'`
 
 ```
-╭── app.config.js ➡️ app config
+╭── app.config.js ➡️ App config
 ╰── node_modules/expo-splash-screen/ ➡️ Module installed from NPM (works with Yarn workspaces as well).
     ├── package.json ➡️ The `main` file will be used if **app.plugin.js** doesn't exist.
     ├── app.plugin.js ➡️ ✅ `module.exports = (config) => config` -- must export a function.

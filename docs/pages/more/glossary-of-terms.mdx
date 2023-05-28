@@ -275,7 +275,7 @@ By default, platform extensions are resolved in `@expo/metro-config` using the f
 
 ### Prebuild
 
-The process of generating the temporary native `/ios` and `/android` folders for a React Native project based on the [app Config](#app-config). This process is performed by running the command `npx expo prebuild` from [Expo CLI](#expo-cli) in a project directory.
+The process of generating the temporary native **android** and **ios** folders for a React Native project based on the [app config](#app-config). This process is performed by running the command `npx expo prebuild` from [Expo CLI](#expo-cli) in a project directory.
 
 See also:
 
@@ -284,7 +284,7 @@ See also:
 
 ### Prebuild Template
 
-The React Native project template that is used as the first step of [Prebuilding](#prebuild). This template is versioned with the [Expo SDK](#expo-sdk), and the template is chosen based on the installed version of `expo` in a project. After the template is cloned, `npx expo prebuild` will evaluate the [app Config](#app-config) and run the [Config mods](#config-mods) which modify various files in the template.
+The React Native project template that is used as the first step of [Prebuilding](#prebuild). This template is versioned with the [Expo SDK](#expo-sdk), and the template is chosen based on the installed version of `expo` in a project. After the template is cloned, `npx expo prebuild` will evaluate the [app config](#app-config) and run the [Config mods](#config-mods) which modify various files in the template.
 
 Although the template can be changed by using the `npx expo prebuild --template /path/to/template` flag, the default prebuild template contains important initial defaults that the `npx expo prebuild` command makes assumptions about.
 
