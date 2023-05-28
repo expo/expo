@@ -272,7 +272,12 @@ public final class CameraViewModule: Module {
   }
 }
 
-private func takePictureForSimulator(_ appContext: AppContext?, _ view: ExpoCamera, _ options: TakePictureOptions, _ promise: Promise) throws {
+private func takePictureForSimulator(
+  _ appContext: AppContext?,
+  _ view: ExpoCamera,
+  _ options: TakePictureOptions,
+  _ promise: Promise
+) throws {
   if options.fastMode {
     promise.resolve()
   }
@@ -288,11 +293,17 @@ private func takePictureForSimulator(_ appContext: AppContext?, _ view: ExpoCame
   }
 }
 
-private func generatePictureForSimulator(appContext: AppContext?, options: TakePictureOptions) throws -> [String: Any?] {
-  guard let fs = appContext?.fileSystem else {
+private func generatePictureForSimulator(
+  appContext: AppContext?,
+  options: TakePictureOptions
+) throws -> [String: Any?] {
+  guard let fileSystem = appContext?.fileSystem else {
     throw Exceptions.FileSystemModuleNotFound()
   }
-  let path = fs.generatePath(inDirectory: fs.cachesDirectory.appending("/Camera"), withExtension: ".jpg")
+  let path = fileSystem.generatePath(
+    inDirectory: fileSystem.cachesDirectory.appending("/Camera"),
+    withExtension: ".jpg"
+  )
   let generatedPhoto = ExpoCameraUtils.generatePhoto(of: CGSize(width: 200, height: 200))
   guard let photoData = generatedPhoto.jpegData(compressionQuality: options.quality) else {
     throw CameraInvalidPhotoData()

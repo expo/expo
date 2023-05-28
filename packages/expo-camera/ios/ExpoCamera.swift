@@ -3,9 +3,8 @@ import ExpoModulesCore
 import CoreMotion
 
 // swiftlint:disable:next type_body_length
-public class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
-  AVCaptureFileOutputRecordingDelegate, AVCaptureMetadataOutputObjectsDelegate,
-  AVCapturePhotoCaptureDelegate {
+class ExpoCamera: ExpoView, EXCameraInterface, AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCaptureDelegate {
+
   public var session = AVCaptureSession()
   public var sessionQueue = DispatchQueue(label: "captureSessionQueue")
   private var motionManager = CMMotionManager()
@@ -342,25 +341,6 @@ public class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
     }
   }
 
-  public func onAppForegrounded() {
-    if !session.isRunning && isSessionRunning {
-      isSessionRunning = false
-      sessionQueue.async {
-        self.session.startRunning()
-        self.ensureSessionConfiguration()
-      }
-    }
-  }
-
-  public func onAppBackgrounded() {
-    if session.isRunning && !isSessionRunning {
-      isSessionRunning = true
-      sessionQueue.async {
-        self.session.stopRunning()
-      }
-    }
-  }
-
   func setBarCodeScannerSettings(settings: [String: Any]) {
     if let barCodeScanner {
       barCodeScanner.setSettings(settings)
@@ -376,23 +356,23 @@ public class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
   func updateResponsiveOrientation() {
     if responsiveWhenOrientationLocked {
       motionManager.startAccelerometerUpdates(to: OperationQueue()) { [weak self] _, error in
-        guard let self, let accelerometerData = self.motionManager.accelerometerData else {
+        if error != nil {
           return
         }
-
-        guard error == nil else {
-          self.motionManager.stopAccelerometerUpdates()
+        guard let self, let accelerometerData = self.motionManager.accelerometerData else {
           return
         }
 
         let deviceOrientation = ExpoCameraUtils.deviceOrientation(
           for: accelerometerData,
-          defaultOrientation: physicalOrientation)
+          default: physicalOrientation)
         if deviceOrientation != self.physicalOrientation {
           self.physicalOrientation = deviceOrientation
           onResponsiveOrientationChanged(["orientation": deviceOrientation.rawValue])
         }
       }
+    } else {
+      motionManager.stopAccelerometerUpdates()
     }
   }
 
@@ -457,11 +437,6 @@ public class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
 
     guard let rawSampleBuffer, error != nil else {
       promise.reject(CameraImageCaptureException())
-      return
-    }
-
-    if fileSystem == nil {
-      promise.reject(Exceptions.FileSystemModuleNotFound())
       return
     }
 
@@ -665,12 +640,10 @@ public class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
       sessionQueue.async {
         let directory = fileSystem.cachesDirectory.appending("/Camera")
         let path = fileSystem.generatePath(inDirectory: directory, withExtension: ".mov")
-        let fileUrl = NSURL(fileURLWithPath: path)
+        let fileUrl = URL(fileURLWithPath: path)
         self.videoRecordedPromise = promise
 
-        if let outputURL = fileUrl.filePathURL {
-          videoFileOutput.startRecording(to: outputURL, recordingDelegate: self)
-        }
+        videoFileOutput.startRecording(to: fileUrl, recordingDelegate: self)
       }
     }
   }
@@ -984,6 +957,27 @@ public class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
 
     if let errorNotification {
       NotificationCenter.default.removeObserver(errorNotification)
+    }
+  }
+}
+
+extension ExpoCamera: EXAppLifecycleListener {
+  public func onAppForegrounded() {
+    if !session.isRunning && isSessionRunning {
+      isSessionRunning = false
+      sessionQueue.async {
+        self.session.startRunning()
+        self.ensureSessionConfiguration()
+      }
+    }
+  }
+
+  public func onAppBackgrounded() {
+    if session.isRunning && !isSessionRunning {
+      isSessionRunning = true
+      sessionQueue.async {
+        self.session.stopRunning()
+      }
     }
   }
 }

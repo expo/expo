@@ -7,8 +7,8 @@ struct ExpoCameraUtils {
   }
 
   static func deviceOrientation(
-    for accelerometerData: CMAccelerometerData, 
-    defaultOrientation: UIDeviceOrientation
+    for accelerometerData: CMAccelerometerData,
+    default orientation: UIDeviceOrientation
     ) -> UIDeviceOrientation {
     if accelerometerData.acceleration.x >= 0.75 {
       return .landscapeRight
@@ -23,7 +23,7 @@ struct ExpoCameraUtils {
       return .portraitUpsideDown
     }
 
-    return defaultOrientation
+    return orientation
 }
 
   static func videoOrientation(for interfaceOrientaion: UIInterfaceOrientation) -> AVCaptureVideoOrientation {
@@ -110,15 +110,17 @@ struct ExpoCameraUtils {
     guard let croppedCgImage = cgImage?.cropping(to: rect) else {
       return image
     }
-    return UIImage(cgImage: croppedCgImage)
+    return UIImage(cgImage: croppedCgImage, scale: image.scale, orientation: image.imageOrientation)
   }
 
   static func write(data: Data, to path: String) -> String? {
-    guard let url = NSURL(fileURLWithPath: path).absoluteURL else {
+    let url = URL(fileURLWithPath: path)
+    do {
+      try data.write(to: url, options: .atomic)
+      return url.absoluteString
+    } catch {
       return nil
     }
-    try? data.write(to: url, options: .atomic)
-    return url.absoluteString
   }
 
   static func data(from image: UIImage, with metadata: NSDictionary, quality: Float) -> Data? {
