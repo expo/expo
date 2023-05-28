@@ -183,7 +183,7 @@ Note that aliases, resolution, and other bundler features are now universal acro
 
 ### Adding Web support to Metro
 
-To enable Metro web support, make sure your project is using Expo SDK 46 or newer. Then modify your [Expo config](/workflow/configuration) to enable the feature using the `expo.web.bundler` field:
+To enable Metro web support, make sure your project is using Expo SDK 46 or newer. Then modify your [app config](/workflow/configuration) to enable the feature using the `expo.web.bundler` field:
 
 ```json app.json
 {
@@ -241,9 +241,8 @@ You can overwrite the default **index.html** in Metro web by creating a **public
 
 In the future, this will work universally across platforms with EAS Update hosting. Currently, the feature is web-only based on the static host used for the native app, for example, the legacy Expo service updates do not support this feature.
 
-{/*
-
-## TypeScript
+{/* prettier-ignore */}
+{/* ## TypeScript
 
 > Available since SDK 49.
 
@@ -255,6 +254,4 @@ These feature requires additional setup in bare projects. See the [versioned Met
 
 > Since SDK 49.
 
-See the versioned [CSS guide](/versions/latest/config/metro#css) for more information.
-
-*/}
+See the versioned [CSS guide](/versions/latest/config/metro#css) for more information. \*/}

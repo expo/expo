@@ -1,6 +1,6 @@
 ---
 title: Configuration with app.json/app.config.js
-description: Learn about what is Expo config and how you can dynamically use it by customizing it.
+description: Learn about what is app config and how you can dynamically use it by customizing it.
 ---
 
 import PossibleRedirectNotification from '~/components/plugins/PossibleRedirectNotification';
@@ -8,7 +8,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 <PossibleRedirectNotification newUrl="/versions/latest/config/app/" />
 
-The Expo config (**app.json**, **app.config.js**, **app.config.ts**) is used for configuring how a project loads in [Expo Go](/get-started/expo-go/), [Expo Prebuild](/workflow/prebuild) generation, and the OTA update manifest. You can think of this as an `index.html` but for React Native apps.
+The app config (**app.json**, **app.config.js**, **app.config.ts**) is used for configuring how a project loads in [Expo Go](/get-started/expo-go/), [Expo Prebuild](/workflow/prebuild) generation, and the OTA update manifest. You can think of this as an `index.html` but for React Native apps.
 
 It must be located at the root of your project, next to the **package.json**. Here is a bare-minimum example:
 
@@ -21,17 +21,17 @@ It must be located at the root of your project, next to the **package.json**. He
 }
 ```
 
-Most configuration from the Expo config is accessible at runtime from the JavaScript code using [`Constants.expoConfig`](/versions/latest/sdk/constants/#nativeconstants--properties). Sensitive information such as secret keys are removed.
+Most configuration from the app config is accessible at runtime from the JavaScript code using [`Constants.expoConfig`](/versions/latest/sdk/constants/#nativeconstants--properties). Sensitive information such as secret keys are removed.
 
 ## Properties
 
-The Expo config configures many things such as app name, icon, splash screen, deep linking scheme, API keys to use for some services and so on. For a complete list of available properties, see [app.json/app.config.js reference](/versions/latest/config/app/).
+The app config configures many things such as app name, icon, splash screen, deep linking scheme, API keys to use for some services and so on. For a complete list of available properties, see [app.json/app.config.js reference](/versions/latest/config/app/).
 
 > **info** Do you use Visual Studio Code? If so, we recommend that you install the [vscode-expo](https://marketplace.visualstudio.com/items?itemName=expo.vscode-expo-tools) extension to get auto-completion of properties in **app.json** files.
 
 ## Extending configuration
 
-Library authors can extend the Expo config by using [Expo Config plugins](/config-plugins/introduction/).
+Library authors can extend the app config by using [Expo Config plugins](/config-plugins/introduction/).
 
 > **info** Config plugins are mostly used to configure the [`npx expo prebuild`](/workflow/prebuild) command.
 

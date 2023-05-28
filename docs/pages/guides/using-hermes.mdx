@@ -13,13 +13,13 @@ import { Collapsible } from '~/ui/components/Collapsible';
 The Hermes engine is the default JavaScript engine used by Expo and it is fully supported across all Expo tooling. See the table below to check if your project is using a compatible version:
 
 | Platform | Expo Go | [Development Builds](/develop/development-builds/introduction/) |
-| -------- | ------- | ----------------------------------------------- |
-| Android  | SDK 42  | SDK 42                                          |
-| iOS      | SDK 47  | SDK 43                                          |
+| -------- | ------- | --------------------------------------------------------------- |
+| Android  | SDK 42  | SDK 42                                                          |
+| iOS      | SDK 47  | SDK 43                                                          |
 
 <Collapsible summary="Using SDK 47 or lower?">
 
-For SDK 47 and lower, JSC is the default JavaScript engine and to use Hermes you need to add the `jsEngine` field in [Expo config](/workflow/configuration):
+For SDK 47 and lower, JSC is the default JavaScript engine and to use Hermes you need to add the `jsEngine` field in [app config](/workflow/configuration):
 
 {/* prettier-ignore */}
 ```js
