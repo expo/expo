@@ -16,6 +16,7 @@ The `expo-updates` library supports end-to-end code signing. Code signing allows
 ## Code Signing with EAS Update
 
 <Step label="1">
+
 Generate a private key and corresponding code signing certificate for your app:
 
 <Terminal
@@ -24,7 +25,7 @@ Generate a private key and corresponding code signing certificate for your app:
     '  --key-output-directory keys \\',
     '  --certificate-output-directory certs \\',
     '  --certificate-validity-duration-years 10 \\',
-    '  --certificate-common-name "My App"'
+    '  --certificate-common-name "My App"',
   ]}
   cmdCopy='npx expo-updates codesigning:generate --key-output-directory keys --certificate-output-directory certs --certificate-validity-duration-years 10 --certificate-common-name "My App"'
 />
@@ -34,31 +35,45 @@ Generate a private key and corresponding code signing certificate for your app:
   - A shorter validity duration will require [key rotation](#key-rotation) more frequently but is considered better practice since a compromised private key will have a sooner expiration which limits exposure.
   - Shorter validity durations add overhead to your app's release process as the key must be rotated more frequently. Binaries with expired certificates won't apply new updates.
   - For example, Expo sets this value to 20 years for the public Expo Go app, but only 1 year for internal apps with binaries that are distributed more frequently. We plan to rotate our keys every 10 years.
+
 </Step>
 
 <Step label="2">
+
 Configure your app's builds to use code signing:
 
-<Terminal cmd={[
-  'npx expo-updates codesigning:configure \\',
-  '  --certificate-input-directory certs \\',
-  '  --key-input-directory keys'
-]} cmdCopy="npx expo-updates codesigning:configure --certificate-input-directory certs --key-input-directory keys" />
+<Terminal
+  cmd={[
+    'npx expo-updates codesigning:configure \\',
+    '  --certificate-input-directory certs \\',
+    '  --key-input-directory keys',
+  ]}
+  cmdCopy="npx expo-updates codesigning:configure --certificate-input-directory certs --key-input-directory keys"
+/>
 
 After this step, create a new build with a new runtime version. The code signing certificate will be embedded in this new build.
 
 </Step>
 
 <Step label="3">
+
 Publish a signed update for your app:
 
 <Terminal cmd={['eas update --private-key-path keys/private-key.pem']} />
 
 During `eas update`, the EAS CLI automatically detects that code signing is configured for your app. It then verifies the integrity of the update and creates a digital signature using your private key. This process is performed locally so that your private key never leaves your machine. The generated signature is automatically sent to EAS to store alongside the update.
+
 </Step>
 
 <Step label="4">
-Download the update on the client (this step is done automatically by the library). The build from step (2) that is configured for code signing checks if there is a new update available. The server responds with the update published in step (3) and its generated signature. After being downloaded but before being applied, the update is verified against the embedded certificate and included signature. The update is applied if the certificate and signature are valid, and rejected otherwise.
+
+Download the update on the client (this step is done automatically by the library). The build from
+step (2) that is configured for code signing checks if there is a new update available. The server
+responds with the update published in step (3) and its generated signature. After being downloaded
+but before being applied, the update is verified against the embedded certificate and included
+signature. The update is applied if the certificate and signature are valid, and rejected
+otherwise.
+
 </Step>
 
 ## Key Rotation
@@ -81,5 +96,5 @@ In any of these cases, the procedure is similar:
 The process of removing code signing from an app is similar to [key rotation](#key-rotation) and can be thought of as a key rotation to a `null` key.
 
 1. Backup the old key and certificate that were generated in step (1) above.
-2. Remove the `updates.codeSigningMetadata` field from your Expo config (**app.json**).
+2. Remove the `updates.codeSigningMetadata` field from your app config (**app.json**).
 3. The new certificate-less app is a new distinct runtime, so a new runtime version should be set for builds to ensure that only unsigned updates run in the new build.

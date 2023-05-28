@@ -91,7 +91,7 @@ as this will perform automatic validation on the plugins and surface error infor
 
 You can develop plugins easily using JS, but if you want to setup Jest tests and use TypeScript, you will want a monorepo.
 
-A monorepo will enable you to work on a node module and import it in your Expo config like you would if it were published to npm.
+A monorepo will enable you to work on a node module and import it in your app config like you would if it were published to npm.
 Expo config plugins have full monorepo support built-in so all you need to do is setup a project.
 
 In your monorepo's `packages/` folder, create a module, and [bootstrap a config plugin](https://github.com/expo/expo/tree/main/packages/expo-module-scripts#-config-plugin) in it.
@@ -243,7 +243,7 @@ export default createRunOncePlugin(
 - **Naming conventions**: Use `withFeatureName` if cross-platform. If the plugin is platform specific, use a camel case naming with the platform right after “with”. For example, `withAndroidSplash`, `withIosSplash`.
   There is no universally agreed upon casing for `iOS` in camel cased identifiers, we prefer this style and suggest using it for your config plugins too.
 - **Leverage built-in plugins**: Account for built-in plugins from the [prebuild config](https://github.com/expo/expo-cli/blob/master/packages/prebuild-config/src/plugins/withDefaultPlugins.ts).
-  Some features are included for historical reasons, like the ability to automatically copy and link [Google services files](https://github.com/expo/expo-cli/blob/3a0ef962a27525a0fe4b7e5567fb7b3fb18ec786/packages/config-plugins/src/ios/Google.ts#L15) defined in the Expo config.
+  Some features are included for historical reasons, like the ability to automatically copy and link [Google services files](https://github.com/expo/expo-cli/blob/3a0ef962a27525a0fe4b7e5567fb7b3fb18ec786/packages/config-plugins/src/ios/Google.ts#L15) defined in the app config.
   If there is overlap, then maybe recommend the user uses the built-in types to keep your plugin as simple as possible.
 - **Split up plugins by platform**: For example — `withIosSplash`, `withAndroidSplash`. This makes using the `--platform` flag in `npx expo prebuild` a bit easier to follow in `EXPO_DEBUG` mode.
 - **Unit test your plugin**: Write Jest tests for complex modifications. If your plugin requires access to the filesystem,
@@ -281,7 +281,7 @@ interface StaticObject {
 }
 ```
 
-Static properties are required because the Expo config must be serializable to JSON for use as the app manifest.
+Static properties are required because the app config must be serializable to JSON for use as the app manifest.
 Static properties can also enable tooling that generates JSON schema type checking for autocomplete and IntelliSense.
 
 If possible, attempt to make your plugin work without props, this will help resolution tooling like [`expo install`](#expo-install) or [VS Code Expo Tools][vscode-expo] work better.
@@ -442,7 +442,7 @@ Introspection only supports a subset of modifiers:
 > Introspection only works on safe modifiers (static files like JSON, XML, plist, properties), with the exception of `ios.xcodeproj` which often requires file system changes, making it non idempotent.
 
 Introspection works by creating custom base mods that work like the default base mods, except they don't write the `modResults` to disk at the end.
-Instead of persisting, they save the results to the Expo config under `_internal.modResults`, followed by the name of the mod
+Instead of persisting, they save the results to the app config under `_internal.modResults`, followed by the name of the mod
 such as the `ios.infoPlist` mod saves to `_internal.modResults.ios.infoPlist: {}`.
 
 As a real-world example, introspection is used by `eas-cli` to determine what the final iOS entitlements will be in a managed app,
@@ -658,7 +658,7 @@ For more info, see [the PR that adds support](https://github.com/expo/expo-cli/p
 
 ## expo install
 
-Node modules with config plugins can be added to the project's Expo config automatically by using the `expo install` command. [Related PR](https://github.com/expo/expo-cli/pull/3437).
+Node modules with config plugins can be added to the project's app config automatically by using the `expo install` command. [Related PR](https://github.com/expo/expo-cli/pull/3437).
 
 This makes setup a bit easier and helps prevent users from forgetting to add a plugin.
 
@@ -666,12 +666,12 @@ This does come with a couple of caveats:
 
 1. Packages must export a plugin via **app.plugin.js**, this rule was added to prevent popular packages like `lodash` from being mistaken for a config plugin and breaking the prebuild.
 2. There is currently no mechanism for detecting if a config plugin has mandatory props. Because of this, `expo install` will only add the plugin, and not attempt to add any extra props. For example, `expo-camera` has optional extra props, so `plugins: ['expo-camera']` is valid, but if it had mandatory props then `expo-camera` would throw an error.
-3. Plugins can only be automatically added when the user's project uses a static Expo config (**app.json** and **app.config.json**).
+3. Plugins can only be automatically added when the user's project uses a static app config (**app.json** and **app.config.json**).
    If the user runs `expo install expo-camera` in a project with an **app.config.js**, they'll see a warning like:
 
 ```
 Cannot automatically write to dynamic config at: app.config.js
-Please add the following to your Expo config
+Please add the following to your app config
 
 {
   "plugins": [
