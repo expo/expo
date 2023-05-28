@@ -139,7 +139,7 @@ struct ExpoCameraUtils {
 
     updatedMetadata.setObject(NSNumber(value: quality), forKey: kCGImageDestinationLossyCompressionQuality as NSString)
     let processedImageData = NSMutableData()
-    
+
     guard let sourceType = CGImageSourceGetType(sourceCGImageSourceRef) else {
       return nil
     }
@@ -164,17 +164,17 @@ struct ExpoCameraUtils {
 
   static func updateExif(metadata: NSDictionary, with additionalData: NSDictionary) -> NSMutableDictionary {
     let mutableMetadata = NSMutableDictionary(dictionary: metadata)
-    
+
     for (key, value) in additionalData {
       mutableMetadata[key] = value
     }
-    
+
     if let gps = mutableMetadata[kCGImagePropertyGPSDictionary as NSString] as? [String: Any] {
       for (gpsKey, gpsValue) in gps {
         mutableMetadata["GPS" + gpsKey] = gpsValue
       }
     }
-    
+
     return mutableMetadata
   }
 }
