@@ -57,10 +57,10 @@ public final class UpdatesUtils: NSObject {
    The implementation of checkForUpdateAsync().
    The UpdatesService is passed in when this is called from JS through UpdatesModule
    */
-  public static func checkForUpdate(_ updatesService: (any EXUpdatesModuleInterface)?, _ block: @escaping ([String: Any]) -> Void) {
+  public static func checkForUpdate(_ block: @escaping ([String: Any]) -> Void) {
     postUpdateEventNotification(AppController.CheckForUpdate_StartEventName)
     do {
-      let constants = try startAPICall(updatesService)
+      let constants = try startAPICall()
 
       var extraHeaders: [String: Any] = [:]
       constants.database.databaseQueue.sync {
@@ -129,10 +129,10 @@ public final class UpdatesUtils: NSObject {
    The implementation of fetchUpdateAsync().
    The UpdatesService is passed in when this is called from JS through UpdatesModule
    */
-  public static func fetchUpdate(_ updatesService: (any EXUpdatesModuleInterface)?, _ block: @escaping ([String: Any]) -> Void) {
+  public static func fetchUpdate(_ block: @escaping ([String: Any]) -> Void) {
     postUpdateEventNotification(AppController.FetchUpdate_StartEventName)
     do {
-      let constants = try startAPICall(updatesService)
+      let constants = try startAPICall()
       let remoteAppLoader = RemoteAppLoader(
         config: constants.config,
         database: constants.database,
@@ -172,7 +172,7 @@ public final class UpdatesUtils: NSObject {
             "successfulAssetCount": successfulAssetCount,
             "failedAssetCount": failedAssetCount,
             "totalAssetCount": totalAssetCount
-          ]
+          ] as [String : Any]
         ])
       } success: { updateResponse in
         if updateResponse?.directiveUpdateResponsePart?.updateDirective is RollBackToEmbeddedUpdateDirective {
@@ -185,16 +185,12 @@ public final class UpdatesUtils: NSObject {
           return
         } else {
           if let update = updateResponse?.manifestUpdateResponsePart?.updateManifest {
-            if let updatesService: (any EXUpdatesModuleInterface) = updatesService {
-              updatesService.resetSelectionPolicy()
-            } else {
-              AppController.sharedInstance.resetSelectionPolicyToDefault()
-            }
+            AppController.sharedInstance.resetSelectionPolicyToDefault()
             let body = [
               "isNew": true,
               "isRollBackToEmbedded": false,
               "manifest": update.manifest.rawManifestJSON()
-            ]
+            ] as [String : Any]
             block(body)
             postUpdateEventNotification(AppController.FetchUpdate_CompleteEventName, body: body)
             return
@@ -337,9 +333,7 @@ public final class UpdatesUtils: NSObject {
    from the AppController.
    Throws if expo-updates is not enabled or not started.
    */
-  private static func startAPICall(
-    _ updatesService: (any EXUpdatesModuleInterface)?
-  ) throws -> (
+  private static func startAPICall() throws -> (
     config: UpdatesConfig,
     selectionPolicy: SelectionPolicy,
     database: UpdatesDatabase,
@@ -347,9 +341,9 @@ public final class UpdatesUtils: NSObject {
     launchedUpdate: Update?,
     embeddedUpdate: Update?
   ) {
-    let maybeConfig: UpdatesConfig? = updatesService?.config ?? AppController.sharedInstance.config
-    let maybeSelectionPolicy: SelectionPolicy? = updatesService?.selectionPolicy ?? AppController.sharedInstance.selectionPolicy()
-    let maybeIsStarted: Bool? = updatesService?.isStarted ?? AppController.sharedInstance.isStarted
+    let maybeConfig: UpdatesConfig? = AppController.sharedInstance.config
+    let maybeSelectionPolicy: SelectionPolicy? = AppController.sharedInstance.selectionPolicy()
+    let maybeIsStarted: Bool? = AppController.sharedInstance.isStarted
 
     guard let config = maybeConfig,
       let selectionPolicy = maybeSelectionPolicy,
@@ -361,10 +355,10 @@ public final class UpdatesUtils: NSObject {
       throw UpdatesNotInitializedException()
     }
 
-    let database = updatesService?.database ?? AppController.sharedInstance.database
-    let launchedUpdate = updatesService?.launchedUpdate ?? AppController.sharedInstance.launchedUpdate()
-    let embeddedUpdate = updatesService?.embeddedUpdate ?? EmbeddedAppLoader.embeddedManifest(withConfig: config, database: database)
-    guard let directory = updatesService?.directory ?? AppController.sharedInstance.updatesDirectory else {
+    let database = AppController.sharedInstance.database
+    let launchedUpdate = AppController.sharedInstance.launchedUpdate()
+    let embeddedUpdate = EmbeddedAppLoader.embeddedManifest(withConfig: config, database: database)
+    guard let directory = AppController.sharedInstance.updatesDirectory else {
       throw UpdatesNotInitializedException()
     }
     return (config, selectionPolicy, database, directory, launchedUpdate, embeddedUpdate)

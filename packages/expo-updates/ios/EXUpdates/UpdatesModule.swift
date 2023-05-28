@@ -84,7 +84,12 @@ public final class UpdatesModule: Module {
     }
 
     AsyncFunction("checkForUpdateAsync") { (promise: Promise) in
-      UpdatesUtils.checkForUpdate(updatesService) { result in
+      let maybeIsCheckForUpdateEnabled: Bool? = updatesService?.canCheckForUpdateAndFetchUpdate ?? true
+      guard maybeIsCheckForUpdateEnabled ?? false else {
+        promise.reject("ERR_UPDATES_CHECK", "checkForUpdateAsync() is not enabled")
+        return
+      }
+      UpdatesUtils.checkForUpdate() { result in
         if result["message"] != nil {
           guard let message = result["message"] as? String else {
             promise.reject("ERR_UPDATES_CHECK", "")
@@ -172,7 +177,12 @@ public final class UpdatesModule: Module {
     }
 
     AsyncFunction("fetchUpdateAsync") { (promise: Promise) in
-      UpdatesUtils.fetchUpdate(updatesService) { result in
+      let maybeIsCheckForUpdateEnabled: Bool? = updatesService?.canCheckForUpdateAndFetchUpdate ?? true
+      guard maybeIsCheckForUpdateEnabled ?? false else {
+        promise.reject("ERR_UPDATES_FETCH", "fetchUpdateAsync() is not enabled")
+        return
+      }
+      UpdatesUtils.fetchUpdate() { result in
         if result["message"] != nil {
           guard let message = result["message"] as? String else {
             promise.reject("ERR_UPDATES_FETCH", "")
