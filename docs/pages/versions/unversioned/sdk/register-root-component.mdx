@@ -17,11 +17,9 @@ Sets the initial React component to render natively in the app's root React Nati
 
 ### Manual Android setup
 
-> This is only required if your app does **not** use [Expo Prebuild](/workflow/prebuild) to continuously generate the `android` directory.
+> This is only required if your app does **not** use [Expo Prebuild](/workflow/prebuild) to continuously generate the **android** directory.
 
-Update the Android `MainActivity.java` file to use the name `"main"` in the `getMainComponentName` function.
-
-`android/app/src/main/<package>/MainActivity.java`
+Update the **android/app/src/main/your-package/MainActivity.java** file to use the name `main` in the `getMainComponentName` function.
 
 ```diff
   @Override
@@ -32,9 +30,9 @@ Update the Android `MainActivity.java` file to use the name `"main"` in the `get
 
 ### Manual iOS setup
 
-> This is only required if your app does **not** use [Expo Prebuild](/workflow/prebuild) to continuously generate the `ios` directory.
+> This is only required if your app does **not** use [Expo Prebuild](/workflow/prebuild) to continuously generate the **ios** directory.
 
-Update the iOS `ios/<name>/AppDelegate.(m|mm|swift)` file to use the **moduleName** `"main"` in the `createRootViewWithBridge:bridge moduleName:@"main" initialProperties:initProps` line of the `application:didFinishLaunchingWithOptions:` function.
+Update the iOS **ios/your-name/AppDelegate.(m|mm|swift)** file to use the **moduleName** `main` in the `createRootViewWithBridge:bridge moduleName:@"main" initialProperties:initProps` line of the `application:didFinishLaunchingWithOptions:` function.
 
 ## API
 
