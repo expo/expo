@@ -6,7 +6,7 @@ description: A tutorial on creating a native module with a config plugin using E
 
 import { Terminal } from '~/ui/components/Snippet';
 
-Config plugins allow you to customize native Android and iOS projects when they are generated with `npx expo prebuild`. It is often useful to add properties in native config files, to copy assets to native projects, and for advanced configurations such as adding an app extension target. As an app developer, applying customizations not exposed in the default [Expo config](/workflow/configuration) can be helpful. As a library author, it allows you to configure native projects for the developers using your library automatically.
+Config plugins allow you to customize native Android and iOS projects when they are generated with `npx expo prebuild`. It is often useful to add properties in native config files, to copy assets to native projects, and for advanced configurations such as adding an app extension target. As an app developer, applying customizations not exposed in the default [app config](/workflow/configuration) can be helpful. As a library author, it allows you to configure native projects for the developers using your library automatically.
 
 This guide will walk you through creating a new config plugin from scratch and show you how to read custom values injected into **AndroidManifest.xml** and **Info.plist** by your plugin from an Expo module.
 
@@ -126,7 +126,7 @@ const withMyApiKey = config => {
 };
 ```
 
-Additionally, you can use `mods`, which are async functions that modify files in native projects such as source code or configuration (plist, xml) files. The `mods` object is different from the rest of the Expo config because it doesn't get serialized after the initial reading. This means you can use it to perform actions *during* code generation.
+Additionally, you can use `mods`, which are async functions that modify files in native projects such as source code or configuration (plist, xml) files. The `mods` object is different from the rest of the app config because it doesn't get serialized after the initial reading. This means you can use it to perform actions *during* code generation.
 
 However, there are a few considerations that we should follow when writing config plugins:
 

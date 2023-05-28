@@ -7,7 +7,7 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-In this step-by-step guide, you'll create a new Expo app, run it in your local development environment, publish an update, and show that the app downloads and runs the update when restarted. It also details some of the Expo config properties used in EAS Update and their functions.
+In this step-by-step guide, you'll create a new Expo app, run it in your local development environment, publish an update, and show that the app downloads and runs the update when restarted. It also details some of the app config properties used in EAS Update and their functions.
 
 <Step label="1">
 ## Install the latest EAS CLI
@@ -49,7 +49,7 @@ To configure your project, run the following commands in the order they are spec
   cmdCopy="npx expo install expo-updates && eas init && eas update:configure"
 />
 
-Inside the Expo config, make changes to use [`runtimeVersion`](/versions/latest/config/app/#runtimeversion) property with a fixed value and to add a request header that the app will use to specify a channel when downloading updates from EAS.
+Inside the app config, make changes to use [`runtimeVersion`](/versions/latest/config/app/#runtimeversion) property with a fixed value and to add a request header that the app will use to specify a channel when downloading updates from EAS.
 
 {/* prettier-ignore */}
 ```json app.json
@@ -68,7 +68,7 @@ Inside the Expo config, make changes to use [`runtimeVersion`](/versions/latest/
   }
 ```
 
-> In the [introductory guide](/eas-update/getting-started), the channel name is set by EAS Build and is different for different EAS build profiles. Since this is a local build, it is necessary to set this request header explicitly in the Expo config.
+> In the [introductory guide](/eas-update/getting-started), the channel name is set by EAS Build and is different for different EAS build profiles. Since this is a local build, it is necessary to set this request header explicitly in the app config.
 
 </Step>
 
@@ -105,7 +105,7 @@ After running the above, inspect **android/app/src/main/AndroidManifest.xml** an
 <!-- @hide ... your existing configuration --><!-- @end -->
 ```
 
-> If you do not see the above lines added to these files, it means that you are using SDK 47 or earlier, and you should add these lines manually to **AndroidManifest.xml** and **Expo.plist**. In SDK 48 and later, the [`requestHeaders`](/versions/latest/config/app/#requestheaders) property from the Expo config is used to automatically add these lines to the native files.
+> If you do not see the above lines added to these files, it means that you are using SDK 47 or earlier, and you should add these lines manually to **AndroidManifest.xml** and **Expo.plist**. In SDK 48 and later, the [`requestHeaders`](/versions/latest/config/app/#requestheaders) property from the app config is used to automatically add these lines to the native files.
 
 </Step>
 

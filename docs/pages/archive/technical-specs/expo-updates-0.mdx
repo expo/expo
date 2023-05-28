@@ -135,7 +135,7 @@ type Asset = {
     A conforming client SHOULD prefix a file extension with a `.` if a file extension is not empty and missing the `.` prefix.
   - `url`: Location at which the file may be fetched.
 - `metadata`: The metadata associated with an update. It is a string-valued dictionary. The server MUST send back an empty object at a minimum, but MAY send back anything it wishes within the object to be used for filtering the updates. The metadata MUST pass the filter defined in the accompanying `expo-manifest-filters` header.
-- `extra`: For specification of optional "extra" information such as third-party configuration. The server MUST send back an empty object at a minimum. Expo Updates does not specify or rely upon this field, but other libraries may. For example, if the update is hosted on Expo Application Services (EAS), the EAS project ID and Expo config (which is used by many Expo libraries through `expo-constants`) may be included:
+- `extra`: For specification of optional "extra" information such as third-party configuration. The server MUST send back an empty object at a minimum. Expo Updates does not specify or rely upon this field, but other libraries may. For example, if the update is hosted on Expo Application Services (EAS), the EAS project ID and app config (which is used by many Expo libraries through `expo-constants`) may be included:
 
 ```json
 "extra": {
