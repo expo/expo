@@ -1505,12 +1505,14 @@ PODS:
   - ExpoModulesCore (1.4.0):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
+    - React-NativeModulesApple
     - React-RCTAppDelegate
     - ReactCommon/turbomodule/core
   - ExpoModulesCore/Tests (1.4.0):
     - ExpoModulesTestCore
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
+    - React-NativeModulesApple
     - React-RCTAppDelegate
     - ReactCommon/turbomodule/core
   - ExpoModulesTestCore (0.11.2):
@@ -2658,6 +2660,7 @@ DEPENDENCIES:
   - RNReanimated (from `./vendored/unversioned/react-native-reanimated`)
   - RNScreens (from `./vendored/unversioned/react-native-screens`)
   - RNSVG (from `./vendored/unversioned/react-native-svg`)
+  - SocketRocket (~> 0.6.0)
   - "stripe-react-native (from `./vendored/unversioned/@stripe/stripe-react-native`)"
   - UMAppLoader (from `../packages/unimodules-app-loader/ios`)
   - Yoga (from `../react-native-lab/react-native/packages/react-native/ReactCommon/yoga`)
@@ -3670,7 +3673,7 @@ SPEC CHECKSUMS:
   ExpoLocalAuthentication: bd9d9037a96a11ccc456e327ddb404df02da10ca
   ExpoLocalization: c1201ba5cfcfb187972138e58c07cc708c5399db
   ExpoMailComposer: b9a4871714550d5b4e26d1873f0572e350c86478
-  ExpoModulesCore: cb548802133d6fdeb1d068aed983a233f61d2b76
+  ExpoModulesCore: fb49cd12163cbd5aa5d6288f9533715e8661c8c6
   ExpoModulesTestCore: 42fce831c9601dcfaba09fe7a03dfe99e25754a4
   ExpoNetwork: ef59bebcdbeb6ea188157a8fc88e9ceafbff1f89
   ExpoPrint: 92311a7545d66959c6f3884e085bf336ba6c7c48
@@ -3797,6 +3800,6 @@ SPEC CHECKSUMS:
   Yoga: 258bd5f6f188432f18cc3f854497f1cf6a0f21c1
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: fc5d3a6d03f638818036d761cd8cb82ec403a6ea
+PODFILE CHECKSUM: ab94beec1ce20b0cbcaf44b64fe086468412b31c
 
 COCOAPODS: 1.12.1

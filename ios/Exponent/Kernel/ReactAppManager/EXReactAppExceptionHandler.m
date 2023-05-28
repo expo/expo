@@ -11,6 +11,8 @@
 #import <React/RCTBridge.h>
 #import <React/RCTRedBox.h>
 
+#import "Expo_Go-Swift.h"
+
 RCTFatalHandler handleFatalReactError = ^(NSError *error) {
   [EXUtil performSynchronouslyOnMainThread:^{
     EXKernelAppRecord *record = [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager appRecordForError:error];
