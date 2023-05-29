@@ -446,7 +446,6 @@
 		F1D6AF61244714C100AC1C74 /* EXDevMenuGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = F1D6AF60244714C100AC1C74 /* EXDevMenuGestureRecognizer.m */; };
 		F1D6AF64244720E100AC1C74 /* EXDevMenuManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F1D6AF63244720E100AC1C74 /* EXDevMenuManager.m */; };
 		F1F7433E24ABECD500EA5023 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1F7433D24ABECD500EA5023 /* AppDelegate.swift */; };
-		F2A146DA1DEC1705926E3D37 /* libPods-Expo Go-Expo Go (unversioned).a in Frameworks */ = {isa = PBXBuildFile; fileRef = D1919BD72DB8244D157FA9EC /* libPods-Expo Go-Expo Go (unversioned).a */; };
 		F581B81CB601426CB5658AEE /* RNSharedElementCornerRadii.m in Sources */ = {isa = PBXBuildFile; fileRef = 780F0BF062134A048B33344C /* RNSharedElementCornerRadii.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F77DDB921E04AC1100624CA2 /* SafariServices.framework */; };
 		FBCC5A97F536402C98688A94 /* RNCPickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 36B3AC83321C444B879BD737 /* RNCPickerManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -457,6 +456,7 @@
 		FCF6D37025B34BC200808BF5 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF6D36F25B34BC200808BF5 /* NotificationService.swift */; };
 		FCF6D37425B34BC200808BF5 /* ExpoNotificationServiceExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = FCF6D36D25B34BC200808BF5 /* ExpoNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		FE8D4A1FC2BDC25C8D4684F8 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C849D84FFC04012BBF6DFFD /* ExpoModulesProvider.swift */; };
+		FFFE71165667AED5AF475C24 /* libPods-Expo Go-Expo Go (unversioned).a in Frameworks */ = {isa = PBXBuildFile; fileRef = D1919BD72DB8244D157FA9EC /* libPods-Expo Go-Expo Go (unversioned).a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -996,7 +996,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */,
-				F2A146DA1DEC1705926E3D37 /* libPods-Expo Go-Expo Go (unversioned).a in Frameworks */,
+				FFFE71165667AED5AF475C24 /* libPods-Expo Go-Expo Go (unversioned).a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2341,7 +2341,8 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go-Expo Go (versioned)/Pods-Expo Go-Expo Go (versioned)-resources.sh",
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
-				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.framework/Resources/GoogleMaps.bundle",
+				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.xcframework/ios-arm64/GoogleMaps.framework/Resources/GoogleMaps.bundle",
+				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.xcframework/ios-arm64_x86_64-simulator/GoogleMaps.framework/Resources/GoogleMaps.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/Stripe/Stripe.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/StripeCore/StripeCore.bundle",
@@ -2354,7 +2355,8 @@
 				"${PODS_CONFIGURATION_BUILD_DIR}/ABI46_0_0React-Core/ABI46_0_0AccessibilityResources.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/ABI47_0_0React-Core/ABI47_0_0AccessibilityResources.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/ABI48_0_0React-Core/ABI48_0_0AccessibilityResources.bundle",
-				"${PODS_ROOT}/GooglePlaces/Frameworks/GooglePlaces.framework/Resources/GooglePlaces.bundle",
+				"${PODS_ROOT}/GooglePlaces/Frameworks/GooglePlaces.xcframework/ios-arm64/GooglePlaces.framework/Resources/GooglePlaces.bundle",
+				"${PODS_ROOT}/GooglePlaces/Frameworks/GooglePlaces.xcframework/ios-arm64_x86_64-simulator/GooglePlaces.framework/Resources/GooglePlaces.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/GoogleSignIn/GoogleSignIn.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
@@ -2449,7 +2451,8 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go-Expo Go (unversioned)/Pods-Expo Go-Expo Go (unversioned)-resources.sh",
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
-				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.framework/Resources/GoogleMaps.bundle",
+				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.xcframework/ios-arm64/GoogleMaps.framework/Resources/GoogleMaps.bundle",
+				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.xcframework/ios-arm64_x86_64-simulator/GoogleMaps.framework/Resources/GoogleMaps.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/Stripe/Stripe.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/StripeCore/StripeCore.bundle",
@@ -2584,7 +2587,8 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go-Tests/Pods-Expo Go-Tests-resources.sh",
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
-				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.framework/Resources/GoogleMaps.bundle",
+				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.xcframework/ios-arm64/GoogleMaps.framework/Resources/GoogleMaps.bundle",
+				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.xcframework/ios-arm64_x86_64-simulator/GoogleMaps.framework/Resources/GoogleMaps.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/Stripe/Stripe.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/StripeCore/StripeCore.bundle",
@@ -3282,6 +3286,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = C8D8QTF339;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
 				EX_BUNDLE_NAME = Expo;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Exponent/Supporting/Exponent-Prefix.pch";
@@ -3593,6 +3598,7 @@
 				CODE_SIGN_IDENTITY = "Apple Distribution";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = C8D8QTF339;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
 				EX_BUNDLE_NAME = Expo;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Exponent/Supporting/Exponent-Prefix.pch";
