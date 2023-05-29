@@ -9,9 +9,9 @@ import expo.modules.kotlin.modules.ModuleDefinition
 class SafeAreaProviderManager : Module() {
   override fun definition() = ModuleDefinition {
     Name("RNCSafeAreaProvider")
-    Constants(
-      "initialWindowMetrics" to initialWindowMetrics
-    )
+    Constants {
+      mapOf("initialWindowMetrics" to initialWindowMetrics)
+    }
     View(SafeAreaProvider::class) {
       Events("onInsetsChange")
     }
