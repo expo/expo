@@ -68,6 +68,12 @@ export async function fetchDevSessions(installationID?: string) {
     headers['Expo-Dev-Client-ID'] = installationID;
   }
 
-  const sessions = await restClient<{ data: DevSession[] }>(devSessionsEndpoint, { headers });
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), 1500);
+  const sessions = await restClient<{ data: DevSession[] }>(devSessionsEndpoint, {
+    headers,
+    signal: controller.signal,
+  });
+  clearTimeout(id);
   return sessions.data ?? [];
 }
