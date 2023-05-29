@@ -4,7 +4,7 @@ import CoreMotion
 
 // swiftlint:disable:next type_body_length
 public class ExpoCamera: ExpoView, EXCameraInterface, EXAppLifecycleListener,
-                          AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCaptureDelegate {
+  AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCaptureDelegate {
   public var session = AVCaptureSession()
   public var sessionQueue = DispatchQueue(label: "captureSessionQueue")
   private var motionManager = CMMotionManager()
@@ -56,7 +56,7 @@ public class ExpoCamera: ExpoView, EXCameraInterface, EXAppLifecycleListener,
         barCodeScanner.maybeStartBarCodeScanning()
       } else if isScanningBarCodes {
         log.error("BarCodeScanner module not found. Make sure "
-                  + "`expo-barcode-scanner` is installed and linked correctly.")
+        + "`expo-barcode-scanner` is installed and linked correctly.")
       }
     }
   }
