@@ -221,7 +221,7 @@ This is done automatically when using `eas update` or when compiling the native 
 
 The following options are provided:
 
-- `--platform <platform>`: Choose the platform to compile for: 'ios', 'android', 'all'. **Default: all**. 'web' is also available if configured in the Expo config. For more information, see [Customizing Metro](/guides/customizing-metro).
+- `--platform <platform>`: Choose the platform to compile for: 'ios', 'android', 'all'. **Default: all**. 'web' is also available if configured in the app config. For more information, see [Customizing Metro](/guides/customizing-metro).
 - `--dev`: Bundle for **development** environments without minifying code or stripping the `__DEV__` boolean.
 - `--output-dir <dir>`: The directory to export the static files to. **Default: dist**
 - `--max-workers <number>`: Maximum number of tasks to allow the bundler to spawn. Setting this to `0` will run all transpilation on the same process, meaning you can easily debug Babel transpilation.
@@ -249,7 +249,7 @@ Native source code must be generated before a native app can compile. Expo CLI p
 
 ## Config
 
-Evaluate the Expo config (**app.json**, or **app.config.js**) by running:
+Evaluate the app config (**app.json**, or **app.config.js**) by running:
 
 <Terminal cmd={['$ npx expo config']} />
 
@@ -259,7 +259,7 @@ Evaluate the Expo config (**app.json**, or **app.config.js**) by running:
 
 ### Config Type
 
-There are three different config types that are generated from the Expo config:
+There are three different config types that are generated from the app config:
 
 - `public`: The manifest file to use with OTA updates. Think of this like an `index.html` file's `<head />` element but for native apps.
 - `prebuild`: The config that is used for [Expo Prebuild](/workflow/prebuild) including async modifiers. This is the only time the config is not serializable.
@@ -358,7 +358,7 @@ From here, you can choose to generate basic project files like:
 | `DEBUG=expo:*`                      | **string**  | Enables debug logs for the CLI, you can configure this using the [`debug` convention](https://github.com/debug-js/debug#conventions).                                                                                                                                                                                                                                                |
 | `EXPO_DEBUG`                        | **boolean** | An alias for `DEBUG=expo:*`.                                                                                                                                                                                                                                                                                                                                                         |
 | `EXPO_PROFILE`                      | **boolean** | Enable profiling stats for the CLI, this does not profile your application.                                                                                                                                                                                                                                                                                                          |
-| `EXPO_NO_CACHE`                     | **boolean** | Disable all global caching. By default, Expo config JSON schemas, Expo Go binaries for simulators and emulators, and project templates are cached in the global **.expo** folder on your machine.                                                                                                                                                                                    |
+| `EXPO_NO_CACHE`                     | **boolean** | Disable all global caching. By default, app config JSON schemas, Expo Go binaries for simulators and emulators, and project templates are cached in the global **.expo** folder on your machine.                                                                                                                                                                                     |
 | `CI`                                | **boolean** | When enabled, the CLI will disable interactive functionality, skip optional prompts, and fail on non-optional prompts.<br/>Example: `CI=1 npx expo install --check` will fail if any installed packages are outdated.                                                                                                                                                                |
 | `EXPO_NO_TELEMETRY`                 | **boolean** | Disables anonymous usage collection. [Learn more about telemetry](#telemetry).                                                                                                                                                                                                                                                                                                       |
 | `EXPO_NO_GIT_STATUS`                | **boolean** | Skips warning about git status during potentially dangerous actions like `npx expo prebuild --clean`.                                                                                                                                                                                                                                                                                |

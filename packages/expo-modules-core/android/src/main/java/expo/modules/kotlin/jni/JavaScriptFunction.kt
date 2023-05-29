@@ -11,10 +11,6 @@ import kotlin.reflect.typeOf
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
 class JavaScriptFunction<ReturnType : Any?> @DoNotStrip private constructor(@DoNotStrip private val mHybridData: HybridData) : Destructible {
-  init {
-    JNIDeallocator.addReference(this)
-  }
-
   @PublishedApi
   internal var returnType: KType? = null
 

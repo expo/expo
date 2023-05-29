@@ -12,7 +12,6 @@ import {
   TerminalIcon,
   ChevronRightIcon,
   InfoIcon,
-  scale,
   useExpoPalette,
   BranchIcon,
 } from 'expo-dev-client-components';
@@ -113,15 +112,11 @@ export function HomeScreen({
   };
 
   return (
-    <View testID="DevLauncherMainScreen">
-      <AppHeader navigation={navigation} />
-      <ScrollView
-        style={{}}
-        contentContainerStyle={{
-          paddingBottom: scale['48'],
-        }}>
-        <ScreenContainer>
-          <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+    <View testID="DevLauncherMainScreen" flex="1">
+      <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+        <AppHeader navigation={navigation} />
+        <ScrollView>
+          <ScreenContainer>
             {crashReport && (
               <View px="medium" py="small" mt="small">
                 <Button.ScaleOnPressContainer
@@ -210,9 +205,9 @@ export function HomeScreen({
 
               <RecentlyOpenedApps onRecentAppPress={onRecentAppPress} loadingUrl={loadingUrl} />
             </View>
-          </KeyboardAvoidingView>
-        </ScreenContainer>
-      </ScrollView>
+          </ScreenContainer>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </View>
   );
 }
@@ -299,12 +294,7 @@ function RecentlyOpenedApps({ onRecentAppPress, loadingUrl }) {
 
     if (app.isEASUpdate && app.updateMessage != null) {
       return (
-        <RecentEASUpdateRow
-          label={label}
-          url={app.url}
-          message={app.updateMessage}
-          branchName={app.branchName}
-        />
+        <RecentEASUpdateRow url={app.url} message={app.updateMessage} branchName={app.branchName} />
       );
     }
 
@@ -389,7 +379,7 @@ function RecentLocalPackagerRow({ label, url }) {
   );
 }
 
-function RecentEASUpdateRow({ label, url, branchName, message }) {
+function RecentEASUpdateRow({ url, branchName, message }) {
   const palette = useExpoPalette();
   return (
     <View>
