@@ -12,10 +12,9 @@ inhibit_all_warnings!
 $expo_updates_create_manifest = false
 
 abstract_target 'Expo Go' do
-  # Expo Client dependencies
   pod 'CocoaLumberjack', '~> 3.5.3'
-  pod 'GoogleMaps', '~> 7.1'
-  pod 'Google-Maps-iOS-Utils', '~> 4.1.0'
+  pod 'GoogleMaps', '~> 7.3.0'
+  pod 'Google-Maps-iOS-Utils', :git => 'https://github.com/googlemaps/google-maps-ios-utils.git'
   pod 'JKBigInteger', :podspec => 'vendored/common/JKBigInteger.podspec.json'
   pod 'MBProgressHUD', '~> 1.2.0'
 
@@ -85,8 +84,6 @@ abstract_target 'Expo Go' do
       target_installation_result.native_target.build_configurations.each do |config|
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
 
-        # Fix building failures on M1
-        config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
       end
 
       if pod_name == 'Branch'
