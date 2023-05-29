@@ -99,7 +99,7 @@ export function UpdatesScreen({ route }: UpdatesScreenProps) {
             </Text>
 
             <View py="medium" align="centered">
-              <Button.ScaleOnPressContainer
+              <Button.FadeOnPressContainer
                 bg="tertiary"
                 onPress={() => {
                   Linking.openURL(`https://docs.expo.dev/eas-update/how-eas-update-works/`);
@@ -109,7 +109,7 @@ export function UpdatesScreen({ route }: UpdatesScreenProps) {
                     Publish an update
                   </Button.Text>
                 </View>
-              </Button.ScaleOnPressContainer>
+              </Button.FadeOnPressContainer>
             </View>
           </View>
         </View>

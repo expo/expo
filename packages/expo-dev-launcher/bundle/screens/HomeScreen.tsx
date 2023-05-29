@@ -119,7 +119,7 @@ export function HomeScreen({
           <ScreenContainer>
             {crashReport && (
               <View px="medium" py="small" mt="small">
-                <Button.ScaleOnPressContainer
+                <Button.FadeOnPressContainer
                   onPress={onCrashReportPress}
                   bg="default"
                   rounded="large">
@@ -129,7 +129,7 @@ export function HomeScreen({
                       get more information.
                     </Button.Text>
                   </Row>
-                </Button.ScaleOnPressContainer>
+                </Button.FadeOnPressContainer>
               </View>
             )}
             <View py="large">
@@ -142,15 +142,14 @@ export function HomeScreen({
                 <Spacer.Horizontal />
 
                 {devSessions.length > 0 && (
-                  <Button.ScaleOnPressContainer
+                  <Button.FadeOnPressContainer
                     bg="ghost"
                     rounded="full"
-                    minScale={0.85}
                     onPress={onDevServerQuestionPress}>
                     <View rounded="full" padding="tiny">
                       <InfoIcon />
                     </View>
-                  </Button.ScaleOnPressContainer>
+                  </Button.FadeOnPressContainer>
                 )}
               </Row>
 
@@ -222,7 +221,7 @@ function FetchDevSessionsRow({ isFetching, onRefetchPress }: FetchDevSessionsRow
   const backgroundColor = isFetching ? theme.status.info : theme.status.default;
 
   return (
-    <Button.ScaleOnPressContainer
+    <Button.FadeOnPressContainer
       onPress={onRefetchPress}
       disabled={isFetching}
       bg="default"
@@ -238,7 +237,7 @@ function FetchDevSessionsRow({ isFetching, onRefetchPress }: FetchDevSessionsRow
         <Spacer.Horizontal />
         {!isFetching && <RefreshIcon />}
       </Row>
-    </Button.ScaleOnPressContainer>
+    </Button.FadeOnPressContainer>
   );
 }
 
@@ -257,7 +256,7 @@ function DevSessionList({ devSessions = [], onDevSessionPress }: DevSessionListP
       {devSessions.map((devSession) => {
         return (
           <View key={devSession.url}>
-            <Button.ScaleOnPressContainer
+            <Button.FadeOnPressContainer
               onPress={() => onDevSessionPress(devSession)}
               roundedTop="large"
               roundedBottom="none"
@@ -273,7 +272,7 @@ function DevSessionList({ devSessions = [], onDevSessionPress }: DevSessionListP
                 <Spacer.Horizontal size="small" />
                 <ChevronRightIcon />
               </Row>
-            </Button.ScaleOnPressContainer>
+            </Button.FadeOnPressContainer>
             <Divider />
           </View>
         );
@@ -309,13 +308,13 @@ function RecentlyOpenedApps({ onRecentAppPress, loadingUrl }) {
         <Heading color="secondary">Recently opened</Heading>
         <Spacer.Horizontal />
 
-        <Button.ScaleOnPressContainer bg="ghost" onPress={clearRecentlyOpenedApps}>
+        <Button.FadeOnPressContainer bg="ghost" onPress={clearRecentlyOpenedApps}>
           <View rounded="medium" px="small" py="micro">
             <Heading size="small" weight="semibold" color="secondary">
               Reset
             </Heading>
           </View>
-        </Button.ScaleOnPressContainer>
+        </Button.FadeOnPressContainer>
       </Row>
 
       <View>
@@ -326,14 +325,14 @@ function RecentlyOpenedApps({ onRecentAppPress, loadingUrl }) {
 
           return (
             <LoadingContainer key={app.id} isLoading={isLoading}>
-              <Button.ScaleOnPressContainer
+              <Button.FadeOnPressContainer
                 onPress={() => onRecentAppPress(app)}
                 roundedTop={isFirst ? 'large' : 'none'}
                 roundedBottom={isLast ? 'large' : 'none'}
                 py="small"
                 bg="default">
                 {renderRow(app)}
-              </Button.ScaleOnPressContainer>
+              </Button.FadeOnPressContainer>
               {!isLast && <Divider />}
             </LoadingContainer>
           );
