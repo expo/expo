@@ -3,7 +3,8 @@ import ExpoModulesCore
 import CoreMotion
 
 // swiftlint:disable:next type_body_length
-public class ExpoCamera: ExpoView, EXCameraInterface, EXAppLifecycleListener, AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCaptureDelegate {
+public class ExpoCamera: ExpoView, EXCameraInterface, EXAppLifecycleListener,
+                          AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCaptureDelegate {
   public var session = AVCaptureSession()
   public var sessionQueue = DispatchQueue(label: "captureSessionQueue")
   private var motionManager = CMMotionManager()
@@ -54,7 +55,8 @@ public class ExpoCamera: ExpoView, EXCameraInterface, EXAppLifecycleListener, AV
       if let barCodeScanner {
         barCodeScanner.maybeStartBarCodeScanning()
       } else if isScanningBarCodes {
-        log.error("BarCodeScanner module not found. Make sure `expo-barcode-scanner` is installed and linked correctly.")
+        log.error("BarCodeScanner module not found. Make sure "
+                  + "`expo-barcode-scanner` is installed and linked correctly.")
       }
     }
   }
@@ -559,20 +561,20 @@ public class ExpoCamera: ExpoView, EXCameraInterface, EXAppLifecycleListener, AV
 
         let gpsLatitude = additionalExif["GPSLatitude"] as? Double
         if let latitude = gpsLatitude {
-          gpsDict[kCGImagePropertyGPSLatitude as String] = fabs(latitude)
+          gpsDict[kCGImagePropertyGPSLatitude as String] = abs(latitude)
           gpsDict[kCGImagePropertyGPSLatitudeRef as String] = latitude >= 0 ? "N" : "S"
         }
 
         let gpsLongitude = additionalExif["GPSLongitude"] as? Double
         if let longitude = gpsLongitude {
-          gpsDict[kCGImagePropertyGPSLongitude as String] = fabs(longitude)
+          gpsDict[kCGImagePropertyGPSLongitude as String] = abs(longitude)
           gpsDict[kCGImagePropertyGPSLongitudeRef as String] = longitude >= 0 ? "E" : "W"
         }
 
         let gpsAltitude = additionalExif["GPSAltitude"] as? Double
         if let altitude = gpsAltitude {
-          gpsDict[kCGImagePropertyGPSLongitude as String] = abs(altitude)
-          gpsDict[kCGImagePropertyGPSLongitudeRef as String] = altitude >= 0 ? 0 : 1
+          gpsDict[kCGImagePropertyGPSAltitude as String] = abs(altitude)
+          gpsDict[kCGImagePropertyGPSAltitudeRef as String] = altitude >= 0 ? 0 : 1
         }
 
         let metadataGpsDict = updatedMetadata[kCGImagePropertyGPSDictionary as String] as? [String: Any]

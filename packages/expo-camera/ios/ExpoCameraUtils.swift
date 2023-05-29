@@ -159,17 +159,15 @@ struct ExpoCameraUtils {
       return processedImageData as Data
     }
 
-    return nil
+    CGImageDestinationAddImage(destinationCGImageRef, sourceCGImageRef, updatedMetadata as CFDictionary)
+    return CGImageDestinationFinalize(destinationCGImageRef) ? processedImageData as Data : nil
   }
 
-  static func updateExif(metadata: NSDictionary, with additionalData: NSDictionary) -> NSMutableDictionary {
+  static func updateExif(metadata: NSDictionary, with additionalData: [String: Any]) -> NSMutableDictionary {
     let mutableMetadata = NSMutableDictionary(dictionary: metadata)
+    mutableMetadata.addEntries(from: additionalData)
 
-    for (key, value) in additionalData {
-      mutableMetadata[key] = value
-    }
-
-    if let gps = mutableMetadata[kCGImagePropertyGPSDictionary as NSString] as? [String: Any] {
+    if let gps = mutableMetadata[kCGImagePropertyGPSDictionary as String] as? [String: Any] {
       for (gpsKey, gpsValue) in gps {
         mutableMetadata["GPS" + gpsKey] = gpsValue
       }
