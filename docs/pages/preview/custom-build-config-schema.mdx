@@ -540,6 +540,39 @@ build:
         run: ls assets
 ```
 
+#### `eas/use_npm_token`
+
+Configures node package managers (npm / yarn / pnpm) for use with private packages, published either to npm or private registry.
+Set `NPM_TOKEN` in your projects secrets and this function will configure the build environment by creating `.npmrc` with the token.
+
+```yaml test.yml
+build:
+  name: Install private npm modules
+  steps:
+    - eas/checkout
+    # @info #
+    - eas/use_npm_token
+    # @end #
+    - run:
+        name: Install dependencies
+        run: npm install # <---- Can now install private packages
+```
+
+#### `eas/install_node_modules`
+
+Installs node modules using the package manager detected base on your project. Works with monorepos.
+Supported package managers: npm, yarn, pnpm
+
+```yaml test.yml
+build:
+  name: Install node modules
+  steps:
+    - eas/checkout
+    # @info #
+    - eas/install_node_modules
+    # @end #
+```
+
 #### `eas/upload_artifact`
 
 Uploads a build artifact.
