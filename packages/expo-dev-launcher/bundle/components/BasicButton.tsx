@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 
 import { ActivityIndicator } from '../components/ActivityIndicator';
 
-type ButtonProps = React.ComponentProps<typeof Button.ScaleOnPressContainer>;
+type ButtonProps = React.ComponentProps<typeof Button.FadeOnPressContainer>;
 
 type BasicButtonProps = ButtonProps & {
   label: string;
@@ -37,7 +37,7 @@ export function BasicButton({
     <View align="start">
       <View>
         <View opacity={isLoading ? '0.5' : '1'}>
-          <Button.ScaleOnPressContainer bg={type} {...props}>
+          <Button.FadeOnPressContainer bg={type} {...props}>
             <View {...sizeMap[size]}>
               <Row align="center" style={{ minHeight: scale.large }}>
                 <Button.Text weight="medium" color={type as any} size={size}>
@@ -47,7 +47,7 @@ export function BasicButton({
                 {children}
               </Row>
             </View>
-          </Button.ScaleOnPressContainer>
+          </Button.FadeOnPressContainer>
         </View>
         {isLoading && (
           <View

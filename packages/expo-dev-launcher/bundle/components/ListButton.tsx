@@ -1,7 +1,7 @@
 import { View, Button } from 'expo-dev-client-components';
 import * as React from 'react';
 
-type ButtonProps = React.ComponentProps<typeof Button.ScaleOnPressContainer>;
+type ButtonProps = React.ComponentProps<typeof Button.FadeOnPressContainer>;
 
 export type ListButtonProps = ButtonProps & {
   children?: React.ReactNode;
@@ -18,7 +18,7 @@ export function ListButton({
   ...buttonProps
 }: ListButtonProps) {
   return (
-    <Button.ScaleOnPressContainer
+    <Button.FadeOnPressContainer
       bg="default"
       onPress={onPress}
       roundedBottom={isLast ? 'large' : 'none'}
@@ -32,6 +32,6 @@ export function ListButton({
         px="small">
         {children}
       </View>
-    </Button.ScaleOnPressContainer>
+    </Button.FadeOnPressContainer>
   );
 }

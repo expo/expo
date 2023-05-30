@@ -50,13 +50,13 @@ export function Onboarding({ isDevice }: OnboardingProps) {
 
             <Spacer.Vertical size="xl" />
 
-            <Button.ScaleOnPressContainer bg="primary" onPress={onOnboardingFinishedPress}>
+            <Button.FadeOnPressContainer bg="primary" onPress={onOnboardingFinishedPress}>
               <View py="small">
                 <Button.Text align="center" size="large" color="primary" weight="medium">
                   Got It
                 </Button.Text>
               </View>
-            </Button.ScaleOnPressContainer>
+            </Button.FadeOnPressContainer>
           </View>
         </View>
       </View>

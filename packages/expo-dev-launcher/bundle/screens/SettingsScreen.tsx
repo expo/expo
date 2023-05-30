@@ -115,7 +115,7 @@ export function SettingsScreen() {
           </View>
 
           <View>
-            <Button.ScaleOnPressContainer
+            <Button.FadeOnPressContainer
               bg="default"
               roundedTop="large"
               roundedBottom="none"
@@ -130,11 +130,11 @@ export function SettingsScreen() {
                 <Spacer.Horizontal />
                 {motionGestureEnabled && <CheckIcon />}
               </Row>
-            </Button.ScaleOnPressContainer>
+            </Button.FadeOnPressContainer>
 
             <Divider />
 
-            <Button.ScaleOnPressContainer
+            <Button.FadeOnPressContainer
               bg="default"
               roundedBottom="large"
               roundedTop="none"
@@ -149,7 +149,7 @@ export function SettingsScreen() {
                 <Spacer.Horizontal />
                 {touchGestureEnabled && <CheckIcon />}
               </Row>
-            </Button.ScaleOnPressContainer>
+            </Button.FadeOnPressContainer>
           </View>
 
           <View padding="small">
@@ -192,7 +192,7 @@ export function SettingsScreen() {
 
             <Divider />
 
-            <Button.ScaleOnPressContainer
+            <Button.FadeOnPressContainer
               onPress={onCopyPress}
               disabled={hasCopiedContent}
               bg="default"
@@ -203,7 +203,7 @@ export function SettingsScreen() {
                   {hasCopiedContent ? 'Copied to clipboard!' : 'Tap to Copy All'}
                 </Text>
               </Row>
-            </Button.ScaleOnPressContainer>
+            </Button.FadeOnPressContainer>
             {userData?.isExpoAdmin && (
               <>
                 <Spacer.Vertical size="medium" />
@@ -247,7 +247,7 @@ function DebugSettings() {
 
       <View>
         <View>
-          <Button.ScaleOnPressContainer
+          <Button.FadeOnPressContainer
             bg="default"
             roundedTop="large"
             roundedBottom="large"
@@ -258,7 +258,7 @@ function DebugSettings() {
               </Text>
               <Spacer.Horizontal />
             </Row>
-          </Button.ScaleOnPressContainer>
+          </Button.FadeOnPressContainer>
 
           <Spacer.Vertical size="large" />
 
@@ -280,7 +280,7 @@ function DebugSettings() {
 
               return (
                 <View key={pageSize}>
-                  <Button.ScaleOnPressContainer
+                  <Button.FadeOnPressContainer
                     bg="default"
                     roundedTop={isFirst ? 'large' : 'none'}
                     roundedBottom={isLast ? 'large' : 'none'}
@@ -293,7 +293,7 @@ function DebugSettings() {
                       <Spacer.Horizontal />
                       {isSelected && <CheckIcon />}
                     </Row>
-                  </Button.ScaleOnPressContainer>
+                  </Button.FadeOnPressContainer>
                   {!isLast && <Divider />}
                 </View>
               );
