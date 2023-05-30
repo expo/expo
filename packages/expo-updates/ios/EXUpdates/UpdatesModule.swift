@@ -89,7 +89,7 @@ public final class UpdatesModule: Module {
         promise.reject("ERR_UPDATES_CHECK", "checkForUpdateAsync() is not enabled")
         return
       }
-      UpdatesUtils.checkForUpdate() { result in
+      UpdatesUtils.checkForUpdate { result in
         if result["message"] != nil {
           guard let message = result["message"] as? String else {
             promise.reject("ERR_UPDATES_CHECK", "")
@@ -182,7 +182,7 @@ public final class UpdatesModule: Module {
         promise.reject("ERR_UPDATES_FETCH", "fetchUpdateAsync() is not enabled")
         return
       }
-      UpdatesUtils.fetchUpdate() { result in
+      UpdatesUtils.fetchUpdate { result in
         if result["message"] != nil {
           guard let message = result["message"] as? String else {
             promise.reject("ERR_UPDATES_FETCH", "")

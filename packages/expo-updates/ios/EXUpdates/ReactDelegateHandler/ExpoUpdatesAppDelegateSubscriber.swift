@@ -15,9 +15,4 @@ public final class ExpoUpdatesAppDelegateSubscriber: ExpoAppDelegateSubscriber {
     }
     return true
   }
-
-  public func applicationWillEnterForeground(_ application: UIApplication) {
-    // Exercise the ShouldCheckForUpdate notification
-    AppController.sharedInstance.postShouldCheckForUpdateNotification()
-  }
 }

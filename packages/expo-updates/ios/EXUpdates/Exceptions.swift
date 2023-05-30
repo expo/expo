@@ -43,3 +43,13 @@ internal final class UpdatesUnsupportedDirectiveException: Exception {
     "Updates service response included a directive that this client does not support."
   }
 }
+
+internal final class UpdatesStateException: Exception {
+  override var code: String {
+    "ERR_UPDATES_STATE_EXCEPTION"
+  }
+
+  override var reason: String {
+    "The Updates state machine received an event that is invalid for the current state"
+  }
+}

@@ -58,7 +58,7 @@ public final class UpdatesUtils: NSObject {
    The UpdatesService is passed in when this is called from JS through UpdatesModule
    */
   public static func checkForUpdate(_ block: @escaping ([String: Any]) -> Void) {
-    sendStateEvent(AppController.CheckForUpdate_StartEventName)
+    sendStateEvent(.check)
     do {
       let constants = try startAPICall()
 
@@ -83,23 +83,23 @@ public final class UpdatesUtils: NSObject {
           switch updateDirective {
           case is NoUpdateAvailableUpdateDirective:
             block([:])
-            sendStateEvent(AppController.CheckForUpdate_Complete_NoUpdateAvailableEventName)
+            sendStateEvent(.checkCompleteUnavailable)
             return
           case is RollBackToEmbeddedUpdateDirective:
             let body = [
               "isRollBackToEmbedded": true
             ]
             block(body)
-            sendStateEvent(AppController.CheckForUpdate_Complete_UpdateAvailableEventName, body: body)
+            sendStateEvent(.checkCompleteAvailable, body: body)
             return
           default:
-            return handleAPIError(UpdatesUnsupportedDirectiveException(), block: block)
+            return handleCheckError(UpdatesUnsupportedDirectiveException(), block: block)
           }
         }
 
         guard let update = updateResponse.manifestUpdateResponsePart?.updateManifest else {
           block([:])
-          sendStateEvent(AppController.CheckForUpdate_Complete_NoUpdateAvailableEventName)
+          sendStateEvent(.checkCompleteUnavailable)
           return
         }
 
@@ -112,16 +112,16 @@ public final class UpdatesUtils: NSObject {
             "manifest": update.manifest.rawManifestJSON()
           ]
           block(body)
-          sendStateEvent(AppController.CheckForUpdate_Complete_UpdateAvailableEventName, body: body)
+          sendStateEvent(.checkCompleteAvailable, body: body)
         } else {
           block([:])
-          sendStateEvent(AppController.CheckForUpdate_Complete_NoUpdateAvailableEventName)
+          sendStateEvent(.checkCompleteUnavailable)
         }
       } errorBlock: { error in
-        return handleAPIError(error, block: block)
+        return handleCheckError(error, block: block)
       }
     } catch {
-      return handleAPIError(error, block: block)
+      return handleCheckError(error, block: block)
     }
   }
 
@@ -130,7 +130,7 @@ public final class UpdatesUtils: NSObject {
    The UpdatesService is passed in when this is called from JS through UpdatesModule
    */
   public static func fetchUpdate(_ block: @escaping ([String: Any]) -> Void) {
-    sendStateEvent(AppController.FetchUpdate_StartEventName)
+    sendStateEvent(.download)
     do {
       let constants = try startAPICall()
       let remoteAppLoader = RemoteAppLoader(
@@ -166,14 +166,20 @@ public final class UpdatesUtils: NSObject {
           filters: updateResponse.responseHeaderData?.manifestFilters
         )
       } asset: { asset, successfulAssetCount, failedAssetCount, totalAssetCount in
-        sendStateEvent(AppController.FetchUpdate_AssetDownloadedEventName, body: [
+        let body = [
           "assetInfo": [
             "assetName": asset.filename,
             "successfulAssetCount": successfulAssetCount,
             "failedAssetCount": failedAssetCount,
             "totalAssetCount": totalAssetCount
-          ] as [String : Any]
-        ])
+          ] as [String: Any]
+        ] as [String: Any]
+        AppController.sharedInstance.logger.info(
+          message: "fetchUpdateAsync didLoadAsset: \(body)",
+          code: .none,
+          updateId: nil,
+          assetId: asset.contentHash
+        )
       } success: { updateResponse in
         if updateResponse?.directiveUpdateResponsePart?.updateDirective is RollBackToEmbeddedUpdateDirective {
           let body = [
@@ -181,7 +187,7 @@ public final class UpdatesUtils: NSObject {
             "isRollBackToEmbedded": true
           ]
           block(body)
-          sendStateEvent(AppController.FetchUpdate_CompleteEventName, body: body)
+          sendStateEvent(.downloadComplete, body: body)
           return
         } else {
           if let update = updateResponse?.manifestUpdateResponsePart?.updateManifest {
@@ -190,9 +196,9 @@ public final class UpdatesUtils: NSObject {
               "isNew": true,
               "isRollBackToEmbedded": false,
               "manifest": update.manifest.rawManifestJSON()
-            ] as [String : Any]
+            ] as [String: Any]
             block(body)
-            sendStateEvent(AppController.FetchUpdate_CompleteEventName, body: body)
+            sendStateEvent(.downloadComplete, body: body)
             return
           } else {
             let body = [
@@ -200,15 +206,15 @@ public final class UpdatesUtils: NSObject {
               "isRollBackToEmbedded": false
             ]
             block(body)
-            sendStateEvent(AppController.FetchUpdate_CompleteEventName, body: body)
+            sendStateEvent(.downloadComplete, body: body)
             return
           }
         }
       } error: { error in
-        return handleAPIError(error, block: block)
+        return handleFetchError(error, block: block)
       }
     } catch {
-      handleAPIError(error, block: block)
+      handleFetchError(error, block: block)
     }
   }
 
@@ -236,8 +242,8 @@ public final class UpdatesUtils: NSObject {
     }
   }
 
-  internal static func sendStateEvent(_ type: String, body: [String: Any] = [:]) {
-    AppController.sharedInstance.state.handleEvent(type, body: body)
+  internal static func sendStateEvent(_ type: UpdatesStateEventType, body: [String: Any] = [:]) {
+    AppController.sharedInstance.stateMachine.processEvent(UpdatesStateEvent(type: type, body: body))
   }
 
   internal static func getRuntimeVersion(withConfig config: UpdatesConfig) -> String {
@@ -315,12 +321,22 @@ public final class UpdatesUtils: NSObject {
   // MARK: - Private methods used by API calls
 
   /**
-   If any error occurs in checkForUpdate() or fetchUpdate(), this will call the
+   If any error occurs in checkForUpdate(), this will call the
    completion block and fire the error notification
    */
-  private static func handleAPIError(_ error: Error, block: @escaping ([String: Any]) -> Void) {
+  private static func handleCheckError(_ error: Error, block: @escaping ([String: Any]) -> Void) {
     let body = ["message": error.localizedDescription]
-    sendStateEvent(AppController.ErrorEventName, body: body)
+    sendStateEvent(.checkError, body: body)
+    block(body)
+  }
+
+  /**
+   If any error occurs in fetchUpdate(), this will call the
+   completion block and fire the error notification
+   */
+  private static func handleFetchError(_ error: Error, block: @escaping ([String: Any]) -> Void) {
+    let body = ["message": error.localizedDescription]
+    sendStateEvent(.downloadError, body: body)
     block(body)
   }
 
