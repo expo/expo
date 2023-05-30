@@ -542,8 +542,8 @@ build:
 
 #### `eas/use_npm_token`
 
-Configures node package managers (npm / yarn / pnpm) for use with private packages, published either to npm or private registry.
-Set `NPM_TOKEN` in your projects secrets and this function will configure the build environment by creating `.npmrc` with the token.
+Configures node package managers (npm, pnpm, or Yarn) for use with private packages, published either to npm or private registry.
+Set `NPM_TOKEN` in your project's secrets, and this function will configure the build environment by creating **.npmrc** with the token.
 
 ```yaml test.yml
 build:
@@ -560,8 +560,7 @@ build:
 
 #### `eas/install_node_modules`
 
-Installs node modules using the package manager detected base on your project. Works with monorepos.
-Supported package managers: npm, yarn, pnpm
+Installs node modules using the package manager (npm, pnpm, or Yarn) detected based on your project. Works with monorepos.
 
 ```yaml test.yml
 build:
