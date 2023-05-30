@@ -74,4 +74,4 @@ JSIExecutor::RuntimeInstaller REAJSIExecutorRuntimeInstaller(
   return runtimeInstaller;
 }
 
-}
+} // namespace reanimated

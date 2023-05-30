@@ -179,8 +179,8 @@ PODS:
     - ExpoModulesCore
   - ExpoMaps (0.0.2):
     - ExpoModulesCore
-    - GoogleMaps (= 7.1.0)
-    - GooglePlaces (= 7.1.0)
+    - GoogleMaps (= 7.3.0)
+    - GooglePlaces (= 7.3.0)
   - ExpoModulesCore (1.3.2):
     - React-Core
     - React-RCTAppDelegate
@@ -251,17 +251,17 @@ PODS:
     - GoogleUtilities/Environment (~> 7.7)
     - nanopb (< 2.30910.0, >= 2.30908.0)
     - PromisesObjC (< 3.0, >= 1.2)
-  - GoogleMaps (7.1.0):
-    - GoogleMaps/Maps (= 7.1.0)
-  - GoogleMaps/Base (7.1.0)
-  - GoogleMaps/Maps (7.1.0):
+  - GoogleMaps (7.3.0):
+    - GoogleMaps/Maps (= 7.3.0)
+  - GoogleMaps/Base (7.3.0)
+  - GoogleMaps/Maps (7.3.0):
     - GoogleMaps/Base
   - GoogleMLKit/FaceDetection (2.6.0):
     - GoogleMLKit/MLKitCore
     - MLKitFaceDetection (~> 1.5.0)
   - GoogleMLKit/MLKitCore (2.6.0):
     - MLKitCommon (~> 5.0.0)
-  - GooglePlaces (7.1.0)
+  - GooglePlaces (7.3.0)
   - GoogleToolboxForMac/DebugUtils (2.3.2):
     - GoogleToolboxForMac/Defines (= 2.3.2)
   - GoogleToolboxForMac/Defines (2.3.2)
@@ -710,9 +710,9 @@ PODS:
     - React-Core
   - RNFlashList (1.4.0):
     - React-Core
-  - RNGestureHandler (2.9.0):
+  - RNGestureHandler (2.10.1):
     - React-Core
-  - RNReanimated (3.0.2):
+  - RNReanimated (3.1.0):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -1291,7 +1291,7 @@ SPEC CHECKSUMS:
   ExpoLocalAuthentication: de5f50fae4fa643a3fc6b404d61a2ab36b5acf20
   ExpoLocalization: c1201ba5cfcfb187972138e58c07cc708c5399db
   ExpoMailComposer: b9a4871714550d5b4e26d1873f0572e350c86478
-  ExpoMaps: be6983038f20ab7d6c953cda7aa48f81713896d3
+  ExpoMaps: 0d442753556c5a2a5f8e15fdb1d833a6768de816
   ExpoModulesCore: b7865a95e88b5731893e177bbf82f6a05f3f92d9
   ExpoModulesTestCore: 42fce831c9601dcfaba09fe7a03dfe99e25754a4
   ExpoNetwork: ef59bebcdbeb6ea188157a8fc88e9ceafbff1f89
@@ -1319,9 +1319,9 @@ SPEC CHECKSUMS:
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
   GoogleDataTransport: 1c8145da7117bd68bbbed00cf304edb6a24de00f
-  GoogleMaps: bc56ffb0324e345a2d91bac1a64a920f9c8f1b20
+  GoogleMaps: a146f275ee429d14822178c7a841c03366ec92a1
   GoogleMLKit: 755661c46990a85e42278015f26400286d98ad95
-  GooglePlaces: 187946335ec3dc624de71c0a9ddcc712f19b0ee1
+  GooglePlaces: 0609463845250bbadafa1739938181e54dece439
   GoogleToolboxForMac: 8bef7c7c5cf7291c687cf5354f39f9db6399ad34
   GoogleUtilities: 1d20a6ad97ef46f67bbdec158ce00563a671ebb7
   GoogleUtilitiesComponents: 679b2c881db3b615a2777504623df6122dd20afe
@@ -1381,8 +1381,8 @@ SPEC CHECKSUMS:
   RNCPicker: 0bf8ef8f7800524f32d2bb2a8bcadd53eda0ecd1
   RNDateTimePicker: 00247f26c34683c80be94207f488f6f13448586e
   RNFlashList: 399bf6a0db68f594ad2c86aaff3ea39564f39f8a
-  RNGestureHandler: 071d7a9ad81e8b83fe7663b303d132406a7d8f39
-  RNReanimated: 3e2ae8e5e62b407bbbde98d3a9cec92a75245154
+  RNGestureHandler: 42ec7c28dd02d540ed6c9159c57a98ff016492dc
+  RNReanimated: 7afddd5ab0590339f3e83d7bb52f43a73443b862
   RNScreens: 218801c16a2782546d30bd2026bb625c0302d70f
   RNSharedElement: 504fa28a235b12505b6daedbb452a9ec96809bd0
   RNSVG: 07dbd870b0dcdecc99b3a202fa37c8ca163caec2

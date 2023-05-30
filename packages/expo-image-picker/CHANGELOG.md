@@ -6,9 +6,12 @@
 
 ### 🎉 New features
 
+- Added ability to choose the preferred asset representation mode on iOS 14+. ([#22456](https://github.com/expo/expo/pull/22456) by [@thespacemanatee](https://github.com/thespacemanatee))
+
 ### 🐛 Bug fixes
 
-- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537) by [@kudo](https://github.com/kudo))
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- Fixed an issue that allowed picking non-image/video files when passing `MediaTypeOptions.All` ([#22606](https://github.com/expo/expo/pull/22606) by [@fobos531](https://github.com/fobos531))
 
 ### 💡 Others
 
@@ -17,7 +20,6 @@
 ### 🎉 New features
 
 - Added ability to choose the camera-facing type. ([#22143](https://github.com/expo/expo/pull/22143) by [@YoussefHenna](https://github.com/YoussefHenna))
-- Added ability to choose the preferred asset representation mode on iOS 14+. ([#22456](https://github.com/expo/expo/pull/22456) by [@thespacemanatee](https://github.com/thespacemanatee))
 
 ### 🐛 Bug fixes
 

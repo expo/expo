@@ -38,6 +38,7 @@ export async function getInitialData(): Promise<Partial<AppProvidersProps>> {
     isAuthenticated,
     installationID,
     isDevice,
+    timeout: 1500,
   }).catch((error) => {
     // likely network request failure -- no need to do anything
     console.log({ error });

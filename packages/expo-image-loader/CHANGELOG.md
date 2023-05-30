@@ -2,13 +2,18 @@
 
 ## Unpublished
 
+- Removed `com.facebook.fresco:fresco` dependency ([#22542](https://github.com/expo/expo/pull/22542) by [@josephyanks](https://github.com/josephyanks))
+### 📚 3rd party library updates
+
+- Updated `com.github.bumptech.glide:glide` to `4.13.2` and added customizable `glideVersion` variable on ext. ([#22542](https://github.com/expo/expo/pull/22542) by [@josephyanks](https://github.com/josephyanks))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
-- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537) by [@kudo](https://github.com/kudo))
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

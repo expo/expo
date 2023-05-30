@@ -8,7 +8,7 @@ public final class AppContext: NSObject {
   internal static func create() -> AppContext {
     let appContext = AppContext()
 
-    appContext._runtime = JavaScriptRuntime()
+    appContext._runtime = ExpoRuntime()
     return appContext
   }
 
@@ -44,7 +44,7 @@ public final class AppContext: NSObject {
    Underlying JSI runtime of the running app.
    */
   @objc
-  public var _runtime: JavaScriptRuntime? {
+  public var _runtime: ExpoRuntime? {
     didSet {
       if _runtime == nil {
         // When the runtime is unpinned from the context (e.g. deallocated),
@@ -52,9 +52,8 @@ public final class AppContext: NSObject {
         // Otherwise the JSCRuntime asserts may fail on deallocation.
         releaseRuntimeObjects()
       } else if _runtime != oldValue {
-        // Try to install ExpoModules host object automatically when the runtime changes.
-        // TODO: Should we uninstall in the old runtime? (@tsapeta)
-        try? installExpoModulesHostObject()
+        // Try to install the core object automatically when the runtime changes.
+        try? prepareRuntime()
       }
     }
   }
@@ -62,7 +61,7 @@ public final class AppContext: NSObject {
   /**
    JSI runtime of the running app.
    */
-  public var runtime: JavaScriptRuntime {
+  public var runtime: ExpoRuntime {
     get throws {
       if let runtime = _runtime {
         return runtime
@@ -70,6 +69,11 @@ public final class AppContext: NSObject {
       throw Exceptions.RuntimeLost()
     }
   }
+
+  /**
+   The core module that defines the `expo` object in the global scope of Expo runtime.
+   */
+  internal private(set) lazy var coreModule = CoreModule(appContext: self)
 
   /**
    Designated initializer without modules provider.
@@ -127,7 +131,8 @@ public final class AppContext: NSObject {
    */
   internal func newObject(nativeClassId: ObjectIdentifier) throws -> JavaScriptObject? {
     guard let jsClass = classRegistry.getJavaScriptClass(nativeClassId: nativeClassId) else {
-      return nil
+      // TODO: Define a JS class for SharedRef in the CoreModule and then use it here instead of a raw object (?)
+      return try runtime.createObject()
     }
     let prototype = try jsClass.getProperty("prototype").asObject()
     let object = try runtime.createObject(withPrototype: prototype)
@@ -342,10 +347,14 @@ public final class AppContext: NSObject {
 
   // MARK: - Runtime
 
-  internal func installExpoModulesHostObject() throws {
-    guard _runtime != nil else {
-      throw RuntimeLostException()
-    }
+  internal func prepareRuntime() throws {
+    let runtime = try runtime
+    let coreObject = try coreModule.definition().build(appContext: self)
+
+    // Initialize `global.expo`.
+    try runtime.initializeCoreObject(coreObject)
+
+    // Install the modules host object as the `global.expo.modules`.
     EXJavaScriptRuntimeManager.installExpoModulesHostObject(self)
   }
 

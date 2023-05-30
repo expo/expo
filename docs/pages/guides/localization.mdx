@@ -3,10 +3,8 @@ title: Localization
 description: Learn about getting started and configuring localization in an Expo project using expo-localization.
 ---
 
-import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 import { SnackInline } from '~/ui/components/Snippet';
 import { Terminal } from '~/ui/components/Snippet';
-import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 
 If you want your app to be easy to use for users who speak different languages or come from different cultures, you should localize it.
@@ -147,7 +145,7 @@ Here are some libraries that can be a good option depending on your needs:
 
 ### Translating app metadata
 
-If you plan on shipping your app to different countries or regions or want it to support various languages, you can provide [localized](/versions/latest/sdk/localization) strings for things like the display name and system dialogs. This is easily set up [in the Expo config](/workflow/configuration) file. First, set `ios.infoPlist.CFBundleAllowMixedLocalizations: true`, then provide a list of file paths to `locales`.
+If you plan on shipping your app to different countries or regions or want it to support various languages, you can provide [localized](/versions/latest/sdk/localization) strings for things like the display name and system dialogs. This is easily set up [in the app config](/workflow/configuration) file. First, set `ios.infoPlist.CFBundleAllowMixedLocalizations: true`, then provide a list of file paths to `locales`.
 
 ```json app.json
 {
@@ -179,7 +177,7 @@ Now, iOS knows to set the display name of your app to `こんにちは` whenever
 
 Several regions around the world write text from right to left. If you want to localize your app, so it looks as expected in RTL languages, you need to make sure your app handles these layout and text direction changes accordingly.
 
-To enable RTL support in your application using SDK 48 or later, install the `expo-localization` package and add the following properties in Expo config: 
+To enable RTL support in your application using SDK 48 or later, install the `expo-localization` package and add the following properties in app config:
 
 <Terminal cmd={['$ npx expo install expo-localization']} />
 
@@ -189,18 +187,18 @@ To enable RTL support in your application using SDK 48 or later, install the `ex
     "extra": {
       "supportsRTL": true
     },
-    "plugins": ["expo-localization"],
+    "plugins": ["expo-localization"]
   }
 }
 ```
 
 This enables RTL when your app is loaded in Expo Go, in Expo dev Client, and in applications built using EAS Build or `npx expo prebuild`.
 
-When an application starts, Expo checks if the current device locale should render in RTL layout to look correctly. For example, an app marked to support RTL in the Expo config file will render in RTL mode in Hebrew or Arabic locale.
+When an application starts, Expo checks if the current device locale should render in RTL layout to look correctly. For example, an app marked to support RTL in the app config file will render in RTL mode in Hebrew or Arabic locale.
 
 <Collapsible summary="Dynamically overriding RTL settings">
 
-If you want to override the default RTL detection from your application code dynamically, you cannot use the static configuration in Expo config. Instead, apply these changes dynamically from your application code.
+If you want to override the default RTL detection from your application code dynamically, you cannot use the static configuration in app config. Instead, apply these changes dynamically from your application code.
 
 This does not work in Expo Go, as Expo Go resets RTL preferences when opening the launcher or individual projects.
 
@@ -265,7 +263,7 @@ You don't need to manually adjust `<View>` styling properties based on locale. Y
 
 #### Web support
 
-Web support for RTL layouts requires no Expo config changes.
+Web support for RTL layouts requires no app config changes.
 
 Expo uses `react-native-web` for running Expo projects in the browser.
 To make `react-native-web` automatically adapt to locale direction, add a `dir` property to your root `<View>` component.

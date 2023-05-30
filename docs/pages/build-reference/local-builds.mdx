@@ -3,9 +3,11 @@ title: Running builds on your own infrastructure
 description: Learn how to run EAS Build on your own custom infrastructure.
 ---
 
+import { Terminal } from '~/ui/components/Snippet';
+
 You can run the same build process that we run on the EAS Build servers directly on your machine with the `--local` flag.
 
-`eas build --platform android --local` or `eas build --platform ios --local`
+<Terminal cmd={['eas build --platform android --local', '# or', 'eas build --platform ios --local']} />
 
 ## Prerequisites
 
