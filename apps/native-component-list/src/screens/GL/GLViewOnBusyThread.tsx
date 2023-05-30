@@ -1,4 +1,5 @@
 import { Asset } from 'expo-asset';
+import ExpoCheckbox from 'expo-checkbox';
 import { ExpoWebGLRenderingContext, GLView } from 'expo-gl';
 import React, { useEffect, useState } from 'react';
 import { Text, StyleSheet, View, TouchableHighlight } from 'react-native';
@@ -61,9 +62,40 @@ async function onContextCreate(gl: ExpoWebGLRenderingContext) {
   gl.endFrameEXP();
 }
 
-export default function GLViewOnBusyWorkletThread() {
-  const [show, setShow] = useState(true);
+function BusyJSThreadSelector() {
+  const [fakeBusyJSThread, setFakeBusyJSThread] = useState(false);
   useEffect(() => {
+    if (!fakeBusyJSThread) {
+      return;
+    }
+    const interval = setInterval(() => {
+      let test_value = 0;
+      const start = Date.now();
+      while (Date.now() - start < 990) {
+        test_value += Math.random();
+      }
+      console.log(`js - ${test_value}`);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [fakeBusyJSThread]);
+
+  return (
+    <View style={styles.checkboxRow}>
+      <ExpoCheckbox
+        onValueChange={() => setFakeBusyJSThread(!fakeBusyJSThread)}
+        value={fakeBusyJSThread}
+      />
+      <Text style={styles.text}>fake work on js thread</Text>
+    </View>
+  );
+}
+
+function BusyWorkletThreadSelector() {
+  const [fakeBusyWorkletThread, setFakeBusyWorkletThread] = useState(true);
+  useEffect(() => {
+    if (!fakeBusyWorkletThread) {
+      return;
+    }
     const interval = setInterval(() => {
       runOnUI(() => {
         'worklet';
@@ -72,15 +104,40 @@ export default function GLViewOnBusyWorkletThread() {
         while (Date.now() - start < 990) {
           test_value += Math.random();
         }
-        console.log(test_value);
+        console.log(`worklet - ${test_value}`);
       })();
     }, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [fakeBusyWorkletThread]);
+
+  return (
+    <View style={styles.checkboxRow}>
+      <ExpoCheckbox
+        onValueChange={() => setFakeBusyWorkletThread(!fakeBusyWorkletThread)}
+        value={fakeBusyWorkletThread}
+      />
+      <Text style={styles.text}>fake work on worklet thread</Text>
+    </View>
+  );
+}
+
+export default function GLViewOnBusyThread() {
+  const [show, setShow] = useState(true);
   return (
     <View style={styles.flex}>
+      <Text style={styles.text}>
+        This screen is expected to lag. It's faking work on JS and worklet threads. Toggle GLView
+        few times to make sure it does no crash.
+      </Text>
+      <BusyWorkletThreadSelector />
+      <BusyJSThreadSelector />
+
       {show ? (
-        <GLView style={styles.flex} onContextCreate={onContextCreate} />
+        <GLView
+          style={styles.flex}
+          onContextCreate={onContextCreate}
+          enableExperimentalWorkletSupport
+        />
       ) : (
         <View style={styles.placeholder}>
           <Text>no gl view</Text>
@@ -90,17 +147,22 @@ export default function GLViewOnBusyWorkletThread() {
         underlayColor="#0176d3"
         style={styles.button}
         onPress={() => setShow(!show)}>
-        <Text>toggle</Text>
+        <Text style={styles.buttonText}>TOGGLE</Text>
       </TouchableHighlight>
     </View>
   );
 }
 
-GLViewOnBusyWorkletThread.title = 'Creating GLView when worklet thread is busy';
+GLViewOnBusyThread.title = 'Creating GLView when a thread is busy';
 
 const styles = StyleSheet.create({
   flex: {
     flex: 1,
+  },
+  checkboxRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 10,
   },
   placeholder: {
     flex: 1,
@@ -108,14 +170,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   text: {
-    padding: 20,
-    fontSize: 20,
+    padding: 10,
+    fontSize: 16,
+  },
+  buttonText: {
+    fontSize: 22,
   },
   button: {
     height: 100,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#2196f3',
-    padding: 10,
+    marginTop: 10,
   },
 });

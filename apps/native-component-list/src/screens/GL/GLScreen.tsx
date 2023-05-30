@@ -109,16 +109,10 @@ const screens = [
     route: '/components/gl/reanimated',
   },
   {
-    _name: 'GLViewOnBusyJSThread',
+    _name: 'GLViewOnBusyThread',
     isAvailable: true,
-    name: 'Creating GLView when JS thread is busy',
-    route: '/components/gl/busyjsthread',
-  },
-  {
-    _name: 'GLViewOnBusyWorkletThread',
-    isAvailable: true,
-    name: 'Creating GLView when worklet thread is busy',
-    route: '/components/gl/busyworkletthread',
+    name: 'Creating GLView when a thread is busy',
+    route: '/components/gl/busythread',
   },
 ];
 
