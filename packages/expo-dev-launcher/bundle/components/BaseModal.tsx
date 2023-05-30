@@ -25,15 +25,11 @@ export function BaseModal({ children, title }: BaseModalProps) {
           <Spacer.Horizontal />
 
           <View style={{ transform: [{ translateX: 6 }, { translateY: -3 }] }}>
-            <Button.ScaleOnPressContainer
-              bg="default"
-              rounded="full"
-              onPress={onClosePress}
-              minScale={0.85}>
+            <Button.FadeOnPressContainer bg="default" rounded="full" onPress={onClosePress}>
               <View padding="tiny" rounded="full" bg="default">
                 <XIcon />
               </View>
-            </Button.ScaleOnPressContainer>
+            </Button.FadeOnPressContainer>
           </View>
         </Row>
       </View>

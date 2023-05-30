@@ -60,7 +60,7 @@ export function CrashReportScreen({ route }) {
     <ScrollView>
       <View py="medium">
         <View px="small">
-          <Button.ScaleOnPressContainer
+          <Button.FadeOnPressContainer
             onPress={onCopyPress}
             disabled={hasCopiedContent}
             bg="default"
@@ -71,7 +71,7 @@ export function CrashReportScreen({ route }) {
                 {hasCopiedContent ? 'Copied to clipboard!' : 'Tap to Copy Report'}
               </Text>
             </Row>
-          </Button.ScaleOnPressContainer>
+          </Button.FadeOnPressContainer>
         </View>
 
         <Spacer.Vertical size="large" />
