@@ -68,19 +68,19 @@ abstract class DevLauncherPlugin : Plugin<Project> {
 
   class OkHttpClientCustomBuildMethod(api: Int, methodVisitor: MethodVisitor) : MethodVisitor(api, methodVisitor) {
     override fun visitCode() {
-      // opcodes for `this.addInterceptor(expo.modules.devlauncher.network.DevLauncherOkHttpAppInterceptor())`
+      // opcodes for `this.addInterceptor(expo.modules.kotlin.networks.ExpoRequestLoggerOkHttpAppInterceptor())`
       visitVarInsn(Opcodes.ALOAD, 0)
-      visitTypeInsn(Opcodes.NEW, "expo/modules/devlauncher/network/DevLauncherOkHttpAppInterceptor")
+      visitTypeInsn(Opcodes.NEW, "expo/modules/kotlin/networks/ExpoRequestLoggerOkHttpAppInterceptor")
       visitInsn(Opcodes.DUP)
-      visitMethodInsn(Opcodes.INVOKESPECIAL, "expo/modules/devlauncher/network/DevLauncherOkHttpAppInterceptor", "<init>", "()V", false)
+      visitMethodInsn(Opcodes.INVOKESPECIAL, "expo/modules/kotlin/networks/ExpoRequestLoggerOkHttpAppInterceptor", "<init>", "()V", false)
       visitTypeInsn(Opcodes.CHECKCAST, "okhttp3/Interceptor")
       visitMethodInsn(Opcodes.INVOKEVIRTUAL, "okhttp3/OkHttpClient\$Builder", "addInterceptor", "(Lokhttp3/Interceptor;)Lokhttp3/OkHttpClient\$Builder;", false)
 
-      // opcodes for `this.addNetworkInterceptor(expo.modules.devlauncher.network.DevLauncherOkHttpNetworkInterceptor())`
+      // opcodes for `this.addNetworkInterceptor(expo.modules.kotlin.networks.ExpoRequestLoggerOkHttpNetworkInterceptor())`
       visitVarInsn(Opcodes.ALOAD, 0)
-      visitTypeInsn(Opcodes.NEW, "expo/modules/devlauncher/network/DevLauncherOkHttpNetworkInterceptor")
+      visitTypeInsn(Opcodes.NEW, "expo/modules/kotlin/networks/ExpoRequestLoggerOkHttpNetworkInterceptor")
       visitInsn(Opcodes.DUP)
-      visitMethodInsn(Opcodes.INVOKESPECIAL, "expo/modules/devlauncher/network/DevLauncherOkHttpNetworkInterceptor", "<init>", "()V", false)
+      visitMethodInsn(Opcodes.INVOKESPECIAL, "expo/modules/kotlin/networks/ExpoRequestLoggerOkHttpNetworkInterceptor", "<init>", "()V", false)
       visitTypeInsn(Opcodes.CHECKCAST, "okhttp3/Interceptor")
       visitMethodInsn(Opcodes.INVOKEVIRTUAL, "okhttp3/OkHttpClient\$Builder", "addNetworkInterceptor", "(Lokhttp3/Interceptor;)Lokhttp3/OkHttpClient\$Builder;", false)
 
