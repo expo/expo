@@ -45,6 +45,19 @@ export function restClient<T = any>(endpoint: string, options: RequestInit = {})
   });
 }
 
+export function restClientWithTimeout<T = any>(
+  endpoint: string,
+  timeout: number,
+  options: RequestInit = {}
+) {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+  return restClient<T>(endpoint, {
+    ...options,
+    signal: controller.signal,
+  }).finally(() => clearTimeout(id));
+}
+
 export async function setSessionAsync(session: string | null) {
   await DevLauncherAuth.setSessionAsync(session);
   apiClient.setHeader('expo-session', session);
