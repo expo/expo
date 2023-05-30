@@ -2478,10 +2478,10 @@ clone-response@^1.0.2:
   dependencies:
     mimic-response "^1.0.0"
 
-cmdk@^0.1.21:
-  version "0.1.21"
-  resolved "https://registry.yarnpkg.com/cmdk/-/cmdk-0.1.21.tgz#c4e0fbb032fdbcf487c003cc98e1a2ffcaecbb6b"
-  integrity sha512-O5oiYmoBdcoqmax4RMOsnJHrseaXlnkzfCSWgNdyBxneTaSCmUByBF5MliJbsveoHJsjkyL2uNUs2kTBBMmIaw==
+cmdk@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/cmdk/-/cmdk-0.2.0.tgz#53c52d56d8776c8bb8ced1055b5054100c388f7c"
+  integrity sha512-JQpKvEOb86SnvMZbYaFKYhvzFntWBeSZdyii0rZPhKJj9uwJBxu4DaVYDrRN7r3mPop56oPhRw+JYWTKs66TYw==
   dependencies:
     "@radix-ui/react-dialog" "1.0.0"
     command-score "0.1.2"
