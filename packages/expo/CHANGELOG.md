@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 48.0.18 — 2023-05-30
+
+_This version does not introduce any user-facing changes._
+
 ## 48.0.17 — 2023-05-16
 
 ### 📚 3rd party library updates
