@@ -108,10 +108,10 @@ export class ExternalModule<TModule> {
         ? new PackageManager.NpmPackageManager({
             cwd: this.projectRoot,
             log: Log.log,
-            silent: !env.EXPO_DEBUG,
+            silent: !(env.EXPO_DEBUG || env.CI),
           })
         : PackageManager.createForProject(this.projectRoot, {
-            silent: !env.EXPO_DEBUG,
+            silent: !(env.EXPO_DEBUG || env.CI),
           });
 
       try {
