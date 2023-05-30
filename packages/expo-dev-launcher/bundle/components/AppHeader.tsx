@@ -61,9 +61,8 @@ export function AppHeader({ navigation }) {
           </View>
 
           <View align="centered" style={{ justifyContent: 'flex-end' }}>
-            <Button.ScaleOnPressContainer
+            <Button.HighlightOnPressContainer
               onPress={onUserProfilePress}
-              minScale={0.85}
               accessibilityLabel="Navigate to User Profile"
               bg="ghost"
               rounded="full">
@@ -84,7 +83,7 @@ export function AppHeader({ navigation }) {
                   </View>
                 )}
               </View>
-            </Button.ScaleOnPressContainer>
+            </Button.HighlightOnPressContainer>
             {!selectedUserImage && (
               <Row
                 style={{

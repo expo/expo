@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Replace buttons bounce animation with fading animation. ([#22681](https://github.com/expo/expo/pull/22681) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 1.4.0 — 2023-05-08
 
 _This version does not introduce any user-facing changes._

@@ -51,6 +51,7 @@ export function Onboarding({ isDevice }: OnboardingProps) {
 
             <Spacer.Vertical size="xl" />
 
+<<<<<<< HEAD
             <GestureHandlerTouchableWrapper onPress={onOnboardingFinishedPress}>
               <Button.ScaleOnPressContainer bg="primary" onPress={onOnboardingFinishedPress}>
                 <View py="small">
@@ -60,6 +61,15 @@ export function Onboarding({ isDevice }: OnboardingProps) {
                 </View>
               </Button.ScaleOnPressContainer>
             </GestureHandlerTouchableWrapper>
+=======
+            <Button.FadeOnPressContainer bg="primary" onPress={onOnboardingFinishedPress}>
+              <View py="small">
+                <Button.Text align="center" size="large" color="primary" weight="medium">
+                  Got It
+                </Button.Text>
+              </View>
+            </Button.FadeOnPressContainer>
+>>>>>>> afba7fcbf8 ([dev-client-components] Update button animation to fade instead of bounce (#22681))
           </View>
         </View>
       </View>

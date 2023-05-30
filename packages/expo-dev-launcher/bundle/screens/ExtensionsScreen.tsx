@@ -100,13 +100,13 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
                   {/* <Spacer.Vertical size="small" />
 
                   <View align="centered">
-                    <Button.ScaleOnPressContainer bg="ghost" rounded="small">
+                    <Button.FadeOnPressContainer bg="ghost" rounded="small">
                       <View border="default" px="small" py="2" rounded="small">
                         <Button.Text color="ghost" weight="semibold" size="small">
                           Learn More
                         </Button.Text>
                       </View>
-                    </Button.ScaleOnPressContainer>
+                    </Button.FadeOnPressContainer>
                   </View> */}
 
                   <Spacer.Vertical size="medium" />
@@ -151,7 +151,7 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
                 <Spacer.Vertical size="large" />
 
                 <View>
-                  <Button.ScaleOnPressContainer
+                  <Button.FadeOnPressContainer
                     bg="tertiary"
                     rounded="medium"
                     onPress={onLoginPress}
@@ -161,11 +161,11 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
                         Log In
                       </Button.Text>
                     </View>
-                  </Button.ScaleOnPressContainer>
+                  </Button.FadeOnPressContainer>
 
                   <Spacer.Vertical size="small" />
 
-                  <Button.ScaleOnPressContainer
+                  <Button.FadeOnPressContainer
                     bg="secondary"
                     rounded="medium"
                     onPress={onSignupPress}
@@ -175,7 +175,7 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
                         Sign Up
                       </Button.Text>
                     </View>
-                  </Button.ScaleOnPressContainer>
+                  </Button.FadeOnPressContainer>
                 </View>
               </View>
               <Spacer.Vertical size="medium" />
@@ -264,7 +264,7 @@ function EASUpdatesPreview({
           );
         })}
         {emptyBranches.length > 1 && (
-          <Button.ScaleOnPressContainer
+          <Button.FadeOnPressContainer
             onPress={onSeeAllBranchesPress}
             bg="default"
             roundedTop="none"
@@ -276,7 +276,7 @@ function EASUpdatesPreview({
                 <ChevronRightIcon />
               </Row>
             </View>
-          </Button.ScaleOnPressContainer>
+          </Button.FadeOnPressContainer>
         )}
       </View>
     );

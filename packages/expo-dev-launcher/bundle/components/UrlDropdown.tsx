@@ -129,7 +129,7 @@ export function UrlDropdown({ onSubmit, isLoading, inputValue, setInputValue }: 
 
           <Spacer.Vertical size="xl" />
 
-          <Button.ScaleOnPressContainer
+          <Button.FadeOnPressContainer
             bg={isValidUrl ? 'tertiary' : 'disabled'}
             shadow="button"
             rounded="medium"
@@ -151,7 +151,7 @@ export function UrlDropdown({ onSubmit, isLoading, inputValue, setInputValue }: 
                 <ActivityIndicator size="small" />
               </View>
             )}
-          </Button.ScaleOnPressContainer>
+          </Button.FadeOnPressContainer>
         </View>
       )}
     </View>
