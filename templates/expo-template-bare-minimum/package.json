@@ -1,7 +1,7 @@
 {
   "name": "expo-template-bare-minimum",
   "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
-  "version": "48.0.16",
+  "version": "48.0.17",
   "main": "index.js",
   "scripts": {
     "start": "expo start --dev-client",
@@ -10,7 +10,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "expo": "~48.0.15",
+    "expo": "~48.0.18",
     "expo-splash-screen": "~0.18.2",
     "expo-status-bar": "~1.4.4",
     "react": "18.2.0",
