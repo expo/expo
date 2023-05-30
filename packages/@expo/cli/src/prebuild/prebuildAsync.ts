@@ -98,7 +98,7 @@ export async function prebuildAsync(
 
     await installAsync([], {
       ...options.packageManager,
-      silent: !env.EXPO_DEBUG,
+      silent: !(env.EXPO_DEBUG || env.CI),
     });
   }
 
