@@ -10,14 +10,15 @@ import path from 'path';
 
 // A list of the Node.js standard library modules that are currently
 // available,
-export const NODE_STDLIB_MODULES: string[] = (
-  builtinModules ||
-  // @ts-expect-error
-  (process.binding ? Object.keys(process.binding('natives')) : []) ||
-  []
-)
-  .filter((x) => !/^_|^(internal|v8|node-inspect)\/|\//.test(x) && !['sys'].includes(x))
-  .sort();
+export const NODE_STDLIB_MODULES: string[] = [
+  'fs/promises',
+  ...(
+    builtinModules ||
+    // @ts-expect-error
+    (process.binding ? Object.keys(process.binding('natives')) : []) ||
+    []
+  ).filter((x) => !/^_|^(internal|v8|node-inspect)\/|\//.test(x) && !['sys'].includes(x)),
+].sort();
 
 export const EXTERNAL_REQUIRE_POLYFILL = '.expo/metro/polyfill.js';
 export const EXTERNAL_REQUIRE_NATIVE_POLYFILL = '.expo/metro/polyfill.native.js';

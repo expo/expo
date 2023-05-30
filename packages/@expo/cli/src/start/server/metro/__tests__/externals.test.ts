@@ -5,7 +5,7 @@ import { NODE_STDLIB_MODULES, isNodeExternal, setupNodeExternals } from '../exte
 describe('NODE_STDLIB_MODULES', () => {
   it(`works`, () => {
     expect(NODE_STDLIB_MODULES.length).toBeGreaterThan(5);
-    expect(NODE_STDLIB_MODULES.includes('fs')).toBe(true);
+    expect(NODE_STDLIB_MODULES.includes('path')).toBe(true);
   });
 });
 
