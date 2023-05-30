@@ -30,10 +30,13 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
   private val SECURITY_LEVEL_NONE = 0
   private val SECURITY_LEVEL_SECRET = 1
   private val SECURITY_LEVEL_BIOMETRIC = 2
+  private val DEVICE_CREDENTIAL_FALLBACK_CODE = 6
   private val biometricManager = BiometricManager.from(context)
   private val packageManager = context.packageManager
   private var biometricPrompt: BiometricPrompt? = null
   private var promise: Promise? = null
+  private var authOptions: Map<String?, Any?>? = null
+  private var isRetryingWithDeviceCredentials = false
   private var isAuthenticating = false
   private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
   private val uIManager: UIManager by moduleRegistry()
@@ -52,9 +55,21 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
     }
   }
 
+  private fun isBiometricUnavailable(code: Int): Boolean {
+    return when (code) {
+      BiometricPrompt.ERROR_HW_NOT_PRESENT,
+      BiometricPrompt.ERROR_HW_UNAVAILABLE,
+      BiometricPrompt.ERROR_NO_BIOMETRICS,
+      BiometricPrompt.ERROR_UNABLE_TO_PROCESS,
+      BiometricPrompt.ERROR_NO_SPACE -> true
+      else -> false
+    }
+  }
+
   private val authenticationCallback: BiometricPrompt.AuthenticationCallback = object : BiometricPrompt.AuthenticationCallback() {
     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
       isAuthenticating = false
+      isRetryingWithDeviceCredentials = false
       biometricPrompt = null
       promise?.resolve(
         Bundle().apply {
@@ -62,10 +77,30 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
         }
       )
       promise = null
+      authOptions = null
     }
 
     override fun onAuthenticationError(errMsgId: Int, errString: CharSequence) {
+      // Make sure to fallback to the Device Credentials if the Biometrics hardware is unavailable.
+      if (isBiometricUnavailable(errMsgId) && isDeviceSecure && !isRetryingWithDeviceCredentials) {
+        val options = authOptions
+
+        if (options != null) {
+          val disableDeviceFallback = options["disableDeviceFallback"] as Boolean?
+
+          // Don't run the device credentials fallback if it's disabled.
+          if (disableDeviceFallback != true) {
+            promise?.let {
+              isRetryingWithDeviceCredentials = true
+              promptDeviceCredentialsFallback(options, it)
+              return
+            }
+          }
+        }
+      }
+
       isAuthenticating = false
+      isRetryingWithDeviceCredentials = false
       biometricPrompt = null
       promise?.resolve(
         Bundle().apply {
@@ -75,6 +110,7 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
         }
       )
       promise = null
+      authOptions = null
     }
   }
 
@@ -177,6 +213,8 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
       return
     }
 
+    this.authOptions = options
+
     // BiometricPrompt callbacks are invoked on the main thread so also run this there to avoid
     // having to do locking.
     uIManager.runOnUiQueueThread(
@@ -245,11 +283,85 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
     }
   }
 
+  fun promptDeviceCredentialsFallback(options: Map<String?, Any?>, promise: Promise) {
+    val fragmentActivity = currentActivity as FragmentActivity?
+    if (fragmentActivity == null) {
+      promise.resolve(
+        Bundle().apply {
+          putBoolean("success", false)
+          putString("error", "not_available")
+          putString("warning", "getCurrentActivity() returned null")
+        }
+      )
+      return
+    }
+
+    val promptMessage = options["promptMessage"] as? String ?: ""
+    val requireConfirmation = options["requireConfirmation"] as? Boolean ?: true
+
+    // BiometricPrompt callbacks are invoked on the main thread so also run this there to avoid
+    // having to do locking.
+    uIManager.runOnUiQueueThread(
+      Runnable {
+        // On Android devices older than 11, we need to use Keyguard to unlock by Device Credentials.
+        if (Build.VERSION.SDK_INT < 30) {
+          val credentialConfirmationIntent = keyguardManager.createConfirmDeviceCredentialIntent(promptMessage, "")
+          fragmentActivity.startActivityForResult(credentialConfirmationIntent, DEVICE_CREDENTIAL_FALLBACK_CODE)
+          return@Runnable
+        }
+
+        val executor: Executor = Executors.newSingleThreadExecutor()
+        val localBiometricPrompt = BiometricPrompt(fragmentActivity, executor, authenticationCallback)
+        if (localBiometricPrompt == null) {
+          promise.reject("E_INTERNAL_ERRROR", "Canceled authentication due to an internal error")
+          return@Runnable
+        }
+        biometricPrompt = localBiometricPrompt
+
+        val promptInfoBuilder = PromptInfo.Builder()
+        promptMessage?.let {
+          promptInfoBuilder.setTitle(it)
+        }
+        promptInfoBuilder.setAllowedAuthenticators(BiometricManager.Authenticators.DEVICE_CREDENTIAL)
+        promptInfoBuilder.setConfirmationRequired(requireConfirmation)
+        val promptInfo = promptInfoBuilder.build()
+        try {
+          localBiometricPrompt.authenticate(promptInfo)
+        } catch (ex: NullPointerException) {
+          promise.reject("E_INTERNAL_ERRROR", "Canceled authentication due to an internal error")
+        }
+      }
+    )
+  }
+
   override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
-    // If the user uses PIN as an authentication method, the result will be passed to the `onActivityResult`.
-    // Unfortunately, react-native doesn't pass this value to the underlying fragment - we won't resolve the promise.
-    // So we need to do it manually.
-    if (activity is FragmentActivity) {
+    // When Biometric is unavailable and using Keyguard fallback, the result will be handled here.
+    if (requestCode == DEVICE_CREDENTIAL_FALLBACK_CODE) {
+      if (resultCode == Activity.RESULT_OK) {
+        promise?.resolve(
+          Bundle().apply {
+            putBoolean("success", true)
+          }
+        )
+      } else {
+        promise?.resolve(
+          Bundle().apply {
+            putBoolean("success", false)
+            putString("error", "user_cancel")
+            putString("warning", "Device Credentials canceled")
+          }
+        )
+      }
+
+      isAuthenticating = false
+      isRetryingWithDeviceCredentials = false
+      biometricPrompt = null
+      promise = null
+      authOptions = null
+    } else if (activity is FragmentActivity) {
+      // If the user uses PIN as an authentication method, the result will be passed to the `onActivityResult`.
+      // Unfortunately, react-native doesn't pass this value to the underlying fragment - we won't resolve the promise.
+      // So we need to do it manually.
       val fragment = activity.supportFragmentManager.findFragmentByTag("androidx.biometric.BiometricFragment")
       fragment?.onActivityResult(requestCode and 0xffff, resultCode, data)
     }
