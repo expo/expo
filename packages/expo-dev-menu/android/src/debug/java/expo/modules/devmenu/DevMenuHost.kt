@@ -15,7 +15,7 @@ import com.facebook.react.defaults.DefaultJSIModulePackage
 import com.facebook.react.devsupport.DevMenuReactInternalSettings
 import com.facebook.react.devsupport.DevServerHelper
 import com.facebook.react.shell.MainReactPackage
-import devmenu.com.th3rdwave.safeareacontext.SafeAreaContextPackage
+import devmenu.com.th3rdwave.safeareacontext.SafeAreaProviderManager
 import expo.modules.adapters.react.ModuleRegistryAdapter
 import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.devmenu.modules.DevMenuInternalModule
@@ -40,12 +40,12 @@ class DevMenuHost(application: Application) : ReactNativeHost(application) {
           override fun getModulesList() =
             listOf(
               DevMenuInternalModule::class.java,
-              DevMenuPreferences::class.java
+              DevMenuPreferences::class.java,
+              SafeAreaProviderManager::class.java
             )
         }
       ),
       DevMenuPackage(),
-      SafeAreaContextPackage()
     )
 
     try {
