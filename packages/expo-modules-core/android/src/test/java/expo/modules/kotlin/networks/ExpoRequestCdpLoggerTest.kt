@@ -3,6 +3,8 @@
 package expo.modules.kotlin.networks
 
 import com.google.common.truth.Truth
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -17,6 +19,7 @@ class MockCdpLoggerDelegate : ExpoRequestCdpLogger.Delegate {
   }
 }
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ExpoRequestCdpLoggerTest {
   private val mockDelegate = MockCdpLoggerDelegate()
   private val client = OkHttpClient.Builder()
@@ -25,7 +28,7 @@ class ExpoRequestCdpLoggerTest {
     .build()
 
   init {
-    ExpoRequestCdpLogger.dispatcher = UnconfinedTestDispatcher()
+    ExpoRequestCdpLogger.coroutineScope = CoroutineScope(UnconfinedTestDispatcher())
     ExpoRequestCdpLogger.setDelegate(mockDelegate)
   }
 

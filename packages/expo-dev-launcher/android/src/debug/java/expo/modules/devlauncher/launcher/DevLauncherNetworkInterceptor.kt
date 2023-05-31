@@ -6,7 +6,6 @@ import com.facebook.react.common.LifecycleState
 import com.facebook.react.devsupport.DevServerHelper
 import com.facebook.react.devsupport.InspectorPackagerConnection
 import expo.modules.devlauncher.DevLauncherController
-import expo.modules.devlauncher.helpers.runBlockingOnMainThread
 import expo.modules.kotlin.networks.ExpoRequestCdpLogger
 import java.io.Closeable
 import java.lang.ref.WeakReference

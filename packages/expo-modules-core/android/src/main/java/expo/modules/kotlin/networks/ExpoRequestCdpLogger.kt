@@ -8,11 +8,9 @@ import expo.modules.kotlin.networks.cdp.LoadingFinishedParams
 import expo.modules.kotlin.networks.cdp.RequestWillBeSentExtraInfoParams
 import expo.modules.kotlin.networks.cdp.RequestWillBeSentParams
 import expo.modules.kotlin.networks.cdp.ResponseReceivedParams
-import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import okhttp3.Request
 import okhttp3.Response
 import java.math.BigDecimal
@@ -23,22 +21,17 @@ import java.math.RoundingMode
  */
 object ExpoRequestCdpLogger : ExpoRequestLoggerOkHttpInterceptorsDelegate {
   private var delegate: Delegate? = null
-
-  internal var dispatcher: CoroutineDispatcher = Dispatchers.Default
+  internal var coroutineScope = CoroutineScope(Dispatchers.Default)
 
   fun setDelegate(delegate: Delegate?) {
-    runBlocking {
-      withContext(dispatcher) {
-        this@ExpoRequestCdpLogger.delegate = delegate
-      }
+    coroutineScope.launch {
+      this@ExpoRequestCdpLogger.delegate = delegate
     }
   }
 
   private fun dispatchEvent(event: Event) {
-    runBlocking {
-      launch(dispatcher) {
-        this@ExpoRequestCdpLogger.delegate?.dispatch(event.toJson())
-      }
+    coroutineScope.launch {
+      this@ExpoRequestCdpLogger.delegate?.dispatch(event.toJson())
     }
   }
 
