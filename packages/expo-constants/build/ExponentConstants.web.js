@@ -1,8 +1,8 @@
 import { Platform } from 'expo-modules-core';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'expo-crypto';
 import { ExecutionEnvironment, } from './Constants.types';
 const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
-const _sessionId = uuidv4();
+const _sessionId = randomUUID();
 function getBrowserName() {
     if (Platform.isDOMAvailable) {
         const agent = navigator.userAgent.toLowerCase();
@@ -45,7 +45,7 @@ export default {
         try {
             installationId = localStorage.getItem(ID_KEY);
             if (installationId == null || typeof installationId !== 'string') {
-                installationId = uuidv4();
+                installationId = randomUUID();
                 localStorage.setItem(ID_KEY, installationId);
             }
         }

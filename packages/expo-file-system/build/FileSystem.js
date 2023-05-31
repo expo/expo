@@ -1,6 +1,6 @@
 import { EventEmitter, UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'expo-crypto';
 import ExponentFileSystem from './ExponentFileSystem';
 import { FileSystemSessionType, FileSystemUploadType, } from './FileSystem.types';
 if (!ExponentFileSystem) {
@@ -269,7 +269,7 @@ export function createUploadTask(url, fileUri, options, callback) {
     return new UploadTask(url, fileUri, options, callback);
 }
 export class FileSystemCancellableNetworkTask {
-    _uuid = uuidv4();
+    _uuid = randomUUID();
     taskWasCanceled = false;
     emitter = new EventEmitter(ExponentFileSystem);
     subscription;

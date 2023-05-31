@@ -1,10 +1,10 @@
 import { CodedError } from 'expo-modules-core';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'expo-crypto';
 const INSTALLATION_ID_KEY = 'EXPO_NOTIFICATIONS_INSTALLATION_ID';
 const REGISTRATION_INFO_KEY = 'EXPO_NOTIFICATIONS_REGISTRATION_INFO';
 // Lazy fallback installationId per session initializer
 let getFallbackInstallationId = () => {
-    const sessionInstallationId = uuidv4();
+    const sessionInstallationId = randomUUID();
     getFallbackInstallationId = () => sessionInstallationId;
 };
 export default {
@@ -13,7 +13,7 @@ export default {
         try {
             installationId = localStorage.getItem(INSTALLATION_ID_KEY);
             if (!installationId || typeof installationId !== 'string') {
-                installationId = uuidv4();
+                installationId = randomUUID();
                 localStorage.setItem(INSTALLATION_ID_KEY, installationId);
             }
         }

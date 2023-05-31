@@ -1,6 +1,6 @@
 import { PermissionStatus, UnavailabilityError } from 'expo-modules-core';
 import { Platform, Share } from 'react-native';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'expo-crypto';
 import ExpoContacts from './ExpoContacts';
 export { PermissionStatus };
 /**
@@ -236,7 +236,7 @@ export async function createGroupAsync(name, containerId) {
     if (!ExpoContacts.createGroupAsync) {
         throw new UnavailabilityError('Contacts', 'createGroupAsync');
     }
-    name = name || uuidv4();
+    name = name || randomUUID();
     if (!containerId) {
         containerId = await getDefaultContainerIdAsync();
     }

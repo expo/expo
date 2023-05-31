@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'expo-crypto';
 const INSTALLATION_ID_KEY = 'installationId';
 let installationId = null;
 export default async function getInstallationIdAsync() {
@@ -18,7 +18,7 @@ export default async function getInstallationIdAsync() {
         // let's create a new one.
     }
     // No persisted value, set the cached value...
-    installationId = uuidv4();
+    installationId = randomUUID();
     // ...and try to persist it. Ignore the errors.
     try {
         localStorage.setItem(INSTALLATION_ID_KEY, installationId);
