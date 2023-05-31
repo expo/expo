@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix type error in downloadExpoGoAsync. ([#22398](https://github.com/expo/expo/pull/22398) by [@0618](https://github.com/0618))
-
 ### 💡 Others
+
+## 0.7.3 — 2023-05-31
+
+### 🐛 Bug fixes
+
+- Fix type error in downloadExpoGoAsync. ([#22398](https://github.com/expo/expo/pull/22398) by [@0618](https://github.com/0618))
 
 ## 0.7.2 — 2023-05-30
 
