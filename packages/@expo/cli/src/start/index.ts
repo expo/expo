@@ -36,6 +36,8 @@ export const expoStart: Command = async (argv) => {
       '-i': '--ios',
       '-w': '--web',
       '-m': '--host',
+      // Alias for adding interop with the Metro docs and RedBox errors.
+      '--reset-cache': '--clear',
     },
     argv
   );
