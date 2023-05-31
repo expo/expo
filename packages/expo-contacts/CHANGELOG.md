@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Replace package `uuid` with `expo-crypto` ([#22698](https://github.com/expo/expo/pull/22698) by [@reichhartd](https://github.com/reichhartd))
+
 ## 12.1.0 — 2023-05-08
 
 _This version does not introduce any user-facing changes._
