@@ -249,8 +249,6 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
 
     purgeUpdatesLogsOlderThanOneDay()
 
-    initializeUpdateEventNotificationHandler()
-
     do {
       try initializeUpdatesDirectory()
       try initializeUpdatesDatabase()
@@ -343,30 +341,6 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     return launcher?.launchedUpdate
   }
 
-  // MARK: - Notifications for UpdateEvents
-
-  private func initializeUpdateEventNotificationHandler() {
-    // Use notifications to allow other parts of expo-updates to send UpdateEvents
-    NotificationCenter.default.addObserver(self, selector: #selector(handleUpdateEventNotification(notification:)), name: Notification.Name(AppController.UpdateEventNotificationName), object: nil)
-  }
-
-  public func handleUpdateEventNotification(notification: Notification) {
-    guard let body = notification.userInfo?["body"] as? [AnyHashable: Any],
-      let type = notification.userInfo?["type"] as? String else {
-      return
-    }
-    // For now, we only support the three types
-    sendEventToBridge(type, body: body)
-  }
-
-  public func postUpdateEventNotification(_ type: String, body: [AnyHashable: Any] = [:]) {
-    NotificationCenter.default.post(
-      name: Notification.Name(AppController.UpdateEventNotificationName),
-      object: nil,
-      userInfo: ["type": type, "body": body]
-    )
-  }
-
   // MARK: - AppLoaderTaskDelegate
 
   public func appLoaderTask(_: AppLoaderTask, didLoadCachedUpdate update: Update) -> Bool {
@@ -382,9 +356,12 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     let rollback: Bool? = body["isRollBackToEmbedded"] as? Bool
     let eventType: UpdatesStateEventType = (rollback == true || manifest != nil) ? .checkCompleteAvailable : .checkCompleteUnavailable
     stateMachine.processEvent(UpdatesStateEvent(type: eventType, body: body))
+    // Send UpdateEvents to JS
     if eventType == .checkCompleteUnavailable {
-      // Send UpdateEvents to JS
-      postUpdateEventNotification(AppController.NoUpdateAvailableEventName, body: [:])
+      sendEventToBridge(AppController.NoUpdateAvailableEventName, body: [:])
+    }
+    if eventType == .checkCompleteAvailable {
+      sendEventToBridge(AppController.UpdateAvailableEventName, body: body)
     }
   }
 
@@ -442,7 +419,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     ]
     stateMachine.processEvent(UpdatesStateEvent(type: .downloadError, body: body))
     // Send legacy UpdateEvents to JS
-    postUpdateEventNotification(AppController.ErrorEventName, body: body)
+    sendEventToBridge(AppController.ErrorEventName, body: body)
     emergencyLaunch(fatalError: error as NSError)
   }
 
@@ -479,7 +456,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
         stateMachine.processEvent(UpdatesStateEvent(type: .downloadError, body: body))
       }
       // Send UpdateEvents to JS
-      postUpdateEventNotification(AppController.ErrorEventName, body: body)
+      sendEventToBridge(AppController.ErrorEventName, body: body)
     case .updateAvailable:
       remoteLoadStatus = .NewUpdateLoaded
       guard let update = update else {
@@ -495,8 +472,6 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
         "manifest": update.manifest.rawManifestJSON()
       ]
       stateMachine.processEvent(UpdatesStateEvent(type: .downloadComplete, body: body))
-      // Send UpdateEvents to JS
-      postUpdateEventNotification(AppController.UpdateAvailableEventName, body: body)
     case .noUpdateAvailable:
       remoteLoadStatus = .Idle
       logger.info(
