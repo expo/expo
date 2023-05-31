@@ -90,15 +90,11 @@ dependencies {
   implementation project(':expo-json-utils')
 
   testImplementation 'junit:junit:4.13.2'
-  testImplementation 'androidx.test:core:1.4.0'
-  testImplementation 'org.mockito:mockito-core:1.10.19'
-  testImplementation 'io.mockk:mockk:1.12.3'
-
-  androidTestImplementation 'androidx.test:runner:1.4.0'
-  androidTestImplementation 'androidx.test:core:1.4.0'
-  androidTestImplementation 'androidx.test:rules:1.4.0'
-  androidTestImplementation 'org.mockito:mockito-android:3.7.7'
-  androidTestImplementation 'io.mockk:mockk-android:1.12.3'
+  testImplementation 'androidx.test:core:1.5.0'
+  testImplementation 'org.mockito:mockito-core:4.0.0'
+  testImplementation 'io.mockk:mockk:1.13.5'
+  testImplementation 'org.json:json:20230227'
+  testImplementation "com.google.truth:truth:1.1.2"
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
 }
