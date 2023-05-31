@@ -26,7 +26,8 @@
 
 @implementation EXGLContext
 
-- (instancetype)initWithDelegate:(id<EXGLContextDelegate>)delegate andModuleRegistry:(nonnull EXModuleRegistry *)moduleRegistry
+- (instancetype)initWithDelegate:(id<EXGLContextDelegate>)delegate
+               andModuleRegistry:(nonnull EXModuleRegistry *)moduleRegistry
 {
   if (self = [super init]) {
     self.delegate = delegate;
@@ -98,7 +99,7 @@
   [self flush];
 }
 
-- (void)prepare:(void(^)(BOOL))callback
+- (void)prepare:(void(^)(BOOL))callback andEnableExperimentalWorkletSupport:(BOOL)enableExperimentalWorkletSupport
 {
   if (_wasPrepareCalled) {
     return;
@@ -123,7 +124,7 @@
       }
 
       EXGLContextSetDefaultFramebuffer(self->_contextId, [self defaultFramebuffer]);
-      EXGLContextPrepare(jsRuntimePtr, self->_contextId, [self](){
+      EXGLContextPrepare(jsRuntimePtr, self->_contextId, enableExperimentalWorkletSupport, [self](){
         [self flush];
       });
 

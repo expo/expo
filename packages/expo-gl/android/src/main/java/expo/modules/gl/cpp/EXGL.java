@@ -8,7 +8,12 @@ public class EXGL {
     SoLoader.loadLibrary("expo-gl");
   }
   public static native int EXGLContextCreate();
-  public static native void EXGLContextPrepare(long jsCtxPtr, int exglCtxId, Object glContext);
+  public static native void EXGLContextPrepare(
+          long jsCtxPtr,
+          int exglCtxId,
+          Object glContext,
+          boolean enableExperimentalWorkletSupport
+  );
 
   public static native void EXGLContextDestroy(int exglCtxId);
   public static native void EXGLContextFlush(int exglCtxId);

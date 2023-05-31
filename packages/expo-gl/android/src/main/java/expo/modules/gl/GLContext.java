@@ -70,7 +70,10 @@ public class GLContext {
     mEventQueue.add(r);
   }
 
-  public void initialize(SurfaceTexture surfaceTexture, final Runnable completionCallback) {
+  public void initialize(
+          SurfaceTexture surfaceTexture,
+          Boolean enableExperimentalWorkletSupport,
+          final Runnable completionCallback) {
     if (mGLThread != null) {
       return;
     }
@@ -94,7 +97,7 @@ public class GLContext {
         synchronized (uiManager) {
           if (jsContextRef != 0) {
             EXGLRegisterThread();
-            EXGLContextPrepare(jsContextRef, mEXGLCtxId, glContext);
+            EXGLContextPrepare(jsContextRef, mEXGLCtxId, glContext, enableExperimentalWorkletSupport);
           }
         }
         mManager.saveContext(glContext);
