@@ -325,7 +325,6 @@ public class Manifest: NSObject {
   /**
    Queries the dedicated package properties in `plugins`
    */
-  @objc
   public func getPluginProperties(packageName: String) -> [String: Any]? {
     typealias PluginWithProps = (String, [String: Any])
     typealias PluginWithoutProps = String
