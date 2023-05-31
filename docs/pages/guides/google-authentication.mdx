@@ -66,7 +66,7 @@ Create a [`androidClientId`](/versions/latest/sdk/auth-session/#googleauthreques
 - Under **Package name**, enter the package name of your app. This is the same package name you have set up in the app config file under [`android.package`](/versions/latest/config/app/#package) field, for example, `com.example.myapp`.
 - Under **SHA-1 certificate fingerprint**, you'll need to add the signing certificate value. To get this value:
   > **warning** If you have an existing app or have uploaded a release build to the Google Play Store, you do not need to re-generate the keystore as described below. You can find the SHA-1 certificate fingerprint in the Google Play Console under **Release** > **Setup** > **App Integrity** > **App signing key certificate** and use that signing certificate value instead.
-  > However, if you are using a development build on a new project, you'll need to generate a new keystore by following the steps below.
+  > However, if you're creating new project, you'll need to generate a new keystore by following the steps below.
   - In the terminal window, run `eas credentials -p android`, then select the build profile. For example, if you are generating the credential for development, select the build profile for it.
   - Select **Keystore: Manage everything needed to build your project** > **Set up a new keystore** > select the default value for **Assign a name to your build credentials** > press <kbd>Y</kbd> to **Generate a new Android Keystore**.
   - This will generate a new keystore and print the SHA-1 certificate fingerprint.
