@@ -1463,7 +1463,7 @@ SPEC CHECKSUMS:
   EXManifests: 37a0bb3514806cf432f6538fcc9825107fc23436
   Expo: 0b569a9cefb602d6cb80633c990153ab921aa652
   expo-dev-client: b9a1eefeb4c93677753c734ad72072db3404caf9
-  expo-dev-launcher: 88d3a7cfc34219ae685f2846cd309153b48bccd8
+  expo-dev-launcher: bdc58c9d8148707573ab921c074443f9fcbe4f1a
   expo-dev-menu: 9e06bed7ce084d77f5a63a4510529684f177328c
   expo-dev-menu-interface: f74523f940ba5306b0d2f37a488a77b44d57f572
   ExpoAppleAuthentication: 7bdf1a2962ebfe9b00eb4183a17b78d736e57185
@@ -1505,7 +1505,7 @@ SPEC CHECKSUMS:
   React-perflogger: fdd8c2969761105b1c85432fecdfff0616100cc6
   React-RCTActionSheet: 5aaa270460794991553f80d393bcdcb97a372273
   React-RCTAnimation: f1e0d1a03ce881c0e45fa151b63b1fd8d4068841
-  React-RCTAppDelegate: a0e9694a397ac789a8c570e65aa5130df535d39a
+  React-RCTAppDelegate: 8823bcd2f779fe862e8c1542b571e64ed270fd86
   React-RCTBlob: 5d83c1bd6d0b88b308f65a61685fac6cc9b58e84
   React-RCTFabric: f02272ef350bab1079393ccbd7e0a39088abbbfc
   React-RCTImage: 84508714b0a1858ae4aca6671bc7b4b19294f430

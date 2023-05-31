@@ -7,10 +7,10 @@
 #import <React/RCTRedBox.h>
 #import <React/RCTLogBox.h>
 #import <React/RCTBundleURLProvider.h>
-#import <React/RCTAppSetupUtils.h>
 
 #pragma clang diagnostic pop
 
 #import "EXDevLauncherRedBoxProtocol.h"
 #import "EXDevLauncherRedBox.h"
 #import "RCTBundleURLProvider+Private.h"
+#import "RCTAppSetupUtils.h"

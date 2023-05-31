@@ -51,8 +51,6 @@ Pod::Spec.new do |s|
   end
   install_modules_dependencies(s)
 
-  install_modules_dependencies(s)
-
   s.subspec 'SafeAreaView' do |safearea|
     safearea.dependency 'ExpoModulesCore'
 
