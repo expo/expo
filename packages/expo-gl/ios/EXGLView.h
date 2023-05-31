@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy, nullable) EXDirectEventBlock onSurfaceCreate;
 @property (nonatomic, assign) NSInteger msaaSamples;
+@property (nonatomic, assign) BOOL enableExperimentalWorkletSupport;
 
 // "protected"
 @property (nonatomic, strong, nullable) EXGLContext *glContext;

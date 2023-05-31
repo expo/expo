@@ -96,7 +96,8 @@ EX_EXPORT_METHOD_AS(createContextAsync,
                     createContext:(EXPromiseResolveBlock)resolve
                     reject:(EXPromiseRejectBlock)reject)
 {
-  EXGLContext *glContext = [[EXGLContext alloc] initWithDelegate:nil andModuleRegistry:_moduleRegistry];
+  EXGLContext *glContext = [[EXGLContext alloc] initWithDelegate:nil
+                                               andModuleRegistry:_moduleRegistry];
 
   [glContext initialize];
   [glContext prepare:^(BOOL success) {
@@ -109,7 +110,7 @@ EX_EXPORT_METHOD_AS(createContextAsync,
              EXErrorWithMessage(@"ExponentGLObjectManager.createContextAsync: Unexpected error occurred when initializing headless context")
              );
     }
-  }];
+  } andEnableExperimentalWorkletSupport:NO];
 }
 
 EX_EXPORT_METHOD_AS(destroyContextAsync,

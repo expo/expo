@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Require explicit prop `enableExperimentalWorkletSupport` to GLView from Reanimated worklet. ([#22613](https://github.com/expo/expo/pull/22613) by [@wkozyra95](https://github.com/wkozyra95))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

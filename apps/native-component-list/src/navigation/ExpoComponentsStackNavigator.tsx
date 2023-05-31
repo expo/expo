@@ -291,6 +291,14 @@ export const Screens = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/GL/GLViewOnBusyThread'));
+    },
+    name: 'GLViewOnBusyThread',
+    options: { title: 'Creating GLView when a thread is busy' },
+    route: 'gl/busythread',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/GestureHandlerPinchScreen'));
     },
     name: 'GestureHandlerPinch',
