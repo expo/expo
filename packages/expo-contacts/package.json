@@ -34,7 +34,7 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "uuid": "^3.4.0"
+    "expo-crypto": "~12.3.0"
   },
   "devDependencies": {
     "@types/uuid": "^3.4.7",

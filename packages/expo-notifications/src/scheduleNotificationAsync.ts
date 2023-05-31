@@ -1,5 +1,5 @@
 import { Platform, UnavailabilityError } from 'expo-modules-core';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'expo-crypto';
 
 import NotificationScheduler from './NotificationScheduler';
 import { NotificationTriggerInput as NativeNotificationTriggerInput } from './NotificationScheduler.types';
@@ -79,7 +79,7 @@ export default async function scheduleNotificationAsync(
   }
 
   return await NotificationScheduler.scheduleNotificationAsync(
-    request.identifier ?? uuidv4(),
+    request.identifier ?? randomUUID(),
     request.content,
     parseTrigger(request.trigger)
   );

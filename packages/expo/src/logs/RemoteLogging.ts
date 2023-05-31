@@ -2,7 +2,7 @@ import Constants from 'expo-constants';
 import { Platform } from 'expo-modules-core';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 import invariant from 'invariant';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'expo-crypto';
 
 import getInstallationIdAsync from '../environment/getInstallationIdAsync';
 import LogSerialization from './LogSerialization';
@@ -28,7 +28,7 @@ export type LogErrorData = { message: string; stack: string };
 
 type TransportErrorListener = (event: { error: Error; response?: Response }) => void;
 
-const _sessionId = uuidv4();
+const _sessionId = randomUUID();
 const _logQueue: LogEntry[] = [];
 const _transportEventEmitter = new EventEmitter();
 

@@ -1,5 +1,5 @@
 import { UnavailabilityError } from 'expo-modules-core';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'expo-crypto';
 
 import NotificationPresenter from './NotificationPresenterModule';
 import { NotificationContentInput } from './Notifications.types';
@@ -16,7 +16,7 @@ let warningMessageShown = false;
  */
 export default async function presentNotificationAsync(
   content: NotificationContentInput,
-  identifier: string = uuidv4()
+  identifier: string = randomUUID()
 ): Promise<string> {
   if (__DEV__ && !warningMessageShown) {
     console.warn(

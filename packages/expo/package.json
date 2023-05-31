@@ -59,13 +59,14 @@
   "dependencies": {
     "@babel/runtime": "^7.20.0",
     "@expo/cli": "0.8.0",
-    "@expo/vector-icons": "^13.0.0",
-    "@expo/config-plugins": "7.0.0",
     "@expo/config": "8.0.4",
+    "@expo/config-plugins": "7.0.0",
+    "@expo/vector-icons": "^13.0.0",
     "babel-preset-expo": "~9.4.0",
     "expo-application": "~5.2.0",
     "expo-asset": "~8.9.2",
     "expo-constants": "~14.3.0",
+    "expo-crypto": "~12.3.0",
     "expo-file-system": "~15.3.0",
     "expo-font": "~11.2.0",
     "expo-keep-awake": "~12.1.0",
@@ -75,8 +76,7 @@
     "invariant": "^2.2.4",
     "md5-file": "^3.2.3",
     "node-fetch": "^2.6.7",
-    "pretty-format": "^26.5.2",
-    "uuid": "^3.4.0"
+    "pretty-format": "^26.5.2"
   },
   "devDependencies": {
     "@types/fbemitter": "^2.0.32",
