@@ -2,9 +2,9 @@
 #import "EXDevLauncherController.h"
 
 #import <React/RCTBundleURLProvider.h>
-#import "React/RCTAppSetupUtils.h"
+#import "RCTAppSetupUtils.h"
 
-#if RCT_NEW_ARCH_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 #import <memory>
 
 #import <React/CoreModulesPlugins.h>
@@ -48,7 +48,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
         self.bridge = [self createBridgeWithDelegate:self launchOptions:launchOptions];
     }
 
-#if RCT_NEW_ARCH_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
     _contextContainer = std::make_shared<facebook::react::ContextContainer const>();
     _reactNativeConfig = std::make_shared<facebook::react::EmptyReactNativeConfig const>();
     _contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
