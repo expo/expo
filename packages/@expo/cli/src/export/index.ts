@@ -30,6 +30,8 @@ export const expoExport: Command = async (argv) => {
       // '-d': '--dump-assetmap',
       '-c': '--clear',
       '-p': '--platform',
+      // Interop with Metro docs and RedBox errors.
+      '--reset-cache': '--clear',
     },
     argv
   );
