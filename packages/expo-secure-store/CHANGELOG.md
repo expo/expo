@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Added automatic invalidated key handling on Android.
+
 ## 12.2.0 — 2023-05-08
 
 ### 🎉 New features

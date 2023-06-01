@@ -87,10 +87,14 @@ export declare function deleteItemAsync(key: string, options?: SecureStoreOption
  *
  * @return A promise that resolves to the previously stored value, or `null` if there is no entry
  * for the given key. The promise will reject if an error occurred while retrieving the value.
+ *
+ * > When reading from an invalidated key the promise will return `null` on iOS, on Android it will be rejected.
  */
 export declare function getItemAsync(key: string, options?: SecureStoreOptions): Promise<string | null>;
 /**
  * Store a key–value pair.
+ *
+ * > On Android, writing a value to an invalidated key will cause the key to be automatically overwritten.
  *
  * @param key The key to associate with the stored value. Keys may contain alphanumeric characters
  * `.`, `-`, and `_`.
