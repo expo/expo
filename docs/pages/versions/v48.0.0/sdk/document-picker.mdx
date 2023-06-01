@@ -26,11 +26,11 @@ import Video from '~/components/plugins/Video';
 
 ## Configuration in app.json/app.config.js
 
-You can configure `expo-document-picker` using its built-in [config plugin](/guides/config-plugins) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect. If your app does **not** use EAS Build, then you'll need to manually configure the package.
+You can configure `expo-document-picker` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect. If your app does **not** use EAS Build, then you'll need to manually configure the package.
 
 <ConfigPluginExample>
 
-If you want to enable [iCloud storage features][icloud-entitlement], set the `expo.ios.usesIcloudStorage` key to `true` in the [Expo config](/workflow/configuration/) file as specified [configuration properties](/versions/latest/config/app/#usesicloudstorage).
+If you want to enable [iCloud storage features][icloud-entitlement], set the `expo.ios.usesIcloudStorage` key to `true` in the [app config](/workflow/configuration/) file as specified [configuration properties](/versions/latest/config/app/#usesicloudstorage).
 
 Running [EAS Build](/build/introduction) locally will use [iOS capabilities signing](/build-reference/ios-capabilities) to enable the required capabilities before building.
 

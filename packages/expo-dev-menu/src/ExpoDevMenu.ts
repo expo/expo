@@ -1,5 +1,9 @@
-import { NativeModules } from 'react-native';
+import { requireNativeModule } from 'expo-modules-core';
+import { NativeModules, Platform } from 'react-native';
 
 import { ExpoDevMenu } from './ExpoDevMenu.types';
 
-export default NativeModules.ExpoDevMenu as ExpoDevMenu;
+const module =
+  Platform.OS === 'android' ? requireNativeModule('ExpoDevMenu') : NativeModules.ExpoDevMenu;
+
+export default module as ExpoDevMenu;

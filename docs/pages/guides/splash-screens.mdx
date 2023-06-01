@@ -11,7 +11,7 @@ A splash screen, also known as a launch screen, is the first screen that a user 
 
 ## Customize the splash screen for your app
 
-The default splash screen is a blank white screen, this can be customized using the `splash` key in the project's [Expo config][expo-config] (**app.json**, **app.config.js**).
+The default splash screen is a blank white screen, this can be customized using the `splash` key in the project's [app config][expo-config] (**app.json**, **app.config.js**).
 
 ### Video walkthrough
 
@@ -35,7 +35,7 @@ Export the image as a PNG and put it in your project directory. I'll assume it's
 
 ### `splash.image`
 
-Open the [Expo config][expo-config] (**app.json**, **app.config.js**) and add the following:
+Open the [app config][expo-config] (**app.json**, **app.config.js**) and add the following:
 
 ```diff
 {
@@ -49,7 +49,7 @@ Open the [Expo config][expo-config] (**app.json**, **app.config.js**) and add th
 
 Now re-open the [Expo Go][expo-go] app and launch your project, you should see your new splash screen. There may be a delay before it shows up in [Expo Go][expo-go], this won't happen in custom builds, see: ["Differences between environments" below](#differences-between-environments).
 
-> It's required to close and re-open the [Expo Go][expo-go] app on iOS in order to see changes to the splash screen in the [Expo config][expo-config]. This is a known issue that we are working to resolve. On Android, you need to press the refresh button from the notification drawer.
+> It's required to close and re-open the [Expo Go][expo-go] app on iOS in order to see changes to the splash screen in the [app config][expo-config]. This is a known issue that we are working to resolve. On Android, you need to press the refresh button from the notification drawer.
 
 ### `splash.backgroundColor`
 
@@ -136,7 +136,7 @@ Depending on the `resizeMode` you will get the following behavior:
 
 ### Bare workflow apps
 
-If your app does not use [Expo Prebuild](/workflow/prebuild) (formerly the _managed workflow_) to generate the native `ios` and `android` directories, then changes in the [Expo config][expo-config] will have no effect. To setup and customize your splash screen manually, refer to [this guide](https://github.com/expo/expo/tree/main/packages/expo-splash-screen#-installation-in-bare-react-native-projects).
+If your app does not use [Expo Prebuild](/workflow/prebuild) (formerly the _managed workflow_) to generate the native **android** and **ios** directories, then changes in the [app config][expo-config] will have no effect. To setup and customize your splash screen manually, refer to [this guide](https://github.com/expo/expo/tree/main/packages/expo-splash-screen#-installation-in-bare-react-native-projects).
 
 ### iOS Caching
 
@@ -147,5 +147,5 @@ In custom iOS builds, launch screens can sometimes remain cached between builds,
 Refer to Apple's guide for more on [testing launch screens](https://developer.apple.com/documentation/technotes/tn3118-debugging-your-apps-launch-screen).
 
 [expo-go]: https://expo.dev/expo-go
-[expo-cli]: /workflow/expo-cli
+[expo-cli]: /more/expo-cli/
 [expo-config]: /workflow/configuration

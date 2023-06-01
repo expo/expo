@@ -10,6 +10,9 @@
 
 - Fix BlurView demo screen not animating the blur intensity after dropping `proxiedProperties`. ([#22452](https://github.com/expo/expo/pull/22452) by [@behenate](https://github.com/behenate))
 
+- [iOS] Fixed Detox tests hanging when `BlurView` is present ([#22439](https://github.com/expo/expo/pull/22439) by [@behenate](https://github.com/behenate))
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 12.3.1 — 2023-05-08

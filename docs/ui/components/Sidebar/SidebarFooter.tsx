@@ -11,7 +11,7 @@ export const SidebarFooter = () => {
   const router = useRouter();
   const isArchive = router?.pathname ? getPageSection(router.pathname) === 'archive' : false;
   return (
-    <div className="flex flex-col p-4 border-t border-t-default bg-default">
+    <div className="flex flex-col p-4 border-t border-t-default bg-default gap-0.5">
       <SidebarSingleEntry
         secondary
         href="/archive"

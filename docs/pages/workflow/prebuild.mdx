@@ -7,7 +7,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 Before a native app can be compiled, the native source code must be generated. Expo CLI provides a unique and powerful system called **prebuild**, which generates the native code for your project based on four factors:
 
-1. The [Expo Config][expo-config] file (`app.json`, `app.config.js`).
+1. The [app config][expo-config] file (**app.json**, **app.config.js**).
 2. Arguments passed to the `npx expo prebuild` command.
 3. Version of `expo` that's installed in the project and its corresponding [prebuild template](#templates).
 4. [Autolinking][autolinking], for linking [native modules][native-modules] found in the `package.json`.
@@ -90,11 +90,11 @@ As of SDK 46, `npx expo prebuild` performs several side effects outside of gener
 
 In addition to generating the native folders, prebuild also makes the following modifications:
 
-- Generates a **metro.config.js** file (if it doesn't exist).
-- Generates an **index.js** file (if it doesn't exist).
-- Removes the `main` field in the **package.json**.
 - Modifies the `scripts` field in the **package.json**.
 - Modifies the `dependencies` field in the **package.json**.
+- For SDK 48 and below, removes the `main` field in the **package.json**.
+- For SDK 48 and below, generates an **index.js** file (if it doesn't exist).
+- For SDK 48 and below generates a **metro.config.js** file (if it doesn't exist).
 
 The convenience change to the `scripts` field is the only side effect that alters how a developer works on their app before/after prebuild. All other changes can be left in place and committed to git to minimize the diff when running prebuild.
 

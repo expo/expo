@@ -6,9 +6,24 @@
 
 ### 🎉 New features
 
+- Add prefetch implementation on web. ([#22630](https://github.com/expo/expo/pull/22630) by [@aleqsio](https://github.com/aleqsio))
+- Add `ImageBackground` component. ([#22347](https://github.com/expo/expo/pull/22347) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
 
+- Fixed styles order breaking layouting on web. ([#22630](https://github.com/expo/expo/pull/22630) by [@aleqsio](https://github.com/aleqsio))
+- Uses prop spreading on web to pass all unused props to the native image component ([#22340](https://github.com/expo/expo/pull/22340) by [@makkarMeenu](https://github.com/makkarMeenu))
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
+
+- Updated `SDWebImage` to `5.15.8`, `SDWebImageWebPCoder` to `0.11.0` and `SDWebImageSVGCoder` to `1.7.0`. ([#22576](https://github.com/expo/expo/pull/22576) by [@tsapeta](https://github.com/tsapeta))
+
+## 1.2.3 — 2023-05-16
+
+### 🐛 Bug fixes
+
+- Upgrade SDWebImageAVIFCoder to fix compiling issue with libavif < 0.11.0. ([#22491](https://github.com/expo/expo/pull/22491) by [@matinzd](https://github.com/matinzd))
 
 ## 1.2.2 — 2023-04-27
 

@@ -120,7 +120,7 @@ public class GLObjectManagerModule extends ExportedModule {
   public void createContextAsync(final Promise promise) {
     final GLContext glContext = new GLContext(this);
 
-    glContext.initialize(null, new Runnable() {
+    glContext.initialize(null, false, new Runnable() {
       @Override
       public void run() {
         Bundle results = new Bundle();

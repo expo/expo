@@ -36,6 +36,7 @@ import expo.modules.devmenu.api.DevMenuMetroClient
 import expo.modules.devmenu.detectors.ShakeDetector
 import expo.modules.devmenu.detectors.ThreeFingerLongPressDetector
 import expo.modules.devmenu.modules.DevMenuPreferences
+import expo.modules.devmenu.modules.DevMenuPreferencesHandle
 import expo.modules.devmenu.react.DevMenuPackagerCommandHandlersSwapper
 import expo.modules.devmenu.react.DevMenuShakeDetectorListenerSwapper
 import expo.modules.devmenu.tests.DevMenuDisabledTestInterceptor
@@ -227,11 +228,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     maybeStartDetectors(devMenuHost.getContext())
     preferences = (
       testInterceptor.overrideSettings()
-        ?: if (reactContext.hasNativeModule(DevMenuPreferences::class.java)) {
-          reactContext.getNativeModule(DevMenuPreferences::class.java)!!
-        } else {
-          DevMenuDefaultPreferences()
-        }
+        ?: DevMenuPreferencesHandle(reactContext)
       ).also {
       if (hasDisableOnboardingQueryParam(currentManifestURL.orEmpty())) {
         it.isOnboardingFinished = true
@@ -260,7 +257,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     return Bundle.EMPTY
   }
 
-  fun loadFonts(applicationContext: ReactApplicationContext) {
+  fun loadFonts(context: Context) {
     if (fontsWereLoaded) {
       return
     }
@@ -278,7 +275,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       "Inter-Thin"
     )
 
-    val assets = applicationContext.assets
+    val assets = context.assets
 
     fonts.map { familyName ->
       val font = Typeface.createFromAsset(assets, "$familyName.otf")

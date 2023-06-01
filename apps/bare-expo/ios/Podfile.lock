@@ -153,12 +153,12 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoHaptics (12.3.0):
     - ExpoModulesCore
-  - ExpoImage (1.2.2):
+  - ExpoImage (1.2.3):
     - ExpoModulesCore
-    - SDWebImage (~> 5.15.0)
-    - SDWebImageAVIFCoder (~> 0.9.4)
-    - SDWebImageSVGCoder (~> 1.6.1)
-    - SDWebImageWebPCoder (~> 0.9.1)
+    - SDWebImage (~> 5.15.8)
+    - SDWebImageAVIFCoder (~> 0.10.0)
+    - SDWebImageSVGCoder (~> 1.7.0)
+    - SDWebImageWebPCoder (~> 0.11.0)
   - ExpoImageManipulator (11.2.0):
     - EXImageLoader
     - ExpoModulesCore
@@ -179,8 +179,8 @@ PODS:
     - ExpoModulesCore
   - ExpoMaps (0.0.2):
     - ExpoModulesCore
-    - GoogleMaps (= 7.1.0)
-    - GooglePlaces (= 7.1.0)
+    - GoogleMaps (= 7.3.0)
+    - GooglePlaces (= 7.3.0)
   - ExpoModulesCore (1.3.2):
     - React-Core
     - React-RCTAppDelegate
@@ -251,17 +251,17 @@ PODS:
     - GoogleUtilities/Environment (~> 7.7)
     - nanopb (< 2.30910.0, >= 2.30908.0)
     - PromisesObjC (< 3.0, >= 1.2)
-  - GoogleMaps (7.1.0):
-    - GoogleMaps/Maps (= 7.1.0)
-  - GoogleMaps/Base (7.1.0)
-  - GoogleMaps/Maps (7.1.0):
+  - GoogleMaps (7.3.0):
+    - GoogleMaps/Maps (= 7.3.0)
+  - GoogleMaps/Base (7.3.0)
+  - GoogleMaps/Maps (7.3.0):
     - GoogleMaps/Base
   - GoogleMLKit/FaceDetection (2.6.0):
     - GoogleMLKit/MLKitCore
     - MLKitFaceDetection (~> 1.5.0)
   - GoogleMLKit/MLKitCore (2.6.0):
     - MLKitCommon (~> 5.0.0)
-  - GooglePlaces (7.1.0)
+  - GooglePlaces (7.3.0)
   - GoogleToolboxForMac/DebugUtils (2.3.2):
     - GoogleToolboxForMac/Defines (= 2.3.2)
   - GoogleToolboxForMac/Defines (2.3.2)
@@ -286,25 +286,25 @@ PODS:
   - hermes-engine (0.71.7):
     - hermes-engine/Pre-built (= 0.71.7)
   - hermes-engine/Pre-built (0.71.7)
-  - libaom (2.0.2):
-    - libvmaf
-  - libavif (0.10.1):
-    - libavif/libaom (= 0.10.1)
-  - libavif/core (0.10.1)
-  - libavif/libaom (0.10.1):
+  - libaom (3.0.0):
+    - libvmaf (>= 2.2.0)
+  - libavif (0.11.1):
+    - libavif/libaom (= 0.11.1)
+  - libavif/core (0.11.1)
+  - libavif/libaom (0.11.1):
     - libaom (>= 2.0.0)
     - libavif/core
   - libevent (2.1.12)
-  - libvmaf (2.2.0)
-  - libwebp (1.2.3):
-    - libwebp/demux (= 1.2.3)
-    - libwebp/mux (= 1.2.3)
-    - libwebp/webp (= 1.2.3)
-  - libwebp/demux (1.2.3):
+  - libvmaf (2.3.1)
+  - libwebp (1.2.4):
+    - libwebp/demux (= 1.2.4)
+    - libwebp/mux (= 1.2.4)
+    - libwebp/webp (= 1.2.4)
+  - libwebp/demux (1.2.4):
     - libwebp/webp
-  - libwebp/mux (1.2.3):
+  - libwebp/mux (1.2.4):
     - libwebp/demux
-  - libwebp/webp (1.2.3)
+  - libwebp/webp (1.2.4)
   - MLImage (1.0.0-beta2)
   - MLKitCommon (5.0.0):
     - GoogleDataTransport (~> 9.0)
@@ -710,9 +710,9 @@ PODS:
     - React-Core
   - RNFlashList (1.4.0):
     - React-Core
-  - RNGestureHandler (2.9.0):
+  - RNGestureHandler (2.10.1):
     - React-Core
-  - RNReanimated (3.0.2):
+  - RNReanimated (3.1.0):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -746,17 +746,17 @@ PODS:
     - React-Core
   - RNSVG (13.4.0):
     - React-Core
-  - SDWebImage (5.15.0):
-    - SDWebImage/Core (= 5.15.0)
-  - SDWebImage/Core (5.15.0)
-  - SDWebImageAVIFCoder (0.9.4):
-    - libavif (>= 0.9.1)
+  - SDWebImage (5.15.8):
+    - SDWebImage/Core (= 5.15.8)
+  - SDWebImage/Core (5.15.8)
+  - SDWebImageAVIFCoder (0.10.0):
+    - libavif (>= 0.11.0)
     - SDWebImage (~> 5.10)
-  - SDWebImageSVGCoder (1.6.1):
+  - SDWebImageSVGCoder (1.7.0):
     - SDWebImage/Core (~> 5.6)
-  - SDWebImageWebPCoder (0.9.1):
+  - SDWebImageWebPCoder (0.11.0):
     - libwebp (~> 1.0)
-    - SDWebImage/Core (~> 5.13)
+    - SDWebImage/Core (~> 5.15)
   - UMAppLoader (4.1.2)
   - Yoga (1.14.0)
   - ZXingObjC/Core (3.6.5)
@@ -1282,7 +1282,7 @@ SPEC CHECKSUMS:
   ExpoDocumentPicker: 2dfcc5935532a3193818017da5e2f3dfda0dbf3b
   ExpoGL: 66d0342641c28a0abbe382e2ca905c556442c7fc
   ExpoHaptics: fb64dfe302cba07591bf1679ecb9531dadfc13cf
-  ExpoImage: 5129495e9981da259c652e23bd87615980864818
+  ExpoImage: f19f918d2ff1c9c9fbedc266e6a28d10aa335800
   ExpoImageManipulator: b8d510b4d15689d8f276dff3482df5707836035b
   ExpoImagePicker: 432af66697986cc210bc814dee782a07b2037a61
   ExpoInsights: 55e764c08fe52d6cb5f926d8e9223df54ed0e9f4
@@ -1291,7 +1291,7 @@ SPEC CHECKSUMS:
   ExpoLocalAuthentication: de5f50fae4fa643a3fc6b404d61a2ab36b5acf20
   ExpoLocalization: c1201ba5cfcfb187972138e58c07cc708c5399db
   ExpoMailComposer: b9a4871714550d5b4e26d1873f0572e350c86478
-  ExpoMaps: be6983038f20ab7d6c953cda7aa48f81713896d3
+  ExpoMaps: 0d442753556c5a2a5f8e15fdb1d833a6768de816
   ExpoModulesCore: b7865a95e88b5731893e177bbf82f6a05f3f92d9
   ExpoModulesTestCore: 42fce831c9601dcfaba09fe7a03dfe99e25754a4
   ExpoNetwork: ef59bebcdbeb6ea188157a8fc88e9ceafbff1f89
@@ -1319,19 +1319,19 @@ SPEC CHECKSUMS:
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
   GoogleDataTransport: 1c8145da7117bd68bbbed00cf304edb6a24de00f
-  GoogleMaps: bc56ffb0324e345a2d91bac1a64a920f9c8f1b20
+  GoogleMaps: a146f275ee429d14822178c7a841c03366ec92a1
   GoogleMLKit: 755661c46990a85e42278015f26400286d98ad95
-  GooglePlaces: 187946335ec3dc624de71c0a9ddcc712f19b0ee1
+  GooglePlaces: 0609463845250bbadafa1739938181e54dece439
   GoogleToolboxForMac: 8bef7c7c5cf7291c687cf5354f39f9db6399ad34
   GoogleUtilities: 1d20a6ad97ef46f67bbdec158ce00563a671ebb7
   GoogleUtilitiesComponents: 679b2c881db3b615a2777504623df6122dd20afe
   GTMSessionFetcher: 5595ec75acf5be50814f81e9189490412bad82ba
   hermes-engine: 4438d2b8bf8bebaba1b1ac0451160bab59e491f8
-  libaom: 9bb51e0f8f9192245e3ca2a1c9e4375d9cbccc52
-  libavif: e242998ccec1c83bcba0bbdc256f460ad5077348
+  libaom: 144606b1da4b5915a1054383c3a4459ccdb3c661
+  libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
-  libvmaf: 8d61aabc2f4ed3e6591cf7406fa00a223ec11289
-  libwebp: 60305b2e989864154bd9be3d772730f08fc6a59c
+  libvmaf: 27f523f1e63c694d14d534cd0fddd2fab0ae8711
+  libwebp: f62cb61d0a484ba548448a4bd52aabf150ff6eef
   MLImage: a454f9f8ecfd537783a12f9488f5be1a68820829
   MLKitCommon: 3bc17c6f7d25ce3660f030350b46ae7ec9ebca6e
   MLKitFaceDetection: 617cb847441868a8bfd4b48d751c9b33c1104948
@@ -1381,15 +1381,15 @@ SPEC CHECKSUMS:
   RNCPicker: 0bf8ef8f7800524f32d2bb2a8bcadd53eda0ecd1
   RNDateTimePicker: 00247f26c34683c80be94207f488f6f13448586e
   RNFlashList: 399bf6a0db68f594ad2c86aaff3ea39564f39f8a
-  RNGestureHandler: 071d7a9ad81e8b83fe7663b303d132406a7d8f39
-  RNReanimated: 3e2ae8e5e62b407bbbde98d3a9cec92a75245154
+  RNGestureHandler: 42ec7c28dd02d540ed6c9159c57a98ff016492dc
+  RNReanimated: 7afddd5ab0590339f3e83d7bb52f43a73443b862
   RNScreens: 218801c16a2782546d30bd2026bb625c0302d70f
   RNSharedElement: 504fa28a235b12505b6daedbb452a9ec96809bd0
   RNSVG: 07dbd870b0dcdecc99b3a202fa37c8ca163caec2
-  SDWebImage: 9bec4c5cdd9579e1f57104735ee0c37df274d593
-  SDWebImageAVIFCoder: 5bf07409ab8a02f0a8e0ac976719b321d8fce209
-  SDWebImageSVGCoder: 6fc109f9c2a82ab44510fff410b88b1a6c271ee8
-  SDWebImageWebPCoder: 18503de6621dd2c420d680e33d46bf8e1d5169b0
+  SDWebImage: cb032eba469c54e0000e78bcb0a13cdde0a52798
+  SDWebImageAVIFCoder: 4aeea8fdf65af5c18525ecb5bdd8b8ed9bb45019
+  SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
+  SDWebImageWebPCoder: 295a6573c512f54ad2dd58098e64e17dcf008499
   UMAppLoader: d1cd37524ea948f9e695722994496784a6d6213c
   Yoga: d56980c8914db0b51692f55533409e844b66133c
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb

@@ -65,6 +65,7 @@ const ImageWrapper = React.forwardRef(
       hashPlaceholderStyle,
       className,
       accessibilityLabel,
+      ...props
     }: {
       source?: ImageSource | null;
       events?: {
@@ -111,6 +112,7 @@ const ImageWrapper = React.forwardRef(
         className={className}
         src={uri || undefined}
         key={source?.uri}
+        {...props}
         style={{
           width: '100%',
           height: '100%',

@@ -12,5 +12,11 @@
     ],
     "reactDelegateHandlers": ["ExpoDevMenuReactDelegateHandler"],
     "debugOnly": true
+  },
+  "android": {
+    "modules": [
+      "expo.modules.devmenu.modules.DevMenuModule", 
+      "expo.modules.devmenu.modules.DevMenuPreferences"
+    ]
   }
 }

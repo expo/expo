@@ -3,29 +3,30 @@ title: Store data
 description: Learn about different libraries available to store data in your Expo project.
 ---
 
-import { SnackInline } from '~/ui/components/Snippet';
 import { BoxLink } from '~/ui/components/BoxLink';
 
 Storing data can be essential to the features implemented in your mobile app. There are different ways to save data in your Expo project depending on the type of data you want to store and the security requirements of your app. This page lists a variety of libraries to help you decide which solution is best for your project.
 
-## SecureStore
+## Expo SecureStore
 
 `expo-secure-store` provides a way to encrypt and securely store key-value pairs locally on the device.
 
 <BoxLink
-  title="SecureStore API reference"
+  title="Expo SecureStore API reference"
   description="For more information on how to install and use expo-secure-store, see its API documentation."
   href="/versions/latest/sdk/securestore"
+  imageUrl="/static/images/packages/expo-secure-store.png"
 />
 
-## FileSystem
+## Expo FileSystem
 
 `expo-file-system` provides access to a file system stored locally on the device. Within Expo Go, each project has a separate file system and no access to other Expo projects' files. However, it can save content shared by other projects to the local filesystem and share local files with other projects. It is also capable of uploading and downloading files from network URLs.
 
 <BoxLink
-  title="FileSystem API reference"
+  title="Expo FileSystem API reference"
   description="For more information on how to install and use expo-file-system, see its API documentation."
   href="/versions/latest/sdk/filesystem"
+  imageUrl="/static/images/packages/expo-file-system.png"
 />
 
 ## Expo SQLite
@@ -46,6 +47,7 @@ Storing data can be essential to the features implemented in your mobile app. Th
   title="Async Storage documentation"
   description="For more information on how to install and use Async Storage, see its documentation."
   href="https://react-native-async-storage.github.io/async-storage/docs/usage"
+  imageUrl="https://react-native-async-storage.github.io/async-storage/img/logo.svg"
 />
 
 ## Other libraries

@@ -126,19 +126,11 @@ if (USE_HERMES) {
 
 def isNewArchitectureEnabled = findProperty("newArchEnabled") == "true"
 
-// Creating sources with comments
-task androidSourcesJar(type: Jar) {
-  classifier = 'sources'
-  from android.sourceSets.main.java.srcDirs
-}
-
 afterEvaluate {
   publishing {
     publications {
       release(MavenPublication) {
         from components.release
-        // Add additional sourcesJar to artifacts
-        artifact(androidSourcesJar)
       }
     }
     repositories {
@@ -168,6 +160,7 @@ android {
     jvmTarget = JavaVersion.VERSION_11.majorVersion
   }
 
+  namespace "expo.modules"
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 33)
@@ -261,6 +254,11 @@ android {
         showExceptions true
         showStandardStreams true
       }
+    }
+  }
+  publishing {
+    singleVariant("release") {
+      withSourcesJar()
     }
   }
 }

@@ -31,9 +31,11 @@ describe(findApplicationTargetWithDependenciesAsync, () => {
     );
     expect(applicationTarget.name).toBe('multitarget');
     expect(applicationTarget.type).toBe(TargetType.APPLICATION);
-    expect(applicationTarget.dependencies.length).toBe(1);
-    expect(applicationTarget.dependencies[0].name).toBe('shareextension');
-    expect(applicationTarget.dependencies[0].type).toBe(TargetType.EXTENSION);
+    expect(applicationTarget.signable).toBe(true);
+    expect(applicationTarget.dependencies?.length).toBe(1);
+    expect(applicationTarget.dependencies?.[0].name).toBe('shareextension');
+    expect(applicationTarget.dependencies?.[0].type).toBe(TargetType.EXTENSION);
+    expect(applicationTarget.dependencies?.[0].signable).toBe(true);
   });
 
   it('also reads dependency dependencies', async () => {
@@ -55,12 +57,35 @@ describe(findApplicationTargetWithDependenciesAsync, () => {
     );
     expect(applicationTarget.name).toBe('easwatchtest');
     expect(applicationTarget.type).toBe(TargetType.APPLICATION);
-    expect(applicationTarget.dependencies.length).toBe(1);
-    expect(applicationTarget.dependencies[0].name).toBe('eas-watch-test');
-    expect(applicationTarget.dependencies[0].type).toBe(TargetType.OTHER);
-    expect(applicationTarget.dependencies[0].dependencies[0].name).toBe(
+    expect(applicationTarget.dependencies?.length).toBe(1);
+    expect(applicationTarget.dependencies?.[0].name).toBe('eas-watch-test');
+    expect(applicationTarget.dependencies?.[0].type).toBe(TargetType.OTHER);
+    expect(applicationTarget.dependencies?.[0].dependencies?.[0].name).toBe(
       'eas-watch-test WatchKit Extension'
     );
-    expect(applicationTarget.dependencies[0].dependencies[0].type).toBe(TargetType.OTHER);
+    expect(applicationTarget.dependencies?.[0].dependencies?.[0].type).toBe(TargetType.OTHER);
+  });
+
+  it('marks framework targets as non-signable', async () => {
+    vol.fromJSON(
+      {
+        'ios/myapp.xcodeproj/project.pbxproj': originalFs.readFileSync(
+          path.join(__dirname, 'fixtures/project-with-framework.pbxproj'),
+          'utf-8'
+        ),
+        'ios/myapp.xcodeproj/xcshareddata/xcschemes/myapp.xcscheme': originalFs.readFileSync(
+          path.join(__dirname, 'fixtures/framework.xcscheme'),
+          'utf-8'
+        ),
+      },
+      projectRoot
+    );
+
+    const applicationTarget = await findApplicationTargetWithDependenciesAsync(
+      projectRoot,
+      'myapp'
+    );
+    expect(applicationTarget.signable).toBe(true);
+    expect(applicationTarget.dependencies?.[0].signable).toBe(false);
   });
 });
