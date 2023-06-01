@@ -214,9 +214,9 @@ PODS:
   - FBLazyVector (0.72.0-rc.5)
   - fmt (6.2.1)
   - glog (0.3.5)
-  - hermes-engine (0.72.0-rc.3):
-    - hermes-engine/Pre-built (= 0.72.0-rc.3)
-  - hermes-engine/Pre-built (0.72.0-rc.3)
+  - hermes-engine (0.72.0-rc.5):
+    - hermes-engine/Pre-built (= 0.72.0-rc.5)
+  - hermes-engine/Pre-built (0.72.0-rc.5)
   - libaom (3.0.0):
     - libvmaf (>= 2.2.0)
   - libavif (0.11.1):
@@ -1477,7 +1477,7 @@ SPEC CHECKSUMS:
   FBLazyVector: 91795e0512b78676010d3749c823a6fca803f267
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
-  hermes-engine: fbde7af51e086177f9e5589b8ccb71af6dac8727
+  hermes-engine: d7bcb29c5d42379f36b62f2e45cebb0728df0ec4
   libaom: 144606b1da4b5915a1054383c3a4459ccdb3c661
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
