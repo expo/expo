@@ -91,19 +91,6 @@ allprojects {
     }
 }
 
-// Workaround: Force all android libraries to use java 11.
-// This is to fix the build errors from some third party libraries still using java 8,
-// which cause gradle 8 errors:
-// 'compileDebugJavaWithJavac' task (current target is 1.8) and 'compileDebugKotlin' task (current target is 11) jvm target compatibility should be set to the same Java version.
-allprojects { subproject ->
-  subproject.pluginManager.withPlugin("com.android.library") {
-    subproject.extensions.findByType(com.android.build.api.variant.AndroidComponentsExtension)?.finalizeDsl { ext ->
-      ext.compileOptions.sourceCompatibility = JavaVersion.VERSION_11
-      ext.compileOptions.targetCompatibility = JavaVersion.VERSION_11
-    }
-  }
-}
-
 subprojects {
   plugins.apply("com.diffplug.spotless")
   spotless {
