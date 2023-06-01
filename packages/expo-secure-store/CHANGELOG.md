@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- Added automatic invalidated key handling on Android.
+- Added automatic invalidated key handling on Android. ([#22716](https://github.com/expo/expo/pull/22716) by [@behenate](https://github.com/behenate))
 
 ## 12.2.0 — 2023-05-08
 

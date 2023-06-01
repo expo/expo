@@ -149,7 +149,7 @@ public class SecureStoreModule extends ExportedModule {
         return;
       }
       // If the issue persists after deleting the key it is likely not related to invalidation
-      promise.reject(new EncryptException("Unable to decrypt the key", e));
+      promise.reject(new EncryptException(null, e));
       Log.w(TAG, e);
     } catch (GeneralSecurityException e) {
       boolean isInvalidationException = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && e instanceof KeyPermanentlyInvalidatedException;
