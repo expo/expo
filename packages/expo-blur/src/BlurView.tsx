@@ -35,6 +35,8 @@ function FnBlurView({
   const BlurComponent =
     intensityIsSharedValue && AnimatedNativeBlurView ? AnimatedNativeBlurView : NativeBlurView;
 
+  // TODO: @behenate Using animatedProps shouldn't be necessary in reanimated v3. Pass the shared value as intensity
+  // directly once the issue with crashes on Android is resolved.
   const animatedProps =
     intensityIsSharedValue &&
     Reanimated !== undefined &&

@@ -17,6 +17,8 @@ function FnBlurView({ tint = 'default', intensity = 50, blurReductionFactor = 4,
             "Make sure that 'react-native-reanimated' is correctly installed.");
     }
     const BlurComponent = intensityIsSharedValue && AnimatedNativeBlurView ? AnimatedNativeBlurView : NativeBlurView;
+    // TODO: @behenate Using animatedProps shouldn't be necessary in reanimated v3. Pass the shared value as intensity
+    // directly once the issue with crashes on Android is resolved.
     const animatedProps = intensityIsSharedValue &&
         Reanimated !== undefined &&
         // Number of hooks will not change during runtime

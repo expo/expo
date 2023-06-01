@@ -13,6 +13,7 @@ exports[`renders a native blur view 1`] = `
   testID="blur"
 >
   <ViewManagerAdapter_ExpoBlurView
+    animatedProps={false}
     blurReductionFactor={4}
     intensity={0.65}
     style={
