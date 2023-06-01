@@ -357,7 +357,7 @@ public class Manifest: NSObject {
       }
     }
 
-    guard let pluginsRawValue = expoClientConfigRootObject()?["plugins"] as? [Any],
+    guard let pluginsRawValue = expoClientConfigRootObject()?.optionalValue(forKey: "plugins") as [Any]?,
       let plugins = PluginType.fromRawArrayValue(pluginsRawValue) else {
       return nil
     }

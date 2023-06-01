@@ -285,14 +285,14 @@ internal sealed class PluginType {
     }
 
     @Throws(IllegalArgumentException::class)
-    fun fromRawArrayValue(value: JSONArray): List<PluginType>? {
-      val result = ArrayList<PluginType>()
-      for (i in 0 until value.length()) {
-        fromRawValue(value.get(i))?.let {
-          result.add(it)
+    fun fromRawArrayValue(value: JSONArray): List<PluginType> {
+      return mutableListOf<PluginType>().apply {
+        for (i in 0 until value.length()) {
+          fromRawValue(value.get(i))?.let {
+            add(it)
+          }
         }
       }
-      return result
     }
   }
 }

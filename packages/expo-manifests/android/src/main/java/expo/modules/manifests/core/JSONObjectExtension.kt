@@ -8,16 +8,10 @@ import org.json.JSONObject
  * Convert a [JSONObject] to Map<String, Any> recursively
  */
 fun JSONObject.toMap(): Map<String, Any> {
-  return mutableMapOf<String, Any>().apply {
-    keys().forEach {
-      when (val value = this@toMap[it]) {
-        is JSONObject -> {
-          put(it, value.toMap())
-        }
-        else -> {
-          put(it, value)
-        }
-      }
+  return keys().asSequence().associateWith {
+    when (val value = this@toMap[it]) {
+      is JSONObject -> value.toMap()
+      else -> value
     }
   }
 }
