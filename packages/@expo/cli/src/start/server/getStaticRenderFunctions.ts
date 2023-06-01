@@ -23,7 +23,8 @@ const debug = require('debug')('expo:start:server:node-renderer') as typeof cons
 function wrapBundle(str: string) {
   // Skip the metro runtime so debugging is a bit easier.
   // Replace the __r() call with an export statement.
-  return str.replace(/^(__r\(.*\);)$/m, 'module.exports = $1');
+  // Use gm to apply to the last require line. This is needed when the bundle has side-effects.
+  return str.replace(/^(__r\(.*\);)$/gm, 'module.exports = $1');
 }
 
 function stripProcess(str: string) {
