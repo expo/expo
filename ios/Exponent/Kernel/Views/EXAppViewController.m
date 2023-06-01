@@ -578,7 +578,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [super supportedInterfaceOrientations];
   }
 
-  if ([ScreenOrientationRegistry.shared requiredOrientationMask] > 0){
+  if ([ScreenOrientationRegistry.shared requiredOrientationMask] > 0) {
     return [ScreenOrientationRegistry.shared requiredOrientationMask];
   }
 

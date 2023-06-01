@@ -34,7 +34,7 @@ public class ScreenOrientationModule: Module, OrientationListener, Hashable {
 
         guard !orientationMask.isEmpty else {
           throw InvalidOrientationLockException()
-      }
+        }
 
         allowedOrientationsMask.insert(orientationMask)
       }
