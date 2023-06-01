@@ -62,12 +62,11 @@ let updatesStateTransitions: [UpdatesStateEventType: UpdatesStateValue] = [
 internal struct UpdatesStateEvent {
   var type: UpdatesStateEventType
   var body: [String: Any] = [:]
-  var updateId: String? {
-    guard let manifest = self.body["manifest"] as? [String: Any],
-      let updateId = manifest["id"] as? String else {
+  var manifest: [String: Any]? {
+    guard let manifest = self.body["manifest"] as? [String: Any] else {
       return nil
     }
-    return updateId
+    return manifest
   }
   var error: Error? {
     guard let message = self.body["message"] as? String else {
@@ -93,8 +92,8 @@ internal struct UpdatesStateContext {
   var isChecking: Bool = false
   var isDownloading: Bool = false
   var isRestarting: Bool = false
-  var latestUpdateId: String?
-  var downloadedUpdateId: String?
+  var latestManifest: [String: Any]?
+  var downloadedManifest: [String: Any]?
   var checkError: Error?
   var downloadError: Error?
 }
@@ -161,13 +160,13 @@ internal class UpdatesStateMachine {
     case .checkCompleteUnavailable:
       newContext.isChecking = false
       newContext.checkError = nil
-      newContext.latestUpdateId = nil
+      newContext.latestManifest = nil
       newContext.isUpdateAvailable = false
       newContext.isRollback = false
     case .checkCompleteAvailable:
       newContext.isChecking = false
       newContext.checkError = nil
-      newContext.latestUpdateId = event.updateId ?? context.latestUpdateId
+      newContext.latestManifest = event.manifest
       newContext.isRollback = event.isRollback
       newContext.isUpdateAvailable = true
     case .checkError:
@@ -178,8 +177,9 @@ internal class UpdatesStateMachine {
     case .downloadComplete:
       newContext.isDownloading = false
       newContext.downloadError = nil
-      newContext.downloadedUpdateId = event.updateId ?? context.downloadedUpdateId
-      newContext.isUpdatePending = newContext.downloadedUpdateId != nil
+      newContext.downloadedManifest = event.manifest ?? context.downloadedManifest
+      newContext.isUpdatePending = newContext.downloadedManifest != nil
+      newContext.isUpdateAvailable = event.manifest != nil || newContext.isUpdateAvailable
     case .downloadError:
       newContext.isDownloading = false
       newContext.downloadError = event.error
