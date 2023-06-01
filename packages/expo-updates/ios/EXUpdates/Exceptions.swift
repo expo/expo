@@ -45,11 +45,7 @@ internal final class UpdatesUnsupportedDirectiveException: Exception {
 }
 
 internal final class UpdatesStateException: Exception {
-  override var code: String {
-    "ERR_UPDATES_STATE_EXCEPTION"
-  }
-
-  override var reason: String {
-    "The Updates state machine received an event that is invalid for the current state"
+  convenience init(_ message: String) {
+    self.init(name: "UpdatesStateException", description: message, code: "ERR_UPDATES_STATE_EXCEPTION", file: #fileID, line: #line, function: #function)
   }
 }

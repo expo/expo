@@ -3,7 +3,6 @@
 // swiftlint:disable file_length
 // swiftlint:disable type_body_length
 // swiftlint:disable line_length
-// swiftlint:disable identifier_name
 
 // this class used a bunch of implicit non-null patterns for member variables. not worth refactoring to appease lint.
 // swiftlint:disable force_unwrapping
@@ -98,6 +97,8 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
   internal let assetFilesQueue: DispatchQueue
   public internal(set) var isStarted: Bool
 
+  private var eventsToSendToJS: [[String: Any]] = []
+
   internal var stateMachine: UpdatesStateMachine
 
   private var loaderTask: AppLoaderTask?
@@ -142,7 +143,6 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     super.init()
 
     self.errorRecovery.delegate = self
-    self.stateMachine.appController = self
   }
 
   /**
@@ -222,6 +222,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
         DispatchQueue.main.async { [weak self] in
           if let strongSelf = self {
             strongSelf.delegate?.appController(strongSelf, didStartWithSuccess: strongSelf.launchAssetUrl() != nil)
+            strongSelf.sendQueuedEventsToBridge()
           }
         }
       }
@@ -356,13 +357,6 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     let rollback: Bool? = body["isRollBackToEmbedded"] as? Bool
     let eventType: UpdatesStateEventType = (rollback == true || manifest != nil) ? .checkCompleteAvailable : .checkCompleteUnavailable
     stateMachine.processEvent(UpdatesStateEvent(type: eventType, body: body))
-    // Send UpdateEvents to JS
-    if eventType == .checkCompleteUnavailable {
-      sendEventToBridge(AppController.NoUpdateAvailableEventName, body: [:])
-    }
-    if eventType == .checkCompleteAvailable {
-      sendEventToBridge(AppController.UpdateAvailableEventName, body: body)
-    }
   }
 
   public func appLoaderTask(_: AppLoaderTask, didStartLoadingUpdate update: Update?) {
@@ -390,6 +384,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     delegate.let { it in
       UpdatesUtils.runBlockOnMainThread {
         it.appController(self, didStartWithSuccess: true)
+        self.sendQueuedEventsToBridge()
       }
     }
   }
@@ -472,6 +467,8 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
         "manifest": update.manifest.rawManifestJSON()
       ]
       stateMachine.processEvent(UpdatesStateEvent(type: .downloadComplete, body: body))
+      // Send UpdateEvents to JS
+      sendEventToBridge(AppController.UpdateAvailableEventName, body: body)
     case .noUpdateAvailable:
       remoteLoadStatus = .Idle
       logger.info(
@@ -485,7 +482,8 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
         stateMachine.processEvent(UpdatesStateEvent(type: .downloadComplete, body: [:]))
       }
       // Otherwise, we don't need to call the state machine here, it already transitioned to .checkCompleteUnavailable
-
+      // Send UpdateEvents to JS
+      sendEventToBridge(AppController.NoUpdateAvailableEventName, body: [:])
     }
 
     errorRecovery.notify(newRemoteLoadStatus: remoteLoadStatus)
@@ -536,16 +534,27 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     }
   }
 
-  internal func sendEventToBridge(_ eventType: String, body: [AnyHashable: Any]) {
-    guard let bridge = bridge else {
-      logger.error(message: "EXUpdates: Could not emit \(eventType) event. Did you set the bridge property on the controller singleton?", code: .jsRuntimeError)
-      return
-    }
-
-    logger.warn(message: "sendEventToBridge(): type = \(eventType)")
+  internal func sendEventToBridge(_ eventType: String, body: [String: Any]) {
+    logger.info(message: "sendEventToBridge(): type = \(eventType)")
     var mutableBody = body
     mutableBody["type"] = eventType
+
+    guard let bridge = bridge else {
+      eventsToSendToJS.append(mutableBody)
+      logger.warn(message: "EXUpdates: Could not emit \(eventType) event. Event will be emitted when the bridge is available", code: .jsRuntimeError)
+      return
+    }
     bridge.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [AppController.EXUpdatesEventName, mutableBody])
+  }
+
+  internal func sendQueuedEventsToBridge() {
+    guard let bridge = bridge else {
+      return
+    }
+    eventsToSendToJS.forEach { mutableBody in
+      bridge.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [AppController.EXUpdatesEventName, mutableBody])
+    }
+    eventsToSendToJS = []
   }
 
   private func emergencyLaunch(fatalError error: NSError) {
@@ -559,6 +568,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
       DispatchQueue.main.async { [weak self] in
         if let strongSelf = self {
           strongSelf.delegate?.appController(strongSelf, didStartWithSuccess: strongSelf.launchAssetUrl() != nil)
+          strongSelf.sendQueuedEventsToBridge()
         }
       }
     }
