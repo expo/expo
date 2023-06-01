@@ -20,7 +20,7 @@
 - Fix static export for consecutive groups. ([#22504](https://github.com/expo/expo/pull/22504) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix externals for Metro Node.js rendering. ([#22695](https://github.com/expo/expo/pull/22695) by [@EvanBacon](https://github.com/EvanBacon))
 - Enable verbose package manager logs on CI. ([#22361](https://github.com/expo/expo/pull/22361) by [@byCedric](https://github.com/byCedric))
-- Fix static rendering when side effects are used.
+- Fix static rendering when side effects are used. ([#22713](https://github.com/expo/expo/pull/22713) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
