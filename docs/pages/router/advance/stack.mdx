@@ -1,0 +1,203 @@
+---
+title: Stack
+description: Learn how to use the Stack Layout in Expo Router.
+---
+
+import { FileTree } from '~/ui/components/FileTree';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { BookOpen02Icon } from '@expo/styleguide-icons';
+
+The `Stack` Layout in Expo Router wraps the [Native Stack Navigator](https://reactnavigation.org/docs/native-stack-navigator) from React Navigation. Do not confuse it with the legacy [JS Stack Navigator](https://reactnavigation.org/docs/stack-navigator).
+
+<FileTree files={['app/_layout.js', 'app/index.js', 'app/detail.js']} />
+
+To create a `Stack` layout with two screens as shown in the file structure above:
+
+```js app/_layout.js
+import { Stack } from 'expo-router/stack';
+
+export default function Layout() {
+  return <Stack initialRouteName="index" />;
+}
+```
+
+## Configure header bar
+
+Use the `screenOptions` prop to configure the header bar.
+
+```js app/_layout.js
+import { Stack } from 'expo-router';
+
+export default function Layout() {
+  return (
+    <Stack
+      initialRouteName="home"
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: '#f4511e',
+        },
+        headerTintColor: '#fff',
+        headerTitleStyle: {
+          fontWeight: 'bold',
+        },
+      }}
+    />
+  );
+}
+```
+
+You can use a layout's Screen component to configure the header bar dynamically from within the route. This is good for interactions that change the UI.
+
+```js app/home.js
+import { Link, Stack } from 'expo-router';
+import { Image, Text, View } from 'react-native';
+
+function LogoTitle() {
+  return (
+    <Image
+      style={{ width: 50, height: 50 }}
+      source={{ uri: 'https://reactnative.dev/img/tiny_logo.png' }}
+    />
+  );
+}
+
+export default function Home() {
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Stack.Screen
+        options={{
+          // https://reactnavigation.org/docs/headers#setting-the-header-title
+          title: 'My home',
+          // https://reactnavigation.org/docs/headers#adjusting-header-styles
+          headerStyle: { backgroundColor: '#f4511e' },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+          // https://reactnavigation.org/docs/headers#replacing-the-title-with-a-custom-component
+          headerTitle: props => <LogoTitle {...props} />,
+        }}
+      />
+      <Text>Home Screen</Text>
+      <Link href={{ pathname: 'details', params: { name: 'Bacon' } }}>Go to Details</Link>
+    </View>
+  );
+}
+```
+
+You can use the imperative API `router.setParams()` function to configure the route dynamically.
+
+```js app/details.js
+import { View, Text } from 'react-native';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+
+export default function Details() {
+  const router = useRouter();
+  const params = useLocalSearchParams();
+
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Stack.Screen
+        options={{
+          title: params.name,
+        }}
+      />
+      <Text
+        onPress={() => {
+          router.setParams({ name: 'Updated' });
+        }}>
+        Update the title
+      </Text>
+    </View>
+  );
+}
+```
+
+## Header buttons
+
+With the following file structure:
+
+<FileTree files={['app/_layout.js', 'app/home.js']} />
+
+You can use the `<Stack.Screen name={routeName} />` component in the layout component route to statically configure screen options. This is useful for tab bars or drawers which need to have an icon defined ahead of time.
+
+```js app/_layout.js
+import { Stack } from 'expo-router';
+
+export default function Layout() {
+  return (
+    <Stack
+      initialRouteName="home"
+      // https://reactnavigation.org/docs/headers#sharing-common-options-across-screens
+      /* @info */
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: '#f4511e',
+        },
+        headerTintColor: '#fff',
+        headerTitleStyle: {
+          fontWeight: 'bold',
+        },
+      }}>
+      /* @end */
+      {/* Optionally configure static options outside the route. */}
+      /* @info */
+      <Stack.Screen name="home" options={{}} />
+      /* @end */
+    </Stack>
+  );
+}
+```
+
+Use the `<Stack.Screen />` component in the child route to dynamically configure options.
+
+```js app/home.js
+import { useLayoutEffect } from 'react';
+import { View, Button, Text, Image } from 'react-native';
+/* @info */
+import { Stack } from 'expo-router';
+/* @end */
+
+function LogoTitle() {
+  return (
+    <Image
+      style={{ width: 50, height: 50 }}
+      source={require('@expo/snack-static/react-native-logo.png')}
+    />
+  );
+}
+
+export default function Home() {
+  const [count, setCount] = React.useState(0);
+
+  return (
+    <>
+      /* @info */
+      <Stack.Screen
+        options={{
+          headerTitle: props => <LogoTitle {...props} />,
+          headerRight: () => <Button onPress={() => setCount(c => c + 1)} title="Update count" />,
+        }}
+      />
+      /* @end */
+      <Text>Count: {count}</Text>
+    </>
+  );
+}
+```
+
+## Next steps
+
+<BoxLink
+  title="Native Stack Navigator: Options"
+  Icon={BookOpen02Icon}
+  description="For a list of all options, see React Navigation's documentation."
+  href="https://reactnavigation.org/docs/native-stack-navigator#options"
+/>
+
+<BoxLink
+  title="Tabs layout"
+  Icon={BookOpen02Icon}
+  description="Learn how to use Tabs layout in Expo Router."
+  href="/router/layouts/tabs/"
+/>
