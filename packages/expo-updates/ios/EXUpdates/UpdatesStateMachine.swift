@@ -130,23 +130,29 @@ internal class UpdatesStateMachine {
    */
   internal func processEvent(_ event: UpdatesStateEvent) {
     // Execute state transition
-    state = transition(state, event)
-
-    // Mutate context
-    context = mutateContext(context, event)
-
-    logger.info(message: "Updates state change: state = \(state), event = \(event.type), context = \(context)")
+    if transition(event) {
+      // Only mutate context if transition succeeds
+      context = mutateContext(context, event)
+      logger.info(message: "Updates state change: state = \(state), event = \(event.type), context = \(context)")
+    }
   }
 
   /**
    Make sure the state transition is allowed, and then update the state.
    */
-  internal func transition(_ state: UpdatesStateValue, _ event: UpdatesStateEvent) -> UpdatesStateValue {
+  internal func transition(_ event: UpdatesStateEvent) -> Bool {
     let allowedEvents: [UpdatesStateEventType] = updatesStateAllowedEvents[state] ?? []
     if !allowedEvents.contains(event.type) {
+      // Uncomment the line below to halt execution on invalid state transitions,
+      // very useful for testing
+      /*
       assertionFailure("UpdatesState: invalid transition requested: state = \(state), event = \(event.type)")
+       */
+      return false
     }
-    return updatesStateTransitions[event.type] ?? .idle
+    // Successful transition
+    state = updatesStateTransitions[event.type] ?? .idle
+    return true
   }
 
   /**
@@ -177,6 +183,7 @@ internal class UpdatesStateMachine {
     case .downloadComplete:
       newContext.isDownloading = false
       newContext.downloadError = nil
+      newContext.latestManifest = event.manifest ?? context.latestManifest
       newContext.downloadedManifest = event.manifest ?? context.downloadedManifest
       newContext.isUpdatePending = newContext.downloadedManifest != nil
       newContext.isUpdateAvailable = event.manifest != nil || newContext.isUpdateAvailable
