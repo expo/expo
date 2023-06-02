@@ -360,6 +360,7 @@ export class RevokeTokenRequest
 {
   readonly clientId?: string;
   readonly clientSecret?: string;
+  readonly extraHeaders?: Record<string, string>;
   readonly token: string;
   readonly tokenTypeHint?: TokenTypeHint;
 
@@ -368,6 +369,7 @@ export class RevokeTokenRequest
     invariant(request.token, `\`RevokeTokenRequest\` requires a valid \`token\` to revoke.`);
     this.clientId = request.clientId;
     this.clientSecret = request.clientSecret;
+    this.extraHeaders = request.extraHeaders;
     this.token = request.token;
     this.tokenTypeHint = request.tokenTypeHint;
   }
@@ -382,6 +384,14 @@ export class RevokeTokenRequest
       const credentials = `${encodedClientId}:${encodedClientSecret}`;
       const basicAuth = Base64.encodeNoWrap(credentials);
       headers.Authorization = `Basic ${basicAuth}`;
+    }
+
+    if (this.extraHeaders) {
+      for (const extra in this.extraHeaders) {
+        if (extra in this.extraHeaders && !(extra in headers)) {
+          headers[extra] = this.extraHeaders[extra];
+        }
+      }
     }
 
     return headers;
