@@ -20,7 +20,7 @@
 
 ### 💡 Others
 
-- Updated `androidx.activity:activity-ktx` to `1.7.1` and `androidx.fragment:fragment-ktx` to `1.7.1` [#22658](https://github.com/expo/expo/pull/22658) by [@fobos531](https://github.com/fobos531)
+- Updated `androidx.activity:activity-ktx` to `1.7.1` and `androidx.fragment:fragment-ktx` to `1.5.7` [#22658](https://github.com/expo/expo/pull/22658) by [@fobos531](https://github.com/fobos531)
 
 ## 1.3.2 — 2023-05-09
 
