@@ -114,7 +114,6 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
     if let error = error {
       client?.urlProtocol(self, didFailWithError: error)
     } else {
-      client?.urlProtocolDidFinishLoading(self)
       if responseContentLength > 0 && responseContentLength <= Self.MAX_BODY_SIZE,
         let currentRequest = task.currentRequest,
         let requestId = URLProtocol.property(
@@ -124,6 +123,7 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
         Self.delegate.didReceiveResponseBody(
           requestId: requestId, responseBody: responseBody as Data, isText: responseIsText)
       }
+      client?.urlProtocolDidFinishLoading(self)
     }
   }
 
