@@ -203,6 +203,7 @@ export type AndroidSubmissionConfigInput = {
   googleServiceAccountKeyId?: InputMaybe<Scalars['String']>;
   googleServiceAccountKeyJson?: InputMaybe<Scalars['String']>;
   releaseStatus?: InputMaybe<SubmissionAndroidReleaseStatus>;
+  rollout?: InputMaybe<Scalars['Float']>;
   track: SubmissionAndroidTrack;
 };
 
@@ -292,7 +293,8 @@ export type AppleAppIdentifierInput = {
 
 export enum AppleDeviceClass {
   Ipad = 'IPAD',
-  Iphone = 'IPHONE'
+  Iphone = 'IPHONE',
+  Mac = 'MAC'
 }
 
 export type AppleDeviceInput = {
@@ -355,6 +357,18 @@ export enum AuthProtocolType {
   Oidc = 'OIDC'
 }
 
+export enum BackgroundJobResultType {
+  GithubBuild = 'GITHUB_BUILD',
+  Void = 'VOID'
+}
+
+export enum BackgroundJobState {
+  Failure = 'FAILURE',
+  InProgress = 'IN_PROGRESS',
+  Queued = 'QUEUED',
+  Success = 'SUCCESS'
+}
+
 export type BuildCacheInput = {
   clear?: InputMaybe<Scalars['Boolean']>;
   disabled?: InputMaybe<Scalars['Boolean']>;
@@ -404,6 +418,11 @@ export enum BuildJobStatus {
   Pending = 'PENDING',
   SentToQueue = 'SENT_TO_QUEUE',
   Started = 'STARTED'
+}
+
+export enum BuildLimitThresholdExceededMetadataType {
+  Ios = 'IOS',
+  Total = 'TOTAL'
 }
 
 export type BuildMetadataInput = {
@@ -488,7 +507,8 @@ export enum BuildStatus {
   Finished = 'FINISHED',
   InProgress = 'IN_PROGRESS',
   InQueue = 'IN_QUEUE',
-  New = 'NEW'
+  New = 'NEW',
+  PendingCancel = 'PENDING_CANCEL'
 }
 
 export enum BuildTrigger {
@@ -505,6 +525,10 @@ export enum BuildWorkflow {
   Managed = 'MANAGED',
   Unknown = 'UNKNOWN'
 }
+
+export type ChannelFilterInput = {
+  searchTerm?: InputMaybe<Scalars['String']>;
+};
 
 export type CodeSigningInfoInput = {
   alg: Scalars['String'];
@@ -534,6 +558,19 @@ export type CreateEnvironmentSecretInput = {
 export type CreateGitHubAppInstallationInput = {
   accountId: Scalars['ID'];
   installationIdentifier: Scalars['Int'];
+};
+
+export type CreateGitHubBuildTriggerInput = {
+  appId: Scalars['ID'];
+  autoSubmit: Scalars['Boolean'];
+  buildProfile: Scalars['String'];
+  isActive: Scalars['Boolean'];
+  platform: AppPlatform;
+  /** A branch or tag name, or a wildcard pattern where the code change originates from. For example, `main` or `release/*`. */
+  sourcePattern: Scalars['String'];
+  /** A branch name or a wildcard pattern that the pull request targets. For example, `main` or `release/*`. */
+  targetPattern?: InputMaybe<Scalars['String']>;
+  type: GitHubBuildTriggerType;
 };
 
 export type CreateGitHubRepositoryInput = {
@@ -612,6 +649,10 @@ export enum EnvironmentSecretType {
   String = 'STRING'
 }
 
+export enum Experiment {
+  Orbit = 'ORBIT'
+}
+
 export enum Feature {
   /** Priority Builds */
   Builds = 'BUILDS',
@@ -643,8 +684,19 @@ export type GitHubBuildInput = {
   platform: AppPlatform;
 };
 
+export enum GitHubBuildTriggerType {
+  PullRequestUpdated = 'PULL_REQUEST_UPDATED',
+  PushToBranch = 'PUSH_TO_BRANCH',
+  TagUpdated = 'TAG_UPDATED'
+}
+
 export type GoogleServiceAccountKeyInput = {
   jsonKey: Scalars['JSONObject'];
+};
+
+export type InsightsTimespan = {
+  end: Scalars['DateTime'];
+  start: Scalars['DateTime'];
 };
 
 export enum InvoiceDiscountType {
@@ -804,7 +856,10 @@ export enum MailchimpTag {
 
 export enum NotificationEvent {
   BuildComplete = 'BUILD_COMPLETE',
-  SubmissionComplete = 'SUBMISSION_COMPLETE'
+  BuildLimitThresholdExceeded = 'BUILD_LIMIT_THRESHOLD_EXCEEDED',
+  BuildPlanCreditThresholdExceeded = 'BUILD_PLAN_CREDIT_THRESHOLD_EXCEEDED',
+  SubmissionComplete = 'SUBMISSION_COMPLETE',
+  Test = 'TEST'
 }
 
 export type NotificationSubscriptionFilter = {
@@ -815,7 +870,8 @@ export type NotificationSubscriptionFilter = {
 };
 
 export enum NotificationType {
-  Email = 'EMAIL'
+  Email = 'EMAIL',
+  Web = 'WEB'
 }
 
 export enum OfferType {
@@ -895,13 +951,14 @@ export enum Role {
   ViewOnly = 'VIEW_ONLY'
 }
 
+export type RuntimeFilterInput = {
+  /** Only return runtimes shared with this branch */
+  branchId?: InputMaybe<Scalars['String']>;
+};
+
 export type SsoUserDataInput = {
   firstName?: InputMaybe<Scalars['String']>;
-  githubUsername?: InputMaybe<Scalars['String']>;
-  industry?: InputMaybe<Scalars['String']>;
   lastName?: InputMaybe<Scalars['String']>;
-  location?: InputMaybe<Scalars['String']>;
-  twitterUsername?: InputMaybe<Scalars['String']>;
 };
 
 export type SecondFactorDeviceConfiguration = {
@@ -1024,6 +1081,16 @@ export type TimelineActivityFilterInput = {
   types?: InputMaybe<Array<ActivityTimelineProjectActivityType>>;
 };
 
+export type UpdateGitHubBuildTriggerInput = {
+  autoSubmit: Scalars['Boolean'];
+  buildProfile: Scalars['String'];
+  isActive: Scalars['Boolean'];
+  platform: AppPlatform;
+  sourcePattern: Scalars['String'];
+  targetPattern?: InputMaybe<Scalars['String']>;
+  type: GitHubBuildTriggerType;
+};
+
 export type UpdateGitHubRepositorySettingsInput = {
   baseDirectory: Scalars['String'];
 };
@@ -1074,17 +1141,12 @@ export type UsageMetricsTimespan = {
 };
 
 export type UserDataInput = {
-  appetizeCode?: InputMaybe<Scalars['String']>;
   email?: InputMaybe<Scalars['String']>;
   firstName?: InputMaybe<Scalars['String']>;
   fullName?: InputMaybe<Scalars['String']>;
-  githubUsername?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['ID']>;
-  industry?: InputMaybe<Scalars['String']>;
   lastName?: InputMaybe<Scalars['String']>;
-  location?: InputMaybe<Scalars['String']>;
   profilePhoto?: InputMaybe<Scalars['String']>;
-  twitterUsername?: InputMaybe<Scalars['String']>;
   username?: InputMaybe<Scalars['String']>;
 };
 
