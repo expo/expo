@@ -8,10 +8,6 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { ExpoGoLogo } from '@expo/styleguide';
 import { CALLOUT } from '~/ui/components/Text';
 
-Linux, macOS and Windows are all supported as your development machine. You can use any web browser to run the project on the web.
-
-> **info** You don't need macOS to build an iOS app with [EAS](/eas). You only need an iOS device to run [development builds](/develop/development-builds/introduction/).
-
 ### Requirements
 
 To use Expo, you need to have the following tools installed on your machine:
@@ -23,12 +19,28 @@ To use Expo, you need to have the following tools installed on your machine:
     management tool (such as `nvm` or `volta` or any other of your choice) to switch between
     different Node.js versions.
   </CALLOUT>
-- [Git](https://git-scm.com)
+- [Git](https://git-scm.com) for source control.
 - [Watchman](https://facebook.github.io/watchman/docs/install#buildinstall) (for Linux or macOS users).
 
-After installing Node.js, you can use `npx` to bootstrap a new app:
+After installing Node.js, you can use `npx` to create a new app.
 
-<Terminal cmd={['# npx is part of Node.js', '$ npx create-expo --template']} />
+<Terminal cmd={['$ npx create-expo --template']} />
+
+### Expo CLI
+
+[Expo CLI](/more/expo-cli/) is part of the `expo` package, and you can use it by leveraging `npx` &mdash; a Node.js package runner. To start your app, open the terminal on your development machine and run the following command:
+
+<Terminal
+  cmd={[
+    '# Start the development server',
+    '$ npx expo',
+    '',
+    '# See a list of commands in Expo CLI',
+    '$ npx expo --help',
+  ]}
+/>
+
+> **info** You don't need macOS to build an iOS app with [EAS](/eas). You only need an iOS device to run [development builds](/develop/development-builds/introduction/).
 
 ### Recommended tools
 
@@ -39,16 +51,6 @@ After installing Node.js, you can use `npx` to bootstrap a new app:
 Yarn users can bootstrap a new app using the following command:
 
 <Terminal cmd={['$ yarn create expo']} />
-
-### Expo CLI
-
-[Expo CLI](/more/expo-cli/) is part of the `expo` package, and you can use it by leveraging `npx` &mdash; a Node.js package runner.
-
-<Terminal cmd={['# Start the development server', '$ npx expo']} />
-
-For example, to see a list of available commands in Expo CLI, open the terminal on your development machine and run the following command:
-
-<Terminal cmd={['# See a list of available commands in Expo CLI', '$ npx expo -h']} />
 
 ## Next step
 
