@@ -3,20 +3,20 @@
 import Foundation
 
 /**
- The `ExpoNetworkInterceptorProtocolDelegate` implementation to dispatch CDP (Chrome DevTools Protocol) events
+ The `ExpoRequestInterceptorProtocolDelegate` implementation to dispatch CDP (Chrome DevTools Protocol) events
  */
-@objc(EXRequestCdpLogger)
-public final class ExpoRequestCdpLogger: NSObject, ExpoRequestInterceptorProtocolDelegate {
-  private var delegate: ExpoRequestCdpLoggerDelegate?
-  internal var dispatchQueue = DispatchQueue(label: "expo.requestCdpLogger")
+@objc(EXRequestCdpInterceptor)
+public final class ExpoRequestCdpInterceptor: NSObject, ExpoRequestInterceptorProtocolDelegate {
+  private var delegate: ExpoRequestCdpInterceptorDelegate?
+  internal var dispatchQueue = DispatchQueue(label: "expo.requestCdpInterceptor")
 
   override private init() {}
 
   @objc
-  public static let shared = ExpoRequestCdpLogger()
+  public static let shared = ExpoRequestCdpInterceptor()
 
   @objc
-  public func setDelegate(_ newValue: ExpoRequestCdpLoggerDelegate?) {
+  public func setDelegate(_ newValue: ExpoRequestCdpInterceptorDelegate?) {
     dispatchQueue.async {
       self.delegate = newValue
     }
@@ -31,7 +31,7 @@ public final class ExpoRequestCdpLogger: NSObject, ExpoRequestInterceptorProtoco
     }
   }
 
-  // MARK: ExpoNetworkInterceptorProtocolDelegate implementations
+  // MARK: ExpoRequestInterceptorProtocolDelegate implementations
 
   func willSendRequest(requestId: String, request: URLRequest, redirectResponse: HTTPURLResponse?) {
     let now = Date().timeIntervalSince1970
@@ -61,10 +61,10 @@ public final class ExpoRequestCdpLogger: NSObject, ExpoRequestInterceptorProtoco
 }
 
 /**
- The delegate to dispatch CDP events for ExpoRequestCdpLogger
+ The delegate to dispatch CDP events for ExpoRequestCdpInterceptor
  */
-@objc(EXRequestCdpLoggerDelegate)
-public protocol ExpoRequestCdpLoggerDelegate {
+@objc(EXRequestCdpInterceptorDelegate)
+public protocol ExpoRequestCdpInterceptorDelegate {
   @objc
   func dispatch(_ event: String)
 }

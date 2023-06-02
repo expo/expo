@@ -4,18 +4,18 @@ import ExpoModulesTestCore
 
 @testable import ExpoModulesCore
 
-final class MockCdpLoggerDelegate: ExpoRequestCdpLoggerDelegate {
+final class MockCdpInterceptorDelegate: ExpoRequestCdpInterceptorDelegate {
   var events: [String] = []
 
-  // ExpoRequestCdpLoggerDelegate implementations
+  // ExpoRequestCdpInterceptorDelegate implementations
 
   func dispatch(_ event: String) {
     self.events.append(event)
   }
 }
 
-final class ExpoRequestCdpLoggerSpec: ExpoSpec {
-  private let mockDelegate = MockCdpLoggerDelegate()
+final class ExpoRequestCdpInterceptorSpec: ExpoSpec {
+  private let mockDelegate = MockCdpInterceptorDelegate()
   private lazy var session: URLSession = {
     let configuration = URLSessionConfiguration.default
     let protocolClasses = configuration.protocolClasses
@@ -38,8 +38,8 @@ final class ExpoRequestCdpLoggerSpec: ExpoSpec {
 
   override func spec() {
     beforeSuite {
-      ExpoRequestCdpLogger.shared.dispatchQueue = DispatchQueue.main
-      ExpoRequestCdpLogger.shared.setDelegate(self.mockDelegate)
+      ExpoRequestCdpInterceptor.shared.dispatchQueue = DispatchQueue.main
+      ExpoRequestCdpInterceptor.shared.setDelegate(self.mockDelegate)
     }
 
     beforeEach {

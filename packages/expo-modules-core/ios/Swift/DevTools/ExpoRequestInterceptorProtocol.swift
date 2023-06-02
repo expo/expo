@@ -21,8 +21,8 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
 
   static let MAX_BODY_SIZE = 1_048_576
 
-  // Currently keeps the delegate fixed for ExpoRequestCdpLogger and be thread-safe
-  static let delegate: ExpoRequestInterceptorProtocolDelegate = ExpoRequestCdpLogger.shared
+  // Currently keeps the delegate fixed for ExpoRequestCdpInterceptor and be thread-safe
+  static let delegate: ExpoRequestInterceptorProtocolDelegate = ExpoRequestCdpInterceptor.shared
 
   // MARK: URLProtocol implementations
 

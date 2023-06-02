@@ -8,7 +8,7 @@ import React
 var isHookInstalled = false
 
 @objc(EXDevLauncherNetworkInterceptor)
-public final class DevLauncherNetworkInterceptor: NSObject, ExpoRequestCdpLoggerDelegate {
+public final class DevLauncherNetworkInterceptor: NSObject, ExpoRequestCdpInterceptorDelegate {
   fileprivate static var inspectorPackagerConn: RCTInspectorPackagerConnection?
 
   public override init() {
@@ -29,15 +29,15 @@ public final class DevLauncherNetworkInterceptor: NSObject, ExpoRequestCdpLogger
       isHookInstalled = true
     }
 
-    ExpoRequestCdpLogger.shared.setDelegate(self)
+    ExpoRequestCdpInterceptor.shared.setDelegate(self)
   }
 
   deinit {
     assert(Thread.isMainThread)
-    ExpoRequestCdpLogger.shared.setDelegate(nil)
+    ExpoRequestCdpInterceptor.shared.setDelegate(nil)
   }
 
-  // MARK: ExpoRequestCdpLoggerDelegate implementations
+  // MARK: ExpoRequestCdpInterceptorDelegate implementations
 
   public func dispatch(_ event: String) {
     Self.inspectorPackagerConn?.sendWrappedEventToAllPages(event)
