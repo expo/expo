@@ -5,7 +5,7 @@ import Foundation
 /**
  The `ExpoNetworkInterceptorProtocolDelegate` implementation to dispatch CDP (Chrome DevTools Protocol) events
  */
-@objc
+@objc(EXRequestCdpLogger)
 public final class ExpoRequestCdpLogger: NSObject, ExpoRequestInterceptorProtocolDelegate {
   private var delegate: ExpoRequestCdpLoggerDelegate?
   internal var dispatchQueue = DispatchQueue(label: "expo.requestCdpLogger")
@@ -63,7 +63,7 @@ public final class ExpoRequestCdpLogger: NSObject, ExpoRequestInterceptorProtoco
 /**
  The delegate to dispatch CDP events for ExpoRequestCdpLogger
  */
-@objc
+@objc(EXRequestCdpLoggerDelegate)
 public protocol ExpoRequestCdpLoggerDelegate {
   @objc
   func dispatch(_ event: String)

@@ -5,16 +5,17 @@ import React
 
 #if DEBUG && EX_DEV_CLIENT_NETWORK_INSPECTOR
 
+var isHookInstalled = false
+
 @objc(EXDevLauncherNetworkInterceptor)
 public final class DevLauncherNetworkInterceptor: NSObject, ExpoRequestCdpLoggerDelegate {
-  private static var isHookSetuped = false
   fileprivate static var inspectorPackagerConn: RCTInspectorPackagerConnection?
 
   public override init() {
     super.init()
     assert(Thread.isMainThread)
 
-    if !Self.isHookSetuped {
+    if !isHookInstalled {
       EXDevLauncherUtils.swizzleClassMethod(
         selector: #selector(RCTInspectorDevServerHelper.connect(withBundleURL:)),
         withSelector: #selector(RCTInspectorDevServerHelper.EXDevLauncher_connect(withBundleURL:)),
@@ -25,7 +26,7 @@ public final class DevLauncherNetworkInterceptor: NSObject, ExpoRequestCdpLogger
         withSelector: #selector(URLSessionConfiguration.EXDevLauncher_urlSessionConfiguration),
         forClass: URLSessionConfiguration.self
       )
-      Self.isHookSetuped = true
+      isHookInstalled = true
     }
 
     ExpoRequestCdpLogger.shared.setDelegate(self)

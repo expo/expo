@@ -5,7 +5,7 @@ import Foundation
 /**
  A `URLSession` interceptor which passes network events to its delegate
  */
-@objc
+@objc(EXRequestInterceptorProtocol)
 public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDelegate {
   private static let REQUEST_ID = "ExpoRequestInterceptorProtocol.requestId"
   private static var requestIdProvider = RequestIdProvider()
@@ -170,7 +170,7 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
 /**
  The delegate to dispatch network request events
  */
-@objc
+@objc(EXRequestInterceptorProtocolDelegate)
 protocol ExpoRequestInterceptorProtocolDelegate {
   @objc
   func willSendRequest(requestId: String, request: URLRequest, redirectResponse: HTTPURLResponse?)
