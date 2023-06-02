@@ -127,7 +127,7 @@ export function assertNotInstallingExcludedPackages(
     if (requestedAndExcludedPackages.length) {
       const excludedPackageMessage =
         requestedAndExcludedPackages.length > 1
-          ? `${requestedAndExcludedPackages.length} packages are`
+          ? `${requestedAndExcludedPackages.length} packages to install are`
           : `${requestedAndExcludedPackages[0]} is`;
       Log.exit(
         chalk.red(
