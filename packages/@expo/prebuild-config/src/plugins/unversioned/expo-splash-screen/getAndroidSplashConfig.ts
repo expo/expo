@@ -1,6 +1,6 @@
 import { ExpoConfig } from '@expo/config-types';
 
-export type SplashScreenConfig = {
+export interface AndroidSplashConfig {
   xxxhdpi: string | null;
   xxhdpi: string | null;
   xhdpi: string | null;
@@ -9,13 +9,13 @@ export type SplashScreenConfig = {
   backgroundColor: string | null;
   resizeMode: 'contain' | 'cover' | 'native';
   fadeTime: number;
-};
+}
 
 const defaultResizeMode = 'contain';
 
 export function getAndroidSplashConfig(
   config: Pick<ExpoConfig, 'splash' | 'android'>
-): SplashScreenConfig | null {
+): AndroidSplashConfig | null {
   // Respect the splash screen object, don't mix and match across different splash screen objects
   // in case the user wants the top level splash to apply to every platform except android.
   if (config.android?.splash) {
@@ -60,7 +60,7 @@ export function getAndroidSplashConfig(
 
 export function getAndroidDarkSplashConfig(
   config: Pick<ExpoConfig, 'splash' | 'android'>
-): SplashScreenConfig | null {
+): AndroidSplashConfig | null {
   // Respect the splash screen object, don't mix and match across different splash screen objects
   // in case the user wants the top level splash to apply to every platform except android.
   if (config.android?.splash?.dark) {

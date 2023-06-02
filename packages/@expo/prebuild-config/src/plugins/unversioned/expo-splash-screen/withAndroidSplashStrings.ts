@@ -6,13 +6,20 @@ const RESIZE_MODE_KEY = 'expo_splash_screen_resize_mode';
 const STATUS_BAR_TRANSLUCENT_KEY = 'expo_splash_screen_status_bar_translucent';
 const FADE_TIME_KEY = 'expo_splash_screen_fade_time';
 
-export const withAndroidSplashStrings: ConfigPlugin = (config) => {
+type ExtraProps = {
+  resizeMode?: string;
+  fadeTime?: number;
+};
+
+const defaultResizeMode = 'contain';
+
+export const withAndroidSplashStrings: ConfigPlugin<ExtraProps> = (config, splash) => {
   return withStringsXml(config, (config) => {
     const splashConfig = getAndroidSplashConfig(config);
     if (splashConfig) {
-      const { resizeMode } = splashConfig;
+      const resizeMode = splash?.resizeMode || defaultResizeMode;
       const statusBarTranslucent = !!config.androidStatusBar?.translucent;
-      const fadeTime = `${splashConfig.fadeTime}`;
+      const fadeTime = `${splash?.fadeTime}`;
       config.modResults = setSplashStrings(
         config.modResults,
         resizeMode,

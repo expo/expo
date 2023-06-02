@@ -1,22 +1,32 @@
 import { ConfigPlugin, WarningAggregator, withPlugins } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
 import JsonFile from '@expo/json-file';
+import Debug from 'debug';
 import resolveFrom from 'resolve-from';
 import semver from 'semver';
 
-import { getAndroidSplashConfig } from './getAndroidSplashConfig';
+import { AndroidSplashConfig, getAndroidSplashConfig } from './getAndroidSplashConfig';
 import { withAndroidSplashDrawables } from './withAndroidSplashDrawables';
 import { withAndroidSplashImages } from './withAndroidSplashImages';
 import { withAndroidSplashLegacyMainActivity } from './withAndroidSplashLegacyMainActivity';
 import { withAndroidSplashStrings } from './withAndroidSplashStrings';
 import { withAndroidSplashStyles } from './withAndroidSplashStyles';
 
-export const withAndroidSplashScreen: ConfigPlugin = (config) => {
-  const splashConfig = getAndroidSplashConfig(config);
+const debug = Debug('expo:prebuild-config:expo-splash-screen:android');
+
+export const withAndroidSplashScreen: ConfigPlugin<
+  AndroidSplashConfig | undefined | null | void
+> = (config, splash) => {
+  // If the user didn't specify a splash object, infer the splash object from the Expo config.
+  if (!splash) {
+    splash = getAndroidSplashConfig(config);
+  } else {
+    debug(`custom splash config provided`);
+  }
 
   // Update the android status bar to match the splash screen
   // androidStatusBar applies info to the app activity style.
-  const backgroundColor = splashConfig?.backgroundColor || '#ffffff';
+  const backgroundColor = splash?.backgroundColor || '#ffffff';
   if (config.androidStatusBar?.backgroundColor) {
     if (
       backgroundColor.toLowerCase() !== config.androidStatusBar?.backgroundColor?.toLowerCase?.()
@@ -33,10 +43,10 @@ export const withAndroidSplashScreen: ConfigPlugin = (config) => {
 
   return withPlugins(config, [
     withAndroidSplashImages,
-    [withAndroidSplashDrawables, splashConfig],
+    [withAndroidSplashDrawables, splash],
     ...(shouldUpdateLegacyMainActivity(config) ? [withAndroidSplashLegacyMainActivity] : []),
     withAndroidSplashStyles,
-    withAndroidSplashStrings,
+    [withAndroidSplashStrings, splash],
   ]);
 };
 

@@ -18,6 +18,13 @@ function _jsonFile() {
   };
   return data;
 }
+function _debug() {
+  const data = _interopRequireDefault(require("debug"));
+  _debug = function () {
+    return data;
+  };
+  return data;
+}
 function _resolveFrom() {
   const data = _interopRequireDefault(require("resolve-from"));
   _resolveFrom = function () {
@@ -75,13 +82,19 @@ function _withAndroidSplashStyles() {
   return data;
 }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-const withAndroidSplashScreen = config => {
-  var _config$androidStatus;
-  const splashConfig = (0, _getAndroidSplashConfig().getAndroidSplashConfig)(config);
+const debug = (0, _debug().default)('expo:prebuild-config:expo-splash-screen:android');
+const withAndroidSplashScreen = (config, splash) => {
+  var _splash, _config$androidStatus;
+  // If the user didn't specify a splash object, infer the splash object from the Expo config.
+  if (!splash) {
+    splash = (0, _getAndroidSplashConfig().getAndroidSplashConfig)(config);
+  } else {
+    debug(`custom splash config provided`);
+  }
 
   // Update the android status bar to match the splash screen
   // androidStatusBar applies info to the app activity style.
-  const backgroundColor = (splashConfig === null || splashConfig === void 0 ? void 0 : splashConfig.backgroundColor) || '#ffffff';
+  const backgroundColor = ((_splash = splash) === null || _splash === void 0 ? void 0 : _splash.backgroundColor) || '#ffffff';
   if ((_config$androidStatus = config.androidStatusBar) !== null && _config$androidStatus !== void 0 && _config$androidStatus.backgroundColor) {
     var _config$androidStatus2, _config$androidStatus3, _config$androidStatus4;
     if (backgroundColor.toLowerCase() !== ((_config$androidStatus2 = config.androidStatusBar) === null || _config$androidStatus2 === void 0 ? void 0 : (_config$androidStatus3 = _config$androidStatus2.backgroundColor) === null || _config$androidStatus3 === void 0 ? void 0 : (_config$androidStatus4 = _config$androidStatus3.toLowerCase) === null || _config$androidStatus4 === void 0 ? void 0 : _config$androidStatus4.call(_config$androidStatus3))) {
@@ -91,7 +104,7 @@ const withAndroidSplashScreen = config => {
     if (!config.androidStatusBar) config.androidStatusBar = {};
     config.androidStatusBar.backgroundColor = backgroundColor;
   }
-  return (0, _configPlugins().withPlugins)(config, [_withAndroidSplashImages().withAndroidSplashImages, [_withAndroidSplashDrawables().withAndroidSplashDrawables, splashConfig], ...(shouldUpdateLegacyMainActivity(config) ? [_withAndroidSplashLegacyMainActivity().withAndroidSplashLegacyMainActivity] : []), _withAndroidSplashStyles().withAndroidSplashStyles, _withAndroidSplashStrings().withAndroidSplashStrings]);
+  return (0, _configPlugins().withPlugins)(config, [_withAndroidSplashImages().withAndroidSplashImages, [_withAndroidSplashDrawables().withAndroidSplashDrawables, splash], ...(shouldUpdateLegacyMainActivity(config) ? [_withAndroidSplashLegacyMainActivity().withAndroidSplashLegacyMainActivity] : []), _withAndroidSplashStyles().withAndroidSplashStyles, [_withAndroidSplashStrings().withAndroidSplashStrings, splash]]);
 };
 exports.withAndroidSplashScreen = withAndroidSplashScreen;
 function shouldUpdateLegacyMainActivity(config) {

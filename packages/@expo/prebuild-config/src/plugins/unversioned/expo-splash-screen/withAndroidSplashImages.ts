@@ -7,7 +7,7 @@ import path from 'path';
 import {
   getAndroidDarkSplashConfig,
   getAndroidSplashConfig,
-  SplashScreenConfig,
+  AndroidSplashConfig,
 } from './getAndroidSplashConfig';
 
 type DRAWABLE_SIZE = 'default' | 'mdpi' | 'hdpi' | 'xhdpi' | 'xxhdpi' | 'xxxhdpi';
@@ -142,7 +142,7 @@ async function clearAllExistingSplashImagesAsync(projectRoot: string) {
 }
 
 export async function setSplashImageDrawablesForThemeAsync(
-  config: SplashScreenConfig | null,
+  config: AndroidSplashConfig | null,
   theme: 'dark' | 'light',
   projectRoot: string
 ) {

@@ -1,5 +1,5 @@
 import { ExpoConfig } from '@expo/config-types';
-export type SplashScreenConfig = {
+export interface AndroidSplashConfig {
     xxxhdpi: string | null;
     xxhdpi: string | null;
     xhdpi: string | null;
@@ -8,6 +8,6 @@ export type SplashScreenConfig = {
     backgroundColor: string | null;
     resizeMode: 'contain' | 'cover' | 'native';
     fadeTime: number;
-};
-export declare function getAndroidSplashConfig(config: Pick<ExpoConfig, 'splash' | 'android'>): SplashScreenConfig | null;
-export declare function getAndroidDarkSplashConfig(config: Pick<ExpoConfig, 'splash' | 'android'>): SplashScreenConfig | null;
+}
+export declare function getAndroidSplashConfig(config: Pick<ExpoConfig, 'splash' | 'android'>): AndroidSplashConfig | null;
+export declare function getAndroidDarkSplashConfig(config: Pick<ExpoConfig, 'splash' | 'android'>): AndroidSplashConfig | null;

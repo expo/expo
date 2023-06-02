@@ -1,8 +1,8 @@
 import { AndroidConfig, ConfigPlugin, withDangerousMod, XML } from '@expo/config-plugins';
 
-import { SplashScreenConfig } from './getAndroidSplashConfig';
+import { AndroidSplashConfig } from './getAndroidSplashConfig';
 
-export const withAndroidSplashDrawables: ConfigPlugin<Pick<SplashScreenConfig, 'resizeMode'>> = (
+export const withAndroidSplashDrawables: ConfigPlugin<Pick<AndroidSplashConfig, 'resizeMode'>> = (
   config,
   splash
 ) => {
@@ -18,7 +18,7 @@ export const withAndroidSplashDrawables: ConfigPlugin<Pick<SplashScreenConfig, '
 };
 
 export async function setSplashDrawableAsync(
-  { resizeMode }: Pick<SplashScreenConfig, 'resizeMode'>,
+  { resizeMode }: Pick<AndroidSplashConfig, 'resizeMode'>,
   projectRoot: string
 ) {
   const filePath = (await AndroidConfig.Paths.getResourceXMLPathAsync(projectRoot, {

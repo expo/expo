@@ -22,16 +22,15 @@ function _getAndroidSplashConfig() {
 const RESIZE_MODE_KEY = 'expo_splash_screen_resize_mode';
 const STATUS_BAR_TRANSLUCENT_KEY = 'expo_splash_screen_status_bar_translucent';
 const FADE_TIME_KEY = 'expo_splash_screen_fade_time';
-const withAndroidSplashStrings = config => {
+const defaultResizeMode = 'contain';
+const withAndroidSplashStrings = (config, splash) => {
   return (0, _configPlugins().withStringsXml)(config, config => {
     const splashConfig = (0, _getAndroidSplashConfig().getAndroidSplashConfig)(config);
     if (splashConfig) {
       var _config$androidStatus;
-      const {
-        resizeMode
-      } = splashConfig;
+      const resizeMode = (splash === null || splash === void 0 ? void 0 : splash.resizeMode) || defaultResizeMode;
       const statusBarTranslucent = !!((_config$androidStatus = config.androidStatusBar) !== null && _config$androidStatus !== void 0 && _config$androidStatus.translucent);
-      const fadeTime = `${splashConfig.fadeTime}`;
+      const fadeTime = `${splash === null || splash === void 0 ? void 0 : splash.fadeTime}`;
       config.modResults = setSplashStrings(config.modResults, resizeMode, statusBarTranslucent, fadeTime);
     }
     return config;
