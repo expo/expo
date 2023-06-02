@@ -11,6 +11,8 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
 
+internal const val UNLIMITED_SELECTION: Int = 0
+
 internal class ImagePickerOptions : Record, Serializable {
   @Field
   var allowsEditing: Boolean = false
@@ -24,7 +26,7 @@ internal class ImagePickerOptions : Record, Serializable {
 
   @Field
   @IntRange(from = 0)
-  var selectionLimit: Int = 0
+  var selectionLimit: Int = UNLIMITED_SELECTION
 
   @Field
   var base64: Boolean = false
