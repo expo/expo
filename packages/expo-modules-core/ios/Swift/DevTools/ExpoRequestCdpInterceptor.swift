@@ -3,7 +3,8 @@
 import Foundation
 
 /**
- The `ExpoRequestInterceptorProtocolDelegate` implementation to dispatch CDP (Chrome DevTools Protocol) events
+ The `ExpoRequestInterceptorProtocolDelegate` implementation to
+ dispatch CDP (Chrome DevTools Protocol: https://chromedevtools.github.io/devtools-protocol/) events.
  */
 @objc(EXRequestCdpInterceptor)
 public final class ExpoRequestCdpInterceptor: NSObject, ExpoRequestInterceptorProtocolDelegate {
