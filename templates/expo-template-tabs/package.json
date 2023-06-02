@@ -1,5 +1,6 @@
 {
   "name": "expo-template-tabs",
+  "main": "expo-router/entry",
   "description": "The Tab Navigation project template includes several example screens.",
   "version": "49.0.0-alpha.1",
   "scripts": {
@@ -22,7 +23,7 @@
     "expo-status-bar": "~1.5.0",
     "expo-system-ui": "~2.3.0",
     "expo-web-browser": "~12.2.0",
-    "expo-router": "^1.0.0-rc5",
+    "expo-router": "^1.5.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.71.7",
@@ -31,46 +32,10 @@
     "react-native-web": "~0.18.10"
   },
   "overrides": {
-    "metro": "0.76.1",
-    "metro-babel-transformer": "0.76.1",
-    "metro-cache": "0.76.1",
-    "metro-file-map": "0.76.1",
-    "metro-hermes-compiler": "0.76.1",
-    "metro-inspector-proxy": "0.76.1",
-    "metro-react-native-babel-transformer": "0.76.1",
-    "metro-resolver": "0.76.1",
-    "metro-runtime": "0.76.1",
-    "metro-source-map": "0.76.1",
-    "metro-symbolicate": "0.76.1",
-    "metro-transform-plugins": "0.76.1",
-    "metro-transform-worker": "0.76.1",
-    "metro-cache-key": "0.76.1",
-    "metro-config": "0.76.1",
-    "metro-core": "0.76.1",
-    "metro-minify-terser": "0.76.1",
-    "metro-minify-uglify": "0.76.1",
-    "metro-react-native-babel-preset": "0.76.1"
+    "react-refresh": "~0.14.0"
   },
   "resolutions": {
-    "metro": "0.76.1",
-    "metro-babel-transformer": "0.76.1",
-    "metro-cache": "0.76.1",
-    "metro-file-map": "0.76.1",
-    "metro-hermes-compiler": "0.76.0",
-    "metro-inspector-proxy": "0.76.1",
-    "metro-react-native-babel-transformer": "0.76.1",
-    "metro-resolver": "0.76.1",
-    "metro-runtime": "0.76.1",
-    "metro-source-map": "0.76.1",
-    "metro-symbolicate": "0.76.1",
-    "metro-transform-plugins": "0.76.1",
-    "metro-transform-worker": "0.76.1",
-    "metro-cache-key": "0.76.1",
-    "metro-config": "0.76.1",
-    "metro-core": "0.76.1",
-    "metro-minify-terser": "0.76.1",
-    "metro-minify-uglify": "0.76.1",
-    "metro-react-native-babel-preset": "0.76.1"
+    "react-refresh": "~0.14.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
