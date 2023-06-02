@@ -43,3 +43,6 @@ internal class FileSystemCannotFindTaskException :
 
 internal class FileSystemCopyFailedException(uri: Uri?) :
   CodedException("File '$uri' could not be copied because it could not be found")
+
+internal class CookieHandlerNotFoundException :
+  CodedException("Failed to find CookieHandler")

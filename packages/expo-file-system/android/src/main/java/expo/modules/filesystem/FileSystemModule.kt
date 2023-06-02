@@ -348,7 +348,9 @@ open class FileSystemModule : Module() {
 
       if (uri.scheme == "file") {
         val file = uri.toFile()
-        val children = file.listFiles() as Array<File?>
+        val children = file.listFiles() as Array<File?>?
+          ?: throw FileSystemCannotReadDirectoryException(uri)
+
         return@AsyncFunction children.map { it?.name }
       } else if (uri.isSAFUri) {
         throw FileSystemUnsupportedSchemeException()
@@ -963,7 +965,8 @@ open class FileSystemModule : Module() {
           .readTimeout(60, TimeUnit.SECONDS)
           .writeTimeout(60, TimeUnit.SECONDS)
         val cookieHandler: CookieHandler = appContext.legacyModule()
-          ?: throw Exceptions.AppContextLost()
+          ?: throw CookieHandlerNotFoundException()
+
         builder.cookieJar(JavaNetCookieJar(cookieHandler))
         client = builder.build()
       }
