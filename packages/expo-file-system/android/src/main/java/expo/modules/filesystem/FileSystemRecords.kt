@@ -69,14 +69,21 @@ data class WritingOptions(
 ) : Record
 
 data class FileSystemUploadOptions(
+  @Field
   val headers: Map<String, String>?,
+  @Field
   val httpMethod: HttpMethod = HttpMethod.POST,
+  @Field
   val sessionType: SessionType = SessionType.BACKGROUND,
+  @Field
   val uploadType: FileSystemUploadType,
+  @Field
   val fieldName: String?,
+  @Field
   val mimeType: String?,
+  @Field
   val parameters: Map<String, String>?
-)
+) : Record
 
 enum class HttpMethod(val value: String) : Enumerable {
   POST("POST"),
