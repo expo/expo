@@ -1,4 +1,4 @@
-import { getConfig } from '@expo/config';
+import { getConfig, PackageJSONConfig } from '@expo/config';
 import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
 
@@ -87,6 +87,15 @@ export async function installPackagesAsync(
     packageManagerArguments: string[];
   }
 ): Promise<void> {
+  // Read the project Expo config without plugins.
+  const { pkg } = getConfig(projectRoot, {
+    // Sometimes users will add a plugin to the config before installing the library,
+    // this wouldn't work unless we dangerously disable plugin serialization.
+    skipPlugins: true,
+  });
+
+  assertNotInstallingExcludedPackages(projectRoot, packages, pkg);
+
   const versioning = await getVersionedPackagesAsync(projectRoot, {
     packages,
     // sdkVersion is always defined because we don't skipSDKVersionRequirement in getConfig.
@@ -102,6 +111,31 @@ export async function installPackagesAsync(
   await packageManager.addAsync([...packageManagerArguments, ...versioning.packages]);
 
   await applyPluginsAsync(projectRoot, versioning.packages);
+}
+
+export function assertNotInstallingExcludedPackages(
+  projectRoot: string,
+  packages: string[],
+  pkg: PackageJSONConfig
+) {
+  if (pkg.expo?.install?.exclude) {
+    const packagesToExclude = pkg.expo.install.exclude;
+    const requestedAndExcludedPackages = packages.filter((packageName) =>
+      packagesToExclude.includes(packageName)
+    );
+
+    if (requestedAndExcludedPackages.length) {
+      const excludedPackageMessage =
+        requestedAndExcludedPackages.length > 1
+          ? `${requestedAndExcludedPackages.length} packages are`
+          : `${requestedAndExcludedPackages[0]} is`;
+      Log.exit(
+        chalk.red(
+          `${excludedPackageMessage} also present in expo.install.exclude in your project's package.json. Remove from your expo install request or from expo.install.exclude in order to proceed with installation.`
+        )
+      );
+    }
+  }
 }
 
 export async function fixPackagesAsync(
