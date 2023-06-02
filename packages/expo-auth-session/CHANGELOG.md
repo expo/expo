@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `extraHeaders` option to TokenRequest and RevokeTokenRequest. ([#22727](https://github.com/expo/expo/pull/22727)) by [@levizimmerman](https://github.com/levizimmerman)
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
