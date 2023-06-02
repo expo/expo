@@ -23,6 +23,7 @@ export async function whoamiAsync() {
         Log.log(`• ${account.name} (Role: ${getLabelForRole(roleOnAccount)})`);
       });
     }
+    process.exit(0);
   } else {
     Log.exit('Not logged in');
   }
