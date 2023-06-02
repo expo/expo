@@ -37,7 +37,7 @@ export async function ensureConfigExistsAsync(projectRoot: string) {
   }
 }
 
-/** Ensure config is written, prompts for application identifiers, and removes entryPoint value. */
+/** Ensure config is written, and prompts for application identifiers. */
 export async function ensureConfigAsync(
   projectRoot: string,
   {

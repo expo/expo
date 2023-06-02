@@ -70,13 +70,17 @@ public class GLContext {
     mEventQueue.add(r);
   }
 
-  public void initialize(SurfaceTexture surfaceTexture, final Runnable completionCallback) {
+  public void initialize(
+          SurfaceTexture surfaceTexture,
+          Boolean enableExperimentalWorkletSupport,
+          final Runnable completionCallback) {
     if (mGLThread != null) {
       return;
     }
 
     mGLThread = new GLThread(surfaceTexture);
     mGLThread.start();
+    mEXGLCtxId = EXGLContextCreate();
 
     // On JS thread, get JavaScriptCore context, create EXGL context, call JS callback
     final GLContext glContext = this;
@@ -92,9 +96,8 @@ public class GLContext {
         long jsContextRef = jsContextProvider.getJavaScriptContextRef();
         synchronized (uiManager) {
           if (jsContextRef != 0) {
-            mEXGLCtxId = EXGLContextCreate();
             EXGLRegisterThread();
-            EXGLContextPrepare(jsContextRef, mEXGLCtxId, glContext);
+            EXGLContextPrepare(jsContextRef, mEXGLCtxId, glContext, enableExperimentalWorkletSupport);
           }
         }
         mManager.saveContext(glContext);

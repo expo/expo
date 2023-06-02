@@ -199,7 +199,8 @@ std::shared_ptr<jsi::Object> JavaScriptModuleObject::getJSIObject(jsi::Runtime &
             JavaReferencesCache::instance()->getJClass(
               "expo/modules/kotlin/sharedobjects/SharedObject").clazz
           )) {
-            auto jsThisObject = JavaScriptObject::newObjectCxxArgs(
+            auto jsThisObject = JavaScriptObject::newInstance(
+              jsiInteropModuleRegistry,
               jsiInteropModuleRegistry->runtimeHolder,
               thisObject
             );

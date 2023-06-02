@@ -7,13 +7,17 @@
   ReanimatedSensorType _sensorType;
   double _interval;
   double _lastTimestamp;
+  int _referenceFrame;
 #if !TARGET_OS_TV
   CMMotionManager *_motionManager;
 #endif
-  void (^_setter)(double[]);
+  void (^_setter)(double[], int);
 }
 
-- (instancetype)init:(ReanimatedSensorType)sensorType interval:(int)interval setter:(void (^)(double[]))setter;
+- (instancetype)init:(ReanimatedSensorType)sensorType
+             interval:(int)interval
+    iosReferenceFrame:(int)iosReferenceFrame
+               setter:(void (^)(double[], int))setter;
 - (bool)initialize;
 - (bool)initializeGyroscope;
 - (bool)initializeAccelerometer;

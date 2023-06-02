@@ -27,6 +27,7 @@ class GLView(context: Context, appContext: AppContext) : TextureView(context), S
   private val exglContextId: Int
     get() = glContext.contextId
 
+  var enableExperimentalWorkletSupport: Boolean = false
   val onSurfaceCreate by EventDispatcher<OnSurfaceCreateRecord>()
 
   init {
@@ -78,7 +79,7 @@ class GLView(context: Context, appContext: AppContext) : TextureView(context), S
   }
 
   private fun initializeSurfaceInGLContext(surfaceTexture: SurfaceTexture) {
-    glContext.initialize(surfaceTexture) {
+    glContext.initialize(surfaceTexture, enableExperimentalWorkletSupport) {
       onSurfaceCreate(OnSurfaceCreateRecord(exglContextId))
     }
   }

@@ -195,6 +195,55 @@ class SelectionPolicyFilterAwareSpec : ExpoSpec {
       it("should load new update - doesnt match") {
         expect(selectionPolicy.shouldLoadNewUpdate(updateDefault2, withLaunchedUpdate: nil, filters: manifestFilters)) == false
       }
+
+      it("should load rollback to embedded directive - embedded does not match filters") {
+        expect(selectionPolicy.shouldLoadRollBackToEmbeddedDirective(
+          RollBackToEmbeddedUpdateDirective(commitTime: Date(), signingInfo: nil),
+          withEmbeddedUpdate: updateDefault1,
+          launchedUpdate: nil,
+          filters: manifestFilters
+        )) == false
+      }
+
+      it("should load rollback to embedded directive - no launched update") {
+        expect(selectionPolicy.shouldLoadRollBackToEmbeddedDirective(
+          RollBackToEmbeddedUpdateDirective(commitTime: Date(), signingInfo: nil),
+          withEmbeddedUpdate: updateRollout0,
+          launchedUpdate: nil,
+          filters: manifestFilters
+        )) == true
+      }
+
+      it("should load rollback to embedded directive - launched update does not match filters") {
+        expect(selectionPolicy.shouldLoadRollBackToEmbeddedDirective(
+          RollBackToEmbeddedUpdateDirective(commitTime: Date(), signingInfo: nil),
+          withEmbeddedUpdate: updateRollout0,
+          launchedUpdate: updateDefault1,
+          filters: manifestFilters
+        )) == true
+      }
+
+      it("should load rollback to embedded directive - commit time of launched update before roll back") {
+        // updateRollout1 has commitTime = 2021-01-12T19:39:22.480Z
+            // roll back is 1 year later
+        expect(selectionPolicy.shouldLoadRollBackToEmbeddedDirective(
+          RollBackToEmbeddedUpdateDirective(commitTime: RCTConvert.nsDate("2022-01-12T19:39:22.480Z"), signingInfo: nil),
+          withEmbeddedUpdate: updateRollout0,
+          launchedUpdate: updateRollout1,
+          filters: manifestFilters
+        )) == true
+      }
+
+      it("should load rollback to embedded directive - commit time of launched update before roll back") {
+        // updateRollout1 has commitTime = 2021-01-12T19:39:22.480Z
+            // roll back is 1 year earlier
+        expect(selectionPolicy.shouldLoadRollBackToEmbeddedDirective(
+          RollBackToEmbeddedUpdateDirective(commitTime: RCTConvert.nsDate("2020-01-12T19:39:22.480Z"), signingInfo: nil),
+          withEmbeddedUpdate: updateRollout0,
+          launchedUpdate: updateRollout1,
+          filters: manifestFilters
+        )) == false
+      }
       
       it("does update match filters - multiple filters") {
         let filtersBadMatch = [

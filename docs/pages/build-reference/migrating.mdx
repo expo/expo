@@ -5,9 +5,9 @@ description: A reference for migrating from "expo build" (classic builds) to EAS
 
 import { Terminal } from '~/ui/components/Snippet';
 
-This page covers practical differences you should know when migrating your Expo [managed app](/introduction/managed-vs-bare/#managed-workflow) from `expo build` (also known as **classic builds**) to EAS Build. If this is your first time using EAS Build, you can use this page as a companion to [Creating your first build](/build/setup).
+This page covers practical differences you should know when migrating your Expo [managed app](/archive/managed-vs-bare/#managed-workflow) from `expo build` (also known as **classic builds**) to EAS Build. If this is your first time using EAS Build, you can use this page as a companion to [Creating your first build](/build/setup).
 
-One of the goals of EAS Build is to make it as easy as possible to migrate from `expo build`. For example, your app signing credentials will be automatically re-used, and the Expo SDK and your [Expo config](/workflow/configuration) (**app.json**) configuration will all work the same as before. However, some differences between the two build processes require additional configuration or small code changes.
+One of the goals of EAS Build is to make it as easy as possible to migrate from `expo build`. For example, your app signing credentials will be automatically re-used, and the Expo SDK and your [app config](/workflow/configuration) (**app.json**) configuration will all work the same as before. However, some differences between the two build processes require additional configuration or small code changes.
 
 ## SDK 41 and above projects are supported
 
@@ -69,7 +69,7 @@ Only the second purpose applies to the EAS Build system. All assets referenced i
 
 If you are using `Constants.manifest` to access fields, you should switch to `Constants.expoConfig` to access them from the [`expo-constants`](/versions/latest/sdk/constants) library.
 
-## Expo config
+## App config (**app.json/app.config.js**)
 
 ### `userInterfaceStyle` depends on `expo-system-ui` being installed
 
@@ -147,7 +147,7 @@ In projects built with `expo build` the native primitives required by AWS Amplif
 
 ### Animated WebP is not supported by default
 
-Most apps do not use this format and support for it adds around 3.4 MB to the final app size, so it is omitted by default. You can enable it by switching `expo.webp.animated=false` to `expo.webp.animated=true` using a custom [Config plugin](/guides/config-plugins) to update **android/gradle.properties**. For more information on how to implement the config plugin, [see this example](https://forums.expo.dev/t/animated-webp-expected-to-work-with-eas-builds/58960/5?u=notbrent) from the community.
+Most apps do not use this format and support for it adds around 3.4 MB to the final app size, so it is omitted by default. You can enable it by switching `expo.webp.animated=false` to `expo.webp.animated=true` using a custom [Config plugin](/config-plugins/introduction/) to update **android/gradle.properties**. For more information on how to implement the config plugin, [see this example](https://forums.expo.dev/t/animated-webp-expected-to-work-with-eas-builds/58960/5?u=notbrent) from the community.
 
 ### metro.config.js must export the entire default config from `expo/metro-config`
 

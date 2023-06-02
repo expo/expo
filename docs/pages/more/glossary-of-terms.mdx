@@ -1,14 +1,25 @@
 ---
 title: Glossary of terms
+description: List of non-obvious terms used withing the documentation, related to Expo or cross-platform development in general.
 ---
 
 ### Android
 
 The mobile operating system sponsored by Google for use with "Android" devices.
 
+### App config
+
+A file named **app.json**, **app.config.json**, **app.config.js**, or **app.config.ts** in the root of a project directory. For more information, see [app config configuration](/workflow/configuration/).
+
+This file is used for the following purposes:
+
+- Configuring how [Expo CLI](#expo-cli) works.
+- Generating a project's public [manifest](#manifest) in EAS Update (think index.html but for native apps).
+- Adding Expo [Config Plugins](#config-plugin) and configuring how `npx expo prebuild` generates native code.
+
 ### app.json
 
-An [Expo Config](#expo-config) file.
+An [app config](#app-config) file.
 
 ### Apple Capabilities
 
@@ -51,11 +62,11 @@ A process for evaluating the results of [`npx expo prebuild`](#prebuild) in-memo
 
 ### Config Mods
 
-Async functions that are appended to the [Expo Config](#expo-config) for use in [Prebuild](#prebuild). These functions are given a single native file to modify like Info.plist or AndroidManifest.xml. Config Mods are chained together and come from the package `@expo/config-plugins`. For more information, see [Config Plugins](/guides/config-plugins).
+Async functions that are appended to the [app config](#app-config) for use in [Prebuild](#prebuild). These functions are given a single native file to modify like Info.plist or AndroidManifest.xml. Config Mods are chained together and come from the package `@expo/config-plugins`. For more information, see [Config Plugins](/config-plugins/introduction/).
 
 ### Config Plugin
 
-A JavaScript function that is used to append [config mods](#config-mods) to the [Expo Config](#expo-config) for use in [Prebuild](#prebuild). For more information, see [Config Plugins](/guides/config-plugins).
+A JavaScript function that is used to append [config mods](#config-mods) to the [app Config](#app-config) for use in [Prebuild](#prebuild). For more information, see [Config Plugins](/config-plugins/introduction/).
 
 ### create-expo-app
 
@@ -130,21 +141,11 @@ The original [Autolinking](#autolinking) system that is designed for projects us
 
 ### Expo CLI
 
-The command-line tool for working with Expo. This term now refers to the [Local Expo CLI](#local-expo-cli), but historically referred to the [Global Expo CLI](#global-expo-cli). For more information, see [Expo CLI](/workflow/expo-cli).
+The command-line tool for working with Expo. This term now refers to the [Local Expo CLI](#local-expo-cli), but historically referred to the [Global Expo CLI](#global-expo-cli). For more information, see [Expo CLI](/more/expo-cli/).
 
 ### Expo client
 
 The former name for the [Expo Go](#expo-go) app.
-
-### Expo Config
-
-A file named `app.json`, `app.config.json`, `app.config.js`, or `app.config.ts` in the root of a project directory. For more information, see [Expo Config configuration](/workflow/configuration/).
-
-This file is used for the following purposes:
-
-- Configuring how [Expo CLI](#expo-cli) works.
-- Generating a project's public [manifest](#manifest) in EAS Update (think index.html but for native apps).
-- Adding Expo [Config Plugins](#config-plugin) and configuring how `npx expo prebuild` generates native code.
 
 ### Expo Export
 
@@ -274,7 +275,7 @@ By default, platform extensions are resolved in `@expo/metro-config` using the f
 
 ### Prebuild
 
-The process of generating the temporary native `/ios` and `/android` folders for a React Native project based on the [Expo Config](#expo-config). This process is performed by running the command `npx expo prebuild` from [Expo CLI](#expo-cli) in a project directory.
+The process of generating the temporary native **android** and **ios** folders for a React Native project based on the [app config](#app-config). This process is performed by running the command `npx expo prebuild` from [Expo CLI](#expo-cli) in a project directory.
 
 See also:
 
@@ -283,7 +284,7 @@ See also:
 
 ### Prebuild Template
 
-The React Native project template that is used as the first step of [Prebuilding](#prebuild). This template is versioned with the [Expo SDK](#expo-sdk), and the template is chosen based on the installed version of `expo` in a project. After the template is cloned, `npx expo prebuild` will evaluate the [Expo Config](#expo-config) and run the [Config mods](#config-mods) which modify various files in the template.
+The React Native project template that is used as the first step of [Prebuilding](#prebuild). This template is versioned with the [Expo SDK](#expo-sdk), and the template is chosen based on the installed version of `expo` in a project. After the template is cloned, `npx expo prebuild` will evaluate the [app config](#app-config) and run the [Config mods](#config-mods) which modify various files in the template.
 
 Although the template can be changed by using the `npx expo prebuild --template /path/to/template` flag, the default prebuild template contains important initial defaults that the `npx expo prebuild` command makes assumptions about.
 
@@ -353,7 +354,7 @@ Traditionally, apps for Android and iOS are updated by submitting an updated bin
 
 ### VS Code Expo
 
-The VS Code extension for improving the developer experience of working with Expo config files. This extension provides autocomplete and intellisense for the [Expo Config](#expo-config), [Store Config](#store-config), [Expo Module Config](#expo-module-config), and [EAS Config](#eas-config). For more information, see the [VS Code Expo extension](https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo).
+The VS Code extension for improving the developer experience of working with app config files. This extension provides autocomplete and intellisense for the [app config](#app-config), [Store Config](#store-config), [Expo Module Config](#expo-module-config), and [EAS Config](#eas-config). For more information, see the [VS Code Expo extension](https://marketplace.visualstudio.com/items?itemName=expo.vscode-expo-tools).
 
 ### Watchman
 

@@ -132,9 +132,6 @@ it(
 
     const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
-    // Deleted
-    expect(pkg.main).not.toBeDefined();
-
     // Added new packages
     expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
       'expo',
@@ -189,7 +186,6 @@ it(
         "android/gradlew.bat",
         "android/settings.gradle",
         "app.json",
-        "index.js",
         "ios/.gitignore",
         "ios/.xcode.env",
         "ios/Podfile",
@@ -211,7 +207,6 @@ it(
         "ios/basicprebuild.xcodeproj/project.xcworkspace/contents.xcworkspacedata",
         "ios/basicprebuild.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist",
         "ios/basicprebuild.xcodeproj/xcshareddata/xcschemes/basicprebuild.xcscheme",
-        "metro.config.js",
         "package.json",
         "yarn.lock",
       ]

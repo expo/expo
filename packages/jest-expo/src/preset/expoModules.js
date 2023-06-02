@@ -282,6 +282,7 @@ module.exports = {
             key: 'isRootedExperimentalAsync',
           },
         ],
+        ExpoDevMenu: [],
         ExpoDocumentPicker: [{ name: 'getDocumentAsync', argumentsCount: 1, key: 0 }],
         ExpoFaceDetector: [{ name: 'detectFaces', argumentsCount: 1, key: 0 }],
         ExpoFontLoader: [{ name: 'loadAsync', argumentsCount: 2, key: 0 }],

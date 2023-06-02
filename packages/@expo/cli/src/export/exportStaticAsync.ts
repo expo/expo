@@ -14,7 +14,7 @@ import { inspect } from 'util';
 import { Log } from '../log';
 import { DevServerManager } from '../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
-import { stripAnsi } from '../utils/ansi';
+import { logMetroErrorAsync } from '../start/server/metro/metroErrorInterface';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
 
@@ -37,7 +37,7 @@ export async function unstable_exportStaticAsync(projectRoot: string, options: O
     },
   ]);
 
-  await exportFromServerAsync(devServerManager, options);
+  await exportFromServerAsync(projectRoot, devServerManager, options);
 
   await devServerManager.stopAsync();
 }
@@ -47,13 +47,16 @@ function matchGroupName(name: string): string | undefined {
   return name.match(/^\(([^/]+?)\)$/)?.[1];
 }
 
-export async function getFilesToExportFromServerAsync({
-  manifest,
-  renderAsync,
-}: {
-  manifest: any;
-  renderAsync: (pathname: string) => Promise<string>;
-}): Promise<Map<string, string>> {
+export async function getFilesToExportFromServerAsync(
+  projectRoot: string,
+  {
+    manifest,
+    renderAsync,
+  }: {
+    manifest: any;
+    renderAsync: (pathname: string) => Promise<string>;
+  }
+): Promise<Map<string, string>> {
   // name : contents
   const files = new Map<string, string>();
 
@@ -65,11 +68,8 @@ export async function getFilesToExportFromServerAsync({
         const data = await renderAsync(pathname);
         files.set(outputPath, data);
       } catch (e: any) {
-        // TODO: Format Metro error message better...
-        Log.error('Failed to statically render route:', pathname);
-        e.message = stripAnsi(e.message);
-        Log.exception(e);
-        throw e;
+        await logMetroErrorAsync({ error: e, projectRoot });
+        throw new Error('Failed to statically export route: ' + pathname);
       }
     })
   );
@@ -79,23 +79,25 @@ export async function getFilesToExportFromServerAsync({
 
 /** Perform all fs commits */
 export async function exportFromServerAsync(
+  projectRoot: string,
   devServerManager: DevServerManager,
-  { outputDir }: Options
+  { outputDir, minify }: Options
 ): Promise<void> {
   const devServer = devServerManager.getDefaultDevServer();
   assert(devServer instanceof MetroBundlerDevServer);
 
   const [manifest, resources, renderAsync] = await Promise.all([
     devServer.getRoutesAsync(),
-    devServer.getStaticResourcesAsync({ mode: 'production' }),
+    devServer.getStaticResourcesAsync({ mode: 'production', minify }),
     devServer.getStaticRenderFunctionAsync({
       mode: 'production',
+      minify,
     }),
   ]);
 
   debug('Routes:\n', inspect(manifest, { colors: true, depth: null }));
 
-  const files = await getFilesToExportFromServerAsync({
+  const files = await getFilesToExportFromServerAsync(projectRoot, {
     manifest,
     async renderAsync(pathname: string) {
       const template = await renderAsync(pathname);
@@ -188,13 +190,14 @@ export function getPathVariations(routePath: string): string[] {
       return;
     }
 
-    const segment = segments[index];
-    const groupName = matchGroupName(segment);
-    if (groupName) {
-      const newSegments = [...segments];
+    const newSegments = [...segments];
+    while (
+      index < newSegments.length &&
+      matchGroupName(newSegments[index]) &&
+      newSegments.length > 1
+    ) {
       newSegments.splice(index, 1);
       variations.add(newSegments.join('/'));
-
       generateVariations(newSegments, index + 1);
     }
 

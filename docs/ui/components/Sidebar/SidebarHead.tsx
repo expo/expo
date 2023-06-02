@@ -3,10 +3,10 @@ import { theme, DocsLogo } from '@expo/styleguide';
 import { spacing } from '@expo/styleguide-base';
 import {
   ArrowLeftIcon,
-  BookOpen02Icon,
-  Home02Icon,
-  GraduationHat02Icon,
-  Stars02Icon,
+  GraduationHat02DuotoneIcon,
+  Stars02DuotoneIcon,
+  Home02DuotoneIcon,
+  BookOpen02DuotoneIcon,
 } from '@expo/styleguide-icons';
 
 import { shouldShowFeaturePreviewLink } from '~/constants/FeatureFlags.cjs';
@@ -36,13 +36,13 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
       <SidebarSingleEntry
         href="/"
         title="Home"
-        Icon={Home02Icon}
+        Icon={Home02DuotoneIcon}
         isActive={sidebarActiveGroup === 'home'}
       />
       <SidebarSingleEntry
         href="/workflow/customizing"
         title="Guides"
-        Icon={BookOpen02Icon}
+        Icon={BookOpen02DuotoneIcon}
         isActive={sidebarActiveGroup === 'general'}
       />
       <SidebarSingleEntry
@@ -52,16 +52,16 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
         isActive={sidebarActiveGroup === 'reference'}
       />
       <SidebarSingleEntry
-        href="/tutorial/create-your-first-app/"
+        href="/tutorial/introduction/"
         title="Learn"
-        Icon={GraduationHat02Icon}
+        Icon={GraduationHat02DuotoneIcon}
         isActive={sidebarActiveGroup === 'learn'}
       />
       {shouldShowFeaturePreviewLink() && (
         <SidebarSingleEntry
           href="/feature-preview"
           title="Feature Preview"
-          Icon={Stars02Icon}
+          Icon={Stars02DuotoneIcon}
           isActive={sidebarActiveGroup === 'featurePreview' || sidebarActiveGroup === 'preview'}
         />
       )}

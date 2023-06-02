@@ -1,0 +1,118 @@
+---
+title: Authentication in Expo Router
+description: How to handle authentication when using Expo Router.
+---
+
+import { FileTree } from '~/ui/components/FileTree';
+
+It's common to restrict certain routes to users who are not authenticated. This can be achieved in a very organized way by using React Context and Route Groups.
+
+Consider the following project:
+
+<FileTree files={['app/_layout.js', 'app/index.js', 'app/(auth)/sign-in.js']} />
+
+First, we'll setup a [React Context provider](https://reactjs.org/docs/context.html) that we can use to protect routes. This provider will use a mock implementation, you can replace it with your own [authentication provider](/guides/authentication/).
+
+```js title=context/auth.js
+import { useRouter, useSegments } from 'expo-router';
+import React from 'react';
+
+const AuthContext = React.createContext(null);
+
+// This hook can be used to access the user info.
+export function useAuth() {
+  return React.useContext(AuthContext);
+}
+
+// This hook will protect the route access based on user authentication.
+function useProtectedRoute(user) {
+  const segments = useSegments();
+  const router = useRouter();
+
+  React.useEffect(() => {
+    const inAuthGroup = segments[0] === '(auth)';
+
+    if (
+      // If the user is not signed in and the initial segment is not anything in the auth group.
+      !user &&
+      !inAuthGroup
+    ) {
+      // Redirect to the sign-in page.
+      router.replace('/sign-in');
+    } else if (user && inAuthGroup) {
+      // Redirect away from the sign-in page.
+      router.replace('/');
+    }
+  }, [user, segments]);
+}
+
+export function Provider(props) {
+  const [user, setAuth] = React.useState(null);
+
+  useProtectedRoute(user);
+
+  return (
+    <AuthContext.Provider
+      value={{
+        signIn: () => setAuth({}),
+        signOut: () => setAuth(null),
+        user,
+      }}>
+      {props.children}
+    </AuthContext.Provider>
+  );
+}
+```
+
+Now we can use this context to control the access to the routes, we'll do this by using a Layout Route that wraps all the screens which require authentication.
+
+```js app/_layout.js
+import { Slot } from 'expo-router';
+import { Provider } from '../context/auth';
+
+export default function Root() {
+  return (
+    // Setup the auth context and render our layout inside of it.
+    <Provider>
+      <Slot />
+    </Provider>
+  );
+}
+```
+
+Now we can create our `(auth)` group which is unprotected, this screen can toggle the authentication using `signIn()`.
+
+```js app/(auth)/sign-in.js
+import { Text, View } from 'react-native';
+import { useAuth } from '../../context/auth';
+
+export default function SignIn() {
+  const { signIn } = useAuth();
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text onPress={() => signIn()}>Sign In</Text>
+    </View>
+  );
+}
+```
+
+And finally we'll implement an authenticated screen which can sign out.
+
+```js app/index.js
+import { Text, View } from 'react-native';
+
+import { useAuth } from '../context/auth';
+
+export default function Index() {
+  const { signOut } = useAuth();
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text onPress={() => signOut()}>Sign Out</Text>
+    </View>
+  );
+}
+```
+
+Now if the authentication state changes globally, the user will be redirected to the appropriate route.
+
+{/* TODO: Guide on using redirects and per-screen behavior */}

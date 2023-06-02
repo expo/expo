@@ -455,26 +455,26 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
-"@expo/styleguide-base@^1.0.0-alpha.2":
-  version "1.0.0-alpha.2"
-  resolved "https://registry.yarnpkg.com/@expo/styleguide-base/-/styleguide-base-1.0.0-alpha.2.tgz#ff581558974706079def453cfbf245e5bc3bb291"
-  integrity sha512-7sEdwU5KtKMF5NnmYw6KwgCuV/6CI1+UtFyX9v3DK9a6lfcqQpChk0Ac1nQB1E4daSq+1pHKxM2BcDh1BWtstA==
+"@expo/styleguide-base@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@expo/styleguide-base/-/styleguide-base-1.0.0.tgz#acdbbebba7fdc80b09fed9e7d73c512e5e0cf1d7"
+  integrity sha512-peDW75rMhPx/UnIExX4ZI96Qg0zKucsCbSQ3NQLcIMY1HSDi4ccolEWsFpHJSwjLobFaMOtgj6FBrLc8C/EPPA==
   dependencies:
     "@radix-ui/colors" "^0.1.8"
 
-"@expo/styleguide-icons@^1.0.0-alpha.4":
-  version "1.0.0-alpha.4"
-  resolved "https://registry.yarnpkg.com/@expo/styleguide-icons/-/styleguide-icons-1.0.0-alpha.4.tgz#bfe7af426dd59f176ca533895900175ac308b400"
-  integrity sha512-DhEaBEJUXmY3DJPXEVltf++JQUmy+gWjlFXI7imweCQ52eAXkNrOrccsiyTrB3AlWPVipvSOKqTxlydYybo8Sw==
+"@expo/styleguide-icons@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@expo/styleguide-icons/-/styleguide-icons-1.0.0.tgz#a99c134d8c31446118448356f1f8f8b2db4c4511"
+  integrity sha512-gqKMLuSPlMbL00BnGpA+patLbBC3YYMh4NxszlMJpNXz/qkb2T7lykmrJoQH6KpLXn/ViO65B1TX6a7pvdO+Nw==
   dependencies:
     tailwind-merge "^1.12.0"
 
-"@expo/styleguide@^8.0.0-alpha.8":
-  version "8.0.0-alpha.8"
-  resolved "https://registry.yarnpkg.com/@expo/styleguide/-/styleguide-8.0.0-alpha.8.tgz#593cbba1c97280ad1e768c77e9537d583418f680"
-  integrity sha512-S8ixiuJ+N0YEODq1GOujQGOt6fDlXiynANWVdfm+aZDOSm+o8YClSTg7JC68o6uGOEcfTOkODdUnPG+p0C3TZw==
+"@expo/styleguide@^8.0.0":
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/@expo/styleguide/-/styleguide-8.0.0.tgz#cc37c3f4bc5a29dc9c9dc37587efa80200fdae0d"
+  integrity sha512-IIKReRslx7Ro3l7tjT2EO/Z9NE8ymkHzvJZnH+mcnXtGCBKFmIWA54E5gjYxA6ztUbRa0sW83o+igzA6PDhp5w==
   dependencies:
-    "@expo/styleguide-base" "^1.0.0-alpha.2"
+    "@expo/styleguide-base" "^1.0.0"
     tailwind-merge "^1.12.0"
 
 "@gitbeaker/core@^21.7.0":
@@ -2478,10 +2478,10 @@ clone-response@^1.0.2:
   dependencies:
     mimic-response "^1.0.0"
 
-cmdk@^0.1.21:
-  version "0.1.21"
-  resolved "https://registry.yarnpkg.com/cmdk/-/cmdk-0.1.21.tgz#c4e0fbb032fdbcf487c003cc98e1a2ffcaecbb6b"
-  integrity sha512-O5oiYmoBdcoqmax4RMOsnJHrseaXlnkzfCSWgNdyBxneTaSCmUByBF5MliJbsveoHJsjkyL2uNUs2kTBBMmIaw==
+cmdk@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/cmdk/-/cmdk-0.2.0.tgz#53c52d56d8776c8bb8ced1055b5054100c388f7c"
+  integrity sha512-JQpKvEOb86SnvMZbYaFKYhvzFntWBeSZdyii0rZPhKJj9uwJBxu4DaVYDrRN7r3mPop56oPhRw+JYWTKs66TYw==
   dependencies:
     "@radix-ui/react-dialog" "1.0.0"
     command-score "0.1.2"
