@@ -127,7 +127,7 @@ const LAUNCH_PICKER_PARAMETERS: FunctionParameter[] = [
         name: 'selectionLimit',
         type: 'number',
         values: [0, 1, 3],
-        platforms: ['ios'],
+        platforms: ['ios', 'android'],
       },
       {
         name: 'orderedSelection',
