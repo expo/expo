@@ -22,7 +22,8 @@ export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
     public readonly devices: Map<string, D> = new Map()
   ) {
     // monkey-patch the device list to expose it within the metro inspector
-    // @ts-expect-error - Device ID used to be number only, but was recently changed to string
+    // See https://github.com/facebook/metro/pull/991
+    // @ts-expect-error - Device ID is changing from `number` to `string` 
     this.metroProxy._devices = this.devices;
 
     // force httpEndpointMiddleware to be bound to this proxy instance
