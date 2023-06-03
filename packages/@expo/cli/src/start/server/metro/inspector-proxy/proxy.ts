@@ -23,7 +23,7 @@ export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
   ) {
     // monkey-patch the device list to expose it within the metro inspector
     // See https://github.com/facebook/metro/pull/991
-    // @ts-expect-error - Device ID is changing from `number` to `string` 
+    // @ts-expect-error - Device ID is changing from `number` to `string`
     this.metroProxy._devices = this.devices;
 
     // force httpEndpointMiddleware to be bound to this proxy instance
@@ -94,18 +94,17 @@ export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
           // See: https://github.com/facebook/metro/pull/991
           // @ts-expect-error - Newly introduced method coming to metro-inspector-proxy soon
           oldDevice.handleDuplicateDeviceConnection(newDevice);
+        } else {
+          debug('New device connected: device=%s, app=%s, id=%s', deviceName, appName, deviceId);
         }
 
         this.devices.set(deviceId, newDevice);
 
-        debug('New device connected: device=%s, app=%s', deviceName, appName);
-
         socket.on('close', () => {
           if (this.devices.get(deviceId) === newDevice) {
             this.devices.delete(deviceId);
+            debug('Device disconnected: device=%s, app=%s, id=%s', deviceName, appName, deviceId);
           }
-
-          debug('Device disconnected: device=%s, app=%s', deviceName, appName);
         });
       } catch (error: unknown) {
         let message = '';
