@@ -19,6 +19,7 @@ import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { importExpoMetroConfig } from './resolveFromProject';
 import { runServer } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
+import { getRouterDirectory } from './router';
 
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
@@ -53,6 +54,7 @@ export async function loadMetroConfigAsync(
   const platformBundlers = getPlatformBundlers(exp);
 
   config = await withMetroMultiPlatformAsync(projectRoot, {
+    routerDirectory: exp.extra?.router?.unstable_src ?? getRouterDirectory(projectRoot),
     config,
     platformBundlers,
     isTsconfigPathsEnabled: !!exp.experiments?.tsconfigPaths,

@@ -13,6 +13,7 @@
 - Add `--reset-cache` flag to `expo start` and `expo export` for interop with the Metro docs. ([#22589](https://github.com/expo/expo/pull/22589) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `--no-minify` flag to `npx expo export` to prevent minifying output JavaScript. ([#22544](https://github.com/expo/expo/pull/22544) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `lazy` query parameter for Metro requests and `EXPO_NO_METRO_LAZY` to disable the feature. ([#22724](https://github.com/expo/expo/pull/22724) by [@EvanBacon](https://github.com/EvanBacon))
+- Add support for the `src/app` directory in Expo Router.
 
 ### 🐛 Bug fixes
 
