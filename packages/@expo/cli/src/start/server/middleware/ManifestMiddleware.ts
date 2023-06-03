@@ -82,6 +82,7 @@ export function createBundleUrlPath({
     dev: String(mode !== 'production'),
     // TODO: Is this still needed?
     hot: String(false),
+    lazy: String(!env.EXPO_NO_METRO_LAZY),
   });
 
   if (minify) {
@@ -259,6 +260,7 @@ export abstract class ManifestMiddleware<
       dev: String(this.options.mode !== 'production'),
       // TODO: Is this still needed?
       hot: String(false),
+      lazy: String(!env.EXPO_NO_METRO_LAZY),
     });
 
     if (this.options.minify) {
