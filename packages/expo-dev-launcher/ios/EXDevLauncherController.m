@@ -48,6 +48,7 @@
 @property (nonatomic, strong) NSURL *possibleManifestURL;
 @property (nonatomic, strong) EXDevLauncherErrorManager *errorManager;
 @property (nonatomic, strong) EXDevLauncherInstallationIDHelper *installationIDHelper;
+@property (nonatomic, strong) EXDevLauncherNetworkInterceptor *networkInterceptor;
 @property (nonatomic, assign) BOOL isStarted;
 
 @end
@@ -73,8 +74,8 @@
     self.pendingDeepLinkRegistry = [EXDevLauncherPendingDeepLinkRegistry new];
     self.errorManager = [[EXDevLauncherErrorManager alloc] initWithController:self];
     self.installationIDHelper = [EXDevLauncherInstallationIDHelper new];
+    self.networkInterceptor = [EXDevLauncherNetworkInterceptor new];
     self.shouldPreferUpdatesInterfaceSourceUrl = NO;
-    [EXDevLauncherNetworkLogger.shared enable];
   }
   return self;
 }
