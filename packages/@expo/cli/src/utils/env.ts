@@ -146,6 +146,11 @@ class Env {
   get EXPO_USE_TYPED_ROUTES() {
     return boolish('EXPO_USE_TYPED_ROUTES', false);
   }
+
+  /** Disable lazy bundling in Metro bundler. */
+  get EXPO_NO_METRO_LAZY() {
+    return boolish('EXPO_NO_METRO_LAZY', false);
+  }
 }
 
 export const env = new Env();
