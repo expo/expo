@@ -9,6 +9,15 @@ import ExpoModulesTestCore
 
 import EXManifests
 
+class TestStateChangeEventSender: UpdatesStateChangeEventSender {
+  var lastEventType: EXUpdates.UpdatesStateEventType?
+  var lastEventBody: [String: Any]?
+  func sendUpdateStateChangeEventToBridge(_ eventType: EXUpdates.UpdatesStateEventType, body: [String: Any]) {
+    lastEventType = eventType
+    lastEventBody = body
+  }
+}
+
 class UpdatesStateMachineSpec: ExpoSpec {
   override func spec() {
     describe("default state") {
@@ -19,9 +28,13 @@ class UpdatesStateMachineSpec: ExpoSpec {
 
       it("should handle check and checkCompleteAvailable") {
         let machine = UpdatesStateMachine()
+        let testStateChangeEventSender: TestStateChangeEventSender = TestStateChangeEventSender()
+
+        machine.changeEventSender = testStateChangeEventSender
 
         machine.processEvent(UpdatesStateEvent(type: .check))
         expect(machine.state) == .checking
+        expect(testStateChangeEventSender.lastEventType) == .check
 
         machine.processEvent(UpdatesStateEvent(type: .checkCompleteAvailable, body: [
           "manifest": [
@@ -34,6 +47,8 @@ class UpdatesStateMachineSpec: ExpoSpec {
         expect(machine.context.latestManifest?["updateId"] as? String ?? "") == "0000-xxxx"
         expect(machine.context.isUpdateAvailable) == true
         expect(machine.context.isUpdatePending) == false
+        expect(testStateChangeEventSender.lastEventType) == .checkCompleteAvailable
+        expect(testStateChangeEventSender.lastEventBody?["isUpdateAvailable"] as? Bool ?? false) == true
       }
 
       it("should handle check and checkCompleteUnavailable") {
@@ -96,10 +111,17 @@ class UpdatesStateMachineSpec: ExpoSpec {
         machine.processEvent(UpdatesStateEvent(type: .check))
         expect(machine.state) == .checking
 
+        let testStateChangeEventSender: TestStateChangeEventSender = TestStateChangeEventSender()
+        machine.changeEventSender = testStateChangeEventSender
+
         // In .checking state, download events should be ignored,
-        // state should not change, context should not change
+        // state should not change, context should not change,
+        // no events should be sent to JS
         machine.processEvent(UpdatesStateEvent(type: .download))
+
         expect(machine.state) == .checking
+        expect(testStateChangeEventSender.lastEventType).to(beNil())
+        expect(testStateChangeEventSender.lastEventBody).to(beNil())
 
         machine.processEvent(UpdatesStateEvent(type: .downloadComplete, body: [
           "manifest": [

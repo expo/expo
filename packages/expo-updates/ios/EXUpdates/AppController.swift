@@ -34,7 +34,7 @@ public protocol AppControllerDelegate: AnyObject {
  */
 @objc(EXUpdatesAppController)
 @objcMembers
-public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelegate {
+public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelegate, UpdatesStateChangeEventSender {
   private static let ErrorDomain = "EXUpdatesAppController"
   private static let EXUpdatesEventName = "Expo.nativeUpdatesEvent"
   private static let EXUpdatesStateChangeEventName = "Expo.nativeUpdatesStateChangeEvent"
@@ -141,7 +141,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     super.init()
 
     self.errorRecovery.delegate = self
-    self.stateMachine.appController = self
+    self.stateMachine.changeEventSender = self
   }
 
   /**

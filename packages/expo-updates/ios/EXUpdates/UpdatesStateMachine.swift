@@ -3,6 +3,14 @@
 import Foundation
 
 /**
+ Protocol with a method for sending state change events to JS.
+ In production, this will be implemented by the AppController.sharedInstance.
+ */
+internal protocol UpdatesStateChangeEventSender {
+  func sendUpdateStateChangeEventToBridge(_ eventType: UpdatesStateEventType, body: [String: Any])
+}
+
+/**
  All the possible states the machine can take.
  */
 internal enum UpdatesStateValue: String {
@@ -119,7 +127,7 @@ internal struct UpdatesStateContext {
  */
 internal class UpdatesStateMachine {
   private let logger = UpdatesLogger()
-  internal var appController: AppController? = nil
+  internal var changeEventSender: (any UpdatesStateChangeEventSender)?
 
   /**
    The current state
@@ -215,6 +223,6 @@ internal class UpdatesStateMachine {
   }
 
   private func sendChangeEventToJS(_ eventType: UpdatesStateEventType) {
-    appController?.sendUpdateStateChangeEventToBridge(eventType, body: context.json)
+    changeEventSender?.sendUpdateStateChangeEventToBridge(eventType, body: context.json)
   }
 }
