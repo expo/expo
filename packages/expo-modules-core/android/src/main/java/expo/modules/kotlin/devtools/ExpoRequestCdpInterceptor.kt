@@ -1,13 +1,13 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-package expo.modules.kotlin.networks
+package expo.modules.kotlin.devtools
 
-import expo.modules.kotlin.networks.cdp.Event
-import expo.modules.kotlin.networks.cdp.ExpoReceivedResponseBodyParams
-import expo.modules.kotlin.networks.cdp.LoadingFinishedParams
-import expo.modules.kotlin.networks.cdp.RequestWillBeSentExtraInfoParams
-import expo.modules.kotlin.networks.cdp.RequestWillBeSentParams
-import expo.modules.kotlin.networks.cdp.ResponseReceivedParams
+import expo.modules.kotlin.devtools.cdp.Event
+import expo.modules.kotlin.devtools.cdp.ExpoReceivedResponseBodyParams
+import expo.modules.kotlin.devtools.cdp.LoadingFinishedParams
+import expo.modules.kotlin.devtools.cdp.RequestWillBeSentExtraInfoParams
+import expo.modules.kotlin.devtools.cdp.RequestWillBeSentParams
+import expo.modules.kotlin.devtools.cdp.ResponseReceivedParams
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -17,25 +17,26 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 
 /**
- * The `ExpoNetworkInterceptorProtocolDelegate` implementation to dispatch CDP (Chrome DevTools Protocol) events
+ * The `ExpoRequestInterceptorProtocolDelegate` implementation to
+ * dispatch CDP (Chrome DevTools Protocol: https://chromedevtools.github.io/devtools-protocol/) events.
  */
-object ExpoRequestCdpLogger : ExpoRequestLoggerOkHttpInterceptorsDelegate {
+object ExpoRequestCdpInterceptor : ExpoNetworkInspectOkHttpInterceptorsDelegate {
   private var delegate: Delegate? = null
   internal var coroutineScope = CoroutineScope(Dispatchers.Default)
 
   fun setDelegate(delegate: Delegate?) {
     coroutineScope.launch {
-      this@ExpoRequestCdpLogger.delegate = delegate
+      this@ExpoRequestCdpInterceptor.delegate = delegate
     }
   }
 
   private fun dispatchEvent(event: Event) {
     coroutineScope.launch {
-      this@ExpoRequestCdpLogger.delegate?.dispatch(event.toJson())
+      this@ExpoRequestCdpInterceptor.delegate?.dispatch(event.toJson())
     }
   }
 
-  //region ExpoRequestLoggerOkHttpInterceptorsDelegate implementations
+  //region ExpoNetworkInspectOkHttpInterceptorsDelegate implementations
 
   override fun willSendRequest(requestId: String, request: Request, redirectResponse: Response?) {
     val now = BigDecimal(System.currentTimeMillis() / 1000.0).setScale(3, RoundingMode.CEILING)
@@ -57,13 +58,13 @@ object ExpoRequestCdpLogger : ExpoRequestLoggerOkHttpInterceptorsDelegate {
     dispatchEvent(Event("Network.loadingFinished", params2))
 
     val contentLength = response.body?.contentLength() ?: 0
-    if (contentLength >= 0 && contentLength <= ExpoRequestLoggerOkHttpNetworkInterceptor.MAX_BODY_SIZE) {
+    if (contentLength >= 0 && contentLength <= ExpoNetworkInspectOkHttpNetworkInterceptor.MAX_BODY_SIZE) {
       val params3 = ExpoReceivedResponseBodyParams(now, requestId, request, response)
       dispatchEvent(Event("Expo(Network.receivedResponseBody)", params3))
     }
   }
 
-  //endregion ExpoRequestLoggerOkHttpInterceptorsDelegate implementations
+  //endregion ExpoNetworkInspectOkHttpInterceptorsDelegate implementations
 
   interface Delegate {
     fun dispatch(event: String)

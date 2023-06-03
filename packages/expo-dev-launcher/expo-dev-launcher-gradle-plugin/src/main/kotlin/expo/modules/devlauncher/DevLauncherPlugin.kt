@@ -1,3 +1,5 @@
+// Copyright 2015-present 650 Industries. All rights reserved.
+
 package expo.modules.devlauncher
 
 import com.android.build.api.instrumentation.AsmClassVisitorFactory
@@ -68,19 +70,19 @@ abstract class DevLauncherPlugin : Plugin<Project> {
 
   class OkHttpClientCustomBuildMethod(api: Int, methodVisitor: MethodVisitor) : MethodVisitor(api, methodVisitor) {
     override fun visitCode() {
-      // opcodes for `this.addInterceptor(expo.modules.kotlin.networks.ExpoRequestLoggerOkHttpAppInterceptor())`
+      // opcodes for `this.addInterceptor(expo.modules.kotlin.devtools.ExpoNetworkInspectOkHttpAppInterceptor())`
       visitVarInsn(Opcodes.ALOAD, 0)
-      visitTypeInsn(Opcodes.NEW, "expo/modules/kotlin/networks/ExpoRequestLoggerOkHttpAppInterceptor")
+      visitTypeInsn(Opcodes.NEW, "expo/modules/kotlin/devtools/ExpoNetworkInspectOkHttpAppInterceptor")
       visitInsn(Opcodes.DUP)
-      visitMethodInsn(Opcodes.INVOKESPECIAL, "expo/modules/kotlin/networks/ExpoRequestLoggerOkHttpAppInterceptor", "<init>", "()V", false)
+      visitMethodInsn(Opcodes.INVOKESPECIAL, "expo/modules/kotlin/devtools/ExpoNetworkInspectOkHttpAppInterceptor", "<init>", "()V", false)
       visitTypeInsn(Opcodes.CHECKCAST, "okhttp3/Interceptor")
       visitMethodInsn(Opcodes.INVOKEVIRTUAL, "okhttp3/OkHttpClient\$Builder", "addInterceptor", "(Lokhttp3/Interceptor;)Lokhttp3/OkHttpClient\$Builder;", false)
 
-      // opcodes for `this.addNetworkInterceptor(expo.modules.kotlin.networks.ExpoRequestLoggerOkHttpNetworkInterceptor())`
+      // opcodes for `this.addNetworkInterceptor(expo.modules.kotlin.devtools.ExpoNetworkInspectOkHttpNetworkInterceptor())`
       visitVarInsn(Opcodes.ALOAD, 0)
-      visitTypeInsn(Opcodes.NEW, "expo/modules/kotlin/networks/ExpoRequestLoggerOkHttpNetworkInterceptor")
+      visitTypeInsn(Opcodes.NEW, "expo/modules/kotlin/devtools/ExpoNetworkInspectOkHttpNetworkInterceptor")
       visitInsn(Opcodes.DUP)
-      visitMethodInsn(Opcodes.INVOKESPECIAL, "expo/modules/kotlin/networks/ExpoRequestLoggerOkHttpNetworkInterceptor", "<init>", "()V", false)
+      visitMethodInsn(Opcodes.INVOKESPECIAL, "expo/modules/kotlin/devtools/ExpoNetworkInspectOkHttpNetworkInterceptor", "<init>", "()V", false)
       visitTypeInsn(Opcodes.CHECKCAST, "okhttp3/Interceptor")
       visitMethodInsn(Opcodes.INVOKEVIRTUAL, "okhttp3/OkHttpClient\$Builder", "addNetworkInterceptor", "(Lokhttp3/Interceptor;)Lokhttp3/OkHttpClient\$Builder;", false)
 

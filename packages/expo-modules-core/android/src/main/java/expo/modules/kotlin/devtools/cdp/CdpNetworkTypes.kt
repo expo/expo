@@ -1,9 +1,9 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-package expo.modules.kotlin.networks.cdp
+package expo.modules.kotlin.devtools.cdp
 
-import expo.modules.kotlin.networks.ExpoRequestLoggerOkHttpNetworkInterceptor
-import expo.modules.kotlin.networks.toSingleMap
+import expo.modules.kotlin.devtools.ExpoNetworkInspectOkHttpNetworkInterceptor
+import expo.modules.kotlin.devtools.toSingleMap
 import okio.Buffer
 import org.json.JSONObject
 import java.math.BigDecimal
@@ -47,10 +47,10 @@ data class Request(
     method = request.method,
     headers = request.headers.toSingleMap(),
     postData = request.body?.let {
-      if (it.contentLength() < ExpoRequestLoggerOkHttpNetworkInterceptor.MAX_BODY_SIZE) {
+      if (it.contentLength() < ExpoNetworkInspectOkHttpNetworkInterceptor.MAX_BODY_SIZE) {
         val buffer = Buffer()
         it.writeTo(buffer)
-        return@let buffer.readUtf8(buffer.size.coerceAtMost(ExpoRequestLoggerOkHttpNetworkInterceptor.MAX_BODY_SIZE))
+        return@let buffer.readUtf8(buffer.size.coerceAtMost(ExpoNetworkInspectOkHttpNetworkInterceptor.MAX_BODY_SIZE))
       } else return@let null
     }
   )
@@ -222,8 +222,8 @@ data class ExpoReceivedResponseBodyParams(
     base64Encoded = false,
   ) {
     val contentLength = response.body?.contentLength() ?: 0
-    check(contentLength >= 0 && contentLength <= ExpoRequestLoggerOkHttpNetworkInterceptor.MAX_BODY_SIZE)
-    val rawBody = response.peekBody(ExpoRequestLoggerOkHttpNetworkInterceptor.MAX_BODY_SIZE)
+    check(contentLength >= 0 && contentLength <= ExpoNetworkInspectOkHttpNetworkInterceptor.MAX_BODY_SIZE)
+    val rawBody = response.peekBody(ExpoNetworkInspectOkHttpNetworkInterceptor.MAX_BODY_SIZE)
     val contentType = rawBody.contentType()
     val isText = contentType?.type == "text" || (contentType?.type == "application" && contentType.subtype == "json")
     val bodyString = if (isText) rawBody.string() else rawBody.source().readByteString().base64()

@@ -1,19 +1,19 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-package expo.modules.kotlin.networks
+package expo.modules.kotlin.devtools
 
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
 
-// Currently keeps the delegate fixed for ExpoRequestCdpLogger and be thread-safe
-internal val delegate: ExpoRequestLoggerOkHttpInterceptorsDelegate = ExpoRequestCdpLogger
+// Currently keeps the delegate fixed for ExpoRequestCdpInterceptor and be thread-safe
+internal val delegate: ExpoNetworkInspectOkHttpInterceptorsDelegate = ExpoRequestCdpInterceptor
 
 /**
  * The OkHttp network interceptor to log requests and the CDP events to the delegate
  */
 @Suppress("unused")
-class ExpoRequestLoggerOkHttpNetworkInterceptor : Interceptor {
+class ExpoNetworkInspectOkHttpNetworkInterceptor : Interceptor {
   override fun intercept(chain: Interceptor.Chain): Response {
     val request = chain.request()
     val redirectResponse = request.tag(RedirectResponse::class.java)
@@ -42,7 +42,7 @@ class ExpoRequestLoggerOkHttpNetworkInterceptor : Interceptor {
  * The OkHttp app interceptor to add custom tag for [RedirectResponse]
  */
 @Suppress("unused")
-class ExpoRequestLoggerOkHttpAppInterceptor : Interceptor {
+class ExpoNetworkInspectOkHttpAppInterceptor : Interceptor {
   override fun intercept(chain: Interceptor.Chain): Response {
     return chain.proceed(
       chain.request().newBuilder()
@@ -55,7 +55,7 @@ class ExpoRequestLoggerOkHttpAppInterceptor : Interceptor {
 /**
  * The delegate to dispatch network request events
  */
-internal interface ExpoRequestLoggerOkHttpInterceptorsDelegate {
+internal interface ExpoNetworkInspectOkHttpInterceptorsDelegate {
   fun willSendRequest(requestId: String, request: Request, redirectResponse: Response?)
 
   fun didReceiveResponse(requestId: String, request: Request, response: Response)

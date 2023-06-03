@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-package expo.modules.kotlin.networks
+package expo.modules.kotlin.devtools
 
 import com.google.common.truth.Truth
 import kotlinx.coroutines.CoroutineScope
@@ -11,7 +11,7 @@ import okhttp3.Request
 import org.json.JSONObject
 import org.junit.Test
 
-class MockCdpLoggerDelegate : ExpoRequestCdpLogger.Delegate {
+class MockCdpInterceptorDelegate : ExpoRequestCdpInterceptor.Delegate {
   internal val events = ArrayList<String>()
 
   override fun dispatch(event: String) {
@@ -20,16 +20,16 @@ class MockCdpLoggerDelegate : ExpoRequestCdpLogger.Delegate {
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class ExpoRequestCdpLoggerTest {
-  private val mockDelegate = MockCdpLoggerDelegate()
+class ExpoRequestCdpInterceptorTest {
+  private val mockDelegate = MockCdpInterceptorDelegate()
   private val client = OkHttpClient.Builder()
-    .addInterceptor(ExpoRequestLoggerOkHttpAppInterceptor())
-    .addNetworkInterceptor(ExpoRequestLoggerOkHttpNetworkInterceptor())
+    .addInterceptor(ExpoNetworkInspectOkHttpAppInterceptor())
+    .addNetworkInterceptor(ExpoNetworkInspectOkHttpNetworkInterceptor())
     .build()
 
   init {
-    ExpoRequestCdpLogger.coroutineScope = CoroutineScope(UnconfinedTestDispatcher())
-    ExpoRequestCdpLogger.setDelegate(mockDelegate)
+    ExpoRequestCdpInterceptor.coroutineScope = CoroutineScope(UnconfinedTestDispatcher())
+    ExpoRequestCdpInterceptor.setDelegate(mockDelegate)
   }
 
   @Test

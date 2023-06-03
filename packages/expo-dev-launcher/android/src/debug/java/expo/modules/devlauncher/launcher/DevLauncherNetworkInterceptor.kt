@@ -1,3 +1,5 @@
+// Copyright 2015-present 650 Industries. All rights reserved.
+
 package expo.modules.devlauncher.launcher
 
 import com.facebook.react.ReactInstanceManager
@@ -6,13 +8,13 @@ import com.facebook.react.common.LifecycleState
 import com.facebook.react.devsupport.DevServerHelper
 import com.facebook.react.devsupport.InspectorPackagerConnection
 import expo.modules.devlauncher.DevLauncherController
-import expo.modules.kotlin.networks.ExpoRequestCdpLogger
+import expo.modules.kotlin.devtools.ExpoRequestCdpInterceptor
 import java.io.Closeable
 import java.lang.ref.WeakReference
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 
-internal class DevLauncherNetworkInterceptor(controller: DevLauncherController) : Closeable, ExpoRequestCdpLogger.Delegate {
+internal class DevLauncherNetworkInterceptor(controller: DevLauncherController) : Closeable, ExpoRequestCdpInterceptor.Delegate {
   private val weakController = WeakReference(controller)
   private var reactInstanceHashCode: Int = 0
   private var _inspectorPackagerConnection: InspectorPackagerConnectionWrapper? = null
@@ -33,7 +35,7 @@ internal class DevLauncherNetworkInterceptor(controller: DevLauncherController) 
     }
 
   init {
-    ExpoRequestCdpLogger.setDelegate(this)
+    ExpoRequestCdpInterceptor.setDelegate(this)
   }
 
   /**
@@ -45,17 +47,17 @@ internal class DevLauncherNetworkInterceptor(controller: DevLauncherController) 
 
   //region Closeable implementations
   override fun close() {
-    ExpoRequestCdpLogger.setDelegate(null)
+    ExpoRequestCdpInterceptor.setDelegate(null)
   }
   //endregion Closeable implementations
 
-  //region ExpoRequestCdpLogger.Delegate implementations
+  //region ExpoRequestCdpInterceptor.Delegate implementations
   override fun dispatch(event: String) {
     if (shouldEmitEvents()) {
       inspectorPackagerConnection.sendWrappedEventToAllPages(event)
     }
   }
-  //endregion ExpoRequestCdpLogger.Delegate implementations
+  //endregion ExpoRequestCdpInterceptor.Delegate implementations
 }
 
 /**
