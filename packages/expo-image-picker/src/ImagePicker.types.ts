@@ -421,6 +421,7 @@ export type ImagePickerOptions = {
    * Setting the value to `0` sets the selection limit to the maximum that the system supports.
    *
    * @platform ios 14+
+   * @platform android
    * @default 0
    */
   selectionLimit?: number;

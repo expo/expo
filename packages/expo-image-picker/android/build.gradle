@@ -82,7 +82,7 @@ android {
 dependencies {
   implementation project(':expo-modules-core')
 
-  implementation "androidx.activity:activity-ktx:1.4.0"
+  implementation "androidx.activity:activity-ktx:1.7.1"
   implementation "androidx.appcompat:appcompat:1.4.2"
   implementation "androidx.exifinterface:exifinterface:1.3.3"
   implementation "com.github.CanHub:Android-Image-Cropper:4.3.0"
