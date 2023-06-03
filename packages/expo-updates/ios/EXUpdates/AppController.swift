@@ -37,14 +37,12 @@ public protocol AppControllerDelegate: AnyObject {
 public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelegate {
   private static let ErrorDomain = "EXUpdatesAppController"
   private static let EXUpdatesEventName = "Expo.nativeUpdatesEvent"
+  private static let EXUpdatesStateChangeEventName = "Expo.nativeUpdatesStateChangeEvent"
 
   // Events for the legacy UpdateEvent JS listener
   public static let UpdateAvailableEventName = "updateAvailable"
   public static let NoUpdateAvailableEventName = "noUpdateAvailable"
   public static let ErrorEventName = "error"
-
-  // Notification names observed by this class
-  public static let UpdateEventNotificationName = "EXUpdates_UpdateEventNotification"
 
   /**
    Delegate which will be notified when EXUpdates has an update ready to launch and
@@ -143,6 +141,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     super.init()
 
     self.errorRecovery.delegate = self
+    self.stateMachine.appController = self
   }
 
   /**
@@ -414,7 +413,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     ]
     stateMachine.processEvent(UpdatesStateEvent(type: .downloadError, body: body))
     // Send legacy UpdateEvents to JS
-    sendEventToBridge(AppController.ErrorEventName, body: body)
+    sendLegacyUpdateEventToBridge(AppController.ErrorEventName, body: body)
     emergencyLaunch(fatalError: error as NSError)
   }
 
@@ -451,7 +450,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
         stateMachine.processEvent(UpdatesStateEvent(type: .downloadError, body: body))
       }
       // Send UpdateEvents to JS
-      sendEventToBridge(AppController.ErrorEventName, body: body)
+      sendLegacyUpdateEventToBridge(AppController.ErrorEventName, body: body)
     case .updateAvailable:
       remoteLoadStatus = .NewUpdateLoaded
       guard let update = update else {
@@ -468,7 +467,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
       ]
       stateMachine.processEvent(UpdatesStateEvent(type: .downloadComplete, body: body))
       // Send UpdateEvents to JS
-      sendEventToBridge(AppController.UpdateAvailableEventName, body: body)
+      sendLegacyUpdateEventToBridge(AppController.UpdateAvailableEventName, body: body)
     case .noUpdateAvailable:
       remoteLoadStatus = .Idle
       logger.info(
@@ -483,7 +482,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
       }
       // Otherwise, we don't need to call the state machine here, it already transitioned to .checkCompleteUnavailable
       // Send UpdateEvents to JS
-      sendEventToBridge(AppController.NoUpdateAvailableEventName, body: [:])
+      sendLegacyUpdateEventToBridge(AppController.NoUpdateAvailableEventName, body: [:])
     }
 
     errorRecovery.notify(newRemoteLoadStatus: remoteLoadStatus)
@@ -534,29 +533,6 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     }
   }
 
-  internal func sendEventToBridge(_ eventType: String, body: [String: Any]) {
-    logger.info(message: "sendEventToBridge(): type = \(eventType)")
-    var mutableBody = body
-    mutableBody["type"] = eventType
-
-    guard let bridge = bridge else {
-      eventsToSendToJS.append(mutableBody)
-      logger.warn(message: "EXUpdates: Could not emit \(eventType) event. Event will be emitted when the bridge is available", code: .jsRuntimeError)
-      return
-    }
-    bridge.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [AppController.EXUpdatesEventName, mutableBody])
-  }
-
-  internal func sendQueuedEventsToBridge() {
-    guard let bridge = bridge else {
-      return
-    }
-    eventsToSendToJS.forEach { mutableBody in
-      bridge.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [AppController.EXUpdatesEventName, mutableBody])
-    }
-    eventsToSendToJS = []
-  }
-
   private func emergencyLaunch(fatalError error: NSError) {
     isEmergencyLaunch = true
 
@@ -574,6 +550,40 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     }
 
     errorRecovery.writeErrorOrExceptionToLog(error)
+  }
+
+  // MARK: - Send events to JS
+
+  internal func sendLegacyUpdateEventToBridge(_ eventType: String, body: [String: Any] ) {
+    logger.info(message: "sendLegacyUpdateEventToBridge(): type = \(eventType)")
+    sendEventToBridge(AppController.EXUpdatesEventName, eventType, body: body)
+  }
+
+  internal func sendUpdateStateChangeEventToBridge(_ eventType: UpdatesStateEventType, body: [String: Any]) {
+    logger.info(message: "sendUpdateStateChangeEventToBridge(): type = \(eventType)")
+    sendEventToBridge(AppController.EXUpdatesStateChangeEventName, "\(eventType)", body: body)
+  }
+
+  private func sendEventToBridge(_ eventName: String, _ eventType: String, body: [String: Any]) {
+    var mutableBody = body
+    mutableBody["type"] = eventType
+
+    guard let bridge = bridge else {
+      eventsToSendToJS.append(mutableBody)
+      logger.warn(message: "EXUpdates: Could not emit event: name = \(eventName), type = \(eventType). Event will be emitted when the bridge is available", code: .jsRuntimeError)
+      return
+    }
+    bridge.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [eventName, mutableBody])
+  }
+
+  internal func sendQueuedEventsToBridge() {
+    guard let bridge = bridge else {
+      return
+    }
+    eventsToSendToJS.forEach { mutableBody in
+      bridge.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [AppController.EXUpdatesEventName, mutableBody])
+    }
+    eventsToSendToJS = []
   }
 
   // MARK: - ErrorRecoveryDelegate

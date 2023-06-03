@@ -96,6 +96,21 @@ internal struct UpdatesStateContext {
   var downloadedManifest: [String: Any]?
   var checkError: Error?
   var downloadError: Error?
+
+  var json: [String: Any] {
+    return [
+      "isUpdateAvailable": self.isUpdateAvailable,
+      "isUpdatePending": self.isUpdatePending,
+      "isRollback": self.isRollback,
+      "isChecking": self.isChecking,
+      "isDownloading": self.isDownloading,
+      "isRestarting": self.isRestarting,
+      "latestManifest": self.latestManifest ?? NSNull(),
+      "downloadedManifest": self.latestManifest ?? NSNull(),
+      "checkError": self.checkError ?? NSNull(),
+      "downloadError": self.downloadError ?? NSNull()
+    ] as [String: Any]
+  }
 }
 
 /**
@@ -104,6 +119,7 @@ internal struct UpdatesStateContext {
  */
 internal class UpdatesStateMachine {
   private let logger = UpdatesLogger()
+  internal var appController: AppController? = nil
 
   /**
    The current state
@@ -131,16 +147,18 @@ internal class UpdatesStateMachine {
   internal func processEvent(_ event: UpdatesStateEvent) {
     // Execute state transition
     if transition(event) {
-      // Only mutate context if transition succeeds
-      context = mutateContext(context, event)
+      // Only change context if transition succeeds
+      context = reducedContext(context, event)
       logger.info(message: "Updates state change: state = \(state), event = \(event.type), context = \(context)")
+      // Send change event
+      sendChangeEventToJS(event.type)
     }
   }
 
   /**
    Make sure the state transition is allowed, and then update the state.
    */
-  internal func transition(_ event: UpdatesStateEvent) -> Bool {
+  private func transition(_ event: UpdatesStateEvent) -> Bool {
     let allowedEvents: [UpdatesStateEventType] = updatesStateAllowedEvents[state] ?? []
     if !allowedEvents.contains(event.type) {
       // Uncomment the line below to halt execution on invalid state transitions,
@@ -156,9 +174,9 @@ internal class UpdatesStateMachine {
   }
 
   /**
-   Modify the context based on the current context and the data in the event.
+   Return reduced context, based on the current context and the data in the event.
    */
-  internal func mutateContext(_ context: UpdatesStateContext, _ event: UpdatesStateEvent) -> UpdatesStateContext {
+  private func reducedContext(_ context: UpdatesStateContext, _ event: UpdatesStateEvent) -> UpdatesStateContext {
     var newContext = context
     switch event.type {
     case .check:
@@ -194,5 +212,9 @@ internal class UpdatesStateMachine {
       newContext.isRestarting = true
     }
     return newContext
+  }
+
+  private func sendChangeEventToJS(_ eventType: UpdatesStateEventType) {
+    appController?.sendUpdateStateChangeEventToBridge(eventType, body: context.json)
   }
 }
