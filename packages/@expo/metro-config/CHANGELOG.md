@@ -7,7 +7,7 @@
 ### 🎉 New features
 
 - Ensure `@expo/metro-runtime` is shifted to be imported first when installed. ([#22628](https://github.com/expo/expo/pull/22628) by [@EvanBacon](https://github.com/EvanBacon))
-- Ignore `@expo/metro-runtime` in stacks.
+- Ignore `@expo/metro-runtime` in stacks. ([#22738](https://github.com/expo/expo/pull/22738) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
