@@ -72,7 +72,7 @@ function _Strings() {
 }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 const CREATE_MANIFEST_ANDROID_PATH = 'expo-updates/scripts/create-manifest-android.gradle';
-let Config;
+let Config; // when making changes to this config plugin, ensure the same changes are also made in eas-cli and build-tools
 exports.Config = Config;
 (function (Config) {
   Config["ENABLED"] = "expo.modules.updates.ENABLED";
