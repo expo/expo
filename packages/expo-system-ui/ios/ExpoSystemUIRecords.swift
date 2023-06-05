@@ -4,7 +4,7 @@ enum Theme: String, Enumerable {
   case light = "light"
   case dark = "dark"
   case auto = "auto"
-  
+
   func toUserInterfaceStyle() -> UIUserInterfaceStyle {
     switch self {
     case .dark:

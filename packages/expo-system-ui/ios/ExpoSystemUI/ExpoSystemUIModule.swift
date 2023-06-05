@@ -5,39 +5,39 @@ import ExpoModulesCore
 public class ExpoSystemUIModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoSystemUI")
-    
+
     Events("onInterfaceStyleChanged")
-    
+
     OnCreate {
       // TODO: Maybe read from the app manifest instead of from Info.plist.
       // Set / reset the initial color on reload and app start.
       let color = Bundle.main.object(forInfoDictionaryKey: "RCTRootViewBackgroundColor") as? Int
       Self.setBackgroundColorAsync(color: color)
     }
-    
+
     AsyncFunction("getBackgroundColorAsync") { () -> String? in
       Self.getBackgroundColor()
     }
-    
+
     AsyncFunction("setBackgroundColorAsync") { (color: Int) in
       Self.setBackgroundColorAsync(color: color)
     }
-    
+
     AsyncFunction("setInterfaceStyleAsync") { (theme: Theme) in
       if let window = UIApplication.shared.delegate?.window {
         let interfaceStyle = window?.traitCollection.userInterfaceStyle
-        
+
         if interfaceStyle != theme.toUserInterfaceStyle() {
           window?.overrideUserInterfaceStyle = theme.toUserInterfaceStyle()
           sendEvent("onInterfaceStyleChanged", ["theme": theme.rawValue])
         }
       }
     }.runOnQueue(.main)
-    
+
     AsyncFunction("getInterfaceStyleAsync") { () -> String in
       if let window = UIApplication.shared.delegate?.window {
         let interfaceStyle = window?.traitCollection.userInterfaceStyle
-        
+
         switch interfaceStyle {
         case .dark:
           return "dark"
@@ -51,7 +51,7 @@ public class ExpoSystemUIModule: Module {
       }
     }.runOnQueue(.main)
   }
-  
+
   static func getBackgroundColor() -> String? {
     var color: String?
     EXUtilities.performSynchronously {
