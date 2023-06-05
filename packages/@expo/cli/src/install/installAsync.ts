@@ -10,6 +10,7 @@ import {
 import { getVersionedDependenciesAsync } from '../start/doctor/dependencies/validateDependenciesVersions';
 import { groupBy } from '../utils/array';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
+import { learnMore } from '../utils/link';
 import { setNodeEnv } from '../utils/nodeEnv';
 import { checkPackagesAsync } from './checkPackages';
 import { Options } from './resolveOptions';
@@ -131,7 +132,9 @@ export function assertNotInstallingExcludedPackages(
           : `${requestedAndExcludedPackages[0]} is`;
       Log.exit(
         chalk.red(
-          `${excludedPackageMessage} also present in expo.install.exclude in your project's package.json. Remove from your expo install request or from expo.install.exclude in order to proceed with installation.`
+          `${excludedPackageMessage} also present in expo.install.exclude in your project's package.json. Remove from your expo install request or from expo.install.exclude in order to proceed with installation. ${learnMore(
+            'https://expo.dev/more/expo-cli/#configuring-dependency-validation'
+          )}.`
         )
       );
     }
