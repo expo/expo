@@ -118,7 +118,7 @@ class EXGLContext {
 
  public:
   EXGLContextId ctxId;
-  // Worklet runtime is storred here only to avoid it passing through Java/Obj-C.
+  // Worklet runtime is stored here only to avoid it passing through Java/Obj-C.
   // It should only be used in prepareContext and prepareWorkletContext.
   jsi::Runtime *maybeWorkletRuntime = nullptr;
   glesContext initialGlesContext;
