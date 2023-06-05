@@ -15,7 +15,7 @@ const simulatorMessage = Platform.select({
       You can open it at any time with the <Text weight="bold">{'\u2318 + d '}</Text> keyboard
       shortcut{' '}
       <Text color="secondary" size="medium">
-        ('Connect Hardware Keyboard' must be enabled on your simulator to use this shortcut, you can
+        ("Connect Hardware Keyboard" must be enabled on your simulator to use this shortcut, you can
         toggle it with{' '}
         <Text weight="bold" color="secondary" size="medium">
           {'\u2318 + shift + K'}
