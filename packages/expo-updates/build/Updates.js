@@ -1,4 +1,4 @@
-import { RCTDeviceEventEmitter, CodedError, NativeModulesProxy, UnavailabilityError, } from 'expo-modules-core';
+import { DeviceEventEmitter, CodedError, NativeModulesProxy, UnavailabilityError, } from 'expo-modules-core';
 import { EventEmitter } from 'fbemitter';
 import ExpoUpdates from './ExpoUpdates';
 export * from './Updates.types';
@@ -240,7 +240,8 @@ let _emitter;
 function _getEmitter() {
     if (!_emitter) {
         _emitter = new EventEmitter();
-        RCTDeviceEventEmitter.addListener('Expo.nativeUpdatesEvent', _emitEvent);
+        DeviceEventEmitter.addListener('Expo.nativeUpdatesEvent', _emitEvent);
+        DeviceEventEmitter.addListener('Expo.nativeUpdatesStateChangeEvent', _emitNativeStateChangeEvent);
     }
     return _emitter;
 }
@@ -258,6 +259,9 @@ function _emitEvent(params) {
     }
     _emitter.emit('Expo.updatesEvent', newParams);
 }
+function _emitNativeStateChangeEvent(params) {
+    _emitter?.emit('Expo.updatesStateChangeEvent', params);
+}
 /**
  * Adds a callback to be invoked when updates-related events occur (such as upon the initial app
  * load) due to auto-update settings chosen at build-time. See also the
@@ -271,5 +275,9 @@ function _emitEvent(params) {
 export function addListener(listener) {
     const emitter = _getEmitter();
     return emitter.addListener('Expo.updatesEvent', listener);
+}
+export function addUpdatesStateChangeListener(listener) {
+    const emitter = _getEmitter();
+    return emitter.addListener('Expo.updatesStateChangeEvent', listener);
 }
 //# sourceMappingURL=Updates.js.map
