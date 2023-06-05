@@ -7,7 +7,7 @@
 namespace expo {
 namespace gl_cpp {
 
-struct initGlesContext {
+struct glesContext {
   int32_t viewportWidth;
   int32_t viewportHeight;
 };
@@ -37,7 +37,7 @@ enum class EXWebGLClass {
 };
 
 void ensurePrototypes(jsi::Runtime &runtime);
-void createWebGLRenderer(jsi::Runtime &runtime, EXGLContext *, initGlesContext, jsi::Object&& global);
+void createWebGLRenderer(jsi::Runtime &runtime, EXGLContext *, glesContext, jsi::Object&& global);
 jsi::Value createWebGLObject(
     jsi::Runtime &runtime,
     EXWebGLClass webglClass,
