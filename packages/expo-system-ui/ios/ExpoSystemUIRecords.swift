@@ -1,9 +1,9 @@
 import ExpoModulesCore
 
 enum Theme: String, Enumerable {
-  case light = "light"
-  case dark = "dark"
-  case auto = "auto"
+  case light
+  case dark
+  case auto
 
   func toUserInterfaceStyle() -> UIUserInterfaceStyle {
     switch self {
