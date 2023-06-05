@@ -133,11 +133,15 @@ export default function GLViewOnBusyThread() {
       <BusyJSThreadSelector />
 
       {show ? (
-        <GLView
-          style={styles.flex}
-          onContextCreate={onContextCreate}
-          enableExperimentalWorkletSupport
-        />
+        <View style={styles.flexWrap}>
+          {[...Array(90)].map(() => (
+            <GLView
+              style={styles.view}
+              onContextCreate={onContextCreate}
+              enableExperimentalWorkletSupport
+            />
+          ))}
+        </View>
       ) : (
         <View style={styles.placeholder}>
           <Text>no gl view</Text>
@@ -158,6 +162,14 @@ GLViewOnBusyThread.title = 'Creating GLView when a thread is busy';
 const styles = StyleSheet.create({
   flex: {
     flex: 1,
+  },
+  flexWrap: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  view: {
+    width: 40,
+    height: 40,
   },
   checkboxRow: {
     flexDirection: 'row',
