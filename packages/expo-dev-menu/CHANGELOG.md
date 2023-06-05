@@ -19,6 +19,8 @@
 
 ### 💡 Others
 
+- Update onboarding text to be more concise and clear, and fix compat with large text accessibiltiy settings. ([#22712](https://github.com/expo/expo/pull/22712) by [@brentvatne](https://github.com/brentvatne))
+
 ## 3.0.0 — 2023-05-08
 
 ### 🛠 Breaking changes
