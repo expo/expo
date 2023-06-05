@@ -22,7 +22,7 @@ Java_expo_modules_gl_cpp_EXGL_EXGLContextCreate
 
 JNIEXPORT void JNICALL
 Java_expo_modules_gl_cpp_EXGL_EXGLContextPrepare
-(JNIEnv *env, jclass clazz, jlong jsiPtr, jint exglCtxId, jobject glContext, jboolean enableExperimentalWorkletSupport) {
+(JNIEnv *env, jclass clazz, jlong jsiPtr, jint exglCtxId, jobject glContext) {
   threadLocalEnv = env;
   jclass GLContextClass = env->GetObjectClass(glContext);
   jobject glContextRef = env->NewGlobalRef(glContext);
@@ -31,7 +31,14 @@ Java_expo_modules_gl_cpp_EXGL_EXGLContextPrepare
   std::function<void(void)> flushMethod = [glContextRef, flushMethodRef] {
     threadLocalEnv->CallVoidMethod(glContextRef, flushMethodRef);
   };
-  EXGLContextPrepare((void*) jsiPtr, exglCtxId, enableExperimentalWorkletSupport == JNI_TRUE, flushMethod);
+  EXGLContextPrepare((void*) jsiPtr, exglCtxId, flushMethod);
+}
+
+JNIEXPORT void JNICALL
+Java_expo_modules_gl_cpp_EXGL_EXGLContextPrepareWorklet
+(JNIEnv *env, jclass clazz, jint exglCtxId) {
+  threadLocalEnv = env;
+  EXGLContextPrepareWorklet(exglCtxId);
 }
 
 JNIEXPORT void JNICALL
@@ -68,12 +75,6 @@ JNIEXPORT jint JNICALL
 Java_expo_modules_gl_cpp_EXGL_EXGLContextGetObject
 (JNIEnv *env, jclass clazz, jint exglCtxId, jint exglObjId) {
   return EXGLContextGetObject(exglCtxId, exglObjId);
-}
-
-JNIEXPORT void JNICALL
-Java_expo_modules_gl_cpp_EXGL_EXGLRegisterThread
-(JNIEnv *env, jclass clazz) {
-  threadLocalEnv = env;
 }
 
 JNIEXPORT bool JNICALL
