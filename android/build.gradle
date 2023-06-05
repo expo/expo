@@ -58,9 +58,6 @@ allprojects {
       url "$rootDir/versioned-abis/expoview-abi47_0_0/maven"
     }
     maven {
-      url "$rootDir/versioned-abis/expoview-abi46_0_0/maven"
-    }
-    maven {
       url "$rootDir/versioned-abis/maven"
     }
     google()

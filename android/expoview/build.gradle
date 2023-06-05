@@ -215,9 +215,6 @@ dependencies {
   // BEGIN_SDK_47
   versionedApi 'host.exp:reactandroid-abi47_0_0:1.0.0'
   // END_SDK_47
-  // BEGIN_SDK_46
-  versionedApi 'host.exp:reactandroid-abi46_0_0:1.0.0'
-  // END_SDK_46
   // WHEN_VERSIONING_REMOVE_TO_HERE
 
   // React native dependencies
