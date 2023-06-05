@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Enable `CADisableMinimumFrameDurationOnPhone` by default.
+
 ### 🐛 Bug fixes
 
 - Update `Target.findApplicationTargetWithDependenciesAsync` to mark framework targets as non-signable. ([#22454](https://github.com/expo/expo/pull/22454) by [@dsokal](https://github.com/dsokal))

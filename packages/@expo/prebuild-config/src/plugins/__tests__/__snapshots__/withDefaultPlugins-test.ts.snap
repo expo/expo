@@ -2254,6 +2254,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
           "EXUpdatesLaunchWaitMs": 650,
         },
         "infoPlist": {
+          "CADisableMinimumFrameDurationOnPhone": true,
           "CFBundleDevelopmentRegion": "$(DEVELOPMENT_LANGUAGE)",
           "CFBundleDisplayName": "my cool app",
           "CFBundleExecutable": "$(EXECUTABLE_NAME)",
@@ -2686,6 +2687,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
     },
     "googleServicesFile": "./config/GoogleService-Info.plist",
     "infoPlist": {
+      "CADisableMinimumFrameDurationOnPhone": true,
       "CFBundleDevelopmentRegion": "$(DEVELOPMENT_LANGUAGE)",
       "CFBundleDisplayName": "my cool app",
       "CFBundleExecutable": "$(EXECUTABLE_NAME)",
