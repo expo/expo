@@ -317,10 +317,12 @@ The command `npx expo install expo-camera` and `npx expo install expo-camera --f
 
 ### Configuring dependency validation
 
-> Available in SDK 49 and higher.
-There may be circumstances where you want to use a version of a package is different from the version recommended by `npx expo install`. For example, you might test a new version of `react-native-reanimated`, verify that it works well in your app and fixes a bug that you encountered, and now you want to 1) not be warned by `npx expo start` or `npx expo-doctor` and 2) not have that package version changed when you run `npx expo install --fix`. 
+> Available in SDK 49 and above.
+There may be circumstances where you want to use a version of a package is different from the version recommended by `npx expo install`.
 
-In SDK 49 and higher projects, you can exclude specific packages from the version checks, while still allowing the `install` command to install, check, and fix any other dependencies. This configuration extends to the checking done by `npx expo-doctor`.
+For example, you want to test a new version of `react-native-reanimated` to verify that it works well in your app and fixes a bug that you encountered. Now you want 1) not be warned by `npx expo start` or `npx expo-doctor` and 2) not have that package version changed when you run `npx expo install --fix`.
+
+You can exclude specific packages from the version checks while still allowing the `install` command to install, check, and fix any other dependencies. This configuration extends to the checking done by `npx expo-doctor`.
 
 To exclude packages from version checking, set the `expo.install` config object in your project's **package.json**:
 ```json package.json
