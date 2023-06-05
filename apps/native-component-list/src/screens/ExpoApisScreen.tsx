@@ -73,6 +73,7 @@ const screens = [
   'StatusBar',
   'StoreReview',
   'SystemUI',
+  'SystemUITheme',
   'TaskManager',
   'TextToSpeech',
   'TrackingTransparency',

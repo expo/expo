@@ -388,6 +388,12 @@ export const Screens = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/SystemUIThemeScreen'));
+    },
+    name: 'SystemUITheme',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/SMSScreen'));
     },
     name: 'SMS',

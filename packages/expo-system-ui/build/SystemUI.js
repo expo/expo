@@ -1,5 +1,6 @@
 import { Platform, processColor } from 'react-native';
 import ExpoSystemUI from './ExpoSystemUI';
+import { useInterfaceStyle } from './ExpoSystemUIHooks';
 /**
  * Changes the root view background color.
  *
@@ -25,4 +26,17 @@ export async function setBackgroundColorAsync(color) {
 export async function getBackgroundColorAsync() {
     return await ExpoSystemUI.getBackgroundColorAsync();
 }
+/**
+ * Locks the user interface to the given theme.
+ *
+ * @example
+ * ```ts
+ * await SystemUI.setSystemThemeAsync("dark");
+ * ```
+ * @param theme The theme to lock the user interface to.
+ */
+export async function setInterfaceStyleAsync(theme) {
+    return await ExpoSystemUI.setInterfaceStyleAsync(theme);
+}
+export { useInterfaceStyle };
 //# sourceMappingURL=SystemUI.js.map
