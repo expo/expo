@@ -17,9 +17,9 @@ import { getPlatformBundlers } from '../platformBundlers';
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { importExpoMetroConfig } from './resolveFromProject';
+import { getRouterDirectory } from './router';
 import { runServer } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
-import { getRouterDirectory } from './router';
 
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
