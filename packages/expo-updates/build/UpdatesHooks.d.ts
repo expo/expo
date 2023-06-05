@@ -24,4 +24,7 @@ import { UpdateEvent } from './Updates.types';
  * ```
  */
 export declare const useUpdateEvents: (listener: (event: UpdateEvent) => void) => void;
+export declare const useUpdatesState: () => {
+    [key: string]: any;
+};
 //# sourceMappingURL=UpdatesHooks.d.ts.map

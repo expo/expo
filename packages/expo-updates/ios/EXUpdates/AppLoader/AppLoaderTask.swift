@@ -2,6 +2,7 @@
 
 // swiftlint:disable closure_body_length
 // swiftlint:disable type_body_length
+// swiftlint:disable function_body_length
 // swiftlint:disable file_length
 
 // this class uses a ton of implicit non-null properties based on method call order. not worth changing to appease lint
@@ -19,7 +20,10 @@ public protocol AppLoaderTaskDelegate: AnyObject {
    * AppLoaderTask proceed as usual.
    */
   func appLoaderTask(_: AppLoaderTask, didLoadCachedUpdate update: Update) -> Bool
-  func appLoaderTask(_: AppLoaderTask, didStartLoadingUpdate update: Update)
+  func appLoaderTask(_: AppLoaderTask, didStartCheckingForUpdate body: [String: Any])
+  func appLoaderTask(_: AppLoaderTask, didFinishCheckingForUpdate body: [String: Any])
+  func appLoaderTask(_: AppLoaderTask, didStartLoadingUpdate update: Update?)
+  func appLoaderTask(_: AppLoaderTask, didLoadAsset asset: UpdateAsset, successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int)
   func appLoaderTask(_: AppLoaderTask, didFinishWithLauncher launcher: AppLauncher, isUpToDate: Bool)
   func appLoaderTask(_: AppLoaderTask, didFinishWithError error: Error)
   func appLoaderTask(
@@ -325,6 +329,12 @@ public final class AppLoaderTask: NSObject {
       launchedUpdate: candidateLauncher?.launchedUpdate,
       completionQueue: loaderTaskQueue
     )
+
+    if let delegate = self.delegate {
+      self.delegateQueue.async {
+        delegate.appLoaderTask(self, didStartCheckingForUpdate: [:])
+      }
+    }
     remoteAppLoader!.loadUpdate(
       fromURL: config.updateUrl!
     ) { updateResponse in
@@ -332,9 +342,20 @@ public final class AppLoaderTask: NSObject {
         switch updateDirective {
         case is NoUpdateAvailableUpdateDirective:
           self.isUpToDate = true
+          if let delegate = self.delegate {
+            self.delegateQueue.async {
+              delegate.appLoaderTask(self, didFinishCheckingForUpdate: [:])
+            }
+          }
           return false
         case is RollBackToEmbeddedUpdateDirective:
-          self.isUpToDate = true
+          self.isUpToDate = false
+          if let delegate = self.delegate {
+            self.delegateQueue.async {
+              delegate.appLoaderTask(self, didFinishCheckingForUpdate: ["isRollBackToEmbedded": true])
+              delegate.appLoaderTask(self, didStartLoadingUpdate: nil)
+            }
+          }
           return true
         default:
           NSException(name: .internalInconsistencyException, reason: "Unhandled update directive type").raise()
@@ -343,7 +364,13 @@ public final class AppLoaderTask: NSObject {
       }
 
       guard let update = updateResponse.manifestUpdateResponsePart?.updateManifest else {
+        // No response, so no update available
         self.isUpToDate = true
+        if let delegate = self.delegate {
+          self.delegateQueue.async {
+            delegate.appLoaderTask(self, didFinishCheckingForUpdate: [:])
+          }
+        }
         return false
       }
 
@@ -352,19 +379,37 @@ public final class AppLoaderTask: NSObject {
         withLaunchedUpdate: self.candidateLauncher?.launchedUpdate,
         filters: updateResponse.responseHeaderData?.manifestFilters
       ) {
+        // got a response, and it is new so should be downloaded
         self.isUpToDate = false
         if let delegate = self.delegate {
           self.delegateQueue.async {
+            delegate.appLoaderTask(self, didFinishCheckingForUpdate: ["manifest": update.manifest.rawManifestJSON()])
             delegate.appLoaderTask(self, didStartLoadingUpdate: update)
           }
         }
         return true
       } else {
+        // got a response, but we already have it
         self.isUpToDate = true
+        if let delegate = self.delegate {
+          self.delegateQueue.async {
+            delegate.appLoaderTask(self, didFinishCheckingForUpdate: [:])
+          }
+        }
         return false
       }
-    } asset: { _, _, _, _ in
-      // do nothing for now
+    } asset: { asset, successfulAssetCount, failedAssetCount, totalAssetCount in
+      if let delegate = self.delegate {
+        self.delegateQueue.async {
+          delegate.appLoaderTask(
+            self,
+            didLoadAsset: asset,
+            successfulAssetCount: successfulAssetCount,
+            failedAssetCount: failedAssetCount,
+            totalAssetCount: totalAssetCount
+          )
+        }
+      }
     } success: { updateResponse in
       completion(nil, updateResponse)
     } error: { error in

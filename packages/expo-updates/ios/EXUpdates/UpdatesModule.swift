@@ -2,7 +2,6 @@
 
 // swiftlint:disable closure_body_length
 // swiftlint:disable function_body_length
-// swiftlint:disable type_body_length
 
 import ExpoModulesCore
 
@@ -17,7 +16,7 @@ import ExpoModulesCore
  */
 public final class UpdatesModule: Module {
   private let updatesService: EXUpdatesModuleInterface?
-  private let methodQueue = DispatchQueue(label: "expo.modules.EXUpdatesQueue")
+  private let methodQueue = UpdatesUtils.methodQueue
 
   public required init(appContext: AppContext) {
     updatesService = appContext.legacyModule(implementing: EXUpdatesModuleInterface.self)
@@ -85,53 +84,35 @@ public final class UpdatesModule: Module {
     }
 
     AsyncFunction("checkForUpdateAsync") { (promise: Promise) in
-      guard let updatesService = updatesService,
-        let config = updatesService.config,
-        let selectionPolicy = updatesService.selectionPolicy,
-        config.isEnabled else {
-        throw UpdatesDisabledException()
+      let maybeIsCheckForUpdateEnabled: Bool? = updatesService?.canCheckForUpdateAndFetchUpdate ?? true
+      guard maybeIsCheckForUpdateEnabled ?? false else {
+        promise.reject("ERR_UPDATES_CHECK", "checkForUpdateAsync() is not enabled")
+        return
       }
-      guard updatesService.isStarted else {
-        throw UpdatesNotInitializedException()
-      }
-
-      var extraHeaders: [String: Any] = [:]
-      updatesService.database.databaseQueue.sync {
-        extraHeaders = FileDownloader.extraHeadersForRemoteUpdateRequest(
-          withDatabase: updatesService.database,
-          config: config,
-          launchedUpdate: updatesService.launchedUpdate,
-          embeddedUpdate: updatesService.embeddedUpdate
-        )
-      }
-
-      let fileDownloader = FileDownloader(config: config)
-      fileDownloader.downloadRemoteUpdate(
-        // swiftlint:disable:next force_unwrapping
-        fromURL: config.updateUrl!,
-        withDatabase: updatesService.database,
-        extraHeaders: extraHeaders
-      ) { updateResponse in
-        guard let update = updateResponse.manifestUpdateResponsePart?.updateManifest else {
+      UpdatesUtils.checkForUpdate { result in
+        if result["message"] != nil {
+          guard let message = result["message"] as? String else {
+            promise.reject("ERR_UPDATES_CHECK", "")
+            return
+          }
+          promise.reject("ERR_UPDATES_CHECK", message)
+          return
+        }
+        if result["manifest"] != nil {
           promise.resolve([
-            "isAvailable": false
+            "isAvailable": true,
+            "manifest": result["manifest"]
           ])
           return
         }
-
-        let launchedUpdate = updatesService.launchedUpdate
-        if selectionPolicy.shouldLoadNewUpdate(update, withLaunchedUpdate: launchedUpdate, filters: updateResponse.responseHeaderData?.manifestFilters) {
+        if result["isRollBackToEmbedded"] != nil {
           promise.resolve([
-            "isAvailable": true,
-            "manifest": update.manifest.rawManifestJSON()
+            "isAvailable": false,
+            "isRollBackToEmbedded": result["isRollBackToEmbedded"]
           ])
-        } else {
-          promise.resolve([
-            "isAvailable": false
-          ])
+          return
         }
-      } errorBlock: { error in
-        promise.reject("ERR_UPDATES_CHECK", error.localizedDescription)
+        promise.resolve(["isAvailable": false])
       }
     }
 
@@ -196,70 +177,22 @@ public final class UpdatesModule: Module {
     }
 
     AsyncFunction("fetchUpdateAsync") { (promise: Promise) in
-      guard let updatesService = updatesService,
-        let config = updatesService.config,
-        let selectionPolicy = updatesService.selectionPolicy,
-        config.isEnabled else {
-        throw UpdatesDisabledException()
+      let maybeIsCheckForUpdateEnabled: Bool? = updatesService?.canCheckForUpdateAndFetchUpdate ?? true
+      guard maybeIsCheckForUpdateEnabled ?? false else {
+        promise.reject("ERR_UPDATES_FETCH", "fetchUpdateAsync() is not enabled")
+        return
       }
-      guard updatesService.isStarted else {
-        throw UpdatesNotInitializedException()
-      }
-
-      let remoteAppLoader = RemoteAppLoader(
-        config: config,
-        database: updatesService.database,
-        directory: updatesService.directory,
-        launchedUpdate: updatesService.launchedUpdate,
-        completionQueue: methodQueue
-      )
-      remoteAppLoader.loadUpdate(
-        // swiftlint:disable:next force_unwrapping
-        fromURL: config.updateUrl!
-      ) { updateResponse in
-        if let updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective {
-          switch updateDirective {
-          case is NoUpdateAvailableUpdateDirective:
-            return false
-          case is RollBackToEmbeddedUpdateDirective:
-            return true
-          default:
-            NSException(name: .internalInconsistencyException, reason: "Unhandled update directive type").raise()
-            return false
+      UpdatesUtils.fetchUpdate { result in
+        if result["message"] != nil {
+          guard let message = result["message"] as? String else {
+            promise.reject("ERR_UPDATES_FETCH", "")
+            return
           }
-        }
-
-        guard let update = updateResponse.manifestUpdateResponsePart?.updateManifest else {
-          return false
-        }
-
-        return selectionPolicy.shouldLoadNewUpdate(
-          update,
-          withLaunchedUpdate: updatesService.launchedUpdate,
-          filters: updateResponse.responseHeaderData?.manifestFilters
-        )
-      } asset: { _, _, _, _ in
-        // do nothing for now
-      } success: { updateResponse in
-        if updateResponse?.directiveUpdateResponsePart?.updateDirective is RollBackToEmbeddedUpdateDirective {
-          promise.resolve([
-            "isRollBackToEmbedded": true
-          ])
+          promise.reject("ERR_UPDATES_FETCH", message)
+          return
         } else {
-          if let update = updateResponse?.manifestUpdateResponsePart?.updateManifest {
-            updatesService.resetSelectionPolicy()
-            promise.resolve([
-              "isNew": true,
-              "manifest": update.manifest.rawManifestJSON()
-            ])
-          } else {
-            promise.resolve([
-              "isNew": false
-            ])
-          }
+          promise.resolve(result)
         }
-      } error: { error in
-        promise.reject("ERR_UPDATES_FETCH", "Failed to download new update: \(error.localizedDescription)")
       }
     }
   }
