@@ -136,7 +136,8 @@ function getInfoPlistTemplate() {
     UILaunchStoryboardName: 'SplashScreen',
     UIRequiredDeviceCapabilities: ['armv7'],
     UIViewControllerBasedStatusBarAppearance: false,
-    UIStatusBarStyle: 'UIStatusBarStyleDefault'
+    UIStatusBarStyle: 'UIStatusBarStyleDefault',
+    CADisableMinimumFrameDurationOnPhone: true
   };
 }
 const defaultProviders = {
