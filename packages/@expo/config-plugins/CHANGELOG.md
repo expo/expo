@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Enable `CADisableMinimumFrameDurationOnPhone` by default.
+- Enable `CADisableMinimumFrameDurationOnPhone` by default. ([#22751](https://github.com/expo/expo/pull/22751) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
