@@ -12,12 +12,11 @@
 
 ### 💡 Others
 
-- Update barcode scanner library for Android. ([#22107](https://github.com/expo/expo/pull/22107) by [@toshiyuki-suzuki-yukashikado](https://github.com/toshiyuki-suzuki-yukashikado))
+- [Android] Replace dependency on deprecated `com.google.android.gms:play-services-vision` with `com.google.mlkit:barcode-scanning`. ([#22107](https://github.com/expo/expo/pull/22107) by [@toshiyuki-suzuki-yukashikado](https://github.com/toshiyuki-suzuki-yukashikado))
 
 ## 12.4.0 — 2023-05-08
 
 _This version does not introduce any user-facing changes._
-
 
 ## 12.3.2 - 2023-03-03
 
