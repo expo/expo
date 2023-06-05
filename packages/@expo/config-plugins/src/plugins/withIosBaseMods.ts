@@ -48,6 +48,7 @@ function getInfoPlistTemplate() {
     UIRequiredDeviceCapabilities: ['armv7'],
     UIViewControllerBasedStatusBarAppearance: false,
     UIStatusBarStyle: 'UIStatusBarStyleDefault',
+    ITSAppUsesNonExemptEncryption: false,
   };
 }
 
