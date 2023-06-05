@@ -18,7 +18,7 @@ type AuthDiscoveryDocument = Pick<DiscoveryDocument, 'authorizationEndpoint'>;
  * const request = new AuthRequest({ ... });
  *
  * // Prompt for an auth code
- * const result = await request.promptAsync(discovery, { useProxy: true });
+ * const result = await request.promptAsync(discovery);
  *
  * // Get the URL to invoke
  * const url = await request.makeAuthUrlAsync(discovery);

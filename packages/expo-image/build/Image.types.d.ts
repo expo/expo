@@ -1,4 +1,4 @@
-import { ImageStyle as RNImageStyle, ViewProps } from 'react-native';
+import { ImageStyle as RNImageStyle, ViewProps, StyleProp, ViewStyle } from 'react-native';
 export type ImageSource = {
     /**
      * A string representing the resource identifier for the image,
@@ -29,6 +29,11 @@ export type ImageSource = {
      */
     blurhash?: string;
     /**
+     * The thumbhash string to use to generate the image placeholder. You can read more about thumbhash
+     * on the [`thumbhash website`](https://evanw.github.io/thumbhash/). Ignored when `uri` is provided.
+     */
+    thumbhash?: string;
+    /**
      * The cache key used to query and store this specific image.
      * If not provided, the `uri` is used also as the cache key.
      */
@@ -49,7 +54,7 @@ export type ImageContentFit = 'cover' | 'contain' | 'fill' | 'none' | 'scale-dow
  */
 export interface ImageProps extends ViewProps {
     /** @hidden */
-    style?: RNImageStyle | RNImageStyle[];
+    style?: StyleProp<RNImageStyle>;
     /**
      * The image source, either a remote URL, a local file resource or a number that is the result of the `require()` function.
      * When provided as an array of sources, the source that fits best into the container size and is closest to the screen scale
@@ -212,9 +217,6 @@ export interface ImageProps extends ViewProps {
     /**
      * The text that's read by the screen reader when the user interacts with the image. Sets the the `alt` tag on web which is used for web crawlers and link traversal.
      * @default undefined
-     * @platform android
-     * @platform ios
-     * @platform web
      */
     accessibilityLabel?: string;
     /**
@@ -222,9 +224,6 @@ export interface ImageProps extends ViewProps {
      *
      * @alias accessibilityLabel
      * @default undefined
-     * @platform android
-     * @platform ios
-     * @platform web
      */
     alt?: string;
     /**
@@ -302,6 +301,14 @@ export type ImageContentPosition =
     bottom?: ImageContentPositionValue;
     left?: ImageContentPositionValue;
 } | ImageContentPositionString;
+export interface ImageBackgroundProps extends Omit<ImageProps, 'style'> {
+    /** The style of the image container */
+    style?: StyleProp<ViewStyle> | undefined;
+    /** Style object for the image */
+    imageStyle?: StyleProp<RNImageStyle> | undefined;
+    /** @hidden */
+    children?: React.ReactNode | undefined;
+}
 /**
  * @hidden It's described as part of {@link ImageContentPosition}.
  */

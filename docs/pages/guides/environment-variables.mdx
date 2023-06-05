@@ -5,7 +5,6 @@ description: Learn about different ways to use environment variables in an Expo 
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
-import { Collapsible } from '~/ui/components/Collapsible';
 
 Environment variables are key-value pairs configured outside your source code that allow your app to behave differently depending on the environment. For example, you can enable or disable certain features when building a testing version of your app, or you can switch to a different API endpoint when building for production.
 
@@ -88,7 +87,6 @@ When you modify **babel.config.js**, you should always restart the development s
 
 ```tsx
 import { Button } from 'react-native';
-import Constants from 'expo-constants';
 
 function Post() {
   const apiUrl = process.env.API_URL;

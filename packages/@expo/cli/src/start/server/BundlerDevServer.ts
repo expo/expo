@@ -18,6 +18,7 @@ import { AsyncNgrok } from './AsyncNgrok';
 import { DevelopmentSession } from './DevelopmentSession';
 import { CreateURLOptions, UrlCreator } from './UrlCreator';
 import { PlatformBundlers } from './platformBundlers';
+import { typescriptTypeGeneration } from './type-generation';
 
 const debug = require('debug')('expo:start:server:devServer') as typeof console.log;
 
@@ -163,7 +164,18 @@ export abstract class BundlerDevServer {
     options: BundlerStartOptions
   ): Promise<DevServerInstance>;
 
-  public async waitForTypeScriptAsync(): Promise<void> {
+  public async waitForTypeScriptAsync(): Promise<boolean> {
+    return false;
+  }
+
+  public async startTypeScriptServices(): Promise<void> {
+    return typescriptTypeGeneration({
+      server: this.instance!.server,
+      projectRoot: this.projectRoot,
+    });
+  }
+
+  public async watchEnvironmentVariables(): Promise<void> {
     // noop -- We've only implemented this functionality in Metro.
   }
 

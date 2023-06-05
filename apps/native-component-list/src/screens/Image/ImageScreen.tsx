@@ -63,6 +63,13 @@ export const ImageScreens = [
     },
   },
   {
+    name: 'Background',
+    route: 'image/background',
+    getComponent() {
+      return optionalRequire(() => require('./ImageBackgroundScreen'));
+    },
+  },
+  {
     name: 'Transitions',
     route: 'image/transitions',
     getComponent() {
@@ -70,10 +77,10 @@ export const ImageScreens = [
     },
   },
   {
-    name: 'Blurhash',
-    route: 'image/blurhash',
+    name: 'Hash Placeholders',
+    route: 'image/hash-placeholders',
     getComponent() {
-      return optionalRequire(() => require('./ImageBlurhashScreen'));
+      return optionalRequire(() => require('./ImageHashPlaceholdersScreen'));
     },
   },
   {
@@ -88,6 +95,13 @@ export const ImageScreens = [
     route: 'image/gifs',
     getComponent() {
       return optionalRequire(() => require('./ImageGifsScreen'));
+    },
+  },
+  {
+    name: 'MediaLibrary and ImagePicker integration',
+    route: 'image/media-library',
+    getComponent() {
+      return optionalRequire(() => require('./ImageMediaLibraryScreen'));
     },
   },
 ];

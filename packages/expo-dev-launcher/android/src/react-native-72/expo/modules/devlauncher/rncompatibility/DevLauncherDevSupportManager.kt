@@ -15,6 +15,7 @@ import com.facebook.react.bridge.ReactMarkerConstants
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.common.futures.SimpleSettableFuture
+import com.facebook.react.devsupport.DevLauncherInternalSettingsWrapper
 import com.facebook.react.devsupport.DevSupportManagerBase
 import com.facebook.react.devsupport.HMRClient
 import com.facebook.react.devsupport.ReactInstanceDevHelper
@@ -29,6 +30,7 @@ import expo.modules.devlauncher.koin.DevLauncherKoinComponent
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import expo.modules.devlauncher.launcher.errors.DevLauncherAppError
 import expo.modules.devlauncher.launcher.errors.DevLauncherErrorActivity
+
 import org.koin.core.component.inject
 import java.io.File
 import java.io.IOException
@@ -61,6 +63,7 @@ class DevLauncherDevSupportManager(
   private val controller: DevLauncherControllerInterface by inject()
   // copied from https://github.com/facebook/react-native/blob/aa4da248c12e3ba41ecc9f1c547b21c208d9a15f/ReactAndroid/src/main/java/com/facebook/react/devsupport/BridgeDevSupportManager.java#L65
   private var mIsSamplingProfilerEnabled = false
+  private val devSettings: DevLauncherInternalSettingsWrapper = DevLauncherInternalSettingsWrapper(getDevSettings())
 
   // copied from https://github.com/facebook/react-native/blob/aa4da248c12e3ba41ecc9f1c547b21c208d9a15f/ReactAndroid/src/main/java/com/facebook/react/devsupport/BridgeDevSupportManager.java#L88-L128
   init {
@@ -85,17 +88,6 @@ class DevLauncherDevSupportManager(
         R.string.catalyst_sample_profiler_enable
       )
     ) { toggleJSSamplingProfiler() }
-    if (!devSettings.isDeviceDebugEnabled) {
-      // For remote debugging, we open up Chrome running the app in a web worker.
-      // Note that this requires async communication, which will not work for Turbo Modules.
-      addCustomDevOption(
-        if (devSettings.isRemoteJSDebugEnabled) applicationContext.getString(R.string.catalyst_debug_stop)
-        else applicationContext.getString(R.string.catalyst_debug)
-      ) {
-        devSettings.isRemoteJSDebugEnabled = !devSettings.isRemoteJSDebugEnabled
-        handleReloadJS()
-      }
-    }
   }
 
   override fun showNewJavaError(message: String?, e: Throwable) {

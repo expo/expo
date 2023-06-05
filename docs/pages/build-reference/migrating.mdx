@@ -5,9 +5,9 @@ description: A reference for migrating from "expo build" (classic builds) to EAS
 
 import { Terminal } from '~/ui/components/Snippet';
 
-This page covers practical differences you should know when migrating your Expo [managed app](/introduction/managed-vs-bare/#managed-workflow) from `expo build` (also known as **classic builds**) to EAS Build. If this is your first time using EAS Build, you can use this page as a companion to [Creating your first build](/build/setup).
+This page covers practical differences you should know when migrating your Expo [managed app](/archive/managed-vs-bare/#managed-workflow) from `expo build` (also known as **classic builds**) to EAS Build. If this is your first time using EAS Build, you can use this page as a companion to [Creating your first build](/build/setup).
 
-One of the goals of EAS Build is to make it as easy as possible to migrate from `expo build`. For example, your app signing credentials will be automatically re-used, and the Expo SDK and your [Expo config](/workflow/configuration) (**app.json**) configuration will all work the same as before. However, some differences between the two build processes require additional configuration or small code changes.
+One of the goals of EAS Build is to make it as easy as possible to migrate from `expo build`. For example, your app signing credentials will be automatically re-used, and the Expo SDK and your [app config](/workflow/configuration) (**app.json**) configuration will all work the same as before. However, some differences between the two build processes require additional configuration or small code changes.
 
 ## SDK 41 and above projects are supported
 
@@ -17,7 +17,7 @@ EAS Build only supports SDK 41 and above projects. You must upgrade your project
 
 Apps built with EAS Build are like other CI services &mdash; the entire project is uploaded securely to the cloud, then downloaded by a build server, the dependencies are installed, and the build is run.
 
-With classic builds, your app's JavaScript is built on your development machine (when you publish the app bundle before building), but now the app's JavaScript is built on an EAS Build worker. Everything required to build your app [must be included in the project to be uploaded](https://expo.fyi/eas-build-archive).
+With classic builds, your app's JavaScript is built on your development machine (when you publish the app bundle before building), but now the app's JavaScript is built on an EAS Build builder. Everything required to build your app [must be included in the project to be uploaded](https://expo.fyi/eas-build-archive).
 
 To learn more about how EAS Build creates a successful build of your project, see [Android](/build-reference/android-builds) and [iOS](/build-reference/ios-builds) build processes.
 
@@ -69,7 +69,7 @@ Only the second purpose applies to the EAS Build system. All assets referenced i
 
 If you are using `Constants.manifest` to access fields, you should switch to `Constants.expoConfig` to access them from the [`expo-constants`](/versions/latest/sdk/constants) library.
 
-## Expo config
+## App config (**app.json/app.config.js**)
 
 ### `userInterfaceStyle` depends on `expo-system-ui` being installed
 
@@ -107,7 +107,7 @@ Run the following command to install the `expo-system-ui` library:
 
 ## Updates
 
-If you are migrating from `expo build` and using `expo publish` to update your app, you are using [Classic Updates](/archive/classic-updates/introduction/). Once you migrate to EAS Build, you can also take advantage of our new-and-improved updates service, [EAS Update](https://docs.expo.dev/eas-update/introduction/). For in-depth information on how to migrate your project to EAS Update, see [Migrating from Classic updates to EAS Update](/eas-update/migrate-to-eas-update).
+If you are migrating from `expo build` and using `expo publish` to update your app, you are using [Classic Updates](/archive/classic-updates/introduction/). Once you migrate to EAS Build, you can also take advantage of our new-and-improved updates service, [EAS Update](/eas-update/introduction/). For in-depth information on how to migrate your project to EAS Update, see [Migrating from Classic updates to EAS Update](/eas-update/migrate-to-eas-update).
 
 ### No more automatic publishing before building
 
@@ -133,7 +133,7 @@ Classic builds had no knowledge of your repository setup. You could use a monore
 or birepo or trirepo, the service was entirely indifferent. As long as you could publish a
 bundle, that's all that was needed.
 
-EAS Build needs to be able to install all of your project dependencies to set up the development environment inside of a worker. In some cases, that will require some additional configuration. For more information, see [How to set up EAS Build with a monorepo](/build-reference/build-with-monorepos/) and [Working with Monorepos](/guides/monorepos).
+EAS Build needs to be able to install all of your project dependencies to set up the development environment inside of a builder. In some cases, that will require some additional configuration. For more information, see [How to set up EAS Build with a monorepo](/build-reference/build-with-monorepos/) and [Working with Monorepos](/guides/monorepos).
 
 ## Miscellaneous
 
@@ -147,7 +147,7 @@ In projects built with `expo build` the native primitives required by AWS Amplif
 
 ### Animated WebP is not supported by default
 
-Most apps do not use this format and support for it adds around 3.4 MB to the final app size, so it is omitted by default. You can enable it by switching `expo.webp.animated=false` to `expo.webp.animated=true` using a custom [Config plugin](/guides/config-plugins) to update **android/gradle.properties**. For more information on how to implement the config plugin, [see this example](https://forums.expo.dev/t/animated-webp-expected-to-work-with-eas-builds/58960/5?u=notbrent) from the community.
+Most apps do not use this format and support for it adds around 3.4 MB to the final app size, so it is omitted by default. You can enable it by switching `expo.webp.animated=false` to `expo.webp.animated=true` using a custom [Config plugin](/config-plugins/introduction/) to update **android/gradle.properties**. For more information on how to implement the config plugin, [see this example](https://forums.expo.dev/t/animated-webp-expected-to-work-with-eas-builds/58960/5?u=notbrent) from the community.
 
 ### metro.config.js must export the entire default config from `expo/metro-config`
 

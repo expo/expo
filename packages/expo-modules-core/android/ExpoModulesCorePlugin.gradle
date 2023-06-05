@@ -30,6 +30,10 @@ ext.applyKotlinExpoModulesCorePlugin = {
   apply plugin: KotlinExpoModulesCorePlugin
 }
 
+ext.boolish = { value ->
+  return value.toString().toBoolean()
+}
+
 // [BEGIN] Remove when we drop SDK 47
 abstract class ExtractReactNativeAARTask extends DefaultTask {
   @Input

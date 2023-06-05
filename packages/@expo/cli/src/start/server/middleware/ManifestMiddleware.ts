@@ -49,6 +49,56 @@ export function getMetroServerRoot(projectRoot: string) {
   return projectRoot;
 }
 
+/** Get the main entry module ID (file) relative to the project root. */
+export function resolveMainModuleName(
+  projectRoot: string,
+  projectConfig: ProjectConfig,
+  platform: string
+): string {
+  const entryPoint = getEntryWithServerRoot(projectRoot, projectConfig, platform);
+
+  debug(`Resolved entry point: ${entryPoint} (project root: ${projectRoot})`);
+
+  return stripExtension(entryPoint, 'js');
+}
+
+export function createBundleUrlPath({
+  platform,
+  mainModuleName,
+  mode,
+  minify = mode === 'production',
+  environment,
+  serializerOutput,
+}: {
+  platform: string;
+  mainModuleName: string;
+  mode: string;
+  minify?: boolean;
+  environment?: string;
+  serializerOutput?: 'static';
+}): string {
+  const queryParams = new URLSearchParams({
+    platform: encodeURIComponent(platform),
+    dev: String(mode !== 'production'),
+    // TODO: Is this still needed?
+    hot: String(false),
+    lazy: String(!env.EXPO_NO_METRO_LAZY),
+  });
+
+  if (minify) {
+    queryParams.append('minify', String(minify));
+  }
+  if (environment) {
+    queryParams.append('resolver.environment', environment);
+    queryParams.append('transform.environment', environment);
+  }
+  if (serializerOutput) {
+    queryParams.append('serializer.output', serializerOutput);
+  }
+
+  return `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;
+}
+
 /** Info about the computer hosting the dev server. */
 export interface HostInfo {
   host: string;
@@ -61,8 +111,6 @@ export interface HostInfo {
 
 /** Parsed values from the supported request headers. */
 export interface ManifestRequestInfo {
-  /** Should return the signed manifest. */
-  acceptSignature: boolean;
   /** Platform to serve. */
   platform: RuntimePlatform;
   /** Requested host name. */
@@ -184,7 +232,12 @@ export abstract class ManifestMiddleware<
     hostname?: string | null;
     mainModuleName: string;
   }): string {
-    const path = this._getBundleUrlPath({ platform, mainModuleName });
+    const path = createBundleUrlPath({
+      mode: this.options.mode ?? 'development',
+      minify: this.options.minify,
+      platform,
+      mainModuleName,
+    });
 
     return (
       this.options.constructUrl({
@@ -207,6 +260,7 @@ export abstract class ManifestMiddleware<
       dev: String(this.options.mode !== 'production'),
       // TODO: Is this still needed?
       hot: String(false),
+      lazy: String(!env.EXPO_NO_METRO_LAZY),
     });
 
     if (this.options.minify) {
@@ -316,8 +370,8 @@ export abstract class ManifestMiddleware<
       const platform = parsePlatformHeader(req);
       // On web, serve the public folder
       if (!platform || platform === 'web') {
-        // Skip the spa-styled index.html when static generation is enabled.
-        if (env.EXPO_USE_STATIC) {
+        if (this.initialProjectConfig.exp.web?.output === 'static') {
+          // Skip the spa-styled index.html when static generation is enabled.
           next();
           return true;
         } else {

@@ -10,7 +10,7 @@
 ### Installation
 
 ```
-expo install expo-system-ui
+npx expo install expo-system-ui
 ```
 
 ### Extra Setup

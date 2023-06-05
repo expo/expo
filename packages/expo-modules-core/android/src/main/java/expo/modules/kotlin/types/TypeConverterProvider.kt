@@ -13,6 +13,7 @@ import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.MissingTypeConverter
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
+import expo.modules.kotlin.jni.JavaScriptFunction
 import expo.modules.kotlin.jni.JavaScriptObject
 import expo.modules.kotlin.jni.JavaScriptValue
 import expo.modules.kotlin.records.Record
@@ -125,6 +126,10 @@ object TypeConverterProviderImpl : TypeConverterProvider {
 
     if (kClass.isSubclassOf(SharedObject::class)) {
       return SharedObjectTypeConverter<SharedObject>(type)
+    }
+
+    if (kClass.isSubclassOf(JavaScriptFunction::class)) {
+      return JavaScriptFunctionTypeConverter<Any>(type)
     }
 
     return handelEither(type, kClass)
@@ -267,8 +272,6 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       BigUint64Array::class.createType(nullable = isOptional) to BigUint64ArrayTypeConverter(isOptional),
       TypedArray::class.createType(nullable = isOptional) to TypedArrayTypeConverter(isOptional),
 
-      Color::class.createType(nullable = isOptional) to ColorTypeConverter(isOptional),
-
       URL::class.createType(nullable = isOptional) to URLTypConverter(isOptional),
       Uri::class.createType(nullable = isOptional) to UriTypeConverter(isOptional),
       URI::class.createType(nullable = isOptional) to JavaURITypeConverter(isOptional),
@@ -281,6 +284,7 @@ object TypeConverterProviderImpl : TypeConverterProvider {
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
       return converters + mapOf(
         Path::class.createType(nullable = isOptional) to PathTypeConverter(isOptional),
+        Color::class.createType(nullable = isOptional) to ColorTypeConverter(isOptional),
       )
     }
 

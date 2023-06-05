@@ -1,6 +1,6 @@
 <manifest package="expo.modules.imagepicker"
-          xmlns:android="http://schemas.android.com/apk/res/android"
-    >
+          xmlns:tools="http://schemas.android.com/tools"
+          xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Required for picking images from camera directly -->
     <uses-permission android:name="android.permission.CAMERA"/>
 
@@ -11,6 +11,18 @@
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
 
     <application>
+      <!-- Trigger Google Play services to install the backported photo picker module. -->
+      <service android:name="com.google.android.gms.metadata.ModuleDependencies"
+        android:enabled="false"
+        android:exported="false"
+        tools:ignore="MissingClass">
+        <intent-filter>
+            <action android:name="com.google.android.gms.metadata.MODULE_DEPENDENCIES" />
+        </intent-filter>
+        <meta-data android:name="photopicker_activity:0:required" android:value="" />
+      </service>
+
+
       <activity
         android:name="com.canhub.cropper.CropImageActivity"
         android:theme="@style/Base.Theme.AppCompat"/>

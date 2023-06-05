@@ -17,6 +17,9 @@ enum class ValueType {
   WorkletFunctionType, // function that gets run on the UI thread
   FrozenObjectType, // frozen object, can only be set and never modified
   FrozenArrayType, // frozen array, can only be set and never modified
+#ifdef RCT_NEW_ARCH_ENABLED
+  ShadowNodeType, // ShadowNode::Shared
+#endif // RCT_NEW_ARCH_ENABLED
 };
 
 class ShareableValue;

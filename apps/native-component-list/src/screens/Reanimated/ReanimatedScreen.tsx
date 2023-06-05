@@ -5,7 +5,6 @@ import HeadingText from '../../components/HeadingText';
 import { Colors } from '../../constants';
 import ReanimatedLayoutAnimation from './ReanimatedLayoutAnimation';
 import ReanimatedLightbox from './ReanimatedLightbox';
-import ReanimatedProgress from './ReanimatedProgress';
 import ReanimatedSwipeable from './ReanimatedSwipeable';
 import ReanimatedWobble from './ReanimatedWobble';
 
@@ -16,10 +15,6 @@ export default class ReanimatedScreen extends React.PureComponent {
         <View style={styles.exampleContainer}>
           <HeadingText style={styles.header}>Lightbox</HeadingText>
           <ReanimatedLightbox />
-        </View>
-        <View style={styles.exampleContainer}>
-          <HeadingText style={styles.header}>Progress</HeadingText>
-          <ReanimatedProgress />
         </View>
         <View style={styles.exampleContainer}>
           <HeadingText style={styles.header}>Wobble</HeadingText>

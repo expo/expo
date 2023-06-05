@@ -25,7 +25,7 @@ import {
 
 ## Configuration in app.json/app.config.js
 
-You can configure `expo-location` using its built-in [config plugin](/guides/config-plugins) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
+You can configure `expo-location` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
 <ConfigPluginExample>
 
@@ -63,18 +63,25 @@ You can configure `expo-location` using its built-in [config plugin](/guides/con
       default: '"Allow $(PRODUCT_NAME) to use your location"',
     },
     {
-      name: 'isIosBackgroundLocationEnabled',
+      name: 'locationWhenInUsePermission',
       platform: 'ios',
       description:
         'A string to set the [`NSLocationWhenInUseUsageDescription`](#permission-nslocationwheninuseusagedescription) permission message.',
       default: '"Allow $(PRODUCT_NAME) to use your location"',
     },
     {
+      name: 'isIosBackgroundLocationEnabled',
+      platform: 'ios',
+      description:
+        'A boolean to enable `location` in the `UIBackgroundModes` in **Info.plist**.',
+      default: 'false',
+    },
+    {
       name: 'isAndroidBackgroundLocationEnabled',
       platform: 'android',
       description:
-        'A string to set the [`ACCESS_BACKGROUND_LOCATION`](#permission-access_background_location) permission message.',
-      default: '',
+        'A boolean to enable the [`ACCESS_BACKGROUND_LOCATION`](#permission-access_background_location) permission.',
+      default: 'false',
     },
   ]}
 />

@@ -344,12 +344,6 @@ export function createUploadTask(
   return new UploadTask(url, fileUri, options, callback);
 }
 
-function isUploadProgressData(
-  data: DownloadProgressData | UploadProgressData
-): data is UploadProgressData {
-  return 'totalBytesSent' in data;
-}
-
 export abstract class FileSystemCancellableNetworkTask<
   T extends DownloadProgressData | UploadProgressData
 > {
@@ -395,19 +389,6 @@ export abstract class FileSystemCancellableNetworkTask<
       if (event.uuid === this.uuid) {
         const callback = this.getCallback();
         if (callback) {
-          if (isUploadProgressData(event.data)) {
-            const data = {
-              ...event.data,
-              get totalByteSent() {
-                console.warn(
-                  'Key "totalByteSent" in File System UploadProgressData is deprecated and will be removed in SDK 49, use "totalBytesSent" instead'
-                );
-                return this.totalBytesSent;
-              },
-            };
-            return callback(data);
-          }
-
           callback(event.data);
         }
       }
@@ -770,7 +751,7 @@ export namespace StorageAccessFramework {
    */
   export const moveAsync = baseMoveAsync;
   /**
-   * Alias fro [`copyAsync`](#filesystemcopyasyncoptions) method.
+   * Alias for [`copyAsync`](#filesystemcopyasyncoptions) method.
    */
   export const copyAsync = baseCopyAsync;
 }

@@ -4,14 +4,6 @@ apply plugin: "com.facebook.react"
 import com.android.build.OutputFile
 
 def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
-def expoDebuggableVariants = ['debug']
-// Override `debuggableVariants` for expo-updates debugging
-if (System.getenv('EX_UPDATES_NATIVE_DEBUG') == "1") {
-  react {
-    expoDebuggableVariants = []
-  }
-}
-
 
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -21,7 +13,7 @@ react {
     entryFile = file(["node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android", "absolute"].execute(null, rootDir).text.trim())
     reactNativeDir = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()
     hermesCommand = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/sdks/hermesc/%OS-BIN%/hermesc"
-    debuggableVariants = expoDebuggableVariants
+    codegenDir = new File(["node", "--print", "require.resolve('react-native-codegen/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()
 
     // Use Expo CLI to bundle the app, this ensures the Metro config
     // works correctly with Expo projects.

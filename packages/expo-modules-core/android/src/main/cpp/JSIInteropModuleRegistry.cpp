@@ -37,14 +37,18 @@ JSIInteropModuleRegistry::JSIInteropModuleRegistry(jni::alias_ref<jhybridobject>
 
 void JSIInteropModuleRegistry::installJSI(
   jlong jsRuntimePointer,
+  jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator,
   jni::alias_ref<react::CallInvokerHolder::javaobject> jsInvokerHolder,
   jni::alias_ref<react::CallInvokerHolder::javaobject> nativeInvokerHolder
 ) {
+  this->jniDeallocator = jni::make_global(jniDeallocator);
+
   auto runtime = reinterpret_cast<jsi::Runtime *>(jsRuntimePointer);
 
   jsRegistry = std::make_unique<JSReferencesCache>(*runtime);
 
   runtimeHolder = std::make_shared<JavaScriptRuntime>(
+    this,
     runtime,
     jsInvokerHolder->cthis()->getCallInvoker(),
     nativeInvokerHolder->cthis()->getCallInvoker()
@@ -72,11 +76,15 @@ void JSIInteropModuleRegistry::installJSI(
     );
 }
 
-void JSIInteropModuleRegistry::installJSIForTests() {
+void JSIInteropModuleRegistry::installJSIForTests(
+  jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator
+) {
 #if !UNIT_TEST
   throw std::logic_error("The function is only available when UNIT_TEST is defined.");
 #else
-  runtimeHolder = std::make_shared<JavaScriptRuntime>();
+  this->jniDeallocator = jni::make_global(jniDeallocator);
+
+  runtimeHolder = std::make_shared<JavaScriptRuntime>(this);
   jsi::Runtime &jsiRuntime = runtimeHolder->get();
 
   jsRegistry = std::make_unique<JSReferencesCache>(jsiRuntime);

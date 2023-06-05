@@ -24,6 +24,16 @@ export const channel = ExpoUpdates.channel ?? null;
  * The runtime version of the current build.
  */
 export const runtimeVersion = ExpoUpdates.runtimeVersion ?? null;
+const _checkAutomaticallyMapNativeToJS = {
+    ALWAYS: 'ON_LOAD',
+    ERROR_RECOVERY_ONLY: 'ON_ERROR_RECOVERY',
+    NEVER: 'NEVER',
+    WIFI_ONLY: 'WIFI_ONLY',
+};
+/**
+ * Determines if and when expo-updates checks for and downloads updates automatically on startup.
+ */
+export const checkAutomatically = _checkAutomaticallyMapNativeToJS[ExpoUpdates.checkAutomatically] ?? null;
 // @docsMissing
 /**
  * @hidden
@@ -51,8 +61,9 @@ export const isEmbeddedLaunch = ExpoUpdates.isEmbeddedLaunch || false;
 export const isUsingEmbeddedAssets = ExpoUpdates.isUsingEmbeddedAssets || false;
 /**
  * If `expo-updates` is enabled, this is the
- * [manifest](/workflow/expo-go#manifest) object for the update that's currently
- * running.
+ * [manifest](/versions/latest/sdk/constants/#manifest) (or
+ * [classic manifest](/versions/latest/sdk/constants/#appmanifest))
+ * object for the update that's currently running.
  *
  * In development mode, or any other environment in which `expo-updates` is disabled, this object is
  * empty.
@@ -158,8 +169,8 @@ export async function getExtraParamsAsync() {
  * discriminate branches based on the `userType`.
  */
 export async function setExtraParamAsync(key, value) {
-    if (!ExpoUpdates.setExtraParamsAsync) {
-        throw new UnavailabilityError('Updates', 'setExtraParamsAsync');
+    if (!ExpoUpdates.setExtraParamAsync) {
+        throw new UnavailabilityError('Updates', 'setExtraParamAsync');
     }
     return await ExpoUpdates.setExtraParamAsync(key, value ?? null);
 }
@@ -234,7 +245,7 @@ function _getEmitter() {
     return _emitter;
 }
 function _emitEvent(params) {
-    let newParams = params;
+    let newParams = { ...params };
     if (typeof params === 'string') {
         newParams = JSON.parse(params);
     }

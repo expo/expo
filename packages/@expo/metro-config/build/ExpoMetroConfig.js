@@ -18,6 +18,13 @@ Object.defineProperty(exports, "MetroConfig", {
 });
 exports.getDefaultConfig = getDefaultConfig;
 exports.loadAsync = loadAsync;
+function _config() {
+  const data = require("@expo/config");
+  _config = function () {
+    return data;
+  };
+  return data;
+}
 function _paths() {
   const data = require("@expo/config/paths");
   _paths = function () {
@@ -25,9 +32,30 @@ function _paths() {
   };
   return data;
 }
+function runtimeEnv() {
+  const data = _interopRequireWildcard(require("@expo/env"));
+  runtimeEnv = function () {
+    return data;
+  };
+  return data;
+}
+function _jsonFile() {
+  const data = _interopRequireDefault(require("@expo/json-file"));
+  _jsonFile = function () {
+    return data;
+  };
+  return data;
+}
 function _chalk() {
   const data = _interopRequireDefault(require("chalk"));
   _chalk = function () {
+    return data;
+  };
+  return data;
+}
+function _metroCache() {
+  const data = require("metro-cache");
+  _metroCache = function () {
     return data;
   };
   return data;
@@ -60,9 +88,9 @@ function _customizeFrame() {
   };
   return data;
 }
-function _env() {
+function _env2() {
   const data = require("./env");
-  _env = function () {
+  _env2 = function () {
     return data;
   };
   return data;
@@ -88,9 +116,35 @@ function _rewriteRequestUrl() {
   };
   return data;
 }
+function _withExpoSerializers() {
+  const data = require("./serializer/withExpoSerializers");
+  _withExpoSerializers = function () {
+    return data;
+  };
+  return data;
+}
+function _postcss() {
+  const data = require("./transform-worker/postcss");
+  _postcss = function () {
+    return data;
+  };
+  return data;
+}
+function _metroConfig2() {
+  const data = require("./traveling/metro-config");
+  _metroConfig2 = function () {
+    return data;
+  };
+  return data;
+}
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 
+// @ts-expect-error: incorrectly typed
+
+const debug = require('debug')('expo:metro:config');
 function getProjectBabelConfigFile(projectRoot) {
   return _resolveFrom().default.silent(projectRoot, './babel.config.js') || _resolveFrom().default.silent(projectRoot, './.babelrc') || _resolveFrom().default.silent(projectRoot, './.babelrc.js');
 }
@@ -103,7 +157,11 @@ function getAssetPlugins(projectRoot) {
 }
 let hasWarnedAboutExotic = false;
 function getDefaultConfig(projectRoot, options = {}) {
-  const isExotic = options.mode === 'exotic' || _env().env.EXPO_USE_EXOTIC;
+  const {
+    getDefaultConfig: getDefaultMetroConfig,
+    mergeConfig
+  } = (0, _metroConfig2().importMetroConfig)(projectRoot);
+  const isExotic = options.mode === 'exotic' || _env2().env.EXPO_USE_EXOTIC;
   if (isExotic && !hasWarnedAboutExotic) {
     hasWarnedAboutExotic = true;
     console.log(_chalk().default.gray(`\u203A Unstable feature ${_chalk().default.bold`EXPO_USE_EXOTIC`} is enabled. Bundling may not work as expected, and is subject to breaking changes.`));
@@ -124,10 +182,17 @@ function getDefaultConfig(projectRoot, options = {}) {
     isModern: false
   };
   const sourceExts = (0, _paths().getBareExtensions)([], sourceExtsConfig);
-  if (isExotic) {
-    // Add support for cjs (without platform extensions).
-    sourceExts.push('cjs');
+
+  // Add support for cjs (without platform extensions).
+  sourceExts.push('cjs');
+  let sassVersion = null;
+  if (options.isCSSEnabled) {
+    sassVersion = getSassVersion(projectRoot);
+    // Enable SCSS by default so we can provide a better error message
+    // when sass isn't installed.
+    sourceExts.push('scss', 'sass', 'css');
   }
+  const envFiles = runtimeEnv().getFiles(process.env.NODE_ENV);
   const babelConfigPath = getProjectBabelConfigFile(projectRoot);
   const isCustomBabelConfigDefined = !!babelConfigPath;
   const resolverMainFields = [];
@@ -138,10 +203,11 @@ function getDefaultConfig(projectRoot, options = {}) {
     resolverMainFields.push('react-native');
   }
   resolverMainFields.push('browser', 'main');
+  const pkg = (0, _config().getPackageJson)(projectRoot);
   const watchFolders = (0, _getWatchFolders().getWatchFolders)(projectRoot);
   // TODO: nodeModulesPaths does not work with the new Node.js package.json exports API, this causes packages like uuid to fail. Disabling for now.
   const nodeModulesPaths = (0, _getModulesPaths().getModulesPaths)(projectRoot);
-  if (_env().env.EXPO_DEBUG) {
+  if (_env2().env.EXPO_DEBUG) {
     console.log();
     console.log(`Expo Metro config:`);
     try {
@@ -154,6 +220,8 @@ function getDefaultConfig(projectRoot, options = {}) {
     console.log(`- Watch Folders: ${watchFolders.join(', ')}`);
     console.log(`- Node Module Paths: ${nodeModulesPaths.join(', ')}`);
     console.log(`- Exotic: ${isExotic}`);
+    console.log(`- Env Files: ${envFiles}`);
+    console.log(`- Sass: ${sassVersion}`);
     console.log();
   }
   const {
@@ -161,11 +229,11 @@ function getDefaultConfig(projectRoot, options = {}) {
     // This prints a giant React logo which is less accessible to users on smaller terminals.
     reporter,
     ...metroDefaultValues
-  } = _metroConfig().getDefaultConfig.getDefaultValues(projectRoot);
+  } = getDefaultMetroConfig.getDefaultValues(projectRoot);
 
   // Merge in the default config from Metro here, even though loadConfig uses it as defaults.
   // This is a convenience for getDefaultConfig use in metro.config.js, e.g. to modify assetExts.
-  return (0, _metroConfig().mergeConfig)(metroDefaultValues, {
+  const metroConfig = mergeConfig(metroDefaultValues, {
     watchFolders,
     resolver: {
       resolverMainFields,
@@ -176,25 +244,44 @@ function getDefaultConfig(projectRoot, options = {}) {
       sourceExts,
       nodeModulesPaths
     },
+    watcher: {
+      // strip starting dot from env files
+      additionalExts: envFiles.map(file => file.replace(/^\./, ''))
+    },
     serializer: {
-      getModulesRunBeforeMainModule: () => [require.resolve(_path().default.join(reactNativePath, 'Libraries/Core/InitializeCore'))
-      // TODO: Bacon: load Expo side-effects
-      ],
+      getModulesRunBeforeMainModule: () => {
+        const preModules = [];
 
+        // We need to shift this to be the first module so web Fast Refresh works as expected.
+        // This will only be applied if the module is installed and imported somewhere in the bundle already.
+        const metroRuntime = _resolveFrom().default.silent(projectRoot, '@expo/metro-runtime');
+        if (metroRuntime) {
+          preModules.push(metroRuntime);
+        }
+        preModules.push(require.resolve(_path().default.join(reactNativePath, 'Libraries/Core/InitializeCore')));
+        return preModules;
+      },
       getPolyfills: () => require(_path().default.join(reactNativePath, 'rn-get-polyfills'))()
     },
     server: {
       rewriteRequestUrl: (0, _rewriteRequestUrl().getRewriteRequestUrl)(projectRoot),
-      port: Number(_env().env.RCT_METRO_PORT) || 8081,
+      port: Number(_env2().env.RCT_METRO_PORT) || 8081,
       // NOTE(EvanBacon): Moves the server root down to the monorepo root.
       // This enables proper monorepo support for web.
-      // @ts-expect-error: not on type
       unstable_serverRoot: (0, _getModulesPaths().getServerRoot)(projectRoot)
     },
     symbolicator: {
       customizeFrame: (0, _customizeFrame().getDefaultCustomizeFrame)()
     },
+    transformerPath: options.isCSSEnabled ?
+    // Custom worker that adds CSS support for Metro web.
+    require.resolve('./transform-worker/transform-worker') : metroDefaultValues.transformerPath,
     transformer: {
+      // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
+      // @ts-expect-error: not on type.
+      postcssHash: (0, _postcss().getPostcssConfigHash)(projectRoot),
+      browserslistHash: pkg.browserslist ? (0, _metroCache().stableHash)(JSON.stringify(pkg.browserslist)).toString('hex') : null,
+      sassVersion,
       // `require.context` support
       unstable_allowRequireContext: true,
       allowOptionalDependencies: true,
@@ -209,6 +296,7 @@ function getDefaultConfig(projectRoot, options = {}) {
       assetPlugins: getAssetPlugins(projectRoot)
     }
   });
+  return (0, _withExpoSerializers().withExpoSerializers)(metroConfig);
 }
 async function loadAsync(projectRoot, {
   reporter,
@@ -221,7 +309,10 @@ async function loadAsync(projectRoot, {
       reporter
     };
   }
-  return await (0, _metroConfig().loadConfig)({
+  const {
+    loadConfig
+  } = (0, _metroConfig2().importMetroConfig)(projectRoot);
+  return await loadConfig({
     cwd: projectRoot,
     projectRoot,
     ...metroOptions
@@ -231,6 +322,27 @@ async function loadAsync(projectRoot, {
 // re-export for use in config files.
 
 // re-export for legacy cases.
-const EXPO_DEBUG = _env().env.EXPO_DEBUG;
+const EXPO_DEBUG = _env2().env.EXPO_DEBUG;
 exports.EXPO_DEBUG = EXPO_DEBUG;
+function getSassVersion(projectRoot) {
+  const sassPkg = _resolveFrom().default.silent(projectRoot, 'sass');
+  if (!sassPkg) return null;
+  const sassPkgJson = findUpPackageJson(sassPkg);
+  if (!sassPkgJson) return null;
+  const pkg = _jsonFile().default.read(sassPkgJson);
+  debug('sass package.json:', sassPkgJson);
+  const sassVersion = pkg.version;
+  if (typeof sassVersion === 'string') {
+    return sassVersion;
+  }
+  return null;
+}
+function findUpPackageJson(cwd) {
+  if (['.', _path().default.sep].includes(cwd)) return null;
+  const found = _resolveFrom().default.silent(cwd, './package.json');
+  if (found) {
+    return found;
+  }
+  return findUpPackageJson(_path().default.dirname(cwd));
+}
 //# sourceMappingURL=ExpoMetroConfig.js.map

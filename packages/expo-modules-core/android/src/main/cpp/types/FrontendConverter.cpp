@@ -9,6 +9,7 @@
 #include "../JSIInteropModuleRegistry.h"
 #include "../JavaScriptObject.h"
 #include "../JavaScriptValue.h"
+#include "../JavaScriptFunction.h"
 #include "../javaclasses/Collections.h"
 
 #include "react/jni/ReadableNativeMap.h"
@@ -158,7 +159,8 @@ jobject TypedArrayFrontendConverter::convert(
   JSIInteropModuleRegistry *moduleRegistry,
   const jsi::Value &value
 ) const {
-  return JavaScriptTypedArray::newObjectCxxArgs(
+  return JavaScriptTypedArray::newInstance(
+    moduleRegistry,
     moduleRegistry->runtimeHolder->weak_from_this(),
     std::make_shared<jsi::Object>(value.getObject(rt))
   ).release();
@@ -177,7 +179,8 @@ jobject JavaScriptValueFrontendConverter::convert(
   JSIInteropModuleRegistry *moduleRegistry,
   const jsi::Value &value
 ) const {
-  return JavaScriptValue::newObjectCxxArgs(
+  return JavaScriptValue::newInstance(
+    moduleRegistry,
     moduleRegistry->runtimeHolder->weak_from_this(),
     // TODO(@lukmccall): make sure that copy here is necessary
     std::make_shared<jsi::Value>(jsi::Value(rt, value))
@@ -194,7 +197,8 @@ jobject JavaScriptObjectFrontendConverter::convert(
   JSIInteropModuleRegistry *moduleRegistry,
   const jsi::Value &value
 ) const {
-  return JavaScriptObject::newObjectCxxArgs(
+  return JavaScriptObject::newInstance(
+    moduleRegistry,
     moduleRegistry->runtimeHolder->weak_from_this(),
     std::make_shared<jsi::Object>(value.getObject(rt))
   ).release();
@@ -205,6 +209,26 @@ bool JavaScriptObjectFrontendConverter::canConvert(
   const jsi::Value &value
 ) const {
   return value.isObject();
+}
+
+jobject JavaScriptFunctionFrontendConverter::convert(
+  jsi::Runtime &rt,
+  JNIEnv *env,
+  JSIInteropModuleRegistry *moduleRegistry,
+  const jsi::Value &value
+) const {
+  return JavaScriptFunction::newInstance(
+    moduleRegistry,
+    moduleRegistry->runtimeHolder->weak_from_this(),
+    std::make_shared<jsi::Function>(value.getObject(rt).asFunction(rt))
+  ).release();
+}
+
+bool JavaScriptFunctionFrontendConverter::canConvert(
+  jsi::Runtime &rt,
+  const jsi::Value &value
+) const {
+  return value.isObject() && value.asObject(rt).isFunction(rt);
 }
 
 jobject UnknownFrontendConverter::convert(
@@ -450,8 +474,8 @@ bool ViewTagFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &va
 }
 
 jobject SharedObjectIdConverter::convert(jsi::Runtime &rt, JNIEnv *env,
-                                          JSIInteropModuleRegistry *moduleRegistry,
-                                          const jsi::Value &value) const {
+                                         JSIInteropModuleRegistry *moduleRegistry,
+                                         const jsi::Value &value) const {
   auto objectId = value.getObject(rt).getProperty(rt, "__expo_shared_object_id__");
   if (objectId.isNull()) {
     return nullptr;

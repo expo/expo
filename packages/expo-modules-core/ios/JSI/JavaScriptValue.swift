@@ -15,8 +15,18 @@ public enum JavaScriptValueKind: String {
   case object
 }
 
-public extension JavaScriptValue {
-  var kind: JavaScriptValueKind {
+/**
+ A protocol that JavaScript values, objects and functions can conform to.
+ */
+protocol AnyJavaScriptValue {
+  /**
+   Tries to convert a raw JavaScript value to the conforming type.
+   */
+  static func convert(from value: JavaScriptValue, appContext: AppContext) throws -> Self
+}
+
+extension JavaScriptValue: AnyJavaScriptValue, AnyArgument {
+  public var kind: JavaScriptValueKind {
     switch true {
     case isUndefined():
       return .undefined
@@ -86,11 +96,28 @@ public extension JavaScriptValue {
     throw JavaScriptValueConversionException((kind: kind, target: "Object"))
   }
 
+  func asFunction() throws -> RawJavaScriptFunction {
+    if isFunction() {
+      return getFunction()
+    }
+    throw JavaScriptValueConversionException((kind: kind, target: "Function"))
+  }
+
   func asTypedArray() throws -> JavaScriptTypedArray {
     if let typedArray = getTypedArray() {
       return typedArray
     }
     throw JavaScriptValueConversionException((kind: kind, target: "TypedArray"))
+  }
+
+  // MARK: - AnyJavaScriptValue
+
+  internal static func convert(from value: JavaScriptValue, appContext: AppContext) throws -> Self {
+    // It's already a `JavaScriptValue` so it should always pass through.
+    if let value = value as? Self {
+      return value
+    }
+    throw JavaScriptValueConversionException((kind: value.kind, target: String(describing: Self.self)))
   }
 }
 

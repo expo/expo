@@ -10,7 +10,6 @@
 #import "ABI48_0_0EXScopedFilePermissionModule.h"
 #import "ABI48_0_0EXScopedFontLoader.h"
 #import "ABI48_0_0EXScopedSecureStore.h"
-#import "ABI48_0_0EXScopedAmplitude.h"
 #import "ABI48_0_0EXScopedPermissions.h"
 #import "ABI48_0_0EXScopedSegment.h"
 #import "ABI48_0_0EXScopedLocalAuthentication.h"
@@ -104,11 +103,6 @@
 #if __has_include(<ABI48_0_0EXSecureStore/ABI48_0_0EXSecureStore.h>)
   ABI48_0_0EXScopedSecureStore *secureStoreModule = [[ABI48_0_0EXScopedSecureStore alloc] initWithScopeKey:scopeKey andConstantsBinding:constantsBinding];
   [moduleRegistry registerExportedModule:secureStoreModule];
-#endif
-
-#if __has_include(<ABI48_0_0EXAmplitude/ABI48_0_0EXAmplitude.h>)
-  ABI48_0_0EXScopedAmplitude *amplitudeModule = [[ABI48_0_0EXScopedAmplitude alloc] initWithScopeKey:scopeKey];
-  [moduleRegistry registerExportedModule:amplitudeModule];
 #endif
 
 #if __has_include(<ABI48_0_0ExpoModulesCore/ABI48_0_0EXPermissionsService.h>)

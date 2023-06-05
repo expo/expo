@@ -43,7 +43,7 @@ abstract class AnyFunction(
       .reversed()
       .indexOfFirst { !it.kType.isMarkedNullable }
     if (nonNullableArgIndex < 0) {
-      return@run desiredArgsTypes.size
+      return@run 0
     }
 
     return@run desiredArgsTypes.size - nonNullableArgIndex

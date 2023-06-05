@@ -2,6 +2,26 @@
 
 ## Unpublished
 
+### 📚 3rd party library updates
+
+- Updated `junit` to `4.13.2`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+- [Android] Load updates in background thread and prevent ANR from initial launch. ([#20273](https://github.com/expo/expo/pull/20273) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- [Android] Resolve up the project root when creating production manifest. ([#22044](https://github.com/expo/expo/pull/22044) by [@EvanBacon](https://github.com/EvanBacon))
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- Fixed broken `create-manifest-android.gradle` on Android Gradle version 8. ([#22538](https://github.com/expo/expo/pull/22538) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+## 0.17.0 — 2023-05-08
+
 ### 🛠 Breaking changes
 
 - Updated **setup documentation** to reflect that setup should include changing the entry from `index` to `.expo/.virtual-metro-entry` which is only available in SDK 49 `@expo/metro-config`. ([#21643](https://github.com/expo/expo/pull/21643) by [@EvanBacon](https://github.com/EvanBacon))
@@ -12,6 +32,9 @@
 
 - Add rollback to embedded update directive. ([#21007](https://github.com/expo/expo/pull/21007), [#21652](https://github.com/expo/expo/pull/21652) by [@wschurman](https://github.com/wschurman))
 - Add support for extra params. ([#21837](https://github.com/expo/expo/pull/21837) by [@wschurman](https://github.com/wschurman))
+- New checkAutomatically constant. ([#22137](https://github.com/expo/expo/pull/22137) by [@douglowder](https://github.com/douglowder))
+- Support 204 status for no-op responses. ([#22348](https://github.com/expo/expo/pull/22348) by [@wschurman](https://github.com/wschurman))
+- Support new SDK version field in new manifests. ([#22356](https://github.com/expo/expo/pull/22356) by [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 
@@ -19,6 +42,12 @@
 - iOS: Fix legacy update bundled asset parsing. ([#21691](https://github.com/expo/expo/pull/21691) by [@wschurman](https://github.com/wschurman))
 - iOS: Fix config plist overriding. ([#21702](https://github.com/expo/expo/pull/21702) by [@wschurman](https://github.com/wschurman))
 - Align properties for different UpdateEvent types. ([#21818](https://github.com/expo/expo/pull/21818) by [@douglowder](https://github.com/douglowder))
+- Improvement in stability of useUpdateEvents() hook. ([#21880](https://github.com/expo/expo/pull/21880) by [@douglowder](https://github.com/douglowder))
+- Copy native events before transforming them. ([#22162](https://github.com/expo/expo/pull/22162) by [@douglowder](https://github.com/douglowder))
+- Fix empty body no-op multipart response. ([#22227](https://github.com/expo/expo/pull/22227) by [@wschurman](https://github.com/wschurman))
+- Put extra data mutation in transaction. ([#22252](https://github.com/expo/expo/pull/22252) by [@wschurman](https://github.com/wschurman))
+- [iOS] fix bizarre bug when downloading update twice. ([#22355](https://github.com/expo/expo/pull/22355) by [@douglowder](https://github.com/douglowder))
+- Fix rollback to embedded logic. ([#22433](https://github.com/expo/expo/pull/22433), [#22434](https://github.com/expo/expo/pull/22434) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 
@@ -37,6 +66,8 @@
 - Fix E2E after Swift conversion. ([#21592](https://github.com/expo/expo/pull/21592) by [@douglowder](https://github.com/douglowder))
 - Fix iOS native debug after Swift conversion. ([#21602](https://github.com/expo/expo/pull/21602) by [@douglowder](https://github.com/douglowder))
 - Fix compilation errors and enable modules after Swift conversion. ([#21621](https://github.com/expo/expo/pull/21621) by [@wschurman](https://github.com/wschurman), [@douglowder](https://github.com/douglowder))
+- E2E tests for JS API. ([#22167](https://github.com/expo/expo/pull/22167) by [@douglowder](https://github.com/douglowder))
+- Android: Switch from deprecated `toLowerCase` to `lowercase` function ([#22225](https://github.com/expo/expo/pull/22225) by [@hbiede](https://github.com/hbiede))
 
 ## 0.16.4 - 2023-04-03
 

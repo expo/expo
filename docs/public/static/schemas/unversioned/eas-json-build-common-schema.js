@@ -50,7 +50,7 @@ export default [
   },
   {
     name: 'resourceClass',
-    enum: ['default', 'medium'],
+    enum: ['default', 'medium', 'large'],
     description: [
       'The resource class that will be used to run this build.',
       'To see mapping for `default` and `medium` resource classes for each platform, see [Android-specific resource class field](eas-json/#resourceclass-1) and [iOS-specific resource class field](eas-json/#resourceclass-2) documentation.',
@@ -124,17 +124,10 @@ export default [
         description: ['Cache key. You can invalidate the cache by changing this value.'],
       },
       {
-        name: 'customPaths',
+        name: 'paths',
         type: 'array',
         description: [
           'List of the paths that will be saved after a successful build and restored at the beginning of the next one. Both absolute and relative paths are supported, where relative paths are resolved from the directory with `eas.json`.',
-        ],
-      },
-      {
-        name: 'cacheDefaultPaths',
-        type: 'boolean',
-        description: [
-          'Specifies whether to cache the recommended set of files, currently only Podfile.lock is cached by default for iOS build and nothing is cached for Android. Defaults to true.',
         ],
       },
     ],

@@ -6,7 +6,7 @@ apply plugin: 'maven-publish'
 apply plugin: "de.undercouch.download"
 
 group = 'host.exp.exponent'
-version = '1.2.2'
+version = '1.3.2'
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -126,19 +126,11 @@ if (USE_HERMES) {
 
 def isNewArchitectureEnabled = findProperty("newArchEnabled") == "true"
 
-// Creating sources with comments
-task androidSourcesJar(type: Jar) {
-  classifier = 'sources'
-  from android.sourceSets.main.java.srcDirs
-}
-
 afterEvaluate {
   publishing {
     publications {
       release(MavenPublication) {
         from components.release
-        // Add additional sourcesJar to artifacts
-        artifact(androidSourcesJar)
       }
     }
     repositories {
@@ -168,12 +160,13 @@ android {
     jvmTarget = JavaVersion.VERSION_11.majorVersion
   }
 
+  namespace "expo.modules"
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 33)
     consumerProguardFiles 'proguard-rules.pro'
     versionCode 1
-    versionName "1.2.2"
+    versionName "1.3.2"
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled.toString()
 
     testInstrumentationRunner "expo.modules.TestRunner"
@@ -263,6 +256,11 @@ android {
       }
     }
   }
+  publishing {
+    singleVariant("release") {
+      withSourcesJar()
+    }
+  }
 }
 
 
@@ -284,8 +282,8 @@ dependencies {
    * We're enforcing the most up-to-date versions of the dependencies here that are used in subclassing chain for ReactActivity.
    */
   implementation "androidx.appcompat:appcompat:1.4.1"
-  implementation "androidx.activity:activity-ktx:1.4.0" // androidx.appcompat:appcompat:1.4.1 depends on version 1.2.3, so we enforce higher one here
-  implementation "androidx.fragment:fragment-ktx:1.4.1" // androidx.appcomapt:appcompat:1.4.1 depends on version 1.3.4, so we enforce higher one here
+  implementation "androidx.activity:activity-ktx:1.7.1" // androidx.appcompat:appcompat:1.4.1 depends on version 1.2.3, so we enforce higher one here
+  implementation "androidx.fragment:fragment-ktx:1.5.7" // androidx.appcomapt:appcompat:1.4.1 depends on version 1.3.4, so we enforce higher one here
 
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'
@@ -293,11 +291,12 @@ dependencies {
   compileOnly 'com.facebook.fbjni:fbjni:0.3.0'
 
   testImplementation 'androidx.test:core:1.4.0'
-  testImplementation 'junit:junit:4.13.1'
+  testImplementation 'junit:junit:4.13.2'
   testImplementation 'io.mockk:mockk:1.12.3'
   testImplementation "com.google.truth:truth:1.1.2"
-  testImplementation "org.robolectric:robolectric:4.5.1"
+  testImplementation "org.robolectric:robolectric:4.10"
   testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
+  testImplementation "org.json:json:20230227"
 
   androidTestImplementation 'androidx.test:runner:1.4.0'
   androidTestImplementation 'androidx.test:core:1.4.0'

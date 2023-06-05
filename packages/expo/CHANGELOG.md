@@ -2,6 +2,33 @@
 
 ## Unpublished
 
+### 📚 3rd party library updates
+
+- Updated `junit` to `4.13.2`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+- Added `ReactActivityHandler.getDelayLoadAppHandler` interface on Android. ([#20273](https://github.com/expo/expo/pull/20273) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- Fixed build error when using Expo CLI on bare React Native projects without installing Expo Modules. ([#22649](https://github.com/expo/expo/pull/22649) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+## 49.0.0-alpha.3 — 2023-05-09
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-alpha.2 — 2023-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-alpha.1 — 2023-05-08
+
 ### 🛠 Breaking changes
 
 - drop `EXPO_USE_LOCAL_CLI` in favor of using `expo` for the local CLI and `expo-cli` for the global CLI. ([#21388](https://github.com/expo/expo/pull/21388) by [@EvanBacon](https://github.com/EvanBacon))
@@ -12,11 +39,31 @@
 - Added internal `export:embed` command for use in Xcode and Android Studio builds. ([#21396](https://github.com/expo/expo/pull/21396) by [@EvanBacon](https://github.com/EvanBacon))
 - Export TypeScript types for `expo/metro-config`. ([#21898](https://github.com/expo/expo/pull/21898) by [@EvanBacon](https://github.com/EvanBacon))
 
-### 🐛 Bug fixes
-
 ### 💡 Others
 
+- Warn on use of Constants.manifest. ([#22247](https://github.com/expo/expo/pull/22247) by [@wschurman](https://github.com/wschurman))
+
+## 48.0.15 — 2023-04-26
+
+_This version does not introduce any user-facing changes._
+
+## 48.0.14 — 2023-04-26
+
 ### 📚 3rd party library updates
+
+- Update `react-native` to 0.71.7. ([#22253](https://github.com/expo/expo/pull/22253) by [@kudo](https://github.com/kudo))
+
+## 48.0.13 — 2023-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 48.0.12 — 2023-04-20
+
+_This version does not introduce any user-facing changes._
+
+## 48.0.11 — 2023-04-13
+
+_This version does not introduce any user-facing changes._
 
 ## 48.0.10 - 2023-04-03
 

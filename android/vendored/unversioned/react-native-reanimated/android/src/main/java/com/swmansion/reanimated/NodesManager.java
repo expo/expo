@@ -2,12 +2,9 @@ package com.swmansion.reanimated;
 
 import static java.lang.Float.NaN;
 
-import android.util.SparseArray;
 import android.view.View;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.GuardedRunnable;
-import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
@@ -30,30 +27,8 @@ import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcherListener;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.swmansion.reanimated.layoutReanimation.AnimationsManager;
-import com.swmansion.reanimated.nodes.AlwaysNode;
-import com.swmansion.reanimated.nodes.BezierNode;
-import com.swmansion.reanimated.nodes.BlockNode;
-import com.swmansion.reanimated.nodes.CallFuncNode;
-import com.swmansion.reanimated.nodes.ClockNode;
-import com.swmansion.reanimated.nodes.ClockOpNode;
-import com.swmansion.reanimated.nodes.ConcatNode;
-import com.swmansion.reanimated.nodes.CondNode;
-import com.swmansion.reanimated.nodes.DebugNode;
-import com.swmansion.reanimated.nodes.EventNode;
-import com.swmansion.reanimated.nodes.FunctionNode;
-import com.swmansion.reanimated.nodes.JSCallNode;
-import com.swmansion.reanimated.nodes.Node;
-import com.swmansion.reanimated.nodes.NoopNode;
-import com.swmansion.reanimated.nodes.OperatorNode;
-import com.swmansion.reanimated.nodes.ParamNode;
-import com.swmansion.reanimated.nodes.PropsNode;
-import com.swmansion.reanimated.nodes.SetNode;
-import com.swmansion.reanimated.nodes.StyleNode;
-import com.swmansion.reanimated.nodes.TransformNode;
-import com.swmansion.reanimated.nodes.ValueNode;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -61,12 +36,11 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nullable;
 
 public class NodesManager implements EventDispatcherListener {
-
-  private static final Double ZERO = Double.valueOf(0);
 
   public void scrollTo(int viewTag, double x, double y, boolean animated) {
     View view;
@@ -94,28 +68,23 @@ public class NodesManager implements EventDispatcherListener {
     void onAnimationFrame(double timestampMs);
   }
 
-  private AnimationsManager mAnimationManager = null;
-  private final SparseArray<Node> mAnimatedNodes = new SparseArray<>();
-  private final Map<String, EventNode> mEventMapping = new HashMap<>();
+  private AnimationsManager mAnimationManager;
   private final UIImplementation mUIImplementation;
   private final DeviceEventManagerModule.RCTDeviceEventEmitter mEventEmitter;
   private final ReactChoreographer mReactChoreographer;
   private final GuardedFrameCallback mChoreographerCallback;
   protected final UIManagerModule.CustomEventNamesResolver mCustomEventNamesResolver;
   private final AtomicBoolean mCallbackPosted = new AtomicBoolean();
-  private final NoopNode mNoopNode;
   private final ReactContext mContext;
   private final UIManagerModule mUIManager;
-
+  private ReactApplicationContext mReactApplicationContext;
   private RCTEventEmitter mCustomEventHandler;
   private List<OnAnimationFrame> mFrameCallbacks = new ArrayList<>();
   private ConcurrentLinkedQueue<CopiedEvent> mEventQueue = new ConcurrentLinkedQueue<>();
-  private boolean mWantRunUpdates;
-
   public double currentFrameTimeMs;
-  public final UpdateContext updateContext;
   public Set<String> uiProps = Collections.emptySet();
   public Set<String> nativeProps = Collections.emptySet();
+  private ReaCompatibility compatibility;
 
   public NativeProxy getNativeProxy() {
     return mNativeProxy;
@@ -139,8 +108,11 @@ public class NodesManager implements EventDispatcherListener {
   }
 
   public void initWithContext(ReactApplicationContext reactApplicationContext) {
+    mReactApplicationContext = reactApplicationContext;
     mNativeProxy = new NativeProxy(reactApplicationContext);
     mAnimationManager.setScheduler(getNativeProxy().getScheduler());
+    compatibility = new ReaCompatibility(reactApplicationContext);
+    compatibility.registerFabricEventListener(this);
   }
 
   private final class NativeUpdateOperation {
@@ -159,7 +131,6 @@ public class NodesManager implements EventDispatcherListener {
   public NodesManager(ReactContext context) {
     mContext = context;
     mUIManager = context.getNativeModule(UIManagerModule.class);
-    updateContext = new UpdateContext();
     mUIImplementation = mUIManager.getUIImplementation();
     mCustomEventNamesResolver = mUIManager.getDirectEventNamesResolver();
     mEventEmitter = context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
@@ -173,8 +144,6 @@ public class NodesManager implements EventDispatcherListener {
           }
         };
 
-    mNoopNode = new NoopNode(this);
-
     // We register as event listener at the end, because we pass `this` and we haven't finished
     // contructing an object yet.
     // This lead to a crash described in
@@ -185,7 +154,7 @@ public class NodesManager implements EventDispatcherListener {
     // registration, creating race condition
     mUIManager.getEventDispatcher().addListener(this);
 
-    mAnimationManager = new AnimationsManager(mContext, mUIImplementation, mUIManager);
+    mAnimationManager = new AnimationsManager(mContext, mUIManager);
   }
 
   public void onHostPause() {
@@ -193,6 +162,10 @@ public class NodesManager implements EventDispatcherListener {
       stopUpdatingOnAnimationFrame();
       mCallbackPosted.set(true);
     }
+  }
+
+  public boolean isAnimationRunning() {
+    return mCallbackPosted.get();
   }
 
   public void onHostResume() {
@@ -215,8 +188,10 @@ public class NodesManager implements EventDispatcherListener {
     }
   }
 
-  private void performOperations() {
-    if (!mOperationsInBatch.isEmpty()) {
+  public void performOperations() {
+    if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+      mNativeProxy.performOperations();
+    } else if (!mOperationsInBatch.isEmpty()) {
       final Queue<NativeUpdateOperation> copiedOperationsQueue = mOperationsInBatch;
       mOperationsInBatch = new LinkedList<>();
       final boolean trySynchronously = mTryRunBatchUpdatesSynchronously;
@@ -248,13 +223,11 @@ public class NodesManager implements EventDispatcherListener {
             }
           });
       if (trySynchronously) {
-        while (true) {
-          try {
-            semaphore.acquire();
-            break;
-          } catch (InterruptedException e) {
-            // noop
-          }
+        try {
+          semaphore.tryAcquire(16, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+          // if the thread is interruped we just continue and let the layout update happen
+          // asynchronously
         }
       }
     }
@@ -276,165 +249,14 @@ public class NodesManager implements EventDispatcherListener {
       }
     }
 
-    if (mWantRunUpdates) {
-      Node.runUpdates(updateContext);
-    }
     performOperations();
 
     mCallbackPosted.set(false);
-    mWantRunUpdates = false;
 
     if (!mFrameCallbacks.isEmpty() || !mEventQueue.isEmpty()) {
       // enqueue next frame
       startUpdatingOnAnimationFrame();
     }
-  }
-
-  /**
-   * Null-safe way of getting node's value. If node is not present we return 0. This also matches
-   * iOS behavior when the app won't just crash.
-   */
-  public Object getNodeValue(int nodeID) {
-    Node node = mAnimatedNodes.get(nodeID);
-    if (node != null) {
-      return node.value();
-    }
-    return ZERO;
-  }
-
-  /**
-   * Null-safe way of getting node reference. This method always returns non-null instance. If the
-   * node is not present we try to return a "no-op" node that allows for "set" calls and always
-   * returns 0 as a value.
-   */
-  public <T extends Node> T findNodeById(int id, Class<T> type) {
-    Node node = mAnimatedNodes.get(id);
-    if (node == null) {
-      if (type == Node.class || type == ValueNode.class) {
-        return (T) mNoopNode;
-      }
-      throw new IllegalArgumentException(
-          "Requested node with id " + id + " of type " + type + " cannot be found");
-    }
-    if (type.isInstance(node)) {
-      return (T) node;
-    }
-    throw new IllegalArgumentException(
-        "Node with id "
-            + id
-            + " is of incompatible type "
-            + node.getClass()
-            + ", requested type was "
-            + type);
-  }
-
-  public void createNode(int nodeID, ReadableMap config) {
-    if (mAnimatedNodes.get(nodeID) != null) {
-      throw new JSApplicationIllegalArgumentException(
-          "Animated node with ID " + nodeID + " already exists");
-    }
-    String type = config.getString("type");
-    final Node node;
-    if ("props".equals(type)) {
-      node = new PropsNode(nodeID, config, this, mUIImplementation);
-    } else if ("style".equals(type)) {
-      node = new StyleNode(nodeID, config, this);
-    } else if ("transform".equals(type)) {
-      node = new TransformNode(nodeID, config, this);
-    } else if ("value".equals(type)) {
-      node = new ValueNode(nodeID, config, this);
-    } else if ("block".equals(type)) {
-      node = new BlockNode(nodeID, config, this);
-    } else if ("cond".equals(type)) {
-      node = new CondNode(nodeID, config, this);
-    } else if ("op".equals(type)) {
-      node = new OperatorNode(nodeID, config, this);
-    } else if ("set".equals(type)) {
-      node = new SetNode(nodeID, config, this);
-    } else if ("debug".equals(type)) {
-      node = new DebugNode(nodeID, config, this);
-    } else if ("clock".equals(type)) {
-      node = new ClockNode(nodeID, config, this);
-    } else if ("clockStart".equals(type)) {
-      node = new ClockOpNode.ClockStartNode(nodeID, config, this);
-    } else if ("clockStop".equals(type)) {
-      node = new ClockOpNode.ClockStopNode(nodeID, config, this);
-    } else if ("clockTest".equals(type)) {
-      node = new ClockOpNode.ClockTestNode(nodeID, config, this);
-    } else if ("call".equals(type)) {
-      node = new JSCallNode(nodeID, config, this);
-    } else if ("bezier".equals(type)) {
-      node = new BezierNode(nodeID, config, this);
-    } else if ("event".equals(type)) {
-      node = new EventNode(nodeID, config, this);
-    } else if ("always".equals(type)) {
-      node = new AlwaysNode(nodeID, config, this);
-    } else if ("concat".equals(type)) {
-      node = new ConcatNode(nodeID, config, this);
-    } else if ("param".equals(type)) {
-      node = new ParamNode(nodeID, config, this);
-    } else if ("func".equals(type)) {
-      node = new FunctionNode(nodeID, config, this);
-    } else if ("callfunc".equals(type)) {
-      node = new CallFuncNode(nodeID, config, this);
-    } else {
-      throw new JSApplicationIllegalArgumentException("Unsupported node type: " + type);
-    }
-    mAnimatedNodes.put(nodeID, node);
-  }
-
-  public void dropNode(int tag) {
-    Node node = mAnimatedNodes.get(tag);
-    if (node != null) {
-      node.onDrop();
-    }
-    mAnimatedNodes.remove(tag);
-  }
-
-  public void connectNodes(int parentID, int childID) {
-    Node parentNode = mAnimatedNodes.get(parentID);
-    Node childNode = mAnimatedNodes.get(childID);
-    if (childNode == null) {
-      throw new JSApplicationIllegalArgumentException(
-          "Animated node with ID " + childID + " does not exists");
-    }
-    parentNode.addChild(childNode);
-  }
-
-  public void disconnectNodes(int parentID, int childID) {
-    Node parentNode = mAnimatedNodes.get(parentID);
-    Node childNode = mAnimatedNodes.get(childID);
-    if (childNode == null) {
-      throw new JSApplicationIllegalArgumentException(
-          "Animated node with ID " + childID + " does not exists");
-    }
-    parentNode.removeChild(childNode);
-  }
-
-  public void connectNodeToView(int nodeID, int viewTag) {
-    Node node = mAnimatedNodes.get(nodeID);
-    if (node == null) {
-      throw new JSApplicationIllegalArgumentException(
-          "Animated node with ID " + nodeID + " does not exists");
-    }
-    if (!(node instanceof PropsNode)) {
-      throw new JSApplicationIllegalArgumentException(
-          "Animated node connected to view should be" + "of type " + PropsNode.class.getName());
-    }
-    ((PropsNode) node).connectToView(viewTag);
-  }
-
-  public void disconnectNodeFromView(int nodeID, int viewTag) {
-    Node node = mAnimatedNodes.get(nodeID);
-    if (node == null) {
-      throw new JSApplicationIllegalArgumentException(
-          "Animated node with ID " + nodeID + " does not exists");
-    }
-    if (!(node instanceof PropsNode)) {
-      throw new JSApplicationIllegalArgumentException(
-          "Animated node connected to view should be" + "of type " + PropsNode.class.getName());
-    }
-    ((PropsNode) node).disconnectFromView(viewTag);
   }
 
   public void enqueueUpdateViewOnNativeThread(
@@ -445,39 +267,9 @@ public class NodesManager implements EventDispatcherListener {
     mOperationsInBatch.add(new NativeUpdateOperation(viewTag, nativeProps));
   }
 
-  public void attachEvent(int viewTag, String eventName, int eventNodeID) {
-    String key = viewTag + eventName;
-
-    EventNode node = (EventNode) mAnimatedNodes.get(eventNodeID);
-    if (node == null) {
-      throw new JSApplicationIllegalArgumentException(
-          "Event node " + eventNodeID + " does not exists");
-    }
-    if (mEventMapping.containsKey(key)) {
-      throw new JSApplicationIllegalArgumentException(
-          "Event handler already set for the given view and event type");
-    }
-
-    mEventMapping.put(key, node);
-  }
-
-  public void detachEvent(int viewTag, String eventName, int eventNodeID) {
-    String key = viewTag + eventName;
-    mEventMapping.remove(key);
-  }
-
   public void configureProps(Set<String> uiPropsSet, Set<String> nativePropsSet) {
     uiProps = uiPropsSet;
     nativeProps = nativePropsSet;
-  }
-
-  public void getValue(int nodeID, Callback callback) {
-    callback.invoke(mAnimatedNodes.get(nodeID).value());
-  }
-
-  public void postRunUpdatesAfterAnimation() {
-    mWantRunUpdates = true;
-    startUpdatingOnAnimationFrame();
   }
 
   public void postOnAnimation(OnAnimationFrame onAnimationFrame) {
@@ -513,32 +305,14 @@ public class NodesManager implements EventDispatcherListener {
     // If the event has a different name in native, convert it to it's JS name.
     String eventName = mCustomEventNamesResolver.resolveCustomEventName(event.getEventName());
     int viewTag = event.getViewTag();
-    String key = viewTag + eventName;
-
     if (mCustomEventHandler != null) {
       event.dispatch(mCustomEventHandler);
-    }
-
-    if (!mEventMapping.isEmpty()) {
-      EventNode node = mEventMapping.get(key);
-      if (node != null) {
-        event.dispatch(node);
-      }
     }
   }
 
   private void handleEvent(int targetTag, String eventName, @Nullable WritableMap event) {
     if (mCustomEventHandler != null) {
       mCustomEventHandler.receiveEvent(targetTag, eventName, event);
-    }
-
-    String key = targetTag + eventName;
-
-    if (!mEventMapping.isEmpty()) {
-      EventNode node = mEventMapping.get(key);
-      if (node != null) {
-        node.receiveEvent(targetTag, eventName, event);
-      }
     }
   }
 
@@ -552,13 +326,6 @@ public class NodesManager implements EventDispatcherListener {
 
   public void sendEvent(String name, WritableMap body) {
     mEventEmitter.emit(name, body);
-  }
-
-  public void setValue(int nodeID, Double newValue) {
-    Node node = mAnimatedNodes.get(nodeID);
-    if (node != null) {
-      ((ValueNode) node).setValue(newValue);
-    }
   }
 
   public void updateProps(int viewTag, Map<String, Object> props) {
@@ -600,6 +367,10 @@ public class NodesManager implements EventDispatcherListener {
         sendEvent("onReanimatedPropsChange", evt);
       }
     }
+  }
+
+  public void synchronouslyUpdateUIProps(int viewTag, ReadableMap uiProps) {
+    compatibility.synchronouslyUpdateUIProps(viewTag, uiProps);
   }
 
   public String obtainProp(int viewTag, String propName) {

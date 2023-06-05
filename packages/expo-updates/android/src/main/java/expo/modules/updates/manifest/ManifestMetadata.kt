@@ -61,20 +61,23 @@ object ManifestMetadata {
     key: String,
     value: String?
   ) {
-    val extraParamsToWrite = (getExtraParams(database, configuration)?.toMutableMap() ?: mutableMapOf()).also {
-      if (value != null) {
-        it[key] = value
-      } else {
-        it.remove(key)
-      }
-    }.toMap()
+    // this is done within a transaction to ensure consistency
+    database.jsonDataDao()!!.updateJSONStringForKey(EXTRA_PARAMS_KEY, configuration.scopeKey!!) { previousValue ->
+      val jsonObject = previousValue?.let { JSONObject(it) }
+      val extraParamsToWrite = (jsonObject?.asStringStringMap()?.toMutableMap() ?: mutableMapOf()).also {
+        if (value != null) {
+          it[key] = value
+        } else {
+          it.remove(key)
+        }
+      }.toMap()
 
-    // ensure that this can be serialized to a structured-header dictionary
-    // this will throw for invalid values
-    Dictionary.valueOf(extraParamsToWrite.mapValues { elem -> StringItem.valueOf(elem.value) })
+      // ensure that this can be serialized to a structured-header dictionary
+      // this will throw for invalid values
+      Dictionary.valueOf(extraParamsToWrite.mapValues { elem -> StringItem.valueOf(elem.value) })
 
-    val extraClientParamsJSONObject = JSONObject(extraParamsToWrite)
-    database.jsonDataDao()!!.setMultipleFields(mapOf(EXTRA_PARAMS_KEY to extraClientParamsJSONObject.toString()), configuration.scopeKey!!)
+      JSONObject(extraParamsToWrite).toString()
+    }
   }
 
   fun saveMetadata(

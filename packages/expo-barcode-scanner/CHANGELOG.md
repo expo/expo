@@ -8,9 +8,16 @@
 
 ### 🐛 Bug fixes
 
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 - Update barcode scanner library for Android. ([#22107](https://github.com/expo/expo/pull/22107) by [@toshiyuki-suzuki-yukashikado](https://github.com/toshiyuki-suzuki-yukashikado))
+
+## 12.4.0 — 2023-05-08
+
+_This version does not introduce any user-facing changes._
+
 
 ## 12.3.2 - 2023-03-03
 

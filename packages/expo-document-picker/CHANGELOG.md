@@ -6,12 +6,24 @@
 
 ### 🎉 New features
 
-- Migrated to Expo Modules API. ([#20336](https://github.com/expo/expo/pull/20336) by [@alanhughes](https://github.com/alanjhughes))
-- Added support for picking multiple documents. ([#20365](https://github.com/expo/expo/pull/20365) by [@alanhughes](https://github.com/alanjhughes))
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+## 11.4.0 — 2023-05-08
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- Export all types from the module. ([#22172](https://github.com/expo/expo/pull/22172) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 11.3.0 — 2023-04-14
+
+### 🎉 New features
+
+- Migrated to Expo Modules API. ([#20336](https://github.com/expo/expo/pull/20336) by [@alanhughes](https://github.com/alanjhughes))
+- Added support for picking multiple documents. ([#20365](https://github.com/expo/expo/pull/20365) by [@alanhughes](https://github.com/alanjhughes))
 
 ## 11.2.2 - 2023-03-28
 

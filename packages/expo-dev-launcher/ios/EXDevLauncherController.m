@@ -13,9 +13,7 @@
 #import "EXDevLauncherManifestParser.h"
 #import "EXDevLauncherLoadingView.h"
 #import "EXDevLauncherRCTDevSettings.h"
-#import "EXDevLauncherInternal.h"
 #import "EXDevLauncherUpdatesHelper.h"
-#import "EXDevLauncherAuth.h"
 #import "RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h"
 
 #if __has_include(<EXDevLauncher/EXDevLauncher-Swift.h>)
@@ -45,12 +43,12 @@
 @property (nonatomic, strong) NSDictionary *launchOptions;
 @property (nonatomic, strong) NSURL *sourceUrl;
 @property (nonatomic, assign) BOOL shouldPreferUpdatesInterfaceSourceUrl;
-@property (nonatomic, strong) EXDevLauncherRecentlyOpenedAppsRegistry *recentlyOpenedAppsRegistry;
 @property (nonatomic, strong) EXManifestsManifest *manifest;
 @property (nonatomic, strong) NSURL *manifestURL;
 @property (nonatomic, strong) NSURL *possibleManifestURL;
 @property (nonatomic, strong) EXDevLauncherErrorManager *errorManager;
 @property (nonatomic, strong) EXDevLauncherInstallationIDHelper *installationIDHelper;
+@property (nonatomic, strong) EXDevLauncherNetworkInterceptor *networkInterceptor;
 @property (nonatomic, assign) BOOL isStarted;
 
 @end
@@ -76,8 +74,8 @@
     self.pendingDeepLinkRegistry = [EXDevLauncherPendingDeepLinkRegistry new];
     self.errorManager = [[EXDevLauncherErrorManager alloc] initWithController:self];
     self.installationIDHelper = [EXDevLauncherInstallationIDHelper new];
+    self.networkInterceptor = [EXDevLauncherNetworkInterceptor new];
     self.shouldPreferUpdatesInterfaceSourceUrl = NO;
-    [EXDevLauncherNetworkLogger.shared enable];
   }
   return self;
 }
@@ -85,15 +83,13 @@
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
 {
 
-  NSMutableArray *modules = [[DevMenuVendoredModulesUtils vendoredModules:bridge] mutableCopy];
+  NSMutableArray<id<RCTBridgeModule>> *modules = [NSMutableArray new];
 
   [modules addObject:[RCTDevMenu new]];
 #ifndef EX_DEV_LAUNCHER_URL
   [modules addObject:[EXDevLauncherRCTDevSettings new]];
 #endif
   [modules addObject:[EXDevLauncherLoadingView new]];
-  [modules addObject:[EXDevLauncherInternal new]];
-  [modules addObject:[EXDevLauncherAuth new]];
 
   return modules;
 }
@@ -177,10 +173,6 @@
   return [[NSBundle bundleWithURL:bundleURL] URLForResource:@"main" withExtension:@"jsbundle"];
 }
 
-- (NSDictionary *)recentlyOpenedApps
-{
-  return [_recentlyOpenedAppsRegistry recentlyOpenedApps];
-}
 
 - (void)clearRecentlyOpenedApps
 {

@@ -34,7 +34,7 @@ Next, this is what happens when EAS Build picks up your request:
 1. Run the `eas-build-pre-install` script from **package.json** if defined.
 1. Run `npm install` in the project root (or `yarn install` if `yarn.lock` exists).
 1. Run `npx expo-doctor` to diagnose potential issues with your project configuration.
-1. Additional step for **managed** projects: Run `expo prebuild` to convert the project to a bare one. This step will use the versioned Expo CLI for projects that use Expo SDK 46+. In SDK 48 and lower, you can still choose to use the (deprecated) global Expo CLI installation by setting `EXPO_USE_LOCAL_CLI=0` in the build profile.
+1. Additional step for **managed** projects: Run `npx expo prebuild` to convert the project to a bare one. This step will use the versioned Expo CLI for projects that use Expo SDK 46+. In SDK 48 and lower, you can still choose to use the (deprecated) global Expo CLI installation by setting `EXPO_USE_LOCAL_CLI=0` in the build profile.
 1. Restore a previously saved cache identified by the `cache.key` value in the [build profile](/build/eas-json).
 1. Run the `eas-build-post-install` script from **package.json** if defined.
 1. Restore the keystore (if it was included in the build request).
@@ -69,7 +69,7 @@ Your application's keystore should be kept private. **Under no circumstances sho
 Your app binary needs to be signed with a keystore. Since we're building the project on a remote server, we had to come up with a way to provide Gradle with credentials which aren't, for security reasons, checked in to your repository. In one of the remote steps, we inject the signing configuration into your **build.gradle**. EAS Build creates the **android/app/eas-build.gradle** file with the following contents:
 
 {/* prettier-ignore */}
-```groovy
+```groovy android/app/eas-build.gradle
 // Build integration with EAS
 
 import java.nio.file.Paths
@@ -128,7 +128,7 @@ The most important part is the `release` signing config. It's configured to read
 
 This file is imported in **android/app/build.gradle** like this:
 
-```groovy
+```groovy android/app/build.gradle
 // ...
 
 apply from: "./eas-build.gradle"

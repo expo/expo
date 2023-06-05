@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '14.1.1'
+version = '14.2.0'
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -35,19 +35,11 @@ buildscript {
   }
 }
 
-// Creating sources with comments
-task androidSourcesJar(type: Jar) {
-  classifier = 'sources'
-  from android.sourceSets.main.java.srcDirs
-}
-
 afterEvaluate {
   publishing {
     publications {
       release(MavenPublication) {
         from components.release
-        // Add additional sourcesJar to artifacts
-        artifact(androidSourcesJar)
       }
     }
     repositories {
@@ -70,21 +62,27 @@ android {
     jvmTarget = JavaVersion.VERSION_11.majorVersion
   }
 
+  namespace "expo.modules.imagepicker"
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 22
-    versionName "14.1.1"
+    versionName "14.2.0"
   }
   lintOptions {
     abortOnError false
+  }
+  publishing {
+    singleVariant("release") {
+      withSourcesJar()
+    }
   }
 }
 
 dependencies {
   implementation project(':expo-modules-core')
 
-  implementation "androidx.activity:activity-ktx:1.4.0"
+  implementation "androidx.activity:activity-ktx:1.7.1"
   implementation "androidx.appcompat:appcompat:1.4.2"
   implementation "androidx.exifinterface:exifinterface:1.3.3"
   implementation "com.github.CanHub:Android-Image-Cropper:4.3.0"

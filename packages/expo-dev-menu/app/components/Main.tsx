@@ -21,6 +21,7 @@ import {
 } from 'expo-dev-client-components';
 import * as React from 'react';
 import { Platform, ScrollView, Switch } from 'react-native';
+import semver from 'semver';
 
 import { useAppInfo } from '../hooks/useAppInfo';
 import { useClipboard } from '../hooks/useClipboard';
@@ -111,15 +112,11 @@ export function Main({ registeredCallbacks = [] }: MainProps) {
             <Spacer.Horizontal />
 
             <View width="large" style={{ alignSelf: 'flex-start' }}>
-              <Button.ScaleOnPressContainer
-                onPress={hideMenu}
-                bg="ghost"
-                rounded="full"
-                minScale={0.8}>
+              <Button.FadeOnPressContainer onPress={hideMenu} bg="ghost" rounded="full">
                 <View padding="micro">
                   <XIcon />
                 </View>
-              </Button.ScaleOnPressContainer>
+              </Button.FadeOnPressContainer>
             </View>
 
             <Spacer.Horizontal size="small" />
@@ -241,12 +238,23 @@ export function Main({ registeredCallbacks = [] }: MainProps) {
           ) : (
             <View bg="default">
               <SettingsRowSwitch
-                disabled={!devSettings.isRemoteDebuggingAvailable}
+                disabled={
+                  appInfo?.sdkVersion && semver.lt(appInfo.sdkVersion, '49.0.0')
+                    ? !devSettings.isRemoteDebuggingAvailable
+                    : true
+                }
                 testID="remote-js-debugger"
                 label="Remote JS debugger"
                 icon={<DebugIcon />}
                 isEnabled={devSettings.isDebuggingRemotely}
                 setIsEnabled={actions.toggleDebugRemoteJS}
+                description={
+                  !appInfo?.sdkVersion || semver.lt(appInfo.sdkVersion, '49.0.0')
+                    ? `This is not compatible with ${
+                        appInfo?.engine ?? 'JSC'
+                      } in this SDK version, please use Hermes to debug.`
+                    : undefined
+                }
               />
             </View>
           )}
@@ -319,7 +327,7 @@ export function Main({ registeredCallbacks = [] }: MainProps) {
             </>
           )}
 
-          <Button.ScaleOnPressContainer
+          <Button.FadeOnPressContainer
             bg="default"
             roundedTop="none"
             roundedBottom="large"
@@ -330,12 +338,12 @@ export function Main({ registeredCallbacks = [] }: MainProps) {
                 {hasCopiedAppInfoContent ? 'Copied to clipboard!' : 'Tap to Copy All'}
               </Text>
             </Row>
-          </Button.ScaleOnPressContainer>
+          </Button.FadeOnPressContainer>
         </View>
 
         <Spacer.Vertical size="large" />
         <View mx="small" rounded="large" overflow="hidden">
-          <Button.ScaleOnPressContainer
+          <Button.FadeOnPressContainer
             bg="default"
             roundedTop="none"
             roundedBottom="large"
@@ -343,7 +351,7 @@ export function Main({ registeredCallbacks = [] }: MainProps) {
             <Row px="medium" py="small" align="center" bg="default">
               <Text>Open React Native dev menu</Text>
             </Row>
-          </Button.ScaleOnPressContainer>
+          </Button.FadeOnPressContainer>
         </View>
 
         {Platform.OS === 'android' && <View style={{ height: 50 }} />}
@@ -361,7 +369,7 @@ type ActionButtonProps = {
 
 function ActionButton({ icon, label, onPress }: ActionButtonProps) {
   return (
-    <Button.ScaleOnPressContainer minScale={0.9} bg="default" onPress={onPress}>
+    <Button.FadeOnPressContainer bg="default" onPress={onPress}>
       <View padding="small" rounded="large" bg="default">
         <View align="centered">{icon}</View>
 
@@ -371,7 +379,7 @@ function ActionButton({ icon, label, onPress }: ActionButtonProps) {
           {label}
         </Text>
       </View>
-    </Button.ScaleOnPressContainer>
+    </Button.FadeOnPressContainer>
   );
 }
 
@@ -391,7 +399,7 @@ function SettingsRowButton({
   disabled,
 }: SettingsRowButtonProps) {
   return (
-    <Button.ScaleOnPressContainer onPress={onPress} bg="default" disabled={disabled}>
+    <Button.FadeOnPressContainer onPress={onPress} bg="default" disabled={disabled}>
       <Row padding="small" align="center" bg="default" style={{ opacity: disabled ? 0.75 : 1 }}>
         {icon && (
           <View width="large" height="large">
@@ -426,7 +434,7 @@ function SettingsRowButton({
           <Spacer.Vertical size="tiny" />
         </View>
       )}
-    </Button.ScaleOnPressContainer>
+    </Button.FadeOnPressContainer>
   );
 }
 

@@ -34,6 +34,8 @@ export enum Config {
   CODE_SIGNING_METADATA = 'EXUpdatesCodeSigningMetadata',
 }
 
+// when making changes to this config plugin, ensure the same changes are also made in eas-cli and build-tools
+
 export const withUpdates: ConfigPlugin<{ expoUsername: string | null }> = (
   config,
   { expoUsername }
@@ -61,7 +63,7 @@ export function setUpdatesConfig(
 ): ExpoPlist {
   const newExpoPlist = {
     ...expoPlist,
-    [Config.ENABLED]: getUpdatesEnabled(config),
+    [Config.ENABLED]: getUpdatesEnabled(config, username),
     [Config.CHECK_ON_LAUNCH]: getUpdatesCheckOnLaunch(config, expoUpdatesPackageVersion),
     [Config.LAUNCH_WAIT_MS]: getUpdatesTimeout(config),
   };
@@ -208,7 +210,7 @@ export function isPlistConfigurationSynced(
 ): boolean {
   return (
     getUpdateUrl(config, username) === expoPlist.EXUpdatesURL &&
-    getUpdatesEnabled(config) === expoPlist.EXUpdatesEnabled &&
+    getUpdatesEnabled(config, username) === expoPlist.EXUpdatesEnabled &&
     getUpdatesTimeout(config) === expoPlist.EXUpdatesLaunchWaitMs &&
     getUpdatesCheckOnLaunch(config) === expoPlist.EXUpdatesCheckOnLaunch &&
     getUpdatesCodeSigningCertificate(projectRoot, config) ===

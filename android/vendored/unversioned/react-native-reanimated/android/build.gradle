@@ -65,20 +65,19 @@ def resolveClientSideBuild() {
         return property("clientSideBuild") == "true"
     }
 
-    if (isDeveloperMode() || isPackageBuild()) {
+    if (isDeveloperMode()) {
         return false
     }
 
     return true
 }
 
-def isPackageBuild() {
-    return System.getenv("REANIMATED_PACKAGE_BUILD") == "1"
+def isReanimatedExampleApp() {
+    return safeAppExtGet("isReanimatedExampleApp", false)
 }
 
 def isDeveloperMode() {
-    // developer mode, to run Example app
-    return safeAppExtGet("isReanimatedExampleApp", false)
+    return isReanimatedExampleApp() || System.getenv("REANIMATED_PACKAGE_BUILD") == "1"
 }
 
 def isNewArchitectureEnabled() {
@@ -95,7 +94,7 @@ def resolveReactNativeDirectory() {
         return file(reactNativeLocation)
     }
 
-    if (isDeveloperMode() || isPackageBuild()) {
+    if (isDeveloperMode()) {
         return file("$projectDir/../${getPlaygroundAppName()}/node_modules/react-native")
     }
 
@@ -208,8 +207,8 @@ file("$reactNativeRootDir/ReactAndroid/gradle.properties").withInputStream { rea
 def REACT_NATIVE_VERSION = reactProperties.getProperty("VERSION_NAME")
 def REACT_NATIVE_MINOR_VERSION = REACT_NATIVE_VERSION.startsWith("0.0.0-") ? 1000 : REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
 def REANIMATED_PACKAGE_BUILD = System.getenv("REANIMATED_PACKAGE_BUILD")
-def REANIMATED_VERSION = "2.14.4"
-def REANIMATED_MAJOR_VERSION = 2
+def REANIMATED_VERSION = "3.1.0"
+def REANIMATED_MAJOR_VERSION = 3
 
 // for React Native <= 0.70
 def BOOST_VERSION = reactProperties.getProperty("BOOST_VERSION")
@@ -291,10 +290,10 @@ def detectAAR(Integer rnMinorVersion, String engine) { // Reanimated2 only
             println "\n\n\n"
             println "****************************************************************************************"
             println "\n\n\n"
-            println "WARNING reanimated - no version-specific reanimated AAR for react-native version $minor found."
+            println "WARNING reanimated - no version-specific reanimated AAR for react-native version $rnMinorVersion found."
             println "Falling back to AAR for react-native version $rnMinorVersionCopy."
             println "The react-native JSI interface is not ABI-safe yet, this may result in crashes."
-            println "Please post a pull request to implement support for react-native version $minor to the reanimated repo."
+            println "Please post a pull request to implement support for react-native version $rnMinorVersion to the reanimated repo."
             println "Thanks!"
             println "\n\n\n"
             println "****************************************************************************************"
@@ -324,7 +323,7 @@ def shouldBuildFromSource(aar, jsRuntimeName) { // Reanimated2 only
     if (jsRuntimeName == "v8") {
         return true
     }
-    else if (isDeveloperMode() || isPackageBuild()) {
+    else if (isDeveloperMode()) {
         // Example app
         return true
     }
@@ -437,17 +436,17 @@ apply plugin: "de.undercouch.download"
 
 android {
     compileSdkVersion safeExtGet("compileSdkVersion", 30)
+    def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
+    if (agpVersion.tokenize('.')[0].toInteger() >= 7) {
+        namespace "com.swmansion.reanimated"
+    }
     if (REACT_NATIVE_MINOR_VERSION >= 71) {
         buildFeatures {
             prefab true
         }
     }
     defaultConfig {
-        if (REACT_NATIVE_MINOR_VERSION >= 71 && isPackageBuild()) {
-            minSdkVersion safeExtGet("minSdkVersion", 21)
-        } else {
-            minSdkVersion safeExtGet("minSdkVersion", 16)
-        }
+        minSdkVersion safeExtGet("minSdkVersion", 16)
         targetSdkVersion safeExtGet("targetSdkVersion", 30)
         versionCode 1
         versionName "1.0"
@@ -463,6 +462,7 @@ android {
                         "-DJS_RUNTIME_DIR=${jsRuntimeDir}",
                         "-DCLIENT_SIDE_BUILD=${CLIENT_SIDE_BUILD}",
                         "-DIS_NEW_ARCHITECTURE_ENABLED=${isNewArchitectureEnabled()}",
+                        "-DIS_REANIMATED_EXAMPLE_APP=${isReanimatedExampleApp()}",
                         "-DPLAYGROUND_APP_NAME=${getPlaygroundAppName()}",
                         "-DREANIMATED_PACKAGE_BUILD=${REANIMATED_PACKAGE_BUILD}",
                         "-DREANIMATED_VERSION=${REANIMATED_VERSION}"
@@ -473,6 +473,8 @@ android {
         buildConfigField("boolean", "IS_INTERNAL_BUILD", "false")
         buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
         buildConfigField("int", "REACT_NATIVE_MINOR_VERSION", REACT_NATIVE_MINOR_VERSION.toString())
+        
+        consumerProguardFiles 'proguard-rules.pro'
     }
     externalNativeBuild {
         cmake {
@@ -603,11 +605,11 @@ def assertNoReanimated2WithNewArchitecture = task assertNoReanimated2WithNewArch
 }
 
 def assertLatestReactNativeWithNewArchitecture = task assertLatestReactNativeWithNewArchitectureTask {
-    onlyIf { isNewArchitectureEnabled() && REANIMATED_MAJOR_VERSION == 3 && REACT_NATIVE_MINOR_VERSION < 71 }
+    onlyIf { isNewArchitectureEnabled() && REANIMATED_MAJOR_VERSION == 3 && REACT_NATIVE_MINOR_VERSION < 72 }
     doFirst {
         throw new GradleException(
             "\n[react-native-reanimated] Reanimated " + REANIMATED_VERSION + " supports the New Architecture " +
-            "only on the latest minor release of React Native. Please upgrade to React Native 0.71.0+ " +
+            "only on the latest minor release of React Native. Please upgrade to React Native 0.72.0+ " +
             "or downgrade to an older version of Reanimated v3."
         )
     }
@@ -1036,21 +1038,13 @@ dependencies {
     implementation "androidx.core:core:1.6.0"
 
     if (REACT_NATIVE_MINOR_VERSION >= 71) {
-        if (isPackageBuild()) {
-            implementation "com.facebook.react:react-android:+"
-        } else {
-            implementation "com.facebook.react:react-android:" // version substituted by RNGP
-        }
+        implementation "com.facebook.react:react-android" // version substituted by RNGP
         if (JS_RUNTIME == "hermes") {
-            if (isPackageBuild()) {
-                implementation "com.facebook.react:hermes-android:+"
-            } else {
-                compileOnly "com.facebook.react:hermes-android:${REACT_NATIVE_VERSION}"
-            }
+            compileOnly "com.facebook.react:hermes-android:${REACT_NATIVE_VERSION}"
         }
     } else {
         implementation "com.facebook.react:react-native:+" // From node_modules
-        if ((isDeveloperMode() || isPackageBuild()) && !isNewArchitectureEnabled()) {
+        if (isDeveloperMode() && !isNewArchitectureEnabled()) {
             implementation "com.facebook.fbjni:fbjni:" + FBJNI_VERSION
         }
         else {
@@ -1060,7 +1054,8 @@ dependencies {
         extractHeaders("com.facebook.fbjni:fbjni:" + FBJNI_VERSION + ":headers")
         extractSO("com.facebook.fbjni:fbjni:" + FBJNI_VERSION)
 
-        
+        def jscAAR = fileTree("$reactNativeRootDir/../jsc-android/dist/org/webkit/android-jsc").matching({ it.include "**/**/*.aar" }).singleFile
+        extractSO(files(jscAAR))
     }
 }
 
@@ -1083,13 +1078,13 @@ afterEvaluate {
         nativeBuildDependsOn(prepareThirdPartyNdkHeaders)
         nativeBuildDependsOn(extractAARHeaders)
         nativeBuildDependsOn(extractSOFiles)
-
-        tasks.forEach({ task ->
-            if (task.name.contains("JniLibFolders")) {
-                task.dependsOn(packageNdkLibs)
-            }
-        })
     }
+
+    tasks.forEach({ task ->
+        if (task.name.contains("JniLibFolders")) {
+            task.dependsOn(packageNdkLibs)
+        }
+    })
 
     if (JS_RUNTIME == "hermes") {
         if (REACT_NATIVE_MINOR_VERSION < 71) {

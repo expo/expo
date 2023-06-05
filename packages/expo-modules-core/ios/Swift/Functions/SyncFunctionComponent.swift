@@ -82,8 +82,7 @@ public final class SyncFunctionComponent<Args, FirstArgType, ReturnType>: AnySyn
       arguments = try cast(arguments: arguments, forFunction: self, appContext: appContext)
 
       let argumentsTuple = try Conversions.toTuple(arguments) as! Args
-      let result = try body(argumentsTuple)
-      return Conversions.convertFunctionResult(result, appContext: appContext)
+      return try body(argumentsTuple)
     } catch let error as Exception {
       throw FunctionCallException(name).causedBy(error)
     } catch {
@@ -103,7 +102,7 @@ public final class SyncFunctionComponent<Args, FirstArgType, ReturnType>: AnySyn
         throw Exceptions.AppContextLost()
       }
       let result = try self.call(by: this, withArguments: args, appContext: appContext)
-      return Conversions.convertFunctionResult(result, appContext: appContext)
+      return Conversions.convertFunctionResult(result, appContext: appContext, dynamicType: ~ReturnType.self)
     }
   }
 }

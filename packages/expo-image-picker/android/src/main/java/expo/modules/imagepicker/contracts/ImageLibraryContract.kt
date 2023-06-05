@@ -5,7 +5,12 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
+import androidx.activity.result.contract.ActivityResultContracts.PickMultipleVisualMedia
 import expo.modules.imagepicker.ImagePickerOptions
+import expo.modules.imagepicker.MediaTypes
+import expo.modules.imagepicker.UNLIMITED_SELECTION
 import expo.modules.imagepicker.getAllDataUris
 import expo.modules.imagepicker.toMediaType
 import expo.modules.kotlin.activityresult.AppContextActivityResultContract
@@ -27,15 +32,43 @@ internal class ImageLibraryContract(
       "React Application Context is null"
     }.contentResolver
 
-  override fun createIntent(context: Context, input: ImageLibraryContractOptions) =
-    Intent(Intent.ACTION_GET_CONTENT)
-      .addCategory(Intent.CATEGORY_OPENABLE)
-      .setType(input.options.mediaTypes.toMimeType())
-      .apply {
-        if (input.options.allowsMultipleSelection) {
-          putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+  override fun createIntent(context: Context, input: ImageLibraryContractOptions): Intent {
+    val request = PickVisualMediaRequest.Builder()
+      .setMediaType(
+        when (input.options.mediaTypes) {
+          MediaTypes.VIDEOS -> {
+            PickVisualMedia.VideoOnly
+          }
+          MediaTypes.IMAGES -> {
+            PickVisualMedia.ImageOnly
+          }
+          else -> {
+            PickVisualMedia.ImageAndVideo
+          }
         }
+      ).build()
+
+    if (input.options.allowsMultipleSelection) {
+      val selectionLimit = input.options.selectionLimit
+
+      if (selectionLimit == 1) {
+        // If multiple selection is allowed but the limit is 1, we should ignore
+        // the multiple selection flag and just treat it as a single selection.
+        return PickVisualMedia().createIntent(context, request)
       }
+
+      if (selectionLimit > 1) {
+        return PickMultipleVisualMedia(selectionLimit).createIntent(context, request)
+      }
+
+      // If the selection limit is 0, it is the same as unlimited selection.
+      if (selectionLimit == UNLIMITED_SELECTION) {
+        return PickMultipleVisualMedia().createIntent(context, request)
+      }
+    }
+
+    return PickVisualMedia().createIntent(context, request)
+  }
 
   override fun parseResult(input: ImageLibraryContractOptions, resultCode: Int, intent: Intent?) =
     if (resultCode == Activity.RESULT_CANCELED) {

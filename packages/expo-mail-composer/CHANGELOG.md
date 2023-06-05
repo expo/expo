@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+## 12.2.0 — 2023-05-08
+
 ### 💡 Others
 
 - Migrated Android codebase to use the new modules API. ([#21200](https://github.com/expo/expo/pull/21200) by [@alanjhughes](https://github.com/alanjhughes))

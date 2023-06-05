@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 49.0.0-alpha.1 — 2023-05-08
+
+_This version does not introduce any user-facing changes._
+
 ## 48.0.2 - 2023-03-08
 
 ### 🐛 Bug fixes
