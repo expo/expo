@@ -5,15 +5,12 @@ import expo.modules.core.interfaces.InternalModule
 import expo.modules.interfaces.barcodescanner.BarCodeScannerProviderInterface
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
 import expo.modules.barcodescanner.scanners.MLKitBarCodeScanner
-import expo.modules.barcodescanner.scanners.ZxingBarCodeScanner
 
 class BarCodeScannerProvider : InternalModule, BarCodeScannerProviderInterface {
   override fun getExportedInterfaces() =
     listOf(BarCodeScannerProviderInterface::class.java)
 
   override fun createBarCodeDetectorWithContext(context: Context): BarCodeScannerInterface {
-    return MLKitBarCodeScanner(context).takeIf {
-      it.isAvailable
-    } ?: ZxingBarCodeScanner(context)
+    return MLKitBarCodeScanner(context)
   }
 }
