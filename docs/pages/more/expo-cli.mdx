@@ -315,7 +315,9 @@ The command `npx expo install expo-camera` and `npx expo install expo-camera --f
 
 <Terminal cmd={['$ npx expo install --fix']} />
 
-### Configuration
+### Configuring dependency validation
+
+> Available in SDK 49 and higher.
 There may be circumstances where you need to use a version of a package that is outside the range of safe versions recognized by `npx expo install`. In SDK 49 and higher projects, you can exclude specific packages from the version checks, while still allowing the `install` command to install, check, and fix any other dependencies. This configuration extends to the checking done by `npx expo-doctor`, suppressing warnings related to these specific packages during the Expo Doctor step in EAS Build.
 
 To exclude packages from version checking, set the `expo.install` config object in your project's **package.json**:
