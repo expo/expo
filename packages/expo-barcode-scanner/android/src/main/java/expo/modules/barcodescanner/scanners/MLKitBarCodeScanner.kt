@@ -32,7 +32,7 @@ class MLKitBarCodeScanner(context: Context) : ExpoBarCodeScanner(context) {
 
   private var barcodeScannerOptions =
     BarcodeScannerOptions.Builder()
-      .setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS) // Barcode.FORMAT_ALL_FORMATS
+      .setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS)
       .build()
   private var barcodeScanner = BarcodeScanning.getClient(barcodeScannerOptions)
 
