@@ -27,8 +27,7 @@ export function App({
     <View style={{ flex: 1, direction: 'ltr' }}>
       <AppProviders appInfo={appInfo} devSettings={devSettings} menuPreferences={menuPreferences}>
         <LoadInitialData loader={<Splash />}>
-          <Main registeredCallbacks={registeredCallbacks} />
-          <Onboarding isDevice={isDevice} />
+          <Main registeredCallbacks={registeredCallbacks} isDevice={isDevice} />
         </LoadInitialData>
       </AppProviders>
     </View>

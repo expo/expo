@@ -5,7 +5,7 @@ import { loadFontsAsync } from '../native-modules/DevMenu';
 import { Splash } from './Splash';
 
 type LoadInitialDataProps = {
-  children: React.ReactElement<any>[];
+  children: React.ReactElement<any> | React.ReactElement<any>[];
   loader?: React.ReactElement<any>;
 };
 
