@@ -88,6 +88,24 @@ internal struct UpdatesStateEvent {
     }
     return isRollback
   }
+  var changedProperties: [String] {
+    return UpdatesStateEvent.updatesStateEventChangedProperties[type] ?? UpdatesStateContext.allProps
+  }
+
+  /**
+   For each event type, an array with the names of the context properties that change
+   when that event is processed.
+   */
+  static let updatesStateEventChangedProperties: [UpdatesStateEventType: [String]] = [
+    .check: ["isChecking"],
+    .checkCompleteAvailable: ["isChecking", "isUpdateAvailable", "checkError", "latestManifest", "isRollback"],
+    .checkCompleteUnavailable: ["isChecking", "isUpdateAvailable", "checkError", "latestManifest", "isRollback"],
+    .checkError: ["isChecking", "checkError"],
+    .download: ["isDownloading"],
+    .downloadComplete: ["isDownloading", "downloadError", "latestManifest", "downloadedManifest", "isUpdatePending", "isUpdateAvailable"],
+    .downloadError: ["isDownloading", "downloadError"],
+    .restart: ["isRestarting"]
+  ]
 }
 
 /**
@@ -119,6 +137,31 @@ internal struct UpdatesStateContext {
       "downloadError": self.downloadError ?? NSNull()
     ] as [String: Any]
   }
+
+  func partialJsonWithKeys(keys: [String]?) -> [String: Any] {
+    guard let keys = keys else {
+      return self.json
+    }
+    var json: [String: Any] = [:]
+    let fullJson = self.json
+    for key in keys {
+      json[key] = fullJson[key]
+    }
+    return json
+  }
+
+  static let allProps: [String] = [
+    "isUpdateAvailable",
+    "isUpdatePending",
+    "isRollback",
+    "isChecking",
+    "isDownloading",
+    "isRestarting",
+    "latestManifest",
+    "downloadedManifest",
+    "checkError",
+    "downloadError"
+  ]
 }
 
 /**
@@ -146,6 +189,7 @@ internal class UpdatesStateMachine {
     state = .idle
     context = UpdatesStateContext()
     logger.info(message: "Updates state is reset, state = \(state), context = \(context)")
+    sendChangeEventToJS()
   }
 
   /**
@@ -159,7 +203,7 @@ internal class UpdatesStateMachine {
       context = reducedContext(context, event)
       logger.info(message: "Updates state change: state = \(state), event = \(event.type), context = \(context)")
       // Send change event
-      sendChangeEventToJS(event.type)
+      sendChangeEventToJS(event)
     }
   }
 
@@ -222,7 +266,17 @@ internal class UpdatesStateMachine {
     return newContext
   }
 
-  private func sendChangeEventToJS(_ eventType: UpdatesStateEventType) {
-    changeEventSender?.sendUpdateStateChangeEventToBridge(eventType, body: context.json)
+  private func sendChangeEventToJS(_ event: UpdatesStateEvent? = nil) {
+    guard let event: UpdatesStateEvent = event else {
+      changeEventSender?.sendUpdateStateChangeEventToBridge(.restart, body: [
+        "fields": UpdatesStateContext.allProps,
+        "values": context.json
+      ])
+      return
+    }
+    changeEventSender?.sendUpdateStateChangeEventToBridge(event.type, body: [
+      "fields": event.changedProperties,
+      "values": context.partialJsonWithKeys(keys: event.changedProperties)
+    ])
   }
 }

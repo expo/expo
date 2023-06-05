@@ -142,6 +142,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
 
     self.errorRecovery.delegate = self
     self.stateMachine.changeEventSender = self
+    self.stateMachine.reset()
   }
 
   /**
