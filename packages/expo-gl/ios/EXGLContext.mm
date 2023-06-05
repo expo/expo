@@ -124,11 +124,17 @@
       }
 
       EXGLContextSetDefaultFramebuffer(self->_contextId, [self defaultFramebuffer]);
-      EXGLContextPrepare(jsRuntimePtr, self->_contextId, enableExperimentalWorkletSupport, [self](){
+      EXGLContextPrepare(jsRuntimePtr, self->_contextId, [self](){
         [self flush];
       });
 
+      if (enableExperimentalWorkletSupport) {
+        dispatch_sync(dispatch_get_main_queue(), ^{
+          EXGLContextPrepareWorklet(self->_contextId);
+        });
+      }
       _isContextReady = YES;
+
       if ([self.delegate respondsToSelector:@selector(glContextInitialized:)]) {
         [self.delegate glContextInitialized:self];
       }

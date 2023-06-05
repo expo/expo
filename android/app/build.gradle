@@ -210,11 +210,6 @@ dependencies {
   // BEGIN_SDK_47
   versionedImplementation(project(':expoview-abi47_0_0'))
   // END_SDK_47
-
-
-  // BEGIN_SDK_46
-  versionedImplementation(project(':expoview-abi46_0_0'))
-  // END_SDK_46
 }
 
 // This has to be down here for some reason
