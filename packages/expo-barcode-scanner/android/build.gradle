@@ -82,8 +82,6 @@ android {
 dependencies {
   implementation project(':expo-modules-core')
   api 'com.google.mlkit:barcode-scanning:17.1.0'
-  api 'com.google.zxing:core:3.3.3'
-
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1")
