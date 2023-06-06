@@ -6,6 +6,7 @@ description: Learn about Expo Go, the free, open-source client for developing an
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { BoxLink } from '~/ui/components/BoxLink';
+import { BookOpen02Icon } from '@expo/styleguide-icons';
 
 Expo Go is a free, [open-source](https://github.com/expo/expo/tree/main/home) client for testing React Native apps on Android and iOS without needing to build anything locally. It is the fastest way to get up and running is to use the [Expo Go](https://expo.dev/client) client app on your Android or iOS device. It allows you to open up apps served through Expo CLI and run your projects faster when developing them.
 
@@ -52,7 +53,7 @@ We release a new SDK version approximately every quarter. Find out which [versio
 
 ## Login into Expo Go
 
-Open the Expo Go app after it has finished installing. If you have created an account with Expo CLI, you can sign in by clicking the **Login** button in the top header on the **Home** tab. Signing in will make it easier for you to open projects in the Expo Go app while developing them &mdash; they will appear automatically under the **Projects** section on the **Home** tab of the app.
+Open the Expo Go app after it has finished installing. If you have [created an account with Expo CLI](/more/expo-cli/#authentication), you can sign in by clicking the **Login** button in the top header on the **Home** tab. Signing in will make it easier for you to open projects in the Expo Go app while developing them &mdash; they will appear automatically under the **Projects** section on the **Home** tab of the app.
 
 > Sometimes, it can be useful to run your app directly on your computer instead of on a separate physical device. If you would like to set this up, you can learn more about [installing an Android Emulator](/workflow/android-studio-emulator) and [installing the iOS Simulator (macOS only)](/workflow/ios-simulator).
 
@@ -70,4 +71,5 @@ You can view the source code for the [Android](https://github.com/expo/expo/tree
   title="Create a new project"
   description="Now that the Expo Go app is installed, let's create a new app and write some code."
   href="/get-started/create-a-project"
+  Icon={BookOpen02Icon}
 />
