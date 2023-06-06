@@ -22,7 +22,7 @@ export default [
       '',
       'This can change over time. To ensure you stay on the same configuration even when we change our defaults, use the specific resource class name.',
       '',
-      'The `large` resource class is not available for free plan.',
+      'The `large` resource class is not available on the free plan.',
     ],
   },
   {

@@ -55,7 +55,7 @@ export default [
       'The resource class that will be used to run this build.',
       'To see mapping for each platform, see [Android-specific resource class field](eas-json/#resourceclass-1) and [iOS-specific resource class field](eas-json/#resourceclass-2) documentation.',
       '',
-      'The `large` resource class is not available for free plan.',
+      'The `large` resource class is not available on the free plan.',
     ],
   },
   {
