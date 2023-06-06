@@ -4,6 +4,21 @@ import * as rtlDetect from 'rtl-detect';
 const getNavigatorLocales = () => {
     return Platform.isDOMAvailable ? navigator.languages || [navigator.language] : [];
 };
+export function addLocaleListener(listener) {
+    addEventListener('languagechange', listener);
+    return {
+        remove: () => removeEventListener('languagechange', listener),
+    };
+}
+export function addCalendarListener(listener) {
+    addEventListener('languagechange', listener);
+    return {
+        remove: () => removeEventListener('languagechange', listener),
+    };
+}
+export function removeSubscription(subscription) {
+    subscription.remove();
+}
 export default {
     get currency() {
         // TODO: Add support

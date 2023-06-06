@@ -29,6 +29,19 @@ interface State {
   locale?: string;
 }
 
+const HooksLocalizationSection = () => {
+  const locales = Localization.useLocales();
+  const calendars = Localization.useCalendars();
+  return (
+    <>
+      <HeadingText>Locales in Preference Order (hook)</HeadingText>
+      <MonoText>{JSON.stringify(locales, null, 2)}</MonoText>
+      <HeadingText>Calendars in Preference Order (hook)</HeadingText>
+      <MonoText>{JSON.stringify(calendars, null, 2)}</MonoText>
+    </>
+  );
+};
+
 // See: https://github.com/expo/expo/pull/10229#discussion_r490961694
 // eslint-disable-next-line @typescript-eslint/ban-types
 export default class LocalizationScreen extends React.Component<{}, State> {
@@ -86,6 +99,8 @@ export default class LocalizationScreen extends React.Component<{}, State> {
     return (
       <ScrollView>
         <View style={styles.container}>
+          <HooksLocalizationSection />
+
           <HeadingText>Locales in Preference Order</HeadingText>
           <MonoText>{JSON.stringify(Localization.getLocales(), null, 2)}</MonoText>
 
