@@ -1,6 +1,7 @@
 package expo.modules.updates.loader
 
 import android.content.Context
+import androidx.core.text.htmlEncode
 import expo.modules.jsonutils.require
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
@@ -834,7 +835,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
         ManifestMetadata.getServerDefinedHeaders(database, configuration) ?: JSONObject()
 
       ManifestMetadata.getExtraParams(database, configuration)?.let {
-        extraHeaders.put("Expo-Extra-Params", Dictionary.valueOf(it.mapValues { elem -> StringItem.valueOf(elem.value) }))
+        extraHeaders.put("Expo-Extra-Params", it.keys.joinToString(", ") { k -> "$k=\"${it[k]?.htmlEncode()}\"" })
       }
 
       launchedUpdate?.let {
