@@ -46,6 +46,12 @@ export async function prebuildAsync(
     platforms: ModPlatform[];
     /** Should delete the native folders before attempting to prebuild. */
     clean?: boolean;
+    /**
+     * Should reset the files controlled by modifiers during prebuild.
+     *
+     * **WARNING:** This will not reset dangerous modifications!
+     */
+    cleanSoft?: boolean;
     /** URL or file path to the prebuild template. */
     template?: string;
     /** Name of the node package manager to install with. */
@@ -83,16 +89,14 @@ export async function prebuildAsync(
   const { exp, pkg } = await ensureConfigAsync(projectRoot, { platforms: options.platforms });
 
   // Create native projects from template.
-  const { hasNewProjectFiles, needsPodInstall, hasNewDependencies } = await updateFromTemplateAsync(
-    projectRoot,
-    {
+  const { templateDirectory, hasNewProjectFiles, needsPodInstall, hasNewDependencies } =
+    await updateFromTemplateAsync(projectRoot, {
       exp,
       pkg,
       template: options.template != null ? resolveTemplateOption(options.template) : undefined,
       platforms: options.platforms,
       skipDependencyUpdate: options.skipDependencyUpdate,
-    }
-  );
+    });
 
   // Install node modules
   if (options.install) {
@@ -113,6 +117,7 @@ export async function prebuildAsync(
   try {
     await profile(configureProjectAsync)(projectRoot, {
       platforms: options.platforms,
+      templateProjectRoot: options.cleanSoft ? templateDirectory : undefined,
     });
     configSyncingStep.succeed('Config synced');
   } catch (error) {

@@ -41,6 +41,8 @@ export async function updateFromTemplateAsync(
   }
 ): Promise<
   {
+    /** Resolved template directory. */
+    templateDirectory: string;
     /** Indicates if new files were created in the project. */
     hasNewProjectFiles: boolean;
     /** Indicates that the project needs to run `pod install` */
@@ -67,6 +69,7 @@ export async function updateFromTemplateAsync(
   });
 
   return {
+    templateDirectory,
     hasNewProjectFiles: !!copiedPaths.length,
     // If the iOS folder changes or new packages are added, we should rerun pod install.
     needsPodInstall:

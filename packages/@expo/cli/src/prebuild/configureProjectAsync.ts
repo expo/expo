@@ -14,8 +14,10 @@ export async function configureProjectAsync(
   projectRoot: string,
   {
     platforms,
+    templateProjectRoot,
   }: {
     platforms: ModPlatform[];
+    templateProjectRoot?: string;
   }
 ): Promise<ExpoConfig> {
   let bundleIdentifier: string | undefined;
@@ -43,6 +45,7 @@ export async function configureProjectAsync(
     projectRoot,
     platforms,
     assertMissingModProviders: false,
+    templateProjectRoot,
   });
 
   if (env.EXPO_DEBUG) {

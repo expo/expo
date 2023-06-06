@@ -10,6 +10,7 @@ export const expoPrebuild: Command = async (argv) => {
       // Types
       '--help': Boolean,
       '--clean': Boolean,
+      '--clean-soft': Boolean,
       '--npm': Boolean,
       '--pnpm': Boolean,
       '--yarn': Boolean,
@@ -33,6 +34,7 @@ export const expoPrebuild: Command = async (argv) => {
         chalk`<dir>                                    Directory of the Expo project. {dim Default: Current working directory}`,
         `--no-install                             Skip installing npm packages and CocoaPods`,
         `--clean                                  Delete the native folders and regenerate them before applying changes`,
+        chalk`--clean-soft                             Reset the native files that are safely modified to the given template. {dim WARNING: This will not reset dangerous modifications}`,
         chalk`--npm                                    Use npm to install dependencies. {dim Default when package-lock.json exists}`,
         chalk`--yarn                                   Use Yarn to install dependencies. {dim Default when yarn.lock exists}`,
         chalk`--pnpm                                   Use pnpm to install dependencies. {dim Default when pnpm-lock.yaml exists}`,
@@ -62,6 +64,7 @@ export const expoPrebuild: Command = async (argv) => {
     return prebuildAsync(getProjectRoot(args), {
       // Parsed options
       clean: args['--clean'],
+      cleanSoft: args['--clean-soft'],
 
       packageManager: resolvePackageManagerOptions(args),
       install: !args['--no-install'],

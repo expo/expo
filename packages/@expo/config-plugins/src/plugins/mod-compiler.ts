@@ -11,6 +11,22 @@ import { withIosBaseMods } from './withIosBaseMods';
 
 const debug = Debug('expo:config-plugins:mod-compiler');
 
+export type PrebuildSettings = {
+  /** Current working directory. Should be one level up from the platform directories. */
+  projectRoot: string;
+  /** Should compile modifiers in introspection mode (dry run). */
+  introspect?: boolean;
+  /** Array of platforms to compile */
+  platforms?: ModPlatform[];
+  /**
+   * Throw errors when mods are missing providers.
+   * @default true
+   */
+  assertMissingModProviders?: boolean;
+  /** If provided, the providers will reset the input source from this template instead of the existing project root. */
+  templateProjectRoot?: string;
+};
+
 export function withDefaultBaseMods(
   config: ExportedConfig,
   props: ForwardedBaseModOptions = {}
@@ -60,19 +76,10 @@ export function withIntrospectionBaseMods(
   return config;
 }
 
-/**
- *
- * @param projectRoot
- * @param config
- */
+/** Compile modifiers in a prebuild config. */
 export async function compileModsAsync(
   config: ExportedConfig,
-  props: {
-    projectRoot: string;
-    platforms?: ModPlatform[];
-    introspect?: boolean;
-    assertMissingModProviders?: boolean;
-  }
+  props: PrebuildSettings
 ): Promise<ExportedConfig> {
   if (props.introspect === true) {
     config = withIntrospectionBaseMods(config);
@@ -110,28 +117,17 @@ const orders: Record<string, string[]> = {
     'xcodeproj',
   ],
 };
-/**
- * A generic plugin compiler.
- *
- * @param config
- */
+
+/** A generic plugin compiler. */
 export async function evalModsAsync(
   config: ExportedConfig,
   {
     projectRoot,
     introspect,
     platforms,
-    /**
-     * Throw errors when mods are missing providers.
-     * @default true
-     */
     assertMissingModProviders,
-  }: {
-    projectRoot: string;
-    introspect?: boolean;
-    assertMissingModProviders?: boolean;
-    platforms?: ModPlatform[];
-  }
+    templateProjectRoot,
+  }: PrebuildSettings
 ): Promise<ExportedConfig> {
   const modRawConfig = getRawClone(config);
   for (const [platformName, platform] of Object.entries(config.mods ?? ({} as ModConfig))) {
@@ -157,6 +153,7 @@ export async function evalModsAsync(
           platform: platformName as ModPlatform,
           modName,
           introspect: !!introspect,
+          templateProjectRoot,
         };
 
         if (!(mod as Mod).isProvider) {

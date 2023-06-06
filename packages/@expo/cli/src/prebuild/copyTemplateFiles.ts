@@ -1,4 +1,6 @@
+import { getConfig } from '@expo/config';
 import { ModPlatform } from '@expo/config-plugins';
+import { getIosModFileProviders } from '@expo/config-plugins/build/plugins/withIosBaseMods';
 import { MergeResults } from '@expo/config-plugins/build/utils/generateCode';
 import chalk from 'chalk';
 import fs from 'fs';
@@ -101,6 +103,37 @@ async function copyPathsFromTemplateAsync(
     copyFilePaths: string[];
   }
 ): Promise<Pick<CopyFilesResults, 'copiedPaths' | 'skippedPaths'>> {
+  const copiedPaths = [];
+  const skippedPaths = [];
+  for (const copyFilePath of copyFilePaths) {
+    const projectPath = path.join(projectRoot, copyFilePath);
+    if (!(await directoryExistsAsync(projectPath))) {
+      copiedPaths.push(copyFilePath);
+      copySync(path.join(templateDirectory, copyFilePath), projectPath);
+    } else {
+      skippedPaths.push(copyFilePath);
+    }
+  }
+  debug(`Copied files:`, copiedPaths);
+  debug(`Skipped files:`, copiedPaths);
+  return { copiedPaths, skippedPaths };
+}
+
+async function copyExactFilePathsFromTemplateAsync(
+  /** File path to the project. */
+  projectRoot: string,
+  {
+    templateDirectory,
+    copyFilePaths,
+  }: {
+    /** File path to the template project. */
+    templateDirectory: string;
+    /** List of relative paths to copy from the template to the project. */
+    copyFilePaths: string[];
+  }
+): Promise<Pick<CopyFilesResults, 'copiedPaths' | 'skippedPaths'>> {
+  const config = getConfig(projectRoot);
+
   const copiedPaths = [];
   const skippedPaths = [];
   for (const copyFilePath of copyFilePaths) {
