@@ -88,7 +88,7 @@ export declare function deleteItemAsync(key: string, options?: SecureStoreOption
  * @return A promise that resolves to the previously stored value. It will return `null` if there is no entry
  * for the given key or if the key has been invalidated. It will reject if an error occurs while retrieving the value.
  *
- * > Keys are invalidated by the system when biometrics change (such as adding a new fingerprint or changing faceID).
+ * > Keys are invalidated by the system when biometrics change, such as adding a new fingerprint or changing the face profile used for face recognition.
  * > After a key has been invalidated, it becomes impossible to read its value.
  * > This only applies to values stored with `requireAuthentication` set to `true`.
  */
