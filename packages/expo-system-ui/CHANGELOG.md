@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Persist user selected background color and restore automatically on iOS. Added `restoreBackgroundColorAsync` to restore it on Android. ([#22773](https://github.com/expo/expo/pull/22773) by [@alanhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
 
 - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
