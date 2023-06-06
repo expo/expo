@@ -85,8 +85,8 @@ export declare function deleteItemAsync(key: string, options?: SecureStoreOption
  * @param key The key that was used to store the associated value.
  * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
  *
- * @return A promise that resolves to the previously stored value. The promise will return `null` if there is no entry
- * for the given key, or if the key has been invalidated. The promise will reject if an error occurred while retrieving the value.
+ * @return A promise that resolves to the previously stored value. It will return `null` if there is no entry
+ * for the given key or if the key has been invalidated. It will reject if an error occurs while retrieving the value.
  *
  * > Keys are invalidated by the system when biometrics change (such as adding a new fingerprint or changing faceID).
  * > After a key has been invalidated, it becomes impossible to read its value.
@@ -95,8 +95,6 @@ export declare function deleteItemAsync(key: string, options?: SecureStoreOption
 export declare function getItemAsync(key: string, options?: SecureStoreOptions): Promise<string | null>;
 /**
  * Store a key–value pair.
- *
- * > On Android, writing a value to an invalidated key will cause the key to be automatically overwritten.
  *
  * @param key The key to associate with the stored value. Keys may contain alphanumeric characters
  * `.`, `-`, and `_`.
