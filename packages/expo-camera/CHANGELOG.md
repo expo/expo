@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- On iOS, rewrite `obj-c` classes in `swift`. ([#22604](https://github.com/expo/expo/pull/22604) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Rewrote Objective-C classes to Swift. ([#22604](https://github.com/expo/expo/pull/22604) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 

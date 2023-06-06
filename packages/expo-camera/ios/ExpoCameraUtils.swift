@@ -9,7 +9,7 @@ struct ExpoCameraUtils {
   static func deviceOrientation(
     for accelerometerData: CMAccelerometerData,
     default orientation: UIDeviceOrientation
-    ) -> UIDeviceOrientation {
+  ) -> UIDeviceOrientation {
     if accelerometerData.acceleration.x >= 0.75 {
       return .landscapeRight
     }
@@ -101,7 +101,8 @@ struct ExpoCameraUtils {
           height: size.height
         ),
         attributes: [.font: UIFont.systemFont(ofSize: 18), .foregroundColor: UIColor.orange],
-        context: nil)
+        context: nil
+      )
     }
   }
 
@@ -144,12 +145,8 @@ struct ExpoCameraUtils {
       return nil
     }
 
-    guard let destinationCGImageRef = CGImageDestinationCreateWithData(
-      processedImageData,
-      sourceType,
-      1,
-      nil
-      ) else {
+    guard let destinationCGImageRef =
+      CGImageDestinationCreateWithData(processedImageData, sourceType, 1, nil) else {
       return nil
     }
 

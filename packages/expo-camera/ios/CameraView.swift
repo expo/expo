@@ -3,21 +3,21 @@ import ExpoModulesCore
 import CoreMotion
 
 // swiftlint:disable:next type_body_length
-public class ExpoCamera: ExpoView, EXCameraInterface, EXAppLifecycleListener,
+public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCaptureDelegate {
   public var session = AVCaptureSession()
   public var sessionQueue = DispatchQueue(label: "captureSessionQueue")
   private var motionManager = CMMotionManager()
   private var physicalOrientation: UIDeviceOrientation = .unknown
 
-  // MARK: Legacy Modules
+  // MARK: - Legacy Modules
   private var faceDetector: EXFaceDetectorManagerInterface?
   private var lifecycleManager: EXAppLifecycleService?
   private var barCodeScanner: EXBarCodeScannerInterface?
   private var fileSystem: EXFileSystemInterface?
   private var permissionsManager: EXPermissionsInterface?
 
-  // MARK: Properties
+  // MARK: - Properties
 
   private var previewLayer: AVCaptureVideoPreviewLayer?
   private var isSessionRunning = false
@@ -97,18 +97,18 @@ public class ExpoCamera: ExpoView, EXCameraInterface, EXAppLifecycleListener,
     }
   }
 
-  // MARK: Session Inputs and Outputs
+  // MARK: - Session Inputs and Outputs
 
   private var videoFileOutput: AVCaptureMovieFileOutput?
   private var photoOutput: AVCapturePhotoOutput?
   private var captureDeviceInput: AVCaptureDeviceInput?
 
-  // MARK: Promises
+  // MARK: - Promises
 
   private var photoCapturedPromise: Promise?
   private var videoRecordedPromise: Promise?
 
-  // MARK: Events
+  // MARK: - Events
 
   let onCameraReady = EventDispatcher()
   let onMountError = EventDispatcher()

@@ -66,7 +66,7 @@ public final class CameraViewModule: Module {
     ])
 
     // swiftlint:disable:next closure_body_length
-    View(ExpoCamera.self) {
+    View(CameraView.self) {
       Events(
         "onCameraReady",
         "onMountError",
@@ -148,8 +148,8 @@ public final class CameraViewModule: Module {
     }
 
     AsyncFunction("takePicture") { (options: TakePictureOptions, viewTag: Int, promise: Promise) in
-      guard let view = self.appContext?.findView(withTag: viewTag, ofType: ExpoCamera.self) else {
-        throw Exceptions.ViewNotFound((tag: viewTag, type: ExpoCamera.self))
+      guard let view = self.appContext?.findView(withTag: viewTag, ofType: CameraView.self) else {
+        throw Exceptions.ViewNotFound((tag: viewTag, type: CameraView.self))
       }
       #if targetEnvironment(simulator)
       try takePictureForSimulator(self.appContext, view, options, promise)
@@ -163,8 +163,8 @@ public final class CameraViewModule: Module {
       #if targetEnvironment(simulator)
       throw Exceptions.SimulatorNotSupported()
       #else
-      guard let view = self.appContext?.findView(withTag: viewTag, ofType: ExpoCamera.self) else {
-        throw Exceptions.ViewNotFound((tag: viewTag, type: ExpoCamera.self))
+      guard let view = self.appContext?.findView(withTag: viewTag, ofType: CameraView.self) else {
+        throw Exceptions.ViewNotFound((tag: viewTag, type: CameraView.self))
       }
       view.record(options: options, promise: promise)
       #endif
@@ -175,8 +175,8 @@ public final class CameraViewModule: Module {
       #if targetEnvironment(simulator)
       throw Exceptions.SimulatorNotSupported()
       #else
-      guard let view = self.appContext?.findView(withTag: viewTag, ofType: ExpoCamera.self) else {
-        throw Exceptions.ViewNotFound((tag: viewTag, type: ExpoCamera.self))
+      guard let view = self.appContext?.findView(withTag: viewTag, ofType: CameraView.self) else {
+        throw Exceptions.ViewNotFound((tag: viewTag, type: CameraView.self))
       }
       view.stopRecording()
       #endif
@@ -187,8 +187,8 @@ public final class CameraViewModule: Module {
       #if targetEnvironment(simulator)
       throw Exceptions.SimulatorNotSupported()
       #else
-      guard let view = self.appContext?.findView(withTag: viewTag, ofType: ExpoCamera.self) else {
-        throw Exceptions.ViewNotFound((tag: viewTag, type: ExpoCamera.self))
+      guard let view = self.appContext?.findView(withTag: viewTag, ofType: CameraView.self) else {
+        throw Exceptions.ViewNotFound((tag: viewTag, type: CameraView.self))
       }
       view.resumePreview()
       #endif
@@ -199,8 +199,8 @@ public final class CameraViewModule: Module {
       #if targetEnvironment(simulator)
       throw Exceptions.SimulatorNotSupported()
       #else
-      guard let view = self.appContext?.findView(withTag: viewTag, ofType: ExpoCamera.self) else {
-        throw Exceptions.ViewNotFound((tag: viewTag, type: ExpoCamera.self))
+      guard let view = self.appContext?.findView(withTag: viewTag, ofType: CameraView.self) else {
+        throw Exceptions.ViewNotFound((tag: viewTag, type: CameraView.self))
       }
       view.pausePreview()
       #endif
@@ -274,7 +274,7 @@ public final class CameraViewModule: Module {
 
 private func takePictureForSimulator(
   _ appContext: AppContext?,
-  _ view: ExpoCamera,
+  _ view: CameraView,
   _ options: TakePictureOptions,
   _ promise: Promise
 ) throws {
