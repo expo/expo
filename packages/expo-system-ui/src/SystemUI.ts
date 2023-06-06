@@ -28,3 +28,20 @@ export async function setBackgroundColorAsync(color: ColorValue): Promise<void> 
 export async function getBackgroundColorAsync(): Promise<ColorValue | null> {
   return await ExpoSystemUI.getBackgroundColorAsync();
 }
+
+/**
+ * Restores the root view background color.
+ * Call this function in your apps root component to restore the most recently set background color.
+ *
+ * @example
+ * ```ts
+ * await SystemUI.restoreBackgroundColorAsync();
+ * ```
+ * @platform android
+ */
+export async function restoreBackgroundColorAsync(): Promise<void> {
+  if (Platform.OS === 'ios') {
+    return;
+  }
+  return await ExpoSystemUI.restoreBackgroundColorAsync();
+}

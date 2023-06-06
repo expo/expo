@@ -9,8 +9,13 @@ public class ExpoSystemUIModule: Module {
     OnCreate {
       // TODO: Maybe read from the app manifest instead of from Info.plist.
       // Set / reset the initial color on reload and app start.
-      let color = Bundle.main.object(forInfoDictionaryKey: "RCTRootViewBackgroundColor") as? Int
-      Self.setBackgroundColorAsync(color: color)
+      let color = UserDefaults.standard.integer(forKey: "backgroundColor")
+
+      if color > 0 {
+        Self.setBackgroundColorAsync(color: color)
+      } else {
+        Self.setBackgroundColorAsync(color: nil)
+      }
     }
 
     AsyncFunction("getBackgroundColorAsync") { () -> String? in
@@ -37,11 +42,21 @@ public class ExpoSystemUIModule: Module {
     EXUtilities.performSynchronously {
       if color == nil {
         if let window = UIApplication.shared.delegate?.window {
+          let interfaceStyle = window?.traitCollection.userInterfaceStyle
           window?.backgroundColor = nil
-          window?.rootViewController?.view.backgroundColor = UIColor.white
+
+          switch interfaceStyle {
+          case .dark:
+            window?.rootViewController?.view.backgroundColor = .black
+          case .light:
+            window?.rootViewController?.view.backgroundColor = .white
+          default:
+            window?.rootViewController?.view.backgroundColor = .white
+          }
         }
         return
       }
+      UserDefaults.standard.set(color, forKey: "backgroundColor")
       let backgroundColor = EXUtilities.uiColor(color)
       // Set the app-wide window, this could have future issues when running multiple React apps,
       // i.e. dev client can't use expo-system-ui.
