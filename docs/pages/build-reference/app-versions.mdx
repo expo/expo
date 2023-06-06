@@ -4,6 +4,7 @@ description: Learn about different version types and how to manage them remotely
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import Video from '~/components/plugins/Video';
 
 Android and iOS each expose two values that identify the version of an application; one that is visible in stores, and another that is visible only to developers.
 
@@ -16,9 +17,11 @@ In managed projects, we use fields `version`/`android.versionCode`/`ios.buildNum
 
 One of the most frequent causes of app store rejections is submitting a build with a duplicate version number. This happens when a developer forgets to increment the version number prior to running a build.
 
-EAS Build can manage automatically incrementing these versions for you if you opt in to using the "remote" app version source. The default behavior is to use a "local" app version source, which means you control versions manually in their respective config files.
+EAS Build can manage automatically incrementing these versions for you if you opt into using the "remote" app version source. The default behavior is to use a "local" app version source, which means you control versions manually in their respective config files.
 
 To simplify the descriptions, we will use **app.json** terminology (`version`/`versionCode`/`buildNumber`) for the rest of this page, but unless stated otherwise, the same applies to bare projects.
+
+<Video url="https://www.youtube.com/embed/Gk7RHDWsLsQ" />
 
 ## Examples
 
