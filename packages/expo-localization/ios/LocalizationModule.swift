@@ -78,38 +78,38 @@ public class LocalizationModule: Module {
    */
   static func getUnicodeCalendarIdentifier(calendar: Calendar) -> String {
     switch calendar.identifier {
-      case .buddhist:
-        return "buddhist"
-      case .chinese:
-        return "chinese"
-      case .coptic:
-        return "coptic"
-      case .ethiopicAmeteAlem:
-        return "ethioaa"
-      case .ethiopicAmeteMihret:
-        return "ethiopic"
-      case .gregorian:
-        return "gregory"
-      case .hebrew:
-        return "hebrew"
-      case .indian:
-        return "indian"
-      case .islamic:
-        return "islamic"
-      case .islamicCivil:
-        return "islamic-civil"
-      case .islamicTabular:
-        return "islamic-tbla"
-      case .islamicUmmAlQura:
-        return "islamic-umalqura"
-      case .japanese:
-        return "japanese"
-      case .persian:
-        return "persian"
-      case .republicOfChina:
-        return "roc"
-      case .iso8601:
-        return "iso8601"
+    case .buddhist:
+      return "buddhist"
+    case .chinese:
+      return "chinese"
+    case .coptic:
+      return "coptic"
+    case .ethiopicAmeteAlem:
+      return "ethioaa"
+    case .ethiopicAmeteMihret:
+      return "ethiopic"
+    case .gregorian:
+      return "gregory"
+    case .hebrew:
+      return "hebrew"
+    case .indian:
+      return "indian"
+    case .islamic:
+      return "islamic"
+    case .islamicCivil:
+      return "islamic-civil"
+    case .islamicTabular:
+      return "islamic-tbla"
+    case .islamicUmmAlQura:
+      return "islamic-umalqura"
+    case .japanese:
+      return "japanese"
+    case .persian:
+      return "persian"
+    case .republicOfChina:
+      return "roc"
+    case .iso8601:
+      return "iso8601"
     }
   }
 
@@ -145,8 +145,8 @@ public class LocalizationModule: Module {
   @objc
   private func localeChanged() {
     // we send both events since on iOS it means both calendar and locale needs an update
-    sendEvent(LOCALE_CHANGED, [:])
-    sendEvent(CALENDAR_CHANGED, [:])
+    sendEvent(LOCALE_CHANGED)
+    sendEvent(CALENDAR_CHANGED)
   }
 
   // https://stackoverflow.com/a/28183182
