@@ -76,10 +76,12 @@ export async function deleteItemAsync(key, options = {}) {
  * @param key The key that was used to store the associated value.
  * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
  *
- * @return A promise that resolves to the previously stored value, or `null` if there is no entry
- * for the given key. The promise will reject if an error occurred while retrieving the value.
+ * @return A promise that resolves to the previously stored value. The promise will return `null` if there is no entry
+ * for the given key, or if the key has been invalidated. The promise will reject if an error occurred while retrieving the value.
  *
- * > When reading from an invalidated key the promise will return `null` on iOS, on Android it will be rejected.
+ * > Keys are invalidated by the system when biometrics change (such as adding a new fingerprint or changing faceID).
+ * > After a key has been invalidated, it becomes impossible to read its value.
+ * > This only applies to values stored with `requireAuthentication` set to `true`.
  */
 export async function getItemAsync(key, options = {}) {
     _ensureValidKey(key);

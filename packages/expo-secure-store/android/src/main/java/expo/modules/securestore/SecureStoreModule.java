@@ -134,8 +134,7 @@ public class SecureStoreModule extends ExportedModule {
           saveEncryptedItem(innerPromise, obj, prefs, key);
         });
       }
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       Log.w(TAG, e);
       promise.reject(new SecureStoreIOException(e));
     } catch (IllegalBlockSizeException e) {
@@ -246,11 +245,12 @@ public class SecureStoreModule extends ExportedModule {
       Log.w(TAG, e);
       promise.reject(new SecureStoreIOException(e));
     } catch (GeneralSecurityException e) {
-      Log.w(TAG, e);
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && e instanceof KeyPermanentlyInvalidatedException) {
-        promise.reject(new DecryptException("The encryption key has been permanently invalidated", null));
+        Log.w(TAG, "The requested key has been permanently invalidated. Returning null");
+        promise.resolve(null);
         return;
       }
+      Log.w(TAG, e);
       promise.reject(new DecryptException(null, e));
     } catch (JSONException e) {
       Log.w(TAG, e);
