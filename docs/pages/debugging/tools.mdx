@@ -219,26 +219,6 @@ After running `npx expo start` in your project's root directory, use a separate 
 
 React DevTools can also be paired with remote debugging, allowing you to inspect props, state, and instance properties in the Chrome console. If you have any questions on setting that up, give the next section a look!
 
-## Remote debugging with Chrome Developer Tools
-
-You can debug React Native apps using the Chrome debugger tools. Rather than running your app's JavaScript on your phone, it will instead run it inside of a webworker in Chrome. You can then set breakpoints, inspect variables, execute code, etc., as you would when debugging a web app.
-
-- To ensure the best debugging experience, first, change your host type to `npx expo start --lan` or `npx expo start --localhost`. If you use `npx expo start --tunnel` with debugging enabled, you are likely to experience so much latency that your app is unusable.
-
-- If you are using `npx expo start --lan`, make sure your device is on the same Wi-Fi network as your development machine. This may not work on some public networks. `npx expo start --localhost` will not work for iOS unless you are in the simulator, and it only works on Android if your device is connected to your machine via USB.
-
-- Open the app on your device, reveal the developer menu then tap on `Debug JS Remotely`. This should open up a Chrome tab with the URL `http://localhost:19000/debugger-ui`. From there, you can set breakpoints and interact through the JavaScript console. Shake the device and stop Chrome debugging when you're done.
-
-- Line numbers for `console.log` statements don't work by default when using Chrome debugging. To get correct line numbers open up the Chrome Dev Tools settings, go to the "Blackboxing" tab, make sure that "Blackbox content scripts" is checked, and add **expo/build/logs/RemoteConsole.js** as a pattern with "Blackbox" selected.
-
-### Troubleshooting localhost debugging
-
-When you run a project on your device with `npx expo start` or `npx expo run:android`, the Expo CLI automatically tells your device to forward `localhost:19000` to your development machine, as long as your device is plugged in or emulator is running. If you are using `localhost` for debugging and it isn't working, close the app and open it up again using `Open on Android`. Alternatively, you can use the following `adb` command if you have the Android developer tools installed: `adb reverse tcp:19000 tcp:19000`.
-
-### Source maps and async functions
-
-Source maps and async functions aren't 100% reliable. React Native doesn't play well with Chrome's source mapping in every case, so if you want to make sure you're breakpointing in the correct place, you should use the `debugger` call directly from your code.
-
 ## Debugging production apps with Sentry
 
 In a perfect world, your app would ship without any bugs. However, that's usually not the case. So, it's a good idea to implement a crash and bug reporting system into your app. This way, if any user experiences a fatal JS error (or any event that you've configured to notify Sentry) you can see the details in your Sentry dashboard.
