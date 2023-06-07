@@ -104,6 +104,7 @@
         "cache": {
           "disabled": true
         },
+        "withoutCredentials": false,
         "gradleCommand": ":app:assembleVersionedRelease"
       },
       "ios": {
