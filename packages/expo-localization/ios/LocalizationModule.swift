@@ -29,12 +29,12 @@ public class LocalizationModule: Module {
     }
 
     Events(LOCALE_CHANGED, CALENDAR_CHANGED)
-    
+
     OnStartObserving {
       NotificationCenter.default.addObserver(
         self,
         selector: #selector(LocalizationModule.localeChanged),
-        name: NSLocale.currentLocaleDidChangeNotification,
+        name: NSLocale.currentLocaleDidChangeNotification, // swiftlint:disable:this legacy_objc_type
         object: nil
       )
     }
@@ -42,13 +42,14 @@ public class LocalizationModule: Module {
     OnStopObserving {
       NotificationCenter.default.removeObserver(
         self,
-        name: NSLocale.currentLocaleDidChangeNotification,
+        name: NSLocale.currentLocaleDidChangeNotification, // swiftlint:disable:this legacy_objc_type
         object: nil
       )
     }
   }
 
   func isRTLPreferredForCurrentLocale() -> Bool {
+    // swiftlint:disable:next legacy_objc_type
     return NSLocale.characterDirection(forLanguage: NSLocale.preferredLanguages.first ?? "en-US") == NSLocale.LanguageDirection.rightToLeft
   }
 
@@ -113,9 +114,9 @@ public class LocalizationModule: Module {
     }
   }
 
-  static func getMeasurementSystemForLocale(_ locale:Locale) -> String {
+  static func getMeasurementSystemForLocale(_ locale: Locale) -> String {
     if #available(iOS 16, *) {
-      return [Locale.MeasurementSystem.us: "us", Locale.MeasurementSystem.uk:"uk", Locale.MeasurementSystem.metric:"metric"][locale.measurementSystem] ?? "metric"
+      return [Locale.MeasurementSystem.us: "us", Locale.MeasurementSystem.uk: "uk", Locale.MeasurementSystem.metric: "metric"][locale.measurementSystem] ?? "metric"
     } else {
       return locale.usesMetricSystem ? "metric" : "us"
     }
