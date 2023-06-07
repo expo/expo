@@ -1,0 +1,7 @@
+{
+  "name": "expo-file-system",
+  "platforms": ["ios", "android"],
+  "android": {
+    "modules": ["expo.modules.filesystem.FileSystemModule"]
+  }
+}
