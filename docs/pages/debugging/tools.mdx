@@ -13,10 +13,7 @@ React Native consists of both JavaScript and native code. Making this disctincti
 
 ## Debugging with Chrome DevTools
 
-[inspector-console]: #interacting-with-the-console
-[inspector-source]: #pausing-on-breakpoints
-
-Just like websites, you can use the Chrome DevTools to gain insights in the JavaScript code of your app. With this tool, you get access to the [Console][inspector-console], source, and even the network tab when using dev clients.
+Just like websites, you can use the Chrome DevTools to gain insights in the JavaScript code of your app. With this tool, you get access to the [Console](#interacting-with-the-console), [Source](#pausing-on-breakpoints), and even the [Network](#inspecting-network-requests) tab when using dev clients.
 
 You can use the Chrome DevTools on any app using Hermes. To open it, start your app and press <kbd>j</kbd> in the terminal where Expo was started. Once you have opened the Chrome DevTools, it will appear as below:
 
@@ -29,7 +26,7 @@ You can use the Chrome DevTools on any app using Hermes. To open it, start your 
 
 You can pause your app on specific parts of your code. To do this, set the breakpoint under the sources tab by clicking on the line number, or add the `debugger` statement in your code.
 
-Once your app is executing code that has a breakpoint, it will fully pause your app. This allows you to inspect all variables and functions in that scope. You can also execute code in the [Console][inspector-console], as if it was part of your app.
+Once your app is executing code that has a breakpoint, it will fully pause your app. This allows you to inspect all variables and functions in that scope. You can also execute code in the [Console](#interacting-with-the-console), as if it was part of your app.
 
 <ImageSpotlight
   alt="The Chrome DevTools, showing one of the files under the source tab."
@@ -52,7 +49,7 @@ If your app is throwing unexpected errors, it can be hard to find the source of 
 
 ### Interacting with the console
 
-The Console tab gives you access to an interactive terminal, connected directly to your app. You can write any JavaScript inside this terminal to execute snippets of code as if it was part of your app. The code is executed in the global scope by default. But, when using breakpoints from the [Source][inspector-source] tab, it executes in the scope of the reached breakpoint. This allows you to invoke methods and access variables throughout your app.
+The Console tab gives you access to an interactive terminal, connected directly to your app. You can write any JavaScript inside this terminal to execute snippets of code as if it was part of your app. The code is executed in the global scope by default. But, when using breakpoints from the [Source](#pausing-on-breakpoints) tab, it executes in the scope of the reached breakpoint. This allows you to invoke methods and access variables throughout your app.
 
 <ImageSpotlight
   alt="Use the console with breakpoints to inspect variables and invoke code throught your app"
@@ -60,8 +57,6 @@ The Console tab gives you access to an interactive terminal, connected directly 
 />
 
 ### Inspecting network requests
-
-> **warning** This experimental feature is coming to SDK 49+.
 
 The Network tab gives you insights in the network requests made by your app. You can inspect each individual requests and responses by clicking on them. This includes `fetch` requests, external loaded media, and in some cases even requests made by native modules.
 
@@ -73,6 +68,19 @@ This feature is only available when using the dev client, it is not available wh
 />
 
 > **info** See the [Inspecting network traffic](#inspecting-network-traffic) for alternative ways to inspect network requests.
+
+## Debugging with VS Code
+
+VS Code is a popular code editor, which has a built-in debugger. This debugger uses the same system as the Chrome DevTools, the inspector protocol.
+
+You can use this debugger with the [Expo Tools](https://github.com/expo/vscode-expo#readme) VS Code extension. This debugger allows you to set breakpoints, inspect variables, and even execute code through the debug console.
+
+<ImageSpotlight
+  alt="Debug your code while you write it"
+  src="/static/images/debugging/vscode-expo.png"
+/>
+
+To start debugging, connect your app and run the "Expo: Debug ..." VS Code command. This will attach VS Code to your running app.
 
 ## Debugging with React DevTools
 
@@ -134,7 +142,7 @@ It uses [`@react-native-community/cli-debugger-ui`](https://github.com/react-nat
   src="/static/images/react-native-community-cli-debugger-ui.png"
 />
 
-> **warning** The Network tab will not work out of the box. To enable the Network tab and other debugging tools, additional setup is required, see the [React Native Debugger](#react-native-debugger) and [React DevTools](#debugging-with-react-devtools) sections below.
+> **warning** The Network tab will not work out of the box. To enable the Network tab and other debugging tools, additional setup is required, see the [React Native Debugger](#react-native-debugger) and section below.
 
 ### Show Performance Monitor
 
