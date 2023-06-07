@@ -74,22 +74,41 @@ function _string() {
   };
   return data;
 }
+function _iosPlugins() {
+  const data = require("../plugins/ios-plugins");
+  _iosPlugins = function () {
+    return data;
+  };
+  return data;
+}
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 const withBundleIdentifier = (config, {
   bundleIdentifier
 }) => {
-  return (0, _withDangerousMod().withDangerousMod)(config, ['ios', async config => {
-    var _config$ios;
-    const bundleId = bundleIdentifier !== null && bundleIdentifier !== void 0 ? bundleIdentifier : (_config$ios = config.ios) === null || _config$ios === void 0 ? void 0 : _config$ios.bundleIdentifier;
+  function getBundleId(exp) {
+    var _exp$ios;
+    const bundleId = bundleIdentifier !== null && bundleIdentifier !== void 0 ? bundleIdentifier : (_exp$ios = exp.ios) === null || _exp$ios === void 0 ? void 0 : _exp$ios.bundleIdentifier;
     (0, _assert().default)(bundleId, '`bundleIdentifier` must be defined in the app config (`expo.ios.bundleIdentifier`) or passed to the plugin `withBundleIdentifier`.');
-    await setBundleIdentifierForPbxproj(config.modRequest.projectRoot, bundleId);
+    return bundleId;
+  }
+
+  // For legacy reasons, we set the bundle identifier in all child pbxproj 
+  // files even though it's unclear when there would be more than one.
+  (0, _withDangerousMod().withDangerousMod)(config, ['ios', async config => {
+    await setBundleIdentifierForPbxproj(config.modRequest.projectRoot, getBundleId(config));
     return config;
   }]);
+
+  // Perform the safe modification of the project.pbxproj file.
+  return (0, _iosPlugins().withXcodeProject)(config, config => {
+    config.modResults = updateBundleIdentifierForPbxprojObject(config.modResults, getBundleId(config));
+    return config;
+  });
 };
 exports.withBundleIdentifier = withBundleIdentifier;
 function getBundleIdentifier(config) {
-  var _config$ios$bundleIde, _config$ios2;
-  return (_config$ios$bundleIde = (_config$ios2 = config.ios) === null || _config$ios2 === void 0 ? void 0 : _config$ios2.bundleIdentifier) !== null && _config$ios$bundleIde !== void 0 ? _config$ios$bundleIde : null;
+  var _config$ios$bundleIde, _config$ios;
+  return (_config$ios$bundleIde = (_config$ios = config.ios) === null || _config$ios === void 0 ? void 0 : _config$ios.bundleIdentifier) !== null && _config$ios$bundleIde !== void 0 ? _config$ios$bundleIde : null;
 }
 
 /**
@@ -171,6 +190,10 @@ function getProductBundleIdentifierFromBuildConfiguration(xcBuildConfiguration) 
 function updateBundleIdentifierForPbxproj(pbxprojPath, bundleIdentifier, updateProductName = true) {
   const project = _xcode().default.project(pbxprojPath);
   project.parseSync();
+  updateBundleIdentifierForPbxprojObject(project, bundleIdentifier, updateProductName);
+  _fs().default.writeFileSync(pbxprojPath, project.writeSync());
+}
+function updateBundleIdentifierForPbxprojObject(project, bundleIdentifier, updateProductName = true) {
   const [, nativeTarget] = (0, _Target().findFirstNativeTarget)(project);
   (0, _Xcodeproj().getBuildConfigurationsForListId)(project, nativeTarget.buildConfigurationList).forEach(([, item]) => {
     if (item.buildSettings.PRODUCT_BUNDLE_IDENTIFIER === bundleIdentifier) {
@@ -184,7 +207,7 @@ function updateBundleIdentifierForPbxproj(pbxprojPath, bundleIdentifier, updateP
       }
     }
   });
-  _fs().default.writeFileSync(pbxprojPath, project.writeSync());
+  return project;
 }
 
 /**

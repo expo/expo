@@ -11,23 +11,36 @@ import { getAllInfoPlistPaths, getAllPBXProjectPaths, getPBXProjectPath } from '
 import { findFirstNativeTarget, getXCBuildConfigurationFromPbxproj } from './Target';
 import { ConfigurationSectionEntry, getBuildConfigurationsForListId } from './utils/Xcodeproj';
 import { trimQuotes } from './utils/string';
+import { withXcodeProject } from '../plugins/ios-plugins';
 
 export const withBundleIdentifier: ConfigPlugin<{ bundleIdentifier?: string }> = (
   config,
   { bundleIdentifier }
 ) => {
-  return withDangerousMod(config, [
+  function getBundleId(exp: ExpoConfig) {
+    const bundleId = bundleIdentifier ?? exp.ios?.bundleIdentifier;
+    assert(
+      bundleId,
+      '`bundleIdentifier` must be defined in the app config (`expo.ios.bundleIdentifier`) or passed to the plugin `withBundleIdentifier`.'
+    );
+    return bundleId;
+  } 
+
+  // For legacy reasons, we set the bundle identifier in all child pbxproj 
+  // files even though it's unclear when there would be more than one.
+  withDangerousMod(config, [
     'ios',
     async (config) => {
-      const bundleId = bundleIdentifier ?? config.ios?.bundleIdentifier;
-      assert(
-        bundleId,
-        '`bundleIdentifier` must be defined in the app config (`expo.ios.bundleIdentifier`) or passed to the plugin `withBundleIdentifier`.'
-      );
-      await setBundleIdentifierForPbxproj(config.modRequest.projectRoot, bundleId!);
+      await setBundleIdentifierForPbxproj(config.modRequest.projectRoot, getBundleId(config));
       return config;
     },
   ]);
+
+  // Perform the safe modification of the project.pbxproj file.
+  return withXcodeProject(config, config => {  
+    config.modResults = updateBundleIdentifierForPbxprojObject(config.modResults, getBundleId(config));
+    return config;
+  });
 };
 
 function getBundleIdentifier(config: Pick<ExpoConfig, 'ios'>): string | null {
@@ -131,6 +144,15 @@ function updateBundleIdentifierForPbxproj(
 ): void {
   const project = xcode.project(pbxprojPath);
   project.parseSync();
+  updateBundleIdentifierForPbxprojObject(project, bundleIdentifier, updateProductName)
+  fs.writeFileSync(pbxprojPath, project.writeSync());
+}
+
+function updateBundleIdentifierForPbxprojObject(
+  project: xcode.XcodeProject,
+  bundleIdentifier: string,
+  updateProductName: boolean = true
+): xcode.XcodeProject {
 
   const [, nativeTarget] = findFirstNativeTarget(project);
 
@@ -150,7 +172,8 @@ function updateBundleIdentifierForPbxproj(
       }
     }
   );
-  fs.writeFileSync(pbxprojPath, project.writeSync());
+
+  return project;
 }
 
 /**
