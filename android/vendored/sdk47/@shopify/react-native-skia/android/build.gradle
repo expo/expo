@@ -65,9 +65,9 @@ tasks.all({ task ->
 if (rootProject.ext.has('reactNativeAndroidRoot')) {
   defaultDir = rootProject.ext.get('reactNativeAndroidRoot')
   androidSourcesDir = defaultDir.parentFile.toString()
-} else if (findProject(':ReactAndroid') != null) {
+} else if (findProject(':packages:react-native:ReactAndroid') != null) {
     sourceBuild = false
-    defaultDir = project(':ReactAndroid').projectDir
+    defaultDir = project(':packages:react-native:ReactAndroid').projectDir
     androidSourcesDir = defaultDir.parentFile.toString()
 } else {
   defaultDir = file("$nodeModules/versioned-react-native/android")
@@ -81,7 +81,7 @@ if (!defaultDir.exists()) {
 }
 
 def prebuiltDir = sourceBuild
-    ? Paths.get(findProject(":ReactAndroid").getProjectDir().toString(), "build", "intermediates", "library_*", "*", "jni")
+    ? Paths.get(findProject(":packages:react-native:ReactAndroid").getProjectDir().toString(), "build", "intermediates", "library_*", "*", "jni")
     : "$buildDir/reactandroid-abi*/jni"
 
 
@@ -208,27 +208,6 @@ dependencies {
     }
 }
 
-afterEvaluate { project ->
-    task androidSourcesJar(type: Jar) {
-        classifier = 'sources'
-        from android.sourceSets.main.java.srcDirs
-        include '**/*.java'
-    }
-
-    android.libraryVariants.all { variant ->
-        def name = variant.name.capitalize()
-        def javaCompileTask = variant.javaCompileProvider.get()
-
-        task "jar${name}"(type: Jar, dependsOn: javaCompileTask) {
-            from javaCompileTask.destinationDir
-        }
-    }
-
-    artifacts {
-        archives androidSourcesJar
-    }
-}
-
 task extractAARHeaders {
     doLast {
         configurations.extractHeaders.files.each {
@@ -275,10 +254,10 @@ tasks.whenTaskAdded { task ->
   if (!task.name.contains("Clean") && (task.name.contains('externalNativeBuild') || task.name.startsWith('configureCMake'))) {
     if (sourceBuild) {
       def currentBuildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
-      task.dependsOn(":ReactAndroid:copy${currentBuildType}JniLibsProjectOnly")
+      task.dependsOn(":packages:react-native:ReactAndroid:copy${currentBuildType}JniLibsProjectOnly")
     }
   } else if (task.name.startsWith('generateJsonModel') && sourceBuild) {
     def currentBuildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
-    task.dependsOn(":ReactAndroid:copy${currentBuildType}JniLibsProjectOnly")
+    task.dependsOn(":packages:react-native:ReactAndroid:copy${currentBuildType}JniLibsProjectOnly")
   }
 }

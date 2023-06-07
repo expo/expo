@@ -698,7 +698,7 @@ exports[`built-in plugins introspects mods 1`] = `
           {
             "key": "FLIPPER_VERSION",
             "type": "property",
-            "value": "0.125.0",
+            "value": "0.182.0",
           },
           {
             "type": "empty",

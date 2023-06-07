@@ -87,7 +87,7 @@ repositories {
 
 dependencies {
     if (isNewArchitectureEnabled()) {
-        implementation project(":ReactAndroid")
+        implementation project(":packages:react-native:ReactAndroid")
     } else {
         implementation 'com.facebook.react:react-native:+'
     }

@@ -75,18 +75,6 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/ProgressViewIOSScreen'));
-    },
-    name: 'ProgressViewIOS',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/ProgressBarAndroidScreen'));
-    },
-    name: 'ProgressBarAndroid',
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/TouchableBounceScreen'));
     },
     name: 'TouchableBounce',

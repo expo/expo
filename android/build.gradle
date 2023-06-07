@@ -42,7 +42,7 @@ plugins {
 // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
 def reactProperties = new Properties()
-file("${project(':ReactAndroid').projectDir}/gradle.properties").withInputStream { reactProperties.load(it) }
+file("${project(':packages:react-native:ReactAndroid').projectDir}/gradle.properties").withInputStream { reactProperties.load(it) }
 
 allprojects {
   repositories {
@@ -91,13 +91,13 @@ allprojects {
     // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
     resolutionStrategy.dependencySubstitution {
       substitute(module("com.facebook.react:react-native"))
-        .using(project(":ReactAndroid"))
+        .using(project(":packages:react-native:ReactAndroid"))
         .because("Building React Native from source")
       substitute(module("com.facebook.react:react-native:+"))
-        .using(project(":ReactAndroid"))
+        .using(project(":packages:react-native:ReactAndroid"))
         .because("Building React Native from source")
       substitute(module("com.facebook.react:react-android"))
-        .using(project(":ReactAndroid"))
+        .using(project(":packages:react-native:ReactAndroid"))
         .because("Building React Native from source")
     }
     // WHEN_DISTRIBUTING_REMOVE_TO_HERE
