@@ -94,10 +94,22 @@
  }
  
 -def nodeModules = findNodeModules(projectDir)
-+def nodeModules = Paths.get(projectDir.getPath(), '../../../../../..', 'react-native-lab').toString()
++def nodeModules = Paths.get(projectDir.getPath(), '../../../../../..', 'react-native-lab/react-native/packages').toString()
  logger.warn("react-native-skia: node_modules/ found at: ${nodeModules}")
  
  def sourceBuild = false
+@@ -51,9 +51,9 @@ def defaultDir
+
+ if (rootProject.ext.has('reactNativeAndroidRoot')) {
+   defaultDir = rootProject.ext.get('reactNativeAndroidRoot')
+-} else if (findProject(':ReactAndroid') != null) {
++} else if (findProject(':packages:react-native:ReactAndroid') != null) {
+     sourceBuild = true
+-    defaultDir = project(':ReactAndroid').projectDir
++    defaultDir = project(':packages:react-native:ReactAndroid').projectDir
+ } else {
+   defaultDir = file("$nodeModules/react-native")
+ }
 @@ -76,6 +76,11 @@
      buildType = "debug"
  }

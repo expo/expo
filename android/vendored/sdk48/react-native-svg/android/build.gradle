@@ -87,7 +87,7 @@ repositories {
 
 dependencies {
     if (isNewArchitectureEnabled()) {
-        implementation project(":ReactAndroid")
+        implementation project(":packages:react-native:ReactAndroid")
     } else {
         implementation 'host.exp:reactandroid-abi48_0_0:1.0.0'
     compileOnly 'com.facebook.fresco:fresco:+'

@@ -44,6 +44,12 @@ Pod::Spec.new do |s|
     'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
     'HEADER_SEARCH_PATHS' => header_search_paths.join(' '),
   }
+  unless defined?(install_modules_dependencies)
+    # `install_modules_dependencies` is defined from react_native_pods.rb.
+    # when running with `pod ipc spec`, this method is not defined and we have to require manually.
+    require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
+  end
+  install_modules_dependencies(s)
 
   s.subspec 'SafeAreaView' do |safearea|
     safearea.dependency 'ExpoModulesCore'

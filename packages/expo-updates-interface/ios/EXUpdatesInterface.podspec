@@ -24,9 +24,14 @@ Pod::Spec.new do |s|
     'SWIFT_COMPILATION_MODE' => 'wholemodule'
   }
 
+  if ENV['USE_FRAMEWORKS']
+    compatibility_header_path = '${BUILT_PRODUCTS_DIR}/${PRODUCT_MODULE_NAME}.framework/Headers/${PRODUCT_MODULE_NAME}-Swift.h'
+  else
+    compatibility_header_path = '${BUILT_PRODUCTS_DIR}/Swift Compatibility Header/${PRODUCT_MODULE_NAME}-Swift.h'
+  end
   s.script_phase = {
     :name => 'Copy Swift Header',
-    :script => 'COMPATIBILITY_HEADER_PATH="${BUILT_PRODUCTS_DIR}/Swift Compatibility Header/${PRODUCT_MODULE_NAME}-Swift.h"; ditto "${COMPATIBILITY_HEADER_PATH}" "${PODS_ROOT}/Headers/Public/${PRODUCT_MODULE_NAME}/${PRODUCT_MODULE_NAME}-Swift.h"',
+    :script => "COMPATIBILITY_HEADER_PATH=\"#{compatibility_header_path}\"" + '; ditto "${COMPATIBILITY_HEADER_PATH}" "${PODS_ROOT}/Headers/Public/${PRODUCT_MODULE_NAME}/${PRODUCT_MODULE_NAME}-Swift.h"',
     :execution_position => :after_compile
   }
 end

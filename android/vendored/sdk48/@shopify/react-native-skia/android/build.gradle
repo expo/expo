@@ -51,9 +51,9 @@ def defaultDir
 
 if (rootProject.ext.has('reactNativeAndroidRoot')) {
   defaultDir = rootProject.ext.get('reactNativeAndroidRoot')
-} else if (findProject(':ReactAndroid') != null) {
+} else if (findProject(':packages:react-native:ReactAndroid') != null) {
     sourceBuild = false
-    defaultDir = project(':ReactAndroid').projectDir
+    defaultDir = project(':packages:react-native:ReactAndroid').projectDir
 } else {
   defaultDir = file("$nodeModules/react-native")
 }
@@ -217,27 +217,6 @@ dependencies {
         def rnAAR = fileTree("${nodeModules}/versioned-react-native/android").matching({ it.include rnAarMatcher }).singleFile
         logger.warn("react-native-skia: Extracting JNI files (pre RN 0.71) ${rnAAR}")
         extractJNI(files(rnAAR))
-    }
-}
-
-afterEvaluate { project ->
-    task androidSourcesJar(type: Jar) {
-        classifier = 'sources'
-        from android.sourceSets.main.java.srcDirs
-        include '**/*.java'
-    }
-
-    android.libraryVariants.all { variant ->
-        def name = variant.name.capitalize()
-        def javaCompileTask = variant.javaCompileProvider.get()
-
-        task "jar${name}"(type: Jar, dependsOn: javaCompileTask) {
-            from javaCompileTask.destinationDir
-        }
-    }
-
-    artifacts {
-        archives androidSourcesJar
     }
 }
 
