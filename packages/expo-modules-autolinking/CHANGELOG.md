@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
+- Added extra CocoaPods dependencies and Maven repositories from `expo-build-properties`. ([#22785](https://github.com/expo/expo/pull/22785) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
