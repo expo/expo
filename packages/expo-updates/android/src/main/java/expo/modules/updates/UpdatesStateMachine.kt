@@ -1,7 +1,7 @@
 package expo.modules.updates
 
 import android.os.Bundle
-import expo.modules.updates.manifest.UpdateManifest
+import expo.modules.manifests.core.Manifest
 
 /**
 Protocol with a method for sending state change events to JS.
@@ -70,11 +70,11 @@ used to modify the context when the machine processes an event.
  */
 data class UpdatesStateEvent(
   val type: UpdatesStateEventType,
-  val body: Map<String, Any>
+  val body: Map<String, Any> = mapOf()
 ) {
-  val manifest: UpdateManifest?
+  val manifest: Manifest?
     get() {
-      return body["manifest"] as? UpdateManifest
+      return body["manifest"] as? Manifest
     }
   val error: Error?
     get() {
@@ -122,8 +122,8 @@ data class UpdatesStateContext(
   var isChecking: Boolean = false,
   var isDownloading: Boolean = false,
   var isRestarting: Boolean = false,
-  var latestManifest: UpdateManifest? = null,
-  var downloadedManifest: UpdateManifest? = null,
+  var latestManifest: Manifest? = null,
+  var downloadedManifest: Manifest? = null,
   var checkError: Error? = null,
   var downloadError: Error? = null
 ) {
