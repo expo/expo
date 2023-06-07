@@ -22,7 +22,7 @@ import expo.modules.documentpicker.DocumentPickerModule
 import expo.modules.easclient.EASClientModule
 import expo.modules.print.PrintModule
 import expo.modules.facedetector.FaceDetectorPackage
-import expo.modules.filesystem.FileSystemPackage
+import expo.modules.filesystem.FileSystemModule
 import expo.modules.font.FontLoaderPackage
 import expo.modules.gl.GLPackage
 import expo.modules.gl.GLViewModule
@@ -75,7 +75,6 @@ object ExperiencePackagePicker : ModulesProvider {
     ConstantsPackage(),
     ContactsPackage(),
     FaceDetectorPackage(),
-    FileSystemPackage(),
     FontLoaderPackage(),
     GLPackage(),
     ImageLoaderPackage(),
@@ -120,6 +119,7 @@ object ExperiencePackagePicker : ModulesProvider {
     DeviceModule::class.java,
     DocumentPickerModule::class.java,
     EASClientModule::class.java,
+    FileSystemModule::class.java,
     PrintModule::class.java,
     GLViewModule::class.java,
     HapticsModule::class.java,

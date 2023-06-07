@@ -102,6 +102,15 @@ open class FileSystemModule : Module() {
       EXUploadProgressEventName
     )
 
+    OnCreate {
+      try {
+        ensureDirExists(context.filesDir)
+        ensureDirExists(context.cacheDir)
+      } catch (e: Exception) {
+        e.printStackTrace()
+      }
+    }
+
     AsyncFunction("getInfoAsync") { _uriStr: String, options: InfoOptions ->
       var uriStr = slashifyFilePath(_uriStr)
 
@@ -685,9 +694,9 @@ open class FileSystemModule : Module() {
     }
 
     OnActivityResult { _, (requestCode, resultCode, data) ->
-      val currentActivity = appContext.currentActivity ?: throw Exceptions.MissingActivity()
-
       if (requestCode == DIR_PERMISSIONS_REQUEST_CODE && dirPermissionsRequest != null) {
+        val currentActivity =
+          appContext.currentActivity ?: throw Exceptions.MissingActivity()
         val result = Bundle()
         if (resultCode == Activity.RESULT_OK && data != null) {
           val treeUri = data.data
@@ -731,6 +740,13 @@ open class FileSystemModule : Module() {
     val dir = file.parentFile
     if (dir == null || !dir.exists()) {
       throw IOException("Directory for '${file.path}' doesn't exist. Please make sure directory '${file.parent}' exists before calling downloadAsync.")
+    }
+  }
+
+  @Throws(IOException::class)
+  private fun ensureDirExists(dir: File) {
+    if (!(dir.isDirectory || dir.mkdirs())) {
+      throw IOException("Couldn't create directory '$dir'")
     }
   }
 
