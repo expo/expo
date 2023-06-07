@@ -37,11 +37,6 @@
       "@testing-library/jest-native/extend-expect"
     ]
   },
-  "dependencies": {
-    "@expo/config": "~8.0.0",
-    "@expo/config-plugins": "~7.0.0",
-    "@expo/metro-config": "~0.8.0"
-  },
   "devDependencies": {
     "@testing-library/jest-native": "^4.0.4",
     "@testing-library/react": "^13.4.0",
@@ -59,7 +54,6 @@
   },
   "peerDependencies": {
     "expo": "*",
-    "expo-constants": "*",
     "expo-updates": "*"
   }
 }

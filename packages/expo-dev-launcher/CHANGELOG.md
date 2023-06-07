@@ -12,6 +12,7 @@
 
 - [Android] Added support for the new architecture. ([#22607](https://github.com/expo/expo/pull/22607) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Allow users to manually load apps without specifying a URL scheme. ([#22637](https://github.com/expo/expo/pull/22637) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
@@ -20,6 +21,7 @@
 - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 - Fixed Home screen KeyboardAvoidingView. ([#22661](https://github.com/expo/expo/pull/22661) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Refactored network inspector code and add unit tests. ([#22669](https://github.com/expo/expo/pull/22669), [#22693](https://github.com/expo/expo/pull/22693) by [@kudo](https://github.com/kudo))
+- Fixed `No compatible apps connected. JavaScript Debugging can only be used with the Hermes engine.` when using JavaScript debugger on Android. ([#20280](https://github.com/expo/expo/pull/20280) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

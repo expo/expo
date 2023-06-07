@@ -88,7 +88,7 @@ const config: VendoringTargetConfig = {
         async preReadPodspecHookAsync(podspecPath: string): Promise<string> {
           const reaUtilsPath = path.join(podspecPath, '..', 'scripts', 'reanimated_utils.rb');
           assert(fs.existsSync(reaUtilsPath), 'Cannot find `reanimated_utils`.');
-          const rnForkPath = path.join(REACT_NATIVE_SUBMODULE_DIR, '..');
+          const rnForkPath = path.join(REACT_NATIVE_SUBMODULE_DIR, 'packages');
           let content = await fs.readFile(reaUtilsPath, 'utf-8');
           content = content.replace(
             'react_native_node_modules_dir = ',
@@ -173,13 +173,19 @@ const config: VendoringTargetConfig = {
               // react-native root dir is in react-native-lab/react-native
               paths: 'build.gradle',
               find: /\b(def reactNativeRootDir)\s*=.+$/gm,
-              replaceWith: `$1 = Paths.get(projectDir.getPath(), '../../../../../react-native-lab/react-native').toFile()`,
+              replaceWith: `$1 = Paths.get(projectDir.getPath(), '../../../../../react-native-lab/react-native/packages/react-native').toFile()`,
             },
             {
               // no-op for extracting tasks
               paths: 'build.gradle',
               find: /\b(task (prepareHermes|unpackReactNativeAAR).*\{)$/gm,
               replaceWith: `$1\n    return`,
+            },
+            {
+              // project `:ReactAndroid` to `:packages:react-native:ReactAndroid`
+              paths: 'build.gradle',
+              find: /(:ReactAndroid)/g,
+              replaceWith: ':packages:react-native:$1',
             },
             {
               // compileOnly hermes-engine
