@@ -8,6 +8,7 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.security.KeyPairGeneratorSpec;
 import android.security.keystore.KeyGenParameterSpec;
+import android.security.keystore.KeyPermanentlyInvalidatedException;
 import android.security.keystore.KeyProperties;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -39,6 +40,7 @@ import java.security.spec.InvalidParameterSpecException;
 import java.util.Date;
 
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
@@ -81,16 +83,16 @@ public class SecureStoreModule extends ExportedModule {
   @SuppressWarnings("unused")
   public void setValueWithKeyAsync(String value, String key, ReadableArguments options, Promise promise) {
     try {
-      setItemImpl(key, value, options, promise);
+      setItemImpl(key, value, options, promise, false);
     } catch (Exception e) {
       Log.e(TAG, "Caught unexpected exception when writing to SecureStore", e);
-      promise.reject("E_SECURESTORE_WRITE_ERROR", "An unexpected error occurred when writing to SecureStore", e);
+      promise.reject(new WriteException(null, e));
     }
   }
 
-  private void setItemImpl(String key, String value, ReadableArguments options, Promise promise) {
+  private void setItemImpl(String key, String value, ReadableArguments options, Promise promise, boolean keyIsInvalidated) {
     if (key == null) {
-      promise.reject("E_SECURESTORE_NULL_KEY", "SecureStore keys must not be null");
+      promise.reject(new NullKeyException());
       return;
     }
 
@@ -101,7 +103,7 @@ public class SecureStoreModule extends ExportedModule {
       if (success) {
         promise.resolve(null);
       } else {
-        promise.reject("E_SECURESTORE_WRITE_ERROR", "Could not write a null value to SecureStore");
+        promise.reject(new WriteException("Could not write a null value to SecureStore", null));
       }
       return;
     }
@@ -114,6 +116,10 @@ public class SecureStoreModule extends ExportedModule {
       // use in the encrypted JSON item so that we know how to decode and decrypt it when reading
       // back a value.
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (keyIsInvalidated) {
+          String alias = mAESEncrypter.getKeyStoreAlias(options);
+          keyStore.deleteEntry(alias);
+        }
         KeyStore.SecretKeyEntry secretKeyEntry = getKeyEntry(KeyStore.SecretKeyEntry.class, mAESEncrypter, options);
         mAESEncrypter.createEncryptedItem(promise, value, keyStore, secretKeyEntry, options, mAuthenticationHelper.getDefaultCallback(), (innerPromise, result) -> {
           JSONObject obj = (JSONObject) result;
@@ -130,23 +136,45 @@ public class SecureStoreModule extends ExportedModule {
       }
     } catch (IOException e) {
       Log.w(TAG, e);
-      promise.reject("E_SECURESTORE_IO_ERROR", "There was an I/O error loading the keystore for SecureStore", e);
-      return;
-    } catch (GeneralSecurityException e) {
+      promise.reject(new SecureStoreIOException(e));
+    } catch (IllegalBlockSizeException e) {
+      // Sometimes, android throws IllegalBlockSizeException when the fingerprint has been changed.
+      // https://github.com/expo/expo/issues/22312. It should be handled the same way as KeyPermanentlyInvalidatedException
+      boolean isInvalidationException = e.getCause() != null && e.getCause().getMessage() != null && e.getCause().getMessage().contains("Key user not authenticated");
+
+      if(isInvalidationException && !keyIsInvalidated) {
+        setItemImpl(key, value, options, promise, true);
+        Log.w(TAG, "IllegalBlockSizeException, retrying with the key deleted");
+        return;
+      }
+      // If the issue persists after deleting the key it is likely not related to invalidation
+      promise.reject(new EncryptException(null, e));
       Log.w(TAG, e);
-      promise.reject("E_SECURESTORE_ENCRYPT_ERROR", "Could not encrypt the value for SecureStore", e);
-      return;
+    } catch (GeneralSecurityException e) {
+      boolean isInvalidationException = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && e instanceof KeyPermanentlyInvalidatedException;
+
+      if (isInvalidationException && !keyIsInvalidated) {
+        // If the key has been invalidated by the OS we try to reinitialize it.
+        Log.w(TAG, "Key has been invalidated, retrying with the key deleted");
+        setItemImpl(key, value, options, promise, true);
+      } else if (isInvalidationException) {
+        Log.w(TAG, e);
+        // If reinitialization of the key fails, reject the promise
+        promise.reject(new EncryptException("Encryption Failed. The key has been permanently invalidated and cannot be reinitialized", e));
+      } else {
+        Log.w(TAG, e);
+        promise.reject(new EncryptException(null, e));
+      }
     } catch (JSONException e) {
       Log.w(TAG, e);
-      promise.reject("E_SECURESTORE_ENCODE_ERROR", "Could not create an encrypted JSON item for SecureStore", e);
-      return;
+      promise.reject(new SecureStoreJSONException("Could not create an encrypted JSON item for SecureStore", e));
     }
   }
 
   private void saveEncryptedItem(Promise promise, JSONObject encryptedItem, SharedPreferences prefs, String key) {
     String encryptedItemString = encryptedItem.toString();
     if (encryptedItemString == null) { // lint warning suppressed, JSONObject#toString() may return null
-      promise.reject("E_SECURESTORE_JSON_ERROR", "Could not JSON-encode the encrypted item for SecureStore");
+      promise.reject(new SecureStoreJSONException("Could not JSON-encode the encrypted item for SecureStore", null));
       return;
     }
 
@@ -154,7 +182,7 @@ public class SecureStoreModule extends ExportedModule {
     if (success) {
       promise.resolve(null);
     } else {
-      promise.reject("E_SECURESTORE_WRITE_ERROR", "Could not write encrypted JSON to SecureStore");
+      promise.reject(new WriteException("Could not write encrypted JSON to SecureStore", null));
     }
   }
 
@@ -165,7 +193,7 @@ public class SecureStoreModule extends ExportedModule {
       getItemImpl(key, options, promise);
     } catch (Exception e) {
       Log.e(TAG, "Caught unexpected exception when reading from SecureStore", e);
-      promise.reject("E_SECURESTORE_READ_ERROR", "An unexpected error occurred when reading from SecureStore", e);
+      promise.reject(new ReadException(e));
     }
   }
 
@@ -187,14 +215,14 @@ public class SecureStoreModule extends ExportedModule {
       encryptedItem = new JSONObject(encryptedItemString);
     } catch (JSONException e) {
       Log.e(TAG, String.format("Could not parse stored value as JSON (key = %s, value = %s)", key, encryptedItemString), e);
-      promise.reject("E_SECURESTORE_JSON_ERROR", "Could not parse the encrypted JSON item in SecureStore");
+      promise.reject(new SecureStoreJSONException("Could not parse the encrypted JSON item in SecureStore", e));
       return;
     }
 
     String scheme = encryptedItem.optString(SCHEME_PROPERTY);
     if (scheme == null) {
       Log.e(TAG, String.format("Stored JSON object is missing a scheme (key = %s, value = %s)", key, encryptedItemString));
-      promise.reject("E_SECURESTORE_DECODE_ERROR", "Could not find the encryption scheme used for SecureStore item");
+      promise.reject(new DecryptException("Could not find the encryption scheme used for SecureStore item", null));
       return;
     }
 
@@ -211,21 +239,22 @@ public class SecureStoreModule extends ExportedModule {
         default:
           String message = String.format("The item for key \"%s\" in SecureStore has an unknown encoding scheme (%s)", key, scheme);
           Log.e(TAG, message);
-          promise.reject("E_SECURESTORE_DECODE_ERROR", message);
-          return;
+          promise.reject(new DecryptException(message, null));
       }
     } catch (IOException e) {
       Log.w(TAG, e);
-      promise.reject("E_SECURESTORE_IO_ERROR", "There was an I/O error loading the keystore for SecureStore", e);
-      return;
+      promise.reject(new SecureStoreIOException(e));
     } catch (GeneralSecurityException e) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && e instanceof KeyPermanentlyInvalidatedException) {
+        Log.w(TAG, "The requested key has been permanently invalidated. Returning null");
+        promise.resolve(null);
+        return;
+      }
       Log.w(TAG, e);
-      promise.reject("E_SECURESTORE_DECRYPT_ERROR", "Could not decrypt the item in SecureStore", e);
-      return;
+      promise.reject(new DecryptException(null, e));
     } catch (JSONException e) {
       Log.w(TAG, e);
-      promise.reject("E_SECURESTORE_DECODE_ERROR", "Could not decode the encrypted JSON item in SecureStore", e);
-      return;
+      promise.reject(new SecureStoreJSONException("Could not decode the encrypted JSON item in SecureStore", e));
     }
   }
 
@@ -248,24 +277,24 @@ public class SecureStoreModule extends ExportedModule {
       String keystoreAlias = encrypter.getKeyStoreAlias(options);
 
       if (!keyStore.containsAlias(keystoreAlias)) {
-        promise.reject("E_SECURESTORE_DECRYPT_ERROR", "Could not find the keystore entry to decrypt the legacy item in SecureStore");
+        promise.reject(new DecryptException("Could not find the keystore entry to decrypt the legacy item in SecureStore", null));
         return;
       }
 
       KeyStore.Entry keyStoreEntry = keyStore.getEntry(keystoreAlias, null);
       if (!(keyStoreEntry instanceof KeyStore.PrivateKeyEntry)) {
-        promise.reject("E_SECURESTORE_DECRYPT_ERROR", "The keystore entry for the legacy item is not a private key entry");
+        promise.reject(new DecryptException("The keystore entry for the legacy item is not a private key entry", null));
         return;
       }
 
       value = encrypter.decryptItem(encryptedItem, (KeyStore.PrivateKeyEntry) keyStoreEntry);
     } catch (IOException e) {
       Log.w(TAG, e);
-      promise.reject("E_SECURESTORE_IO_ERROR", "There was an I/O error loading the keystore for SecureStore", e);
+      promise.reject(new SecureStoreIOException(e));
       return;
     } catch (GeneralSecurityException e) {
       Log.w(TAG, e);
-      promise.reject("E_SECURESTORE_DECRYPT_ERROR", "Could not decrypt the item in SecureStore", e);
+      promise.reject(new DecryptException(null, e));
       return;
     }
 
@@ -279,7 +308,7 @@ public class SecureStoreModule extends ExportedModule {
       deleteItemImpl(key, promise);
     } catch (Exception e) {
       Log.e(TAG, "Caught unexpected exception when deleting from SecureStore", e);
-      promise.reject("E_SECURESTORE_DELETE_ERROR", "An unexpected error occurred when deleting item from SecureStore", e);
+      promise.reject(new DeleteException(null, e));
     }
   }
 
@@ -298,7 +327,7 @@ public class SecureStoreModule extends ExportedModule {
     if (success) {
       promise.resolve(null);
     } else {
-      promise.reject("E_SECURESTORE_DELETE_ERROR", "Could not delete the item from SecureStore");
+      promise.reject(new DeleteException("Could not delete the item from SecureStore", null));
     }
   }
 
