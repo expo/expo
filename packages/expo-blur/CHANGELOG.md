@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- `BlurView` can no longer be animated using the `Animated API`. Only `react-native-reanimated` is supported.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
@@ -12,6 +14,8 @@
 - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
+
+- Updated the animated `BlurView` demo to work correctly with `react-native-reanimated`.
 
 ## 12.3.1 — 2023-05-08
 
