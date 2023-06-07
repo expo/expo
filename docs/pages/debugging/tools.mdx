@@ -9,7 +9,70 @@ import { Terminal } from '~/ui/components/Snippet';
 import Video from '~/components/plugins/Video';
 import { Collapsible } from '~/ui/components/Collapsible';
 
-This page lists a few tools to help debug your Expo project.
+React Native consists of both JavaScript and native code. Making this disctinction is very important when it comes to debugging. If an error is thrown from the JavaScript code, you likely won't be able to find it using debugging tools for native code. This page lists a few tools to help you debug your Expo project.
+
+## Debugging with Chrome DevTools
+
+[inspector-console]: #interacting-with-the-console
+[inspector-source]: #pausing-on-breakpoints
+
+Just like websites, you can use the Chrome DevTools to gain insights in the JavaScript code of your app. With this tool, you get access to the [Console][inspector-console], source, and even the network tab when using dev clients.
+
+You can use the Chrome DevTools on any app using Hermes. To open it, start your app and press <kbd>j</kbd> in the terminal where Expo was started. Once you have opened the Chrome DevTools, it will appear as below:
+
+<ImageSpotlight
+  alt="The Chrome DevTools, showing one of the files under the source tab."
+  src="/static/images/debugging/inspector-source-tab.png"
+/>
+
+### Pausing on breakpoints
+
+You can pause your app on specific parts of your code. To do this, set the breakpoint under the sources tab by clicking on the line number, or add the `debugger` statement in your code.
+
+Once your app is executing code that has a breakpoint, it will fully pause your app. This allows you to inspect all variables and functions in that scope. You can also execute code in the [Console][inspector-console], as if it was part of your app.
+
+<ImageSpotlight
+  alt="The Chrome DevTools, showing one of the files under the source tab."
+  src="/static/images/debugging/inspector-breakpoint.png"
+/>
+
+> **warning** Breakpoints set through the Chrome DevTools depend heavily on source maps. Unfortunately, these source maps are not always 100% accurate. In some cases, you might have to use a `debugger` statement instead of a breakpoint.
+
+### Pausing on exceptions
+
+If your app is throwing unexpected errors, it can be hard to find the source of the error. You can use the Chrome DevTools to pause your app whenever an error is thrown. This allows you to inspect the stack trace and variables at the moment the error was thrown.
+
+<ImageSpotlight
+  alt="Enable Pause on exceptions in the right panel of the sources tab"
+  src="/static/images/debugging/inspector-pause-exception.png"
+  style={{ maxWidth: 320 }}
+/>
+
+> **info** Some errors might be caught by other components in your app, like Expo Router. In these cases, you can turn on "Pause on caught exceptions". This will enable you to inspect any thrown error, even when it's handled properly.
+
+### Interacting with the console
+
+The Console tab gives you access to an interactive terminal, connected directly to your app. You can write any JavaScript inside this terminal to execute snippets of code as if it was part of your app. The code is executed in the global scope by default. But, when using breakpoints from the [Source][inspector-source] tab, it executes in the scope of the reached breakpoint. This allows you to invoke methods and access variables throughout your app.
+
+<ImageSpotlight
+  alt="Use the console with breakpoints to inspect variables and invoke code throught your app"
+  src="/static/images/debugging/inspector-breakpoint-console.png"
+/>
+
+### Inspecting network requests
+
+> **warning** This experimental feature is coming to SDK 49+.
+
+The Network tab gives you insights in the network requests made by your app. You can inspect each individual requests and responses by clicking on them. This includes `fetch` requests, external loaded media, and in some cases even requests made by native modules.
+
+This feature is only available when using the dev client, it is not available when using Expo Go.
+
+<ImageSpotlight
+  alt="Gain insights in the network requests from your app"
+  src="/static/images/debugging/inspector-network-post.png"
+/>
+
+> **info** See the [Inspecting network traffic](#inspecting-network-traffic) for alternative ways to inspect network requests.
 
 ## Developer menu
 
@@ -49,6 +112,8 @@ Now let's explore some of the more exciting functionalities.
 
 ### Debug Remote JS
 
+> **warning** Debug remote JS does not support apps using Hermes, see the [Chrome DevTools](#debugging-with-chrome-devtools) section.
+
 Opens a React Native Debugger tab in your browser to allow you to use DevTools. For example, you can use the Console tab to read the `console.log` statements.
 
 It uses [`@react-native-community/cli-debugger-ui`](https://github.com/react-native-community/cli/tree/main/packages/cli-debugger-ui):
@@ -87,6 +152,8 @@ This overlay has capabilities to:
 4. Touchables: Highlight touchable elements
 
 ## React Native Debugger
+
+> **warning** The React Native Debugger does not support apps using Hermes, see the [Chrome DevTools](#debugging-with-chrome-devtools) section.
 
 The React Native Debugger includes many tools listed later on this page, all bundled into one, including [React DevTools](#debugging-with-react-devtools) and network request inspection. For this reason, if you use one tool from this page, it should probably be this one.
 
