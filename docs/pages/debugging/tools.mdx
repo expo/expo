@@ -7,17 +7,28 @@ sidebar_title: Tools
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import Video from '~/components/plugins/Video';
+import { Collapsible } from '~/ui/components/Collapsible';
 
 This page lists a few tools to help debug your Expo project.
 
 ### Developer menu
 
-This menu gives you access to several functions which are useful for debugging and is built into the Expo Go app. The way you open it is a bit different depending on where you're running the Expo Go app:
+This menu gives you access to several functions which are useful for debugging and is built into the Expo Go or dev client apps. If you are using the emulator, simulator, or have your device connected via USB, you can open this menu by pressing <kbd>m</kbd> in the terminal where Expo is running.
 
-- Android Device: Shake the device vertically, or if your device is connected via USB, run `adb shell input keyevent 82` in your terminal
-- Android Emulator: Either press <kbd>Cmd ⌘</kbd> + <kbd>m</kbd> or <kbd>Ctrl</kbd> + <kbd>m</kbd> or run `adb shell input keyevent 82` in your terminal
-- iOS Device: Shake the device, or touch 3 fingers to the screen
-- iOS Simulator: Press <kbd>Ctrl</kbd> + <kbd>Cmd ⌘</kbd> + <kbd>z</kbd> on a Mac in the emulator to simulate the shake gesture, or press <kbd>Cmd ⌘</kbd> + <kbd>d</kbd>
+<Collapsible summary="Or use any of the alternative options">
+
+- Android device (without USB): Shake the device verically.
+- Android emulator or device (with USB):
+  - Press <kbd>Cmd ⌘</kbd> + <kbd>m</kbd> or <kbd>Ctrl</kbd> + <kbd>m</kbd>
+  - Run `adb shell input keyevent 82`
+
+- iOS device (without USB):
+  - Shake the device.
+  - Touch 3 fingers to the screen.
+- iOS simulator or device (with USB):
+  - Press <kbd>Ctrl</kbd> + <kbd>Cmd ⌘</kbd> + <kbd>z</kbd> or <kbd>Cmd ⌘</kbd> + <kbd>d</kbd>
+
+</Collapsible>
 
 Once you have opened the Developer menu, it will appear as below:
 
