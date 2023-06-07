@@ -11,7 +11,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 
 This page lists a few tools to help debug your Expo project.
 
-### Developer menu
+## Developer menu
 
 This menu gives you access to several functions which are useful for debugging and is built into the Expo Go or dev client apps. If you are using the emulator, simulator, or have your device connected via USB, you can open this menu by pressing <kbd>m</kbd> in the terminal where Expo is running.
 
@@ -47,7 +47,7 @@ The Developer menu provides multiple options:
 
 Now let's explore some of the more exciting functionalities.
 
-#### Debug Remote JS
+### Debug Remote JS
 
 Opens a React Native Debugger tab in your browser to allow you to use DevTools. For example, you can use the Console tab to read the `console.log` statements.
 
@@ -60,7 +60,7 @@ It uses [`@react-native-community/cli-debugger-ui`](https://github.com/react-nat
 
 > **warning** The Network tab will not work out of the box. To enable the Network tab and other debugging tools, additional setup is required, see the [React Native Debugger](#react-native-debugger) and [React DevTools](#debugging-with-react-devtools) sections below.
 
-#### Show Performance Monitor
+### Show Performance Monitor
 
 Opens up a small window giving you performance information about your app. It provides:
 
@@ -69,7 +69,7 @@ Opens up a small window giving you performance information about your app. It pr
 - 2 numbers for Views, the top indicates the number of views for the screen, the bottom indicates the number of views in the component
 - Frames Per Second for the UI and JS threads. The UI thread is used for native Android or iOS UI rendering. The JS thread is where most of your logic runs, including API calls, touch events, and so on.
 
-#### Show/Hide Element Inspector
+### Show/Hide Element Inspector
 
 Opens up the Element Inspector overlay:
 
@@ -86,7 +86,7 @@ This overlay has capabilities to:
 3. Network: Show network details
 4. Touchables: Highlight touchable elements
 
-### React Native Debugger
+## React Native Debugger
 
 The React Native Debugger includes many tools listed later on this page, all bundled into one, including [React DevTools](#debugging-with-react-devtools) and network request inspection. For this reason, if you use one tool from this page, it should probably be this one.
 
@@ -96,7 +96,7 @@ You can install it via the [release page](https://github.com/jhen0409/react-nati
 
 <Terminal cmd={['$ brew install react-native-debugger']} />
 
-#### Startup
+### Startup
 
 After firing up React Native Debugger, you'll need to specify the port (shortcuts: <kbd>Cmd ⌘</kbd> + <kbd>t</kbd> on macOS, <kbd>Ctrl</kbd> + <kbd>t</kbd> on Linux/Windows) to `19000` (if you use SDK &lt;= 39, the port should be `19001`&gt;). After that, run your project with `npx expo start`, and select `Debug remote JS` from the Developer Menu. The debugger should automatically connect.
 
@@ -106,7 +106,7 @@ If you right-click anywhere in the React Native Debugger, you'll get some handy 
 
 <Video file="debugging/react-native-debugger.mp4" />
 
-#### Inspecting network traffic
+### Inspecting network traffic
 
 It's easy to use the React Native Debugger to debug your network request: right-click anywhere in the React Native Debugger and select `Enable Network Inspect`. This will enable the Network tab and allow you to inspect requests of `fetch` and `XMLHttpRequest`.
 
@@ -119,7 +119,7 @@ There are however [some limitations](https://github.com/jhen0409/react-native-de
 
 > In bare workflow apps you can use [Flipper](https://fbflipper.com/) to inspect network traffic.
 
-### Debugging Redux
+## Debugging Redux
 
 [Redux](https://redux.js.org/) is a popular library for managing and centralizing application state shared throughout the app. You can use Redux DevTools on React Native Debugger for debugging the application's state changes. The setup is as follows:
 
@@ -130,7 +130,7 @@ There are however [some limitations](https://github.com/jhen0409/react-native-de
 
 You're now good to go! If you are experiencing any issues or want to learn more about how to use these tools, refer to this [guide](https://medium.com/@tetsuyahasegawa/how-to-integrate-react-native-debugger-to-your-expo-react-native-project-db1d631fad02).
 
-### Debugging with React DevTools
+## Debugging with React DevTools
 
 React DevTools is a great way to get a look at each of your components' props and state. First, you'll need to run
 
@@ -152,7 +152,7 @@ After running `npx expo start` in your project's root directory, use a separate 
 
 React DevTools can also be paired with remote debugging, allowing you to inspect props, state, and instance properties in the Chrome console. If you have any questions on setting that up, give the next section a look!
 
-### Remote debugging with Chrome Developer Tools
+## Remote debugging with Chrome Developer Tools
 
 You can debug React Native apps using the Chrome debugger tools. Rather than running your app's JavaScript on your phone, it will instead run it inside of a webworker in Chrome. You can then set breakpoints, inspect variables, execute code, etc., as you would when debugging a web app.
 
@@ -164,15 +164,15 @@ You can debug React Native apps using the Chrome debugger tools. Rather than run
 
 - Line numbers for `console.log` statements don't work by default when using Chrome debugging. To get correct line numbers open up the Chrome Dev Tools settings, go to the "Blackboxing" tab, make sure that "Blackbox content scripts" is checked, and add **expo/build/logs/RemoteConsole.js** as a pattern with "Blackbox" selected.
 
-#### Troubleshooting localhost debugging
+### Troubleshooting localhost debugging
 
 When you run a project on your device with `npx expo start` or `npx expo run:android`, the Expo CLI automatically tells your device to forward `localhost:19000` to your development machine, as long as your device is plugged in or emulator is running. If you are using `localhost` for debugging and it isn't working, close the app and open it up again using `Open on Android`. Alternatively, you can use the following `adb` command if you have the Android developer tools installed: `adb reverse tcp:19000 tcp:19000`.
 
-#### Source maps and async functions
+### Source maps and async functions
 
 Source maps and async functions aren't 100% reliable. React Native doesn't play well with Chrome's source mapping in every case, so if you want to make sure you're breakpointing in the correct place, you should use the `debugger` call directly from your code.
 
-### Debugging production apps with Sentry
+## Debugging production apps with Sentry
 
 In a perfect world, your app would ship without any bugs. However, that's usually not the case. So, it's a good idea to implement a crash and bug reporting system into your app. This way, if any user experiences a fatal JS error (or any event that you've configured to notify Sentry) you can see the details in your Sentry dashboard.
 
