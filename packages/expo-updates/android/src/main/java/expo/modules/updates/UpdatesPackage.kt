@@ -29,7 +29,7 @@ import expo.modules.updates.UpdatesController
  * applicable environments.
  */
 class UpdatesPackage : Package {
-  private val useNativeDebug = BuildConfig.EX_UPDATES_NATIVE_DEBUG
+  private val useNativeDebug = BuildConfig.EX_UPDATES_NATIVE_DEBUG || true
   private var mShouldAutoSetup: Boolean? = null
 
   override fun createInternalModules(context: Context): List<InternalModule> {

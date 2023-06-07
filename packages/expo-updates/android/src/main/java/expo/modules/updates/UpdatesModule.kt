@@ -66,7 +66,7 @@ class UpdatesModule(
         constants["runtimeVersion"] = updatesServiceLocal.configuration.runtimeVersion ?: ""
         constants["checkAutomatically"] = updatesServiceLocal.configuration.checkOnLaunch.toJSString()
         constants["channel"] = updatesServiceLocal.configuration.requestHeaders["expo-channel-name"] ?: ""
-        constants["nativeDebug"] = BuildConfig.EX_UPDATES_NATIVE_DEBUG
+        constants["nativeDebug"] = true
 
         val launchedUpdate = updatesServiceLocal.launchedUpdate
         if (launchedUpdate != null) {
@@ -141,69 +141,71 @@ class UpdatesModule(
         )
         return
       }
-      val databaseHolder = updatesServiceLocal.databaseHolder
-      val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(
-        databaseHolder.database,
-        updatesServiceLocal.configuration,
-        updatesServiceLocal.launchedUpdate,
-        updatesServiceLocal.embeddedUpdate
-      )
-      databaseHolder.releaseDatabase()
-      updatesServiceLocal.fileDownloader.downloadRemoteUpdate(
-        updatesServiceLocal.configuration,
-        extraHeaders,
-        context,
-        object : RemoteUpdateDownloadCallback {
-          override fun onFailure(message: String, e: Exception) {
-            promise.reject("ERR_UPDATES_CHECK", message, e)
-            Log.e(TAG, message, e)
-          }
+      AsyncTask.execute {
+        val databaseHolder = updatesServiceLocal.databaseHolder
+        val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(
+          databaseHolder.database,
+          updatesServiceLocal.configuration,
+          updatesServiceLocal.launchedUpdate,
+          updatesServiceLocal.embeddedUpdate
+        )
+        databaseHolder.releaseDatabase()
+        updatesServiceLocal.fileDownloader.downloadRemoteUpdate(
+          updatesServiceLocal.configuration,
+          extraHeaders,
+          context,
+          object : RemoteUpdateDownloadCallback {
+            override fun onFailure(message: String, e: Exception) {
+              promise.reject("ERR_UPDATES_CHECK", message, e)
+              Log.e(TAG, message, e)
+            }
 
-          override fun onSuccess(updateResponse: UpdateResponse) {
-            val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
-            val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
+            override fun onSuccess(updateResponse: UpdateResponse) {
+              val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
+              val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
 
-            val updateInfo = Bundle()
-            if (updateDirective != null) {
-              if (updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) {
-                updateInfo.putBoolean("isRollBackToEmbedded", true)
+              val updateInfo = Bundle()
+              if (updateDirective != null) {
+                if (updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) {
+                  updateInfo.putBoolean("isRollBackToEmbedded", true)
+                  promise.resolve(updateInfo)
+                  return
+                }
+              }
+
+              if (updateManifest == null) {
+                updateInfo.putBoolean("isAvailable", false)
                 promise.resolve(updateInfo)
                 return
               }
-            }
 
-            if (updateManifest == null) {
-              updateInfo.putBoolean("isAvailable", false)
-              promise.resolve(updateInfo)
-              return
-            }
+              val launchedUpdate = updatesServiceLocal.launchedUpdate
+              if (launchedUpdate == null) {
+                // this shouldn't ever happen, but if we don't have anything to compare
+                // the new manifest to, let the user know an update is available
+                updateInfo.putBoolean("isAvailable", true)
+                updateInfo.putString("manifestString", updateManifest.manifest.toString())
+                promise.resolve(updateInfo)
+                return
+              }
 
-            val launchedUpdate = updatesServiceLocal.launchedUpdate
-            if (launchedUpdate == null) {
-              // this shouldn't ever happen, but if we don't have anything to compare
-              // the new manifest to, let the user know an update is available
-              updateInfo.putBoolean("isAvailable", true)
-              updateInfo.putString("manifestString", updateManifest.manifest.toString())
-              promise.resolve(updateInfo)
-              return
-            }
-
-            if (updatesServiceLocal.selectionPolicy.shouldLoadNewUpdate(
-                updateManifest.updateEntity,
-                launchedUpdate,
-                updateResponse.responseHeaderData?.manifestFilters
-              )
-            ) {
-              updateInfo.putBoolean("isAvailable", true)
-              updateInfo.putString("manifestString", updateManifest.manifest.toString())
-              promise.resolve(updateInfo)
-            } else {
-              updateInfo.putBoolean("isAvailable", false)
-              promise.resolve(updateInfo)
+              if (updatesServiceLocal.selectionPolicy.shouldLoadNewUpdate(
+                  updateManifest.updateEntity,
+                  launchedUpdate,
+                  updateResponse.responseHeaderData?.manifestFilters
+                )
+              ) {
+                updateInfo.putBoolean("isAvailable", true)
+                updateInfo.putString("manifestString", updateManifest.manifest.toString())
+                promise.resolve(updateInfo)
+              } else {
+                updateInfo.putBoolean("isAvailable", false)
+                promise.resolve(updateInfo)
+              }
             }
           }
-        }
-      )
+        )
+      }
     } catch (e: IllegalStateException) {
       promise.reject(
         "ERR_UPDATES_CHECK",

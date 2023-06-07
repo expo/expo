@@ -6,7 +6,6 @@ import expo.modules.jsonutils.require
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.entity.AssetEntity
-import expo.modules.structuredheaders.Dictionary
 import expo.modules.updates.launcher.NoDatabaseLauncher
 import expo.modules.updates.selectionpolicy.SelectionPolicies
 import okhttp3.*
@@ -24,7 +23,6 @@ import java.io.ByteArrayOutputStream
 import expo.modules.easclient.EASClientID
 import okhttp3.Headers.Companion.toHeaders
 import expo.modules.jsonutils.getNullable
-import expo.modules.structuredheaders.StringItem
 import expo.modules.updates.codesigning.ValidationResult
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.UpdateEntity
