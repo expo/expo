@@ -74,6 +74,17 @@ This feature is only available when using the dev client, it is not available wh
 
 > **info** See the [Inspecting network traffic](#inspecting-network-traffic) for alternative ways to inspect network requests.
 
+## Debugging with React DevTools
+
+React DevTools is a great way to get a look at each of your components' props and state. You can open the React DevTools by pressing <kbd>Shift</kbd> + <kbd>m</kbd> in the terminal where Expo was started. Once you have opened the React DevTools, it will appear as below:
+
+<ImageSpotlight
+  alt="Inspect your components using the React DevTools"
+  src="/static/images/debugging/react-devtools.png"
+/>
+
+React DevTools can also be paired with the [element inspector](#showhide-element-inspector), allowing you to inspect props, state, and instance properties by tapping components inside your app.
+
 ## Developer menu
 
 This menu gives you access to several functions which are useful for debugging and is built into the Expo Go or dev client apps. If you are using the emulator, simulator, or have your device connected via USB, you can open this menu by pressing <kbd>m</kbd> in the terminal where Expo was started.
@@ -185,28 +196,6 @@ There are however [some limitations](https://github.com/jhen0409/react-native-de
 - [Fiddler](http://www.telerik.com/fiddler)
 
 > In bare workflow apps you can use [Flipper](https://fbflipper.com/) to inspect network traffic.
-
-## Debugging with React DevTools
-
-React DevTools is a great way to get a look at each of your components' props and state. First, you'll need to run
-
-<Terminal
-  cmdCopy="npm install -g react-devtools"
-  cmd={[
-    '# Install React DevTools with npm',
-    '$ npm install -g react-devtools',
-    '',
-    '# If you are using Expo SDK <= 37: npm install -g react-devtools@^3',
-  ]}
-/>
-
-(if you don't want to install it globally, run `npm install --dev react-devtools` to install it as a project dependency).
-
-After running `npx expo start` in your project's root directory, use a separate terminal tab to run `react-devtools`. This will open up the React DevTools console (for it to connect, you need to select `Debug remote JS` from the Developer Menu in the Expo Go app). From this console, you can search for your React components at the top, or open up the Developer Menu and enable the Element Inspector. Once you do that, you can tap on any element on screen and React DevTools will automatically find and display that element in the tree. From there, you can inspect the elements state, props, etc.
-
-<Video file="debugging/react-devtools.mp4" />
-
-React DevTools can also be paired with remote debugging, allowing you to inspect props, state, and instance properties in the Chrome console. If you have any questions on setting that up, give the next section a look!
 
 ## Debugging production apps with Sentry
 
