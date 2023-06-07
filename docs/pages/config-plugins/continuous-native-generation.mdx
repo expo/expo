@@ -16,16 +16,28 @@ Continuous Native Generation is an abstract concept that describes the process o
 
 > The goal of CNG is to enable developers to build more powerful apps without compromising on iteration speed.
 
-## Implementation
+## Usage in React Native
 
-Continuous Native Generation should be thought of as a pattern, not a specific implementation. The pattern is as follows:
+Any React Native app can leverage **Continuous Native Generation** by using [Expo Prebuild](/workflow/prebuild). This enables you to automate upgrading React Native, installing/uninstalling libraries, white-labeling at scale, sharing config across multiple apps, generating assets, reducing [orphaned code](workflow/prebuild/#orphaned-code), and more––generally speaking, it allows you to build more powerful apps, at larger scales, without compromising on iteration speed.
 
-1. A developer writes a configuration file that describes the native project they want to generate.
-2. The configuration file is passed to a tool that generates the native source code and configuration.
-3. The native project is compiled into a native app.
-4. The generated source code and configuration are discarded.
+Expo as a framework enables **Continuous Native Generation** by combining the following tools:
 
-The reference implementation comes from the Expo framework, specifically Expo Config Plugins, which has been proven to work at scale with extensive adoption:
+1. The [Expo Config][expo-config] file (`app.json`, `app.config.js`).
+2. Arguments passed to the `npx expo prebuild` command.
+3. Version of `expo` that's installed in the project and its corresponding [prebuild template](#templates).
+4. [Autolinking][autolinking], for linking [native modules][native-modules] found in the `package.json`.
+5. Native Subscribers, for reducing native code side-effects in entry files.
+6. EAS Credentials for code signing additional targets and entitlments.
+
+This boils down to a workflow where a user can express any native application with the `app.json` and generate that project--continuously--by running `npx expo prebuild`.
+
+## Community Adoption
+
+Many complex libraries and services already support CNG via Expo Prebuild, [MapBox](https://github.com/rnmapbox/maps), [OneSignal](https://github.com/OneSignal/onesignal-expo-plugin), [Stripe](https://github.com/stripe/stripe-react-native), and [React Native Firebase](https://rnfirebase.io/#expo) to name a few examples.
+
+Libraries that don't have first-party integration are also supported in the [community Config Plugins repository](https://github.com/expo/config-plugins/).
+
+But the best part; Expo Config Plugins have first-class support for building locally and adding to your project without any third-party intervention or NPM publishing. This enables you to move fast and patch things!
 
 <a
   aria-label="Expo Config Plugins downloads"
@@ -39,40 +51,32 @@ The reference implementation comes from the Expo framework, specifically Expo Co
 
 > Note: NPM downloads do not exactly reflect the number of users, but it's a rough estimate of adoption.
 
-## Usage in Expo
+### Adoption by Library Authors
 
-Expo supports **Continuous Native Generation** by combining the following tools:
+React Native libraries can _adopt_ Continuous Native Generation in various ways depending on the complexity of their libraries. Here, we outline different scenarios for library adoption.
 
-1. The [Expo Config][expo-config] file (`app.json`, `app.config.js`).
-2. Arguments passed to the `npx expo prebuild` command.
-3. Version of `expo` that's installed in the project and its corresponding [prebuild template](#templates).
-4. [Autolinking][autolinking], for linking [native modules][native-modules] found in the `package.json`.
-5. Native Subscribers, for reducing native code side-effects in entry files.
+- **No native code or configuration side-effects**: Libraries without native code or configuration side-effects, such as `react-native-blurhash`, can seamlessly integrate with `npx expo prebuild`. They can rely on Node Module Resolution and [Expo Autolinking][autolinking] to link into the native project without requiring any additional configuration.
 
-This boils down to a workflow where a user can express any native application with the `app.json` and generate that project--continuously--by running `npx expo prebuild`.
+- **Native code with no additional setup after install**: Libraries with native code can often be installed and linked automatically with [Expo Autolinking][autolinking] which runs before the native app is built.
 
-Community Adoption
-The React Native community can adopt Continuous Native Generation (CNG) in various ways, depending on the complexity of their libraries. Here, we outline different scenarios for library adoption.
+- **Additional configuration side-effects and setup**: Libraries which require additional configuration side-effects can adopt CNG by creating [Expo Config Plugins][config-plugins] for their libraries. This approach enables library authors to automate adding values like permission messages to the `Info.plist`, or injecting targets in the Xcode project.
 
-No Native Code or Configuration Side Effects: Libraries without native code or configuration side effects, such as react-native-blurhash, can seamlessly integrate with npx expo prebuild. They can rely on Node Module Resolution and [Expo Autolinking][autolinking] to link into the native project without requiring any additional configuration.
+- **Libraries Dependent on Native Runtime Hooks**: Libraries that depend on specific native runtime hooks, such as intercepting the initial launch URL via the AppDelegate, MainActivity, MainApplication, etc., can utilize [**Lifecycle listeners**](https://docs.expo.dev/modules/android-lifecycle-listeners/) to minimize the side-effects of their library.
 
-Native Code or Configuration Side Effects: Libraries with native code or configuration side effects can adopt CNG by creating [Expo Config Plugins][config-plugins] for their libraries. This approach enables library authors to automate the configuration side effects and allows users to install a library with all required configuration side effects added to their native project automatically.
-
-Libraries Dependent on Native Runtime Hooks: Libraries that depend on specific native runtime hooks, such as intercepting the initial launch URL, can utilize Native App Subscribers to minimize the side effects of their library.
-
-While library authors' adoption of CNG is not a prerequisite for using npx expo prebuild, it significantly enhances the user experience. If a library author has not yet adopted CNG, users can still use npx expo prebuild by creating local Config Plugins to modify the native generation pipeline. This flexibility ensures that the adoption of CNG is accessible and beneficial to all users within the React Native community.
+While library authors' adoption of CNG is not a prerequisite for using `npx expo prebuild`, it significantly enhances the user experience.
+If a library author has not yet adopted CNG, users can still use npx expo prebuild by creating local Config Plugins to modify the native generation pipeline. This flexibility ensures that the adoption of CNG is accessible and beneficial to all users within the React Native community.
 
 ## Success
 
-CNG is designed to empower developers to build better apps than they normally could, by fragmenting architecture into testable and maintainable pieces. This allows developers to build more powerful apps without compromising on iteration speed.
+CNG is designed to empower developers to build better apps than they normally could, by dividing configuration into testable and maintainable pieces. This allows developers to build more powerful apps without compromising on iteration speed.
 
-This pattern has been proven to work in the Expo community in the following ways.
+This pattern has been proven to work in the React Native community in the following ways...
 
 ### Upgrades
 
-React Native developers who don't use continuous native generation have reported that upgrading their apps to the latest version of React Native is the number one weakness of the library. cite: [React Native Survey (2022)](https://results.stateofreactnative.com/opinions/opinions_pain_points).
+React Native developers who don't use **Continuous Native Generation** have reported that upgrading their apps to the latest version of React Native is the number one weakness of the library. cite: [React Native Survey (2022)](https://results.stateofreactnative.com/opinions/opinions_pain_points).
 
-Expo developers, using CNG via the `npx expo prebuild` command have remarked that upgrading their complex native apps is nearly as easy as updating a website.
+When using CNG, the upgrade process simply involves upgrading the NPM dependencies, `app.json`, and re-running `npx expo prebuild --clean`.
 
 ### Features
 
