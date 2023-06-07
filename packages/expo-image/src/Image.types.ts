@@ -43,11 +43,11 @@ export type ImageSource = {
    */
   cacheKey?: string;
   /**
-   * @platform web
    * The max width of the viewport for which this source should be selected.
    * Has no effect if `source` prop is not an array or has only 1 element.
    * Has no effect if `responsivePolicy` is not set to `static`.
    * Ignored if `blurhash` or `thumbhash` is provided (image hashes are never selected if passed in an array).
+   * @platform web
    */
   webMaxViewportWidth?: number;
 };
@@ -166,7 +166,7 @@ export interface ImageProps extends ViewProps {
   cachePolicy?: 'none' | 'disk' | 'memory' | 'memory-disk' | /** @hidden */ null;
 
   /**
-   * Controls the selection of the image source based on the container or viewport size.
+   * Controls the selection of the image source based on the container or viewport size on the web.
    * If set to `'static'`, the browser selects the correct source based on user's viewport width. Works with static rendering.
    * Make sure to set the `webMaxViewportWidth` property on all sources.
    * The source with the largest `webMaxViewportWidth` is used even for larger viewports.
@@ -175,7 +175,7 @@ export interface ImageProps extends ViewProps {
    *
    * If set to `'live'`, the component will select the correct source on every resize based on container size. Does not work with static rendering.
    *
-   * @default 'static' if all sources have the `'webMaxViewportWidth'` property set, otherwise 'live'
+   * @default `'static'` if all sources have the `'webMaxViewportWidth'` property set, otherwise `'initial'`
    * @platform web
    */
   responsivePolicy?: 'live' | 'initial' | 'static';

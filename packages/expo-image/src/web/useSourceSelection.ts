@@ -48,7 +48,7 @@ function getDefaultResponsivePolicy(sources: ImageSource[] | undefined) {
   const allSourcesHaveStaticSizeSelectionInfo = sources?.every(
     (source) => typeof source === 'object' && source.webMaxViewportWidth != null
   );
-  return allSourcesHaveStaticSizeSelectionInfo ? 'static' : 'live';
+  return allSourcesHaveStaticSizeSelectionInfo ? 'static' : 'initial';
 }
 
 function selectSource(
