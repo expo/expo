@@ -41,7 +41,7 @@ function isBlurSupported(): boolean {
 
 function getBlurStyle({ intensity, tint }): Record<string, string> {
   const style: Record<string, string> = {
-    backgroundColor: getBackgroundColor(intensity, tint),
+    backgroundColor: getBackgroundColor(Math.min(intensity, 100), tint),
   };
 
   if (isBlurSupported()) {

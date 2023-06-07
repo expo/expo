@@ -32,7 +32,7 @@ function isBlurSupported() {
 }
 function getBlurStyle({ intensity, tint }) {
     const style = {
-        backgroundColor: getBackgroundColor(intensity, tint),
+        backgroundColor: getBackgroundColor(Math.min(intensity, 100), tint),
     };
     if (isBlurSupported()) {
         const blur = `saturate(180%) blur(${Math.min(intensity, 100) * 0.2}px)`;
