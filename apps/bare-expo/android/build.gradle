@@ -5,7 +5,7 @@ import groovy.json.JsonSlurper
 buildscript {
     ext {
         buildToolsVersion = '33.0.0'
-        gradlePluginVersion = '7.4.1'
+        gradlePluginVersion = '7.4.2'
         minSdkVersion = 21
         compileSdkVersion = 33
         targetSdkVersion = 33
@@ -80,6 +80,9 @@ allprojects {
             // expo-camera bundles a custom com.google.android:cameraview
             url "$rootDir/../node_modules/expo-camera/android/maven"
             url(new File(["node", "--print", "require.resolve('expo-camera/package.json')"].execute(null, rootDir).text.trim(), "../android/maven"))
+        }
+        maven {
+            url(new File(["node", "--print", "require.resolve('detox/package.json')"].execute(null, rootDir).text.trim(), "../Detox-android"))
         }
 
         google()

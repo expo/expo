@@ -6,12 +6,12 @@ apply plugin: 'kotlin-kapt'
 apply from: new File(rootDir, "versioning_linking.gradle")
 
 def reactProperties = new Properties()
-file("${project(':ReactAndroid').projectDir}/gradle.properties").withInputStream { reactProperties.load(it) }
+file("${project(':packages:react-native:ReactAndroid').projectDir}/gradle.properties").withInputStream { reactProperties.load(it) }
 
 
 def prebuiltHermesDir = findProperty("expo.prebuiltHermesDir") ?: file("${rootDir}/prebuiltHermes")
 def prebuiltHermesVersion = file("${prebuiltHermesDir}/.hermesversion").exists() ? file("${prebuiltHermesDir}/.hermesversion").text : null
-def currentHermesVersion = file("${project(':ReactAndroid').projectDir}/../sdks/.hermesversion").exists() ? file("${project(':ReactAndroid').projectDir}/../sdks/.hermesversion").text : null
+def currentHermesVersion = file("${project(':packages:react-native:ReactAndroid').projectDir}/../sdks/.hermesversion").exists() ? file("${project(':packages:react-native:ReactAndroid').projectDir}/../sdks/.hermesversion").text : null
 def buildHermesSource = currentHermesVersion != prebuiltHermesVersion
 logger.info(":expoview - buildHermesSource[${buildHermesSource}]")
 

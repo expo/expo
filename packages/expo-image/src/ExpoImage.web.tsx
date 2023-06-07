@@ -147,6 +147,7 @@ export default function ExpoImage({
     <div
       ref={containerRef}
       className="expo-image-container"
+      // @ts-expect-error
       style={{
         aspectRatio: String(aspectRatio),
         backgroundColor: backgroundColor?.toString(),

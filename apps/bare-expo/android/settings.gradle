@@ -11,7 +11,7 @@ useExpoModules()
 rootProject.name = 'BareExpo'
 
 include ':app'
-includeBuild(new File(["node", "--print", "require.resolve('react-native-gradle-plugin/package.json')"].execute(null, rootDir).text.trim()).getParentFile())
+includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json')"].execute(null, rootDir).text.trim()).getParentFile())
 
 if (settings.hasProperty("buildReactNativeFromSource") && settings.buildReactNativeFromSource == "true") {
   include(":ReactAndroid")

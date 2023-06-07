@@ -199,7 +199,7 @@ if (CLIENT_SIDE_BUILD) {
     configurations.maybeCreate("default")
 }
 
-def reactNativeRootDir = Paths.get(projectDir.getPath(), '../../../../../react-native-lab/react-native').toFile()
+def reactNativeRootDir = Paths.get(projectDir.getPath(), '../../../../../react-native-lab/react-native/packages/react-native').toFile()
 
 def reactProperties = new Properties()
 file("$reactNativeRootDir/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
@@ -736,7 +736,7 @@ if (REACT_NATIVE_MINOR_VERSION < 71) {
     Task resolveGlog = resolveTaskFactory("resolveGlog", "glog-${GLOG_VERSION}.tar.gz", reactNativeAndroidDownloadDir, downloadsDir)
 
     if (isNewArchitectureEnabled()) {
-        def reactNativeAndroidProject = findProject(":ReactAndroid")
+        def reactNativeAndroidProject = findProject(":packages:react-native:ReactAndroid")
         if (reactNativeAndroidProject != null) {
             reactNativeAndroidProject.afterEvaluate {
                 def resolveTasks = [resolveBoost, resolveGlog, resolveDoubleConversion, resolveFolly]
@@ -746,13 +746,13 @@ if (REACT_NATIVE_MINOR_VERSION < 71) {
                     if (reactAndroidDownloadTask != null) {
                         task.dependsOn(reactAndroidDownloadTask)
                     } else {
-                        logger.warn("[Reanimated] Failed to find task named `$reactAndroidDownloadTaskName` in `:ReactAndroid` project." +
+                        logger.warn("[Reanimated] Failed to find task named `$reactAndroidDownloadTaskName` in `:packages:react-native:ReactAndroid` project." +
                                 " Explicit dependency between it and $task.name task can not be set.")
                     }
                 })
             }
         } else {
-            throw new GradleException("[Reanimated] Failed to find `:ReactAndroid` project. Explicit dependency between download tasks can not be set.")
+            throw new GradleException("[Reanimated] Failed to find `:packages:react-native:ReactAndroid` project. Explicit dependency between download tasks can not be set.")
         }
     }
 

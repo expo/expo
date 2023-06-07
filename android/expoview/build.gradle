@@ -6,18 +6,12 @@ apply plugin: 'kotlin-kapt'
 apply from: new File(rootDir, "versioning_linking.gradle")
 
 def reactProperties = new Properties()
-file("${project(':ReactAndroid').projectDir}/gradle.properties").withInputStream { reactProperties.load(it) }
+file("${project(':packages:react-native:ReactAndroid').projectDir}/gradle.properties").withInputStream { reactProperties.load(it) }
 
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 //maven repository info
 group = 'host.exp.exponent'
 version = '45.0.0'
-
-// Creating sources with comments
-task androidSourcesJar(type: Jar) {
-  classifier = 'sources'
-  from android.sourceSets.main.java.srcDirs
-}
 
 afterEvaluate {
   publishing {
@@ -25,8 +19,6 @@ afterEvaluate {
       // use `versionedRelease` configuration when publishing to maven
       versionedRelease(MavenPublication) {
         from components.versionedRelease
-        // Add additional sourcesJar to artifacts
-        artifact(androidSourcesJar)
       }
     }
     repositories {
@@ -40,7 +32,7 @@ afterEvaluate {
 
 def prebuiltHermesDir = findProperty("expo.prebuiltHermesDir") ?: file("${rootDir}/prebuiltHermes")
 def prebuiltHermesVersion = file("${prebuiltHermesDir}/.hermesversion").exists() ? file("${prebuiltHermesDir}/.hermesversion").text : null
-def currentHermesVersion = file("${project(':ReactAndroid').projectDir}/../sdks/.hermesversion").exists() ? file("${project(':ReactAndroid').projectDir}/../sdks/.hermesversion").text : null
+def currentHermesVersion = file("${project(':packages:react-native:ReactAndroid').projectDir}/../sdks/.hermesversion").exists() ? file("${project(':packages:react-native:ReactAndroid').projectDir}/../sdks/.hermesversion").text : null
 def buildHermesSource = currentHermesVersion != prebuiltHermesVersion
 logger.info(":expoview - buildHermesSource[${buildHermesSource}]")
 
@@ -132,6 +124,12 @@ android {
 
   // use `versionedRelease` configuration when publishing to maven
   defaultPublishConfig "versionedRelease"
+
+  publishing {
+    singleVariant("release") {
+      withSourcesJar()
+    }
+  }
 }
 
 // WHEN_VERSIONING_REMOVE_FROM_HERE
@@ -190,13 +188,13 @@ dependencies {
 
   api 'org.webkit:android-jsc:r250231' // needs to be before react-native
 
-  api project(':ReactAndroid')
+  api project(':packages:react-native:ReactAndroid')
 
   if (!buildHermesSource) {
     debugImplementation(files("${prebuiltHermesDir}/hermes-engine-debug.aar"))
     releaseImplementation(files("${prebuiltHermesDir}/hermes-engine-release.aar"))
   } else {
-    implementation(project(':ReactAndroid:hermes-engine')) {
+    implementation(project(':packages:react-native:ReactAndroid:hermes-engine')) {
       exclude(group:'com.facebook.fbjni', module: 'fbjni')
     }
   }

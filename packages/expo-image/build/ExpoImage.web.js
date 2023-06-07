@@ -80,7 +80,9 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
                 ...style,
             }, className: className, priority: priority, contentPosition: selectedSource ? contentPosition : { top: '50%', left: '50%' }, hashPlaceholderContentPosition: contentPosition, hashPlaceholderStyle: blurhashStyle, accessibilityLabel: props.accessibilityLabel })),
     ];
-    return (React.createElement("div", { ref: containerRef, className: "expo-image-container", style: {
+    return (React.createElement("div", { ref: containerRef, className: "expo-image-container", 
+        // @ts-expect-error
+        style: {
             aspectRatio: String(aspectRatio),
             backgroundColor: backgroundColor?.toString(),
             transform: transform?.toString(),
