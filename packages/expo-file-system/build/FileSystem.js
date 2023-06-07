@@ -153,7 +153,7 @@ export async function readDirectoryAsync(fileUri) {
     if (!ExponentFileSystem.readDirectoryAsync) {
         throw new UnavailabilityError('expo-file-system', 'readDirectoryAsync');
     }
-    return await ExponentFileSystem.readDirectoryAsync(fileUri, {});
+    return await ExponentFileSystem.readDirectoryAsync(fileUri);
 }
 /**
  * Gets the available internal disk storage size, in bytes. This returns the free space on the data partition that hosts all of the internal storage for all apps on the device.
@@ -563,7 +563,7 @@ export var StorageAccessFramework;
         if (!ExponentFileSystem.readSAFDirectoryAsync) {
             throw new UnavailabilityError('expo-file-system', 'StorageAccessFramework.readDirectoryAsync');
         }
-        return await ExponentFileSystem.readSAFDirectoryAsync(dirUri, {});
+        return await ExponentFileSystem.readSAFDirectoryAsync(dirUri);
     }
     StorageAccessFramework.readDirectoryAsync = readDirectoryAsync;
     /**

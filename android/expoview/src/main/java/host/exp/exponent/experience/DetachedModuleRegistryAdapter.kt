@@ -49,9 +49,6 @@ open class DetachedModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegi
     // Overriding ScopedUIManagerModuleWrapper from ReactAdapterPackage
     moduleRegistry.registerInternalModule(ScopedUIManagerModuleWrapper(reactContext))
 
-    // Overriding expo-file-system FileSystemModule
-    moduleRegistry.registerExportedModule(ScopedFileSystemModule(scopedContext))
-
     // Overriding expo-secure-store
     moduleRegistry.registerExportedModule(ScopedSecureStoreModule(scopedContext))
 
