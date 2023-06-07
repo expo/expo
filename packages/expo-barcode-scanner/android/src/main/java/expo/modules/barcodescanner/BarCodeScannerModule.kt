@@ -3,7 +3,7 @@ package expo.modules.barcodescanner
 import android.Manifest
 import android.content.Context
 import android.graphics.Bitmap
-import com.google.android.gms.vision.barcode.Barcode
+import com.google.mlkit.vision.barcode.common.Barcode
 import expo.modules.barcodescanner.utils.BarCodeScannerResultSerializer
 import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
 import expo.modules.interfaces.imageloader.ImageLoaderInterface.ResultListener
@@ -25,19 +25,19 @@ class BarCodeScannerModule : Module() {
 
     Constants(
       "BarCodeType" to mapOf(
-        "aztec" to Barcode.AZTEC,
-        "ean13" to Barcode.EAN_13,
-        "ean8" to Barcode.EAN_8,
-        "qr" to Barcode.QR_CODE,
-        "pdf417" to Barcode.PDF417,
-        "upc_e" to Barcode.UPC_E,
-        "datamatrix" to Barcode.DATA_MATRIX,
-        "code39" to Barcode.CODE_39,
-        "code93" to Barcode.CODE_93,
-        "itf14" to Barcode.ITF,
-        "codabar" to Barcode.CODABAR,
-        "code128" to Barcode.CODE_128,
-        "upc_a" to Barcode.UPC_A,
+        "aztec" to Barcode.FORMAT_AZTEC,
+        "ean13" to Barcode.FORMAT_EAN_13,
+        "ean8" to Barcode.FORMAT_EAN_8,
+        "qr" to Barcode.FORMAT_QR_CODE,
+        "pdf417" to Barcode.FORMAT_PDF417,
+        "upc_e" to Barcode.FORMAT_UPC_E,
+        "datamatrix" to Barcode.FORMAT_DATA_MATRIX,
+        "code39" to Barcode.FORMAT_CODE_39,
+        "code93" to Barcode.FORMAT_CODE_93,
+        "itf14" to Barcode.FORMAT_ITF,
+        "codabar" to Barcode.FORMAT_CODABAR,
+        "code128" to Barcode.FORMAT_CODE_128,
+        "upc_a" to Barcode.FORMAT_UPC_A,
       ),
       "Type" to mapOf(
         "front" to ExpoBarCodeScanner.CAMERA_TYPE_FRONT,
