@@ -18,6 +18,11 @@ Pod::Spec.new do |s|
   s.dependency 'ExpoModulesCore'
   s.dependency 'React-Core'
 
+  unless defined?(install_modules_dependencies)
+    # `install_modules_dependencies` is defined from react_native_pods.rb.
+    # when running with `pod ipc spec`, this method is not defined and we have to require manually.
+    require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
+  end
   install_modules_dependencies(s)
 
   # Swift/Objective-C compatibility
