@@ -11,6 +11,10 @@ interface UpdatesStateChangeEventSender {
   fun sendUpdateStateChangeEventToBridge(eventType: UpdatesStateEventType, body: Bundle = Bundle())
 }
 
+class UpdatesStateError : Error() {
+  override var message: String? = null
+}
+
 /**
 All the possible states the machine can take.
  */
@@ -80,7 +84,9 @@ data class UpdatesStateEvent(
     get() {
       val message = body["message"] as? String?
       return if (message != null) {
-        Error(message)
+        val error = UpdatesStateError()
+        error.message = message
+        error
       } else {
         null
       }
@@ -239,7 +245,10 @@ class UpdatesStateMachine {
    */
   private fun transition(event: UpdatesStateEvent): Boolean {
     val allowedEvents: List<UpdatesStateEventType> = updatesStateAllowedEvents[state] ?: listOf()
-    assert(allowedEvents.contains(event.type))
+    if (!allowedEvents.contains(event.type)) {
+      // Optionally put an assert here when testing to catch bad state transitions in E2E tests
+      return false
+    }
     state = updatesStateTransitions[event.type] ?: UpdatesStateValue.Idle
     return true
   }

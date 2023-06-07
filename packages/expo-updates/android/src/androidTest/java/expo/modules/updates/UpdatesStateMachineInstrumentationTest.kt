@@ -125,4 +125,99 @@ class UpdatesStateMachineInstrumentationTest {
     Assert.assertNull(machine.context.latestManifest)
     Assert.assertEquals(UpdatesStateEventType.CheckCompleteUnavailable, testStateChangeEventSender.lastEventType)
   }
+
+  @Test
+  fun test_handleDownloadAndDownloadComplete() {
+    val machine = UpdatesStateMachine()
+    val testStateChangeEventSender = TestStateChangeEventSender()
+    machine.changeEventSender = testStateChangeEventSender
+
+    machine.processEvent(UpdatesStateEvent(UpdatesStateEventType.Download))
+
+    Assert.assertEquals(UpdatesStateValue.Downloading, machine.state)
+    Assert.assertEquals(UpdatesStateEventType.Download, testStateChangeEventSender.lastEventType)
+
+    machine.processEvent(
+      UpdatesStateEvent(
+        UpdatesStateEventType.DownloadComplete,
+        mapOf(
+          "manifest" to TestManifest(JSONObject("{\"updateId\":\"0000-xxxx\"}"))
+        )
+      )
+    )
+    Assert.assertEquals(UpdatesStateValue.Idle, machine.state)
+    Assert.assertFalse(machine.context.isDownloading)
+    Assert.assertNull(machine.context.downloadError)
+    Assert.assertEquals("0000-xxxx", (machine.context.latestManifest as? TestManifest)?.updateId ?: "")
+    Assert.assertEquals("0000-xxxx", (machine.context.downloadedManifest as? TestManifest)?.updateId ?: "")
+    Assert.assertTrue(machine.context.isUpdateAvailable)
+    Assert.assertTrue(machine.context.isUpdatePending)
+    Assert.assertEquals(UpdatesStateEventType.DownloadComplete, testStateChangeEventSender.lastEventType)
+  }
+
+  @Test
+  fun test_handleRollback() {
+    val machine = UpdatesStateMachine()
+    val testStateChangeEventSender = TestStateChangeEventSender()
+    machine.changeEventSender = testStateChangeEventSender
+
+    machine.processEvent(UpdatesStateEvent(UpdatesStateEventType.Check))
+
+    Assert.assertEquals(UpdatesStateValue.Checking, machine.state)
+    Assert.assertEquals(UpdatesStateEventType.Check, testStateChangeEventSender.lastEventType)
+
+    machine.processEvent(
+      UpdatesStateEvent(
+        UpdatesStateEventType.CheckCompleteAvailable,
+        mapOf(
+          "isRollBackToEmbedded" to true
+        )
+      )
+    )
+    Assert.assertEquals(UpdatesStateValue.Idle, machine.state)
+    Assert.assertFalse(machine.context.isChecking)
+    Assert.assertNull(machine.context.checkError)
+    Assert.assertTrue(machine.context.isUpdateAvailable)
+    Assert.assertFalse(machine.context.isUpdatePending)
+    Assert.assertTrue(machine.context.isRollback)
+  }
+
+  @Test
+  fun test_checkError() {
+    val machine = UpdatesStateMachine()
+    val testStateChangeEventSender = TestStateChangeEventSender()
+    machine.changeEventSender = testStateChangeEventSender
+
+    machine.processEvent(UpdatesStateEvent(UpdatesStateEventType.Check))
+
+    Assert.assertEquals(UpdatesStateValue.Checking, machine.state)
+    Assert.assertEquals(UpdatesStateEventType.Check, testStateChangeEventSender.lastEventType)
+
+    machine.processEvent(
+      UpdatesStateEvent(
+        UpdatesStateEventType.CheckError,
+        mapOf(
+          "message" to "A serious error has occurred"
+        )
+      )
+    )
+    Assert.assertEquals(UpdatesStateValue.Idle, machine.state)
+    Assert.assertFalse(machine.context.isChecking)
+    Assert.assertNotNull(machine.context.checkError)
+    Assert.assertFalse(machine.context.isUpdateAvailable)
+    Assert.assertFalse(machine.context.isUpdatePending)
+    Assert.assertFalse(machine.context.isRollback)
+  }
+
+  @Test
+  fun test_invalidTransitions() {
+    val machine = UpdatesStateMachine()
+    machine.processEvent(UpdatesStateEvent(UpdatesStateEventType.Check))
+    Assert.assertEquals(UpdatesStateValue.Checking, machine.state)
+    // Test invalid transitions and ensure that state does not change
+    machine.processEvent(UpdatesStateEvent(UpdatesStateEventType.Download))
+    Assert.assertEquals(UpdatesStateValue.Checking, machine.state)
+    machine.processEvent(UpdatesStateEvent(UpdatesStateEventType.DownloadComplete))
+    Assert.assertEquals(UpdatesStateValue.Checking, machine.state)
+  }
 }
