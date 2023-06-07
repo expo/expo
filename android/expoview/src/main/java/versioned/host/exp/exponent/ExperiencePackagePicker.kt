@@ -23,6 +23,7 @@ import expo.modules.easclient.EASClientModule
 import expo.modules.print.PrintModule
 import expo.modules.facedetector.FaceDetectorPackage
 import expo.modules.filesystem.FileSystemModule
+import expo.modules.filesystem.FileSystemPackage
 import expo.modules.font.FontLoaderPackage
 import expo.modules.gl.GLPackage
 import expo.modules.gl.GLViewModule
@@ -75,6 +76,7 @@ object ExperiencePackagePicker : ModulesProvider {
     ConstantsPackage(),
     ContactsPackage(),
     FaceDetectorPackage(),
+    FileSystemPackage(),
     FontLoaderPackage(),
     GLPackage(),
     ImageLoaderPackage(),

@@ -257,7 +257,7 @@ open class FileSystemModule : Module() {
 
     AsyncFunction("moveAsync") { options: RelocatingOptions ->
       val fromUri = Uri.parse(slashifyFilePath(options.from))
-      ensurePermission(fromUri, Permission.WRITE, "Location '$fromUri' isn't movable.")
+      ensurePermission(Uri.withAppendedPath(fromUri, ".."), Permission.WRITE, "Location '$fromUri' isn't movable.")
       val toUri = Uri.parse(slashifyFilePath(options.to))
       ensurePermission(toUri, Permission.WRITE)
 
