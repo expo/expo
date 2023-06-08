@@ -163,3 +163,36 @@ It's possible to run internal distribution builds non-interactively in CI using 
 {/* (@dsokal) this is not implemented yet */}
 
 {/* When using iOS ad hoc provisioning managed by Expo, if a teammate navigates to this URL on an iOS device that is not yet registered, they will be able to register their device and initiate a new build to include the updated profile that will run on their device. If the ad hoc provisioning profile is not managed by Expo, the user will be asked to contact the organization admin in order to add their device UDID and create a new build compatible with their device. */}
+
+## Managing devices
+You can see any devices registered via `eas device:create` by running:
+<Terminal
+  cmd={[
+    '# List devices registered for ad hoc provisioning',
+    '$ eas device:list',
+  ]}
+  cmdCopy="eas device:list"
+/>
+
+Devices registered with Expo for ad hoc provisioning will only appear on your Apple Developer Portal once they are used when generating a provisioning profile for a new internal build with EAS Build or for resigning an existing build with `eas build:resign`.
+
+### Remove devices
+If a device is no longer in use, it can be removed from this list by running:
+<Terminal
+  cmd={[
+    '# Delete devices from your Expo account, optionally disable them on the Apple Developer Portal',
+    '$ eas device:delete',
+  ]}
+  cmdCopy="eas device:delete"
+/>
+This command will also optionally disable to device on the Apple Developer Portal. Note that disabled devices may still count against Apple's limit of 100 devices for ad hoc distribution per app.
+
+### Rename devices
+Devices added via the website URL/ QR code will default to displaying their UDID when selecting them for an EAS Build. You can assign friendly names to your devices with the following command:
+<Terminal
+  cmd={[
+    '# Rename devices on Expo and the Apple Developer Portal',
+    '$ eas device:rename',
+  ]}
+  cmdCopy="eas device:delete"
+/>
