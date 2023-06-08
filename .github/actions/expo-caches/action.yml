@@ -200,6 +200,7 @@ runs:
         ./gradlew :packages:react-native:ReactAndroid:hermes-engine:assembleDebug
         cp -f ../react-native-lab/react-native/packages/react-native/ReactAndroid/hermes-engine/build/outputs/aar/hermes-engine-release.aar prebuiltHermes/
         cp -f ../react-native-lab/react-native/packages/react-native/ReactAndroid/hermes-engine/build/outputs/aar/hermes-engine-debug.aar prebuiltHermes/
+        ./gradlew clean
       env:
         # Reset reactNativeArchitectures to build all architectures
         ORG_GRADLE_PROJECT_reactNativeArchitectures:
