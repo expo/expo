@@ -3,13 +3,14 @@
 import ExpoModulesCore
 
 public class ExpoSystemUIModule: Module {
+  private static let colorKey = "expoRootBackgroundColor"
   public func definition() -> ModuleDefinition {
     Name("ExpoSystemUI")
 
     OnCreate {
       // TODO: Maybe read from the app manifest instead of from Info.plist.
       // Set / reset the initial color on reload and app start.
-      let color = UserDefaults.standard.integer(forKey: "backgroundColor")
+      let color = UserDefaults.standard.integer(forKey: Self.colorKey)
 
       if color > 0 {
         Self.setBackgroundColorAsync(color: color)
@@ -22,7 +23,7 @@ public class ExpoSystemUIModule: Module {
       Self.getBackgroundColor()
     }
 
-    AsyncFunction("setBackgroundColorAsync") { (color: Int) in
+    AsyncFunction("setBackgroundColorAsync") { (color: Int?) in
       Self.setBackgroundColorAsync(color: color)
     }
   }
@@ -42,6 +43,7 @@ public class ExpoSystemUIModule: Module {
     EXUtilities.performSynchronously {
       if color == nil {
         if let window = UIApplication.shared.delegate?.window {
+          UserDefaults.standard.removeObject(forKey: colorKey)
           let interfaceStyle = window?.traitCollection.userInterfaceStyle
           window?.backgroundColor = nil
 
@@ -56,7 +58,7 @@ public class ExpoSystemUIModule: Module {
         }
         return
       }
-      UserDefaults.standard.set(color, forKey: "backgroundColor")
+      UserDefaults.standard.set(color, forKey: colorKey)
       let backgroundColor = EXUtilities.uiColor(color)
       // Set the app-wide window, this could have future issues when running multiple React apps,
       // i.e. dev client can't use expo-system-ui.

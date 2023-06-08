@@ -4,16 +4,21 @@ import ExpoSystemUI from './ExpoSystemUI';
 
 /**
  * Changes the root view background color.
+ * Call this function in the root file outside of you component.
  *
  * @example
  * ```ts
- * SystemUI.setBackgroundColorAsync("white");
+ * SystemUI.setBackgroundColorAsync("black");
  * ```
  * @param color Any valid [CSS 3 (SVG) color](http://www.w3.org/TR/css3-color/#svg-color).
  */
-export async function setBackgroundColorAsync(color: ColorValue): Promise<void> {
-  const colorNumber = Platform.OS === 'web' ? color : processColor(color);
-  return await ExpoSystemUI.setBackgroundColorAsync(colorNumber);
+export async function setBackgroundColorAsync(color: ColorValue | null): Promise<void> {
+  if (color === null) {
+    return await ExpoSystemUI.setBackgroundColorAsync(null);
+  } else {
+    const colorNumber = Platform.OS === 'web' ? color : processColor(color);
+    return await ExpoSystemUI.setBackgroundColorAsync(colorNumber);
+  }
 }
 
 /**
@@ -27,21 +32,4 @@ export async function setBackgroundColorAsync(color: ColorValue): Promise<void> 
  */
 export async function getBackgroundColorAsync(): Promise<ColorValue | null> {
   return await ExpoSystemUI.getBackgroundColorAsync();
-}
-
-/**
- * Restores the root view background color.
- * Call this function in your apps root component to restore the most recently set background color.
- *
- * @example
- * ```ts
- * await SystemUI.restoreBackgroundColorAsync();
- * ```
- * @platform android
- */
-export async function restoreBackgroundColorAsync(): Promise<void> {
-  if (Platform.OS === 'ios') {
-    return;
-  }
-  return await ExpoSystemUI.restoreBackgroundColorAsync();
 }
