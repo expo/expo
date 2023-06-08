@@ -13,13 +13,13 @@ If you don't have an Android device available to test with, we recommend using t
 
 <Step label="1">
 
-[Download](https://developer.android.com/studio) and install Android Studio 3.0+.
+[Download](https://developer.android.com/studio) and install Android Studio.
 
 </Step>
 
 <Step label="2">
 
-Select **"Standard"** for the **"Install Type"** inside the wizard.
+Open the **Android Studio** app, click **More Actions** and then select **SDK Manager**.
 
 </Step>
 
@@ -48,6 +48,12 @@ Copy or remember the path listed in the box that says **Android SDK Location**.
 
 <Step label="5">
 
+Click **Apply** and **OK** to install the Android SDK and related build tools.
+
+</Step>
+
+<Step label="6">
+
 If you are on macOS or Linux, add an [environment variable](https://developer.android.com/studio/command-line/variables#envar) pointing to the Android SDK location in **~/.bash_profile** (or **~/.zshrc** if you use Zsh). For example: `export ANDROID_HOME=/your/path/here`.
 
 Add the following lines to your **/.zprofile** or **~/.zshrc** (if you are using bash, then **~/.bash_profile** or **~/.bashrc**) config file:
@@ -63,7 +69,7 @@ Add the following lines to your **/.zprofile** or **~/.zshrc** (if you are using
 
 </Step>
 
-<Step label="6">
+<Step label="7">
 
 Reload the path environment variables in your current shell:
 
@@ -71,7 +77,7 @@ Reload the path environment variables in your current shell:
 
 </Step>
 
-<Step label="7">
+<Step label="8">
 
 Finally, make sure that you can run `adb` from your terminal.
 
@@ -128,15 +134,17 @@ Select an OS version to load on the emulator (probably one of the system images 
 
 <Step label="5">
 
-Change any other settings you'd like, and press **"Finish"** to create the virtual device. You can now run this device anytime by pressing the Play button in the AVD Manager window.
+Change any other settings you'd like, and press **Finish** to create the virtual device. You can now run this device anytime by pressing the Play button in the AVD Manager window.
 
 </Step>
 
 ### Multiple `adb` versions
 
-Having multiple `adb` versions on your system can result in the error `adb server version (xx) doesn't match this client (xx); killing...`
+Having multiple `adb` versions on your system can result in the following error:
 
-This is because the adb version on your system is different from the adb version on the android sdk platform-tools.
+<Terminal cmd={["$ adb server version (xx) doesn't match this client (xx); killing..."]} />
+
+This is because the `adb` version on your system is different from the `adb` version on the Android SDK platform-tools.
 
 <Step label="1">
 Open the terminal and check the `adb` version on the system:
