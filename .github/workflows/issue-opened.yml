@@ -9,7 +9,7 @@ on:
 
 jobs:
   check-if-trusted:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: 8398a7/action-slack@v3.8.0
         if: ${{ contains( env.TRUSTED_USERS, github.event.issue.user.login ) }}
@@ -35,7 +35,7 @@ jobs:
             })
 
   validate:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
