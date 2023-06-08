@@ -2,13 +2,15 @@ import { ExpoConfig, PackageJSONConfig } from '@expo/config';
 import JsonFile from '@expo/json-file';
 import assert from 'assert';
 import chalk from 'chalk';
+import path from 'path';
 import resolveFrom from 'resolve-from';
 import semver from 'semver';
 
 import { APISettings } from '../../../api/settings';
 import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
-import { BundledNativeModules } from './bundledNativeModules';
+import { anyMatchAsync, wrapGlobWithTimeout } from '../../../utils/glob';
+import { BundledNativeModules, getVersionedNativeModulesAsync } from './bundledNativeModules';
 import { getCombinedKnownVersionsAsync } from './getVersionedPackages';
 
 const debug = require('debug')('expo:doctor:dependencies:validate') as typeof console.log;
@@ -131,6 +133,56 @@ export async function getVersionedDependenciesAsync(
   }
 
   return incorrectDeps;
+}
+
+/**
+ * Returns a list of native module dependencies which are not included in the bundledNativeModules.json.
+ *
+ * @param projectRoot Expo project root.
+ * @param pkg Project's `package.json`.
+ * @param sdkVersion The SDK version for the bundledNativeModules.json source, defaults to use local `UNVERSIONED` bundledNativeModules.json and works with offline.
+ * @returns A list of unbundled native modules.
+ */
+export async function findUnbundledNativeModulesAsync(
+  projectRoot: string,
+  pkg: PackageJSONConfig,
+  sdkVersion: string = 'UNVERSIONED'
+): Promise<string[]> {
+  const bundledNativeModules = await getVersionedNativeModulesAsync(projectRoot, sdkVersion);
+  const installedPackages = [
+    ...Object.keys(pkg.dependencies ?? {}),
+    ...Object.keys(pkg.devDependencies ?? {}),
+  ];
+  const result: string[] = [];
+  for (const packageName of installedPackages) {
+    if (!bundledNativeModules[packageName]) {
+      const packageJsonPath = resolveFrom.silent(projectRoot, `${packageName}/package.json`);
+      if (packageJsonPath && (await isNativeModuleAsync(path.dirname(packageJsonPath)))) {
+        result.push(packageName);
+      }
+    }
+  }
+  return result;
+}
+
+/** Returns whether the package is a native module. */
+export async function isNativeModuleAsync(packageRoot: string) {
+  const ignore = ['**/node_modules/**'];
+  const result = await wrapGlobWithTimeout(async () => {
+    const results = await Promise.all([
+      // @react-native-community/cli autolinking only searches podspec at package root
+      anyMatchAsync('*.podspec', {
+        cwd: packageRoot,
+        ignore,
+      }),
+      anyMatchAsync('**/build.gradle', {
+        cwd: packageRoot,
+        ignore,
+      }),
+    ]);
+    return ([] as string[]).concat(...results);
+  }, 3000);
+  return result !== false && result.length > 0;
 }
 
 function getFilteredObject(keys: string[], object: Record<string, string>) {
