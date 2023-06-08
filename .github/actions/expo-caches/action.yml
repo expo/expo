@@ -172,7 +172,7 @@ runs:
 
     - name: ♻️ Restore hermes-engine AAR cache
       if: inputs.hermes-engine-aar == 'true'
-      uses: actions/cache@v3
+      uses: actions/cache/restore@v3
       with:
         path: android/prebuiltHermes
         key: hermes-engine-aar-${{ hashFiles('react-native-lab/react-native/packages/react-native/sdks/.hermesversion') }}
@@ -205,6 +205,12 @@ runs:
         # Reset reactNativeArchitectures to build all architectures
         ORG_GRADLE_PROJECT_reactNativeArchitectures:
       working-directory: android
+    - name: ♻️ Save hermes-engine AAR cache
+      if: inputs.hermes-engine-aar == 'true' && inputs.rebuild-hermes-engine-aar-if-needed == 'true' && steps.cache-hermes-engine-aar.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v3
+      with:
+        path: android/prebuiltHermes
+        key: hermes-engine-aar-${{ hashFiles('react-native-lab/react-native/packages/react-native/sdks/.hermesversion') }}
 
     - name: 🛠 Setup "REACT_NATIVE_DOWNLOADS_DIR" environment variable
       if: inputs.react-native-gradle-downloads == 'true'
