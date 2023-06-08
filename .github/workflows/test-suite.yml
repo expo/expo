@@ -26,7 +26,7 @@ concurrency:
 
 jobs:
   web:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
@@ -140,7 +140,7 @@ jobs:
           author_name: Test Suite (iOS)
 
   android-build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
       GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"

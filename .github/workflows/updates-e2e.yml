@@ -44,7 +44,7 @@ jobs:
       fail-fast: false
       matrix:
         platform: [ios, android]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 40
     env:
       UPDATES_PORT: 4747
