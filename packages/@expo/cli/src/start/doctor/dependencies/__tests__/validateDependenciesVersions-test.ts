@@ -1,3 +1,4 @@
+import type { PackageJSONConfig } from '@expo/config';
 import { vol } from 'memfs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
@@ -5,6 +6,8 @@ import resolveFrom from 'resolve-from';
 import { asMock } from '../../../../__tests__/asMock';
 import * as Log from '../../../../log';
 import {
+  findUnbundledNativeModulesAsync,
+  isNativeModuleAsync,
   logIncorrectDependencies,
   validateDependenciesVersionsAsync,
 } from '../validateDependenciesVersions';
@@ -149,8 +152,9 @@ describe(validateDependenciesVersionsAsync, () => {
   });
 
   it('skips validating dependencies when running in offline mode', async () => {
-    jest.resetModules();
-    jest.mock('../../../../api/settings', () => ({ APISettings: { isOffline: true } }));
+    const { APISettings } = require('../../../../api/settings');
+    const originalIsOffline = APISettings.isOffline;
+    APISettings.isOffline = true;
 
     const { validateDependenciesVersionsAsync } = require('../validateDependenciesVersions');
     const exp = { sdkVersion: '46.0.0' };
@@ -161,5 +165,118 @@ describe(validateDependenciesVersionsAsync, () => {
     await expect(
       validateDependenciesVersionsAsync(projectRoot, exp as any, pkg)
     ).resolves.toBeNull();
+    APISettings.isOffline = originalIsOffline;
+  });
+});
+
+describe(findUnbundledNativeModulesAsync, () => {
+  const projectRoot = '/test-project';
+
+  beforeAll(() => {
+    jest.doMock('node:fs', jest.requireActual('memfs').fs);
+  });
+
+  beforeEach(() => {
+    vol.reset();
+  });
+
+  afterAll(() => {
+    jest.dontMock('node:fs');
+  });
+
+  it('should return native modules not in bundledNativeModules.json', async () => {
+    const packageJSON: PackageJSONConfig = {
+      dependencies: {
+        'expo-updates': '*',
+        'test-native-module': '*',
+      },
+      devDependencies: {
+        'test-dev-native-module': '*',
+      },
+    };
+    vol.fromJSON(
+      {
+        'node_modules/test-native-module/package.json': '{}',
+        'node_modules/test-native-module/Hello.podspec': 'require "json"',
+        'node_modules/test-dev-native-module/package.json': '{}',
+        'node_modules/test-dev-native-module/Hello.podspec': 'require "json"',
+        'node_modules/expo-updates/package.json': '{}',
+        'node_modules/expo-updates/ios/EXUpdates.podspec': 'require "json"',
+      },
+      projectRoot
+    );
+    await expect(findUnbundledNativeModulesAsync('/test-project', packageJSON)).resolves.toEqual([
+      'test-native-module',
+      'test-dev-native-module',
+    ]);
+  });
+
+  it('should not return third-party js only packages', async () => {
+    const packageJSON: PackageJSONConfig = {
+      dependencies: {
+        'expo-updates': '*',
+        'test-js-package': '*',
+      },
+    };
+    vol.fromJSON(
+      {
+        'node_modules/test-js-package/package.json': '{}',
+        'node_modules/test-js-package/index.js': 'console.log("hello");',
+        'node_modules/expo-updates/package.json': '{}',
+        'node_modules/expo-updates/ios/EXUpdates.podspec': 'require "json"',
+      },
+      projectRoot
+    );
+    await expect(findUnbundledNativeModulesAsync('/test-project', packageJSON)).resolves.toEqual(
+      []
+    );
+  });
+});
+
+describe(isNativeModuleAsync, () => {
+  const packageRoot = '/test-project/node_modules/test-package';
+
+  beforeAll(() => {
+    jest.doMock('node:fs', jest.requireActual('memfs').fs);
+  });
+
+  beforeEach(() => {
+    vol.reset();
+  });
+
+  afterAll(() => {
+    jest.dontMock('node:fs');
+  });
+
+  it('should return true for package with build.gradle', async () => {
+    vol.fromJSON(
+      {
+        'android/build.gradle': 'import java.nio.file.Paths',
+      },
+      packageRoot
+    );
+    await expect(isNativeModuleAsync(packageRoot)).resolves.toBe(true);
+  });
+
+  it('should return true for package with both build.gradle and podspec', async () => {
+    vol.fromJSON(
+      {
+        'android/build.gradle': 'import java.nio.file.Paths',
+        'Hello.podspec': 'require "json"',
+      },
+      packageRoot
+    );
+    await expect(isNativeModuleAsync(packageRoot)).resolves.toBe(true);
+  });
+
+  it('should return false for package with only json and js files', async () => {
+    vol.fromJSON(
+      {
+        'app.json': '{}',
+        'App.js': 'console.log("hello")',
+      },
+      packageRoot
+    );
+    await expect(isNativeModuleAsync(packageRoot)).resolves.toBe(false);
   });
 });
