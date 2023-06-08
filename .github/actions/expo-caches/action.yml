@@ -175,7 +175,7 @@ runs:
       uses: actions/cache@v3
       with:
         path: android/prebuiltHermes
-        key: hermes-engine-aar-v2-${{ hashFiles('react-native-lab/react-native/packages/react-native/sdks/.hermesversion') }}
+        key: hermes-engine-aar-${{ hashFiles('react-native-lab/react-native/packages/react-native/sdks/.hermesversion') }}
     - name: Check hermes-engine cache-hit
       if: inputs.hermes-engine-aar == 'true'
       id: cache-hermes-engine-aar
