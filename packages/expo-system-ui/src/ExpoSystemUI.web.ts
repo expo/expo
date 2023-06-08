@@ -13,8 +13,8 @@ export default {
       return null;
     }
   },
-  setBackgroundColorAsync(color: string) {
-    if (Platform.isDOMAvailable) {
+  setBackgroundColorAsync(color: string | null) {
+    if (Platform.isDOMAvailable && color) {
       document.body.style.backgroundColor = color;
     }
   },
