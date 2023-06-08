@@ -5,7 +5,6 @@ sidebar_title: Development and debugging
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
-import { BoxLink } from '~/ui/components/BoxLink';
 
 Developing a plugin is a great way to extend the Expo ecosystem. However, there are times you'll want to debug your plugin. This page provides some of the best practices for developing and debugging a plugin.
 
@@ -85,14 +84,14 @@ const { /* @hide ...*//* @end */ } = require('@expo/config-plugins');
 
 ### Tooling
 
-We highly recommend installing the [Expo Tools VS Code plugin](https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo)
+We highly recommend installing the [Expo Tools VS Code plugin][vscode-expo]
 as this will perform automatic validation on the plugins and surface error information along with other quality of life improvements for Config Plugin development.
 
 ### Setup up a playground environment
 
 You can develop plugins easily using JS, but if you want to setup Jest tests and use TypeScript, you will want a monorepo.
 
-A monorepo will enable you to work on a node module and import it in your Expo config like you would if it were published to npm.
+A monorepo will enable you to work on a node module and import it in your app config like you would if it were published to npm.
 Expo config plugins have full monorepo support built-in so all you need to do is setup a project.
 
 In your monorepo's `packages/` folder, create a module, and [bootstrap a config plugin](https://github.com/expo/expo/tree/main/packages/expo-module-scripts#-config-plugin) in it.
@@ -240,13 +239,13 @@ export default createRunOncePlugin(
   If anything goes wrong with the plugin, users should still be able to manually add the package to their project.
   Doing this often helps you to find ways to reduce the setup, which can lead to a simpler plugin.
   - Document the available properties for the plugin, and specify if the plugin works without props.
-  - If you can make your plugin work after running prebuild multiple times, that’s a big plus! It can improve the developer experience to be able to run `expo prebuild` without the `--clean` flag to sync changes.
+  - If you can make your plugin work after running prebuild multiple times, that’s a big plus! It can improve the developer experience to be able to run `npx expo prebuild` without the `--clean` flag to sync changes.
 - **Naming conventions**: Use `withFeatureName` if cross-platform. If the plugin is platform specific, use a camel case naming with the platform right after “with”. For example, `withAndroidSplash`, `withIosSplash`.
   There is no universally agreed upon casing for `iOS` in camel cased identifiers, we prefer this style and suggest using it for your config plugins too.
 - **Leverage built-in plugins**: Account for built-in plugins from the [prebuild config](https://github.com/expo/expo-cli/blob/master/packages/prebuild-config/src/plugins/withDefaultPlugins.ts).
-  Some features are included for historical reasons, like the ability to automatically copy and link [Google services files](https://github.com/expo/expo-cli/blob/3a0ef962a27525a0fe4b7e5567fb7b3fb18ec786/packages/config-plugins/src/ios/Google.ts#L15) defined in the Expo config.
+  Some features are included for historical reasons, like the ability to automatically copy and link [Google services files](https://github.com/expo/expo-cli/blob/3a0ef962a27525a0fe4b7e5567fb7b3fb18ec786/packages/config-plugins/src/ios/Google.ts#L15) defined in the app config.
   If there is overlap, then maybe recommend the user uses the built-in types to keep your plugin as simple as possible.
-- **Split up plugins by platform**: For example — `withIosSplash`, `withAndroidSplash`. This makes using the `--platform` flag in `expo prebuild` a bit easier to follow in `EXPO_DEBUG` mode.
+- **Split up plugins by platform**: For example — `withIosSplash`, `withAndroidSplash`. This makes using the `--platform` flag in `npx expo prebuild` a bit easier to follow in `EXPO_DEBUG` mode.
 - **Unit test your plugin**: Write Jest tests for complex modifications. If your plugin requires access to the filesystem,
   use a mock system (we strongly recommend [`memfs`][memfs]), you can see examples of this in the [`expo-notifications`](https://github.com/expo/expo/blob/fc3fb2e81ad3a62332fa1ba6956c1df1c3186464/packages/expo-notifications/plugin/src/__tests__/withNotificationsAndroid-test.ts#L34) plugin tests.
   - Notice the root [\*\*/\_\_mocks\_\_/\*\*/\*](https://github.com/expo/expo/tree/main/packages/expo-notifications/plugin/__mocks__) folder and [**plugin/jest.config.js**](https://github.com/expo/expo/tree/main/packages/expo-notifications/plugin/jest.config.js).
@@ -255,7 +254,7 @@ export default createRunOncePlugin(
 
 ### Versioning
 
-By default, `expo prebuild` runs transformations on a [source template][source-template] associated with the Expo SDK version that a project is using.
+By default, `npx expo prebuild` runs transformations on a [source template][source-template] associated with the Expo SDK version that a project is using.
 The SDK version is defined in the **app.json** or inferred from the installed version of `expo` that the project has.
 
 When Expo SDK upgrades to a new version of React Native for instance, the template may change significantly to account for changes in React Native or new releases of Android or iOS.
@@ -282,7 +281,7 @@ interface StaticObject {
 }
 ```
 
-Static properties are required because the Expo config must be serializable to JSON for use as the app manifest.
+Static properties are required because the app config must be serializable to JSON for use as the app manifest.
 Static properties can also enable tooling that generates JSON schema type checking for autocomplete and IntelliSense.
 
 If possible, attempt to make your plugin work without props, this will help resolution tooling like [`expo install`](#expo-install) or [VS Code Expo Tools][vscode-expo] work better.
@@ -405,7 +404,7 @@ Managed Expo users can now interact with this API like so:
 }
 ```
 
-By re-running `expo prebuild -p` (`eas build -p android`, or `expo run:ios`) the user can now see the changes, safely applied in their managed project!
+By re-running `npx expo prebuild -p` (`eas build -p android`, or `npx expo run:ios`) the user can now see the changes, safely applied in their managed project!
 
 As you can see from the example, we rely heavily on application code (expo-modules-core) to interact with application code (the native project). This ensures that our config plugins are safe and reliable, hopefully for a very long time!
 
@@ -413,9 +412,9 @@ As you can see from the example, we rely heavily on application code (expo-modul
 
 You can debug config plugins by running `EXPO_DEBUG=1 expo prebuild`. If `EXPO_DEBUG` is enabled, the plugin stack logs will be printed, these are useful for viewing which mods ran, and in what order they ran in. To view all static plugin resolution errors, enable `EXPO_CONFIG_PLUGIN_VERBOSE_ERRORS`, this should only be needed for plugin authors. By default, some automatic plugin errors are hidden because they're usually related to versioning issues and aren't very helpful (that is, legacy package doesn't have a config plugin yet).
 
-Running `expo prebuild --clean` with remove the generated native folders before compiling.
+Running `npx expo prebuild --clean` with remove the generated native folders before compiling.
 
-You can also run `expo config --type prebuild` to print the results of the plugins with the mods unevaluated (no code is generated).
+You can also run `npx expo config --type prebuild` to print the results of the plugins with the mods unevaluated (no code is generated).
 
 Expo CLI commands can be profiled using `EXPO_PROFILE=1`.
 
@@ -443,7 +442,7 @@ Introspection only supports a subset of modifiers:
 > Introspection only works on safe modifiers (static files like JSON, XML, plist, properties), with the exception of `ios.xcodeproj` which often requires file system changes, making it non idempotent.
 
 Introspection works by creating custom base mods that work like the default base mods, except they don't write the `modResults` to disk at the end.
-Instead of persisting, they save the results to the Expo config under `_internal.modResults`, followed by the name of the mod
+Instead of persisting, they save the results to the app config under `_internal.modResults`, followed by the name of the mod
 such as the `ios.infoPlist` mod saves to `_internal.modResults.ios.infoPlist: {}`.
 
 As a real-world example, introspection is used by `eas-cli` to determine what the final iOS entitlements will be in a managed app,
@@ -567,7 +566,7 @@ Generally, you should only interact with the Podfile via Expo [Autolinking][auto
 
 ### Custom Base Modifiers
 
-The Expo CLI `expo prebuild` command uses [`@expo/prebuild-config`][prebuild-config] to get the default base modifiers. These defaults only manage a subset of common files, if you want to manage custom files you can do that locally by adding new base modifiers.
+The Expo CLI `npx expo prebuild` command uses [`@expo/prebuild-config`][prebuild-config] to get the default base modifiers. These defaults only manage a subset of common files, if you want to manage custom files you can do that locally by adding new base modifiers.
 
 For example, say you wanted to add support for managing the `ios/*/AppDelegate.h` file, you could do this by adding a `ios.appDelegateHeader` modifier.
 
@@ -659,7 +658,7 @@ For more info, see [the PR that adds support](https://github.com/expo/expo-cli/p
 
 ## expo install
 
-Node modules with config plugins can be added to the project's Expo config automatically by using the `expo install` command. [Related PR](https://github.com/expo/expo-cli/pull/3437).
+Node modules with config plugins can be added to the project's app config automatically by using the `expo install` command. [Related PR](https://github.com/expo/expo-cli/pull/3437).
 
 This makes setup a bit easier and helps prevent users from forgetting to add a plugin.
 
@@ -667,12 +666,12 @@ This does come with a couple of caveats:
 
 1. Packages must export a plugin via **app.plugin.js**, this rule was added to prevent popular packages like `lodash` from being mistaken for a config plugin and breaking the prebuild.
 2. There is currently no mechanism for detecting if a config plugin has mandatory props. Because of this, `expo install` will only add the plugin, and not attempt to add any extra props. For example, `expo-camera` has optional extra props, so `plugins: ['expo-camera']` is valid, but if it had mandatory props then `expo-camera` would throw an error.
-3. Plugins can only be automatically added when the user's project uses a static Expo config (**app.json** and **app.config.json**).
+3. Plugins can only be automatically added when the user's project uses a static app config (**app.json** and **app.config.json**).
    If the user runs `expo install expo-camera` in a project with an **app.config.js**, they'll see a warning like:
 
 ```
 Cannot automatically write to dynamic config at: app.config.js
-Please add the following to your Expo config
+Please add the following to your app config
 
 {
   "plugins": [
@@ -683,11 +682,11 @@ Please add the following to your Expo config
 
 [config-docs]: /versions/latest/config/app/
 [prebuild-config]: https://github.com/expo/expo-cli/tree/main/packages/prebuild-config#readme
-[cli-prebuild]: /workflow/expo-cli/#expo-prebuild
+[cli-prebuild]: /more/expo-cli//#expo-prebuild
 [configplugin]: https://github.com/expo/expo-cli/blob/3a0ef962a27525a0fe4b7e5567fb7b3fb18ec786/packages/config-plugins/src/Plugin.types.ts#L76
 [source-template]: https://github.com/expo/expo/tree/main/templates/expo-template-bare-minimum
 [expo-beta-docs]: https://github.com/expo/expo/tree/main/guides/releasing/Release%20Workflow.mdx#stage-5---beta-release
-[vscode-expo]: https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo
+[vscode-expo]: https://marketplace.visualstudio.com/items?itemName=expo.vscode-expo-tools
 [ems-plugin]: https://github.com/expo/expo/tree/main/packages/expo-module-scripts#-config-plugin
 [xml2js]: https://www.npmjs.com/package/xml2js
 [expo-plist]: https://www.npmjs.com/package/@expo/plist

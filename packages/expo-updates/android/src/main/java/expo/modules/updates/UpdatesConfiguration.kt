@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
+import expo.modules.core.errors.InvalidArgumentException
 import expo.modules.updates.codesigning.CodeSigningConfiguration
 
 /**
@@ -48,7 +49,9 @@ data class UpdatesConfiguration(
     ALWAYS {
       override fun toJSString() = "ALWAYS"
     };
-    abstract fun toJSString(): String
+    open fun toJSString(): String {
+      throw InvalidArgumentException("Unsupported CheckAutomaticallyConfiguration value")
+    }
   }
 
   constructor(context: Context?, overrideMap: Map<String, Any>?) : this(

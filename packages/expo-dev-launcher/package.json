@@ -1,7 +1,7 @@
 {
   "name": "expo-dev-launcher",
   "title": "Expo Development Launcher",
-  "version": "2.1.4",
+  "version": "2.3.0",
   "description": "Pre-release version of the Expo development launcher package for testing.",
   "main": "build/DevLauncher.js",
   "types": "build/DevLauncher.d.ts",
@@ -29,7 +29,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev",
   "dependencies": {
-    "expo-dev-menu": "2.1.3",
+    "expo-dev-menu": "3.0.0",
     "resolve-from": "^5.0.0",
     "semver": "^7.3.5"
   },
@@ -42,14 +42,14 @@
     "@testing-library/jest-native": "^4.0.4",
     "@testing-library/react-native": "^8.0.0",
     "babel-plugin-module-resolver": "^4.1.0",
-    "babel-preset-expo": "~9.3.0",
+    "babel-preset-expo": "~9.4.0",
     "date-fns": "^2.28.0",
-    "expo-dev-client-components": "1.3.1",
+    "expo-dev-client-components": "1.4.0",
     "expo-module-scripts": "^3.0.0",
     "graphql": "^16.0.1",
     "graphql-request": "^3.6.1",
     "react": "18.2.0",
-    "react-native": "0.71.6",
+    "react-native": "0.72.0-rc.5",
     "react-query": "^3.34.16",
     "url": "^0.11.0"
   },

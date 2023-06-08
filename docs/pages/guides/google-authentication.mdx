@@ -63,14 +63,14 @@ Create a [`androidClientId`](/versions/latest/sdk/auth-session/#googleauthreques
 - In the Google Cloud console, go to **Credentials** > **Create OAuth client** page.
 - For **Application type**, select **Android** from the dropdown menu.
 - For **Name**, enter the name such as **Android Client ID** to identify different client IDs in case you have more than one for multiple platforms.
-- Under **Package name**, enter the package name of your app. This is the same package name you have set up in the Expo config file under [`android.package`](/versions/latest/config/app/#package) field, for example, `com.example.myapp`.
+- Under **Package name**, enter the package name of your app. This is the same package name you have set up in the app config file under [`android.package`](/versions/latest/config/app/#package) field, for example, `com.example.myapp`.
 - Under **SHA-1 certificate fingerprint**, you'll need to add the signing certificate value. To get this value:
   - In the terminal window, run `eas credentials -p android`, then select the build profile. For example, if you are generating the credential for development, select the build profile for it.
   - Select **Keystore: Manage everything needed to build your project** > **Set up a new keystore** > select the default value for **Assign a name to your build credentials** > press <kbd>Y</kbd> to **Generate a new Android Keystore**.
   - This will generate a new keystore and print the SHA-1 certificate fingerprint. Copy the value of **SHA1 Fingerprint** and paste it into the Google Cloud console.
 - Click **Save**.
 
-> Whenever you change values in the Expo config file, you'll need to rebuild the native app.
+> Whenever you change values in the app config file, you'll need to rebuild the native app.
 
 </Tab>
 
@@ -81,10 +81,10 @@ Create a [`iosClientId`](/versions/latest/sdk/auth-session/#googleauthrequestcon
 - In the Google Cloud console, go to **Credentials** > **Create OAuth client** page.
 - For **Application type**, select **iOS** from the dropdown menu.
 - For **Name**, enter the name such as **iOS Client ID** to identify different client IDs in case you have more than one for multiple platforms.
-- Under **Bundle ID**, enter the bundle ID of your app. This is the same bundler identifier you have set up in the Expo config file under [`ios.bundleIdentifier`](/versions/latest/config/app/#bundleidentifier) field, for example, `com.example.myapp`.
+- Under **Bundle ID**, enter the bundle ID of your app. This is the same bundler identifier you have set up in the app config file under [`ios.bundleIdentifier`](/versions/latest/config/app/#bundleidentifier) field, for example, `com.example.myapp`.
 - Click **Save**.
 
-> Whenever you change values in the Expo config file, you'll need to rebuild the native app.
+> Whenever you change values in the app config file, you'll need to rebuild the native app.
 
 </Tab>
 
@@ -98,7 +98,7 @@ Create a [`iosClientId`](/versions/latest/sdk/auth-session/#googleauthrequestcon
 
 ### Add a scheme
 
-For a development build and when setting up production apps, define [`scheme`](/versions/latest/config/app/#scheme) in the Expo config file. It is required for the authentication flow to complete the process and redirect the user back to the app. It handles the process of deep linking back to the app.
+For a development build and when setting up production apps, define [`scheme`](/versions/latest/config/app/#scheme) in the app config file. It is required for the authentication flow to complete the process and redirect the user back to the app. It handles the process of deep linking back to the app.
 
 ```json app.json
 {
@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
 
 ## Testing your app
 
-**For a development build**, see [Use development builds](/development/use-development-builds/#start-the-development-server) for further instructions on how to start the development server or run [`npx expo run:android` or `npx expo run:ios`](/workflow/expo-cli/#compiling) command to test the native project locally.
+**For a development build**, see [Use development builds](/develop/development-builds/use-development-builds/#start-the-development-server) for further instructions on how to start the development server or run [`npx expo run:android` or `npx expo run:ios`](/more/expo-cli/#compiling) command to test the native project locally.
 
 ## Expo web
 

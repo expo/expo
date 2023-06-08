@@ -6,11 +6,17 @@
 
 ### 🎉 New features
 
-- Generating `ExpoModulesProvider.swift` in the build phase script instead of only `pod install`. ([#21108](https://github.com/expo/expo/pull/21108) by [@tsapeta](https://github.com/tsapeta))
+- Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 1.3.0 — 2023-05-08
+
+### 🎉 New features
+
+- Generating `ExpoModulesProvider.swift` in the build phase script instead of only `pod install`. ([#21108](https://github.com/expo/expo/pull/21108) by [@tsapeta](https://github.com/tsapeta))
 
 ## 1.2.0 - 2023-04-13
 

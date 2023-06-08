@@ -26,7 +26,7 @@ For bare React Native projects, you must ensure that you have [installed and con
 ### Add the package to your npm dependencies
 
 ```
-expo install expo-network
+npx expo install expo-network
 ```
 
 ### Configure for Android

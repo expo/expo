@@ -124,7 +124,7 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
           errorMessage = `Couldn't open Expo Go app on device "${this.name}". Please install.`;
         } else {
           errorMessage += `\nThe app might not be installed, try installing it with: ${chalk.bold(
-            `expo run:ios -d ${this.device.udid}`
+            `npx expo run:ios -d ${this.device.udid}`
           )}`;
         }
       }

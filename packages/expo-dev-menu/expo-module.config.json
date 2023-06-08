@@ -4,8 +4,19 @@
   "ios": {
     "podspecPath": "expo-dev-menu.podspec",
     "swiftModuleName": "EXDevMenu",
-    "modules": ["RNCSafeAreaProviderManager"],
+    "modules": [
+      "DevMenuModule",
+      "DevMenuInternalModule",
+      "DevMenuPreferences",
+      "RNCSafeAreaProviderManager"
+    ],
     "reactDelegateHandlers": ["ExpoDevMenuReactDelegateHandler"],
     "debugOnly": true
+  },
+  "android": {
+    "modules": [
+      "expo.modules.devmenu.modules.DevMenuModule", 
+      "expo.modules.devmenu.modules.DevMenuPreferences"
+    ]
   }
 }

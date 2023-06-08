@@ -1,6 +1,7 @@
 import { css } from '@emotion/react';
 import { theme, typography } from '@expo/styleguide';
 import { borderRadius, spacing } from '@expo/styleguide-base';
+import { FileCode01Icon } from '@expo/styleguide-icons';
 import { Language, Prism } from 'prism-react-renderer';
 import * as React from 'react';
 import tippy, { roundArrow } from 'tippy.js';
@@ -207,7 +208,7 @@ export class Code extends React.Component<React.PropsWithChildren<Props>> {
       }
 
       html = Prism.highlight(html, grammar, lang as Language);
-      if (['properties', 'ruby', 'bash'].includes(lang)) {
+      if (['properties', 'ruby', 'bash', 'yaml'].includes(lang)) {
         html = this.replaceHashCommentsWithAnnotations(html);
       } else if (['xml', 'html'].includes(lang)) {
         html = this.replaceXmlCommentsWithAnnotations(html);
@@ -218,10 +219,10 @@ export class Code extends React.Component<React.PropsWithChildren<Props>> {
 
     return value?.title ? (
       <Snippet>
-        <SnippetHeader title={value.title}>
+        <SnippetHeader title={value.title} Icon={FileCode01Icon}>
           <CopyAction text={cleanCopyValue(value.value)} />
         </SnippetHeader>
-        <SnippetContent skipPadding>
+        <SnippetContent className="p-0">
           <pre css={STYLES_CODE_CONTAINER} {...attributes}>
             <code
               css={STYLES_CODE_BLOCK}

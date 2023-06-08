@@ -153,7 +153,7 @@ export async function readDirectoryAsync(fileUri) {
     if (!ExponentFileSystem.readDirectoryAsync) {
         throw new UnavailabilityError('expo-file-system', 'readDirectoryAsync');
     }
-    return await ExponentFileSystem.readDirectoryAsync(fileUri, {});
+    return await ExponentFileSystem.readDirectoryAsync(fileUri);
 }
 /**
  * Gets the available internal disk storage size, in bytes. This returns the free space on the data partition that hosts all of the internal storage for all apps on the device.
@@ -268,9 +268,6 @@ export function createDownloadResumable(uri, fileUri, options, callback, resumeD
 export function createUploadTask(url, fileUri, options, callback) {
     return new UploadTask(url, fileUri, options, callback);
 }
-function isUploadProgressData(data) {
-    return 'totalBytesSent' in data;
-}
 export class FileSystemCancellableNetworkTask {
     _uuid = uuidv4();
     taskWasCanceled = false;
@@ -303,16 +300,6 @@ export class FileSystemCancellableNetworkTask {
             if (event.uuid === this.uuid) {
                 const callback = this.getCallback();
                 if (callback) {
-                    if (isUploadProgressData(event.data)) {
-                        const data = {
-                            ...event.data,
-                            get totalByteSent() {
-                                console.warn('Key "totalByteSent" in File System UploadProgressData is deprecated and will be removed in SDK 49, use "totalBytesSent" instead');
-                                return this.totalBytesSent;
-                            },
-                        };
-                        return callback(data);
-                    }
                     callback(event.data);
                 }
             }
@@ -576,7 +563,7 @@ export var StorageAccessFramework;
         if (!ExponentFileSystem.readSAFDirectoryAsync) {
             throw new UnavailabilityError('expo-file-system', 'StorageAccessFramework.readDirectoryAsync');
         }
-        return await ExponentFileSystem.readSAFDirectoryAsync(dirUri, {});
+        return await ExponentFileSystem.readSAFDirectoryAsync(dirUri);
     }
     StorageAccessFramework.readDirectoryAsync = readDirectoryAsync;
     /**
@@ -623,7 +610,7 @@ export var StorageAccessFramework;
      */
     StorageAccessFramework.moveAsync = baseMoveAsync;
     /**
-     * Alias fro [`copyAsync`](#filesystemcopyasyncoptions) method.
+     * Alias for [`copyAsync`](#filesystemcopyasyncoptions) method.
      */
     StorageAccessFramework.copyAsync = baseCopyAsync;
 })(StorageAccessFramework || (StorageAccessFramework = {}));

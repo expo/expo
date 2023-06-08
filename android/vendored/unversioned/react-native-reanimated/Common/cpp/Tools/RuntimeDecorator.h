@@ -5,14 +5,20 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
-#include "LayoutAnimationsProxy.h"
 #include "PlatformDepMethodsHolder.h"
 
 using namespace facebook;
 
 namespace reanimated {
 
-using RequestFrameFunction = std::function<void(std::function<void(double)>)>;
+using RequestFrameFunction =
+    std::function<void(jsi::Runtime &, const jsi::Value &)>;
+using ScheduleOnJSFunction =
+    std::function<void(jsi::Runtime &, const jsi::Value &, const jsi::Value &)>;
+using MakeShareableCloneFunction =
+    std::function<jsi::Value(jsi::Runtime &, const jsi::Value &)>;
+using UpdateDataSynchronouslyFunction =
+    std::function<void(jsi::Runtime &, const jsi::Value &, const jsi::Value &)>;
 
 enum RuntimeType {
   /**
@@ -31,15 +37,23 @@ class RuntimeDecorator {
   static void decorateRuntime(jsi::Runtime &rt, const std::string &label);
   static void decorateUIRuntime(
       jsi::Runtime &rt,
-      const UpdaterFunction updater,
-      const RequestFrameFunction requestFrame,
+      const UpdatePropsFunction updateProps,
+      const MeasureFunction measure,
+#ifdef RCT_NEW_ARCH_ENABLED
+      const RemoveShadowNodeFromRegistryFunction removeShadowNodeFromRegistry,
+      const DispatchCommandFunction dispatchCommand,
+#else
       const ScrollToFunction scrollTo,
-      const MeasuringFunction measure,
+#endif
+      const RequestFrameFunction requestFrame,
+      const ScheduleOnJSFunction scheduleOnJS,
+      const MakeShareableCloneFunction makeShareableClone,
+      const UpdateDataSynchronouslyFunction updateDataSynchronously,
       const TimeProviderFunction getCurrentTime,
-      const RegisterSensorFunction registerSensor,
-      const UnregisterSensorFunction unregisterSensor,
       const SetGestureStateFunction setGestureState,
-      std::shared_ptr<LayoutAnimationsProxy> layoutAnimationsProxy);
+      const ProgressLayoutAnimationFunction progressLayoutAnimationFunction,
+      const EndLayoutAnimationFunction endLayoutAnimationFunction,
+      const MaybeFlushUIUpdatesQueueFunction maybeFlushUIUpdatesQueueFunction);
 
   /**
    Returns true if the given Runtime is the Reanimated UI-Thread Runtime.

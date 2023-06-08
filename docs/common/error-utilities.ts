@@ -136,11 +136,11 @@ const RENAMED_PAGES: Record<string, string> = {
   // Redirects after creating /home route
   '/next-steps/additional-resources/': '/additional-resources/',
   // TODO: (@aman) Uncomment the two lines below when we've removed third-party libraries from Reference
-  // '/versions/latest/sdk/safe-area-context/': '/home/develop/user-interface/safe-areas',
-  // '/versions/latest/sdk/async-storage/': '/home/develop/user-interface/store-data/#async-storage',
+  // '/versions/latest/sdk/safe-area-context/': '/develop/user-interface/safe-areas',
+  // '/versions/latest/sdk/async-storage/': '/develop/user-interface/store-data/#async-storage',
   '/get-started/create-a-new-app/': '/get-started/create-a-project',
   '/guides/config-plugins/': '/config-plugins/introduction/',
-  '/workflow/debugging/': '/debugging/runtime-issue/',
+  '/workflow/debugging/': '/debugging/runtime-issues/',
   '/guides/userinterface/': '/ui-programming/user-interface-libraries/',
   '/introduction/expo/': '/core-concepts/',
   '/introduction/why-not-expo/': '/faq/#limitations',
@@ -158,14 +158,15 @@ const RENAMED_PAGES: Record<string, string> = {
   '/development/development-workflows/': '/develop/development-builds/development-workflows/',
   '/workflow/expo-cli/': '/more/expo-cli/',
   '/versions/latest/workflow/expo-cli/': '/more/expo-cli/',
-  '/debugging/': '/debugging/runtime-issue/',
+  '/debugging/': '/debugging/runtime-issues/',
+  '/debugging/runtime-issue/': '/debugging/runtime-issues/',
   '/guides/testing-with-jest/': '/develop/unit-testing/',
   '/workflow/glossary-of-terms/': '/more/glossary-of-terms/',
   '/development/installation/': '/develop/development-builds/installation/',
   '/get-started/errors/': '/debugging/errors-and-warnings/',
 
   // Old redirects
-  '/introduction/project-lifecycle/': '/introduction/managed-vs-bare/',
+  '/introduction/project-lifecycle/': '/archive/managed-vs-bare/',
   '/versions/latest/sdk/': '/versions/latest/',
   '/versions/latest/sdk/overview/': '/versions/latest/',
   '/guides/building-standalone-apps/': '/archive/classic-updates/building-standalone-apps/',
@@ -176,12 +177,12 @@ const RENAMED_PAGES: Record<string, string> = {
   '/expokit/': '/archive/glossary/#expokit/',
 
   // Development builds redirects
-  '/development/build/': '/development/create-development-builds/',
-  '/development/getting-started/': '/development/create-development-builds/',
-  '/development/troubleshooting/': '/development/introduction/',
-  '/development/upgrading/': '/development/introduction/',
-  '/development/extensions/': '/development/development-workflows/',
-  '/development/develop-your-project': '/development/use-development-builds',
+  '/development/build/': '/develop/development-builds/create-a-build/',
+  '/development/getting-started/': '/develop/development-builds/create-a-build/',
+  '/development/troubleshooting/': '/develop/development-builds/introduction/',
+  '/development/upgrading/': '/develop/development-builds/introduction/',
+  '/development/extensions/': '/develop/development-builds/development-workflows/',
+  '/development/develop-your-project': '/develop/development-builds/use-development-builds/',
 
   // Consolidate workflow page
   '/bare/customizing/': '/workflow/customizing/',
@@ -193,7 +194,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/workflow/publishing/': '/archive/classic-updates/publishing/',
   '/guides/linking/': '/workflow/linking/',
   '/guides/up-and-running/': '/get-started/installation/',
-  '/guides/debugging/': '/workflow/debugging/',
+  '/guides/debugging/': '/debugging/runtime-issues/',
   '/guides/logging/': '/workflow/logging/',
   '/introduction/troubleshooting-proxies/': '/guides/troubleshooting-proxies/',
   '/introduction/running-in-the-browser/': '/guides/running-in-the-browser/',
@@ -215,7 +216,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/v37.0.0/sdk/overview/': '/versions/v37.0.0/',
 
   // Errors and debugging is better suited for getting started than tutorial
-  '/tutorial/errors/': '/get-started/errors/',
+  '/tutorial/errors/': '/debugging/errors-and-warnings/',
 
   // Redirects based on Next 9 upgrade (09/11/2020)
   '/api/': '/versions/latest/',
@@ -341,4 +342,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/tutorial/': '/tutorial/introduction/',
   // Note (@aman): The following redirect is temporary until Guides section has an overview
   '/guides/': '/workflow/customizing/',
+  '/archive/workflow/customizing/': '/workflow/customizing/',
+  '/errors-and-warnings/': '/debugging/errors-and-warnings/',
 };

@@ -7,10 +7,9 @@ description: Learn about different Metro bundler configurations that can be cust
 
 import { Terminal } from '~/ui/components/Snippet';
 import { YesIcon, NoIcon, PendingIcon } from '~/ui/components/DocIcons';
-import { Collapsible } from '~/ui/components/Collapsible';
 import { Step } from '~/ui/components/Step';
 
-Expo CLI uses Metro during [`npx expo start`](/workflow/expo-cli#develop) and [`npx expo export`](/workflow/expo-cli#exporting) to bundle your JavaScript code and assets. Metro is built and optimized for React Native, and used for large-scale applications such as Facebook and Instagram.
+Expo CLI uses Metro during [`npx expo start`](/more/expo-cli/#develop) and [`npx expo export`](/more/expo-cli/#exporting) to bundle your JavaScript code and assets. Metro is built and optimized for React Native, and used for large-scale applications such as Facebook and Instagram.
 
 ## Customizing
 
@@ -60,7 +59,7 @@ module.exports = config;
 
 ## Minification
 
-The source code is optimized for readability and debugging. To optimize your application for performance, the source code is automatically minified when [compiling](/workflow/expo-cli#compiling) and [exporting](/workflow/expo-cli#exporting). You can also minify your code during development with `npx expo start --minify`. This is sometimes useful for testing production optimizations.
+The source code is optimized for readability and debugging. To optimize your application for performance, the source code is automatically minified when [compiling](/more/expo-cli/#compiling) and [exporting](/more/expo-cli/#exporting). You can also minify your code during development with `npx expo start --minify`. This is sometimes useful for testing production optimizations.
 
 By default, Metro uses `uglify-es` to minify code. According to [this benchmark](https://github.com/privatenumber/minification-benchmarks) `uglify` generally produces the smallest bundles, and is nearly the _slowest_ minifier. There are alternative minifiers you can use with Metro:
 
@@ -148,7 +147,7 @@ This will show an interactive breakdown of what makes up your JavaScript bundle.
 
 ## Web Support
 
-> **info** Metro web support is under development and only works with the [local Expo CLI](/workflow/expo-cli) and Expo SDK 46 or newer. It's recommended you use it with [Expo Router](https://expo.github.io/router/docs).
+> **info** Metro web support is under development and only works with the [local Expo CLI](/more/expo-cli/) and Expo SDK 46 or newer. It's recommended you use it with [Expo Router](https://expo.github.io/router/docs).
 
 By default, Expo CLI uses webpack as the bundler on web platforms because Metro historically did not support web. Using different bundlers across platforms leads to some critical divergence in how an app works across platforms. Features such as Fast Refresh which works on native don't work on the web, and important production functionality such as assets are treated differently across bundlers.
 
@@ -184,7 +183,7 @@ Note that aliases, resolution, and other bundler features are now universal acro
 
 ### Adding Web support to Metro
 
-To enable Metro web support, make sure your project is using Expo SDK 46 or newer. Then modify your [Expo config](/workflow/configuration) to enable the feature using the `expo.web.bundler` field:
+To enable Metro web support, make sure your project is using Expo SDK 46 or newer. Then modify your [app config](/workflow/configuration) to enable the feature using the `expo.web.bundler` field:
 
 ```json app.json
 {
@@ -242,11 +241,10 @@ You can overwrite the default **index.html** in Metro web by creating a **public
 
 In the future, this will work universally across platforms with EAS Update hosting. Currently, the feature is web-only based on the static host used for the native app, for example, the legacy Expo service updates do not support this feature.
 
-{/*
+{/* prettier-ignore */}
+{/* ## TypeScript
 
-## TypeScript
-
-> Available since SDK 49.
+> Available in SDK 49 and higher.
 
 Expo's Metro config has experimental support for the `compilerOptions.paths` and `compilerOptions.baseUrl` fields in the project's `tsconfig.json` (or `jsconfig.json`) file. This enables absolute imports and aliases in the project. Learn more in the [TypeScript guide](/guides/typescript).
 
@@ -254,8 +252,6 @@ These feature requires additional setup in bare projects. See the [versioned Met
 
 ## CSS
 
-> Since SDK 49.
+> Available in SDK 49 and higher.
 
-See the versioned [CSS guide](/versions/latest/config/metro#css) for more information.
-
-*/}
+See the versioned [CSS guide](/versions/latest/config/metro#css) for more information. \*/}

@@ -109,7 +109,6 @@ const orders: Record<string, string[]> = {
     // run the XcodeProject mod second because many plugins attempt to read from it.
     'xcodeproj',
   ],
-  android: ['dangerous'],
 };
 /**
  * A generic plugin compiler.

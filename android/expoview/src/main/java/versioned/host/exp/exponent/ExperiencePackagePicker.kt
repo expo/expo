@@ -22,6 +22,7 @@ import expo.modules.documentpicker.DocumentPickerModule
 import expo.modules.easclient.EASClientModule
 import expo.modules.print.PrintModule
 import expo.modules.facedetector.FaceDetectorPackage
+import expo.modules.filesystem.FileSystemModule
 import expo.modules.filesystem.FileSystemPackage
 import expo.modules.font.FontLoaderPackage
 import expo.modules.gl.GLPackage
@@ -47,7 +48,7 @@ import expo.modules.network.NetworkModule
 import expo.modules.notifications.NotificationsPackage
 import expo.modules.permissions.PermissionsPackage
 import expo.modules.random.RandomModule
-import expo.modules.screencapture.ScreenCapturePackage
+import expo.modules.screencapture.ScreenCaptureModule
 import expo.modules.screenorientation.ScreenOrientationModule
 import expo.modules.securestore.SecureStorePackage
 import expo.modules.sensors.SensorsPackage
@@ -86,7 +87,6 @@ object ExperiencePackagePicker : ModulesProvider {
     NotificationsPackage(),
     PermissionsPackage(),
     SQLitePackage(),
-    ScreenCapturePackage(),
     SecureStorePackage(),
     SensorsPackage(),
     SpeechPackage(),
@@ -121,6 +121,7 @@ object ExperiencePackagePicker : ModulesProvider {
     DeviceModule::class.java,
     DocumentPickerModule::class.java,
     EASClientModule::class.java,
+    FileSystemModule::class.java,
     PrintModule::class.java,
     GLViewModule::class.java,
     HapticsModule::class.java,
@@ -134,6 +135,7 @@ object ExperiencePackagePicker : ModulesProvider {
     MediaLibraryModule::class.java,
     NetworkModule::class.java,
     RandomModule::class.java,
+    ScreenCaptureModule::class.java,
     ScreenOrientationModule::class.java,
     SMSModule::class.java,
     SharingModule::class.java,

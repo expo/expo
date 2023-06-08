@@ -22,7 +22,7 @@ beforeAll(async () => {
   process.env.FORCE_COLOR = '0';
   process.env.CI = '1';
   process.env._EXPO_E2E_USE_PATH_ALIASES = '1';
-  delete process.env.EXPO_USE_STATIC;
+  delete process.env.EXPO_WEB_OUTPUT_MODE;
 });
 
 afterAll(() => {
@@ -65,6 +65,7 @@ it('runs `npx expo export --help`', async () => {
         --dump-assetmap            Dump the asset map for further processing
         --dump-sourcemap           Dump the source map for debugging the JS bundle
         -p, --platform <platform>  Options: android, ios, web, all. Default: all
+        --no-minify                Prevent minifying source
         -c, --clear                Clear the bundler cache
         -h, --help                 Usage info
     "
@@ -228,14 +229,14 @@ describe('server', () => {
     120 * 1000
   );
 
-  it(
+  xit(
     'runs `npx expo export -p web` for static rendering',
     async () => {
       const projectRoot = await setupTestProjectAsync('export-router', 'with-router', '48.0.0');
       await execa('node', [bin, 'export', '-p', 'web'], {
         cwd: projectRoot,
         env: {
-          EXPO_USE_STATIC: '1',
+          EXPO_WEB_OUTPUT_MODE: 'static',
         },
       });
 

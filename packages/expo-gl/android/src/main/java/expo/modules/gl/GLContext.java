@@ -32,6 +32,7 @@ import expo.modules.core.Promise;
 import expo.modules.core.interfaces.JavaScriptContextProvider;
 import expo.modules.core.interfaces.RuntimeEnvironmentInterface;
 import expo.modules.core.interfaces.services.UIManager;
+import expo.modules.gl.cpp.EXGL;
 import expo.modules.gl.utils.FileSystemUtils;
 
 import static android.opengl.GLES30.*;
@@ -70,13 +71,17 @@ public class GLContext {
     mEventQueue.add(r);
   }
 
-  public void initialize(SurfaceTexture surfaceTexture, final Runnable completionCallback) {
+  public void initialize(
+          SurfaceTexture surfaceTexture,
+          Boolean enableExperimentalWorkletSupport,
+          final Runnable completionCallback) {
     if (mGLThread != null) {
       return;
     }
 
     mGLThread = new GLThread(surfaceTexture);
     mGLThread.start();
+    mEXGLCtxId = EXGLContextCreate();
 
     // On JS thread, get JavaScriptCore context, create EXGL context, call JS callback
     final GLContext glContext = this;
@@ -85,20 +90,28 @@ public class GLContext {
     final JavaScriptContextProvider jsContextProvider = moduleRegistry.getModule(JavaScriptContextProvider.class);
     final RuntimeEnvironmentInterface environment = moduleRegistry.getModule(RuntimeEnvironmentInterface.class);
 
-    EXGLRegisterThread();
     uiManager.runOnClientCodeQueueThread(new Runnable() {
       @Override
       public void run() {
         long jsContextRef = jsContextProvider.getJavaScriptContextRef();
         synchronized (uiManager) {
           if (jsContextRef != 0) {
-            mEXGLCtxId = EXGLContextCreate();
-            EXGLRegisterThread();
             EXGLContextPrepare(jsContextRef, mEXGLCtxId, glContext);
           }
         }
-        mManager.saveContext(glContext);
-        completionCallback.run();
+        if (enableExperimentalWorkletSupport) {
+          uiManager.runOnUiQueueThread(new Runnable() {
+            @Override
+            public void run() {
+                EXGLContextPrepareWorklet(mEXGLCtxId);
+                mManager.saveContext(glContext);
+                completionCallback.run();
+            }
+          });
+        } else {
+            mManager.saveContext(glContext);
+            completionCallback.run();
+        }
       }
     });
   }

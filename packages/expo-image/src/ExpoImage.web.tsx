@@ -8,6 +8,24 @@ import useSourceSelection from './web/useSourceSelection';
 
 loadStyle();
 
+export const ExpoImageModule = {
+  prefetch(urls: string | string[]): void {
+    const urlsArray = Array.isArray(urls) ? urls : [urls];
+    urlsArray.forEach((url) => {
+      const img = new Image();
+      img.src = url;
+    });
+  },
+
+  async clearMemoryCache(): Promise<boolean> {
+    return false;
+  },
+
+  async clearDiskCache(): Promise<boolean> {
+    return false;
+  },
+};
+
 function onLoadAdapter(onLoad?: (event: ImageLoadEventData) => void) {
   return (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
     const target = event.target as HTMLImageElement;
@@ -73,6 +91,7 @@ export default function ExpoImage({
           (className, style) =>
             (
               <ImageWrapper
+                {...props}
                 source={placeholder?.[0]}
                 style={{
                   objectFit: imagePlaceholderContentFit,
@@ -102,6 +121,7 @@ export default function ExpoImage({
       (className, style) =>
         (
           <ImageWrapper
+            {...props}
             source={selectedSource || placeholder?.[0]}
             events={{
               onError: [onErrorAdapter(onError), onLoadEnd, onErrorInner],
@@ -123,19 +143,19 @@ export default function ExpoImage({
           />
         ),
   ];
-
   return (
     <div
       ref={containerRef}
       className="expo-image-container"
+      // @ts-expect-error
       style={{
         aspectRatio: String(aspectRatio),
         backgroundColor: backgroundColor?.toString(),
         transform: transform?.toString(),
         borderColor: borderColor?.toString(),
-        ...style,
-        overflow: 'hidden',
         position: 'relative',
+        overflow: 'hidden',
+        ...style,
       }}>
       <AnimationManager transition={transition} recyclingKey={recyclingKey} initial={initialNode}>
         {currentNode}

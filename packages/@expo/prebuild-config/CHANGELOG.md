@@ -6,14 +6,24 @@
 
 ### 🎉 New features
 
+- Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
-- Fix missing `await` syntax that was causing build error for `android.adapative.monochromeImage` field, if specified in `app.json`. [#22000](https://github.com/expo/expo/pull/22000) by [@amandeepmittal](https://github.com/amandeepmittal))
+### 💡 Others
+
+## 6.0.2 — 2023-05-08
 
 ### 💡 Others
 
 - Update tests to use latest Expo template. ([#21339](https://github.com/expo/expo/pull/21339) by [@EvanBacon](https://github.com/EvanBacon))
 - Update build files. ([#21941](https://github.com/expo/expo/pull/21941) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 6.0.1 - 2023-04-26
+
+### 🐛 Bug fixes
+
+- Fix missing `await` syntax that was causing build error for `android.adapative.monochromeImage` field, if specified in `app.json`. [#22000](https://github.com/expo/expo/pull/22000) by [@amandeepmittal](https://github.com/amandeepmittal))
 
 ## 6.0.0 — 2023-02-03
 

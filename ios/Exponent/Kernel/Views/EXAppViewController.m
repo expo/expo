@@ -2,7 +2,6 @@
 
 @import UIKit;
 
-#import "EXAnalytics.h"
 #import "EXAbstractLoader.h"
 #import "EXAppViewController.h"
 #import "EXAppLoadingProgressWindowController.h"
@@ -36,9 +35,6 @@
 #endif
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI47_0_0React/ABI47_0_0RCTAppearance.h>)
 #import <ABI47_0_0React/ABI47_0_0RCTAppearance.h>
-#endif
-#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI46_0_0React/ABI46_0_0RCTAppearance.h>)
-#import <ABI46_0_0React/ABI46_0_0RCTAppearance.h>
 #endif
 
 #if defined(EX_DETACHED)
@@ -301,7 +297,6 @@ NS_ASSUME_NONNULL_BEGIN
       [self _overrideUserInterfaceStyleOf:self];
       [self _overrideAppearanceModuleBehaviour];
       [self _invalidateRecoveryTimer];
-      [[EXKernel sharedInstance] logAnalyticsEvent:@"LOAD_EXPERIENCE" forAppRecord:self.appRecord];
       [self.appRecord.appManager rebuildBridge];
     });
   }
@@ -652,9 +647,6 @@ NS_ASSUME_NONNULL_BEGIN
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI47_0_0React/ABI47_0_0RCTAppearance.h>)
   ABI47_0_0RCTOverrideAppearancePreference(appearancePreference);
 #endif
-#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI46_0_0React/ABI46_0_0RCTAppearance.h>)
-  ABI46_0_0RCTOverrideAppearancePreference(appearancePreference);
-#endif
 
 }
 
@@ -750,7 +742,6 @@ NS_ASSUME_NONNULL_BEGIN
     _errorView.error = error;
     _contentView = _errorView;
     [self.view addSubview:_contentView];
-    [[EXAnalytics sharedInstance] logErrorVisibleEvent];
   }
 }
 

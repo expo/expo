@@ -10,9 +10,12 @@ import path from 'path';
 import requireString from 'require-from-string';
 import resolveFrom from 'resolve-from';
 
+import { stripAnsi } from '../../utils/ansi';
 import { delayAsync } from '../../utils/delay';
+import { SilentError } from '../../utils/errors';
 import { memoize } from '../../utils/fn';
 import { profile } from '../../utils/profile';
+import { logMetroError } from './metro/metroErrorInterface';
 import { getMetroServerRoot } from './middleware/ManifestMiddleware';
 
 const debug = require('debug')('expo:start:server:node-renderer') as typeof console.log;
@@ -20,7 +23,8 @@ const debug = require('debug')('expo:start:server:node-renderer') as typeof cons
 function wrapBundle(str: string) {
   // Skip the metro runtime so debugging is a bit easier.
   // Replace the __r() call with an export statement.
-  return str.replace(/^(__r\(.*\);)$/m, 'module.exports = $1');
+  // Use gm to apply to the last require line. This is needed when the bundle has side-effects.
+  return str.replace(/^(__r\(.*\);)$/gm, 'module.exports = $1');
 }
 
 function stripProcess(str: string) {
@@ -116,6 +120,12 @@ export async function createMetroEndpointAsync(
   return url;
 }
 
+export class MetroNodeError extends Error {
+  constructor(message: string, public rawObject: any) {
+    super(message);
+  }
+}
+
 export async function requireFileContentsWithMetro(
   projectRoot: string,
   devServerUrl: string,
@@ -129,9 +139,10 @@ export async function requireFileContentsWithMetro(
   // TODO: Improve error handling
   if (res.status === 500) {
     const text = await res.text();
-    if (text.startsWith('{"originModulePath"')) {
+    if (text.startsWith('{"originModulePath"') || text.startsWith('{"type":"TransformError"')) {
       const errorObject = JSON.parse(text);
-      throw new Error(errorObject.message);
+
+      throw new MetroNodeError(stripAnsi(errorObject.message) ?? errorObject.message, errorObject);
     }
     throw new Error(`[${res.status}]: ${res.statusText}\n${text}`);
   }
@@ -163,46 +174,41 @@ export async function requireWithMetro<T>(
     absoluteFilePath,
     options
   );
-
-  return profile(requireString, 'eval-metro-bundle')(content);
+  return evalMetro(content);
 }
 
 export async function getStaticRenderFunctions(
   projectRoot: string,
   devServerUrl: string,
   options: StaticRenderOptions = {}
-): Promise<any> {
+): Promise<Record<string, (...args: any[]) => Promise<any>>> {
   const scriptContents = await getStaticRenderFunctionsContentAsync(
     projectRoot,
     devServerUrl,
     options
   );
-  return profile(requireString, 'eval-metro-bundle')(scriptContents);
+
+  const contents = evalMetro(scriptContents);
+
+  // wrap each function with a try/catch that uses Metro's error formatter
+  return Object.keys(contents).reduce((acc, key) => {
+    const fn = contents[key];
+    if (typeof fn !== 'function') {
+      return { ...acc, [key]: fn };
+    }
+
+    acc[key] = async function (...props: any[]) {
+      try {
+        return await fn.apply(this, props);
+      } catch (error: any) {
+        await logMetroError(projectRoot, { error });
+        throw new SilentError(error);
+      }
+    };
+    return acc;
+  }, {} as any);
 }
 
-export async function getStaticPageContentsAsync(
-  projectRoot: string,
-  devServerUrl: string,
-  options: StaticRenderOptions = {}
-) {
-  const scriptContents = await getStaticRenderFunctionsContentAsync(
-    projectRoot,
-    devServerUrl,
-    options
-  );
-
-  const {
-    getStaticContent,
-    // getDataLoader
-  } = profile(requireString, 'eval-metro-bundle')(scriptContents);
-
-  return function loadPageAsync(url: URL) {
-    // const fetchData = getDataLoader(url);
-
-    return {
-      fetchData: false,
-      scriptContents,
-      renderAsync: () => getStaticContent(url),
-    };
-  };
+function evalMetro(src: string) {
+  return profile(requireString, 'eval-metro-bundle')(src);
 }

@@ -5,7 +5,6 @@ description: Learn how to use deep links to open your app from a web browser or 
 
 import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 import { Collapsible } from '~/ui/components/Collapsible';
-import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { CODE } from '~/ui/components/Text';
 
@@ -93,7 +92,7 @@ Note that iOS will download your AASA when your app is first installed and when 
 
 After deploying your AASA, you must also configure your app to use your associated domain:
 
-Add [`expo.ios.associatedDomains`](/versions/latest/config/app/#associateddomains) to your [Expo config](/workflow/configuration/), and make sure to follow [Apple's specified format](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_associated-domains). Make sure _not_ to include the protocol (`https`) in your URL, this is a common mistake that will result in your universal links not working.
+Add [`expo.ios.associatedDomains`](/versions/latest/config/app/#associateddomains) to your [app config](/workflow/configuration/), and make sure to follow [Apple's specified format](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_associated-domains). Make sure _not_ to include the protocol (`https`) in your URL, this is a common mistake that will result in your universal links not working.
 
 For example, if a website is `https://expo.dev/`, the app links will be:
 
@@ -126,7 +125,7 @@ At this point, opening a link on your mobile device should now open your app! If
 
 ## Deep links on Android
 
-Implementing deep links on Android (without a custom URL scheme) is somewhat simpler than on iOS. You need to add `intentFilters` to the [`android`](/versions/latest/config/app/#android) section of your [Expo config](/workflow/configuration/). The following basic configuration will cause your app to be presented in the standard Android dialog as an option for handling any record links to `myapp.io`:
+Implementing deep links on Android (without a custom URL scheme) is somewhat simpler than on iOS. You need to add `intentFilters` to the [`android`](/versions/latest/config/app/#android) section of your [app config](/workflow/configuration/). The following basic configuration will cause your app to be presented in the standard Android dialog as an option for handling any record links to `myapp.io`:
 
 ```json app.json
 {
@@ -164,9 +163,9 @@ It may be desirable for links to your domain to always open your app (without pr
 </Step>
 
 <Step label="2">
-  Add `"autoVerify": true` to the intent filter in your [Expo config](/workflow/configuration/).
-  This tells Android to check for your **assetlinks.json** on your server and register your app as
-  the automatic handler for the specified paths:
+  Add `"autoVerify": true` to the intent filter in your [app config](/workflow/configuration/). This
+  tells Android to check for your **assetlinks.json** on your server and register your app as the
+  automatic handler for the specified paths:
 </Step>
 
 ```json app.json
@@ -176,7 +175,7 @@ It may be desirable for links to your domain to always open your app (without pr
       "intentFilters": [
         {
           "action": "VIEW",
-          /* @info Add autoVerify property to the intent filter in Expo config.*/
+          /* @info Add autoVerify property to the intent filter in app config.*/
           "autoVerify": true,
           /* @end */
           "data": [
@@ -196,9 +195,9 @@ It may be desirable for links to your domain to always open your app (without pr
 
 <Collapsible summary={<>Handle App Links on Android for <CODE>expo-dev-client</CODE> version 1.2.1 and below</>}>
 
-From Android 12 onwards, there is an issue reported when verifying the App Links with [`expo-dev-client`](/development/create-development-builds) version 1.2.1 and below.
+From Android 12 onwards, there is an issue reported when verifying the App Links with [`expo-dev-client`](/develop/development-builds/introduction/#what-is-an-expo-dev-client) version 1.2.1 and below.
 
-In Expo config, when `expo.android.intentFilters` is used and `"autoVerify"` is set to `true`, the `expo-dev-client` adds a scheme `<data android:scheme="exp+<slug>" />` to the intent filter. This scheme breaks the App Links verification.
+In app config, when `expo.android.intentFilters` is used and `"autoVerify"` is set to `true`, the `expo-dev-client` adds a scheme `<data android:scheme="exp+<slug>" />` to the intent filter. This scheme breaks the App Links verification.
 
 An example of the `exp+` scheme breaking the verification process:
 

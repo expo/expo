@@ -62,7 +62,7 @@ export const getUserFacingVersionString = (
   return versionString;
 };
 
-export const stripVersionFromPath = (path: string) => {
+export const stripVersionFromPath = (path?: string) => {
   if (!path) {
     return path;
   }

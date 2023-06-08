@@ -65,7 +65,7 @@ You may want to create a plugin in a different file, here's how:
 Consider the following example that changes the config name:
 
 ```
-╭── app.config.js ➡️ Expo Config
+╭── app.config.js ➡️ App config
 ╰── my-plugin.js ➡️ Our custom plugin file
 ```
 
@@ -146,12 +146,12 @@ export default {
 
 A modifier (mod for short) is an async function that accepts a config and a data object, then manipulates and returns both as an object.
 
-Mods are added to the `mods` object of the Expo config. The `mods` object is different from the rest of the Expo config because it doesn't get serialized
+Mods are added to the `mods` object of the app config. The `mods` object is different from the rest of the app config because it doesn't get serialized
 after the initial reading, which means you can use it to perform actions _during_ code generation.
 If possible, you should attempt to use basic plugins instead of mods, as they're simpler to work with.
 
 - `mods` are omitted from the manifest and **cannot** be accessed via `Updates.manifest`. Mods exist for the sole purpose of modifying native project files during code generation!
-- `mods` can be used to read and write files safely during the `expo prebuild` command. This is how Expo CLI modifies the **Info.plist**, entitlements, xcproj, etc...
+- `mods` can be used to read and write files safely during the `npx expo prebuild` command. This is how Expo CLI modifies the **Info.plist**, entitlements, xcproj, etc...
 - `mods` are platform-specific and should always be added to a platform-specific object:
 
 ```js app.config.js
@@ -334,7 +334,7 @@ You can quickly create a plugin in your project and use it in your config.
 - <NoIcon /> `'./my-config-plugin.js'`
 
 ```
-╭── app.config.js ➡️ Expo Config
+╭── app.config.js ➡️ app config
 ╰── my-config-plugin.js ➡️ ✅ `module.exports = (config) => config`
 ```
 
@@ -348,7 +348,7 @@ If an **app.plugin.js** file is present in the root of a Node module's folder, i
 - <NoIcon /> `'expo-splash-screen/app.plugin.js'`
 
 ```
-╭── app.config.js ➡️ Expo Config
+╭── app.config.js ➡️ App config
 ╰── node_modules/expo-splash-screen/ ➡️ Module installed from NPM (works with Yarn workspaces as well).
     ├── package.json ➡️ The `main` file will be used if **app.plugin.js** doesn't exist.
     ├── app.plugin.js ➡️ ✅ `module.exports = (config) => config` -- must export a function.
@@ -364,7 +364,7 @@ A config plugin in a node module (without an **app.plugin.js**) will use the `ma
 - <NoIcon /> `'expo-splash-screen/build/index'`
 
 ```
-╭── app.config.js ➡️ Expo Config
+╭── app.config.js ➡️ App config
 ╰── node_modules/expo-splash-screen/ ➡️ Module installed from NPM (works with Yarn workspaces as well).
     ├── package.json ➡️ The `main` file points to **build/index.js**
     ╰── build/index.js ➡️  ✅ Node resolves to this module.
@@ -379,7 +379,7 @@ A config plugin in a node module (without an **app.plugin.js**) will use the `ma
 This is different to how Node modules work because **app.plugin.js** won't be resolved by default in a directory. You'll have to manually specify `./my-config-plugin/app.plugin.js` to use it, otherwise **index.js** in the directory will be used.
 
 ```
-╭── app.config.js ➡️ Expo Config
+╭── app.config.js ➡️ App config
 ╰── my-config-plugin/ ➡️ Folder containing plugin code
     ╰── index.js ➡️ ✅ By default, Node resolves a folder's index.js file as the main file.
 ```
@@ -394,7 +394,7 @@ We support this to make testing, and plugin authoring easier, but we don't expec
 - <NoIcon /> `'expo-splash-screen/build'`
 
 ```
-╭── app.config.js ➡️ Expo Config
+╭── app.config.js ➡️ App config
 ╰── node_modules/expo-splash-screen/ ➡️ Module installed from npm (works with Yarn workspaces as well).
     ├── package.json ➡️ The `main` file will be used if **app.plugin.js** doesn't exist.
     ├── app.plugin.js ➡️ ❌ Ignored because the reference reaches into the package internals.
@@ -439,13 +439,13 @@ This is because Node environments are often different to iOS, Android, or web JS
 
 Because of this reasoning, the root of a Node module is searched instead of right next to the **index.js**.
 Imagine you had a TypeScript Node module where the transpiled main file was located at **build/index.js**,
-if Expo config plugin resolution searched for **build/app.plugin.js** you'd lose the ability to transpile the file differently.
+if app config plugin resolution searched for **build/app.plugin.js** you'd lose the ability to transpile the file differently.
 
 ## Next step
 
 <BoxLink
   title="Development and debugging"
-  description="Learn about development best practices and debugging techniques for Expo config plugins."
+  description="Learn about development best practices and debugging techniques for app config plugins."
   href="/config-plugins/development-and-debugging"
 />
 

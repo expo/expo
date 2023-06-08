@@ -32,7 +32,7 @@ function getObjectPositionFromContentPositionObject(contentPosition) {
 function getFetchPriorityFromImagePriority(priority = 'normal') {
     return priority && ['low', 'high'].includes(priority) ? priority : 'auto';
 }
-const ImageWrapper = React.forwardRef(({ source, events, contentPosition, hashPlaceholderContentPosition, priority, style, hashPlaceholderStyle, className, accessibilityLabel, }, ref) => {
+const ImageWrapper = React.forwardRef(({ source, events, contentPosition, hashPlaceholderContentPosition, priority, style, hashPlaceholderStyle, className, accessibilityLabel, ...props }, ref) => {
     useEffect(() => {
         events?.onMount?.forEach((e) => e?.());
     }, []);
@@ -47,7 +47,7 @@ const ImageWrapper = React.forwardRef(({ source, events, contentPosition, hashPl
     const uri = isHash ? blurhashUri ?? thumbhashUri : source?.uri;
     if (!uri)
         return null;
-    return (React.createElement("img", { ref: ref, alt: accessibilityLabel, className: className, src: uri || undefined, key: source?.uri, style: {
+    return (React.createElement("img", { ref: ref, alt: accessibilityLabel, className: className, src: uri || undefined, key: source?.uri, ...props, style: {
             width: '100%',
             height: '100%',
             position: 'absolute',
@@ -60,7 +60,15 @@ const ImageWrapper = React.forwardRef(({ source, events, contentPosition, hashPl
         // @ts-ignore
         // eslint-disable-next-line react/no-unknown-property
         fetchpriority: getFetchPriorityFromImagePriority(priority || 'normal'), onLoad: (event) => {
-            events?.onLoad?.forEach((e) => e?.(event));
+            if (typeof window !== 'undefined') {
+                // this ensures the animation will run, since the starting class is applied at least 1 frame before the target class set in the onLoad event callback
+                window.requestAnimationFrame(() => {
+                    events?.onLoad?.forEach((e) => e?.(event));
+                });
+            }
+            else {
+                events?.onLoad?.forEach((e) => e?.(event));
+            }
         }, onTransitionEnd: () => events?.onTransitionEnd?.forEach((e) => e?.()), onError: () => events?.onError?.forEach((e) => e?.({ source: source || null })) }));
 });
 export default ImageWrapper;

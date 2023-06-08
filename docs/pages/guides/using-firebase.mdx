@@ -94,6 +94,8 @@ You do not have to install other plugins or configurations to use Firebase JS SD
 
 Firebase version 9 provides a modular API. You can directly import any service you want to use from the `firebase` package. For example, if you want to use an authentication service in your project, you can import the `auth` module from the `firebase/auth` package.
 
+> Using Firebase Authentication? See [the guide for setting up persistence to keep users logged in between reloads](https://expo.fyi/firebase-js-auth-setup).
+
 </Step>
 
 <Step label="3">
@@ -220,7 +222,7 @@ Once you have configured the React Native Firebase library in your project, come
 #### Run the project
 
 If you are using **[EAS Build](/build/introduction/), you can create and install a development build** on your devices. You do not need to run the project locally before creating a development build.
-For more information on creating a development build, see the section on [installing a development build](/development/create-development-builds/#create-and-install-eas-build).
+For more information on creating a development build, see the section on [installing a development build](/develop/development-builds/create-a-build/).
 
 <Collapsible summary="Run project locally?">
 
@@ -229,7 +231,7 @@ If you want to run the project locally:
 - You need both Android Studio and Xcode installed and configured on your computer.
 - Then, you can run the project using `npx expo run:android` or `npx expo run:ios` command.
 
-If a particular React Native Firebase module requires custom native configuration steps, you must add it as a `plugin` to [Expo config file](/workflow/configuration/).
+If a particular React Native Firebase module requires custom native configuration steps, you must add it as a `plugin` to [app config file](/workflow/configuration/).
 Then, to run the project locally, you will have to run the `npx expo prebuild --clean` command to apply the native changes before the `npx expo run` commands.
 
 </Collapsible>

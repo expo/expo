@@ -28,8 +28,6 @@ const screens = [
   'Modal',
   'Picker',
   'Pressable',
-  'ProgressBarAndroid',
-  'ProgressViewIOS',
   'QRCode',
   'Reanimated',
   'Skia',

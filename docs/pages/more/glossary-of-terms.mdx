@@ -1,14 +1,25 @@
 ---
 title: Glossary of terms
+description: List of non-obvious terms used withing the documentation, related to Expo or cross-platform development in general.
 ---
 
 ### Android
 
-The mobile operating system sponsored by Google for use with "Android" devices.
+The mobile operating system sponsored by Google for use with **Android** devices.
+
+### App Config
+
+A file named **app.json**, **app.config.json**, **app.config.js**, or **app.config.ts** in the root of a project directory. For more information, see [app config configuration](/workflow/configuration/).
+
+This file is used for the following purposes:
+
+- To configure how [Expo CLI](#expo-cli) works.
+- Generate a project's public [manifest](#manifest) in EAS Update (think **index.html** but for native apps).
+- Add Expo [config plugins](#config-plugin) and configure how `npx expo prebuild` generates native code.
 
 ### app.json
 
-An [Expo Config](#expo-config) file.
+An [app config](#app-config) file.
 
 ### Apple Capabilities
 
@@ -26,8 +37,9 @@ A feature of EAS build that automatically enables or disables [Apple capabilitie
 
 A cross-platform tool for automatically linking native modules to native apps via native package managers.
 
-- On iOS the tool is used in [CocoaPods](#cocoapods) `ios/Podfile` and invoked during `pod install`.
-- On Android the tool is used in the `android/app/build.gradle` and invoked during the [Gradle](#gradle) sync process.
+- On Android the tool is used in the **android/app/build.gradle** and invoked during the [Gradle](#gradle) sync process.
+- On iOS the tool is used in [CocoaPods](#cocoapods) **ios/Podfile** and invoked during `pod install`.
+
 
 There are two versions of Autolinking: [Expo Autolinking](#expo-autolinking), and [Community Autolinking](#community-autolinking).
 
@@ -35,15 +47,17 @@ The default [Prebuild template](#prebuild-template) includes support for [Expo A
 
 ### Babel
 
-Transpiler used for removing language features that aren't available in the runtime's [JavaScript engine](#javascript-engine). [Metro](#metro-bundler) uses Babel internally. Project's can configure how Babel is used by modifying the `babel.config.js` file in their project directory. This file is optional when using [Expo CLI](#expo-cli). Expo projects should extend the default Babel preset [`babel-preset-expo`](https://github.com/expo/expo/tree/main/packages/babel-preset-expo).
+Transpiler used for removing language features that aren't available in the runtime's [JavaScript engine](#javascript-engine). [Metro](#metro-bundler) uses Babel internally.
+
+Projects can configure how Babel is used by modifying the **babel.config.js** file in the project directory. This file is optional when using [Expo CLI](#expo-cli). Expo projects should extend the default Babel preset [`babel-preset-expo`](https://github.com/expo/expo/tree/main/packages/babel-preset-expo).
 
 ### CocoaPods
 
-The iOS package manager, used to link native modules to the native iOS project. This package manager is configured using the `ios/Podfile`, and updated when a user runs `pod install` in the `ios` directory.
+The iOS package manager used to link native modules to the native iOS project. This package manager is configured using the **ios/Podfile** and updated when a user runs `pod install` in the **ios** directory.
 
 ### Community Autolinking
 
-This refers to the React Native community [fork](https://github.com/react-native-community/cli/issues/248#issue-422591744) of the [Expo Autolinking](#expo-autolinking). The requirements for linking a module different to [Expo Autolinking](#expo-autolinking) but the implementation is the same.
+This refers to the React Native community [fork](https://github.com/react-native-community/cli/issues/248#issue-422591744) of the [Expo Autolinking](#expo-autolinking). The requirements for linking a module are different from [Expo Autolinking](#expo-autolinking), however, the implementation is the same.
 
 ### Config Introspection
 
@@ -51,11 +65,11 @@ A process for evaluating the results of [`npx expo prebuild`](#prebuild) in-memo
 
 ### Config Mods
 
-Async functions that are appended to the [Expo Config](#expo-config) for use in [Prebuild](#prebuild). These functions are given a single native file to modify like Info.plist or AndroidManifest.xml. Config Mods are chained together and come from the package `@expo/config-plugins`. For more information, see [Config Plugins](/guides/config-plugins).
+Async functions that are appended to the [app config](#app-config) for use in [Prebuild](#prebuild). These functions are given a single native file to modify such as **AndroidManifest.xml** or **Info.plist**. Config mods are chained together and come from the package `@expo/config-plugins`. For more information, see [Config plugins](/config-plugins/introduction/).
 
 ### Config Plugin
 
-A JavaScript function that is used to append [config mods](#config-mods) to the [Expo Config](#expo-config) for use in [Prebuild](#prebuild). For more information, see [Config Plugins](/guides/config-plugins).
+A JavaScript function that is used to append [config mods](#config-mods) to the [app Config](#app-config) for use in [Prebuild](#prebuild). For more information, see [Config Plugins](/config-plugins/introduction/).
 
 ### create-expo-app
 
@@ -79,7 +93,7 @@ This package can be used by running any of the following commands:
 
 ### Dangerous Mods
 
-Config [modifiers](#config-mods) that apply unstable changes to a native project during [prebuild](#prebuild). Use of these modifiers is unpredictable and prone to breaking changes between major version bumps in [Expo SDK](#expo-sdk).
+Config [modifiers](#config-mods) that apply unstable changes to a native project during [prebuild](#prebuild). Using these modifiers is unpredictable and prone to breaking changes between major version bumps in [Expo SDK](#expo-sdk).
 
 ### Dev Clients
 
@@ -101,16 +115,16 @@ The command-line tool for working with EAS. {/* Pending creation of eas-cli [Rea
 
 ### EAS Config
 
-The `eas.json` file used to configure [EAS CLI](#eas-cli). For more information, see [Configuring EAS Build with `eas.json`](/build/eas-json/).
+The **eas.json** file used to configure [EAS CLI](#eas-cli). For more information, see [Configuring EAS Build with eas.json](/build/eas-json/).
 
 ### EAS Metadata
 
-A command line tool for uploading and downloading Apple App Store metadata as JSON. This tool is available in the [EAS CLI](#eas-cli) package and should be used to improve the iOS submission process. For more information, see [EAS Metadata](/eas/metadata).
+A command-line tool for uploading and downloading Apple App Store metadata as JSON. This tool is available in the [EAS CLI](#eas-cli) package and should be used to improve the iOS submission process. For more information, see [EAS Metadata](/eas/metadata).
 
 ### EAS Update
 
 1. The cloud hosting service [EAS Update](/eas-update/introduction/) that is used for OTA Updates.
-2. The CLI command `eas update` from [EAS CLI](#eas-cli) that is used to publish static files to the cloud hosting service.
+2. The CLI command `eas update` from [EAS CLI](#eas-cli) used to publish static files to the cloud hosting service.
 
 ### Emulator
 
@@ -118,7 +132,7 @@ Emulator is used to describe software emulators of Android devices on your compu
 
 ### Entry Point
 
-The entry point usually refers to the initial JavaScript file used to load an application. In apps using [Expo CLI](#expo-cli), the default entry point is `./node_modules/expo/AppEntry.js` which simply imports the **App.js** file from the root project directory and registers it as the initial component in the native app.
+The entry point usually refers to the initial JavaScript file used to load an application. In apps using [Expo CLI](#expo-cli), the default entry point is **./node_modules/expo/AppEntry.js** which simply imports the **App.js** file from the root project directory and registers it as the initial component in the native app.
 
 ### Experience
 
@@ -126,25 +140,15 @@ A synonym for app that usually implies something more single-use and smaller in 
 
 ### Expo Autolinking
 
-The original [Autolinking](#autolinking) system that is designed for projects using `expo-modules-core`. This system links modules based on the existence of an `expo-module.config.json` file in the library's root directory.
+The original [Autolinking](#autolinking) system that is designed for projects using `expo-modules-core`. This system links modules based on the existence of an **expo-module.config.json** in the library's root directory.
 
 ### Expo CLI
 
-The command-line tool for working with Expo. This term now refers to the [Local Expo CLI](#local-expo-cli), but historically referred to the [Global Expo CLI](#global-expo-cli). For more information, see [Expo CLI](/workflow/expo-cli).
+The command-line tool for working with Expo. This term now refers to the [Local Expo CLI](#local-expo-cli), but historically referred to the [Global Expo CLI](#global-expo-cli). For more information, see [Expo CLI](/more/expo-cli/).
 
 ### Expo client
 
 The former name for the [Expo Go](#expo-go) app.
-
-### Expo Config
-
-A file named `app.json`, `app.config.json`, `app.config.js`, or `app.config.ts` in the root of a project directory. For more information, see [Expo Config configuration](/workflow/configuration/).
-
-This file is used for the following purposes:
-
-- Configuring how [Expo CLI](#expo-cli) works.
-- Generating a project's public [manifest](#manifest) in EAS Update (think index.html but for native apps).
-- Adding Expo [Config Plugins](#config-plugin) and configuring how `npx expo prebuild` generates native code.
 
 ### Expo Export
 
@@ -152,7 +156,7 @@ Refers to the command `npx expo export` from [Expo CLI](#expo-cli). This command
 
 ### Expo Go
 
-The Android and iOS app that runs React Native apps. When you want to run your app outside of the Expo Go app and deploy it to the App and/or Play stores, you can build a [Standalone App](#standalone-app).
+The Android and iOS app that runs React Native apps. When you want to run your app outside of the Expo Go app and deploy it to the app stores, you can build a [Standalone App](#standalone-app).
 
 ### Expo Install
 
@@ -160,13 +164,13 @@ Refers to the command `npx expo install` from [Expo CLI](#expo-cli). This comman
 
 ### Expo Module Config
 
-A file named `expo-module.config.json` that lives in the root directory of a [native module](#native-module). For more information, see [Module Config](/modules/module-config/).
+A file named **expo-module.config.json** that lives in the root directory of a [native module](#native-module). For more information, see [Module Config](/modules/module-config/).
 
 ### Expo SDK
 
 A collection of [npm](#npm) packages containing [native modules](#native-module) that provides access to device/system functionality such as camera, push notification, contacts, file system, and more.
 
-- Each package supports iOS, Android, and web whenever possible.
+- Each package supports Android, iOS, and web whenever possible.
 - The interface is completely written in [TypeScript](#typescript).
 - All packages in the Expo SDK work with each other and can safely be compiled together.
 - Any package in the SDK can be used in any [React Native](#react-native) app, with minimal, shared setup. [Learn more](/bare/installing-expo-modules/).
@@ -186,7 +190,7 @@ A mobile app debugger. We do not enable Flipper in the default [Prebuild](#prebu
 
 ### FYI
 
-Sometimes referred to as "Expo FYI", this is a collection of tailored solutions to complex issues that lives at [expo.fyi](https://expo.fyi/). FYI links are utilized throughout Expo's developer tooling to help provide a better developer experience to users.
+Sometimes referred to as **Expo FYI**, is a collection of tailored solutions to complex issues that live at [expo.fyi](https://expo.fyi/). FYI links are utilized throughout Expo's developer tooling to help provide a better developer experience to users.
 
 ### Global Expo CLI
 
@@ -222,7 +226,7 @@ The package `@expo/cli` is installed with the `expo` package. This is sometimes 
 
 ### Manifest
 
-An Expo app manifest is similar to a [web app manifest](https://developer.mozilla.org/en-US/docs/Web/Manifest) - it provides information that Expo Go needs to know how to run the app and other relevant data. For more information, see [Expo Go](/get-started/expo-go/#manifest).
+An Expo app manifest is similar to a [web app manifest](https://developer.mozilla.org/en-US/docs/Web/Manifest). It provides information that Expo Go needs to know how to run the app and other relevant data. For more information, see [Expo Go](/get-started/expo-go/#manifest).
 
 ### Meta
 
@@ -234,7 +238,7 @@ The bundler used for converting JavaScript files and assets into a format that r
 
 ### Metro Config
 
-The `metro.config.js` file used to configure [Metro bundler](#metro-bundler). This should extend the package `@expo/metro-config` when using [Expo CLI](#expo-cli). For more information, see [Customizing Metro](/guides/customizing-metro).
+The **metro.config.js** file used to configure [Metro bundler](#metro-bundler). This should extend the package `@expo/metro-config` when using [Expo CLI](#expo-cli). For more information, see [Customizing Metro](/guides/customizing-metro).
 
 ### Monorepo
 
@@ -260,21 +264,21 @@ A native application containing a [JavaScript engine](#javascript-engine), and i
 
 Automates the process of installing, upgrading, configuring, and removing libraries, also known as dependencies, from your project. See [npm](#npm) and [yarn](#yarn).
 
-### Platform extensions
+### Platform Extensions
 
-Platform extensions are a feature of the [Metro bundler](#metro-bundler) which enable users to substitute files on a per-platform basis given a specific filename. For example, if a project has a `./index.js` file and a `./index.ios.js` file, then the `index.ios.js` will be used when bundling for iOS, and the `index.js` file will be used when bundling for all other platforms.
+Platform extensions are a feature of the [Metro bundler](#metro-bundler) which enable users to substitute files on a per-platform basis given a specific filename. For example, if a project has a **./index.js** file and a **./index.ios.js** file, then the **index.ios.js** will be used when bundling for iOS, and the **index.js** file will be used when bundling for all other platforms.
 
 By default, platform extensions are resolved in `@expo/metro-config` using the following formula:
 
-- iOS: `*.ios.js`, `*.native.js`, `*.js`
-- Android: `*.android.js`, `*.native.js`, `*.js`
-- Web: `*.web.js`, `*.js`
+- Android: **&#42;.android.js**, **&#42;.native.js**, **&#42;.js**
+- iOS: **&#42;.ios.js**, **&#42;.native.js**, **&#42;.js**
+- Web: **&#42;.web.js**, **&#42;.js**
 
 {/* TODO: Multi-Resolution Asset Extensions */}
 
 ### Prebuild
 
-The process of generating the temporary native `/ios` and `/android` folders for a React Native project based on the [Expo Config](#expo-config). This process is performed by running the command `npx expo prebuild` from [Expo CLI](#expo-cli) in a project directory.
+The process of generating the temporary native **android** and **ios** folders for a React Native project based on the [app config](#app-config). This process is performed by running the command `npx expo prebuild` from [Expo CLI](#expo-cli) in a project directory.
 
 See also:
 
@@ -283,11 +287,11 @@ See also:
 
 ### Prebuild Template
 
-The React Native project template that is used as the first step of [Prebuilding](#prebuild). This template is versioned with the [Expo SDK](#expo-sdk), and the template is chosen based on the installed version of `expo` in a project. After the template is cloned, `npx expo prebuild` will evaluate the [Expo Config](#expo-config) and run the [Config mods](#config-mods) which modify various files in the template.
+The React Native project template that is used as the first step of [Prebuilding](#prebuild). This template is versioned with the [Expo SDK](#expo-sdk), and the template is chosen based on the installed version of `expo` in a project. After the template is cloned, `npx expo prebuild` will evaluate the [app config](#app-config) and run the [Config mods](#config-mods) which modify various files in the template.
 
 Although the template can be changed by using the `npx expo prebuild --template /path/to/template` flag, the default prebuild template contains important initial defaults that the `npx expo prebuild` command makes assumptions about.
 
-The default template currently lives here: [`expo-template-bare-minimum`](https://github.com/expo/expo/tree/main/templates/expo-template-bare-minimum).
+The default template currently lives at [`expo-template-bare-minimum`](https://github.com/expo/expo/tree/main/templates/expo-template-bare-minimum).
 
 ### Publish
 
@@ -295,7 +299,7 @@ We use the word "publish" as a synonym for "deploy". When you publish an app, it
 
 ### React Native
 
-"React Native lets you build mobile apps using only JavaScript. It uses the same design as React, letting you compose a rich mobile UI from declarative components." [Read more](https://reactnative.dev/).
+[React Native](https://reactnative.dev/) lets you build mobile apps using only JavaScript. It uses the same design as React, letting you compose a rich mobile UI from declarative components.
 
 ### React Native Web
 
@@ -309,19 +313,13 @@ The preferred navigation library for React Native apps, developed and sponsored 
 
 Remote Debugging (also known as Async Chrome Debugging) is an experimental system for debugging React Native apps. The system works by executing the application JavaScript in a Chrome tab's web worker, then sending native commands over websockets to the native device. The benefit being you could use the built-in Chrome break points and network inspector to debug your application. This system does not work with JSI's synchronous calls, meaning it's not a reliable way to debug modern React Native apps. A better alternative to debugging React Native is to use [Hermes](#hermes-engine) as you can connect Chrome Dev Tools to it.
 
-### Shell app
-
-> **warning** Deprecated technology
-
-Another term we occasionally use for [Standalone app](#standalone-app).
-
 ### Simulator
 
 An emulator for iOS devices that you can run on macOS (or in [Snack](#snack)) to work on your app without having to have a physical device handy.
 
 ### Slug
 
-We use the word "slug" in [app.json](#appjson) to refer to the name to use for your app in its url. For example, the [Native Component List](https://expo.dev/@community/native-component-list) app lives at https://expo.dev/@community/native-component-list and the slug is native-component-list.
+We use the word "slug" in [**app.json**](#appjson) to refer to the name to use for your app in its url. For example, the [Native Component List](https://expo.dev/@community/native-component-list) app lives at https://expo.dev/@community/native-component-list and the slug is native-component-list.
 
 ### Snack
 
@@ -333,11 +331,11 @@ A development agency in Krakow, Poland. Maintainers of `react-native-gesture-han
 
 ### Standalone app
 
-An application binary that can be submitted to the iOS App Store or Android Play Store. For more information, see [Building Standalone Apps](/archive/classic-updates/building-standalone-apps).
+An application binary that can be submitted to the Android Play Store or iOS App Store. For more information, see [Building Standalone Apps](/archive/classic-updates/building-standalone-apps).
 
 ### Store Config
 
-The `store.config.json` file used to configure [EAS Metadata](#eas-metadata). This file can be generated from an existing App Store entry using `eas metadata:pull`.
+The **store.config.json** file used to configure [EAS Metadata](#eas-metadata). This file can be generated from an existing App Store entry using `eas metadata:pull`.
 
 ### Sweet API
 
@@ -353,11 +351,11 @@ Traditionally, apps for Android and iOS are updated by submitting an updated bin
 
 ### VS Code Expo
 
-The VS Code extension for improving the developer experience of working with Expo config files. This extension provides autocomplete and intellisense for the [Expo Config](#expo-config), [Store Config](#store-config), [Expo Module Config](#expo-module-config), and [EAS Config](#eas-config). For more information, see the [VS Code Expo extension](https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo).
+The VS Code extension for improving the developer experience of working with app config files. This extension provides autocomplete and intellisense for the [app config](#app-config), [Store Config](#store-config), [Expo Module Config](#expo-module-config), and [EAS Config](#eas-config). For more information, see the [VS Code Expo extension](https://marketplace.visualstudio.com/items?itemName=expo.vscode-expo-tools).
 
 ### Watchman
 
-The file watcher used by [Metro](#metro-bundler) to perform hot reloads during development. Watchman contains native code and may cause issues when installing globally. Watchman is maintained by [Meta](#meta) and used in Jest.
+The file watcher used by [Metro](#metro-bundler) to perform hot reloads during development. Watchman contains native code and may cause issues when installed globally. Watchman is maintained by [Meta](#meta) and used in Jest.
 
 ### webpack
 
@@ -365,11 +363,11 @@ The bundler used by [Expo CLI](#expo-cli) for developing [`react-native-web`](#r
 
 ### yarn
 
-A package manager for JavaScript. [Read more](https://yarnpkg.com/)
+A package manager for JavaScript. For more information, see [Yarn](https://yarnpkg.com/) documentation.
 
 ### Yarn Workspaces
 
-The [monorepo](#monorepo) solution we recommend for Expo users. Yarn workspaces can be configured using the package [`expo-yarn-workspaces`](https://github.com/expo/expo/tree/main/packages/expo-yarn-workspaces).
+The [monorepo](#monorepo) solution we recommend for Expo users. See [Working with Monorepos](/guides/monorepos) for more information on how to configure Yarn workspaces.
 
 ### Yoga
 

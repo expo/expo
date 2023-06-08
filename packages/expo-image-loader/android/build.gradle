@@ -33,21 +33,13 @@ buildscript {
 }
 
 group = 'host.exp.exponent'
-version = '4.1.1'
-
-// Creating sources with comments
-task androidSourcesJar(type: Jar) {
-  classifier = 'sources'
-  from android.sourceSets.main.java.srcDirs
-}
+version = '4.2.0'
 
 afterEvaluate {
   publishing {
     publications {
       release(MavenPublication) {
         from components.release
-        // Add additional sourcesJar to artifacts
-        artifact(androidSourcesJar)
       }
     }
     repositories {
@@ -70,14 +62,20 @@ android {
     jvmTarget = JavaVersion.VERSION_11.majorVersion
   }
 
+  namespace "expo.modules.imageloader"
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 8
-    versionName "4.1.1"
+    versionName "4.2.0"
   }
   lintOptions {
     abortOnError false
+  }
+  publishing {
+    singleVariant("release") {
+      withSourcesJar()
+    }
   }
 }
 
@@ -85,10 +83,11 @@ repositories {
   mavenCentral()
 }
 
+def glideVersion = safeExtGet('glideVersion', '4.13.2')
+
 dependencies {
   implementation project(':expo-modules-core')
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
-  api 'com.github.bumptech.glide:glide:4.9.0'
-  api 'com.facebook.fresco:fresco:2.0.0'
+  api "com.github.bumptech.glide:glide:${glideVersion}"
 }

@@ -23,7 +23,7 @@ To install and use Expo modules, the easiest way to get up and running is with t
   packageName="expo"
   cmd={[
     '# Install and configure the expo package automatically',
-    'npx install-expo-modules@latest',
+    '$ npx install-expo-modules@latest',
   ]}
   hideBareInstructions
 />
@@ -60,10 +60,10 @@ Save all of your changes. In Xcode, update the iOS Deployment Target under `Targ
   packageName="expo"
   cmd={[
     '# Install pods',
-    'npx pod-install',
+    '$ npx pod-install',
     '',
     '# Alternatively, the run command will install them for you',
-    'expo run:ios',
+    '$ npx expo run:ios',
   ]}
   hideBareInstructions
 />
@@ -74,8 +74,8 @@ Save all of your changes. In Xcode, update the iOS Deployment Target under `Targ
 
 You can verify that the installation was successful by logging a value from [`expo-constants`](/versions/latest/sdk/constants).
 
-- Run `expo install expo-constants`
-- Then, run `expo run:[android|ios]` and modify your app JavaScript code to add the following:
+- Run `npx expo install expo-constants`
+- Then, run `npx expo run:[android|ios]` and modify your app JavaScript code to add the following:
 
 ```js
 import Constants from 'expo-constants';
@@ -84,7 +84,7 @@ console.log(Constants.systemFonts);
 
 ### Using Expo SDK packages
 
-Once the `expo` package is installed and configured in your project, you can use `expo install` to add any other Expo module from the SDK. See [Using Libraries](/workflow/using-libraries) for more information.
+Once the `expo` package is installed and configured in your project, you can use `npx expo install` to add any other Expo module from the SDK. See [Using Libraries](/workflow/using-libraries) for more information.
 
 ### Expo modules included in the `expo` package
 

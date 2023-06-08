@@ -13,7 +13,7 @@ To get started, create a **tsconfig.json** in your project root:
 
 <Terminal cmd={['$ touch tsconfig.json']} />
 
-Running `npx expo start` will prompt you to install the required dependencies (`typescript`, `@types/react`, `@types/react-native`), and automatically configure your **tsconfig.json**.
+For SDK 48 and above, running `npx expo start` will prompt you to install the required dependencies, such as `typescript` and `@types/react`, and automatically configure your **tsconfig.json**. For SDK 47 and below, the command will also prompt to install `@types/react-native` as an additional dependency.
 
 Rename files to convert them to TypeScript. For example, you would rename **App.js** to **App.tsx**. Use the **.tsx** extension if the file includes React components (JSX). If the file did not include any JSX, you can use the **.ts** file extension.
 
@@ -80,7 +80,7 @@ When you create new source files in your project you should use the **.ts** exte
 
 ## Path Aliases
 
-> Available since SDK 49.
+> Available in SDK 49 and higher.
 
 SDK 49 projects will need to enable this feature in the project's **app.json**:
 
@@ -123,7 +123,7 @@ Then simply add the alias `@/` in the project's **tsconfig.json** and set it to 
 
 ## Absolute Imports
 
-> Available since SDK 49.
+> Available in SDK 49 and higher.
 
 SDK 49 projects will need to enable this feature in the project's **app.json**:
 

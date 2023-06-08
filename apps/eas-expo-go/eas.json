@@ -1,7 +1,9 @@
 {
   "cli": {
     "version": ">= 0.52.0",
-    "requireCommit": true
+    "requireCommit": true,
+    "appVersionSource": "remote",
+    "promptToConfigurePushNotifications": false
   },
   "build": {
     "base": {
@@ -22,9 +24,10 @@
       },
       "ios": {
         "cache": {
-          "key": "sdk48-0.71.3",
-          "cacheDefaultPaths": false,
-          "customPaths": ["../../ios/Pods"]
+          "key": "sdk49-0.72.0",
+          "customPaths": [
+            "../../ios/Pods"
+          ]
         },
         "resourceClass": "m-medium",
         "env": {
@@ -48,29 +51,6 @@
         "buildConfiguration": "Release"
       }
     },
-    "versioned-client-signed": {
-      "extends": "versioned-client",
-      "env": {
-        "EAS_BUILD_PROFILE": "versioned-client-signed"
-      },
-      "android": {
-        "withoutCredentials": false,
-        "gradleCommand": ":app:bundleVersionedRelease"
-      },
-      "ios": {
-        "credentialsSource": "remote",
-        "simulator": false
-      }
-    },
-    "versioned-client-signed-apk": {
-      "extends": "versioned-client-signed",
-      "env": {
-        "EAS_BUILD_PROFILE": "versioned-client-signed-apk"
-      },
-      "android": {
-        "gradleCommand": ":app:assembleVersionedRelease"
-      }
-    },
     "versioned-client-add-sdk": {
       "extends": "versioned-client",
       "env": {
@@ -90,6 +70,42 @@
         "scheme": "Expo Go \\(unversioned\\)",
         "simulator": true,
         "buildConfiguration": "Release"
+      }
+    },
+    "release-client": {
+      "extends": "versioned-client",
+      "env": {
+        "EAS_BUILD_PROFILE": "release-client"
+      },
+      "android": {
+        "autoIncrement": "versionCode",
+        "cache": {
+          "disabled": true
+        },
+        "withoutCredentials": false,
+        "gradleCommand": ":app:bundleVersionedRelease"
+      },
+      "ios": {
+        "autoIncrement": "buildNumber",
+        "resourceClass": "m-large",
+        "cache": {
+          "disabled": true
+        },
+        "simulator": false
+      }
+    }
+  },
+  "submit": {
+    "release-client": {
+      "ios": {
+        "ascApiKeyPath": "./credentials/secrets/ios-AuthKey-2A94XP6D72.p8",
+        "ascApiKeyId": "2A94XP6D72",
+        "ascApiKeyIssuerId": "69a6de7e-ee52-47e3-e053-5b8c7c11a4d1",
+        "ascAppId": "982107779"
+      },
+      "android": {
+        "serviceAccountKeyPath": "./credentials/secrets/android-service-account-key.json",
+        "track": "production"
       }
     }
   }

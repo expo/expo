@@ -5,7 +5,6 @@ description: Learn about getting started with Expo modules API.
 ---
 
 import { BookOpen02Icon, Grid01Icon } from '@expo/styleguide-icons';
-
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
@@ -14,8 +13,9 @@ import { Terminal } from '~/ui/components/Snippet';
 
 The two recommended flows to create a new module with Expo Modules API:
 
-- Add a new module to an existing Expo application, and use it to test and develop your module.
-- Create a new module in isolation with a generated example project if you want to reuse it in multiple projects or publish it to npm.
+- [Add a new module to an existing Expo application, and use it to test and develop your module.](#adding-a-new-module-to-an-existing-application)
+
+- [Create a new module in isolation with a generated example project if you want to reuse it in multiple projects or publish it to npm.](#creating-a-new-module-with-an-example-project)
 
 Both of these flows are covered in the next sections.
 
@@ -37,26 +37,17 @@ It's best to provide a meaningful module name. However, you can accept the defau
 
 ### Using the module
 
-If you have an **ios** directory in your project that you created using `expo prebuild`, you must reinstall the pods:
+If you have an **ios** directory in your project that you created using `npx expo prebuild`, you must reinstall the pods:
 
 <Terminal cmd={[`$ pod install --project-directory=ios`]} />
 
 > **Note:**
 > If you're using a development client, you need to rebuild your development client any time you want to use new native code.
 
-> **Warning:**
-> If you override the `paths` property in `tsconfig.json` or are using Expo SDK version below `48.0.11`, you need to include the following wildcard in [the paths config](https://www.typescriptlang.org/tsconfig#paths).
->
-> ```
-> "paths": {
->   "*": ["./modules/*"]
-> }
-> ```
-
-Now, import the module in your application:
+Now, import the module in your application, for example in **App.js** or **App.tsx**:
 
 ```js
-import { hello } from 'my-module';
+import { hello } from './modules/my-module';
 ```
 
 To run your app locally, run the `prebuild` command and then compile the app:
@@ -75,6 +66,9 @@ To run your app locally, run the `prebuild` command and then compile the app:
 
 Congratulations! You have created a local Expo module. You can now start working on it.
 
+> **Note:**
+> You can also use absolute import paths [with some configuration changes](https://expo.fyi/absolute-path-expo-modules.md).
+
 </Step>
 
 <Step label="3">
@@ -83,7 +77,7 @@ Congratulations! You have created a local Expo module. You can now start working
 
 #### Android
 
-If you have an `android` directory in your project that you created using `expo prebuild`, you can open the directory in Android Studio.
+If you have an **android** directory in your project that you created using `npx expo prebuild`, you can open the directory in Android Studio.
 
 You can always just edit the files in the `modules/my-module/android/src/main/java/expo/modules/mymodule/` directory directly in your favorite text editor.
 
@@ -93,7 +87,7 @@ Rebuild the app or build a new development client and you should see your change
 
 #### iOS
 
-Open the files in **modules/my-module/ios/** directory in your favorite code editor to edit them. Alternatively, if you have an **ios** directory in your project that was created using `expo prebuild`, you can use Xcode to edit them.
+Open the files in **modules/my-module/ios/** directory in your favorite code editor to edit them. Alternatively, if you have an **ios** directory in your project that was created using `npx expo prebuild`, you can use Xcode to edit them.
 
 Now, change the `hello` method to return a different string. For example, you can change it to return "Hello world! 🌎🍎".
 

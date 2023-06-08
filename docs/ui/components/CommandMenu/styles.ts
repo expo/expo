@@ -37,12 +37,12 @@ export const commandMenuStyles = css`
     z-index: 1001;
 
     @media screen and (max-width: ${breakpoints.medium}px) {
-      min-height: 100vh;
-      max-height: 100vh;
       width: 100vw;
       min-width: 100vw;
-      top: 50%;
-      border-radius: 0;
+      position: absolute;
+      min-height: 84vh;
+      max-height: 84vh;
+      margin-top: -16px;
     }
   }
 
@@ -119,8 +119,8 @@ export const commandMenuStyles = css`
     margin: ${spacing[3]}px 0 0;
 
     @media screen and (max-width: ${breakpoints.medium}px) {
-      height: calc(100vh - 50px - 50px - 20px);
-      max-height: calc(100vh - 50px - 50px - 20px);
+      height: calc(84vh - 50px - 50px - 20px);
+      max-height: calc(84vh - 50px - 50px - 20px);
     }
   }
 

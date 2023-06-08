@@ -90,8 +90,9 @@ export const isUsingEmbeddedAssets: boolean = ExpoUpdates.isUsingEmbeddedAssets 
 
 /**
  * If `expo-updates` is enabled, this is the
- * [manifest](/workflow/expo-go#manifest) object for the update that's currently
- * running.
+ * [manifest](/versions/latest/sdk/constants/#manifest) (or
+ * [classic manifest](/versions/latest/sdk/constants/#appmanifest))
+ * object for the update that's currently running.
  *
  * In development mode, or any other environment in which `expo-updates` is disabled, this object is
  * empty.
@@ -216,8 +217,8 @@ export async function setExtraParamAsync(
   key: string,
   value: string | null | undefined
 ): Promise<void> {
-  if (!ExpoUpdates.setExtraParamsAsync) {
-    throw new UnavailabilityError('Updates', 'setExtraParamsAsync');
+  if (!ExpoUpdates.setExtraParamAsync) {
+    throw new UnavailabilityError('Updates', 'setExtraParamAsync');
   }
 
   return await ExpoUpdates.setExtraParamAsync(key, value ?? null);

@@ -169,9 +169,9 @@ Firebase Cloud Messaging credentials are required for all Android apps to receiv
 
 To register your iOS device and automatically enable push notifications for your EAS Build, see [push notification setup](/push-notifications/push-notifications-setup/#ios).
 
-### Expo config
+### App config
 
-To configure `expo-notifications`, use the built-in [config plugin](/guides/config-plugins) in the Expo config (**app.json** or **app.config.js**) for [EAS Build](/build/introduction) or with `npx expo run:[android|ios]`. The plugin allows you to configure the following properties that cannot be set at runtime and require building a new app binary to take effect:
+To configure `expo-notifications`, use the built-in [config plugin](/config-plugins/introduction/) in the app config (**app.json** or **app.config.js**) for [EAS Build](/build/introduction) or with `npx expo run:[android|ios]`. The plugin allows you to configure the following properties that cannot be set at runtime and require building a new app binary to take effect:
 
 <ConfigPluginProperties
   properties={[
@@ -196,7 +196,7 @@ To configure `expo-notifications`, use the built-in [config plugin](/guides/conf
   ]}
 />
 
-Here is an example of using the config plugin in the Expo config file:
+Here is an example of using the config plugin in the app config file:
 
 ```json app.json
 {

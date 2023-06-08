@@ -421,6 +421,7 @@ exports[`built-in plugins compiles mods 1`] = `
     },
     "googleServicesFile": "./config/GoogleService-Info.plist",
     "infoPlist": {
+      "CADisableMinimumFrameDurationOnPhone": true,
       "CFBundleDevelopmentRegion": "$(DEVELOPMENT_LANGUAGE)",
       "CFBundleDisplayName": "my cool app",
       "CFBundleExecutable": "$(EXECUTABLE_NAME)",
@@ -697,7 +698,7 @@ exports[`built-in plugins introspects mods 1`] = `
           {
             "key": "FLIPPER_VERSION",
             "type": "property",
-            "value": "0.125.0",
+            "value": "0.182.0",
           },
           {
             "type": "empty",
@@ -924,12 +925,6 @@ exports[`built-in plugins introspects mods 1`] = `
                   },
                 ],
                 "meta-data": [
-                  {
-                    "$": {
-                      "android:name": "expo.modules.updates.EXPO_UPDATE_URL",
-                      "android:value": "https://exp.host/@bacon/mycoolapp",
-                    },
-                  },
                   {
                     "$": {
                       "android:name": "io.branch.sdk.BranchKey",
@@ -1231,9 +1226,9 @@ exports[`built-in plugins introspects mods 1`] = `
           "EXUpdatesCheckOnLaunch": "NEVER",
           "EXUpdatesEnabled": true,
           "EXUpdatesLaunchWaitMs": 650,
-          "EXUpdatesURL": "https://exp.host/@bacon/mycoolapp",
         },
         "infoPlist": {
+          "CADisableMinimumFrameDurationOnPhone": true,
           "CFBundleDevelopmentRegion": "$(DEVELOPMENT_LANGUAGE)",
           "CFBundleDisplayName": "my cool app",
           "CFBundleExecutable": "$(EXECUTABLE_NAME)",
@@ -1712,6 +1707,7 @@ exports[`built-in plugins introspects mods 1`] = `
     },
     "googleServicesFile": "./config/GoogleService-Info.plist",
     "infoPlist": {
+      "CADisableMinimumFrameDurationOnPhone": true,
       "CFBundleDevelopmentRegion": "$(DEVELOPMENT_LANGUAGE)",
       "CFBundleDisplayName": "my cool app",
       "CFBundleExecutable": "$(EXECUTABLE_NAME)",
@@ -2006,12 +2002,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                 "meta-data": [
                   {
                     "$": {
-                      "android:name": "expo.modules.updates.EXPO_UPDATE_URL",
-                      "android:value": "https://exp.host/@bacon/mycoolapp",
-                    },
-                  },
-                  {
-                    "$": {
                       "android:name": "io.branch.sdk.BranchKey",
                       "android:value": "MY_BRANCH_ANDROID_KEY",
                     },
@@ -2262,9 +2252,9 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
           "EXUpdatesCheckOnLaunch": "NEVER",
           "EXUpdatesEnabled": true,
           "EXUpdatesLaunchWaitMs": 650,
-          "EXUpdatesURL": "https://exp.host/@bacon/mycoolapp",
         },
         "infoPlist": {
+          "CADisableMinimumFrameDurationOnPhone": true,
           "CFBundleDevelopmentRegion": "$(DEVELOPMENT_LANGUAGE)",
           "CFBundleDisplayName": "my cool app",
           "CFBundleExecutable": "$(EXECUTABLE_NAME)",
@@ -2697,6 +2687,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
     },
     "googleServicesFile": "./config/GoogleService-Info.plist",
     "infoPlist": {
+      "CADisableMinimumFrameDurationOnPhone": true,
       "CFBundleDevelopmentRegion": "$(DEVELOPMENT_LANGUAGE)",
       "CFBundleDisplayName": "my cool app",
       "CFBundleExecutable": "$(EXECUTABLE_NAME)",

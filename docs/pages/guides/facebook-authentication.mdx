@@ -7,7 +7,6 @@ description: A guide on setting up and using Facebook authentication with AuthSe
 import { Terminal } from '~/ui/components/Snippet';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 import { Collapsible } from '~/ui/components/Collapsible';
-import { CODE } from '~/ui/components/Text';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Step } from '~/ui/components/Step';
 
@@ -52,7 +51,7 @@ If you do not provide a value for the `scheme`, the authentication flow will com
 
 For Android, you'll need to add a scheme that contains the app ID as a prefix. Facebook requires this scheme to be able to redirect the user back to the app after the authentication process is complete.
 
-For example, if your app ID is `1234567890`, then the scheme will be `fb1234567890`. Modify the `scheme` in Expo config and convert it to an array if you have more than one custom scheme to add this scheme:
+For example, if your app ID is `1234567890`, then the scheme will be `fb1234567890`. Modify the `scheme` in app config and convert it to an array if you have more than one custom scheme to add this scheme:
 
 ```json app.json
 {
@@ -281,7 +280,7 @@ const styles = StyleSheet.create({
 
 ## Testing your app
 
-**For a development build**, see [Use development builds](/development/use-development-builds/#start-the-development-server) for further instructions on how to start the development server or run [`npx expo run:android` or `npx expo run:ios`](/workflow/expo-cli/#compiling) command to test the native project locally.
+**For a development build**, see [Use development builds](/develop/development-builds/use-development-builds/#start-the-development-server) for further instructions on how to start the development server or run [`npx expo run:android` or `npx expo run:ios`](/more/expo-cli/#compiling) command to test the native project locally.
 
 ## Troubleshooting
 

@@ -65,6 +65,7 @@ const ImageWrapper = React.forwardRef(
       hashPlaceholderStyle,
       className,
       accessibilityLabel,
+      ...props
     }: {
       source?: ImageSource | null;
       events?: {
@@ -111,6 +112,7 @@ const ImageWrapper = React.forwardRef(
         className={className}
         src={uri || undefined}
         key={source?.uri}
+        {...props}
         style={{
           width: '100%',
           height: '100%',
@@ -125,7 +127,14 @@ const ImageWrapper = React.forwardRef(
         // eslint-disable-next-line react/no-unknown-property
         fetchpriority={getFetchPriorityFromImagePriority(priority || 'normal')}
         onLoad={(event) => {
-          events?.onLoad?.forEach((e) => e?.(event));
+          if (typeof window !== 'undefined') {
+            // this ensures the animation will run, since the starting class is applied at least 1 frame before the target class set in the onLoad event callback
+            window.requestAnimationFrame(() => {
+              events?.onLoad?.forEach((e) => e?.(event));
+            });
+          } else {
+            events?.onLoad?.forEach((e) => e?.(event));
+          }
         }}
         onTransitionEnd={() => events?.onTransitionEnd?.forEach((e) => e?.())}
         onError={() => events?.onError?.forEach((e) => e?.({ source: source || null }))}

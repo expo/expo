@@ -46,7 +46,6 @@ describe('requireNativeViewManager', () => {
     expect(React.Children.toArray(testNativeComponent.props.children)).toHaveLength(1);
 
     // Custom props
-    expect(testNativeComponent.props.proxiedProperties).toEqual({ custom: 'hello' });
-    expect(testNativeComponent.props).not.toHaveProperty('custom');
+    expect(testNativeComponent.props.custom).toEqual('hello');
   });
 });
