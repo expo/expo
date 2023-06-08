@@ -34,13 +34,13 @@ excluded:
 opt_in_rules:
   - anyobject_protocol
   - array_init
-  - capture_variable
   - closure_body_length
   - closure_end_indentation
   - closure_spacing
   - collection_alignment
   - comma_inheritance
   - conditional_returns_on_newline
+  - direct_return
   - discouraged_object_literal
   - empty_collection_literal
   - empty_count
@@ -69,11 +69,11 @@ opt_in_rules:
   - prohibited_super_call
   - redundant_nil_coalescing
   - static_operator
+  - superfluous_else
   - unavailable_function
   - unneeded_parentheses_in_closure_argument
   - unowned_variable_capture
-  - unused_declaration
-  - unused_import
+  - unused_capture_list
   - vertical_parameter_alignment_on_call
   - vertical_whitespace_closing_braces
   - vertical_whitespace_opening_braces
@@ -84,6 +84,12 @@ disabled_rules:
   - reduce_boolean
   - todo
   - weak_delegate
+
+# Rules run by `swiftlint analyze`.
+analyzer_rules:
+  - capture_variable
+  - unused_declaration
+  - unused_import
 
 # Prefer using AnyObject over class for class-only protocols.
 anyobject_protocol: warning
@@ -123,6 +129,9 @@ cyclomatic_complexity:
   error: 20
   ignores_case_statements: true
 
+# Directly return the expression instead of assigning it to a variable first.
+direct_return: warning
+
 # Prefer initializers over object literals.
 discouraged_object_literal:
   severity: error
@@ -151,6 +160,12 @@ enum_case_associated_values_count:
 # A `fatalError` call should have a message.
 fatal_error_message: error
 
+# Files should not span too many lines.
+file_length:
+  warning: 850
+  error: 900
+  ignore_comment_only_lines: true
+
 # File name should not contain any whitespace.
 file_name_no_space:
   severity: error
@@ -166,8 +181,8 @@ force_unwrapping: error
 
 # Functions bodies should not span too many lines.
 function_body_length:
-  warning: 80
-  error: 100
+  warning: 250
+  error: 300
 
 # Comparing two identical operands is likely a mistake.
 identical_operands: error
@@ -180,7 +195,7 @@ identifier_name:
   max_length:
     warning: 35
     error: 50
-  validates_start_with_lowercase: true
+  validates_start_with_lowercase: warning
   # Ignore Sweet API components as they intentionally start with the uppercase letter.
   allowed_symbols:
     [
@@ -216,6 +231,8 @@ indentation_width:
   severity: warning
   indentation_width: 2
   include_comments: false
+  include_compiler_directives: false
+  include_multiline_strings: true
 
 # Tuples shouldn’t have too many members. Create a custom type instead.
 large_tuple:
@@ -315,6 +332,9 @@ redundant_optional_initialization: warning
 # Operators should be declared as static functions, not free functions.
 static_operator: warning
 
+# Else branches should be avoided when the previous if-block exits the current scope.
+superfluous_else: warning
+
 # Files should have a single trailing newline.
 trailing_newline: warning
 
@@ -329,8 +349,8 @@ trailing_whitespace:
 
 # Type bodies should not span too many lines.
 type_body_length:
-  warning: 200
-  error: 350
+  warning: 750
+  error: 800
 
 # Type name should only contain alphanumeric characters, start with an uppercase character and span between 3 and 35 characters in length.
 type_name:
