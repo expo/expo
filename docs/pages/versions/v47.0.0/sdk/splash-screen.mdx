@@ -7,6 +7,8 @@ packageName: 'expo-splash-screen'
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { GithubIcon } from '@expo/styleguide-icons';
 
 The `SplashScreen` module from the `expo-splash-screen` library is used to tell the splash screen to remain visible until it has been explicitly told to hide. This is useful to do tasks that will happen behind the scenes such as making API calls, pre-loading fonts, animating the splash screen and so on.
 
@@ -22,7 +24,7 @@ Also, see the guide on [creating a splash screen image](/develop/user-interface/
 
 This example shows how to keep the splash screen visible while loading app resources and then hide the splash screen when the app has rendered some initial content.
 
-```js
+```js App.js
 import React, { useCallback, useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import Entypo from '@expo/vector-icons/Entypo';
@@ -80,9 +82,14 @@ export default function App() {
 }
 ```
 
-### Animating the splash screen
+### Animate the splash screen
 
-See the [with-splash-screen](https://github.com/expo/examples/tree/master/with-splash-screen) example on how to apply any arbitrary animations to your splash screen, such as a fade out. You can initialize a new project from this example by running `npx create-react-native-app -t with-splash-screen`.
+<BoxLink
+  title="Animate splash screen example"
+  description="See with-splash-screen example on how to apply any arbitrary animations to your splash screen, such as a fade out."
+  Icon={GithubIcon}
+  href="https://github.com/expo/examples/tree/master/with-splash-screen"
+/>
 
 ## API
 
