@@ -1,6 +1,5 @@
-import { PropsWithChildren, useContext } from 'react';
+import { PropsWithChildren } from 'react';
 
-import { PageApiVersionContext } from '~/providers/page-api-version';
 import { usePageMetadata } from '~/providers/page-metadata';
 import { Terminal } from '~/ui/components/Snippet';
 import { A, P, DEMI } from '~/ui/components/Text';
