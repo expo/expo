@@ -39,7 +39,7 @@ export class PlatformManager<
       getExpoGoUrl: () => string;
       /**
        * Get redirect URL for native disambiguation.
-       * @returns a URL like `http://localhost:19000/_expo/loading`
+       * @returns a URL like `http://localhost:8081/_expo/loading`
        */
       getRedirectUrl: () => string | null;
       /** Dev Client */

@@ -68,7 +68,7 @@ export const expoStart: Command = async (argv) => {
         `--offline                              Skip network requests and use anonymous manifest signatures`,
         `--https                                Start the dev server with https protocol`,
         `--scheme <scheme>                      Custom URI protocol to use when launching an app`,
-        chalk`-p, --port <port>                      Port to start the dev server on (does not apply to web or tunnel). {dim Default: 19000}`,
+        chalk`-p, --port <port>                      Port to start the dev server on (does not apply to web or tunnel). {dim Default: 8081}`,
         ``,
         chalk`--dev-client                           {yellow Experimental:} Starts the bundler for use with the expo-development-client`,
         `--force-manifest-type <manifest-type>  Override auto detection of manifest type`,
