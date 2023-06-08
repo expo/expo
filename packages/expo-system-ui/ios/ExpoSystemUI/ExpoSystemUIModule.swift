@@ -3,7 +3,7 @@
 import ExpoModulesCore
 
 public class ExpoSystemUIModule: Module {
-  private static let colorKey = "expoRootBackgroundColor"
+  private static let colorKey = "ExpoSystemUI.backgroundColor"
   public func definition() -> ModuleDefinition {
     Name("ExpoSystemUI")
 
