@@ -28,7 +28,7 @@ interface ExtraDependencies {
 }
 
 /**
- * Gets the `expo-build-properties` settings from app config
+ * Gets the `expo-build-properties` settings from the app config.
  */
 export async function getBuildPropertiesAsync(): Promise<Record<string, any>> {
   const projectRoot = path.dirname(projectPackageJsonPath);
@@ -40,7 +40,7 @@ export async function getBuildPropertiesAsync(): Promise<Record<string, any>> {
 }
 
 /**
- * Resolves the extra dependencies from `expo-build-properties` properties of the app config
+ * Resolves the extra dependencies from `expo-build-properties` settings.
  */
 export async function resolveExtraDependenciesAsync(): Promise<Partial<ExtraDependencies>> {
   const buildProps = await getBuildPropertiesAsync();

@@ -96,7 +96,7 @@ export interface PluginConfigTypeAndroid {
   unstable_networkInspector?: boolean;
 
   /**
-   * Add extra maven respositories to all gradle projects.
+   * Add extra maven repositories to all gradle projects.
    *
    * This acts like to add the following code to **android/build.gradle**:
    * ```groovy
