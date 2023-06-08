@@ -45,7 +45,7 @@ describe(resolvePortsAsync, () => {
   });
   it(`resolves default port for metro`, async () => {
     await expect(resolvePortsAsync('/noop', {}, { webOnly: false })).resolves.toStrictEqual({
-      metroPort: 19000,
+      metroPort: 8081,
     });
   });
   it(`resolves default port with given port`, async () => {

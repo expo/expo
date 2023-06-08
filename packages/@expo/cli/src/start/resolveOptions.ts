@@ -149,7 +149,7 @@ export async function resolvePortsAsync(
     const devClientDefaultPort = process.env.RCT_METRO_PORT
       ? parseInt(process.env.RCT_METRO_PORT, 10)
       : 8081;
-    const expoGoDefaultPort = 19000;
+    const expoGoDefaultPort = 8081;
     const metroPort = await resolvePortAsync(projectRoot, {
       defaultPort: options.port,
       fallbackPort: options.devClient ? devClientDefaultPort : expoGoDefaultPort,

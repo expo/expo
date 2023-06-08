@@ -63,12 +63,12 @@ it('runs `npx expo start --help`', async () => {
         -a, --android                          Opens your app in Expo Go on a connected Android device
         -i, --ios                              Opens your app in Expo Go in a currently running iOS simulator on your computer
         -w, --web                              Opens your app in a web browser
-        
+
         -c, --clear                            Clear the bundler cache
         --max-workers <num>                    Maximum number of tasks to allow Metro to spawn
         --no-dev                               Bundle in production mode
         --minify                               Minify JavaScript
-        
+
         -m, --host <mode>                      Dev server hosting type. Default: lan
                                                lan: Use the local network
                                                tunnel: Use any network by tunnel through ngrok
@@ -76,12 +76,12 @@ it('runs `npx expo start --help`', async () => {
         --tunnel                               Same as --host tunnel
         --lan                                  Same as --host lan
         --localhost                            Same as --host localhost
-        
+
         --offline                              Skip network requests and use anonymous manifest signatures
         --https                                Start the dev server with https protocol
         --scheme <scheme>                      Custom URI protocol to use when launching an app
-        -p, --port <port>                      Port to start the dev server on (does not apply to web or tunnel). Default: 19000
-        
+        -p, --port <port>                      Port to start the dev server on (does not apply to web or tunnel). Default: 8081
+
         --dev-client                           Experimental: Starts the bundler for use with the expo-development-client
         --force-manifest-type <manifest-type>  Override auto detection of manifest type
         --private-key-path <path>              Path to private key for code signing. Default: "private-key.pem" in the same directory as the certificate specified by the expo-updates configuration in app.json.
@@ -105,7 +105,7 @@ for (const args of [
 
 describe('server', () => {
   // Kill port
-  const kill = () => ensurePortFreeAsync(19000);
+  const kill = () => ensurePortFreeAsync(8081);
 
   beforeEach(async () => {
     await kill();
@@ -128,7 +128,7 @@ describe('server', () => {
         promise.on('close', (code: number) => {
           reject(
             code === 0
-              ? 'Server closed too early. Run `kill -9 $(lsof -ti:19000)` to kill the orphaned process.'
+              ? 'Server closed too early. Run `kill -9 $(lsof -ti:8081)` to kill the orphaned process.'
               : code
           );
         });
@@ -143,7 +143,7 @@ describe('server', () => {
       });
 
       console.log('Fetching manifest');
-      const response = await fetch('http://localhost:19000/', {
+      const response = await fetch('http://localhost:8081/', {
         headers: {
           'expo-platform': 'ios',
           Accept: 'multipart/mixed',
@@ -171,12 +171,12 @@ describe('server', () => {
 
       // URLs
       expect(manifest.launchAsset.url).toBe(
-        'http://127.0.0.1:19000/node_modules/expo/AppEntry.bundle?platform=ios&dev=true&hot=false&lazy=true'
+        'http://127.0.0.1:8081/node_modules/expo/AppEntry.bundle?platform=ios&dev=true&hot=false&lazy=true'
       );
-      expect(manifest.extra.expoGo.debuggerHost).toBe('127.0.0.1:19000');
-      expect(manifest.extra.expoGo.logUrl).toBe('http://127.0.0.1:19000/logs');
+      expect(manifest.extra.expoGo.debuggerHost).toBe('127.0.0.1:8081');
+      expect(manifest.extra.expoGo.logUrl).toBe('http://127.0.0.1:8081/logs');
       expect(manifest.extra.expoGo.mainModuleName).toBe('node_modules/expo/AppEntry');
-      expect(manifest.extra.expoClient.hostUri).toBe('127.0.0.1:19000');
+      expect(manifest.extra.expoClient.hostUri).toBe('127.0.0.1:8081');
 
       // Manifest
       expect(manifest.runtimeVersion).toBe('exposdk:47.0.0');
