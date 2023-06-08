@@ -5,6 +5,7 @@ import expo.modules.updates.UpdatesConfiguration.CheckAutomaticallyConfiguration
 import expo.modules.updates.db.entity.AssetEntity
 import android.os.AsyncTask
 import android.net.ConnectivityManager
+import android.os.Build
 import android.util.Base64
 import android.util.Log
 import com.facebook.react.ReactNativeHost
@@ -36,7 +37,6 @@ object UpdatesUtils {
   private val TAG = UpdatesUtils::class.java.simpleName
 
   private const val UPDATES_DIRECTORY_NAME = ".expo-internal"
-  private const val UPDATES_EVENT_NAME = "Expo.nativeUpdatesEvent"
 
   @Throws(Exception::class)
   fun getMapFromJSONString(stringifiedJSON: String): Map<String, String> {
@@ -154,6 +154,7 @@ object UpdatesUtils {
   fun sendEventToReactNative(
     reactNativeHost: WeakReference<ReactNativeHost>?,
     eventName: String,
+    eventType: String,
     params: WritableMap?
   ) {
     val host = reactNativeHost?.get()
@@ -184,20 +185,20 @@ object UpdatesUtils {
               if (eventParams == null) {
                 eventParams = Arguments.createMap()
               }
-              eventParams!!.putString("type", eventName)
-              emitter.emit(UPDATES_EVENT_NAME, eventParams)
+              eventParams!!.putString("type", eventType)
+              emitter.emit(eventName, eventParams)
               return@execute
             }
           }
-          Log.e(TAG, "Could not emit $eventName event; no event emitter was found.")
+          Log.e(TAG, "Could not emit $eventType event; no event emitter was found.")
         } catch (e: Exception) {
-          Log.e(TAG, "Could not emit $eventName event; no react context was found.")
+          Log.e(TAG, "Could not emit $eventType event; no react context was found.")
         }
       }
     } else {
       Log.e(
         TAG,
-        "Could not emit $eventName event; UpdatesController was not initialized with an instance of ReactApplication."
+        "Could not emit $eventType event; UpdatesController was not initialized with an instance of ReactApplication."
       )
     }
   }
@@ -258,7 +259,11 @@ object UpdatesUtils {
   @Throws(ParseException::class)
   fun parseDateString(dateString: String?): Date {
     return try {
-      val formatter: DateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.US)
+      val formatter: DateFormat = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.US)
+      } else {
+        throw ParseException("X character not allowed in this build version", 0)
+      }
       formatter.parse(dateString)
     } catch (e: ParseException) {
       Log.e(TAG, "Failed to parse date string on first try: $dateString", e)

@@ -65,6 +65,11 @@ class LoaderTask(
     fun onCachedUpdateLoaded(update: UpdateEntity): Boolean
     fun onRemoteUpdateManifestResponseManifestLoaded(updateManifest: UpdateManifest)
     fun onSuccess(launcher: Launcher, isUpToDate: Boolean)
+
+    fun onCheckForUpdateStarted()
+    fun onCheckForUpdateFinished(body: Map<String, Any>)
+    fun onLoadUpdateStarted()
+    fun onAssetLoaded(asset: AssetEntity, successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int)
     fun onBackgroundUpdateFinished(
       status: BackgroundUpdateStatus,
       update: UpdateEntity?,
@@ -292,6 +297,7 @@ class LoaderTask(
   private fun launchRemoteUpdateInBackground(context: Context, remoteUpdateCallback: Callback) {
     AsyncTask.execute {
       val database = databaseHolder.database
+      callback.onCheckForUpdateStarted()
       RemoteLoader(context, configuration, database, fileDownloader, directory, candidateLauncher?.launchedUpdate)
         .start(object : LoaderCallback {
           override fun onFailure(e: Exception) {
@@ -307,6 +313,7 @@ class LoaderTask(
             failedAssetCount: Int,
             totalAssetCount: Int
           ) {
+            callback.onAssetLoaded(asset, successfulAssetCount, failedAssetCount, totalAssetCount)
           }
 
           override fun onUpdateResponseLoaded(updateResponse: UpdateResponse): Loader.OnUpdateResponseLoadedResult {
@@ -315,10 +322,12 @@ class LoaderTask(
               return when (updateDirective) {
                 is UpdateDirective.RollBackToEmbeddedUpdateDirective -> {
                   isUpToDate = true
+                  callback.onCheckForUpdateFinished(mapOf("isRollBackToEmbedded" to true))
                   Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
                 }
                 is UpdateDirective.NoUpdateAvailableUpdateDirective -> {
                   isUpToDate = true
+                  callback.onCheckForUpdateFinished(mapOf())
                   Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
                 }
               }
@@ -327,6 +336,7 @@ class LoaderTask(
             val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
             if (updateManifest == null) {
               isUpToDate = true
+              callback.onCheckForUpdateFinished(mapOf())
               return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
             }
 
@@ -338,9 +348,12 @@ class LoaderTask(
             ) {
               isUpToDate = false
               callback.onRemoteUpdateManifestResponseManifestLoaded(updateManifest)
+              callback.onCheckForUpdateFinished(mapOf("manifest" to updateManifest.manifest))
+              callback.onLoadUpdateStarted()
               Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
             } else {
               isUpToDate = true
+              callback.onCheckForUpdateFinished(mapOf())
               Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
             }
           }

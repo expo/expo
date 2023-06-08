@@ -23,6 +23,7 @@ interface UpdatesInterface {
   val directory: File?
   val databaseHolder: DatabaseHolder
   val fileDownloader: FileDownloader
+  val stateMachine: UpdatesStateMachine?
 
   val isEmergencyLaunch: Boolean
   val isEmbeddedLaunch: Boolean

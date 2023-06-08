@@ -1,9 +1,6 @@
 package expo.modules.updates
 
-import android.os.Bundle
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
-import expo.modules.manifests.core.Manifest
-import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.Assert
 import org.junit.Test
@@ -14,61 +11,13 @@ class UpdatesStateMachineInstrumentationTest {
   // Test classes
   class TestStateChangeEventSender : UpdatesStateChangeEventSender {
     var lastEventType: UpdatesStateEventType? = null
-    var lastBody: Bundle? = null
 
     override fun sendUpdateStateChangeEventToBridge(
       eventType: UpdatesStateEventType,
-      body: Bundle
+      fields: List<String>,
+      values: Map<String, Any>
     ) {
       lastEventType = eventType
-      lastBody = body
-    }
-  }
-
-  class TestManifest(json: JSONObject) : Manifest(json) {
-    val updateId: String?
-      get() {
-        return json.getString("updateId")
-      }
-
-    override fun getStableLegacyID(): String? {
-      return null
-    }
-
-    override fun getScopeKey(): String {
-      return "test"
-    }
-
-    override fun getEASProjectID(): String? {
-      return null
-    }
-
-    override fun getBundleURL(): String {
-      return "https://test"
-    }
-
-    override fun getExpoGoSDKVersion(): String? {
-      return null
-    }
-
-    override fun getAssets(): JSONArray? {
-      return null
-    }
-
-    override fun getExpoGoConfigRootObject(): JSONObject? {
-      return null
-    }
-
-    override fun getExpoClientConfigRootObject(): JSONObject? {
-      return null
-    }
-
-    override fun getSlug(): String? {
-      return null
-    }
-
-    override fun getAppKey(): String? {
-      return null
     }
   }
 
@@ -93,7 +42,7 @@ class UpdatesStateMachineInstrumentationTest {
       UpdatesStateEvent(
         UpdatesStateEventType.CheckCompleteAvailable,
         mapOf(
-          "manifest" to TestManifest(JSONObject("{\"updateId\":\"0000-xxxx\"}"))
+          "manifest" to JSONObject("{\"updateId\":\"0000-xxxx\"}")
         )
       )
     )
@@ -101,7 +50,7 @@ class UpdatesStateMachineInstrumentationTest {
     Assert.assertFalse(machine.context.isChecking)
     Assert.assertTrue(machine.context.isUpdateAvailable)
     Assert.assertFalse(machine.context.isUpdatePending)
-    Assert.assertEquals("0000-xxxx", (machine.context.latestManifest as? TestManifest)?.updateId ?: "")
+    Assert.assertEquals("0000-xxxx", machine.context.latestManifest?.get("updateId"))
     Assert.assertEquals(UpdatesStateEventType.CheckCompleteAvailable, testStateChangeEventSender.lastEventType)
   }
 
@@ -141,15 +90,15 @@ class UpdatesStateMachineInstrumentationTest {
       UpdatesStateEvent(
         UpdatesStateEventType.DownloadComplete,
         mapOf(
-          "manifest" to TestManifest(JSONObject("{\"updateId\":\"0000-xxxx\"}"))
+          "manifest" to JSONObject("{\"updateId\":\"0000-xxxx\"}")
         )
       )
     )
     Assert.assertEquals(UpdatesStateValue.Idle, machine.state)
     Assert.assertFalse(machine.context.isDownloading)
     Assert.assertNull(machine.context.downloadError)
-    Assert.assertEquals("0000-xxxx", (machine.context.latestManifest as? TestManifest)?.updateId ?: "")
-    Assert.assertEquals("0000-xxxx", (machine.context.downloadedManifest as? TestManifest)?.updateId ?: "")
+    Assert.assertEquals("0000-xxxx", machine.context.latestManifest?.get("updateId"))
+    Assert.assertEquals("0000-xxxx", machine.context.downloadedManifest?.get("updateId"))
     Assert.assertTrue(machine.context.isUpdateAvailable)
     Assert.assertTrue(machine.context.isUpdatePending)
     Assert.assertEquals(UpdatesStateEventType.DownloadComplete, testStateChangeEventSender.lastEventType)

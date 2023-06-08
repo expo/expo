@@ -1,14 +1,18 @@
 package expo.modules.updates
 
-import android.os.Bundle
-import expo.modules.manifests.core.Manifest
+import android.content.Context
+import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.WritableMap
+import expo.modules.updates.logging.UpdatesLogger
+import org.json.JSONObject
 
 /**
 Protocol with a method for sending state change events to JS.
 In production, this will be implemented by the AppController.sharedInstance.
  */
 interface UpdatesStateChangeEventSender {
-  fun sendUpdateStateChangeEventToBridge(eventType: UpdatesStateEventType, body: Bundle = Bundle())
+  // Method to send events
+  fun sendUpdateStateChangeEventToBridge(eventType: UpdatesStateEventType, fields: List<String>, values: Map<String, Any>)
 }
 
 class UpdatesStateError : Error() {
@@ -76,9 +80,9 @@ data class UpdatesStateEvent(
   val type: UpdatesStateEventType,
   val body: Map<String, Any> = mapOf()
 ) {
-  val manifest: Manifest?
+  val manifest: JSONObject?
     get() {
-      return body["manifest"] as? Manifest
+      return body["manifest"] as? JSONObject
     }
   val error: Error?
     get() {
@@ -128,63 +132,52 @@ data class UpdatesStateContext(
   var isChecking: Boolean = false,
   var isDownloading: Boolean = false,
   var isRestarting: Boolean = false,
-  var latestManifest: Manifest? = null,
-  var downloadedManifest: Manifest? = null,
+  var latestManifest: JSONObject? = null,
+  var downloadedManifest: JSONObject? = null,
   var checkError: Error? = null,
   var downloadError: Error? = null
 ) {
 
-  val json: Bundle
+  val json: MutableMap<String, Any>
     get() {
-      return Bundle().apply {
-        putBoolean("isUpdateAvailable", isUpdateAvailable)
-        putBoolean("isUpdatePending", isUpdatePending)
-        putBoolean("isRollback", isRollback)
-        putBoolean("isChecking", isChecking)
-        putBoolean("isDownloading", isDownloading)
-        putBoolean("isRestarting", isRestarting)
-        if (latestManifest != null) {
-          putString("latestManifestString", latestManifest.toString())
-        }
-        if (downloadedManifest != null) {
-          putString("downloadedManifestString", downloadedManifest.toString())
-        }
-        if (checkError != null) {
-          putBundle(
-            "checkError",
-            Bundle().apply {
-              putString("message", checkError?.message ?: "")
-              putString("stack", checkError?.stackTraceToString() ?: "")
-            }
-          )
-        }
-        if (downloadError != null) {
-          putBundle(
-            "downloadError",
-            Bundle().apply {
-              putString("message", downloadError?.message ?: "")
-              putString("stack", downloadError?.stackTraceToString() ?: "")
-            }
-          )
-        }
+      val map: MutableMap<String, Any> = mutableMapOf(
+        "isUpdateAvailable" to isUpdateAvailable,
+        "isUpdatePending" to isUpdatePending,
+        "isRollback" to isRollback,
+        "isChecking" to isChecking,
+        "isDownloading" to isDownloading,
+        "isRestarting" to isRestarting
+      )
+      if (latestManifest != null) {
+        map["latestManifest"] = latestManifest!!
       }
+      if (downloadedManifest != null) {
+        map["downloadedManifest"] = downloadedManifest!!
+      }
+      if (checkError != null) {
+        map["checkError"] = mutableMapOf(
+          "message" to (checkError?.message ?: ""),
+          "stack" to (checkError?.stackTraceToString() ?: "")
+        )
+      }
+      if (downloadError != null) {
+        map["downloadError"] = mutableMapOf(
+          "message" to (downloadError?.message ?: ""),
+          "stack" to (downloadError?.stackTraceToString() ?: "")
+        )
+      }
+      return map
     }
 
-  fun partialJsonWithKeys(keys: List<String>): Bundle {
-    val fullBundle = json
-    return Bundle().apply {
-      for (key: String in keys) {
-        if (json.containsKey(key)) {
-          if (key.startsWith("is")) {
-            putBoolean(key, fullBundle.getBoolean(key))
-          } else if (key.endsWith("Manifest")) {
-            putString(key, fullBundle.getString(key))
-          } else {
-            putBundle(key, fullBundle.getBundle(key))
-          }
-        }
+  fun partialJsonWithKeys(keys: List<String>): MutableMap<String, Any> {
+    val fullJson = json
+    val map: MutableMap<String, Any> = mutableMapOf()
+    for (key: String in keys) {
+      if (fullJson.containsKey(key)) {
+        map[key] = fullJson[key] as Any
       }
     }
+    return map
   }
 
   companion object {
@@ -203,7 +196,15 @@ data class UpdatesStateContext(
   }
 }
 
-class UpdatesStateMachine {
+class UpdatesStateMachine constructor(
+  androidContext: Context? = null
+) {
+
+  private val logger = when (androidContext) {
+    null -> null
+    else -> UpdatesLogger(androidContext)
+  }
+
   var changeEventSender: UpdatesStateChangeEventSender? = null
 
   /**
@@ -223,7 +224,7 @@ class UpdatesStateMachine {
   fun reset() {
     state = UpdatesStateValue.Idle
     context = UpdatesStateContext()
-    // logger.info
+    logger?.info("Updates state change: reset, context = ${context.json}")
     sendChangeEventToJS()
   }
 
@@ -234,7 +235,7 @@ class UpdatesStateMachine {
   fun processEvent(event: UpdatesStateEvent) {
     if (transition(event)) {
       context = reducedContext(context, event)
-      // logger.info
+      logger?.info("Updates state change: ${event.type}, context = ${context.json}")
       // Send change event
       sendChangeEventToJS(event)
     }
@@ -303,25 +304,52 @@ class UpdatesStateMachine {
   }
 
   private fun sendChangeEventToJS(event: UpdatesStateEvent? = null) {
-    when (event) {
-      null -> {
-        changeEventSender?.sendUpdateStateChangeEventToBridge(
-          UpdatesStateEventType.Restart,
-          Bundle().apply {
-            putStringArrayList("fields", ArrayList(UpdatesStateContext.allProps))
-            putBundle("values", context.json)
-          }
-        )
+    val fields = when (event) {
+      null -> UpdatesStateContext.allProps
+      else -> event.changedProperties
+    }
+    val values = when (event) {
+      null -> context.json
+      else -> context.partialJsonWithKeys(event.changedProperties)
+    }
+    changeEventSender?.sendUpdateStateChangeEventToBridge(
+      event?.type ?: UpdatesStateEventType.Restart,
+      fields,
+      values
+    )
+  }
+
+  companion object {
+    fun paramsForJSEvent(fields: List<String>, values: Map<String, Any>): WritableMap {
+      val fieldArray = Arguments.createArray()
+      for (field: String in fields) {
+        fieldArray.pushString(field)
       }
-      else -> {
-        changeEventSender?.sendUpdateStateChangeEventToBridge(
-          event.type,
-          Bundle().apply {
-            putStringArrayList("fields", event.changedProperties)
-            putBundle("values", context.partialJsonWithKeys(event.changedProperties))
+      val valueMap = Arguments.createMap()
+      for (field: String in fields) {
+        if (field.startsWith("is")) {
+          valueMap.putBoolean(field, values[field] as Boolean)
+        } else if (field.endsWith("Manifest")) {
+          if (values[field] != null) {
+            valueMap.putString(field, (values[field] as JSONObject).toString())
+          } else {
+            valueMap.putNull(field)
           }
-        )
+        } else { // errors
+          if (values[field] != null) {
+            val errorMap = Arguments.createMap()
+            errorMap.putString("message", (values[field] as Map<*, *>)["message"] as String)
+            errorMap.putString("stack", (values[field] as Map<*, *>)["stack"] as String)
+            valueMap.putMap(field, errorMap)
+          } else {
+            valueMap.putNull(field)
+          }
+        }
       }
+      val params = Arguments.createMap()
+      params.putArray("fields", fieldArray)
+      params.putMap("values", valueMap)
+      return params
     }
   }
 }

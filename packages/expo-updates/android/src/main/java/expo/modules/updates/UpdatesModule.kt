@@ -141,6 +141,7 @@ class UpdatesModule(
         )
         return
       }
+      updatesServiceLocal.stateMachine?.processEvent(UpdatesStateEvent(UpdatesStateEventType.Check))
       AsyncTask.execute {
         val databaseHolder = updatesServiceLocal.databaseHolder
         val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(
@@ -169,6 +170,14 @@ class UpdatesModule(
                 if (updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) {
                   updateInfo.putBoolean("isRollBackToEmbedded", true)
                   promise.resolve(updateInfo)
+                  updatesServiceLocal.stateMachine?.processEvent(
+                    UpdatesStateEvent(
+                      UpdatesStateEventType.CheckCompleteAvailable,
+                      mapOf(
+                        "isRollBackToEmbedded" to true
+                      )
+                    )
+                  )
                   return
                 }
               }
@@ -176,6 +185,7 @@ class UpdatesModule(
               if (updateManifest == null) {
                 updateInfo.putBoolean("isAvailable", false)
                 promise.resolve(updateInfo)
+                updatesServiceLocal.stateMachine?.processEvent(UpdatesStateEvent(UpdatesStateEventType.CheckCompleteUnavailable))
                 return
               }
 
@@ -186,6 +196,14 @@ class UpdatesModule(
                 updateInfo.putBoolean("isAvailable", true)
                 updateInfo.putString("manifestString", updateManifest.manifest.toString())
                 promise.resolve(updateInfo)
+                updatesServiceLocal.stateMachine?.processEvent(
+                  UpdatesStateEvent(
+                    UpdatesStateEventType.CheckCompleteAvailable,
+                    mapOf(
+                      "manifestString" to updateManifest.manifest.getRawJson().toString()
+                    )
+                  )
+                )
                 return
               }
 
@@ -198,9 +216,18 @@ class UpdatesModule(
                 updateInfo.putBoolean("isAvailable", true)
                 updateInfo.putString("manifestString", updateManifest.manifest.toString())
                 promise.resolve(updateInfo)
+                updatesServiceLocal.stateMachine?.processEvent(
+                  UpdatesStateEvent(
+                    UpdatesStateEventType.CheckCompleteAvailable,
+                    mapOf(
+                      "manifest" to updateManifest.manifest.getRawJson()
+                    )
+                  )
+                )
               } else {
                 updateInfo.putBoolean("isAvailable", false)
                 promise.resolve(updateInfo)
+                updatesServiceLocal.stateMachine?.processEvent(UpdatesStateEvent(UpdatesStateEventType.CheckCompleteUnavailable))
               }
             }
           }
@@ -225,6 +252,7 @@ class UpdatesModule(
         )
         return
       }
+      updatesServiceLocal.stateMachine?.processEvent(UpdatesStateEvent(UpdatesStateEventType.Download))
       AsyncTask.execute {
         val databaseHolder = updatesServiceLocal.databaseHolder
         RemoteLoader(
@@ -240,6 +268,14 @@ class UpdatesModule(
               override fun onFailure(e: Exception) {
                 databaseHolder.releaseDatabase()
                 promise.reject("ERR_UPDATES_FETCH", "Failed to download new update", e)
+                updatesServiceLocal.stateMachine?.processEvent(
+                  UpdatesStateEvent(
+                    UpdatesStateEventType.DownloadError,
+                    mapOf(
+                      "message" to "Failed to download new update: ${e.message}"
+                    )
+                  )
+                )
               }
 
               override fun onAssetLoaded(
@@ -278,9 +314,18 @@ class UpdatesModule(
 
                 if (loaderResult.updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) {
                   updateInfo.putBoolean("isRollBackToEmbedded", true)
+                  updatesServiceLocal.stateMachine?.processEvent(
+                    UpdatesStateEvent(
+                      UpdatesStateEventType.DownloadComplete,
+                      mapOf(
+                        "isRollBackToEmbedded" to true
+                      )
+                    )
+                  )
                 } else {
                   if (loaderResult.updateEntity == null) {
                     updateInfo.putBoolean("isNew", false)
+                    updatesServiceLocal.stateMachine?.processEvent(UpdatesStateEvent(UpdatesStateEventType.DownloadComplete, mapOf()))
                   } else {
                     updatesServiceLocal.resetSelectionPolicy()
                     updateInfo.putBoolean("isNew", true)
@@ -288,6 +333,13 @@ class UpdatesModule(
                       "manifestString",
                       loaderResult.updateEntity.manifest.toString()
                     )
+                    val body: Map<String, Any> = when (loaderResult.updateEntity.manifest != null) {
+                      true -> mapOf(
+                        "manifest" to loaderResult.updateEntity.manifest!!
+                      )
+                      else -> mapOf()
+                    }
+                    updatesServiceLocal.stateMachine?.processEvent(UpdatesStateEvent(UpdatesStateEventType.DownloadComplete, body))
                   }
                 }
 
@@ -297,10 +349,8 @@ class UpdatesModule(
           )
       }
     } catch (e: IllegalStateException) {
-      promise.reject(
-        "ERR_UPDATES_FETCH",
-        "The updates module controller has not been properly initialized. If you're using a development client, you cannot fetch updates. Otherwise, make sure you have called the native method UpdatesController.initialize()."
-      )
+      val message = "The updates module controller has not been properly initialized. If you're using a development client, you cannot fetch updates. Otherwise, make sure you have called the native method UpdatesController.initialize()."
+      promise.reject("ERR_UPDATES_FETCH", message)
     }
   }
 
