@@ -28,7 +28,7 @@
     "@expo/json-file": "^8.2.37",
     "@expo/plist": "^0.0.20",
     "@expo/spawn-async": "^1.7.0",
-    "@expo/swiftlint": "^0.2.0",
+    "@expo/swiftlint": "^0.52.4",
     "@expo/xcodegen": "2.18.0-patch.1",
     "@expo/xdl": "^59.2.1",
     "@linear/sdk": "^2.6.0",
