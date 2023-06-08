@@ -24,15 +24,6 @@ const InstallSection = ({
   href = getPackageLink(packageName),
 }: InstallSectionProps) => {
   const { sourceCodeUrl } = usePageMetadata();
-  const { version } = useContext(PageApiVersionContext);
-
-  // Recommend just `expo install` for SDK 45.
-  // TODO: remove this when we drop SDK 45 from docs
-  if (version.startsWith('v45')) {
-    if (cmd[0] === getInstallCmd(packageName)) {
-      cmd[0] = cmd[0].replace('npx expo', 'expo');
-    }
-  }
 
   return (
     <>
