@@ -1,4 +1,4 @@
 {
   "expo.jsEngine": "hermes",
-  "expo.enableFabric": true
+  "newArchEnabled": "true"
 }

@@ -766,7 +766,7 @@ EX_EXPORT_METHOD_AS(networkTaskCancelAsync,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  NSURLSessionDownloadTask *task = [_taskHandlersManager taskForId:uuid];
+  NSURLSessionTask *task = [_taskHandlersManager taskForId:uuid];
   if (task) {
     [task cancel];
   }

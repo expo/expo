@@ -1,14 +1,17 @@
 package expo.modules.kotlin.jni
 
+import expo.modules.core.interfaces.DoNotStrip
 import java.lang.ref.PhantomReference
 import java.lang.ref.ReferenceQueue
 import java.lang.ref.WeakReference
 
+@DoNotStrip
 interface Destructible {
   fun deallocate()
 }
 
-object JNIDeallocator {
+@DoNotStrip
+class JNIDeallocator(private val shouldCreateDestructorThread: Boolean = true) {
   /**
    * A [PhantomReference] queue managed by JVM
    */
@@ -23,23 +26,27 @@ object JNIDeallocator {
    * A thread that clears your registry when an object has been garbage collected
    * to not store invalid references to every created object.
    */
-  private val destructorThread = object : Thread("Expo JNI deallocator") {
-    override fun run() {
-      while (true) {
-        try {
-          // Referent of PhantomReference were garbage collected so we can remove it from our registry.
-          // Note that we don't have to call `deallocate` method - it was called [com.facebook.jni.HybridData].
-          val current = referenceQueue.remove()
-          synchronized(this) {
-            destructorMap.remove(current)
+  private val destructorThread = if (shouldCreateDestructorThread) {
+    object : Thread("Expo JNI deallocator") {
+      override fun run() {
+        while (!isInterrupted) {
+          try {
+            // Referent of PhantomReference were garbage collected so we can remove it from our registry.
+            // Note that we don't have to call `deallocate` method - it was called [com.facebook.jni.HybridData].
+            val current = referenceQueue.remove()
+            synchronized(this) {
+              destructorMap.remove(current)
+            }
+          } catch (e: InterruptedException) {
+            return
           }
-        } catch (e: InterruptedException) {
-          // Continue. This thread should never be terminated.
         }
       }
+    }.also {
+      it.start()
     }
-  }.also {
-    it.start()
+  } else {
+    null
   }
 
   /**
@@ -47,7 +54,8 @@ object JNIDeallocator {
    * That reference will be deallocated when [JNIDeallocator.deallocate] is called or
    * when the reference won't be reachable by the GC.
    */
-  internal fun addReference(destructible: Destructible) = synchronized(this) {
+  @DoNotStrip
+  fun addReference(destructible: Destructible): Unit = synchronized(this) {
     val weakRef = WeakReference(destructible)
     val phantomRef = PhantomReference(destructible, referenceQueue)
     destructorMap[phantomRef] = weakRef
@@ -61,6 +69,7 @@ object JNIDeallocator {
       it.get()?.deallocate()
     }
     destructorMap.clear()
+    destructorThread?.interrupt()
   }
 
   /**

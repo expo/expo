@@ -27,6 +27,7 @@ build:
   name: Run tests
   # @end #
   steps:
+    - eas/checkout
     - run:
         name: Install dependencies
         command: npm install
@@ -46,6 +47,7 @@ The `run` key is used to trigger a set of instructions. For example, a `run` key
 build:
   name: Install npm dependencies
   steps:
+    - eas/checkout
     # @info #
     - run:
         name: Install dependencies
@@ -69,16 +71,14 @@ build:
 
 #### Use a single step
 
-For example, a workflow with the following `steps` will run a single command to install npm dependencies:
+For example, a workflow with the following `steps` will print "Hello world":
 
 ```yaml
 build:
-  name: Install npm dependencies
+  name: Greeting
   steps:
     # @info #
-    - run:
-        name: Install dependencies
-        command: npm install
+    - run: echo "Hello world"
     # @end #
 ```
 
@@ -86,13 +86,14 @@ build:
 
 #### Use multiple steps
 
-When multiple `steps` are defined, they are executed sequentially. For example, a workflow with the following `steps` will first run a single command to install npm dependencies and then run a command to run tests:
+When multiple `steps` are defined, they are executed sequentially. For example, a workflow with the following `steps` will first check out the project, install npm dependencies, and then run a command to run tests:
 
 ```yaml
 build:
   name: Run tests
   steps:
     # @info #
+    - eas/checkout
     - run:
         name: Install dependencies
         command: npm install
@@ -116,6 +117,7 @@ The `command` defines a custom shell command to run when a step is executed. It 
 build:
   name: Run tests
   steps:
+    - eas/checkout
     - run:
         name: Run tests
         # @info #
@@ -133,6 +135,7 @@ The `working_directory` is used to define an existing directory from the project
 build:
   name: Demo
   steps:
+    - eas/checkout
     - run:
         name: List assets
         # @info #
@@ -448,7 +451,7 @@ functions:
   greetings:
     name: Say Hi!
     # @info #
-    command: echo "Hello world"
+    command: echo "Hi!"
     # @end #
 ```
 
@@ -463,11 +466,115 @@ functions:
     # @info #
     shell: /bin/sh
     # @end #
+    command: echo "Hi!"
 ```
+
+### `functions.[function_name].supported_platforms`
+
+Used to define the supported platforms for a function. Defaults to all platforms. Allowed platforms: `darwin`, `linux`.
+
+For example, the function's supported platform is `darwin` (macOS):
+
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    # @info #
+    supported_platforms: [darwin]
+    # @end #
+    command: echo "Hi!"
+```
+
+## `import`
+
+A config file path list used to import functions from other config files. Imported files cannot have the `build` section.
+
+For example, the following workflow imports two files and calls two imported functions - `say_hi` and `say_bye`.
+
+```yaml workflow.yml
+import:
+  - common-functions.yml
+  - another-file.yml
+
+build:
+  steps:
+    - say_hi
+    - say_bye
+```
+
+```yaml common-functions.yml
+functions:
+  say_hi:
+    name: Say Hi!
+    command: echo "Hi!"
+```
+
+```yaml another-file.yml
+functions:
+  say_bye:
+    name: Say bye :(
+    command: echo "Bye!"
+```
+
+## Functions
 
 ### Built-in EAS functions
 
-EAS provides a built-in reusable function called `upload_artifact` that you can use in a workflow without defining the function definition.
+EAS provides a set of built-in reusable functions that you can use in a workflow without defining the function definition.
+
+> **info** **Tip:** Any function that is built-in and provided by EAS must start with the prefix `eas/`.
+
+#### `eas/checkout`
+
+Checks out you project source files.
+
+For example, a workflow with the following `steps` will check out the project and list the files in the **assets** directory:
+
+```yaml upload.yml
+build:
+  name: List files
+  steps:
+    - eas/checkout
+    - run:
+        name: List assets
+        run: ls assets
+```
+
+#### `eas/use_npm_token`
+
+Configures node package managers (npm, pnpm, or Yarn) for use with private packages, published either to npm or private registry.
+Set `NPM_TOKEN` in your project's secrets, and this function will configure the build environment by creating **.npmrc** with the token.
+
+```yaml test.yml
+build:
+  name: Install private npm modules
+  steps:
+    - eas/checkout
+    # @info #
+    - eas/use_npm_token
+    # @end #
+    - run:
+        name: Install dependencies
+        run: npm install # <---- Can now install private packages
+```
+
+#### `eas/install_node_modules`
+
+Installs node modules using the package manager (npm, pnpm, or Yarn) detected based on your project. Works with monorepos.
+
+```yaml test.yml
+build:
+  name: Install node modules
+  steps:
+    - eas/checkout
+    # @info #
+    - eas/install_node_modules
+    # @end #
+```
+
+#### `eas/upload_artifact`
+
+Uploads a build artifact.
 
 For example, a workflow with the following `steps` will upload an artifact to the EAS servers:
 
@@ -475,6 +582,8 @@ For example, a workflow with the following `steps` will upload an artifact to th
 build:
   name: Upload artifacts
   steps:
+    - eas/checkout
+    # - ...
     - eas/upload_artifact:
         name: Upload application archive
         inputs:
@@ -486,18 +595,16 @@ build:
           path: assets/icon.png
 ```
 
-> **info** **Tip:** Any function that is built-in and provided by EAS must start with the prefix `eas/`.
-
 The `eas/upload_artifact` function has the following properties
 
-| Property      | Description                                                                 |
-| ------------- | --------------------------------------------------------------------------- |
-| `name`        | The name of the step in the reusable function that shows in the build logs. |
-| `inputs`      | Requires input providers (such as `path` or `type`) to be defined.          |
-| `inputs.path` | **Required**. The path to the artifact that is uploaded to the EAS servers. |
-| `inputs.type` | The type of artifact that is uploaded to the EAS servers.                   |
+| Property      | Description                                                                                                                                          |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`        | The name of the step in the reusable function that shows in the build logs.                                                                          |
+| `inputs`      | Requires input providers (such as `path` or `type`) to be defined.                                                                                   |
+| `inputs.path` | **Required**. The path to the artifact that is uploaded to the EAS servers.                                                                          |
+| `inputs.type` | The type of artifact that is uploaded to the EAS servers. Allowed values: `application-archive`, `build-artifact`. Defaults to `application-archive` |
 
-## Use a reusable function in a `build`
+### Use a reusable function in a `build`
 
 For example, a workflow with the following reusable function contains a single command to print a message that is echoed.
 
@@ -551,6 +658,7 @@ build:
   name: List files
   # @info #
   steps:
+    - eas/checkout
     - list_files
   # @end #
 ```
@@ -562,7 +670,8 @@ build:
   name: List files
     steps:
       # @info #
+      - eas/checkout
       - list_files:
-        working_directory: /a/b/c
+          working_directory: /a/b/c
       # @end #
 ```

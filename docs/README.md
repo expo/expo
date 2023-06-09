@@ -199,7 +199,7 @@ cd expo/packages/expo-constants
 
 ```ts
 /**
- * The standard Expo config object defined in `app.json` and `app.config.js` files. For both
+ * The standard app config object defined in `app.json` and `app.config.js` files. For both
  * classic and modern manifests, whether they are embedded or remote.
  */
 expoConfig: ExpoConfig | null;

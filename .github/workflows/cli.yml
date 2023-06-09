@@ -23,7 +23,7 @@ concurrency:
 
 jobs:
   test:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
@@ -40,9 +40,9 @@ jobs:
       - name: 🧶 Install node modules in root dir
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
-      - name: 🔎 Type Check CLI
-        run: yarn typecheck
-        working-directory: packages/@expo/cli
+      # - name: 🔎 Type Check CLI
+      #   run: yarn typecheck
+      #   working-directory: packages/@expo/cli
       - name: 🛠 Build CLI
         run: yarn prepare
         working-directory: packages/@expo/cli

@@ -5,10 +5,12 @@ import com.facebook.react.ReactApplication
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
+import com.facebook.react.bridge.JSIModulePackage
 import com.facebook.react.bridge.JavaScriptExecutorFactory
 import com.facebook.react.config.ReactFeatureFlags
+import com.facebook.react.defaults.DefaultJSIModulePackage
 import com.facebook.react.shell.MainReactPackage
-import devmenu.com.th3rdwave.safeareacontext.SafeAreaContextPackage
+import devmenu.com.th3rdwave.safeareacontext.SafeAreaProviderManager
 import expo.modules.adapters.react.ModuleRegistryAdapter
 import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.devlauncher.DevLauncherController
@@ -52,11 +54,11 @@ class DevLauncherClientHost(
           override fun getModulesList() =
             listOf(
               DevMenuPreferences::class.java,
+              SafeAreaProviderManager::class.java
             )
         }
       ),
       DevLauncherPackage(),
-      SafeAreaContextPackage(),
     ) +
       devMenuRelatedPackages +
       additionalPackages
@@ -79,4 +81,11 @@ class DevLauncherClientHost(
     method.isAccessible = true
     return method.invoke(appHost) as ReactPackageTurboModuleManagerDelegate.Builder
   }
+
+  override fun getJSIModulePackage(): JSIModulePackage? =
+    if (ReactFeatureFlags.enableFabricRenderer) {
+      DefaultJSIModulePackage(this)
+    } else {
+      null
+    }
 }
