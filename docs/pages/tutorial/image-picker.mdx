@@ -54,7 +54,7 @@ export default function App() {
     });
     /* @end */
 
-    if (!result.canceled) {
+    if (!result.cancelled) {
       /* @info If the image is picked, print its information in terminal window. */
       console.log(result);
       /* @end */
@@ -176,7 +176,7 @@ export default function App() {
       quality: 1,
     });
 
-    if (!result.canceled) {
+    if (!result.cancelled) {
       /* @info Pick the first uri from the assets array. Also, there is only one image selected at a time so you don't have to change this. */
       setSelectedImage(result.assets[0].uri);
       /* @end */
