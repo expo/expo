@@ -5,6 +5,7 @@ import ComponentListScreen from './ComponentListScreen';
 
 const screens = [
   'ActivityIndicator',
+  'ApplePasteButton',
   'BarCodeScanner',
   'BlurView',
   'Button',

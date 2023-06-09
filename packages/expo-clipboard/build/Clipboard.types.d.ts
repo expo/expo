@@ -1,3 +1,4 @@
+import { ViewProps, StyleProp, ViewStyle } from 'react-native';
 export interface GetImageOptions {
     /**
      * The format of the clipboard image to be converted to.
@@ -71,4 +72,73 @@ export interface SetStringOptions {
      */
     inputFormat?: StringFormat;
 }
+export interface ApplePasteButtonProps extends ViewProps {
+    /**
+     * A callback that is called with the result of the paste action.
+     * Inspect the `type` property to determine the type of the pasted data.
+     
+     * Can be one of `text` or `image`
+     *
+     * @example
+     * ```ts
+     *   onPress={(data) => {
+     *     if (data.type === 'image') {
+     *       setImageData(data);
+     *    } else {
+     *       setTextData(data);
+     *     }
+     *   }}
+     * ```
+     */
+    onPress: (data: PasteEventPayload) => void;
+    /**
+     * The backgroundColor of the button.
+     */
+    backgroundColor?: string;
+    /**
+     * The foregroundColor of the button.
+     */
+    foregroundColor?: string;
+    /**
+     * The cornerStyle of the button.
+     * @default capsule
+     *
+     * @see [Apple Documetation](https://developer.apple.com/documentation/uikit/uibutton/configuration/cornerstyle) for more details.
+     */
+    cornerStyle?: CornerStyle;
+    /**
+     * The displayMode of the button.
+     * @default `iconAndLabel`
+     *
+     * @see [Apple Documetation](https://developer.apple.com/documentation/uikit/uipastecontrol/displaymode) for more details.
+     */
+    displayMode?: DisplayMode;
+    /**
+     * The custom style to apply to the button. Should not include `backgroundColor`, `borderRadius` or `color`
+     * properties.
+     */
+    style?: StyleProp<Omit<ViewStyle, 'backgroundColor' | 'borderRadius' | 'color'>>;
+    /**
+     * The options to use when pasting an image from the clipboard.
+     */
+    imageOptions?: GetImageOptions;
+    /**
+     * An array of the content types that will cause the button to become active
+     * @note do not include `plain-text` and `html` at the same time as this will cause all text to be treated as `html`
+     * @default ['plain-text', 'image']
+     */
+    acceptedContentTypes?: AcceptedContentType[];
+}
+type AcceptedContentType = 'plain-text' | 'image' | 'url' | 'html';
+type CornerStyle = 'dynamic' | 'fixed' | 'capsule' | 'large' | 'medium' | 'small';
+type DisplayMode = 'iconAndLabel' | 'iconOnly' | 'labelOnly';
+export type PasteEventPayload = TextPasteEvent | ImagePasteEvent;
+export interface TextPasteEvent {
+    text: string;
+    type: 'text';
+}
+export interface ImagePasteEvent extends ClipboardImage {
+    type: 'image';
+}
+export {};
 //# sourceMappingURL=Clipboard.types.d.ts.map

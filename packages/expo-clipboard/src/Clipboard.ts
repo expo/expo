@@ -244,4 +244,20 @@ export function removeClipboardListener(subscription: Subscription) {
   emitter.removeSubscription(subscription);
 }
 
+/**
+ * Dertermines if the `ApplePasteButton` is available.
+ *
+ * This requires the users device to be using at least iOS 16.
+ *
+ * @returns A boolean that is `true` if the component is available, and `false` otherwise.
+ */
+export function applePasteButtonIsAvailable(): boolean {
+  if (Platform.OS === 'android') {
+    return false;
+  }
+
+  return ExpoClipboard.applePasteButtonIsAvailable();
+}
+
 export * from './Clipboard.types';
+export { default as ApplePasteButton } from './ApplePasteButton';

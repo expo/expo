@@ -9,7 +9,7 @@ public class ClipboardModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoClipboard")
 
-    // MARK: Strings
+    // MARK: - Strings
 
     AsyncFunction("getStringAsync") { (options: GetStringOptions) -> String in
       switch options.preferredFormat {
@@ -35,7 +35,7 @@ public class ClipboardModule: Module {
       return UIPasteboard.general.hasStrings || UIPasteboard.general.hasHTML
     }
 
-    // MARK: URLs
+    // MARK: - URLs
 
     AsyncFunction("getUrlAsync") { () -> String? in
       return UIPasteboard.general.url?.absoluteString
@@ -49,7 +49,7 @@ public class ClipboardModule: Module {
       return UIPasteboard.general.hasURLs
     }
 
-    // MARK: Images
+    // MARK: - Images
 
     AsyncFunction("setImageAsync") { (content: String) in
       guard let data = Data(base64Encoded: content),
@@ -82,7 +82,14 @@ public class ClipboardModule: Module {
       ]
     }
 
-    // MARK: Events
+    Function("applePasteButtonIsAvailable") { () -> Bool in
+      if #available(iOS 16.0, *) {
+        return true
+      }
+      return false
+    }
+
+    // MARK: - Events
 
     Events(onClipboardChanged)
 
@@ -98,6 +105,78 @@ public class ClipboardModule: Module {
 
     OnStopObserving {
       NotificationCenter.default.removeObserver(self, name: UIPasteboard.changedNotification, object: nil)
+    }
+
+    // MARK: - View
+
+    View(ApplePasteButton.self) {
+      Events("onPastePressed")
+
+      Prop("backgroundColor") { (view, color: UIColor?) in
+        guard let color else {
+          view.baseBackgroundColor = .white
+          view.needsUpdate = true
+          return
+        }
+        if view.baseBackgroundColor != color {
+          view.baseBackgroundColor = color
+          view.needsUpdate = true
+        }
+      }
+
+      Prop("foregroundColor") { (view, color: UIColor?) in
+        guard let color else {
+          view.baseForegroundColor = .systemBlue
+          view.needsUpdate = true
+          return
+        }
+        if view.baseForegroundColor != color {
+          view.baseForegroundColor = color
+          view.needsUpdate = true
+        }
+      }
+
+      Prop("acceptedContentTypes") { (view, types: [AcceptedTypes]?) in
+        guard let types else {
+          view.acceptedContentTypes = []
+          view.needsUpdate = true
+          return
+        }
+        view.acceptedContentTypes = types
+        view.needsUpdate = true
+      }
+
+      Prop("cornerStyle") { (view, style: CornerStyle?) in
+        guard let style else {
+          view.cornerStyle = .capsule
+          view.needsUpdate = true
+          return
+        }
+        if view.cornerStyle != style {
+          view.cornerStyle = style
+          view.needsUpdate = true
+        }
+      }
+
+      Prop("displayMode") { (view, mode: DisplayMode?) in
+        guard let mode else {
+          view.displayMode = .iconAndLabel
+          view.needsUpdate = true
+          return
+        }
+        if view.displayMode != mode {
+          view.displayMode = mode
+          view.needsUpdate = true
+        }
+      }
+
+      Prop("imageOptions") { (view, options: GetImageOptions) in
+        view.imageOptions = options
+      }
+
+      OnViewDidUpdateProps { view in
+        view.updateIfNeeded()
+      }
     }
   }
 
