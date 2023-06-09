@@ -35,6 +35,7 @@ export enum Config {
 }
 
 // when making changes to this config plugin, ensure the same changes are also made in eas-cli and build-tools
+// Also ensure the docs are up-to-date: https://docs.expo.dev/bare/installing-updates/
 
 export const withUpdates: ConfigPlugin<{ expoUsername: string | null }> = (
   config,
