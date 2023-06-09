@@ -1,3 +1,4 @@
+import { PackageJSONConfig } from '@expo/config';
 import npmPackageArg from 'npm-package-arg';
 
 import { getVersionsAsync, SDKVersion } from '../../../api/getVersions';
@@ -84,13 +85,19 @@ export async function getVersionedPackagesAsync(
   {
     packages,
     sdkVersion,
+    pkg,
   }: {
     /** List of npm packages to process. */
     packages: string[];
     /** Target SDK Version number to version the `packages` for. */
     sdkVersion: string;
+    pkg: PackageJSONConfig;
   }
-): Promise<{ packages: string[]; messages: string[] }> {
+): Promise<{
+  packages: string[];
+  messages: string[];
+  excludedNativeModules: string[];
+}> {
   const versionsForSdk = await getCombinedKnownVersionsAsync({
     projectRoot,
     sdkVersion,
@@ -99,11 +106,18 @@ export async function getVersionedPackagesAsync(
 
   let nativeModulesCount = 0;
   let othersCount = 0;
+  const excludedNativeModules: string[] = [];
 
   const versionedPackages = packages.map((arg) => {
     const { name, type, raw } = npmPackageArg(arg);
 
-    if (['tag', 'version', 'range'].includes(type) && name && versionsForSdk[name]) {
+    if (pkg?.expo?.install?.exclude?.includes(name)) {
+      othersCount++;
+      if (name) {
+        excludedNativeModules.push(name);
+      }
+      return raw;
+    } else if (['tag', 'version', 'range'].includes(type) && name && versionsForSdk[name]) {
       // Unimodule packages from npm registry are modified to use the bundled version.
       // Some packages have the recommended version listed in https://exp.host/--/api/v2/versions.
       nativeModulesCount++;
@@ -124,6 +138,7 @@ export async function getVersionedPackagesAsync(
   return {
     packages: versionedPackages,
     messages,
+    excludedNativeModules,
   };
 }
 

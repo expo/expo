@@ -1,4 +1,4 @@
-import { getConfig, PackageJSONConfig } from '@expo/config';
+import { getConfig } from '@expo/config';
 import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
 
@@ -95,12 +95,13 @@ export async function installPackagesAsync(
     skipPlugins: true,
   });
 
-  assertNotInstallingExcludedPackages(projectRoot, packages, pkg);
+  //assertNotInstallingExcludedPackages(projectRoot, packages, pkg);
 
   const versioning = await getVersionedPackagesAsync(projectRoot, {
     packages,
     // sdkVersion is always defined because we don't skipSDKVersionRequirement in getConfig.
     sdkVersion,
+    pkg,
   });
 
   Log.log(
@@ -109,36 +110,29 @@ export async function installPackagesAsync(
     }using {bold ${packageManager.name}}`
   );
 
+  if (versioning.excludedNativeModules.length) {
+    Log.log(
+      chalk`\u203A Using latest version instead of ${joinWithAnd(
+        versioning.excludedNativeModules
+      )} because ${
+        versioning.excludedNativeModules.length > 1 ? 'they are' : 'it is'
+      } listed in {bold expo.install.exclude} in package.json. ${learnMore(
+        'https://expo.dev/more/expo-cli/#configuring-dependency-validation'
+      )}`
+    );
+  }
+
   await packageManager.addAsync([...packageManagerArguments, ...versioning.packages]);
 
   await applyPluginsAsync(projectRoot, versioning.packages);
 }
 
-export function assertNotInstallingExcludedPackages(
-  projectRoot: string,
-  packages: string[],
-  pkg: PackageJSONConfig
-) {
-  if (pkg.expo?.install?.exclude) {
-    const packagesToExclude = pkg.expo.install.exclude;
-    const requestedAndExcludedPackages = packages.filter((packageName) =>
-      packagesToExclude.includes(packageName)
-    );
-
-    if (requestedAndExcludedPackages.length) {
-      const excludedPackageMessage =
-        requestedAndExcludedPackages.length > 1
-          ? `${requestedAndExcludedPackages.length} packages to install are`
-          : `${requestedAndExcludedPackages[0]} is`;
-      Log.exit(
-        chalk.red(
-          `${excludedPackageMessage} also present in expo.install.exclude in your project's package.json. Remove from your expo install request or from expo.install.exclude in order to proceed with installation. ${learnMore(
-            'https://expo.dev/more/expo-cli/#configuring-dependency-validation'
-          )}.`
-        )
-      );
-    }
+function joinWithAnd(arr: string[]): string {
+  if (arr.length === 1) {
+    return arr[0];
   }
+  const last = arr.pop();
+  return `${arr.join(', ')} and ${last}`;
 }
 
 export async function fixPackagesAsync(
