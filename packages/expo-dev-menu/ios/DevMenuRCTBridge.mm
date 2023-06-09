@@ -33,13 +33,7 @@
 #import <reacthermes/HermesExecutorFactory.h>
 #endif
 
-#if __has_include(<React-RCTAppDelegate/RCTAppDelegate.h>)
-#import <React-RCTAppDelegate/RCTAppDelegate.h>
-#elif __has_include(<React_RCTAppDelegate/RCTAppDelegate.h>)
-// for importing the header from framework, the dash will be transformed to underscore
-#import <React_RCTAppDelegate/RCTAppDelegate.h>
-#endif
-
+#import "RCTAppDelegate+Private.h"
 #import "RCTAppSetupUtils.h"
 
 #if RCT_NEW_ARCH_ENABLED
@@ -164,37 +158,20 @@
 #endif
 }
 
-// Temporaray remove custom jsExecutorFactoryForBridge
-// - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
-// {
-//   #ifdef RCT_NEW_ARCH_ENABLED
-//     self.turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge
-//                                                                   delegate:(id<RCTTurboModuleManagerDelegate>)self
-//                                                                   jsInvoker:bridge.jsCallInvoker];
-//     std::unique_ptr<facebook::react::JSExecutorFactory> executorFactory = RCTAppSetupDefaultJsExecutorFactory(bridge, self.turboModuleManager);
+#pragma mark - RCTCxxBridgeDelegate
+- (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
+{
+    std::unique_ptr<facebook::react::JSExecutorFactory> executorFactory  = [super jsExecutorFactoryForBridge:bridge];
 
-//     #if __has_include(<reacthermes/HermesExecutorFactory.h>)
-//         auto rawExecutorFactory = executorFactory.get();
-//         auto hermesExecFactory = dynamic_cast<facebook::react::HermesExecutorFactory*>(rawExecutorFactory);
-//         if (hermesExecFactory != nullptr) {
-//             hermesExecFactory->setEnableDebugger(false);
-//         }
-//     #endif
+    #if __has_include(<reacthermes/HermesExecutorFactory.h>)
+        auto rawExecutorFactory = executorFactory.get();
+        auto hermesExecFactory = dynamic_cast<facebook::react::HermesExecutorFactory*>(rawExecutorFactory);
+        if (hermesExecFactory != nullptr) {
+            hermesExecFactory->setEnableDebugger(false);
+        }
+    #endif
 
-//     return executorFactory;
-//   #endif
-
-//   #if __has_include(<reacthermes/HermesExecutorFactory.h>)
-//     // Disable Hermes debugger to prevent Hermes debugger uses dev-menu
-//     // as inspecting target.
-//     auto installBindings = facebook::react::RCTJSIExecutorRuntimeInstaller(nullptr);
-//     auto *hermesExecutorFactory = new facebook::react::HermesExecutorFactory(installBindings);
-//     hermesExecutorFactory->setEnableDebugger(false);
-//     std::unique_ptr<facebook::react::JSExecutorFactory> jsExecutorFactory(hermesExecutorFactory);
-//     return std::move(jsExecutorFactory);
-//   #else
-//     return nullptr;
-//   #endif
-// }
+    return executorFactory;
+}
 
 @end
