@@ -60,6 +60,8 @@ export async function choosePortAsync(
         message += ` running ${chalk.cyan(runningProcess.command)} in another window`;
       }
       message += '\n' + chalk.gray(`  ${runningProcess.directory} ${pidTag}`);
+    } else {
+      message += 'being used by another process'
     }
 
     Log.log(`\u203A ${message}`);
