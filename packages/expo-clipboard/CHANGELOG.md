@@ -10,6 +10,8 @@
 
 ### 🎉 New features
 
+- On iOS, added `ApplePasteButton` that uses `UIPasteControl`. ([#22823](https://github.com/expo/expo/pull/22823) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
 
 - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))

@@ -140,7 +140,7 @@ class ApplePasteButton: ExpoView {
       ]
     ])
   }
-  
+
   private func processHtml(data: String?) {
     guard let htmlString = data as? String else {
       log.error("Failed to read html data")
