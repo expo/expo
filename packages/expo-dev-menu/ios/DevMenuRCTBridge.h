@@ -25,6 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface DevMenuRCTAppDelegate : RCTAppDelegate
 
+- (void)createBridgeWithAdapter:(NSDictionary *_Nullable)launchOptions;
+
 @end
 
 NS_ASSUME_NONNULL_END
