@@ -7,7 +7,9 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { BookOpen02Icon } from '@expo/styleguide-icons';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
-The [`@react-native-google-signin/google-signin`](https://github.com/react-native-google-signin/google-signin) library provides different ways such as Firebase and Google API to integrate Google authentication in your Expo app. It also provides native sign-in buttons and supports various authentication methods (such as standard, with server-side validation and offline access). You can use the library in your project by adding the [config plugin](/config-plugins/introduction/) in the [app config](/versions/latest/config/app/). This guide provides additional information on how to configure the library for your project and different steps might be required depending on the authentication method you choose.
+The [`@react-native-google-signin/google-signin`](https://github.com/react-native-google-signin/google-signin) library provides different ways, such as Firebase and Google API, to integrate Google authentication in your Expo app. It also provides native sign-in buttons and supports various authentication methods (standard, server-side validation, and offline access). You can use the library in your project by adding the [config plugin](/config-plugins/introduction/) in the [app config](/versions/latest/config/app/).
+
+This guide provides additional information on how to configure the library for your project, and different steps might be required depending on the authentication method you choose.
 
 ## Prerequisites
 
@@ -29,11 +31,9 @@ For instructions on how to install the library and add the config plugin in the 
 
 Below are instructions on how to configure your Google project for Android and iOS.
 
-### Android
+### Upload app to Google Play Store
 
-#### Upload app to Google Play Store
-
-We recommend that you upload the app to the Google Play Store once your app is not in production yet. It is not necessary to upload the complete app if your project is still in the development process. Upload a single instance of your app. This will allow you to sign your app with the required certificates such as SHA-1 certificate fingerprint. It is required when configuring the Google project for Android. To learn more about app submission the process, see the guides below in the order they are specified:
+We recommend uploading the app to the Google Play Store if your app still needs to be in production. It is not necessary to upload the complete app if your project is still in the development process. Upload a single instance of your app. This will allow you to sign your app with the required certificates, such as the SHA-1 certificate fingerprint, which is required to provide when configuring the Google project for Android. To learn more about the app submission process, see the guides below in the order they are specified:
 
 <BoxLink title="Create your first EAS Build" href="/build/setup/" />
 
@@ -44,12 +44,14 @@ We recommend that you upload the app to the Google Play Store once your app is n
   href="https://expo.fyi/first-android-submission"
 />
 
-Once you've uploaded your app, you have the option to provide SHA-1 certificate fingerprint value when asked while configuring Google project. There are two values that you can provide from:
+Once you've uploaded your app, you can provide an SHA-1 certificate fingerprint value when asked while configuring the Google project. There are two values that you can provide from:
 
 - Fingerprint of the **.apk** you built (on your machine or using EAS Build). You can find the SHA-1 certificate fingerprint in the Google Play Console under **Release** > **Setup** > **App Integrity** > **Upload key certificate**.
-- Fingerprint of a production app downloaded from the play store. You can find the SHA-1 certificate fingerprint in the Google Play Console under **Release** > **Setup** > **App Integrity** > **App signing key certificate**.
+- Fingerprint of a **production app** downloaded from the play store. You can find the SHA-1 certificate fingerprint in the Google Play Console under **Release** > **Setup** > **App Integrity** > **App signing key certificate**.
 
-#### With Firebase
+### With Firebase
+
+#### Android
 
 For more instructions on how to configure your Google project for Android with Firebase:
 
@@ -58,18 +60,7 @@ For more instructions on how to configure your Google project for Android with F
   href="https://github.com/react-native-google-signin/google-signin/blob/master/docs/get-config-file.md"
 />
 
-#### With Google API
-
-For more instructions on how to configure your Google project for Android with Google API:
-
-<BoxLink
-  title="Google API"
-  href="https://github.com/react-native-google-signin/google-signin/blob/master/docs/android-guide.md#1b---if-youre-not-using-firebase"
-/>
-
-### iOS
-
-#### With Firebase
+#### iOS
 
 For more instructions on how to configure your Google project for iOS with Firebase:
 
@@ -78,9 +69,29 @@ For more instructions on how to configure your Google project for iOS with Fireb
   href="https://github.com/react-native-google-signin/google-signin/blob/master/docs/get-config-file.md"
 />
 
-#### With Google API
+#### Upload google-services.json and GoogleService-Info.plist to EAS
 
-For iOS, if you are using Google API instead of Firebase, you'll need to generate OAuth client id. Follow the instructions below to generate the client id:
+If you use the Firebase method for Android and iOS (as shared below), you'll need to upload **google-services.json** and **GoogleService-Info.plist** to EAS and add them to **.gitignore** to avoid checking them in the repository.
+
+<BoxLink
+  title="Upload a secret file to EAS and use in the app config"
+  href="/build-reference/variables/#how-to-upload-a-secret-file-and-use-it-in-my-app-config"
+/>
+
+### With Google API
+
+#### Android
+
+For more instructions on how to configure your Google project for Android with Google API:
+
+<BoxLink
+  title="Google API"
+  href="https://github.com/react-native-google-signin/google-signin/blob/master/docs/android-guide.md#1b---if-youre-not-using-firebase"
+/>
+
+#### iOS
+
+For iOS, if you use Google API instead of Firebase, you'll need to generate an OAuth client id. Follow the instructions below to generate the client id:
 
 <BoxLink
   title="Google API"
@@ -99,26 +110,15 @@ Then, add the iOS URL scheme value in the app config under [`ios.infoPlist`](/ve
 
 ```json app.json
 {
-  "expo": {
-    "ios": {
-      /* @hide ...*/ /* @end */
-      "infoPlist": {
-        "CFBundleURLTypes": [
-          {
-            "CFBundleURLSchemes": ["com.googleusercontent.apps.17898xxxxxx-xxxxxqhqj0exxxxxpl03xxx"]
-          }
-        ]
-      }
+  "ios": {
+    /* @hide ...*/ /* @end */
+    "infoPlist": {
+      "CFBundleURLTypes": [
+        {
+          "CFBundleURLSchemes": ["com.googleusercontent.apps.17898xxxxxx-xxxxxqhqj0exxxxxpl03xxx"]
+        }
+      ]
     }
   }
 }
 ```
-
-## Upload google-services.json and GoogleService-Info.plist to EAS
-
-If you are using the Firebase method for Android and iOS (as shared below), you'll need to upload **google-services.json** and **GoogleService-Info.plist** to EAS and them to **.gitignore** to avoid checking them in the repository.
-
-<BoxLink
-  title="Upload a secret file to EAS and use in the app config"
-  href="/build-reference/variables/#how-to-upload-a-secret-file-and-use-it-in-my-app-config"
-/>
