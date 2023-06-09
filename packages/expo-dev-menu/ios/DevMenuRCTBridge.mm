@@ -146,6 +146,11 @@
 @implementation DevMenuRCTAppDelegate
 
 
+- (RCTBridge *)createBridgeWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
+{
+  return [[DevMenuRCTBridge alloc] initWithDelegate:delegate launchOptions:launchOptions];
+}
+
 - (void)createBridgeWithAdapter:(NSDictionary * _Nullable)launchOptions {
     self.bridge = [self createBridgeWithDelegate:self launchOptions:launchOptions];
 
