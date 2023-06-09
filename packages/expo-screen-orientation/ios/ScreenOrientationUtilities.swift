@@ -31,22 +31,21 @@ extension UIInterfaceOrientationMask {
   }
 
   internal func isSupportedByDevice() -> Bool {
-    if self.contains(.portraitUpsideDown) // UIInterfaceOrientationMaskPortraitUpsideDown is part of orientationMask
-      && doesDeviceHaveNotch {
-        // device does not support UIInterfaceOrientationMaskPortraitUpsideDown and it was requested via orientationMask
-        return false
-      }
-      return true
+    // Devices with a notch don't support upside down orientation mask.
+    return !self.contains(.portraitUpsideDown) || !doesDeviceHaveNotch
   }
 
   internal func defaultOrientation() -> UIInterfaceOrientation {
     if self.contains(.portrait) {
       return .portrait
-    } else if self.contains(.landscapeLeft) {
+    }
+    if self.contains(.landscapeLeft) {
       return .landscapeLeft
-    } else if self.contains(.landscapeRight) {
+    }
+    if self.contains(.landscapeRight) {
       return .landscapeRight
-    } else if self.contains(.portraitUpsideDown) {
+    }
+    if self.contains(.portraitUpsideDown) {
       return .portraitUpsideDown
     }
     return .unknown

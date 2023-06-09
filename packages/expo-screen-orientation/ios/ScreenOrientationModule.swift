@@ -19,7 +19,7 @@ public class ScreenOrientationModule: Module, OrientationListener, Hashable {
       }
 
       guard orientationMask.isSupportedByDevice() else {
-        throw UnsupportedOrientationLockException("\(orientationLock.rawValue)")
+        throw UnsupportedOrientationLockException(orientationLock)
       }
 
       screenOrientationRegistry.setMask(orientationMask, forModule: self)
@@ -50,9 +50,9 @@ public class ScreenOrientationModule: Module, OrientationListener, Hashable {
       return ModuleOrientationLock.from(mask: screenOrientationRegistry.currentOrientationMask).rawValue
     }
 
-    AsyncFunction("getPlatformOrientationLockAsync") { () -> [Int?] in
+    AsyncFunction("getPlatformOrientationLockAsync") { () -> [Int] in
       let orientationMask = screenOrientationRegistry.currentOrientationMask
-      var allowedOrientations: [Int?] = []
+      var allowedOrientations: [Int] = []
       let orientationMasks: [UIInterfaceOrientationMask] = [.portrait, .portraitUpsideDown, .landscapeLeft, .landscapeRight]
 
       // If the particular orientation is supported, we add it to the array of allowedOrientations
@@ -90,6 +90,7 @@ public class ScreenOrientationModule: Module, OrientationListener, Hashable {
   }
 
   // MARK: - ScreenOrientationListener
+
   func screenOrientationDidChange(_ orientation: UIInterfaceOrientation) {
     guard let currentTraitCollection = screenOrientationRegistry.currentTraitCollection else {
       return
@@ -106,6 +107,7 @@ public class ScreenOrientationModule: Module, OrientationListener, Hashable {
   }
 
   // MARK: - Hashable
+
   public func hash(into hasher: inout Hasher) {
     hasher.combine(ObjectIdentifier(self))
   }

@@ -1,5 +1,6 @@
 import Foundation
 import ExpoModulesCore
+
 protocol OrientationListener {
   func screenOrientationDidChange(_ orientation: UIInterfaceOrientation)
 }
@@ -19,7 +20,7 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   weak var currentTraitCollection: UITraitCollection?
   var lastOrientationMask: UIInterfaceOrientationMask
   var rootViewController: UIViewController? {
-    return UIApplication.shared.windows.filter { $0.isKeyWindow }.first?.rootViewController
+    return UIApplication.shared.keyWindow?.rootViewController
   }
 
   var currentOrientationMask: UIInterfaceOrientationMask {
@@ -52,7 +53,7 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   }
 
   /**
-   Called by ScreenOrientationAppDelegate in order to set initial interface orientation
+   Called by ScreenOrientationAppDelegate in order to set initial interface orientation.
    */
   func updateCurrentScreenOrientation() {
     let windows = UIApplication.shared.windows
@@ -68,8 +69,9 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   }
 
   // MARK: - Affecting screen orientation
+
   /**
-   Rotates the view to currentScreenOrientation or default orientation from the orientationMask
+   Rotates the view to currentScreenOrientation or default orientation from the orientationMask.
    */
   func enforceDesiredDeviceOrientation(withOrientationMask orientationMask: UIInterfaceOrientationMask) {
     var newOrientation = orientationMask.defaultOrientation()
@@ -110,8 +112,9 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   }
 
   // MARK: - Getters
+
   /**
-   Gets the orientationMask for the current module. Also used for Expo Go in EXAppViewController
+   Gets the orientationMask for the app. Uses an intersection of all applied orientation masks. Also used for Expo Go in EXAppViewController.
    */
   @objc
   public func requiredOrientationMask() -> UIInterfaceOrientationMask {
@@ -130,8 +133,9 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   }
 
   // MARK: - Events
+
   /**
-   Called when iOS sends and OrientationDidChangeNotification
+   Called when the OS sends an OrientationDidChange notification.
    */
   @objc
   func handleDeviceOrientationChange(notification: Notification) {
@@ -141,7 +145,7 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   }
 
   /**
-   Called when the device physically is rotated. Checks if screen orientation should be changed after user rotated the device
+   Called when the device is physically rotated. Checks if screen orientation should be changed after user rotated the device.
    */
   func interfaceOrientationDidChange(_ newScreenOrientation: UIInterfaceOrientation) {
     if currentScreenOrientation == newScreenOrientation || newScreenOrientation == .unknown {
@@ -221,7 +225,7 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   }
 
   /**
-   Called on the end of the screen orientation change. Notifies modules about the orientation change.
+   Called at the end of the screen orientation change. Notifies modules about the orientation change.
    */
   func screenOrientationDidChange(_ newScreenOrientation: UIInterfaceOrientation) {
     currentScreenOrientation = newScreenOrientation
