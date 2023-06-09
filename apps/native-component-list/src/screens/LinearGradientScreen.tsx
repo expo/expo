@@ -1,7 +1,8 @@
-import { LinearGradient } from 'expo-linear-gradient';
-import React from 'react';
+import { GradientDirection, LinearGradient } from 'expo-linear-gradient';
+import React, { useState } from 'react';
 import { Image, Platform, Animated, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import Button from '../components/Button';
 import MonoText from '../components/MonoText';
 
 // https://github.com/expo/expo/issues/10599
@@ -63,6 +64,7 @@ export default class LinearGradientScreen extends React.Component<{}, State> {
           style={{ display: 'none' }}
           colors={[this.state.colorTop, this.state.colorBottom]}
         />
+        <DirectionTest colors={[this.state.colorTop, this.state.colorBottom]} />
         <ColorsTest colors={[this.state.colorTop, this.state.colorBottom]} />
         <LocationsTest locations={[location, 1.0 - location]} />
         <ControlPointTest start={[position, 0]} />
@@ -138,6 +140,26 @@ const ColorsTest = ({ colors }: { colors: string[] }) => {
     <Container title="Colors">
       <MonoText>{`colors={[${info}]}`}</MonoText>
       <LinearGradient colors={colors} style={styles.gradient} />
+    </Container>
+  );
+};
+
+const DirectionTest = ({ colors }: { colors: string[] }) => {
+  const [direction, setDirection] = useState(GradientDirection.RIGHT);
+  return (
+    <Container title="Gradient Direction">
+      <MonoText>{`gradientDirection={${direction}}`}</MonoText>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 5 }}>
+        <Button title="Up" onPress={() => setDirection(GradientDirection.UP)} />
+        <Button title="Top Right" onPress={() => setDirection(GradientDirection.TOP_RIGHT)} />
+        <Button title="Right" onPress={() => setDirection(GradientDirection.RIGHT)} />
+        <Button title="Bottom Right" onPress={() => setDirection(GradientDirection.BOTTOM_RIGHT)} />
+        <Button title="Down" onPress={() => setDirection(GradientDirection.DOWN)} />
+        <Button title="Bottom Left" onPress={() => setDirection(GradientDirection.BOTTOM_LEFT)} />
+        <Button title="Left" onPress={() => setDirection(GradientDirection.LEFT)} />
+        <Button title="Top Left" onPress={() => setDirection(GradientDirection.TOP_LEFT)} />
+      </View>
+      <LinearGradient gradientDirection={direction} colors={colors} style={styles.gradient} />
     </Container>
   );
 };

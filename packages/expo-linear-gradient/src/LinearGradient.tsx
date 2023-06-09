@@ -58,18 +58,59 @@ export type LinearGradientProps = ViewProps & {
    * @default { x: 0.5, y: 1.0 }
    */
   end?: LinearGradientPoint | null;
+  /**
+   * Specifies the direction of the gradient color transition. Each value represents a particular direction:
+   * - `GradientDirection.UP` starts the gradient at the bottom and ends at the top.
+   * - `GradientDirection.TOP_RIGHT` starts the gradient at the bottom left and ends at the top right.
+   * - `GradientDirection.RIGHT` starts the gradient on the left and ends on the right.
+   * - `GradientDirection.BOTTOM_RIGHT` starts the gradient at the top left and ends at the bottom right.
+   * - `GradientDirection.DOWN` starts the gradient at the top and ends at the bottom.
+   * - `GradientDirection.BOTTOM_LEFT` starts the gradient at the top right and ends at the bottom left.
+   * - `GradientDirection.LEFT` starts the gradient on the right and ends on the left.
+   * - `GradientDirection.TOP_LEFT` starts the gradient at the bottom right and ends at the top left.
+   *
+   * Specifying 'start' or 'end' properties will override the 'gradientDirection' property.
+   *
+   * If not specified, it defaults to the start and end properties
+   *
+   * Note: For web, the direction will only alter the angle of the gradient, as CSS gradients do not support changing start and end positions.
+   */
+  gradientDirection?: GradientDirection | undefined;
 };
+
+export enum GradientDirection {
+  UP = 'up',
+  TOP_RIGHT = 'top-right',
+  RIGHT = 'right',
+  BOTTOM_RIGHT = 'bottom-right',
+  DOWN = 'down',
+  BOTTOM_LEFT = 'bottom-left',
+  LEFT = 'left',
+  TOP_LEFT = 'top-left',
+}
 
 /**
  * Renders a native view that transitions between multiple colors in a linear direction.
  */
 export class LinearGradient extends React.Component<LinearGradientProps> {
   render() {
-    const { colors, locations, start, end, ...props } = this.props;
+    const { colors, locations, start, end, gradientDirection, ...props } = this.props;
     let resolvedLocations = locations;
+    let startPoint = gradientDirection
+      ? directionValues[gradientDirection].start
+      : _normalizePoint(start);
+    let endPoint = gradientDirection
+      ? directionValues[gradientDirection].end
+      : _normalizePoint(end);
     if (locations && colors.length !== locations.length) {
       console.warn('LinearGradient colors and locations props should be arrays of the same length');
       resolvedLocations = locations.slice(0, colors.length);
+    }
+
+    // Specifying 'start' or 'end' properties will override the 'gradientDirection' property
+    if (gradientDirection !== undefined && (start !== undefined || end !== undefined)) {
+      startPoint = _normalizePoint(start);
+      endPoint = _normalizePoint(end);
     }
 
     return (
@@ -80,8 +121,8 @@ export class LinearGradient extends React.Component<LinearGradientProps> {
           default: colors.map(processColor),
         })}
         locations={resolvedLocations}
-        startPoint={_normalizePoint(start)}
-        endPoint={_normalizePoint(end)}
+        startPoint={startPoint}
+        endPoint={endPoint}
       />
     );
   }
@@ -101,3 +142,41 @@ function _normalizePoint(
 
   return Array.isArray(point) ? point : [point.x, point.y];
 }
+
+const directionValues: Record<
+  GradientDirection,
+  { start: NativeLinearGradientPoint; end: NativeLinearGradientPoint }
+> = {
+  [GradientDirection.UP]: {
+    start: [1, 1],
+    end: [1, 0],
+  },
+  [GradientDirection.TOP_RIGHT]: {
+    start: [0, 1],
+    end: [1, 0],
+  },
+  [GradientDirection.RIGHT]: {
+    start: [0, 0],
+    end: [1, 0],
+  },
+  [GradientDirection.BOTTOM_RIGHT]: {
+    start: [0, 0],
+    end: [1, 1],
+  },
+  [GradientDirection.DOWN]: {
+    start: [0, 0],
+    end: [0, 1],
+  },
+  [GradientDirection.BOTTOM_LEFT]: {
+    start: [1, 0],
+    end: [0, 1],
+  },
+  [GradientDirection.LEFT]: {
+    start: [1, 0],
+    end: [0, 0],
+  },
+  [GradientDirection.TOP_LEFT]: {
+    start: [1, 1],
+    end: [0, 0],
+  },
+};
