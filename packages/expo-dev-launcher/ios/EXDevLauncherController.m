@@ -585,7 +585,7 @@
     #ifdef RCT_NEW_ARCH_ENABLED
       #define EXPECTED_ROOT_VIEW RCTSurfaceView
     #else
-      #define EXPECTED_ROOT_VIEW RCTRootView
+      #define EXPECTED_ROOT_VIEW RCTRootContentView
     #endif
     NSArray<UIView *> *views = [[[self->_window rootViewController] view] subviews];
     for (UIView *view in views) {
