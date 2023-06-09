@@ -27,6 +27,8 @@
 #import <React/RCTDevMenu.h>
 #import <React/RCTCxxBridgeDelegate.h>
 #import <React/RCTJSIExecutorRuntimeInstaller.h>
+#import <React/RCTRuntimeExecutorFromBridge.h>
+#import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #if __has_include(<reacthermes/HermesExecutorFactory.h>)
 #import <reacthermes/HermesExecutorFactory.h>
 #endif
@@ -38,11 +40,28 @@
 #import <React_RCTAppDelegate/RCTAppDelegate.h>
 #endif
 
-
-#ifdef RCT_NEW_ARCH_ENABLED
-#import <ReactCommon/RCTTurboModuleManager.h>
-#endif
 #import "RCTAppSetupUtils.h"
+
+#if RCT_NEW_ARCH_ENABLED
+#import <React/CoreModulesPlugins.h>
+#import <React/RCTComponentViewFactory.h>
+#import <React/RCTComponentViewProtocol.h>
+#import <React/RCTFabricSurfaceHostingProxyRootView.h>
+#import <React/RCTLegacyViewManagerInteropComponentView.h>
+#import <React/RCTSurfacePresenter.h>
+#import <React/RCTSurfacePresenterBridgeAdapter.h>
+#import <ReactCommon/RCTTurboModuleManager.h>
+#import <react/config/ReactNativeConfig.h>
+#import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
+#import "RCTLegacyInteropComponents.h"
+
+@interface DevMenuRCTAppDelegate () <RCTTurboModuleManagerDelegate> {
+  std::shared_ptr<const facebook::react::ReactNativeConfig> _reactNativeConfig;
+  facebook::react::ContextContainer::Shared _contextContainer;
+}
+@end
+
+#endif
 
 @implementation DevMenuRCTCxxBridge
 
@@ -119,7 +138,26 @@
 
 @end
 
+@interface DevMenuRCTAppDelegate () <RCTCxxBridgeDelegate> {
+  std::shared_ptr<facebook::react::RuntimeScheduler> _runtimeScheduler;
+}
+@end
+
 @implementation DevMenuRCTAppDelegate
+
+
+- (void)createBridgeWithAdapter:(NSDictionary * _Nullable)launchOptions {
+    self.bridge = [self createBridgeWithDelegate:self launchOptions:launchOptions];
+
+#ifdef RCT_NEW_ARCH_ENABLED
+    _contextContainer = std::make_shared<facebook::react::ContextContainer const>();
+    _reactNativeConfig = std::make_shared<facebook::react::EmptyReactNativeConfig const>();
+    _contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
+    self.bridgeAdapter = [[RCTSurfacePresenterBridgeAdapter alloc] initWithBridge:self.bridge
+                                                                 contextContainer:_contextContainer];
+    self.bridge.surfacePresenter = self.bridgeAdapter.surfacePresenter;
+#endif
+}
 
 // Temporaray remove custom jsExecutorFactoryForBridge
 // - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge

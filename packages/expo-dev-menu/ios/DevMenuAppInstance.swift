@@ -14,8 +14,7 @@ class DevMenuAppInstance: DevMenuRCTAppDelegate {
     self.manager = manager
 
     super.init()
-
-    self.bridge = DevMenuRCTBridge.init(delegate: self, launchOptions: nil)
+    self.createBridge(withAdapter: nil)
   }
 
   init(manager: DevMenuManager, bridge: RCTBridge) {
