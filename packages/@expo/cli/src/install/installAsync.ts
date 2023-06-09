@@ -112,7 +112,7 @@ export async function installPackagesAsync(
 
   if (versioning.excludedNativeModules.length) {
     Log.log(
-      chalk`\u203A Using latest version instead of ${joinWithAnd(
+      chalk`\u203A Using latest version instead of ${formatExcludedPackages(
         versioning.excludedNativeModules
       )} because ${
         versioning.excludedNativeModules.length > 1 ? 'they are' : 'it is'
@@ -127,12 +127,17 @@ export async function installPackagesAsync(
   await applyPluginsAsync(projectRoot, versioning.packages);
 }
 
-function joinWithAnd(arr: string[]): string {
-  if (arr.length === 1) {
-    return arr[0];
+function formatExcludedPackages(
+  packages: { name: string; bundledNativeVersion: string }[]
+): string {
+  const packagesWithVersions = packages.map(({ bundledNativeVersion, name }) => {
+    return `${bundledNativeVersion} for ${name}`;
+  });
+  if (packagesWithVersions.length === 1) {
+    return packagesWithVersions[0];
   }
-  const last = arr.pop();
-  return `${arr.join(', ')} and ${last}`;
+  const last = packagesWithVersions.pop();
+  return `${packagesWithVersions.join(', ')}, and ${last}`;
 }
 
 export async function fixPackagesAsync(
