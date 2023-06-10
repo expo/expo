@@ -6,7 +6,6 @@ import path from 'path';
 import { unsafeTemplate } from '../../../utils/template';
 import { ServerLike } from '../BundlerDevServer';
 import { metroWatchTypeScriptFiles } from '../metro/metroWatchTypeScriptFiles';
-import { getExpoRouterRootDirectory } from '../metro/router';
 
 // /test/[...param1]/[param2]/[param3] - captures ["param1", "param2", "param3"]
 export const CAPTURE_DYNAMIC_PARAMS = /\[(?:\.{3})?(\w*?)[\]$]/g;
@@ -24,6 +23,7 @@ export interface SetupTypedRoutesOptions {
   metro?: Server | null;
   typesDirectory: string;
   projectRoot: string;
+  routerDirectory: string;
 }
 
 export async function setupTypedRoutes({
@@ -31,8 +31,9 @@ export async function setupTypedRoutes({
   metro,
   typesDirectory,
   projectRoot,
+  routerDirectory,
 }: SetupTypedRoutesOptions) {
-  const appRoot = getExpoRouterRootDirectory(projectRoot);
+  const appRoot = path.join(projectRoot, routerDirectory);
 
   const { filePathToRoute, staticRoutes, dynamicRoutes, addFilePath } =
     getTypedRoutesUtils(appRoot);

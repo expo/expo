@@ -1,5 +1,9 @@
+import chalk from 'chalk';
 import path from 'path';
 import resolveFrom from 'resolve-from';
+
+import { Log } from '../../../log';
+import { directoryExistsSync } from '../../../utils/dir';
 
 const debug = require('debug')('expo:start:server:metro:router') as typeof console.log;
 
@@ -7,7 +11,10 @@ const debug = require('debug')('expo:start:server:metro:router') as typeof conso
  * Get the relative path for requiring the `/app` folder relative to the `expo-router/entry` file.
  * This mechanism does require the server to restart after the `expo-router` package is installed.
  */
-export function getAppRouterRelativeEntryPath(projectRoot: string): string | undefined {
+export function getAppRouterRelativeEntryPath(
+  projectRoot: string,
+  routerDirectory: string = getRouterDirectory(projectRoot)
+): string | undefined {
   // Auto pick App entry
   const routerEntry =
     resolveFrom.silent(projectRoot, 'expo-router/entry') ?? getFallbackEntryRoot(projectRoot);
@@ -15,7 +22,7 @@ export function getAppRouterRelativeEntryPath(projectRoot: string): string | und
     return undefined;
   }
   // It doesn't matter if the app folder exists.
-  const appFolder = path.join(projectRoot, 'app');
+  const appFolder = path.join(projectRoot, routerDirectory);
   const appRoot = path.relative(path.dirname(routerEntry), appFolder);
   debug('routerEntry', routerEntry, appFolder, appRoot);
   return appRoot;
@@ -30,6 +37,13 @@ function getFallbackEntryRoot(projectRoot: string): string {
   return path.join(projectRoot, 'node_modules/expo-router/entry');
 }
 
-export function getExpoRouterRootDirectory(projectRoot: string): string {
-  return path.join(projectRoot, 'app');
+export function getRouterDirectory(projectRoot: string): string {
+  // more specific directories first
+  if (directoryExistsSync(path.join(projectRoot, 'src/app'))) {
+    Log.log(chalk.gray('Using src/app as the root directory for Expo Router.'));
+    return 'src/app';
+  }
+
+  Log.debug('Using app as the root directory for Expo Router.');
+  return 'app';
 }

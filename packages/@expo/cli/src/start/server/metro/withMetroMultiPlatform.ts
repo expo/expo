@@ -308,15 +308,17 @@ export async function withMetroMultiPlatformAsync(
     platformBundlers,
     isTsconfigPathsEnabled,
     webOutput,
+    routerDirectory,
   }: {
     config: ConfigT;
     isTsconfigPathsEnabled: boolean;
     platformBundlers: PlatformBundlers;
     webOutput?: 'single' | 'static';
+    routerDirectory: string;
   }
 ) {
-  // Auto pick App entry: this is injected with a custom serializer.
-  process.env.EXPO_ROUTER_APP_ROOT = getAppRouterRelativeEntryPath(projectRoot);
+  // Auto pick app entry for router.
+  process.env.EXPO_ROUTER_APP_ROOT = getAppRouterRelativeEntryPath(projectRoot, routerDirectory);
 
   // Required for @expo/metro-runtime to format paths in the web LogBox.
   process.env.EXPO_PUBLIC_PROJECT_ROOT = process.env.EXPO_PUBLIC_PROJECT_ROOT ?? projectRoot;
@@ -325,6 +327,13 @@ export async function withMetroMultiPlatformAsync(
     // Enable static rendering in runtime space.
     process.env.EXPO_PUBLIC_USE_STATIC = '1';
   }
+
+  // Ensure the cache is invalidated if these values change.
+  // @ts-expect-error
+  config.transformer._expoRouterRootDirectory = process.env.EXPO_ROUTER_APP_ROOT;
+  // @ts-expect-error
+  config.transformer._expoRouterWebRendering = webOutput;
+  // TODO: import mode
 
   if (platformBundlers.web === 'metro') {
     await new WebSupportProjectPrerequisite(projectRoot).assertAsync();

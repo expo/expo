@@ -1,5 +1,13 @@
 import fs from 'fs-extra';
 
+export function directoryExistsSync(file: string): boolean {
+  try {
+    return fs.statSync(file)?.isDirectory() ?? false;
+  } catch {
+    return false;
+  }
+}
+
 export async function directoryExistsAsync(file: string): Promise<boolean> {
   return (await fs.promises.stat(file).catch(() => null))?.isDirectory() ?? false;
 }
