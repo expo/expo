@@ -1,3 +1,4 @@
+import { getConfig } from '@expo/config';
 import fs from 'fs/promises';
 import { Server } from 'metro';
 import path from 'path';
@@ -6,6 +7,7 @@ import { env } from '../../../utils/env';
 import { upsertGitIgnoreContents, removeFromGitIgnore } from '../../../utils/mergeGitIgnorePaths';
 import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo';
 import { ServerLike } from '../BundlerDevServer';
+import { getRouterDirectory } from '../metro/router';
 import { removeExpoEnvDTS, writeExpoEnvDTS } from './expo-env';
 import { setupTypedRoutes } from './routes';
 import { forceRemovalTSConfig, forceUpdateTSConfig } from './tsconfig';
@@ -31,6 +33,7 @@ export async function typescriptTypeGeneration({
       removeFromGitIgnore(gitIgnorePath, 'expo-env.d.ts'),
     ]);
   } else {
+    const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
     const dotExpoDir = ensureDotExpoProjectDirectoryInitialized(projectRoot);
     const typesDirectory = path.resolve(dotExpoDir, './types');
 
@@ -41,7 +44,13 @@ export async function typescriptTypeGeneration({
       upsertGitIgnoreContents(path.join(projectRoot, '.gitignore'), 'expo-env.d.ts'),
       writeExpoEnvDTS(projectRoot),
       forceUpdateTSConfig(projectRoot),
-      setupTypedRoutes({ metro, server, typesDirectory, projectRoot }),
+      setupTypedRoutes({
+        metro,
+        server,
+        typesDirectory,
+        projectRoot,
+        routerDirectory: exp.extra?.router?.unstable_src ?? getRouterDirectory(projectRoot),
+      }),
     ]);
   }
 }
