@@ -15,7 +15,7 @@
 
 ### 💡 Others
 
-- Update snapshots.
+- Update snapshots. ([#22748](https://github.com/expo/expo/pull/22748) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 7.0.0 — 2023-05-08
 
