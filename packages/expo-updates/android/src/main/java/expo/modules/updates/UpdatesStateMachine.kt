@@ -331,7 +331,7 @@ class UpdatesStateMachine constructor(
           valueMap.putBoolean(field, values[field] as Boolean)
         } else if (field.endsWith("Manifest")) {
           if (values[field] != null) {
-            valueMap.putString(field, (values[field] as JSONObject).toString())
+            valueMap.putString("${field}String", (values[field] as JSONObject).toString())
           } else {
             valueMap.putNull(field)
           }

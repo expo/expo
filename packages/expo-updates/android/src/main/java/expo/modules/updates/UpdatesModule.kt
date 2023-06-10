@@ -200,7 +200,7 @@ class UpdatesModule(
                   UpdatesStateEvent(
                     UpdatesStateEventType.CheckCompleteAvailable,
                     mapOf(
-                      "manifestString" to updateManifest.manifest.getRawJson().toString()
+                      "manifest" to updateManifest.manifest.getRawJson()
                     )
                   )
                 )
