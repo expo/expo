@@ -9,7 +9,6 @@ export const BLT = '\u203A';
 
 export type StartOptions = {
   isWebSocketsEnabled?: boolean;
-  devClient?: boolean;
   reset?: boolean;
   nonPersistent?: boolean;
   maxWorkers?: number;
@@ -30,7 +29,7 @@ export const printItem = (text: string): string =>
   `${BLT} ` + wrapAnsi(text, getTerminalColumns()).trimStart();
 
 export function printUsage(
-  options: Pick<StartOptions, 'devClient' | 'isWebSocketsEnabled' | 'platforms'>,
+  options: Pick<StartOptions, 'isWebSocketsEnabled' | 'platforms'>,
   { verbose }: { verbose: boolean }
 ) {
   const isMac = process.platform === 'darwin';

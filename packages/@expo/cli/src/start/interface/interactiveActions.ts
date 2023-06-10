@@ -20,9 +20,7 @@ const debug = require('debug')('expo:start:interface:interactiveActions') as typ
 export class DevServerManagerActions {
   constructor(private devServerManager: DevServerManager) {}
 
-  printDevServerInfo(
-    options: Pick<StartOptions, 'devClient' | 'isWebSocketsEnabled' | 'platforms'>
-  ) {
+  printDevServerInfo(options: Pick<StartOptions, 'isWebSocketsEnabled' | 'platforms'>) {
     // If native dev server is running, print its URL.
     if (this.devServerManager.getNativeDevServerPort()) {
       const devServer = this.devServerManager.getDefaultDevServer();
