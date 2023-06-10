@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 import * as Updates from './Updates';
 import { UpdateEvent } from './Updates.types';
@@ -43,30 +43,4 @@ export const useUpdateEvents = (listener: (event: UpdateEvent) => void) => {
     }
     return undefined;
   }, []);
-};
-
-export const useUpdatesState: () => { [key: string]: any } = () => {
-  const [localState, setLocalState] = useState<{ [key: string]: any }>({
-    isUpdateAvailable: false,
-    isUpdatePending: false,
-    isRollback: false,
-    isChecking: false,
-    isDownloading: false,
-    isRestarting: false,
-    checkError: null,
-    downloadError: null,
-    latestManifest: null,
-    downloadedManifest: null,
-  });
-  useEffect(() => {
-    const subscription = Updates.addUpdatesStateChangeListener((event) => {
-      const state: { [key: string]: any } = {};
-      for (const key of event.fields) {
-        state[key] = event.values[key];
-      }
-      setLocalState((localState) => ({ ...localState, ...state }));
-    });
-    return () => subscription.remove();
-  }, []);
-  return localState;
 };

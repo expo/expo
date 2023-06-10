@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import * as Updates from './Updates';
 /**
  * React hook to create an [`UpdateEvent`](#updateevent) listener subscription on mount, using
@@ -38,30 +38,5 @@ export const useUpdateEvents = (listener) => {
         }
         return undefined;
     }, []);
-};
-export const useUpdatesState = () => {
-    const [localState, setLocalState] = useState({
-        isUpdateAvailable: false,
-        isUpdatePending: false,
-        isRollback: false,
-        isChecking: false,
-        isDownloading: false,
-        isRestarting: false,
-        checkError: null,
-        downloadError: null,
-        latestManifest: null,
-        downloadedManifest: null,
-    });
-    useEffect(() => {
-        const subscription = Updates.addUpdatesStateChangeListener((event) => {
-            const state = {};
-            for (const key of event.fields) {
-                state[key] = event.values[key];
-            }
-            setLocalState((localState) => ({ ...localState, ...state }));
-        });
-        return () => subscription.remove();
-    }, []);
-    return localState;
 };
 //# sourceMappingURL=UpdatesHooks.js.map
