@@ -490,7 +490,7 @@ describe('JS API tests', () => {
     jestExpect(isEmbeddedAfterUpdate).toEqual('false');
   });
 
-  xit('Receives expected events when update available on start', async () => {
+  it('Receives expected events when update available on start', async () => {
     jest.setTimeout(300000 * TIMEOUT_BIAS);
     const bundleFilename = 'bundle1.js';
     const newNotifyString = 'test-update-1';
