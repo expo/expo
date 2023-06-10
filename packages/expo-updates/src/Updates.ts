@@ -328,7 +328,22 @@ function _emitEvent(params): void {
 }
 
 function _emitNativeStateChangeEvent(params: any) {
-  _emitter?.emit('Expo.updatesStateChangeEvent', params);
+  let newParams = { ...params };
+  if (typeof params === 'string') {
+    newParams = JSON.parse(params);
+  }
+  if (newParams.values.latestManifestString) {
+    newParams.values.latestManifest = JSON.parse(newParams.values.latestManifestString);
+    delete newParams.values.latestManifestString;
+  }
+  if (newParams.values.downloadedManifestString) {
+    newParams.values.downloadedManifest = JSON.parse(newParams.values.downloadedManifestString);
+    delete newParams.values.downloadedManifestString;
+  }
+  if (!_emitter) {
+    throw new Error(`EventEmitter must be initialized to use from its listener`);
+  }
+  _emitter?.emit('Expo.updatesStateChangeEvent', newParams);
 }
 
 /**
