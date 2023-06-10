@@ -15,6 +15,8 @@
 
 ### 💡 Others
 
+- Update snapshots.
+
 ## 7.0.0 — 2023-05-08
 
 ### 🛠 Breaking changes
