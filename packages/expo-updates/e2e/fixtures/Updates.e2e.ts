@@ -490,6 +490,57 @@ describe('JS API tests', () => {
     jestExpect(isEmbeddedAfterUpdate).toEqual('false');
   });
 
+  it('Receives state machine change events', async () => {
+    jest.setTimeout(300000 * TIMEOUT_BIAS);
+    const bundleFilename = 'bundle1.js';
+    const newNotifyString = 'test-update-1';
+    const hash = await Update.copyBundleToStaticFolder(
+      projectRoot,
+      bundleFilename,
+      newNotifyString,
+      platform
+    );
+    const manifest = Update.getUpdateManifestForBundleFilename(
+      new Date(),
+      hash,
+      'test-update-1-key',
+      bundleFilename,
+      []
+    );
+
+    // Launch app
+    await device.installApp();
+    await device.launchApp({
+      newInstance: true,
+    });
+    await waitForAppToBecomeVisible();
+
+    // Check state
+    let isUpdatePending = await testElementValueAsync('state.isUpdatePending');
+    jestExpect(isUpdatePending).toEqual('false');
+    let isUpdateAvailable = await testElementValueAsync('state.isUpdateAvailable');
+    jestExpect(isUpdateAvailable).toEqual('false');
+    let latestManifestId = await testElementValueAsync('state.latestManifest.id');
+    jestExpect(latestManifestId).toEqual('');
+
+    // Now serve a manifest
+    Server.start(Update.serverPort, protocolVersion);
+    await Server.serveSignedManifest(manifest, projectRoot);
+
+    // Check for update, and expect isUpdateAvailable to be true
+    await pressTestButtonAsync('checkForUpdate');
+    isUpdateAvailable = await testElementValueAsync('state.isUpdateAvailable');
+    jestExpect(isUpdatePending).toEqual('false');
+    jestExpect(isUpdateAvailable).toEqual('true');
+    latestManifestId = await testElementValueAsync('state.latestManifest.id');
+    jestExpect(latestManifestId).toEqual(manifest.id);
+
+    // Download update and expect isUpdatePending to be true
+    await pressTestButtonAsync('downloadUpdate');
+    jestExpect(isUpdatePending).toEqual('false');
+    jestExpect(isUpdateAvailable).toEqual('true');
+  });
+
   it('Receives expected events when update available on start', async () => {
     jest.setTimeout(300000 * TIMEOUT_BIAS);
     const bundleFilename = 'bundle1.js';

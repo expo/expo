@@ -1,5 +1,11 @@
 import { Inter_900Black } from '@expo-google-fonts/inter';
-import { useUpdates, checkForUpdate, downloadUpdate, runUpdate } from '@expo/use-updates';
+import {
+  useUpdates,
+  checkForUpdate,
+  downloadUpdate,
+  runUpdate,
+  useUpdatesState,
+} from '@expo/use-updates';
 import { NativeModulesProxy } from 'expo-modules-core';
 import { StatusBar } from 'expo-status-bar';
 import * as Updates from 'expo-updates';
@@ -14,8 +20,10 @@ Inter_900Black;
 function TestValue(props: { testID: string; value: string }) {
   return (
     <View>
-      <Text>{props.testID}</Text>
-      <Text testID={props.testID}>{props.value}</Text>
+      <View style={{ flexDirection: 'row' }}>
+        <Text>{props.testID}</Text>
+        <Text testID={props.testID}>{props.value}</Text>
+      </View>
       <Text>---</Text>
     </View>
   );
@@ -37,6 +45,8 @@ export default function App() {
   const [lastUpdateEventType, setLastUpdateEventType] = React.useState('');
 
   const { currentlyRunning, availableUpdate, isUpdateAvailable, isUpdatePending } = useUpdates();
+
+  const state = useUpdatesState();
 
   Updates.useUpdateEvents((event) => {
     setLastUpdateEventType(event.type);
@@ -114,6 +124,11 @@ export default function App() {
       <TestValue testID="checkAutomatically" value={`${Updates.checkAutomatically}`} />
       <TestValue testID="isEmbeddedLaunch" value={`${currentlyRunning.isEmbeddedLaunch}`} />
       <TestValue testID="availableUpdateID" value={`${availableUpdate?.updateId}`} />
+
+      <TestValue testID="state.isUpdateAvailable" value={`${state.isUpdateAvailable}`} />
+      <TestValue testID="state.isUpdatePending" value={`${state.isUpdatePending}`} />
+      <TestValue testID="state.latestManifest.id" value={`${state.latestManifest?.id || ''}`} />
+
       <Text>Log messages</Text>
       <ScrollView style={styles.logEntriesContainer}>
         <Text testID="logEntries" style={styles.logEntriesText}>
