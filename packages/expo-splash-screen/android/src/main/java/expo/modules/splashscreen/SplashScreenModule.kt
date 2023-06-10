@@ -18,8 +18,8 @@ class SplashScreenModule : Module() {
     Name("ExpoSplashScreen")
 
     AsyncFunction("preventAutoHideAsync") { promise: Promise ->
-      val currentActivity
-        = appContext.currentActivity ?: throw Exceptions.MissingActivity()
+      val currentActivity =
+        appContext.currentActivity ?: throw Exceptions.MissingActivity()
 
       SplashScreen.preventAutoHide(
         currentActivity,
@@ -29,8 +29,8 @@ class SplashScreenModule : Module() {
     }
 
     AsyncFunction("hideAsync") { promise: Promise ->
-      val currentActivity
-        = appContext.currentActivity ?: throw Exceptions.MissingActivity()
+      val currentActivity =
+        appContext.currentActivity ?: throw Exceptions.MissingActivity()
 
       SplashScreen.hide(
         currentActivity,
