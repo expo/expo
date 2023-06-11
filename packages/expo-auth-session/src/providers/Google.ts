@@ -158,7 +158,7 @@ export function useIdTokenAuthRequest(
   AuthSessionResult | null,
   (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>
 ] {
-  const isWebAuth =  Platform.OS === 'web';
+  const isWebAuth = Platform.OS === 'web';
 
   return useAuthRequest(
     {
@@ -193,14 +193,12 @@ export function useAuthRequest(
   AuthSessionResult | null,
   (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>
 ] {
-
-
   const clientId = useMemo((): string => {
-    const propertyName =  Platform.select({
-          ios: 'iosClientId',
-          android: 'androidClientId',
-          default: 'webClientId',
-        });
+    const propertyName = Platform.select({
+      ios: 'iosClientId',
+      android: 'androidClientId',
+      default: 'webClientId',
+    });
 
     const clientId = config[propertyName as any] ?? config.clientId;
     invariantClientId(propertyName, clientId, 'Google');
@@ -220,7 +218,7 @@ export function useAuthRequest(
     }
     // You can only use `response_token=code` on installed apps (iOS, Android without proxy).
     // Installed apps can auto exchange without a client secret and get the token and id-token (Firebase).
-    const isInstalledApp = Platform.OS !== 'web' ;
+    const isInstalledApp = Platform.OS !== 'web';
     // If the user provided the client secret (they shouldn't!) then use code exchange by default.
     if (config.clientSecret || isInstalledApp) {
       return ResponseType.Code;

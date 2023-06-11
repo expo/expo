@@ -125,14 +125,12 @@ export function useAuthRequest(
   AuthSessionResult | null,
   (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>
 ] {
-
-
   const clientId = useMemo((): string => {
     const propertyName = Platform.select({
-          ios: 'iosClientId',
-          android: 'androidClientId',
-          default: 'webClientId',
-        });
+      ios: 'iosClientId',
+      android: 'androidClientId',
+      default: 'webClientId',
+    });
     return config[propertyName as any] ?? config.clientId;
   }, [
     config.expoClientId,
