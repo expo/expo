@@ -1,8 +1,13 @@
 import { PermissionStatus, PermissionResponse, PermissionHookOptions } from 'expo-modules-core';
 import { LocationAccuracy, LocationCallback, LocationGeocodedAddress, LocationGeocodedLocation, LocationHeadingCallback, LocationHeadingObject, LocationLastKnownOptions, LocationObject, LocationOptions, LocationPermissionResponse, LocationProviderStatus, LocationRegion, LocationSubscription, LocationTaskOptions, LocationActivityType, LocationGeofencingEventType, LocationGeofencingRegionState, LocationGeocodingOptions } from './Location.types';
 import { LocationEventEmitter } from './LocationEventEmitter';
-import { setGoogleApiKey } from './LocationGoogleGeocoding';
 import { _getCurrentWatchId } from './LocationSubscribers';
+/**
+ * @deprecated The Geocoding web api is no longer available from SDK 49 onwards. Use [Place Autocomplete](https://developers.google.com/maps/documentation/places/web-service/autocomplete) instead.
+ * @param apiKey Google API key obtained from Google API Console. This API key must have `Geocoding API`
+ * enabled, otherwise your geocoding requests will be denied.
+ */
+declare function setGoogleApiKey(_apiKey: string): void;
 /**
  * Check status of location providers.
  * @return A promise which fulfills with an object of type [LocationProviderStatus](#locationproviderstatus).
@@ -61,6 +66,8 @@ export declare function getHeadingAsync(): Promise<LocationHeadingObject>;
 export declare function watchHeadingAsync(callback: LocationHeadingCallback): Promise<LocationSubscription>;
 /**
  * Geocode an address string to latitude-longitude location.
+ * > **Note**: Using the Geocoding web api is no longer available. Use [Place Autocomplete](https://developers.google.com/maps/documentation/places/web-service/autocomplete) instead.
+ *
  * > **Note**: Geocoding is resource consuming and has to be used reasonably. Creating too many
  * > requests at a time can result in an error, so they have to be managed properly.
  * > It's also discouraged to use geocoding while the app is in the background and its results won't
@@ -75,6 +82,8 @@ export declare function watchHeadingAsync(callback: LocationHeadingCallback): Pr
 export declare function geocodeAsync(address: string, options?: LocationGeocodingOptions): Promise<LocationGeocodedLocation[]>;
 /**
  * Reverse geocode a location to postal address.
+ * > **Note**: Using the Geocoding web api is no longer available. Use [Place Autocomplete](https://developers.google.com/maps/documentation/places/web-service/autocomplete) instead.
+ *
  * > **Note**: Geocoding is resource consuming and has to be used reasonably. Creating too many
  * > requests at a time can result in an error, so they have to be managed properly.
  * > It's also discouraged to use geocoding while the app is in the background and its results won't

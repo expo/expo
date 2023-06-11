@@ -2,8 +2,14 @@ import { PermissionStatus, createPermissionHook, Platform, } from 'expo-modules-
 import ExpoLocation from './ExpoLocation';
 import { LocationAccuracy, LocationActivityType, LocationGeofencingEventType, LocationGeofencingRegionState, } from './Location.types';
 import { LocationEventEmitter } from './LocationEventEmitter';
-import { setGoogleApiKey, googleGeocodeAsync, googleReverseGeocodeAsync, } from './LocationGoogleGeocoding';
 import { LocationSubscriber, HeadingSubscriber, _getCurrentWatchId } from './LocationSubscribers';
+// @needsAudit
+/**
+ * @deprecated The Geocoding web api is no longer available from SDK 49 onwards. Use [Place Autocomplete](https://developers.google.com/maps/documentation/places/web-service/autocomplete) instead.
+ * @param apiKey Google API key obtained from Google API Console. This API key must have `Geocoding API`
+ * enabled, otherwise your geocoding requests will be denied.
+ */
+function setGoogleApiKey(_apiKey) { }
 // @needsAudit
 /**
  * Check status of location providers.
@@ -113,6 +119,8 @@ export async function watchHeadingAsync(callback) {
 // @needsAudit
 /**
  * Geocode an address string to latitude-longitude location.
+ * > **Note**: Using the Geocoding web api is no longer available. Use [Place Autocomplete](https://developers.google.com/maps/documentation/places/web-service/autocomplete) instead.
+ *
  * > **Note**: Geocoding is resource consuming and has to be used reasonably. Creating too many
  * > requests at a time can result in an error, so they have to be managed properly.
  * > It's also discouraged to use geocoding while the app is in the background and its results won't
@@ -129,13 +137,19 @@ export async function geocodeAsync(address, options) {
         throw new TypeError(`Address to geocode must be a string. Got ${address} instead.`);
     }
     if (options?.useGoogleMaps || Platform.OS === 'web') {
-        return await googleGeocodeAsync(address);
+        if (__DEV__) {
+            console.warn('The Geocoding API has been removed in SDK 49, use Place Autocomplete service instead' +
+                '(https://developers.google.com/maps/documentation/places/web-service/autocomplete)');
+        }
+        return [];
     }
     return await ExpoLocation.geocodeAsync(address);
 }
 // @needsAudit
 /**
  * Reverse geocode a location to postal address.
+ * > **Note**: Using the Geocoding web api is no longer available. Use [Place Autocomplete](https://developers.google.com/maps/documentation/places/web-service/autocomplete) instead.
+ *
  * > **Note**: Geocoding is resource consuming and has to be used reasonably. Creating too many
  * > requests at a time can result in an error, so they have to be managed properly.
  * > It's also discouraged to use geocoding while the app is in the background and its results won't
@@ -152,7 +166,11 @@ export async function reverseGeocodeAsync(location, options) {
         throw new TypeError('Location to reverse-geocode must be an object with number properties `latitude` and `longitude`.');
     }
     if (options?.useGoogleMaps || Platform.OS === 'web') {
-        return await googleReverseGeocodeAsync(location);
+        if (__DEV__) {
+            console.warn('The Geocoding API has been removed in SDK 49, use Place Autocomplete service instead' +
+                '(https://developers.google.com/maps/documentation/places/web-service/autocomplete)');
+        }
+        return [];
     }
     return await ExpoLocation.reverseGeocodeAsync(location);
 }
