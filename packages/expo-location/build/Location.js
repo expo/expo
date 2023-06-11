@@ -119,7 +119,7 @@ export async function watchHeadingAsync(callback) {
 // @needsAudit
 /**
  * Geocode an address string to latitude-longitude location.
- * > **Note**: Using the Geocoding web api is no longer available. Use [Place Autocomplete](https://developers.google.com/maps/documentation/places/web-service/autocomplete) instead.
+ * > **Note**: Using the Geocoding web api is no longer supported. Use [Place Autocomplete](https://developers.google.com/maps/documentation/places/web-service/autocomplete) instead.
  *
  * > **Note**: Geocoding is resource consuming and has to be used reasonably. Creating too many
  * > requests at a time can result in an error, so they have to be managed properly.
@@ -148,7 +148,7 @@ export async function geocodeAsync(address, options) {
 // @needsAudit
 /**
  * Reverse geocode a location to postal address.
- * > **Note**: Using the Geocoding web api is no longer available. Use [Place Autocomplete](https://developers.google.com/maps/documentation/places/web-service/autocomplete) instead.
+ * > **Note**: Using the Geocoding web api is no longer supported. Use [Place Autocomplete](https://developers.google.com/maps/documentation/places/web-service/autocomplete) instead.
  *
  * > **Note**: Geocoding is resource consuming and has to be used reasonably. Creating too many
  * > requests at a time can result in an error, so they have to be managed properly.
