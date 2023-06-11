@@ -17,7 +17,7 @@ import {
 } from '../AuthSession';
 import { AccessTokenRequest } from '../TokenRequest';
 import { ProviderAuthRequestConfig } from './Provider.types';
-import { applyRequiredScopes, invariantClientId, useProxyEnabled } from './ProviderUtils';
+import { applyRequiredScopes, invariantClientId } from './ProviderUtils';
 
 const settings = {
   windowFeatures: { width: 515, height: 680 },
@@ -158,9 +158,7 @@ export function useIdTokenAuthRequest(
   AuthSessionResult | null,
   (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>
 ] {
-  const useProxy = useProxyEnabled(redirectUriOptions);
-
-  const isWebAuth = useProxy || Platform.OS === 'web';
+  const isWebAuth =  Platform.OS === 'web';
 
   return useAuthRequest(
     {
@@ -173,7 +171,7 @@ export function useIdTokenAuthRequest(
           ? ResponseType.IdToken
           : undefined,
     },
-    { ...redirectUriOptions, useProxy }
+    { ...redirectUriOptions }
   );
 }
 
@@ -195,12 +193,10 @@ export function useAuthRequest(
   AuthSessionResult | null,
   (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>
 ] {
-  const useProxy = useProxyEnabled(redirectUriOptions);
+
 
   const clientId = useMemo((): string => {
-    const propertyName = useProxy
-      ? 'expoClientId'
-      : Platform.select({
+    const propertyName =  Platform.select({
           ios: 'iosClientId',
           android: 'androidClientId',
           default: 'webClientId',
@@ -210,7 +206,6 @@ export function useAuthRequest(
     invariantClientId(propertyName, clientId, 'Google');
     return clientId;
   }, [
-    useProxy,
     config.expoClientId,
     config.iosClientId,
     config.androidClientId,
@@ -225,14 +220,14 @@ export function useAuthRequest(
     }
     // You can only use `response_token=code` on installed apps (iOS, Android without proxy).
     // Installed apps can auto exchange without a client secret and get the token and id-token (Firebase).
-    const isInstalledApp = Platform.OS !== 'web' && !useProxy;
+    const isInstalledApp = Platform.OS !== 'web' ;
     // If the user provided the client secret (they shouldn't!) then use code exchange by default.
     if (config.clientSecret || isInstalledApp) {
       return ResponseType.Code;
     }
     // This seems the most pragmatic option since it can result in a full authentication on web and proxy platforms as expected.
     return ResponseType.Token;
-  }, [config.responseType, config.clientSecret, useProxy]);
+  }, [config.responseType, config.clientSecret]);
 
   const redirectUri = useMemo((): string => {
     if (typeof config.redirectUri !== 'undefined') {
@@ -241,11 +236,10 @@ export function useAuthRequest(
 
     return makeRedirectUri({
       native: `${Application.applicationId}:/oauthredirect`,
-      useProxy,
       ...redirectUriOptions,
       // native: `com.googleusercontent.apps.${guid}:/oauthredirect`,
     });
-  }, [useProxy, config.redirectUri, redirectUriOptions]);
+  }, [config.redirectUri, redirectUriOptions]);
 
   const extraParams = useMemo((): GoogleAuthRequestConfig['extraParams'] => {
     const output = config.extraParams ? { ...config.extraParams } : {};
@@ -275,7 +269,6 @@ export function useAuthRequest(
   );
 
   const [result, promptAsync] = useAuthRequestResult(request, discovery, {
-    useProxy,
     windowFeatures: settings.windowFeatures,
   });
 
