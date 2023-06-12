@@ -381,8 +381,8 @@ const preview = [
   ]),
   makeSection('Expo Router', [
     makeGroup('Static rendering', [
+      makePage('router/static-rendering/index.mdx'),
       makePage('router/static-rendering/async-routes.mdx'),
-      makePage('router/static-rendering/root-html.mdx'),
     ]),
     makeGroup('Advance layout patterns', [
       makePage('router/advance/root-layout.mdx'),
