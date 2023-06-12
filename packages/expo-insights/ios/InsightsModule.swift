@@ -100,7 +100,7 @@ private func getLaunchEventData(projectId: String) -> [String: String?] {
     "event_name": "APP_LAUNCH",
     "eas_client_id": EASClientID.uuid().uuidString,
     "project_id": projectId,
-    "app_version": info?["CFBundleVersion"] as? String,
+    "app_version": info?["CFBundleShortVersionString"] as? String,
     "platform": "iOS",
     "os_version": UIDevice.current.systemVersion
   ]
