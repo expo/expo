@@ -1,4 +1,5 @@
 import * as Log from '../../../log';
+import { AppLaunchMode } from '../../server/AppLaunchMode';
 import { DeviceManager } from '../DeviceManager';
 import { PlatformManager } from '../PlatformManager';
 
@@ -38,6 +39,7 @@ describe('openAsync', () => {
       logOpeningUrl: jest.fn(),
       ensureExpoGoAsync: jest.fn(),
       activateWindowAsync: jest.fn(),
+      startAppAsync: jest.fn(),
       openUrlAsync: jest.fn(),
       isAppInstalledAsync: jest.fn(async () => isAppInstalled),
     } as unknown as DeviceManager<unknown>;
@@ -83,7 +85,12 @@ describe('openAsync', () => {
     const { manager, getExpoGoUrl, device, resolveDeviceAsync } = createManager();
 
     const url = 'exp://localhost:8081/';
-    expect(await manager.openAsync({ runtime: 'expo' })).toStrictEqual({
+    expect(
+      await manager.openAsync({
+        runtime: 'native',
+        appLaunchMode: AppLaunchMode.OpenDeepLinkExpoGo,
+      })
+    ).toStrictEqual({
       url,
     });
 
@@ -112,7 +119,12 @@ describe('openAsync', () => {
     const url = 'http://localhost:8081/_expo/loading';
     getRedirectUrl.mockImplementationOnce(() => url);
 
-    expect(await manager.openAsync({ runtime: 'expo' })).toStrictEqual({
+    expect(
+      await manager.openAsync({
+        runtime: 'native',
+        appLaunchMode: AppLaunchMode.OpenRedirectPage,
+      })
+    ).toStrictEqual({
       url,
     });
 
@@ -142,7 +154,12 @@ describe('openAsync', () => {
     const url = 'exp://localhost:8081/';
     getRedirectUrl.mockImplementationOnce(() => 'http://localhost:8081/_expo/loading');
 
-    expect(await manager.openAsync({ runtime: 'expo' })).toStrictEqual({
+    expect(
+      await manager.openAsync({
+        runtime: 'native',
+        appLaunchMode: AppLaunchMode.OpenRedirectPage,
+      })
+    ).toStrictEqual({
       url,
     });
 
@@ -174,7 +191,12 @@ describe('openAsync', () => {
     const url = 'exp://localhost:8081/';
     getRedirectUrl.mockImplementationOnce(() => 'http://localhost:8081/_expo/loading');
 
-    expect(await manager.openAsync({ runtime: 'expo' })).toStrictEqual({
+    expect(
+      await manager.openAsync({
+        runtime: 'native',
+        appLaunchMode: AppLaunchMode.OpenRedirectPage,
+      })
+    ).toStrictEqual({
       url,
     });
 
@@ -224,7 +246,12 @@ describe('openAsync', () => {
       isAppInstalled: true,
     });
 
-    expect(await manager.openAsync({ runtime: 'custom' })).toStrictEqual({
+    expect(
+      await manager.openAsync({
+        runtime: 'native',
+        appLaunchMode: AppLaunchMode.OpenDeepLinkDevClient,
+      })
+    ).toStrictEqual({
       url,
     });
 
@@ -254,9 +281,9 @@ describe('openAsync', () => {
       isAppInstalled: false,
     });
 
-    await expect(manager.openAsync({ runtime: 'custom' })).rejects.toThrow(
-      /No development build \(dev\.bacon\.app\) for this project is installed/
-    );
+    await expect(
+      manager.openAsync({ runtime: 'native', appLaunchMode: AppLaunchMode.OpenDeepLinkDevClient })
+    ).rejects.toThrow(/No development build \(dev\.bacon\.app\) for this project is installed/);
 
     expect(resolveDeviceAsync).toHaveBeenCalledTimes(1);
     expect(getCustomRuntimeUrl).toHaveBeenCalledTimes(1);
@@ -287,7 +314,12 @@ describe('openAsync', () => {
     // Bundle identifier is used instead of URL...
     manager._resolveAlternativeLaunchUrl = jest.fn(() => url);
 
-    expect(await manager.openAsync({ runtime: 'custom' })).toStrictEqual({
+    expect(
+      await manager.openAsync({
+        runtime: 'native',
+        appLaunchMode: AppLaunchMode.OpenDeepLinkDevClient,
+      })
+    ).toStrictEqual({
       url,
     });
 
@@ -308,6 +340,44 @@ describe('openAsync', () => {
 
     // Logging
     expect(device.logOpeningUrl).toHaveBeenNthCalledWith(1, url);
+    expect(Log.warn).toHaveBeenCalledTimes(0);
+    expect(Log.error).toHaveBeenCalledTimes(0);
+  });
+
+  it(`starts a project using app identifier`, async () => {
+    const appId = 'dev.bacon.app';
+    const { manager, device, resolveDeviceAsync } = createManager({
+      // Return no custom url -- this happens when a dev client is not installed or the scheme cannot be resolved (like during run commands).
+      customUrl: null,
+      isAppInstalled: true,
+    });
+    // Bundle identifier is used instead of URL...
+    manager._resolveAlternativeLaunchUrl = jest.fn(() => appId);
+
+    expect(
+      (
+        await manager.openAsync({
+          runtime: 'native',
+          appLaunchMode: AppLaunchMode.Start,
+        })
+      ).url
+    ).toContain(appId);
+
+    expect(resolveDeviceAsync).toHaveBeenCalledTimes(1);
+
+    // Expo Go is not checked
+    expect(device.ensureExpoGoAsync).toHaveBeenCalledTimes(0);
+
+    // But does check the custom dev client
+    expect(device.isAppInstalledAsync).toHaveBeenCalledTimes(0);
+
+    expect(device.activateWindowAsync).toHaveBeenCalledTimes(1);
+    expect(device.startAppAsync).toHaveBeenNthCalledWith(1, appId);
+
+    expect(manager._resolveAlternativeLaunchUrl).toBeCalledTimes(1);
+
+    // Logging
+    expect(device.logOpeningUrl).toHaveBeenNthCalledWith(1, appId);
     expect(Log.warn).toHaveBeenCalledTimes(0);
     expect(Log.error).toHaveBeenCalledTimes(0);
   });

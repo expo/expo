@@ -178,6 +178,10 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
     }));
   }
 
+  override async startAppAsync(appId: string): Promise<void> {
+    await this.launchApplicationIdAsync(appId);
+  }
+
   async openUrlAsync(url: string) {
     // Non-compliant URLs will be treated as application identifiers.
     if (!validateUrl(url, { requireProtocol: true })) {

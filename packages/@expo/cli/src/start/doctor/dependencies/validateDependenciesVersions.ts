@@ -149,6 +149,9 @@ export async function findUnbundledNativeModulesAsync(
   sdkVersion: string = 'UNVERSIONED'
 ): Promise<string[]> {
   const bundledNativeModules = await getVersionedNativeModulesAsync(projectRoot, sdkVersion);
+  // The `expo` package is always bundled in Expo Go.
+  bundledNativeModules['expo'] = '*';
+
   const installedPackages = [
     ...Object.keys(pkg.dependencies ?? {}),
     ...Object.keys(pkg.devDependencies ?? {}),

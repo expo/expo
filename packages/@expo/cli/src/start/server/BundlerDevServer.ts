@@ -1,19 +1,19 @@
 import { MessageSocket } from '@expo/dev-server';
 import assert from 'assert';
 import openBrowserAsync from 'better-opn';
-import resolveFrom from 'resolve-from';
 
 import { APISettings } from '../../api/settings';
 import * as Log from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
 import { resolveWithTimeout } from '../../utils/delay';
 import { env } from '../../utils/env';
-import { CommandError } from '../../utils/errors';
+import { CommandError, UnimplementedError } from '../../utils/errors';
 import {
   BaseOpenInCustomProps,
   BaseResolveDeviceProps,
   PlatformManager,
 } from '../platforms/PlatformManager';
+import { AppLaunchMode } from '../server/AppLaunchMode';
 import { AsyncNgrok } from './AsyncNgrok';
 import { DevelopmentSession } from './DevelopmentSession';
 import { CreateURLOptions, UrlCreator } from './UrlCreator';
@@ -48,8 +48,8 @@ export interface BundlerStartOptions {
   https?: boolean;
   /** Should start the dev servers in development mode (minify). */
   mode?: 'development' | 'production';
-  /** Is dev client enabled. */
-  devClient?: boolean;
+  /** The way to launch the app. */
+  appLaunchMode: AppLaunchMode;
   /** Should run dev servers with clean caches. */
   resetDevServer?: boolean;
   /** Which manifest type to serve. */
@@ -106,6 +106,8 @@ export abstract class BundlerDevServer {
   private platformManagers: Record<string, PlatformManager<any>> = {};
   /** Manages the creation of dev server URLs. */
   protected urlCreator?: UrlCreator | null = null;
+  /** Defines the way to launch app. */
+  private appLaunchMode: AppLaunchMode | null = null;
 
   private notifier: FileNotifier | null = null;
 
@@ -113,9 +115,7 @@ export abstract class BundlerDevServer {
     /** Project root folder. */
     public projectRoot: string,
     /** A mapping of bundlers to platforms. */
-    public platformBundlers: PlatformBundlers,
-    // TODO: Replace with custom scheme maybe...
-    public isDevClient?: boolean
+    public platformBundlers: PlatformBundlers
   ) {}
 
   protected setInstance(instance: DevServerInstance) {
@@ -147,6 +147,7 @@ export abstract class BundlerDevServer {
   /** Start the dev server using settings defined in the start command. */
   public async startAsync(options: BundlerStartOptions): Promise<DevServerInstance> {
     await this.stopAsync();
+    this.appLaunchMode = options.appLaunchMode;
 
     let instance: DevServerInstance;
     if (options.headless) {
@@ -308,6 +309,11 @@ export abstract class BundlerDevServer {
     return this.instance;
   }
 
+  private requireAppLaunchMode(): AppLaunchMode {
+    assert(this.appLaunchMode, 'This method should not be called before startAsync()');
+    return this.appLaunchMode;
+  }
+
   /** Stop the running dev server instance. */
   async stopAsync() {
     // Stop file watching.
@@ -363,10 +369,18 @@ export abstract class BundlerDevServer {
     return this.urlCreator;
   }
 
-  public getNativeRuntimeUrl(opts: Partial<CreateURLOptions> = {}) {
-    return this.isDevClient
-      ? this.getUrlCreator().constructDevClientUrl(opts) ?? this.getDevServerUrl()
-      : this.getUrlCreator().constructUrl({ ...opts, scheme: 'exp' });
+  public getNativeRuntimeUrl() {
+    switch (this.requireAppLaunchMode()) {
+      case AppLaunchMode.Start:
+      case AppLaunchMode.OpenRedirectPage:
+        return this.getUrlCreator().constructUrl();
+      case AppLaunchMode.OpenDeepLinkDevClient:
+        return this.getUrlCreator().constructDevClientUrl() ?? this.getDevServerUrl();
+      case AppLaunchMode.OpenDeepLinkExpoGo:
+        return this.getUrlCreator().constructUrl({ scheme: 'exp' });
+      default:
+        throw new UnimplementedError();
+    }
   }
 
   /** Get the URL for the running instance of the dev server. */
@@ -411,9 +425,10 @@ export abstract class BundlerDevServer {
       return { url };
     }
 
-    const runtime = this.isTargetingNative() ? (this.isDevClient ? 'custom' : 'expo') : 'web';
+    const appLaunchMode = this.requireAppLaunchMode();
+    const runtime = this.isTargetingNative() ? 'native' : 'web';
     const manager = await this.getPlatformManagerAsync(launchTarget);
-    return manager.openAsync({ runtime }, resolver);
+    return manager.openAsync({ runtime, appLaunchMode }, resolver);
   }
 
   /** Open the dev server in a runtime. */
@@ -422,15 +437,16 @@ export abstract class BundlerDevServer {
     launchProps: Partial<BaseOpenInCustomProps> = {},
     resolver: BaseResolveDeviceProps<any> = {}
   ) {
-    const runtime = this.isTargetingNative() ? (this.isDevClient ? 'custom' : 'expo') : 'web';
-    if (runtime !== 'custom') {
+    const appLaunchMode = this.requireAppLaunchMode();
+    const runtime = this.isTargetingNative() ? 'native' : 'web';
+    if (runtime !== 'native' || appLaunchMode === AppLaunchMode.OpenDeepLinkExpoGo) {
       throw new CommandError(
         `dev server cannot open custom runtimes either because it does not target native platforms or because it is not targeting dev clients. (target: ${runtime})`
       );
     }
 
     const manager = await this.getPlatformManagerAsync(launchTarget);
-    return manager.openAsync({ runtime: 'custom', props: launchProps }, resolver);
+    return manager.openAsync({ runtime, appLaunchMode, customLaunchProps: launchProps }, resolver);
   }
 
   /** Get the URL for opening in Expo Go. */
@@ -440,13 +456,8 @@ export abstract class BundlerDevServer {
 
   /** Should use the interstitial page for selecting which runtime to use. */
   protected isRedirectPageEnabled(): boolean {
-    return (
-      !env.EXPO_NO_REDIRECT_PAGE &&
-      // if user passed --dev-client flag, skip interstitial page
-      !this.isDevClient &&
-      // Checks if dev client is installed.
-      !!resolveFrom.silent(this.projectRoot, 'expo-dev-client')
-    );
+    const appLaunchMode = this.requireAppLaunchMode();
+    return !env.EXPO_NO_REDIRECT_PAGE && appLaunchMode === AppLaunchMode.OpenRedirectPage;
   }
 
   /** Get the redirect URL when redirecting is enabled. */

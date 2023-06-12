@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import * as Log from '../log';
 import getDevClientProperties from '../utils/analytics/getDevClientProperties';
 import { logEventAsync } from '../utils/analytics/rudderstackClient';
+import { CommandError } from '../utils/errors';
 import { installExitHooks } from '../utils/exit';
 import { isInteractive } from '../utils/interactive';
 import { setNodeEnv } from '../utils/nodeEnv';
@@ -11,21 +12,26 @@ import { profile } from '../utils/profile';
 import { validateDependenciesVersionsAsync } from './doctor/dependencies/validateDependenciesVersions';
 import { WebSupportProjectPrerequisite } from './doctor/web/WebSupportProjectPrerequisite';
 import { startInterfaceAsync } from './interface/startInterface';
+import { ProjectState } from './project/projectState';
 import { Options, resolvePortsAsync } from './resolveOptions';
+import { AppLaunchMode } from './server/AppLaunchMode';
 import { BundlerStartOptions } from './server/BundlerDevServer';
 import { DevServerManager, MultiBundlerStartOptions } from './server/DevServerManager';
 import { openPlatformsAsync } from './server/openPlatforms';
 import { getPlatformBundlers, PlatformBundlers } from './server/platformBundlers';
 
+const debug = require('debug')('expo:start:startAsync') as typeof console.log;
+
 async function getMultiBundlerStartOptions(
   projectRoot: string,
   { forceManifestType, ...options }: Options,
   settings: { webOnly?: boolean },
-  platformBundlers: PlatformBundlers
+  platformBundlers: PlatformBundlers,
+  appLaunchMode: AppLaunchMode
 ): Promise<[BundlerStartOptions, MultiBundlerStartOptions]> {
   const commonOptions: BundlerStartOptions = {
     mode: options.dev ? 'development' : 'production',
-    devClient: options.devClient,
+    appLaunchMode,
     forceManifestType,
     privateKeyPath: options.privateKeyPath ?? undefined,
     https: options.https,
@@ -64,6 +70,7 @@ async function getMultiBundlerStartOptions(
 
 export async function startAsync(
   projectRoot: string,
+  projectState: ProjectState,
   options: Options,
   settings: { webOnly?: boolean }
 ) {
@@ -97,11 +104,14 @@ export async function startAsync(
     }
   }
 
+  const appLaunchMode = resolveAppLaunchMode(projectState, options);
+  debug(`Resolved appLaunchMode: ${appLaunchMode}`);
   const [defaultOptions, startOptions] = await getMultiBundlerStartOptions(
     projectRoot,
     options,
     settings,
-    platformBundlers
+    platformBundlers,
+    appLaunchMode
   );
 
   const devServerManager = new DevServerManager(projectRoot, defaultOptions);
@@ -122,13 +132,16 @@ export async function startAsync(
     await devServerManager.bootstrapTypeScriptAsync();
   }
 
-  if (!settings.webOnly && !options.devClient) {
+  if (!settings.webOnly && !projectState.customized) {
     await profile(validateDependenciesVersionsAsync)(projectRoot, exp, pkg);
   }
 
   // Some tracking thing
 
-  if (options.devClient) {
+  if (
+    appLaunchMode === AppLaunchMode.OpenDeepLinkDevClient ||
+    appLaunchMode === AppLaunchMode.OpenRedirectPage
+  ) {
     await trackAsync(projectRoot, exp);
   }
 
@@ -169,4 +182,40 @@ async function trackAsync(projectRoot: string, exp: ExpoConfig): Promise<void> {
     });
     // UnifiedAnalytics.flush();
   });
+}
+
+export function resolveAppLaunchMode(
+  projectState: ProjectState,
+  options?: Pick<Options, 'appLaunchMode' | 'devClient'>
+): AppLaunchMode {
+  if (options?.appLaunchMode) {
+    const appLaunchMode = AppLaunchMode.valueOf(options.appLaunchMode);
+    if (!appLaunchMode) {
+      throw new CommandError(
+        'BAD_ARGS',
+        `Invalid app launch mode. Valid options are: ${Object.values(AppLaunchMode)
+          .filter((item) => typeof item === 'string')
+          .join(', ')}`
+      );
+    }
+    return appLaunchMode;
+  }
+
+  const { customized, expoGoCompatible, devClientInstalled } = projectState;
+
+  if (options?.devClient) {
+    return devClientInstalled ? AppLaunchMode.OpenDeepLinkDevClient : AppLaunchMode.Start;
+  }
+
+  if (customized) {
+    if (devClientInstalled) {
+      return AppLaunchMode.OpenDeepLinkDevClient;
+    }
+    return expoGoCompatible ? AppLaunchMode.OpenDeepLinkExpoGo : AppLaunchMode.Start;
+  }
+
+  if (devClientInstalled) {
+    return AppLaunchMode.OpenRedirectPage;
+  }
+  return expoGoCompatible ? AppLaunchMode.OpenDeepLinkExpoGo : AppLaunchMode.Start;
 }

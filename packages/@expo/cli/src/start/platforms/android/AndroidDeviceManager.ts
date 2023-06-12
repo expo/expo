@@ -131,6 +131,10 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Devic
     return await AndroidDebugBridge.isPackageInstalledAsync(this.device, applicationId);
   }
 
+  override async startAppAsync(applicationId: string): Promise<void> {
+    await this.launchActivityAsync(applicationId);
+  }
+
   async openUrlAsync(url: string) {
     // Non-compliant URLs will be treated as application identifiers.
     if (!validateUrl(url, { requireProtocol: true })) {

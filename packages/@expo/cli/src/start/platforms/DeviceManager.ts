@@ -24,6 +24,8 @@ export abstract class DeviceManager<IDevice> {
 
   abstract isAppInstalledAsync(applicationId: string): Promise<boolean>;
 
+  abstract startAppAsync(applicationId: string): Promise<void>;
+
   abstract openUrlAsync(url: string): Promise<void>;
 
   abstract activateWindowAsync(): Promise<void>;

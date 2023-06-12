@@ -1,4 +1,5 @@
 import * as Log from '../../../../log';
+import { AppLaunchMode } from '../../../server/AppLaunchMode';
 import { AppleDeviceManager } from '../AppleDeviceManager';
 import { ApplePlatformManager } from '../ApplePlatformManager';
 import { assertSystemRequirementsAsync } from '../assertSystemRequirements';
@@ -29,6 +30,7 @@ describe('openAsync', () => {
       getCustomRuntimeUrl,
       getDevServerUrl: jest.fn(),
       getExpoGoUrl: jest.fn(),
+      getRedirectUrl: jest.fn(),
     });
     manager._getAppIdResolver = jest.fn(
       () =>
@@ -37,7 +39,12 @@ describe('openAsync', () => {
         } as any)
     );
 
-    expect(await manager.openAsync({ runtime: 'custom' })).toStrictEqual({
+    expect(
+      await manager.openAsync({
+        runtime: 'native',
+        appLaunchMode: AppLaunchMode.OpenDeepLinkDevClient,
+      })
+    ).toStrictEqual({
       url: 'custom://path',
     });
 
@@ -56,6 +63,7 @@ describe('openAsync', () => {
       getCustomRuntimeUrl,
       getDevServerUrl: jest.fn(),
       getExpoGoUrl: jest.fn(),
+      getRedirectUrl: jest.fn(),
     });
 
     manager._getAppIdResolver = jest.fn(
@@ -69,7 +77,12 @@ describe('openAsync', () => {
       value: jest.fn(async () => ({ status: 0 })),
     });
 
-    expect(await manager.openAsync({ runtime: 'custom' })).toStrictEqual({
+    expect(
+      await manager.openAsync({
+        runtime: 'native',
+        appLaunchMode: AppLaunchMode.OpenDeepLinkDevClient,
+      })
+    ).toStrictEqual({
       url: 'dev.bacon.app',
     });
 

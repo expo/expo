@@ -39,11 +39,7 @@ import { observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
-/** Default port to use for apps running in Expo Go. */
-const EXPO_GO_METRO_PORT = 8081;
-
-/** Default port to use for apps that run in standard React Native projects or Expo Dev Clients. */
-const DEV_CLIENT_METRO_PORT = 8081;
+const DEFAULT_METRO_PORT = 8081;
 
 export class MetroBundlerDevServer extends BundlerDevServer {
   private metro: import('metro').Server | null = null;
@@ -56,12 +52,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const port =
       // If the manually defined port is busy then an error should be thrown...
       options.port ??
-      // Otherwise use the default port based on the runtime target.
-      (options.devClient
-        ? // Don't check if the port is busy if we're using the dev client since most clients are hardcoded to 8081.
-          Number(process.env.RCT_METRO_PORT) || DEV_CLIENT_METRO_PORT
-        : // Otherwise (running in Expo Go) use a free port that falls back on the classic 8081 port.
-          await getFreePortAsync(EXPO_GO_METRO_PORT));
+      (Number(process.env.RCT_METRO_PORT) || undefined) ??
+      // Otherwise use the default port based on the availability.
+      (await getFreePortAsync(DEFAULT_METRO_PORT));
 
     return port;
   }

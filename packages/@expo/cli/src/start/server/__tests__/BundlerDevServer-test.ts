@@ -1,6 +1,7 @@
 import openBrowserAsync from 'better-opn';
 import { vol } from 'memfs';
 
+import { AppLaunchMode } from '../AppLaunchMode';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import { UrlCreator } from '../UrlCreator';
 import { getPlatformBundlers } from '../platformBundlers';
@@ -109,7 +110,7 @@ class MockMetroBundlerDevServer extends MockBundlerDevServer {
 
 async function getRunningServer() {
   const devServer = new MockBundlerDevServer('/', getPlatformBundlers({}));
-  await devServer.startAsync({ location: {} });
+  await devServer.startAsync({ appLaunchMode: AppLaunchMode.Start, location: {} });
   return devServer;
 }
 
@@ -127,6 +128,7 @@ describe('openPlatformAsync', () => {
   it(`opens a project in the browser using tunnel with metro web`, async () => {
     const devServer = new MockMetroBundlerDevServer('/', getPlatformBundlers({}));
     await devServer.startAsync({
+      appLaunchMode: AppLaunchMode.Start,
       location: {
         hostType: 'tunnel',
       },
@@ -135,6 +137,7 @@ describe('openPlatformAsync', () => {
     expect(url).toBe('http://exp.tunnel.dev/foobar');
     expect(openBrowserAsync).toBeCalledWith('http://exp.tunnel.dev/foobar');
   });
+
   it(`opens a project in the browser`, async () => {
     const devServer = await getRunningServer();
     const { url } = await devServer.openPlatformAsync('desktop');
@@ -143,20 +146,17 @@ describe('openPlatformAsync', () => {
   });
 
   for (const platform of ['ios', 'android']) {
-    for (const isDevClient of [false, true]) {
-      const runtime = platform === 'ios' ? 'simulator' : 'emulator';
-      it(`opens an ${platform} project in a ${runtime} (dev client: ${isDevClient})`, async () => {
-        const devServer = await getRunningServer();
-        devServer.isDevClient = isDevClient;
-        const { url } = await devServer.openPlatformAsync(runtime);
+    const runtime = platform === 'ios' ? 'simulator' : 'emulator';
+    it(`opens an ${platform} project in a ${runtime}`, async () => {
+      const devServer = await getRunningServer();
+      const { url } = await devServer.openPlatformAsync(runtime);
 
-        expect(
-          (await devServer['getPlatformManagerAsync'](runtime)).openAsync
-        ).toHaveBeenNthCalledWith(1, { runtime: isDevClient ? 'custom' : 'expo' }, {});
+      expect(
+        (await devServer['getPlatformManagerAsync'](runtime)).openAsync
+      ).toHaveBeenNthCalledWith(1, { runtime: 'native', appLaunchMode: AppLaunchMode.Start }, {});
 
-        expect(url).toBe(platform === 'ios' ? 'mock-apple-url' : 'mock-android-url');
-      });
-    }
+      expect(url).toBe(platform === 'ios' ? 'mock-apple-url' : 'mock-android-url');
+    });
   }
 });
 
@@ -164,6 +164,7 @@ describe('stopAsync', () => {
   it(`stops a running dev server`, async () => {
     const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
     const instance = await server.startAsync({
+      appLaunchMode: AppLaunchMode.Start,
       location: {
         hostType: 'tunnel',
       },
@@ -204,12 +205,11 @@ describe('isRedirectPageEnabled', () => {
   it(`is redirect enabled`, async () => {
     mockDevClientInstalled();
 
-    const server = new MockBundlerDevServer(
-      '/',
-      getPlatformBundlers({}),
-      // is Dev Client
-      false
-    );
+    const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
+    await server.startAsync({
+      appLaunchMode: AppLaunchMode.OpenRedirectPage,
+      location: {},
+    });
     expect(server['isRedirectPageEnabled']()).toBe(true);
   });
 
@@ -218,46 +218,29 @@ describe('isRedirectPageEnabled', () => {
 
     process.env.EXPO_NO_REDIRECT_PAGE = '1';
 
-    const server = new MockBundlerDevServer(
-      '/',
-      getPlatformBundlers({}),
-      // is Dev Client
-      false
-    );
+    const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
+    await server.startAsync({
+      appLaunchMode: AppLaunchMode.OpenRedirectPage,
+      location: {},
+    });
     expect(server['isRedirectPageEnabled']()).toBe(false);
   });
 
   it(`redirect is disabled when running in dev client mode`, async () => {
     mockDevClientInstalled();
 
-    const server = new MockBundlerDevServer(
-      '/',
-      getPlatformBundlers({}),
-      // is Dev Client
-      true
-    );
-    expect(server['isRedirectPageEnabled']()).toBe(false);
-  });
-
-  it(`redirect is disabled when expo-dev-client is not installed in the project`, async () => {
-    const server = new MockBundlerDevServer(
-      '/',
-      getPlatformBundlers({}),
-      // is Dev Client
-      false
-    );
+    const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
+    await server.startAsync({
+      appLaunchMode: AppLaunchMode.OpenDeepLinkDevClient,
+      location: {},
+    });
     expect(server['isRedirectPageEnabled']()).toBe(false);
   });
 });
 
 describe('getRedirectUrl', () => {
   it(`returns null when the redirect page functionality is disabled`, async () => {
-    const server = new MockBundlerDevServer(
-      '/',
-      getPlatformBundlers({}),
-      // is Dev Client
-      false
-    );
+    const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
     server['isRedirectPageEnabled'] = () => false;
     expect(server['getRedirectUrl']()).toBe(null);
   });
@@ -266,6 +249,7 @@ describe('getRedirectUrl', () => {
     const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
     server['isRedirectPageEnabled'] = () => true;
     await server.startAsync({
+      appLaunchMode: AppLaunchMode.OpenRedirectPage,
       location: {},
     });
 
@@ -292,6 +276,7 @@ describe('getExpoGoUrl', () => {
   it(`gets the native Expo Go URL`, async () => {
     const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
     await server.startAsync({
+      appLaunchMode: AppLaunchMode.OpenDeepLinkExpoGo,
       location: {},
     });
 
@@ -300,18 +285,18 @@ describe('getExpoGoUrl', () => {
 });
 
 describe('getNativeRuntimeUrl', () => {
-  it(`gets the native runtime URL`, async () => {
+  it('should return exp://... for `AppLaunchMode.OpenDeepLinkExpoGo`', async () => {
     const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
     await server.startAsync({
+      appLaunchMode: AppLaunchMode.OpenDeepLinkExpoGo,
       location: {},
     });
     expect(server.getNativeRuntimeUrl()).toBe('exp://100.100.1.100:3000');
-    expect(server.getNativeRuntimeUrl({ hostname: 'localhost' })).toBe('exp://127.0.0.1:3000');
-    expect(server.getNativeRuntimeUrl({ scheme: 'foobar' })).toBe('exp://100.100.1.100:3000');
   });
-  it(`gets the native runtime URL for dev client`, async () => {
-    const server = new MockBundlerDevServer('/', getPlatformBundlers({}), true);
+  it('should return {scheme}://expo-development-client/?url=... for `AppLaunchMode.OpenDeepLinkDevClient`', async () => {
+    const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
     await server.startAsync({
+      appLaunchMode: AppLaunchMode.OpenDeepLinkDevClient,
       location: {
         scheme: 'my-app',
       },
@@ -319,12 +304,56 @@ describe('getNativeRuntimeUrl', () => {
     expect(server.getNativeRuntimeUrl()).toBe(
       'my-app://expo-development-client/?url=http%3A%2F%2F100.100.1.100%3A3000'
     );
-    expect(server.getNativeRuntimeUrl({ hostname: 'localhost' })).toBe(
-      'my-app://expo-development-client/?url=http%3A%2F%2F127.0.0.1%3A3000'
-    );
-    expect(server.getNativeRuntimeUrl({ scheme: 'foobar' })).toBe(
-      'foobar://expo-development-client/?url=http%3A%2F%2F100.100.1.100%3A3000'
-    );
+  });
+  it('should return http://... for `AppLaunchMode.OpenDeepLinkDevClient` when no scheme resolved', async () => {
+    const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
+    await server.startAsync({
+      appLaunchMode: AppLaunchMode.OpenDeepLinkDevClient,
+      location: {
+        scheme: undefined,
+      },
+    });
+    expect(server.getNativeRuntimeUrl()).toBe('http://localhost:3000');
+  });
+  it('should return {scheme}://... for `AppLaunchMode.Start`', async () => {
+    const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
+    await server.startAsync({
+      appLaunchMode: AppLaunchMode.Start,
+      location: {
+        scheme: 'my-app',
+      },
+    });
+    expect(server.getNativeRuntimeUrl()).toBe('my-app://100.100.1.100:3000');
+  });
+  it('should return http://... for `AppLaunchMode.Start` when no scheme resolved', async () => {
+    const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
+    await server.startAsync({
+      appLaunchMode: AppLaunchMode.Start,
+      location: {
+        scheme: undefined,
+      },
+    });
+    expect(server.getNativeRuntimeUrl()).toBe('http://100.100.1.100:3000');
+  });
+  it('should return {scheme}://... for `AppLaunchMode.OpenRedirectPage`', async () => {
+    const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
+    await server.startAsync({
+      appLaunchMode: AppLaunchMode.OpenRedirectPage,
+      location: {
+        scheme: 'my-app',
+      },
+    });
+    expect(server.getNativeRuntimeUrl()).toBe('my-app://100.100.1.100:3000');
+  });
+  it('should return http://... for `AppLaunchMode.OpenRedirectPage` when no scheme resolved', async () => {
+    const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
+    await server.startAsync({
+      appLaunchMode: AppLaunchMode.OpenRedirectPage,
+      location: {
+        scheme: undefined,
+      },
+    });
+    expect(server.getNativeRuntimeUrl()).toBe('http://100.100.1.100:3000');
   });
 });
 
@@ -355,19 +384,22 @@ describe('_startTunnelAsync', () => {
 describe('getJsInspectorBaseUrl', () => {
   it('should return http based url', async () => {
     const devServer = new MockMetroBundlerDevServer('/', getPlatformBundlers({}));
-    await devServer.startAsync({ location: {} });
+    await devServer.startAsync({ appLaunchMode: AppLaunchMode.Start, location: {} });
     expect(devServer.getJsInspectorBaseUrl()).toBe('http://100.100.1.100:3000');
   });
 
   it('should return tunnel url', async () => {
     const devServer = new MockMetroBundlerDevServer('/', getPlatformBundlers({}));
-    await devServer.startAsync({ location: { hostType: 'tunnel' } });
+    await devServer.startAsync({
+      appLaunchMode: AppLaunchMode.Start,
+      location: { hostType: 'tunnel' },
+    });
     expect(devServer.getJsInspectorBaseUrl()).toBe('http://exp.tunnel.dev');
   });
 
   it('should throw error for unsupported bundler', async () => {
     const devServer = new MockBundlerDevServer('/', getPlatformBundlers({}));
-    await devServer.startAsync({ location: {} });
+    await devServer.startAsync({ appLaunchMode: AppLaunchMode.Start, location: {} });
     expect(() => devServer.getJsInspectorBaseUrl()).toThrow();
   });
 });

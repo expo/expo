@@ -18,6 +18,7 @@ export const expoStart: Command = async (argv) => {
       '--force-manifest-type': String,
       '--private-key-path': String,
       '--port': Number,
+      '--app-launch-mode': String,
       '--dev-client': Boolean,
       '--scheme': String,
       '--android': Boolean,
@@ -70,6 +71,11 @@ export const expoStart: Command = async (argv) => {
         `--scheme <scheme>                      Custom URI protocol to use when launching an app`,
         chalk`-p, --port <port>                      Port to start the dev server on (does not apply to web or tunnel). {dim Default: 8081}`,
         ``,
+        `--app-launch-mode <mode>               Override the app launch mode. If not specified, the app will try to determine the best launch mode based on the current project dependencies and workflow.`,
+        chalk`                                       {bold start}: Directly start the app`,
+        chalk`                                       {bold open-deep-link-dev-client}: Launch expo-development-client with deep link`,
+        chalk`                                       {bold open-deep-link-expo-go}: Launch Expo Go with deep link`,
+        chalk`                                       {bold open-redirect-page}: Open the redirect page in browser`,
         chalk`--dev-client                           {yellow Experimental:} Starts the bundler for use with the expo-development-client`,
         `--force-manifest-type <manifest-type>  Override auto detection of manifest type`,
         `--private-key-path <path>              Path to private key for code signing. Default: "private-key.pem" in the same directory as the certificate specified by the expo-updates configuration in app.json.`,
@@ -79,12 +85,15 @@ export const expoStart: Command = async (argv) => {
   }
 
   const projectRoot = getProjectRoot(args);
+  const { getProjectStateAsync } = await import('./project/projectState');
+  const projectState = await getProjectStateAsync(projectRoot);
+
   const { resolveOptionsAsync } = await import('./resolveOptions');
-  const options = await resolveOptionsAsync(projectRoot, args).catch(logCmdError);
+  const options = await resolveOptionsAsync(projectRoot, projectState, args).catch(logCmdError);
 
   const { APISettings } = await import('../api/settings');
   APISettings.isOffline = options.offline;
 
   const { startAsync } = await import('./startAsync');
-  return startAsync(projectRoot, options, { webOnly: false }).catch(logCmdError);
+  return startAsync(projectRoot, projectState, options, { webOnly: false }).catch(logCmdError);
 };

@@ -1,6 +1,7 @@
 import { vol } from 'memfs';
 
 import { startInterfaceAsync } from '../../start/interface/startInterface';
+import { AppLaunchMode } from '../../start/server/AppLaunchMode';
 import { startBundlerAsync } from '../startBundler';
 
 jest.mock('../../start/server/DevServerManager', () => ({
@@ -9,6 +10,13 @@ jest.mock('../../start/server/DevServerManager', () => ({
     getDefaultDevServer: jest.fn(),
     bootstrapTypeScriptAsync: jest.fn(),
     watchEnvironmentVariables: jest.fn(),
+  })),
+}));
+jest.mock('../../start/project/projectState', () => ({
+  getProjectStateAsync: jest.fn(() => ({
+    customized: false,
+    expoGoCompatible: false,
+    devClientInstalled: false,
   })),
 }));
 
@@ -40,7 +48,7 @@ describe(startBundlerAsync, () => {
     expect(manager.startAsync).toHaveBeenCalledWith([
       {
         options: {
-          devClient: true,
+          appLaunchMode: AppLaunchMode.Start,
           headless: true,
           location: {},
           port: 3000,
@@ -60,7 +68,7 @@ describe(startBundlerAsync, () => {
     expect(manager.startAsync).toHaveBeenCalledWith([
       {
         options: {
-          devClient: true,
+          appLaunchMode: AppLaunchMode.Start,
           headless: false,
           location: {},
           port: 3000,

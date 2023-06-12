@@ -6,6 +6,7 @@ import { Log } from '../../log';
 import { logEventAsync } from '../../utils/analytics/rudderstackClient';
 import { CommandError, UnimplementedError } from '../../utils/errors';
 import { learnMore } from '../../utils/link';
+import { AppLaunchMode } from '../server/AppLaunchMode';
 import { AppIdResolver } from './AppIdResolver';
 import { DeviceManager } from './DeviceManager';
 
@@ -102,11 +103,34 @@ export class PlatformManager<
     return this.props.getExpoGoUrl();
   }
 
-  protected async openProjectInExpoGoAsync(
+  protected async openProjectInRedirectPageAsync(
     resolveSettings: Partial<IResolveDeviceProps> = {}
   ): Promise<{ url: string }> {
     const deviceManager = await this.props.resolveDeviceAsync(resolveSettings);
     const url = await this.getExpoGoOrCustomRuntimeUrlAsync(deviceManager);
+
+    deviceManager.logOpeningUrl(url);
+
+    // TODO: Expensive, we should only do this once.
+    const { exp } = getConfig(this.projectRoot);
+    const installedExpo = await deviceManager.ensureExpoGoAsync(exp.sdkVersion);
+
+    deviceManager.activateWindowAsync();
+    await deviceManager.openUrlAsync(url);
+
+    await logEventAsync('Open Url on Device', {
+      platform: this.props.platform,
+      installedExpo,
+    });
+
+    return { url };
+  }
+
+  protected async openProjectInExpoGoAsync(
+    resolveSettings: Partial<IResolveDeviceProps> = {}
+  ): Promise<{ url: string }> {
+    const deviceManager = await this.props.resolveDeviceAsync(resolveSettings);
+    const url = await this.props.getExpoGoUrl();
 
     deviceManager.logOpeningUrl(url);
 
@@ -174,11 +198,12 @@ export class PlatformManager<
   async openAsync(
     options:
       | {
-          runtime: 'expo' | 'web';
+          runtime: 'web';
         }
       | {
-          runtime: 'custom';
-          props?: Partial<IOpenInCustomProps>;
+          runtime: 'native';
+          appLaunchMode: AppLaunchMode;
+          customLaunchProps?: Partial<IOpenInCustomProps>;
         },
     resolveSettings: Partial<IResolveDeviceProps> = {}
   ): Promise<{ url: string }> {
@@ -186,15 +211,40 @@ export class PlatformManager<
       `open (runtime: ${options.runtime}, platform: ${this.props.platform}, device: %O, shouldPrompt: ${resolveSettings.shouldPrompt})`,
       resolveSettings.device
     );
-    if (options.runtime === 'expo') {
-      return this.openProjectInExpoGoAsync(resolveSettings);
-    } else if (options.runtime === 'web') {
+    if (options.runtime === 'web') {
       return this.openWebProjectAsync(resolveSettings);
-    } else if (options.runtime === 'custom') {
-      return this.openProjectInCustomRuntimeAsync(resolveSettings, options.props);
-    } else {
-      throw new CommandError(`Invalid runtime target: ${options.runtime}`);
     }
+    assert(options.runtime === 'native', 'Invalid runtime target');
+
+    switch (options.appLaunchMode) {
+      case AppLaunchMode.Start:
+        return this.startProjectWithAppIdAsync(resolveSettings);
+      case AppLaunchMode.OpenRedirectPage:
+        return this.openProjectInRedirectPageAsync(resolveSettings);
+      case AppLaunchMode.OpenDeepLinkExpoGo:
+        return this.openProjectInExpoGoAsync(resolveSettings);
+      case AppLaunchMode.OpenDeepLinkDevClient:
+        return this.openProjectInCustomRuntimeAsync(resolveSettings, options.customLaunchProps);
+      default:
+        throw new UnimplementedError();
+    }
+  }
+
+  protected async startProjectWithAppIdAsync(
+    resolveSettings: Partial<IResolveDeviceProps>
+  ): Promise<{ url: string }> {
+    const applicationId = await this._getAppIdResolver().getAppIdAsync();
+    const platformAppId = this._resolveAlternativeLaunchUrl(applicationId, {
+      applicationId,
+    } as IOpenInCustomProps);
+
+    const deviceManager = await this.props.resolveDeviceAsync(resolveSettings);
+    deviceManager.logOpeningUrl(applicationId);
+    await deviceManager.activateWindowAsync();
+    await deviceManager.startAppAsync(platformAppId);
+    return {
+      url: platformAppId,
+    };
   }
 
   /** Open the current web project (Webpack) in a device . */
