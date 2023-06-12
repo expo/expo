@@ -85,8 +85,8 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
       launchOptions[key] = value
     }
 
-     let bridge = self.bridgeDelegateHandler.createBridge(withAdapter: launchOptions)
-     developmentClientController.appBridge = bridge
+    let bridge = self.bridgeDelegateHandler.createBridge(withAdapter: launchOptions)
+    developmentClientController.appBridge = bridge
 
     guard let rootView = self.bridgeDelegateHandler.createRootView(with: bridge, moduleName: self.rootViewModuleName!, initProps: self.rootViewInitialProperties)  else {
         return
