@@ -142,11 +142,6 @@ class Env {
     return boolish('EXPO_USE_CUSTOM_INSPECTOR_PROXY', false);
   }
 
-  /** **Experimental:** Enable automatic TypeScript types for Expo Router projects (SDK +49). */
-  get EXPO_USE_TYPED_ROUTES() {
-    return boolish('EXPO_USE_TYPED_ROUTES', false);
-  }
-
   /** Disable lazy bundling in Metro bundler. */
   get EXPO_NO_METRO_LAZY() {
     return boolish('EXPO_NO_METRO_LAZY', false);
