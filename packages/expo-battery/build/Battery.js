@@ -175,6 +175,7 @@ export function addLowPowerModeListener(listener) {
 export function useBatteryLevel() {
     const [batteryLevel, setBatteryLevel] = useState(-1);
     useEffect(() => {
+        getBatteryLevelAsync().then(setBatteryLevel);
         const listener = addBatteryLevelListener((b) => setBatteryLevel(b.batteryLevel));
         return () => listener.remove();
     }, []);
@@ -194,6 +195,7 @@ export function useBatteryLevel() {
 export function useBatteryState() {
     const [batteryState, setBatteryState] = useState(BatteryState.UNKNOWN);
     useEffect(() => {
+        getBatteryStateAsync().then(setBatteryState);
         const listener = addBatteryStateListener((b) => setBatteryState(b.batteryState));
         return () => listener.remove();
     }, []);
@@ -213,6 +215,7 @@ export function useBatteryState() {
 export function useLowPowerMode() {
     const [lowPowerMode, setLowPowerMode] = useState(false);
     useEffect(() => {
+        isLowPowerModeEnabledAsync().then(setLowPowerMode);
         const listener = addLowPowerModeListener((b) => setLowPowerMode(b.lowPowerMode));
         return () => listener.remove();
     }, []);
@@ -234,6 +237,9 @@ export function usePowerState() {
     const [batteryState, setBatteryState] = useState(BatteryState.UNKNOWN);
     const [batteryLevel, setBatteryLevel] = useState(-1);
     useEffect(() => {
+        isLowPowerModeEnabledAsync().then(setLowPowerMode);
+        getBatteryStateAsync().then(setBatteryState);
+        getBatteryLevelAsync().then(setBatteryLevel);
         const modeListener = addLowPowerModeListener((b) => setLowPowerMode(b.lowPowerMode));
         const levelListener = addBatteryLevelListener((b) => setBatteryLevel(b.batteryLevel));
         const stateListener = addBatteryStateListener((b) => setBatteryState(b.batteryState));
