@@ -3,8 +3,8 @@
 import Foundation
 import ExpoModulesCore
 
-let LOCALE_CHANGED = "onLocaleChanged"
-let CALENDAR_CHANGED = "onCalendarChanged"
+let LOCALE_SETTINGS_CHANGED = "onLocaleSettingsChanged"
+let CALENDAR_SETTINGS_CHANGED = "onCalendarSettingsChanged"
 
 public class LocalizationModule: Module {
   public func definition() -> ModuleDefinition {
@@ -28,7 +28,7 @@ public class LocalizationModule: Module {
       }
     }
 
-    Events(LOCALE_CHANGED, CALENDAR_CHANGED)
+    Events(LOCALE_SETTINGS_CHANGED, CALENDAR_SETTINGS_CHANGED)
 
     OnStartObserving {
       NotificationCenter.default.addObserver(
@@ -116,14 +116,14 @@ public class LocalizationModule: Module {
 
   static func getMeasurementSystemForLocale(_ locale: Locale) -> String {
     if #available(iOS 16, *) {
-      return [
+      let measurementSystems = [
         Locale.MeasurementSystem.us: "us",
         Locale.MeasurementSystem.uk: "uk",
         Locale.MeasurementSystem.metric: "metric"
-      ][locale.measurementSystem] ?? "metric"
-    } else {
-      return locale.usesMetricSystem ? "metric" : "us"
+      ]
+      return measurementSystems[locale.measurementSystem] ?? "metric"
     }
+    return locale.usesMetricSystem ? "metric" : "us"
   }
 
   static func getLocales() -> [[String: Any?]] {
@@ -150,8 +150,8 @@ public class LocalizationModule: Module {
   @objc
   private func localeChanged() {
     // we send both events since on iOS it means both calendar and locale needs an update
-    sendEvent(LOCALE_CHANGED)
-    sendEvent(CALENDAR_CHANGED)
+    sendEvent(LOCALE_SETTINGS_CHANGED)
+    sendEvent(CALENDAR_SETTINGS_CHANGED)
   }
 
   // https://stackoverflow.com/a/28183182

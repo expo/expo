@@ -23,6 +23,7 @@ object Notifier {
   }
 }
 
+// TODO: Move to new listener API once it's available
 class LocalizationPackage : Package {
   override fun createApplicationLifecycleListeners(context: Context?): List<out ApplicationLifecycleListener> {
     return listOf(object : ApplicationLifecycleListener {

@@ -29,7 +29,7 @@ interface State {
   locale?: string;
 }
 
-const HooksLocalizationSection = () => {
+function HooksLocalizationSection() {
   const locales = Localization.useLocales();
   const calendars = Localization.useCalendars();
   return (
@@ -40,7 +40,7 @@ const HooksLocalizationSection = () => {
       <MonoText>{JSON.stringify(calendars, null, 2)}</MonoText>
     </>
   );
-};
+}
 
 // See: https://github.com/expo/expo/pull/10229#discussion_r490961694
 // eslint-disable-next-line @typescript-eslint/ban-types

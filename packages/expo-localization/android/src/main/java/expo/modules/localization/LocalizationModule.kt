@@ -29,11 +29,8 @@ import java.util.*
 private const val SHARED_PREFS_NAME = "com.facebook.react.modules.i18nmanager.I18nUtil"
 private const val KEY_FOR_PREFS_ALLOWRTL = "RCTI18nUtil_allowRTL"
 
-private const val LOCALE_CHANGED = "onLocaleChanged"
-private const val CALENDAR_CHANGED = "onCalendarChanged"
-
-
-
+private const val LOCALE_SETTINGS_CHANGED = "onLocaleSettingsChanged"
+private const val CALENDAR_SETTINGS_CHANGED = "onCalendarSettingsChanged"
 
 class LocalizationModule : Module() {
   private var observer : () -> Unit = {}
@@ -57,15 +54,15 @@ class LocalizationModule : Module() {
       return@Function getCalendars()
     }
 
-    Events(LOCALE_CHANGED, LOCALE_CHANGED)
+    Events(LOCALE_SETTINGS_CHANGED, CALENDAR_SETTINGS_CHANGED)
 
     OnCreate {
       appContext?.reactContext?.let {
         setRTLFromStringResources(it)
       }
       observer = {
-        this@LocalizationModule.sendEvent(LOCALE_CHANGED);
-        this@LocalizationModule.sendEvent(CALENDAR_CHANGED);
+        this@LocalizationModule.sendEvent(LOCALE_SETTINGS_CHANGED);
+        this@LocalizationModule.sendEvent(CALENDAR_SETTINGS_CHANGED);
       }
       Notifier.registerObserver(observer)
     }
@@ -73,7 +70,6 @@ class LocalizationModule : Module() {
     OnDestroy {
       Notifier.deregisterObserver(observer)
     }
-
 
   }
 
