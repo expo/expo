@@ -230,6 +230,16 @@ export function withExtendedResolver(
             resolveRequest: undefined,
 
             mainFields,
+
+            // Passing `mainFields` directly won't be considered (in certain version of Metro)
+            // we need to extend the `getPackageMainPath` directly to
+            // use platform specific `mainFields`.
+            // @ts-ignore
+            getPackageMainPath(packageJsonPath) {
+              // @ts-expect-error: mainFields is not on type
+              const package_ = context.moduleCache.getPackage(packageJsonPath);
+              return package_.getMain(mainFields);
+            },
           },
           moduleName,
           platform
