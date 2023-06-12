@@ -35,6 +35,11 @@ import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.UpdateManifest
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
+import expo.modules.updates.statemachine.UpdatesStateChangeEventSender
+import expo.modules.updates.statemachine.UpdatesStateEvent
+import expo.modules.updates.statemachine.UpdatesStateEventType
+import expo.modules.updates.statemachine.UpdatesStateMachine
+import expo.modules.updates.statemachine.UpdatesStateValue
 import java.io.File
 import java.lang.ref.WeakReference
 

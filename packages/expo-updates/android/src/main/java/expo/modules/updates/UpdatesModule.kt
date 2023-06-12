@@ -18,6 +18,8 @@ import expo.modules.updates.logging.UpdatesLogEntry
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.ManifestMetadata
+import expo.modules.updates.statemachine.UpdatesStateEvent
+import expo.modules.updates.statemachine.UpdatesStateEventType
 import java.util.Date
 
 // these unused imports must stay because of versioning
@@ -185,7 +187,10 @@ class UpdatesModule(
               if (updateManifest == null) {
                 updateInfo.putBoolean("isAvailable", false)
                 promise.resolve(updateInfo)
-                updatesServiceLocal.stateMachine?.processEvent(UpdatesStateEvent(UpdatesStateEventType.CheckCompleteUnavailable))
+                updatesServiceLocal.stateMachine?.processEvent(
+                  UpdatesStateEvent(
+                  UpdatesStateEventType.CheckCompleteUnavailable)
+                )
                 return
               }
 
@@ -227,7 +232,10 @@ class UpdatesModule(
               } else {
                 updateInfo.putBoolean("isAvailable", false)
                 promise.resolve(updateInfo)
-                updatesServiceLocal.stateMachine?.processEvent(UpdatesStateEvent(UpdatesStateEventType.CheckCompleteUnavailable))
+                updatesServiceLocal.stateMachine?.processEvent(
+                  UpdatesStateEvent(
+                  UpdatesStateEventType.CheckCompleteUnavailable)
+                )
               }
             }
           }
@@ -325,7 +333,10 @@ class UpdatesModule(
                 } else {
                   if (loaderResult.updateEntity == null) {
                     updateInfo.putBoolean("isNew", false)
-                    updatesServiceLocal.stateMachine?.processEvent(UpdatesStateEvent(UpdatesStateEventType.DownloadComplete, mapOf()))
+                    updatesServiceLocal.stateMachine?.processEvent(
+                      UpdatesStateEvent(
+                      UpdatesStateEventType.DownloadComplete, mapOf())
+                    )
                   } else {
                     updatesServiceLocal.resetSelectionPolicy()
                     updateInfo.putBoolean("isNew", true)
@@ -339,7 +350,10 @@ class UpdatesModule(
                       )
                       else -> mapOf()
                     }
-                    updatesServiceLocal.stateMachine?.processEvent(UpdatesStateEvent(UpdatesStateEventType.DownloadComplete, body))
+                    updatesServiceLocal.stateMachine?.processEvent(
+                      UpdatesStateEvent(
+                      UpdatesStateEventType.DownloadComplete, body)
+                    )
                   }
                 }
 

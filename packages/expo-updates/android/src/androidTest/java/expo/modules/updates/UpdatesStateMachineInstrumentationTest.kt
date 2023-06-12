@@ -1,6 +1,11 @@
 package expo.modules.updates
 
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
+import expo.modules.updates.statemachine.UpdatesStateChangeEventSender
+import expo.modules.updates.statemachine.UpdatesStateEvent
+import expo.modules.updates.statemachine.UpdatesStateEventType
+import expo.modules.updates.statemachine.UpdatesStateMachine
+import expo.modules.updates.statemachine.UpdatesStateValue
 import org.json.JSONObject
 import org.junit.Assert
 import org.junit.Test
