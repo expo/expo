@@ -1,10 +1,9 @@
 ---
 title: Using Google authentication
-description: A guide on using @react-native-google-signin/google-signin library in your Expo project.
+description: A guide on using @react-native-google-signin/google-signin library to integrate Google authentication in your Expo project.
 ---
 
 import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
 The [`@react-native-google-signin/google-signin`](https://github.com/react-native-google-signin/google-signin) library provides different ways, such as Firebase and Google API, to integrate Google authentication in your Expo app. It also provides native sign-in buttons and supports various authentication methods (standard, server-side validation, and offline access). You can use the library in your project by adding the [config plugin](/config-plugins/introduction/) in the [app config](/versions/latest/config/app/).
@@ -15,7 +14,7 @@ This guide provides additional information on how to configure the library for y
 
 `@react-native-google-signin/google-signin` requires [custom native code](/workflow/customizing/) and cannot be used with Expo Go. Before proceeding, you can either use:
 
-- Xcode or Android Studio to build your project locally (see [Prebuild](/workflow/prebuild/) for more information)
+- Android Studio or Xcode to build your project locally (see [Prebuild](/workflow/prebuild/) for more information)
 - [Development builds](/develop/development-builds/create-a-build/)
 
 ## Installation
