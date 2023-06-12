@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { View } from 'react-native-web';
 import { ImageNativeProps, ImageSource, ImageLoadEventData } from './Image.types';
 import AnimationManager, { AnimationManagerNode } from './web/AnimationManager';
 import ImageWrapper from './web/ImageWrapper';
@@ -69,9 +69,9 @@ export default function ExpoImage({
   priority,
   blurRadius,
   recyclingKey,
+  style,
   ...props
 }: ImageNativeProps) {
-  const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
   const imagePlaceholderContentFit = placeholderContentFit || 'scale-down';
   const blurhashStyle = {
     objectFit: placeholderContentFit || contentFit,
@@ -145,21 +145,13 @@ export default function ExpoImage({
         ),
   ];
   return (
-    <div
+    <View
       ref={containerRef}
       className="expo-image-container"
-      style={{
-        aspectRatio: String(aspectRatio),
-        backgroundColor: backgroundColor?.toString(),
-        transform: transform?.toString(),
-        borderColor: borderColor?.toString(),
-        position: 'relative',
-        overflow: 'hidden',
-        ...style,
-      }}>
+      style={[{ overflow: 'hidden' }, style]}>
       <AnimationManager transition={transition} recyclingKey={recyclingKey} initial={initialNode}>
         {currentNode}
       </AnimationManager>
-    </div>
+    </View>
   );
 }

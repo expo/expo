@@ -1,4 +1,5 @@
 import React from 'react';
+import { View } from 'react-native-web';
 import AnimationManager from './web/AnimationManager';
 import ImageWrapper from './web/ImageWrapper';
 import loadStyle from './web/style';
@@ -45,8 +46,7 @@ const setCssVariables = (element, size) => {
     element?.style.setProperty('--expo-image-width', `${size.width}px`);
     element?.style.setProperty('--expo-image-height', `${size.height}px`);
 };
-export default function ExpoImage({ source, placeholder, contentFit, contentPosition, placeholderContentFit, onLoad, transition, onError, responsivePolicy, onLoadEnd, priority, blurRadius, recyclingKey, ...props }) {
-    const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
+export default function ExpoImage({ source, placeholder, contentFit, contentPosition, placeholderContentFit, onLoad, transition, onError, responsivePolicy, onLoadEnd, priority, blurRadius, recyclingKey, style, ...props }) {
     const imagePlaceholderContentFit = placeholderContentFit || 'scale-down';
     const blurhashStyle = {
         objectFit: placeholderContentFit || contentFit,
@@ -81,15 +81,7 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
                 ...style,
             }, className: className, priority: priority, contentPosition: selectedSource ? contentPosition : { top: '50%', left: '50%' }, hashPlaceholderContentPosition: contentPosition, hashPlaceholderStyle: blurhashStyle, accessibilityLabel: props.accessibilityLabel })),
     ];
-    return (React.createElement("div", { ref: containerRef, className: "expo-image-container", style: {
-            aspectRatio: String(aspectRatio),
-            backgroundColor: backgroundColor?.toString(),
-            transform: transform?.toString(),
-            borderColor: borderColor?.toString(),
-            position: 'relative',
-            overflow: 'hidden',
-            ...style,
-        } },
+    return (React.createElement(View, { ref: containerRef, className: "expo-image-container", style: [{ overflow: 'hidden' }, style] },
         React.createElement(AnimationManager, { transition: transition, recyclingKey: recyclingKey, initial: initialNode }, currentNode)));
 }
 //# sourceMappingURL=ExpoImage.web.js.map
