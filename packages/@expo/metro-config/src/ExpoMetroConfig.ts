@@ -5,7 +5,6 @@ import * as runtimeEnv from '@expo/env';
 import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
 import { Reporter } from 'metro';
-// @ts-expect-error: incorrectly typed
 import { stableHash } from 'metro-cache';
 import { ConfigT as MetroConfig, InputConfigT } from 'metro-config';
 import path from 'path';

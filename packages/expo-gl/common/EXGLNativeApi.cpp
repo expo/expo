@@ -11,12 +11,17 @@ EXGLContextId EXGLContextCreate() {
 void EXGLContextPrepare(
     void *jsiPtr,
     EXGLContextId exglCtxId,
-    bool enableExperimentalWorkletSupport,
     std::function<void(void)> flushMethod) {
   auto [exglCtx, lock] = ContextGet(exglCtxId);
   if (exglCtx) {
-    exglCtx->prepareContext(
-        *reinterpret_cast<jsi::Runtime *>(jsiPtr), enableExperimentalWorkletSupport, flushMethod);
+    exglCtx->prepareContext(*reinterpret_cast<jsi::Runtime *>(jsiPtr), flushMethod);
+  }
+}
+
+void EXGLContextPrepareWorklet(EXGLContextId exglCtxId) {
+  auto [exglCtx, lock] = ContextGet(exglCtxId);
+  if (exglCtx) {
+    exglCtx->prepareWorkletContext();
   }
 }
 

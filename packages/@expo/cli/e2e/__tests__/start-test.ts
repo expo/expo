@@ -171,7 +171,7 @@ describe('server', () => {
 
       // URLs
       expect(manifest.launchAsset.url).toBe(
-        'http://127.0.0.1:19000/node_modules/expo/AppEntry.bundle?platform=ios&dev=true&hot=false'
+        'http://127.0.0.1:19000/node_modules/expo/AppEntry.bundle?platform=ios&dev=true&hot=false&lazy=true'
       );
       expect(manifest.extra.expoGo.debuggerHost).toBe('127.0.0.1:19000');
       expect(manifest.extra.expoGo.logUrl).toBe('http://127.0.0.1:19000/logs');
