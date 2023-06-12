@@ -97,7 +97,7 @@ export function getDefaultConfig(
 
   let sassVersion: string | null = null;
   if (options.isCSSEnabled) {
-    sassVersion = getSassVersion(projectRoot);
+    sassVersion = getPkgVersion(projectRoot, 'sass');
     // Enable SCSS by default so we can provide a better error message
     // when sass isn't installed.
     sourceExts.push('scss', 'sass', 'css');
@@ -199,14 +199,6 @@ export function getDefaultConfig(
       : metroDefaultValues.transformerPath,
 
     transformer: {
-      // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
-      // @ts-expect-error: not on type.
-      postcssHash: getPostcssConfigHash(projectRoot),
-      browserslistHash: pkg.browserslist
-        ? stableHash(JSON.stringify(pkg.browserslist)).toString('hex')
-        : null,
-      sassVersion,
-
       // `require.context` support
       unstable_allowRequireContext: true,
       allowOptionalDependencies: true,
@@ -221,6 +213,15 @@ export function getDefaultConfig(
           require.resolve('./transformer/metro-expo-babel-transformer'),
       assetRegistryPath: 'react-native/Libraries/Image/AssetRegistry',
       assetPlugins: getAssetPlugins(projectRoot),
+
+      // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
+      // @ts-expect-error: not on type.
+      postcssHash: getPostcssConfigHash(projectRoot),
+      browserslistHash: pkg.browserslist
+        ? stableHash(JSON.stringify(pkg.browserslist)).toString('hex')
+        : null,
+      sassVersion,
+      reanimatedVersion: getPkgVersion(projectRoot, 'react-native-reanimated'),
     },
   });
 
@@ -247,17 +248,17 @@ export { MetroConfig, INTERNAL_CALLSITES_REGEX };
 // re-export for legacy cases.
 export const EXPO_DEBUG = env.EXPO_DEBUG;
 
-function getSassVersion(projectRoot: string): string | null {
-  const sassPkg = resolveFrom.silent(projectRoot, 'sass');
-  if (!sassPkg) return null;
-  const sassPkgJson = findUpPackageJson(sassPkg);
-  if (!sassPkgJson) return null;
-  const pkg = JsonFile.read(sassPkgJson);
+function getPkgVersion(projectRoot: string, dependency: string): string | null {
+  const pkgPath = resolveFrom.silent(projectRoot, dependency);
+  if (!pkgPath) return null;
+  const resolvedPkgPath = findUpPackageJson(pkgPath);
+  if (!resolvedPkgPath) return null;
+  const pkg = JsonFile.read(resolvedPkgPath);
 
-  debug('sass package.json:', sassPkgJson);
-  const sassVersion = pkg.version;
-  if (typeof sassVersion === 'string') {
-    return sassVersion;
+  debug(`${dependency} package.json:`, resolvedPkgPath);
+  const version = pkg.version;
+  if (typeof version === 'string') {
+    return version;
   }
 
   return null;
