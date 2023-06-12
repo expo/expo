@@ -10,6 +10,8 @@ internal protocol UpdatesStateChangeEventSender {
   func sendUpdateStateChangeEventToBridge(_ eventType: UpdatesStateEventType, body: [String: Any])
 }
 
+// MARK: - Enums
+
 /**
  All the possible states the machine can take.
  */
@@ -35,32 +37,7 @@ internal enum UpdatesStateEventType: String {
   case restart
 }
 
-/**
- For a particular machine state, only certain events may be processed.
- If the machine receives an unexpected event, an assertion failure will occur
- and the app will crash.
- */
-let updatesStateAllowedEvents: [UpdatesStateValue: [UpdatesStateEventType]] = [
-  .idle: [.check, .download, .restart],
-  .checking: [.checkCompleteAvailable, .checkCompleteUnavailable, .checkError],
-  .downloading: [.downloadComplete, .downloadError],
-  .restarting: []
-]
-
-/**
- For this state machine, each event has only one destination state that the
- machine will transition to.
- */
-let updatesStateTransitions: [UpdatesStateEventType: UpdatesStateValue] = [
-  .check: .checking,
-  .checkCompleteAvailable: .idle,
-  .checkCompleteUnavailable: .idle,
-  .checkError: .idle,
-  .download: .downloading,
-  .downloadComplete: .idle,
-  .downloadError: .idle,
-  .restart: .restarting
-]
+// MARK: - Data structures
 
 /**
  Structure representing an event that can be sent to the machine.
@@ -164,18 +141,27 @@ internal struct UpdatesStateContext {
   ]
 }
 
+// MARK: - State machine class
+
 /**
- The state machine representing the current state of expo-updates while the app is
- running.
+ The Updates state machine class. There should be only one instance of this class
+ in a production app, instantiated as a property of AppController.
  */
 internal class UpdatesStateMachine {
   private let logger = UpdatesLogger()
+
+  // MARK: - Public methods and properties
+
+  /**
+   In production, this is the AppController instance.
+   */
   internal var changeEventSender: (any UpdatesStateChangeEventSender)?
 
   /**
    The current state
    */
   internal var state: UpdatesStateValue = .idle
+
   /**
    The context
    */
@@ -207,11 +193,13 @@ internal class UpdatesStateMachine {
     }
   }
 
+  // MARK: - Private nethods
+
   /**
    Make sure the state transition is allowed, and then update the state.
    */
   private func transition(_ event: UpdatesStateEvent) -> Bool {
-    let allowedEvents: [UpdatesStateEventType] = updatesStateAllowedEvents[state] ?? []
+    let allowedEvents: [UpdatesStateEventType] = UpdatesStateMachine.updatesStateAllowedEvents[state] ?? []
     if !allowedEvents.contains(event.type) {
       // Uncomment the line below to halt execution on invalid state transitions,
       // very useful for testing
@@ -221,12 +209,13 @@ internal class UpdatesStateMachine {
       return false
     }
     // Successful transition
-    state = updatesStateTransitions[event.type] ?? .idle
+    state = UpdatesStateMachine.updatesStateTransitions[event.type] ?? .idle
     return true
   }
 
   /**
-   Return reduced context, based on the current context and the data in the event.
+   Given an allowed event and a context, return a new context with the changes
+   made by processing the event.
    */
   private func reducedContext(_ context: UpdatesStateContext, _ event: UpdatesStateEvent) -> UpdatesStateContext {
     var newContext = context
@@ -266,6 +255,12 @@ internal class UpdatesStateMachine {
     return newContext
   }
 
+  /**
+   If a state change event is passed in, the JS sender
+   is called with just the fields and values that changed.
+   During a reset, this method is called with no event passed in,
+   and then all the fields and the entire context are passed to the JS sender.
+   */
   private func sendChangeEventToJS(_ event: UpdatesStateEvent? = nil) {
     guard let event: UpdatesStateEvent = event else {
       changeEventSender?.sendUpdateStateChangeEventToBridge(.restart, body: [
@@ -279,4 +274,33 @@ internal class UpdatesStateMachine {
       "values": context.partialJsonWithKeys(keys: event.changedProperties)
     ])
   }
+
+  // MARK: - Static definitions of the state machine rules
+  
+  /**
+   For a particular machine state, only certain events may be processed.
+   If the machine receives an unexpected event, an assertion failure will occur
+   and the app will crash.
+   */
+  static let updatesStateAllowedEvents: [UpdatesStateValue: [UpdatesStateEventType]] = [
+    .idle: [.check, .download, .restart],
+    .checking: [.checkCompleteAvailable, .checkCompleteUnavailable, .checkError],
+    .downloading: [.downloadComplete, .downloadError],
+    .restarting: []
+  ]
+
+  /**
+   For this state machine, each event has only one destination state that the
+   machine will transition to.
+   */
+  static let updatesStateTransitions: [UpdatesStateEventType: UpdatesStateValue] = [
+    .check: .checking,
+    .checkCompleteAvailable: .idle,
+    .checkCompleteUnavailable: .idle,
+    .checkError: .idle,
+    .download: .downloading,
+    .downloadComplete: .idle,
+    .downloadError: .idle,
+    .restart: .restarting
+  ]
 }
