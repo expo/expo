@@ -6,17 +6,15 @@ description: Learn how to speed up development with async bundling in Expo Route
 import { Terminal } from '~/ui/components/Snippet';
 import Video from '~/components/plugins/Video';
 
-<Video file="expo-router/async-routes.mp4" loop={false} />
-
 > This guide requires `expo@49.0.0-alpha.3` or greater and `metro@0.76.3`––everything listed here is still experimental. You may need to [use Expo CLI on `main`](https://github.com/expo/expo/tree/main/packages/%40expo/cli#contributing) to use these features.
 
-> Metro Bundler has a special development-only bundle splitting feature which can be used to defer bundling unused code until it is needed. This system was developed at Meta for incrementally developing the Facebook app at scale. However, it is rarely seen outside of Meta as it requires specialized setup and routing architecture.
+<Video file="expo-router/async-routes.mp4" loop={false} />
 
 Expo Router can automatically split your JavaScript bundle based on the route files using [React Suspense](https://react.dev/reference/react/Suspense). This enables faster development as only the routes you navigate to will be bundled or loaded into memory. This can also be useful for reducing the initial bundle size for your application.
 
 Apps using the Hermes Engine will not benefit as much from bundle splitting as the bytecode is already memory mapped ahead of time. However, it will improve your over-the-air updates, React Server Components, and web support.
 
-> When you bundle for production, all suspense boundaries will be disabled and there will be no loading states.
+> When bundling for production, all suspense boundaries **will be disabled** and there will be no loading states.
 
 ## How it works
 
