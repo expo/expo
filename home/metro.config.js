@@ -4,7 +4,7 @@ const path = require('path');
 const baseConfig = createMetroConfiguration(__dirname);
 
 // To test home from Expo Go, the react-native js source is from our fork.
-const reactNativeRoot = path.join(__dirname, '..', 'react-native-lab', 'react-native');
+const reactNativeRoot = path.join(__dirname, '..', 'react-native-lab', 'react-native', 'packages', 'react-native');
 
 module.exports = {
   ...baseConfig,
