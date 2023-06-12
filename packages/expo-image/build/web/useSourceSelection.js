@@ -26,9 +26,8 @@ function findBestSourceForSize(sources, size) {
         .sort((a, b) => a.penalty - b.penalty)
         .sort((a, b) => Number(b.covers) - Number(a.covers))[0]?.source ?? null);
 }
-function getDefaultResponsivePolicy(sources) {
-    const allSourcesHaveStaticSizeSelectionInfo = sources?.every((source) => typeof source === 'object' && source.webMaxViewportWidth != null);
-    return allSourcesHaveStaticSizeSelectionInfo ? 'static' : 'live';
+function getCSSMediaQueryForSource(source) {
+    return `(max-width: ${source.webMaxViewportWidth ?? source.width}px) ${source.width}px`;
 }
 function selectSource(sources, size, responsivePolicy) {
     if (sources == null || sources.length === 0) {
@@ -38,22 +37,16 @@ function selectSource(sources, size, responsivePolicy) {
         return findBestSourceForSize(sources, size);
     }
     const staticSupportedSources = sources
-        .filter((s) => s.uri &&
-        s.webMaxViewportWidth != null &&
-        s.width != null &&
-        !isBlurhashString(s.uri) &&
-        !isThumbhashString(s.uri))
-        .sort((a, b) => (a.webMaxViewportWidth ?? 0) - (b.webMaxViewportWidth ?? 0));
+        .filter((s) => s.uri && s.width != null && !isBlurhashString(s.uri) && !isThumbhashString(s.uri))
+        .sort((a, b) => (a.webMaxViewportWidth ?? a.width ?? 0) - (b.webMaxViewportWidth ?? b.width ?? 0));
     if (staticSupportedSources.length === 0) {
-        console.warn("You've set the `static` responsivePolicy but none of the sources have the `webMaxViewportWidth` and `width` properties set. Falling back to the `initial` policy.");
+        console.warn("You've set the `static` responsivePolicy but none of the sources have the `width` properties set. Make sure you set both `width` and `webMaxViewportWidth` for best results when using static responsiveness. Falling back to the `initial` policy.");
         return findBestSourceForSize(sources, size);
     }
     const srcset = staticSupportedSources
         ?.map((source) => `${source.uri} ${source.width}w`)
         .join(', ');
-    const sizes = `${staticSupportedSources
-        ?.map((source) => `(max-width: ${source.webMaxViewportWidth}px) ${source.width}px`)
-        .join(', ')}, ${staticSupportedSources[staticSupportedSources.length - 1]?.width}px`;
+    const sizes = `${staticSupportedSources?.map(getCSSMediaQueryForSource).join(', ')}, ${staticSupportedSources[staticSupportedSources.length - 1]?.width}px`;
     return {
         srcset,
         sizes,
@@ -61,7 +54,7 @@ function selectSource(sources, size, responsivePolicy) {
         type: 'srcset',
     };
 }
-export default function useSourceSelection(sources, responsivePolicy = getDefaultResponsivePolicy(sources), measurementCallback) {
+export default function useSourceSelection(sources, responsivePolicy = 'static', measurementCallback) {
     const hasMoreThanOneSource = (sources?.length ?? 0) > 1;
     // null - not calculated yet, DOMRect - size available
     const [size, setSize] = useState(null);

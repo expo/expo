@@ -44,11 +44,8 @@ export interface SrcSetSource extends ImageSource {
   type: 'srcset';
 }
 
-function getDefaultResponsivePolicy(sources: ImageSource[] | undefined) {
-  const allSourcesHaveStaticSizeSelectionInfo = sources?.every(
-    (source) => typeof source === 'object' && source.webMaxViewportWidth != null
-  );
-  return allSourcesHaveStaticSizeSelectionInfo ? 'static' : 'initial';
+function getCSSMediaQueryForSource(source: ImageSource) {
+  return `(max-width: ${source.webMaxViewportWidth ?? source.width}px) ${source.width}px`;
 }
 
 function selectSource(
@@ -65,18 +62,15 @@ function selectSource(
   }
   const staticSupportedSources = sources
     .filter(
-      (s) =>
-        s.uri &&
-        s.webMaxViewportWidth != null &&
-        s.width != null &&
-        !isBlurhashString(s.uri) &&
-        !isThumbhashString(s.uri)
+      (s) => s.uri && s.width != null && !isBlurhashString(s.uri) && !isThumbhashString(s.uri)
     )
-    .sort((a, b) => (a.webMaxViewportWidth ?? 0) - (b.webMaxViewportWidth ?? 0));
+    .sort(
+      (a, b) => (a.webMaxViewportWidth ?? a.width ?? 0) - (b.webMaxViewportWidth ?? b.width ?? 0)
+    );
 
   if (staticSupportedSources.length === 0) {
     console.warn(
-      "You've set the `static` responsivePolicy but none of the sources have the `webMaxViewportWidth` and `width` properties set. Falling back to the `initial` policy."
+      "You've set the `static` responsivePolicy but none of the sources have the `width` properties set. Make sure you set both `width` and `webMaxViewportWidth` for best results when using static responsiveness. Falling back to the `initial` policy."
     );
     return findBestSourceForSize(sources, size);
   }
@@ -84,9 +78,9 @@ function selectSource(
   const srcset = staticSupportedSources
     ?.map((source) => `${source.uri} ${source.width}w`)
     .join(', ');
-  const sizes = `${staticSupportedSources
-    ?.map((source) => `(max-width: ${source.webMaxViewportWidth}px) ${source.width}px`)
-    .join(', ')}, ${staticSupportedSources[staticSupportedSources.length - 1]?.width}px`;
+  const sizes = `${staticSupportedSources?.map(getCSSMediaQueryForSource).join(', ')}, ${
+    staticSupportedSources[staticSupportedSources.length - 1]?.width
+  }px`;
   return {
     srcset,
     sizes,
@@ -97,7 +91,7 @@ function selectSource(
 
 export default function useSourceSelection(
   sources?: ImageSource[],
-  responsivePolicy: ImageProps['responsivePolicy'] = getDefaultResponsivePolicy(sources),
+  responsivePolicy: ImageProps['responsivePolicy'] = 'static',
   measurementCallback?: (target: HTMLElement, size: DOMRect) => void
 ): { containerRef: (element: HTMLDivElement) => void; source: ImageSource | SrcSetSource | null } {
   const hasMoreThanOneSource = (sources?.length ?? 0) > 1;

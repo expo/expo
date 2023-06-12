@@ -167,15 +167,17 @@ export interface ImageProps extends ViewProps {
 
   /**
    * Controls the selection of the image source based on the container or viewport size on the web.
+   *
    * If set to `'static'`, the browser selects the correct source based on user's viewport width. Works with static rendering.
-   * Make sure to set the `webMaxViewportWidth` property on all sources.
-   * The source with the largest `webMaxViewportWidth` is used even for larger viewports.
+   * Make sure to set the '`webMaxViewportWidth`' property on each source for best results.
+   * For example, if an image occupies 1/3 of the screen width, set the '`webMaxViewportWidth`' to 3x the image width.
+   * The source with the largest '`webMaxViewportWidth`' is used even for larger viewports.
    *
    * If set to `'initial'`, the component will select the correct source during mount based on container size. Does not work with static rendering.
    *
    * If set to `'live'`, the component will select the correct source on every resize based on container size. Does not work with static rendering.
    *
-   * @default `'static'` if all sources have the `'webMaxViewportWidth'` property set, otherwise `'initial'`
+   * @default `'static'`
    * @platform web
    */
   responsivePolicy?: 'live' | 'initial' | 'static';
