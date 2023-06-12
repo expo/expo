@@ -185,12 +185,13 @@ export function addLowPowerModeListener(listener: (event: PowerModeEvent) => voi
 
 // @needsAudit
 /**
+ * Gets the device's battery level, as in [`getBatteryLevelAsync`](#getbatterylevelasync).
+ *
+ * @example
  * ```ts
  * const batteryLevel = useBatteryLevel();
  * ```
- * Returns the battery level of the device
  *
- * @see addBatteryLevelListener
  * @return The battery level of the device
  */
 export function useBatteryLevel(): number {
@@ -206,12 +207,13 @@ export function useBatteryLevel(): number {
 
 // @needsAudit
 /**
+ * Gets the device's battery state, as in [`getBatteryStateAsync`](#getbatterystateasync).
+ *
+ * @example
  * ```ts
  * const batteryState = useBatteryState();
  * ```
- * Returns the battery state of the device
  *
- * @see addBatteryStateListener
  * @return The battery state of the device
  */
 export function useBatteryState(): BatteryState {
@@ -227,12 +229,13 @@ export function useBatteryState(): BatteryState {
 
 // @needsAudit
 /**
+ * Boolean that indicates if the device is in low power or power saver mode, as in  [`isLowPowerModeEnabledAsync`](#islowpowermodeenabledasync).
+ *
+ * @example
  * ```ts
  * const lowPowerMode = useLowPowerMode();
  * ```
- * Returns boolean indicating if the device is in low power mode
  *
- * @see addLowPowerModeListener
  * @return boolean indicating if the device is in low power mode
  */
 export function useLowPowerMode(): boolean {
@@ -248,12 +251,13 @@ export function useLowPowerMode(): boolean {
 
 // @needsAudit
 /**
+ * Gets the device's power state information, as in [`getPowerStateAsync`](#getpowerstateasync).
+ *
+ * @example
  * ```ts
  * const { lowPowerMode, batteryLevel, batteryState } = usePowerState();
  * ```
- * Returns power state information
  *
- * @see PowerState
  * @return power state information
  */
 export function usePowerState(): PowerState {
