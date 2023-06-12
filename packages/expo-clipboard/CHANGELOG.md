@@ -10,7 +10,7 @@
 
 ### 🎉 New features
 
-- On iOS, added `ApplePasteButton` that uses `UIPasteControl`. ([#22823](https://github.com/expo/expo/pull/22823) by [@alanjhughes](https://github.com/alanjhughes))
+- On iOS, added native `ClipboardPasteButton` view that uses `UIPasteControl`. ([#22823](https://github.com/expo/expo/pull/22823) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
