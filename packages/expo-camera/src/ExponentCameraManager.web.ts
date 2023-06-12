@@ -86,29 +86,42 @@ async function handlePermissionsQueryAsync(
     throw new UnavailabilityError('expo-camera', 'navigator.permissions API is not available');
   }
 
-  const { state } = await navigator.permissions.query({ name: query });
-  switch (state) {
-    case 'prompt':
+  try {
+    const { state } = await navigator.permissions.query({ name: query });
+    switch (state) {
+      case 'prompt':
+        return {
+          status: PermissionStatus.UNDETERMINED,
+          expires: 'never',
+          canAskAgain: true,
+          granted: false,
+        };
+      case 'granted':
+        return {
+          status: PermissionStatus.GRANTED,
+          expires: 'never',
+          canAskAgain: true,
+          granted: true,
+        };
+      case 'denied':
+        return {
+          status: PermissionStatus.DENIED,
+          expires: 'never',
+          canAskAgain: true,
+          granted: false,
+        };
+    }
+  } catch (e) {
+    // Firefox doesn't support querying for the camera permission, so return undetermined status
+    if (e instanceof TypeError) {
       return {
         status: PermissionStatus.UNDETERMINED,
         expires: 'never',
         canAskAgain: true,
         granted: false,
       };
-    case 'granted':
-      return {
-        status: PermissionStatus.GRANTED,
-        expires: 'never',
-        canAskAgain: true,
-        granted: true,
-      };
-    case 'denied':
-      return {
-        status: PermissionStatus.DENIED,
-        expires: 'never',
-        canAskAgain: true,
-        granted: false,
-      };
+    }
+    throw e;
   }
 }
 
