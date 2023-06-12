@@ -12,6 +12,7 @@ import prettyBytes from 'pretty-bytes';
 import { inspect } from 'util';
 
 import { Log } from '../log';
+import { AppLaunchMode } from '../start/server/AppLaunchMode';
 import { DevServerManager } from '../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
 import { logMetroErrorAsync } from '../start/server/metro/metroErrorInterface';
@@ -26,6 +27,7 @@ export async function unstable_exportStaticAsync(projectRoot: string, options: O
   Log.warn('Static exporting with Metro is an experimental feature.');
 
   const devServerManager = new DevServerManager(projectRoot, {
+    appLaunchMode: AppLaunchMode.Start,
     minify: options.minify,
     mode: 'production',
     location: {},

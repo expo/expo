@@ -11,6 +11,7 @@ import {
   hasRequiredAndroidFilesAsync,
   hasRequiredIOSFilesAsync,
 } from '../prebuild/clearNativeFolder';
+import { ProjectState } from '../start/project/projectState';
 import { intersecting } from './array';
 
 const debug = require('debug')('expo:utils:scheme') as typeof console.log;
@@ -79,6 +80,35 @@ async function getManagedDevClientSchemeAsync(projectRoot: string): Promise<stri
     );
     return null;
   }
+}
+
+/**
+ * Query the scheme for the project.
+ */
+export async function getSchemeAsync(
+  projectRoot: string,
+  projectState: ProjectState
+): Promise<string | null> {
+  if (!projectState.customized) {
+    const { exp } = getConfig(projectRoot);
+    return Array.isArray(exp.scheme) ? exp.scheme[0] : exp.scheme ?? null;
+  }
+
+  const [ios, android] = await Promise.all([
+    getSchemesForIosAsync(projectRoot),
+    getSchemesForAndroidAsync(projectRoot),
+  ]);
+
+  let matching: string;
+  // Allow for only one native project to exist.
+  if (ios.length === 0) {
+    matching = android[0];
+  } else if (android.length === 0) {
+    matching = ios[0];
+  } else {
+    [matching] = intersecting(ios, android);
+  }
+  return matching ?? null;
 }
 
 // TODO: Revisit and test after run code is merged.

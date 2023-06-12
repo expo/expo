@@ -1,4 +1,5 @@
 import * as Log from '../../../../log';
+import { AppLaunchMode } from '../../../server/AppLaunchMode';
 import { AndroidDeviceManager } from '../AndroidDeviceManager';
 import { AndroidPlatformManager } from '../AndroidPlatformManager';
 import { startAdbReverseAsync } from '../adbReverse';
@@ -29,7 +30,8 @@ describe('openAsync', () => {
     const manager = new AndroidPlatformManager('/', 8081, {
       getCustomRuntimeUrl: () => null,
       getDevServerUrl: () => null,
-      getExpoGoUrl: () => null,
+      getExpoGoUrl: () => '',
+      getRedirectUrl: () => null,
     });
 
     // @ts-expect-error
@@ -37,7 +39,7 @@ describe('openAsync', () => {
       getAppIdAsync: () => 'dev.bacon.app',
     }));
 
-    expect(await manager.openAsync({ runtime: 'custom' })).toStrictEqual({
+    expect(await manager.openAsync({ runtime: 'native', appLaunchMode: AppLaunchMode.OpenDeepLinkDevClient })).toStrictEqual({
       url: 'dev.bacon.app/.MainActivity',
     });
     expect(startAdbReverseAsync).toHaveBeenCalledTimes(1);
@@ -49,14 +51,15 @@ describe('openAsync', () => {
     const manager = new AndroidPlatformManager('/', 8081, {
       getCustomRuntimeUrl: () => null,
       getDevServerUrl: () => null,
-      getExpoGoUrl: () => null,
+      getExpoGoUrl: () => '',
+      getRedirectUrl: () => null,
     });
     // @ts-expect-error
     manager._getAppIdResolver = jest.fn(() => ({
       getAppIdAsync: () => 'dev.bacon.app',
     }));
     expect(
-      await manager.openAsync({ runtime: 'custom', props: { launchActivity: 'foobar' } })
+      await manager.openAsync({ runtime: 'native', appLaunchMode: AppLaunchMode.OpenDeepLinkDevClient, customLaunchProps: { launchActivity: 'foobar' } })
     ).toStrictEqual({
       url: 'foobar',
     });

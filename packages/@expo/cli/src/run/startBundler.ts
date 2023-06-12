@@ -3,7 +3,9 @@ import chalk from 'chalk';
 
 import * as Log from '../log';
 import { startInterfaceAsync } from '../start/interface/startInterface';
+import { getProjectStateAsync } from '../start/project/projectState';
 import { DevServerManager } from '../start/server/DevServerManager';
+import { resolveAppLaunchMode } from '../start/startAsync';
 import { isInteractive } from '../utils/interactive';
 
 export async function startBundlerAsync(
@@ -18,10 +20,12 @@ export async function startBundlerAsync(
     scheme?: string;
   }
 ): Promise<DevServerManager> {
+  const projectState = await getProjectStateAsync(projectRoot);
+  const appLaunchMode = await resolveAppLaunchMode(projectState);
   const options = {
     port,
     headless,
-    devClient: true,
+    appLaunchMode,
 
     location: {
       scheme,

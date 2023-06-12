@@ -2,6 +2,7 @@ import assert from 'assert';
 
 import { AbortCommandError, CommandError } from '../utils/errors';
 import { resolvePortAsync } from '../utils/port';
+import type { ProjectState } from './project/projectState';
 
 export type Options = {
   forceManifestType: 'classic' | 'expo-updates';
@@ -17,12 +18,18 @@ export type Options = {
   port: number;
   /** Should instruct the bundler to create minified bundles. */
   minify: boolean;
+  appLaunchMode: string | undefined;
+  /** @deprecated Use `appLaunchMode` instead. */
   devClient: boolean;
   scheme: string | null;
   host: 'localhost' | 'lan' | 'tunnel';
 };
 
-export async function resolveOptionsAsync(projectRoot: string, args: any): Promise<Options> {
+export async function resolveOptionsAsync(
+  projectRoot: string,
+  projectState: ProjectState,
+  args: any
+): Promise<Options> {
   const forceManifestType = args['--force-manifest-type'];
   if (forceManifestType) {
     assert.match(forceManifestType, /^(classic|expo-updates)$/);
@@ -35,7 +42,7 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
     tunnel: args['--tunnel'],
   });
 
-  const scheme = await resolveSchemeAsync(projectRoot, {
+  const scheme = await resolveSchemeAsync(projectRoot, projectState, {
     scheme: args['--scheme'],
     devClient: args['--dev-client'],
   });
@@ -56,6 +63,7 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
     port: args['--port'],
     minify: !!args['--minify'],
 
+    appLaunchMode: args['--app-launch-mode'],
     devClient: !!args['--dev-client'],
 
     scheme,
@@ -65,32 +73,17 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
 
 export async function resolveSchemeAsync(
   projectRoot: string,
+  projectState: ProjectState,
   options: { scheme?: string; devClient?: boolean }
 ): Promise<string | null> {
-  const resolveFrom = await import('resolve-from').then((m) => m.default);
-
-  const isDevClientPackageInstalled = (() => {
-    try {
-      // we check if `expo-dev-launcher` is installed instead of `expo-dev-client`
-      // because someone could install only launcher.
-      resolveFrom(projectRoot, 'expo-dev-launcher');
-      return true;
-    } catch {
-      return false;
-    }
-  })();
-
+  // Use the custom scheme
   if (typeof options.scheme === 'string') {
-    // Use the custom scheme
-    return options.scheme ?? null;
-  } else if (options.devClient || isDevClientPackageInstalled) {
-    const { getOptionalDevClientSchemeAsync } = await import('../utils/scheme');
-    // Attempt to find the scheme or warn the user how to setup a custom scheme
-    return await getOptionalDevClientSchemeAsync(projectRoot);
-  } else {
-    // Ensure this is reset when users don't use `--scheme`, `--dev-client` and don't have the `expo-dev-client` package installed.
-    return null;
+    return options.scheme;
   }
+
+  // Attempt to find the scheme or warn the user how to setup a custom scheme
+  const { getSchemeAsync } = await import('../utils/scheme');
+  return getSchemeAsync(projectRoot, projectState);
 }
 
 /** Resolve and assert host type options. */

@@ -3,6 +3,7 @@ import chalk from 'chalk';
 
 import { Log } from '../../log';
 import { WebSupportProjectPrerequisite } from '../../start/doctor/web/WebSupportProjectPrerequisite';
+import { AppLaunchMode } from '../../start/server/AppLaunchMode';
 import { getPlatformBundlers } from '../../start/server/platformBundlers';
 import { WebpackBundlerDevServer } from '../../start/server/webpack/WebpackBundlerDevServer';
 import { CommandError } from '../../utils/errors';
@@ -19,7 +20,7 @@ export async function exportWebAsync(projectRoot: string, options: Options) {
   const { exp } = getConfig(projectRoot);
   const platformBundlers = getPlatformBundlers(exp);
   // Create a bundler interface
-  const bundler = new WebpackBundlerDevServer(projectRoot, platformBundlers, false);
+  const bundler = new WebpackBundlerDevServer(projectRoot, platformBundlers);
 
   // If the user set `web.bundler: 'metro'` then they should use `expo export` instead.
   if (!bundler.isTargetingWeb()) {

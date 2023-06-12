@@ -1,3 +1,4 @@
+import { AppLaunchMode } from '../../server/AppLaunchMode';
 import { AppIdResolver } from '../AppIdResolver';
 import { BaseOpenInCustomProps, PlatformManager } from '../PlatformManager';
 import { AppleAppIdResolver } from './AppleAppIdResolver';
@@ -29,8 +30,8 @@ export class ApplePlatformManager extends PlatformManager<Device> {
 
   async openAsync(
     options:
-      | { runtime: 'expo' | 'web' }
-      | { runtime: 'custom'; props?: Partial<BaseOpenInCustomProps> },
+      | { runtime: 'web' }
+      | { runtime: 'native'; appLaunchMode: AppLaunchMode; customLaunchProps?: Partial<BaseOpenInCustomProps> },
     resolveSettings?: Partial<{ shouldPrompt?: boolean; device?: Device }>
   ): Promise<{ url: string }> {
     await AppleDeviceManager.assertSystemRequirementsAsync();

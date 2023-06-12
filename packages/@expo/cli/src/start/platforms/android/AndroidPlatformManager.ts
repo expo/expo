@@ -1,3 +1,4 @@
+import { AppLaunchMode } from '../../server/AppLaunchMode';
 import { AppIdResolver } from '../AppIdResolver';
 import { BaseOpenInCustomProps, BaseResolveDeviceProps, PlatformManager } from '../PlatformManager';
 import { AndroidAppIdResolver } from './AndroidAppIdResolver';
@@ -33,8 +34,8 @@ export class AndroidPlatformManager extends PlatformManager<Device, AndroidOpenI
 
   async openAsync(
     options:
-      | { runtime: 'expo' | 'web' }
-      | { runtime: 'custom'; props?: Partial<AndroidOpenInCustomProps> },
+      | { runtime: 'web' }
+      | { runtime: 'native'; appLaunchMode: AppLaunchMode; customLaunchProps?: Partial<AndroidOpenInCustomProps> },
     resolveSettings?: Partial<BaseResolveDeviceProps<Device>>
   ): Promise<{ url: string }> {
     await startAdbReverseAsync([this.port]);
