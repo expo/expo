@@ -2,13 +2,12 @@ import { MetroConfig } from '@expo/metro-config';
 import crypto from 'crypto';
 import type { Module } from 'metro';
 import { getJsOutput, isJsModule } from 'metro/src/DeltaBundler/Serializers/helpers/js';
-// @ts-expect-error: TODO: Use Metro upstream types: https://github.com/facebook/metro/commit/07732e778b0587ce7e92571e66243c7546781f7c
+import type { ReadOnlyDependencies } from 'metro/src/DeltaBundler/types';
 import type IncrementalBundler from 'metro/src/IncrementalBundler';
 import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
 import path from 'path';
 
 // import { getAssetData } from 'metro/src/Assets';
-export type ReadOnlyDependencies<T = any> = Map<string, Module<T>>;
 
 type Options = {
   processModuleFilter: (modules: Module) => boolean;

@@ -11,6 +11,7 @@ import {
 import type { LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import Metro from 'metro';
+import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
 
 import { CSSAsset, getCssModulesFromBundler } from '../start/server/metro/getCssModulesFromBundler';
 import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
@@ -81,7 +82,7 @@ export async function bundleAsync(
   const buildAsync = async (bundle: BundleOptions): Promise<BundleOutput> => {
     const buildID = `bundle_${nextBuildID++}_${bundle.platform}`;
     const isHermes = isEnableHermesManaged(expoConfig, bundle.platform);
-    const bundleOptions: Metro.BundleOptions = {
+    const bundleOptions: MetroBundleOptions = {
       ...Server.DEFAULT_BUNDLE_OPTIONS,
       bundleType: 'bundle',
       platform: bundle.platform,
@@ -109,7 +110,6 @@ export async function bundleAsync(
     reporter.update({
       buildID,
       type: 'bundle_build_started',
-      // @ts-expect-error: TODO
       bundleDetails,
     });
     try {

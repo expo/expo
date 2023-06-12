@@ -3837,11 +3837,6 @@
   resolved "https://registry.yarnpkg.com/@types/aria-query/-/aria-query-4.2.2.tgz#ed4e0ad92306a704f9fb132a0cfcf77486dbe2bc"
   integrity sha512-HnYpAE1Y6kRyKM/XkEuiRQhTHvkzMBurTHnpFLYLBGPIylZNPs9jJcuOOYWxPLJCSEtmZT0Y8rHDokKN7rRTig==
 
-"@types/babel__code-frame@*":
-  version "7.0.3"
-  resolved "https://registry.yarnpkg.com/@types/babel__code-frame/-/babel__code-frame-7.0.3.tgz#eda94e1b7c9326700a4b69c485ebbc9498a0b63f"
-  integrity sha512-2TN6oiwtNjOezilFVl77zwdNPwQWaDBBCCWWxyo1ctiO3vAtd7H/aB/CBJdw9+kqq3+latD0SXoedIuHySSZWw==
-
 "@types/babel__core@^7.1.14":
   version "7.1.19"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.1.19.tgz#7b497495b7d1b4812bdb9d02804d0576f43ee460"
@@ -4176,67 +4171,6 @@
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/@types/long/-/long-4.0.2.tgz#b74129719fc8d11c01868010082d483b7545591a"
   integrity sha512-MqTGEo5bj5t157U6fA/BiDynNkn0YknVdh48CMPkTSpFTVmvao5UQmm7uEF6xBEo7qIMAlY/JSleYaE6VOdpaA==
-
-"@types/metro-babel-transformer@*":
-  version "0.66.0"
-  resolved "https://registry.yarnpkg.com/@types/metro-babel-transformer/-/metro-babel-transformer-0.66.0.tgz#54eb259038e699d27ed72cd69856a84fc31d4380"
-  integrity sha512-EMp16oxuhMJWuZ0p+/7Fz/hRxlTfiMr6LPctHQnIDhUFVuWcIYmDL9segxIp5vQXWE6kopjOlAnm84o4toWojg==
-
-"@types/metro-cache@*":
-  version "0.66.0"
-  resolved "https://registry.yarnpkg.com/@types/metro-cache/-/metro-cache-0.66.0.tgz#771c141ff6d0509324d6c8acb5a0cf332ddd0718"
-  integrity sha512-VZyANwzn1aO6pqnJKPSvwk4yWOX23oolsVH68oAe4zlZiwduRHBoTsG7KhmrvuE9AOAAYB3YCOZfY2/fz9X7Lw==
-  dependencies:
-    "@types/node" "*"
-
-"@types/metro-config@*":
-  version "0.66.0"
-  resolved "https://registry.yarnpkg.com/@types/metro-config/-/metro-config-0.66.0.tgz#91cd115773227d56bd79fde3025feaf30ba33f21"
-  integrity sha512-2H52IsyIXwQvakfjxV1sRDGtq25m8C7Rtf1lSVVFeM54KKeKZRThqJj5c/HoVvAVCswneogyyWmjv9Gn1JUqaw==
-  dependencies:
-    "@types/metro" "*"
-    "@types/metro-cache" "*"
-    "@types/metro-resolver" "*"
-    "@types/metro-source-map" "*"
-    "@types/metro-transform-worker" "*"
-
-"@types/metro-core@*", "@types/metro-core@~0.66.0":
-  version "0.66.0"
-  resolved "https://registry.yarnpkg.com/@types/metro-core/-/metro-core-0.66.0.tgz#35477ebccfdc4a94080fde3a22c89f053ec2365d"
-  integrity sha512-bTlWh1gf2DqLtcA3XnJgR4h4UO65uFhKWPF1XikudeUMAvVh0Hv2uDAdinP1kRhWFSccmYsa74dr1CVZNXDiqA==
-  dependencies:
-    "@types/node" "*"
-
-"@types/metro-resolver@*":
-  version "0.66.0"
-  resolved "https://registry.yarnpkg.com/@types/metro-resolver/-/metro-resolver-0.66.0.tgz#3d3c59c8d4068f4e0429db912bad6d774709fc52"
-  integrity sha512-a97Su7R7XoKuEuhMSeAqddfeb6QygRwXYjHDHKtGoIF4IkXt5FAjW5Vf+oJTpzgPIptRpViuLYre89pzudC/+g==
-
-"@types/metro-source-map@*":
-  version "0.66.0"
-  resolved "https://registry.yarnpkg.com/@types/metro-source-map/-/metro-source-map-0.66.0.tgz#32286858a5d7e266e73d5abed7c4e3b33b6626bd"
-  integrity sha512-lzZDCemXrM7XfS1D3Zmb6mOdevfk8jZ/433gqkbkTmY9IivKzr+KyXG39MSrOdF3QTXwu2J9qAfLr26pTxPcUQ==
-
-"@types/metro-transform-worker@*":
-  version "0.66.0"
-  resolved "https://registry.yarnpkg.com/@types/metro-transform-worker/-/metro-transform-worker-0.66.0.tgz#fdefbb7474f887eb5bcbffd3a5696a9f199a9200"
-  integrity sha512-lyFAFiY2lkQhJKOcvOFnD7jgDY++eEEP1febRkNGsl8zrmvsXSa5/NBhAw06dGEkzZr/LOE3MxCo8k7qunfgDg==
-  dependencies:
-    "@types/metro" "*"
-    "@types/metro-babel-transformer" "*"
-    "@types/metro-source-map" "*"
-
-"@types/metro@*", "@types/metro@~0.66.1":
-  version "0.66.1"
-  resolved "https://registry.yarnpkg.com/@types/metro/-/metro-0.66.1.tgz#f619bc21ff2a459eff2222ca13a58693dd0ebfe3"
-  integrity sha512-dwmII5ifXDuBDT3w7fWYKLT/TPsVcU3I8ydj3uoLmUFNTpsc3H+2I6ovDIiQKlx/GI1mE4LswzLo/zkqMFu5AQ==
-  dependencies:
-    "@types/babel__code-frame" "*"
-    "@types/metro-babel-transformer" "*"
-    "@types/metro-config" "*"
-    "@types/metro-core" "*"
-    "@types/metro-source-map" "*"
-    "@types/metro-transform-worker" "*"
 
 "@types/micromatch@^4.0.2":
   version "4.0.2"
