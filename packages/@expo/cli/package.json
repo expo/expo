@@ -126,8 +126,6 @@
     "@types/getenv": "^1.0.0",
     "@types/js-yaml": "^3.12.2",
     "@types/klaw-sync": "^6.0.0",
-    "@types/metro": "~0.66.1",
-    "@types/metro-core": "~0.66.0",
     "@types/minipass": "^3.1.2",
     "@types/npm-package-arg": "^6.1.0",
     "@types/progress": "^2.0.5",

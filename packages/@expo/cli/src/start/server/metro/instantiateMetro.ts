@@ -113,6 +113,7 @@ export async function instantiateMetroAsync(
 
   const { server, metro } = await runServer(metroBundler, metroConfig, {
     hmrEnabled: true,
+    // @ts-expect-error: Inconsistent `websocketEndpoints` type between metro and @react-native-community/cli-server-api
     websocketEndpoints,
     watch: isWatchEnabled(),
   });
