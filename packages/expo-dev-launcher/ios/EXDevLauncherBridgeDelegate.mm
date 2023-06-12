@@ -44,9 +44,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
     RCTAppSetupPrepareApp(application, enableTM);
 
-    if (!self.bridge) {
         self.bridge = [self createBridgeWithDelegate:self launchOptions:launchOptions];
-    }
 
 #ifdef RCT_NEW_ARCH_ENABLED
     _contextContainer = std::make_shared<facebook::react::ContextContainer const>();
