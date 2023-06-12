@@ -12,6 +12,7 @@ import { groupBy } from '../utils/array';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
 import { learnMore } from '../utils/link';
 import { setNodeEnv } from '../utils/nodeEnv';
+import { joinWithCommasAnd } from '../utils/strings';
 import { checkPackagesAsync } from './checkPackages';
 import { Options } from './resolveOptions';
 
@@ -112,8 +113,10 @@ export async function installPackagesAsync(
 
   if (versioning.excludedNativeModules.length) {
     Log.log(
-      chalk`\u203A Using latest version instead of ${formatExcludedPackages(
-        versioning.excludedNativeModules
+      chalk`\u203A Using latest version instead of ${joinWithCommasAnd(
+        versioning.excludedNativeModules.map(
+          ({ bundledNativeVersion, name }) => `${bundledNativeVersion} for ${name}`
+        )
       )} because ${
         versioning.excludedNativeModules.length > 1 ? 'they are' : 'it is'
       } listed in {bold expo.install.exclude} in package.json. ${learnMore(
@@ -125,19 +128,6 @@ export async function installPackagesAsync(
   await packageManager.addAsync([...packageManagerArguments, ...versioning.packages]);
 
   await applyPluginsAsync(projectRoot, versioning.packages);
-}
-
-function formatExcludedPackages(
-  packages: { name: string; bundledNativeVersion: string }[]
-): string {
-  const packagesWithVersions = packages.map(({ bundledNativeVersion, name }) => {
-    return `${bundledNativeVersion} for ${name}`;
-  });
-  if (packagesWithVersions.length === 1) {
-    return packagesWithVersions[0];
-  }
-  const last = packagesWithVersions.pop();
-  return `${packagesWithVersions.join(', ')}, and ${last}`;
 }
 
 export async function fixPackagesAsync(
