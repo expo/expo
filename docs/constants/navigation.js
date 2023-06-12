@@ -394,7 +394,6 @@ const preview = [
       makePage('router/advance/router-settings.mdx'),
     ]),
     makeGroup('Reference', [
-      makePage('router/reference/roadmap.mdx'),
       makePage('router/reference/sitemap.mdx'),
       makePage('router/reference/typescript.mdx'),
       makePage('router/reference/authentication.mdx'),
