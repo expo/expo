@@ -1,11 +1,11 @@
 package expo.modules.updates.loader
 
 import android.content.Context
-import androidx.core.text.htmlEncode
 import expo.modules.jsonutils.require
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.entity.AssetEntity
+import expo.modules.structuredheaders.Dictionary
 import expo.modules.updates.launcher.NoDatabaseLauncher
 import expo.modules.updates.selectionpolicy.SelectionPolicies
 import okhttp3.*
@@ -23,6 +23,7 @@ import java.io.ByteArrayOutputStream
 import expo.modules.easclient.EASClientID
 import okhttp3.Headers.Companion.toHeaders
 import expo.modules.jsonutils.getNullable
+import expo.modules.structuredheaders.StringItem
 import expo.modules.updates.codesigning.ValidationResult
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.UpdateEntity
@@ -833,7 +834,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
         ManifestMetadata.getServerDefinedHeaders(database, configuration) ?: JSONObject()
 
       ManifestMetadata.getExtraParams(database, configuration)?.let {
-        extraHeaders.put("Expo-Extra-Params", it.keys.joinToString(", ") { k -> "$k=\"${it[k]?.htmlEncode()}\"" })
+        extraHeaders.put("Expo-Extra-Params", Dictionary.valueOf(it.mapValues { elem -> StringItem.valueOf(elem.value) }))
       }
 
       launchedUpdate?.let {
