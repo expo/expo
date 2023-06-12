@@ -1505,12 +1505,14 @@ PODS:
   - ExpoModulesCore (1.3.2):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
+    - React-NativeModulesApple
     - React-RCTAppDelegate
     - ReactCommon/turbomodule/core
   - ExpoModulesCore/Tests (1.3.2):
     - ExpoModulesTestCore
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
+    - React-NativeModulesApple
     - React-RCTAppDelegate
     - ReactCommon/turbomodule/core
   - ExpoModulesTestCore (0.11.2):
@@ -3693,7 +3695,7 @@ SPEC CHECKSUMS:
   ExpoLocalAuthentication: de5f50fae4fa643a3fc6b404d61a2ab36b5acf20
   ExpoLocalization: c1201ba5cfcfb187972138e58c07cc708c5399db
   ExpoMailComposer: b9a4871714550d5b4e26d1873f0572e350c86478
-  ExpoModulesCore: 41ff5ce328543283207b509e834a7dd086fcc73e
+  ExpoModulesCore: 2c69bc93f9a2b522bba0bc041ff9fd5d066c89ec
   ExpoModulesTestCore: 42fce831c9601dcfaba09fe7a03dfe99e25754a4
   ExpoNetwork: ef59bebcdbeb6ea188157a8fc88e9ceafbff1f89
   ExpoPrint: 92311a7545d66959c6f3884e085bf336ba6c7c48
