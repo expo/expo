@@ -11,7 +11,6 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTB
 
   private weak var reactDelegate: ExpoReactDelegate?
   private var bridgeDelegate: RCTBridgeDelegate?
-  private var launchOptions: [AnyHashable : Any]?
   private var deferredRootView: EXDevLauncherDeferredRCTRootView?
   private var rootViewModuleName: String?
   private var rootViewInitialProperties: [AnyHashable : Any]?
@@ -44,14 +43,13 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTB
 
     self.reactDelegate = reactDelegate
     self.bridgeDelegate = EXRCTBridgeDelegateInterceptor(bridgeDelegate: bridgeDelegate, interceptor: self)
-    self.launchOptions = launchOptions
 
     EXDevLauncherController.sharedInstance().autoSetupPrepare(self, launchOptions: launchOptions)
     if let sharedController = UpdatesControllerRegistry.sharedInstance.controller {
       // for some reason the swift compiler and bridge are having issues here
       EXDevLauncherController.sharedInstance().updatesInterface = sharedController
     }
-    return EXDevLauncherDeferredRCTBridge(delegate: self.bridgeDelegate!, launchOptions: self.launchOptions)
+    return EXDevLauncherDeferredRCTBridge(delegate: self.bridgeDelegate!, launchOptions: launchOptions)
   }
 
   public override func createRootView(reactDelegate: ExpoReactDelegate, bridge: RCTBridge, moduleName: String, initialProperties: [AnyHashable : Any]?) -> RCTRootView? {
@@ -74,19 +72,7 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTB
   // MARK: EXDevelopmentClientControllerDelegate implementations
 
   public func devLauncherController(_ developmentClientController: EXDevLauncherController, didStartWithSuccess success: Bool) {
-    var launchOptions: [AnyHashable: Any] = [:]
-
-    if let initialLaunchOptions = self.launchOptions {
-      for (key, value) in initialLaunchOptions {
-        launchOptions[key] = value
-      }
-    }
-
-    for (key, value) in developmentClientController.getLaunchOptions() {
-      launchOptions[key] = value
-    }
-
-    let bridge = RCTBridge(delegate: self.bridgeDelegate, launchOptions: launchOptions)
+    let bridge = RCTBridge(delegate: self.bridgeDelegate, launchOptions: developmentClientController.getLaunchOptions())
     developmentClientController.appBridge = bridge
 
     let rootView = RCTRootView(bridge: bridge!, moduleName: self.rootViewModuleName!, initialProperties: self.rootViewInitialProperties)
