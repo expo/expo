@@ -12,21 +12,16 @@ class ClipboardPasteButton: ExpoView {
   var acceptedContentTypes: [AcceptedTypes] = []
   var imageOptions = GetImageOptions()
 
-  var needsUpdate = true
   private var childView: UIView?
   private var id = 0
 
-  func updateIfNeeded() {
-    guard needsUpdate else {
-      return
-    }
+  func update() {
     unmountChild()
     if #available(iOS 16.0, *) {
       mountView()
     } else {
       log.error("ClipboardPasteButton is only supported on iOS 16 and above")
     }
-    needsUpdate = false
   }
 
   @available(iOS 16.0, *)

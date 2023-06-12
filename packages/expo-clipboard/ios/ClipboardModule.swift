@@ -82,7 +82,7 @@ public class ClipboardModule: Module {
       ]
     }
 
-    Function("pasteButtonIsAvailable") { () -> Bool in
+    Property("isPasteButtonAvailable") { () -> Bool in
       if #available(iOS 16.0, *) {
         return true
       }
@@ -113,61 +113,32 @@ public class ClipboardModule: Module {
       Events("onPastePressed")
 
       Prop("backgroundColor") { (view, color: UIColor?) in
-        guard let color else {
-          view.baseBackgroundColor = .white
-          view.needsUpdate = true
-          return
-        }
-        if view.baseBackgroundColor != color {
-          view.baseBackgroundColor = color
-          view.needsUpdate = true
+        let backgroundColor = color ?? .white
+        if view.baseBackgroundColor != backgroundColor {
+          view.baseBackgroundColor = backgroundColor
         }
       }
 
       Prop("foregroundColor") { (view, color: UIColor?) in
-        guard let color else {
-          view.baseForegroundColor = .systemBlue
-          view.needsUpdate = true
-          return
-        }
-        if view.baseForegroundColor != color {
-          view.baseForegroundColor = color
-          view.needsUpdate = true
+        let foregroundColor = color ?? .systemBlue
+        if view.baseForegroundColor != foregroundColor {
+          view.baseForegroundColor = foregroundColor
         }
       }
 
       Prop("acceptedContentTypes") { (view, types: [AcceptedTypes]?) in
-        guard let types else {
-          view.acceptedContentTypes = []
-          view.needsUpdate = true
-          return
-        }
-        view.acceptedContentTypes = types
-        view.needsUpdate = true
+        let newTypes = types ?? []
+        view.acceptedContentTypes = newTypes
       }
 
       Prop("cornerStyle") { (view, style: CornerStyle?) in
-        guard let style else {
-          view.cornerStyle = .capsule
-          view.needsUpdate = true
-          return
-        }
-        if view.cornerStyle != style {
-          view.cornerStyle = style
-          view.needsUpdate = true
-        }
+        let newStyle = style ?? .capsule
+        view.cornerStyle = newStyle
       }
 
       Prop("displayMode") { (view, mode: DisplayMode?) in
-        guard let mode else {
-          view.displayMode = .iconAndLabel
-          view.needsUpdate = true
-          return
-        }
-        if view.displayMode != mode {
-          view.displayMode = mode
-          view.needsUpdate = true
-        }
+        let displayMode = mode ?? .iconAndLabel
+        view.displayMode = displayMode
       }
 
       Prop("imageOptions") { (view, options: GetImageOptions) in
@@ -175,7 +146,7 @@ public class ClipboardModule: Module {
       }
 
       OnViewDidUpdateProps { view in
-        view.updateIfNeeded()
+        view.update()
       }
     }
   }

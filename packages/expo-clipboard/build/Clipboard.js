@@ -217,6 +217,14 @@ export function pasteButtonIsAvailable() {
     }
     return ExpoClipboard.pasteButtonIsAvailable();
 }
+/**
+ * Property that dertermines if the `ClipboardPasteButton` is available.
+ *
+ * This requires the users device to be using at least iOS 16.
+ *
+ * `true` if the component is available, and `false` otherwise.
+ */
+export const isPasteButtonAvailable = Platform.OS === 'ios' ? ExpoClipboard.isPasteButtonAvailable : false;
 export * from './Clipboard.types';
 export { default as ClipboardPasteButton } from './ClipboardPasteButton';
 //# sourceMappingURL=Clipboard.js.map

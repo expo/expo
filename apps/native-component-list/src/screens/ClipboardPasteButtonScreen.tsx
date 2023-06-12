@@ -4,7 +4,7 @@ import React from 'react';
 import { Text, View, StyleSheet, Image } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
-const available = Clipboard.pasteButtonIsAvailable();
+const available = Clipboard.isPasteButtonAvailable;
 
 export default function ClipboardPasteButtonScreen() {
   const [textData, setTextData] = React.useState<TextPasteEvent | null>(null);

@@ -152,6 +152,14 @@ export declare function removeClipboardListener(subscription: Subscription): voi
  * @returns A boolean that is `true` if the component is available, and `false` otherwise.
  */
 export declare function pasteButtonIsAvailable(): boolean;
+/**
+ * Property that dertermines if the `ClipboardPasteButton` is available.
+ *
+ * This requires the users device to be using at least iOS 16.
+ *
+ * `true` if the component is available, and `false` otherwise.
+ */
+export declare const isPasteButtonAvailable: boolean;
 export * from './Clipboard.types';
 export { default as ClipboardPasteButton } from './ClipboardPasteButton';
 //# sourceMappingURL=Clipboard.d.ts.map
