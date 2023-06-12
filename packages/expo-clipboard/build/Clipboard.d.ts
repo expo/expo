@@ -145,13 +145,13 @@ export declare function addClipboardListener(listener: (event: ClipboardEvent) =
  */
 export declare function removeClipboardListener(subscription: Subscription): void;
 /**
- * Dertermines if the `ApplePasteButton` is available.
+ * Dertermines if the `ClipboardPasteButton` is available.
  *
  * This requires the users device to be using at least iOS 16.
  *
  * @returns A boolean that is `true` if the component is available, and `false` otherwise.
  */
-export declare function applePasteButtonIsAvailable(): boolean;
+export declare function pasteButtonIsAvailable(): boolean;
 export * from './Clipboard.types';
-export { default as ApplePasteButton } from './ApplePasteButton';
+export { default as ClipboardPasteButton } from './ClipboardPasteButton';
 //# sourceMappingURL=Clipboard.d.ts.map

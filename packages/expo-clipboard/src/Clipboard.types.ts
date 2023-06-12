@@ -113,14 +113,16 @@ export interface ApplePasteButtonProps extends ViewProps {
    * The cornerStyle of the button.
    * @default capsule
    *
-   * @see [Apple Documetation](https://developer.apple.com/documentation/uikit/uibutton/configuration/cornerstyle) for more details.
+   * @see [Apple
+   * Documetation](https://developer.apple.com/documentation/uikit/uibutton/configuration/cornerstyle) for more details.
    */
   cornerStyle?: CornerStyle;
   /**
    * The displayMode of the button.
    * @default `iconAndLabel`
    *
-   * @see [Apple Documetation](https://developer.apple.com/documentation/uikit/uipastecontrol/displaymode) for more details.
+   * @see [Apple
+   * Documetation](https://developer.apple.com/documentation/uikit/uipastecontrol/displaymode) for more details.
    */
   displayMode?: DisplayMode;
   /**

@@ -1,19 +1,19 @@
 import * as Clipboard from 'expo-clipboard';
-import { ApplePasteButton, TextPasteEvent, ImagePasteEvent } from 'expo-clipboard';
+import { ClipboardPasteButton, TextPasteEvent, ImagePasteEvent } from 'expo-clipboard';
 import React from 'react';
 import { Text, View, StyleSheet, Image } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
-const available = Clipboard.applePasteButtonIsAvailable();
+const available = Clipboard.pasteButtonIsAvailable();
 
-export default function ApplePasteButtonScreen() {
+export default function ClipboardPasteButtonScreen() {
   const [textData, setTextData] = React.useState<TextPasteEvent | null>(null);
   const [imageData, setImageData] = React.useState<ImagePasteEvent | null>(null);
 
   if (!available) {
     return (
       <View style={styles.screen}>
-        <Text>ApplePasteButton is not available on this device</Text>
+        <Text>ClipboardPasteButton is not available on this device</Text>
       </View>
     );
   }
@@ -21,7 +21,7 @@ export default function ApplePasteButtonScreen() {
   return (
     <ScrollView>
       <View style={styles.screen}>
-        <ApplePasteButton
+        <ClipboardPasteButton
           imageOptions={{ format: 'png' }}
           onPress={(data) => {
             if (data.type === 'image') {

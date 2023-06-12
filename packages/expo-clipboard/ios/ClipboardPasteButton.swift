@@ -1,7 +1,7 @@
 import ExpoModulesCore
 import UniformTypeIdentifiers
 
-class ApplePasteButton: ExpoView {
+class ClipboardPasteButton: ExpoView {
   let onPastePressed = EventDispatcher()
 
   // MARK: - Properties
@@ -14,6 +14,7 @@ class ApplePasteButton: ExpoView {
 
   var needsUpdate = true
   private var childView: UIView?
+  private var id = 0
 
   func updateIfNeeded() {
     guard needsUpdate else {
@@ -23,7 +24,7 @@ class ApplePasteButton: ExpoView {
     if #available(iOS 16.0, *) {
       mountView()
     } else {
-      log.error("ApplePasteButton is only supported on iOS 16 and above")
+      log.error("ClipboardPasteButton is only supported on iOS 16 and above")
     }
     needsUpdate = false
   }
@@ -130,15 +131,28 @@ class ApplePasteButton: ExpoView {
       return
     }
 
-    let imageData = "data:\(imageOptions.imageFormat.getMimeType());base64,\(data.base64EncodedString())"
-    self.onPastePressed([
-      "type": "image",
-      "data": imageData,
-      "size": [
-        "width": image.size.width,
-        "height": image.size.height
-      ]
-    ])
+    guard let fileSystem = appContext?.fileSystem else {
+      log.error("Failed to access FileSystem")
+      return
+    }
+
+    let url = URL(fileURLWithPath: fileSystem.cachesDirectory)
+      .appendingPathComponent("clipboard-\(id).\(imageOptions.imageFormat.rawValue)")
+
+    do {
+      try data.write(to: url)
+      id += 1
+      self.onPastePressed([
+        "type": "image",
+        "data": url.absoluteString,
+        "size": [
+          "width": image.size.width,
+          "height": image.size.height
+        ]
+      ])
+    } catch {
+      log.error("Failed to write image data to file")
+    }
   }
 
   private func processHtml(data: String?) {

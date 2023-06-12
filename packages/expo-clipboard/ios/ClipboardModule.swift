@@ -82,7 +82,7 @@ public class ClipboardModule: Module {
       ]
     }
 
-    Function("applePasteButtonIsAvailable") { () -> Bool in
+    Function("pasteButtonIsAvailable") { () -> Bool in
       if #available(iOS 16.0, *) {
         return true
       }
@@ -109,7 +109,7 @@ public class ClipboardModule: Module {
 
     // MARK: - View
 
-    View(ApplePasteButton.self) {
+    View(ClipboardPasteButton.self) {
       Events("onPastePressed")
 
       Prop("backgroundColor") { (view, color: UIColor?) in

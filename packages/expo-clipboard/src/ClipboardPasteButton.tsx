@@ -8,7 +8,7 @@ import ExpoClipboardApplePasteButton from './ClipboardApplePasteButton';
 /**
  * This component displays the `UIPasteControl` button on your screen. This allows pasting from the clipboard without requesting permission from the user.
  *
- * You should only attempt to render this if [`Clipboard.applePasteButtonIsAvailable()`](#applePasteButtonIsAvailable)
+ * You should only attempt to render this if [`Clipboard.pasteButtonIsAvailable()`](#pasteButtonIsAvailable)
  * returns `true`. This component will render nothing if it is not available, and you will get
  * a warning in development mode (`__DEV__ === true`).
  *
@@ -22,7 +22,7 @@ import ExpoClipboardApplePasteButton from './ClipboardApplePasteButton';
  * Documentation](https://developer.apple.com/documentation/uikit/uipastecontrol)
  * for more details.
  */
-export default function ApplePasteButton({ onPress, ...restProps }: ApplePasteButtonProps) {
+export default function ClipboardPasteButton({ onPress, ...restProps }: ApplePasteButtonProps) {
   if (!ExpoClipboardApplePasteButton) {
     if (__DEV__) {
       console.warn("'ApplePasteButton' is not available.");

@@ -417,9 +417,9 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/ApplePasteButtonScreen'));
+      return optionalRequire(() => require('../screens/ClipboardPasteButtonScreen'));
     },
-    name: 'ApplePasteButton',
+    name: 'ClipboardPasteButton',
   },
   ...ImageScreens,
 ];
