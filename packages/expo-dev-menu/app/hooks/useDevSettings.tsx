@@ -88,8 +88,7 @@ export function useDevSettings() {
   }, []);
 
   const openRNDevMenu = React.useCallback(async () => {
-    await DevMenu.openDevMenuFromReactNative();
-    DevMenu.closeMenu();
+    DevMenu.openDevMenuFromReactNative();
   }, []);
 
   const openJSInspector = React.useCallback(async () => {
