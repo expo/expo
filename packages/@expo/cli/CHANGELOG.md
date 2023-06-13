@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unpublished
+- Exclude dependencies from check/fix operations in `expo install` when set in package.json `expo.install.exclude`. ([#22736](https://github.com/expo/expo/pull/22736) by [@keith-kurak](https://github.com/keith-kurak))
 
 ### 🛠 Breaking changes
 
