@@ -574,7 +574,7 @@ class UpdatesController private constructor(
   }
 
   fun sendEventToJS(eventName: String, eventType: String, params: WritableMap?) {
-    UpdatesUtils.sendEventToReactNative(reactNativeHost, eventName, eventType, params)
+    UpdatesUtils.sendEventToReactNative(reactNativeHost, logger, eventName, eventType, params)
   }
 
   companion object {

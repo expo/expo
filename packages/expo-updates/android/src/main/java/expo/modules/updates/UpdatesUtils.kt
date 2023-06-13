@@ -13,6 +13,8 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.modules.core.DeviceEventManagerModule
+import expo.modules.updates.logging.UpdatesErrorCode
+import expo.modules.updates.logging.UpdatesLogger
 import org.apache.commons.io.FileUtils
 import org.json.JSONArray
 import org.json.JSONObject
@@ -153,6 +155,7 @@ object UpdatesUtils {
 
   fun sendEventToReactNative(
     reactNativeHost: WeakReference<ReactNativeHost>?,
+    logger: UpdatesLogger,
     eventName: String,
     eventType: String,
     params: WritableMap?
@@ -186,19 +189,20 @@ object UpdatesUtils {
                 eventParams = Arguments.createMap()
               }
               eventParams!!.putString("type", eventType)
+              logger.info("Emitted event: name = $eventName, type = $eventType")
               emitter.emit(eventName, eventParams)
               return@execute
             }
           }
-          Log.e(TAG, "Could not emit $eventType event; no event emitter was found.")
+          logger.error("Could not emit $eventName $eventType event; no event emitter was found.", UpdatesErrorCode.JSRuntimeError)
         } catch (e: Exception) {
-          Log.e(TAG, "Could not emit $eventType event; no react context was found.")
+          logger.error("Could not emit $eventName $eventType event; no react context was found.", UpdatesErrorCode.JSRuntimeError)
         }
       }
     } else {
-      Log.e(
-        TAG,
-        "Could not emit $eventType event; UpdatesController was not initialized with an instance of ReactApplication."
+      logger.error(
+        "Could not emit $eventType event; UpdatesController was not initialized with an instance of ReactApplication.",
+        UpdatesErrorCode.Unknown
       )
     }
   }
