@@ -10,7 +10,9 @@ import {
 import { getVersionedDependenciesAsync } from '../start/doctor/dependencies/validateDependenciesVersions';
 import { groupBy } from '../utils/array';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
+import { learnMore } from '../utils/link';
 import { setNodeEnv } from '../utils/nodeEnv';
+import { joinWithCommasAnd } from '../utils/strings';
 import { checkPackagesAsync } from './checkPackages';
 import { Options } from './resolveOptions';
 
@@ -87,10 +89,20 @@ export async function installPackagesAsync(
     packageManagerArguments: string[];
   }
 ): Promise<void> {
+  // Read the project Expo config without plugins.
+  const { pkg } = getConfig(projectRoot, {
+    // Sometimes users will add a plugin to the config before installing the library,
+    // this wouldn't work unless we dangerously disable plugin serialization.
+    skipPlugins: true,
+  });
+
+  //assertNotInstallingExcludedPackages(projectRoot, packages, pkg);
+
   const versioning = await getVersionedPackagesAsync(projectRoot, {
     packages,
     // sdkVersion is always defined because we don't skipSDKVersionRequirement in getConfig.
     sdkVersion,
+    pkg,
   });
 
   Log.log(
@@ -98,6 +110,20 @@ export async function installPackagesAsync(
       versioning.messages.length ? versioning.messages.join(' and ') + ' ' : ''
     }using {bold ${packageManager.name}}`
   );
+
+  if (versioning.excludedNativeModules.length) {
+    Log.log(
+      chalk`\u203A Using latest version instead of ${joinWithCommasAnd(
+        versioning.excludedNativeModules.map(
+          ({ bundledNativeVersion, name }) => `${bundledNativeVersion} for ${name}`
+        )
+      )} because ${
+        versioning.excludedNativeModules.length > 1 ? 'they are' : 'it is'
+      } listed in {bold expo.install.exclude} in package.json. ${learnMore(
+        'https://expo.dev/more/expo-cli/#configuring-dependency-validation'
+      )}`
+    );
+  }
 
   await packageManager.addAsync([...packageManagerArguments, ...versioning.packages]);
 
