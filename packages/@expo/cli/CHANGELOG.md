@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix metro error imports in tests.
+
 ### 💡 Others
 
 ## 0.9.0 — 2023-06-13

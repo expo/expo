@@ -1,6 +1,6 @@
 import { ConfigT } from 'metro-config';
-import FailedToResolveNameError from 'metro-resolver/src/errors/FailedToResolveNameError';
-import FailedToResolvePathError from 'metro-resolver/src/errors/FailedToResolvePathError';
+import FailedToResolveNameError from 'metro-resolver/src/FailedToResolveNameError';
+import FailedToResolvePathError from 'metro-resolver/src/FailedToResolvePathError';
 
 import { withMetroResolvers } from '../withMetroResolvers';
 
