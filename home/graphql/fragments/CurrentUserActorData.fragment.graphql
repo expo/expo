@@ -1,4 +1,4 @@
-fragment CurrentUserData on User {
+fragment CurrentUserActorData on UserActor {
   id
   username
   firstName
@@ -7,7 +7,7 @@ fragment CurrentUserData on User {
   accounts {
     id
     name
-    owner {
+    ownerUserActor {
       id
       username
       profilePhoto

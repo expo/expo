@@ -1,6 +1,6 @@
 import { Spacer, View } from 'expo-dev-client-components';
 import * as Tracking from 'expo-tracking-transparency';
-import { useHome_CurrentUserQuery } from 'graphql/types';
+import { useHome_CurrentUserActorQuery } from 'graphql/types';
 import * as React from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -12,7 +12,7 @@ import { ThemeSection } from './ThemeSection';
 import { TrackingSection } from './TrackingSection';
 
 export function SettingsScreen() {
-  const { data } = useHome_CurrentUserQuery();
+  const { data } = useHome_CurrentUserActorQuery();
 
   return (
     <KeyboardAwareScrollView
@@ -35,10 +35,10 @@ export function SettingsScreen() {
           </>
         )}
         <ConstantsSection />
-        {data?.viewer ? (
+        {data?.meUserActor ? (
           <>
             <Spacer.Vertical size="xl" />
-            <DeleteAccountSection viewerUsername={data.viewer.username} />
+            <DeleteAccountSection viewerUsername={data.meUserActor.username} />
           </>
         ) : null}
       </View>
