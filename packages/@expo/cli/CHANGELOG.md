@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix metro types. ([#22867](https://github.com/expo/expo/pull/22867) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 0.9.0 — 2023-06-13

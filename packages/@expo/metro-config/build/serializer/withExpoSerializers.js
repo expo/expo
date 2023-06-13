@@ -84,14 +84,14 @@ function withSerializerPlugins(config, processors) {
   };
 }
 function getDefaultSerializer(fallbackSerializer) {
-  const defaultSerializer = fallbackSerializer !== null && fallbackSerializer !== void 0 ? fallbackSerializer : (...params) => {
+  const defaultSerializer = fallbackSerializer !== null && fallbackSerializer !== void 0 ? fallbackSerializer : async (...params) => {
     const bundle = (0, _baseJSBundle().default)(...params);
     const outputCode = (0, _bundleToString().default)(bundle).code;
     return outputCode;
   };
-  return (...props) => {
+  return async (...props) => {
     const [,, graph, options] = props;
-    const jsCode = defaultSerializer(...props);
+    const jsCode = await defaultSerializer(...props);
     if (!options.sourceUrl) {
       return jsCode;
     }
