@@ -13,7 +13,7 @@ React Native consists of both JavaScript and native code. Making this disctincti
 
 ## Debugging with Chrome DevTools
 
-Just like websites, you can use the Chrome DevTools to gain insights in the JavaScript code of your app. With this tool, you get access to the [Console](#interacting-with-the-console), [Source](#pausing-on-breakpoints), and even the [Network](#inspecting-network-requests) tab when using dev clients.
+As with websites, you can use Chrome DevTools to gain insights into the JavaScript code of your app. With this tool, you can access the [Console](#interacting-with-the-console), [Source](#pausing-on-breakpoints), and [Network](#inspecting-network-requests) tab when using [dev clients](/more/glossary-of-terms/#dev-clients).
 
 You can use the Chrome DevTools on any app using Hermes. To open it, start your app and press <kbd>j</kbd> in the terminal where Expo was started. Once you have opened the Chrome DevTools, it will appear as below:
 
@@ -24,9 +24,9 @@ You can use the Chrome DevTools on any app using Hermes. To open it, start your 
 
 ### Pausing on breakpoints
 
-You can pause your app on specific parts of your code. To do this, set the breakpoint under the sources tab by clicking on the line number, or add the `debugger` statement in your code.
+You can pause your app on specific parts of your code. To do this, set the breakpoint under the Sources tab by clicking the line number, or add the `debugger` statement in your code.
 
-Once your app is executing code that has a breakpoint, it will fully pause your app. This allows you to inspect all variables and functions in that scope. You can also execute code in the [Console](#interacting-with-the-console), as if it was part of your app.
+Once your app is executing code that has a breakpoint, it will entirely pause your app. This allows you to inspect all variables and functions in that scope. You can also execute code in the [Console](#interacting-with-the-console) tab as part of your app.
 
 <ImageSpotlight
   alt="The Chrome DevTools, showing one of the files under the source tab."
@@ -37,7 +37,7 @@ Once your app is executing code that has a breakpoint, it will fully pause your 
 
 ### Pausing on exceptions
 
-If your app is throwing unexpected errors, it can be hard to find the source of the error. You can use the Chrome DevTools to pause your app whenever an error is thrown. This allows you to inspect the stack trace and variables at the moment the error was thrown.
+If your app throws unexpected errors, it can be hard to find the source of the error. You can use Chrome DevTools to pause your app and inspect the stack trace and variables the moment it throws an error.
 
 <ImageSpotlight
   alt="Enable Pause on exceptions in the right panel of the sources tab"
@@ -45,7 +45,7 @@ If your app is throwing unexpected errors, it can be hard to find the source of 
   style={{ maxWidth: 320 }}
 />
 
-> **info** Some errors might be caught by other components in your app, like Expo Router. In these cases, you can turn on "Pause on caught exceptions". This will enable you to inspect any thrown error, even when it's handled properly.
+> **info** Some errors might be caught by other components in your app, such as Expo Router. In these cases, you can turn on **Pause on caught exceptions**. It will enable you to inspect any thrown error, even when handled properly.
 
 ### Interacting with the console
 
@@ -58,9 +58,9 @@ The Console tab gives you access to an interactive terminal, connected directly 
 
 ### Inspecting network requests
 
-The Network tab gives you insights in the network requests made by your app. You can inspect each individual requests and responses by clicking on them. This includes `fetch` requests, external loaded media, and in some cases even requests made by native modules.
+The **Network tab** gives you insights into the network requests made by your app. You can inspect each request and response by clicking on them. This includes `fetch` requests, external loaded media, and in some cases, even requests made by native modules.
 
-This feature is only available when using the dev client, it is not available when using Expo Go.
+This feature is only available when using the dev client and not when using Expo Go.
 
 <ImageSpotlight
   alt="Gain insights in the network requests from your app"
@@ -71,20 +71,25 @@ This feature is only available when using the dev client, it is not available wh
 
 ## Debugging with VS Code
 
-VS Code is a popular code editor, which has a built-in debugger. This debugger uses the same system as the Chrome DevTools, the inspector protocol.
+VS Code is a popular code editor, which has a built-in debugger. This debugger uses the same system as the Chrome DevTools &mdash; the inspector protocol.
 
-You can use this debugger with the [Expo Tools](https://github.com/expo/vscode-expo#readme) VS Code extension. This debugger allows you to set breakpoints, inspect variables, and even execute code through the debug console.
+You can use this debugger with the [Expo Tools](https://github.com/expo/vscode-expo#readme) VS Code extension. This debugger allows you to set breakpoints, inspect variables, and execute code through the debug console.
 
 <ImageSpotlight
   alt="Debug your code while you write it"
   src="/static/images/debugging/vscode-expo.png"
 />
 
-To start debugging, connect your app and run the "Expo: Debug ..." VS Code command. This will attach VS Code to your running app.
+To start debugging: 
+- Connect your app
+- Open VS Code command palette (based on your computer, it's either <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>p</kbd> or <kbd>Cmd ⌘</kbd> + <kbd>Shift</kbd> + <kbd>p</kbd>)
+- Run the **Expo: Debug ...** VS Code command. 
+
+This will attach VS Code to your running app.
 
 ## Debugging with React DevTools
 
-React DevTools is a great way to get a look at each of your components' props and state. You can open the React DevTools by pressing <kbd>Shift</kbd> + <kbd>m</kbd> in the terminal where Expo was started. Once you have opened the React DevTools, it will appear as below:
+React DevTools is a great way to look at your components' props and state. You can open it by pressing <kbd>Shift</kbd> + <kbd>m</kbd> in the terminal where Expo was started. Once it's open, it will appear as below:
 
 <ImageSpotlight
   alt="Inspect your components using the React DevTools"
