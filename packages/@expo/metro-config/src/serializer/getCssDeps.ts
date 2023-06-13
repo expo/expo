@@ -6,7 +6,7 @@ import { pathToHtmlSafeName } from '../transform-worker/css';
 import { hashString } from '../utils/hash';
 import { SerialAsset } from './serializerAssets';
 
-export type ReadOnlyDependencies<T = any> = Map<string, Module<T>>;
+export type ReadOnlyDependencies<T = any> = ReadonlyMap<string, Module<T>>;
 
 type Options = {
   processModuleFilter: (modules: Module) => boolean;
@@ -58,8 +58,8 @@ export function filterJsModules(
   return assets;
 }
 
-export function getCssSerialAssets(
-  dependencies: ReadOnlyDependencies,
+export function getCssSerialAssets<T extends any>(
+  dependencies: ReadOnlyDependencies<T>,
   { processModuleFilter, projectRoot }: Pick<Options, 'projectRoot' | 'processModuleFilter'>
 ): SerialAsset[] {
   const assets: SerialAsset[] = [];

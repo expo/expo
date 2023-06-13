@@ -4,7 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { ConfigT, InputConfigT } from 'metro-config';
+import { MixedOutput } from 'metro';
+import { InputConfigT, SerializerConfigT } from 'metro-config';
 import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
 import bundleToString from 'metro/src/lib/bundleToString';
 
@@ -13,7 +14,7 @@ import { environmentVariableSerializerPlugin } from './environmentVariableSerial
 import { fileNameFromContents, getCssSerialAssets } from './getCssDeps';
 import { SerialAsset } from './serializerAssets';
 
-export type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
+export type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
 
 export type SerializerParameters = Parameters<Serializer>;
 
@@ -47,17 +48,19 @@ export function withSerializerPlugins(
   };
 }
 
-function getDefaultSerializer(fallbackSerializer?: Serializer): Serializer {
+function getDefaultSerializer(fallbackSerializer?: Serializer | null): Serializer {
   const defaultSerializer =
     fallbackSerializer ??
-    ((...params: SerializerParameters) => {
+    (async (...params: SerializerParameters) => {
       const bundle = baseJSBundle(...params);
       const outputCode = bundleToString(bundle).code;
       return outputCode;
     });
-  return (...props: SerializerParameters): string | any => {
+  return async (
+    ...props: SerializerParameters
+  ): Promise<string | { code: string; map: string }> => {
     const [, , graph, options] = props;
-    const jsCode = defaultSerializer(...props);
+    const jsCode = await defaultSerializer(...props);
 
     if (!options.sourceUrl) {
       return jsCode;
@@ -71,7 +74,7 @@ function getDefaultSerializer(fallbackSerializer?: Serializer): Serializer {
       return jsCode;
     }
 
-    const cssDeps = getCssSerialAssets(graph.dependencies, {
+    const cssDeps = getCssSerialAssets<MixedOutput>(graph.dependencies, {
       projectRoot: options.projectRoot,
       processModuleFilter: options.processModuleFilter,
     });
@@ -100,7 +103,7 @@ function getDefaultSerializer(fallbackSerializer?: Serializer): Serializer {
 
 export function createSerializerFromSerialProcessors(
   processors: (SerializerPlugin | undefined)[],
-  originalSerializer?: Serializer
+  originalSerializer?: Serializer | null
 ): Serializer {
   const finalSerializer = getDefaultSerializer(originalSerializer);
   return (...props: SerializerParameters): ReturnType<Serializer> => {
