@@ -119,6 +119,14 @@
   return [expoGoConfig nullableDictionaryForKey:@"developer"];
 }
 
+- (nullable NSString *)logUrl {
+  NSDictionary *expoGoConfig = self.expoGoConfigRootObject;
+  if (!expoGoConfig) {
+    return nil;
+  }
+  return [expoGoConfig nullableStringForKey:@"logUrl"];
+}
+
 - (nullable NSString *)facebookAppId {
   NSDictionary *expoClientConfig = self.expoClientConfigRootObject;
   if (!expoClientConfig) {
