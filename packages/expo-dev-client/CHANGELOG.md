@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Bump `babel-plugin-module-resolver` dev dependency.
+
 ## 2.3.0 — 2023-05-08
 
 ### 💡 Others

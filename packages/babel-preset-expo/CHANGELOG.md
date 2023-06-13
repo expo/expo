@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Bump `babel-plugin-module-resolver` dev dependency.
+
 ## 9.4.1 — 2023-06-13
 
 ### 📚 3rd party library updates
