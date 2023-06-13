@@ -29,7 +29,7 @@ export function AppHeader({ navigation }) {
   };
 
   const isAuthenticated = userData != null;
-  const selectedUserImage = selectedAccount?.owner?.profilePhoto ?? null;
+  const selectedUserImage = selectedAccount?.ownerUserActor?.profilePhoto ?? null;
 
   return (
     <>
