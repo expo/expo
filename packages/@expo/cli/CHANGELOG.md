@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent source map requests for context modules from reaching Metro.
+
 ### 💡 Others
 
 ## 0.9.1 — 2023-06-13

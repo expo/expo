@@ -35,6 +35,7 @@ import { instantiateMetroAsync } from './instantiateMetro';
 import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import { observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
+import { ContextModuleSourceMapsMiddleware } from '../middleware/ContextModuleSourceMapsMiddleware';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
@@ -263,13 +264,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const manifestMiddleware = await this.getManifestMiddlewareAsync(options);
 
+    // Important that we noop source maps for context modules as soon as possible.
+    prependMiddleware(middleware, new ContextModuleSourceMapsMiddleware().getHandler());
+
     // We need the manifest handler to be the first middleware to run so our
     // routes take precedence over static files. For example, the manifest is
     // served from '/' and if the user has an index.html file in their project
     // then the manifest handler will never run, the static middleware will run
     // and serve index.html instead of the manifest.
     // https://github.com/expo/expo/issues/13114
-
     prependMiddleware(middleware, manifestMiddleware.getHandler());
 
     middleware.use(
