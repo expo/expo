@@ -35,7 +35,7 @@ export function SettingsScreen() {
           </>
         )}
         <ConstantsSection />
-        {data?.meUserActor ? (
+        {data?.meUserActor && data.meUserActor.__typename === 'User' ? (
           <>
             <Spacer.Vertical size="xl" />
             <DeleteAccountSection viewerUsername={data.meUserActor.username} />

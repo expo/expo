@@ -1,4 +1,5 @@
 fragment CurrentUserActorData on UserActor {
+  __typename
   id
   username
   firstName
