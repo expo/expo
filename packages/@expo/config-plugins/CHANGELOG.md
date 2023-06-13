@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update `xml2js` version.
+
 ## 7.1.0 — 2023-06-13
 
 ### 🎉 New features
