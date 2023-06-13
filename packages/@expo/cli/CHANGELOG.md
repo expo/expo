@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Drop support for sending `logUrl` in manifests (unimplemented feature from `expo-cli`).
+- Drop support for sending `logUrl` in manifests (unimplemented feature from `expo-cli`). ([#18596](https://github.com/expo/expo/pull/18596) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 

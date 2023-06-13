@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Drop support for `logUrl` which sent console logs to the legacy `expo-cli`.
+- Drop support for `logUrl` which sent console logs to the legacy `expo-cli`. ([#18596](https://github.com/expo/expo/pull/18596) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
