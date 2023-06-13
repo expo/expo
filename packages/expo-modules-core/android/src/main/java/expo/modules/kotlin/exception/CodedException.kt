@@ -7,6 +7,12 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.KType
 
+@Suppress("NOTHING_TO_INLINE")
+inline fun Throwable.toCodedException() = when (this) {
+  is CodedException -> this
+  else -> UnexpectedException(this)
+}
+
 /**
  * A class for errors specifying its `code` and providing the `description`.
  */
@@ -71,14 +77,29 @@ internal class IncompatibleArgTypeException(
   cause = cause
 )
 
+internal class EnumNoSuchValueException(
+  enumType: KClass<Enum<*>>,
+  enumConstants: Array<out Enum<*>>,
+  value: Any?
+) : CodedException(
+  message = "'$value' is not present in ${enumType.simpleName} enum, it must be one of: ${enumConstants.joinToString(separator = ", ") { "'${it.name}'" }}"
+)
+
 internal class MissingTypeConverter(
   forType: KType
 ) : CodedException(
   message = "Cannot find type converter for '$forType'.",
 )
 
-internal class InvalidArgsNumberException(received: Int, expected: Int) :
-  CodedException(message = "Received $received arguments, but $expected was expected.")
+@DoNotStrip
+internal class InvalidArgsNumberException(received: Int, expected: Int, required: Int = expected) :
+  CodedException(
+    message = if (required < expected) {
+      "Received $received arguments, but $expected was expected and at least $required is required"
+    } else {
+      "Received $received arguments, but $expected was expected"
+    }
+  )
 
 internal class MethodNotFoundException :
   CodedException(message = "Method does not exist.")
@@ -131,14 +152,38 @@ internal class PropSetException(
   cause,
 )
 
+internal class OnViewDidUpdatePropsException(
+  viewType: KClass<*>,
+  cause: CodedException
+) : DecoratedException(
+  message = "Error occurred when invoking 'onViewDidUpdateProps' on '${viewType.simpleName}'",
+  cause
+)
+
 internal class ArgumentCastException(
   argDesiredType: KType,
   argIndex: Int,
-  providedType: ReadableType,
+  providedType: String,
   cause: CodedException,
 ) : DecoratedException(
-  message = "Argument at index '$argIndex' couldn't be casted to type '$argDesiredType' (received '$providedType').",
+  message = "The ${formatOrdinalNumber(argIndex + 1)} argument cannot be cast to type $argDesiredType (received $providedType)",
   cause,
+) {
+  companion object {
+    fun formatOrdinalNumber(number: Int) = "$number" + when {
+      (number % 100 in 11..13) -> "th"
+      (number % 10) == 1 -> "st"
+      (number % 10) == 2 -> "nd"
+      (number % 10) == 3 -> "rd"
+      else -> "th"
+    }
+  }
+}
+
+internal class InvalidSharedObjectException(
+  sharedType: KType,
+) : CodedException(
+  message = "Cannot convert provided JavaScriptObject to the '$sharedType', because it doesn't contain valid id"
 )
 
 internal class FieldCastException(
@@ -159,15 +204,29 @@ internal class RecordCastException(
   cause
 )
 
-internal class CollectionElementCastException(
+internal class CollectionElementCastException private constructor(
   collectionType: KType,
   elementType: KType,
-  providedType: ReadableType,
+  providedType: String,
   cause: CodedException
 ) : DecoratedException(
-  message = "Cannot cast '${providedType.name}' to '$elementType' required by the collection of type: '$collectionType'.",
+  message = "Cannot cast '$providedType' to '$elementType' required by the collection of type: '$collectionType'.",
   cause
-)
+) {
+  constructor(
+    collectionType: KType,
+    elementType: KType,
+    providedType: ReadableType,
+    cause: CodedException
+  ) : this(collectionType, elementType, providedType.name, cause)
+
+  constructor(
+    collectionType: KType,
+    elementType: KType,
+    providedType: KClass<*>,
+    cause: CodedException
+  ) : this(collectionType, elementType, providedType.toString(), cause)
+}
 
 @DoNotStrip
 class JavaScriptEvaluateException(
@@ -179,3 +238,8 @@ class JavaScriptEvaluateException(
   $jsStack
   """.trimIndent()
 )
+
+@PublishedApi
+internal class UnsupportedClass(
+  clazz: KClass<*>,
+) : CodedException(message = "Unsupported type: '$clazz'")

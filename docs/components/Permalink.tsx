@@ -1,4 +1,5 @@
 import { css } from '@emotion/react';
+import { LinkBase } from '@expo/styleguide';
 import * as React from 'react';
 
 import { AdditionalProps } from '~/common/headingManager';
@@ -10,29 +11,27 @@ import withHeadingManager, {
 type BaseProps = React.PropsWithChildren<{
   component: any;
   className?: string;
+  style?: React.CSSProperties;
 }>;
 
 type EnhancedProps = React.PropsWithChildren<{
+  // Sidebar heading level override
   nestingLevel?: number;
   additionalProps?: AdditionalProps;
-  customIconStyle?: React.CSSProperties;
   id?: string;
 }>;
-
-const STYLES_PERMALINK = css`
-  position: relative;
-`;
 
 const STYLES_PERMALINK_TARGET = css`
   display: block;
   position: absolute;
-  top: -100px;
+  top: -46px;
   visibility: hidden;
 `;
 
 const STYLES_PERMALINK_LINK = css`
+  position: relative;
   color: inherit;
-  text-decoration: inherit;
+  text-decoration: none !important;
 
   /* Disable link when used in collapsible, to allow expand on click */
   details & {
@@ -46,10 +45,10 @@ const STYLED_PERMALINK_CONTENT = css`
 
 const STYLES_PERMALINK_ICON = css`
   cursor: pointer;
-  vertical-align: text-top;
+  vertical-align: middle;
   display: inline-block;
   width: 1.2em;
-  height: 1.2em;
+  height: 1em;
   padding: 0 0.2em;
   visibility: hidden;
 
@@ -73,12 +72,6 @@ const PermalinkBase = ({ component, children, className, ...rest }: BaseProps) =
     children
   );
 
-/**
- * Props:
- * - children: Title or component containing title text
- * - nestingLevel: Sidebar heading level override
- * - additionalProps: Additional properties passed to component
- */
 const Permalink: React.FC<EnhancedProps> = withHeadingManager(
   (props: EnhancedProps & HeadingManagerProps) => {
     // NOTE(jim): Not the greatest way to generate permalinks.
@@ -86,33 +79,26 @@ const Permalink: React.FC<EnhancedProps> = withHeadingManager(
     const component = props.children as JSX.Element;
     const children = component.props.children || '';
 
-    let permalinkKey = props.id;
-    let heading;
-
-    if (props.nestingLevel) {
-      heading = props.headingManager.addHeading(
-        children,
-        props.nestingLevel,
-        props.additionalProps,
-        permalinkKey
-      );
+    if (!props.nestingLevel) {
+      return children;
     }
 
-    if (!permalinkKey && heading?.slug) {
-      permalinkKey = heading.slug;
-    }
+    const heading = props.headingManager.addHeading(
+      children,
+      props.nestingLevel,
+      props.additionalProps,
+      props.id
+    );
 
     return (
-      <PermalinkBase component={component} data-components-heading>
-        <div css={STYLES_PERMALINK} ref={heading?.ref}>
-          <span css={STYLES_PERMALINK_TARGET} id={permalinkKey} />
-          <a css={STYLES_PERMALINK_LINK} href={'#' + permalinkKey}>
-            <span css={STYLED_PERMALINK_CONTENT}>{children}</span>
-            <span css={STYLES_PERMALINK_ICON} style={props.customIconStyle}>
-              <PermalinkIcon />
-            </span>
-          </a>
-        </div>
+      <PermalinkBase component={component} style={props.additionalProps?.style}>
+        <LinkBase css={STYLES_PERMALINK_LINK} href={'#' + heading.slug} ref={heading.ref}>
+          <span css={STYLES_PERMALINK_TARGET} id={heading.slug} />
+          <span css={STYLED_PERMALINK_CONTENT}>{children}</span>
+          <span css={STYLES_PERMALINK_ICON}>
+            <PermalinkIcon />
+          </span>
+        </LinkBase>
       </PermalinkBase>
     );
   }

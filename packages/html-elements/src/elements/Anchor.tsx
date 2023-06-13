@@ -4,11 +4,15 @@ import { Linking, Platform } from 'react-native';
 import Text from '../primitives/Text';
 import { LinkProps } from './Text.types';
 
-export const A = forwardRef(({ href, target, ...props }: LinkProps, ref) => {
+export const A = forwardRef(({ href, target, download, rel, ...props }: LinkProps, ref) => {
   const nativeProps = Platform.select<LinkProps>({
     web: {
       href,
-      target,
+      hrefAttrs: {
+        target,
+        download,
+        rel,
+      },
     },
     default: {
       onPress: (event) => {

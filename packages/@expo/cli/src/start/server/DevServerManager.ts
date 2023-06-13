@@ -4,7 +4,9 @@ import chalk from 'chalk';
 
 import { FileNotifier } from '../../utils/FileNotifier';
 import { logEventAsync } from '../../utils/analytics/rudderstackClient';
+import { env } from '../../utils/env';
 import { ProjectPrerequisite } from '../doctor/Prerequisite';
+import { TypeScriptProjectPrerequisite } from '../doctor/typescript/TypeScriptProjectPrerequisite';
 import * as AndroidDebugBridge from '../platforms/android/adb';
 import { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
 import { getPlatformBundlers } from './platformBundlers';
@@ -29,14 +31,16 @@ const BUNDLERS = {
 
 /** Manages interacting with multiple dev servers. */
 export class DevServerManager {
-  private projectPrerequisites: ProjectPrerequisite[] = [];
+  private projectPrerequisites: ProjectPrerequisite<any, void>[] = [];
+
+  private notifier: FileNotifier | null = null;
 
   constructor(
     public projectRoot: string,
     /** Keep track of the original CLI options for bundlers that are started interactively. */
     public options: BundlerStartOptions
   ) {
-    this.watchBabelConfig();
+    this.notifier = this.watchBabelConfig();
   }
 
   private watchBabelConfig() {
@@ -60,7 +64,7 @@ export class DevServerManager {
   }
 
   /** Lazily load and assert a project-level prerequisite. */
-  async ensureProjectPrerequisiteAsync(PrerequisiteClass: typeof ProjectPrerequisite) {
+  async ensureProjectPrerequisiteAsync(PrerequisiteClass: typeof ProjectPrerequisite<any, any>) {
     let prerequisite = this.projectPrerequisites.find(
       (prerequisite) => prerequisite instanceof PrerequisiteClass
     );
@@ -68,7 +72,7 @@ export class DevServerManager {
       prerequisite = new PrerequisiteClass(this.projectRoot);
       this.projectPrerequisites.push(prerequisite);
     }
-    await prerequisite.assertAsync();
+    return await prerequisite.assertAsync();
   }
 
   /**
@@ -125,7 +129,7 @@ export class DevServerManager {
 
   /** Start all dev servers. */
   async startAsync(startOptions: MultiBundlerStartOptions): Promise<ExpoConfig> {
-    const { exp } = getConfig(this.projectRoot);
+    const { exp } = getConfig(this.projectRoot, { skipSDKVersionRequirement: true });
 
     await logEventAsync('Start Project', {
       sdkVersion: exp.sdkVersion ?? null,
@@ -148,9 +152,41 @@ export class DevServerManager {
     return exp;
   }
 
+  async bootstrapTypeScriptAsync() {
+    const typescriptPrerequisite = await this.ensureProjectPrerequisiteAsync(
+      TypeScriptProjectPrerequisite
+    );
+
+    if (env.EXPO_NO_TYPESCRIPT_SETUP) {
+      return;
+    }
+
+    // Optionally, wait for the user to add TypeScript during the
+    // development cycle.
+    const server = devServers.find((server) => server.name === 'metro');
+    if (!server) {
+      return;
+    }
+
+    if (!typescriptPrerequisite) {
+      server.waitForTypeScriptAsync().then(async (success) => {
+        if (success) {
+          await server.startTypeScriptServices();
+        }
+      });
+    } else {
+      server.startTypeScriptServices();
+    }
+  }
+
+  async watchEnvironmentVariables() {
+    await devServers.find((server) => server.name === 'metro')?.watchEnvironmentVariables();
+  }
+
   /** Stop all servers including ADB. */
   async stopAsync(): Promise<void> {
     await Promise.allSettled([
+      this.notifier?.stopObserving(),
       // Stop all dev servers
       ...devServers.map((server) => server.stopAsync()),
       // Stop ADB

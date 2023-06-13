@@ -2,10 +2,154 @@
 
 ## Unpublished
 
+### 📚 3rd party library updates
+
+- Updated `junit` to `4.13.2`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+- [Android] Load updates in background thread and prevent ANR from initial launch. ([#20273](https://github.com/expo/expo/pull/20273) by [@kudo](https://github.com/kudo))
+- Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- [Android] Resolve up the project root when creating production manifest. ([#22044](https://github.com/expo/expo/pull/22044) by [@EvanBacon](https://github.com/EvanBacon))
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- Fixed broken `create-manifest-android.gradle` on Android Gradle version 8. ([#22538](https://github.com/expo/expo/pull/22538) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+## 0.17.0 — 2023-05-08
+
+### 🛠 Breaking changes
+
+- Updated **setup documentation** to reflect that setup should include changing the entry from `index` to `.expo/.virtual-metro-entry` which is only available in SDK 49 `@expo/metro-config`. ([#21643](https://github.com/expo/expo/pull/21643) by [@EvanBacon](https://github.com/EvanBacon))
+- [android] Add support for version 1 of the protocol. ([#20275](https://github.com/expo/expo/pull/20275) by [@wschurman](https://github.com/wschurman))
+- Add support for version 1 of the protocol. ([#20275](https://github.com/expo/expo/pull/20275), [#21652](https://github.com/expo/expo/pull/21652) by [@wschurman](https://github.com/wschurman))
+
+### 🎉 New features
+
+- Add rollback to embedded update directive. ([#21007](https://github.com/expo/expo/pull/21007), [#21652](https://github.com/expo/expo/pull/21652) by [@wschurman](https://github.com/wschurman))
+- Add support for extra params. ([#21837](https://github.com/expo/expo/pull/21837) by [@wschurman](https://github.com/wschurman))
+- New checkAutomatically constant. ([#22137](https://github.com/expo/expo/pull/22137) by [@douglowder](https://github.com/douglowder))
+- Support 204 status for no-op responses. ([#22348](https://github.com/expo/expo/pull/22348) by [@wschurman](https://github.com/wschurman))
+- Support new SDK version field in new manifests. ([#22356](https://github.com/expo/expo/pull/22356) by [@wschurman](https://github.com/wschurman))
+
+### 🐛 Bug fixes
+
+- iOS: Fix odd nullability issue in expo module. ([#21655](https://github.com/expo/expo/pull/21655) by [@wschurman](https://github.com/wschurman))
+- iOS: Fix legacy update bundled asset parsing. ([#21691](https://github.com/expo/expo/pull/21691) by [@wschurman](https://github.com/wschurman))
+- iOS: Fix config plist overriding. ([#21702](https://github.com/expo/expo/pull/21702) by [@wschurman](https://github.com/wschurman))
+- Align properties for different UpdateEvent types. ([#21818](https://github.com/expo/expo/pull/21818) by [@douglowder](https://github.com/douglowder))
+- Improvement in stability of useUpdateEvents() hook. ([#21880](https://github.com/expo/expo/pull/21880) by [@douglowder](https://github.com/douglowder))
+- Copy native events before transforming them. ([#22162](https://github.com/expo/expo/pull/22162) by [@douglowder](https://github.com/douglowder))
+- Fix empty body no-op multipart response. ([#22227](https://github.com/expo/expo/pull/22227) by [@wschurman](https://github.com/wschurman))
+- Put extra data mutation in transaction. ([#22252](https://github.com/expo/expo/pull/22252) by [@wschurman](https://github.com/wschurman))
+- [iOS] fix bizarre bug when downloading update twice. ([#22355](https://github.com/expo/expo/pull/22355) by [@douglowder](https://github.com/douglowder))
+- Fix rollback to embedded logic. ([#22433](https://github.com/expo/expo/pull/22433), [#22434](https://github.com/expo/expo/pull/22434) by [@wschurman](https://github.com/wschurman))
+
+### 💡 Others
+
+- Improved README and other chagnes for E2E tests. ([#21331](https://github.com/expo/expo/pull/21331) by [@douglowder](https://github.com/douglowder))
+- Protocol 1 support and rollback test in E2E tests. ([#21197](https://github.com/expo/expo/pull/21197) by [@wschurman](https://github.com/wschurman), [@douglowder](https://github.com/douglowder))
+- Convert EXManifests iOS implementation to Swift. ([#21298](https://github.com/expo/expo/pull/21298) by [@wschurman](https://github.com/wschurman))
+- Convert to Swift. ([#21320](https://github.com/expo/expo/pull/21320), [#21329](https://github.com/expo/expo/pull/21329), [#21332](https://github.com/expo/expo/pull/21332), [#21391](https://github.com/expo/expo/pull/21391), [#21394](https://github.com/expo/expo/pull/21394), [#21450](https://github.com/expo/expo/pull/21450), [#21451](https://github.com/expo/expo/pull/21451), [#21467](https://github.com/expo/expo/pull/21467), [#21471](https://github.com/expo/expo/pull/21471), [#21478](https://github.com/expo/expo/pull/21478), [#21493](https://github.com/expo/expo/pull/21493), [#21495](https://github.com/expo/expo/pull/21495), [#21512](https://github.com/expo/expo/pull/21512), [#21535](https://github.com/expo/expo/pull/21535), [#21536](https://github.com/expo/expo/pull/21536), [#21570](https://github.com/expo/expo/pull/21570), [#21591](https://github.com/expo/expo/pull/21591), [#21596](https://github.com/expo/expo/pull/21596), [#21599](https://github.com/expo/expo/pull/21599), [#21649](https://github.com/expo/expo/pull/21649) by [@wschurman](https://github.com/wschurman))
+- Convert iOS EXUpdatesCrypto to swift. ([#21524](https://github.com/expo/expo/pull/21524) by [@wschurman](https://github.com/wschurman))
+- iOS: Decrease access control on classes and remove unnecessary objc attributes. ([#21597](https://github.com/expo/expo/pull/21597) by [@wschurman](https://github.com/wschurman))
+- iOS: Replace reachability code with library for wifi detection. ([#21598](https://github.com/expo/expo/pull/21598) by [@wschurman](https://github.com/wschurman))
+- iOS: Clean up and rename code signing classes. ([#21600](https://github.com/expo/expo/pull/21600) by [@wschurman](https://github.com/wschurman))
+- iOS: Rename classes to be more swifty. ([#21620](https://github.com/expo/expo/pull/21620), [#21622](https://github.com/expo/expo/pull/21622) by [@wschurman](https://github.com/wschurman))
+- Fix E2E rollback test and other improvements. ([#21389](https://github.com/expo/expo/pull/21389) by [@douglowder](https://github.com/douglowder))
+- Consolidate E2E tests. ([#21458](https://github.com/expo/expo/pull/21458) by [@douglowder](https://github.com/douglowder))
+- E2E tests: graceful Detox failures. ([#21520](https://github.com/expo/expo/pull/21520) by [@douglowder](https://github.com/douglowder))
+- Fix E2E after Swift conversion. ([#21592](https://github.com/expo/expo/pull/21592) by [@douglowder](https://github.com/douglowder))
+- Fix iOS native debug after Swift conversion. ([#21602](https://github.com/expo/expo/pull/21602) by [@douglowder](https://github.com/douglowder))
+- Fix compilation errors and enable modules after Swift conversion. ([#21621](https://github.com/expo/expo/pull/21621) by [@wschurman](https://github.com/wschurman), [@douglowder](https://github.com/douglowder))
+- E2E tests for JS API. ([#22167](https://github.com/expo/expo/pull/22167) by [@douglowder](https://github.com/douglowder))
+- Android: Switch from deprecated `toLowerCase` to `lowercase` function ([#22225](https://github.com/expo/expo/pull/22225) by [@hbiede](https://github.com/hbiede))
+
+## 0.16.4 - 2023-04-03
+
+### 🐛 Bug fixes
+
+- Change arg in gradle `.execute()` call to null to inherit env variables from user's env ([#21712](https://github.com/expo/expo/pull/21712) by [@phoenixiguess](https://github.com/phoenixiguess))
+- [Android] Fix missing manifest for build flavor variants. ([#21813](https://github.com/expo/expo/pull/21813) by [@douglowder](https://github.com/douglowder))
+
+## 0.16.3 - 2023-02-22
+
+### 🎉 New features
+
+- New `useUpdateEvents` hook. ([#21258](https://github.com/expo/expo/pull/21258) by [@douglowder](https://github.com/douglowder))
+
+### 🐛 Bug fixes
+
+- Make Updates API work with native debug. ([#21253](https://github.com/expo/expo/pull/21253) by [@douglowder](https://github.com/douglowder))
+
+### 💡 Others
+
+- Break up E2E tests for reliability. ([#21223](https://github.com/expo/expo/pull/21223) by [@douglowder](https://github.com/douglowder))
+- Convert E2E tests to TypeScript. ([#21278](https://github.com/expo/expo/pull/21278) by [@douglowder](https://github.com/douglowder))
+
+## 0.16.2 - 2023-02-21
+
+_This version does not introduce any user-facing changes._
+
+## 0.16.1 — 2023-02-09
+
+### 💡 Others
+
+- Convert E2E tests to Hermes. ([#21065](https://github.com/expo/expo/pull/21065) by [@douglowder](https://github.com/douglowder))
+
+## 0.16.0 — 2023-02-03
+
+### 🐛 Bug fixes
+
+- [Android] Fix runtime version parsing. ([#19821](https://github.com/expo/expo/pull/19821) by [@douglowder](https://github.com/douglowder))
+- Added support for React Native 0.71.x. ([#20799](https://github.com/expo/expo/pull/20799) [#20832](https://github.com/expo/expo/pull/20832) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Bump `@expo/metro-config`. ([#20720](https://github.com/expo/expo/pull/20720) by [@EvanBacon](https://github.com/EvanBacon))
+- Improvements to setup for Updates E2E tests. ([#20120](https://github.com/expo/expo/pull/20120) by [@douglowder](https://github.com/douglowder))
+- Convert updates E2E workflow to use EAS. ([#20399](https://github.com/expo/expo/pull/20399) by [@douglowder](https://github.com/douglowder))
+- Avoid dependency on `uuid`. ([#20475](https://github.com/expo/expo/pull/20475) by [@LinusU](https://github.com/LinusU))
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.15.5 - 2022-11-14
+
+### 🎉 New features
+
+- New API Updates.isEmbeddedLaunch. ([#20014](https://github.com/expo/expo/pull/20014) by [@douglowder](https://github.com/douglowder))
+
+## 0.15.4 — 2022-11-03
+
+### 🐛 Bug fixes
+
+- Fixed another _app.manifest_ occasionally missing from build outputs on Android. ([#19809](https://github.com/expo/expo/pull/19809) by [@kudo](https://github.com/kudo))
+
+## 0.15.3 — 2022-10-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.15.2 — 2022-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.15.1 — 2022-10-28
+
+### 🐛 Bug fixes
+
+- Fixed the _app.manifest_ occasionally missing from build outputs on Android. ([#19731](https://github.com/expo/expo/pull/19731) by [@kudo](https://github.com/kudo), [@kudo](https://github.com/kudo))
+
+## 0.15.0 — 2022-10-25
+
 ### 🛠 Breaking changes
 
 - Drop support for `logUrl` which sent console logs to the legacy `expo-cli`.
 - [plugin] Upgrade minimum runtime requirement to Node 14 (LTS). ([#18204](https://github.com/expo/expo/pull/18204) by [@EvanBacon](https://github.com/EvanBacon))
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
 
@@ -23,8 +167,16 @@
 
 ### 💡 Others
 
+- [plugin] Migrate import from @expo/config-plugins to expo/config-plugins and @expo/config-types to expo/config. ([#18855](https://github.com/expo/expo/pull/18855) by [@brentvatne](https://github.com/brentvatne))
+- Update doc block link for manifests. ([#18981](https://github.com/expo/expo/pull/18981) by [@EvanBacon](https://github.com/EvanBacon))
 - Drop `@expo/config-plugins` dependency in favor of peer dependency on `expo`. ([#18595](https://github.com/expo/expo/pull/18595) by [@EvanBacon](https://github.com/EvanBacon))
 - Log various errors with the new Updates logger; add E2E tests for the logger. ([#18810](https://github.com/expo/expo/pull/18810) by [@douglowder](https://github.com/douglowder))
+- [iOS] Flag to enable native debugging of updates. ([#19292](https://github.com/expo/expo/pull/19292) by [@douglowder](https://github.com/douglowder))
+- [Android] Flag to enable native debugging of updates. ([#19441](https://github.com/expo/expo/pull/19441) by [@douglowder](https://github.com/douglowder))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.70.x. ([#19261](https://github.com/expo/expo/pull/19261) by [@kudo](https://github.com/kudo))
 
 ## 0.14.3 — 2022-07-25
 

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getRootViewBackgroundColor = exports.withRootViewBackgroundColorStyles = exports.withRootViewBackgroundColorColors = exports.withAndroidRootViewBackgroundColor = void 0;
-const config_plugins_1 = require("@expo/config-plugins");
+const config_plugins_1 = require("expo/config-plugins");
 const { assignColorValue } = config_plugins_1.AndroidConfig.Colors;
 const { assignStylesValue, getAppThemeLightNoActionBarGroup } = config_plugins_1.AndroidConfig.Styles;
 const ANDROID_WINDOW_BACKGROUND = 'android:windowBackground';

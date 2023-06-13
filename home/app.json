@@ -4,8 +4,8 @@
     "description": "",
     "slug": "home",
     "privacy": "unlisted",
-    "sdkVersion": "46.0.0",
-    "version": "46.0.0",
+    "sdkVersion": "48.0.0",
+    "version": "48.0.0",
     "orientation": "portrait",
     "platforms": [
       "ios",
@@ -31,13 +31,11 @@
       "barStyle": "dark-content"
     },
     "scheme": "exp",
-    "extra": {
-      "amplitudeApiKey": "081e5ec53f869b440b225d5e40ec73f9"
-    },
     "isKernel": true,
     "kernel": {
       "iosManifestPath": "../ios/Exponent/Supporting/kernel-manifest.json",
       "androidManifestPath": "../android/app/src/main/assets/kernel-manifest.json"
-    }
+    },
+    "jsEngine": "hermes"
   }
 }

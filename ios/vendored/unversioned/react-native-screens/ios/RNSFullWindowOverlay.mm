@@ -4,11 +4,11 @@
 
 #ifdef RN_FABRIC_ENABLED
 #import <React/RCTConversions.h>
+#import <React/RCTFabricComponentsPlugins.h>
 #import <React/RCTSurfaceTouchHandler.h>
 #import <react/renderer/components/rnscreens/ComponentDescriptors.h>
 #import <react/renderer/components/rnscreens/Props.h>
 #import <react/renderer/components/rnscreens/RCTComponentViewHelpers.h>
-#import "RCTFabricComponentsPlugins.h"
 #else
 #import <React/RCTTouchHandler.h>
 #endif // RN_FABRIC_ENABLED
@@ -23,6 +23,38 @@
     }
   }
   return NO;
+}
+
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+  BOOL canReceiveTouchEvents = ([self isUserInteractionEnabled] && ![self isHidden]);
+  if (!canReceiveTouchEvents) {
+    return nil;
+  }
+
+  // `hitSubview` is the topmost subview which was hit. The hit point can
+  // be outside the bounds of `view` (e.g., if -clipsToBounds is NO).
+  UIView *hitSubview = nil;
+  BOOL isPointInside = [self pointInside:point withEvent:event];
+  if (![self clipsToBounds] || isPointInside) {
+    // Take z-index into account when calculating the touch target.
+    NSArray<UIView *> *sortedSubviews = [self reactZIndexSortedSubviews];
+
+    // The default behaviour of UIKit is that if a view does not contain a point,
+    // then no subviews will be returned from hit testing, even if they contain
+    // the hit point. By doing hit testing directly on the subviews, we bypass
+    // the strict containment policy (i.e., UIKit guarantees that every ancestor
+    // of the hit view will return YES from -pointInside:withEvent:). See:
+    //  - https://developer.apple.com/library/ios/qa/qa2013/qa1812.html
+    for (UIView *subview in [sortedSubviews reverseObjectEnumerator]) {
+      CGPoint convertedPoint = [subview convertPoint:point fromView:self];
+      hitSubview = [subview hitTest:convertedPoint withEvent:event];
+      if (hitSubview != nil) {
+        break;
+      }
+    }
+  }
+  return hitSubview;
 }
 
 @end

@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '1.3.0'
+version = '2.2.0'
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -22,7 +22,7 @@ buildscript {
     if (ext.has("kotlinVersion")) {
       ext.kotlinVersion()
     } else {
-      ext.safeExtGet("kotlinVersion", "1.6.10")
+      ext.safeExtGet("kotlinVersion", "1.8.10")
     }
   }
 
@@ -35,19 +35,11 @@ buildscript {
   }
 }
 
-// Creating sources with comments
-task androidSourcesJar(type: Jar) {
-  classifier = 'sources'
-  from android.sourceSets.main.java.srcDirs
-}
-
 afterEvaluate {
   publishing {
     publications {
       release(MavenPublication) {
         from components.release
-        // Add additional sourcesJar to artifacts
-        artifact(androidSourcesJar)
       }
     }
     repositories {
@@ -59,7 +51,7 @@ afterEvaluate {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 31)
+  compileSdkVersion safeExtGet("compileSdkVersion", 33)
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_11
@@ -70,14 +62,20 @@ android {
     jvmTarget = JavaVersion.VERSION_11.majorVersion
   }
 
+  namespace "expo.modules.navigationbar"
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 31)
+    targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 1
-    versionName '1.3.0'
+    versionName '2.2.0'
   }
   lintOptions {
     abortOnError false
+  }
+  publishing {
+    singleVariant("release") {
+      withSourcesJar()
+    }
   }
 }
 

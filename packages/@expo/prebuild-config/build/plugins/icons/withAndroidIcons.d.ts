@@ -1,7 +1,7 @@
 import { AndroidConfig, ConfigPlugin } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
-declare type DPIString = 'mdpi' | 'hdpi' | 'xhdpi' | 'xxhdpi' | 'xxxhdpi';
-declare type dpiMap = Record<DPIString, {
+type DPIString = 'mdpi' | 'hdpi' | 'xhdpi' | 'xxhdpi' | 'xxxhdpi';
+type dpiMap = Record<DPIString, {
     folderName: string;
     scale: number;
 }>;
@@ -14,16 +14,18 @@ export declare function getAdaptiveIcon(config: ExpoConfig): {
     foregroundImage: string | null;
     backgroundColor: string | null;
     backgroundImage: string | null;
+    monochromeImage: string | null;
 };
 /**
  * Resizes the user-provided icon to create a set of legacy icon files in
  * their respective "mipmap" directories for <= Android 7, and creates a set of adaptive
  * icon files for > Android 7 from the adaptive icon files (if provided).
  */
-export declare function setIconAsync(projectRoot: string, { icon, backgroundColor, backgroundImage, isAdaptive, }: {
+export declare function setIconAsync(projectRoot: string, { icon, backgroundColor, backgroundImage, monochromeImage, isAdaptive, }: {
     icon: string | null;
     backgroundColor: string | null;
     backgroundImage: string | null;
+    monochromeImage: string | null;
     isAdaptive: boolean;
 }): Promise<true | null>;
 /**
@@ -32,6 +34,6 @@ export declare function setIconAsync(projectRoot: string, { icon, backgroundColo
  * - A backgroundImage is provided, or
  * - A backgroundColor was specified
  */
-export declare function configureAdaptiveIconAsync(projectRoot: string, foregroundImage: string, backgroundImage: string | null, isAdaptive: boolean): Promise<void>;
-export declare const createAdaptiveIconXmlString: (backgroundImage: string | null) => string;
+export declare function configureAdaptiveIconAsync(projectRoot: string, foregroundImage: string, backgroundImage: string | null, monochromeImage: string | null, isAdaptive: boolean): Promise<void>;
+export declare const createAdaptiveIconXmlString: (backgroundImage: string | null, monochromeImage: string | null) => string;
 export {};

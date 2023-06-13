@@ -31,6 +31,22 @@ class DevMenuDevOptionsDelegate {
     devSettings?.toggleElementInspector()
   }
 
+  internal func openJSInspector() {
+    guard let bundleURL = bridge?.bundleURL else {
+      return
+    }
+    let port = bundleURL.port ?? Int(RCT_METRO_PORT)
+    let host = bundleURL.host ?? "localhost"
+    let openURL = "http://\(host):\(port)/inspector?applicationId=\(Bundle.main.bundleIdentifier ?? "")"
+    guard let url = URL(string: openURL) else {
+      NSLog("[DevMenu] Invalid openJSInspector URL: $@", openURL)
+      return
+    }
+    let request = NSMutableURLRequest(url: url)
+    request.httpMethod = "PUT"
+    URLSession.shared.dataTask(with: request as URLRequest).resume()
+  }
+
   internal func toggleRemoteDebugging() {
     guard let devSettings = devSettings else {
       return

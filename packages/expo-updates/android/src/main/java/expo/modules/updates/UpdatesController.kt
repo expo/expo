@@ -24,12 +24,9 @@ import expo.modules.updates.launcher.DatabaseLauncher
 import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.launcher.Launcher.LauncherCallback
 import expo.modules.updates.launcher.NoDatabaseLauncher
-import expo.modules.updates.loader.FileDownloader
-import expo.modules.updates.loader.Loader
-import expo.modules.updates.loader.LoaderTask
+import expo.modules.updates.loader.*
 import expo.modules.updates.loader.LoaderTask.BackgroundUpdateStatus
 import expo.modules.updates.loader.LoaderTask.LoaderTaskCallback
-import expo.modules.updates.loader.RemoteLoader
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
@@ -39,6 +36,25 @@ import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
 import java.io.File
 import java.lang.ref.WeakReference
 
+/**
+ * Main entry point to expo-updates in normal release builds (development clients, including Expo
+ * Go, use a different entry point). Singleton that keeps track of updates state, holds references
+ * to instances of other updates classes, and is the central hub for all updates-related tasks.
+ *
+ * The `start` method in this class should be invoked early in the application lifecycle, via
+ * [UpdatesPackage]. It delegates to an instance of [LoaderTask] to start the process of loading and
+ * launching an update, then responds appropriately depending on the callbacks that are invoked.
+ *
+ * This class also provides getter methods to access information about the updates state, which are
+ * used by the exported [UpdatesModule] through [UpdatesService]. Such information includes
+ * references to: the database, the [UpdatesConfiguration] object, the path on disk to the updates
+ * directory, any currently active [LoaderTask], the current [SelectionPolicy], the error recovery
+ * handler, and the current launched update. This class is intended to be the source of truth for
+ * these objects, so other classes shouldn't retain any of them indefinitely.
+ *
+ * This class also optionally holds a reference to the app's [ReactNativeHost], which allows
+ * expo-updates to reload JS and send events through the bridge.
+ */
 class UpdatesController private constructor(
   context: Context,
   var updatesConfiguration: UpdatesConfiguration
@@ -155,6 +171,10 @@ class UpdatesController private constructor(
   val isUsingEmbeddedAssets: Boolean
     get() = launcher?.isUsingEmbeddedAssets ?: false
 
+  /**
+   * Any process that calls this *must* manually release the lock by calling `releaseDatabase()` in
+   * every possible case (success, error) as soon as it is finished.
+   */
   fun getDatabase(): UpdatesDatabase = databaseHolder.database
 
   fun releaseDatabase() {
@@ -253,7 +273,7 @@ class UpdatesController private constructor(
           return true
         }
 
-        override fun onRemoteUpdateManifestLoaded(updateManifest: UpdateManifest) {
+        override fun onRemoteUpdateManifestResponseManifestLoaded(updateManifest: UpdateManifest) {
           remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADING
         }
 
@@ -317,7 +337,7 @@ class UpdatesController private constructor(
     (this as java.lang.Object).notify()
   }
 
-  fun initializeErrorRecovery(context: Context) {
+  private fun initializeErrorRecovery(context: Context) {
     errorRecovery.initialize(object : ErrorRecoveryDelegate {
       override fun loadRemoteUpdate() {
         if (loaderTask?.isRunning == true) {
@@ -332,16 +352,31 @@ class UpdatesController private constructor(
             setRemoteLoadStatus(ErrorRecoveryDelegate.RemoteLoadStatus.IDLE)
             releaseDatabase()
           }
-          override fun onSuccess(update: UpdateEntity?) {
+
+          override fun onSuccess(loaderResult: Loader.LoaderResult) {
             setRemoteLoadStatus(
-              if (update != null) ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADED
+              if (loaderResult.updateEntity != null || loaderResult.updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADED
               else ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
             )
             releaseDatabase()
           }
+
           override fun onAssetLoaded(asset: AssetEntity, successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int) { }
-          override fun onUpdateManifestLoaded(updateManifest: UpdateManifest) =
-            selectionPolicy.shouldLoadNewUpdate(updateManifest.updateEntity, launchedUpdate, updateManifest.manifestFilters)
+
+          override fun onUpdateResponseLoaded(updateResponse: UpdateResponse): Loader.OnUpdateResponseLoadedResult {
+            val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
+            if (updateDirective != null) {
+              return Loader.OnUpdateResponseLoadedResult(
+                shouldDownloadManifestIfPresentInResponse = when (updateDirective) {
+                  is UpdateDirective.RollBackToEmbeddedUpdateDirective -> false
+                  is UpdateDirective.NoUpdateAvailableUpdateDirective -> false
+                }
+              )
+            }
+
+            val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest ?: return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
+            return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = selectionPolicy.shouldLoadNewUpdate(updateManifest.updateEntity, launchedUpdate, updateResponse.responseHeaderData?.manifestFilters))
+          }
         })
       }
 

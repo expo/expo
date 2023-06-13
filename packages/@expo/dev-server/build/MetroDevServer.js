@@ -25,69 +25,49 @@ Object.defineProperty(exports, "createDevServerMiddleware", {
   }
 });
 exports.runMetroDevServerAsync = runMetroDevServerAsync;
-
 function _config() {
   const data = require("@expo/config");
-
   _config = function () {
     return data;
   };
-
   return data;
 }
-
 function _chalk() {
   const data = _interopRequireDefault(require("chalk"));
-
   _chalk = function () {
     return data;
   };
-
   return data;
 }
-
 function _HermesBundler() {
   const data = require("./HermesBundler");
-
   _HermesBundler = function () {
     return data;
   };
-
   return data;
 }
-
 function _LogReporter() {
   const data = _interopRequireDefault(require("./LogReporter"));
-
   _LogReporter = function () {
     return data;
   };
-
   return data;
 }
-
 function _importMetroFromProject() {
   const data = require("./metro/importMetroFromProject");
-
   _importMetroFromProject = function () {
     return data;
   };
-
   return data;
 }
-
 function _devServerMiddleware() {
   const data = require("./middleware/devServerMiddleware");
-
   _devServerMiddleware = function () {
     return data;
   };
-
   return data;
 }
-
 var _middlwareMutations = require("./middlwareMutations");
-
 Object.keys(_middlwareMutations).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
@@ -99,9 +79,7 @@ Object.keys(_middlwareMutations).forEach(function (key) {
     }
   });
 });
-
 var _JsInspector = require("./JsInspector");
-
 Object.keys(_JsInspector).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
@@ -113,9 +91,7 @@ Object.keys(_JsInspector).forEach(function (key) {
     }
   });
 });
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function getExpoMetroConfig(projectRoot, {
   logger,
   unversioned
@@ -123,18 +99,18 @@ function getExpoMetroConfig(projectRoot, {
   if (!unversioned) {
     try {
       return (0, _importMetroFromProject().importExpoMetroConfigFromProject)(projectRoot);
-    } catch {// If expo isn't installed, use the unversioned config and warn about installing expo.
+    } catch {
+      // If expo isn't installed, use the unversioned config and warn about installing expo.
     }
   }
-
   const unversionedVersion = require('@expo/metro-config/package.json').version;
-
   logger.info({
     tag: 'expo'
   }, _chalk().default.gray(`\u203A Unversioned ${_chalk().default.bold`@expo/metro-config@${unversionedVersion}`} is being used. Bundling apps may not work as expected, and is subject to breaking changes. Install ${_chalk().default.bold`expo`} or set the app.json sdkVersion to use a stable version of @expo/metro-config.`));
   return require('@expo/metro-config');
 }
 
+/** @deprecated */
 async function runMetroDevServerAsync(projectRoot, options) {
   const Metro = (0, _importMetroFromProject().importMetroFromProject)(projectRoot);
   const reporter = new (_LogReporter().default)(options.logger);
@@ -155,21 +131,19 @@ async function runMetroDevServerAsync(projectRoot, options) {
     watchFolders: metroConfig.watchFolders,
     logger: options.logger
   });
-  const customEnhanceMiddleware = metroConfig.server.enhanceMiddleware; // @ts-ignore can't mutate readonly config
-
+  const customEnhanceMiddleware = metroConfig.server.enhanceMiddleware;
+  // @ts-ignore can't mutate readonly config
   metroConfig.server.enhanceMiddleware = (metroMiddleware, server) => {
     if (customEnhanceMiddleware) {
       metroMiddleware = customEnhanceMiddleware(metroMiddleware, server);
     }
-
     return middleware.use(metroMiddleware);
   };
-
   const server = await Metro.runServer(metroConfig, {
     hmrEnabled: true,
+    // @ts-expect-error: Inconsistent `websocketEndpoints` type between metro and @react-native-community/cli-server-api
     websocketEndpoints
   });
-
   if (attachToServer) {
     // Expo SDK 44 and lower
     const {
@@ -188,14 +162,15 @@ async function runMetroDevServerAsync(projectRoot, options) {
     return {
       server,
       middleware,
-      messageSocket: messageSocketEndpoint // debuggerProxyEndpoint,
-
+      messageSocket: messageSocketEndpoint
+      // debuggerProxyEndpoint,
     };
   }
 }
 
-let nextBuildID = 0; // TODO: deprecate options.target
+let nextBuildID = 0;
 
+/** @deprecated */
 async function bundleAsync(projectRoot, expoConfig, options, bundles) {
   const metro = (0, _importMetroFromProject().importMetroFromProject)(projectRoot);
   const Server = (0, _importMetroFromProject().importMetroServerFromProject)(projectRoot);
@@ -209,16 +184,16 @@ async function bundleAsync(projectRoot, expoConfig, options, bundles) {
   const metroServer = await metro.runMetro(config, {
     watch: false
   });
-
   const buildAsync = async bundle => {
     var _bundle$dev, _bundle$minify, _bundle$dev2, _bundle$minify2;
-
-    const bundleOptions = { ...Server.DEFAULT_BUNDLE_OPTIONS,
+    const isHermes = (0, _HermesBundler().isEnableHermesManaged)(expoConfig, bundle.platform);
+    const bundleOptions = {
+      ...Server.DEFAULT_BUNDLE_OPTIONS,
       bundleType: 'bundle',
       platform: bundle.platform,
       entryFile: bundle.entryPoint,
       dev: (_bundle$dev = bundle.dev) !== null && _bundle$dev !== void 0 ? _bundle$dev : false,
-      minify: (_bundle$minify = bundle.minify) !== null && _bundle$minify !== void 0 ? _bundle$minify : !bundle.dev,
+      minify: !isHermes && ((_bundle$minify = bundle.minify) !== null && _bundle$minify !== void 0 ? _bundle$minify : !bundle.dev),
       inlineSourceMap: false,
       sourceMapUrl: bundle.sourceMapUrl,
       createModuleIdFactory: config.serializer.createModuleIdFactory,
@@ -241,7 +216,7 @@ async function bundleAsync(projectRoot, expoConfig, options, bundles) {
         platform: bundle.platform,
         entryFile: bundle.entryPoint,
         dev: (_bundle$dev2 = bundle.dev) !== null && _bundle$dev2 !== void 0 ? _bundle$dev2 : false,
-        minify: (_bundle$minify2 = bundle.minify) !== null && _bundle$minify2 !== void 0 ? _bundle$minify2 : false
+        minify: !isHermes && ((_bundle$minify2 = bundle.minify) !== null && _bundle$minify2 !== void 0 ? _bundle$minify2 : !bundle.dev)
       }
     });
     const {
@@ -259,10 +234,8 @@ async function bundleAsync(projectRoot, expoConfig, options, bundles) {
       assets
     };
   };
-
   const maybeAddHermesBundleAsync = async (bundle, bundleOutput) => {
     var _ref, _paths$dynamicConfigP;
-
     const {
       platform
     } = bundle;
@@ -270,40 +243,36 @@ async function bundleAsync(projectRoot, expoConfig, options, bundles) {
     const paths = (0, _config().getConfigFilePaths)(projectRoot);
     const configFilePath = (_ref = (_paths$dynamicConfigP = paths.dynamicConfigPath) !== null && _paths$dynamicConfigP !== void 0 ? _paths$dynamicConfigP : paths.staticConfigPath) !== null && _ref !== void 0 ? _ref : 'app.json';
     await (0, _HermesBundler().maybeThrowFromInconsistentEngineAsync)(projectRoot, configFilePath, platform, isHermesManaged);
-
     if (isHermesManaged) {
+      var _bundle$minify3;
       const platformTag = _chalk().default.bold({
         ios: 'iOS',
         android: 'Android',
         web: 'Web'
       }[platform] || platform);
-
       options.logger.info({
         tag: 'expo'
       }, `💿 ${platformTag} Building Hermes bytecode for the bundle`);
-      const hermesBundleOutput = await (0, _HermesBundler().buildHermesBundleAsync)(projectRoot, bundleOutput.code, bundleOutput.map, bundle.minify);
+      const hermesBundleOutput = await (0, _HermesBundler().buildHermesBundleAsync)(projectRoot, bundleOutput.code, bundleOutput.map, (_bundle$minify3 = bundle.minify) !== null && _bundle$minify3 !== void 0 ? _bundle$minify3 : !bundle.dev);
       bundleOutput.hermesBytecodeBundle = hermesBundleOutput.hbc;
       bundleOutput.hermesSourcemap = hermesBundleOutput.sourcemap;
     }
-
     return bundleOutput;
   };
-
   try {
     const intermediateOutputs = await Promise.all(bundles.map(bundle => buildAsync(bundle)));
     const bundleOutputs = [];
-
     for (let i = 0; i < bundles.length; ++i) {
       // hermesc does not support parallel building even we spawn processes.
       // we should build them sequentially.
       bundleOutputs.push(await maybeAddHermesBundleAsync(bundles[i], intermediateOutputs[i]));
     }
-
     return bundleOutputs;
   } finally {
     metroServer.end();
   }
 }
+
 /**
  * Attach the inspector proxy to a development server.
  * Inspector proxy is used for viewing the JS context in a browser.
@@ -315,8 +284,6 @@ async function bundleAsync(projectRoot, expoConfig, options, bundles) {
  * @param props.server dev server to add WebSockets to
  * @param props.middleware dev server middleware to add extra middleware to
  */
-
-
 function attachInspectorProxy(projectRoot, {
   server,
   middleware
@@ -325,7 +292,6 @@ function attachInspectorProxy(projectRoot, {
     InspectorProxy
   } = (0, _importMetroFromProject().importInspectorProxyServerFromProject)(projectRoot);
   const inspectorProxy = new InspectorProxy(projectRoot);
-
   if ('addWebSocketListener' in inspectorProxy) {
     // metro@0.59.0
     inspectorProxy.addWebSocketListener(server);
@@ -333,12 +299,11 @@ function attachInspectorProxy(projectRoot, {
     // metro@0.66.0
     // TODO: This isn't properly support without a ws router.
     inspectorProxy.createWebSocketListeners(server);
-  } // TODO(hypuk): Refactor inspectorProxy.processRequest into separate request handlers
+  }
+  // TODO(hypuk): Refactor inspectorProxy.processRequest into separate request handlers
   // so that we could provide routes (/json/list and /json/version) here.
   // Currently this causes Metro to give warning about T31407894.
   // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-
-
   middleware.use(inspectorProxy.processRequest.bind(inspectorProxy));
   return {
     inspectorProxy

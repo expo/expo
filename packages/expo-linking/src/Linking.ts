@@ -22,10 +22,8 @@ function validateURL(url: string): void {
 }
 
 function getHostUri(): string | null {
-  if (Constants.manifest?.hostUri) {
-    return Constants.manifest.hostUri;
-  } else if (Constants.manifest2?.extra?.expoClient?.hostUri) {
-    return Constants.manifest2.extra.expoClient.hostUri;
+  if (Constants.expoConfig?.hostUri) {
+    return Constants.expoConfig.hostUri;
   } else if (!hasCustomScheme()) {
     // we're probably not using up-to-date xdl, so just fake it for now
     // we have to remove the /--/ on the end since this will be inserted again later
@@ -39,9 +37,8 @@ function isExpoHosted(): boolean {
   const hostUri = getHostUri();
   return !!(
     hostUri &&
-    (/^(.*\.)?(expo\.io|exp\.host|exp\.direct|expo\.test)(:.*)?(\/.*)?$/.test(hostUri) ||
-      Constants.manifest?.developer ||
-      Constants.manifest2?.extra?.expoGo?.developer)
+    (/^(.*\.)?(expo\.io|exp\.host|exp\.direct|expo\.test|expo\.dev)(:.*)?(\/.*)?$/.test(hostUri) ||
+      Constants.expoGoConfig?.developer)
   );
 }
 
@@ -262,19 +259,6 @@ export function parse(url: string): ParsedURL {
  */
 export function addEventListener(type: 'url', handler: URLListener): EmitterSubscription {
   return NativeLinking.addEventListener(type, handler);
-}
-
-/**
- * Remove a handler by passing the `url` event type and the handler.
- * @param type The only valid type is `'url'`.
- * @param handler An [`URLListener`](#urllistener) function that takes an `event` object of the type
- * [`EventType`](#eventype).
- * @see [React Native Docs Linking page](https://reactnative.dev/docs/linking#removeeventlistener).
- *
- * @deprecated Call `remove()` on the return value of `addEventListener()` instead.
- */
-export function removeEventListener(type: 'url', handler: URLListener): void {
-  NativeLinking.removeEventListener(type, handler);
 }
 
 // @needsAudit

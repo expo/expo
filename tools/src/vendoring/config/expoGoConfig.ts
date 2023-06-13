@@ -1,10 +1,12 @@
 import assert from 'assert';
 import fs from 'fs-extra';
+import minimatch from 'minimatch';
 import path from 'path';
 
 import { Podspec } from '../../CocoaPods';
-import { EXPO_DIR, EXPOTOOLS_DIR } from '../../Constants';
+import { EXPO_DIR, EXPOTOOLS_DIR, REACT_NATIVE_SUBMODULE_DIR } from '../../Constants';
 import logger from '../../Logger';
+import { transformFileAsync } from '../../Transforms';
 import { applyPatchAsync } from '../../Utils';
 import { VendoringTargetConfig } from '../types';
 
@@ -58,29 +60,49 @@ const config: VendoringTargetConfig = {
       source: 'https://github.com/software-mansion/react-native-gesture-handler.git',
       semverPrefix: '~',
       ios: {},
+      android: {
+        async postCopyFilesHookAsync(sourceDirectory: string, targetDirectory: string) {
+          const buildGradlePath = path.join(targetDirectory, 'android', 'build.gradle');
+          let buildGradle = await fs.readFile(buildGradlePath, 'utf-8');
+          buildGradle = buildGradle.replace(
+            'def shouldUseCommonInterfaceFromReanimated() {',
+            'def shouldUseCommonInterfaceFromReanimated() {\n    return true\n'
+          );
+          buildGradle = buildGradle.replace(
+            /react-native-reanimated/g,
+            'vendored_unversioned_react-native-reanimated'
+          );
+          await fs.writeFile(buildGradlePath, buildGradle);
+        },
+        excludeFiles: [
+          'android/gradle{/**,**}',
+          'android/settings.gradle',
+          'android/spotless.gradle',
+        ],
+      },
     },
     'react-native-reanimated': {
       source: 'https://github.com/software-mansion/react-native-reanimated.git',
       semverPrefix: '~',
       ios: {
         async preReadPodspecHookAsync(podspecPath: string): Promise<string> {
-          let content = await fs.readFile(podspecPath, 'utf-8');
-          content = content.replace("reactVersion = '0.66.0'", "reactVersion = '0.67.2'");
-          content = content.replace(/(puts "\[RNReanimated\].*$)/gm, '# $1');
-          await fs.writeFile(podspecPath, content);
+          const reaUtilsPath = path.join(podspecPath, '..', 'scripts', 'reanimated_utils.rb');
+          assert(fs.existsSync(reaUtilsPath), 'Cannot find `reanimated_utils`.');
+          const rnForkPath = path.join(REACT_NATIVE_SUBMODULE_DIR, 'packages');
+          let content = await fs.readFile(reaUtilsPath, 'utf-8');
+          content = content.replace(
+            'react_native_node_modules_dir = ',
+            `react_native_node_modules_dir = "${rnForkPath}" #`
+          );
+          await fs.writeFile(reaUtilsPath, content);
           return podspecPath;
         },
         async mutatePodspec(podspec: Podspec) {
-          // TODO: The podspec checks RN version from package.json.
-          // however we don't have RN's package.json in the place where it looks for and the fallback
-          // is set to `0.66.0`.
-          // currently we change the version in `preReadPodspecHookAsync`, once reanimated removed the `puts` in error message.
-          // we should use the json based transformation here. that's why we keep the referenced code and comment out.
-          // podspec.compiler_flags = podspec.compiler_flags.replace('RNVERSION=64', 'RNVERSION=63');
-          // podspec.xcconfig.OTHER_CFLAGS = podspec.xcconfig.OTHER_CFLAGS.replace(
-          //   'RNVERSION=64',
-          //   'RNVERSION=63'
-          // );
+          const rnForkPath = path.join(REACT_NATIVE_SUBMODULE_DIR, '..');
+          const relativeForkPath = path.relative(path.join(EXPO_DIR, 'ios'), rnForkPath);
+          podspec.xcconfig['HEADER_SEARCH_PATHS'] = podspec.xcconfig[
+            'HEADER_SEARCH_PATHS'
+          ]?.replace(rnForkPath, '${PODS_ROOT}/../' + relativeForkPath);
         },
         transforms: {
           content: [
@@ -94,6 +116,90 @@ const config: VendoringTargetConfig = {
               find: /^#import "React\/RCT(.*).h"$/gm,
               replaceWith: '#import <React/RCT$1.h>',
             },
+            {
+              // remove the `#elif __has_include(<hermes/hermes.h>)` code block
+              paths: 'NativeProxy.mm',
+              find: /#elif __has_include\(<hermes\/hermes.h>\)\n.*(#import|makeHermesRuntime).*\n/gm,
+              replaceWith: '',
+            },
+          ],
+        },
+      },
+      android: {
+        excludeFiles: [
+          'android/gradle{/**,**}',
+          'android/settings.gradle',
+          'android/spotless.gradle',
+          'android/README.md',
+          'android/rnVersionPatch/**',
+        ],
+        async postCopyFilesHookAsync(sourceDirectory: string, targetDirectory: string) {
+          const excludedBlobs = ['**/*.md'];
+
+          await fs.copy(
+            path.join(sourceDirectory, 'Common'),
+            path.join(targetDirectory, 'Common'),
+            {
+              filter: (src) => {
+                const isExcluded = excludedBlobs.some((blob) => minimatch(src, blob));
+                return !isExcluded;
+              },
+              overwrite: true,
+              errorOnExist: false,
+            }
+          );
+          const reanimatedVersion = require(path.join(sourceDirectory, 'package.json')).version;
+          await transformFileAsync(path.join(targetDirectory, 'android', 'build.gradle'), [
+            // set reanimated version
+            {
+              find: 'def REANIMATED_VERSION = getReanimatedVersion()',
+              replaceWith: `def REANIMATED_VERSION = "${reanimatedVersion}"`,
+            },
+            {
+              find: 'def REANIMATED_MAJOR_VERSION = getReanimatedMajorVersion()',
+              replaceWith: `def REANIMATED_MAJOR_VERSION = ${reanimatedVersion.split('.')[0]}`,
+            },
+          ]);
+        },
+        transforms: {
+          content: [
+            {
+              // Always uses hermes as reanimated worklet runtime on Expo Go
+              paths: 'build.gradle',
+              find: /\b(def JS_RUNTIME = \{)/g,
+              replaceWith: '$1\n    return "hermes" // Expo Go always uses hermes\n',
+            },
+            {
+              // react-native root dir is in react-native-lab/react-native
+              paths: 'build.gradle',
+              find: /\b(def reactNativeRootDir)\s*=.+$/gm,
+              replaceWith: `$1 = Paths.get(projectDir.getPath(), '../../../../../react-native-lab/react-native/packages/react-native').toFile()`,
+            },
+            {
+              // no-op for extracting tasks
+              paths: 'build.gradle',
+              find: /\b(task (prepareHermes|unpackReactNativeAAR).*\{)$/gm,
+              replaceWith: `$1\n    return`,
+            },
+            {
+              // project `:ReactAndroid` to `:packages:react-native:ReactAndroid`
+              paths: 'build.gradle',
+              find: /(:ReactAndroid)/g,
+              replaceWith: ':packages:react-native:$1',
+            },
+            {
+              // compileOnly hermes-engine
+              paths: 'build.gradle',
+              find: /implementation "com\.facebook\.react:hermes-android:?"\s*\/\/ version substituted by RNGP/g,
+              replaceWith:
+                'compileOnly "com.facebook.react:hermes-android:${REACT_NATIVE_VERSION}"',
+            },
+            {
+              // expose `ReanimatedUIManagerFactory.create` publicly
+              paths: 'ReanimatedUIManagerFactory.java',
+              find: /((?<!public )static UIManagerModule create\()/g,
+              replaceWith: 'public $1',
+            },
           ],
         },
       },
@@ -102,23 +208,13 @@ const config: VendoringTargetConfig = {
       source: 'https://github.com/software-mansion/react-native-screens.git',
       semverPrefix: '~',
       ios: {},
-      // TODO: Uncomment once the new vendoring scripts supports Android
-      // android: {
-      //   transforms: {
-      //     content: [
-      //       {
-      //         paths: 'ScreenStack.kt',
-      //         find: /(?=^class ScreenStack\()/m,
-      //         replaceWith: `import host.exp.expoview.R\n\n`,
-      //       },
-      //       {
-      //         paths: 'ScreenStackHeaderConfig.kt',
-      //         find: /(?=^class ScreenStackHeaderConfig\()/m,
-      //         replaceWith: `import host.exp.expoview.BuildConfig\nimport host.exp.expoview.R\n\n`,
-      //       },
-      //     ],
-      //   },
-      // },
+      android: {
+        excludeFiles: [
+          'android/gradle{/**,**}',
+          'android/settings.gradle',
+          'android/spotless.gradle',
+        ],
+      },
     },
     'amazon-cognito-identity-js': {
       source: 'https://github.com/aws-amplify/amplify-js.git',
@@ -128,6 +224,16 @@ const config: VendoringTargetConfig = {
     },
     'react-native-svg': {
       source: 'https://github.com/react-native-svg/react-native-svg',
+      ios: {},
+      android: {
+        excludeFiles: [
+          'android/gradle{/**,**}',
+          'android/settings.gradle',
+          'android/spotless.gradle',
+          'android/src/fabric/**',
+          'android/src/main/jni/**',
+        ],
+      },
     },
     'react-native-maps': {
       source: 'https://github.com/react-native-maps/react-native-maps',
@@ -262,6 +368,9 @@ const config: VendoringTargetConfig = {
     'react-native-pager-view': {
       source: 'https://github.com/callstack/react-native-viewpager',
       ios: {},
+      android: {
+        excludeFiles: ['android/gradle{/**,**}', 'android/settings.gradle'],
+      },
     },
     'react-native-shared-element': {
       source: 'https://github.com/IjzerenHein/react-native-shared-element',
@@ -275,7 +384,12 @@ const config: VendoringTargetConfig = {
     },
     '@react-native-community/slider': {
       source: 'https://github.com/callstack/react-native-slider',
-      packageJsonPath: 'src/package.json',
+      rootDir: 'package',
+      ios: {},
+      android: {
+        includeFiles: 'android/**',
+        excludeFiles: ['android/gradle{/**,**}'],
+      },
     },
     '@shopify/react-native-skia': {
       source: '@shopify/react-native-skia',
@@ -367,6 +481,55 @@ const config: VendoringTargetConfig = {
       ios: {},
       android: {
         excludeFiles: ['**/src/test/**'],
+      },
+    },
+    '@react-native-async-storage/async-storage': {
+      source: 'https://github.com/react-native-async-storage/async-storage.git',
+      ios: {
+        excludeFiles: 'example/**/*',
+        async mutatePodspec(podspec: Podspec, sourceDirectory: string, targetDirectory: string) {
+          // patch for scoped async storage
+          const patchFile = path.join(
+            EXPOTOOLS_DIR,
+            'src/vendoring/config/react-native-async-storage-scoped-storage-ios.patch'
+          );
+          const patchContent = await fs.readFile(patchFile, 'utf8');
+          try {
+            await applyPatchAsync({
+              patchContent,
+              cwd: targetDirectory,
+              stripPrefixNum: 0,
+            });
+          } catch (e) {
+            logger.error(
+              `Failed to apply patch: \`patch -p0 -d '${targetDirectory}' < ${patchFile}\``
+            );
+            throw e;
+          }
+        },
+      },
+      android: {
+        excludeFiles: 'example/**/*',
+        async postCopyFilesHookAsync(sourceDirectory, targetDirectory) {
+          // patch for scoped async storage
+          const patchFile = path.join(
+            EXPOTOOLS_DIR,
+            'src/vendoring/config/react-native-async-storage-scoped-storage-android.patch'
+          );
+          const patchContent = await fs.readFile(patchFile, 'utf8');
+          try {
+            await applyPatchAsync({
+              patchContent,
+              cwd: targetDirectory,
+              stripPrefixNum: 0,
+            });
+          } catch (e) {
+            logger.error(
+              `Failed to apply patch: \`patch -p0 -d '${targetDirectory}' < ${patchFile}\``
+            );
+            throw e;
+          }
+        },
       },
     },
   },

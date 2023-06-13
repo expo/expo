@@ -9,6 +9,9 @@ import expo.modules.imagepicker.contracts.CameraContractOptions
 import expo.modules.imagepicker.contracts.ImageLibraryContractOptions
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.Enumerable
+
+internal const val UNLIMITED_SELECTION: Int = 0
 
 internal class ImagePickerOptions : Record, Serializable {
   @Field
@@ -20,6 +23,10 @@ internal class ImagePickerOptions : Record, Serializable {
   @Field
   @FloatRange(from = 0.0, to = 1.0)
   var quality: Double = 0.2
+
+  @Field
+  @IntRange(from = 0)
+  var selectionLimit: Int = UNLIMITED_SELECTION
 
   @Field
   var base64: Boolean = false
@@ -36,12 +43,15 @@ internal class ImagePickerOptions : Record, Serializable {
   @Field
   var aspect: Pair<Int, Int>? = null
 
+  @Field
+  var cameraType: CameraType = CameraType.BACK
+
   fun toCameraContractOptions(uri: Uri) = CameraContractOptions(uri, this)
 
   fun toImageLibraryContractOptions() = ImageLibraryContractOptions(this)
 }
 
-internal enum class MediaTypes(val value: String) {
+internal enum class MediaTypes(val value: String) : Enumerable {
   IMAGES("Images"),
   VIDEOS("Videos"),
   ALL("All");
@@ -76,4 +86,9 @@ internal enum class MediaTypes(val value: String) {
     const val VideoAllMimeType = "video/*"
     const val AllMimeType = "*/*"
   }
+}
+
+internal enum class CameraType(val value: String) : Enumerable {
+  BACK("back"),
+  FRONT("front"),
 }

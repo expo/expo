@@ -1,0 +1,324 @@
+---
+title: Build server infrastructure
+sidebar_title: Server infrastructure
+maxHeadingDepth: 4
+description: Learn about the current build server infrastructure when using EAS.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+
+> This document was last updated on **May 5, 2023**.
+
+## Builder IP addresses
+
+Here is the [up-to-date list of builder IP addresses](https://expo.dev/eas-build-worker-ips.txt).
+
+## Configuring build environment
+
+Images for each platform have one specific version of Node.js, yarn, CocoaPods, Xcode, Ruby, Fastlane, and so on. You can override some of the versions in [eas.json](/build/eas-json).
+If there is no dedicated configuration option you're looking for, you can use [npm hooks](npm-hooks) to install or update any system dependencies with `apt-get` or `brew`. Please take into account that those customizations are applied during the build and will increase your build times.
+
+When selecting an image for the build you can use the full name provided below or one of the aliases: `default`, `latest`.
+
+- The use of a specific name guarantees the consistent environment with only minor updates.
+- `default` alias will be assigned to the environment that most closely resembles the configuration used for Expo SDK development.
+- `latest` alias will be assigned to the image with the most up to date versions of the software.
+
+> **info** **Note:** If you do not provide `image` in **eas.json**, your build will use `default` image. However, in some cases, we select a more appropriate image based on the Expo SDK version or React Native version.
+> You can check what image is used for a build in the "Spin up build environment" build logs section.
+
+## Android build server configurations
+
+Android builders run on virtual machines in an isolated environment. Every build gets its own dedicated VM instance.
+
+- Build resources:
+  - [`medium`](eas-json/#resourceclass-1): 4 CPU, 16 GB RAM ([`n2-standard-4`](https://cloud.google.com/compute/docs/general-purpose-machines#n2_machines) Google Cloud machine type)
+  - [`large`](eas-json/#resourceclass-1): 8 CPU, 32 GB RAM ([`n2-standard-8`](https://cloud.google.com/compute/docs/general-purpose-machines#n2_machines) Google Cloud machine type)
+- [npm cache deployed with Kubernetes](caching/#javascript-dependencies)
+- [Maven cache deployed with Kubernetes](caching/#android-dependencies)
+- Global Gradle configuration in **~/.gradle/gradle.properties**:
+
+  ```ini ~/.gradle/gradle.properties
+  org.gradle.jvmargs=-Xmx14g -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
+  org.gradle.parallel=true
+  org.gradle.configureondemand=true
+  org.gradle.daemon=false
+  ```
+
+- Global npm configuration in **~/.npmrc**:
+
+  ```ini ~/.npmrc
+  registry=http://npm-cache-service.worker-infra-production.svc.cluster.local:4873
+  ```
+
+- Global Yarn configuration in **~/.yarnrc.yml**:
+
+  ```yml ~/.yarnrc.yml
+  unsafeHttpWhitelist:
+    - '*'
+  npmRegistryServer: 'http://npm-cache-service.worker-infra-production.svc.cluster.local:4873'
+  enableImmutableInstalls: false
+  ```
+
+### Android server images
+
+#### `ubuntu-22.04-jdk-11-ndk-r21e` (alias `latest`)
+
+<Collapsible summary="Details">
+
+- Docker image: `ubuntu:jammy-20220531`
+- NDK 21.4.7075529
+- Node.js 16.18.1
+- Yarn 1.22.17
+- pnpm 7.0.0
+- npm 8.19.2
+- Java 11
+
+</Collapsible>
+
+#### `ubuntu-22.04-jdk-8-ndk-r21e`
+
+<Collapsible summary="Details">
+
+- Docker image: `ubuntu:jammy-20220531`
+- NDK 21.4.7075529
+- Node.js 16.18.1
+- Yarn 1.22.17
+- pnpm 7.0.0
+- npm 8.19.2
+- Java 8
+
+</Collapsible>
+
+#### `ubuntu-20.04-jdk-11-ndk-r21e` (alias `default`)
+
+<Collapsible summary="Details">
+
+- Docker image: `ubuntu:focal-20210921`
+- NDK 21.4.7075529
+- Node.js 16.18.1
+- Yarn 1.22.17
+- pnpm 7.0.0
+- npm 8.19.2
+- Java 11
+
+</Collapsible>
+
+#### `ubuntu-20.04-jdk-8-ndk-r21e`
+
+<Collapsible summary="Details">
+
+- Docker image: `ubuntu:focal-20210921`
+- NDK 21.4.7075529
+- Node.js 16.18.1
+- Yarn 1.22.17
+- pnpm 7.0.0
+- npm 8.19.2
+- Java 8
+
+</Collapsible>
+
+#### `ubuntu-18.04-jdk-11-ndk-r19c`
+
+<Collapsible summary="Details">
+
+- Docker image: `ubuntu:bionic-20210930`
+- NDK 19.2.5345600
+- Node.js 16.18.1
+- Yarn 1.22.17
+- pnpm 7.0.0
+- npm 8.19.2
+- Java 11
+
+</Collapsible>
+
+#### `ubuntu-18.04-jdk-8-ndk-r19c`
+
+<Collapsible summary="Details">
+
+- Docker image: `ubuntu:bionic-20210930`
+- NDK 19.2.5345600
+- Node.js 16.18.1
+- Yarn 1.22.17
+- pnpm 7.0.0
+- npm 8.19.2
+- Java 8
+
+</Collapsible>
+
+## iOS build server configurations
+
+iOS builder VMs run on Mac Mini 8.1 hosts in an isolated environment. Every build gets its own fresh macOS VM:
+
+- Hardware:
+  - Intel: Intel(R) Core(TM) i7-8700B CPU (6 cores/12 threads), 64 GB RAM
+  - M1: 3.2GHz 8-Core M1 (4 performance and 4 efficiency cores), 16 GB RAM
+  - M2: 3.4GHz 12-Core M2 (8 performance and 4 efficiency cores), 24 GB RAM
+  - M2 Pro: 3.4GHz 10-Core M2 Pro (6 performance and 4 efficiency cores), 32 GB RAM
+- Build resources:
+  - [`intel-medium`](eas-json/#resourceclass-2): 3 cores, 12 GB RAM, 2 builder VMs per host
+  - [`m-medium`](eas-json/#resourceclass-2): 2 cores, 8 GB RAM, 2 builder VMs per host
+  - [`large`](eas-json/#resourceclass-2): 4 cores, 12 GB RAM, 2 builder VMs per host (for builds running on M2 Pro hosts) or 4 cores, 22 GB RAM, 1 builder VM per host (for builds running on M2 hosts)
+- [npm cache](caching/#javascript-dependencies)
+- [CocoaPods cache](caching/#ios-dependencies)
+- [`cocoapods-nexus-plugin`](https://github.com/expo/eas-build/tree/main/packages/cocoapods-nexus-plugin)
+- Global npm configuration in **~/.npmrc**:
+
+  ```ini ~/.npmrc
+  registry=http://10.254.24.9:4873
+  ```
+
+- Global Yarn configuration in **~/.yarnrc.yml**:
+
+  ```yml ~/.yarnrc.yml
+  unsafeHttpWhitelist:
+    - '*'
+  npmRegistryServer: 'registry=http://10.254.24.9:4873'
+  enableImmutableInstalls: false
+  ```
+
+### iOS server images
+
+#### `macos-ventura-13.3-xcode-14.3` (`latest` for Apple silicon builders, only available for Apple silicon builders)
+
+<Collapsible summary="Details">
+
+- macOS Ventrua 13.3
+- Xcode 14.3 (14E222b)
+- Node.js 16.18.1
+- Yarn 1.22.17
+- pnpm 8.2.0
+- npm 8.1.2
+- fastlane 2.212.2
+- CocoaPods 1.12.0
+- Ruby 2.7
+
+</Collapsible>
+
+#### `macos-monterey-12.6-xcode-14.2` (`latest` for Intel builders, `default` for Apple silicon builders)
+
+<Collapsible summary="Details">
+
+- macOS Monterey 12.6
+- Xcode 14.2 (14C18)
+- Node.js 16.18.1
+- Yarn 1.22.17
+- pnpm 7.27.0
+- npm 8.19.2
+- fastlane 2.211.0
+- CocoaPods 1.11.3
+- Ruby 2.7
+
+</Collapsible>
+
+#### `macos-monterey-12.6-xcode-14.1` (`default` for Intel builders)
+
+<Collapsible summary="Details">
+
+- macOS Monterey 12.6
+- Xcode 14.1 (14B47b)
+- Node.js 16.18.1
+- Yarn 1.22.17
+- pnpm 7.15.0
+- npm 8.19.2
+- fastlane 2.210.1
+- CocoaPods 1.11.3
+- Ruby 2.7
+
+</Collapsible>
+
+#### `macos-monterey-12.6-xcode-14.0`
+
+<Collapsible summary="Details">
+
+- macOS Monterey 12.6
+- Xcode 14.0 (14A309)
+- Node.js 16.18.1
+- Yarn 1.22.17
+- pnpm 7.11.0
+- npm 8.19.2
+- fastlane 2.210.0
+- CocoaPods 1.11.3
+- Ruby 2.7
+
+</Collapsible>
+
+#### `macos-monterey-12.4-xcode-13.4`
+
+<Collapsible summary="Details">
+
+- macOS Monterey 12.4
+- Xcode 13.4 (13F17a)
+- Node.js 16.18.1
+- Yarn 1.22.17
+- pnpm 7.0.0
+- npm 8.19.2
+- fastlane 2.205.2
+- CocoaPods 1.11.3
+- Ruby 2.7
+
+</Collapsible>
+
+#### `macos-big-sur-11.4-xcode-13.0`
+
+<Collapsible summary="Details">
+
+- macOS Big Sur 11.4
+- Xcode 13.0 (13A233)
+- Node.js 16.18.1
+- Yarn 1.22.17
+- pnpm 7.0.0
+- npm 8.19.2
+- fastlane 2.185.1
+- CocoaPods 1.10.1
+- Ruby 2.7
+
+</Collapsible>
+
+#### `macos-monterey-12.3-xcode-13.3` (deprecated)
+
+<Collapsible summary="Details">
+
+- macOS Monterey 12.3.1
+- Xcode 13.3.1 (13E500a)
+- Node.js 16.18.1
+- Yarn 1.22.17
+- pnpm 7.0.0
+- npm 8.19.2
+- fastlane 2.205.2
+- CocoaPods 1.11.3
+- Ruby 2.7
+
+</Collapsible>
+
+#### `macos-monterey-12.1-xcode-13.2` (deprecated)
+
+<Collapsible summary="Details">
+
+- macOS Monterey 12.1
+- Xcode 13.2.1 (13C100)
+- Node.js 16.18.1
+- Yarn 1.22.17
+- pnpm 7.0.0
+- npm 8.19.2
+- fastlane 2.201.0
+- CocoaPods 1.11.2
+- Ruby 2.7
+
+</Collapsible>
+
+#### `macos-big-sur-11.4-xcode-12.5` (deprecated, only available for Intel builders)
+
+<Collapsible summary="Details">
+
+- macOS Big Sur 11.4
+- Xcode 12.5 (12E5244e)
+- Node.js 16.18.1
+- Yarn 1.22.17
+- pnpm 7.0.0
+- npm 8.19.2
+- fastlane 2.185.1
+- CocoaPods 1.10.1
+- Ruby 2.7
+
+</Collapsible>

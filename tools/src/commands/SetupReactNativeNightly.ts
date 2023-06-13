@@ -1,13 +1,19 @@
 import { Command } from '@expo/commander';
 import JsonFile from '@expo/json-file';
+import spawnAsync from '@expo/spawn-async';
+import assert from 'assert';
 import fs from 'fs-extra';
+import glob from 'glob-promise';
 import path from 'path';
 
-import { EXPO_DIR } from '../Constants';
+import { EXPO_DIR, EXPOTOOLS_DIR } from '../Constants';
 import logger from '../Logger';
 import { getPackageViewAsync } from '../Npm';
 import { transformFileAsync } from '../Transforms';
+import { applyPatchAsync } from '../Utils';
 import { installAsync as workspaceInstallAsync } from '../Workspace';
+
+const PATCHES_ROOT = path.join(EXPOTOOLS_DIR, 'src', 'react-native-nightlies', 'patches');
 
 export default (program: Command) => {
   program
@@ -22,12 +28,12 @@ async function main() {
     throw new Error('Unable to get react-native nightly version.');
   }
 
+  logger.info('Adding bare-expo optional packages:');
+  await addBareExpoOptionalPackagesAsync();
+
   logger.info('Adding pinned packages:');
   const pinnedPackages = {
     'react-native': nightlyVersion,
-
-    // Remove this after we upgrade reanimated
-    'react-native-reanimated': '2.10.0',
   };
   await addPinnedPackagesAsync(pinnedPackages);
 
@@ -36,16 +42,46 @@ async function main() {
 
   await updateReactNativePackageAsync();
 
-  await patchReanimatedAsync();
-
-  // Workaround for deprecated `Linking.removeEventListener`
-  // Remove this after we migrate to @react-navigation/native@^6.0.12
-  // https://linear.app/expo/issue/ENG-4148/upgrade-react-navigation-across-expoexpo-monorepo
-  // https://github.com/react-navigation/react-navigation/commit/bd5cd55e130cba2c6c35bbf360e3727a9fcf00e4
+  await patchReanimatedAsync(nightlyVersion);
+  await patchDetoxAsync();
   await patchReactNavigationAsync();
+  await patchGestureHandlerAsync();
+
+  logger.info('Setting up Expo modules files');
+  await updateExpoModulesAsync();
 
   logger.info('Setting up project files for bare-expo.');
-  await updateBareExpoAsync();
+  await updateBareExpoAsync(nightlyVersion);
+}
+
+/**
+ * To save the CI build time, some third-party libraries are intentionally not listed as dependencies in bare-expo.
+ * Adding these packages for nightly testing to increase coverage.
+ */
+async function addBareExpoOptionalPackagesAsync() {
+  const bareExpoRoot = path.join(EXPO_DIR, 'apps', 'bare-expo');
+  const OPTIONAL_PKGS = ['@shopify/react-native-skia', 'lottie-react-native', 'react-native-maps'];
+
+  const packageJsonNCL = await JsonFile.readAsync(
+    path.join(EXPO_DIR, 'apps', 'native-component-list', 'package.json')
+  );
+  const versionMap = {
+    ...(packageJsonNCL.devDependencies as object),
+    ...(packageJsonNCL.dependencies as object),
+    // override @shopify/react-native-skia version to fix xcode 14.3 build error
+    '@shopify/react-native-skia': '0.1.184',
+  };
+
+  const installPackages = OPTIONAL_PKGS.map((pkg) => {
+    const version = versionMap[pkg];
+    assert(version);
+    return `${pkg}@${version}`;
+  });
+  for (const pkg of installPackages) {
+    logger.log('  ', pkg);
+  }
+
+  await spawnAsync('yarn', ['add', ...installPackages], { cwd: bareExpoRoot });
 }
 
 async function addPinnedPackagesAsync(packages: Record<string, string>) {
@@ -60,100 +96,146 @@ async function addPinnedPackagesAsync(packages: Record<string, string>) {
 }
 
 async function updateReactNativePackageAsync() {
-  const root = path.join(EXPO_DIR, 'node_modules', 'react-native');
+  const reactNativeRoot = path.join(EXPO_DIR, 'node_modules', 'react-native');
 
-  // Third party libraries used to use react-native minor version, update the version 1000.999.0 as the latest version
-  await transformFileAsync(path.join(root, 'package.json'), [
-    {
-      find: '"version": "0.0.0-',
-      replaceWith: '"version": "1000.999.0-',
-    },
-  ]);
-  await transformFileAsync(path.join(root, 'ReactAndroid', 'gradle.properties'), [
-    {
-      find: 'VERSION_NAME=1000.0.0-',
-      replaceWith: 'VERSION_NAME=1000.999.0-',
-    },
-  ]);
-
-  // Build hermes source from the main branch
-  await fs.writeFile(path.join(root, 'sdks', '.hermesversion'), 'main');
-  await transformFileAsync(path.join(root, 'sdks', 'hermes-engine', 'hermes-engine.podspec'), [
-    {
-      // Use the fake version to force building hermes from source
-      find: "version = package['version']",
-      replaceWith: "version = '1000.0.0'",
-    },
-  ]);
-
-  // Remove unused hermes build artifacts to reduce build time
-  await transformFileAsync(path.join(root, 'sdks', 'hermes-engine', 'hermes-engine.podspec'), [
-    {
-      find: './utils/build-mac-framework.sh',
-      replaceWith: '',
-    },
-  ]);
+  // Update native ReactNativeVersion
+  const versions = (process.env.REACT_NATIVE_OVERRIDE_VERSION ?? '9999.9999.9999').split('.');
   await transformFileAsync(
-    path.join(root, 'sdks', 'hermes-engine', 'utils', 'build-ios-framework.sh'),
+    path.join(
+      reactNativeRoot,
+      'ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java'
+    ),
     [
       {
-        find: 'build_apple_framework "iphoneos" "arm64" "$ios_deployment_target"',
-        replaceWith: '',
+        find: /("major", )\d+,/g,
+        replaceWith: `$1${versions[0]},`,
       },
       {
-        find: 'build_apple_framework "catalyst" "x86_64;arm64" "$ios_deployment_target"',
-        replaceWith: '',
+        find: /("minor", )\d+,/g,
+        replaceWith: `$1${versions[1]},`,
       },
       {
-        find: 'create_universal_framework "iphoneos" "iphonesimulator" "catalyst"',
-        replaceWith: 'create_universal_framework "iphonesimulator"',
+        find: /("patch", )\d+,/g,
+        replaceWith: `$1${versions[2]},`,
+      },
+    ]
+  );
+
+  // Workaround build error for React-bridging depending on butter
+  const bridgingFiles = await glob('ReactCommon/react/bridging/*.{h,cpp}', {
+    cwd: reactNativeRoot,
+    absolute: true,
+  });
+  await Promise.all(
+    bridgingFiles.map((file) =>
+      transformFileAsync(file, [
+        {
+          find: /<butter\/map\.h>/g,
+          replaceWith: '<map>',
+        },
+        {
+          find: /<butter\/function\.h>/g,
+          replaceWith: '<functional>',
+        },
+        {
+          find: /butter::(map|function)/g,
+          replaceWith: 'std::$1',
+        },
+      ])
+    )
+  );
+
+  // Workaround build error for outdated `@react-native/gradle-plugin`
+  const reactGradlePluginRoot = path.join(
+    EXPO_DIR,
+    'node_modules',
+    '@react-native',
+    'gradle-plugin'
+  );
+  await transformFileAsync(
+    path.join(reactGradlePluginRoot, 'src/main/kotlin/com/facebook/react/utils/DependencyUtils.kt'),
+    [
+      {
+        find: 'return if (versionString.startsWith("0.0.0")) {',
+        replaceWith:
+          'return if (versionString.startsWith("0.0.0") || "-nightly-" in versionString) {',
       },
     ]
   );
 }
 
-async function patchReanimatedAsync() {
-  // Workaround for reanimated doesn't support the hermes where building from source
+async function patchReanimatedAsync(nightlyVersion: string) {
   const root = path.join(EXPO_DIR, 'node_modules', 'react-native-reanimated');
+
   await transformFileAsync(path.join(root, 'android', 'build.gradle'), [
     {
-      find: /\bdef hermesAAR = file\(.+\)/g,
-      replaceWith:
-        'def hermesAAR = file("$reactNative/ReactAndroid/hermes-engine/build/outputs/aar/hermes-engine-debug.aar")',
+      find: /\$minor/g,
+      replaceWith: '$rnMinorVersion',
     },
   ]);
 
-  // Remove this after reanimated support react-native 0.71
-  await transformFileAsync(path.join(root, 'android', 'CMakeLists.txt'), [
+  await transformFileAsync(path.join(root, 'RNReanimated.podspec'), [
     {
-      find: /(\s*"\$\{NODE_MODULES_DIR\}\/react-native\/ReactAndroid\/src\/main\/jni")/g,
-      replaceWith:
-        '$1\n        "${NODE_MODULES_DIR}/react-native/ReactAndroid/src/main/jni/react/turbomodule"',
+      find: /^(\s*['"]USE_HEADERMAP['"]\s+=>\s+['"]YES['"],\s*)$/gm,
+      replaceWith: `$1\n    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",`,
     },
   ]);
+}
+
+async function patchDetoxAsync() {
+  const patchFile = path.join(PATCHES_ROOT, 'detox.patch');
+  const patchContent = await fs.readFile(patchFile, 'utf8');
+  await applyPatchAsync({ patchContent, cwd: EXPO_DIR, stripPrefixNum: 1 });
 }
 
 async function patchReactNavigationAsync() {
-  const root = path.join(EXPO_DIR, 'node_modules', '@react-navigation');
-  await transformFileAsync(path.join(root, 'native', 'src', 'useLinking.native.tsx'), [
-    {
-      find: `\
-      Linking.addEventListener('url', callback);
-
-      return () => Linking.removeEventListener('url', callback);`,
-      replaceWith: `\
-      const subscription = Linking.addEventListener('url', callback);
-
-      return () => subscription.remove();`,
-    },
-  ]);
+  await transformFileAsync(
+    path.join(EXPO_DIR, 'node_modules', '@react-navigation/elements', 'src/Header/Header.tsx'),
+    [
+      {
+        // Weird that the nightlies will break if pass `undefined` to the `transform` prop
+        find: 'style={[{ height, minHeight, maxHeight, opacity, transform }]}',
+        replaceWith:
+          'style={[{ height, minHeight, maxHeight, opacity, transform: transform ?? [] }]}',
+      },
+    ]
+  );
 }
 
-async function updateBareExpoAsync() {
-  const gradlePropsFile = path.join(EXPO_DIR, 'apps', 'bare-expo', 'android', 'gradle.properties');
-  let content = await fs.readFile(gradlePropsFile, 'utf8');
-  if (!content.match('reactNativeNightly=true')) {
-    content += `\nreactNativeNightly=true\n`;
-    await fs.writeFile(gradlePropsFile, content);
-  }
+async function patchGestureHandlerAsync() {
+  await transformFileAsync(
+    path.join(
+      EXPO_DIR,
+      'node_modules',
+      'react-native-gesture-handler',
+      'android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerModule.kt'
+    ),
+    [
+      {
+        find: 'decorateRuntime(jsContext.get())',
+        replaceWith: 'decorateRuntime(jsContext!!.get())',
+      },
+    ]
+  );
+}
+
+async function updateExpoModulesAsync() {
+  // no-op currently
+}
+
+async function updateBareExpoAsync(nightlyVersion: string) {
+  const root = path.join(EXPO_DIR, 'apps', 'bare-expo');
+  await transformFileAsync(path.join(root, 'android', 'settings.gradle'), [
+    {
+      find: /react-native-gradle-plugin/g,
+      replaceWith: '@react-native/gradle-plugin',
+    },
+  ]);
+
+  await transformFileAsync(path.join(root, 'ios', 'Podfile'), [
+    {
+      find: /(platform :ios, )['"]13\.0['"]/g,
+      replaceWith: "$1'13.4'",
+    },
+  ]);
 }

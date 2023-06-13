@@ -1,13 +1,14 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXAppFetcher+Private.h"
-#import <EXManifests/EXManifestsManifest.h>
+
+@class EXManifestsManifest;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXAppFetcherCacheOnly : EXAppFetcher
 
-- (instancetype)initWithAppLoader:(EXAppLoader *)appLoader manifest:(EXManifestsManifest *)manifest;
+- (instancetype)initWithAppLoader:(EXAbstractLoader *)appLoader manifest:(EXManifestsManifest *)manifest;
 
 @end
 

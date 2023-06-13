@@ -6,7 +6,7 @@ import FunctionDemo, {
   FunctionDescription,
   FunctionParameter,
 } from '../../components/FunctionDemo';
-import ImageOrVideoPreview from './ImageOrVideoPreview';
+import ImagePickerAssetsList from './ImagePickerAssetsList';
 
 const LAUNCH_PICKER_PARAMETERS: FunctionParameter[] = [
   {
@@ -127,7 +127,7 @@ const LAUNCH_PICKER_PARAMETERS: FunctionParameter[] = [
         name: 'selectionLimit',
         type: 'number',
         values: [0, 1, 3],
-        platforms: ['ios'],
+        platforms: ['ios', 'android'],
       },
       {
         name: 'orderedSelection',
@@ -219,7 +219,7 @@ function ImagePickerScreen() {
           key={idx}
           namespace="ImagePicker"
           {...props}
-          renderAdditionalResult={ImageOrVideoPreview}
+          renderAdditionalResult={ImagePickerAssetsList}
         />
       ))}
     </ScrollView>

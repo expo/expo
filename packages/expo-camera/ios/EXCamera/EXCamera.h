@@ -3,6 +3,7 @@
 #import <ExpoModulesCore/EXModuleRegistry.h>
 #import <ExpoModulesCore/EXAppLifecycleListener.h>
 #import <ExpoModulesCore/EXCameraInterface.h>
+#import <ExpoModulesCore/EXLegacyExpoViewProtocol.h>
 
 static const int EXFlashModeTorch = 3;
 
@@ -61,7 +62,7 @@ typedef NS_ENUM(NSInteger, EXCameraVideoCodec) {
   EXCameraVideoCodecAppleProRes4444 = 4,
 };
 
-@interface EXCamera : UIView <AVCaptureMetadataOutputObjectsDelegate, AVCaptureFileOutputRecordingDelegate, EXAppLifecycleListener, EXCameraInterface, AVCapturePhotoCaptureDelegate>
+@interface EXCamera : UIView <AVCaptureMetadataOutputObjectsDelegate, AVCaptureFileOutputRecordingDelegate, EXAppLifecycleListener, EXCameraInterface, AVCapturePhotoCaptureDelegate, EXLegacyExpoViewProtocol>
 
 @property (nonatomic, strong) dispatch_queue_t sessionQueue;
 @property (nonatomic, strong) AVCaptureSession *session;
@@ -79,6 +80,8 @@ typedef NS_ENUM(NSInteger, EXCameraVideoCodec) {
 @property (nonatomic, assign) NSInteger whiteBalance;
 @property (assign, nonatomic) AVCaptureSessionPreset pictureSize;
 @property (nonatomic, assign) AVCaptureVideoStabilizationMode videoStabilizationMode;
+@property (nonatomic, assign) BOOL responsiveOrientationWhenOrientationLocked;
+
 
 @property (nonatomic, assign) BOOL isScanningBarCodes;
 @property (nonatomic, assign) BOOL isDetectingFaces;
@@ -92,6 +95,7 @@ typedef NS_ENUM(NSInteger, EXCameraVideoCodec) {
 - (void)updateZoom;
 - (void)updateWhiteBalance;
 - (void)updatePictureSize;
+- (void)updateResponsiveOrientationWhenOrientationLocked;
 - (void)updateFaceDetectorSettings:(NSDictionary *)settings;
 - (void)setBarCodeScannerSettings:(NSDictionary *)settings;
 - (void)takePicture:(NSDictionary *)options resolve:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)reject;
@@ -101,6 +105,7 @@ typedef NS_ENUM(NSInteger, EXCameraVideoCodec) {
 - (void)pausePreview;
 - (void)onReady:(NSDictionary *)event;
 - (void)onMountingError:(NSDictionary *)event;
+- (void)onResponsiveOrientationChanged:(NSDictionary *)event;
 - (void)onPictureSaved:(NSDictionary *)event;
 
 @end

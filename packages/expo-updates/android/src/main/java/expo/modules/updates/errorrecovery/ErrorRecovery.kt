@@ -5,7 +5,7 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
 import com.facebook.react.ReactInstanceManager
-import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler
+import com.facebook.react.bridge.DefaultJSExceptionHandler
 import com.facebook.react.bridge.ReactMarker
 import com.facebook.react.bridge.ReactMarkerConstants
 import com.facebook.react.devsupport.DisabledDevSupportManager
@@ -14,6 +14,19 @@ import expo.modules.updates.logging.UpdatesLogger
 import java.lang.ref.WeakReference
 import kotlin.Exception
 
+/**
+ * Entry point for the error recovery flow. Responsible for initializing the error recovery handler
+ * and handler thread, and for registering (and unregistering) listeners to lifecycle events so that
+ * the appropriate error recovery flows will be triggered.
+ *
+ * The error recovery flow is intended to be lightweight and is *not* a full safety net whose
+ * purpose is to avoid crashes at all costs. Rather, its primary purpose is to prevent bad updates
+ * from "bricking" an app by causing crashes before there is ever a chance to download a fix.
+ *
+ * Notably, the error listener will be unregistered 10 seconds after content has appeared; we assume
+ * that by this point, expo-updates has had enough time to download a new update if there is one,
+ * and so there is no more need to trigger the error recovery pipeline.
+ */
 class ErrorRecovery(
   private val context: Context
 ) {
@@ -22,7 +35,7 @@ class ErrorRecovery(
   internal val logger = UpdatesLogger(context)
 
   private var weakReactInstanceManager: WeakReference<ReactInstanceManager>? = null
-  private var previousExceptionHandler: DefaultNativeModuleCallExceptionHandler? = null
+  private var previousExceptionHandler: DefaultJSExceptionHandler? = null
 
   fun initialize(delegate: ErrorRecoveryDelegate) {
     if (!::handler.isInitialized) {
@@ -72,17 +85,17 @@ class ErrorRecovery(
     }
 
     val devSupportManager = reactInstanceManager.devSupportManager as DisabledDevSupportManager
-    val defaultNativeModuleCallExceptionHandler = object : DefaultNativeModuleCallExceptionHandler() {
+    val defaultJSExceptionHandler = object : DefaultJSExceptionHandler() {
       override fun handleException(e: Exception?) {
         this@ErrorRecovery.handleException(e!!)
       }
     }
     val devSupportManagerClass = devSupportManager.javaClass
-    previousExceptionHandler = devSupportManagerClass.getDeclaredField("mDefaultNativeModuleCallExceptionHandler").let { field ->
+    previousExceptionHandler = devSupportManagerClass.getDeclaredField("mDefaultJSExceptionHandler").let { field ->
       field.isAccessible = true
       val previousValue = field[devSupportManager]
-      field[devSupportManager] = defaultNativeModuleCallExceptionHandler
-      return@let previousValue as DefaultNativeModuleCallExceptionHandler
+      field[devSupportManager] = defaultJSExceptionHandler
+      return@let previousValue as DefaultJSExceptionHandler
     }
     weakReactInstanceManager = WeakReference(reactInstanceManager)
   }
@@ -99,7 +112,7 @@ class ErrorRecovery(
 
       val devSupportManager = reactInstanceManager.devSupportManager as DisabledDevSupportManager
       val devSupportManagerClass = devSupportManager.javaClass
-      devSupportManagerClass.getDeclaredField("mDefaultNativeModuleCallExceptionHandler").let { field ->
+      devSupportManagerClass.getDeclaredField("mDefaultJSExceptionHandler").let { field ->
         field.isAccessible = true
         field[devSupportManager] = previousExceptionHandler
       }

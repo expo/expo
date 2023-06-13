@@ -1,16 +1,10 @@
-export declare type AssetMetadata = {
-    hash: string;
-    name: string;
-    type: string;
-    width?: number;
-    height?: number;
-    scales: number[];
-    httpServerLocation: string;
+import { PackagerAsset } from 'react-native/Libraries/Image/AssetRegistry';
+export type AssetMetadata = Pick<PackagerAsset, 'httpServerLocation' | 'name' | 'hash' | 'type' | 'scales' | 'width' | 'height'> & {
     uri?: string;
     fileHashes?: string[];
     fileUris?: string[];
 };
-export declare type AssetSource = {
+export type AssetSource = {
     uri: string;
     hash: string;
 };

@@ -1,6 +1,6 @@
 import { Recording } from './Recording';
 import { AndroidAudioEncoder, AndroidOutputFormat, IOSAudioQuality, IOSOutputFormat } from './RecordingConstants';
-export declare type RecordingStatus = {
+export type RecordingStatus = {
     /**
      * A boolean describing if the `Recording` can initiate the recording.
      */
@@ -33,7 +33,7 @@ export declare type RecordingStatus = {
      */
     mediaServicesDidReset?: boolean;
 };
-export declare type RecordingOptionsAndroid = {
+export type RecordingOptionsAndroid = {
     /**
      * The desired file extension. Example valid values are `.3gp` and `.m4a`.
      * For more information, see the [Android docs](https://developer.android.com/guide/topics/media/media-formats)
@@ -86,7 +86,7 @@ export declare type RecordingOptionsAndroid = {
      */
     maxFileSize?: number;
 };
-export declare type RecordingOptionsIOS = {
+export type RecordingOptionsIOS = {
     /**
      * The desired file extension.
      *
@@ -144,7 +144,7 @@ export declare type RecordingOptionsIOS = {
      */
     linearPCMIsFloat?: boolean;
 };
-export declare type RecordingOptionsWeb = {
+export type RecordingOptionsWeb = {
     mimeType?: string;
     bitsPerSecond?: number;
 };
@@ -161,7 +161,7 @@ export declare type RecordingOptionsWeb = {
  * we will enumerate all possible valid combinations, but at this time, our goal is to make the basic use-case easy (with presets)
  * and the advanced use-case possible (by exposing all the functionality available on all supported platforms).
  */
-export declare type RecordingOptions = {
+export type RecordingOptions = {
     /**
      * A boolean that determines whether audio level information will be part of the status object under the "metering" key.
      */
@@ -185,12 +185,12 @@ export declare type RecordingOptions = {
      */
     web: RecordingOptionsWeb;
 };
-export declare type RecordingInput = {
+export type RecordingInput = {
     name: string;
     type: string;
     uid: string;
 };
-export declare type RecordingObject = {
+export type RecordingObject = {
     /**
      * The newly created and started `Recording` object.
      */

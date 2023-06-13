@@ -23,7 +23,6 @@ import expo.modules.updates.codesigning.CODE_SIGNING_METADATA_ALGORITHM_KEY
 import expo.modules.updates.codesigning.CODE_SIGNING_METADATA_KEY_ID_KEY
 import expo.modules.updates.codesigning.CodeSigningAlgorithm
 import expo.modules.updates.manifest.EmbeddedManifest
-import expo.modules.updates.selectionpolicy.LauncherSelectionPolicyFilterAware
 import expo.modules.updates.selectionpolicy.LoaderSelectionPolicyFilterAware
 import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClient
 import expo.modules.updates.selectionpolicy.SelectionPolicy
@@ -45,6 +44,18 @@ private const val UPDATE_AVAILABLE_EVENT = "updateAvailable"
 private const val UPDATE_NO_UPDATE_AVAILABLE_EVENT = "noUpdateAvailable"
 private const val UPDATE_ERROR_EVENT = "error"
 
+/**
+ * Entry point to expo-updates in Expo Go and legacy standalone builds. Fulfills many of the
+ * purposes of [UpdatesController] along with serving as an interface to the rest of the ExpoKit
+ * kernel.
+ *
+ * Dynamically generates a configuration object with the correct scope key, and then, like
+ * [UpdatesController], delegates to an instance of [LoaderTask] to start the process of loading and
+ * launching an update, and responds appropriately depending on the callbacks that are invoked.
+ *
+ * Multiple instances of ExpoUpdatesAppLoader can exist at a time; instances are retained by
+ * [Kernel].
+ */
 class ExpoUpdatesAppLoader @JvmOverloads constructor(
   private val manifestUrl: String,
   private val callback: AppLoaderCallback,
@@ -151,6 +162,8 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
       )
       configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_INCLUDE_MANIFEST_RESPONSE_CERTIFICATE_CHAIN] = true
       configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_ALLOW_UNSIGNED_MANIFESTS] = true
+      // in Expo Go, ignore directives in manifest responses and require a manifest. the current directives (no update available, roll back) don't have any practical use outside of standalone apps
+      configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE] = true
     }
 
     val configuration = UpdatesConfiguration(null, configMap)
@@ -161,7 +174,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
       }
     }
     val selectionPolicy = SelectionPolicy(
-      LauncherSelectionPolicyFilterAware(sdkVersionsList),
+      ExpoGoLauncherSelectionPolicyFilterAware(sdkVersionsList),
       LoaderSelectionPolicyFilterAware(),
       ReaperSelectionPolicyDevelopmentClient()
     )
@@ -237,10 +250,10 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
           return true
         }
 
-        override fun onRemoteUpdateManifestLoaded(updateManifest: UpdateManifest) {
+        override fun onRemoteUpdateManifestResponseManifestLoaded(updateManifest: UpdateManifest) {
           // expo-cli does not always respect our SDK version headers and respond with a compatible update or an error
           // so we need to check the compatibility here
-          val sdkVersion = updateManifest.manifest.getSDKVersion()
+          val sdkVersion = updateManifest.manifest.getExpoGoSDKVersion()
           if (!isValidSdkVersion(sdkVersion)) {
             callback.onError(formatExceptionForIncompatibleSdk(sdkVersion))
             didAbort = true

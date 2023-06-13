@@ -1,27 +1,33 @@
 import { css } from '@emotion/react';
+import { breakpoints, spacing } from '@expo/styleguide-base';
 import * as React from 'react';
 
-import { BASE_HEADING_LEVEL, Heading, HeadingManager } from '../common/headingManager';
 import DocumentationSidebarRightLink from './DocumentationSidebarRightLink';
 
+import { BASE_HEADING_LEVEL, Heading, HeadingManager } from '~/common/headingManager';
 import withHeadingManager, {
   HeadingManagerProps,
 } from '~/components/page-higher-order/withHeadingManager';
-import * as Constants from '~/constants/theme';
+import { CALLOUT } from '~/ui/components/Text';
 
-const STYLES_SIDEBAR = css`
-  padding: 20px 24px 24px 24px;
-  width: 280px;
+const sidebarStyle = css({
+  padding: spacing[6],
+  width: 280,
 
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-    width: 100%;
-  }
-`;
+  [`@media screen and (max-width: ${breakpoints.medium + 124}px)`]: {
+    width: '100%',
+  },
+});
+
+const sidebarTitleStyle = css({
+  marginBottom: spacing[2],
+  userSelect: 'none',
+});
 
 const UPPER_SCROLL_LIMIT_FACTOR = 1 / 4;
 const LOWER_SCROLL_LIMIT_FACTOR = 3 / 4;
 
-const ACTIVE_ITEM_OFFSET_FACTOR = 1 / 6;
+const ACTIVE_ITEM_OFFSET_FACTOR = 1 / 10;
 
 const isDynamicScrollAvailable = () => {
   if (!history?.replaceState) {
@@ -94,7 +100,10 @@ class DocumentationSidebarRight extends React.Component<PropsWithHM, State> {
     );
 
     return (
-      <nav css={STYLES_SIDEBAR} data-sidebar>
+      <nav css={sidebarStyle} data-sidebar>
+        <CALLOUT weight="medium" css={sidebarTitleStyle}>
+          On this page
+        </CALLOUT>
         {displayedHeadings.map(heading => {
           const isActive = heading.slug === this.state.activeSlug;
           return (

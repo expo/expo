@@ -12,7 +12,6 @@ import com.facebook.react.uimanager.FloatUtil
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.yoga.YogaConstants
 import expo.modules.image.ifYogaUndefinedUse
-import java.util.*
 
 class OutlineProvider(private val mContext: Context) : ViewOutlineProvider() {
   enum class BorderRadiusConfig {
@@ -25,14 +24,13 @@ class OutlineProvider(private val mContext: Context) : ViewOutlineProvider() {
 
   private var mLayoutDirection = View.LAYOUT_DIRECTION_LTR
   private val mBounds = RectF()
-  val borderRadiiConfig = FloatArray(9)
+  val borderRadiiConfig = FloatArray(9) { YogaConstants.UNDEFINED }
   private val mCornerRadii = FloatArray(4)
   private var mCornerRadiiInvalidated = true
   private val mConvexPath = Path()
   private var mConvexPathInvalidated = true
 
   init {
-    Arrays.fill(borderRadiiConfig, YogaConstants.UNDEFINED)
     updateCornerRadiiIfNeeded()
   }
 
@@ -117,16 +115,19 @@ class OutlineProvider(private val mContext: Context) : ViewOutlineProvider() {
     }
     mConvexPath.reset()
     mConvexPath.addRoundRect(
-      mBounds, floatArrayOf(
-      mCornerRadii[CornerRadius.TOP_LEFT.ordinal],
-      mCornerRadii[CornerRadius.TOP_LEFT.ordinal],
-      mCornerRadii[CornerRadius.TOP_RIGHT.ordinal],
-      mCornerRadii[CornerRadius.TOP_RIGHT.ordinal],
-      mCornerRadii[CornerRadius.BOTTOM_RIGHT.ordinal],
-      mCornerRadii[CornerRadius.BOTTOM_RIGHT.ordinal],
-      mCornerRadii[CornerRadius.BOTTOM_LEFT.ordinal],
-      mCornerRadii[CornerRadius.BOTTOM_LEFT.ordinal]
-    ), Path.Direction.CW)
+      mBounds,
+      floatArrayOf(
+        mCornerRadii[CornerRadius.TOP_LEFT.ordinal],
+        mCornerRadii[CornerRadius.TOP_LEFT.ordinal],
+        mCornerRadii[CornerRadius.TOP_RIGHT.ordinal],
+        mCornerRadii[CornerRadius.TOP_RIGHT.ordinal],
+        mCornerRadii[CornerRadius.BOTTOM_RIGHT.ordinal],
+        mCornerRadii[CornerRadius.BOTTOM_RIGHT.ordinal],
+        mCornerRadii[CornerRadius.BOTTOM_LEFT.ordinal],
+        mCornerRadii[CornerRadius.BOTTOM_LEFT.ordinal]
+      ),
+      Path.Direction.CW
+    )
     mConvexPathInvalidated = false
   }
 
@@ -161,7 +162,8 @@ class OutlineProvider(private val mContext: Context) : ViewOutlineProvider() {
     if (mBounds.left != left.toFloat() ||
       mBounds.top != top.toFloat() ||
       mBounds.right != right.toFloat() ||
-      mBounds.bottom != bottom.toFloat()) {
+      mBounds.bottom != bottom.toFloat()
+    ) {
       mBounds[left.toFloat(), top.toFloat(), right.toFloat()] = bottom.toFloat()
       mCornerRadiiInvalidated = true
     }

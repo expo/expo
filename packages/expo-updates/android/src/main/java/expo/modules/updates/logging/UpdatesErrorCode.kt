@@ -9,6 +9,7 @@ enum class UpdatesErrorCode(val code: String) {
   UpdateAssetsNotAvailable("UpdateAssetsNotAvailable"),
   UpdateServerUnreachable("UpdateServerUnreachable"),
   UpdateHasInvalidSignature("UpdateHasInvalidSignature"),
+  UpdateCodeSigningError("UpdateCodeSigningError"),
   UpdateFailedToLoad("UpdateFailedToLoad"),
   AssetsFailedToLoad("AssetsFailedToLoad"),
   JSRuntimeError("JSRuntimeError"),

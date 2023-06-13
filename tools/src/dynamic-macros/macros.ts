@@ -2,11 +2,11 @@ import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
 import { ExponentTools, Project, UrlUtils } from '@expo/xdl';
 import chalk from 'chalk';
+import crypto from 'crypto';
 import ip from 'ip';
 import fetch from 'node-fetch';
 import os from 'os';
 import path from 'path';
-import { v4 as uuidv4 } from 'uuid';
 
 import { getExpoRepositoryRootDir } from '../Directories';
 import { getHomeSDKVersionAsync } from '../ProjectVersions';
@@ -14,6 +14,11 @@ import { getHomeSDKVersionAsync } from '../ProjectVersions';
 interface Manifest {
   id: string;
   name: string;
+  extra?: {
+    expoClient?: {
+      name: string;
+    };
+  };
 }
 
 // some files are absent on turtle builders and we don't want log errors there
@@ -102,7 +107,7 @@ export default {
   },
 
   async TEST_RUN_ID() {
-    return process.env.UNIVERSE_BUILD_ID || uuidv4();
+    return process.env.UNIVERSE_BUILD_ID || crypto.randomUUID();
   },
 
   async BUILD_MACHINE_LOCAL_HOSTNAME() {
@@ -156,13 +161,18 @@ export default {
       return '';
     }
 
+    if (process.env.CI) {
+      console.log('Skip fetching local manifest on CI.');
+      return '';
+    }
+
     const pathToHome = 'home';
     const url = await UrlUtils.constructManifestUrlAsync(path.join(EXPO_DIR, pathToHome));
 
     try {
       const manifest = await getManifestAsync(url, platform, null);
 
-      if (manifest.name !== 'expo-home') {
+      if (manifest.extra?.expoClient?.name !== 'expo-home') {
         console.log(
           `Manifest at ${url} is not expo-home; using published kernel manifest instead...`
         );

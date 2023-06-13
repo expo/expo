@@ -1,10 +1,10 @@
 import { css } from '@emotion/react';
-import { theme, spacing } from '@expo/styleguide';
-import React from 'react';
+import { theme } from '@expo/styleguide';
+import { spacing, breakpoints } from '@expo/styleguide-base';
+import type { PropsWithChildren, ComponentType } from 'react';
 
 import { SidebarGroup, SidebarSection, VersionSelector } from './index';
 
-import * as Constants from '~/constants/theme';
 import { NavigationType, NavigationRoute } from '~/types/common';
 
 const STYLES_SIDEBAR = css`
@@ -13,7 +13,7 @@ const STYLES_SIDEBAR = css`
   position: relative;
   background-color: ${theme.background.default};
 
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+  @media screen and (max-width: ${breakpoints.medium + 124}px) {
     width: 100%;
   }
 `;
@@ -28,12 +28,12 @@ const STYLES_SIDEBAR_FADE = css`
   z-index: 10;
   pointer-events: none;
 
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+  @media screen and (max-width: ${breakpoints.medium + 124}px) {
     display: none;
   }
 `;
 
-type SidebarProps = React.PropsWithChildren<{
+type SidebarProps = PropsWithChildren<{
   routes?: NavigationRoute[];
 }>;
 
@@ -43,9 +43,9 @@ export type SidebarNodeProps = {
 };
 
 export const Sidebar = ({ routes = [] }: SidebarProps) => {
-  const renderTypes: Record<NavigationType, React.ComponentType<SidebarNodeProps> | null> = {
-    section: SidebarSection,
-    group: SidebarGroup,
+  const renderTypes: Record<NavigationType, ComponentType<SidebarNodeProps> | null> = {
+    section: SidebarGroup,
+    group: SidebarSection,
     page: null, // Pages are rendered inside groups and should not be rendered directly
   };
 

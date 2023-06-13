@@ -1,5 +1,6 @@
 export type ModalStackRoutes = {
   QRCode: undefined;
+  RootStack: undefined;
 };
 
 export type HomeStackRoutes = {

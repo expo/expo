@@ -1,5 +1,5 @@
 import { NextWebVitalsMetric } from 'next/app';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/compat/router';
 import Script from 'next/script';
 import React, { PropsWithChildren, useEffect } from 'react';
 
@@ -13,12 +13,12 @@ type AnalyticsProps = PropsWithChildren<object>;
  * @see https://nextjs.org/docs/basic-features/script#lazyonload
  */
 export function AnalyticsProvider(props: AnalyticsProps) {
-  const { events } = useRouter();
+  const router = useRouter();
 
   useEffect(function didMount() {
-    events.on('routeChangeComplete', reportPageView);
+    router?.events.on('routeChangeComplete', reportPageView);
     return function didUnmount() {
-      events.off('routeChangeComplete', reportPageView);
+      router?.events.off('routeChangeComplete', reportPageView);
     };
   }, []);
 
@@ -60,6 +60,16 @@ export function reportWebVitals({ id, name, label, value }: NextWebVitalsMetric)
     // compute a total by grouping on this ID (note: requires `eventLabel` to
     // be a dimension in your report).
     event_label: id,
+    // Use a non-interaction event to avoid affecting bounce rate.
+    non_interaction: true,
+    anonymize_ip: true,
+  });
+}
+
+export function reportPageVote({ status }: { status: boolean }) {
+  window?.gtag?.('event', status ? 'page_vote_up' : 'page_vote_down', {
+    event_category: 'Page vote',
+    value: window?.location.pathname,
     // Use a non-interaction event to avoid affecting bounce rate.
     non_interaction: true,
     anonymize_ip: true,

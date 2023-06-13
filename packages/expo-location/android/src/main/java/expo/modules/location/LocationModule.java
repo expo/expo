@@ -275,7 +275,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   @ExpoMethod
   public void getCurrentPositionAsync(final Map<String, Object> options, final Promise promise) {
     // Read options
-    final LocationRequest locationRequest = LocationHelpers.prepareLocationRequest(options);
+    final LocationRequest.Builder builder = LocationHelpers.prepareLocationRequest(options);
     boolean showUserSettingsDialog = !options.containsKey(SHOW_USER_SETTINGS_DIALOG_KEY) || (boolean) options.get(SHOW_USER_SETTINGS_DIALOG_KEY);
 
     // Check for permissions
@@ -285,12 +285,12 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     }
 
     if (LocationHelpers.hasNetworkProviderEnabled(mContext) || !showUserSettingsDialog) {
-      LocationHelpers.requestSingleLocation(this, locationRequest, promise);
+      LocationHelpers.requestSingleLocation(this, builder, promise);
     } else {
       // Pending requests can ask the user to turn on improved accuracy mode in user's settings.
-      addPendingLocationRequest(locationRequest, resultCode -> {
+      addPendingLocationRequest(builder.build(), resultCode -> {
         if (resultCode == Activity.RESULT_OK) {
-          LocationHelpers.requestSingleLocation(LocationModule.this, locationRequest, promise);
+          LocationHelpers.requestSingleLocation(LocationModule.this, builder, promise);
         } else {
           promise.reject(new LocationSettingsUnsatisfiedException());
         }
@@ -336,16 +336,16 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
       return;
     }
 
-    final LocationRequest locationRequest = LocationHelpers.prepareLocationRequest(options);
+    final LocationRequest.Builder locationRequest = LocationHelpers.prepareLocationRequest(options);
     boolean showUserSettingsDialog = !options.containsKey(SHOW_USER_SETTINGS_DIALOG_KEY) || (boolean) options.get(SHOW_USER_SETTINGS_DIALOG_KEY);
 
     if (LocationHelpers.hasNetworkProviderEnabled(mContext) || !showUserSettingsDialog) {
-      LocationHelpers.requestContinuousUpdates(this, locationRequest, watchId, promise);
+      LocationHelpers.requestContinuousUpdates(this, locationRequest.build(), watchId, promise);
     } else {
       // Pending requests can ask the user to turn on improved accuracy mode in user's settings.
-      addPendingLocationRequest(locationRequest, resultCode -> {
+      addPendingLocationRequest(locationRequest.build(), resultCode -> {
         if (resultCode == Activity.RESULT_OK) {
-          LocationHelpers.requestContinuousUpdates(LocationModule.this, locationRequest, watchId, promise);
+          LocationHelpers.requestContinuousUpdates(LocationModule.this, locationRequest.build(), watchId, promise);
         } else {
           promise.reject(new LocationSettingsUnsatisfiedException());
         }
@@ -443,9 +443,9 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
       return;
     }
 
-    LocationRequest locationRequest = LocationHelpers.prepareLocationRequest(new HashMap<>());
+    LocationRequest.Builder locationRequest = LocationHelpers.prepareLocationRequest(new HashMap<>());
 
-    addPendingLocationRequest(locationRequest, resultCode -> {
+    addPendingLocationRequest(locationRequest.build(), resultCode -> {
       if (resultCode == Activity.RESULT_OK) {
         promise.resolve(null);
       } else {
@@ -787,7 +787,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     if (isMissingForegroundPermissions() || mGeofield == null) {
       return -1;
     }
-    return magNorth + mGeofield.getDeclination();
+    return (magNorth + mGeofield.getDeclination()) % 360;
   }
 
   private void stopHeadingWatch() {
@@ -841,8 +841,15 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   private Bundle handleForegroundLocationPermissions(Map<String, PermissionsResponse> result) {
     PermissionsResponse accessFineLocation = result.get(Manifest.permission.ACCESS_FINE_LOCATION);
     PermissionsResponse accessCoarseLocation = result.get(Manifest.permission.ACCESS_COARSE_LOCATION);
-    Objects.requireNonNull(accessFineLocation);
-    Objects.requireNonNull(accessCoarseLocation);
+    /**
+     * Missing permissions from OS callback should be considered as denied permissions
+     */
+    if(accessFineLocation == null) {
+      accessFineLocation = new PermissionsResponse(PermissionsStatus.DENIED, true);
+    }
+    if(accessCoarseLocation == null) {
+      accessCoarseLocation = new PermissionsResponse(PermissionsStatus.DENIED, true);
+    }
 
     PermissionsStatus status = PermissionsStatus.UNDETERMINED;
     String accuracy = "none";

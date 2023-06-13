@@ -1,9 +1,6 @@
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 
-import { InlineCode } from '~/components/base/code';
-import { UL, LI } from '~/components/base/list';
-import { B, P } from '~/components/base/paragraph';
-import { H2, H3Code } from '~/components/plugins/Headings';
+import { APIDataType } from '~/components/plugins/api/APIDataType';
 import {
   PropData,
   TypeDeclarationContentData,
@@ -12,8 +9,8 @@ import {
   TypeSignaturesData,
 } from '~/components/plugins/api/APIDataTypes';
 import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
+import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import {
-  mdInlineComponents,
   resolveTypeName,
   renderFlags,
   CommentTextBlock,
@@ -22,13 +19,16 @@ import {
   getCommentOrSignatureComment,
   getTagData,
   renderParams,
-  renderTableHeadRow,
+  ParamsTableHeadRow,
   renderDefaultValue,
   renderIndexSignature,
   STYLES_APIBOX,
   getTagNamesList,
+  H3Code,
+  getCommentContent,
 } from '~/components/plugins/api/APISectionUtils';
 import { Cell, Row, Table } from '~/ui/components/Table';
+import { H2, BOLD, P, CODE, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionTypesProps = {
   data: TypeGeneralData[];
@@ -41,7 +41,7 @@ const defineLiteralType = (types: TypeDefinitionData[]): JSX.Element | null => {
   if (uniqueTypes.length === 1 && uniqueTypes.filter(Boolean).length === 1) {
     return (
       <>
-        <InlineCode>{uniqueTypes[0]}</InlineCode>
+        <CODE>{uniqueTypes[0]}</CODE>
         {' - '}
       </>
     );
@@ -49,17 +49,21 @@ const defineLiteralType = (types: TypeDefinitionData[]): JSX.Element | null => {
   return null;
 };
 
-const renderTypeDeclarationTable = ({
-  children,
-  indexSignature,
-}: TypeDeclarationContentData): JSX.Element => (
-  <Table key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}>
-    {renderTableHeadRow()}
-    <tbody>
-      {children?.map(renderTypePropertyRow)}
-      {indexSignature?.parameters && indexSignature.parameters.map(renderTypePropertyRow)}
-    </tbody>
-  </Table>
+const renderTypeDeclarationTable = (
+  { children, indexSignature, comment }: TypeDeclarationContentData,
+  index?: number
+): JSX.Element => (
+  <Fragment key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}>
+    {index && index > 0 ? <br /> : undefined}
+    <CommentTextBlock comment={comment} />
+    <Table>
+      <ParamsTableHeadRow />
+      <tbody>
+        {children?.map(renderTypePropertyRow)}
+        {indexSignature?.parameters && indexSignature.parameters.map(renderTypePropertyRow)}
+      </tbody>
+    </Table>
+  </Fragment>
 );
 
 const renderTypePropertyRow = ({
@@ -71,13 +75,16 @@ const renderTypePropertyRow = ({
   signatures,
   kind,
 }: PropData): JSX.Element => {
-  const initValue = parseCommentContent(defaultValue || getTagData('default', comment)?.text);
+  const defaultTag = getTagData('default', comment);
+  const initValue = parseCommentContent(
+    defaultValue || (defaultTag ? getCommentContent(defaultTag.content) : undefined)
+  );
   const commentData = getCommentOrSignatureComment(comment, signatures);
   const hasDeprecationNote = Boolean(getTagData('deprecated', comment));
   return (
     <Row key={name}>
       <Cell fitContent>
-        <B>{name}</B>
+        <BOLD>{name}</BOLD>
         {renderFlags(flags, initValue)}
         {kind && renderIndexSignature(kind)}
       </Cell>
@@ -85,8 +92,8 @@ const renderTypePropertyRow = ({
       <Cell fitContent>
         <APISectionDeprecationNote comment={comment} />
         <CommentTextBlock
+          inlineHeaders
           comment={commentData}
-          components={mdInlineComponents}
           afterContent={renderDefaultValue(initValue)}
           emptyCommentFallback={hasDeprecationNote ? undefined : '-'}
         />
@@ -106,13 +113,14 @@ const renderType = ({
     return (
       <div key={`type-definition-${name}`} css={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} />
+        <APISectionPlatformTags comment={comment} prefix="Only for:" />
         <H3Code tags={getTagNamesList(comment)}>
-          <InlineCode>
+          <MONOSPACE weight="medium">
             {name}
             {type.declaration.signatures ? '()' : ''}
-          </InlineCode>
+          </MONOSPACE>
         </H3Code>
-        <CommentTextBlock comment={comment} />
+        <CommentTextBlock comment={comment} includePlatforms={false} />
         {type.declaration.children && renderTypeDeclarationTable(type.declaration)}
         {type.declaration.signatures
           ? type.declaration.signatures.map(({ parameters, comment }: TypeSignaturesData) => (
@@ -133,24 +141,29 @@ const renderType = ({
       return (
         <div key={`prop-type-definition-${name}`} css={STYLES_APIBOX}>
           <APISectionDeprecationNote comment={comment} />
+          <APISectionPlatformTags comment={comment} prefix="Only for:" />
           <H3Code tags={getTagNamesList(comment)}>
-            <InlineCode>{name}</InlineCode>
+            <MONOSPACE weight="medium">{name}</MONOSPACE>
           </H3Code>
-          <CommentTextBlock comment={comment} />
+          <CommentTextBlock comment={comment} includePlatforms={false} />
           {type.type === 'intersection' ? (
-            <P>
-              {type.types
-                .filter(type => type.type === 'reference')
-                .map(validType => (
-                  <Fragment key={`intersection-type-${validType.name}`}>
-                    <InlineCode>{resolveTypeName(validType)}</InlineCode>{' '}
-                  </Fragment>
-                ))}
-              extended by:
-            </P>
+            <>
+              <P>
+                {type.types
+                  .filter(type => ['reference', 'union', 'intersection'].includes(type.type))
+                  .map(validType => (
+                    <Fragment key={`nested-reference-type-${validType.name}`}>
+                      <CODE>{resolveTypeName(validType)}</CODE>{' '}
+                    </Fragment>
+                  ))}
+                extended by:
+              </P>
+              <br />
+            </>
           ) : null}
           {propTypes.map(
-            propType => propType.declaration && renderTypeDeclarationTable(propType.declaration)
+            (propType, index) =>
+              propType.declaration && renderTypeDeclarationTable(propType.declaration, index)
           )}
         </div>
       );
@@ -158,16 +171,17 @@ const renderType = ({
       return (
         <div key={`type-definition-${name}`} css={STYLES_APIBOX}>
           <APISectionDeprecationNote comment={comment} />
+          <APISectionPlatformTags comment={comment} prefix="Only for:" />
           <H3Code tags={getTagNamesList(comment)}>
-            <InlineCode>{name}</InlineCode>
+            <MONOSPACE weight="medium">{name}</MONOSPACE>
           </H3Code>
-          <CommentTextBlock comment={comment} />
+          <CommentTextBlock comment={comment} includePlatforms={false} />
           <P>
             {defineLiteralType(literalTypes)}
             Acceptable values are:{' '}
             {literalTypes.map((lt, index) => (
               <span key={`${name}-literal-type-${index}`}>
-                <InlineCode>{resolveTypeName(lt)}</InlineCode>
+                <CODE>{resolveTypeName(lt)}</CODE>
                 {index + 1 !== literalTypes.length ? ', ' : '.'}
               </span>
             ))}
@@ -179,28 +193,29 @@ const renderType = ({
     return (
       <div key={`record-definition-${name}`} css={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} />
+        <APISectionPlatformTags comment={comment} prefix="Only for:" />
         <H3Code tags={getTagNamesList(comment)}>
-          <InlineCode>{name}</InlineCode>
+          <MONOSPACE weight="medium">{name}</MONOSPACE>
         </H3Code>
-        <UL>
-          <LI>
-            <InlineCode>{resolveTypeName(type)}</InlineCode>
-          </LI>
-        </UL>
-        <CommentTextBlock comment={comment} />
+        <div css={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+          <BOLD>Type: </BOLD>
+          <APIDataType typeDefinition={type} />
+        </div>
+        <CommentTextBlock comment={comment} includePlatforms={false} />
       </div>
     );
   } else if (type.type === 'intrinsic') {
     return (
       <div key={`generic-type-definition-${name}`} css={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} />
+        <APISectionPlatformTags comment={comment} prefix="Only for:" />
         <H3Code tags={getTagNamesList(comment)}>
-          <InlineCode>{name}</InlineCode>
+          <MONOSPACE weight="medium">{name}</MONOSPACE>
         </H3Code>
-        <CommentTextBlock comment={comment} />
+        <CommentTextBlock comment={comment} includePlatforms={false} />
         <P>
-          <B>Type: </B>
-          <InlineCode>{type.name}</InlineCode>
+          <BOLD>Type: </BOLD>
+          <CODE>{type.name}</CODE>
         </P>
       </div>
     );
@@ -208,29 +223,30 @@ const renderType = ({
     return (
       <div key={`conditional-type-definition-${name}`} css={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} />
+        <APISectionPlatformTags comment={comment} prefix="Only for:" />
         <H3Code tags={getTagNamesList(comment)}>
-          <InlineCode>
+          <MONOSPACE weight="medium">
             {name}&lt;{type.checkType.name}&gt;
-          </InlineCode>
+          </MONOSPACE>
         </H3Code>
-        <CommentTextBlock comment={comment} />
+        <CommentTextBlock comment={comment} includePlatforms={false} />
         <P>
-          <B>Generic: </B>
-          <InlineCode>
+          <BOLD>Generic: </BOLD>
+          <CODE>
             {type.checkType.name}
             {typeParameter && <> extends {resolveTypeName(typeParameter[0].type)}</>}
-          </InlineCode>
+          </CODE>
         </P>
         <P>
-          <B>Type: </B>
-          <InlineCode>
+          <BOLD>Type: </BOLD>
+          <CODE>
             {type.checkType.name}
             {typeParameter && <> extends {type.extendsType && resolveTypeName(type.extendsType)}</>}
             {' ? '}
             {type.trueType && resolveTypeName(type.trueType)}
             {' : '}
             {type.falseType && resolveTypeName(type.falseType)}
-          </InlineCode>
+          </CODE>
         </P>
       </div>
     );

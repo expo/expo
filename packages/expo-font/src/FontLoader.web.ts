@@ -2,14 +2,15 @@ import { Asset } from 'expo-asset';
 import { CodedError } from 'expo-modules-core';
 
 import ExpoFontLoader from './ExpoFontLoader';
-import { FontDisplay } from './Font';
-import { FontResource, FontSource } from './Font.types';
+import { FontResource, FontSource, FontDisplay } from './Font.types';
 
 function uriFromFontSource(asset: any): string | null {
   if (typeof asset === 'string') {
     return asset || null;
   } else if (typeof asset === 'object') {
-    return asset.uri || asset.localUri || null;
+    return asset.uri || asset.localUri || asset.default || null;
+  } else if (typeof asset === 'number') {
+    return uriFromFontSource(Asset.fromModule(asset));
   }
   return null;
 }
@@ -41,7 +42,7 @@ function throwInvalidSourceError(source: any): never {
   if (type === 'object') type = JSON.stringify(source, null, 2);
   throw new CodedError(
     `ERR_FONT_SOURCE`,
-    `Expected font asset of type \`string | FontResource | Asset\` (number is not supported on web) instead got: ${type}`
+    `Expected font asset of type \`string | FontResource | Asset\` instead got: ${type}`
   );
 }
 

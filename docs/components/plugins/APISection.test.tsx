@@ -1,24 +1,15 @@
-import { render, screen, RenderOptions } from '@testing-library/react';
-import GithubSlugger from 'github-slugger';
-import React, { PropsWithChildren, ReactElement } from 'react';
+import { render, screen } from '@testing-library/react';
+import { createRequire } from 'node:module';
 
-import { HeadingsContext } from '../page-higher-order/withHeadingManager';
 import APISection from './APISection';
 
-import { HeadingManager } from '~/common/headingManager';
+import { renderWithHeadings } from '~/common/test-utilities';
 
-const Wrapper = ({ children }: PropsWithChildren<object>) => (
-  <HeadingsContext.Provider value={new HeadingManager(new GithubSlugger(), { headings: [] })}>
-    {children}
-  </HeadingsContext.Provider>
-);
-
-const customRender = (element: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) =>
-  render(element, { wrapper: Wrapper, ...options });
+const require = createRequire(import.meta.url);
 
 describe('APISection', () => {
   test('no data', () => {
-    const { container } = render(<APISection packageName="expo-none" />);
+    const { container } = render(<APISection packageName="expo-none" testRequire={require} />);
 
     expect(screen.getAllByText('No API data file found, sorry!')).toHaveLength(1);
 
@@ -26,8 +17,12 @@ describe('APISection', () => {
   });
 
   test('expo-apple-authentication', () => {
-    const { container } = customRender(
-      <APISection packageName="expo-apple-authentication" forceVersion="unversioned" />
+    const { container } = renderWithHeadings(
+      <APISection
+        packageName="expo-apple-authentication"
+        forceVersion="unversioned"
+        testRequire={require}
+      />
     );
 
     expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(6);
@@ -49,11 +44,12 @@ describe('APISection', () => {
   });
 
   test('expo-barcode-scanner', () => {
-    const { container } = customRender(
+    const { container } = renderWithHeadings(
       <APISection
         packageName="expo-barcode-scanner"
         apiName="BarCodeScanner"
         forceVersion="unversioned"
+        testRequire={require}
       />
     );
 
@@ -75,8 +71,8 @@ describe('APISection', () => {
   });
 
   test('expo-pedometer', () => {
-    const { container } = customRender(
-      <APISection packageName="expo-pedometer" forceVersion="v45.0.0" />
+    const { container } = renderWithHeadings(
+      <APISection packageName="expo-pedometer" forceVersion="unversioned" testRequire={require} />
     );
 
     expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(4);
@@ -99,7 +95,9 @@ describe('APISection', () => {
   });
 
   test('expo-asset', () => {
-    customRender(<APISection packageName="expo-asset" forceVersion="unversioned" />);
+    renderWithHeadings(
+      <APISection packageName="expo-asset" forceVersion="unversioned" testRequire={require} />
+    );
 
     expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(3);
     expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(18);

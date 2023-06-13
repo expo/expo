@@ -60,7 +60,7 @@ export function UserProfileScreen({ navigation }) {
   const isAuthenticated = userData != null;
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }} edges={['bottom']}>
       <ScrollView style={{ flex: 1 }}>
         <View>
           <AccountScreenHeader onClosePress={onClosePress} />
@@ -100,16 +100,15 @@ function AccountScreenHeader({ onClosePress }) {
 
         <Spacer.Horizontal />
 
-        <Button.ScaleOnPressContainer
+        <Button.FadeOnPressContainer
           onPress={onClosePress}
           accessibilityLabel="Go Back"
           rounded="full"
-          bg="ghost"
-          minScale={0.9}>
+          bg="ghost">
           <View padding="medium" rounded="full">
             <XIcon />
           </View>
-        </Button.ScaleOnPressContainer>
+        </Button.FadeOnPressContainer>
       </Row>
     </View>
   );
@@ -124,7 +123,7 @@ function LoginSignupCard({ onLoginPress, onSignupPress, isLoading }) {
 
       <Spacer.Vertical size="medium" />
 
-      <Button.ScaleOnPressContainer
+      <Button.FadeOnPressContainer
         bg="tertiary"
         rounded="medium"
         onPress={onLoginPress}
@@ -135,11 +134,11 @@ function LoginSignupCard({ onLoginPress, onSignupPress, isLoading }) {
             Log In
           </Button.Text>
         </View>
-      </Button.ScaleOnPressContainer>
+      </Button.FadeOnPressContainer>
 
       <Spacer.Vertical size="small" />
 
-      <Button.ScaleOnPressContainer
+      <Button.FadeOnPressContainer
         bg="secondary"
         rounded="medium"
         onPress={onSignupPress}
@@ -150,7 +149,7 @@ function LoginSignupCard({ onLoginPress, onSignupPress, isLoading }) {
             Sign Up
           </Button.Text>
         </View>
-      </Button.ScaleOnPressContainer>
+      </Button.FadeOnPressContainer>
 
       {isLoading && (
         <View
@@ -207,7 +206,7 @@ function UserAccountSelector({
           const isSelected = account.id === selectedAccount?.id;
 
           return (
-            <Button.ScaleOnPressContainer
+            <Button.FadeOnPressContainer
               key={account.id}
               onPress={() => onSelectAccount(account)}
               bg="default"
@@ -231,20 +230,20 @@ function UserAccountSelector({
                 {isSelected && <CheckIcon testID={`active-account-checkmark-${account.id}`} />}
               </Row>
               {!isLast && <Divider />}
-            </Button.ScaleOnPressContainer>
+            </Button.FadeOnPressContainer>
           );
         })}
       </View>
 
       <Spacer.Vertical size="medium" />
 
-      <Button.ScaleOnPressContainer bg="tertiary" rounded="medium" onPress={onLogoutPress}>
+      <Button.FadeOnPressContainer bg="tertiary" rounded="medium" onPress={onLogoutPress}>
         <View py="small" rounded="medium">
           <Button.Text color="tertiary" weight="bold" align="center">
             Log Out
           </Button.Text>
         </View>
-      </Button.ScaleOnPressContainer>
+      </Button.FadeOnPressContainer>
     </View>
   );
 }

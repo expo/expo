@@ -16,6 +16,8 @@ import fetch from 'node-fetch';
 
 import * as Log from '../../log';
 import { getExpoApiBaseUrl } from '../endpoint';
+import { wrapFetchWithOffline } from '../rest/wrapFetchWithOffline';
+import { wrapFetchWithProxy } from '../rest/wrapFetchWithProxy';
 import UserSettings from '../user/UserSettings';
 
 type AccessTokenHeaders = {
@@ -39,7 +41,7 @@ export const graphqlClient = createUrqlClient({
     fetchExchange,
   ],
   // @ts-ignore Type 'typeof fetch' is not assignable to type '(input: RequestInfo, init?: RequestInit | undefined) => Promise<Response>'.
-  fetch,
+  fetch: wrapFetchWithOffline(wrapFetchWithProxy(fetch)),
   fetchOptions: (): { headers?: AccessTokenHeaders | SessionHeaders } => {
     const token = UserSettings.getAccessToken();
     if (token) {

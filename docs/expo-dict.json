@@ -1,7 +1,7 @@
 {
   "amazon appstore": "Amazon Appstore",
   "android emulator": "Android Emulator",
-  "app store": "App Store",
+  "apple app store": "Apple App Store",
   "apple developer": "Apple Developer",
   "eas": "EAS",
   "eas build": "EAS Build",
@@ -10,8 +10,10 @@
   "expo go": "Expo Go",
   "expo sdk": "Expo SDK",
   "ios simulator": "iOS Simulator",
+  "javascript core": "JavaScriptCore",
   "mac os": "macOS",
-  "play store": "Play Store",
+  "objective c": "Objective-C",
+  "google play store": "Google Play Store",
   "react navigation": "React Navigation",
   "turtle cli": "Turtle CLI",
   "unix": "Unix"

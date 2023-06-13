@@ -49,3 +49,30 @@ export function assertUnexpectedObjectKeys(keys: string[], obj: Record<string, a
     throw new CommandError('BAD_ARGS', `Unexpected: ${unexpectedKeys.join(', ')}`);
   }
 }
+
+export function assertUnexpectedVariadicFlags(
+  expectedFlags: string[],
+  { extras, flags, variadic }: ReturnType<typeof parseVariadicArguments>,
+  prefixCommand = ''
+) {
+  const unexpectedFlags = Object.keys(flags).filter((key) => !expectedFlags.includes(key));
+
+  if (unexpectedFlags.length > 0) {
+    const intendedFlags = Object.entries(flags)
+      .filter(([key]) => expectedFlags.includes(key))
+      .map(([key]) => key);
+
+    const cmd = [
+      prefixCommand,
+      ...variadic,
+      ...intendedFlags,
+      '--',
+      ...extras.concat(unexpectedFlags),
+    ].join(' ');
+
+    throw new CommandError(
+      'BAD_ARGS',
+      `Unexpected: ${unexpectedFlags.join(', ')}\nDid you mean: ${cmd.trim()}`
+    );
+  }
+}

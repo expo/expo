@@ -2,7 +2,7 @@
 
 #import "EXKernelAppRecord.h"
 #import "EXReactAppManager.h"
-#import "EXAppLoader.h"
+#import "EXAbstractLoader.h"
 
 #import <UMAppLoader/UMAppRecordInterface.h>
 

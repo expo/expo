@@ -6,9 +6,9 @@ import getDevClientProperties from '../utils/analytics/getDevClientProperties';
 import { logEventAsync } from '../utils/analytics/rudderstackClient';
 import { installExitHooks } from '../utils/exit';
 import { isInteractive } from '../utils/interactive';
+import { setNodeEnv } from '../utils/nodeEnv';
 import { profile } from '../utils/profile';
 import { validateDependenciesVersionsAsync } from './doctor/dependencies/validateDependenciesVersions';
-import { TypeScriptProjectPrerequisite } from './doctor/typescript/TypeScriptProjectPrerequisite';
 import { WebSupportProjectPrerequisite } from './doctor/web/WebSupportProjectPrerequisite';
 import { startInterfaceAsync } from './interface/startInterface';
 import { Options, resolvePortsAsync } from './resolveOptions';
@@ -69,14 +69,32 @@ export async function startAsync(
 ) {
   Log.log(chalk.gray(`Starting project at ${projectRoot}`));
 
+  setNodeEnv(options.dev ? 'development' : 'production');
+  require('@expo/env').load(projectRoot);
   const { exp, pkg } = profile(getConfig)(projectRoot);
 
   const platformBundlers = getPlatformBundlers(exp);
 
   if (!options.forceManifestType) {
-    const easUpdatesUrlRegex = /^https:\/\/(staging-)?u\.expo\.dev/;
-    const isEasUpdatesUrl = exp.updates?.url ? easUpdatesUrlRegex.test(exp.updates.url) : false;
-    options.forceManifestType = isEasUpdatesUrl ? 'expo-updates' : 'classic';
+    if (exp.updates?.useClassicUpdates) {
+      options.forceManifestType = 'classic';
+    } else {
+      const classicUpdatesUrlRegex = /^(staging\.)?exp\.host/;
+      let parsedUpdatesUrl: { hostname: string | null } = { hostname: null };
+      if (exp.updates?.url) {
+        try {
+          parsedUpdatesUrl = new URL(exp.updates.url);
+        } catch {
+          Log.error(
+            `Failed to parse \`updates.url\` in this project's app config. ${exp.updates.url} is not a valid URL.`
+          );
+        }
+      }
+      const isClassicUpdatesUrl = parsedUpdatesUrl.hostname
+        ? classicUpdatesUrlRegex.test(parsedUpdatesUrl.hostname)
+        : false;
+      options.forceManifestType = isClassicUpdatesUrl ? 'classic' : 'expo-updates';
+    }
   }
 
   const [defaultOptions, startOptions] = await getMultiBundlerStartOptions(
@@ -94,7 +112,15 @@ export async function startAsync(
     await devServerManager.ensureProjectPrerequisiteAsync(WebSupportProjectPrerequisite);
   }
 
-  await devServerManager.ensureProjectPrerequisiteAsync(TypeScriptProjectPrerequisite);
+  // Start the server as soon as possible.
+  await profile(devServerManager.startAsync.bind(devServerManager))(startOptions);
+
+  if (!settings.webOnly) {
+    await devServerManager.watchEnvironmentVariables();
+
+    // After the server starts, we can start attempting to bootstrap TypeScript.
+    await devServerManager.bootstrapTypeScriptAsync();
+  }
 
   if (!settings.webOnly && !options.devClient) {
     await profile(validateDependenciesVersionsAsync)(projectRoot, exp, pkg);
@@ -105,8 +131,6 @@ export async function startAsync(
   if (options.devClient) {
     await trackAsync(projectRoot, exp);
   }
-
-  await profile(devServerManager.startAsync.bind(devServerManager))(startOptions);
 
   // Open project on devices.
   await profile(openPlatformsAsync)(devServerManager, options);

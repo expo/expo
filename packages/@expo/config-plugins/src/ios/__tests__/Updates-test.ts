@@ -42,6 +42,10 @@ describe('iOS Updates config', () => {
               alg: 'rsa-v1_5-sha256',
               keyid: 'test',
             },
+            requestHeaders: {
+              'expo-channel-name': 'test',
+              testheader: 'test',
+            },
           },
         },
         {} as any,
@@ -50,7 +54,6 @@ describe('iOS Updates config', () => {
       )
     ).toMatchObject({
       EXUpdatesEnabled: false,
-      EXUpdatesURL: 'https://exp.host/@owner/my-app',
       EXUpdatesCheckOnLaunch: 'ERROR_RECOVERY_ONLY',
       EXUpdatesLaunchWaitMs: 2000,
       EXUpdatesSDKVersion: '37.0.0',
@@ -59,6 +62,33 @@ describe('iOS Updates config', () => {
         'utf-8'
       ),
       EXUpdatesCodeSigningMetadata: { alg: 'rsa-v1_5-sha256', keyid: 'test' },
+      EXUpdatesRequestHeaders: { 'expo-channel-name': 'test', testheader: 'test' },
+    });
+  });
+
+  it('sets the correct values in Expo.plist for useClassicUpdates', () => {
+    vol.fromJSON({
+      '/app/hello': fsReal.readFileSync(sampleCodeSigningCertificatePath, 'utf-8'),
+    });
+
+    expect(
+      Updates.setUpdatesConfig(
+        '/app',
+        {
+          sdkVersion: '37.0.0',
+          slug: 'my-app',
+          owner: 'owner',
+          updates: {
+            useClassicUpdates: true,
+          },
+        },
+        {} as any,
+        'user',
+        '0.11.0'
+      )
+    ).toMatchObject({
+      EXUpdatesEnabled: true,
+      EXUpdatesURL: 'https://exp.host/@owner/my-app',
     });
   });
 

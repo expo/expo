@@ -8,7 +8,60 @@
 
 ### 🐛 Bug fixes
 
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
+
+## 11.4.0 — 2023-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 11.3.2 — 2023-04-20
+
+### 🐛 Bug fixes
+
+- On iOS, fix crash when share menu is presented on iPad. ([#22193](https://github.com/expo/expo/pull/22193) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 11.3.1 — 2023-04-14
+
+### 🐛 Bug fixes
+
+- On iOS, fixed an issue where file permissions were not checked correctly. ([#22112](https://github.com/expo/expo/pull/22112) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 11.3.0 — 2023-04-12
+
+### 🎉 New features
+
+- On iOS, switched from using `UIDocumentInteractionController` to `UIActivityViewController` which provides more features. ([#22012](https://github.com/expo/expo/pull/22012) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 11.2.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 11.2.0 — 2023-02-03
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
+## 11.1.0 — 2022-12-30
+
+### 🎉 New features
+
+- Migrated module to Expo Modules API. ([#20112](https://github.com/expo/expo/pull/20112) and ([#20969](https://github.com/expo/expo/pull/20969) by [@alanhughes](https://github.com/alanjhughes))
+
+## 11.0.1 — 2022-10-27
+
+### 🐛 Bug fixes
+
+- On iOS, dismiss share sheet after sharing to an app is canceled, so the file doesn't fail to attach when trying to share again ([#19656](https://github.com/expo/expo/pull/19656) by [@keith-kurak](https://github.com/keith-kurak))
+- Fixed `shareAsync` not resolving on Android. ([#21432](https://github.com/expo/expo/pull/21432) by [@alanhughes](https://github.com/alanjhughes))
+
+## 11.0.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
 
 ## 10.3.0 — 2022-07-07
 

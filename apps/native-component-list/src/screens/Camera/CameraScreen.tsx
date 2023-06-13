@@ -1,85 +1,73 @@
-import Foundation from '@expo/vector-icons/build/Foundation';
 import Ionicons from '@expo/vector-icons/build/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
-import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
-import Octicons from '@expo/vector-icons/build/Octicons';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import {
   AutoFocus,
+  BarCodePoint,
   BarCodeScanningResult,
   Camera,
+  CameraCapturedPicture,
   CameraType,
   FlashMode,
   PermissionStatus,
   WhiteBalance,
 } from 'expo-camera';
-import Constants from 'expo-constants';
 import * as FileSystem from 'expo-file-system';
 import React from 'react';
-import { Alert, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { isIphoneX } from 'react-native-iphone-x-helper';
+import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import * as Svg from 'react-native-svg';
 
 import { face, landmarks } from '../../components/Face';
 import GalleryScreen from './GalleryScreen';
 
-interface Picture {
-  width: number;
-  height: number;
-  uri: string;
-  base64?: string;
-  exif?: any;
-}
-
-type FlashModeString = keyof typeof FlashMode;
-type AutoFocusString = keyof typeof AutoFocus;
-type WhiteBalanceString = keyof typeof WhiteBalance;
-
-const flashModeOrder: { [key: string]: FlashModeString } = {
-  off: 'on',
-  on: 'auto',
-  auto: 'torch',
-  torch: 'off',
+const flashModeOrder = {
+  off: FlashMode.on,
+  on: FlashMode.auto,
+  auto: FlashMode.torch,
+  torch: FlashMode.off,
 };
 
-const flashIcons: { [key: string]: string } = {
+const flashIcons: Record<string, string> = {
   off: 'flash-off',
   on: 'flash',
   auto: 'flash-outline',
   torch: 'flashlight',
 };
 
-const wbOrder: { [key: string]: WhiteBalanceString } = {
-  auto: 'sunny',
-  sunny: 'cloudy',
-  cloudy: 'shadow',
-  shadow: 'fluorescent',
-  fluorescent: 'incandescent',
-  incandescent: 'auto',
+const wbOrder: Record<string, WhiteBalance> = {
+  auto: WhiteBalance.sunny,
+  sunny: WhiteBalance.cloudy,
+  cloudy: WhiteBalance.shadow,
+  shadow: WhiteBalance.fluorescent,
+  fluorescent: WhiteBalance.incandescent,
+  incandescent: WhiteBalance.auto,
 };
 
-const wbIcons: { [key: string]: string } = {
-  auto: 'wb-auto',
-  sunny: 'wb-sunny',
-  cloudy: 'wb-cloudy',
-  shadow: 'beach-access',
-  fluorescent: 'wb-iridescent',
-  incandescent: 'wb-incandescent',
+const wbIcons: Record<string, string> = {
+  auto: 'white-balance-auto',
+  sunny: 'white-balance-sunny',
+  cloudy: 'cloud',
+  shadow: 'umbrella-beach',
+  fluorescent: 'white-balance-iridescent',
+  incandescent: 'white-balance-incandescent',
 };
 
-const photos: Picture[] = [];
+const photos: CameraCapturedPicture[] = [];
 
 interface State {
-  flash: FlashModeString;
+  flash: FlashMode;
   zoom: number;
-  autoFocus: AutoFocusString;
+  autoFocus: AutoFocus;
   type: CameraType;
   depth: number;
-  whiteBalance: WhiteBalanceString;
+  whiteBalance: WhiteBalance;
   ratio: string;
   ratios: any[];
   barcodeScanning: boolean;
   faceDetecting: boolean;
   faces: any[];
+  cornerPoints?: BarCodePoint[];
+  barcodeData: string;
   newPhotos: boolean;
   permissionsGranted: boolean;
   permission?: PermissionStatus;
@@ -88,11 +76,11 @@ interface State {
   pictureSizeId: number;
   showGallery: boolean;
   showMoreOptions: boolean;
+  mode: string;
+  recording: boolean;
 }
 
-// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
-// eslint-disable-next-line @typescript-eslint/ban-types
-export default class CameraScreen extends React.Component<{}, State> {
+export default class CameraScreen extends React.Component<object, State> {
   readonly state: State = {
     flash: FlashMode.off,
     zoom: 0,
@@ -105,12 +93,16 @@ export default class CameraScreen extends React.Component<{}, State> {
     barcodeScanning: false,
     faceDetecting: false,
     faces: [],
+    cornerPoints: undefined,
+    barcodeData: '',
     newPhotos: false,
     permissionsGranted: false,
     pictureSizes: [],
     pictureSizeId: 0,
     showGallery: false,
     showMoreOptions: false,
+    mode: 'picture',
+    recording: false,
   };
 
   camera?: Camera;
@@ -127,9 +119,8 @@ export default class CameraScreen extends React.Component<{}, State> {
   async ensureDirectoryExistsAsync() {
     try {
       await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'photos');
-    } catch (error) {
-      // tslint:disable-next-line no-console
-      console.log(error, 'Directory exists');
+    } catch {
+      // Directory exists
     }
   }
 
@@ -152,7 +143,9 @@ export default class CameraScreen extends React.Component<{}, State> {
   toggleWB = () => this.setState((state) => ({ whiteBalance: wbOrder[state.whiteBalance] }));
 
   toggleFocus = () =>
-    this.setState((state) => ({ autoFocus: state.autoFocus === 'on' ? 'off' : 'on' }));
+    this.setState((state) => ({
+      autoFocus: state.autoFocus === AutoFocus.on ? AutoFocus.off : AutoFocus.on,
+    }));
 
   zoomOut = () => this.setState((state) => ({ zoom: state.zoom - 0.1 < 0 ? 0 : state.zoom - 0.1 }));
 
@@ -165,16 +158,41 @@ export default class CameraScreen extends React.Component<{}, State> {
 
   toggleFaceDetection = () => this.setState((state) => ({ faceDetecting: !state.faceDetecting }));
 
-  takePicture = () => {
+  takePicture = async () => {
     if (this.camera) {
-      this.camera.takePictureAsync({ onPictureSaved: this.onPictureSaved });
+      await this.camera.takePictureAsync({ onPictureSaved: this.onPictureSaved });
     }
   };
 
-  // tslint:disable-next-line no-console
+  recordVideo = async () => {
+    if (this.camera) {
+      this.setState((state) => ({ recording: !state.recording }));
+      if (this.state.recording) {
+        this.camera.stopRecording();
+        return Promise.resolve();
+      } else {
+        return await this.camera.recordAsync();
+      }
+    }
+  };
+
+  takeVideo = async () => {
+    const result = await this.recordVideo();
+    if (result?.uri) {
+      await FileSystem.moveAsync({
+        from: result.uri,
+        to: `${FileSystem.documentDirectory}photos/${Date.now()}.${result.uri.split('.')[1]}`,
+      });
+    }
+  };
+
+  changeMode = () => {
+    this.setState((state) => ({ mode: state.mode === 'picture' ? 'video' : 'picture' }));
+  };
+
   handleMountError = ({ message }: { message: string }) => console.error(message);
 
-  onPictureSaved = async (photo: Picture) => {
+  onPictureSaved = async (photo: CameraCapturedPicture) => {
     if (Platform.OS === 'web') {
       photos.push(photo);
     } else {
@@ -188,10 +206,10 @@ export default class CameraScreen extends React.Component<{}, State> {
 
   onBarCodeScanned = (code: BarCodeScanningResult) => {
     console.log('Found: ', code);
-    this.setState(
-      (state) => ({ barcodeScanning: !state.barcodeScanning }),
-      () => Alert.alert(`Barcode found: ${code.data}`)
-    );
+    this.setState(() => ({
+      barcodeData: code.data,
+      cornerPoints: code.cornerPoints,
+    }));
   };
 
   onFacesDetected = ({ faces }: { faces: any }) => this.setState({ faces });
@@ -199,7 +217,7 @@ export default class CameraScreen extends React.Component<{}, State> {
   collectPictureSizes = async () => {
     if (this.camera) {
       const { ratio } = this.state;
-      const pictureSizes = await this.camera.getAvailablePictureSizesAsync(ratio);
+      const pictureSizes = (await this.camera.getAvailablePictureSizesAsync(ratio)) || [];
       let pictureSizeId = 0;
       if (Platform.OS === 'ios') {
         pictureSizeId = pictureSizes.indexOf('High');
@@ -231,8 +249,7 @@ export default class CameraScreen extends React.Component<{}, State> {
   };
 
   renderGallery() {
-    const localPhotos = photos.map((photo) => photo.uri);
-    return <GalleryScreen onPress={this.toggleView} photos={localPhotos} />;
+    return <GalleryScreen onPress={this.toggleView} />;
   }
 
   renderFaces = () => (
@@ -271,7 +288,11 @@ export default class CameraScreen extends React.Component<{}, State> {
         <Ionicons name={flashIcons[this.state.flash] as any} size={28} color="white" />
       </TouchableOpacity>
       <TouchableOpacity style={styles.toggleButton} onPress={this.toggleWB}>
-        <MaterialIcons name={wbIcons[this.state.whiteBalance] as any} size={32} color="white" />
+        <MaterialCommunityIcons
+          name={wbIcons[this.state.whiteBalance] as any}
+          size={32}
+          color="white"
+        />
       </TouchableOpacity>
       <TouchableOpacity style={styles.toggleButton} onPress={this.toggleFocus}>
         <Text
@@ -282,22 +303,39 @@ export default class CameraScreen extends React.Component<{}, State> {
           AF
         </Text>
       </TouchableOpacity>
+      <TouchableOpacity style={styles.toggleButton} onPress={this.toggleMoreOptions}>
+        <MaterialCommunityIcons name="dots-horizontal" size={32} color="white" />
+      </TouchableOpacity>
     </View>
   );
 
   renderBottomBar = () => (
     <View style={styles.bottomBar}>
-      <TouchableOpacity style={styles.bottomButton} onPress={this.toggleMoreOptions}>
-        <Octicons name="kebab-horizontal" size={30} color="white" />
+      <TouchableOpacity style={styles.bottomButton} onPress={this.changeMode}>
+        <MaterialCommunityIcons
+          name={this.state.mode === 'picture' ? 'image' : 'video'}
+          size={32}
+          color="white"
+        />
       </TouchableOpacity>
       <View style={{ flex: 0.4 }}>
-        <TouchableOpacity onPress={this.takePicture} style={{ alignSelf: 'center' }}>
-          <Ionicons name="ios-radio-button-on" size={70} color="white" />
+        <TouchableOpacity
+          onPress={this.state.mode === 'picture' ? this.takePicture : this.takeVideo}
+          style={{ alignSelf: 'center' }}>
+          {this.state.recording ? (
+            <MaterialCommunityIcons name="stop-circle" size={64} color="red" />
+          ) : (
+            <Ionicons
+              name="ios-radio-button-on"
+              size={64}
+              color={this.state.mode === 'picture' ? 'white' : 'red'}
+            />
+          )}
         </TouchableOpacity>
       </View>
       <TouchableOpacity style={styles.bottomButton} onPress={this.toggleView}>
         <View>
-          <Foundation name="thumbnails" size={30} color="white" />
+          <MaterialCommunityIcons name="apps" size={32} color="white" />
           {this.state.newPhotos && <View style={styles.newPhotosDot} />}
         </View>
       </TouchableOpacity>
@@ -308,8 +346,8 @@ export default class CameraScreen extends React.Component<{}, State> {
     <View style={styles.options}>
       <View style={styles.detectors}>
         <TouchableOpacity onPress={this.toggleFaceDetection}>
-          <MaterialIcons
-            name="tag-faces"
+          <MaterialCommunityIcons
+            name="face-recognition"
             size={32}
             color={this.state.faceDetecting ? 'white' : '#858585'}
           />
@@ -340,6 +378,27 @@ export default class CameraScreen extends React.Component<{}, State> {
     </View>
   );
 
+  renderBarCode = () => {
+    const origin: BarCodePoint | undefined = this.state.cornerPoints
+      ? this.state.cornerPoints[0]
+      : undefined;
+    return (
+      <Svg.Svg style={styles.barcode} pointerEvents="none">
+        {origin && (
+          <Svg.Text fill="#CF4048" stroke="#CF4048" fontSize="14" x={origin.x} y={origin.y - 8}>
+            {this.state.barcodeData}
+          </Svg.Text>
+        )}
+
+        <Svg.Polygon
+          points={this.state.cornerPoints?.map((coord) => `${coord.x},${coord.y}`).join(' ')}
+          stroke="green"
+          strokeWidth={10}
+        />
+      </Svg.Svg>
+    );
+  };
+
   renderCamera = () => (
     <View style={{ flex: 1 }}>
       <Camera
@@ -366,10 +425,12 @@ export default class CameraScreen extends React.Component<{}, State> {
         }}
         onBarCodeScanned={this.state.barcodeScanning ? this.onBarCodeScanned : undefined}>
         {this.renderTopBar()}
+
         {this.renderBottomBar()}
       </Camera>
       {this.state.faceDetecting && this.renderFaces()}
       {this.state.faceDetecting && this.renderLandmarks()}
+      {this.state.barcodeScanning && this.renderBarCode()}
       {this.state.showMoreOptions && this.renderMoreOptions()}
     </View>
   );
@@ -397,13 +458,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingTop: Constants.statusBarHeight / 2,
+    paddingTop: 8,
   },
   bottomBar: {
-    paddingBottom: isIphoneX() ? 25 : 5,
+    paddingBottom: 12,
     backgroundColor: 'transparent',
     justifyContent: 'space-between',
     flexDirection: 'row',
+    alignItems: 'center',
   },
   noPermissions: {
     flex: 1,
@@ -448,13 +510,12 @@ const styles = StyleSheet.create({
   },
   options: {
     position: 'absolute',
-    bottom: 80,
-    left: 30,
+    top: 84,
+    right: 24,
     width: 200,
-    height: 160,
     backgroundColor: '#000000BA',
     borderRadius: 4,
-    padding: 10,
+    padding: 16,
   },
   detectors: {
     flex: 0.5,
@@ -491,5 +552,10 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
+  },
+  barcode: {
+    position: 'absolute',
+    borderWidth: 2,
+    borderColor: 'red',
   },
 });

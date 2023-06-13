@@ -114,7 +114,7 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
 
 - (void)onAppContentDidAppear:(UIViewController *)viewController
 {
-  if (![self.splashScreenControllers objectForKey:viewController]) {
+  if ([self isAppActive] && ![self.splashScreenControllers objectForKey:viewController]) {
     EXLogWarn(@"No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.");
   }
   BOOL needsHide = [[self.splashScreenControllers objectForKey:viewController] needsHideOnAppContentDidAppear];
@@ -128,7 +128,7 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
 
 - (void)onAppContentWillReload:(UIViewController *)viewController
 {
-  if (![self.splashScreenControllers objectForKey:viewController]) {
+  if ([self isAppActive] && ![self.splashScreenControllers objectForKey:viewController]) {
     EXLogWarn(@"No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.");
   }
   BOOL needsShow = [[self.splashScreenControllers objectForKey:viewController] needsShowOnAppContentWillReload];
@@ -140,6 +140,10 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
               successCallback:^{}
               failureCallback:^(NSString *message){}];
   }
+}
+
+- (BOOL)isAppActive {
+    return UIApplication.sharedApplication.applicationState == UIApplicationStateActive;
 }
 
 # pragma mark - UIApplicationDelegate

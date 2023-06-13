@@ -21,7 +21,7 @@ buildscript {
     if (ext.has("kotlinVersion")) {
       ext.kotlinVersion()
     } else {
-      ext.safeExtGet("kotlinVersion", "1.6.10")
+      ext.safeExtGet("kotlinVersion", "1.8.10")
     }
   }
 
@@ -35,12 +35,13 @@ buildscript {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 31)
+  compileSdkVersion safeExtGet("compileSdkVersion", 33)
+  namespace "expo.modules.devlauncher"
   defaultConfig {
     minSdkVersion safeExtGet('minSdkVersion', 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 31)
+    targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 9
-    versionName "1.2.1"
+    versionName "2.3.0"
   }
 
   lintOptions {
@@ -68,35 +69,21 @@ android {
   }
 
   sourceSets {
-    main {
+    debug {
       java {
+        srcDirs += "src/expo-45"
+
         def rnVersion = getRNVersion()
-        if (rnVersion >= versionToNumber(0, 69, 0)) {
+        if (rnVersion >= versionToNumber(0, 72, 0)) {
+          srcDirs += "src/react-native-72"
+        } else if (rnVersion >= versionToNumber(0, 69, 0)) {
           srcDirs += "src/react-native-69"
-        } else if (rnVersion >= versionToNumber(0, 67, 0)) {
-          srcDirs += "src/react-native-67"
-        } else if (rnVersion >= versionToNumber(0, 66, 0)) {
-          srcDirs += "src/react-native-66"
-        } else if (rnVersion >= versionToNumber(0, 65, 0)) {
-          srcDirs += "src/react-native-65"
-        } else {
-          srcDirs += 'src/react-native-64'
         }
 
         if (projectIncludesExpoUpdates()) {
           srcDirs += 'src/with-updates'
         } else {
           srcDirs += 'src/without-updates'
-        }
-      }
-    }
-    debug {
-      java {
-        def expoPackageVersion = getExpoPackageVersion()
-        if (expoPackageVersion >= versionToNumber(45, 0, 0)) {
-          srcDirs += "src/expo-45"
-        } else {
-          srcDirs += "src/expo-44"
         }
       }
     }
@@ -107,6 +94,11 @@ android {
 
   buildFeatures {
     viewBinding true
+  }
+  publishing {
+    singleVariant("release") {
+      withSourcesJar()
+    }
   }
 }
 
@@ -154,26 +146,18 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1")
   implementation "org.jetbrains.kotlin:kotlin-reflect:${getKotlinVersion()}"
 
-  api "io.insert-koin:koin-core:3.1.2"
+  def koinVersion = "3.4.0"
+
+  api "io.insert-koin:koin-core:${koinVersion}"
 
   testImplementation 'androidx.test:core:1.4.0'
   testImplementation 'androidx.test:core-ktx:1.4.0'
   testImplementation "com.google.truth:truth:1.1.2"
   testImplementation 'com.squareup.okhttp3:mockwebserver:4.3.1'
-  testImplementation "io.insert-koin:koin-test:3.1.2"
-  testImplementation "io.insert-koin:koin-test-junit4:3.1.2"
+  testImplementation "io.insert-koin:koin-test:${koinVersion}"
+  testImplementation "io.insert-koin:koin-test-junit4:${koinVersion}"
   testImplementation 'io.mockk:mockk:1.12.3'
-  testImplementation "org.robolectric:robolectric:4.7.3"
-}
-
-// Koin uses a different version of Kotlin under the hood.
-configurations.all {
-  resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-    def requested = details.requested
-    if (requested.group == 'org.jetbrains.kotlin') {
-      details.useVersion safeExtGet('kotlinVersion', '1.6.10')
-    }
-  }
+  testImplementation "org.robolectric:robolectric:4.10"
 }
 
 def versionToNumber(major, minor, patch) {
@@ -181,7 +165,7 @@ def versionToNumber(major, minor, patch) {
 }
 
 def getNodeModulesPackageVersion(packageName, overridePropName) {
-  def nodeModulesVersion = ["node", "-e", "console.log(require('$packageName/package.json').version);"].execute([], projectDir).text.trim()
+  def nodeModulesVersion = ["node", "-e", "console.log(require('$packageName/package.json').version);"].execute(null, projectDir).text.trim()
   def version = safeExtGet(overridePropName, nodeModulesVersion)
 
   def coreVersion = version.split("-")[0]
@@ -195,6 +179,17 @@ def getNodeModulesPackageVersion(packageName, overridePropName) {
 }
 
 def getRNVersion() {
+  if (System.getenv("REACT_NATIVE_OVERRIDE_VERSION")) {
+    def version = System.getenv("REACT_NATIVE_OVERRIDE_VERSION")
+    def coreVersion = version.split("-")[0]
+    def (major, minor, patch) = coreVersion.tokenize('.').collect { it.toInteger() }
+    return versionToNumber(
+        major,
+        minor,
+        patch
+    )
+  }
+
   return getNodeModulesPackageVersion("react-native", "reactNativeVersion")
 }
 

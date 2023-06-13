@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.modifyJavaMainActivity = void 0;
-const config_plugins_1 = require("@expo/config-plugins");
+const config_plugins_1 = require("expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const semver_1 = __importDefault(require("semver"));
@@ -168,7 +168,7 @@ const withDevLauncherPodfile = (config) => {
         async (config) => {
             await editPodfile(config, (podfile) => {
                 // replace all iOS versions below 12
-                podfile = podfile.replace(/platform :ios, '((\d\.0)|(1[0-1].0))'/, "platform :ios, '12.0'");
+                podfile = podfile.replace(/platform :ios, '((\d\.0)|(1[0-1].0))'/, "platform :ios, '13.0'");
                 // Match both variations of Ruby config:
                 // unknown: pod 'expo-dev-launcher', path: '../node_modules/expo-dev-launcher', :configurations => :debug
                 // Rubocop: pod 'expo-dev-launcher', path: '../node_modules/expo-dev-launcher', configurations: :debug

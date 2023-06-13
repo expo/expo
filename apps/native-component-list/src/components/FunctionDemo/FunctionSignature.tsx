@@ -80,7 +80,9 @@ function convertObjectArgumentToString(arg: FunctionArgument, parameter: ObjectP
       }
 
       if (property.type === 'enum') {
-        return `${property.name}: ${convertEnumArgumentToString(value, property)}`;
+        const stringArgument = convertEnumArgumentToString(value, property);
+        if (!stringArgument) return;
+        return `${property.name}: ${stringArgument}`;
       }
 
       return `${property.name}: ${property.type === 'string' ? `"${value}"` : value}`;
@@ -100,11 +102,7 @@ function convertEnumArgumentToString(arg: FunctionArgument, { name, values }: En
       : value === arg
   );
   if (!value) {
-    throw new Error(
-      `Value ${arg} not found in available values for enum parameter ${name}. Available values: ${values
-        .map((v) => `${v.name} -> ${v.value}`)
-        .join(', ')}`
-    );
+    return;
   }
   return value.name;
 }

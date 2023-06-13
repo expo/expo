@@ -8,9 +8,33 @@
 
 ### 🐛 Bug fixes
 
-- Fix null error in purchaseItemAsync when details argument is not passed [#18272](https://github.com/expo/expo/pull/18272)
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
+
+## 14.2.0 — 2023-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 14.1.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 14.1.0 — 2023-02-03
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
+## 14.0.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- Fix null error in purchaseItemAsync when details argument is not passed [#18272](https://github.com/expo/expo/pull/18272)
 
 ## 13.1.0 — 2022-07-07
 

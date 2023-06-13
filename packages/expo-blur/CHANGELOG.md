@@ -10,6 +10,55 @@
 
 ### 💡 Others
 
+## 12.3.2 — 2023-06-13
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed Detox tests hanging when `BlurView` is present ([#22439](https://github.com/expo/expo/pull/22439) by [@behenate](https://github.com/behenate))
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
+## 12.3.1 — 2023-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 12.3.0 — 2023-04-17
+
+### 🎉 New features
+
+- Add Android support for `BlurView`. ([#21744](https://github.com/expo/expo/pull/21744) by [@behenate](https://github.com/behenate))
+
+## 12.2.2 — 2023-02-14
+
+### 🐛 Bug fixes
+
+- Add `WebkitBackdropFilter` to support `react-native-web` styling. ([#21146](https://github.com/expo/expo/pull/21146) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 12.2.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 12.2.0 — 2023-02-03
+
+### 🐛 Bug fixes
+
+- Add `-webkit-backdrop-filter` to support blurring on Safari. ([#21003](https://github.com/expo/expo/pull/21003) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 12.1.0 — 2022-12-30
+
+### 🎉 New features
+
+- Migrated iOS codebase to Swift and the new Expo modules API. ([#19786](https://github.com/expo/expo/pull/19786) by [@tsapeta](https://github.com/tsapeta))
+
+## 12.0.1 — 2022-11-02
+
+_This version does not introduce any user-facing changes._
+
+## 12.0.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
 ## 11.2.0 — 2022-07-07
 
 _This version does not introduce any user-facing changes._

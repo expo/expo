@@ -1,45 +1,39 @@
-import { css } from '@emotion/react';
-import { borderRadius, spacing, theme, ArrowRightIcon, iconSize, shadows } from '@expo/styleguide';
-import React, { PropsWithChildren, ReactNode } from 'react';
+import { ArrowRightIcon, ArrowUpRightIcon } from '@expo/styleguide-icons';
+import type { AnchorHTMLAttributes, ComponentType, HTMLAttributes, ReactNode } from 'react';
 
-import { A, HEADLINE, P } from '~/ui/components/Text';
+import { A, DEMI, P } from '~/ui/components/Text';
 
-type BoxLinkProps = PropsWithChildren<{
+type BoxLinkProps = AnchorHTMLAttributes<HTMLLinkElement> & {
   title: string;
-  description: string | ReactNode;
-  href?: string;
+  description: ReactNode;
   testID?: string;
-}>;
+  Icon?: ComponentType<HTMLAttributes<SVGSVGElement>>;
+  imageUrl?: string;
+};
 
-export function BoxLink({ title, description, href, testID }: BoxLinkProps) {
+export function BoxLink({ title, description, href, testID, Icon, imageUrl }: BoxLinkProps) {
+  const isExternal = Boolean(href && href.startsWith('http'));
+  const ArrowIcon = isExternal ? ArrowUpRightIcon : ArrowRightIcon;
   return (
-    <A href={href} css={tileContainerStyle} data-testid={testID}>
-      <div>
-        <HEADLINE tag="span">{title}</HEADLINE>
-        <P>{description}</P>
+    <A
+      href={href}
+      className="flex flex-row justify-between border border-solid border-default rounded-md py-3 px-4 mb-3 hocus:shadow-xs"
+      data-testid={testID}
+      openInNewTab={isExternal}
+      isStyled>
+      <div className="flex flex-row gap-4">
+        {Icon && (
+          <div className="flex bg-element rounded-md self-center items-center justify-center min-w-[36px] h-9">
+            <Icon className="icon-lg text-icon-default" />
+          </div>
+        )}
+        {imageUrl && <img className="!w-9 !h-9 self-center" src={imageUrl} alt="Icon" />}
+        <div>
+          <DEMI>{title}</DEMI>
+          <P>{description}</P>
+        </div>
       </div>
-      <ArrowRightIcon css={iconStyle} color={theme.icon.secondary} />
+      <ArrowIcon className="text-icon-secondary self-center content-end ml-3 min-w-[20px]" />
     </A>
   );
 }
-
-const tileContainerStyle = css({
-  display: 'flex',
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  border: `1px solid ${theme.border.default}`,
-  borderRadius: borderRadius.medium,
-  padding: `${spacing[3]}px ${spacing[4]}px`,
-  marginBottom: spacing[3],
-
-  ':hover': {
-    boxShadow: shadows.micro,
-  },
-});
-
-const iconStyle = css({
-  alignSelf: 'center',
-  alignContent: 'flex-end',
-  minWidth: iconSize.regular,
-  marginLeft: spacing[3],
-});

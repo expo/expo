@@ -1,18 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resolvePackageManager = void 0;
+exports.formatRunCommand = exports.resolvePackageManager = void 0;
 const child_process_1 = require("child_process");
 /** Determine which package manager to use for installing dependencies based on how the process was started. */
 function resolvePackageManager() {
     // Attempt to detect if the user started the command using `yarn` or `pnpm`
     const userAgent = process.env.npm_config_user_agent;
-    if (userAgent === null || userAgent === void 0 ? void 0 : userAgent.startsWith('yarn')) {
+    if (userAgent?.startsWith('yarn')) {
         return 'yarn';
     }
-    else if (userAgent === null || userAgent === void 0 ? void 0 : userAgent.startsWith('pnpm')) {
+    else if (userAgent?.startsWith('pnpm')) {
         return 'pnpm';
     }
-    else if (userAgent === null || userAgent === void 0 ? void 0 : userAgent.startsWith('npm')) {
+    else if (userAgent?.startsWith('npm')) {
         return 'npm';
     }
     // Try availability
@@ -33,4 +33,16 @@ function isPackageManagerAvailable(manager) {
     catch { }
     return false;
 }
+function formatRunCommand(manager, cmd) {
+    switch (manager) {
+        case 'pnpm':
+            return `pnpm run ${cmd}`;
+        case 'yarn':
+            return `yarn ${cmd}`;
+        case 'npm':
+        default:
+            return `npm run ${cmd}`;
+    }
+}
+exports.formatRunCommand = formatRunCommand;
 //# sourceMappingURL=resolvePackageManager.js.map

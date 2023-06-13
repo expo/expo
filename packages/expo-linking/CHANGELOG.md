@@ -10,6 +10,40 @@
 
 ### 💡 Others
 
+## 4.1.0 — 2023-05-08
+
+### 💡 Others
+
+- Warn on use of Constants.manifest. ([#22247](https://github.com/expo/expo/pull/22247) by [@wschurman](https://github.com/wschurman))
+
+## 4.0.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.0 — 2023-02-03
+
+### 🛠 Breaking changes
+
+- Removed the deprecated `Linking.removeEventListener`. ([#20832](https://github.com/expo/expo/pull/20832) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Fix link in README that was incorrectly pointing to to expo-asset. ([#20616](https://github.com/expo/expo/pull/20616) by [@stereoplegic](https://github.com/stereoplegic))
+
+## 3.3.1 — 2023-02-27
+
+### 🐛 Bug fixes
+
+- Fixed crash when calling `Linking.removeEventListener` and added warning about `Linking.removeEventListener` being removed from react-native. ([#21371](https://github.com/expo/expo/pull/21371) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 3.2.3 — 2022-10-25
+
+### 🐛 Bug fixes
+
+- Recognize EAS Updates (u.expo.dev) URL's as Expo-hosted so `createURL` can make a valid default URL for expo-auth-session ([#19258](https://github.com/expo/expo/pull/19258) by [@confraria](https://github.com/confraria)) and [@keith-kurak](https://github.com/keith-kurak))
+
+### 💡 Others
+
 - Update docs link. ([#18935](https://github.com/expo/expo/pull/18935) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.2.2 — 2022-07-25

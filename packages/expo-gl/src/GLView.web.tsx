@@ -14,11 +14,11 @@ import {
 } from './GLView.types';
 
 function getImageForAsset(asset: {
-  downloadAsync: () => Promise<any>;
+  downloadAsync?: () => Promise<any>;
   uri?: string;
   localUri?: string;
 }): HTMLImageElement | any {
-  if (asset != null && typeof asset === 'object' && asset !== null && asset.downloadAsync) {
+  if (asset != null && typeof asset === 'object' && asset.downloadAsync) {
     const dataURI = asset.localUri || asset.uri || '';
     const image = new Image();
     image.src = dataURI;

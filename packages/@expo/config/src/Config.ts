@@ -11,7 +11,6 @@ import {
   AppJSONConfig,
   ConfigFilePaths,
   ExpoConfig,
-  ExpRc,
   GetConfigOptions,
   PackageJSONConfig,
   Platform,
@@ -19,10 +18,8 @@ import {
   ProjectTarget,
   WriteConfigOptions,
 } from './Config.types';
-import { ConfigError } from './Errors';
-import { getExpoSDKVersion } from './Project';
 import { getDynamicConfig, getStaticConfig } from './getConfig';
-import { getFullName } from './getFullName';
+import { getExpoSDKVersion } from './getExpoSDKVersion';
 import { withConfigPlugins } from './plugins/withConfigPlugins';
 import { withInternal } from './plugins/withInternal';
 import { getRootPackageJsonPath } from './resolvePackageJson';
@@ -134,6 +131,8 @@ export function getConfig(projectRoot: string, options: GetConfigOptions = {}): 
     }
 
     if (options.isPublicConfig) {
+      // TODD(EvanBacon): Drop plugins array after it's been resolved.
+
       // Remove internal values with references to user's file paths from the public config.
       delete configWithDefaultValues.exp._internal;
 
@@ -146,12 +145,6 @@ export function getConfig(projectRoot: string, options: GetConfigOptions = {}): 
       if (configWithDefaultValues.exp.android?.config) {
         delete configWithDefaultValues.exp.android.config;
       }
-
-      // These value will be overwritten when the manifest is being served from the host (i.e. not completely accurate).
-      // @ts-ignore: currentFullName not on type yet.
-      configWithDefaultValues.exp.currentFullName = getFullName(configWithDefaultValues.exp);
-      // @ts-ignore: originalFullName not on type yet.
-      configWithDefaultValues.exp.originalFullName = getFullName(configWithDefaultValues.exp);
 
       delete configWithDefaultValues.exp.updates?.codeSigningCertificate;
       delete configWithDefaultValues.exp.updates?.codeSigningMetadata;
@@ -203,93 +196,16 @@ function getPackageJsonAndPath(projectRoot: string): [PackageJSONConfig, string]
   return [JsonFile.read(packageJsonPath), packageJsonPath];
 }
 
-export function readConfigJson(
-  projectRoot: string,
-  skipValidation: boolean = false,
-  skipSDKVersionRequirement: boolean = false
-): ProjectConfig {
-  const paths = getConfigFilePaths(projectRoot);
-
-  const rawStaticConfig = paths.staticConfigPath ? getStaticConfig(paths.staticConfigPath) : null;
-
-  const getConfigName = (): string => {
-    if (paths.staticConfigPath) return ` \`${path.basename(paths.staticConfigPath)}\``;
-    return '';
-  };
-
-  let outputRootConfig = rawStaticConfig as JSONObject | null;
-  if (outputRootConfig === null || typeof outputRootConfig !== 'object') {
-    if (skipValidation) {
-      outputRootConfig = { expo: {} };
-    } else {
-      throw new ConfigError(
-        `Project at path ${path.resolve(
-          projectRoot
-        )} does not contain a valid Expo config${getConfigName()}`,
-        'NOT_OBJECT'
-      );
-    }
-  }
-  let exp = outputRootConfig.expo as Partial<ExpoConfig>;
-  if (exp === null || typeof exp !== 'object') {
-    throw new ConfigError(
-      `Property 'expo' in${getConfigName()} for project at path ${path.resolve(
-        projectRoot
-      )} is not an object. Please make sure${getConfigName()} includes a managed Expo app config like this: ${APP_JSON_EXAMPLE}`,
-      'NO_EXPO'
-    );
-  }
-
-  exp = { ...exp };
-
-  const [pkg, packageJsonPath] = getPackageJsonAndPath(projectRoot);
-
-  return {
-    ...ensureConfigHasDefaultValues({
-      projectRoot,
-      exp,
-      pkg,
-      skipSDKVersionRequirement,
-      paths,
-      packageJsonPath,
-    }),
-    mods: null,
-    dynamicConfigObjectType: null,
-    rootConfig: { ...outputRootConfig } as AppJSONConfig,
-    ...paths,
-  };
-}
-
 /**
  * Get the static and dynamic config paths for a project. Also accounts for custom paths.
  *
  * @param projectRoot
  */
 export function getConfigFilePaths(projectRoot: string): ConfigFilePaths {
-  const customPaths = getCustomConfigFilePaths(projectRoot);
-  if (customPaths) {
-    return customPaths;
-  }
-
   return {
     dynamicConfigPath: getDynamicConfigFilePath(projectRoot),
     staticConfigPath: getStaticConfigFilePath(projectRoot),
   };
-}
-
-function getCustomConfigFilePaths(projectRoot: string): ConfigFilePaths | null {
-  if (!customConfigPaths[projectRoot]) {
-    return null;
-  }
-  // If the user picks a custom config path, we will only use that and skip searching for a secondary config.
-  if (isDynamicFilePath(customConfigPaths[projectRoot])) {
-    return {
-      dynamicConfigPath: customConfigPaths[projectRoot],
-      staticConfigPath: null,
-    };
-  }
-  // Anything that's not js or ts will be treated as json.
-  return { staticConfigPath: customConfigPaths[projectRoot], dynamicConfigPath: null };
 }
 
 function getDynamicConfigFilePath(projectRoot: string): string | null {
@@ -310,60 +226,6 @@ function getStaticConfigFilePath(projectRoot: string): string | null {
     }
   }
   return null;
-}
-
-// TODO: This should account for dynamic configs
-export function findConfigFile(projectRoot: string): {
-  configPath: string;
-  configName: string;
-  configNamespace: 'expo';
-} {
-  let configPath: string;
-  // Check for a custom config path first.
-  if (customConfigPaths[projectRoot]) {
-    configPath = customConfigPaths[projectRoot];
-    // We shouldn't verify if the file exists because
-    // the user manually specified that this path should be used.
-    return {
-      configPath,
-      configName: path.basename(configPath),
-      configNamespace: 'expo',
-    };
-  } else {
-    // app.config.json takes higher priority over app.json
-    configPath = path.join(projectRoot, 'app.config.json');
-    if (!fs.existsSync(configPath)) {
-      configPath = path.join(projectRoot, 'app.json');
-    }
-  }
-
-  return {
-    configPath,
-    configName: path.basename(configPath),
-    configNamespace: 'expo',
-  };
-}
-
-// TODO: deprecate
-export function configFilename(projectRoot: string): string {
-  return findConfigFile(projectRoot).configName;
-}
-
-export async function readExpRcAsync(projectRoot: string): Promise<ExpRc> {
-  const expRcPath = path.join(projectRoot, '.exprc');
-  return await JsonFile.readAsync(expRcPath, { json5: true, cantReadFileDefault: {} });
-}
-
-const customConfigPaths: { [projectRoot: string]: string } = {};
-
-export function resetCustomConfigPaths(): void {
-  for (const key of Object.keys(customConfigPaths)) {
-    delete customConfigPaths[key];
-  }
-}
-
-export function setCustomConfigPath(projectRoot: string, configPath: string): void {
-  customConfigPaths[projectRoot] = configPath;
 }
 
 /**
@@ -432,14 +294,6 @@ export async function modifyConfigAsync(
   return { type: 'fail', message: 'No config exists', config: null };
 }
 
-const APP_JSON_EXAMPLE = JSON.stringify({
-  expo: {
-    name: 'My app',
-    slug: 'my-app',
-    sdkVersion: '...',
-  },
-});
-
 function ensureConfigHasDefaultValues({
   projectRoot,
   exp,
@@ -498,29 +352,6 @@ function ensureConfigHasDefaultValues({
   };
 }
 
-export async function writeConfigJsonAsync(
-  projectRoot: string,
-  options: object
-): Promise<ProjectConfig> {
-  const paths = getConfigFilePaths(projectRoot);
-  let { exp, pkg, rootConfig, dynamicConfigObjectType } = readConfigJson(projectRoot);
-  exp = { ...rootConfig.expo, ...options };
-  rootConfig = { ...rootConfig, expo: exp };
-
-  if (paths.staticConfigPath) {
-    await JsonFile.writeAsync(paths.staticConfigPath, rootConfig, { json5: false });
-  } else {
-    console.log('Failed to write to config: ', options);
-  }
-
-  return {
-    exp,
-    pkg,
-    rootConfig,
-    dynamicConfigObjectType,
-    ...paths,
-  };
-}
 const DEFAULT_BUILD_PATH = `web-build`;
 
 export function getWebOutputPath(config: { [key: string]: any } = {}): string {
@@ -565,6 +396,7 @@ export function getDefaultTarget(
 function isBareWorkflowProject(projectRoot: string): boolean {
   const [pkg] = getPackageJsonAndPath(projectRoot);
 
+  // TODO: Drop this
   if (pkg.dependencies && pkg.dependencies.expokit) {
     return false;
   }
@@ -585,15 +417,6 @@ function isBareWorkflowProject(projectRoot: string): boolean {
   }
 
   return false;
-}
-
-/**
- * true if the file is .js or .ts
- *
- * @param filePath
- */
-function isDynamicFilePath(filePath: string): boolean {
-  return !!filePath.match(/\.[j|t]s$/);
 }
 
 /**
@@ -636,5 +459,3 @@ export function getProjectConfigDescriptionWithPaths(
 }
 
 export * from './Config.types';
-
-export { isLegacyImportsEnabled } from './isLegacyImportsEnabled';

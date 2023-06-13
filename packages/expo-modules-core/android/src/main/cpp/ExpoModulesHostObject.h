@@ -7,10 +7,14 @@
 #include <jsi/jsi.h>
 
 #include <vector>
+#import <unordered_map>
 
 namespace jsi = facebook::jsi;
 
 namespace expo {
+
+using UniqueJSIObject = std::unique_ptr<jsi::Object>;
+
 /**
  * An entry point to all exported functionalities like modules.
  *
@@ -20,6 +24,8 @@ class ExpoModulesHostObject : public jsi::HostObject {
 public:
   ExpoModulesHostObject(JSIInteropModuleRegistry *installer);
 
+  ~ExpoModulesHostObject() override;
+
   jsi::Value get(jsi::Runtime &, const jsi::PropNameID &name) override;
 
   void set(jsi::Runtime &, const jsi::PropNameID &name, const jsi::Value &value) override;
@@ -28,5 +34,6 @@ public:
 
 private:
   JSIInteropModuleRegistry *installer;
+  std::unordered_map<std::string, UniqueJSIObject> modulesCache;
 };
 } // namespace expo

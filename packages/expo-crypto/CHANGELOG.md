@@ -10,6 +10,55 @@
 
 ### 💡 Others
 
+## 12.4.0 — 2023-06-13
+
+### 📚 3rd party library updates
+
+- Updated `robolectric` to `4.10` and `junit` to `4.13.2`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+
+### 🐛 Bug fixes
+
+- Return lower case UUID on iOS. ([#22509](https://github.com/expo/expo/pull/22509) by [@LinusU](https://github.com/LinusU))
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
+## 12.3.0 — 2023-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 12.2.2 — 2023-04-06
+
+### 💡 Others
+
+- Set the missing return type of `randomUUID` method. ([#21187](https://github.com/expo/expo/pull/21187) by [@KiwiKilian](https://github.com/KiwiKilian))
+
+## 12.2.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 12.2.0 — 2023-02-03
+
+### 🎉 New features
+
+- Added a `digest` method to get a cryptographic digest of a typed array. ([#20886](https://github.com/expo/expo/pull/20886) by [@aleqsio](https://github.com/aleqsio))
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
+## 12.1.0 — 2022-12-30
+
+### 🎉 New features
+
+- Added a `randomUUID` method to get a random UUIDv4 string. ([#20274](https://github.com/expo/expo/pull/20274) by [@aleqsio](https://github.com/aleqsio))
+- Added a `getRandomValues` method to fill typed arrays. ([#20257](https://github.com/expo/expo/pull/20257) by [@aleqsio](https://github.com/aleqsio))
+- Ported over `getRandomBytes`, `getRandomBytesAsync` methods from `expo-random`. ([#20217](https://github.com/expo/expo/pull/20217) by [@aleqsio](https://github.com/aleqsio))
+
+## 12.0.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
 ## 11.0.0 — 2022-07-07
 
 ### 🎉 New features

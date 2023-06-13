@@ -48,6 +48,7 @@ function getInfoPlistTemplate() {
     UIRequiredDeviceCapabilities: ['armv7'],
     UIViewControllerBasedStatusBarAppearance: false,
     UIStatusBarStyle: 'UIStatusBarStyleDefault',
+    CADisableMinimumFrameDurationOnPhone: true,
   };
 }
 
@@ -64,6 +65,7 @@ const defaultProviders = {
   // Append a rule to supply AppDelegate data to mods on `mods.ios.appDelegate`
   appDelegate: provider<Paths.AppDelegateProjectFile>({
     getFilePath({ modRequest: { projectRoot } }) {
+      // TODO: Get application AppDelegate file from pbxproj.
       return Paths.getAppDelegateFilePath(projectRoot);
     },
     async read(filePath) {

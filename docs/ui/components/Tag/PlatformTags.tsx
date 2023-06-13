@@ -1,20 +1,19 @@
 import { PlatformTag } from './PlatformTag';
 
-import { B } from '~/components/base/paragraph';
 import { PlatformName } from '~/types/common';
+import { BOLD } from '~/ui/components/Text';
 
 type PlatformTagsProps = {
   prefix?: string;
   platforms?: PlatformName[];
-  firstElement?: boolean;
 };
 
-export const PlatformTags = ({ prefix, firstElement, platforms }: PlatformTagsProps) => {
+export const PlatformTags = ({ prefix, platforms }: PlatformTagsProps) => {
   return platforms?.length ? (
     <>
-      {prefix && <B>{prefix}&ensp;</B>}
+      {prefix && <BOLD>{prefix}&ensp;</BOLD>}
       {platforms.map(platform => {
-        return <PlatformTag key={platform} platform={platform} firstElement={firstElement} />;
+        return <PlatformTag key={platform} platform={platform} />;
       })}
       {prefix && <br />}
     </>

@@ -10,7 +10,7 @@
 #import <EXDevLauncher-Swift.h>
 #endif
 
-#import <EXManifests/EXManifestsManifestFactory.h>
+@import EXManifests;
 
 typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
 
@@ -99,6 +99,7 @@ typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:self.url];
   [request setHTTPMethod:method];
   [request setValue:@"ios" forHTTPHeaderField:@"expo-platform"];
+  [request setValue:@"application/expo+json,application/json" forHTTPHeaderField:@"accept"];
   if (self.installationID) {
     [request setValue:self.installationID forHTTPHeaderField:@"Expo-Dev-Client-ID"];
   }

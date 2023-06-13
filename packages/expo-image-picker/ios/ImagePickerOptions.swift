@@ -5,6 +5,8 @@ import MobileCoreServices
 import PhotosUI
 
 internal let DEFAULT_QUALITY = 0.2
+internal let MAXIMUM_QUALITY = 1.0
+
 internal let UNLIMITED_SELECTION = 0
 internal let SINGLE_SELECTION = 1
 
@@ -39,7 +41,9 @@ internal struct ImagePickerOptions: Record {
   @Field
   var presentationStyle: PresentationStyle = .automatic
 
-  // TODO: (bbarthec): undocumented
+  @Field
+  var preferredAssetRepresentationMode: PreferredAssetRepresentationMode = .automatic
+
   @Field
   var cameraType: CameraType = .back
 
@@ -88,6 +92,24 @@ internal enum PresentationStyle: String, EnumArgument {
       }
       // default prior iOS 13
       return .fullScreen
+    }
+  }
+}
+
+internal enum PreferredAssetRepresentationMode: String, EnumArgument {
+  case automatic
+  case compatible
+  case current
+
+  @available(iOS 14.0, *)
+  func toAssetRepresentationMode() -> PHPickerConfiguration.AssetRepresentationMode {
+    switch self {
+    case .automatic:
+      return .automatic
+    case .compatible:
+      return .compatible
+    case .current:
+      return .current
     }
   }
 }

@@ -8,8 +8,10 @@ import {
   logIncorrectDependencies,
 } from '../start/doctor/dependencies/validateDependenciesVersions';
 import { isInteractive } from '../utils/interactive';
+import { learnMore } from '../utils/link';
 import { confirmAsync } from '../utils/prompts';
-import { installPackagesAsync } from './installAsync';
+import { joinWithCommasAnd } from '../utils/strings';
+import { fixPackagesAsync } from './installAsync';
 import { Options } from './resolveOptions';
 
 const debug = require('debug')('expo:install:check') as typeof console.log;
@@ -29,10 +31,7 @@ export async function checkPackagesAsync(
      */
     packages: string[];
     /** Package manager to use when installing the versioned packages. */
-    packageManager:
-      | PackageManager.NpmPackageManager
-      | PackageManager.YarnPackageManager
-      | PackageManager.PnpmPackageManager;
+    packageManager: PackageManager.NodePackageManager;
 
     /** How the check should resolve */
     options: Pick<Options, 'fix'>;
@@ -50,6 +49,16 @@ export async function checkPackagesAsync(
     skipPlugins: true,
   });
 
+  if (pkg.expo?.install?.exclude?.length) {
+    Log.log(
+      chalk`Skipped ${fix ? 'fixing' : 'checking'} dependencies: ${joinWithCommasAnd(
+        pkg.expo.install.exclude
+      )}. These dependencies are listed in {bold expo.install.exclude} in package.json. ${learnMore(
+        'https://expo.dev/more/expo-cli/#configuring-dependency-validation'
+      )}`
+    );
+  }
+
   const dependencies = await getVersionedDependenciesAsync(projectRoot, exp, pkg, packages);
 
   if (!dependencies.length) {
@@ -65,13 +74,11 @@ export async function checkPackagesAsync(
     (isInteractive() && (await confirmAsync({ message: 'Fix dependencies?' }).catch(() => false)));
 
   if (value) {
-    // Just pass in the names, the install function will resolve the versions again.
-    const fixedDependencies = dependencies.map((dependency) => dependency.packageName);
-    debug('Installing fixed dependencies:', fixedDependencies);
+    debug('Installing fixed dependencies:', dependencies);
     // Install the corrected dependencies.
-    return installPackagesAsync(projectRoot, {
+    return fixPackagesAsync(projectRoot, {
       packageManager,
-      packages: fixedDependencies,
+      packages: dependencies,
       packageManagerArguments,
       sdkVersion: exp.sdkVersion!,
     });

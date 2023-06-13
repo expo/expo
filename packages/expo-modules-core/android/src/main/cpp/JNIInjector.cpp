@@ -4,8 +4,10 @@
 #include "JavaScriptModuleObject.h"
 #include "JavaScriptValue.h"
 #include "JavaScriptObject.h"
+#include "JavaScriptFunction.h"
 #include "JavaScriptTypedArray.h"
 #include "JavaReferencesCache.h"
+#include "JavaCallback.h"
 #include "types/FrontendConverterProvider.h"
 
 #if RN_FABRIC_ENABLED
@@ -26,7 +28,9 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
     expo::JavaScriptModuleObject::registerNatives();
     expo::JavaScriptValue::registerNatives();
     expo::JavaScriptObject::registerNatives();
+    expo::JavaScriptFunction::registerNatives();
     expo::JavaScriptTypedArray::registerNatives();
+    expo::JavaCallback::registerNatives();
 #if RN_FABRIC_ENABLED
     expo::FabricComponentsRegistry::registerNatives();
 #endif

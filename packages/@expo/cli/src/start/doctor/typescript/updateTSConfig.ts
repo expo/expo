@@ -1,5 +1,6 @@
 import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
+import fs from 'fs';
 
 import * as Log from '../../../log';
 
@@ -12,6 +13,7 @@ export async function updateTSConfigAsync({
   tsConfigPath: string;
   isBootstrapping: boolean;
 }): Promise<void> {
+  const shouldGenerate = !fs.existsSync(tsConfigPath);
   if (isBootstrapping) {
     await JsonFile.writeAsync(tsConfigPath, {});
   }
@@ -42,6 +44,11 @@ export async function updateTSConfigAsync({
   // Write changes and log out a summary of what changed
   await JsonFile.writeAsync(tsConfigPath, projectTSConfig);
 
+  // If no changes, then quietly bail out
+  if (isBootstrapping && !shouldGenerate) {
+    return;
+  }
+
   Log.log();
 
   if (isBootstrapping) {
@@ -58,7 +65,7 @@ export async function updateTSConfigAsync({
 function logModifications(modifications: string[][]) {
   Log.log();
 
-  Log.log(`\u203A {bold Required} modifications made to the {cyan tsconfig.json}:`);
+  Log.log(chalk`\u203A {bold Required} modifications made to the {cyan tsconfig.json}:`);
 
   Log.log();
 

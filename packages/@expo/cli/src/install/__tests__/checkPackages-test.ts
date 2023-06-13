@@ -1,3 +1,5 @@
+import { getConfig } from '@expo/config';
+
 import { asMock } from '../../__tests__/asMock';
 import { Log } from '../../log';
 import {
@@ -6,14 +8,14 @@ import {
 } from '../../start/doctor/dependencies/validateDependenciesVersions';
 import { confirmAsync } from '../../utils/prompts';
 import { checkPackagesAsync } from '../checkPackages';
-import { installPackagesAsync } from '../installAsync';
+import { fixPackagesAsync } from '../installAsync';
 
 jest.mock('../../log');
 
 jest.mock('../../utils/prompts');
 
 jest.mock('../installAsync', () => ({
-  installPackagesAsync: jest.fn(),
+  fixPackagesAsync: jest.fn(),
 }));
 
 jest.mock('../../start/doctor/dependencies/validateDependenciesVersions', () => ({
@@ -39,6 +41,7 @@ describe(checkPackagesAsync, () => {
     asMock(getVersionedDependenciesAsync).mockResolvedValueOnce([
       {
         packageName: 'react-native',
+        packageType: 'dependencies',
         expectedVersionOrRange: '^1.0.0',
         actualVersion: '0.69.0',
       },
@@ -59,6 +62,44 @@ describe(checkPackagesAsync, () => {
       // Because of ansi
       expect.stringContaining('Found outdated dependencies'),
       1
+    );
+  });
+
+  it(`notifies when dependencies are on exclude list`, async () => {
+    asMock(confirmAsync).mockResolvedValueOnce(false);
+    // @ts-expect-error
+    asMock(getConfig).mockReturnValueOnce({
+      pkg: {
+        expo: {
+          install: {
+            exclude: ['expo-av', 'expo-blur'],
+          },
+        },
+      },
+      exp: {
+        sdkVersion: '45.0.0',
+        name: 'my-app',
+        slug: 'my-app',
+      },
+    });
+    asMock(getVersionedDependenciesAsync).mockResolvedValueOnce([
+      {
+        packageName: 'expo-av',
+        packageType: 'dependencies',
+        expectedVersionOrRange: '^2.0.0',
+        actualVersion: '1.0.0',
+      },
+    ]);
+    await checkPackagesAsync('/', {
+      packages: ['expo-av'],
+      options: { fix: true },
+      // @ts-expect-error
+      packageManager: {},
+      packageManagerArguments: [],
+    });
+
+    expect(Log.log).toBeCalledWith(
+      expect.stringContaining('Skipped fixing dependencies: expo-av and expo-blur')
     );
   });
 
@@ -85,18 +126,22 @@ describe(checkPackagesAsync, () => {
   });
 
   it(`fixes invalid packages`, async () => {
-    asMock(getVersionedDependenciesAsync).mockResolvedValueOnce([
+    const issues: Awaited<ReturnType<typeof getVersionedDependenciesAsync>> = [
       {
         packageName: 'react-native',
+        packageType: 'dependencies',
         expectedVersionOrRange: '^1.0.0',
         actualVersion: '0.69.0',
       },
       {
         packageName: 'expo',
+        packageType: 'dependencies',
         expectedVersionOrRange: '^1.0.0',
         actualVersion: '0.69.0',
       },
-    ]);
+    ];
+
+    asMock(getVersionedDependenciesAsync).mockResolvedValueOnce(issues);
 
     await checkPackagesAsync('/', {
       packages: ['react-native', 'expo'],
@@ -106,10 +151,10 @@ describe(checkPackagesAsync, () => {
       packageManagerArguments: [],
     });
 
-    expect(installPackagesAsync).toBeCalledWith('/', {
+    expect(fixPackagesAsync).toBeCalledWith('/', {
       packageManager: {},
       packageManagerArguments: [],
-      packages: ['react-native', 'expo'],
+      packages: issues,
       sdkVersion: '45.0.0',
     });
     expect(logIncorrectDependencies).toBeCalledTimes(1);

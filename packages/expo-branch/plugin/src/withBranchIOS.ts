@@ -1,5 +1,5 @@
-import { ConfigPlugin, InfoPlist, withInfoPlist } from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
+import { ExpoConfig } from 'expo/config';
+import { ConfigPlugin, InfoPlist, withInfoPlist } from 'expo/config-plugins';
 
 export const withBranchIOS: ConfigPlugin = (config) => {
   return withInfoPlist(config, (config) => {

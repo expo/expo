@@ -2,6 +2,7 @@ import chalk from 'chalk';
 
 import * as Log from '../../log';
 import { maybePromptToSyncPodsAsync } from '../../utils/cocoapods';
+import { setNodeEnv } from '../../utils/nodeEnv';
 import { profile } from '../../utils/profile';
 import { getSchemesForIosAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
@@ -13,6 +14,9 @@ import { launchAppAsync } from './launchApp';
 import { resolveOptionsAsync } from './options/resolveOptions';
 
 export async function runIosAsync(projectRoot: string, options: Options) {
+  setNodeEnv(options.configuration === 'Release' ? 'production' : 'development');
+  require('@expo/env').load(projectRoot);
+
   assertPlatform();
 
   const install = !!options.install;

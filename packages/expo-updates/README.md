@@ -4,7 +4,7 @@
 
 ## API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/updates.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/updates.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/updates/)
 
 Additionally, for an introduction to this module and tooling around OTA updates, you can watch [this talk](https://www.youtube.com/watch?v=Si909la3rLk) by [@esamelson](https://github.com/esamelson) from ReactEurope 2020. Note: `expo eject` (mentioned @9:10) is no longer needed to implement native code. See [Development Builds](https://docs.expo.dev/development/introduction/#from-expo-go-to-development-builds).
@@ -23,7 +23,7 @@ If you're upgrading from `expo-updates@0.1.x`, you can opt into the **no-publish
 
 # Installation in managed Expo projects
 
-For [managed](https://docs.expo.dev/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/updates/).
+For [managed](https://docs.expo.dev/archive/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/updates/).
 
 # Installation in bare React Native projects
 
@@ -102,7 +102,7 @@ The number of milliseconds `expo-updates` should delay the app launch and stay o
 
 If `codeSigningCertificate` is present, `expo-updates` will enforce manifest code signing using the certificate and any metadata associated with it.
 - `codeSigningCertificate` must be a valid PEM formatted X.509 certificate with code signing extended key usage.
-- `codeSigningMetadata` (optional) must be a JSON object containing:
+- `codeSigningMetadata` (optional) On iOS this is specified as a plist dictionary. On Android this is JSON object string. It must be a JSON object containing:
     - `alg` - Algorithm used to generate manifest signature. Only `rsa-v1_5-sha256` is currently supported.
     - `keyid` - Identifier for the key in `codeSigningCertificate`. Used to instruct signing mechanisms when signing or verifying signatures.
 - `codeSigningIncludeManifestResponseCertificateChain` (optional) instructs `expo-updates` to evaluate certificates included in a multipart manifest response (under the `certificate_chain` multipart part) as part of the code signing certificate chain with the embedded `codeSigningCertificate` as the implicitly trusted root certificate of the chain. The leaf certificate in the chain must be valid for code signing.
@@ -118,7 +118,7 @@ In `expo-updates@0.9.0` and above, we support automatic installation of the modu
 
 # Removing pre-installed expo-updates
 
-Projects created by `expo init` and `expo prebuild` come with expo-updates pre-installed, because we anticipate most users will want this functionality. However, if you do not intend to use OTA updates, you can disable or uninstall the module.
+Projects created by `npx create-expo-app` and `npx expo prebuild` come with expo-updates pre-installed, because we anticipate most users will want this functionality. However, if you do not intend to use OTA updates, you can disable or uninstall the module.
 
 ## Disabling expo-updates
 
@@ -220,7 +220,8 @@ Remove`EXUpdatesAppControllerDelegate` as a protocol of your `AppDelegate`.
 ...
 
  #ifdef DEBUG
-   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
+-   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
++   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@".expo/.virtual-metro-entry" fallbackResource:nil];
  #else
 -  return [[EXUpdatesAppController sharedInstance] launchAssetUrl];
 +  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
@@ -249,7 +250,8 @@ Remove`EXUpdatesAppControllerDelegate` as a protocol of your `AppDelegate`.
 ...
 
      protected String getJSMainModuleName() {
-       return "index";
+-       return "index";
++       return ".expo/.virtual-metro-entry";
      }
 -
 -    @Override

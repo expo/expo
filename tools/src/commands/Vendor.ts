@@ -17,6 +17,7 @@ import {
   CopyFiles,
   Pipe,
   Platform,
+  PrefixHeaders,
   prefixPackage,
   RemoveDirectory,
   renameClass,
@@ -63,7 +64,7 @@ function getReanimatedPipe() {
       new Print(MessageType.WARNING, 'You have to adjust the installation steps of the react-native-reanimated to work well with the react-native-gesture-handler. For more information go to the https://github.com/expo/expo/pull/17878 and https://github.com/expo/expo/pull/18562' ),
       new Clone({
         url: 'git@github.com:software-mansion/react-native-reanimated.git',
-        tag: '2.9.1',
+        tag: '2.14.4',
       }),
       new RemoveDirectory({
         name: 'clean vendored folder',
@@ -83,6 +84,12 @@ function getReanimatedPipe() {
         filePattern: 'Common/**/ReanimatedHiddenHeaders.h',
         find: 'Common/cpp',
         replace: 'vendored/react-native-reanimated/Common/cpp',
+      }),
+      new PrefixHeaders({
+        prefix: "DevMenu",
+        subPath: 'Common',
+        filePattern: "**/*.@(h|cpp|m|mm)",
+        debug: true
       }),
       new CopyFiles({
         filePattern: ['src/**/*.*', '*.d.ts', 'plugin.js', 'Common/**/*.@(h|cpp)'],
@@ -209,6 +216,16 @@ function getReanimatedPipe() {
         filePattern: 'ios/**/*.@(h|m|mm)',
         find: 'RNGestureHandlerStateManager',
         replace: 'DevMenuRNGestureHandlerStateManager',
+      }),
+      new TransformFilesContent({
+        filePattern: 'ios/**/RNGestureHandler.m',
+        find: 'UIGestureRecognizer (GestureHandler)',
+        replace: 'UIGestureRecognizer (DevMenuGestureHandler)'
+      }),
+      new TransformFilesContent({
+        filePattern: 'ios/**/RNGestureHandler.m',
+        find: 'gestureHandler',
+        replace: 'devmenugestureHandler'
       }),
       new CopyFiles({
         filePattern: 'ios/**/*.@(m|h|mm)',

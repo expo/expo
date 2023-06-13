@@ -4,7 +4,61 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 13.4.0 — 2023-06-13
+
+- Fixed `Expo camera - Cannot take landscape photos if screen orientation is locked'` on iOS. ([#21938](https://github.com/expo/expo/issues/21938) by [@chalenascholl](https://github.com/chalenascholl)) ([#21956](https://github.com/expo/expo/pull/21956) by [@chalenascholl](https://github.com/chalenascholl))
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
+## 13.3.0 — 2023-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 13.2.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 13.2.0 — 2023-02-03
+
+### 🐛 Bug fixes
+
+- Fix path where simulator saves photos ([#20872](https://github.com/expo/expo/pull/20872) by [@pettomartino](https://github.com/pettomartino))
+- Fixed `Cannot set prop 'barCodeScannerSettings' on view 'class expo.modules.camera.ExpoCameraView'` on Android. ([#21033](https://github.com/expo/expo/pull/21033) by [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
+## 13.1.0 - 2022-11-23
+
+### 🐛 Bug fixes
+
+- Fix import issue on case-sensitive file systems ([#20141](https://github.com/expo/expo/pull/20141) by [@hirbod](https://github.com/hirbod))
+
+### 💡 Others
+
+- Use correct type for `videoStabilizationMode` option. ([#20130](https://github.com/expo/expo/pull/20130) by [@simek](https://github.com/simek))
+
+## 13.0.0 — 2022-10-25
+
+### 🐛 Bug fixes
+
+- Added `bounds` property to the `BarCodeScanningResult`. ([#19519](https://github.com/expo/expo/pull/19519) by [@lukmccall](https://github.com/lukmccall))
+
+## 13.0.0-beta.1 — 2022-10-06
+
+### 🛠 Breaking changes
+
 - [plugin] Upgrade minimum runtime requirement to Node 14 (LTS). ([#18204](https://github.com/expo/expo/pull/18204) by [@EvanBacon](https://github.com/EvanBacon))
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
 
@@ -12,7 +66,10 @@
 - Native module for camera view is now written in Swift using the new API. ([#18703](https://github.com/expo/expo/pull/18703) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
+
 - Fix error when calling `takePictureAsync()` on Android emulator. ([#18704](https://github.com/expo/expo/pull/18704)) by [@keith-kurak](https://github.com/keith-kurak))
+- Add `cornerPoints` to `onBarCodeScanned` on Android. ([#19357](https://github.com/expo/expo/pull/19357) by [@igoro00](https://github.com/igoro00))
+- Fix error where `takePictureAsync()` saved the photo to a global cache directory that was inaccessible in Expo Go. ([#19205](https://github.com/expo/expo/pull/19205) by [@aleqsio](https://github.com/aleqsio))
 
 ### 💡 Others
 

@@ -38,6 +38,9 @@ class ScopedPermissionsRequester(private val experienceKey: ExperienceKey) {
     permissionsResult = mutableMapOf()
 
     for (permission in permissions) {
+      if (permission == null) {
+        continue
+      }
       val globalStatus = currentActivity.checkSelfPermission(permission)
       if (globalStatus == PackageManager.PERMISSION_DENIED) {
         permissionsToRequestGlobally.add(permission)
@@ -141,6 +144,10 @@ class ScopedPermissionsRequester(private val experienceKey: ExperienceKey) {
       Manifest.permission.ACCESS_FINE_LOCATION -> R.string.perm_fine_location
       Manifest.permission.ACCESS_COARSE_LOCATION -> R.string.perm_coarse_location
       Manifest.permission.ACCESS_BACKGROUND_LOCATION -> R.string.perm_background_location
+      Manifest.permission.READ_PHONE_STATE -> R.string.perm_read_phone_state
+      Manifest.permission.READ_MEDIA_IMAGES -> R.string.perm_read_media_images
+      Manifest.permission.READ_MEDIA_VIDEO -> R.string.perm_read_media_videos
+      Manifest.permission.READ_MEDIA_AUDIO -> R.string.perm_read_media_audio
       else -> -1
     }
   }

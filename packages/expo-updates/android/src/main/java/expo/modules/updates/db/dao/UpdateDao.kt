@@ -6,6 +6,9 @@ import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.db.enums.UpdateStatus
 import java.util.*
 
+/**
+ * Utility class for accessing and modifying data in SQLite relating to updates.
+ */
 @Dao
 abstract class UpdateDao {
   /**
@@ -75,6 +78,11 @@ abstract class UpdateDao {
 
   fun setUpdateScopeKey(update: UpdateEntity, newScopeKey: String) {
     update.scopeKey = newScopeKey
+    _updateUpdate(update)
+  }
+
+  fun setUpdateCommitTime(update: UpdateEntity, commitTime: Date) {
+    update.commitTime = commitTime
     _updateUpdate(update)
   }
 

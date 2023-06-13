@@ -11,11 +11,18 @@ import expo.modules.updates.loader.EmbeddedLoader
 import expo.modules.manifests.core.LegacyManifest
 import org.json.JSONArray
 import org.json.JSONException
-import org.json.JSONObject
 import java.net.URI
 import java.text.ParseException
 import java.util.*
 
+/**
+ * Class for manifests that use the classic format (i.e. come from Expo's classic updates service or
+ * a self-hosted service following the classic updates format, such as one making use of `expo-cli
+ * export`).
+ *
+ * Asset URLs are relative in this format, and we assume that if no base URL is explicitly provided,
+ * the base URL is Expo's classic asset CDN.
+ */
 class LegacyUpdateManifest private constructor(
   override val manifest: LegacyManifest,
   private val mManifestUrl: Uri,
@@ -26,10 +33,6 @@ class LegacyUpdateManifest private constructor(
   private val mBundleUrl: Uri,
   private val mAssets: JSONArray?
 ) : UpdateManifest {
-  override val serverDefinedHeaders: JSONObject? = null
-
-  override val manifestFilters: JSONObject? = null
-
   override val updateEntity: UpdateEntity by lazy {
     UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey).apply {
       manifest = this@LegacyUpdateManifest.manifest.getRawJson()
@@ -111,7 +114,7 @@ class LegacyUpdateManifest private constructor(
         }
       }
 
-      val runtimeVersion = manifest.getRuntimeVersion() ?: manifest.getSDKVersion() ?: throw Exception("sdkVersion should not be null")
+      val runtimeVersion = manifest.getRuntimeVersion() ?: manifest.getExpoGoSDKVersion() ?: throw Exception("sdkVersion should not be null")
       val bundleUrl = Uri.parse(manifest.getBundleURL())
       val bundledAssets = manifest.getBundledAssets()
       return LegacyUpdateManifest(

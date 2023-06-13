@@ -1,7 +1,9 @@
 import { toByteArray } from 'base64-js';
 import { UnavailabilityError } from 'expo-modules-core';
 import ExpoRandom from './ExpoRandom';
+const warnIsDeprecated = (functionName) => console.warn(`expo-random is deprecated in favor of expo-crypto: use ExpoCrypto.${functionName}()instead. https://docs.expo.dev/versions/latest/sdk/crypto/`);
 function assertByteCount(value, methodName) {
+    warnIsDeprecated('assertByteCount');
     if (typeof value !== 'number' ||
         isNaN(value) ||
         Math.floor(value) < 0 ||
@@ -18,6 +20,7 @@ function assertByteCount(value, methodName) {
  * @return An array of random bytes with the same length as the `byteCount`.
  */
 export function getRandomBytes(byteCount) {
+    warnIsDeprecated('getRandomBytes');
     assertByteCount(byteCount, 'getRandomBytes');
     const validByteCount = Math.floor(byteCount);
     if (__DEV__) {
@@ -49,6 +52,7 @@ export function getRandomBytes(byteCount) {
  * @return A promise that fulfills with an array of random bytes with the same length as the `byteCount`.
  */
 export async function getRandomBytesAsync(byteCount) {
+    warnIsDeprecated('getRandomBytesAsync');
     assertByteCount(byteCount, 'getRandomBytesAsync');
     const validByteCount = Math.floor(byteCount);
     if (ExpoRandom.getRandomBytesAsync) {

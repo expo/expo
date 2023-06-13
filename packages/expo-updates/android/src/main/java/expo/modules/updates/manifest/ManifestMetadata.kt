@@ -1,14 +1,21 @@
 package expo.modules.updates.manifest
 
 import android.util.Log
+import expo.modules.jsonutils.require
+import expo.modules.structuredheaders.Dictionary
+import expo.modules.structuredheaders.StringItem
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.UpdatesDatabase
 import org.json.JSONObject
-import java.util.*
 
+/**
+ * Utility methods for reading and writing JSON metadata from manifests (e.g. `serverDefinedHeaders`
+ * and `manifestFilters`, both used for rollouts) to and from SQLite.
+ */
 object ManifestMetadata {
   private val TAG = ManifestMetadata::class.java.simpleName
 
+  private const val EXTRA_PARAMS_KEY = "extraParams"
   private const val MANIFEST_SERVER_DEFINED_HEADERS_KEY = "serverDefinedHeaders"
   private const val MANIFEST_FILTERS_KEY = "manifestFilters"
 
@@ -41,20 +48,60 @@ object ManifestMetadata {
     return getJSONObject(MANIFEST_FILTERS_KEY, database, configuration)
   }
 
+  fun getExtraParams(
+    database: UpdatesDatabase,
+    configuration: UpdatesConfiguration
+  ): Map<String, String>? {
+    return getJSONObject(EXTRA_PARAMS_KEY, database, configuration)?.asStringStringMap()
+  }
+
+  fun setExtraParam(
+    database: UpdatesDatabase,
+    configuration: UpdatesConfiguration,
+    key: String,
+    value: String?
+  ) {
+    // this is done within a transaction to ensure consistency
+    database.jsonDataDao()!!.updateJSONStringForKey(EXTRA_PARAMS_KEY, configuration.scopeKey!!) { previousValue ->
+      val jsonObject = previousValue?.let { JSONObject(it) }
+      val extraParamsToWrite = (jsonObject?.asStringStringMap()?.toMutableMap() ?: mutableMapOf()).also {
+        if (value != null) {
+          it[key] = value
+        } else {
+          it.remove(key)
+        }
+      }.toMap()
+
+      // ensure that this can be serialized to a structured-header dictionary
+      // this will throw for invalid values
+      Dictionary.valueOf(extraParamsToWrite.mapValues { elem -> StringItem.valueOf(elem.value) })
+
+      JSONObject(extraParamsToWrite).toString()
+    }
+  }
+
   fun saveMetadata(
-    updateManifest: UpdateManifest,
+    responseHeaderData: ResponseHeaderData,
     database: UpdatesDatabase,
     configuration: UpdatesConfiguration
   ) {
     val fieldsToSet = mutableMapOf<String, String>()
-    if (updateManifest.serverDefinedHeaders != null) {
-      fieldsToSet[MANIFEST_SERVER_DEFINED_HEADERS_KEY] = updateManifest.serverDefinedHeaders.toString()
+    if (responseHeaderData.serverDefinedHeaders != null) {
+      fieldsToSet[MANIFEST_SERVER_DEFINED_HEADERS_KEY] = responseHeaderData.serverDefinedHeaders.toString()
     }
-    if (updateManifest.manifestFilters != null) {
-      fieldsToSet[MANIFEST_FILTERS_KEY] = updateManifest.manifestFilters.toString()
+    if (responseHeaderData.manifestFilters != null) {
+      fieldsToSet[MANIFEST_FILTERS_KEY] = responseHeaderData.manifestFilters.toString()
     }
     if (fieldsToSet.isNotEmpty()) {
       database.jsonDataDao()!!.setMultipleFields(fieldsToSet, configuration.scopeKey!!)
+    }
+  }
+
+  private fun JSONObject.asStringStringMap(): Map<String, String> {
+    return buildMap {
+      this@asStringStringMap.keys().asSequence().forEach { key ->
+        this[key] = this@asStringStringMap.require(key)
+      }
     }
   }
 }

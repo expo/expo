@@ -1,12 +1,13 @@
 import { ExpoAppManifest } from '@expo/config';
 import { ModPlatform } from '@expo/config-plugins';
-import { BundleOutput } from '@expo/dev-server';
+import fs from 'fs';
 import minimatch from 'minimatch';
 import path from 'path';
 
 import * as Log from '../log';
 import { resolveGoogleServicesFile } from '../start/server/middleware/resolveAssets';
 import { uniqBy } from '../utils/array';
+import { BundleOutput } from './fork-bundleAsync';
 import { Asset, saveAssetsAsync } from './saveAssets';
 
 const debug = require('debug')('expo:export:exportAssets') as typeof console.log;
@@ -102,4 +103,28 @@ export async function exportAssetsAsync(
   await resolveAssetBundlePatternsAsync(projectRoot, exp, assets);
 
   return { exp, assets };
+}
+
+export async function exportCssAssetsAsync({
+  outputDir,
+  bundles,
+}: {
+  bundles: Partial<Record<ModPlatform, BundleOutput>>;
+  outputDir: string;
+}) {
+  const assets = uniqBy(
+    Object.values(bundles).flatMap((bundle) => bundle!.css),
+    (asset) => asset.filename
+  );
+
+  const cssDirectory = assets[0]?.filename;
+  if (!cssDirectory) return [];
+
+  await fs.promises.mkdir(path.join(outputDir, path.dirname(cssDirectory)), { recursive: true });
+
+  await Promise.all(
+    assets.map((v) => fs.promises.writeFile(path.join(outputDir, v.filename), v.source))
+  );
+
+  return assets.map((v) => '/' + v.filename);
 }

@@ -33,9 +33,8 @@ JsiHostObject::~JsiHostObject() {
 
 void JsiHostObject::set(jsi::Runtime &rt, const jsi::PropNameID &name,
                         const jsi::Value &value) {
-  
-  auto nameVal = name.utf8(rt);
-  auto nameStr = nameVal.c_str();
+
+  auto nameStr = name.utf8(rt);
 
   /** Check the static setters map */
   const JsiPropertySettersMap &setters = getExportedPropertySettersMap();
@@ -54,9 +53,16 @@ void JsiHostObject::set(jsi::Runtime &rt, const jsi::PropNameID &name,
 
 jsi::Value JsiHostObject::get(jsi::Runtime &runtime,
                               const jsi::PropNameID &name) {
-  auto nameVal = name.utf8(runtime);
-  auto nameStr = nameVal.c_str();
-  
+  auto nameStr = name.utf8(runtime);
+
+  // Do the happy-paths first
+
+  // Check function cache
+  auto cachedFunc = _hostFunctionCache.find(nameStr);
+  if (cachedFunc != _hostFunctionCache.end()) {
+    return cachedFunc->second.asFunction(runtime);
+  }
+
   // Check the static getters map
   const JsiPropertyGettersMap &getters = getExportedPropertyGettersMap();
   auto getter = getters.find(nameStr);
@@ -65,38 +71,21 @@ jsi::Value JsiHostObject::get(jsi::Runtime &runtime,
     return dispatcher(runtime);
   }
 
-  // Check the cache for functions
-  auto runtimeCache = _cache.find(&runtime);
-  JsiHostFunctionCache *currentCache;
-  if (runtimeCache != _cache.end()) {
-    currentCache = &runtimeCache->second;
-    // Check if the runtime cache as a cache of the host function
-    auto cachedFunc = runtimeCache->second.find(nameStr);
-    if (cachedFunc != runtimeCache->second.end()) {
-      return cachedFunc->second->asFunction(runtime);
-    }
-  } else {
-    // Create cache for this runtime
-    JsiHostFunctionCache runtimeCache;
-    _cache.emplace(&runtime, JsiHostFunctionCache{});
-    currentCache = &_cache.at(&runtime);
-  }
-
   // Check the static function map
   const JsiFunctionMap &funcs = getExportedFunctionMap();
   auto func = funcs.find(nameStr);
   if (func != funcs.end()) {
-    auto dispatcher = std::bind(func->second, (JsiHostObject *)this,
-                                std::placeholders::_1, std::placeholders::_2,
-                                std::placeholders::_3, std::placeholders::_4);
+    auto dispatcher =
+        std::bind(func->second, reinterpret_cast<JsiHostObject *>(this),
+                  std::placeholders::_1, std::placeholders::_2,
+                  std::placeholders::_3, std::placeholders::_4);
 
-    // Add to cache
-    currentCache->emplace(nameStr, std::make_unique<jsi::Function>(
-                                       jsi::Function::createFromHostFunction(
-                                           runtime, name, 0, dispatcher)));
-
-    // return retVal;
-    return currentCache->at(nameStr)->asFunction(runtime);
+    // Add to cache - it is important to cache the results from the
+    // createFromHostFunction function which takes some time.
+    return _hostFunctionCache
+        .emplace(nameStr, jsi::Function::createFromHostFunction(runtime, name,
+                                                                0, dispatcher))
+        .first->second.asFunction(runtime);
   }
 
   if (_funcMap.count(nameStr) > 0) {
@@ -115,16 +104,17 @@ jsi::Value JsiHostObject::get(jsi::Runtime &runtime,
 std::vector<jsi::PropNameID>
 JsiHostObject::getPropertyNames(jsi::Runtime &runtime) {
   // statically exported functions
-  const auto& funcs = getExportedFunctionMap();
+  const auto &funcs = getExportedFunctionMap();
 
   // Statically exported property getters
-  const auto& getters = getExportedPropertyGettersMap();
+  const auto &getters = getExportedPropertyGettersMap();
 
   // Statically exported property setters
-  const auto& setters = getExportedPropertySettersMap();
+  const auto &setters = getExportedPropertySettersMap();
 
   std::vector<jsi::PropNameID> propNames;
-  propNames.reserve(funcs.size() + getters.size() + setters.size() + _funcMap.size() + _propMap.size());
+  propNames.reserve(funcs.size() + getters.size() + setters.size() +
+                    _funcMap.size() + _propMap.size());
 
   for (auto it = funcs.cbegin(); it != funcs.cend(); ++it) {
     propNames.push_back(jsi::PropNameID::forAscii(runtime, it->first));

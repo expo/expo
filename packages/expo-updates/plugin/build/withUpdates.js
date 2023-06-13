@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const config_1 = require("@expo/config");
-const config_plugins_1 = require("@expo/config-plugins");
+const config_plugins_1 = require("expo/config-plugins");
 const pkg = require('expo-updates/package.json');
 const withUpdates = (config, props = {}) => {
     // The username will be passed from the CLI when the plugin is automatically used.

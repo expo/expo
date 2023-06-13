@@ -5,49 +5,35 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.createBuildSourceFile = createBuildSourceFile;
 exports.withBuildSourceFile = void 0;
-
 function _fs() {
   const data = _interopRequireDefault(require("fs"));
-
   _fs = function () {
     return data;
   };
-
   return data;
 }
-
 function _path() {
   const data = _interopRequireDefault(require("path"));
-
   _path = function () {
     return data;
   };
-
   return data;
 }
-
 function _iosPlugins() {
   const data = require("../plugins/ios-plugins");
-
   _iosPlugins = function () {
     return data;
   };
-
   return data;
 }
-
 function _Xcodeproj() {
   const data = require("./utils/Xcodeproj");
-
   _Xcodeproj = function () {
     return data;
   };
-
   return data;
 }
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 /**
  * Create a build source file and link it to Xcode.
  *
@@ -74,6 +60,7 @@ const withBuildSourceFile = (config, {
     return config;
   });
 };
+
 /**
  * Add a source file to the Xcode project and write it to the file system.
  *
@@ -82,10 +69,7 @@ const withBuildSourceFile = (config, {
  * @param fileContents string file contents to write to the `filePath`
  * @param overwrite should write file even if one already exists
  */
-
-
 exports.withBuildSourceFile = withBuildSourceFile;
-
 function createBuildSourceFile({
   project,
   nativeProjectRoot,
@@ -94,16 +78,15 @@ function createBuildSourceFile({
   overwrite
 }) {
   const absoluteFilePath = _path().default.join(nativeProjectRoot, filePath);
-
   if (overwrite || !_fs().default.existsSync(absoluteFilePath)) {
     // Create the file
     _fs().default.writeFileSync(absoluteFilePath, fileContents, 'utf8');
-  } // `myapp`
+  }
 
+  // `myapp`
+  const groupName = _path().default.dirname(filePath);
 
-  const groupName = _path().default.dirname(filePath); // Ensure the file is linked with Xcode resource files
-
-
+  // Ensure the file is linked with Xcode resource files
   if (!project.hasFile(filePath)) {
     project = (0, _Xcodeproj().addBuildSourceFileToGroup)({
       filepath: filePath,
@@ -111,7 +94,6 @@ function createBuildSourceFile({
       project
     });
   }
-
   return project;
 }
 //# sourceMappingURL=XcodeProjectFile.js.map

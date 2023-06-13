@@ -1,32 +1,8 @@
 require 'json'
 
-# reanimated 2
-
-reactVersion = '0.0.0'
-
-begin
-  reactVersion = `node --print "require('react-native/package.json').version"`
-rescue
-  reactVersion = '0.66.0'
-end
-
-rnVersion = reactVersion.split('.')[1]
-
-folly_prefix = ""
-if rnVersion.to_i >= 64
-  folly_prefix = "RCT-"
-end
-
-folly_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DRNVERSION=' + rnVersion
-folly_compiler_flags = folly_flags + ' ' + '-Wno-comma -Wno-shorten-64-to-32'
-folly_version = '2021.04.26.00'
-boost_compiler_flags = '-Wno-documentation'
-
-
-require_relative 'TargetValidator'
-# end reanimated 2
-
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
+
+folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
 
 Pod::Spec.new do |s|
   s.name           = 'expo-dev-menu'
@@ -36,7 +12,7 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platform       = :ios, '12.0'
+  s.platform       = :ios, '13.0'
   s.swift_version  = '5.2'
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
@@ -53,81 +29,42 @@ Pod::Spec.new do |s|
 
   s.xcconfig = { 'GCC_PREPROCESSOR_DEFINITIONS' => 'EX_DEV_MENU_ENABLED=1', 'OTHER_SWIFT_FLAGS' => '-DEX_DEV_MENU_ENABLED' }
 
-  # Swift/Objective-C compatibility
-  s.pod_target_xcconfig = { "DEFINES_MODULE" => "YES" }
+  s.user_target_xcconfig = {
+    "HEADER_SEARCH_PATHS" => "\"${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-menu/Swift Compatibility Header\"",
+  }
 
-  s.subspec 'GestureHandler' do |handler|
-    if File.exist?("vendored/react-native-gesture-handler/DevMenuRNGestureHandler.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
-      handler.source_files = "vendored/react-native-gesture-handler/**/*.{h}"
-      handler.vendored_frameworks = "vendored/react-native-gesture-handler/DevMenuRNGestureHandler.xcframework"
-      handler.private_header_files = 'vendored/react-native-gesture-handler/**/*.h'
-    else
-      handler.source_files = 'vendored/react-native-gesture-handler/**/*.{h,m}'
-      handler.private_header_files = 'vendored/react-native-gesture-handler/**/*.h'
-
-      handler.compiler_flags = '-w -Xanalyzer -analyzer-disable-all-checks'
-    end
+  header_search_paths = [
+    '"$(PODS_ROOT)/boost"',
+    '"${PODS_ROOT}/Headers/Private/React-Core"',
+    '"$(PODS_CONFIGURATION_BUILD_DIR)/ExpoModulesCore/Swift Compatibility Header"',
+    '"$(PODS_CONFIGURATION_BUILD_DIR)/expo-dev-menu-interface/Swift Compatibility Header"',
+  ]
+  s.pod_target_xcconfig = {
+    'DEFINES_MODULE' => 'YES',
+    'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
+    'HEADER_SEARCH_PATHS' => header_search_paths.join(' '),
+  }
+  unless defined?(install_modules_dependencies)
+    # `install_modules_dependencies` is defined from react_native_pods.rb.
+    # when running with `pod ipc spec`, this method is not defined and we have to require manually.
+    require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
   end
-
-  s.subspec 'Reanimated' do |reanimated|
-    reanimated.compiler_flags = folly_compiler_flags + ' ' + boost_compiler_flags + ' -w -Xanalyzer -analyzer-disable-all-checks -x objective-c++'
-    reanimated.private_header_files = 'vendored/react-native-reanimated/**/*.h'
-    reanimated.source_files = 'vendored/react-native-reanimated/**/*.{h,m,mm,cpp}'
-    reanimated.preserve_paths = 'vendored/react-native-reanimated/Common/cpp/hidden_headers/**'
-    reanimated.pod_target_xcconfig = {
-      "USE_HEADERMAP" => "YES",
-      "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/#{folly_prefix}Folly\" \"$(PODS_ROOT)/boost\"  \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/Headers/Private/React-Core\" "
-    }
-    reanimated.xcconfig = {
-      'CLANG_CXX_LIBRARY' => 'libc++',
-      "CLANG_CXX_LANGUAGE_STANDARD" => "c++14",
-      "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/glog\" \"$(PODS_ROOT)/#{folly_prefix}Folly\" \"${PODS_ROOT}/Headers/Public/React-hermes\" \"${PODS_ROOT}/Headers/Public/hermes-engine\"",
-                                 "OTHER_CFLAGS" => "$(inherited)" + " " + folly_flags
-    }
-
-    reanimated.dependency 'FBLazyVector'
-    reanimated.dependency 'FBReactNativeSpec'
-    reanimated.dependency 'RCTRequired'
-    reanimated.dependency 'RCTTypeSafety'
-    reanimated.dependency 'React-Core'
-    reanimated.dependency 'React-CoreModules'
-    reanimated.dependency 'React-Core/DevSupport'
-    reanimated.dependency 'React-RCTActionSheet'
-    reanimated.dependency 'React-RCTNetwork'
-    reanimated.dependency 'React-RCTAnimation'
-    reanimated.dependency 'React-RCTLinking'
-    reanimated.dependency 'React-RCTBlob'
-    reanimated.dependency 'React-RCTSettings'
-    reanimated.dependency 'React-RCTText'
-    reanimated.dependency 'React-RCTVibration'
-    reanimated.dependency 'React-RCTImage'
-    reanimated.dependency 'React-Core/RCTWebSocket'
-    reanimated.dependency 'React-cxxreact'
-    reanimated.dependency 'React-jsi'
-    reanimated.dependency 'React-jsiexecutor'
-    reanimated.dependency 'React-jsinspector'
-    reanimated.dependency 'ReactCommon/turbomodule/core'
-    reanimated.dependency 'Yoga'
-    reanimated.dependency 'DoubleConversion'
-    reanimated.dependency 'glog'
-
-    if reactVersion.match(/^0.62/)
-      reanimated.dependency 'ReactCommon/callinvoker'
-    else
-      reanimated.dependency 'React-callinvoker'
-    end
-
-    reanimated.dependency "#{folly_prefix}Folly"
-  end
-
+  install_modules_dependencies(s)
 
   s.subspec 'SafeAreaView' do |safearea|
+    safearea.dependency 'ExpoModulesCore'
+
+    # Swift/Objective-C compatibility
+    safearea.pod_target_xcconfig = {
+      'DEFINES_MODULE' => 'YES',
+      'SWIFT_COMPILATION_MODE' => 'wholemodule'
+    }
     if File.exist?("vendored/react-native-safe-area-context/dev-menu-react-native-safe-area-context.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
       safearea.source_files = "vendored/react-native-safe-area-context/**/*.{h}"
       safearea.vendored_frameworks = "vendored/react-native-safe-area-context/dev-menu-react-native-safe-area-context.xcframework"
       safearea.private_header_files = 'vendored/react-native-safe-area-context/**/*.h'
     else
-      safearea.source_files = 'vendored/react-native-safe-area-context/**/*.{h,m}'
+      safearea.source_files = 'vendored/react-native-safe-area-context/**/*.{h,m,swift}'
       safearea.private_header_files = 'vendored/react-native-safe-area-context/**/*.h'
 
       safearea.compiler_flags = '-w -Xanalyzer -analyzer-disable-all-checks'
@@ -135,8 +72,6 @@ Pod::Spec.new do |s|
   end
 
   s.subspec 'Vendored' do |vendored|
-    vendored.dependency "expo-dev-menu/GestureHandler"
-    vendored.dependency "expo-dev-menu/Reanimated"
     vendored.dependency "expo-dev-menu/SafeAreaView"
   end
 
@@ -144,6 +79,7 @@ Pod::Spec.new do |s|
     s.source_files   = 'ios/**/*.{h,m,mm,swift}'
     s.preserve_paths = 'ios/**/*.{h,m,mm,swift}'
     s.exclude_files  = 'ios/*Tests/**/*', 'vendored/**/*'
+    s.compiler_flags = folly_compiler_flags
 
     main.dependency 'React-Core'
     main.dependency "EXManifests"
@@ -158,7 +94,9 @@ Pod::Spec.new do |s|
     test_spec.dependency 'Quick'
     test_spec.dependency 'Nimble'
     test_spec.dependency 'React-CoreModules'
-    test_spec.platform = :ios, '12.0'
+    # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
+    test_spec.dependency 'ExpoModulesTestCore'
+    test_spec.platform = :ios, '13.0'
   end
 
   s.test_spec 'UITests' do |test_spec|
@@ -166,7 +104,7 @@ Pod::Spec.new do |s|
     test_spec.source_files = 'ios/UITests/**/*'
     test_spec.dependency 'React-CoreModules'
     test_spec.dependency 'React'
-    test_spec.platform = :ios, '12.0'
+    test_spec.platform = :ios, '13.0'
   end
 
   s.default_subspec = 'Main'

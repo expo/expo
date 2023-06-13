@@ -8,7 +8,39 @@
 
 ### 🐛 Bug fixes
 
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
+
+## 10.6.0 — 2023-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 10.5.2 — 2023-02-14
+
+### 🐛 Bug fixes
+
+- Fix attempting to import module on iOS. ([#21185](https://github.com/expo/expo/pull/21185) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 10.5.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 10.5.0 — 2023-02-03
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
+## 10.4.0 — 2022-12-30
+
+### 🎉 New features
+
+- Migrated to Expo Modules API. ([#20327](https://github.com/expo/expo/pull/20327) by [@alanhughes](https://github.com/alanjhughes))
+
+## 10.3.1 — 2022-10-25
+
+_This version does not introduce any user-facing changes._
 
 ## 10.3.0 — 2022-07-07
 
@@ -48,7 +80,7 @@ _This version does not introduce any user-facing changes._
 
 - Replace the stand-alone action constant strings with String Enum named `ActivityAction`. ([#14070](https://github.com/expo/expo/pull/14070) by [@Simek](https://github.com/Simek))
 
-```diff
+````diff
 - IntentLauncher.ACTION_* // ACTION_ACCESSIBILITY_SETTINGS
 + IntentLauncher.ActivityAction.* // ActivityAction.ACCESSIBILITY_SETTINGS
 ```## 9.1.0 — 2021-06-16
@@ -87,6 +119,8 @@ _This version does not introduce any user-facing changes._
 ## 8.2.0 — 2020-05-27
 
 *This version does not introduce any user-facing changes.*
-``````
+````
+
+```
 
 ```

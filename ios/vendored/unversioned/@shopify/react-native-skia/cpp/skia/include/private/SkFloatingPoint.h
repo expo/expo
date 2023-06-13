@@ -57,7 +57,10 @@ constexpr float sk_float_radians_to_degrees(float radians) {
     return radians * (180 / SK_FloatPI);
 }
 
-#define sk_float_round(x) sk_float_floor((x) + 0.5f)
+// floor(double+0.5) vs. floorf(float+0.5f) give comparable performance, but upcasting to double
+// means tricky values like 0.49999997 and 2^24 get rounded correctly. If these were rounded
+// as floatf(x + .5f), they would be 1 higher than expected.
+#define sk_float_round(x) (float)sk_double_round((double)(x))
 
 // can't find log2f on android, but maybe that just a tool bug?
 #ifdef SK_BUILD_FOR_ANDROID
@@ -130,19 +133,19 @@ static inline int64_t sk_float_saturate2int64(float x) {
 }
 
 #define sk_float_floor2int(x)   sk_float_saturate2int(sk_float_floor(x))
-#define sk_float_round2int(x)   sk_float_saturate2int(sk_float_floor((x) + 0.5f))
+#define sk_float_round2int(x)   sk_float_saturate2int(sk_float_round(x))
 #define sk_float_ceil2int(x)    sk_float_saturate2int(sk_float_ceil(x))
 
 #define sk_float_floor2int_no_saturate(x)   (int)sk_float_floor(x)
-#define sk_float_round2int_no_saturate(x)   (int)sk_float_floor((x) + 0.5f)
+#define sk_float_round2int_no_saturate(x)   (int)sk_float_round(x)
 #define sk_float_ceil2int_no_saturate(x)    (int)sk_float_ceil(x)
 
 #define sk_double_floor(x)          floor(x)
 #define sk_double_round(x)          floor((x) + 0.5)
 #define sk_double_ceil(x)           ceil(x)
-#define sk_double_floor2int(x)      (int)floor(x)
-#define sk_double_round2int(x)      (int)floor((x) + 0.5)
-#define sk_double_ceil2int(x)       (int)ceil(x)
+#define sk_double_floor2int(x)      (int)sk_double_floor(x)
+#define sk_double_round2int(x)      (int)sk_double_round(x)
+#define sk_double_ceil2int(x)       (int)sk_double_ceil(x)
 
 // Cast double to float, ignoring any warning about too-large finite values being cast to float.
 // Clang thinks this is undefined, but it's actually implementation defined to return either

@@ -1,4 +1,4 @@
-import { NavigationContainer } from '@react-navigation/native';
+import { LinkingOptions, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as Linking from 'expo-linking';
 import * as React from 'react';
@@ -11,7 +11,7 @@ import MainTabNavigator from './MainTabNavigator';
 
 const Switch = createStackNavigator();
 
-export const linking = {
+export const linking: LinkingOptions<object> = {
   prefixes: [Linking.createURL('/')],
   config: {
     screens: {
@@ -34,11 +34,11 @@ export const linking = {
 export default function RootNavigation() {
   return (
     <NavigationContainer linking={linking} fallback={<Text>Loading…</Text>}>
-      <Switch.Navigator mode="modal" headerMode="none">
+      <Switch.Navigator screenOptions={{ presentation: 'modal', headerShown: false }}>
         <Switch.Screen name="main" component={MainTabNavigator} />
         <Switch.Screen name="redirect" component={RedirectScreen} />
         <Switch.Screen
-          name="search"
+          name="searchNavigator"
           component={SearchScreen}
           options={{ cardStyle: { backgroundColor: 'transparent' } }}
         />

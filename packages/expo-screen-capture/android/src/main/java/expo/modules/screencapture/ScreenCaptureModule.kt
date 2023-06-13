@@ -1,69 +1,31 @@
 package expo.modules.screencapture
 
-import android.app.Activity
 import android.content.Context
 import android.view.WindowManager
+import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.functions.Queues
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
 
-import expo.modules.core.ExportedModule
-import expo.modules.core.ModuleRegistry
-import expo.modules.core.Promise
-import expo.modules.core.errors.CurrentActivityNotFoundException
-import expo.modules.core.interfaces.ActivityProvider
-import expo.modules.core.interfaces.ExpoMethod
+class ScreenCaptureModule : Module() {
+  private val context: Context
+    get() = appContext.reactContext ?: throw Exceptions.AppContextLost()
+  private val currentActivity
+    get() = appContext.currentActivity ?: throw Exceptions.MissingActivity()
 
-class ScreenCaptureModule(context: Context) : ExportedModule(context) {
+  override fun definition() = ModuleDefinition {
+    Name("ExpoScreenCapture")
 
-  private lateinit var mActivityProvider: ActivityProvider
-
-  override fun getName(): String {
-    return NAME
-  }
-
-  override fun onCreate(moduleRegistry: ModuleRegistry) {
-    mActivityProvider = moduleRegistry.getModule(ActivityProvider::class.java)
-    ScreenshotEventEmitter(context, moduleRegistry)
-  }
-
-  @ExpoMethod
-  fun preventScreenCapture(promise: Promise) {
-    val activity = getCurrentActivity()
-
-    activity.runOnUiThread {
-      try {
-        activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE)
-      } catch (exception: Exception) {
-        promise.reject(ERROR_CODE_PREVENTION, "Failed to prevent screen capture: " + exception)
-      }
+    OnCreate {
+      ScreenshotEventEmitter(context, appContext.legacyModuleRegistry)
     }
-    promise.resolve(null)
-  }
 
-  @ExpoMethod
-  fun allowScreenCapture(promise: Promise) {
-    val activity = getCurrentActivity()
+    AsyncFunction("preventScreenCapture") {
+      currentActivity.window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+    }.runOnQueue(Queues.MAIN)
 
-    activity.runOnUiThread {
-      try {
-        activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
-      } catch (exception: Exception) {
-        promise.reject(ERROR_CODE_PREVENTION, "Failed to reallow screen capture: " + exception)
-      }
-    }
-    promise.resolve(null)
-  }
-
-  @Throws(CurrentActivityNotFoundException::class)
-  fun getCurrentActivity(): Activity {
-    val activity = mActivityProvider.currentActivity
-    if (activity != null) {
-      return activity
-    } else {
-      throw CurrentActivityNotFoundException()
-    }
-  }
-
-  companion object {
-    private val NAME = "ExpoScreenCapture"
-    private const val ERROR_CODE_PREVENTION = "ERR_SCREEN_CAPTURE_PREVENTION"
+    AsyncFunction("allowScreenCapture") {
+      currentActivity.window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+    }.runOnQueue(Queues.MAIN)
   }
 }

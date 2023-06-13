@@ -1,142 +1,9 @@
-import groovy.json.JsonSlurper
-import java.util.regex.Matcher
-import java.util.regex.Pattern
-
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '1.2.1'
-
-// reanimated v2
-def reactNativeFilePath = ["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()
-def inputFile = new File(reactNativeFilePath)
-def json = new JsonSlurper().parseText(inputFile.text)
-def reactNativeVersion = json.version as String
-def (major, minor, patch) = reactNativeVersion.tokenize('.')
-
-def engine = "jsc"
-
-// If the user has the reanimated 2.2.1 or above installed, we don't have to swap JNI implementation.
-def shouldSwapJNI() {
-  try {
-    def reanimatedVersion = ["node", "--print", "require('react-native-reanimated/package.json').version"].execute(null, rootDir).text.trim()
-    if (reanimatedVersion == "undefined") {
-      return true
-    }
-    def (int major, int minor, int patch) = reanimatedVersion.tokenize('.').collect { it.toInteger() }
-
-    if (major < 2 || (major == 2 && minor <= 1) || (major == 2 && minor == 2 && patch == 0)) {
-      return true
-    }
-
-    return !rootProject.findProject(":react-native-reanimated")
-  } catch (ignored) {
-    return true
-  }
-}
-
-abstract class replaceSoTask extends DefaultTask {
-  public static String appName = ":app"
-  public static String buildDir = "../../../android/app/build"
-
-  @TaskAction
-  def run() {
-    for (def abiVersion in ["x86", "x86_64", "armeabi-v7a", "arm64-v8a"]) {
-      ant.sequential {
-        copy(
-            tofile: "${buildDir}/intermediates/merged_native_libs/debug/out/lib/${abiVersion}/libfbjni.so",
-            file: "../vendored/react-native-reanimated/libSo/fbjni/jni/${abiVersion}/libfbjni.so",
-            overwrite: true
-        )
-      }
-    }
-  }
-}
-
-def getCurrentFlavor() {
-  Gradle gradle = getGradle()
-  String taskRequestName = gradle.getStartParameter().getTaskRequests().toString()
-  Pattern pattern
-
-  if (taskRequestName.contains("assemble")) {
-    pattern = Pattern.compile("assemble(\\w+)(Release|Debug)")
-  } else if (taskRequestName.contains("bundle")) {
-    pattern = Pattern.compile("bundle(\\w+)(Release|Debug)")
-  } else {
-    pattern = Pattern.compile("generate(\\w+)(Release|Debug)")
-  }
-  Matcher matcher = pattern.matcher(taskRequestName)
-
-  if (matcher.find()) {
-    return matcher.group(1)
-  }
-  return ""
-}
-
-def replaceSoTaskDebug
-def replaceSoTaskReleaseWithDevMenu
-
-if (Integer.parseInt(minor) < 65 && shouldSwapJNI()) {
-  println("DevMenu will replace JNI library.")
-
-  tasks.register("replaceSoTaskDebug", replaceSoTask)
-  tasks.register("replaceSoTaskReleaseWithDevMenu", replaceSoTask)
-  replaceSoTaskDebug = project.getTasks().getByPath(":expo-dev-menu:replaceSoTaskDebug")
-  replaceSoTaskReleaseWithDevMenu = project.getTasks().getByPath(":expo-dev-menu:replaceSoTaskReleaseWithDevMenu")
-}
-
-rootProject.getSubprojects().forEach({ project ->
-  if (project.plugins.hasPlugin("com.android.application")) {
-    if (project.ext.has("react") && project.ext.react.enableHermes) {
-      engine = "hermes"
-    }
-
-    if (project.getProperties().get("android") && Integer.parseInt(minor) < 65 && shouldSwapJNI()) {
-      def projectProperties = project.getProperties()
-      if (!projectProperties.get("reanimated")
-          || (projectProperties.get("reanimated") && projectProperties.get("reanimated").get("enablePackagingOptions"))
-      ) {
-        def flavorNameCapitalized = getCurrentFlavor()
-        replaceSoTask.appName = project.getProperties().path
-        replaceSoTask.buildDir = project.getProperties().buildDir
-        def appName = project.getProperties().path
-
-        def tasks = project.getTasks()
-        replaceSoTaskDebug.dependsOn(
-            tasks.getByPath("${appName}:merge${flavorNameCapitalized}DebugNativeLibs"),
-            tasks.getByPath("${appName}:strip${flavorNameCapitalized}DebugDebugSymbols")
-        )
-        tasks.getByPath("${appName}:package${flavorNameCapitalized}Debug").dependsOn(replaceSoTaskDebug)
-
-        if (tasks.findByPath("${appName}:merge${flavorNameCapitalized}ReleaseWithDevMenuNativeLibs")
-            && tasks.findByPath("${appName}:strip${flavorNameCapitalized}ReleaseWithDevMenuDebugSymbols")
-            && tasks.findByPath("${appName}:package${flavorNameCapitalized}ReleaseWithDevMenu")) {
-          replaceSoTaskReleaseWithDevMenu.dependsOn(
-              task.getByPath("${appName}:merge${flavorNameCapitalized}ReleaseWithDevMenuNativeLibs"),
-              task.getByPath("${appName}:strip${flavorNameCapitalized}ReleaseWithDevMenuDebugSymbols")
-          )
-          tasks.getByPath("${appName}:package${flavorNameCapitalized}ReleaseWithDevMenu").dependsOn(replaceSoTaskReleaseWithDevMenu)
-        }
-      }
-    }
-  }
-})
-
-def reanimatedPath = "../vendored/react-native-reanimated/android"
-def minorCopy = Integer.parseInt(minor)
-def reanimatedFolder = file("${reanimatedPath}/${minorCopy}-${engine}")
-while (!reanimatedFolder.exists()) {
-  minorCopy -= 1
-  reanimatedFolder = file("${reanimatedPath}/${minorCopy}-${engine}")
-  if (minorCopy < 62) {
-    throw new GradleException('No matching aar for react-native-reanimated found. Upgrade react-native to 0.63.x or later in order to use the expo-dev-menu package.')
-  }
-}
-def reanimatedVersion = minorCopy
-
-// end of reanimated v2
+version = '3.0.0'
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -155,7 +22,7 @@ buildscript {
     if (ext.has("kotlinVersion")) {
       ext.kotlinVersion()
     } else {
-      ext.safeExtGet("kotlinVersion", "1.6.10")
+      ext.safeExtGet("kotlinVersion", "1.8.10")
     }
   }
 
@@ -168,19 +35,11 @@ buildscript {
   }
 }
 
-// Creating sources with comments
-task androidSourcesJar(type: Jar) {
-  classifier = 'sources'
-  from android.sourceSets.main.java.srcDirs
-}
-
 afterEvaluate {
   publishing {
     publications {
       release(MavenPublication) {
         from components.release
-        // Add additional sourcesJar to artifacts
-        artifact(androidSourcesJar)
       }
     }
     repositories {
@@ -192,7 +51,7 @@ afterEvaluate {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 31)
+  compileSdkVersion safeExtGet("compileSdkVersion", 33)
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_11
@@ -203,11 +62,12 @@ android {
     jvmTarget = JavaVersion.VERSION_11.majorVersion
   }
 
+  namespace "expo.modules.devmenu"
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 31)
+    targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 10
-    versionName '1.2.1'
+    versionName '3.0.0'
   }
   lintOptions {
     abortOnError false
@@ -222,7 +82,6 @@ android {
 
   sourceSets {
     debug {
-      jniLibs.srcDir "$reanimatedPath/$reanimatedVersion-$engine/jni"
       java {
         srcDirs += ['../vendored/react-native-gesture-handler/android/']
         srcDirs += ['../vendored/react-native-safe-area-context/android/']
@@ -238,6 +97,11 @@ android {
 
     releaseWithDevMenu {
       setRoot 'src/debug'
+    }
+  }
+  publishing {
+    singleVariant("release") {
+      withSourcesJar()
     }
   }
 }
@@ -271,8 +135,8 @@ dependencies {
   implementation project(':expo-modules-core')
   implementation project(":expo-manifests")
 
-  debugImplementation files("${reanimatedPath}/${minorCopy}-${engine}/classes.jar")
-  releaseWithDevMenuImplementation files("${reanimatedPath}/${minorCopy}-${engine}/classes.jar")
+  implementation 'androidx.coordinatorlayout:coordinatorlayout:1.2.0'
+  implementation 'com.google.android.material:material:1.2.1'
 
   implementation project(":expo-dev-menu-interface")
 
@@ -299,7 +163,7 @@ dependencies {
   api "androidx.browser:browser:1.2.0"
 
   testImplementation "com.google.truth:truth:1.1.2"
-  testImplementation "org.robolectric:robolectric:4.3.1"
+  testImplementation "org.robolectric:robolectric:4.10"
   testImplementation 'com.squareup.okhttp3:mockwebserver:4.3.1'
   testImplementation 'androidx.test:core:1.4.0'
 }
@@ -309,7 +173,7 @@ def versionToNumber(major, minor, patch) {
 }
 
 def getNodeModulesPackageVersion(packageName, overridePropName) {
-  def nodeModulesVersion = ["node", "-e", "console.log(require('$packageName/package.json').version);"].execute([], projectDir).text.trim()
+  def nodeModulesVersion = ["node", "-e", "console.log(require('$packageName/package.json').version);"].execute(null, projectDir).text.trim()
   def version = safeExtGet(overridePropName, nodeModulesVersion)
 
   def coreVersion = version.split("-")[0]

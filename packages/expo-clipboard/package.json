@@ -1,6 +1,6 @@
 {
   "name": "expo-clipboard",
-  "version": "3.1.0",
+  "version": "4.2.0",
   "description": "ExpoClipboard standalone module",
   "main": "build/Clipboard.js",
   "types": "build/Clipboard.d.ts",
@@ -31,7 +31,7 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/clipboard",
   "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "^2.0.0"
+    "expo-module-scripts": "^3.0.0"
   },
   "peerDependencies": {
     "expo": "*"

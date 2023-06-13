@@ -42,7 +42,7 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
 
   return {
     forceManifestType,
-    privateKeyPath: args['private-key-path'] ?? null,
+    privateKeyPath: args['--private-key-path'] ?? null,
 
     android: !!args['--android'],
     web: !!args['--web'],

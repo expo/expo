@@ -3,8 +3,16 @@ import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
 
 import * as Log from '../log';
-import { getVersionedPackagesAsync } from '../start/doctor/dependencies/getVersionedPackages';
+import {
+  getOperationLog,
+  getVersionedPackagesAsync,
+} from '../start/doctor/dependencies/getVersionedPackages';
+import { getVersionedDependenciesAsync } from '../start/doctor/dependencies/validateDependenciesVersions';
+import { groupBy } from '../utils/array';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
+import { learnMore } from '../utils/link';
+import { setNodeEnv } from '../utils/nodeEnv';
+import { joinWithCommasAnd } from '../utils/strings';
 import { checkPackagesAsync } from './checkPackages';
 import { Options } from './resolveOptions';
 
@@ -13,17 +21,19 @@ export async function installAsync(
   options: Options & { projectRoot?: string },
   packageManagerArguments: string[] = []
 ) {
+  setNodeEnv('development');
   // Locate the project root based on the process current working directory.
   // This enables users to run `npx expo install` from a subdirectory of the project.
   const projectRoot = options.projectRoot ?? findUpProjectRootOrAssert(process.cwd());
+  require('@expo/env').load(projectRoot);
 
   // Resolve the package manager used by the project, or based on the provided arguments.
   const packageManager = PackageManager.createForProject(projectRoot, {
     npm: options.npm,
     yarn: options.yarn,
     pnpm: options.pnpm,
-    log: Log.log,
     silent: options.silent,
+    log: Log.log,
   });
 
   if (options.check || options.fix) {
@@ -61,15 +71,12 @@ export async function installPackagesAsync(
     packageManagerArguments,
   }: {
     /**
-     * List of packages to version
+     * List of packages to version, grouped by the type of dependency.
      * @example ['uuid', 'react-native-reanimated@latest']
      */
     packages: string[];
     /** Package manager to use when installing the versioned packages. */
-    packageManager:
-      | PackageManager.NpmPackageManager
-      | PackageManager.YarnPackageManager
-      | PackageManager.PnpmPackageManager;
+    packageManager: PackageManager.NodePackageManager;
     /**
      * SDK to version `packages` for.
      * @example '44.0.0'
@@ -82,10 +89,20 @@ export async function installPackagesAsync(
     packageManagerArguments: string[];
   }
 ): Promise<void> {
+  // Read the project Expo config without plugins.
+  const { pkg } = getConfig(projectRoot, {
+    // Sometimes users will add a plugin to the config before installing the library,
+    // this wouldn't work unless we dangerously disable plugin serialization.
+    skipPlugins: true,
+  });
+
+  //assertNotInstallingExcludedPackages(projectRoot, packages, pkg);
+
   const versioning = await getVersionedPackagesAsync(projectRoot, {
     packages,
     // sdkVersion is always defined because we don't skipSDKVersionRequirement in getConfig.
     sdkVersion,
+    pkg,
   });
 
   Log.log(
@@ -94,9 +111,81 @@ export async function installPackagesAsync(
     }using {bold ${packageManager.name}}`
   );
 
-  await packageManager.addWithParametersAsync(versioning.packages, packageManagerArguments);
+  if (versioning.excludedNativeModules.length) {
+    Log.log(
+      chalk`\u203A Using latest version instead of ${joinWithCommasAnd(
+        versioning.excludedNativeModules.map(
+          ({ bundledNativeVersion, name }) => `${bundledNativeVersion} for ${name}`
+        )
+      )} because ${
+        versioning.excludedNativeModules.length > 1 ? 'they are' : 'it is'
+      } listed in {bold expo.install.exclude} in package.json. ${learnMore(
+        'https://expo.dev/more/expo-cli/#configuring-dependency-validation'
+      )}`
+    );
+  }
+
+  await packageManager.addAsync([...packageManagerArguments, ...versioning.packages]);
 
   await applyPluginsAsync(projectRoot, versioning.packages);
+}
+
+export async function fixPackagesAsync(
+  projectRoot: string,
+  {
+    packages,
+    packageManager,
+    sdkVersion,
+    packageManagerArguments,
+  }: {
+    packages: Awaited<ReturnType<typeof getVersionedDependenciesAsync>>;
+    /** Package manager to use when installing the versioned packages. */
+    packageManager: PackageManager.NodePackageManager;
+    /**
+     * SDK to version `packages` for.
+     * @example '44.0.0'
+     */
+    sdkVersion: string;
+    /**
+     * Extra parameters to pass to the `packageManager` when installing versioned packages.
+     * @example ['--no-save']
+     */
+    packageManagerArguments: string[];
+  }
+): Promise<void> {
+  if (!packages.length) {
+    return;
+  }
+
+  const { dependencies = [], devDependencies = [] } = groupBy(packages, (dep) => dep.packageType);
+  const versioningMessages = getOperationLog({
+    othersCount: 0, // All fixable packages are versioned
+    nativeModulesCount: packages.length,
+    sdkVersion,
+  });
+
+  Log.log(
+    chalk`\u203A Installing ${
+      versioningMessages.length ? versioningMessages.join(' and ') + ' ' : ''
+    }using {bold ${packageManager.name}}`
+  );
+
+  if (dependencies.length) {
+    const versionedPackages = dependencies.map(
+      (dep) => `${dep.packageName}@${dep.expectedVersionOrRange}`
+    );
+
+    await packageManager.addAsync([...packageManagerArguments, ...versionedPackages]);
+
+    await applyPluginsAsync(projectRoot, versionedPackages);
+  }
+
+  if (devDependencies.length) {
+    await packageManager.addDevAsync([
+      ...packageManagerArguments,
+      ...devDependencies.map((dep) => `${dep.packageName}@${dep.expectedVersionOrRange}`),
+    ]);
+  }
 }
 
 /**

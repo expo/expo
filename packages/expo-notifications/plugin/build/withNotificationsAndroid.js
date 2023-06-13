@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.withNotificationsAndroid = exports.setNotificationSounds = exports.setNotificationIconAsync = exports.setNotificationIconColor = exports.getNotificationColor = exports.getNotificationIcon = exports.withNotificationSounds = exports.withNotificationManifest = exports.withNotificationIconColor = exports.withNotificationIcons = exports.NOTIFICATION_ICON_COLOR_RESOURCE = exports.NOTIFICATION_ICON_COLOR = exports.NOTIFICATION_ICON_RESOURCE = exports.NOTIFICATION_ICON = exports.META_DATA_NOTIFICATION_ICON_COLOR = exports.META_DATA_NOTIFICATION_ICON = exports.dpiValues = exports.ANDROID_RES_PATH = void 0;
-const config_plugins_1 = require("@expo/config-plugins");
 const image_utils_1 = require("@expo/image-utils");
+const config_plugins_1 = require("expo/config-plugins");
 const fs_1 = require("fs");
 const path_1 = require("path");
 const { Colors } = config_plugins_1.AndroidConfig;

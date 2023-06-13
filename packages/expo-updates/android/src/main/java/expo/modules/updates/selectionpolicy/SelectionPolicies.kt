@@ -6,6 +6,9 @@ import expo.modules.updates.db.entity.UpdateEntity
 import org.json.JSONObject
 import java.lang.Exception
 
+/**
+ * Utility methods used by multiple [SelectionPolicy] subclasses.
+ */
 object SelectionPolicies {
   val TAG = SelectionPolicies::class.java.simpleName
 
@@ -25,7 +28,7 @@ object SelectionPolicies {
       val metadataKeySet = metadata.keys()
       while (metadataKeySet.hasNext()) {
         val key = metadataKeySet.next()
-        metadataLCKeys.put(key.toLowerCase(), metadata[key])
+        metadataLCKeys.put(key.lowercase(), metadata[key])
       }
       val filterKeySet = manifestFilters.keys()
       while (filterKeySet.hasNext()) {

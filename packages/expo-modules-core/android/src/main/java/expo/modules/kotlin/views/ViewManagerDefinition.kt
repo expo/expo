@@ -1,7 +1,6 @@
 package expo.modules.kotlin.views
 
 import android.content.Context
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import com.facebook.react.bridge.ReactContext
@@ -9,17 +8,22 @@ import com.facebook.react.bridge.ReadableMap
 import expo.modules.adapters.react.NativeModulesProxy
 import expo.modules.core.ViewManager
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.DynamicNull
 import expo.modules.kotlin.exception.CodedException
-import expo.modules.kotlin.exception.UnexpectedException
+import expo.modules.kotlin.exception.toCodedException
+import expo.modules.kotlin.functions.BaseAsyncFunctionComponent
+import expo.modules.kotlin.logger
 import expo.modules.kotlin.recycle
 
 class ViewManagerDefinition(
   private val viewFactory: (Context, AppContext) -> View,
-  private val viewType: Class<out View>,
-  private val props: Map<String, AnyViewProp>,
+  internal val viewType: Class<out View>,
+  internal val props: Map<String, AnyViewProp>,
   val onViewDestroys: ((View) -> Unit)? = null,
   val callbacksDefinition: CallbacksDefinition? = null,
-  val viewGroupDefinition: ViewGroupDefinition? = null
+  val viewGroupDefinition: ViewGroupDefinition? = null,
+  val onViewDidUpdateProps: ((View) -> Unit)? = null,
+  val asyncFunctions: List<BaseAsyncFunctionComponent> = emptyList()
 ) {
 
   fun createView(context: Context, appContext: AppContext): View = viewFactory(context, appContext)
@@ -35,24 +39,24 @@ class ViewManagerDefinition(
   }
 
   fun setProps(propsToSet: ReadableMap, onView: View) {
-    val iterator = propsToSet.keySetIterator()
-    while (iterator.hasNextKey()) {
-      val key = iterator.nextKey()
-      val propDelegate = props[key] ?: continue
-      propsToSet.getDynamic(key).recycle {
-        try {
-          propDelegate.set(this, onView)
-        } catch (exception: Throwable) {
-          Log.e("ExpoModulesCore", "Cannot set the '$key' prop on the '${viewType.simpleName}'.", exception)
-
-          handleException(
-            onView,
-            when (exception) {
-              is CodedException -> exception
-              else -> UnexpectedException(exception)
+    props.forEach { (name, propDelegate) ->
+      try {
+        if (propsToSet.hasKey(name)) {
+          propsToSet
+            .getDynamic(name)
+            .recycle {
+              propDelegate.set(this, onView)
             }
-          )
+        } else if (propDelegate.isNullable) {
+          propDelegate.set(DynamicNull, onView)
         }
+      } catch (exception: Throwable) {
+        logger.error("❌ Cannot set the '$name' prop on the '${viewType.simpleName}'", exception)
+
+        handleException(
+          onView,
+          exception.toCodedException()
+        )
       }
     }
   }

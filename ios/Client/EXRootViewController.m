@@ -7,7 +7,7 @@
 #import "EXAppViewController.h"
 #import "EXHomeAppManager.h"
 #import "EXKernel.h"
-#import "EXAppLoader.h"
+#import "EXHomeLoader.h"
 #import "EXKernelAppRecord.h"
 #import "EXKernelAppRegistry.h"
 #import "EXKernelLinkingManager.h"
@@ -64,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)createRootAppAndMakeVisible
 {
   EXHomeAppManager *homeAppManager = [[EXHomeAppManager alloc] init];
-  EXAppLoader *homeAppLoader = [[EXAppLoader alloc] initWithLocalManifest:[EXHomeAppManager bundledHomeManifest]];
+  EXHomeLoader *homeAppLoader = [[EXHomeLoader alloc] initWithLocalManifest:[EXHomeAppManager bundledHomeManifest]];
   EXKernelAppRecord *homeAppRecord = [[EXKernelAppRecord alloc] initWithAppLoader:homeAppLoader appManager:homeAppManager];
   [[EXKernel sharedInstance].appRegistry registerHomeAppRecord:homeAppRecord];
   [self moveAppToVisible:homeAppRecord];
@@ -113,7 +113,6 @@ NS_ASSUME_NONNULL_BEGIN
   [[EXDevMenuManager sharedInstance] close];
 
   EXKernelAppRecord *visibleApp = [EXKernel sharedInstance].visibleApp;
-  [[EXKernel sharedInstance] logAnalyticsEvent:@"RELOAD_EXPERIENCE" forAppRecord:visibleApp];
   NSURL *urlToRefresh = visibleApp.appLoader.manifestUrl;
 
   // Unregister visible app record so all modules get destroyed.

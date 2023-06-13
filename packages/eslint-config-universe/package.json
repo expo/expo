@@ -1,6 +1,6 @@
 {
   "name": "eslint-config-universe",
-  "version": "11.1.0",
+  "version": "11.3.0",
   "description": "Shared ESLint configs for universal Expo projects, Node, and web",
   "main": "default.js",
   "scripts": {
@@ -40,14 +40,14 @@
   },
   "homepage": "https://github.com/expo/expo/tree/main/packages/eslint-config-universe",
   "dependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.27.0",
-    "@typescript-eslint/parser": "^5.27.0",
+    "@typescript-eslint/eslint-plugin": "^5.50.0",
+    "@typescript-eslint/parser": "^5.50.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-react": "^7.30.0",
-    "eslint-plugin-react-hooks": "^4.5.0"
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.31.11",
+    "eslint-plugin-react-hooks": "^4.6.0"
   },
   "peerDependencies": {
     "eslint": ">=8.10",
@@ -60,8 +60,8 @@
   },
   "devDependencies": {
     "@expo/spawn-async": "^1.6.0",
-    "eslint": "^8.20.0",
-    "jest": "^27.5.1",
-    "prettier": "^2.7.1"
+    "eslint": "^8.29.0",
+    "jest": "^29.2.1",
+    "prettier": "^2.8.1"
   }
 }

@@ -17,6 +17,8 @@ const qrWorkerMethod = ({ data, width, height }) => {
         const nativeEvent = {
             type: 'qr',
             data: parsed.data,
+            cornerPoints: [],
+            bounds: { origin: { x: 0, y: 0 }, size: { width: 0, height: 0 } },
         };
         if (parsed.location) {
             nativeEvent.cornerPoints = [

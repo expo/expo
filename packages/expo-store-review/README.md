@@ -4,12 +4,12 @@
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/storereview.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/storereview.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/storereview/)
 
 # Installation in managed Expo projects
 
-For [managed](https://docs.expo.dev/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/storereview/).
+For [managed](https://docs.expo.dev/archive/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/storereview/).
 
 # Installation in bare React Native projects
 
@@ -18,7 +18,7 @@ For bare React Native projects, you must ensure that you have [installed and con
 ### Add the package to your dependencies
 
 ```
-expo install expo-store-review
+npx expo install expo-store-review
 ```
 
 ### Configure for iOS

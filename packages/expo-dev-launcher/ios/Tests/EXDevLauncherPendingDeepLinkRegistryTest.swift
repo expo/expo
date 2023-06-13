@@ -7,7 +7,7 @@ class EXDevLauncherPendingDeepLinkRegistryTest: QuickSpec {
   class Listener: NSObject, EXDevLauncherPendingDeepLinkListener {
     var lastDeepLink: URL?
 
-    func onNewPendingDeepLink(_ deepLink: URL!) {
+    func onNewPendingDeepLink(_ deepLink: URL) {
       lastDeepLink = deepLink
     }
   }

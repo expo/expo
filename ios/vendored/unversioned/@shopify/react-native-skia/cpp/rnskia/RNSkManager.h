@@ -6,15 +6,17 @@
 #include "RNSkPlatformContext.h"
 
 namespace facebook {
-  namespace react {
-    class CallInvoker;
-  }
+namespace react {
+class CallInvoker;
 }
+} // namespace facebook
 
 namespace RNSkia {
-class RNSkDrawView;
+class RNSkView;
 class RNSkJsiViewApi;
-using namespace facebook;
+
+namespace jsi = facebook::jsi;
+namespace react = facebook::react;
 
 class RNSkManager {
 public:
@@ -30,31 +32,31 @@ public:
               std::shared_ptr<RNSkPlatformContext> platformContext);
 
   ~RNSkManager();
-  
+
   /**
    Invalidates the Skia Manager
    */
   void invalidate();
 
   /**
-   * Registers a RNSkDrawView with the given native id
+   * Registers a RNSkView with the given native id
    * @param nativeId Native view id
    * @param view View to register
    */
-  void registerSkiaDrawView(size_t nativeId, std::shared_ptr<RNSkDrawView> view);
+  void registerSkiaView(size_t nativeId, std::shared_ptr<RNSkView> view);
 
   /**
-   * Unregisters the RNSkDrawView from the list of registered views
+   * Unregisters the RNSkView from the list of registered views
    * @param nativeId Native view Id
    */
-  void unregisterSkiaDrawView(size_t nativeId);
-  
+  void unregisterSkiaView(size_t nativeId);
+
   /**
    Sets the view pointed to by nativeId to the provided value.
    Used when we want to remove a view without unregistering it
    - this happens typically on iOS.
    */
-  void setSkiaDrawView(size_t nativeId, std::shared_ptr<RNSkDrawView> view);
+  void setSkiaView(size_t nativeId, std::shared_ptr<RNSkView> view);
 
   /**
    * @return The platform context
@@ -66,7 +68,7 @@ public:
 private:
   /**
    * Installs the javascript methods for registering/unregistering draw
-   * callbacks for RNSkDrawViews. Called on installation of the parent native
+   * callbacks for RNSkViews. Called on installation of the parent native
    * module.
    */
   void installBindings();

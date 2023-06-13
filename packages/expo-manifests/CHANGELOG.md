@@ -2,15 +2,63 @@
 
 ## Unpublished
 
+### 📚 3rd party library updates
+
+- Updated `junit` to `4.13.2`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+
 ### 🛠 Breaking changes
 
 - Drop support for `logUrl` which sent console logs to the legacy `expo-cli`.
 
 ### 🎉 New features
 
+- Added `Manifests.getPluginProperties()` helper to query dedicated package's properties inside the `plugins` config. ([#22701](https://github.com/expo/expo/pull/22701) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
+
+## 0.6.0 — 2023-05-08
+
+### 🎉 New features
+
+- Support new SDK version field in new manifests. ([#22356](https://github.com/expo/expo/pull/22356) by [@wschurman](https://github.com/wschurman))
+
+### 💡 Others
+
+- Convert iOS implementation to Swift. ([#21298](https://github.com/expo/expo/pull/21298), [#21648](https://github.com/expo/expo/pull/21648) by [@wschurman](https://github.com/wschurman))
+
+## 0.5.2 - 2023-02-21
+
+### 🐛 Bug fixes
+
+- Fixed default `expo.jsEngine` value when SDK is lower than 48. ([#21266](https://github.com/expo/expo/pull/21266) by [@kudo](https://github.com/kudo))
+
+## 0.5.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 0.5.0 — 2023-02-03
+
+### 🎉 New features
+
+- Switch default JS engine to Hermes. ([#21001](https://github.com/expo/expo/pull/21001) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.4.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
+### ⚠️ Notices
+
+- Replace `getAndroidJsEngine` as `jsEngine` lazy kotlin property. ([#19116](https://github.com/expo/expo/pull/19116) by [@kudo](https://github.com/kudo))
 
 ## 0.3.1 — 2022-07-16
 

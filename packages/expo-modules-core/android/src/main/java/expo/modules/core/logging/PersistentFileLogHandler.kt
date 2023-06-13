@@ -15,7 +15,10 @@ internal class PersistentFileLogHandler(
 
   private val persistentFileLog = PersistentFileLog(category, context)
 
-  override fun log(type: LogType, message: String) {
+  override fun log(type: LogType, message: String, cause: Throwable?) {
     persistentFileLog.appendEntry(message)
+    cause?.let {
+      persistentFileLog.appendEntry("${cause.localizedMessage}\n${cause.stackTraceToString()}")
+    }
   }
 }

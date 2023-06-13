@@ -11,7 +11,6 @@ import expo.modules.core.ExportedModule;
 import expo.modules.core.ViewManager;
 import expo.modules.core.interfaces.InternalModule;
 import expo.modules.av.player.datasource.SharedCookiesDataSourceFactoryProvider;
-import expo.modules.av.video.VideoManager;
 
 public class AVPackage extends BasePackage {
 
@@ -26,8 +25,7 @@ public class AVPackage extends BasePackage {
   @Override
   public List<ExportedModule> createExportedModules(Context context) {
     return Arrays.<ExportedModule>asList(
-        new AVModule(context),
-        new VideoManager(context)
+        new AVModule(context)
     );
   }
 

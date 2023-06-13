@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '0.3.0'
+version = '0.6.0'
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -22,7 +22,7 @@ buildscript {
     if (ext.has("kotlinVersion")) {
       ext.kotlinVersion()
     } else {
-      ext.safeExtGet("kotlinVersion", "1.6.10")
+      ext.safeExtGet("kotlinVersion", "1.8.10")
     }
   }
 
@@ -35,19 +35,11 @@ buildscript {
   }
 }
 
-// Creating sources with comments
-task androidSourcesJar(type: Jar) {
-  classifier = 'sources'
-  from android.sourceSets.main.java.srcDirs
-}
-
 afterEvaluate {
   publishing {
     publications {
       release(MavenPublication) {
         from components.release
-        // Add additional sourcesJar to artifacts
-        artifact(androidSourcesJar)
       }
     }
     repositories {
@@ -59,7 +51,7 @@ afterEvaluate {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 31)
+  compileSdkVersion safeExtGet("compileSdkVersion", 33)
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_11
@@ -70,11 +62,12 @@ android {
     jvmTarget = JavaVersion.VERSION_11.majorVersion
   }
 
+  namespace "expo.modules.jsonutils"
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 31)
+    targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 31
-    versionName '0.3.0'
+    versionName '0.6.0'
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
   lintOptions {
@@ -83,15 +76,22 @@ android {
   testOptions {
     unitTests.includeAndroidResources = true
   }
+  publishing {
+    singleVariant("release") {
+      withSourcesJar()
+    }
+  }
 }
 
 dependencies {
-  testImplementation 'junit:junit:4.12'
+  testImplementation 'junit:junit:4.13.2'
   testImplementation 'androidx.test:core:1.4.0'
   testImplementation 'org.mockito:mockito-core:1.10.19'
   testImplementation 'io.mockk:mockk:1.12.3'
 
-  androidTestImplementation 'org.amshove.kluent:kluent-android:1.68'
+  androidTestImplementation('org.amshove.kluent:kluent-android:1.72') {
+    exclude group: 'org.jetbrains.kotlin'
+  }
   androidTestImplementation 'androidx.test:runner:1.4.0'
   androidTestImplementation 'androidx.test:core:1.4.0'
   androidTestImplementation 'androidx.test:rules:1.4.0'

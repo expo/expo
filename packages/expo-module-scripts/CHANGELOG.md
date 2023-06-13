@@ -4,15 +4,65 @@
 
 ### 🛠 Breaking changes
 
-- [plugin] Upgrade minimum runtime requirement to Node 14 (LTS). ([#18204](https://github.com/expo/expo/pull/18204) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
-- Fixed *with-node.sh* doesn't keep quotes when passing arguments to Node.js and caused build errors when there are spaces in target name. ([#18741](https://github.com/expo/expo/pull/18741) by [@kudo](https://github.com/kudo))
+### 💡 Others
+
+## 3.0.9 — 2023-06-02
+
+### 🐛 Bug fixes
+
+- Fixed `npx` script failing when `yarn` is not installed. ([#22582](https://github.com/expo/expo/pull/22582) by [@tsapeta](https://github.com/tsapeta))
+
+## 3.0.8 — 2023-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.7 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.6 — 2023-02-03
+
+### 📚 3rd party library updates
+
+- Upgrade jest to v29. ([#20832](https://github.com/expo/expo/pull/20832) by [@kudo](https://github.com/kudo))
+
+## 3.0.5 — 2022-12-30
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.3 — 2022-11-02
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.2 — 2022-10-30
 
 ### 💡 Others
+
+- Remove Enzyme plugin - it does not work with React 18. Not considered a breaking change because the Enzyme plugin has never worked with React 18 and so is already broken. ([#19777](https://github.com/expo/expo/pull/19777) by [@brentvatne](https://github.com/brentvatne))
+
+## 3.0.1 — 2022-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
+- [plugin] Upgrade minimum runtime requirement to Node 14 (LTS). ([#18204](https://github.com/expo/expo/pull/18204) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Use the correct TSConfig package in dependencies to match one referred in `tsconfig.plugin.json`. ([#19670](https://github.com/expo/expo/pull/19670) by [@Simek](https://github.com/Simek))
+
+## 2.1.1 - 2022-08-22
+
+### 🐛 Bug fixes
+
+- Fixed *with-node.sh* doesn't keep quotes when passing arguments to Node.js and caused build errors when there are spaces in target name. ([#18741](https://github.com/expo/expo/pull/18741) by [@kudo](https://github.com/kudo))
 
 ## 2.1.0 — 2022-08-04
 

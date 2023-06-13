@@ -23,13 +23,6 @@ inputs:
   gradle:
     description: 'Restore Gradle cache'
     required: false
-  avd:
-    description: 'Restore AVD cache'
-    required: false
-  avd-api:
-    description: 'API version used in AVD'
-    default: '31'
-    required: false
   ndk:
     description: 'Restore NDK cache'
     required: false
@@ -46,6 +39,9 @@ inputs:
   rebuild-hermes-engine-aar-if-needed:
     description: 'Rebuild hermes-engine AAR when cache missed'
     default: 'true'
+    required: false
+  react-native-gradle-downloads:
+    description: 'Restore Gradle downloads cache for React Native libraries'
     required: false
 
 outputs:
@@ -67,9 +63,6 @@ outputs:
   native-tests-pods-hit:
     description: 'Returns true, if /apps/native-tests/ios pods cache is up-to-date'
     value: steps.native-tests-pods-cache.outputs.cache-hit
-  avd-hit:
-    description: 'Returns true, if AVD cache is up-to-date'
-    value: steps.avd-cache.outputs.cache-hit
   git-lfs-hit:
     description: 'Returns true, if Git LFS cache is up-to-date'
     value: steps.git-lfs-cache.outputs.cache-hit
@@ -82,11 +75,11 @@ runs:
   steps:
     - name: 🔍️ Get yarn cache directory path
       id: yarn-cache-dir-path
-      run: echo "::set-output name=dir::$(yarn cache dir)"
+      run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
       shell: bash
     - name: ♻️ Restore workspace node modules
       if: inputs.yarn-workspace == 'true'
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       id: workspace-modules-cache
       with:
         # See "workspaces" → "packages" in the root package.json for the source of truth of
@@ -95,6 +88,7 @@ runs:
           ${{ steps.yarn-cache-dir-path.outputs.dir }}
           node_modules
           apps/*/node_modules
+          apps/*/__generated__/AppEntry.js
           home/node_modules
           packages/*/node_modules
           packages/@expo/*/node_modules
@@ -103,7 +97,7 @@ runs:
 
     - name: ♻️ Restore /tools node modules and bins
       if: inputs.yarn-tools == 'true'
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       id: tools-modules-cache
       with:
         path: |
@@ -112,21 +106,21 @@ runs:
 
     - name: ♻️ Restore /docs node modules
       if: inputs.yarn-docs == 'true'
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       id: docs-modules-cache
       with:
         path: docs/node_modules
         key: ${{ runner.os }}-docs-modules-${{ hashFiles('docs/yarn.lock') }}
     - name: ♻️ Restore Docs Next cache
       if: inputs.yarn-docs == 'true' && steps.docs-modules-cache.outputs.cache-hit == 'true'
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: docs/.next/cache
         key: ${{ runner.os }}-docs-next-${{ hashFiles('docs/yarn.lock') }}-${{ hashFiles('docs/next.config.js') }}
 
     - name: ♻️ Restore ios/Pods from cache
       if: inputs.ios-pods == 'true'
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       id: ios-pods-cache
       with:
         path: ios/Pods
@@ -134,7 +128,7 @@ runs:
 
     - name: ♻️ Restore apps/bare-expo/ios/Pods from cache
       if: inputs.bare-expo-pods == 'true'
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       id: bare-expo-pods-cache
       with:
         path: apps/bare-expo/ios/Pods
@@ -142,38 +136,19 @@ runs:
 
     - name: ♻️ Restore apps/native-tests/ios/Pods from cache
       if: inputs.native-tests-pods == 'true'
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       id: native-tests-pods-cache
       with:
         path: apps/native-tests/ios/Pods
         key: ${{ runner.os }}-native-tests-pods-${{ hashFiles('apps/native-tests/ios/Podfile.lock') }}
 
     - name: ♻️ Restore Gradle cache
-      if: inputs.avd == 'true' || inputs.ndk == 'true' || inputs.gradle == 'true'
+      if: inputs.ndk == 'true' || inputs.gradle == 'true'
       uses: gradle/gradle-build-action@v2
-
-    - name: ♻️ Restore AVD cache
-      if: inputs.avd == 'true'
-      uses: actions/cache@v2
-      id: avd-cache
-      with:
-        path: |
-          ~/.android/avd/*
-          ~/.android/adb*
-        key: avd-${{ inputs.avd-api }}
-    - name: 📱 Create AVD and generate snapshot for caching
-      if: inputs.avd == 'true' && steps.avd-cache.outputs.cache-hit != 'true'
-      uses: reactivecircus/android-emulator-runner@v2
-      with:
-        api-level: ${{ inputs.avd-api }}
-        avd-name: avd-${{ matrix.api-level }}
-        arch: x86_64
-        force-avd-creation: false
-        script: echo "Generated AVD snapshot for caching."
 
     - name: ♻️ Restore Android NDK from cache
       if: inputs.ndk == 'true'
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       id: cache-android-ndk
       with:
         path: /usr/local/lib/android/sdk/ndk/${{ inputs.ndk-version }}/
@@ -186,10 +161,10 @@ runs:
     - name: 🔍️ Get cache key of Git LFS files
       if: inputs.git-lfs == 'true'
       id: git-lfs
-      run: echo "::set-output name=sha256::$(git lfs ls-files | openssl dgst -sha256)"
+      run: echo "sha256=$(git lfs ls-files | openssl dgst -sha256)" >> $GITHUB_OUTPUT
       shell: bash
     - name: ♻️ Restore Git LFS cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       if: inputs.git-lfs == 'true'
       with:
         path: .git/lfs
@@ -197,31 +172,47 @@ runs:
 
     - name: ♻️ Restore hermes-engine AAR cache
       if: inputs.hermes-engine-aar == 'true'
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
-        path: android/ReactAndroid/prebuiltHermes
-        key: hermes-engine-aar-v2-${{ hashFiles('android/sdks/.hermesversion') }}
+        path: android/prebuiltHermes
+        key: hermes-engine-aar-v2-${{ hashFiles('react-native-lab/react-native/packages/react-native/sdks/.hermesversion') }}
     - name: Check hermes-engine cache-hit
       if: inputs.hermes-engine-aar == 'true'
       id: cache-hermes-engine-aar
       shell: bash
       run: |
-        CURRENT_VERSION=$(test -f android/ReactAndroid/prebuiltHermes/.hermesversion && cat android/ReactAndroid/prebuiltHermes/.hermesversion) || true
-        TARGET_VERSION=$(test -f android/sdks/.hermesversion && cat android/sdks/.hermesversion) || true
-        if [[ $CURRENT_VERSION == $TARGET_VERSION ]]; then echo '::set-output name=cache-hit::true'; else echo '::set-output name=cache-hit::false'; fi
+        CURRENT_VERSION=$(test -f android/prebuiltHermes/.hermesversion && cat android/prebuiltHermes/.hermesversion) || true
+        TARGET_VERSION=$(test -f react-native-lab/react-native/packages/react-native/sdks/.hermesversion && cat react-native-lab/react-native/packages/react-native/sdks/.hermesversion) || true
+        if [[ $CURRENT_VERSION == $TARGET_VERSION ]]; then
+          echo "cache-hit=true" >> $GITHUB_OUTPUT
+        else
+          echo "cache-hit=false" >> $GITHUB_OUTPUT
+        fi
     - name: 🛠 Rebuild hermes-engine AAR when cache missed
       if: inputs.hermes-engine-aar == 'true' && inputs.rebuild-hermes-engine-aar-if-needed == 'true' && steps.cache-hermes-engine-aar.outputs.cache-hit != 'true'
       shell: bash
       run: |
         # Ensure node packages are installed when yarn-workspace cache miss
         yarn install --frozen-lockfile
-        mkdir -p ReactAndroid/prebuiltHermes
-        cp -f sdks/.hermesversion ReactAndroid/prebuiltHermes/
-        ./gradlew :ReactAndroid:hermes-engine:assembleRelease
-        ./gradlew :ReactAndroid:hermes-engine:assembleDebug
-        cp -f ReactAndroid/hermes-engine/build/outputs/aar/hermes-engine-release.aar ReactAndroid/prebuiltHermes/
-        cp -f ReactAndroid/hermes-engine/build/outputs/aar/hermes-engine-debug.aar ReactAndroid/prebuiltHermes/
+        mkdir -p prebuiltHermes
+        cp -f ../react-native-lab/react-native/packages/react-native/sdks/.hermesversion prebuiltHermes/
+        ./gradlew :packages:react-native:ReactAndroid:hermes-engine:assembleRelease
+        ./gradlew :packages:react-native:ReactAndroid:hermes-engine:assembleDebug
+        cp -f ../react-native-lab/react-native/packages/react-native/ReactAndroid/hermes-engine/build/outputs/aar/hermes-engine-release.aar prebuiltHermes/
+        cp -f ../react-native-lab/react-native/packages/react-native/ReactAndroid/hermes-engine/build/outputs/aar/hermes-engine-debug.aar prebuiltHermes/
       env:
         # Reset reactNativeArchitectures to build all architectures
         ORG_GRADLE_PROJECT_reactNativeArchitectures:
       working-directory: android
+
+    - name: 🛠 Setup "REACT_NATIVE_DOWNLOADS_DIR" environment variable
+      if: inputs.react-native-gradle-downloads == 'true'
+      shell: bash
+      run: echo "REACT_NATIVE_DOWNLOADS_DIR=$HOME/.gradle/react-native-downloads" >> $GITHUB_ENV
+    - name: ♻️ Restore Gradle downloads cache for React Native libraries
+      if: inputs.react-native-gradle-downloads == 'true'
+      uses: actions/cache@v3
+      with:
+        path: ${{ env.REACT_NATIVE_DOWNLOADS_DIR }}
+        key: gradle-downloads-${{ hashFiles('yarn.lock') }}
+        restore-keys: gradle-downloads-

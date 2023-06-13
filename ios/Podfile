@@ -1,34 +1,41 @@
 require_relative './podfile_helpers.rb'
-require_relative '../react-native-lab/react-native/scripts/react_native_pods'
+require_relative '../react-native-lab/react-native/packages/react-native/scripts/react_native_pods'
 require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
 
 install! 'cocoapods',
          :generate_multiple_pod_projects => true,
          :incremental_installation => true
-platform :ios, '12.4'
+platform :ios, '13.0'
 inhibit_all_warnings!
 
 # Disable expo-updates auto create manifest in podspec script_phase
 $expo_updates_create_manifest = false
 
 abstract_target 'Expo Go' do
-  # Expo Client dependencies
-  pod 'Amplitude'
   pod 'CocoaLumberjack', '~> 3.5.3'
-  pod 'GoogleMaps', '~> 3.6'
-  pod 'Google-Maps-iOS-Utils', '~> 2.1.0'
+  pod 'GoogleMaps', '~> 7.3.0'
+  pod 'Google-Maps-iOS-Utils', :git => 'https://github.com/googlemaps/google-maps-ios-utils.git'
   pod 'JKBigInteger', :podspec => 'vendored/common/JKBigInteger.podspec.json'
   pod 'MBProgressHUD', '~> 1.2.0'
+
+  # Required by firebase core versions 9.x / 10.x (included with SDK 47)
+  # See https://github.com/invertase/react-native-firebase/issues/6332#issuecomment-1189734581
+  pod 'FirebaseCore', :modular_headers => true
+  pod 'GoogleUtilities', :modular_headers => true
 
   # Expo modules
   use_expo_modules!({
     exclude: [
       'expo-module-template',
+      'expo-module-template-local',
       'expo-in-app-purchases',
       'expo-dev-menu',
       'expo-dev-menu-interface',
       'expo-dev-launcher',
       'expo-dev-client',
+      'expo-maps',
+      'expo-insights',
+      'expo-face-detector',
     ],
     includeTests: true,
     flags: {
@@ -40,10 +47,16 @@ abstract_target 'Expo Go' do
   use_pods! 'vendored/unversioned/**/*.podspec.json'
 
   # Unversioned React Native
-  use_react_native! path: '../react-native-lab/react-native'
+  use_react_native!(
+    :path => '../react-native-lab/react-native/packages/react-native',
+    :hermes_enabled => true,
+    :fabric_enabled => false,
+  )
+  setup_jsc!(
+    :react_native_path => '../react-native-lab/react-native/packages/react-native',
+    :fabric_enabled => false,
+  )
 
-  # Build React Native with RCT_DEV enabled and RCT_ENABLE_INSPECTOR and
-  # RCT_ENABLE_PACKAGER_CONNECTION disabled
   post_install do |installer|
     # Workaround build error for Folly
     __apply_Xcode_12_5_M1_post_install_workaround(installer) if installer.pods_project
@@ -59,17 +72,30 @@ abstract_target 'Expo Go' do
       # These actions are specified in `versioned-react-native/ABI*/postinstalls.rb` files.
       run_versioned_postinstalls!(pod_name, target_installation_result)
 
-      target_installation_result.native_target.build_configurations.each do |config|
-        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+      # This is necessary for Xcode 14 that by default signs resource bundles when building for the device.
+      target_installation_result.resource_bundle_targets.each do |resource_bundle_target|
+        resource_bundle_target.build_configurations.each do |config|
+          config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
+        end
+      end
 
-        # Fix building failures on M1
-        config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
+      target_installation_result.native_target.build_configurations.each do |config|
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
+
       end
 
       if pod_name == 'Branch'
         target_installation_result.native_target.build_configurations.each do |config|
           config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
           config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'BRANCH_EXCLUDE_IDFA_CODE=1'
+        end
+      end
+
+      # On iOS, the Stripe dependency StripePaymentsUI can't seem to find a header that should be there.
+      if pod_name == 'StripePaymentsUI'
+        target_installation_result.native_target.build_configurations.each do |config|
+          config.build_settings['HEADER_SEARCH_PATHS'] ||= ['$(inherited)']
+          config.build_settings['HEADER_SEARCH_PATHS'] << '"$(PODS_ROOT)/Headers/Public/StripePayments"'
         end
       end
 
@@ -87,6 +113,7 @@ abstract_target 'Expo Go' do
         config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
         config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'RCT_DEV=1'
         config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'RCT_ENABLE_INSPECTOR=0'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'RCT_REMOTE_PROFILE=0'
         config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION=0'
       end
     end

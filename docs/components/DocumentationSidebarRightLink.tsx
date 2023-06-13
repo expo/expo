@@ -1,16 +1,14 @@
 import { css } from '@emotion/react';
 import { theme, typography } from '@expo/styleguide';
+import Link from 'next/link';
 import * as React from 'react';
 
 import { BASE_HEADING_LEVEL, Heading, HeadingType } from '~/common/headingManager';
-import { paragraph } from '~/components/base/typography';
 import { Tag } from '~/ui/components/Tag';
+import { MONOSPACE, CALLOUT } from '~/ui/components/Text';
 
 const STYLES_LINK = css`
-  ${paragraph}
-  color: ${theme.text.secondary};
   transition: 50ms ease color;
-  font-size: 14px;
   display: flex;
   text-decoration: none;
   margin-bottom: 6px;
@@ -19,49 +17,46 @@ const STYLES_LINK = css`
   text-overflow: ellipsis;
   align-items: center;
   justify-content: space-between;
-
-  :hover {
-    color: ${theme.link.default};
-  }
-`;
-
-const STYLES_LINK_HEADER = css`
-  font-family: ${typography.fontFaces.medium};
 `;
 
 const STYLES_LINK_LABEL = css`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: ${theme.text.secondary};
+
+  :hover {
+    color: ${theme.text.link};
+  }
 `;
 
-const STYLES_LINK_CODE = css`
-  font-family: ${typography.fontFaces.mono};
-  font-size: 13px;
+const STYLES_LINK_MONOSPACE = css`
+  ${typography.fontSizes[13]}
 `;
 
 const STYLES_LINK_ACTIVE = css`
-  color: ${theme.link.default};
+  color: ${theme.text.link};
 `;
 
 const STYLES_TOOLTIP = css`
-  ${typography.fontSizes[13]}
   border-radius: 3px;
   position: absolute;
-  color: ${theme.text.default};
-  background-color: ${theme.background.secondary};
-  font-family: ${typography.fontFaces.medium};
+  background-color: ${theme.background.subtle};
   max-width: 400px;
   border: 1px solid ${theme.border.default};
   padding: 3px 6px;
-  word-break: break-word;
-  word-wrap: normal;
   display: inline-block;
 `;
 
-const STYLES_CODE_TOOLTIP = css`
-  font-family: ${typography.fontFaces.mono};
-  font-size: 11px;
+const STYLES_TOOLTIP_TEXT = css`
+  ${typography.fontSizes[13]}
+  color: ${theme.text.default};
+  word-break: break-word;
+  word-wrap: normal;
+`;
+
+const STYLES_TOOLTIP_CODE = css`
+  ${typography.fontSizes[12]}
 `;
 
 const STYLES_TAG_CONTAINER = css`
@@ -95,7 +90,8 @@ const isOverflowing = (el: HTMLElement) => {
   }
 
   const childrenWidth = Array.from(el.children).reduce((sum, child) => sum + child.scrollWidth, 0);
-  return childrenWidth >= el.scrollWidth - parseInt(el.style.paddingLeft, 10);
+  const indent = parseInt(window.getComputedStyle(el).paddingLeft, 10);
+  return childrenWidth >= el.scrollWidth - indent;
 };
 
 type TooltipProps = React.PropsWithChildren<{
@@ -103,11 +99,16 @@ type TooltipProps = React.PropsWithChildren<{
   topOffset: number;
 }>;
 
-const Tooltip = ({ children, isCode, topOffset }: TooltipProps) => (
-  <div css={[STYLES_TOOLTIP, isCode && STYLES_CODE_TOOLTIP]} style={{ right: 24, top: topOffset }}>
-    {children}
-  </div>
-);
+const Tooltip = ({ children, isCode, topOffset }: TooltipProps) => {
+  const ContentWrapper = isCode ? MONOSPACE : CALLOUT;
+  return (
+    <div css={STYLES_TOOLTIP} style={{ right: 24, top: topOffset }}>
+      <ContentWrapper css={[STYLES_TOOLTIP_TEXT, isCode && STYLES_TOOLTIP_CODE]}>
+        {children}
+      </ContentWrapper>
+    </div>
+  );
+};
 
 type SidebarLinkProps = {
   heading: Heading;
@@ -120,10 +121,8 @@ const DocumentationSidebarRightLink = React.forwardRef<HTMLAnchorElement, Sideba
   ({ heading, isActive, shortenCode, onClick }, ref) => {
     const { slug, level, title, type, tags } = heading;
 
-    const isNested = level <= BASE_HEADING_LEVEL;
     const isCode = type === HeadingType.InlineCode;
-
-    const paddingLeft = NESTING_OFFSET * (level - BASE_HEADING_LEVEL) + 'px';
+    const paddingLeft = NESTING_OFFSET * (level - BASE_HEADING_LEVEL);
     const displayTitle = shortenCode && isCode ? trimCodedTitle(title) : title;
 
     const [tooltipVisible, setTooltipVisible] = React.useState(false);
@@ -139,6 +138,8 @@ const DocumentationSidebarRightLink = React.forwardRef<HTMLAnchorElement, Sideba
       setTooltipVisible(false);
     };
 
+    const TitleElement = isCode ? MONOSPACE : CALLOUT;
+
     return (
       <>
         {tooltipVisible && (
@@ -146,23 +147,29 @@ const DocumentationSidebarRightLink = React.forwardRef<HTMLAnchorElement, Sideba
             {displayTitle}
           </Tooltip>
         )}
-        <a
+        <Link
           ref={ref}
           onMouseOver={onMouseOver}
           onMouseOut={onMouseOut}
-          style={{ paddingLeft }}
           href={'#' + slug}
           onClick={onClick}
-          css={[STYLES_LINK, isNested && STYLES_LINK_HEADER, isActive && STYLES_LINK_ACTIVE]}>
-          <span css={[STYLES_LINK_LABEL, isCode && STYLES_LINK_CODE]}>{displayTitle}</span>
+          css={[STYLES_LINK, paddingLeft && { paddingLeft }]}>
+          <TitleElement
+            css={[
+              STYLES_LINK_LABEL,
+              isCode && STYLES_LINK_MONOSPACE,
+              isActive && STYLES_LINK_ACTIVE,
+            ]}>
+            {displayTitle}
+          </TitleElement>
           {tags && tags.length ? (
             <div css={STYLES_TAG_CONTAINER}>
               {tags.map(tag => (
-                <Tag name={tag} type="toc" />
+                <Tag name={tag} type="toc" key={`${displayTitle}-${tag}`} />
               ))}
             </div>
           ) : undefined}
-        </a>
+        </Link>
       </>
     );
   }

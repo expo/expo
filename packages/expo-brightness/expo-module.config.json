@@ -1,0 +1,10 @@
+{
+  "name": "expo-brightness",
+  "platforms": ["ios", "android"],
+  "ios": {
+    "modules": ["BrightnessModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.brightness.BrightnessModule"]
+  }
+}

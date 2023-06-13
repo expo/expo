@@ -1,0 +1,10 @@
+{
+  "name": "expo-document-picker",
+  "platforms": ["ios", "android"],
+  "ios": {
+    "modules": ["DocumentPickerModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.documentpicker.DocumentPickerModule"]
+  }
+}

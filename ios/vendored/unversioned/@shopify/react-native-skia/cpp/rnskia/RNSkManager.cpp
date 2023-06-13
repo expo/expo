@@ -7,11 +7,13 @@
 
 #include <JsiSkApi.h>
 #include <RNSkJsiViewApi.h>
-#include <RNSkDrawView.h>
 #include <RNSkValueApi.h>
+#include <RNSkView.h>
+
+#include <JsiDomApi.h>
 
 namespace RNSkia {
-using namespace facebook;
+namespace jsi = facebook::jsi;
 
 RNSkManager::RNSkManager(
     jsi::Runtime *jsRuntime,
@@ -35,29 +37,30 @@ RNSkManager::~RNSkManager() {
 }
 
 void RNSkManager::invalidate() {
-  if(_isInvalidated) {
+  if (_isInvalidated) {
     return;
   }
   _isInvalidated = true;
-  
+
   // Invalidate members
   _viewApi->invalidate();
   _platformContext->invalidate();
 }
 
-void RNSkManager::registerSkiaDrawView(size_t nativeId, std::shared_ptr<RNSkDrawView> view) {
+void RNSkManager::registerSkiaView(size_t nativeId,
+                                   std::shared_ptr<RNSkView> view) {
   if (!_isInvalidated && _viewApi != nullptr)
-    _viewApi->registerSkiaDrawView(nativeId, view);
+    _viewApi->registerSkiaView(nativeId, view);
 }
 
-void RNSkManager::unregisterSkiaDrawView(size_t nativeId) {
+void RNSkManager::unregisterSkiaView(size_t nativeId) {
   if (!_isInvalidated && _viewApi != nullptr)
-    _viewApi->unregisterSkiaDrawView(nativeId);
+    _viewApi->unregisterSkiaView(nativeId);
 }
 
-void RNSkManager::setSkiaDrawView(size_t nativeId, std::shared_ptr<RNSkDrawView> view) {
+void RNSkManager::setSkiaView(size_t nativeId, std::shared_ptr<RNSkView> view) {
   if (!_isInvalidated && _viewApi != nullptr)
-    _viewApi->setSkiaDrawView(nativeId, view);
+    _viewApi->setSkiaView(nativeId, view);
 }
 
 void RNSkManager::installBindings() {
@@ -75,7 +78,12 @@ void RNSkManager::installBindings() {
 
   auto skiaValueApi = std::make_shared<RNSkValueApi>(_platformContext);
   _jsRuntime->global().setProperty(
-    *_jsRuntime, "SkiaValueApi",
-    jsi::Object::createFromHostObject(*_jsRuntime, std::move(skiaValueApi)));
+      *_jsRuntime, "SkiaValueApi",
+      jsi::Object::createFromHostObject(*_jsRuntime, std::move(skiaValueApi)));
+
+  auto skiaDomApi = std::make_shared<JsiDomApi>(_platformContext);
+  _jsRuntime->global().setProperty(
+      *_jsRuntime, "SkiaDomApi",
+      jsi::Object::createFromHostObject(*_jsRuntime, std::move(skiaDomApi)));
 }
 } // namespace RNSkia

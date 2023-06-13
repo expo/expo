@@ -1,6 +1,6 @@
 {
   "name": "expo-sharing",
-  "version": "10.3.0",
+  "version": "11.4.0",
   "description": "ExpoSharing standalone module",
   "main": "build/Sharing.js",
   "types": "build/Sharing.d.ts",
@@ -32,7 +32,7 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/sharing/",
   "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "^2.0.0"
+    "expo-module-scripts": "^3.0.0"
   },
   "peerDependencies": {
     "expo": "*"

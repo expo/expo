@@ -4,14 +4,59 @@
 
 ### 🛠 Breaking changes
 
-- [plugin] Upgrade minimum runtime requirement to Node 14 (LTS). ([#18204](https://github.com/expo/expo/pull/18204) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
+## 6.0.0-beta.1 — 2023-06-13
+
+### 🎉 New features
+
+- Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- [iOS] Fixed screen orientation on iOS 16. ([#22152](https://github.com/expo/expo/pull/22152) by [@behenate](https://github.com/behenate))
+- [iOS] Fixed status bar and navigation bar following the device's orientation regardless of applied orientation lock. ([#22152](https://github.com/expo/expo/pull/22152) by [@behenate](https://github.com/behenate))
+- [iOS] Fixed SafeAreaViews failing after pulling down quick settings when the device is in a different orientation than the current orientation lock allows. ([#22152](https://github.com/expo/expo/pull/22152) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
+- [iOS] Migrated to new modules API. ([#22152](https://github.com/expo/expo/pull/22152) by [@behenate](https://github.com/behenate))
+
+## 5.2.0 — 2023-05-08
+
+### 🎉 New features
+
+- Migrated to new modules API on Android ([#22019](https://github.com/expo/expo/pull/22019) by [@behenate](https://github.com/behenate))
+
+## 5.1.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 5.1.0 — 2023-02-03
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
+## 5.0.1 — 2022-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
+- [plugin] Upgrade minimum runtime requirement to Node 14 (LTS). ([#18204](https://github.com/expo/expo/pull/18204) by [@EvanBacon](https://github.com/EvanBacon))
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
+### 💡 Others
+
+- [plugin] Migrate import from @expo/config-plugins to expo/config-plugins and @expo/config-types to expo/config. ([#18855](https://github.com/expo/expo/pull/18855) by [@brentvatne](https://github.com/brentvatne))
 - Drop `@expo/config-plugins` dependency in favor of peer dependency on `expo`. ([#18595](https://github.com/expo/expo/pull/18595) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 4.3.0 — 2022-07-07

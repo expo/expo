@@ -56,5 +56,11 @@ export async function startBundlerAsync(
       Log.log(chalk`Waiting on {underline ${url}}`);
     }
   }
+
+  if (!options.headless) {
+    await devServerManager.watchEnvironmentVariables();
+    await devServerManager.bootstrapTypeScriptAsync();
+  }
+
   return devServerManager;
 }

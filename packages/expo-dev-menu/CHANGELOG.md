@@ -2,13 +2,127 @@
 
 ## Unpublished
 
+### 📚 3rd party library updates
+
+- Updated `robolectric` to `4.10`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
 
+- [Android] Added support for the new architecture. ([#22607](https://github.com/expo/expo/pull/22607) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
+- Fixed react-native nighlies `0.73.0-nightly-20230515-066f0b76d` build errors on Android. ([#22503](https://github.com/expo/expo/pull/22503) by [@kudo](https://github.com/kudo))
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
+
+- Update onboarding text to be more concise and clear, and fix compat with large text accessibiltiy settings. ([#22712](https://github.com/expo/expo/pull/22712) by [@brentvatne](https://github.com/brentvatne))
+
+## 3.0.0 — 2023-05-08
+
+### 🛠 Breaking changes
+
+- Update iOS and Android entry points to support custom entry files (changed `index` to `.expo/.virtual-metro-entry`). This requires all projects to use `expo/metro-config` as the base config. ([#21643](https://github.com/expo/expo/pull/21643) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+- Fixed reload crash when expo-dev-menu is turned off. ([#21279](https://github.com/expo/expo/pull/21279) by [@jayshah123](https://github.com/jayshah123))
+- Fix JS entry file in development builds. ([#21984](https://github.com/expo/expo/pull/21984) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Update the start script to dynamically locate the packager IP from any network interface. ([#21977](https://github.com/expo/expo/pull/21977) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Fix assert in `requestOverlayMetricsIfNeeded` failing when the device is rotated to landscape orientation. ([#22598](https://github.com/expo/expo/pull/22598) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
+- Convert EXManifests iOS implementation to Swift. ([#21298](https://github.com/expo/expo/pull/21298) by [@wschurman](https://github.com/wschurman))
+- Rewrite vendored safe area view using the new modules API. ([#22174](https://github.com/expo/expo/pull/22174) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Migrate iOS native modules to use the new Module API. ([#22263](https://github.com/expo/expo/pull/22263) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### ⚠️ Notices
+
+- Disable the `Remote JS debugger` option on menu when using SDK 49 or above. ([#22010](https://github.com/expo/expo/pull/22010) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 📚 3rd party library updates
+
+- Update `react-native` to 0.71.7. ([#22253](https://github.com/expo/expo/pull/22253) by [@kudo](https://github.com/kudo))
+
+## 2.2.0 - 2023-04-13
+
+### 🎉 New features
+
+- Added experimental react-devtools integration. ([#21462](https://github.com/expo/expo/pull/21462) by [@kudo](https://github.com/kudo))
+
+## 2.1.4 - 2023-03-20
+
+### 🐛 Bug fixes
+
+- Change arg in gradle `.execute()` call to null to inherit env variables from user's env ([#21712](https://github.com/expo/expo/pull/21712) by [@phoenixiguess](https://github.com/phoenixiguess))
+
+## 2.1.2 — 2023-02-17
+
+### 🐛 Bug fixes
+
+- Fixed `'jsc/JSCRuntime.h' file not found` when using JSC on iOS. ([#21246](https://github.com/expo/expo/pull/21246) by [@lukmccall](https://github.com/lukmccall))
+
+## 2.1.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.0 — 2023-02-03
+
+### 🐛 Bug fixes
+
+- Added React Native 0.71 support. ([#20470](https://github.com/expo/expo/pull/20470) by [@kudo](https://github.com/kudo))
+- Added support for React Native 0.71.x. ([#20799](https://github.com/expo/expo/pull/20799) [#20832](https://github.com/expo/expo/pull/20832) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
+## 2.0.2 - 2022-11-21
+
+### 🐛 Bug fixes
+
+- Fixed `RCTStatusBarManager` module requires that the `UIViewControllerBasedStatusBarAppearance` to be false on iOS. ([#20104](https://github.com/expo/expo/pull/20104) by [@lukmccall](https://github.com/lukmccall))
+- Fixed writing 'r' into text input reloading the app on iOS. ([#20107](https://github.com/expo/expo/pull/20107) by [@lukmccall](https://github.com/lukmccall))
+
+## 2.0.1 - 2022-11-08
+
+### 🐛 Bug fixes
+
+- Fixed build errors when testing on React Native nightly builds. ([#19369](https://github.com/expo/expo/pull/19369) by [@kudo](https://github.com/kudo), [#19805](https://github.com/expo/expo/pull/19805) by [@kudo](https://github.com/kudo))
+- Fixed Android `java.lang.AssertionError: TurboModules are enabled, but mTurboModuleRegistry hasn't been set.` error when running on new architecture mode. ([#19931](https://github.com/expo/expo/pull/19931) by [@kudo](https://github.com/kudo))
+
+## 2.0.0 — 2022-10-27
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
+### 💡 Others
+
+- [plugin] Migrate import from @expo/config-plugins to expo/config-plugins and @expo/config-types to expo/config. ([#18855](https://github.com/expo/expo/pull/18855) by [@brentvatne](https://github.com/brentvatne))
+- Locked `layoutDirection` to LTR to prevent incorrect rendering when used together with a RTL enabled app. ([#19634](https://github.com/expo/expo/pull/19634) by [@aleqsio](https://github.com/aleqsio))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.70.x. ([#19261](https://github.com/expo/expo/pull/19261) by [@kudo](https://github.com/kudo))
+
+## 1.3.1 — 2022-10-11
+
+### 🐛 Bug fixes
+
+- Fix compilation error when the `compileSdkVersion` is set to 33. ([#19271](https://github.com/expo/expo/pull/19271) by [@lukmccall](https://github.com/lukmccall))
+- Fixed the _Local dev tools_ menu doesn't work for Hermes. ([#19301](https://github.com/expo/expo/pull/19301) by [@kudo](https://github.com/kudo))
+
+## 1.3.0 — 2022-09-16
+
+### 💡 Others
+
+- Disable onboarding popup with URL query param. ([#19024](https://github.com/expo/expo/pull/19024) by [@douglowder](https://github.com/douglowder))
 
 ## 1.2.1 — 2022-08-16
 

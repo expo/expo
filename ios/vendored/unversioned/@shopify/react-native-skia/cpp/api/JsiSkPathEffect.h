@@ -10,26 +10,28 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
 
-#include <SkPathEffect.h>
+#include "SkPathEffect.h"
 
 #pragma clang diagnostic pop
 
 namespace RNSkia {
 
-using namespace facebook;
+namespace jsi = facebook::jsi;
 
 class JsiSkPathEffect : public JsiSkWrappingSkPtrHostObject<SkPathEffect> {
 public:
   JsiSkPathEffect(std::shared_ptr<RNSkPlatformContext> context,
                   sk_sp<SkPathEffect> pathEffect)
-      : JsiSkWrappingSkPtrHostObject<SkPathEffect>(std::move(context), std::move(pathEffect)) {}
+      : JsiSkWrappingSkPtrHostObject<SkPathEffect>(std::move(context),
+                                                   std::move(pathEffect)) {}
 
   // TODO: declare in JsiSkWrappingSkPtrHostObject via extra template parameter?
   JSI_PROPERTY_GET(__typename__) {
     return jsi::String::createFromUtf8(runtime, "PathEffect");
   }
 
-  JSI_EXPORT_PROPERTY_GETTERS(JSI_EXPORT_PROP_GET(JsiSkPathEffect, __typename__))
+  JSI_EXPORT_PROPERTY_GETTERS(JSI_EXPORT_PROP_GET(JsiSkPathEffect,
+                                                  __typename__))
 
   /**
     Returns the underlying object from a host object of this type

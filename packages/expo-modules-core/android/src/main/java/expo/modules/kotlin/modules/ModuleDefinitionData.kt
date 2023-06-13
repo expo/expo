@@ -1,6 +1,7 @@
 package expo.modules.kotlin.modules
 
-import expo.modules.kotlin.ConcatIterator
+import expo.modules.kotlin.activityresult.AppContextActivityResultCaller
+import expo.modules.kotlin.classcomponent.ClassDefinitionData
 import expo.modules.kotlin.events.EventListener
 import expo.modules.kotlin.events.EventName
 import expo.modules.kotlin.objects.ObjectDefinitionData
@@ -11,6 +12,8 @@ class ModuleDefinitionData(
   val objectDefinition: ObjectDefinitionData,
   val viewManagerDefinition: ViewManagerDefinition? = null,
   val eventListeners: Map<EventName, EventListener> = emptyMap(),
+  val registerContracts: (suspend AppContextActivityResultCaller.() -> Unit)? = null,
+  val classData: List<ClassDefinitionData> = emptyList()
 ) {
 
   val constantsProvider = objectDefinition.constantsProvider
@@ -18,7 +21,5 @@ class ModuleDefinitionData(
   val asyncFunctions = objectDefinition.asyncFunctions
   val eventsDefinition = objectDefinition.eventsDefinition
   val properties = objectDefinition.properties
-
-  val functions
-    get() = ConcatIterator(syncFunctions.values.iterator(), asyncFunctions.values.iterator())
+  val functions = objectDefinition.functions
 }

@@ -1,3 +1,8 @@
+import java.nio.file.Files
+import java.nio.file.Paths
+
+apply plugin: 'kotlin-kapt'
+
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
   ext.safeExtGet = { prop, fallback ->
@@ -15,9 +20,10 @@ buildscript {
 }
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'com.google.firebase.crashlytics'
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 31)
+  compileSdkVersion safeExtGet("compileSdkVersion", 33)
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_11
@@ -31,11 +37,11 @@ android {
   defaultConfig {
     applicationId 'host.exp.exponent'
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 31)
+    targetSdkVersion safeExtGet("targetSdkVersion", 33)
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 173
-    versionName '2.25.1'
+    versionCode 183
+    versionName '2.28.0'
     // END VERSIONS
 
     multiDexEnabled true
@@ -71,24 +77,30 @@ android {
       if (!System.getenv("ANDROID_UNSIGNED")) {
         signingConfig signingConfigs.release
       }
+      firebaseCrashlytics {
+        nativeSymbolUploadEnabled true
+      }
     }
   }
-  // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
-  // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
+
   flavorDimensions "versioning"
   productFlavors {
     versioned {
       dimension "versioning"
       manifestPlaceholders = [appLabel:"@string/versioned_app_name"]
+      firebaseCrashlytics {
+        unstrippedNativeLibsDir file("${buildDir}/intermediates/merged_native_libs/versionedRelease/out/lib")
+      }
     }
     unversioned {
       dimension "versioning"
       getIsDefault().set(true)
       manifestPlaceholders = [appLabel: "@string/unversioned_app_name"]
+      firebaseCrashlytics {
+        unstrippedNativeLibsDir file("${buildDir}/intermediates/merged_native_libs/unversionedRelease/out/lib")
+      }
     }
   }
-  // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
-  // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   // `productFlavors` must be defined before this block
   defaultConfig {
@@ -106,12 +118,8 @@ android {
   packagingOptions {
     // libfbjni.so is prebuilt library shared between all ABIs
     pickFirst "lib/**/libfbjni.so"
-  }
-}
-
-configurations.all {
-  resolutionStrategy {
-    force 'org.webkit:android-jsc:r245459'
+    // AGP will give priority of libc++_shared coming from App modules.
+    pickFirst "**/libc++_shared.so"
   }
 }
 
@@ -160,6 +168,10 @@ dependencies {
   implementation 'com.squareup.okhttp3:okhttp:3.10.0'
   implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
 
+  // expo-image
+  def GLIDE_VERSION = "4.13.2"
+  kapt "com.github.bumptech.glide:compiler:${GLIDE_VERSION}"
+
   // Testing
   androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
   androidTestImplementation 'androidx.test:runner:1.4.0'
@@ -168,24 +180,16 @@ dependencies {
   androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
   androidTestImplementation 'com.azimolabs.conditionwatcher:conditionwatcher:0.2'
 
-  androidTestImplementation 'junit:junit:4.12'
+  androidTestImplementation 'junit:junit:4.13.2'
   androidTestImplementation 'org.mockito:mockito-core:1.10.19'
-  testImplementation 'org.robolectric:robolectric:3.8'
+  testImplementation 'org.robolectric:robolectric:4.10'
   androidTestImplementation 'androidx.test:runner:1.4.0'
   androidTestImplementation 'androidx.test:rules:1.4.0'
 
   testImplementation 'androidx.test:runner:1.4.0'
   testImplementation 'androidx.test:rules:1.4.0'
-  testImplementation 'junit:junit:4.12'
+  testImplementation 'junit:junit:4.13.2'
   testImplementation 'org.mockito:mockito-core:1.10.19'
-
-  /* UNCOMMENT WHEN DISTRIBUTING
-  implementation('host.exp.exponent:expoview:45.0.0@aar') {
-    transitive = true
-    exclude group: 'com.squareup.okhttp3', module: 'okhttp'
-    exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
-  }
-  END UNCOMMENT WHEN DISTRIBUTING */
 
   // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
 
@@ -195,38 +199,26 @@ dependencies {
   implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
   // END_SDK_UNVERSIONED
 
-  // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
-
   // ADD_NEW_SDKS_HERE
 
 
-  // BEGIN_SDK_46
-  versionedImplementation(project(':expoview-abi46_0_0'))
-  // END_SDK_46
+  // BEGIN_SDK_48
+  versionedImplementation(project(':expoview-abi48_0_0'))
+  // END_SDK_48
 
 
-  // BEGIN_SDK_45
-  versionedImplementation(project(':expoview-abi45_0_0'))
-  // END_SDK_45
-
-  // This is not needed in shell apps, the Amplitude module will include this dep if installed
-  implementation 'com.amplitude:android-sdk:2.23.2'
-
-  // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
-  // WHEN_DISTRIBUTING_REMOVE_TO_HERE
-
-  /* UNCOMMENT WHEN DISTRIBUTING
-  api 'org.webkit:android-jsc:r245459' // needs to be before react-native
-  api 'com.facebook.react:react-native:+'
-  END UNCOMMENT WHEN DISTRIBUTING */
-
-  // WHEN_DETACHING_REMOVE_FROM_HERE
-  /* UNCOMMENT WHEN DISTRIBUTING
-  implementation project(':expo')
-  implementation 'host.exp.exponent:expo-random:+'
-  END UNCOMMENT WHEN DISTRIBUTING */
-  // WHEN_DETACHING_REMOVE_TO_HERE
+  // BEGIN_SDK_47
+  versionedImplementation(project(':expoview-abi47_0_0'))
+  // END_SDK_47
 }
 
 // This has to be down here for some reason
 apply plugin: 'com.google.gms.google-services'
+
+def ensureCrashlyticsDir = tasks.register('ensureCrashlyticsDir') {
+  doLast {
+    Files.createDirectories(Paths.get("${buildDir}/intermediates/merged_native_libs/versionedRelease/out/lib"))
+    Files.createDirectories(Paths.get("${buildDir}/intermediates/merged_native_libs/unversionedRelease/out/lib"))
+  }
+}
+preBuild.dependsOn(ensureCrashlyticsDir)

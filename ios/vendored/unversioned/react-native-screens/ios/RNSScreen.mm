@@ -6,13 +6,13 @@
 
 #ifdef RN_FABRIC_ENABLED
 #import <React/RCTConversions.h>
+#import <React/RCTFabricComponentsPlugins.h>
 #import <React/RCTRootComponentView.h>
 #import <React/RCTSurfaceTouchHandler.h>
 #import <react/renderer/components/rnscreens/EventEmitters.h>
 #import <react/renderer/components/rnscreens/Props.h>
 #import <react/renderer/components/rnscreens/RCTComponentViewHelpers.h>
 #import <rnscreens/RNSScreenComponentDescriptor.h>
-#import "RCTFabricComponentsPlugins.h"
 #import "RNSConvert.h"
 #import "RNSScreenViewEvent.h"
 #else
@@ -57,7 +57,7 @@
 
   return self;
 }
-#endif
+#endif // RN_FABRIC_ENABLED
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
@@ -146,6 +146,7 @@
       // ignored, we only need to keep in mind not to set presentation delegate
       break;
   }
+
   // There is a bug in UIKit which causes retain loop when presentationController is accessed for a
   // controller that is not going to be presented modally. We therefore need to avoid setting the
   // delegate for screens presented using push. This also means that when controller is updated from
@@ -508,6 +509,11 @@
   }
 }
 
+- (BOOL)isModal
+{
+  return self.stackPresentation != RNSScreenStackPresentationPush;
+}
+
 #pragma mark - Fabric specific
 #ifdef RN_FABRIC_ENABLED
 
@@ -545,6 +551,17 @@
   _dismissed = NO;
   _state.reset();
   _touchHandler = nil;
+
+  // We set this prop to default value here to workaround view-recycling.
+  // Let's assume the view has had _stackPresentation == <some modal stack presentation> set
+  // before below line was executed. Then, when instantiated again (with the same modal presentation)
+  // updateProps:oldProps: method would be called and setter for stack presentation would not be called.
+  // This is crucial as in that setter we register `self.controller` as a delegate
+  // (UIAdaptivePresentationControllerDelegate) to presentation controller and this leads to buggy modal behaviour as we
+  // rely on UIAdaptivePresentationControllerDelegate callbacks. Restoring the default value and then comparing against
+  // it in updateProps:oldProps: allows for setter to be called, however if there was some additional logic to execute
+  // when stackPresentation is set to "push" the setter would not be triggered.
+  _stackPresentation = RNSScreenStackPresentationPush;
 }
 
 - (void)updateProps:(facebook::react::Props::Shared const &)props
@@ -596,11 +613,14 @@
   if (newScreenProps.homeIndicatorHidden != oldScreenProps.homeIndicatorHidden) {
     [self setHomeIndicatorHidden:newScreenProps.homeIndicatorHidden];
   }
-#endif
+#endif // !TARGET_OS_TV
 
-  if (newScreenProps.stackPresentation != oldScreenProps.stackPresentation) {
-    [self
-        setStackPresentation:[RNSConvert RNSScreenStackPresentationFromCppEquivalent:newScreenProps.stackPresentation]];
+  // Notice that we compare against _stackPresentation, not oldScreenProps.stackPresentation.
+  // See comment in prepareForRecycle method for explanation.
+  RNSScreenStackPresentation newStackPresentation =
+      [RNSConvert RNSScreenStackPresentationFromCppEquivalent:newScreenProps.stackPresentation];
+  if (newStackPresentation != _stackPresentation) {
+    [self setStackPresentation:newStackPresentation];
   }
 
   if (newScreenProps.stackAnimation != oldScreenProps.stackAnimation) {
@@ -739,7 +759,8 @@ Class<RCTComponentViewProtocol> RNSScreenCls(void)
 - (void)viewWillDisappear:(BOOL)animated
 {
   [super viewWillDisappear:animated];
-  if (!self.transitionCoordinator.isInteractive) {
+  // self.navigationController might be null when we are dismissing a modal
+  if (!self.transitionCoordinator.isInteractive && self.navigationController != nil) {
     // user might have long pressed ios 14 back button item,
     // so he can go back more than one screen and we need to dismiss more screens in JS stack then.
     // We check it by calculating the difference between the index of currently displayed screen
@@ -1178,9 +1199,40 @@ RCT_EXPORT_VIEW_PROPERTY(statusBarStyle, RNSStatusBarStyle)
 RCT_EXPORT_VIEW_PROPERTY(homeIndicatorHidden, BOOL)
 #endif
 
+#if !TARGET_OS_TV
+// See:
+// 1. https://github.com/software-mansion/react-native-screens/pull/1543
+// 2. https://github.com/software-mansion/react-native-screens/pull/1596
+// This class is instatiated from React Native's internals during application startup
+- (instancetype)init
+{
+  if (self = [super init]) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+    });
+  }
+  return self;
+}
+
+- (void)dealloc
+{
+  dispatch_sync(dispatch_get_main_queue(), ^{
+    [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
+  });
+}
+#endif // !TARGET_OS_TV
+
 - (UIView *)view
 {
   return [[RNSScreenView alloc] initWithBridge:self.bridge];
+}
+
++ (BOOL)requiresMainQueueSetup
+{
+  // Returning NO here despite the fact some initialization in -init method dispatches tasks
+  // on main queue, because the comments in RN source code states that modules which return YES
+  // here will be constructed ahead-of-time -- and this is not required in our case.
+  return NO;
 }
 
 @end

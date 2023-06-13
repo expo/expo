@@ -1,34 +1,53 @@
 import { css } from '@emotion/react';
-import { borderRadius, shadows, spacing, theme, typography } from '@expo/styleguide';
-import React from 'react';
+import { shadows, theme, typography } from '@expo/styleguide';
+import { borderRadius, breakpoints, spacing } from '@expo/styleguide-base';
+import type { ComponentProps, ComponentType } from 'react';
+import { Fragment } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 import { APIDataType } from './APIDataType';
 
-import { Code, InlineCode } from '~/components/base/code';
-import { H4 } from '~/components/base/headings';
-import Link from '~/components/base/link';
-import { LI, UL, OL } from '~/components/base/list';
-import { B, P, Quote } from '~/components/base/paragraph';
+import { HeadingType } from '~/common/headingManager';
+import { Code as PrismCodeBlock } from '~/components/base/code';
 import {
+  CommentContentData,
   CommentData,
+  MethodDefinitionData,
   MethodParamData,
   MethodSignatureData,
   PropData,
   TypeDefinitionData,
   TypePropertyDataFlags,
+  TypeSignaturesData,
 } from '~/components/plugins/api/APIDataTypes';
 import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
-import * as Constants from '~/constants/theme';
+import { Callout } from '~/ui/components/Callout';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { tableWrapperStyle } from '~/ui/components/Table/Table';
-import { A } from '~/ui/components/Text';
+import { Tag } from '~/ui/components/Tag';
+import {
+  A,
+  BOLD,
+  CODE,
+  H4,
+  LI,
+  OL,
+  P,
+  RawH3,
+  RawH4,
+  UL,
+  createPermalinkedComponent,
+  DEMI,
+  CALLOUT,
+  createTextComponent,
+} from '~/ui/components/Text';
+import { TextElement } from '~/ui/components/Text/types';
 
 const isDev = process.env.NODE_ENV === 'development';
 
 export enum TypeDocKind {
-  LegacyEnum = 4,
+  Namespace = 4,
   Enum = 8,
   Variable = 32,
   Function = 64,
@@ -37,26 +56,26 @@ export enum TypeDocKind {
   Property = 1024,
   Method = 2048,
   Parameter = 32768,
+  Accessor = 262144,
   TypeAlias = 4194304,
 }
 
-export type MDComponents = React.ComponentProps<typeof ReactMarkdown>['components'];
+export type MDComponents = ComponentProps<typeof ReactMarkdown>['components'];
 
 const getInvalidLinkMessage = (href: string) =>
   `Using "../" when linking other packages in doc comments produce a broken link! Please use "./" instead. Problematic link:\n\t${href}`;
 
 export const mdComponents: MDComponents = {
-  blockquote: ({ children }) => (
-    <Quote>
-      {/* @ts-ignore - current implementation produce type issues, this would be fixed in docs redesign */}
-      {children.map(child => (child?.props?.node?.tagName === 'p' ? child?.props.children : child))}
-    </Quote>
-  ),
+  blockquote: ({ children }) => <Callout>{children}</Callout>,
   code: ({ children, className }) =>
-    className ? <Code className={className}>{children}</Code> : <InlineCode>{children}</InlineCode>,
+    className ? (
+      <PrismCodeBlock className={className}>{children}</PrismCodeBlock>
+    ) : (
+      <CODE css={css({ display: 'inline' })}>{children}</CODE>
+    ),
   h1: ({ children }) => <H4>{children}</H4>,
-  ul: ({ children }) => <UL>{children}</UL>,
-  ol: ({ children }) => <OL>{children}</OL>,
+  ul: ({ children }) => <UL className={ELEMENT_SPACING}>{children}</UL>,
+  ol: ({ children }) => <OL className={ELEMENT_SPACING}>{children}</OL>,
   li: ({ children }) => <LI>{children}</LI>,
   a: ({ href, children }) => {
     if (
@@ -70,10 +89,10 @@ export const mdComponents: MDComponents = {
         console.warn(getInvalidLinkMessage(href));
       }
     }
-    return <Link href={href}>{children}</Link>;
+    return <A href={href}>{children}</A>;
   },
-  p: ({ children }) => (children ? <P>{children}</P> : null),
-  strong: ({ children }) => <B>{children}</B>,
+  p: ({ children }) => (children ? <P className={ELEMENT_SPACING}>{children}</P> : null),
+  strong: ({ children }) => <BOLD>{children}</BOLD>,
   span: ({ children }) => (children ? <span>{children}</span> : null),
   table: ({ children }) => <Table>{children}</Table>,
   thead: ({ children }) => <TableHead>{children}</TableHead>,
@@ -82,17 +101,19 @@ export const mdComponents: MDComponents = {
   td: ({ children }) => <Cell>{children}</Cell>,
 };
 
-export const mdInlineComponents: MDComponents = {
+export const mdComponentsNoValidation: MDComponents = {
   ...mdComponents,
-  p: ({ children }) => (children ? <span>{children}</span> : null),
+  a: ({ href, children }) => <A href={href}>{children}</A>,
 };
 
 const nonLinkableTypes = [
   'ColorValue',
   'Component',
   'ComponentClass',
+  'PureComponent',
   'E',
   'EventSubscription',
+  'Listener',
   'NativeSyntheticEvent',
   'ParsedQs',
   'ServiceActionResult',
@@ -103,6 +124,7 @@ const nonLinkableTypes = [
   'React.FC',
   'ForwardRefExoticComponent',
   'StyleProp',
+  'HTMLInputElement',
   // Cross-package permissions management
   'RequestPermissionMethod',
   'GetPermissionMethod',
@@ -123,6 +145,9 @@ const omittableTypes = [
  */
 const replaceableTypes: Partial<Record<string, string>> = {
   ForwardRefExoticComponent: 'Component',
+  LocationAccuracy: 'Accuracy',
+  LocationGeofencingRegionState: 'GeofencingRegionState',
+  LocationActivityType: 'ActivityType',
 };
 
 const hardcodedTypeLinks: Record<string, string> = {
@@ -131,21 +156,25 @@ const hardcodedTypeLinks: Record<string, string> = {
   AVPlaybackStatusToSet: '/versions/latest/sdk/av/#avplaybackstatustoset',
   Blob: 'https://developer.mozilla.org/en-US/docs/Web/API/Blob',
   Date: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date',
+  DeviceSensor: '/versions/latest/sdk/sensors',
   Element: 'https://www.typescriptlang.org/docs/handbook/jsx.html#function-component',
   Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
   ExpoConfig:
     'https://github.com/expo/expo/blob/main/packages/%40expo/config-types/src/ExpoConfig.ts',
   File: 'https://developer.mozilla.org/en-US/docs/Web/API/File',
   FileList: 'https://developer.mozilla.org/en-US/docs/Web/API/FileList',
+  Manifest: '/versions/latest/sdk/constants/#manifest',
+  MediaTrackSettings: 'https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackSettings',
   MessageEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent',
   Omit: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys',
   Pick: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys',
   Partial: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype',
   Promise:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
-  View: '/versions/latest/react-native/view',
-  ViewProps: '/versions/latest/react-native/view#props',
-  ViewStyle: '/versions/latest/react-native/view-style-props',
+  SyntheticEvent: 'https://react.dev/reference/react-dom/components/common#react-event-object',
+  View: 'https://reactnative.dev/docs/view',
+  ViewProps: 'https://reactnative.dev/docs/view#props',
+  ViewStyle: 'https://reactnative.dev/docs/view-style-props',
   WebGL2RenderingContext: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext',
   WebGLFramebuffer: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGLFramebuffer',
 };
@@ -153,15 +182,17 @@ const hardcodedTypeLinks: Record<string, string> = {
 const renderWithLink = (name: string, type?: string) => {
   const replacedName = replaceableTypes[name] ?? name;
 
+  if (name.includes('.')) return name;
+
   return nonLinkableTypes.includes(replacedName) ? (
     replacedName + (type === 'array' ? '[]' : '')
   ) : (
-    <Link
+    <A
       href={hardcodedTypeLinks[replacedName] || `#${replacedName.toLowerCase()}`}
       key={`type-link-${replacedName}`}>
       {replacedName}
       {type === 'array' && '[]'}
-    </Link>
+    </A>
   );
 };
 
@@ -314,7 +345,7 @@ export const resolveTypeName = (
       return queryType.name;
     } else if (type === 'literal' && typeof value === 'boolean') {
       return `${value}`;
-    } else if (type === 'literal' && value) {
+    } else if (type === 'literal' && (value || (typeof value === 'number' && value === 0))) {
       return `'${value}'`;
     } else if (type === 'intersection' && types) {
       return types
@@ -329,6 +360,8 @@ export const resolveTypeName = (
       return `${objectType?.name}['${indexType?.value}']`;
     } else if (type === 'typeOperator') {
       return operator || 'undefined';
+    } else if (type === 'intrinsic') {
+      return name || 'undefined';
     } else if (value === null) {
       return 'null';
     }
@@ -348,11 +381,14 @@ export const renderParamRow = ({
   flags,
   defaultValue,
 }: MethodParamData): JSX.Element => {
-  const initValue = parseCommentContent(defaultValue || getTagData('default', comment)?.text);
+  const defaultData = getTagData('default', comment);
+  const initValue = parseCommentContent(
+    defaultValue || (defaultData ? getCommentContent(defaultData.content) : '')
+  );
   return (
     <Row key={`param-${name}`}>
       <Cell>
-        <B>{parseParamName(name)}</B>
+        <BOLD>{parseParamName(name)}</BOLD>
         {renderFlags(flags, initValue)}
       </Cell>
       <Cell>
@@ -361,7 +397,6 @@ export const renderParamRow = ({
       <Cell>
         <CommentTextBlock
           comment={comment}
-          components={mdInlineComponents}
           afterContent={renderDefaultValue(initValue)}
           emptyCommentFallback="-"
         />
@@ -370,7 +405,7 @@ export const renderParamRow = ({
   );
 };
 
-export const renderTableHeadRow = () => (
+export const ParamsTableHeadRow = () => (
   <TableHead>
     <Row>
       <HeaderCell>Name</HeaderCell>
@@ -380,9 +415,32 @@ export const renderTableHeadRow = () => (
   </TableHead>
 );
 
+const InheritPermalink = createPermalinkedComponent(
+  createTextComponent(
+    TextElement.SPAN,
+    css({ fontSize: 'inherit', fontWeight: 'inherit', color: 'inherit' })
+  ),
+  { baseNestingLevel: 2 }
+);
+
+export const BoxSectionHeader = ({
+  text,
+  exposeInSidebar,
+}: {
+  text: string;
+  exposeInSidebar?: boolean;
+}) => {
+  const TextWrapper = exposeInSidebar ? InheritPermalink : Fragment;
+  return (
+    <CALLOUT theme="secondary" weight="medium" css={STYLES_NESTED_SECTION_HEADER}>
+      <TextWrapper>{text}</TextWrapper>
+    </CALLOUT>
+  );
+};
+
 export const renderParams = (parameters: MethodParamData[]) => (
   <Table>
-    {renderTableHeadRow()}
+    <ParamsTableHeadRow />
     <tbody>{parameters?.map(renderParamRow)}</tbody>
   </Table>
 );
@@ -393,18 +451,18 @@ export const listParams = (parameters: MethodParamData[]) =>
 export const renderDefaultValue = (defaultValue?: string) =>
   defaultValue && defaultValue !== '...' ? (
     <div css={defaultValueContainerStyle}>
-      <B>Default:</B> <InlineCode>{defaultValue}</InlineCode>
+      <DEMI>Default:</DEMI> <CODE>{defaultValue}</CODE>
     </div>
   ) : undefined;
 
 export const renderTypeOrSignatureType = (
   type?: TypeDefinitionData,
-  signatures?: MethodSignatureData[],
+  signatures?: MethodSignatureData[] | TypeSignaturesData[],
   allowBlock: boolean = false
 ) => {
   if (signatures && signatures.length) {
     return (
-      <InlineCode key={`signature-type-${signatures[0].name}`}>
+      <CODE key={`signature-type-${signatures[0].name}`}>
         (
         {signatures?.map(({ parameters }) =>
           parameters?.map(param => (
@@ -414,19 +472,14 @@ export const renderTypeOrSignatureType = (
             </span>
           ))
         )}
-        ) =&gt;{' '}
-        {type ? (
-          <InlineCode key={`signature-type-${type.name}`}>{resolveTypeName(type)}</InlineCode>
-        ) : (
-          'void'
-        )}
-      </InlineCode>
+        ) =&gt; {signatures[0].type ? resolveTypeName(signatures[0].type) : 'void'}
+      </CODE>
     );
   } else if (type) {
     if (allowBlock) {
       return <APIDataType typeDefinition={type} />;
     }
-    return <InlineCode key={`signature-type-${type.name}`}>{resolveTypeName(type)}</InlineCode>;
+    return <CODE key={`signature-type-${type.name}`}>{resolveTypeName(type)}</CODE>;
   }
   return undefined;
 };
@@ -456,10 +509,10 @@ export const renderIndexSignature = (kind: TypeDocKind) =>
 export type CommentTextBlockProps = {
   comment?: CommentData;
   components?: MDComponents;
-  withDash?: boolean;
   beforeContent?: JSX.Element;
   afterContent?: JSX.Element;
   includePlatforms?: boolean;
+  inlineHeaders?: boolean;
   emptyCommentFallback?: string;
 };
 
@@ -468,90 +521,135 @@ export const parseCommentContent = (content?: string): string =>
 
 export const getCommentOrSignatureComment = (
   comment?: CommentData,
-  signatures?: MethodSignatureData[]
+  signatures?: MethodSignatureData[] | TypeSignaturesData[]
 ) => comment || (signatures && signatures[0]?.comment);
 
 export const getTagData = (tagName: string, comment?: CommentData) =>
   getAllTagData(tagName, comment)?.[0];
 
 export const getAllTagData = (tagName: string, comment?: CommentData) =>
-  comment?.tags?.filter(tag => tag.tag === tagName);
+  comment?.blockTags?.filter(tag => tag.tag.substring(1) === tagName);
 
 export const getTagNamesList = (comment?: CommentData) =>
   comment && [
-    ...(getAllTagData('platform', comment)?.map(platformData => platformData.text) || []),
+    ...(getAllTagData('platform', comment)?.map(platformData =>
+      getCommentContent(platformData.content)
+    ) || []),
     ...(getTagData('deprecated', comment) ? ['deprecated'] : []),
     ...(getTagData('experimental', comment) ? ['experimental'] : []),
   ];
 
+export const getMethodName = (
+  method: MethodDefinitionData,
+  apiName?: string,
+  name?: string,
+  parameters?: MethodParamData[]
+) => {
+  const isProperty = method.kind === TypeDocKind.Property && !parameters?.length;
+  const methodName = ((apiName && `${apiName}.`) ?? '') + (method.name || name);
+  if (!isProperty) {
+    return `${methodName}(${parameters ? listParams(parameters) : ''})`;
+  }
+
+  return methodName;
+};
+
 export const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
+
+const PARAM_TAGS_REGEX = /@tag-\S*/g;
+
+const getParamTags = (shortText?: string) => {
+  if (!shortText || !shortText.includes('@tag-')) {
+    return undefined;
+  }
+  return Array.from(shortText.matchAll(PARAM_TAGS_REGEX), match => match[0]);
+};
+
+export const getCommentContent = (content: CommentContentData[]) => {
+  return content
+    .map(entry => entry.text)
+    .join('')
+    .trim();
+};
 
 export const CommentTextBlock = ({
   comment,
-  components = mdComponents,
-  withDash,
   beforeContent,
   afterContent,
   includePlatforms = true,
+  inlineHeaders = false,
   emptyCommentFallback,
 }: CommentTextBlockProps) => {
-  const shortText = comment?.shortText?.trim().length ? (
-    <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
-      {parseCommentContent(comment.shortText)}
-    </ReactMarkdown>
-  ) : null;
-  const text = comment?.text?.trim().length ? (
-    <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
-      {parseCommentContent(comment.text)}
-    </ReactMarkdown>
-  ) : null;
+  const content = comment && comment.summary ? getCommentContent(comment.summary) : undefined;
 
-  if (emptyCommentFallback && (!comment || (!shortText && !text))) {
+  if (emptyCommentFallback && (!comment || !content || !content.length)) {
     return <>{emptyCommentFallback}</>;
   }
 
+  const paramTags = content ? getParamTags(content) : undefined;
+  const parsedContent = (
+    <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm]}>
+      {parseCommentContent(paramTags ? content?.replaceAll(PARAM_TAGS_REGEX, '') : content)}
+    </ReactMarkdown>
+  );
+
   const examples = getAllTagData('example', comment);
   const exampleText = examples?.map((example, index) => (
-    <React.Fragment key={'example-' + index}>
-      {components !== mdComponents ? (
+    <Fragment key={'example-' + index}>
+      {inlineHeaders ? (
         <div css={STYLES_EXAMPLE_IN_TABLE}>
-          <B>Example</B>
+          <BOLD>Example</BOLD>
         </div>
       ) : (
-        <div css={STYLES_NESTED_SECTION_HEADER}>
-          <H4>Example</H4>
-        </div>
+        <BoxSectionHeader text="Example" />
       )}
-      <ReactMarkdown components={components}>{example.text}</ReactMarkdown>
-    </React.Fragment>
+      <ReactMarkdown components={mdComponents}>{getCommentContent(example.content)}</ReactMarkdown>
+    </Fragment>
   ));
 
   const see = getTagData('see', comment);
-  const seeText = see ? (
-    <Quote>
-      <B>See: </B>
-      <ReactMarkdown components={mdInlineComponents}>{see.text}</ReactMarkdown>
-    </Quote>
-  ) : null;
+  const seeText = see && (
+    <Callout>
+      <ReactMarkdown components={mdComponents}>
+        {`**See:** ` + getCommentContent(see.content)}
+      </ReactMarkdown>
+    </Callout>
+  );
 
   const hasPlatforms = (getAllTagData('platform', comment)?.length || 0) > 0;
 
   return (
     <>
-      {!withDash && includePlatforms && hasPlatforms && (
+      {includePlatforms && hasPlatforms && (
         <APISectionPlatformTags comment={comment} prefix="Only for:" />
       )}
+      {paramTags && (
+        <>
+          <BOLD>Only for:&ensp;</BOLD>
+          {paramTags.map(tag => (
+            <Tag key={tag} name={tag.split('-')[1]} />
+          ))}
+        </>
+      )}
       {beforeContent}
-      {withDash && (shortText || text) && ' - '}
-      {withDash && includePlatforms && <APISectionPlatformTags comment={comment} />}
-      {shortText}
-      {text}
+      {parsedContent}
       {afterContent}
       {seeText}
       {exampleText}
     </>
   );
 };
+
+const getMonospaceHeader = (element: ComponentType<any>) => {
+  const level = parseInt(element?.displayName?.replace(/\D/g, '') ?? '0', 10);
+  return createPermalinkedComponent(element, {
+    baseNestingLevel: level !== 0 ? level : undefined,
+    sidebarType: HeadingType.InlineCode,
+  });
+};
+
+export const H3Code = getMonospaceHeader(RawH3);
+export const H4Code = getMonospaceHeader(RawH4);
 
 export const getComponentName = (name?: string, children: PropData[] = []) => {
   if (name && name !== 'default') return name;
@@ -560,17 +658,21 @@ export const getComponentName = (name?: string, children: PropData[] = []) => {
 };
 
 export const STYLES_APIBOX = css({
-  borderRadius: borderRadius.medium,
+  borderRadius: borderRadius.md,
   borderWidth: 1,
   borderStyle: 'solid',
   borderColor: theme.border.default,
-  padding: `${spacing[1]}px ${spacing[5]}px`,
-  boxShadow: shadows.micro,
+  padding: spacing[5],
+  boxShadow: shadows.xs,
   marginBottom: spacing[6],
   overflowX: 'hidden',
 
   h3: {
-    marginTop: spacing[4],
+    marginBottom: spacing[2.5],
+  },
+
+  'h2, h3, h4': {
+    marginTop: 0,
   },
 
   th: {
@@ -578,34 +680,52 @@ export const STYLES_APIBOX = css({
     padding: `${spacing[3]}px ${spacing[4]}px`,
   },
 
-  [`.css-${tableWrapperStyle.name}`]: {
-    boxShadow: 'none',
+  li: {
+    marginBottom: 0,
   },
 
-  [`@media screen and (max-width: ${Constants.breakpoints.mobile})`]: {
-    padding: `0 ${spacing[4]}px`,
+  [`.css-${tableWrapperStyle.name}`]: {
+    boxShadow: 'none',
+    marginBottom: 0,
+  },
+
+  [`@media screen and (max-width: ${breakpoints.medium + 124}px)`]: {
+    paddingInline: spacing[4],
   },
 });
 
 export const STYLES_APIBOX_NESTED = css({
   boxShadow: 'none',
+  marginBottom: spacing[4],
+  padding: `${spacing[4]}px ${spacing[5]}px 0`,
 
   h4: {
     marginTop: 0,
   },
 });
 
+export const STYLES_APIBOX_WRAPPER = css({
+  marginBottom: spacing[4],
+  padding: `${spacing[4]}px ${spacing[5]}px 0`,
+
+  [`.css-${tableWrapperStyle.name}:last-child`]: {
+    marginBottom: spacing[4],
+  },
+});
+
+export const STYLE_APIBOX_NO_SPACING = css({ marginBottom: -spacing[5] });
+
 export const STYLES_NESTED_SECTION_HEADER = css({
   display: 'flex',
   borderTop: `1px solid ${theme.border.default}`,
   borderBottom: `1px solid ${theme.border.default}`,
-  margin: `${spacing[6]}px -${spacing[5]}px ${spacing[4]}px`,
+  margin: `${spacing[4]}px -${spacing[5]}px ${spacing[4]}px`,
   padding: `${spacing[2.5]}px ${spacing[5]}px`,
-  backgroundColor: theme.background.secondary,
+  backgroundColor: theme.background.subtle,
 
   h4: {
     ...typography.fontSizes[16],
-    fontFamily: typography.fontFaces.medium,
+    fontWeight: 600,
     marginBottom: 0,
     marginTop: 0,
     color: theme.text.secondary,
@@ -613,9 +733,12 @@ export const STYLES_NESTED_SECTION_HEADER = css({
 });
 
 export const STYLES_NOT_EXPOSED_HEADER = css({
-  marginTop: spacing[5],
-  marginBottom: spacing[2],
+  marginBottom: spacing[1],
   display: 'inline-block',
+
+  code: {
+    marginBottom: 0,
+  },
 });
 
 export const STYLES_OPTIONAL = css({
@@ -632,8 +755,15 @@ export const STYLES_SECONDARY = css({
 
 const defaultValueContainerStyle = css({
   marginTop: spacing[2],
+  marginBottom: spacing[2],
+
+  '&:last-child': {
+    marginBottom: 0,
+  },
 });
 
 const STYLES_EXAMPLE_IN_TABLE = css({
   margin: `${spacing[2]}px 0`,
 });
+
+export const ELEMENT_SPACING = 'mb-4';

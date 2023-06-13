@@ -7,7 +7,7 @@ import type { ExpoConfig } from '@expo/config-types';
  * ```ts
  * {
  *   propName: 'expo.jsEngine',
- *   propValueGetter: (config) => config.android?.jsEngine ?? config.jsEngine ?? 'jsc',
+ *   propValueGetter: (config) => config.android?.jsEngine ?? config.jsEngine ?? 'hermes',
  * }
  * ```
  * Will lookup a value through the `propValueGetter` and update to `android/gradle.properties` / `ios/Podfile.properties.json`

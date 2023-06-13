@@ -1,44 +1,12 @@
 // NOTE(jim):
 // GETTING NESTED SCROLL RIGHT IS DELICATE BUSINESS. THEREFORE THIS COMPONENT
 // IS THE ONLY PLACE WHERE SCROLL CODE SHOULD BE HANDLED. THANKS.
-import { Global, css } from '@emotion/react';
-import { breakpoints, theme } from '@expo/styleguide';
+import { css } from '@emotion/react';
+import { theme } from '@expo/styleguide';
+import { breakpoints } from '@expo/styleguide-base';
 import * as React from 'react';
 
-import * as Constants from '~/constants/theme';
-import { SidebarHead } from '~/ui/components/Sidebar/SidebarHead';
-
-const STYLES_GLOBAL = css`
-  html {
-    background: ${theme.background.default};
-  }
-
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-    html {
-      /* width */
-      ::-webkit-scrollbar {
-        width: 6px;
-      }
-
-      /* Track */
-      ::-webkit-scrollbar-track {
-        backgroundColor: transparent,
-        cursor: pointer,
-      }
-
-      /* Handle */
-      ::-webkit-scrollbar-thumb {
-        background: ${theme.background.tertiary};
-        border-radius: 10px;
-      }
-
-      /* Handle on hover */
-      ::-webkit-scrollbar-thumb:hover {
-        background: ${theme.background.quaternary};
-      }
-    }
-  }
-`;
+import { SidebarHead, SidebarFooter } from '~/ui/components/Sidebar';
 
 const STYLES_CONTAINER = css`
   width: 100%;
@@ -137,7 +105,6 @@ const STYLES_CENTER = css`
 const STYLES_SCROLL_CONTAINER = css`
   height: 100%;
   width: 100%;
-  padding-bottom: 24px;
   overflow-y: scroll;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
@@ -155,12 +122,12 @@ const STYLES_SCROLL_CONTAINER = css`
 
   /* Handle */
   ::-webkit-scrollbar-thumb {
-    background: ${theme.background.tertiary};
+    background: ${theme.palette.gray5};
   }
 
   /* Handle on hover */
   ::-webkit-scrollbar-thumb:hover {
-    background: ${theme.background.quaternary};
+    background: ${theme.palette.gray6};
   }
 
   @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
@@ -255,13 +222,13 @@ export default class DocumentationNestedScrollLayout extends React.Component<Pro
 
     return (
       <div css={STYLES_CONTAINER}>
-        <Global styles={STYLES_GLOBAL} />
         <div css={STYLES_HEADER}>{header}</div>
         <div css={STYLES_CONTENT}>
           <div css={[STYLES_SIDEBAR, STYLES_LEFT]}>
             <SidebarHead sidebarActiveGroup={sidebarActiveGroup} />
             <ScrollContainer ref={this.sidebarRef} scrollPosition={sidebarScrollPosition}>
               {sidebar}
+              <SidebarFooter />
             </ScrollContainer>
           </div>
           <div css={[STYLES_CENTER, isMobileMenuVisible && STYLES_HIDDEN]}>

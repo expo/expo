@@ -14,7 +14,7 @@ function warnIfOnlyOneVersionChanged() {
   }
 
   let pages = danger.git.modified_files.filter(
-    file => file.startsWith('docs/pages') && file.endsWith('.md')
+    file => file.startsWith('docs/pages') && file.endsWith('.mdx')
   );
 
   let groupedByName = pages.reduce((all, path) => {

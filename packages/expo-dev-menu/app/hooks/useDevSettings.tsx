@@ -2,7 +2,6 @@ import * as React from 'react';
 
 import { DevLauncher } from '../native-modules/DevLauncher';
 import * as DevMenu from '../native-modules/DevMenu';
-import { useBottomSheet } from './useBottomSheet';
 
 // TODO - this would be better suited as an event emitter subscriber
 
@@ -30,7 +29,6 @@ export function DevSettingsProvider({ children, devSettings }: DevSettingsProvid
 }
 
 export function useDevSettings() {
-  const bottomSheet = useBottomSheet();
   const initialDevSettings = React.useContext(DevSettingsContext);
 
   const [devSettings, setDevSettings] = React.useState<DevMenu.DevSettings>(
@@ -58,44 +56,45 @@ export function useDevSettings() {
   const toggleElementInspector = React.useCallback(async () => {
     eagerToggleValue('isElementInspectorShown');
     await DevMenu.toggleElementInspectorAsync();
-    bottomSheet.collapse();
+    DevMenu.closeMenu();
   }, []);
 
   const toggleFastRefresh = React.useCallback(async () => {
     eagerToggleValue('isHotLoadingEnabled');
     await DevMenu.toggleFastRefreshAsync();
-    bottomSheet.collapse();
+    DevMenu.closeMenu();
   }, []);
 
   const toggleDebugRemoteJS = React.useCallback(async () => {
     eagerToggleValue('isDebuggingRemotely');
     await DevMenu.toggleDebugRemoteJSAsync();
-    bottomSheet.collapse();
+    DevMenu.closeMenu();
   }, []);
 
   const togglePerformanceMonitor = React.useCallback(async () => {
     eagerToggleValue('isPerfMonitorShown');
     await DevMenu.togglePerformanceMonitorAsync();
-    bottomSheet.collapse();
+    DevMenu.closeMenu();
   }, []);
 
   const navigateToLauncher = React.useCallback(async () => {
     await DevLauncher.navigateToLauncherAsync();
-    bottomSheet.collapse();
+    DevMenu.closeMenu();
   }, []);
 
   const reload = React.useCallback(async () => {
     await DevMenu.reloadAsync();
-    bottomSheet.collapse();
+    DevMenu.closeMenu();
   }, []);
 
   const openRNDevMenu = React.useCallback(async () => {
     await DevMenu.openDevMenuFromReactNative();
+    DevMenu.closeMenu();
   }, []);
 
   const openJSInspector = React.useCallback(async () => {
     await DevMenu.openJSInspector();
-    bottomSheet.collapse();
+    DevMenu.closeMenu();
   }, []);
 
   return {

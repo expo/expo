@@ -1,6 +1,6 @@
 {
   "name": "expo-manifests",
-  "version": "0.3.1",
+  "version": "0.6.0",
   "description": "Code to parse and use Expo and Expo Updates manifests.",
   "main": "index.js",
   "keywords": [
@@ -20,6 +20,6 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/module-template",
   "dependencies": {
-    "expo-json-utils": "~0.3.0"
+    "expo-json-utils": "~0.6.0"
   }
 }

@@ -25,6 +25,7 @@ rm -rf expoview/libs/ReactAndroid-temp
 pushd versioned-react-native
 set -e
 ./gradlew :ReactAndroid:assembleRelease
+./gradlew :ReactAndroid:hermes-engine:assembleRelease
 popd
 
 mkdir -p expoview/libs

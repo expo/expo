@@ -1,31 +1,24 @@
-import { getExpoHomeDirectory } from '@expo/config/build/getUserState';
 import { JSONValue } from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
 import fs from 'fs';
-import fetch from 'node-fetch';
-import path from 'path';
 import slugify from 'slugify';
 import { Stream } from 'stream';
 import tar from 'tar';
 import { promisify } from 'util';
 
-import { FileSystemCache } from '../api/rest/cache/FileSystemCache';
-import { wrapFetchWithCache } from '../api/rest/cache/wrapFetchWithCache';
+import { createCachedFetch } from '../api/rest/client';
 import { createEntryResolver, createFileTransform } from './createFileTransform';
 import { ensureDirectoryAsync } from './dir';
 import { CommandError } from './errors';
 
 const debug = require('debug')('expo:utils:npm') as typeof console.log;
 
-const cachedFetch = wrapFetchWithCache(
-  fetch,
-  new FileSystemCache({
-    cacheDirectory: getCacheFilePath(),
-    // Time to live. How long (in ms) responses remain cached before being automatically ejected. If undefined, responses are never automatically ejected from the cache.
-    // ttl: 1000,
-  })
-);
+const cachedFetch = createCachedFetch({
+  cacheDirectory: 'template-cache',
+  // Time to live. How long (in ms) responses remain cached before being automatically ejected. If undefined, responses are never automatically ejected from the cache.
+  // ttl: 1000,
+});
 
 export function sanitizeNpmPackageName(name: string): string {
   // https://github.com/npm/validate-npm-package-name/#naming-rules
@@ -125,10 +118,6 @@ type ExtractProps = {
   strip?: number;
   fileList?: string[];
 };
-
-function getCacheFilePath() {
-  return path.join(getExpoHomeDirectory(), 'template-cache');
-}
 
 async function createUrlStreamAsync(url: string) {
   const response = await cachedFetch(url);

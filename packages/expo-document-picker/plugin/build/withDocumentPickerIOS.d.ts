@@ -1,6 +1,6 @@
-import { ConfigPlugin } from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
-export declare type IosProps = {
+import { ExpoConfig } from 'expo/config';
+import { ConfigPlugin } from 'expo/config-plugins';
+export type IosProps = {
     /**
      * Sets the `com.apple.developer.icloud-container-environment` entitlement which is read by EAS CLI to set
      * the `iCloudContainerEnvironment` in the `xcodebuild` `exportOptionsPlist`.

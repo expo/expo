@@ -2,7 +2,12 @@
 
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
-#import <ExpoModulesCore/EXBarCodeScannerInterface.h>
+#import <ExpoModulesCore/EXBarcodeScannerInterface.h>
+
+typedef NS_ENUM(NSInteger, EXCameraType) {
+  EXCameraTypeFront = AVCaptureDevicePositionFront,
+  EXCameraTypeBack = AVCaptureDevicePositionBack
+};
 
 @interface EXBarCodeScanner : NSObject <EXBarCodeScannerInterface>
 

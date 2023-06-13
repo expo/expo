@@ -51,6 +51,30 @@ describe(getMalformedNativeProjectsAsync, () => {
     expect(malformed).toStrictEqual([]);
   });
 
+  it(`skips arbitrary platforms without verifiers`, async () => {
+    const projectRoot = '/';
+    vol.fromJSON(
+      {
+        ...Object.entries(rnFixture).reduce((prev, [key, value]) => {
+          // Skip ios project files
+          if (key.startsWith('ios')) return prev;
+          return {
+            ...prev,
+            [key]: value,
+          };
+        }, {}),
+      },
+      projectRoot
+    );
+    const malformed = await getMalformedNativeProjectsAsync(projectRoot, [
+      'windows',
+      'macos',
+      'tvos',
+      'androidtv',
+    ] as any);
+    expect(malformed).toStrictEqual([]);
+  });
+
   it(`finds a single platform`, async () => {
     const projectRoot = '/';
     vol.fromJSON(rnFixture, projectRoot);
@@ -66,7 +90,7 @@ describe(getMalformedNativeProjectsAsync, () => {
           // Skip core files to emulate a malformed project
           if (
             [
-              'ios/ReactNativeProject/Info.plist',
+              'ios/ReactNativeProject.xcodeproj/project.pbxproj',
               'android/app/src/main/java/com/reactnativeproject/MainApplication.java',
             ].includes(key)
           ) {
@@ -80,6 +104,7 @@ describe(getMalformedNativeProjectsAsync, () => {
       },
       projectRoot
     );
+
     const malformed = await getMalformedNativeProjectsAsync(projectRoot, ['ios', 'android']);
     expect(malformed).toStrictEqual(['ios', 'android']);
   });

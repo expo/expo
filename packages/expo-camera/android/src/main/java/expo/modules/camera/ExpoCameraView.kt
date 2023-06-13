@@ -30,13 +30,18 @@ import expo.modules.interfaces.facedetector.FaceDetectorInterface
 import expo.modules.interfaces.facedetector.FaceDetectorProviderInterface
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.Promise
-import expo.modules.kotlin.callbacks.callback
 import expo.modules.kotlin.views.ExpoView
 import java.io.File
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
+import expo.modules.camera.utils.mapX
+import expo.modules.camera.utils.mapY
+import kotlin.math.roundToInt
+import android.view.WindowManager
+import expo.modules.interfaces.barcodescanner.BarCodeScannerResult.BoundingBox
+import expo.modules.kotlin.viewevent.EventDispatcher
 
 class ExpoCameraView(
   context: Context,
@@ -56,9 +61,9 @@ class ExpoCameraView(
   private var isPaused = false
   private var isNew = true
 
-  private val onCameraReady by callback<Unit>()
-  private val onMountError by callback<CameraMountErrorEvent>()
-  private val onBarCodeScanned by callback<BarCodeScannedEvent>(
+  private val onCameraReady by EventDispatcher<Unit>()
+  private val onMountError by EventDispatcher<CameraMountErrorEvent>()
+  private val onBarCodeScanned by EventDispatcher<BarCodeScannedEvent>(
     /**
      * We want every distinct barcode to be reported to the JS listener.
      * If we return some static value as a coalescing key there may be two barcode events
@@ -68,15 +73,15 @@ class ExpoCameraView(
      */
     coalescingKey = { event -> (event.data.hashCode() % Short.MAX_VALUE).toShort() }
   )
-  private val onFacesDetected by callback<FacesDetectedEvent>(
+  private val onFacesDetected by EventDispatcher<FacesDetectedEvent>(
     /**
      * Should events about detected faces coalesce, the best strategy will be
      * to ensure that events with different faces count are always being transmitted.
      */
     coalescingKey = { event -> (event.faces.size % Short.MAX_VALUE).toShort() }
   )
-  private val onFaceDetectionError by callback<FaceDetectionErrorEvent>()
-  private val onPictureSaved by callback<PictureSavedEvent>(
+  private val onFaceDetectionError by EventDispatcher<FaceDetectionErrorEvent>()
+  private val onPictureSaved by EventDispatcher<PictureSavedEvent>(
     coalescingKey = { event ->
       val uriHash = event.data.getString("uri")?.hashCode() ?: -1
       (uriHash % Short.MAX_VALUE).toShort()
@@ -189,13 +194,91 @@ class ExpoCameraView(
     barCodeScanner?.setSettings(settings)
   }
 
+  // Even = portrait, odd = landscape
+  private fun getDeviceOrientation() =
+    (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.rotation
+
+  private fun transformBarCodeScannerResultToViewCoordinates(barCode: BarCodeScannerResult) {
+    val cornerPoints = barCode.cornerPoints
+
+    // For some reason they're swapped, I don't know anymore...
+    val cameraWidth = barCode.referenceImageHeight
+    val cameraHeight = barCode.referenceImageWidth
+
+    val facingBack = cameraView.facing == CameraView.FACING_BACK
+    val facingFront = cameraView.facing == CameraView.FACING_FRONT
+    val portrait = getDeviceOrientation() % 2 == 0
+    val landscape = getDeviceOrientation() % 2 == 1
+
+    if (facingBack && portrait) {
+      cornerPoints.mapX { cameraWidth - cornerPoints[it] }
+    }
+    if (facingBack && landscape) {
+      cornerPoints.mapY { cameraHeight - cornerPoints[it] }
+    }
+    if (facingFront) {
+      cornerPoints.mapX { cameraWidth - cornerPoints[it] }
+      cornerPoints.mapY { cameraHeight - cornerPoints[it] }
+    }
+
+    val scaleX = width / cameraWidth.toDouble()
+    val scaleY = height / cameraHeight.toDouble()
+
+    cornerPoints.mapX {
+      (cornerPoints[it] * scaleX)
+        .roundToInt()
+    }
+    cornerPoints.mapY {
+      (cornerPoints[it] * scaleY)
+        .roundToInt()
+    }
+
+    barCode.cornerPoints = cornerPoints
+  }
+
+  private fun getCornerPointsAndBoundingBox(cornerPoints: List<Int>, boundingBox: BoundingBox): Pair<ArrayList<Bundle>, Bundle> {
+    val density = cameraView.resources.displayMetrics.density
+    val convertedCornerPoints = ArrayList<Bundle>()
+    for (i in cornerPoints.indices step 2) {
+      val y = cornerPoints[i].toFloat() / density
+      val x = cornerPoints[i + 1].toFloat() / density
+      convertedCornerPoints.add(
+        Bundle().apply {
+          putFloat("x", x)
+          putFloat("y", y)
+        }
+      )
+    }
+    val boundingBoxBundle = Bundle().apply {
+      putParcelable(
+        "origin",
+        Bundle().apply {
+          putFloat("x", boundingBox.x.toFloat() / density)
+          putFloat("y", boundingBox.y.toFloat() / density)
+        }
+      )
+      putParcelable(
+        "size",
+        Bundle().apply {
+          putFloat("width", boundingBox.width.toFloat() / density)
+          putFloat("height", boundingBox.height.toFloat() / density)
+        }
+      )
+    }
+    return convertedCornerPoints to boundingBoxBundle
+  }
+
   override fun onBarCodeScanned(barCode: BarCodeScannerResult) {
     if (mShouldScanBarCodes) {
+      transformBarCodeScannerResultToViewCoordinates(barCode)
+      val (cornerPoints, boundingBox) = getCornerPointsAndBoundingBox(barCode.cornerPoints, barCode.boundingBox)
       onBarCodeScanned(
         BarCodeScannedEvent(
           target = id,
           data = barCode.value,
-          type = barCode.type
+          type = barCode.type,
+          cornerPoints = cornerPoints,
+          boundingBox = boundingBox
         )
       )
     }

@@ -90,7 +90,7 @@ describe('getProjectConfigFilePath', () => {
   it(`loads from project`, async () => {
     vol.fromJSON({ 'webpack.config.js': '{}' }, '/');
     const devServer = new WebpackBundlerDevServer('/', getPlatformBundlers({}));
-    expect(devServer.getProjectConfigFilePath()).toBe('webpack.config.js');
+    expect(devServer.getProjectConfigFilePath()).toBe('/webpack.config.js');
   });
   it(`cannot load from project`, async () => {
     vol.fromJSON({ 'package.json': '{}' }, '/');

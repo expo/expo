@@ -1,6 +1,6 @@
 {
   "name": "expo-navigation-bar",
-  "version": "1.3.0",
+  "version": "2.2.0",
   "description": "Interact with the system navigation bar",
   "main": "build/NavigationBar.js",
   "types": "build/NavigationBar.d.ts",
@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
-    "expo-module-scripts": "^2.0.0"
+    "expo-module-scripts": "^3.0.0"
   },
   "peerDependencies": {
     "expo": "*"

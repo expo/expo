@@ -26,7 +26,7 @@ export function parseAddress({
   return address;
 }
 
-export function parseKey(key: Contacts.FieldType) {
+export function parseKey(key: string) {
   return {
     [Contacts.Fields.ID]: 'ID',
     [Contacts.Fields.ContactType]: 'Contact Type',

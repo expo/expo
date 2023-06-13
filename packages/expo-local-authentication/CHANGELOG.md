@@ -10,6 +10,56 @@
 
 ### 💡 Others
 
+## 13.4.1 — 2023-06-13
+
+### 🐛 Bug fixes
+
+- [Android] Fixed device credentials fallback when biometric sensors are unavailable ([#22388](https://github.com/expo/expo/pull/22388) by [@hubastard](https://github.com/hubastard))
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
+## 13.4.0 — 2023-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 13.3.0 - 2023-04-10
+
+### 🐛 Bug fixes
+
+- On iOS, fix incorrect nil check when checking for `NSFaceIDUsageDescription` in the Info.plist. ([#21500](https://github.com/expo/expo/pull/21500) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 13.2.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 13.2.0 — 2023-02-03
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
+## 13.1.0 — 2022-12-30
+
+### 🎉 New features
+
+- Native module on iOS is now written in Swift using the Sweet API. ([#19980](https://github.com/expo/expo/pull/19980) by [@fobos531](https://github.com/fobos531))
+
+## 13.0.2 — 2022-11-02
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.1 — 2022-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
+### 💡 Others
+
+- [plugin] Migrate import from @expo/config-plugins to expo/config-plugins and @expo/config-types to expo/config. ([#18855](https://github.com/expo/expo/pull/18855) by [@brentvatne](https://github.com/brentvatne))
 - Updated docs link. ([#18972](https://github.com/expo/expo/pull/18972) by [@EvanBacon](https://github.com/EvanBacon))
 - Drop `@expo/config-plugins` dependency in favor of peer dependency on `expo`. ([#18595](https://github.com/expo/expo/pull/18595) by [@EvanBacon](https://github.com/EvanBacon))
 
@@ -153,3 +203,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - Added estimate of supported authentication types for Android. ([#8431](https://github.com/expo/expo/pull/8431) by [@bycedric](https://github.com/bycedric))
+
+### 💡 Others
+
+- Removed `console.warn` from the `authenticateAsync` function, preventing running it every time the user cancels authentication or authentication fails. ([#19803](https://github.com/expo/expo/pull/19803) by [@GustavoMont](https://github.com/GustavoMont))

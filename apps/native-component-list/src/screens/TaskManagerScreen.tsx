@@ -15,7 +15,7 @@ export default function TaskManagerScreen(props: {
     BackgroundFetch: undefined;
   }>;
 }) {
-  const [tasks, setTasks] = React.useState<TaskManager.RegisteredTask[]>([]);
+  const [tasks, setTasks] = React.useState<TaskManager.TaskManagerTask[]>([]);
 
   const updateRegisteredTasks = async () => {
     const tasks = await TaskManager.getRegisteredTasksAsync();

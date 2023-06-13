@@ -1,9 +1,9 @@
-import { by, device, element, expect as detoxExpect, waitFor } from 'detox';
+import { by, device, element, expect, waitFor } from 'detox';
 
 import { sleepAsync } from './Utils';
 import { expectResults } from './utils/report';
 
-const TESTS = [
+export const TESTS = [
   'Basic',
   // 'Asset',
   // 'FileSystem',
@@ -23,8 +23,6 @@ const TESTS = [
   'Random',
   'Permissions',
   'KeepAwake',
-  'FirebaseCore',
-  'FirebaseAnalytics',
   // 'Audio',
   'HTML',
 ];
@@ -37,15 +35,22 @@ describe('test-suite', () => {
       `passes ${testName}`,
       async () => {
         const platform = device.getPlatform();
+        const launchArgs = {
+          EXDevMenuIsOnboardingFinished: true,
+        };
+        if (platform === 'android') {
+          launchArgs['class'] = 'dev.expo.payments.DetoxTest';
+        }
         await device.launchApp({
           newInstance: true,
           url: `bareexpo://test-suite/run?tests=${testName}`,
+          launchArgs,
         });
 
-        const launchWaitingTime = platform === 'ios' ? 100 : 3000;
+        const launchWaitingTime = platform === 'ios' ? 1000 : 5000;
         await sleepAsync(launchWaitingTime);
 
-        await detoxExpect(element(by.id('test_suite_container'))).toExist();
+        await expect(element(by.id('test_suite_container'))).toExist();
         try {
           await waitFor(element(by.id('test_suite_text_results')))
             .toExist()
@@ -64,7 +69,7 @@ describe('test-suite', () => {
           });
         } else {
           // Platforms do no support `getAttributes()`, using text matching instead
-          await detoxExpect(element(by.id('test_suite_text_results'))).toHaveText(
+          await expect(element(by.id('test_suite_text_results'))).toHaveText(
             'Complete: 0 tests failed.'
           );
         }

@@ -201,12 +201,12 @@
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>
     <!-- WHEN_PREPARING_SHELL_REMOVE_FROM_HERE -->
     <!-- ADD DEV SETTINGS HERE -->
-    <!-- BEGIN_SDK_46 -->
-    <activity android:name="abi46_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
-    <!-- END_SDK_46 -->
-    <!-- BEGIN_SDK_45 -->
-    <activity android:name="abi45_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
-    <!-- END_SDK_45 -->
+    <!-- BEGIN_SDK_48 -->
+    <activity android:name="abi48_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
+    <!-- END_SDK_48 -->
+    <!-- BEGIN_SDK_47 -->
+    <activity android:name="abi47_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
+    <!-- END_SDK_47 -->
     <!-- WHEN_PREPARING_SHELL_REMOVE_TO_HERE -->
 
     <activity

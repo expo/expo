@@ -5,10 +5,22 @@ import path from 'path';
 
 import { CommandError } from '../../../utils/errors';
 
-const supportedPlatforms = ['ios', 'android', 'web'];
+const supportedPlatforms = ['ios', 'android', 'web', 'none'];
 
-/** Returns the relative entry file for the project.  */
+/** @returns the relative entry file for the project.  */
 export function resolveEntryPoint(
+  projectRoot: string,
+  platform?: string,
+  projectConfig?: ProjectConfig
+): string {
+  return path.relative(
+    projectRoot,
+    resolveAbsoluteEntryPoint(projectRoot, platform, projectConfig)
+  );
+}
+
+/** @returns the absolute entry file for the project.  */
+export function resolveAbsoluteEntryPoint(
   projectRoot: string,
   platform?: string,
   projectConfig?: ProjectConfig
@@ -30,5 +42,5 @@ export function resolveEntryPoint(
     );
   }
 
-  return path.relative(projectRoot, entry);
+  return entry;
 }

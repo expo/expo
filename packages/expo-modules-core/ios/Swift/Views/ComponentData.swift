@@ -7,7 +7,7 @@ import React
  but it also simplifies capturing the view config so we can omit some reflections that React Native executes.
  */
 @objc(EXComponentData)
-public final class ComponentData: RCTComponentData {
+public final class ComponentData: RCTComponentDataSwiftAdapter {
   /**
    Weak pointer to the holder of a module that the component data was created for.
    */
@@ -43,6 +43,41 @@ public final class ComponentData: RCTComponentData {
     return super.createPropBlock(propName, isShadowView: isShadowView)
   }
 
+  public override func setProps(_ props: [String: Any], forView view: RCTComponent) {
+    guard let view = view as? UIView else {
+      log.warn("Given view is not an UIView")
+      return
+    }
+    guard let viewManager = moduleHolder?.viewManager else {
+      log.warn("View manager '\(self.name)' not found")
+      return
+    }
+    guard let appContext = moduleHolder?.appContext else {
+      log.warn("App context has been lost")
+      return
+    }
+    let propsDict = viewManager.propsDict()
+    var remainingProps = props
+
+    for (key, prop) in propsDict {
+      if props.index(forKey: key) == nil {
+        continue
+      }
+
+      let newValue = props[key] as Any
+
+      // TODO: @tsapeta: Figure out better way to rethrow errors from here.
+      try? prop.set(value: Conversions.fromNSObject(newValue), onView: view, appContext: appContext)
+
+      remainingProps.removeValue(forKey: key)
+    }
+
+    // Let the base class `RCTComponentData` handle all remaining props.
+    super.setProps(remainingProps, forView: view)
+
+    viewManager.callLifecycleMethods(withType: .didUpdateProps, forView: view)
+  }
+
   /**
    The base `RCTComponentData` class does some Objective-C dynamic calls in this function, but we don't
    need to do these slow operations since the Sweet API gives us necessary details without reflections.
@@ -52,8 +87,12 @@ public final class ComponentData: RCTComponentData {
     var directEvents: [String] = []
     let superClass: AnyClass? = managerClass.superclass()
 
-    if let eventNames = moduleHolder?.viewManager?.eventNames {
-      for eventName in eventNames {
+    if let viewManager = moduleHolder?.viewManager {
+      for prop in viewManager.props {
+        // `id` allows every type to be passed in
+        propTypes[prop.name] = "id"
+      }
+      for eventName in viewManager.eventNames {
         directEvents.append(RCTNormalizeInputEventName(eventName))
         propTypes[eventName] = "BOOL"
       }
@@ -76,7 +115,7 @@ private func createEventSetter(eventName: String, bridge: RCTBridge?) -> RCTProp
     installEventDispatcher(forEvent: eventName, onView: target) { [weak target] (body: [String: Any]) in
       if let target = target {
         let componentEvent = RCTComponentEvent(name: eventName, viewTag: target.reactTag, body: body)
-        bridge?.eventDispatcher().send(componentEvent)
+        bridge?.eventDispatcher()?.send(componentEvent)
       }
     }
   }

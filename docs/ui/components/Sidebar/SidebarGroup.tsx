@@ -1,22 +1,29 @@
 import { css } from '@emotion/react';
-import { spacing } from '@expo/styleguide';
-import * as React from 'react';
+import { spacing } from '@expo/styleguide-base';
 
 import { SidebarNodeProps } from './Sidebar';
-import { SidebarTitle, SidebarLink } from './index';
+import { SidebarTitle, SidebarLink, SidebarSection } from './index';
 
 import { NavigationRoute } from '~/types/common';
 
 export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => (
-  <div css={STYLES_SECTION_CATEGORY}>
+  <div css={[STYLES_SECTION_CATEGORY]}>
     {!shouldSkipTitle(route, parentRoute) && (
       <SidebarTitle>{route.sidebarTitle || route.name}</SidebarTitle>
     )}
-    {(route.children || []).map(page => (
-      <SidebarLink key={`${route.name}-${page.name}`} info={page}>
-        {page.sidebarTitle || page.name}
-      </SidebarLink>
-    ))}
+    {(route.children || []).map(child =>
+      child.type === 'page' ? (
+        <SidebarLink key={`${route.name}-${child.name}`} info={child}>
+          {child.sidebarTitle || child.name}
+        </SidebarLink>
+      ) : (
+        <SidebarSection
+          key={`group-${child.name}-${route.name}`}
+          route={child}
+          parentRoute={route}
+        />
+      )
+    )}
   </div>
 );
 
@@ -39,6 +46,5 @@ const shouldSkipTitle = (info: NavigationRoute, parentGroup?: NavigationRoute) =
 };
 
 const STYLES_SECTION_CATEGORY = css({
-  marginBottom: spacing[4] + spacing[0.5],
-  marginTop: spacing[1],
+  marginBottom: spacing[5],
 });

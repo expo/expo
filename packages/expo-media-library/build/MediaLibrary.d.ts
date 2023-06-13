@@ -1,5 +1,5 @@
 import { PermissionResponse as EXPermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions, Subscription } from 'expo-modules-core';
-export declare type PermissionResponse = EXPermissionResponse & {
+export type PermissionResponse = EXPermissionResponse & {
     /**
      * Indicates if your app has access to the whole or only part of the photo library. Possible values are:
      * - `'all'` if the user granted your app access to the whole photo library
@@ -8,16 +8,16 @@ export declare type PermissionResponse = EXPermissionResponse & {
      */
     accessPrivileges?: 'all' | 'limited' | 'none';
 };
-export declare type MediaTypeValue = 'audio' | 'photo' | 'video' | 'unknown';
-export declare type SortByKey = 'default' | 'mediaType' | 'width' | 'height' | 'creationTime' | 'modificationTime' | 'duration';
-export declare type SortByValue = [SortByKey, boolean] | SortByKey;
-export declare type MediaTypeObject = {
+export type MediaTypeValue = 'audio' | 'photo' | 'video' | 'unknown';
+export type SortByKey = 'default' | 'mediaType' | 'width' | 'height' | 'creationTime' | 'modificationTime' | 'duration';
+export type SortByValue = [SortByKey, boolean] | SortByKey;
+export type MediaTypeObject = {
     audio: 'audio';
     photo: 'photo';
     video: 'video';
     unknown: 'unknown';
 };
-export declare type SortByObject = {
+export type SortByObject = {
     default: 'default';
     mediaType: 'mediaType';
     width: 'width';
@@ -26,7 +26,7 @@ export declare type SortByObject = {
     modificationTime: 'modificationTime';
     duration: 'duration';
 };
-export declare type Asset = {
+export type Asset = {
     /**
      * Internal ID that represents an asset.
      */
@@ -74,7 +74,7 @@ export declare type Asset = {
      */
     albumId?: string;
 };
-export declare type AssetInfo = Asset & {
+export type AssetInfo = Asset & {
     /**
      * Local URI for the asset.
      */
@@ -106,15 +106,15 @@ export declare type AssetInfo = Asset & {
      */
     orientation?: number;
 };
-export declare type MediaSubtype = 'depthEffect' | 'hdr' | 'highFrameRate' | 'livePhoto' | 'panorama' | 'screenshot' | 'stream' | 'timelapse';
-export declare type MediaLibraryAssetInfoQueryOptions = {
+export type MediaSubtype = 'depthEffect' | 'hdr' | 'highFrameRate' | 'livePhoto' | 'panorama' | 'screenshot' | 'stream' | 'timelapse';
+export type MediaLibraryAssetInfoQueryOptions = {
     /**
      * Whether allow the asset to be downloaded from network. Only available in iOS with iCloud assets.
      * @default true
      */
     shouldDownloadFromNetwork?: boolean;
 };
-export declare type MediaLibraryAssetsChangeEvent = {
+export type MediaLibraryAssetsChangeEvent = {
     /**
      * Whether the media library's changes could be described as "incremental changes".
      * `true` indicates the changes are described by the `insertedAssets`, `deletedAssets` and
@@ -140,11 +140,11 @@ export declare type MediaLibraryAssetsChangeEvent = {
      */
     updatedAssets?: Asset[];
 };
-export declare type Location = {
+export type Location = {
     latitude: number;
     longitude: number;
 };
-export declare type Album = {
+export type Album = {
     /**
      * Album ID.
      */
@@ -187,11 +187,11 @@ export declare type Album = {
      */
     locationNames?: string[];
 };
-export declare type AlbumType = 'album' | 'moment' | 'smartAlbum';
-export declare type AlbumsOptions = {
+export type AlbumType = 'album' | 'moment' | 'smartAlbum';
+export type AlbumsOptions = {
     includeSmartAlbums?: boolean;
 };
-export declare type AssetsOptions = {
+export type AssetsOptions = {
     /**
      * The maximum number of items on a single page.
      * @default 20
@@ -230,7 +230,7 @@ export declare type AssetsOptions = {
      */
     createdBefore?: Date | number;
 };
-export declare type PagedInfo<T> = {
+export type PagedInfo<T> = {
     /**
      * A page of [`Asset`](#asset)s fetched by the query.
      */
@@ -249,8 +249,8 @@ export declare type PagedInfo<T> = {
      */
     totalCount: number;
 };
-export declare type AssetRef = Asset | string;
-export declare type AlbumRef = Album | string;
+export type AssetRef = Asset | string;
+export type AlbumRef = Album | string;
 export { PermissionStatus, PermissionExpiration, EXPermissionResponse, PermissionHookOptions, Subscription, };
 /**
  * Possible media types.
@@ -284,7 +284,7 @@ export declare function getPermissionsAsync(writeOnly?: boolean): Promise<Permis
  *
  * @example
  * ```ts
- * const [status, requestPermission] = MediaLibrary.usePermissions();
+ * const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
  * ```
  */
 export declare const usePermissions: (options?: PermissionHookOptions<{
@@ -360,7 +360,7 @@ export declare function deleteAssetsAsync(assets: AssetRef[] | AssetRef): Promis
  * Provides more information about an asset, including GPS location, local URI and EXIF metadata.
  * @param asset An [Asset](#asset) or its ID.
  * @param options
- * @return [AssetInfo](#assetinfo) object, which is an `Asset` extended by an additional fields.
+ * @return An [AssetInfo](#assetinfo) object, which is an `Asset` extended by an additional fields.
  */
 export declare function getAssetInfoAsync(asset: AssetRef, options?: MediaLibraryAssetInfoQueryOptions): Promise<AssetInfo>;
 /**

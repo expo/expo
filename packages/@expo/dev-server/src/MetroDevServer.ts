@@ -5,6 +5,7 @@ import chalk from 'chalk';
 import type { Server as ConnectServer } from 'connect';
 import http from 'http';
 import type Metro from 'metro';
+import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
 
 import {
   buildHermesBundleAsync,
@@ -69,6 +70,7 @@ function getExpoMetroConfig(
   return require('@expo/metro-config');
 }
 
+/** @deprecated */
 export async function runMetroDevServerAsync(
   projectRoot: string,
   options: MetroDevServerOptions
@@ -110,6 +112,7 @@ export async function runMetroDevServerAsync(
 
   const server = await Metro.runServer(metroConfig, {
     hmrEnabled: true,
+    // @ts-expect-error: Inconsistent `websocketEndpoints` type between metro and @react-native-community/cli-server-api
     websocketEndpoints,
   });
 
@@ -138,7 +141,7 @@ export async function runMetroDevServerAsync(
 
 let nextBuildID = 0;
 
-// TODO: deprecate options.target
+/** @deprecated */
 export async function bundleAsync(
   projectRoot: string,
   expoConfig: ExpoConfig,
@@ -159,13 +162,14 @@ export async function bundleAsync(
   });
 
   const buildAsync = async (bundle: BundleOptions): Promise<BundleOutput> => {
-    const bundleOptions: Metro.BundleOptions = {
+    const isHermes = isEnableHermesManaged(expoConfig, bundle.platform);
+    const bundleOptions: MetroBundleOptions = {
       ...Server.DEFAULT_BUNDLE_OPTIONS,
       bundleType: 'bundle',
       platform: bundle.platform,
       entryFile: bundle.entryPoint,
       dev: bundle.dev ?? false,
-      minify: bundle.minify ?? !bundle.dev,
+      minify: !isHermes && (bundle.minify ?? !bundle.dev),
       inlineSourceMap: false,
       sourceMapUrl: bundle.sourceMapUrl,
       createModuleIdFactory: config.serializer.createModuleIdFactory,
@@ -188,7 +192,7 @@ export async function bundleAsync(
         platform: bundle.platform,
         entryFile: bundle.entryPoint,
         dev: bundle.dev ?? false,
-        minify: bundle.minify ?? false,
+        minify: !isHermes && (bundle.minify ?? !bundle.dev),
       },
     });
     const { code, map } = await metroServer.build(bundleOptions);
@@ -230,7 +234,7 @@ export async function bundleAsync(
         projectRoot,
         bundleOutput.code,
         bundleOutput.map,
-        bundle.minify
+        bundle.minify ?? !bundle.dev
       );
       bundleOutput.hermesBytecodeBundle = hermesBundleOutput.hbc;
       bundleOutput.hermesSourcemap = hermesBundleOutput.sourcemap;

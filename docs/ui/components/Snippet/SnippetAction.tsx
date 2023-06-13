@@ -1,7 +1,5 @@
-import { darkTheme, iconSize } from '@expo/styleguide';
-import React from 'react';
+import { Button, ButtonProps, mergeClasses } from '@expo/styleguide';
 
-import { Button, ButtonProps } from '~/ui/components/Button';
 import { FOOTNOTE } from '~/ui/components/Text';
 
 export type SnippetActionProps = ButtonProps & {
@@ -9,17 +7,22 @@ export type SnippetActionProps = ButtonProps & {
 };
 
 export const SnippetAction = (props: SnippetActionProps) => {
-  const { children, icon, alwaysDark = false, ...rest } = props;
-  const iconStyle = {
-    color: alwaysDark ? darkTheme.text.default : undefined,
-    size: iconSize.small,
-  };
-
-  const styledIcon = icon && React.cloneElement(icon as any, iconStyle);
+  const { children, leftSlot, rightSlot, alwaysDark = false, ...rest } = props;
 
   return (
-    <Button size="mini" theme="transparent" icon={styledIcon} {...rest}>
-      <FOOTNOTE css={alwaysDark && { color: darkTheme.text.default }}>{children}</FOOTNOTE>
+    <Button
+      size="xs"
+      theme="quaternary"
+      leftSlot={leftSlot}
+      rightSlot={rightSlot}
+      className={mergeClasses(
+        alwaysDark &&
+          'dark-theme border-transparent bg-[transparent] hocus:shadow-xs hocus:border-palette-gray9 hocus:bg-palette-gray5',
+        !alwaysDark &&
+          'border-0 rounded-none border-l border-l-default h-10 leading-10 px-4 hocus:bg-subtle hocus:shadow-none'
+      )}
+      {...rest}>
+      <FOOTNOTE className={mergeClasses(alwaysDark && '!text-palette-white')}>{children}</FOOTNOTE>
     </Button>
   );
 };

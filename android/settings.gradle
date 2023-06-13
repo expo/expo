@@ -12,36 +12,14 @@ include ':app'
 apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle")
 apply from: new File(rootDir, "versioning_linking.gradle")
 
-/* UNCOMMENT WHEN DISTRIBUTING
-useExpoModules([
-    exclude: [
-        'expo-module-template',
-        'expo-in-app-purchases',
-        'react-native-reanimated',
-        'expo-dev-menu-interface',
-        'expo-dev-menu',
-        'expo-dev-launcher',
-        'expo-dev-client'
-    ],
-    searchPaths: [
-      'enabled-modules'
-    ],
-    useAAR: true
-])
-
-include ':expo'
-project(':expo').projectDir = new File('../packages/expo/android')
-END UNCOMMENT WHEN DISTRIBUTING */
-
-
-// WHEN_DISTRIBUTING_REMOVE_FROM_HERE
 includeBuild('../react-native-lab/react-native/packages/react-native-gradle-plugin/')
 
 include ':expoview'
 include ':tools'
-include ':ReactAndroid'
-include ':ReactAndroid:hermes-engine'
-project(':ReactAndroid:hermes-engine').projectDir = new File(rootDir, 'ReactAndroid/hermes-engine')
+include ':packages:react-native:ReactAndroid'
+project(':packages:react-native:ReactAndroid').projectDir = new File(rootDir, '../react-native-lab/react-native/packages/react-native/ReactAndroid')
+include ':packages:react-native:ReactAndroid:hermes-engine'
+project(':packages:react-native:ReactAndroid:hermes-engine').projectDir = new File(rootDir, '../react-native-lab/react-native/packages/react-native/ReactAndroid/hermes-engine')
 include ':expo-modules-test-core'
 project(':expo-modules-test-core').projectDir = new File(rootDir, '../packages/expo-modules-test-core/android')
 
@@ -51,8 +29,8 @@ project(":expo-random").projectDir = new File("../packages/expo-random/android")
 
 [
     // ADD_NEW_SUPPORTED_ABIS_HERE
-    "abi46_0_0",
-    "abi45_0_0",
+    "abi48_0_0",
+    "abi47_0_0",
 ].forEach({ abiVariant ->
   include ":expoview-$abiVariant"
   project(":expoview-$abiVariant").projectDir = new File(rootDir, "versioned-abis/expoview-$abiVariant")
@@ -61,15 +39,17 @@ project(":expo-random").projectDir = new File("../packages/expo-random/android")
 useExpoModules([
     exclude : [
         'expo-module-template',
+        'expo-module-template-local',
+        'expo-in-app-purchases',
         'react-native-reanimated',
         'expo-dev-menu-interface',
         'expo-dev-menu',
         'expo-dev-launcher',
-        'expo-dev-client'
+        'expo-dev-client',
+        'expo-maps'
     ]
 ])
 
 useVendoredModulesForSettingsGradle('unversioned')
-useVendoredModulesForSettingsGradle('sdk46')
-
-// WHEN_DISTRIBUTING_REMOVE_TO_HERE
+useVendoredModulesForSettingsGradle('sdk48')
+useVendoredModulesForSettingsGradle('sdk47')

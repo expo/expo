@@ -31,7 +31,7 @@ export interface IOSManifest {
     /**
      * The build number specified in the embedded **Info.plist** value for `CFBundleVersion` in this app.
      * In a standalone app, you can set this with the `ios.buildNumber` value in **app.json**. This
-     * may differ from the value in `Constants.manifest.ios.buildNumber` because the manifest
+     * may differ from the value in `Constants.expoConfig.ios.buildNumber` because the manifest
      * can be updated, whereas this value will never change for a given native binary.
      * The value is set to `null` in case you run your app in Expo Go.
      */
@@ -77,7 +77,7 @@ export interface ManifestAsset {
 /**
  * A modern manifest.
  */
-export declare type Manifest = {
+export type Manifest = {
     id: string;
     createdAt: string;
     runtimeVersion: string;
@@ -86,7 +86,7 @@ export declare type Manifest = {
     metadata: object;
     extra?: ManifestExtra;
 };
-export declare type ManifestExtra = ClientScopingConfig & {
+export type ManifestExtra = ClientScopingConfig & {
     expoClient?: ExpoConfig & {
         /**
          * Only present during development using @expo/cli.
@@ -96,21 +96,21 @@ export declare type ManifestExtra = ClientScopingConfig & {
     expoGo?: ExpoGoConfig;
     eas?: EASConfig;
 };
-export declare type EASConfig = {
+export type EASConfig = {
     /**
      * The ID for this project if it's using EAS. UUID. This value will not change when a project is
      * transferred between accounts or renamed.
      */
     projectId?: string;
 };
-export declare type ClientScopingConfig = {
+export type ClientScopingConfig = {
     /**
      * An opaque unique string for scoping client-side data to this project. This value
      * will not change when a project is transferred between accounts or renamed.
      */
     scopeKey?: string;
 };
-export declare type ExpoGoConfig = {
+export type ExpoGoConfig = {
     mainModuleName?: string;
     debuggerHost?: string;
     developer?: {
@@ -119,7 +119,7 @@ export declare type ExpoGoConfig = {
     };
     packagerOpts?: ExpoGoPackagerOpts;
 };
-export declare type ExpoGoPackagerOpts = {
+export type ExpoGoPackagerOpts = {
     hostType?: string;
     dev?: boolean;
     strict?: boolean;
@@ -129,7 +129,7 @@ export declare type ExpoGoPackagerOpts = {
     lanType?: string;
     [key: string]: any;
 };
-export declare type ExpoClientConfig = ExpoConfig & {
+export type ExpoClientConfig = ExpoConfig & {
     /**
      * Published apps only.
      */
@@ -161,7 +161,7 @@ export declare type ExpoClientConfig = ExpoConfig & {
 /**
  * Represents an intersection of all possible Config types.
  */
-export declare type AppManifest = ExpoClientConfig & ExpoGoConfig & EASConfig & ClientScopingConfig & Record<string, any>;
+export type AppManifest = ExpoClientConfig & ExpoGoConfig & EASConfig & ClientScopingConfig & Record<string, any>;
 export interface PlatformManifest {
     ios?: IOSManifest;
     android?: AndroidManifest;
@@ -234,19 +234,36 @@ export interface NativeConstants {
      */
     nativeBuildVersion: string | null;
     /**
-     * Classic manifest for Expo apps using classic updates.
+     * Classic manifest for Expo apps using classic updates and the updates embedded in builds.
      * Returns `null` in bare workflow and when `manifest2` is non-null.
+     * @deprecated Use `Constants.expoConfig` instead, which behaves more consistently across EAS Build
+     * and EAS Update.
      */
     manifest: AppManifest | null;
     /**
-     * New manifest for Expo apps using modern Expo Updates.
-     * Returns `null` in bare workflow and when `manifest` is non-null.
+     * Manifest for Expo apps using modern Expo Updates from a remote source, such as apps that
+     * use EAS Update. Returns `null` in bare workflow and when `manifest` is non-null.
+     * `Constants.expoConfig` should be used for accessing the Expo config object.
      */
     manifest2: Manifest | null;
     /**
-     * The standard Expo config object defined in `app.config.js` files. For both classic and new manifests.
+     * The standard Expo config object defined in `app.json` and `app.config.js` files. For both
+     * classic and modern manifests, whether they are embedded or remote.
      */
-    expoConfig: ExpoConfig | null;
+    expoConfig: (ExpoConfig & {
+        /**
+         * Only present during development using @expo/cli.
+         */
+        hostUri?: string;
+    }) | null;
+    /**
+     * The standard Expo Go config object populated when running in Expo Go.
+     */
+    expoGoConfig: ExpoGoConfig | null;
+    /**
+     * The standard EAS config object populated when using EAS.
+     */
+    easConfig: EASConfig | null;
     /**
      * A string that is unique to the current session of your app. It is different across apps and
      * across multiple launches of the same app.

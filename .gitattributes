@@ -2,3 +2,11 @@
 packages/*/build/** -diff linguist-generated
 packages/*/plugin/build/** -diff linguist-generated
 packages/@*/*/build/** -diff linguist-generated
+
+ios/vendored/** linguist-vendored
+ios/versioned/** linguist-vendored
+ios/versioned-react-native/** linguist-vendored
+android/vendored/** linguist-vendored
+android/versioned-abis/** linguist-vendored
+android/versioned-react-native/** linguist-vendored
+packages/expo-dev-menu/vendored/** linguist-vendored

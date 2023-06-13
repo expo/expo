@@ -1,0 +1,316 @@
+---
+title: Authentication with Facebook and AuthSession API
+sidebar_title: Using Facebook authentication
+description: A guide on setting up and using Facebook authentication with AuthSession API in your Expo app.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+import { Collapsible } from '~/ui/components/Collapsible';
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { Step } from '~/ui/components/Step';
+
+AuthSession API allows [browser-based authentication](/versions/latest/sdk/auth-session/#how-web-browser-based-authentication-flows-work) (using OAuth or OpenID Connect) to your project for Android, iOS, and the web. This guide provides steps on configuring and using the API with Facebook and a [development build](/develop/development-builds/create-a-build/).
+
+<Step label="1">
+
+## Install libraries
+
+To use AuthSession API, you'll need to install the following packages in your project:
+
+<Terminal cmd={['$ npx expo install expo-auth-session expo-crypto expo-web-browser']} />
+
+<Collapsible summary="Using SDK 47 or below?">
+
+If you're using SDK 47 or below, you'll need to install `expo-random` instead of `expo-crypto` package:
+
+<Terminal cmd={['$ npx expo install expo-auth-session expo-random expo-web-browser']} />
+
+`expo-random` is deprecated from SDK 48 and above and is replaced by `expo-crypto`.
+
+</Collapsible>
+
+</Step>
+
+<Step label="2">
+## Add a scheme
+
+For a development build and when setting up production apps, define [`scheme`](/versions/latest/config/app/#scheme) in the **app.json**. It is required for the authentication flow to complete the process and redirect the user back to the app. It handles the process of deep linking back to the app.
+
+```json app.json
+{
+  "expo": {
+    "scheme": "yourscheme"
+  }
+}
+```
+
+If you do not provide a value for the `scheme`, the authentication flow will complete, however, the user will not be redirected back to the app. They will have to manually exit the authentication popup which will result in the rejection of the process.
+
+#### Android only
+
+For Android, you'll need to add a scheme that contains the app ID as a prefix. Facebook requires this scheme to be able to redirect the user back to the app after the authentication process is complete.
+
+For example, if your app ID is `1234567890`, then the scheme will be `fb1234567890`. Modify the `scheme` in app config and convert it to an array if you have more than one custom scheme to add this scheme:
+
+```json app.json
+{
+  "expo": {
+    "scheme": ["yourscheme", "fb1234567890"]
+  }
+}
+```
+
+</Step>
+
+<Step label="3">
+
+## Create a Facebook app
+
+To use Facebook authentication, you'll need to create a Facebook app, enable the Facebook login product and get the app ID.
+
+- Go to [developers.facebook.com/apps](https://developers.facebook.com/apps/) and click the **Create App** button.
+- After the Facebook app is created, you'll be redirected to the app dashboard that shows a list of products.
+- Browse through the list and select **Facebook for Login**. Click **Set up**. This will open **Facebook Login Settings**.
+- Under **Client OAuth settings**, enable **Embedded Browser OAuth Login**.
+- Under **Valid OAuth Redirect URIs**, add the redirect string of the following format:
+
+```shell
+scheme://expo-development-client/?url={manifestUrl}
+
+# Example
+yourscheme://expo-development-client/?url=https://u.expo.dev/[your-eas-build-project-id]?channel-name=[channel-name]
+```
+
+- Replace `scheme` with the one you defined in the previous step. To learn what goes in the `manifestUrl` parameter, read the [development workflows](/develop/development-builds/development-workflows/#deep-linking-urls) section. Click **Save changes**.
+
+  <ImageSpotlight
+    alt="Settings for Facebook Login product."
+    src="/static/images/authentication/facebook-login-settings.jpg"
+    style={{ maxWidth: 720 }}
+  />
+
+- Navigate to **Settings > Basic**, add a **Privacy Policy URL** for your app and click **Save changes**. This will help you get advance access (if required) for **public_profile** permission.
+
+  <ImageSpotlight
+    alt="Settings for Facebook app."
+    src="/static/images/authentication/facebook-app-settings.jpg"
+    style={{ maxWidth: 720 }}
+  />
+
+- Also, copy the **App ID** as shown in the above screenshot. You'll need it in the next step.
+
+</Step>
+
+## Using AuthSession API
+
+<Step label="1">
+
+### Add import statements
+
+Add the following import statements to your project code. The `WebBrowser` API, `AuthSession` API, and the `Facebook` provider from the `expo-auth-session` are essential to handle the authentication process.
+
+```js App.js
+import * as AuthSession from 'expo-auth-session';
+import * as Facebook from 'expo-auth-session/providers/facebook';
+import * as WebBrowser from 'expo-web-browser';
+```
+
+</Step>
+
+<Step label="2">
+
+### Add a method to dismiss the web popup
+
+Expo's [WebBrowser API](/versions/latest/sdk/webbrowser/) provides `maybeCompleteAuthSession()` method to dismiss the popup when the authentication sessions are completed successfully. It uses the redirect URL added in the provider's authorized list of URLs.
+
+Invoke this method to the app screen you want to redirect back to by adding the following code snippet:
+
+```js App.js
+WebBrowser.maybeCompleteAuthSession();
+```
+
+If this method is not invoked, the popup will not dismiss itself.
+
+</Step>
+
+<Step label="3">
+
+### Pass the client ID to the provider
+
+[`Facebook.useAuthRequest()`](/versions/latest/sdk/auth-session/#useauthrequest-1) hook provides `request` and `response` objects. It allows for async setup, which means that a mobile web browser won't block the request. It also accepts an object of client IDs that are generated in the Facebook app.
+
+Define this hook inside the React component by adding the code snippet below:
+
+{/* prettier-ignore */}
+```js App.js
+export default function App() {
+  const [request, response, promptAsync] = Facebook.useAuthRequest({
+    clientId: "FB_APP_ID",
+  });
+  /* @hide ... */ /* @end */
+}
+```
+
+In the above code snippet, replace the `FB_APP_ID` with the client ID generated in the Facebook app.
+
+</Step>
+
+<Step label="4">
+
+### Send the auth request
+
+`useAuthRequest()` hook also provides `promptAsync()` that prompts the user to authenticate by opening a web browser. It is invoked when the user clicks the login button. The button must be disabled until the request is loaded asynchronously. This is done by passing the `request` object from the `useAuthRequest` hook to the `disabled` prop of the button component.
+
+An example button component that invokes `promptAsync()` is shown below:
+
+```jsx App.js
+<Button
+  disabled={!request}
+  title="Sign in with Facebook"
+  onPress={() => {
+    promptAsync();
+  }}
+/>
+```
+
+</Step>
+
+## Minimal working example
+
+In the code snippet below, you can see a minimal working example of the AuthSession API with the Facebook provider. After successful authentication, a user's public information is fetched and displayed on the app screen.
+
+{/* prettier-ignore */}
+```jsx App.js
+import { useState, useEffect } from "react";
+import { Button, Image, StyleSheet, Text, View } from "react-native";
+import * as AuthSession from "expo-auth-session";
+import * as Facebook from "expo-auth-session/providers/facebook";
+import * as WebBrowser from "expo-web-browser";
+
+/* @info This automatically dismisses the modal when an auth session is completed. If it is not provided, the popup window will remain open. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+export default function App() {
+  const [user, setUser] = useState(null);
+  /* @info The useAuthRequest hook provides instances and methods to invoke an auth session. It also accepts an object of client IDs for supported platforms.*/
+  const [request, response, promptAsync] = Facebook.useAuthRequest({
+    clientId: "FB_APP_ID",
+  });
+  /* @end */
+
+  if (request) {
+    console.log(
+      "You need to add this url to your authorized redirect urls on your Facebook app: " +
+        request.redirectUri
+    );
+  }
+
+  useEffect(() => {
+    if (response && response.type === "success" && response.authentication) {
+      (async () => {
+        const userInfoResponse = await fetch(
+          /* @info The endpoint to fetch user information. */
+          `https://graph.facebook.com/me?access_token=${response.authentication.accessToken}&fields=id,name,picture.type(large)`
+          /* @end */
+        );
+        const userInfo = await userInfoResponse.json();
+        setUser(userInfo);
+      })();
+    }
+  }, [response]);
+
+  /* @info Prompt the user to authenticate in a user interaction or web browsers will block it.*/
+  const handlePressAsync = async () => {
+    const result = await promptAsync();
+    if (result.type !== "success") {
+      alert("Uh oh, something went wrong");
+      return;
+    }
+  };
+  /* @end */
+
+  return (
+    <View style={styles.container}>
+      {user ? (
+        <Profile user={user} />
+      ) : (
+        <Button
+          /* @info The button is disabled until the request is loaded asynchronously.*/
+          disabled={!request}
+          /* @end */
+          title="Sign in with Facebook"
+          onPress={handlePressAsync}
+        />
+      )}
+    </View>
+  );
+}
+
+function Profile({ user }) {
+  return (
+    <View style={styles.profile}>
+      <Image source={{ uri: user.picture.data.url }} style={styles.image} />
+      <Text style={styles.name}>{user.name}</Text>
+      <Text>ID: {user.id}</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  profile: {
+    alignItems: "center",
+  },
+  name: {
+    fontSize: 20,
+  },
+  image: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+  },
+});
+```
+
+## Testing your app
+
+**For a development build**, see [Use development builds](/develop/development-builds/use-development-builds/#start-the-development-server) for further instructions on how to start the development server or run [`npx expo run:android` or `npx expo run:ios`](/more/expo-cli/#compiling) command to test the native project locally.
+
+## Troubleshooting
+
+<Collapsible summary="URI scheme in bare workflow">
+
+For a development build or projects using EAS, the URI scheme is automatically added.
+
+For bare workflow, your project needs to conform to the URI scheme matching your `android.package` for Android and `ios.bundleIdentifier` for iOS. You can do that by running the following command for each platform:
+
+<Tabs>
+
+<Tab label="Android">
+
+<Terminal cmd={['$ npx uri-scheme add your-android.package --android']} />
+
+</Tab>
+
+<Tab label="iOS">
+
+<Terminal cmd={['$ npx uri-scheme add your-ios.bundleIdentifier --ios']} />
+
+</Tab>
+
+</Tabs>
+
+</Collapsible>
+
+## Learn more
+
+- [AuthSession API reference](/versions/latest/sdk/auth-session/)
+- [How browser-based authentication works?](/versions/latest/sdk/auth-session/#how-web-browser-based-authentication-flows-work)
+- [Facebook authentication provider reference](/versions/latest/sdk/auth-session/#facebook)
+- Alternatively, you can also use [`react-native-fbsdk-next`](https://github.com/thebergamo/react-native-fbsdk-next#expo-installation) library with a [development build](/develop/development-builds/introduction/).

@@ -58,6 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) RNSScreenStackPresentation stackPresentation;
 @property (nonatomic) RNSScreenSwipeDirection swipeDirection;
 @property (nonatomic) RNSScreenReplaceAnimation replaceAnimation;
+
 @property (nonatomic, retain) NSNumber *transitionDuration;
 @property (nonatomic, readonly) BOOL dismissed;
 @property (nonatomic) BOOL hideKeyboardOnSwipe;
@@ -74,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UIInterfaceOrientationMask screenOrientation;
 @property (nonatomic) BOOL statusBarHidden;
 @property (nonatomic) BOOL homeIndicatorHidden;
-#endif
+#endif // !TARGET_OS_TV
 
 #ifdef RN_FABRIC_ENABLED
 // we recreate the behavior of `reactSetFrame` on new architecture
@@ -89,7 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) RCTDirectEventBlock onWillDisappear;
 @property (nonatomic, copy) RCTDirectEventBlock onNativeDismissCancelled;
 @property (nonatomic, copy) RCTDirectEventBlock onTransitionProgress;
-#endif
+#endif // RN_FABRIC_ENABLED
 
 - (void)notifyFinishTransitioning;
 
@@ -103,6 +104,7 @@ NS_ASSUME_NONNULL_BEGIN
 #endif
 
 - (void)notifyTransitionProgress:(double)progress closing:(BOOL)closing goingForward:(BOOL)goingForward;
+- (BOOL)isModal;
 
 @end
 

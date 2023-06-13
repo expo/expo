@@ -4,7 +4,7 @@ import {
   PermissionExpiration,
   PermissionHookOptions,
 } from 'expo-modules-core';
-import { ViewProps } from 'react-native';
+import type { ViewProps } from 'react-native';
 
 export enum CameraType {
   front = 'front',
@@ -85,7 +85,10 @@ export enum VideoCodec {
   AppleProRes4444 = 'ap4h',
 }
 
-// @needsAudit
+/**
+ * This option specifies the stabilization mode to use when recording a video.
+ * @platform ios
+ */
 export enum VideoStabilization {
   off = 'off',
   standard = 'standard',
@@ -93,7 +96,7 @@ export enum VideoStabilization {
   auto = 'auto',
 }
 
-// @needsAudit
+// @docsMissing
 export enum VideoQuality {
   '2160p' = '2160p',
   '1080p' = '1080p',
@@ -102,41 +105,69 @@ export enum VideoQuality {
   '4:3' = '4:3',
 }
 
-// @needsAudit
-export type ImageParameters = {
-  imageType: ImageType;
-  quality: number | null;
-};
+export enum CameraOrientation {
+  portrait = 1,
+  portraitUpsideDown = 2,
+  landscapeLeft = 3,
+  landscapeRight = 4,
+}
 
+// @docsMissing
+/**
+ * @hidden We do not expose related web methods in docs.
+ * @platform web
+ */
 export type ImageSize = {
   width: number;
   height: number;
 };
 
-export type WebCameraSettings = Partial<{
-  autoFocus: string;
-  flashMode: string;
-  whiteBalance: string;
-  exposureCompensation: number;
-  colorTemperature: number;
-  iso: number;
-  brightness: number;
-  contrast: number;
-  saturation: number;
-  sharpness: number;
-  focusDistance: number;
-  zoom: number;
-}>;
+// @docsMissing
+/**
+ * @hidden We do not expose related web methods in docs.
+ * @platform web
+ */
+export type WebCameraSettings = {
+  autoFocus?: string;
+  flashMode?: string;
+  whiteBalance?: string;
+  exposureCompensation?: number;
+  colorTemperature?: number;
+  iso?: number;
+  brightness?: number;
+  contrast?: number;
+  saturation?: number;
+  sharpness?: number;
+  focusDistance?: number;
+  zoom?: number;
+};
 
+// @needsAudit
 export type CameraCapturedPicture = {
+  /**
+   * Captured image width.
+   */
   width: number;
+  /**
+   * Captured image height.
+   */
   height: number;
+  /**
+   * On web, the value of `uri` is the same as `base64` because file system URLs are not supported in the browser.
+   */
   uri: string;
+  /**
+   * A Base64 representation of the image.
+   */
   base64?: string;
+  /**
+   * On Android and iOS this object may include various fields based on the device and operating system.
+   * On web, it is a partial representation of the [`MediaTrackSettings`](https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackSettings) dictionary.
+   */
   exif?: Partial<MediaTrackSettings> | any;
 };
 
-// @needsAudit @docsMissing
+// @needsAudit
 export type CameraPictureOptions = {
   /**
    * Specify the quality of compression, from 0 to 1. 0 means compress for small size, 1 means compress for maximum quality.
@@ -195,6 +226,10 @@ export type CameraPictureOptions = {
    * @hidden
    */
   fastMode?: boolean;
+  /**
+   * @hidden
+   */
+  maxDownsampling?: number;
 };
 
 // @needsAudit
@@ -235,22 +270,68 @@ export type CameraRecordingOptions = {
   codec?: VideoCodec;
 };
 
+/**
+ * @hidden
+ */
 export type PictureSavedListener = (event: {
   nativeEvent: { data: CameraCapturedPicture; id: number };
 }) => void;
 
+/**
+ * @hidden
+ */
 export type CameraReadyListener = () => void;
 
+/**
+ * @hidden
+ */
+export type ResponsiveOrientationChangedListener = (event: {
+  nativeEvent: ResponsiveOrientationChanged;
+}) => void;
+
+export type ResponsiveOrientationChanged = { orientation: CameraOrientation };
+
+/**
+ * @hidden
+ */
 export type MountErrorListener = (event: { nativeEvent: CameraMountError }) => void;
 
+// @docsMissing
 export type CameraMountError = { message: string };
 
+// @docsMissing
 export type Point = {
   x: number;
   y: number;
 };
 
+export type BarCodeSize = {
+  /**
+   * The height value.
+   */
+  height: number;
+  /**
+   * The width value.
+   */
+  width: number;
+};
+
+/**
+ * These coordinates are represented in the coordinate space of the camera source (e.g. when you
+ * are using the camera view, these values are adjusted to the dimensions of the view).
+ */
 export type BarCodePoint = Point;
+
+export type BarCodeBounds = {
+  /**
+   * The origin point of the bounding box.
+   */
+  origin: BarCodePoint;
+  /**
+   * The size of the bounding box.
+   */
+  size: BarCodeSize;
+};
 
 // @needsAudit
 export type BarCodeScanningResult = {
@@ -264,38 +345,30 @@ export type BarCodeScanningResult = {
   data: string;
   /**
    * Corner points of the bounding box.
+   * `cornerPoints` is not always available and may be empty. On iOS, for `code39` and `pdf417`
+   * you don't get this value.
    */
-  cornerPoints?: BarCodePoint[];
+  cornerPoints: BarCodePoint[];
+  /**
+   * The [BarCodeBounds](#barcodebounds) object.
+   * `bounds` in some case will be representing an empty rectangle.
+   * Moreover, `bounds` doesn't have to bound the whole barcode.
+   * For some types, they will represent the area used by the scanner.
+   */
+  bounds: BarCodeBounds;
 };
 
-export type Face = {
-  faceID: number;
-  bounds: {
-    origin: Point;
-    size: {
-      height: number;
-      width: number;
-    };
-  };
-  rollAngle: number;
-  yawAngle: number;
-  smilingProbability: number;
-  leftEarPosition: Point;
-  rightEarPosition: Point;
-  leftEyePosition: Point;
-  leftEyeOpenProbability: number;
-  rightEyePosition: Point;
-  rightEyeOpenProbability: number;
-  leftCheekPosition: Point;
-  rightCheekPosition: Point;
-  mouthPosition: Point;
-  leftMouthPosition: Point;
-  rightMouthPosition: Point;
-  noseBasePosition: Point;
+export type FaceDetectionResult = {
+  /**
+   * Array of objects representing results of face detection.
+   * See [`FaceFeature`](facedetector/#facefeature) in FaceDetector documentation for more details.
+   */
+  faces: object[];
 };
 
-export type FaceDetectionResult = { faces: Face[] };
-
+/**
+ * @hidden
+ */
 export type ConstantsType = {
   Type: CameraType;
   FlashMode: FlashMode;
@@ -370,7 +443,7 @@ export type CameraProps = ViewProps & {
    * You can read more about each stabilization type in [Apple Documentation](https://developer.apple.com/documentation/avfoundation/avcapturevideostabilizationmode).
    * @platform ios
    */
-  videoStabilizationMode?: number;
+  videoStabilizationMode?: VideoStabilization;
   /**
    * Callback invoked when camera preview could not been started.
    * @param event Error object that contains a `message`.
@@ -403,7 +476,8 @@ export type CameraProps = ViewProps & {
    */
   faceDetectorSettings?: object;
   /**
-   * Callback invoked with results of face detection on the preview. See [FaceDetector documentation](facedetector/#detectionresult) for details.
+   * Callback invoked with results of face detection on the preview.
+   * See [`DetectionResult`](facedetector/#detectionresult) in FaceDetector documentation for more details.
    * @param faces
    */
   onFacesDetected?: (faces: FaceDetectionResult) => void;
@@ -412,8 +486,23 @@ export type CameraProps = ViewProps & {
    * @platform web
    */
   poster?: string;
+  /**
+   * Whether to allow responsive orientation of the camera when the screen orientation is locked (i.e. when set to `true`
+   * landscape photos will be taken if the device is turned that way, even if the app or device orientation is locked to portrait)
+   * @platform ios
+   */
+  responsiveOrientationWhenOrientationLocked?: boolean;
+  /**
+   * Callback invoked when responsive orientation changes. Only applicable if `responsiveOrientationWhenOrientationLocked` is `true`
+   * @param event result object that contains updated orientation of camera
+   * @platform ios
+   */
+  onResponsiveOrientationChanged?: (event: ResponsiveOrientationChanged) => void;
 };
 
+/**
+ * @hidden
+ */
 export type CameraNativeProps = {
   pointerEvents?: any;
   style?: any;
@@ -424,6 +513,7 @@ export type CameraNativeProps = {
   onFacesDetected?: (event: { nativeEvent: FaceDetectionResult }) => void;
   onFaceDetectionError?: (event: { nativeEvent: Error }) => void;
   onPictureSaved?: PictureSavedListener;
+  onResponsiveOrientationChanged?: ResponsiveOrientationChangedListener;
   type?: number | string;
   flashMode?: number | string;
   autoFocus?: string | boolean | number;
@@ -438,8 +528,10 @@ export type CameraNativeProps = {
   ratio?: string;
   useCamera2Api?: boolean;
   poster?: string;
+  responsiveOrientationWhenOrientationLocked?: boolean;
 };
 
+// @docsMissing
 export type BarCodeSettings = {
   barCodeTypes: string[];
   interval?: number;

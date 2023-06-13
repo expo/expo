@@ -1,4 +1,4 @@
-import { AppJSONConfig, ConfigFilePaths, ExpoConfig, ExpRc, GetConfigOptions, PackageJSONConfig, ProjectConfig, ProjectTarget, WriteConfigOptions } from './Config.types';
+import { AppJSONConfig, ConfigFilePaths, ExpoConfig, GetConfigOptions, PackageJSONConfig, ProjectConfig, ProjectTarget, WriteConfigOptions } from './Config.types';
 /**
  * Evaluate the config for an Expo project.
  * If a function is exported from the `app.config.js` then a partial config will be passed as an argument.
@@ -27,22 +27,12 @@ import { AppJSONConfig, ConfigFilePaths, ExpoConfig, ExpRc, GetConfigOptions, Pa
  */
 export declare function getConfig(projectRoot: string, options?: GetConfigOptions): ProjectConfig;
 export declare function getPackageJson(projectRoot: string): PackageJSONConfig;
-export declare function readConfigJson(projectRoot: string, skipValidation?: boolean, skipSDKVersionRequirement?: boolean): ProjectConfig;
 /**
  * Get the static and dynamic config paths for a project. Also accounts for custom paths.
  *
  * @param projectRoot
  */
 export declare function getConfigFilePaths(projectRoot: string): ConfigFilePaths;
-export declare function findConfigFile(projectRoot: string): {
-    configPath: string;
-    configName: string;
-    configNamespace: 'expo';
-};
-export declare function configFilename(projectRoot: string): string;
-export declare function readExpRcAsync(projectRoot: string): Promise<ExpRc>;
-export declare function resetCustomConfigPaths(): void;
-export declare function setCustomConfigPath(projectRoot: string, configPath: string): void;
 /**
  * Attempt to modify an Expo project config.
  * This will only fully work if the project is using static configs only.
@@ -59,7 +49,6 @@ export declare function modifyConfigAsync(projectRoot: string, modifications: Pa
     message?: string;
     config: AppJSONConfig | null;
 }>;
-export declare function writeConfigJsonAsync(projectRoot: string, options: object): Promise<ProjectConfig>;
 export declare function getWebOutputPath(config?: {
     [key: string]: any;
 }): string;
@@ -85,4 +74,3 @@ export declare function getProjectConfigDescription(projectRoot: string): string
  */
 export declare function getProjectConfigDescriptionWithPaths(projectRoot: string, projectConfig: ConfigFilePaths): string;
 export * from './Config.types';
-export { isLegacyImportsEnabled } from './isLegacyImportsEnabled';

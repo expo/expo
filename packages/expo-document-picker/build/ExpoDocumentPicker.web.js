@@ -1,5 +1,4 @@
 import { Platform } from 'expo-modules-core';
-import { v4 as uuidv4 } from 'uuid';
 export default {
     get name() {
         return 'ExpoDocumentPicker';
@@ -7,13 +6,13 @@ export default {
     async getDocumentAsync({ type = '*/*', multiple = false, }) {
         // SSR guard
         if (!Platform.isDOMAvailable) {
-            return { type: 'cancel' };
+            return { canceled: true, assets: null };
         }
         const input = document.createElement('input');
         input.style.display = 'none';
         input.setAttribute('type', 'file');
         input.setAttribute('accept', Array.isArray(type) ? type.join(',') : type);
-        input.setAttribute('id', uuidv4());
+        input.setAttribute('id', String(Math.random()));
         if (multiple) {
             input.setAttribute('multiple', 'multiple');
         }
@@ -30,9 +29,11 @@ export default {
                     reader.onload = ({ target }) => {
                         const uri = target.result;
                         resolve({
+                            canceled: false,
                             type: 'success',
                             uri,
                             mimeType,
+                            assets: [],
                             name: targetFile.name,
                             file: targetFile,
                             lastModified: targetFile.lastModified,
@@ -44,7 +45,7 @@ export default {
                     reader.readAsDataURL(targetFile);
                 }
                 else {
-                    resolve({ type: 'cancel' });
+                    resolve({ canceled: true, assets: null });
                 }
                 document.body.removeChild(input);
             });

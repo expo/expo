@@ -34,19 +34,19 @@ concurrency:
 
 jobs:
   test:
-    runs-on: macos-11
-    timeout-minutes: 60
+    runs-on: macos-12
+    timeout-minutes: 150
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
       GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=1024m
     strategy:
       matrix:
-        api-level: [31]
+        api-level: [33]
     steps:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '14.17'
+          node-version: 16
       - name: 👀 Check out repository
         uses: actions/checkout@v3
         with:
@@ -60,29 +60,26 @@ jobs:
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
+          gradle: 'true'
           yarn-workspace: 'true'
           yarn-tools: 'true'
-          avd: 'true'
-          avd-api: ${{ matrix.api-level }}
           hermes-engine-aar: 'true'
+          react-native-gradle-downloads: 'true'
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🧶 Install node modules in root dir
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: 📱 Run instrumented unit tests
-        timeout-minutes: 45
-        uses: reactivecircus/android-emulator-runner@v2
+        timeout-minutes: 80
+        uses: ./.github/actions/use-android-emulator
         with:
-          api-level: ${{ matrix.api-level }}
+          avd-api: ${{ matrix.api-level }}
           avd-name: avd-${{ matrix.api-level }}
-          arch: x86_64
-          force-avd-creation: false
           script: expotools android-native-unit-tests --type instrumented
-          disk-size: 2048M
       - name: 💾 Save test results
         if: always()
         uses: actions/upload-artifact@v3
         with:
           name: test-results
-          path: packages/**/build/test-reports/**/*xml
+          path: packages/**/build/outputs/androidTest-results/**/*

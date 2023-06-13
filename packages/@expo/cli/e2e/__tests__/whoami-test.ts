@@ -1,4 +1,5 @@
 /* eslint-env jest */
+import { ExecaError } from 'execa';
 import fs from 'fs/promises';
 import os from 'os';
 
@@ -50,7 +51,8 @@ it('throws on invalid project root', async () => {
   try {
     await execute('very---invalid', 'whoami');
   } catch (e) {
-    expect(e.stderr).toMatch(/Invalid project root: \//);
+    const error = e as ExecaError;
+    expect(error.stderr).toMatch(/Invalid project root: \//);
   }
 });
 
@@ -73,7 +75,8 @@ if (process.env.CI) {
     try {
       console.log(await execute('whoami'));
     } catch (e) {
-      expect(e.stderr).toMatch(/Not logged in/);
+      const error = e as ExecaError;
+      expect(error.stderr).toMatch(/Not logged in/);
     }
   });
 }

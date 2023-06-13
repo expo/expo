@@ -1,28 +1,22 @@
 import groovy.json.JsonSlurper
-import org.apache.tools.ant.taskdefs.condition.Os
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
     ext {
-        buildToolsVersion = "31.0.0"
-        gradlePluginVersion = '7.1.1'
+        buildToolsVersion = '33.0.0'
+        gradlePluginVersion = '7.4.2'
         minSdkVersion = 21
-        compileSdkVersion = 31
-        targetSdkVersion = 31
+        compileSdkVersion = 33
+        targetSdkVersion = 33
         // Some dependencies still expect supportLibVersion to be defined
         supportLibVersion = "29.0.0"
-        kotlinVersion = '1.6.10'
+        kotlinVersion = '1.8.10'
         // for expo-dev-client
         expoUpdatesVersion = null
 
-        if (System.properties['os.arch'] == "aarch64") {
-            // For M1 Users we need to use the NDK 24 which added support for aarch64
-            ndkVersion = "24.0.8215888"
-        } else {
-            // Otherwise we default to the side-by-side NDK version from AGP.
-            ndkVersion = "21.4.7075529"
-        }
+        // We use NDK 23 which has both M1 support and is the side-by-side NDK version from AGP.
+        ndkVersion = "23.1.7779620"
     }
     repositories {
         google()
@@ -33,17 +27,9 @@ buildscript {
 
         classpath("com.facebook.react:react-native-gradle-plugin")
 
-        // Copied version from the Exponent Android project.
-        // Newer versions suffer either from "play-services-basement was supposed to be 15.0.1,
-        // but has been resolved to 17.0.0"
-        // or https://github.com/segment-integrations/analytics-android-integration-firebase/issues/23
         classpath 'com.google.gms:google-services:4.3.5'  // Google Services plugin
 
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-
-        classpath("de.undercouch:gradle-download-task:5.0.1")
     }
 }
 
@@ -62,15 +48,21 @@ ext {
 allprojects {
     // [Custom]
     configurations.all {
-        if (findProperty("reactNativeNightly") == "true") {
-            resolutionStrategy {
-                dependencySubstitution {
-                    substitute module("com.facebook.react:react-native:+") with project(":ReactAndroid")
-                    substitute module("com.facebook.react:react-native:${reactNativeVersion}") with project(":ReactAndroid")
-                }
+        if (findProperty("buildReactNativeFromSource") == "true") {
+            resolutionStrategy.dependencySubstitution {
+                substitute(module("com.facebook.react:react-native"))
+                    .using(project(":ReactAndroid"))
+                    .because("Building React Native from source")
+                substitute(module("com.facebook.react:react-android"))
+                    .using(project(":ReactAndroid"))
+                    .because("Building React Native from source")
+                substitute(module("com.facebook.react:hermes-engine"))
+                    .using(project(":ReactAndroid:hermes-engine"))
+                    .because("Building Hermes from source")
+                substitute(module("com.facebook.react:hermes-android"))
+                    .using(project(":ReactAndroid:hermes-engine"))
+                    .because("Building Hermes from source")
             }
-        } else {
-            resolutionStrategy.force "com.facebook.react:react-native:${reactNativeVersion}"
         }
     }
 
@@ -89,15 +81,12 @@ allprojects {
             url "$rootDir/../node_modules/expo-camera/android/maven"
             url(new File(["node", "--print", "require.resolve('expo-camera/package.json')"].execute(null, rootDir).text.trim(), "../android/maven"))
         }
+        maven {
+            url(new File(["node", "--print", "require.resolve('detox/package.json')"].execute(null, rootDir).text.trim(), "../Detox-android"))
+        }
 
         google()
-        mavenCentral {
-            // We don't want to fetch react-native from Maven Central as there are
-            // older versions over there.
-            content {
-                excludeGroup "com.facebook.react"
-            }
-        }
+        mavenCentral()
         maven { url 'https://jitpack.io' }
     }
 }

@@ -4,14 +4,12 @@ import fs from 'fs-extra';
 import glob from 'glob-promise';
 import path from 'path';
 
-import { IOS_DIR } from '../../Constants';
+import { IOS_VENDORED_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { copyFileWithTransformsAsync } from '../../Transforms';
 import { FileTransforms } from '../../Transforms.types';
 import { searchFilesAsync } from '../../Utils';
 import vendoredModulesTransforms from './transforms/vendoredModulesTransforms';
-
-const IOS_VENDORED_DIR = path.join(IOS_DIR, 'vendored');
 
 /**
  * Versions iOS vendored modules.
@@ -115,18 +113,22 @@ function baseTransformsFactory(prefix: string): Required<FileTransforms> {
         replaceWith: `${prefix}$1$2`,
       },
       {
-        find: /facebook::/g,
-        replaceWith: `${prefix}facebook::`,
+        find: /(facebook|react|hermes)::/g,
+        replaceWith: (_, p1) => {
+          return `${prefix}${p1 === 'react' ? 'React' : p1}::`;
+        },
       },
       {
-        find: /react::/g,
-        replaceWith: `${prefix}React::`,
-      },
-      {
-        find: /namespace (facebook|react)/g,
+        find: /namespace (facebook|react|hermes)/g,
         replaceWith: (_, p1) => {
           return `namespace ${prefix}${p1 === 'react' ? 'React' : p1}`;
         },
+      },
+      {
+        // namespace ABI48_0_0React = ABI48_0_0facebook::react -> namespace ABI48_0_0React = ABI48_0_0facebook::ABI48_0_0React
+        // using namespace ABI48_0_0facebook::react -> using namespace ABI48_0_0facebook::ABI48_0_0React
+        find: /namespace ([\w\s=]+facebook)::react/g,
+        replaceWith: `namespace $1::${prefix}React`,
       },
       {
         // Objective-C only, see the comment in the rule below.
@@ -169,6 +171,10 @@ function baseTransformsFactory(prefix: string): Required<FileTransforms> {
         replaceWith: `Is${prefix}ReactRootView`,
       },
       {
+        find: `UIView+${prefix}React.h`,
+        replaceWith: `${prefix}UIView+React.h`,
+      },
+      {
         // Prefix only unindented `@objc` (notice `^` and `m` flag in the pattern). Method names shouldn't get prefixed.
         paths: '*.swift',
         find: /^@objc\(([^)]+)\)/gm,
@@ -178,6 +184,11 @@ function baseTransformsFactory(prefix: string): Required<FileTransforms> {
         paths: '*.podspec.json',
         find: new RegExp(`${prefix}React-${prefix}RCT`, 'g'),
         replaceWith: `${prefix}React-RCT`,
+      },
+      {
+        paths: '*.podspec.json',
+        find: /\b(hermes-engine)\b/g,
+        replaceWith: `${prefix}$1`,
       },
       {
         paths: '*.podspec.json',

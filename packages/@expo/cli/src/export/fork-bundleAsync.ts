@@ -1,23 +1,20 @@
-import { ExpoConfig, getConfig, getConfigFilePaths, Platform } from '@expo/config';
+import { ExpoConfig, getConfigFilePaths, Platform } from '@expo/config';
 import {
   buildHermesBundleAsync,
   isEnableHermesManaged,
   maybeThrowFromInconsistentEngineAsync,
 } from '@expo/dev-server/build/HermesBundler';
 import {
-  importExpoMetroConfigFromProject,
   importMetroFromProject,
   importMetroServerFromProject,
 } from '@expo/dev-server/build/metro/importMetroFromProject';
-import { LoadOptions } from '@expo/metro-config';
+import type { LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import Metro from 'metro';
-import { Terminal } from 'metro-core';
+import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
 
-import { WebSupportProjectPrerequisite } from '../start/doctor/web/WebSupportProjectPrerequisite';
-import { MetroTerminalReporter } from '../start/server/metro/MetroTerminalReporter';
-import { withMetroMultiPlatform } from '../start/server/metro/withMetroMultiPlatform';
-import { getPlatformBundlers } from '../start/server/platformBundlers';
+import { CSSAsset, getCssModulesFromBundler } from '../start/server/metro/getCssModulesFromBundler';
+import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
 
 export type MetroDevServerOptions = LoadOptions & {
   logger: import('@expo/bunyan');
@@ -35,32 +32,12 @@ export type BundleAssetWithFileHashes = Metro.AssetData & {
 };
 export type BundleOutput = {
   code: string;
-  map: string;
+  map?: string;
   hermesBytecodeBundle?: Uint8Array;
   hermesSourcemap?: string;
+  css: CSSAsset[];
   assets: readonly BundleAssetWithFileHashes[];
 };
-
-function getExpoMetroConfig(
-  projectRoot: string,
-  { logger }: Pick<MetroDevServerOptions, 'logger'>
-): typeof import('@expo/metro-config') {
-  try {
-    return importExpoMetroConfigFromProject(projectRoot);
-  } catch {
-    // If expo isn't installed, use the unversioned config and warn about installing expo.
-  }
-
-  const unversionedVersion = require('@expo/metro-config/package.json').version;
-  logger.info(
-    { tag: 'expo' },
-    chalk.gray(
-      `\u203A Unversioned ${chalk.bold`@expo/metro-config@${unversionedVersion}`} is being used. Bundling apps may not work as expected, and is subject to breaking changes. Install ${chalk.bold`expo`} or set the app.json sdkVersion to use a stable version of @expo/metro-config.`
-    )
-  );
-
-  return require('@expo/metro-config');
-}
 
 let nextBuildID = 0;
 
@@ -94,27 +71,9 @@ export async function bundleAsync(
   const metro = importMetroFromProject(projectRoot);
   const Server = importMetroServerFromProject(projectRoot);
 
-  const terminal = new Terminal(process.stdout);
-  const terminalReporter = new MetroTerminalReporter(projectRoot, terminal);
-
-  const reporter = {
-    update(event: any) {
-      terminalReporter.update(event);
-    },
-  };
-
-  const ExpoMetroConfig = getExpoMetroConfig(projectRoot, options);
-
-  const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
-  let config = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
-
-  const bundlerPlatforms = getPlatformBundlers(exp);
-
-  if (bundlerPlatforms.web === 'metro') {
-    await new WebSupportProjectPrerequisite(projectRoot).assertAsync();
-  }
-
-  config = withMetroMultiPlatform(projectRoot, config, bundlerPlatforms);
+  const { config, reporter } = await loadMetroConfigAsync(projectRoot, options, {
+    exp: expoConfig,
+  });
 
   const metroServer = await metro.runMetro(config, {
     watch: false,
@@ -122,19 +81,20 @@ export async function bundleAsync(
 
   const buildAsync = async (bundle: BundleOptions): Promise<BundleOutput> => {
     const buildID = `bundle_${nextBuildID++}_${bundle.platform}`;
-    const bundleOptions: Metro.BundleOptions = {
+    const isHermes = isEnableHermesManaged(expoConfig, bundle.platform);
+    const bundleOptions: MetroBundleOptions = {
       ...Server.DEFAULT_BUNDLE_OPTIONS,
       bundleType: 'bundle',
       platform: bundle.platform,
       entryFile: bundle.entryPoint,
       dev: bundle.dev ?? false,
-      minify: bundle.minify ?? !bundle.dev,
+      minify: !isHermes && (bundle.minify ?? !bundle.dev),
       inlineSourceMap: false,
       sourceMapUrl: bundle.sourceMapUrl,
       createModuleIdFactory: config.serializer.createModuleIdFactory,
       onProgress: (transformedFileCount: number, totalFileCount: number) => {
         if (!options.quiet) {
-          terminalReporter.update({
+          reporter.update({
             buildID,
             type: 'bundle_transform_progressed',
             transformedFileCount,
@@ -147,24 +107,25 @@ export async function bundleAsync(
       ...bundleOptions,
       buildID,
     };
-    terminalReporter.update({
+    reporter.update({
       buildID,
       type: 'bundle_build_started',
-      // @ts-expect-error: TODO
       bundleDetails,
     });
     try {
       const { code, map } = await metroServer.build(bundleOptions);
-      const assets = (await metroServer.getAssets(
-        bundleOptions
-      )) as readonly BundleAssetWithFileHashes[];
-      terminalReporter.update({
+      const [assets, css] = await Promise.all([
+        metroServer.getAssets(bundleOptions),
+        getCssModulesFromBundler(config, metroServer.getBundler(), bundleOptions),
+      ]);
+
+      reporter.update({
         buildID,
         type: 'bundle_build_done',
       });
-      return { code, map, assets };
+      return { code, map, assets: assets as readonly BundleAssetWithFileHashes[], css };
     } catch (error) {
-      terminalReporter.update({
+      reporter.update({
         buildID,
         type: 'bundle_build_failed',
       });
@@ -184,13 +145,13 @@ export async function bundleAsync(
         { ios: 'iOS', android: 'Android', web: 'Web' }[platform] || platform
       );
 
-      terminalReporter.terminal.log(`${platformTag} Building Hermes bytecode for the bundle`);
+      reporter.terminal.log(`${platformTag} Building Hermes bytecode for the bundle`);
 
       const hermesBundleOutput = await buildHermesBundleAsync(
         projectRoot,
         bundleOutput.code,
-        bundleOutput.map,
-        bundle.minify
+        bundleOutput.map!,
+        bundle.minify ?? !bundle.dev
       );
       bundleOutput.hermesBytecodeBundle = hermesBundleOutput.hbc;
       bundleOutput.hermesSourcemap = hermesBundleOutput.sourcemap;

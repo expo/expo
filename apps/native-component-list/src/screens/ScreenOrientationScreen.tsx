@@ -1,7 +1,7 @@
 import { Platform, Subscription } from 'expo-modules-core';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import React from 'react';
-import { ScrollView, Text } from 'react-native';
+import { ScrollView, Text, SafeAreaView } from 'react-native';
 
 import ListButton from '../components/ListButton';
 
@@ -127,32 +127,34 @@ export default class ScreenOrientationScreen extends React.Component<{}, State> 
   render() {
     const { orientation, orientationLock } = this.state;
     return (
-      <ScrollView style={{ padding: 10 }}>
-        {orientation !== undefined && (
-          <Text>Orientation: {ScreenOrientation.Orientation[orientation]}</Text>
-        )}
-        {orientationLock !== undefined && (
-          <Text>OrientationLock: {ScreenOrientation.OrientationLock[orientationLock]}</Text>
-        )}
-        {this.getScreenOrientationLockOptions().map((o) => (
-          <ListButton key={o.key} onPress={() => this.lock(o.value)} title={o.key} />
-        ))}
-        <ListButton
-          key="lockPlatformAsync Example"
-          onPress={this.lockPlatformExample}
-          title="Apply a custom native lock"
-        />
-        <ListButton
-          key="doesSupport"
-          onPress={this.doesSupport}
-          title="Check Orientation.PORTRAIT_DOWN support"
-        />
-        <ListButton
-          key="updateCurrentOrientationAndLock"
-          onPress={this.updateCurrentOrientationAndLock}
-          title="Update current orientation and lock"
-        />
-      </ScrollView>
+      <SafeAreaView>
+        <ScrollView style={{ padding: 10 }}>
+          {orientation !== undefined && (
+            <Text>Orientation: {ScreenOrientation.Orientation[orientation]}</Text>
+          )}
+          {orientationLock !== undefined && (
+            <Text>OrientationLock: {ScreenOrientation.OrientationLock[orientationLock]}</Text>
+          )}
+          {this.getScreenOrientationLockOptions().map((o) => (
+            <ListButton key={o.key} onPress={() => this.lock(o.value)} title={o.key} />
+          ))}
+          <ListButton
+            key="lockPlatformAsync Example"
+            onPress={this.lockPlatformExample}
+            title="Apply a custom native lock"
+          />
+          <ListButton
+            key="doesSupport"
+            onPress={this.doesSupport}
+            title="Check Orientation.PORTRAIT_DOWN support"
+          />
+          <ListButton
+            key="updateCurrentOrientationAndLock"
+            onPress={this.updateCurrentOrientationAndLock}
+            title="Update current orientation and lock"
+          />
+        </ScrollView>
+      </SafeAreaView>
     );
   }
 }

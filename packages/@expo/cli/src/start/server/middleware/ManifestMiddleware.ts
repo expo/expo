@@ -1,7 +1,10 @@
 import { ExpoConfig, ExpoGoConfig, getConfig, ProjectConfig } from '@expo/config';
+import findWorkspaceRoot from 'find-yarn-workspace-root';
+import path from 'path';
 import { resolve } from 'url';
 
 import * as Log from '../../../log';
+import { env } from '../../../utils/env';
 import { stripExtension } from '../../../utils/url';
 import * as ProjectDevices from '../../project/devices';
 import { UrlCreator } from '../UrlCreator';
@@ -9,9 +12,92 @@ import { getPlatformBundlers } from '../platformBundlers';
 import { createTemplateHtmlFromExpoConfigAsync } from '../webTemplate';
 import { ExpoMiddleware } from './ExpoMiddleware';
 import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
-import { resolveEntryPoint } from './resolveEntryPoint';
+import { resolveAbsoluteEntryPoint } from './resolveEntryPoint';
 import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
 import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './server.types';
+
+const debug = require('debug')('expo:start:server:middleware:manifest') as typeof console.log;
+
+/** Wraps `findWorkspaceRoot` and guards against having an empty `package.json` file in an upper directory. */
+export function getWorkspaceRoot(projectRoot: string): string | null {
+  try {
+    return findWorkspaceRoot(projectRoot);
+  } catch (error: any) {
+    if (error.message.includes('Unexpected end of JSON input')) {
+      return null;
+    }
+    throw error;
+  }
+}
+
+export function getEntryWithServerRoot(
+  projectRoot: string,
+  projectConfig: ProjectConfig,
+  platform: string
+) {
+  return path.relative(
+    getMetroServerRoot(projectRoot),
+    resolveAbsoluteEntryPoint(projectRoot, platform, projectConfig)
+  );
+}
+
+export function getMetroServerRoot(projectRoot: string) {
+  if (env.EXPO_USE_METRO_WORKSPACE_ROOT) {
+    return getWorkspaceRoot(projectRoot) ?? projectRoot;
+  }
+
+  return projectRoot;
+}
+
+/** Get the main entry module ID (file) relative to the project root. */
+export function resolveMainModuleName(
+  projectRoot: string,
+  projectConfig: ProjectConfig,
+  platform: string
+): string {
+  const entryPoint = getEntryWithServerRoot(projectRoot, projectConfig, platform);
+
+  debug(`Resolved entry point: ${entryPoint} (project root: ${projectRoot})`);
+
+  return stripExtension(entryPoint, 'js');
+}
+
+export function createBundleUrlPath({
+  platform,
+  mainModuleName,
+  mode,
+  minify = mode === 'production',
+  environment,
+  serializerOutput,
+}: {
+  platform: string;
+  mainModuleName: string;
+  mode: string;
+  minify?: boolean;
+  environment?: string;
+  serializerOutput?: 'static';
+}): string {
+  const queryParams = new URLSearchParams({
+    platform: encodeURIComponent(platform),
+    dev: String(mode !== 'production'),
+    // TODO: Is this still needed?
+    hot: String(false),
+    lazy: String(!env.EXPO_NO_METRO_LAZY),
+  });
+
+  if (minify) {
+    queryParams.append('minify', String(minify));
+  }
+  if (environment) {
+    queryParams.append('resolver.environment', environment);
+    queryParams.append('transform.environment', environment);
+  }
+  if (serializerOutput) {
+    queryParams.append('serializer.output', serializerOutput);
+  }
+
+  return `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;
+}
 
 /** Info about the computer hosting the dev server. */
 export interface HostInfo {
@@ -25,8 +111,6 @@ export interface HostInfo {
 
 /** Parsed values from the supported request headers. */
 export interface ManifestRequestInfo {
-  /** Should return the signed manifest. */
-  acceptSignature: boolean;
   /** Platform to serve. */
   platform: RuntimePlatform;
   /** Requested host name. */
@@ -108,7 +192,10 @@ export abstract class ManifestMiddleware<
 
   /** Get the main entry module ID (file) relative to the project root. */
   private resolveMainModuleName(projectConfig: ProjectConfig, platform: string): string {
-    let entryPoint = resolveEntryPoint(this.projectRoot, platform, projectConfig);
+    let entryPoint = getEntryWithServerRoot(this.projectRoot, projectConfig, platform);
+
+    debug(`Resolved entry point: ${entryPoint} (project root: ${this.projectRoot})`);
+
     // NOTE(Bacon): Webpack is currently hardcoded to index.bundle on native
     // in the future (TODO) we should move this logic into a Webpack plugin and use
     // a generated file name like we do on web.
@@ -145,7 +232,12 @@ export abstract class ManifestMiddleware<
     hostname?: string | null;
     mainModuleName: string;
   }): string {
-    const path = this._getBundleUrlPath({ platform, mainModuleName });
+    const path = createBundleUrlPath({
+      mode: this.options.mode ?? 'development',
+      minify: this.options.minify,
+      platform,
+      mainModuleName,
+    });
 
     return (
       this.options.constructUrl({
@@ -168,6 +260,7 @@ export abstract class ManifestMiddleware<
       dev: String(this.options.mode !== 'production'),
       // TODO: Is this still needed?
       hot: String(false),
+      lazy: String(!env.EXPO_NO_METRO_LAZY),
     });
 
     if (this.options.minify) {
@@ -233,6 +326,16 @@ export abstract class ManifestMiddleware<
     await resolveGoogleServicesFile(this.projectRoot, manifest);
   }
 
+  public getWebBundleUrl() {
+    const platform = 'web';
+    // Read from headers
+    const mainModuleName = this.resolveMainModuleName(this.initialProjectConfig, platform);
+    return this._getBundleUrlPath({
+      platform,
+      mainModuleName,
+    });
+  }
+
   /**
    * Web platforms should create an index.html response using the same script resolution as native.
    *
@@ -240,13 +343,8 @@ export abstract class ManifestMiddleware<
    * to an `index.html`, this enables the web platform to load JavaScript from the server.
    */
   private async handleWebRequestAsync(req: ServerRequest, res: ServerResponse) {
-    const platform = 'web';
     // Read from headers
-    const mainModuleName = this.resolveMainModuleName(this.initialProjectConfig, platform);
-    const bundleUrl = this._getBundleUrlPath({
-      platform,
-      mainModuleName,
-    });
+    const bundleUrl = this.getWebBundleUrl();
 
     res.setHeader('Content-Type', 'text/html');
 
@@ -259,7 +357,7 @@ export abstract class ManifestMiddleware<
   }
 
   /** Exposed for testing. */
-  async checkBrowserRequestAsync(req: ServerRequest, res: ServerResponse) {
+  async checkBrowserRequestAsync(req: ServerRequest, res: ServerResponse, next: ServerNext) {
     // Read the config
     const bundlers = getPlatformBundlers(this.initialProjectConfig.exp);
     if (bundlers.web === 'metro') {
@@ -269,8 +367,14 @@ export abstract class ManifestMiddleware<
       const platform = parsePlatformHeader(req);
       // On web, serve the public folder
       if (!platform || platform === 'web') {
-        await this.handleWebRequestAsync(req, res);
-        return true;
+        if (this.initialProjectConfig.exp.web?.output === 'static') {
+          // Skip the spa-styled index.html when static generation is enabled.
+          next();
+          return true;
+        } else {
+          await this.handleWebRequestAsync(req, res);
+          return true;
+        }
       }
     }
     return false;
@@ -282,7 +386,7 @@ export abstract class ManifestMiddleware<
     next: ServerNext
   ): Promise<void> {
     // First check for standard JavaScript runtimes (aka legacy browsers like Chrome).
-    if (await this.checkBrowserRequestAsync(req, res)) {
+    if (await this.checkBrowserRequestAsync(req, res, next)) {
       return;
     }
 

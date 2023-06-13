@@ -12,18 +12,18 @@ import {
   TerminalIcon,
   ChevronRightIcon,
   InfoIcon,
-  scale,
   useExpoPalette,
   BranchIcon,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { Animated, ScrollView } from 'react-native';
+import { Animated, ScrollView, KeyboardAvoidingView } from 'react-native';
 
 import { AppHeader } from '../components/AppHeader';
 import { DevServerExplainerModal } from '../components/DevServerExplainerModal';
 import { useLoadingContainerStyle } from '../components/EASUpdatesRows';
 import { LoadAppErrorModal } from '../components/LoadAppErrorModal';
 import { PulseIndicator } from '../components/PulseIndicator';
+import { ScreenContainer } from '../components/ScreenContainer';
 import { Toasts } from '../components/Toasts';
 import { UrlDropdown } from '../components/UrlDropdown';
 import { formatUpdateUrl } from '../functions/formatUpdateUrl';
@@ -112,92 +112,101 @@ export function HomeScreen({
   };
 
   return (
-    <View testID="DevLauncherMainScreen">
-      <AppHeader navigation={navigation} />
-      <ScrollView contentContainerStyle={{ paddingBottom: scale['48'] }}>
-        {crashReport && (
-          <View px="medium" py="small" mt="small">
-            <Button.ScaleOnPressContainer onPress={onCrashReportPress} bg="default" rounded="large">
-              <Row align="center" padding="medium" bg="default">
-                <Button.Text color="default">
-                  The last time you tried to open an app the development build crashed. Tap to get
-                  more information.
-                </Button.Text>
-              </Row>
-            </Button.ScaleOnPressContainer>
-          </View>
-        )}
-        <View py="large">
-          <Row px="small" align="center">
-            <View px="medium">
-              <TerminalIcon />
-            </View>
-            <Heading color="secondary">Development servers</Heading>
-
-            <Spacer.Horizontal />
-
-            {devSessions.length > 0 && (
-              <Button.ScaleOnPressContainer
-                bg="ghost"
-                rounded="full"
-                minScale={0.85}
-                onPress={onDevServerQuestionPress}>
-                <View rounded="full" padding="tiny">
-                  <InfoIcon />
-                </View>
-              </Button.ScaleOnPressContainer>
+    <View testID="DevLauncherMainScreen" flex="1">
+      <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+        <AppHeader navigation={navigation} />
+        <ScrollView>
+          <ScreenContainer>
+            {crashReport && (
+              <View px="medium" py="small" mt="small">
+                <Button.FadeOnPressContainer
+                  onPress={onCrashReportPress}
+                  bg="default"
+                  rounded="large">
+                  <Row align="center" padding="medium" bg="default">
+                    <Button.Text color="default">
+                      The last time you tried to open an app the development build crashed. Tap to
+                      get more information.
+                    </Button.Text>
+                  </Row>
+                </Button.FadeOnPressContainer>
+              </View>
             )}
-          </Row>
+            <View py="large">
+              <Row px="small" align="center">
+                <View px="medium">
+                  <TerminalIcon />
+                </View>
+                <Heading color="secondary">Development servers</Heading>
 
-          <Spacer.Vertical size="small" />
+                <Spacer.Horizontal />
 
-          <View px="medium">
-            <View>
-              {devSessions.length === 0 && (
-                <>
-                  <View padding="medium" bg="default" roundedTop="large">
-                    <Text>Start a local development server with:</Text>
-                    <Spacer.Vertical size="small" />
-
-                    <View bg="secondary" border="default" rounded="medium" padding="medium">
-                      <Text type="mono" size="small">
-                        expo start --dev-client
-                      </Text>
+                {devSessions.length > 0 && (
+                  <Button.FadeOnPressContainer
+                    bg="ghost"
+                    rounded="full"
+                    onPress={onDevServerQuestionPress}>
+                    <View rounded="full" padding="tiny">
+                      <InfoIcon />
                     </View>
+                  </Button.FadeOnPressContainer>
+                )}
+              </Row>
 
-                    <Spacer.Vertical size="small" />
-                    <Text>Then, select the local server when it appears here.</Text>
-                    <Spacer.Vertical size="small" />
-                    <Text>
-                      Alternatively, open the Camera app and scan the QR code that appears in your
-                      terminal
-                    </Text>
-                  </View>
+              <Spacer.Vertical size="small" />
+
+              <View px="medium">
+                <View>
+                  {devSessions.length === 0 && (
+                    <>
+                      <View padding="medium" bg="default" roundedTop="large">
+                        <Text>Start a local development server with:</Text>
+                        <Spacer.Vertical size="small" />
+
+                        <View bg="secondary" border="default" rounded="medium" padding="medium">
+                          <Text type="mono" size="small">
+                            npx expo start --dev-client
+                          </Text>
+                        </View>
+
+                        <Spacer.Vertical size="small" />
+                        <Text>Then, select the local server when it appears here.</Text>
+                        <Spacer.Vertical size="small" />
+                        <Text>
+                          Alternatively, open the Camera app and scan the QR code that appears in
+                          your terminal
+                        </Text>
+                      </View>
+                      <Divider />
+                    </>
+                  )}
+
+                  {devSessions?.length > 0 && (
+                    <DevSessionList
+                      devSessions={devSessions}
+                      onDevSessionPress={onDevSessionPress}
+                    />
+                  )}
+
+                  <FetchDevSessionsRow isFetching={isFetching} onRefetchPress={onRefetchPress} />
                   <Divider />
-                </>
-              )}
 
-              {devSessions?.length > 0 && (
-                <DevSessionList devSessions={devSessions} onDevSessionPress={onDevSessionPress} />
-              )}
+                  <UrlDropdown
+                    onSubmit={onUrlSubmit}
+                    inputValue={inputValue}
+                    setInputValue={setInputValue}
+                    isLoading={inputValue !== '' && inputValue === loadingUrl}
+                  />
+                </View>
+              </View>
 
-              <FetchDevSessionsRow isFetching={isFetching} onRefetchPress={onRefetchPress} />
-              <Divider />
+              <Spacer.Vertical size="medium" />
 
-              <UrlDropdown
-                onSubmit={onUrlSubmit}
-                inputValue={inputValue}
-                setInputValue={setInputValue}
-                isLoading={inputValue !== '' && inputValue === loadingUrl}
-              />
+              <RecentlyOpenedApps onRecentAppPress={onRecentAppPress} loadingUrl={loadingUrl} />
             </View>
-          </View>
-
-          <Spacer.Vertical size="medium" />
-
-          <RecentlyOpenedApps onRecentAppPress={onRecentAppPress} loadingUrl={loadingUrl} />
-        </View>
-      </ScrollView>
+          </ScreenContainer>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </View>
   );
 }
@@ -212,7 +221,7 @@ function FetchDevSessionsRow({ isFetching, onRefetchPress }: FetchDevSessionsRow
   const backgroundColor = isFetching ? theme.status.info : theme.status.default;
 
   return (
-    <Button.ScaleOnPressContainer
+    <Button.FadeOnPressContainer
       onPress={onRefetchPress}
       disabled={isFetching}
       bg="default"
@@ -228,7 +237,7 @@ function FetchDevSessionsRow({ isFetching, onRefetchPress }: FetchDevSessionsRow
         <Spacer.Horizontal />
         {!isFetching && <RefreshIcon />}
       </Row>
-    </Button.ScaleOnPressContainer>
+    </Button.FadeOnPressContainer>
   );
 }
 
@@ -247,7 +256,7 @@ function DevSessionList({ devSessions = [], onDevSessionPress }: DevSessionListP
       {devSessions.map((devSession) => {
         return (
           <View key={devSession.url}>
-            <Button.ScaleOnPressContainer
+            <Button.FadeOnPressContainer
               onPress={() => onDevSessionPress(devSession)}
               roundedTop="large"
               roundedBottom="none"
@@ -263,7 +272,7 @@ function DevSessionList({ devSessions = [], onDevSessionPress }: DevSessionListP
                 <Spacer.Horizontal size="small" />
                 <ChevronRightIcon />
               </Row>
-            </Button.ScaleOnPressContainer>
+            </Button.FadeOnPressContainer>
             <Divider />
           </View>
         );
@@ -284,12 +293,7 @@ function RecentlyOpenedApps({ onRecentAppPress, loadingUrl }) {
 
     if (app.isEASUpdate && app.updateMessage != null) {
       return (
-        <RecentEASUpdateRow
-          label={label}
-          url={app.url}
-          message={app.updateMessage}
-          branchName={app.branchName}
-        />
+        <RecentEASUpdateRow url={app.url} message={app.updateMessage} branchName={app.branchName} />
       );
     }
 
@@ -304,13 +308,13 @@ function RecentlyOpenedApps({ onRecentAppPress, loadingUrl }) {
         <Heading color="secondary">Recently opened</Heading>
         <Spacer.Horizontal />
 
-        <Button.ScaleOnPressContainer bg="ghost" onPress={clearRecentlyOpenedApps}>
+        <Button.FadeOnPressContainer bg="ghost" onPress={clearRecentlyOpenedApps}>
           <View rounded="medium" px="small" py="micro">
             <Heading size="small" weight="semibold" color="secondary">
               Reset
             </Heading>
           </View>
-        </Button.ScaleOnPressContainer>
+        </Button.FadeOnPressContainer>
       </Row>
 
       <View>
@@ -321,14 +325,14 @@ function RecentlyOpenedApps({ onRecentAppPress, loadingUrl }) {
 
           return (
             <LoadingContainer key={app.id} isLoading={isLoading}>
-              <Button.ScaleOnPressContainer
+              <Button.FadeOnPressContainer
                 onPress={() => onRecentAppPress(app)}
                 roundedTop={isFirst ? 'large' : 'none'}
                 roundedBottom={isLast ? 'large' : 'none'}
                 py="small"
                 bg="default">
                 {renderRow(app)}
-              </Button.ScaleOnPressContainer>
+              </Button.FadeOnPressContainer>
               {!isLast && <Divider />}
             </LoadingContainer>
           );
@@ -374,7 +378,7 @@ function RecentLocalPackagerRow({ label, url }) {
   );
 }
 
-function RecentEASUpdateRow({ label, url, branchName, message }) {
+function RecentEASUpdateRow({ url, branchName, message }) {
   const palette = useExpoPalette();
   return (
     <View>

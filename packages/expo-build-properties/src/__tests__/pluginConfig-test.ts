@@ -40,7 +40,53 @@ describe(validateConfig, () => {
     expect(() =>
       validateConfig({ ios: { deploymentTarget: '9.0' } })
     ).toThrowErrorMatchingInlineSnapshot(
-      `"\`ios.deploymentTarget\` needs to be at least version 12.0."`
+      `"\`ios.deploymentTarget\` needs to be at least version 13.0."`
     );
+  });
+
+  it('should not allow ios.flipper=true and ios.useFrameworks at the same time', () => {
+    expect(() =>
+      validateConfig({ ios: { flipper: true, useFrameworks: 'static' } })
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"\`ios.flipper\` cannot be enabled when \`ios.useFrameworks\` is set."`
+    );
+  });
+
+  it(`should not allow ios.flipper='0.999.0' and ios.useFrameworks at the same time`, () => {
+    expect(() =>
+      validateConfig({ ios: { flipper: '0.999.0', useFrameworks: 'static' } })
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"\`ios.flipper\` cannot be enabled when \`ios.useFrameworks\` is set."`
+    );
+  });
+
+  it('should allow ios.flipper=false and ios.useFrameworks at the same time', () => {
+    expect(() =>
+      validateConfig({ ios: { flipper: false, useFrameworks: 'static' } })
+    ).not.toThrow();
+  });
+
+  it('should use `enableShrinkResourcesInReleaseBuilds` with `enableProguardInReleaseBuilds`', () => {
+    expect(() =>
+      validateConfig({ android: { enableShrinkResourcesInReleaseBuilds: true } })
+    ).toThrow();
+
+    expect(() =>
+      validateConfig({
+        android: {
+          enableShrinkResourcesInReleaseBuilds: true,
+          enableProguardInReleaseBuilds: true,
+        },
+      })
+    ).not.toThrow();
+
+    expect(() =>
+      validateConfig({
+        android: {
+          enableShrinkResourcesInReleaseBuilds: true,
+          enableProguardInReleaseBuilds: false,
+        },
+      })
+    ).toThrow();
   });
 });

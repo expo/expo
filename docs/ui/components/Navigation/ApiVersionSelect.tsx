@@ -1,10 +1,13 @@
 import { css } from '@emotion/react';
-import { borderRadius, iconSize, shadows, spacing, theme, ChevronDownIcon } from '@expo/styleguide';
-import React from 'react';
+import { shadows, theme } from '@expo/styleguide';
+import { borderRadius, spacing } from '@expo/styleguide-base';
+import { ChevronDownIcon } from '@expo/styleguide-icons';
 
-import { VERSIONS, LATEST_VERSION, BETA_VERSION } from '~/constants/versions.cjs';
 import { usePageApiVersion } from '~/providers/page-api-version';
-import { LABEL } from '~/ui/components/Text';
+import versions from '~/public/static/constants/versions.json';
+import { A, LABEL } from '~/ui/components/Text';
+
+const { VERSIONS, LATEST_VERSION, BETA_VERSION } = versions;
 
 // TODO(cedric): move this to a generic select input, so we can reuse it in the color scheme selector
 
@@ -17,9 +20,9 @@ export function ApiVersionSelect() {
 
   return (
     <div css={containerStyle}>
-      <label css={labelStyle} htmlFor="api-version-select">
-        <LABEL css={labelTextStyle}>{versionToText(version)}</LABEL>
-        <ChevronDownIcon css={labelIconStyle} size={iconSize.small} />
+      <label className="flex flex-row items-center" htmlFor="api-version-select">
+        <LABEL className="flex">{versionToText(version)}</LABEL>
+        <ChevronDownIcon className="icon-sm shrink-0" />
       </label>
       <select
         id="api-version-select"
@@ -34,7 +37,7 @@ export function ApiVersionSelect() {
       </select>
       {/* Changing versions is a JS only mechanism. To help crawlers find other versions, we add hidden links. */}
       {VERSIONS.map(version => (
-        <a css={crawlerLinkStyle} key={version} href={`/versions/${version}`} />
+        <A className="hidden" key={version} href={`/versions/${version}`} />
       ))}
     </div>
   );
@@ -45,8 +48,8 @@ function versionToText(version: string): string {
     return 'Unversioned';
   } else if (version === 'latest') {
     return `${versionToText(LATEST_VERSION)} (latest)`;
-  } else if (version === BETA_VERSION) {
-    return `${versionToText(BETA_VERSION)} (beta)`;
+  } else if (BETA_VERSION && version === BETA_VERSION.toString()) {
+    return `${versionToText(BETA_VERSION.toString())} (beta)`;
   }
   return `SDK ${version.substring(1, 3)}`;
 }
@@ -55,28 +58,10 @@ const containerStyle = css({
   position: 'relative',
   background: theme.background.default,
   border: `1px solid ${theme.border.default}`,
-  borderRadius: borderRadius.medium,
-  boxShadow: shadows.input,
+  borderRadius: borderRadius.md,
+  boxShadow: shadows.xs,
   margin: spacing[4],
   padding: `${spacing[2]}px ${spacing[3]}px`,
-});
-
-const labelStyle = css({
-  display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'center',
-});
-
-const labelTextStyle = css({
-  flex: 1,
-});
-
-const labelIconStyle = css({
-  flexShrink: 0,
-});
-
-const crawlerLinkStyle = css({
-  display: 'none',
 });
 
 const selectStyle = css({

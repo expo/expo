@@ -1,8 +1,10 @@
 import semver from 'semver';
 
 import { getVersionsAsync } from '../../api/getVersions';
+import { APISettings } from '../../api/settings';
 import * as Log from '../../log';
 import { downloadExpoGoAsync } from '../../utils/downloadExpoGoAsync';
+import { CommandError } from '../../utils/errors';
 import { logNewSection } from '../../utils/ora';
 import { confirmAsync } from '../../utils/prompts';
 import type { DeviceManager } from './DeviceManager';
@@ -52,7 +54,16 @@ export class ExpoGoInstaller<IDevice> {
       return false;
     }
     ExpoGoInstaller.cache[cacheId] = true;
+
     if (await this.isClientOutdatedAsync(deviceManager)) {
+      if (this.sdkVersion === 'UNVERSIONED') {
+        // This should only happen in the expo/expo repo, e.g. `apps/test-suite`
+        Log.log(
+          `Skipping Expo Go upgrade check for UNVERSIONED project. Manually ensure the Expo Go app is built from source.`
+        );
+        return false;
+      }
+
       // Only prompt once per device, per run.
       const confirm = await confirmAsync({
         initial: true,
@@ -73,6 +84,16 @@ export class ExpoGoInstaller<IDevice> {
   /** Check if a given device has Expo Go installed, if not then download and install it. */
   async ensureAsync(deviceManager: DeviceManager<IDevice>): Promise<boolean> {
     let shouldInstall = !(await deviceManager.isAppInstalledAsync(this.appId));
+
+    if (APISettings.isOffline && !shouldInstall) {
+      Log.warn(`Skipping Expo Go version validation in offline mode`);
+      return false;
+    } else if (APISettings.isOffline && shouldInstall) {
+      throw new CommandError(
+        'NO_EXPO_GO',
+        `Expo Go is not installed on device "${deviceManager.name}", while running in offline mode. Manually install Expo Go or run without --offline flag.`
+      );
+    }
 
     if (!shouldInstall) {
       shouldInstall = await this.uninstallExpoGoIfOutdatedAsync(deviceManager);

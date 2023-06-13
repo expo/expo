@@ -15,17 +15,23 @@ internal func DynamicType<T>(_ type: T.Type) -> AnyDynamicType {
   if let OptionalType = T.self as? AnyOptional.Type {
     return DynamicOptionalType(wrappedType: OptionalType.getWrappedDynamicType())
   }
-  if let ConvertibleType = T.self as? ConvertibleArgument.Type {
+  if let ConvertibleType = T.self as? Convertible.Type {
     return DynamicConvertibleType(innerType: ConvertibleType)
   }
-  if let EnumType = T.self as? EnumArgument.Type {
+  if let EnumType = T.self as? any Enumerable.Type {
     return DynamicEnumType(innerType: EnumType)
+  }
+  if let ViewType = T.self as? UIView.Type {
+    return DynamicViewType(innerType: ViewType)
   }
   if let SharedObjectType = T.self as? SharedObject.Type {
     return DynamicSharedObjectType(innerType: SharedObjectType)
   }
   if let TypedArrayType = T.self as? AnyTypedArray.Type {
     return DynamicTypedArrayType(innerType: TypedArrayType)
+  }
+  if let JavaScriptValueType = T.self as? any AnyJavaScriptValue.Type {
+    return DynamicJavaScriptType(innerType: JavaScriptValueType)
   }
   return DynamicRawType(innerType: T.self)
 }

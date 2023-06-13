@@ -1,4 +1,4 @@
-import { printBundleSizes } from '../printBundleSizes';
+import { printBundleSizes, createFilesTable } from '../printBundleSizes';
 
 jest.mock('../../log');
 jest.mock('chalk', () => {
@@ -9,6 +9,29 @@ jest.mock('chalk', () => {
   def.dim = (str) => str;
 
   return def;
+});
+
+describe(createFilesTable, () => {
+  it(`handles single-line output`, () => {
+    expect(createFilesTable([['foo', 'bar']])).toMatchInlineSnapshot(`
+      "Bundle  Size
+      ─ foo    3 B"
+    `);
+  });
+  it(`handles multi-line output`, () => {
+    expect(
+      createFilesTable([
+        ['alpha', '1'],
+        ['beta', '2'],
+        ['charlie', '3'],
+      ])
+    ).toMatchInlineSnapshot(`
+      "Bundle     Size
+      ┌ alpha     1 B
+      ├ beta      1 B
+      └ charlie   1 B"
+    `);
+  });
 });
 
 describe(printBundleSizes, () => {
@@ -30,10 +53,10 @@ describe(printBundleSizes, () => {
       })
     ).toEqual([
       ['index.ios.js', 'foo'],
-      ['index.android.js (Hermes)', expect.anything()],
+      ['index.android.hbc', expect.anything()],
       [expect.stringContaining('index.ios.js.map'), 'bars'],
       ['index.web.js', 'foo2'],
-      [expect.stringContaining('index.android.js.map (Hermes)'), '12345'],
+      [expect.stringContaining('index.android.hbc.map'), '12345'],
       [expect.stringContaining('index.web.js.map'), 'bars2'],
     ]);
   });

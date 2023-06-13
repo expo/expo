@@ -10,6 +10,32 @@
 
 ### 💡 Others
 
+## 11.3.0 — 2023-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 11.2.0 — 2023-02-03
+
+### 🐛 Bug fixes
+
+- Fix import ignore entry for `react-native`, which do not work correctly on Windows. ([#20785](https://github.com/expo/expo/pull/20785) by [@Simek](https://github.com/Simek))
+
+### 💡 Others
+
+- Bumped `@typescript-eslint/*` dependencies from 5.27.0 to 5.45.1, to add the TypeScript 4.9 support. ([#20374](https://github.com/expo/expo/pull/20374) by [@Simek](https://github.com/Simek))
+- Bumped `eslint-plugin-prettier` from 4.0.0 to 4.2.1. ([#20374](https://github.com/expo/expo/pull/20374) by [@Simek](https://github.com/Simek))
+- Bumped `eslint-plugin-react` from 7.30.0 to 7.31.11. ([#20374](https://github.com/expo/expo/pull/20374) by [@Simek](https://github.com/Simek))
+- Bumped `eslint-plugin-react-hooks` from 4.5.0 to 4.6.0. ([#20374](https://github.com/expo/expo/pull/20374) by [@Simek](https://github.com/Simek))
+- Upgrade typescript-eslint packages. ([#21025](https://github.com/expo/expo/pull/21025) by [@wschurman](https://github.com/wschurman))
+
+### 📚 3rd party library updates
+
+- Upgrade jest to v29. ([#20832](https://github.com/expo/expo/pull/20832) by [@kudo](https://github.com/kudo))
+
+## 11.1.1 — 2022-10-25
+
+_This version does not introduce any user-facing changes._
+
 ## 11.1.0 — 2022-07-07
 
 ### 💡 Others

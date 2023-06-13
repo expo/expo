@@ -3,18 +3,23 @@ package expo.modules.kotlin
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.os.Handler
+import android.os.HandlerThread
 import android.view.View
-import androidx.annotation.MainThread
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
 import com.facebook.react.uimanager.UIManagerHelper
+import expo.modules.adapters.react.NativeModulesProxy
 import expo.modules.core.errors.ContextDestroyedException
+import expo.modules.core.errors.ModuleNotFoundException
 import expo.modules.core.interfaces.ActivityProvider
+import expo.modules.core.interfaces.JavaScriptContextProvider
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
 import expo.modules.interfaces.camera.CameraViewInterface
 import expo.modules.interfaces.constants.ConstantsInterface
+import expo.modules.interfaces.filesystem.AppDirectoriesModuleInterface
 import expo.modules.interfaces.filesystem.FilePermissionModuleInterface
 import expo.modules.interfaces.font.FontManagerInterface
 import expo.modules.interfaces.imageloader.ImageLoaderInterface
@@ -22,48 +27,60 @@ import expo.modules.interfaces.permissions.Permissions
 import expo.modules.interfaces.sensors.SensorServiceInterface
 import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.kotlin.activityresult.ActivityResultsManager
-import expo.modules.kotlin.activityresult.AppContextActivityResultCaller
-import expo.modules.kotlin.activityresult.AppContextActivityResultContract
-import expo.modules.kotlin.activityresult.AppContextActivityResultFallbackCallback
-import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
+import expo.modules.kotlin.activityresult.DefaultAppContextActivityResultCaller
 import expo.modules.kotlin.defaultmodules.ErrorManagerModule
+import expo.modules.kotlin.defaultmodules.NativeModulesProxyModule
 import expo.modules.kotlin.events.EventEmitter
 import expo.modules.kotlin.events.EventName
 import expo.modules.kotlin.events.KEventEmitterWrapper
 import expo.modules.kotlin.events.KModuleEventEmitterWrapper
 import expo.modules.kotlin.events.OnActivityResultPayload
+import expo.modules.kotlin.jni.JNIDeallocator
 import expo.modules.kotlin.jni.JSIInteropModuleRegistry
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.providers.CurrentActivityProvider
+import expo.modules.kotlin.sharedobjects.SharedObjectRegistry
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.android.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.newSingleThreadContext
-import java.io.Serializable
+import java.io.File
 import java.lang.ref.WeakReference
 
 class AppContext(
   modulesProvider: ModulesProvider,
   val legacyModuleRegistry: expo.modules.core.ModuleRegistry,
   private val reactContextHolder: WeakReference<ReactApplicationContext>
-) : CurrentActivityProvider, AppContextActivityResultCaller {
-  val registry = ModuleRegistry(WeakReference(this)).apply {
-  }
+) : CurrentActivityProvider {
+  val registry = ModuleRegistry(WeakReference(this))
   private val reactLifecycleDelegate = ReactLifecycleDelegate(this)
 
   // We postpone creating the `JSIInteropModuleRegistry` to not load so files in unit tests.
   private lateinit var jsiInterop: JSIInteropModuleRegistry
 
+  internal val sharedObjectRegistry = SharedObjectRegistry()
+
+  private val modulesQueueDispatcher = HandlerThread("expo.modules.AsyncFunctionQueue")
+    .apply { start() }
+    .looper.let { Handler(it) }
+    .asCoroutineDispatcher()
+
+  /**
+   * A scope used to dispatch all background work.
+   */
+  val backgroundCoroutineScope = CoroutineScope(
+    Dispatchers.IO +
+      SupervisorJob() +
+      CoroutineName("expo.modules.BackgroundCoroutineScope")
+  )
+
   /**
    * A queue used to dispatch all async methods that are called via JSI.
    */
-  @OptIn(DelicateCoroutinesApi::class)
   val modulesQueue = CoroutineScope(
-    // TODO(@lukmccall): maybe it will be better to use a thread pool
-    newSingleThreadContext("expo.modules.AsyncFunctionQueue") +
+    modulesQueueDispatcher +
       SupervisorJob() +
       CoroutineName("expo.modules.AsyncFunctionQueue")
   )
@@ -74,7 +91,12 @@ class AppContext(
       CoroutineName("expo.modules.MainQueue")
   )
 
+  val jniDeallocator: JNIDeallocator = JNIDeallocator()
+
+  internal var legacyModulesProxyHolder: WeakReference<NativeModulesProxy>? = null
+
   private val activityResultsManager = ActivityResultsManager(this)
+  internal val appContextActivityResultCaller = DefaultAppContextActivityResultCaller(activityResultsManager)
 
   init {
     requireNotNull(reactContextHolder.get()) {
@@ -87,7 +109,10 @@ class AppContext(
       // `AppContext` during their initialisation (or during `OnCreate` method), so we need to ensure all `AppContext`'s
       // properties are initialized first. Not having that would trigger NPE.
       registry.register(ErrorManagerModule())
+      registry.register(NativeModulesProxyModule())
       registry.register(modulesProvider)
+
+      logger.info("✅ AppContext was initialized")
     }
   }
 
@@ -95,18 +120,27 @@ class AppContext(
    * Initializes a JSI part of the module registry.
    * It will be a NOOP if the remote debugging was activated.
    */
-  fun installJSIInterop() {
-    jsiInterop = JSIInteropModuleRegistry(this)
-    val reactContext = reactContextHolder.get() ?: return
-    reactContext.javaScriptContextHolder?.get()
-      ?.takeIf { it != 0L }
-      ?.let {
-        jsiInterop.installJSI(
-          it,
-          reactContext.catalystInstance.jsCallInvokerHolder as CallInvokerHolderImpl,
-          reactContext.catalystInstance.nativeCallInvokerHolder as CallInvokerHolderImpl
-        )
-      }
+  fun installJSIInterop() = synchronized<Unit>(this) {
+    try {
+      jsiInterop = JSIInteropModuleRegistry(this)
+      val reactContext = reactContextHolder.get() ?: return
+      val jsContextProvider = legacyModule<JavaScriptContextProvider>() ?: return
+      val jsContextHolder = jsContextProvider.javaScriptContextRef
+      val catalystInstance = reactContext.catalystInstance ?: return
+      jsContextHolder
+        .takeIf { it != 0L }
+        ?.let {
+          jsiInterop.installJSI(
+            it,
+            jniDeallocator,
+            jsContextProvider.jsCallInvokerHolder,
+            catalystInstance.nativeCallInvokerHolder as CallInvokerHolderImpl
+          )
+          logger.info("✅ JSI interop was installed")
+        }
+    } catch (e: Throwable) {
+      logger.error("❌ Cannot install JSI interop: $e", e)
+    }
   }
 
   /**
@@ -131,6 +165,26 @@ class AppContext(
    */
   val filePermission: FilePermissionModuleInterface?
     get() = legacyModule()
+
+  /**
+   * Provides access to the scoped directories from the legacy module registry.
+   */
+  private val appDirectories: AppDirectoriesModuleInterface?
+    get() = legacyModule()
+
+  /**
+   * A directory for storing user documents and other permanent files.
+   */
+  val persistentFilesDirectory: File
+    get() = appDirectories?.persistentFilesDirectory
+      ?: throw ModuleNotFoundException("expo.modules.interfaces.filesystem.AppDirectories")
+
+  /**
+   * A directory for storing temporary files that can be removed at any time by the device's operating system.
+   */
+  val cacheDirectory: File
+    get() = appDirectories?.cacheDirectory
+      ?: throw ModuleNotFoundException("expo.modules.interfaces.filesystem.AppDirectories")
 
   /**
    * Provides access to the permissions manager from the legacy module registry
@@ -187,6 +241,12 @@ class AppContext(
     get() = reactContextHolder.get()
 
   /**
+   * @return true if there is an non-null, alive react native instance
+   */
+  val hasActiveReactInstance: Boolean
+    get() = reactContextHolder.get()?.hasActiveReactInstance() ?: false
+
+  /**
    * Provides access to the event emitter
    */
   fun eventEmitter(module: Module): EventEmitter? {
@@ -217,14 +277,18 @@ class AppContext(
     registry.cleanUp()
     modulesQueue.cancel(ContextDestroyedException())
     mainQueue.cancel(ContextDestroyedException())
+    backgroundCoroutineScope.cancel(ContextDestroyedException())
+    jniDeallocator.deallocate()
+    logger.info("✅ AppContext was destroyed")
   }
 
   internal fun onHostResume() {
-    activityResultsManager.onHostResume(
-      requireNotNull(currentActivity) {
-        "Current Activity is not available at this moment. This is an invalid state and this should never happen"
-      }
-    )
+    val activity = currentActivity
+    check(activity is AppCompatActivity) {
+      "Current Activity is of incorrect class, expected AppCompatActivity, received ${currentActivity?.localClassName}"
+    }
+
+    activityResultsManager.onHostResume(activity)
     registry.post(EventName.ACTIVITY_ENTERS_FOREGROUND)
   }
 
@@ -233,11 +297,13 @@ class AppContext(
   }
 
   internal fun onHostDestroy() {
-    activityResultsManager.onHostDestroy(
-      requireNotNull(currentActivity) {
-        "Current Activity is not available at this moment. This is an invalid state and this should never happen"
+    currentActivity?.let {
+      check(it is AppCompatActivity) {
+        "Current Activity is of incorrect class, expected AppCompatActivity, received ${currentActivity?.localClassName}"
       }
-    )
+
+      activityResultsManager.onHostDestroy(it)
+    }
     registry.post(EventName.ACTIVITY_DESTROYS)
   }
 
@@ -268,35 +334,19 @@ class AppContext(
     return UIManagerHelper.getUIManagerForReactTag(reactContext, viewTag)?.resolveView(viewTag) as? T
   }
 
+  /**
+   * Runs a code block on the JavaScript thread.
+   */
+  fun executeOnJavaScriptThread(runnable: Runnable) {
+    reactContextHolder.get()?.runOnJSQueueThread(runnable)
+  }
+
 // region CurrentActivityProvider
 
-  override val currentActivity: AppCompatActivity?
+  override val currentActivity: Activity?
     get() {
-      val currentActivity = this.activityProvider?.currentActivity ?: return null
-
-      check(currentActivity is AppCompatActivity) {
-        "Current Activity is of incorrect class, expected AppCompatActivity, received ${currentActivity.localClassName}"
-      }
-
-      return currentActivity
+      return activityProvider?.currentActivity
     }
-
-// endregion
-
-// region AppContextActivityResultCaller
-
-  /**
-   * For the time being [fallbackCallback] is not working.
-   * There are some problems with saving and restoring the state of [activityResultsManager]
-   * connected with [Activity]'s lifecycle and [AppContext] lifespan. So far, we've failed with identifying
-   * what parts of the application outlives the Activity destruction (especially [AppContext] and other [Bridge]-related parts).
-   */
-  @MainThread
-  override suspend fun <I : Serializable, O> registerForActivityResult(
-    contract: AppContextActivityResultContract<I, O>,
-    fallbackCallback: AppContextActivityResultFallbackCallback<I, O>
-  ): AppContextActivityResultLauncher<I, O> =
-    activityResultsManager.registerForActivityResult(contract, fallbackCallback)
 
 // endregion
 }

@@ -16,13 +16,10 @@ import de.greenrobot.event.EventBus
 import expo.modules.barcodescanner.BarCodeScannerPackage
 import expo.modules.constants.ConstantsPackage
 import expo.modules.core.interfaces.Package
-import expo.modules.device.DevicePackage
 import expo.modules.facedetector.FaceDetectorPackage
 import expo.modules.filesystem.FileSystemPackage
 import expo.modules.font.FontLoaderPackage
-import expo.modules.haptics.HapticsPackage
 import expo.modules.keepawake.KeepAwakePackage
-import expo.modules.medialibrary.MediaLibraryPackage
 import expo.modules.notifications.NotificationsPackage
 import expo.modules.permissions.PermissionsPackage
 import expo.modules.splashscreen.SplashScreenImageResizeMode
@@ -32,11 +29,11 @@ import expo.modules.taskManager.TaskManagerPackage
 import host.exp.exponent.Constants
 import host.exp.exponent.ExponentManifest
 import host.exp.exponent.RNObject
-import host.exp.exponent.analytics.Analytics
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.kernel.ExperienceKey
 import host.exp.exponent.kernel.Kernel.KernelStartedRunningEvent
 import host.exp.exponent.utils.ExperienceActivityUtils
+import host.exp.exponent.utils.ExperienceRTLManager
 import host.exp.expoview.BuildConfig
 import org.json.JSONException
 import javax.inject.Inject
@@ -68,6 +65,8 @@ open class HomeActivity : BaseExperienceActivity() {
     EventBus.getDefault().registerSticky(this)
     kernel.startJSKernel(this)
 
+    ExperienceRTLManager.setSupportsRTL(this, false)
+
     SplashScreen.show(this, SplashScreenImageResizeMode.NATIVE, ReactRootView::class.java, true)
 
     tryInstallLeakCanary(true)
@@ -83,7 +82,6 @@ open class HomeActivity : BaseExperienceActivity() {
   override fun onResume() {
     super.onResume()
     SoLoader.init(this, false)
-    Analytics.logEvent(Analytics.AnalyticsEvent.HOME_APPEARED)
   }
   //endregion Activity Lifecycle
   /**
@@ -148,12 +146,9 @@ open class HomeActivity : BaseExperienceActivity() {
         BarCodeScannerPackage(),
         KeepAwakePackage(),
         FaceDetectorPackage(),
-        MediaLibraryPackage(),
         NotificationsPackage(), // home doesn't use notifications, but we want the singleton modules created
         TaskManagerPackage(), // load expo-task-manager to restore tasks once the client is opened
-        DevicePackage(),
-        SplashScreenPackage(),
-        HapticsPackage()
+        SplashScreenPackage()
       )
     }
   }

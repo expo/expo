@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
+import { intersects as semverIntersects } from 'semver';
 
 import * as Log from '../log';
 import { isModuleSymlinked } from '../utils/isModuleSymlinked';
@@ -31,7 +32,7 @@ export async function updatePackageJSONAsync(
   }
 ): Promise<DependenciesModificationResults> {
   const updatingPackageJsonStep = logNewSection(
-    'Updating your package.json scripts, and dependencies'
+    'Updating your package.json scripts, dependencies, and main file'
   );
 
   const templatePkg = getPackageJson(templateDirectory);
@@ -49,7 +50,9 @@ export async function updatePackageJSONAsync(
     JSON.stringify(pkg, null, 2) + '\n'
   );
 
-  updatingPackageJsonStep.succeed('Updated package.json');
+  updatingPackageJsonStep.succeed(
+    'Updated package.json and added index.js entry point for iOS and Android'
+  );
 
   return results;
 }
@@ -59,6 +62,7 @@ export async function updatePackageJSONAsync(
  *
  * 1. Update `package.json` `scripts`.
  * 2. Update `package.json` `dependencies` and `devDependencies`.
+ * 3. Update `package.json` `main`.
  *
  * @param projectRoot The root directory of the project.
  * @param props.templatePkg Template project package.json as JSON.
@@ -80,6 +84,7 @@ function modifyPackageJson(
 ) {
   updatePkgScripts({ pkg });
 
+  // TODO: Move to `npx expo-doctor`
   return updatePkgDependencies(projectRoot, {
     pkg,
     templatePkg,
@@ -124,26 +129,48 @@ export function updatePkgDependencies(
     ...pkg.dependencies,
   });
 
+  const addWhenMissingDependencies = ['react', 'react-native'].filter(
+    (depKey) => !!defaultDependencies[depKey]
+  );
   const requiredDependencies = ['expo', 'expo-splash-screen', 'react', 'react-native'].filter(
     (depKey) => !!defaultDependencies[depKey]
   );
 
   const symlinkedPackages: string[] = [];
+  const nonRecommendedPackages: string[] = [];
 
   for (const dependenciesKey of requiredDependencies) {
-    if (
-      // If the local package.json defined the dependency that we want to overwrite...
-      pkg.dependencies?.[dependenciesKey]
-    ) {
-      if (
-        // Then ensure it isn't symlinked (i.e. the user has a custom version in their yarn workspace).
-        isModuleSymlinked(projectRoot, { moduleId: dependenciesKey, isSilent: true })
-      ) {
+    // If the local package.json defined the dependency that we want to overwrite...
+    if (pkg.dependencies?.[dependenciesKey]) {
+      // Then ensure it isn't symlinked (i.e. the user has a custom version in their yarn workspace).
+      if (isModuleSymlinked(projectRoot, { moduleId: dependenciesKey, isSilent: true })) {
         // If the package is in the project's package.json and it's symlinked, then skip overwriting it.
         symlinkedPackages.push(dependenciesKey);
         continue;
       }
+
+      // Do not modify manually skipped dependencies
       if (skipDependencyUpdate.includes(dependenciesKey)) {
+        continue;
+      }
+
+      // Ensure the package only needs to be added when missing
+      if (addWhenMissingDependencies.includes(dependenciesKey)) {
+        let projectHasRecommended: boolean | null = null;
+        // Check if the version intersects with the recommended versions
+        try {
+          projectHasRecommended = semverIntersects(
+            pkg.dependencies[dependenciesKey],
+            String(defaultDependencies[dependenciesKey])
+          );
+        } catch {
+          // If the version is invalid, just warn the user
+        }
+        // When the versions can't be parsed `null`, or does not intersect `false`, warn the user
+        if (projectHasRecommended !== true) {
+          nonRecommendedPackages.push(`${dependenciesKey}@${defaultDependencies[dependenciesKey]}`);
+        }
+        // Do not modify add-only dependencies
         continue;
       }
     }
@@ -155,6 +182,14 @@ export function updatePkgDependencies(
       `\u203A Using symlinked ${symlinkedPackages
         .map((pkg) => chalk.bold(pkg))
         .join(', ')} instead of recommended version(s).`
+    );
+  }
+
+  if (nonRecommendedPackages.length) {
+    Log.warn(
+      `\u203A Using current versions instead of recommended ${nonRecommendedPackages
+        .map((pkg) => chalk.bold(pkg))
+        .join(', ')}.`
     );
   }
 

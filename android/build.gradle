@@ -1,25 +1,21 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+import com.android.build.api.variant.AndroidComponentsExtension
 
 buildscript {
   ext {
     minSdkVersion = 21
-    targetSdkVersion = 31
-    compileSdkVersion = 31
+    targetSdkVersion = 33
+    compileSdkVersion = 33
 
     dbFlowVersion = '4.2.4'
-    buildToolsVersion = '31.0.0'
-    kotlinVersion = '1.6.10'
-    gradlePluginVersion = '7.1.1'
+    buildToolsVersion = '33.0.0'
+    kotlinVersion = '1.8.10'
+    gradlePluginVersion = '7.4.1'
     gradleDownloadTaskVersion = '5.0.1'
     repositoryUrl = "file:${System.env.HOME}/.m2/repository/"
 
-    if (System.properties['os.arch'] == "aarch64") {
-      // For M1 Users we need to use the NDK 24 which added support for aarch64
-      ndkVersion = "24.0.8215888"
-    } else {
-      // Otherwise we default to the side-by-side NDK version from AGP.
-      ndkVersion = "21.4.7075529"
-    }
+    // We use NDK 23 which has both M1 support and is the side-by-side NDK version from AGP.
+    ndkVersion = "23.1.7779620"
   }
   repositories {
     google()
@@ -28,6 +24,7 @@ buildscript {
   dependencies {
     classpath "com.android.tools.build:gradle:${gradlePluginVersion}"
     classpath 'com.google.gms:google-services:4.3.5'
+    classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.4'
     classpath "de.undercouch:gradle-download-task:$gradleDownloadTaskVersion"
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
 
@@ -44,6 +41,9 @@ plugins {
 }
 // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
+def reactProperties = new Properties()
+file("${project(':packages:react-native:ReactAndroid').projectDir}/gradle.properties").withInputStream { reactProperties.load(it) }
+
 allprojects {
   repositories {
     // For non-detach
@@ -52,10 +52,10 @@ allprojects {
     }
     // For old expoviews to work
     maven {
-      url "$rootDir/versioned-abis/expoview-abi46_0_0/maven"
+      url "$rootDir/versioned-abis/expoview-abi48_0_0/maven"
     }
     maven {
-      url "$rootDir/versioned-abis/expoview-abi45_0_0/maven"
+      url "$rootDir/versioned-abis/expoview-abi47_0_0/maven"
     }
     maven {
       url "$rootDir/versioned-abis/maven"
@@ -81,9 +81,7 @@ allprojects {
       dirs 'libs'
       // dirs project(':expoview').file('libs')
     }
-    // Using www.jitpack.io instead of plain jitpack.io due to
-    // https://github.com/jitpack/jitpack.io/issues/4002
-    maven { url "https://www.jitpack.io" }
+    maven { url "https://jitpack.io" }
 
     // Want this last so that we never end up with a stale cache
     mavenLocal()
@@ -92,24 +90,39 @@ allprojects {
   configurations.all {
     // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
     resolutionStrategy.dependencySubstitution {
-      substitute module("com.facebook.react:react-native:+") with project(":ReactAndroid")
-
-      // Gradle needs another hint (apart from plain dependency substitution)
-      // to know that it should first evaluate the replacing project before resolving
-      // classpaths etc. Without this block an error is thrown when running tests
-      // in a project that depends on react-native (eg. expo-updates):
-      //   > No matching configuration of project :ReactAndroid was found.
-      //   > The consumer was configured to find a runtime of a component,
-      //   > as well as attribute 'com.android.build.api.attributes.BuildTypeAttr'
-      //   > with value 'debug' but:
-      //   >   - None of the consumable configurations have attributes.
-      all {
-        if (requested.displayName == "com.facebook.react:react-native:+") {
-          evaluationDependsOn(":ReactAndroid")
-        }
-      }
+      substitute(module("com.facebook.react:react-native"))
+        .using(project(":packages:react-native:ReactAndroid"))
+        .because("Building React Native from source")
+      substitute(module("com.facebook.react:react-native:+"))
+        .using(project(":packages:react-native:ReactAndroid"))
+        .because("Building React Native from source")
+      substitute(module("com.facebook.react:react-android"))
+        .using(project(":packages:react-native:ReactAndroid"))
+        .because("Building React Native from source")
     }
     // WHEN_DISTRIBUTING_REMOVE_TO_HERE
+
+    resolutionStrategy.force(
+      "com.facebook.fresco:fbcore:${reactProperties.getProperty('FRESCO_VERSION')}",
+      "com.facebook.fresco:fresco:${reactProperties.getProperty('FRESCO_VERSION')}",
+      "com.facebook.fresco:imagepipeline-okhttp3:${reactProperties.getProperty('FRESCO_VERSION')}",
+      "com.facebook.fresco:ui-common:${reactProperties.getProperty('FRESCO_VERSION')}",
+    )
+  }
+}
+
+// to prevent duplicated lib error, pick first of libc++_shared.so and libfbjni.so for instrumented tests
+allprojects { subProject ->
+  subProject.afterEvaluate {
+    def androidComponents = subProject.extensions.findByType(AndroidComponentsExtension.class)
+    androidComponents?.with {
+      onVariants(selector().all()) {
+        getAndroidTest()?.packaging?.jniLibs?.pickFirsts?.addAll([
+          "**/libc++_shared.so",
+          "**/libfbjni.so",
+        ])
+      }
+    }
   }
 }
 

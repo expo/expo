@@ -36,6 +36,7 @@ import expo.modules.devmenu.api.DevMenuMetroClient
 import expo.modules.devmenu.detectors.ShakeDetector
 import expo.modules.devmenu.detectors.ThreeFingerLongPressDetector
 import expo.modules.devmenu.modules.DevMenuPreferences
+import expo.modules.devmenu.modules.DevMenuPreferencesHandle
 import expo.modules.devmenu.react.DevMenuPackagerCommandHandlersSwapper
 import expo.modules.devmenu.react.DevMenuShakeDetectorListenerSwapper
 import expo.modules.devmenu.tests.DevMenuDisabledTestInterceptor
@@ -47,6 +48,8 @@ import kotlinx.coroutines.Dispatchers
 import java.lang.ref.WeakReference
 
 object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
+  data class Callback(val name: String, val shouldCollapse: Boolean)
+
   val metroClient: DevMenuMetroClient by lazy { DevMenuMetroClient() }
   private var fontsWereLoaded = false
 
@@ -206,6 +209,10 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     }
   }
 
+  private fun hasDisableOnboardingQueryParam(urlString: String): Boolean {
+    return urlString.contains("disableOnboarding=1")
+  }
+
   /**
    * Starts dev menu if wasn't initialized, prepares for opening menu at launch if needed and gets [DevMenuPreferences].
    * We can't open dev menu here, cause then the app will crash - two react instance try to render.
@@ -221,12 +228,12 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     maybeStartDetectors(devMenuHost.getContext())
     preferences = (
       testInterceptor.overrideSettings()
-        ?: if (reactContext.hasNativeModule(DevMenuPreferences::class.java)) {
-          reactContext.getNativeModule(DevMenuPreferences::class.java)!!
-        } else {
-          DevMenuDefaultPreferences()
-        }
+        ?: DevMenuPreferencesHandle(reactContext)
       ).also {
+      if (hasDisableOnboardingQueryParam(currentManifestURL.orEmpty())) {
+        it.isOnboardingFinished = true
+      }
+    }.also {
       shouldLaunchDevMenuOnStart = canLaunchDevMenuOnStart && (it.showsAtLaunch || !it.isOnboardingFinished)
       if (shouldLaunchDevMenuOnStart) {
         reactContext.addLifecycleEventListener(this)
@@ -250,7 +257,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     return Bundle.EMPTY
   }
 
-  fun loadFonts(applicationContext: ReactApplicationContext) {
+  fun loadFonts(context: Context) {
     if (fontsWereLoaded) {
       return
     }
@@ -268,7 +275,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       "Inter-Thin"
     )
 
-    val assets = applicationContext.assets
+    val assets = context.assets
 
     fonts.map { familyName ->
       val font = Typeface.createFromAsset(assets, "$familyName.otf")
@@ -278,8 +285,8 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   // captures any callbacks that are registered via the `registerDevMenuItems` module method
   // it is set and unset by the public facing `DevMenuModule`
-  // when the DevMenuModule instance is unloaded (e.g between app loads) the callback list is reset to an empty array
-  var registeredCallbacks = arrayListOf<String>()
+  // when the DevMenuModule instance is unloaded (e.g between app loads) the callback list is reset to an empty list
+  var registeredCallbacks = mutableListOf<Callback>()
 
   //endregion
 
@@ -351,19 +358,16 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     setCurrentScreen(null)
 
     activity.startActivity(Intent(activity, DevMenuActivity::class.java))
-
-    hostReactContext
-      ?.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
-      ?.emit("openDevMenu", null)
   }
 
   /**
-   * Sends an event to JS triggering the animation that collapses the dev menu.
+   * Triggers the animation that collapses the dev menu.
    */
   override fun closeMenu() {
-    hostReactContext
-      ?.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
-      ?.emit("closeDevMenu", null)
+    val activity = hostActivity as? DevMenuActivity ?: return
+    if (!activity.isDestroyed) {
+      activity.closeBottomSheet()
+    }
   }
 
   override fun hideMenu() {

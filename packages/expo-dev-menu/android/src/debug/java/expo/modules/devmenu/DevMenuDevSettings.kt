@@ -2,14 +2,12 @@ package expo.modules.devmenu
 
 import android.os.Bundle
 import com.facebook.react.ReactInstanceManager
-import com.facebook.react.devsupport.DevInternalSettings
 import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
-import kotlinx.coroutines.runBlocking
 
 object DevMenuDevSettings {
   fun getDevSettings(reactInstanceManager: ReactInstanceManager): Bundle {
     val devDelegate = DevMenuDevToolsDelegate(DevMenuManager, reactInstanceManager)
-    val devSettings = devDelegate.devSettings as? DevInternalSettings
+    val devSettings = devDelegate.devSettings
 
     val jsBundleURL = reactInstanceManager.devSupportManager.jsBundleURLForRemoteDebugging
 
@@ -17,21 +15,19 @@ object DevMenuDevSettings {
       return Bundle().apply {
         putBoolean("isDebuggingRemotely", devSettings.isRemoteJSDebugEnabled)
         putBoolean("isElementInspectorShown", devSettings.isElementInspectorEnabled)
-        putBoolean("isHotLoadingEnabled", devSettings.isHotModuleReplacementEnabled)
+        putBoolean("isHotLoadingEnabled", devDelegate.devInternalSettings?.isHotModuleReplacementEnabled ?: false)
         putBoolean("isPerfMonitorShown", devSettings.isFpsDebugEnabled)
         putBoolean("isRemoteDebuggingAvailable", jsBundleURL.isNotEmpty())
         putBoolean("isElementInspectorAvailable", devSettings.isJSDevModeEnabled)
         putBoolean("isHotLoadingAvailable", devSettings.isJSDevModeEnabled)
         putBoolean("isPerfMonitorAvailable", devSettings.isJSDevModeEnabled)
-        putBoolean("isJSInspectorAvailable", run {
-          val packageName = reactInstanceManager.currentReactContext?.packageName
-            ?: return@run false
-          val metroHost = "http://${devSettings.packagerConnectionSettings.debugServerHost}"
-          runBlocking {
-            DevMenuManager.metroClient
-              .queryJSInspectorAvailability(metroHost, packageName)
+        putBoolean(
+          "isJSInspectorAvailable",
+          run {
+            val jsExecutorName = reactInstanceManager.jsExecutorName
+            jsExecutorName.contains("Hermes") || jsExecutorName.contains("V8")
           }
-        })
+        )
       }
     }
 

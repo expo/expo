@@ -11,6 +11,7 @@ import * as Log from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { getIpAddress } from '../../../utils/ip';
+import { setNodeEnv } from '../../../utils/nodeEnv';
 import { choosePortAsync } from '../../../utils/port';
 import { createProgressBar } from '../../../utils/progress';
 import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo';
@@ -133,7 +134,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
 
     const middleware = await this.getManifestMiddlewareAsync(options);
 
-    nativeMiddleware.middleware.use(middleware);
+    nativeMiddleware.middleware.use(middleware.getHandler());
 
     return nativeMiddleware;
   }
@@ -345,7 +346,8 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       mode: options.mode,
       https: options.https,
     };
-    setMode(env.mode ?? 'development');
+    setNodeEnv(env.mode ?? 'development');
+    require('@expo/env').load(env.projectRoot);
     // Check if the project has a webpack.config.js in the root.
     const projectWebpackConfig = this.getProjectConfigFilePath();
     let config: WebpackConfiguration;
@@ -383,11 +385,6 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       Log.error(`Could not clear ${mode} web cache directory: ${error.message}`);
     }
   }
-}
-
-function setMode(mode: 'development' | 'production' | 'test' | 'none'): void {
-  process.env.BABEL_ENV = mode;
-  process.env.NODE_ENV = mode;
 }
 
 export function getProjectWebpackConfigFilePath(projectRoot: string) {

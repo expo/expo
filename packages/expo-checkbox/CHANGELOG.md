@@ -10,6 +10,28 @@
 
 ### 💡 Others
 
+## 2.4.0 — 2023-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 2.3.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 2.3.0 — 2023-02-03
+
+### ⚠️ Notices
+
+- Remove deprecated `isAvailableAsync()` method. ([#20961](https://github.com/expo/expo/pull/20961) by [@Simek](https://github.com/Simek))
+
+## 2.2.2 — 2022-11-02
+
+_This version does not introduce any user-facing changes._
+
+## 2.2.1 — 2022-10-25
+
+_This version does not introduce any user-facing changes._
+
 ## 2.2.0 — 2022-07-07
 
 _This version does not introduce any user-facing changes._
@@ -22,7 +44,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🛠 Breaking changes
 
-- Remove `isAvailableAsync()` and reimplement module in javascript. ([#13510](https://github.com/expo/expo/pull/13510) by [@ajsmth](https://github.com/ajsmth))
+- Deprecate `isAvailableAsync()` and reimplement module in javascript. ([#13510](https://github.com/expo/expo/pull/13510) by [@ajsmth](https://github.com/ajsmth))
 
 ## 1.0.3 — 2021-03-10
 

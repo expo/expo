@@ -14,6 +14,7 @@
 
 package expo.modules.kotlin.objects
 
+import com.facebook.react.bridge.Arguments
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.events.EventsDefinition
 import expo.modules.kotlin.functions.AsyncFunction
@@ -21,6 +22,9 @@ import expo.modules.kotlin.functions.AsyncFunctionBuilder
 import expo.modules.kotlin.functions.AsyncFunctionComponent
 import expo.modules.kotlin.functions.AsyncFunctionWithPromiseComponent
 import expo.modules.kotlin.functions.SyncFunctionComponent
+import expo.modules.kotlin.jni.JavaScriptModuleObject
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinitionBuilder
 import expo.modules.kotlin.types.toAnyType
 import kotlin.reflect.typeOf
 
@@ -43,6 +47,18 @@ open class ObjectDefinitionBuilder {
   internal var properties = mutableMapOf<String, PropertyComponentBuilder>()
 
   fun buildObject(): ObjectDefinitionData {
+    // Register stub functions to bypass react-native `NativeEventEmitter` warnings
+    // WARN  `new NativeEventEmitter()` was called with a non-null argument without the required `addListener` method.
+    // WARN  `new NativeEventEmitter()` was called with a non-null argument without the required `removeListeners` method.
+    eventsDefinition?.run {
+      if (!containsFunction("addListener")) {
+        Function("addListener") { _: String -> { } }
+      }
+      if (!containsFunction("removeListeners")) {
+        Function("removeListeners") { _: Int -> { } }
+      }
+    }
+
     return ObjectDefinitionData(
       constantsProvider,
       syncFunctions,
@@ -50,6 +66,12 @@ open class ObjectDefinitionBuilder {
       eventsDefinition,
       properties.mapValues { (_, value) -> value.build() }
     )
+  }
+
+  private fun containsFunction(functionName: String): Boolean {
+    return syncFunctions.containsKey(functionName) ||
+      asyncFunctions.containsKey(functionName) ||
+      functionBuilders.containsKey(functionName)
   }
 
   /**
@@ -112,11 +134,47 @@ open class ObjectDefinitionBuilder {
     }
   }
 
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3> Function(
+    name: String,
+    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3) -> R
+  ): SyncFunctionComponent {
+    return SyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3) }.also {
+      syncFunctions[name] = it
+    }
+  }
+
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4> Function(
+    name: String,
+    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4) -> R
+  ): SyncFunctionComponent {
+    return SyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4) }.also {
+      syncFunctions[name] = it
+    }
+  }
+
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5> Function(
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5) -> R
   ): SyncFunctionComponent {
     return SyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5) }.also {
+      syncFunctions[name] = it
+    }
+  }
+
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6> Function(
+    name: String,
+    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6) -> R
+  ): SyncFunctionComponent {
+    return SyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType(), typeOf<P6>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5, it[6] as P6) }.also {
+      syncFunctions[name] = it
+    }
+  }
+
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6, reified P7> Function(
+    name: String,
+    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7) -> R
+  ): SyncFunctionComponent {
+    return SyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType(), typeOf<P6>().toAnyType(), typeOf<P7>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5, it[6] as P6, it[7] as P7) }.also {
       syncFunctions[name] = it
     }
   }
@@ -256,6 +314,14 @@ open class ObjectDefinitionBuilder {
   }
 
   /**
+   * Defines event names that this module can send to JavaScript.
+   */
+  @JvmName("EventsWithArray")
+  fun Events(events: Array<String>) {
+    eventsDefinition = EventsDefinition(events)
+  }
+
+  /**
    * Creates module's lifecycle listener that is called right after the first event listener is added.
    */
   inline fun OnStartObserving(crossinline body: () -> Unit) {
@@ -287,4 +353,30 @@ open class ObjectDefinitionBuilder {
       properties[name] = it
     }
   }
+}
+
+inline fun ModuleDefinitionBuilder.Object(block: ObjectDefinitionBuilder.() -> Unit): JavaScriptModuleObject {
+  return module!!.Object(block)
+}
+
+inline fun Module.Object(block: ObjectDefinitionBuilder.() -> Unit): JavaScriptModuleObject {
+  val objectData = ObjectDefinitionBuilder().also(block).buildObject()
+  return JavaScriptModuleObject(appContext.jniDeallocator, "[Anonymous Object]")
+    .apply {
+      val constants = objectData.constantsProvider()
+      val convertedConstants = Arguments.makeNativeMap(constants)
+      exportConstants(convertedConstants)
+
+      objectData
+        .functions
+        .forEach { function ->
+          function.attachToJSObject(appContext, this)
+        }
+
+      objectData
+        .properties
+        .forEach { (_, prop) ->
+          prop.attachToJSObject(this)
+        }
+    }
 }

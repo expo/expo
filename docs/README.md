@@ -1,11 +1,12 @@
 # Expo Documentation
 
-This is the public documentation for **Expo**, its SDK, client, and services.
+This is the public documentation for **Expo**, its SDK, client, and services, like **EAS**.
 
-You can access this documentation online at https://docs.expo.dev/. It's built using Next.js on top of the https://github.com/vercel/docs codebase.
+This documentation is built using Next.js and you can access it online at https://docs.expo.dev/.
 
-> **Contributors:** Please make sure that you edit the docs in the `pages/versions/unversioned` directory if you want your changes to apply to the next SDK version too!
+> **Note** **Contributors:** Please make sure that you edit the docs in the `pages/versions/unversioned` directory if you want your changes to apply to the next SDK version too!
 
+> **Note**
 > If you are looking for Expo Documentation Writing Style guidelines, please refer [Expo Documentation Style Guide](https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md).
 
 ## Running Locally
@@ -39,9 +40,17 @@ yarn run export-server
 
 ## Editing Docs Content
 
-You can find the content source of the documentation inside the `pages/` directory. Documentation is mostly written in markdown with the help of some React components (for Snack embeds, etc). Our API documentation can all be found under `pages/versions/`; we keep separate versions of the documentation for each SDK version currently supported in Expo Go, see ["A note about versioning"](#a-note-about-versioning) for more info. The routes and navbar are automatically inferred from the directory structure within `versions`.
+All documentation-related content is inside the **pages** directory. We write docs in markdown with the help of custom React components that provide additional functionality, such as embedding Snack examples and so on.
 
-> Note: We are currently in the process of moving our API documentation to being auto-generated using `expotools`'s `GenerateDocsAPIData` command.
+The documentation is divided into four main sections:
+
+- **Home**: Provides a guided path from starting a project from scratch to deploying it to app stores.
+- **Guides**: General purpose and fundamental guides that help you understand how Expo works and how to use it. This section also contains all EAS related documentation.
+- **Reference**: Detailed reference documentation for all Expo APIs and modules. All Expo SDK API docs are located under **pages/versions** directory. We keep separate versions of documentation for each SDK version currently supported in Expo Go. See ["A note about versioning"](#a-note-about-versioning) for more information.
+- **Learn**: Tutorials and guides that help you learn how to use Expo and React Native.
+
+> **Note**
+> We are currently in the process of moving our API documentation to being auto-generated using `expotools`'s `GenerateDocsAPIData` command.
 
 Each markdown page can be provided metadata in the heading, distinguished by:
 
@@ -53,11 +62,13 @@ metadata: goes here
 
 These metadata items include:
 
-- `title`: Title of the page shown as the heading and in search results
+- `title`: Title of the page shown as the heading and in search results.
+- `description`: Description of the page shown in search results and open graph descriptions when the page is shared on social media sites.
 - `hideFromSearch`: Whether to hide the page from Algolia search results. Defaults to `false`.
 - `hideInSidebar`: Whether to hide this page from the sidebar. Defaults to `false`.
 - `hideTOC`: Whether to hide the table of contents (appears on the right sidebar). Defaults to `false`.
 - `sidebar_title`: The title of the page to display in the sidebar. Defaults to the page title.
+- `maxHeadingDepth`: The max level of headings shown in Table of Content on the right side. Defaults to `3`.
 
 ### Editing Code
 
@@ -67,7 +78,7 @@ The docs are written with Next.js and TypeScript. If you need to make code chang
 yarn watch
 ```
 
-When you are done, you should run _prettier_ to format your code. Also, don't forget to run tests and linter before committing your changes.
+When you are done, you should run `prettier` to format your code. Also, don't forget to run tests and linter before committing your changes.
 
 ```sh
 yarn prettier
@@ -79,7 +90,7 @@ yarn lint
 
 ### Server-side redirects
 
-These redirects are limited in their expressiveness - you can map a path to another path, but no regular expressions or anything are supported. See client-side redirects for more of that. Server-side redirects are re-created on each run of **deploy.sh**.
+These redirects are limited in their expressiveness - you can map a path to another path, but no regular expressions are supported. See client-side redirects for more of that. Server-side redirects are re-created on each run of **deploy.sh**.
 
 We currently do two client-side redirects, using meta tags with `http-equiv="refresh"`:
 
@@ -94,44 +105,25 @@ Use these for more complex rules than one-to-one path-to-path redirect mapping. 
 
 You can add your own client-side redirect rules in `common/error-utilities.ts`.
 
-## Algolia Docsearch
+## Search
 
-We use Algolia Docsearch as the search engine for our docs. Right now, it's searching for any keywords with the proper `version` tag based on the current location. This is set in the `components/DocumentationPage` header.
+We use Algolia as a main search results provider for our docs. Besides the query, results are also filtered based on the `version` tag which represents the user current location. The tag set in the `components/DocumentationPage.tsx` head.
 
-In `components/plugins/AlgoliaSearch`, you can see the `facetFilters` set to `[['version:none', 'version:{currentVersion}']]`. Translated to English, this means "Search on all pages where `version` is `none`, or the currently selected version.".
+In `ui/components/CommandMenu/utils.ts`, you can see the `facetFilters` set to `[['version:none', 'version:{version}']]`. Translated to English, this means - search on all pages where `version` is `none`, or the currently selected version. Here are the rules we use to set this tag:
 
-- All unversioned pages use the version tag `none`.
-- All versioned pages use the SDK version (e.g. `v40.0.0` or `v39.0.0`).
-- All `hideFromSearch: true` pages don't have the version tag.
+- all unversioned pages use the version tag `none`,
+- all versioned pages use the SDK version (e.g. `v46.0.0` or `v47.0.0`),
+- all pages with `hideFromSearch: true` frontmatter entry don't have the version tag.
+
+Currently, the base results for Expo docs are combined with other results from multiple sources, like:
+
+- manually defined paths for Expo dashboard located in `ui/components/CommandMenu/expoEntries.ts`,
+- public Algolia index for React Native website,
+- React Native directory public API, see the directory [README.md](https://github.com/react-native-community/directory#i-dont-like-your-website-can-i-hit-an-api-instead-and-build-my-own-better-stuff) for more details.
 
 ## Quirks
 
 - You can't have curly brace without quotes: \`{}\` -> `{}`
-- Make sure to leave an empty newline between a table and following content
-
-## A note about versioning
-
-Expo's SDK is versioned so that apps made on old SDKs are still supported
-when new SDKs are released. The website documents previous SDK versions too.
-
-Version names correspond to directory names under `versions`.
-
-`unversioned` is a special version for the next SDK release. It is not included in production output. Additionally, any versions greater than the package.json `version` number are not included in production output, so that it's possible to generate, test, and make changes to new SDK version docs during the release process.
-
-`latest` is an untracked folder which duplicates the contents of the folder matching the version number in **package.json**.
-
-Sometimes you want to make an edit in version `X` and have that edit also
-be applied in versions `Y, Z, ...` (say, when you're fixing documentation for an
-API call that existed in old versions too). You can use the
-`./scripts/versionpatch.sh` utility to apply your `git diff` in one version in
-other versions. For example, to update the docs in `unversioned` then apply it
-on `v8.0.0` and `v7.0.0`, you'd do the following after editing the docs in
-`unversioned` such that it shows up in `git diff`:
-
-`./scripts/versionpatch.sh unversioned v8.0.0 v7.0.0`
-
-Any changes in your `git diff` outside the `unversioned` directory are ignored
-so don't worry if you have code changes or such elsewhere.
 
 ## Deployment
 
@@ -139,43 +131,123 @@ The docs are deployed automatically via a GitHub Action each time a PR with docs
 
 ## How-tos
 
-## Internal linking
+### Internal linking
 
-If you need to link from one MDX file to another, please use the path-reference to this file including extension.
-This allows us to automatically validate these links and see if the file and/or headers still exists.
+If you need to link from one MDX file to another, please use the static/full path to this file (avoid relative links):
 
-- from: `tutorial/button.md`, to: `/workflow/guides/` -> `../workflow/guides.md`
-- from: **index.md**, to: `/guides/errors/#tracking-js-errors` -> `./guides/errors.md#tracking-js-errors` (or without `./`)
+- from: **tutorial/button.mdx**, to: **introduction/expo.mdx** -> `/introduction/expo`
+- from: **index.mdx**, to: **guides/errors.mdx#tracking-js-errors** -> `/guides/errors/#tracking-javascript-errors`
 
-You can validate all current links by running `yarn lint-links`.
+You can validate all current links by running `yarn lint-links` script.
 
 ### Updating latest version of docs
 
-When we release a new SDK, we copy the `unversioned` directory, and rename it to the new version. Latest version of docs is read from **package.json** so make sure to update the `version` key there as well. However, if you update the `version` key there, you need to `rm -rf node_modules/.cache/` before the change is picked up (why? [read this](https://github.com/vercel/next.js/blob/4.0.0/examples/with-universal-configuration/README.md#caveats)).
+When we release a new SDK, we copy the `unversioned` directory, and rename it to the new version. Latest version of docs is read from **package.json** so make sure to update the `version` key there as well.
 
-Make sure to also grab the upgrade instructions from the release notes blog post and put them in `upgrading-expo-sdk-walkthrough.md`.
+Make sure to also grab the upgrade instructions from the release notes blog post and put them in **upgrading-expo-sdk-walkthrough.mdx**.
 
 That's all you need to do. The `versions` directory is listed on server start to find all available versions. The routes and navbar contents are automatically inferred from the directory structure within `versions`.
 
-Because the navbar is automatically generated from the directory structure, the default ordering of the links under each section is alphabetical. However, for many sections, this is not ideal UX. So, if you wish to override the alphabetical ordering, manipulate page titles in **navigation.js**.
+Because the navbar is automatically generated from the directory structure, the default ordering of the links under each section is alphabetical. However, for many sections, this is not ideal UX.
+So, if you wish to override the alphabetical ordering, manipulate page titles in **constants/navigation.js**.
+
+### Updating API reference docs
+
+The API reference docs are generated from the TypeScript source code.
+
+This section walks through the process of updating documentation for an Expo package. Throughout this document, we will assume we want to update TypeDoc definitions of property inside `expo-constants` as an example.
+
+> For more information on how TypeDoc/JSDoc parses comments, see [**Doc comments in TypeDoc documentation**](https://typedoc.org/guides/doccomments/).
+
+#### Prerequisites
+
+Before proceeding, make sure you:
+
+- have [**expo/**](https://github.com/expo/expo) repo cloned on your machine
+  - make sure to [install `direnv`](https://direnv.net/docs/installation.html) and run `direnv allow` at the root of the **expo/** repo.
+- have gone through the steps mentioned in [**"Download and Setup" in the contribution guideline**](https://github.com/expo/expo/blob/main/CONTRIBUTING.md#-download-and-setup).
+- can run **expo/docs** app **[locally](https://github.com/expo/expo/tree/main/docs#running-locally)**.
+- can run [`et` (Expotools)](https://github.com/expo/expo/blob/main/tools/README.md) command locally.
+
+Once you have made sure the development setup is ready, proceed to the next section:
+
+#### Step 1: Update the package’s TypeDoc
+
+- After you have identified which package docs you want to update, open a terminal window and navigate to that package’s directory. For example:
+
+```shell
+# Navigate to expo-constants package directory inside expo/ repo
+cd expo/packages/expo-constants
+```
+
+- Then, open **.ts** file in your code editor/IDE where you want to make changes/updates.
+- Start the TypeScript build compilation in watch mode using `yarn build` in the terminal window.
+- Make the update. For example, we want to update the TypeDoc description of [`expoConfig` property](https://docs.expo.dev/versions/latest/sdk/constants/#nativeconstants)
+
+  - Inside the **src/** directory, open **Constants.types.ts** file.
+  - Search for `expoConfig` property. It has a current description as shown below:
+
+  ```ts
+  /**
+   * The standard Expo confg object defined in `app.json` and `app.config.js` files. For both
+   * classic and modern manifests, whether they are embedded or remote.
+   */
+  expoConfig: ExpoConfig | null;
+  ```
+
+- In the above example, let’s fix the typo by changing `confg` to `config`:
+
+```ts
+/**
+ * The standard app config object defined in `app.json` and `app.config.js` files. For both
+ * classic and modern manifests, whether they are embedded or remote.
+ */
+expoConfig: ExpoConfig | null;
+```
+
+- Before moving to the next step, make sure to exit the "watch mode" by pressing `Ctrl + C` from the keyboard.
+
+#### Step 2: Apply TypeDoc updates to expo/docs repo
+
+In the terminal window and run the following command with to generate the JSON data file for the package (which is stored at the location `expo/docs/public/static/data/[SDK-VERSION]`)
+
+- Read the **NOTE** in the below snippet for updating the docs for `unversioned`:
+
+```shell
+et generate-docs-api-data --packageName expo-constants --sdk 47
+
+#### NOTE ####
+# To update unversioned docs, run the command without mentioning the SDK version
+et gdad -p expo-constants
+
+# For more information about et command, run: et gdad --help
+```
+
+**Why update `unversioned` docs?** If these are new changes/updates, apply them to `unversioned` to make sure that those changes are part of the next SDK version.
+
+#### Step 3: See the changes in the docs repo
+
+Now, in the terminal window, navigate to **expo/docs** repo and run the command `yarn run dev` to see the changes applied
+
+- Open [http://localhost:3002/](http://localhost:3002/) in the browser and go to the API doc to see the changes you have made. Make sure to select the right SDK version to see the changes in the left sidebar.
+
+#### Tips
+
+##### Disabling changelog
+
+After making changes, when you are opening the PR, consider adding `<!-- disable:changelog-checks -->` in the PR description if the changes you are making are docs-related changes (such as updating the field description or fixing a typo, etc.)
+
+This will make sure that the ExpoBot on GitHub will not complain about updating the package’s changelog (some of these changes, as described above, are not worth mentioning in the changelog).
+
+##### Using the correct package name
+
+Some of the packages have documentation spread over multiple pages. For example, `expo-av` package has a separate base interface, and some of the information is separated into `Audio` and `Video` components. For such packages, always make sure to check the [name of the package](https://github.com/expo/expo/blob/main/tools/src/commands/GenerateDocsAPIData.ts#L24) for `et` command.
 
 ### Syncing app.json / app.config.js with the schema
 
 To render the app.json / app.config.js properties table, we currently store a local copy of the appropriate version of the schema.
 
 If the schema is updated, in order to sync and rewrite our local copy, run `yarn run schema-sync <SDK version integer>` or `yarn run schema-sync unversioned`.
-
-### Importing from the React Native docs
-
-You can import the React Native docs in an automated way into these docs.
-
-1. Update the react-native-website submodule here
-2. `yarn run import-react-native-docs`
-
-This will write all the relevant RN doc stuff into the unversioned version directory.
-You may need to tweak the script as the source docs change; the script hackily translates between the different forms of markdown that have different quirks.
-
-The React Native docs are actually versioned but we currently read off of main.
 
 ### Adding Images and Assets
 
@@ -226,11 +298,12 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ### Embedding multiple options of code
 
-Sometimes it's useful to show multiple ways of doing something, for instance maybe you'd like to have an example using a React class component, and also an example of a functional component. The `Tabs` plugin is really useful for this, and this is how you'd use it an a markdown file:
+Sometimes it's useful to show multiple ways of doing something, for instance maybe you'd like to have an example using a React class component, and also an example of a functional component.
+The `Tabs` plugin is really useful for this, and this is how you'd use it in a markdown file:
 
 <!-- prettier-ignore -->
 ```jsx
-import { Tab, Tabs } from '~/components/plugins/Tabs';
+import { Tabs, Tab } from '~/ui/components/Tabs';
 
 <Tabs>
 <Tab label="Add 1 One Way">
@@ -241,10 +314,8 @@ import { Tab, Tabs } from '~/components/plugins/Tabs';
     /* @end */
     };
 
-
 </Tab>
 <Tab label="Add 1 Another Way">
-
 
     addOne = async x => {
     /* @info This text will be shown onHover */
@@ -256,17 +327,18 @@ import { Tab, Tabs } from '~/components/plugins/Tabs';
 </Tabs>
 ```
 
-n.b. The components should not be indented or they will not be parsed correctly.
+**Note:** The components should not be indented or they will not be parsed correctly.
 
-### Excluding pages from Docsearch
+### Excluding pages from DocSearch
 
 To ignore a page from the search result, use `hideFromSearch: true` on that page. This removes the `<meta name="docsearch:version">` tag from that page and filters it from our facet-based search.
 
-Please note that `hideFromSearch` only prevents the page from showing up in the internal docs search (Algolia). The page will still show up in search engine results like Google. For a page to be hidden even from search engine results, you need to edit the sitemap that is generated via our Next.js config (**config.js**).
+Please note that `hideFromSearch` only prevents the page from showing up in the internal docs search (Algolia). The page will still show up in search engine results like Google.
+For a page to be hidden even from search engine results, you need to edit the sitemap that is generated via our Next.js config (**next.config.js**).
 
 ### Excluding directories from the sidebar
 
-Certain directories are excluded from the sidebar in order to prevent it from getting too long and unnavigable. You can find a list of these directories, and add new ones, in **navigation.js** under `hiddenSections`.
+Certain directories are excluded from the sidebar in order to prevent it from getting too long and unnavigable. You can find a list of these directories, and add new ones, in **constants/navigation.js** under `hiddenSections`.
 
 If you just want to hide a single page from the sidebar, set `hideInSidebar: true` in the page metadata.
 
@@ -278,7 +350,7 @@ Whenever shell commands are used or referred, use `Terminal` component to make t
 import { Terminal } from '~/ui/components/Snippet';
 
 // for single command and one prop
-<Terminal cmd={["$ expo install package"]} />
+<Terminal cmd={["$ npx expo install package"]} />
 
 // for multiple commands
 
@@ -296,10 +368,4 @@ import { Terminal } from '~/ui/components/Snippet';
 
 Please commit any sizeable diffs that are the result of `prettier` separately to make reviews as easy as possible.
 
-If you have a codeblock using `/* @info */` highlighting, use `<!-- prettier-ignore -->` on the block and take care to preview the block in the browser to ensure that the indentation is correct - the highlighting annotation will sometimes swallow newlines.
-
-## TODOs:
-
-- Handle image sizing in imports better
-- Read from the appropriate version (configurable) of the React Native docs, not just main
-- Make Snack embeds work; these are marked in some of the React Native docs but they are just imported as plain JS code blocks
+If you have a code block using `/* @info */` highlighting, use `{/* prettier-ignore */}` on the block and take care to preview the block in the browser to ensure that the indentation is correct - the highlighting annotation will sometimes swallow newlines.

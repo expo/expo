@@ -40,10 +40,12 @@ internal class AnyTypeConverterTest {
   fun `should work with collections`() {
     val convertedValue = convert<List<Any>>(listOf(1.0, "string"))
     val convertedDynamic = convert<List<Any>>(
-      JavaOnlyArray().apply {
-        pushDouble(1.0)
-        pushString("string")
-      }
+      DynamicFromObject(
+        JavaOnlyArray().apply {
+          pushDouble(1.0)
+          pushString("string")
+        }
+      )
     )
 
     Truth.assertThat(convertedValue[0]).isInstanceOf(java.lang.Double::class.java)

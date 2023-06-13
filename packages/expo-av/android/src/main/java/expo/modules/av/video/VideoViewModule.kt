@@ -1,8 +1,10 @@
 package expo.modules.av.video
 
 import com.facebook.react.bridge.ReadableMap
+import expo.modules.av.ViewUtils
 import expo.modules.av.video.scalablevideoview.ScalableType
 import expo.modules.core.arguments.MapArguments
+import expo.modules.kotlin.Promise
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
@@ -48,5 +50,60 @@ class VideoViewModule : Module() {
 
       //endregion
     }
+
+    //region Native module
+
+    Constants(
+      "ScaleNone" to ScalableType.LEFT_TOP.ordinal.toString(),
+      "ScaleToFill" to ScalableType.FIT_XY.ordinal.toString(),
+      "ScaleAspectFit" to ScalableType.FIT_CENTER.ordinal.toString(),
+      "ScaleAspectFill" to ScalableType.CENTER_CROP.ordinal.toString(),
+    )
+
+    AsyncFunction("setFullscreen") { tag: Int, shouldBeFullscreen: Boolean, promise: Promise ->
+      ViewUtils.tryRunWithVideoView(
+        appContext.legacyModuleRegistry, tag,
+        object : ViewUtils.VideoViewCallback {
+          override fun runWithVideoView(videoView: VideoView) {
+            val listener = object : FullscreenVideoPlayerPresentationChangeProgressListener() {
+              override fun onFullscreenPlayerDidDismiss() {
+                promise.resolve(videoView.status)
+              }
+
+              override fun onFullscreenPlayerDidPresent() {
+                promise.resolve(videoView.status)
+              }
+
+              override fun onFullscreenPlayerPresentationTriedToInterrupt() {
+                promise.reject("E_FULLSCREEN_VIDEO_PLAYER", "This presentation change tries to interrupt an older request. Await the old request and then try again.", null)
+              }
+
+              override fun onFullscreenPlayerPresentationInterrupted() {
+                promise.reject("E_FULLSCREEN_VIDEO_PLAYER", "This presentation change has been interrupted by a newer change request.", null)
+              }
+
+              override fun onFullscreenPlayerPresentationError(errorMessage: String?) {
+                val rejectionMessageBuilder = StringBuilder()
+                rejectionMessageBuilder.append("This presentation change has been interrupted by an error.")
+                if (errorMessage != null) {
+                  rejectionMessageBuilder.append(" ")
+                  rejectionMessageBuilder.append(errorMessage)
+                }
+                promise.reject("E_FULLSCREEN_VIDEO_PLAYER", rejectionMessageBuilder.toString(), null)
+              }
+            }
+
+            if (shouldBeFullscreen) {
+              videoView.ensureFullscreenPlayerIsPresented(listener)
+            } else {
+              videoView.ensureFullscreenPlayerIsDismissed(listener)
+            }
+          }
+        },
+        promise
+      )
+    }
+
+    //endregion
   }
 }

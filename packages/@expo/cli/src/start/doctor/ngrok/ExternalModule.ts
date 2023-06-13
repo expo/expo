@@ -108,17 +108,17 @@ export class ExternalModule<TModule> {
         ? new PackageManager.NpmPackageManager({
             cwd: this.projectRoot,
             log: Log.log,
-            silent: !env.EXPO_DEBUG,
+            silent: !(env.EXPO_DEBUG || env.CI),
           })
         : PackageManager.createForProject(this.projectRoot, {
-            silent: !env.EXPO_DEBUG,
+            silent: !(env.EXPO_DEBUG || env.CI),
           });
 
       try {
         if (shouldGloballyInstall) {
-          await packageManager.addGlobalAsync(packageName);
+          await packageManager.addGlobalAsync([packageName]);
         } else {
-          await packageManager.addDevAsync(packageName);
+          await packageManager.addDevAsync([packageName]);
         }
         Log.log(`Installed ${packageName}`);
       } catch (error: any) {

@@ -1,6 +1,6 @@
 {
   "name": "expo-secure-store",
-  "version": "11.3.0",
+  "version": "12.3.0",
   "description": "Provides a way to encrypt and securely store key–value pairs locally on the device.",
   "main": "build/SecureStore.js",
   "types": "build/SecureStore.d.ts",
@@ -37,7 +37,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "^2.0.0"
+    "expo-module-scripts": "^3.0.0"
   },
   "peerDependencies": {
     "expo": "*"

@@ -12,6 +12,8 @@ namespace expo {
 
 class ExpoViewComponentDescriptor : public facebook::react::ConcreteComponentDescriptor<ExpoViewShadowNode> {
  public:
+  using Flavor = std::shared_ptr<std::string const>;
+
   ExpoViewComponentDescriptor(facebook::react::ComponentDescriptorParameters const &parameters);
 
   facebook::react::ComponentHandle getComponentHandle() const override;

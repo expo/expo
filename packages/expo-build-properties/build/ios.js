@@ -1,12 +1,29 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.withIosDeploymentTarget = exports.withIosBuildProperties = void 0;
-const config_plugins_1 = require("@expo/config-plugins");
+const config_plugins_1 = require("expo/config-plugins");
 const { createBuildPodfilePropsConfigPlugin } = config_plugins_1.IOSConfig.BuildProperties;
 exports.withIosBuildProperties = createBuildPodfilePropsConfigPlugin([
     {
+        propName: 'newArchEnabled',
+        propValueGetter: (config) => config.ios?.newArchEnabled?.toString(),
+    },
+    {
         propName: 'ios.useFrameworks',
         propValueGetter: (config) => config.ios?.useFrameworks,
+    },
+    {
+        propName: 'ios.flipper',
+        propValueGetter: (config) => {
+            if (typeof config.ios?.flipper === 'string' || typeof config.ios?.flipper === 'boolean') {
+                return config.ios.flipper.toString();
+            }
+            return undefined;
+        },
+    },
+    {
+        propName: 'EX_DEV_CLIENT_NETWORK_INSPECTOR',
+        propValueGetter: (config) => config.ios?.unstable_networkInspector?.toString(),
     },
 ], 'withIosBuildProperties');
 const withIosDeploymentTarget = (config, props) => {

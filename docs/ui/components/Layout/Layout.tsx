@@ -1,7 +1,8 @@
 import { css, Global } from '@emotion/react';
 import { SerializedStyles } from '@emotion/serialize';
-import { breakpoints, spacing, theme } from '@expo/styleguide';
-import React, { PropsWithChildren, ReactNode } from 'react';
+import { theme } from '@expo/styleguide';
+import { breakpoints, spacing } from '@expo/styleguide-base';
+import { PropsWithChildren, ReactNode } from 'react';
 
 import { Sidebar } from '../Sidebar';
 
@@ -36,7 +37,7 @@ export const Layout = ({
   header = (
     <Header
       sidebar={<Sidebar />}
-      sidebarActiveGroup="general"
+      sidebarActiveGroup="home"
       isMobileMenuVisible={false}
       setMobileMenuVisible={() => undefined}
     />
@@ -51,7 +52,7 @@ export const Layout = ({
     <Global
       styles={css({
         // Ensure correct background for Overscroll
-        '[data-expo-theme="dark"] body': {
+        'body.dark-theme': {
           backgroundColor: theme.background.screen,
         },
       })}
@@ -75,7 +76,7 @@ const layoutStyle = css({
   maxHeight: `calc(100vh - ${HEADER_HEIGHT}px)`,
   marginTop: HEADER_HEIGHT,
   backgroundColor: theme.background.default,
-  '[data-expo-theme="dark"] &': {
+  '.dark-theme &': {
     backgroundColor: theme.background.screen,
   },
   [`@media screen and (max-width: ${breakpoints.medium}px)`]: {

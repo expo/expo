@@ -1,45 +1,24 @@
-import { css } from '@emotion/react';
-import { borderRadius, theme, spacing } from '@expo/styleguide';
-import React, { PropsWithChildren } from 'react';
+import { mergeClasses } from '@expo/styleguide';
+import { forwardRef, PropsWithChildren } from 'react';
 
-type SnippetContentProps = PropsWithChildren<{
+export type SnippetContentProps = PropsWithChildren<{
   alwaysDark?: boolean;
   hideOverflow?: boolean;
+  className?: string;
 }>;
 
-export const SnippetContent = ({
-  children,
-  alwaysDark = false,
-  hideOverflow = false,
-}: SnippetContentProps) => (
-  <div css={[contentStyle, alwaysDark && contentDarkStyle, hideOverflow && contentHideOverflow]}>
-    {children}
-  </div>
+export const SnippetContent = forwardRef<HTMLDivElement, SnippetContentProps>(
+  ({ children, className, alwaysDark = false, hideOverflow = false }: SnippetContentProps, ref) => (
+    <div
+      ref={ref}
+      className={mergeClasses(
+        'text-default bg-subtle border border-default rounded-b-md overflow-x-auto p-4 !leading-[19px]',
+        'prose-code:!px-0',
+        alwaysDark && 'dark-theme bg-palette-black border-transparent whitespace-nowrap',
+        hideOverflow && 'overflow-hidden prose-code:!whitespace-nowrap',
+        className
+      )}>
+      {children}
+    </div>
+  )
 );
-
-const contentStyle = css`
-  background-color: ${theme.palette.black};
-  border: 1px solid ${theme.border.default};
-  border-bottom-left-radius: ${borderRadius.medium}px;
-  border-bottom-right-radius: ${borderRadius.medium}px;
-  padding: ${spacing[4]}px;
-  overflow-x: auto;
-
-  code {
-    padding-left: 0;
-    padding-right: 0;
-  }
-`;
-
-const contentDarkStyle = css`
-  border-color: transparent;
-  white-space: nowrap;
-`;
-
-const contentHideOverflow = css`
-  overflow: hidden;
-
-  code {
-    white-space: nowrap;
-  }
-`;

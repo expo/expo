@@ -1,14 +1,17 @@
 package expo.modules.kotlin.views
 
 import android.content.Context
-import android.util.Log
 import android.view.View
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.common.MapBuilder
 import expo.modules.core.utilities.ifNull
 import expo.modules.kotlin.ModuleHolder
-import expo.modules.kotlin.callbacks.ViewCallbackDelegate
 import expo.modules.kotlin.events.normalizeEventName
+import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.exception.OnViewDidUpdatePropsException
+import expo.modules.kotlin.exception.exceptionDecorator
+import expo.modules.kotlin.logger
+import expo.modules.kotlin.viewevent.ViewEventDelegate
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.jvm.isAccessible
 
@@ -22,6 +25,9 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder) {
   val name: String
     get() = moduleHolder.name
 
+  val props: Map<String, AnyViewProp>
+    get() = definition.props
+
   fun createView(context: Context): View {
     return definition
       .createView(context, moduleHolder.module.appContext)
@@ -30,8 +36,40 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder) {
       }
   }
 
-  fun setProxiedProperties(view: View, proxiedProperties: ReadableMap) {
-    definition.setProps(proxiedProperties, view)
+  fun onViewDidUpdateProps(view: View) {
+    definition.onViewDidUpdateProps?.let {
+      try {
+        exceptionDecorator({ OnViewDidUpdatePropsException(view.javaClass.kotlin, it) }) {
+          it.invoke(view)
+        }
+      } catch (exception: CodedException) {
+        logger.error("❌ Error occurred when invoking 'onViewDidUpdateProps' on '${view.javaClass.simpleName}'", exception)
+        definition.handleException(view, exception)
+      }
+    }
+  }
+
+  /**
+   * Updates the expo related properties of a given View based on a ReadableMap of property values.
+   *
+   * @param view The View whose properties should be updated.
+   * @param propsMap A ReadableMap of property values.
+   *
+   * @return A List of property names that were successfully updated.
+   */
+  fun updateProperties(view: View, propsMap: ReadableMap): List<String> {
+    val expoProps = props
+    val handledProps = mutableListOf<String>()
+    val iterator = propsMap.keySetIterator()
+
+    while (iterator.hasNextKey()) {
+      val key = iterator.nextKey()
+      expoProps[key]?.let { expoProp ->
+        expoProp.set(propsMap.getDynamic(key), view)
+        handledProps.add(key)
+      }
+    }
+    return handledProps
   }
 
   fun onDestroy(view: View) =
@@ -60,18 +98,18 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder) {
 
     callbacks.forEach {
       val property = propertiesMap[it].ifNull {
-        Log.w("ExpoModuleCore", "Property `$it` does not exist in ${kClass.simpleName}.")
+        logger.warn("⚠️ Property `$it` does not exist in ${kClass.simpleName}")
         return@forEach
       }
       property.isAccessible = true
 
       val delegate = property.getDelegate(view).ifNull {
-        Log.w("ExpoModulesCore", "Property delegate for `$it` in ${kClass.simpleName} does not exist.")
+        logger.warn("⚠️ Property delegate for `$it` in ${kClass.simpleName} does not exist")
         return@forEach
       }
 
-      val viewDelegate = (delegate as? ViewCallbackDelegate<*>).ifNull {
-        Log.w("ExpoModulesCore", "Property delegate for `$it` cannot be cased to `ViewCallbackDelegate`.")
+      val viewDelegate = (delegate as? ViewEventDelegate<*>).ifNull {
+        logger.warn("⚠️ Property delegate for `$it` cannot be cased to `ViewCallbackDelegate`")
         return@forEach
       }
 

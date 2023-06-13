@@ -1,4 +1,4 @@
-import Image from './Image';
+export * from './Image';
 export * from './Image.types';
-export default Image;
+export * from './ImageBackground';
 //# sourceMappingURL=index.d.ts.map

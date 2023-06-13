@@ -26,6 +26,11 @@ using ClassConstructor = std::function<void(jsi::Runtime &runtime, const jsi::Va
 
 std::shared_ptr<jsi::Function> createClass(jsi::Runtime &runtime, const char *name, ClassConstructor constructor);
 
+/**
+ Creates a new object, using the provided object as the prototype.
+ */
+std::shared_ptr<jsi::Object> createObjectWithPrototype(jsi::Runtime &runtime, std::shared_ptr<jsi::Object> prototype);
+
 #pragma mark - Weak objects
 
 /**
@@ -58,6 +63,10 @@ void defineProperty(jsi::Runtime &runtime, const jsi::Object *object, const char
  Sets the deallocator block on a given object, which is called when the object is being deallocated.
  */
 void setDeallocator(jsi::Runtime &runtime, std::shared_ptr<jsi::Object> object, ObjectDeallocatorBlock deallocatorBlock);
+
+#pragma mark - Errors
+
+jsi::Value makeCodedError(jsi::Runtime &runtime, NSString *code, NSString *message);
 
 } // namespace expo
 

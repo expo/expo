@@ -154,37 +154,36 @@ export var UIImagePickerPresentationStyle;
      * @platform ios 13+
      */
     UIImagePickerPresentationStyle["AUTOMATIC"] = "automatic";
-    /**
-     * @deprecated Use `UIImagePickerPresentationStyle.FULL_SCREEN` instead.
-     */
-    UIImagePickerPresentationStyle["FullScreen"] = "fullScreen";
-    /**
-     * @deprecated Use `UIImagePickerPresentationStyle.PAGE_SHEET` instead.
-     */
-    UIImagePickerPresentationStyle["PageSheet"] = "pageSheet";
-    /**
-     * @deprecated Use `UIImagePickerPresentationStyle.FORM_SHEET` instead.
-     */
-    UIImagePickerPresentationStyle["FormSheet"] = "formSheet";
-    /**
-     * @deprecated Use `UIImagePickerPresentationStyle.CURRENT_CONTEXT` instead.
-     */
-    UIImagePickerPresentationStyle["CurrentContext"] = "currentContext";
-    /**
-     * @deprecated Use `UIImagePickerPresentationStyle.OVER_FULL_SCREEN` instead.
-     */
-    UIImagePickerPresentationStyle["OverFullScreen"] = "overFullScreen";
-    /**
-     * @deprecated Use `UIImagePickerPresentationStyle.OVER_CURRENT_CONTEXT` instead.
-     */
-    UIImagePickerPresentationStyle["OverCurrentContext"] = "overCurrentContext";
-    /**
-     * @deprecated Use `UIImagePickerPresentationStyle.POPOVER` instead.
-     */
-    UIImagePickerPresentationStyle["Popover"] = "popover";
-    /**
-     * @deprecated Use `UIImagePickerPresentationStyle.AUTOMATIC` instead.
-     */
-    UIImagePickerPresentationStyle["Automatic"] = "automatic";
 })(UIImagePickerPresentationStyle || (UIImagePickerPresentationStyle = {}));
+/**
+ * Picker preferred asset representation mode. Its values are directly mapped to the [`PHPickerConfigurationAssetRepresentationMode`](https://developer.apple.com/documentation/photokit/phpickerconfigurationassetrepresentationmode).
+ *
+ * @platform ios
+ */
+export var UIImagePickerPreferredAssetRepresentationMode;
+(function (UIImagePickerPreferredAssetRepresentationMode) {
+    /**
+     * A mode that indicates that the system chooses the appropriate asset representation.
+     */
+    UIImagePickerPreferredAssetRepresentationMode["Automatic"] = "automatic";
+    /**
+     * A mode that uses the most compatible asset representation.
+     */
+    UIImagePickerPreferredAssetRepresentationMode["Compatible"] = "compatible";
+    /**
+     * A mode that uses the current representation to avoid transcoding, if possible.
+     */
+    UIImagePickerPreferredAssetRepresentationMode["Current"] = "current";
+})(UIImagePickerPreferredAssetRepresentationMode || (UIImagePickerPreferredAssetRepresentationMode = {}));
+export var CameraType;
+(function (CameraType) {
+    /**
+     * Back/rear camera.
+     */
+    CameraType["back"] = "back";
+    /**
+     * Front camera
+     */
+    CameraType["front"] = "front";
+})(CameraType || (CameraType = {}));
 //# sourceMappingURL=ImagePicker.types.js.map

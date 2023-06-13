@@ -4,9 +4,61 @@
 
 ### 🛠 Breaking changes
 
-- Remove the manual re-export of `usePermissions` hook at package top level. ([#18630](https://github.com/expo/expo/pull/18630) by [@Simek](https://github.com/Simek))
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 12.5.0 — 2023-06-13
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- [Android] Replace dependency on deprecated `com.google.android.gms:play-services-vision` with `com.google.mlkit:barcode-scanning`. ([#22107](https://github.com/expo/expo/pull/22107) by [@toshiyuki-suzuki-yukashikado](https://github.com/toshiyuki-suzuki-yukashikado))
+
+## 12.4.0 — 2023-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 12.3.2 - 2023-03-03
+
+### 🐛 Bug fixes
+
+- Fixed Android property name of BarCodeScannedEvent from boundingBox to bounds to match TypeScript definitions ([#21384](https://github.com/expo/expo/pull/21384) by [@frw](https://github.com/frw))
+
+## 12.3.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 12.3.0 — 2023-02-03
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
+## 12.2.0 — 2022-12-30
 
 ### 🎉 New features
+
+- Native module for barcode scanner view is now written in Swift and Kotlin using the new API. ([#20441](https://github.com/expo/expo/pull/20441) and ([#20668](https://github.com/expo/expo/pull/20668) by [@alanhughes](https://github.com/alanjhughes))
+
+## 12.1.0 - 2022-11-23
+
+### 🐛 Bug fixes
+
+- Fix import issue on case-sensitive file systems ([#20141](https://github.com/expo/expo/pull/20141) by [@hirbod](https://github.com/hirbod))
+
+## 12.0.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
+- Remove the manual re-export of `usePermissions` hook at package top level. ([#18630](https://github.com/expo/expo/pull/18630) by [@Simek](https://github.com/Simek))
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+- Made `cornerPoints` and `bounds` not optional in the `BarCodeScannerResult`. ([#19519](https://github.com/expo/expo/pull/19519) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
@@ -14,6 +66,7 @@
 
 ### 💡 Others
 
+- [plugin] Migrate import from @expo/config-plugins to expo/config-plugins and @expo/config-types to expo/config. ([#18855](https://github.com/expo/expo/pull/18855) by [@brentvatne](https://github.com/brentvatne))
 - Drop `@expo/config-plugins` dependency in favor of peer dependency on `expo`. ([#18595](https://github.com/expo/expo/pull/18595) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 11.4.0 — 2022-07-07

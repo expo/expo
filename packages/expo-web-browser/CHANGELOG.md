@@ -2,13 +2,48 @@
 
 ## Unpublished
 
+### 📚 3rd party library updates
+
+- Updated `robolectric` to `4.10`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
 
-- Support CSS colors in `controlsColor`, `toolbarColor` and `secondaryToolbarColor` options. ([#18586](https://github.com/expo/expo/pull/18586) by [@janicduplessis](https://github.com/janicduplessis))
+### 🐛 Bug fixes
+
+- On `iOS` fix browser session being kept alive after view controller is dismissed. ([#22415](https://github.com/expo/expo/pull/22415) by [@alanjhughes](https://github.com/alanjhughes))
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+## 12.2.0 — 2023-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 12.1.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 12.1.0 — 2023-02-03
 
 ### 🐛 Bug fixes
+
+- Add missing peer dependency on `url` for web. ([#20708](https://github.com/expo/expo/pull/20708) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
+## 12.0.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+- Support CSS colors in `controlsColor`, `toolbarColor` and `secondaryToolbarColor` options. ([#18586](https://github.com/expo/expo/pull/18586) by [@janicduplessis](https://github.com/janicduplessis))
 
 ### 💡 Others
 

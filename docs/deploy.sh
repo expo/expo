@@ -85,8 +85,8 @@ redirects[versions/latest/sdk/introduction/index.html]=versions/latest/sdk/overv
 # project-lifecycle is now covered by managed-vs-bare
 redirects[versions/latest/introduction/project-lifecycle/]=versions/latest/introduction/managed-vs-bare/
 # exp-cli is now expo-cli
-redirects[versions/latest/guides/exp-cli.html]=versions/latest/workflow/expo-cli/
-redirects[versions/latest/guides/exp-cli]=versions/latest/workflow/expo-cli/
+# redirects[versions/latest/guides/exp-cli.html]=versions/latest/workflow/expo-cli/
+# redirects[versions/latest/guides/exp-cli]=versions/latest/workflow/expo-cli/
 # Migrated FAQ pages
 redirects[faq/image-background]=ui-programming/image-background/
 redirects[faq/react-native-styling-buttons]=ui-programming/react-native-styling-buttons/
@@ -103,7 +103,8 @@ redirects[guides/adhoc-builds]=archived/adhoc-builds/
 # clients is now development
 redirects[clients/distribution-for-ios]=development/build/
 redirects[clients/distribution-for-android]=development/build/
-redirects[clients/compatibility]=development/compatibility/
+redirects[clients/compatibility]=development/introduction/
+redirects[development/compatibility]=development/introduction/
 redirects[clients/development-workflows]=development/development-workflows/
 redirects[clients/eas-build]=development/eas-build/
 redirects[clients/extending-the-dev-menu]=development/extending-the-dev-menu/
@@ -117,14 +118,28 @@ redirects[modules]=modules/overview/
 redirects[module-api]=modules/module-api/
 redirects[module-config]=modules/module-config/
 # EAS Metadata
-redirects[eas-metadata]=eas-metadata/introduction/
+redirects[eas-metadata]=eas/metadata/
+redirects[eas-metadata/introduction]=eas/metadata/
+redirects[eas-metadata/getting-started]=eas/metadata/getting-started/
 
-redirects[introduction/walkthrough]=tutorial/planning/
+# Development builds
+redirects[development/build]=development/create-development-builds/
+redirects[development/getting-started]=development/create-development-builds/
+redirects[development/troubleshooting]=development/introduction/
+redirects[development/upgrading]=development/introduction/
+redirects[development/extensions]=development/development-workflows/
+redirects[development/develop-your-project]=development/use-development-builds/
 
 # Guides that have been deleted
-redirects[guides/using-gatsby]=guides/
+redirects[guides/using-gatsby]=/
 redirects[guides/testing-on-devices]=workflow/run-on-device
 redirects[distribution/uploading-apps]=submit/introduction
+redirects[guides/setup-native-firebase/]=guides/using-firebase
+redirects[guides/using-clojurescript/]=/
+redirects[distribution/hosting-your-app/]=distribution/publishing-websites/
+
+# We should change this redirect to a more general EAS guide later
+redirects[guides/setting-up-continuous-integration]=build/building-on-ci
 
 # Moved classic updates
 redirects[distribution/release-channels]=archive/classic-updates/release-channels
@@ -138,6 +153,35 @@ redirects[eas-update/bare-react-native]=bare/updating-your-app
 redirects[worfkflow/publishing]=archive/classic-updates/publishing
 redirects[classic/building-standalone-apps/]=archive/classic-updates/building-standalone-apps/
 redirects[classic/turtle-cli/]=archive/classic-updates/turtle-cli/
+redirects[archive/classic-updates/getting-started/]=eas-update/getting-started/
+redirects[archived/]=archive/
+
+# Old tutorial pages
+redirects[introduction/walkthrough]=tutorial/introduction/
+redirects[tutorial/planning]=tutorial/introduction/
+redirects[tutorial/sharing]=tutorial/introduction/
+redirects[tutorial/text]=tutorial/introduction/
+
+# Push notifications
+redirects[push-notifications/using-fcm/]=push-notifications/push-notifications-setup/
+
+# Removed API reference docs
+redirects[versions/latest/sdk/facebook]=guides/authentication/
+redirects[versions/latest/sdk/taskmanager]=versions/latest/sdk/task-manager/
+redirects[versions/latest/sdk/videothumbnails]=versions/latest/sdk/video-thumbnails/
+redirects[versions/latest/sdk/appearance]=versions/latest/react-native/appearance/
+redirects[versions/latest/sdk/app-loading]=versions/latest/sdk/splash-screen/
+redirects[versions/latest/sdk/app-auth]=guides/authentication/
+redirects[versions/latest/sdk/firebase-core]=guides/using-firebase/
+redirects[versions/latest/sdk/firebase-analytics]=guides/using-firebase/
+redirects[versions/latest/sdk/firebase-recaptcha]=guides/using-firebase/
+redirects[versions/latest/sdk/google-sign-in]=guides/authentication/
+redirects[versions/latest/sdk/google]=guides/authentication/
+redirects[versions/latest/sdk/amplitude/]=guides/using-analytics/
+redirects[versions/latest/sdk/util/]=versions/latest/
+
+# Redirects based on Sentry reports
+redirects[push-notifications]=push-notifications/overview/
 
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys

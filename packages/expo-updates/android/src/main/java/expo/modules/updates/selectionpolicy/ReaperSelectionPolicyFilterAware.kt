@@ -9,6 +9,8 @@ import org.json.JSONObject
  * update in addition to the one currently running, preferring updates that match the same filters
  * if available.
  *
+ * Uses `commitTime` to determine ordering of updates.
+ *
  * Chooses only to delete updates whose scope matches that of `launchedUpdate`.
  */
 class ReaperSelectionPolicyFilterAware : ReaperSelectionPolicy {
@@ -21,7 +23,7 @@ class ReaperSelectionPolicyFilterAware : ReaperSelectionPolicy {
       return listOf()
     }
     val updatesToDelete = mutableListOf<UpdateEntity>()
-    // keep the launched update and one other, to be safe and make rollbacks faster
+    // keep the launched update and one other, to be safe and make roll backs faster
     // keep the next newest update that matches all the manifest filters, unless no other updates do
     // in which case, keep the next newest across all updates
     var nextNewestUpdate: UpdateEntity? = null

@@ -1,1 +1,0 @@
-{"version":3,"file":"AppLoading.d.ts","sourceRoot":"","sources":["../src/AppLoading.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,MAAM,OAAO,CAAC;AAE1B,OAAO,EAAE,eAAe,EAAE,MAAM,oBAAoB,CAAC;AAGrD,cAAM,UAAW,SAAQ,KAAK,CAAC,SAAS,CAAC,eAAe,CAAC;IACvD,UAAU,EAAE,OAAO,CAAS;IAE5B,iBAAiB;IAWjB,oBAAoB;YAIN,6BAA6B;IA6B3C,MAAM;CAGP;AAED,eAAe,UAAU,CAAC"}

@@ -7,6 +7,8 @@ import ExpoModulesTestCore
 
 final class DynamicTypeSpec: ExpoSpec {
   override func spec() {
+    let appContext = AppContext.create()
+
     // MARK: - DynamicRawType
 
     describe("DynamicRawType") {
@@ -17,20 +19,20 @@ final class DynamicTypeSpec: ExpoSpec {
       }
       describe("casts") {
         it("succeeds") {
-          expect(try (~String.self).cast("expo") as? String) == "expo"
-          expect(try (~Double.self).cast(2.1) as? Double) == 2.1
-          expect(try (~Bool.self).cast(false) as? Bool) == false
+          expect(try (~String.self).cast("expo", appContext: appContext) as? String) == "expo"
+          expect(try (~Double.self).cast(2.1, appContext: appContext) as? Double) == 2.1
+          expect(try (~Bool.self).cast(false, appContext: appContext) as? Bool) == false
         }
         it("throws NullCastException") {
           let value: Double? = nil
           let anyValue = value as Any
 
-          expect { try (~Double.self).cast(anyValue) }.to(
+          expect { try (~Double.self).cast(anyValue, appContext: appContext) }.to(
             throwError(errorType: Conversions.NullCastException<Double>.self)
           )
         }
         it("throws CastingException") {
-          expect { try (~String.self).cast(true) }.to(
+          expect { try (~String.self).cast(true, appContext: appContext) }.to(
             throwError(errorType: Conversions.CastingException<String>.self)
           )
         }
@@ -72,13 +74,13 @@ final class DynamicTypeSpec: ExpoSpec {
       }
       describe("casts") {
         it("succeeds") {
-          expect(try (~[Double].self).cast([1.2, 3.4]) as? [Double]) == [1.2, 3.4]
-          expect(try (~[[String]].self).cast([["hello", "expo"]]) as? [[String]]) == [["hello", "expo"]]
+          expect(try (~[Double].self).cast([1.2, 3.4], appContext: appContext) as? [Double]) == [1.2, 3.4]
+          expect(try (~[[String]].self).cast([["hello", "expo"]], appContext: appContext) as? [[String]]) == [["hello", "expo"]]
         }
         it("casts arrays") {
           let value = 9.9
           let anyValue = [value] as [Any]
-          let result = try (~[Double].self).cast(anyValue) as! [Any]
+          let result = try (~[Double].self).cast(anyValue, appContext: appContext) as! [Any]
 
           expect(result).to(beAKindOf([Double].self))
           expect(result as? [Double]) == [value]
@@ -86,11 +88,11 @@ final class DynamicTypeSpec: ExpoSpec {
         it("arrayizes single element") {
           // The dynamic array type can arrayize the single element
           // if only the array element's dynamic type can cast it.
-          expect(try (~[Int].self).cast(50) as? [Int]) == [50]
-          expect(try (~[String].self).cast("not an array") as? [String]) == ["not an array"]
+          expect(try (~[Int].self).cast(50, appContext: appContext) as? [Int]) == [50]
+          expect(try (~[String].self).cast("not an array", appContext: appContext) as? [String]) == ["not an array"]
         }
         it("throws CastingException") {
-          expect { try (~[String].self).cast(84) }.to(
+          expect { try (~[String].self).cast(84, appContext: appContext) }.to(
             throwError(errorType: Conversions.CastingException<String>.self)
           )
         }
@@ -131,12 +133,12 @@ final class DynamicTypeSpec: ExpoSpec {
       }
       describe("casts") {
         it("succeeds") {
-          expect(try (~CGPoint.self).cast([2.1, 3.7]) as? CGPoint) == CGPoint(x: 2.1, y: 3.7)
-          expect(try (~CGVector.self).cast(["dx": 0.8, "dy": 4.1]) as? CGVector) == CGVector(dx: 0.8, dy: 4.1)
-          expect(try (~URL.self).cast("/test/path") as? URL) == URL(fileURLWithPath: "/test/path")
+          expect(try (~CGPoint.self).cast([2.1, 3.7], appContext: appContext) as? CGPoint) == CGPoint(x: 2.1, y: 3.7)
+          expect(try (~CGVector.self).cast(["dx": 0.8, "dy": 4.1], appContext: appContext) as? CGVector) == CGVector(dx: 0.8, dy: 4.1)
+          expect(try (~URL.self).cast("/test/path", appContext: appContext) as? URL) == URL(fileURLWithPath: "/test/path")
         }
         it("throws ConvertingException") {
-          expect { try (~CGRect.self).cast("not a rect") as? CGRect }.to(
+          expect { try (~CGRect.self).cast("not a rect", appContext: appContext) as? CGRect }.to(
             throwError(errorType: Conversions.ConvertingException<CGRect>.self)
           )
         }
@@ -170,11 +172,11 @@ final class DynamicTypeSpec: ExpoSpec {
     // MARK: - DynamicEnumType
 
     describe("DynamicEnumType") {
-      enum StringTestEnum: String, EnumArgument {
+      enum StringTestEnum: String, Enumerable {
         case hello
         case expo
       }
-      enum IntTestEnum: Int, EnumArgument {
+      enum IntTestEnum: Int, Enumerable {
         case negative = -1
         case positive = 1
       }
@@ -185,16 +187,16 @@ final class DynamicTypeSpec: ExpoSpec {
       }
       describe("casts") {
         it("succeeds") {
-          expect(try (~StringTestEnum.self).cast("expo") as? StringTestEnum) == .expo
-          expect(try (~IntTestEnum.self).cast(1) as? IntTestEnum) == .positive
+          expect(try (~StringTestEnum.self).cast("expo", appContext: appContext) as? StringTestEnum) == .expo
+          expect(try (~IntTestEnum.self).cast(1, appContext: appContext) as? IntTestEnum) == .positive
         }
         it("throws EnumNoSuchValueException") {
-          expect { try (~StringTestEnum.self).cast("react native") as? StringTestEnum }.to(
+          expect { try (~StringTestEnum.self).cast("react native", appContext: appContext) as? StringTestEnum }.to(
             throwError(errorType: EnumNoSuchValueException.self)
           )
         }
         it("throws EnumCastingException") {
-          expect { try (~IntTestEnum.self).cast(true) as? StringTestEnum }.to(
+          expect { try (~IntTestEnum.self).cast(true, appContext: appContext) as? StringTestEnum }.to(
             throwError(errorType: EnumCastingException.self)
           )
         }
@@ -234,12 +236,12 @@ final class DynamicTypeSpec: ExpoSpec {
       }
       describe("casts") {
         it("succeeds") {
-          expect(try (~String?.self).cast("expo") as? String) == "expo"
-          expect(try (~Bool?.self).cast(false) as? Bool) == false
+          expect(try (~String?.self).cast("expo", appContext: appContext) as? String) == "expo"
+          expect(try (~Bool?.self).cast(false, appContext: appContext) as? Bool) == false
         }
         it("succeeds with nil") {
           let value: Double? = nil
-          let result = try (~Double?.self).cast(value as Any)
+          let result = try (~Double?.self).cast(value as Any, appContext: appContext)
 
           expect(result).to(beAKindOf(Double?.self))
 
@@ -249,12 +251,12 @@ final class DynamicTypeSpec: ExpoSpec {
         }
         it("succeeds with NSNull") {
           let value = NSNull()
-          let result = try (~Double?.self).cast(value as Any)
+          let result = try (~Double?.self).cast(value as Any, appContext: appContext)
           expect(result).to(beAKindOf(Double?.self))
           expect(Optional.isNil(result)) == true
         }
         it("throws CastingException") {
-          expect { try (~Double?.self).cast("a string") as? Double }.to(
+          expect { try (~Double?.self).cast("a string", appContext: appContext) as? Double }.to(
             throwError(errorType: Conversions.CastingException<Double>.self)
           )
         }
@@ -296,16 +298,16 @@ final class DynamicTypeSpec: ExpoSpec {
         it("succeeds") {
           let appContext = AppContext.create()
           let nativeObject = TestSharedObject()
-          let jsObjectValue = try appContext.runtime!.eval("({})")
+          let jsObjectValue = try appContext.runtime.eval("({})")
 
           SharedObjectRegistry.add(native: nativeObject, javaScript: try jsObjectValue.asObject())
 
           // `DynamicSharedObjectType` only supports casting
           // from `JavaScriptValue`, but not from `JavaScriptObject`.
-          expect(try (~TestSharedObject.self).cast(jsObjectValue) as? TestSharedObject) === nativeObject
+          expect(try (~TestSharedObject.self).cast(jsValue: jsObjectValue, appContext: appContext) as? TestSharedObject) === nativeObject
         }
         it("throws NativeSharedObjectNotFoundException") {
-          expect { try (~TestSharedObject.self).cast("a string") as? TestSharedObject }.to(
+          expect { try (~TestSharedObject.self).cast("a string", appContext: appContext) as? TestSharedObject }.to(
             throwError(errorType: NativeSharedObjectNotFoundException.self)
           )
         }

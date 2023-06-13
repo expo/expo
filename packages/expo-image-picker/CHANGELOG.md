@@ -4,13 +4,88 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 14.3.0 — 2023-06-13
+
+### 🎉 New features
+
+- Added ability to choose the preferred asset representation mode on iOS 14+. ([#22456](https://github.com/expo/expo/pull/22456) by [@thespacemanatee](https://github.com/thespacemanatee))
+- Updated the Android image picker to use a [more streamlined and modern interface](https://developer.android.com/training/data-storage/shared/photopicker), closely resembling the one on iOS. [#22658](https://github.com/expo/expo/pull/22658) by [@fobos531](https://github.com/fobos531)
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- Fixed an issue that allowed picking non-image/video files when passing `MediaTypeOptions.All` ([#22606](https://github.com/expo/expo/pull/22606) by [@fobos531](https://github.com/fobos531))
+
+## 14.2.0 — 2023-05-08
+
+### 🎉 New features
+
+- Added ability to choose the camera-facing type. ([#22143](https://github.com/expo/expo/pull/22143) by [@YoussefHenna](https://github.com/YoussefHenna))
+
+### 🐛 Bug fixes
+
+- Fix images unexpectedly being converted to `.png` when opening `.bmp` files and selecting any quality in `ImagePickerOptions`. ([#21361](https://github.com/expo/expo/pull/21361) by [@behenate](https://github.com/behenate))
+- Fix issue where the array of permissions could end up empty causing an exception. ([#21589](https://github.com/expo/expo/pull/21589) by [@alanhughes](https://github.com/alanjhughes))
+- Fix rotated videos returning incorrect width/height. [#12573](https://github.com/expo/expo/issues/12573) ([#21758](https://github.com/expo/expo/pull/21758) by [@mmmulani](https://github.com/mmmulani))
+- Fix NullPointerException for launchCameraAsync on Android 13. ([#22123](https://github.com/expo/expo/pull/22123) by [@witheroux](https://github.com/witheroux))
+- [Android] Fix image picker returning inverted dimensions when selecting vertical images without editing. ([#22383](https://github.com/expo/expo/pull/22383) by [@behenate](https://github.com/behenate))
+
+## 14.1.1 — 2023-02-09
+
+### ⚠️ Notices
+
+- Removed deprecated fields from pick result type and deprecated `UIImagePickerPresentationStyle` enum values. ([#21078](https://github.com/expo/expo/pull/21078) by [@Simek](https://github.com/Simek))
+
+## 14.1.0 — 2023-01-26
+
+### 🎉 New features
+
+- Add support for [granular permissions](https://developer.android.com/about/versions/13/behavior-changes-13) on Android 13. ([#20908](https://github.com/expo/expo/pull/20908) by [@alanhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
+## 14.0.3 — 2022-12-30
+
+### 💡 Others
+
+- Avoid dependency on `uuid`. ([#20476](https://github.com/expo/expo/pull/20476) by [@LinusU](https://github.com/LinusU))
+
+## 14.0.2 - 2022-11-21
+
+### 🐛 Bug fixes
+
+- Fix support for animated GIFs on iOS. ([#20034](https://github.com/expo/expo/pull/20034) by [@barthap](https://github.com/barthap))
+
+## 14.0.1 - 2022-11-08
+
+### 🐛 Bug fixes
+
+- Fix incorrect asset type for videos on iOS. ([#19932](https://github.com/expo/expo/pull/19932) by [@tsapeta](https://github.com/tsapeta))
+
+## 14.0.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
 - Remove deprecated `requestCameraRollPermissionsAsync` and `getCameraRollPermissionsAsync` methods, as well as associated to them `CameraRollPermissionResponse` type. ([#18600](https://github.com/expo/expo/pull/18600) by [@Simek](https://github.com/Simek))
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+- Reworked the picking result object for simplicity and better compatibility with the multiple selection. ([#19570](https://github.com/expo/expo/pull/19570) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
 
 - The new `PHPickerViewController` is now default picker interface on iOS 14+. ([#18871](https://github.com/expo/expo/pull/18871) by [@barthap](https://github.com/barthap))
 
 ### 🐛 Bug fixes
+
+- Fix images taken with `launchCameraAsync` being translated incorrectly on some camera orientations. ([#19185](https://github.com/expo/expo/pull/19185) by [@jacobjaffe](https://github.com/JacobJaffe) and [@reececox](https://github.com/reececox))
+- Fix error where `launchImageLibraryAsync()` saved the photo to a global cache directory that was inaccessible in Expo Go. ([#19205](https://github.com/expo/expo/pull/19205) by [@aleqsio](https://github.com/aleqsio))
 
 ### 💡 Others
 

@@ -1,7 +1,6 @@
 import * as React from 'react';
 
-import { P } from '~/components/base/paragraph';
-import { CONTAINER_STYLE } from '~/components/plugins/VersionedRedirectNotification';
+import { A, P } from '~/ui/components/Text';
 
 const PossibleRedirectNotification = ({ newUrl }: React.PropsWithChildren<{ newUrl: string }>) => {
   const [targetId, setTargetId] = React.useState<string | null>(null);
@@ -18,10 +17,10 @@ const PossibleRedirectNotification = ({ newUrl }: React.PropsWithChildren<{ newU
 
   if (targetId) {
     return (
-      <div css={CONTAINER_STYLE}>
-        <P>
+      <div className="bg-warning border border-solid border-warning p-4 mt-1 rounded-sm">
+        <P className="mb-0">
           ⚠️ The information you are looking for (addressed by <em>"{targetId}"</em>) has moved.{' '}
-          <a href={`${newUrl}#${targetId}`}>Continue to the new location.</a>
+          <A href={`${newUrl}#${targetId}`}>Continue to the new location.</A>
         </P>
       </div>
     );

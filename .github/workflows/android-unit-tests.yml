@@ -28,8 +28,8 @@ concurrency:
 
 jobs:
   test:
-    runs-on: ubuntu-20.04
-    timeout-minutes: 60
+    runs-on: ubuntu-22.04
+    timeout-minutes: 100
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
       GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=1024m
@@ -37,7 +37,7 @@ jobs:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '14.17'
+          node-version: 16
       - name: 👀 Check out repository
         uses: actions/checkout@v3
         with:
@@ -54,6 +54,7 @@ jobs:
           yarn-workspace: 'true'
           yarn-tools: 'true'
           hermes-engine-aar: 'true'
+          react-native-gradle-downloads: 'true'
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🧶 Install node modules in root dir

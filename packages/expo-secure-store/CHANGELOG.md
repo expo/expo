@@ -1,9 +1,5 @@
 # Changelog
 
-### 🎉 New features
-
-- Added `requireAuthentication` and `authenticationPrompt` parameters to `SecureStoreOptions` options object used in `SecureStore.{deleteItemAsync, getItemAsync, setItemAsync}` methods to enable user authentication while accessing Secure Store. ([#14512](https://github.com/expo/expo/pull/14512) by [@j-piasecki](https://github.com/j-piasecki))
-
 ## Unpublished
 
 ### 🛠 Breaking changes
@@ -12,11 +8,47 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 12.3.0 — 2023-06-13
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Added automatic invalidated key handling on Android. ([#22716](https://github.com/expo/expo/pull/22716) by [@behenate](https://github.com/behenate))
+
+## 12.2.0 — 2023-05-08
+
+### 🎉 New features
+
+- Migrated iOS codebase to use Expo modules API. ([#21393](https://github.com/expo/expo/pull/21393) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 12.1.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 12.1.0 — 2023-02-03
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
+## 12.0.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- Fixed missing `code` and `message` in promise errors. ([#19555](https://github.com/expo/expo/pull/19555) by [@tsapeta](https://github.com/tsapeta))
+
 ### ⚠️ Notices
 
 - Changed `requireAuthentication` option to also require biometrics on iOS (matches Android behavior) ([#18591](https://github.com/expo/expo/pull/18591) by [@stefan-schweiger](https://github.com/stefan-schweiger))
-
-### 💡 Others
 
 ## 11.3.0 — 2022-07-07
 

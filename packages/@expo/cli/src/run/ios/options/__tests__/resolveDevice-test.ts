@@ -24,6 +24,7 @@ jest.mock('../../appleDevice/AppleDevice', () => ({
       model: 'iPhone13,4',
       osVersion: '15.4.1',
       deviceType: 'device',
+      connectionType: 'USB',
       udid: '00008101-001964A22629003A',
     },
   ]),

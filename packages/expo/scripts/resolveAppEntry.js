@@ -15,6 +15,7 @@
 //   Currently only supports android and ios.
 
 const { resolveEntryPoint } = require('@expo/config/paths');
+const fs = require('fs');
 const path = require('path');
 
 const projectRoot = process.argv[1];
@@ -34,7 +35,13 @@ if (entry) {
   // Prevent any logs from the app.config.js
   // from being used in the output of this command.
   console.clear();
-  console.log(absolute ? path.resolve(entry) : path.relative(projectRoot, entry));
+  // React Native's `PROJECT_ROOT` could be using a different root on MacOS (`/var` vs `/private/var`)
+  // We need to make sure to get the real path, `resolveEntryPoint` is using this too
+  console.log(
+    absolute
+      ? path.resolve(entry)
+      : path.relative(fs.realpathSync(projectRoot), fs.realpathSync(entry))
+  );
 } else {
   console.error(`Error: Could not find entry file for project at: ${projectRoot}`);
   process.exit(1);

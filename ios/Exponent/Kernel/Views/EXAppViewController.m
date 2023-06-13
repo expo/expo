@@ -2,8 +2,7 @@
 
 @import UIKit;
 
-#import "EXAnalytics.h"
-#import "EXAppLoader.h"
+#import "EXAbstractLoader.h"
 #import "EXAppViewController.h"
 #import "EXAppLoadingProgressWindowController.h"
 #import "EXAppLoadingCancelView.h"
@@ -26,17 +25,23 @@
 #import <React/RCTUtils.h>
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
-#if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
-#import <EXScreenOrientation/EXScreenOrientationRegistry.h>
+#import <React/RCTAppearance.h>
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI48_0_0React/ABI48_0_0RCTAppearance.h>)
+#import <ABI48_0_0React/ABI48_0_0RCTAppearance.h>
+#endif
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI47_0_0React/ABI47_0_0RCTAppearance.h>)
+#import <ABI47_0_0React/ABI47_0_0RCTAppearance.h>
 #endif
 
-#import <React/RCTAppearance.h>
-#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI46_0_0React/ABI46_0_0RCTAppearance.h>)
-#import <ABI46_0_0React/ABI46_0_0RCTAppearance.h>
-#endif
-#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI45_0_0React/ABI45_0_0RCTAppearance.h>)
-#import <ABI45_0_0React/ABI45_0_0RCTAppearance.h>
-#endif
+#if defined(EX_DETACHED)
+#import "ExpoKit-Swift.h"
+#else
+#import "Expo_Go-Swift.h"
+#endif // defined(EX_DETACHED)
+
+@import EXManifests;
+
+@import ExpoScreenOrientation;
 
 #define EX_INTERFACE_ORIENTATION_USE_MANIFEST 0
 
@@ -260,8 +265,18 @@ NS_ASSUME_NONNULL_BEGIN
   [_appRecord.appLoader requestFromCache];
 }
 
+- (bool)_readSupportsRTLFromManifest:(EXManifestsManifest *)manifest
+{
+  return manifest.supportsRTL;
+}
+
 - (void)appStateDidBecomeActive
 {
+  if (_isHomeApp) {
+    [EXTextDirectionController setSupportsRTL:false];
+  } else if(_appRecord.appLoader.manifest != nil) {
+    [EXTextDirectionController setSupportsRTL:[self _readSupportsRTLFromManifest:_appRecord.appLoader.manifest]];
+  }
   dispatch_async(dispatch_get_main_queue(), ^{
     // Reset the root view background color and window color if we switch between Expo home and project
     [self _setBackgroundColor];
@@ -280,7 +295,6 @@ NS_ASSUME_NONNULL_BEGIN
       [self _overrideUserInterfaceStyleOf:self];
       [self _overrideAppearanceModuleBehaviour];
       [self _invalidateRecoveryTimer];
-      [[EXKernel sharedInstance] logAnalyticsEvent:@"LOAD_EXPERIENCE" forAppRecord:self.appRecord];
       [self.appRecord.appManager rebuildBridge];
     });
   }
@@ -357,7 +371,7 @@ NS_ASSUME_NONNULL_BEGIN
   });
 }
 
-- (void)_setLoadingViewStatusIfEnabledFromAppLoader:(EXAppLoader *)appLoader
+- (void)_setLoadingViewStatusIfEnabledFromAppLoader:(EXAbstractLoader *)appLoader
 {
   if (appLoader.shouldShowRemoteUpdateStatus) {
     [self.appLoadingProgressWindowController updateStatus:appLoader.remoteUpdateStatus];
@@ -435,7 +449,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - EXAppLoaderDelegate
 
-- (void)appLoader:(EXAppLoader *)appLoader didLoadOptimisticManifest:(EXManifestsManifest *)manifest
+- (void)appLoader:(EXAbstractLoader *)appLoader didLoadOptimisticManifest:(EXManifestsManifest *)manifest
 {
   if (_appLoadingCancelView) {
     EX_WEAKIFY(self);
@@ -453,16 +467,19 @@ NS_ASSUME_NONNULL_BEGIN
   [self _rebuildBridge];
 }
 
-- (void)appLoader:(EXAppLoader *)appLoader didLoadBundleWithProgress:(EXLoadingProgress *)progress
+- (void)appLoader:(EXAbstractLoader *)appLoader didLoadBundleWithProgress:(EXLoadingProgress *)progress
 {
   if (self->_appRecord.appManager.status != kEXReactAppManagerStatusRunning) {
     [self.appLoadingProgressWindowController updateStatusWithProgress:progress];
   }
 }
 
-- (void)appLoader:(EXAppLoader *)appLoader didFinishLoadingManifest:(EXManifestsManifest *)manifest bundle:(NSData *)data
+- (void)appLoader:(EXAbstractLoader *)appLoader didFinishLoadingManifest:(EXManifestsManifest *)manifest bundle:(NSData *)data
 {
   [self _showOrReconfigureManagedAppSplashScreen:manifest];
+  if (!_isHomeApp) {
+    [EXTextDirectionController setSupportsRTL:[self _readSupportsRTLFromManifest:_appRecord.appLoader.manifest]];
+  }
   [self _rebuildBridge];
   if (self->_appRecord.appManager.status == kEXReactAppManagerStatusBridgeLoading) {
     [self->_appRecord.appManager appLoaderFinished];
@@ -473,7 +490,7 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
-- (void)appLoader:(EXAppLoader *)appLoader didFailWithError:(NSError *)error
+- (void)appLoader:(EXAbstractLoader *)appLoader didFailWithError:(NSError *)error
 {
   if (_appRecord.appManager.status == kEXReactAppManagerStatusBridgeLoading) {
     [_appRecord.appManager appLoaderFailedWithError:error];
@@ -481,7 +498,7 @@ NS_ASSUME_NONNULL_BEGIN
   [self maybeShowError:error];
 }
 
-- (void)appLoader:(EXAppLoader *)appLoader didResolveUpdatedBundleWithManifest:(EXManifestsManifest * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error
+- (void)appLoader:(EXAbstractLoader *)appLoader didResolveUpdatedBundleWithManifest:(EXManifestsManifest * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error
 {
   [[EXKernel sharedInstance].serviceRegistry.updatesManager notifyApp:_appRecord ofDownloadWithManifest:manifest isNew:!isFromCache error:error];
 }
@@ -548,6 +565,8 @@ NS_ASSUME_NONNULL_BEGIN
   [self refresh];
 }
 
+// In Expo Go the ScreenOrientationViewController.swift is not used, therefore it is necessary to write the same
+// functionality into the EXAppViewController
 #pragma mark - orientation
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
@@ -556,12 +575,10 @@ NS_ASSUME_NONNULL_BEGIN
     return [super supportedInterfaceOrientations];
   }
 
-#if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
-  EXScreenOrientationRegistry *screenOrientationRegistry = (EXScreenOrientationRegistry *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
-  if (screenOrientationRegistry && [screenOrientationRegistry requiredOrientationMask] > 0) {
-    return [screenOrientationRegistry requiredOrientationMask];
+  if ([ScreenOrientationRegistry.shared requiredOrientationMask] > 0) {
+    return [ScreenOrientationRegistry.shared requiredOrientationMask];
   }
-#endif
+
 
   return [self orientationMaskFromManifestOrDefault];
 }
@@ -596,10 +613,7 @@ NS_ASSUME_NONNULL_BEGIN
   if ((self.traitCollection.verticalSizeClass != previousTraitCollection.verticalSizeClass)
       || (self.traitCollection.horizontalSizeClass != previousTraitCollection.horizontalSizeClass)) {
 
-    #if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
-      EXScreenOrientationRegistry *screenOrientationRegistryController = (EXScreenOrientationRegistry *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
-      [screenOrientationRegistryController traitCollectionDidChangeTo:self.traitCollection];
-    #endif
+    [ScreenOrientationRegistry.shared traitCollectionDidChangeTo:self.traitCollection];
   }
 }
 
@@ -622,11 +636,11 @@ NS_ASSUME_NONNULL_BEGIN
     appearancePreference = nil;
   }
   RCTOverrideAppearancePreference(appearancePreference);
-#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI46_0_0React/ABI46_0_0RCTAppearance.h>)
-  ABI46_0_0RCTOverrideAppearancePreference(appearancePreference);
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI48_0_0React/ABI48_0_0RCTAppearance.h>)
+  ABI48_0_0RCTOverrideAppearancePreference(appearancePreference);
 #endif
-#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI45_0_0React/ABI45_0_0RCTAppearance.h>)
-  ABI45_0_0RCTOverrideAppearancePreference(appearancePreference);
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI47_0_0React/ABI47_0_0RCTAppearance.h>)
+  ABI47_0_0RCTOverrideAppearancePreference(appearancePreference);
 #endif
 
 }
@@ -723,7 +737,6 @@ NS_ASSUME_NONNULL_BEGIN
     _errorView.error = error;
     _contentView = _errorView;
     [self.view addSubview:_contentView];
-    [[EXAnalytics sharedInstance] logErrorVisibleEvent];
   }
 }
 

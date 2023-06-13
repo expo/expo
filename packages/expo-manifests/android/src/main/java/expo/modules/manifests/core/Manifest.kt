@@ -70,7 +70,11 @@ abstract class Manifest(protected val json: JSONObject) {
 
   fun getMetadata(): JSONObject? = json.getNullable("metadata")
 
-  abstract fun getSDKVersion(): String?
+  /**
+   * Get the SDK version that should be attempted to be used in Expo Go. If no SDK version can be
+   * determined, returns null
+   */
+  abstract fun getExpoGoSDKVersion(): String?
 
   abstract fun getAssets(): JSONArray?
 
@@ -166,12 +170,16 @@ abstract class Manifest(protected val json: JSONObject) {
     return expoClientConfig.getNullable("androidNavigationBar")
   }
 
-  fun getAndroidJsEngine(): String? {
-    val expoClientConfig = getExpoClientConfigRootObject() ?: return null
-    val sharedJsEngine = expoClientConfig.getNullable<String>("jsEngine")
-    val androidJsEngine = expoClientConfig
-      .getNullable<JSONObject>("android")?.getNullable<String>("jsEngine")
-    return androidJsEngine ?: sharedJsEngine
+  val jsEngine: String by lazy {
+    val expoClientConfig = getExpoClientConfigRootObject()
+    var result = expoClientConfig
+      ?.getNullable<JSONObject>("android")?.getNullable<String>("jsEngine") ?: expoClientConfig?.getNullable<String>("jsEngine")
+    if (result == null) {
+      val sdkVersionComponents = getExpoGoSDKVersion()?.split(".")
+      val sdkMajorVersion = if (sdkVersionComponents?.size == 3) sdkVersionComponents[0].toIntOrNull() else 0
+      result = if (sdkMajorVersion in 1..47) "jsc" else "hermes"
+    }
+    result
   }
 
   fun getIconUrl(): String? {
@@ -221,6 +229,18 @@ abstract class Manifest(protected val json: JSONObject) {
   @Throws(JSONException::class)
   fun getFacebookAutoInitEnabled(): Boolean = getExpoClientConfigRootObject()!!.require("facebookAutoInitEnabled")
 
+  /**
+   * Queries the dedicated package properties in `plugins`
+   */
+  @Throws(JSONException::class, IllegalArgumentException::class)
+  fun getPluginProperties(packageName: String): Map<String, Any>? {
+    val pluginsRawValue = getExpoClientConfigRootObject()?.getNullable<JSONArray>("plugins") ?: return null
+    val plugins = PluginType.fromRawArrayValue(pluginsRawValue) ?: return null
+    return plugins.filterIsInstance<PluginType.WithProps>()
+      .firstOrNull { it.plugin.first == packageName }
+      ?.plugin?.second
+  }
+
   companion object {
     @JvmStatic fun fromManifestJson(manifestJson: JSONObject): Manifest {
       return when {
@@ -232,6 +252,44 @@ abstract class Manifest(protected val json: JSONObject) {
         }
         else -> {
           BareManifest(manifestJson)
+        }
+      }
+    }
+  }
+}
+
+internal typealias PluginWithProps = Pair<String, Map<String, Any>>
+internal typealias PluginWithoutProps = String
+internal sealed class PluginType {
+  data class WithProps(val plugin: PluginWithProps) : PluginType()
+  data class WithoutProps(val plugin: PluginWithoutProps) : PluginType()
+
+  companion object {
+    @Throws(IllegalArgumentException::class)
+    private fun fromRawValue(value: Any): PluginType? {
+      return when (value) {
+        is JSONArray -> {
+          if (value.length() != 2) {
+            throw IllegalArgumentException("Value for (key = plugins) has incorrect type")
+          }
+          val name = value.get(0) as? String ?: return null
+          val props = value.get(1) as? JSONObject ?: return null
+          WithProps(name to props.toMap())
+        }
+        is String -> {
+          WithoutProps(value)
+        }
+        else -> throw IllegalArgumentException("Value for (key = plugins) has incorrect type")
+      }
+    }
+
+    @Throws(IllegalArgumentException::class)
+    fun fromRawArrayValue(value: JSONArray): List<PluginType> {
+      return mutableListOf<PluginType>().apply {
+        for (i in 0 until value.length()) {
+          fromRawValue(value.get(i))?.let {
+            add(it)
+          }
         }
       }
     }

@@ -1,4 +1,11 @@
-# expo-notifications
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/notifications/">
+    <img
+      src="../../.github/resources/expo-notifications.svg"
+      alt="expo-notifications"
+      height="64" />
+  </a>
+</p>
 
 Provides an API to fetch push notification tokens and to present, schedule, receive and respond to notifications.
 
@@ -27,7 +34,7 @@ For bare React Native projects, you must ensure that you have [installed and con
 ### Add the package to your npm dependencies
 
 ```
-expo install expo-notifications
+npx expo install expo-notifications
 ```
 
 ### Configure for iOS
@@ -119,7 +126,7 @@ This module requires permission to subscribe to device boot. It's used to setup 
 
 ### Config plugin setup (optional)
 
-If you're using EAS Build, you can set your Android notification icon and color tint, add custom push notification sounds, and set your iOS notification environment using the expo-notifications config plugin ([what's a config plugin?](http://docs.expo.dev/guides/config-plugins/)). To setup, just add the config plugin to the plugins array of your `app.json` or `app.config.js` as shown below, then rebuild the app.
+If you're using EAS Build, you can set your Android notification icon and color tint, add custom push notification sounds, and set your iOS notification environment using the expo-notifications config plugin ([what's a config plugin?](https://docs.expo.dev/home/config-plugins/introduction)). To setup, just add the config plugin to the plugins array of your `app.json` or `app.config.js` as shown below, then rebuild the app.
 
 ```json
 {
@@ -181,7 +188,7 @@ Here are a few ways people claim to have solved this problem, maybe one of these
 Go read the Apple's [Technical Note on troubleshooting push notifications](https://developer.apple.com/library/archive/technotes/tn2265/_index.html)! This the single most reliable source of information on this problem. To help you grasp what they're suggesting:
 
 - Make sure the device has a reliable connection to the Internet (try turning off Wi-Fi or switching to another network, and disabling firewall block on port 5223, as suggested in [this SO answer](https://stackoverflow.com/a/34332047/1123156)).
-- Make sure your app configuration is set properly for registering for push notifications (for bare workflow check out [this guide](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/AddingCapabilities/AddingCapabilities.html#//apple_ref/doc/uid/TP40012582-CH26-SW6), for managed workflow this is done automatically for you by `expo-cli`) as also suggested by [this StackOverflow answer](https://stackoverflow.com/a/10791240/1123156).
+- Make sure your app configuration is set properly for registering for push notifications (for bare workflow check out [this guide](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/AddingCapabilities/AddingCapabilities.html), for managed workflow this is done automatically for you by `expo-cli`) as also suggested by [this StackOverflow answer](https://stackoverflow.com/a/10791240/1123156).
 - If you're in bare workflow you may want to try to debug this even further by logging persistent connection debug information as outlined by [this StackOverflow answer](https://stackoverflow.com/a/8036052/1123156).
 
 </p>
@@ -673,7 +680,7 @@ export default function App() {
           Linking.addEventListener('url', onReceiveURL);
 
           // Listen to expo push notifications
-          const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+          const subscription = Notifications.addNotificationResponseReceivedListener((response) => {
             const url = response.notification.request.content.data.url;
 
             // Any custom logic to see whether the URL needs to be handled

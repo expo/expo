@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
@@ -29,7 +29,7 @@ jobs:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '14.17'
+          node-version: 16
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
@@ -62,7 +62,7 @@ jobs:
   # publish-dogfood-home:
   #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
   #   needs: build
-  #   runs-on: ubuntu-20.04
+  #   runs-on: ubuntu-22.04
   #   steps:
   #     - name: 👀 Checkout
   #       uses: actions/checkout@v3
@@ -71,7 +71,7 @@ jobs:
   #     - name: ⬢ Setup Node
   #       uses: actions/setup-node@v3
   #       with:
-  #         node-version: '14.17'
+  #         node-version: 16
   #     - name: ♻️ Restore caches
   #       uses: ./.github/actions/expo-caches
   #       id: expo-caches

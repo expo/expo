@@ -17,6 +17,7 @@ export const expoExport: Command = async (argv) => {
       '--max-workers': Number,
       '--output-dir': String,
       '--platform': String,
+      '--no-minify': Boolean,
 
       // Hack: This is added because EAS CLI always includes the flag.
       // If supplied, we'll do nothing with the value, but at least the process won't crash.
@@ -28,6 +29,9 @@ export const expoExport: Command = async (argv) => {
       // '-s': '--dump-sourcemap',
       // '-d': '--dump-assetmap',
       '-c': '--clear',
+      '-p': '--platform',
+      // Interop with Metro docs and RedBox errors.
+      '--reset-cache': '--clear',
     },
     argv
   );
@@ -37,15 +41,16 @@ export const expoExport: Command = async (argv) => {
       `Export the static files of the app for hosting it on a web server`,
       chalk`npx expo export {dim <dir>}`,
       [
-        chalk`<dir>                   Directory of the Expo project. {dim Default: Current working directory}`,
-        chalk`--platform <platform>   Options: android, ios, web, all. {dim Default: all}`,
-        `--dev                   Configure static files for developing locally using a non-https server`,
-        chalk`--output-dir <dir>      The directory to export the static files to. {dim Default: dist}`,
-        `--max-workers <number>  Maximum number of tasks to allow the bundler to spawn`,
-        `--dump-assetmap         Dump the asset map for further processing`,
-        `--dump-sourcemap        Dump the source map for debugging the JS bundle`,
-        `-c, --clear             Clear the bundler cache`,
-        `-h, --help              Usage info`,
+        chalk`<dir>                      Directory of the Expo project. {dim Default: Current working directory}`,
+        `--dev                      Configure static files for developing locally using a non-https server`,
+        chalk`--output-dir <dir>         The directory to export the static files to. {dim Default: dist}`,
+        `--max-workers <number>     Maximum number of tasks to allow the bundler to spawn`,
+        `--dump-assetmap            Dump the asset map for further processing`,
+        `--dump-sourcemap           Dump the source map for debugging the JS bundle`,
+        chalk`-p, --platform <platform>  Options: android, ios, web, all. {dim Default: all}`,
+        `--no-minify                Prevent minifying source`,
+        `-c, --clear                Clear the bundler cache`,
+        `-h, --help                 Usage info`,
       ].join('\n')
     );
   }

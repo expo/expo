@@ -1,11 +1,11 @@
 import { ExpoConfig } from '@expo/config-types';
 import xcode, { PBXFile, PBXGroup, PBXNativeTarget, PBXProject, XCBuildConfiguration, XCConfigurationList, XcodeProject } from 'xcode';
-export declare type ProjectSectionEntry = [string, PBXProject];
-export declare type NativeTargetSection = Record<string, PBXNativeTarget>;
-export declare type NativeTargetSectionEntry = [string, PBXNativeTarget];
-export declare type ConfigurationLists = Record<string, XCConfigurationList>;
-export declare type ConfigurationListEntry = [string, XCConfigurationList];
-export declare type ConfigurationSectionEntry = [string, XCBuildConfiguration];
+export type ProjectSectionEntry = [string, PBXProject];
+export type NativeTargetSection = Record<string, PBXNativeTarget>;
+export type NativeTargetSectionEntry = [string, PBXNativeTarget];
+export type ConfigurationLists = Record<string, XCConfigurationList>;
+export type ConfigurationListEntry = [string, XCConfigurationList];
+export type ConfigurationSectionEntry = [string, XCBuildConfiguration];
 export declare function getProjectName(projectRoot: string): string;
 export declare function resolvePathOrProject(projectRootOrProject: string | XcodeProject): XcodeProject | null;
 export declare function sanitizedName(name: string): string;

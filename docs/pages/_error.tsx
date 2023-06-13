@@ -1,11 +1,11 @@
 import { css } from '@emotion/react';
-import { spacing, theme, typography } from '@expo/styleguide';
+import { Button, theme, typography } from '@expo/styleguide';
+import { spacing } from '@expo/styleguide-base';
 import * as Sentry from '@sentry/browser';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { getRedirectPath } from '~/common/error-utilities';
 import Head from '~/components/Head';
-import { Button } from '~/ui/components/Button';
 import { NotFoundImage, RedirectImage, ServerErrorImage } from '~/ui/components/ErrorPage';
 import { Layout } from '~/ui/components/Layout';
 import { H1, P } from '~/ui/components/Text';
@@ -33,7 +33,7 @@ const renderNotFoundAfterRedirect = () => (
       We took an educated guess and tried to direct you to the right page, but it seems that did not
       work out! Maybe it doesn't exist anymore! 😔
     </P>
-    <Button theme="tertiary" href="/">
+    <Button theme="secondary" href="/">
       Return Home
     </Button>
   </>
@@ -48,7 +48,7 @@ const renderNotFound = () => (
       We couldn't find the page you were looking for. Check the URL to make sure it's correct and
       try again.
     </P>
-    <Button theme="tertiary" href="/">
+    <Button theme="secondary" href="/">
       Return Home
     </Button>
   </>
@@ -81,7 +81,11 @@ const Error = () => {
 
     // We are confident now that we can render a not found error
     setNotFound(true);
-    Sentry.captureMessage(`Page not found (404)`);
+    Sentry.captureMessage(`Page not found (404)`, {
+      extra: {
+        '404': pathname,
+      },
+    });
   }, []);
 
   useEffect(() => {
@@ -112,7 +116,7 @@ export default Error;
 
 const styles = {
   layout: css({
-    backgroundColor: theme.background.secondary,
+    backgroundColor: theme.background.subtle,
   }),
   container: css({
     display: 'flex',

@@ -1,5 +1,7 @@
 package expo.modules.medialibrary.assets
 
+import expo.modules.medialibrary.AssetQueryException
+import expo.modules.medialibrary.AssetsOptions
 import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD
 import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
 import expo.modules.medialibrary.MockContext
@@ -7,6 +9,9 @@ import expo.modules.medialibrary.MockData
 import expo.modules.medialibrary.mockContentResolver
 import expo.modules.medialibrary.mockContentResolverForResult
 import expo.modules.medialibrary.throwableContentResolver
+import expo.modules.test.core.PromiseMock
+import expo.modules.test.core.assertRejectedWithCode
+import expo.modules.test.core.promiseResolved
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.just
@@ -14,13 +19,11 @@ import io.mockk.mockkStatic
 import io.mockk.runs
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertThrows
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.unimodules.test.core.PromiseMock
-import org.unimodules.test.core.assertRejectedWithCode
-import org.unimodules.test.core.promiseResolved
 import java.io.IOException
 
 @RunWith(RobolectricTestRunner::class)
@@ -29,13 +32,24 @@ internal class GetAssetsTest {
   private lateinit var promise: PromiseMock
   private lateinit var mockContext: MockContext
 
+  private val defaultAssets
+    get() = AssetsOptions(
+      first = 0.0,
+      after = null,
+      createdAfter = null,
+      createdBefore = null,
+      sortBy = emptyList(),
+      mediaType = emptyList(),
+      album = null
+    )
+
   @Before
   fun setUp() {
     promise = PromiseMock()
     mockContext = MockContext()
 
     mockkStatic(::getQueryFromOptions)
-    every { getQueryFromOptions(any()) } returns GetAssetsQuery(selection = "", order = "", limit = 10, offset = 0)
+    every { getQueryFromOptions(any()) } returns GetAssetsQuery(selection = "", order = "", limit = 10.0, offset = 0)
 
     mockkStatic(::putAssetsInfo)
     every { putAssetsInfo(any(), any(), any(), any(), any(), any()) } just runs
@@ -57,7 +71,7 @@ internal class GetAssetsTest {
     )
 
     // act
-    GetAssets(context, mutableMapOf(), promise).doInBackground()
+    GetAssets(context, defaultAssets, promise).execute()
 
     // assert
     promiseResolved(promise) {
@@ -71,10 +85,10 @@ internal class GetAssetsTest {
     val context = mockContext with mockContentResolver(null)
 
     // act
-    GetAssets(context, mutableMapOf(), promise).doInBackground()
-
     // assert
-    assertRejectedWithCode(promise, ERROR_UNABLE_TO_LOAD)
+    assertThrows(AssetQueryException::class.java) {
+      GetAssets(context, defaultAssets, promise).execute()
+    }
   }
 
   @Test
@@ -83,7 +97,7 @@ internal class GetAssetsTest {
     val context = mockContext with throwableContentResolver(SecurityException())
 
     // act
-    GetAssets(context, mutableMapOf(), promise).doInBackground()
+    GetAssets(context, defaultAssets, promise).execute()
 
     // assert
     assertRejectedWithCode(promise, ERROR_UNABLE_TO_LOAD_PERMISSION)
@@ -95,7 +109,7 @@ internal class GetAssetsTest {
     val context = mockContext with throwableContentResolver(IOException())
 
     // act
-    GetAssets(context, mutableMapOf(), promise).doInBackground()
+    GetAssets(context, defaultAssets, promise).execute()
 
     // assert
     assertRejectedWithCode(promise, ERROR_UNABLE_TO_LOAD)

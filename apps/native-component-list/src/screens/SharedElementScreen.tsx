@@ -56,8 +56,8 @@ export default function SharedElementScreen() {
   return (
     <NavigationContainer independent>
       <Stack.Navigator
-        headerMode="none"
         screenOptions={{
+          headerShown: false,
           headerTintColor: Colors.tabIconSelected,
           headerTitleStyle: { color: '#000' },
           transitionSpec: {

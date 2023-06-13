@@ -1,6 +1,7 @@
 package expo.modules.devmenu
 
 import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.MotionEvent
@@ -24,7 +25,9 @@ object DevMenuManager : DevMenuManagerInterface {
   var currentManifest: Manifest? = null
   var currentManifestURL: String? = null
 
-  var registeredCallbacks = arrayListOf<String>()
+  data class Callback(val name: String, val shouldCollapse: Boolean)
+
+  var registeredCallbacks = arrayListOf<Callback>()
 
   fun getReactInstanceManager(): ReactInstanceManager? {
     return null
@@ -96,7 +99,6 @@ object DevMenuManager : DevMenuManagerInterface {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
-
   override fun setCanLaunchDevMenuOnStart(canLaunchDevMenuOnStart: Boolean) {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
@@ -113,7 +115,7 @@ object DevMenuManager : DevMenuManagerInterface {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
-  fun loadFonts(applicationContext: ReactApplicationContext) {
+  fun loadFonts(context: Context) {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 

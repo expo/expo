@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 
-import { getConfig, getProjectConfigDescriptionWithPaths, readConfigJson } from '../Config';
+import { getConfig, getProjectConfigDescriptionWithPaths } from '../Config';
 
 jest.mock('fs');
 
@@ -99,12 +99,12 @@ describe('getConfig public config', () => {
     expect(exp.hooks).toBeUndefined();
 
     expect(exp.ios).toBeDefined();
-    expect(exp.ios.buildNumber).toEqual(appJsonWithPrivateData.ios.buildNumber);
-    expect(exp.ios.config).toBeUndefined();
+    expect(exp.ios!.buildNumber).toEqual(appJsonWithPrivateData.ios.buildNumber);
+    expect(exp.ios!.config).toBeUndefined();
 
     expect(exp.android).toBeDefined();
-    expect(exp.android.versionCode).toEqual(appJsonWithPrivateData.android.versionCode);
-    expect(exp.android.config).toBeUndefined();
+    expect(exp.android!.versionCode).toEqual(appJsonWithPrivateData.android.versionCode);
+    expect(exp.android!.config).toBeUndefined();
     expect(exp._internal).toBeUndefined();
   });
 
@@ -156,18 +156,13 @@ describe('readConfigJson', () => {
     afterAll(() => vol.reset());
 
     it('reads the SDK version from the config', () => {
-      const { exp } = readConfigJson('/from-config');
+      const { exp } = getConfig('/from-config');
       expect(exp.sdkVersion).toBe('100.0.0');
     });
 
     it('reads the SDK version from the installed version of expo', () => {
-      const { exp } = readConfigJson('/from-package');
+      const { exp } = getConfig('/from-package');
       expect(exp.sdkVersion).toBe('650.0.0');
-    });
-
-    it('skips resolution of the SDK version', () => {
-      const { exp } = readConfigJson('/no-version', true, true);
-      expect(exp.sdkVersion).not.toBeDefined();
     });
   });
 
@@ -193,30 +188,18 @@ describe('readConfigJson', () => {
     });
     afterAll(() => vol.reset());
 
-    it(`can skip throwing when the app.json is missing`, () => {
-      const { exp, pkg } = readConfigJson('/no-config', true);
-      expect(exp.name).toBe(pkg.name);
-      expect(exp.description).toBe(pkg.description);
-    });
-
     it(`can skip throwing when the app.json is missing and expo isn't installed`, () => {
-      const { exp, pkg } = readConfigJson('/no-package', true, true);
+      const { exp, pkg } = getConfig('/no-package', { skipSDKVersionRequirement: true });
       expect(exp.name).toBe(pkg.name);
       expect(exp.description).toBe(pkg.description);
     });
 
-    it(`will throw if the app.json is missing`, () => {
-      expect(() => readConfigJson('/no-config')).toThrow(
-        /Project at path \/no-config does not contain a valid Expo config/
-      );
+    it(`will not throw if the app.json is missing`, () => {
       // No config is required for new method
       expect(() => getConfig('/no-config')).not.toThrow();
     });
 
-    it(`will throw if the expo package is missing`, () => {
-      expect(() => readConfigJson('/no-package', true)).toThrow(
-        /Cannot determine which native SDK version your project uses/
-      );
+    it(`will not throw if the expo package is missing when skipSDKVersionRequirement is enabled`, () => {
       expect(() => getConfig('/no-package', { skipSDKVersionRequirement: false })).toThrow(
         /Cannot determine which native SDK version your project uses/
       );

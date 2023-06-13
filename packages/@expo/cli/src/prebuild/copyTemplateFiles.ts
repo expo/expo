@@ -68,11 +68,7 @@ export async function copyTemplateFilesAsync(
 ): Promise<CopyFilesResults> {
   const copyResults = await copyPathsFromTemplateAsync(projectRoot, {
     templateDirectory,
-    copyFilePaths: [
-      // Just copy over the native folders from the template
-      // we copy the metro file in a different way.
-      ...platforms,
-    ],
+    copyFilePaths: platforms,
   });
 
   const hasPlatformSpecificGitIgnores = hasAllPlatformSpecificGitIgnores(
@@ -80,6 +76,8 @@ export async function copyTemplateFilesAsync(
     platforms
   );
   debug(`All platforms have an internal gitignore: ${hasPlatformSpecificGitIgnores}`);
+
+  // TODO: Remove gitignore modifications -- maybe move to `npx expo-doctor`
   const gitignore = hasPlatformSpecificGitIgnores
     ? null
     : mergeGitIgnorePaths(

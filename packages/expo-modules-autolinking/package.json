@@ -1,6 +1,6 @@
 {
   "name": "expo-modules-autolinking",
-  "version": "0.10.1",
+  "version": "1.4.0",
   "description": "Scripts that autolink Expo modules.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -35,9 +35,9 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo-modules-autolinking#readme",
   "devDependencies": {
     "@expo/spawn-async": "^1.5.0",
-    "@tsconfig/node12": "^1.0.9",
+    "@tsconfig/node14": "^1.0.3",
     "@types/fs-extra": "^9.0.11",
-    "expo-module-scripts": "~2.1.0",
+    "expo-module-scripts": "~3.0.0",
     "minimatch": "^3.0.4",
     "tempy": "^0.7.1"
   },

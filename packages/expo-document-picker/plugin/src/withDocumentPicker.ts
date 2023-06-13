@@ -1,4 +1,4 @@
-import { createRunOncePlugin } from '@expo/config-plugins';
+import { createRunOncePlugin } from 'expo/config-plugins';
 
 import { withDocumentPickerIOS } from './withDocumentPickerIOS';
 

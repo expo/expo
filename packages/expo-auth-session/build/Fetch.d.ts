@@ -1,9 +1,9 @@
-export declare type Headers = Record<string, string> & {
+export type Headers = Record<string, string> & {
     'Content-Type': string;
     Authorization?: string;
     Accept?: string;
 };
-export declare type FetchRequest = {
+export type FetchRequest = {
     headers?: Headers;
     body?: Record<string, string>;
     dataType?: string;

@@ -8,9 +8,58 @@
 
 ### 🐛 Bug fixes
 
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+## 2.3.0 — 2023-05-08
+
+### 💡 Others
+
+- Update e2e tests to use custom entry file system. ([#21643](https://github.com/expo/expo/pull/21643) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 2.1.4 — 2023-02-28
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.3 — 2023-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.2 — 2023-02-17
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.0 — 2023-02-03
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
+## 2.0.1 — 2022-11-21
+
+_This version does not introduce any user-facing changes._
+
+## 2.0.0 — 2022-10-27
+
 ### 💡 Others
 
 - Drop `@expo/config-plugins` dependency in favor of peer dependency on `expo`. ([#18595](https://github.com/expo/expo/pull/18595) by [@EvanBacon](https://github.com/EvanBacon))
+- Get detox tests running locally. ([#19254](https://github.com/expo/expo/pull/19254) by [@esamelson](https://github.com/esamelson))
+
+## 1.3.1 — 2022-10-11
+
+_This version does not introduce any user-facing changes._
+
+## 1.3.0 — 2022-09-16
+
+### 🐛 Bug fixes
+
+- Remove default scheme from intent filters that specify `autoVerify=true`. ([#18963](https://github.com/expo/expo/pull/18963) by [@ajsmth](https://github.com/ajsmth))
 
 ## 1.2.1 — 2022-08-16
 

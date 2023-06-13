@@ -177,7 +177,6 @@ function BackgroundLocationMapView() {
 
       if (!state.isTracking) {
         alert(
-          // tslint:disable-next-line max-line-length
           'Now you can send app to the background, go somewhere and come back here! You can even terminate the app and it will be woken up when the new significant location change comes out.'
         );
       }
@@ -413,7 +412,6 @@ TaskManager.defineTask(LOCATION_UPDATES_TASK, async ({ data: { locations } }: an
       longitude: coords.longitude,
     }));
 
-    // tslint:disable-next-line no-console
     console.log(`Received new locations at ${new Date()}:`, locations);
 
     savedLocations.push(...newLocations);

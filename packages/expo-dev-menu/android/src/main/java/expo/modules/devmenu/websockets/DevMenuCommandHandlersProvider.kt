@@ -3,6 +3,7 @@ package expo.modules.devmenu.websockets
 import android.util.Log
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.bridge.UiThreadUtil
+import com.facebook.react.modules.core.RCTNativeAppEventEmitter
 import com.facebook.react.packagerconnection.NotificationOnlyHandler
 import expo.interfaces.devmenu.DevMenuManagerInterface
 import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
@@ -53,7 +54,12 @@ class DevMenuCommandHandlersProvider(
             val activity = instanceManager.currentReactContext?.currentActivity ?: return
             devDelegate.togglePerformanceMonitor(activity)
           }
-          "openJsInspector" -> devDelegate.openJsInspector()
+          "openJSInspector" -> devDelegate.openJSInspector()
+          "reconnectReactDevTools" -> {
+            // Emit the `RCTDevMenuShown` for the app to reconnect react-devtools
+            // https://github.com/facebook/react-native/blob/22ba1e45c52edcc345552339c238c1f5ef6dfc65/Libraries/Core/setUpReactDevTools.js#L80
+            instanceManager.currentReactContext?.getJSModule(RCTNativeAppEventEmitter::class.java)?.emit("RCTDevMenuShown", null)
+          }
           else -> Log.w("DevMenu", "Unknown command: $command")
         }
       }

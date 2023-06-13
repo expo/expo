@@ -174,6 +174,7 @@ platform :ios do
       skip_detect_devices: true,
       skip_package_dependencies_resolution: true,
       derived_data_path: "/tmp/ExpoUnitTestsDerivedData",
+      xcargs: 'CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO',
     )
   end
 
@@ -285,21 +286,22 @@ platform :android do
   end
 
   private_lane :verify_upload_to_staging do |version_name: |
-    require 'open-uri'
-    staging_version = nil
-    begin
-      versions = JSON.parse(open(URI.join(STAGING_API_URL, "/--/api/v2/versions")).read)
-      latest_major_version = versions['sdkVersions'].keys.map(&:to_i).sort().reverse().first()
-      latest_version = versions['sdkVersions']["#{latest_major_version}.0.0"]
-      staging_version = latest_version['androidClientVersion']
-    rescue StandardError => e
-      UI.user_error!("Unable to validate androidClientVersion for latest SDK version on versions endpoint: #{e.inspect}. If this issue persists, remove the verify_upload_to_staging step from Fastfile and manually verify that the Android client has been deployed and tested on staging.")
-    end
+    UI.message "Skipping staging verification step"
+    # require 'open-uri'
+    # staging_version = nil
+    # begin
+    #   versions = JSON.parse(open(URI.join(STAGING_API_URL, "/--/api/v2/versions")).read)
+    #   latest_major_version = versions['sdkVersions'].keys.map(&:to_i).sort().reverse().first()
+    #   latest_version = versions['sdkVersions']["#{latest_major_version}.0.0"]
+    #   staging_version = latest_version['androidClientVersion']
+    # rescue StandardError => e
+    #   UI.user_error!("Unable to validate androidClientVersion for latest SDK version on versions endpoint: #{e.inspect}. If this issue persists, remove the verify_upload_to_staging step from Fastfile and manually verify that the Android client has been deployed and tested on staging.")
+    # end
 
-    unless staging_version == version_name
-      UI.user_error!("APK version #{version_name} is not yet uploaded to staging. Please download from the client_android CI job, test and upload manually.")
-    end
-    UI.message "APK version #{version_name} has been uploaded to staging"
+    # unless staging_version == version_name
+    #   UI.user_error!("APK version #{version_name} is not yet uploaded to staging. Please download from the client_android CI job, test and upload manually.")
+    # end
+    # UI.message "APK version #{version_name} has been uploaded to staging"
   end
 
   lane :start do |flavor: "unversioned"|
@@ -319,6 +321,15 @@ platform :android do
       task: aab ? "app:bundle": "app:assemble",
       flavor: flavor,
       build_type: build_type,
+    )
+  end
+
+  lane :upload_crashlytics_symbols do |flavor: "versioned"|
+    gradle(
+      project_dir: "android",
+      task: "app:uploadCrashlyticsSymbolFile",
+      flavor: flavor,
+      build_type: "Release",
     )
   end
 

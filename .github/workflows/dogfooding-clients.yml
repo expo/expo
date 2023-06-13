@@ -9,7 +9,7 @@ concurrency:
 
 jobs:
   build-android:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
@@ -18,7 +18,7 @@ jobs:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '14.17'
+          node-version: 16
       - name: 💎 Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:

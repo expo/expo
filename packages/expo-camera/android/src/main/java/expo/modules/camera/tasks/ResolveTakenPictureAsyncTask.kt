@@ -25,7 +25,9 @@ private const val DIRECTORY_NOT_FOUND_MSG = "Documents directory of the app coul
 private const val UNKNOWN_IO_EXCEPTION_MSG = "An unknown I/O exception has occurred."
 private const val UNKNOWN_EXCEPTION_MSG = "An unknown exception has occurred."
 private const val PARAMETER_EXCEPTION_MSG = "An incompatible parameter has been passed in. "
+private const val OUT_OF_MEMORY_EXCEPTION_MSG = "Cannot allocate enough space to process the taken picture."
 private const val ERROR_TAG = "E_TAKING_PICTURE_FAILED"
+private const val OUT_OF_MEMORY_TAG = "ERR_CAMERA_OUT_OF_MEMORY"
 private const val DIRECTORY_NAME = "Camera"
 private const val EXTENSION = ".jpg"
 private const val BASE64_KEY = "base64"
@@ -53,8 +55,6 @@ class ResolveTakenPictureAsyncTask(
       return handleSkipProcessing()
     }
 
-    var bitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.size)
-
     // set, read, and apply EXIF data
     try {
       ByteArrayInputStream(imageData).use { inputStream ->
@@ -73,9 +73,28 @@ class ResolveTakenPictureAsyncTask(
           ExifInterface.ORIENTATION_UNDEFINED
         )
 
-        // Rotate the bitmap to the proper orientation if needed
-        if (orientation != ExifInterface.ORIENTATION_UNDEFINED) {
-          bitmap = rotateBitmap(bitmap, getImageRotation(orientation))
+        val bitmapOptions = BitmapFactory
+          .Options()
+          .apply {
+            inSampleSize = 1
+          }
+        var bitmap: Bitmap? = null
+        var lastError: Error? = null
+
+        // If OOM exception was thrown, we try to use downsampling to recover.
+        while (bitmapOptions.inSampleSize <= options.maxDownsampling) {
+          try {
+            bitmap = decodeBitmap(imageData, orientation, bitmapOptions)
+            break
+          } catch (exception: OutOfMemoryError) {
+            bitmapOptions.inSampleSize *= 2
+            lastError = exception
+          }
+        }
+
+        if (bitmap == null) {
+          promise.reject(OUT_OF_MEMORY_TAG, OUT_OF_MEMORY_EXCEPTION_MSG, lastError)
+          return null
         }
 
         // Write Exif data to the response if requested
@@ -86,13 +105,13 @@ class ResolveTakenPictureAsyncTask(
 
         // Upon rotating, write the image's dimensions to the response
         response.apply {
-          putInt(WIDTH_KEY, bitmap!!.width)
-          putInt(HEIGHT_KEY, bitmap!!.height)
+          putInt(WIDTH_KEY, bitmap.width)
+          putInt(HEIGHT_KEY, bitmap.height)
         }
 
         // Cache compressed image in imageStream
         ByteArrayOutputStream().use { imageStream ->
-          bitmap!!.compress(Bitmap.CompressFormat.JPEG, quality, imageStream)
+          bitmap.compress(Bitmap.CompressFormat.JPEG, quality, imageStream)
           // Write compressed image to file in cache directory
           val filePath = writeStreamToFile(imageStream)
 
@@ -199,7 +218,17 @@ class ResolveTakenPictureAsyncTask(
     return null
   }
 
-  private fun rotateBitmap(source: Bitmap, angle: Int): Bitmap {
+  private fun decodeBitmap(imageData: ByteArray, orientation: Int, bitmapOptions: BitmapFactory.Options): Bitmap {
+    // Rotate the bitmap to the proper orientation if needed
+    return if (orientation != ExifInterface.ORIENTATION_UNDEFINED) {
+      decodeAndRotateBitmap(imageData, getImageRotation(orientation), bitmapOptions)
+    } else {
+      BitmapFactory.decodeByteArray(imageData, 0, imageData.size, bitmapOptions)
+    }
+  }
+
+  private fun decodeAndRotateBitmap(imageData: ByteArray, angle: Int, options: BitmapFactory.Options): Bitmap {
+    val source = BitmapFactory.decodeByteArray(imageData, 0, imageData.size, options)
     val matrix = Matrix()
     matrix.postRotate(angle.toFloat())
     return Bitmap.createBitmap(source, 0, 0, source.width, source.height, matrix, true)

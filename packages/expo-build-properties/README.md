@@ -1,6 +1,6 @@
 # expo-build-properties
 
-**`expo-build-properties`** is a config plugin for managed apps to override the default native build properties.
+**`expo-build-properties`** is a [config plugin](https://docs.expo.dev/config-plugins/introduction/) to customize native build properties when using [`npx expo prebuild`](https://docs.expo.dev/workflow/prebuild/).
 
 ## API documentation
 
@@ -9,10 +9,8 @@
 
 ### Installation
 
-**Note:** To use this config plugin, your apps must be a managed app and build by either [EAS Build](/build/introduction.md) or `expo run:[android|ios]`.
-
 ```
-expo install expo-build-properties
+npx expo install expo-build-properties
 ```
 
 Add plugin to `app.json`. For example:
@@ -27,10 +25,12 @@ Add plugin to `app.json`. For example:
           "android": {
             "compileSdkVersion": 31,
             "targetSdkVersion": 31,
-            "buildToolsVersion": "31.0.0"
+            "buildToolsVersion": "31.0.0",
+            "flipper": true
           },
           "ios": {
-            "deploymentTarget": "13.0"
+            "deploymentTarget": "13.0",
+            "flipper": true
           }
         }
       ]
@@ -41,9 +41,9 @@ Add plugin to `app.json`. For example:
 
 ## Contributing
 
-Contributions are very welcome! Please refer to guidelines described in the [contributing guide][contributing].
+Contributions are very welcome! Please refer to guidelines described in the [contributing guide][../../contributing.md].
 
-[docs-main]: https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/build-properties.md
+[docs-main]: https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/build-properties.mdx
 [docs-stable]: https://docs.expo.dev/versions/latest/sdk/build-properties/
 [contributing]: https://github.com/expo/expo#contributing
-[config-plugins]: https://docs.expo.dev/guides/config-plugins/
+[config-plugins]: https://docs.expo.dev/home/config-plugins/introduction

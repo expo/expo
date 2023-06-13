@@ -127,7 +127,7 @@ export const getDefaultReturnUrl = sessionUrlProvider.getDefaultReturnUrl;
  * // Web: https://localhost:19006/redirect
  * ```
  *
- * @deprecated Use `makeRedirectUri({ path, useProxy })` instead.
+ * @deprecated Use `makeRedirectUri()` instead.
  */
 export function getRedirectUrl(path?: string): string {
   return sessionUrlProvider.getRedirectUrl({ urlPath: path });
@@ -163,14 +163,6 @@ export function getRedirectUrl(path?: string): string {
  * });
  * // Development Build: scheme2:///
  * // Expo Go: exp://localhost:19000
- * // Web dev: https://localhost:19006
- * // Web prod: https://yourwebsite.com
- *
- * const redirectUri3 = makeRedirectUri({
- *   useProxy: true,
- * });
- * // Development Build: https://auth.expo.io/@username/slug
- * // Expo Go: https://auth.expo.io/@username/slug
  * // Web dev: https://localhost:19006
  * // Web prod: https://yourwebsite.com
  * ```

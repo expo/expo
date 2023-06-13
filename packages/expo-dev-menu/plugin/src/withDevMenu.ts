@@ -1,3 +1,4 @@
+import { ExpoConfig } from 'expo/config';
 import {
   ConfigPlugin,
   createRunOncePlugin,
@@ -5,8 +6,7 @@ import {
   WarningAggregator,
   withDangerousMod,
   withMainActivity,
-} from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
+} from 'expo/config-plugins';
 import fs from 'fs';
 import path from 'path';
 import semver from 'semver';

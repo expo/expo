@@ -1,5 +1,5 @@
 import { ViewProps } from 'react-native';
-export declare type BlurViewProps = {
+export type BlurViewProps = {
     /**
      * A tint mode which will be applied to the view.
      * @default 'default'
@@ -14,6 +14,17 @@ export declare type BlurViewProps = {
      * @default 50
      */
     intensity?: number;
+    /**
+     * A number by which the blur intensity will be divided on Android.
+     *
+     * Due to platform differences blurs on Android and iOS vary slightly and might look different
+     * at different intensity levels. This property can be used to fine tune blur intensity on Android to match it
+     * more closely with iOS.
+     * @default 4
+     * @platform android
+     *
+     */
+    blurReductionFactor?: number;
 } & ViewProps;
-export declare type BlurTint = 'light' | 'dark' | 'default';
+export type BlurTint = 'light' | 'dark' | 'default';
 //# sourceMappingURL=BlurView.types.d.ts.map

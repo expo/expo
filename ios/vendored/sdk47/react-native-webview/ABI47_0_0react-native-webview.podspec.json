@@ -1,0 +1,20 @@
+{
+  "name": "ABI47_0_0react-native-webview",
+  "version": "11.23.1",
+  "summary": "ABI47_0_0React Native WebView component for iOS, Android, macOS, and Windows",
+  "license": "MIT",
+  "authors": "Jamon Holmgren <jamon@infinite.red>",
+  "homepage": "https://github.com/react-native-webview/react-native-webview#readme",
+  "platforms": {
+    "ios": "9.0",
+    "osx": "10.13"
+  },
+  "source": {
+    "git": "https://github.com/react-native-webview/react-native-webview.git",
+    "tag": "v11.23.1"
+  },
+  "source_files": "apple/**/*.{h,m}",
+  "dependencies": {
+    "ABI47_0_0React-Core": []
+  }
+}

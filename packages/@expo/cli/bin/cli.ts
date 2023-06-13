@@ -17,6 +17,7 @@ export type Command = (argv?: string[]) => void;
 
 const commands: { [command: string]: () => Promise<Command> } = {
   // Add a new command here
+  // NOTE(EvanBacon): Ensure every bundler-related command sets `NODE_ENV` as expected for the command.
   'run:ios': () => import('../src/run/ios').then((i) => i.expoRunIos),
   'run:android': () => import('../src/run/android').then((i) => i.expoRunAndroid),
   start: () => import('../src/start').then((i) => i.expoStart),
@@ -24,9 +25,11 @@ const commands: { [command: string]: () => Promise<Command> } = {
   config: () => import('../src/config').then((i) => i.expoConfig),
   export: () => import('../src/export').then((i) => i.expoExport),
   'export:web': () => import('../src/export/web').then((i) => i.expoExportWeb),
+  'export:embed': () => import('../src/export/embed').then((i) => i.expoExportEmbed),
 
   // Auxiliary commands
   install: () => import('../src/install').then((i) => i.expoInstall),
+  add: () => import('../src/install').then((i) => i.expoInstall),
   customize: () => import('../src/customize').then((i) => i.expoCustomize),
 
   // Auth
@@ -76,12 +79,17 @@ if (!isSubcommand && args['--help']) {
     register,
     start,
     install,
+    add,
     export: _export,
     config,
     customize,
     prebuild,
     'run:ios': runIos,
     'run:android': runAndroid,
+    // NOTE(EvanBacon): Don't document this command as it's a temporary
+    // workaround until we can use `expo export` for all production bundling.
+    // https://github.com/expo/expo/pull/21396/files#r1121025873
+    'export:embed': exportEmbed_unused,
     ...others
   } = commands;
 
@@ -118,7 +126,7 @@ if (!isSubcommand) {
     'build:android': 'eas build -p android',
     'client:install:ios': 'npx expo start --ios',
     'client:install:android': 'npx expo start --android',
-    doctor: 'expo-cli doctor',
+    doctor: 'npx expo-doctor',
     upgrade: 'expo-cli upgrade',
     'customize:web': 'npx expo customize',
 

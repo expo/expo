@@ -27,34 +27,25 @@ Object.defineProperty(exports, "XcodeProject", {
     return _xcode().XcodeProject;
   }
 });
-
 function _xcode() {
   const data = require("xcode");
-
   _xcode = function () {
     return data;
   };
-
   return data;
 }
-
 function _Manifest() {
   const data = require("./android/Manifest");
-
   _Manifest = function () {
     return data;
   };
-
   return data;
 }
-
 function _IosConfig() {
   const data = require("./ios/IosConfig.types");
-
   _IosConfig = function () {
     return data;
   };
-
   return data;
 }
 //# sourceMappingURL=Plugin.types.js.map

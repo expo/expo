@@ -13,12 +13,13 @@ export type FontSource = string | number | Asset | FontResource;
  * with [`loadAsync`](#loadasync).
  */
 export type FontResource = {
-  uri: string | number;
+  uri?: string | number;
   /**
    * Sets the [`font-display`](#fontdisplay) property for a given typeface in the browser.
    * @platform web
    */
   display?: FontDisplay;
+  default?: string;
 };
 
 // @needsAudit

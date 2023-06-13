@@ -12,6 +12,7 @@ import {
   getUpdatesCheckOnLaunch,
   getUpdatesCodeSigningCertificate,
   getUpdatesCodeSigningMetadata,
+  getUpdatesRequestHeaders,
   getUpdatesEnabled,
   getUpdatesTimeout,
   getUpdateUrl,
@@ -32,6 +33,9 @@ export enum Config {
   CODE_SIGNING_CERTIFICATE = 'EXUpdatesCodeSigningCertificate',
   CODE_SIGNING_METADATA = 'EXUpdatesCodeSigningMetadata',
 }
+
+// when making changes to this config plugin, ensure the same changes are also made in eas-cli and build-tools
+// Also ensure the docs are up-to-date: https://docs.expo.dev/bare/installing-updates/
 
 export const withUpdates: ConfigPlugin<{ expoUsername: string | null }> = (
   config,
@@ -60,7 +64,7 @@ export function setUpdatesConfig(
 ): ExpoPlist {
   const newExpoPlist = {
     ...expoPlist,
-    [Config.ENABLED]: getUpdatesEnabled(config),
+    [Config.ENABLED]: getUpdatesEnabled(config, username),
     [Config.CHECK_ON_LAUNCH]: getUpdatesCheckOnLaunch(config, expoUpdatesPackageVersion),
     [Config.LAUNCH_WAIT_MS]: getUpdatesTimeout(config),
   };
@@ -84,6 +88,13 @@ export function setUpdatesConfig(
     newExpoPlist[Config.CODE_SIGNING_METADATA] = codeSigningMetadata;
   } else {
     delete newExpoPlist[Config.CODE_SIGNING_METADATA];
+  }
+
+  const requestHeaders = getUpdatesRequestHeaders(config);
+  if (requestHeaders) {
+    newExpoPlist[Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY] = requestHeaders;
+  } else {
+    delete newExpoPlist[Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY];
   }
 
   return setVersionsConfig(config, newExpoPlist);
@@ -200,7 +211,7 @@ export function isPlistConfigurationSynced(
 ): boolean {
   return (
     getUpdateUrl(config, username) === expoPlist.EXUpdatesURL &&
-    getUpdatesEnabled(config) === expoPlist.EXUpdatesEnabled &&
+    getUpdatesEnabled(config, username) === expoPlist.EXUpdatesEnabled &&
     getUpdatesTimeout(config) === expoPlist.EXUpdatesLaunchWaitMs &&
     getUpdatesCheckOnLaunch(config) === expoPlist.EXUpdatesCheckOnLaunch &&
     getUpdatesCodeSigningCertificate(projectRoot, config) ===

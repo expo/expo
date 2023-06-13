@@ -6,7 +6,7 @@ import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.loader.FileDownloader.AssetDownloadCallback
-import expo.modules.updates.loader.FileDownloader.ManifestDownloadCallback
+import expo.modules.updates.loader.FileDownloader.RemoteUpdateDownloadCallback
 import java.io.File
 
 /**
@@ -34,15 +34,15 @@ class RemoteLoader internal constructor(
     launchedUpdate: UpdateEntity?
   ) : this(context, configuration, database, fileDownloader, updatesDirectory, launchedUpdate, LoaderFiles())
 
-  override fun loadManifest(
+  override fun loadRemoteUpdate(
     context: Context,
     database: UpdatesDatabase,
     configuration: UpdatesConfiguration,
-    callback: ManifestDownloadCallback
+    callback: RemoteUpdateDownloadCallback
   ) {
     val embeddedUpdate = loaderFiles.readEmbeddedManifest(context, configuration)?.updateEntity
-    val extraHeaders = FileDownloader.getExtraHeaders(database, configuration, launchedUpdate, embeddedUpdate)
-    mFileDownloader.downloadManifest(configuration, extraHeaders, context, callback)
+    val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(database, configuration, launchedUpdate, embeddedUpdate)
+    mFileDownloader.downloadRemoteUpdate(configuration, extraHeaders, context, callback)
   }
 
   override fun loadAsset(

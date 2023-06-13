@@ -4,7 +4,7 @@
 #import "EXErrorRecoveryManager.h"
 #import "EXUserNotificationManager.h"
 #import "EXKernel.h"
-#import "EXAppLoader.h"
+#import "EXAbstractLoader.h"
 #import "EXKernelLinkingManager.h"
 #import "EXKernelServiceRegistry.h"
 #import "EXKernelUtil.h"
@@ -18,6 +18,7 @@
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 #import <EXConstants/EXConstantsService.h>
 #import <EXSplashScreen/EXSplashScreenService.h>
+#import <EXManifests/EXManifests-Swift.h>
 
 #import <React/RCTBridge.h>
 #import <React/RCTCxxBridgeDelegate.h>
@@ -509,6 +510,15 @@
   }
 }
 
+- (void)reconnectReactDevTools
+{
+  if ([self enablesDeveloperTools]) {
+    // Emit the `RCTDevMenuShown` for the app to reconnect react-devtools
+    // https://github.com/facebook/react-native/blob/22ba1e45c52edcc345552339c238c1f5ef6dfc65/Libraries/Core/setUpReactDevTools.js#L80
+    [self.reactBridge enqueueJSCall:@"RCTNativeAppEventEmitter.emit" args:@[@"RCTDevMenuShown"]];
+  }
+}
+
 - (void)toggleDevMenu
 {
   if ([EXEnvironment sharedEnvironment].isDetached) {
@@ -520,7 +530,6 @@
 
 - (void)setupWebSocketControls
 {
-#if DEBUG || RCT_DEV
   if ([self enablesDeveloperTools]) {
     if ([_versionManager respondsToSelector:@selector(addWebSocketNotificationHandler:queue:forMethod:)]) {
       __weak __typeof(self) weakSelf = self;
@@ -544,6 +553,8 @@
               [weakSelf toggleElementInspector];
             } else if ([name isEqualToString:@"togglePerformanceMonitor"]) {
               [weakSelf togglePerformanceMonitor];
+            } else if ([name isEqualToString:@"reconnectReactDevTools"]) {
+              [weakSelf reconnectReactDevTools];
             }
           }
         }
@@ -568,7 +579,6 @@
                                              forMethod:@"devMenu"];
     }
   }
-#endif
 }
 
 - (NSDictionary<NSString *, NSString *> *)devMenuItems

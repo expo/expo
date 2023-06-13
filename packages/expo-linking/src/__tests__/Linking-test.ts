@@ -40,32 +40,37 @@ describe(Linking.createURL, () => {
   const executionEnvironment = Constants.executionEnvironment;
 
   describe('queries', () => {
-    beforeEach(() => {
-      console.warn = jest.fn();
-      Constants.executionEnvironment = ExecutionEnvironment.StoreClient;
-      mockProperty(Constants.manifest, 'hostUri', 'exp.host/@test/test');
-      mockProperty(Constants.manifest, 'scheme', 'demo');
-    });
+    describe.each<string>(['exp.host/@test/test', 'u.expo.dev/update/some-guid'])(
+      `for hostUri %p`,
+      (hostUri) => {
+        beforeEach(() => {
+          console.warn = jest.fn();
+          Constants.executionEnvironment = ExecutionEnvironment.StoreClient;
+          mockProperty(Constants.manifest, 'hostUri', hostUri);
+          mockProperty(Constants.manifest, 'scheme', 'demo');
+        });
 
-    afterEach(() => {
-      console.warn = consoleWarn;
-      Constants.executionEnvironment = executionEnvironment;
-      unmockAllProperties();
-    });
+        afterEach(() => {
+          console.warn = consoleWarn;
+          Constants.executionEnvironment = executionEnvironment;
+          unmockAllProperties();
+        });
 
-    test.each<QueryParams>([
-      { shouldEscape: '%2b%20' },
-      { escapePluses: 'email+with+plus@whatever.com' },
-      { emptyParam: '' },
-      { undefinedParam: undefined },
-      { lotsOfSlashes: '/////' },
-    ])(`makes url %p`, (queryParams) => {
-      expect(Linking.createURL('some/path', { queryParams })).toMatchSnapshot();
-    });
+        test.each<QueryParams>([
+          { shouldEscape: '%2b%20' },
+          { escapePluses: 'email+with+plus@whatever.com' },
+          { emptyParam: '' },
+          { undefinedParam: undefined },
+          { lotsOfSlashes: '/////' },
+        ])(`makes url %p`, (queryParams) => {
+          expect(Linking.createURL('some/path', { queryParams })).toMatchSnapshot();
+        });
 
-    test.each<string>(['path/into/app', ''])(`makes url %p`, (path) => {
-      expect(Linking.createURL(path)).toMatchSnapshot();
-    });
+        test.each<string>(['path/into/app', ''])(`makes url %p`, (path) => {
+          expect(Linking.createURL(path)).toMatchSnapshot();
+        });
+      }
+    );
   });
 
   describe('bare', () => {

@@ -11,6 +11,7 @@ import {
   scale,
 } from 'expo-dev-client-components';
 import * as React from 'react';
+import { useWindowDimensions } from 'react-native';
 
 import { SafeAreaTop } from '../components/SafeAreaTop';
 import { useBuildInfo } from '../providers/BuildInfoProvider';
@@ -18,6 +19,7 @@ import { useUser } from '../providers/UserContextProvider';
 
 export function AppHeader({ navigation }) {
   const buildInfo = useBuildInfo();
+  const { width } = useWindowDimensions();
   const { appName, appIcon } = buildInfo;
 
   const { userData, selectedAccount } = useUser();
@@ -31,7 +33,11 @@ export function AppHeader({ navigation }) {
 
   return (
     <>
-      <View bg="default" pt="small" pb="small">
+      <View
+        bg="default"
+        pt="small"
+        pb="small"
+        style={{ paddingHorizontal: width > 650 ? scale[14] : 0 }}>
         <SafeAreaTop />
         <Row align="center">
           <Spacer.Horizontal size="medium" />
@@ -55,9 +61,8 @@ export function AppHeader({ navigation }) {
           </View>
 
           <View align="centered" style={{ justifyContent: 'flex-end' }}>
-            <Button.ScaleOnPressContainer
+            <Button.HighlightOnPressContainer
               onPress={onUserProfilePress}
-              minScale={0.85}
               accessibilityLabel="Navigate to User Profile"
               bg="ghost"
               rounded="full">
@@ -78,7 +83,7 @@ export function AppHeader({ navigation }) {
                   </View>
                 )}
               </View>
-            </Button.ScaleOnPressContainer>
+            </Button.HighlightOnPressContainer>
             {!selectedUserImage && (
               <Row
                 style={{

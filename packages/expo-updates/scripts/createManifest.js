@@ -1,11 +1,21 @@
 const { resolveEntryPoint } = require('@expo/config/paths');
 const { loadAsync } = require('@expo/metro-config');
+const crypto = require('crypto');
 const fs = require('fs');
 const Server = require('metro/src/Server');
 const path = require('path');
-const { v4: uuidv4 } = require('uuid');
 
 const filterPlatformAssetScales = require('./filterPlatformAssetScales');
+
+function findUpProjectRoot(cwd) {
+  if (['.', path.sep].includes(cwd)) return null;
+
+  if (fs.existsSync(path.join(cwd, 'package.json'))) {
+    return cwd;
+  } else {
+    return findUpProjectRoot(path.dirname(cwd));
+  }
+}
 
 /** Resolve the relative entry file using Expo's resolution method. */
 function getRelativeEntryPoint(projectRoot, platform) {
@@ -18,7 +28,7 @@ function getRelativeEntryPoint(projectRoot, platform) {
 
 (async function () {
   const platform = process.argv[2];
-  const possibleProjectRoot = process.argv[3];
+  const possibleProjectRoot = findUpProjectRoot(process.argv[3]);
   const destinationDir = process.argv[4];
   const entryFile =
     process.argv[5] ||
@@ -63,7 +73,7 @@ function getRelativeEntryPoint(projectRoot, platform) {
   }
 
   const manifest = {
-    id: uuidv4(),
+    id: crypto.randomUUID(),
     commitTime: new Date().getTime(),
     assets: [],
   };

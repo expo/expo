@@ -1,4 +1,4 @@
-export declare type PropertiesItem = {
+export type PropertiesItem = {
     type: 'comment';
     value: string;
 } | {

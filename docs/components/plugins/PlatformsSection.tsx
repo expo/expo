@@ -1,24 +1,9 @@
-import { css } from '@emotion/react';
-import { StatusWaitingIcon, theme } from '@expo/styleguide';
-import * as React from 'react';
+import { StatusWaitingIcon } from '@expo/styleguide-icons';
 
-import { H4 } from '~/components/base/headings';
 import { ElementType } from '~/types/common';
 import { NoIcon, YesIcon } from '~/ui/components/DocIcons';
 import { Cell, HeaderCell, Row, Table, TableHead, TableLayout } from '~/ui/components/Table';
-
-const STYLES_TITLE = css`
-  margin-bottom: 1rem;
-`;
-
-const STYLES_LINK = css`
-  text-decoration: none;
-  display: grid;
-  grid-template-columns: 20px auto;
-  text-align: left;
-  grid-gap: 8px;
-  color: ${theme.link.default};
-`;
+import { A, H4 } from '~/ui/components/Text';
 
 const platforms = [
   { title: 'Android Device', propName: 'android' },
@@ -40,9 +25,9 @@ function getInfo(isSupported: IsSupported, { title }: Platform) {
   } else if (typeof isSupported === 'object') {
     return {
       children: (
-        <a css={STYLES_LINK} target="_blank" href={isSupported.pending}>
-          <StatusWaitingIcon color={theme.status.info} /> Pending
-        </a>
+        <A className="grid gap-2 grid-cols-[20px_auto]" href={isSupported.pending}>
+          <StatusWaitingIcon className="icon-md text-icon-info" /> Pending
+        </A>
       ),
       title: `${title} support is pending`,
     };
@@ -67,7 +52,7 @@ type PlatformProps = Omit<Props, 'title'>;
 
 const PlatformsSection = (props: Props) => (
   <>
-    <H4 css={STYLES_TITLE}>{props.title || 'Platform Compatibility'}</H4>
+    <H4 className="mb-1">{props.title || 'Platform Compatibility'}</H4>
     <Table layout={TableLayout.Fixed}>
       <TableHead>
         <Row>

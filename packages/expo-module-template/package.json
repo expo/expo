@@ -1,9 +1,7 @@
 {
   "name": "expo-module-template",
-  "version": "10.7.2",
+  "version": "10.7.19",
   "description": "ExpoModuleTemplate standalone module",
-  "main": "build/ModuleTemplate.js",
-  "types": "build/ModuleTemplate.d.ts",
   "scripts": {},
   "keywords": [
     "react-native",
@@ -20,7 +18,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/module-template",
+  "homepage": "https://docs.expo.dev/modules",
   "dependencies": {},
   "devDependencies": {},
   "peerDependencies": {}

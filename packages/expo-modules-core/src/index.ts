@@ -28,6 +28,7 @@ export {
 };
 
 export * from './requireNativeModule';
+export * from './TypedArrays.types';
 
 /**
  * @deprecated renamed to `DeviceEventEmitter`

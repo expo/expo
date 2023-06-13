@@ -18,130 +18,130 @@ public final class CameraViewModule: Module {
 
     Constants([
       "Type": [
-        "front": EXCameraType.front,
-        "back": EXCameraType.back
+        "front": EXCameraType.front.rawValue,
+        "back": EXCameraType.back.rawValue
       ],
       "FlashMode": [
-        "off": EXCameraFlashMode.off,
-        "on": EXCameraFlashMode.on,
-        "auto": EXCameraFlashMode.auto,
-        "torch": EXCameraFlashMode.torch
+        "off": EXCameraFlashMode.off.rawValue,
+        "on": EXCameraFlashMode.on.rawValue,
+        "auto": EXCameraFlashMode.auto.rawValue,
+        "torch": EXCameraFlashMode.torch.rawValue
       ],
       "AutoFocus": [
-        "on": EXCameraAutoFocus.on,
-        "off": EXCameraAutoFocus.off
+        "on": EXCameraAutoFocus.on.rawValue,
+        "off": EXCameraAutoFocus.off.rawValue
       ],
       "WhiteBalance": [
-        "auto": EXCameraWhiteBalance.auto,
-        "sunny": EXCameraWhiteBalance.sunny,
-        "cloudy": EXCameraWhiteBalance.cloudy,
-        "shadow": EXCameraWhiteBalance.shadow,
-        "incandescent": EXCameraWhiteBalance.incandescent,
-        "fluorescent": EXCameraWhiteBalance.fluorescent
+        "auto": EXCameraWhiteBalance.auto.rawValue,
+        "sunny": EXCameraWhiteBalance.sunny.rawValue,
+        "cloudy": EXCameraWhiteBalance.cloudy.rawValue,
+        "shadow": EXCameraWhiteBalance.shadow.rawValue,
+        "incandescent": EXCameraWhiteBalance.incandescent.rawValue,
+        "fluorescent": EXCameraWhiteBalance.fluorescent.rawValue
       ],
       "VideoQuality": [
-        "2160p": EXCameraVideoResolution.video2160p,
-        "1080p": EXCameraVideoResolution.video1080p,
-        "720p": EXCameraVideoResolution.video720p,
-        "480p": EXCameraVideoResolution.video4x3,
-        "4:3": EXCameraVideoResolution.video4x3
+        "2160p": EXCameraVideoResolution.video2160p.rawValue,
+        "1080p": EXCameraVideoResolution.video1080p.rawValue,
+        "720p": EXCameraVideoResolution.video720p.rawValue,
+        "480p": EXCameraVideoResolution.video4x3.rawValue,
+        "4:3": EXCameraVideoResolution.video4x3.rawValue
       ],
       "VideoStabilization": [
-        "off": EXCameraVideoStabilizationMode.videoStabilizationModeOff,
-        "standard": EXCameraVideoStabilizationMode.videoStabilizationModeStandard,
-        "cinematic": EXCameraVideoStabilizationMode.videoStabilizationModeCinematic,
-        "auto": EXCameraVideoStabilizationMode.avCaptureVideoStabilizationModeAuto
+        "off": EXCameraVideoStabilizationMode.videoStabilizationModeOff.rawValue,
+        "standard": EXCameraVideoStabilizationMode.videoStabilizationModeStandard.rawValue,
+        "cinematic": EXCameraVideoStabilizationMode.videoStabilizationModeCinematic.rawValue,
+        "auto": EXCameraVideoStabilizationMode.avCaptureVideoStabilizationModeAuto.rawValue
       ],
       "VideoCodec": [
-        "H264": EXCameraVideoCodec.H264,
-        "HEVC": EXCameraVideoCodec.HEVC,
-        "JPEG": EXCameraVideoCodec.JPEG,
-        "AppleProRes422": EXCameraVideoCodec.appleProRes422,
-        "AppleProRes4444": EXCameraVideoCodec.appleProRes4444
+        "H264": EXCameraVideoCodec.H264.rawValue,
+        "HEVC": EXCameraVideoCodec.HEVC.rawValue,
+        "JPEG": EXCameraVideoCodec.JPEG.rawValue,
+        "AppleProRes422": EXCameraVideoCodec.appleProRes422.rawValue,
+        "AppleProRes4444": EXCameraVideoCodec.appleProRes4444.rawValue
       ]
     ])
 
-    ViewManager {
-      // TODO: For some unknown reason, the below line doesn't compile when used within the `View` component.
-      // That's probably fine as a workaround, since we plan to get rid of custom view factories anyway.
-      let legacyModuleRegistry = self.appContext?.legacyModuleRegistry
-
-      View {
-        return EXCamera(moduleRegistry: legacyModuleRegistry)
-      }
-
+    View(EXCamera.self) {
       Events(
         "onCameraReady",
         "onMountError",
         "onPictureSaved",
         "onBarCodeScanned",
-        "onFacesDetected"
+        "onFacesDetected",
+        "onResponsiveOrientationChanged"
       )
 
-      Prop("type") { (view: EXCamera, type: Int) in
+      Prop("type") { (view, type: Int) in
         if view.presetCamera != type {
           view.presetCamera = type
           view.updateType()
         }
       }
 
-      Prop("flashMode") { (view: EXCamera, flashMode: Int) in
+      Prop("flashMode") { (view, flashMode: Int) in
         if let flashMode = EXCameraFlashMode(rawValue: flashMode), view.flashMode != flashMode {
           view.flashMode = flashMode
           view.updateFlashMode()
         }
       }
 
-      Prop("faceDetectorSettings") { (view: EXCamera, settings: [String: Any]) in
+      Prop("faceDetectorSettings") { (view, settings: [String: Any]) in
         view.updateFaceDetectorSettings(settings)
       }
 
-      Prop("barCodeScannerSettings") { (view: EXCamera, settings: [String: Any]) in
+      Prop("barCodeScannerSettings") { (view, settings: [String: Any]) in
         view.setBarCodeScannerSettings(settings)
       }
 
-      Prop("autoFocus") { (view: EXCamera, autoFocus: Int) in
+      Prop("autoFocus") { (view, autoFocus: Int) in
         if view.autoFocus != autoFocus {
           view.autoFocus = autoFocus
           view.updateFocusMode()
         }
       }
 
-      Prop("focusDepth") { (view: EXCamera, focusDepth: Float) in
+      Prop("focusDepth") { (view, focusDepth: Float) in
         if fabsf(view.focusDepth - focusDepth) > Float.ulpOfOne {
           view.focusDepth = focusDepth
           view.updateFocusDepth()
         }
       }
 
-      Prop("zoom") { (view: EXCamera, zoom: Double) in
+      Prop("zoom") { (view, zoom: Double) in
         if fabs(view.zoom - zoom) > Double.ulpOfOne {
           view.zoom = zoom
           view.updateZoom()
         }
       }
 
-      Prop("whiteBalance") { (view: EXCamera, whiteBalance: Int) in
+      Prop("whiteBalance") { (view, whiteBalance: Int) in
         if view.whiteBalance != whiteBalance {
           view.whiteBalance = whiteBalance
           view.updateWhiteBalance()
         }
       }
 
-      Prop("pictureSize") { (view: EXCamera, pictureSize: String) in
+      Prop("pictureSize") { (view, pictureSize: String) in
         view.pictureSize = pictureSizesDict[pictureSize]?.rawValue as NSString?
         view.updatePictureSize()
       }
 
-      Prop("faceDetectorEnabled") { (view: EXCamera, detectFaces: Bool) in
+      Prop("faceDetectorEnabled") { (view, detectFaces: Bool) in
         if view.isDetectingFaces != detectFaces {
           view.isDetectingFaces = detectFaces
         }
       }
 
-      Prop("barCodeScannerEnabled") { (view: EXCamera, scanBarCodes: Bool) in
+      Prop("barCodeScannerEnabled") { (view, scanBarCodes: Bool) in
         if view.isScanningBarCodes != scanBarCodes {
           view.isScanningBarCodes = scanBarCodes
+        }
+      }
+
+      Prop("responsiveOrientationWhenOrientationLocked") { (view, responsiveOrientation: Bool) in
+        if view.responsiveOrientationWhenOrientationLocked != responsiveOrientation {
+          view.responsiveOrientationWhenOrientationLocked = responsiveOrientation
+          view.updateResponsiveOrientationWhenOrientationLocked()
         }
       }
     }
@@ -161,44 +161,48 @@ public final class CameraViewModule: Module {
     AsyncFunction("record") { (options: [String: Any], viewTag: Int, promise: Promise) in
       #if targetEnvironment(simulator)
       throw Exceptions.SimulatorNotSupported()
-      #endif
+      #else
       guard let view = self.appContext?.findView(withTag: viewTag, ofType: EXCamera.self) else {
         throw Exceptions.ViewNotFound((tag: viewTag, type: EXCamera.self))
       }
       view.record(options, resolve: promise.resolver, reject: promise.legacyRejecter)
+      #endif
     }
     .runOnQueue(.main)
 
     AsyncFunction("stopRecording") { (viewTag: Int) in
       #if targetEnvironment(simulator)
       throw Exceptions.SimulatorNotSupported()
-      #endif
+      #else
       guard let view = self.appContext?.findView(withTag: viewTag, ofType: EXCamera.self) else {
         throw Exceptions.ViewNotFound((tag: viewTag, type: EXCamera.self))
       }
       view.stopRecording()
+      #endif
     }
     .runOnQueue(.main)
 
     AsyncFunction("resumePreview") { (viewTag: Int) in
       #if targetEnvironment(simulator)
       throw Exceptions.SimulatorNotSupported()
-      #endif
+      #else
       guard let view = self.appContext?.findView(withTag: viewTag, ofType: EXCamera.self) else {
         throw Exceptions.ViewNotFound((tag: viewTag, type: EXCamera.self))
       }
       view.resumePreview()
+      #endif
     }
     .runOnQueue(.main)
 
     AsyncFunction("pausePreview") { (viewTag: Int) in
       #if targetEnvironment(simulator)
       throw Exceptions.SimulatorNotSupported()
-      #endif
+      #else
       guard let view = self.appContext?.findView(withTag: viewTag, ofType: EXCamera.self) else {
         throw Exceptions.ViewNotFound((tag: viewTag, type: EXCamera.self))
       }
       view.pausePreview()
+      #endif
     }
     .runOnQueue(.main)
 
@@ -287,7 +291,7 @@ private func generatePictureForSimulator(appContext: AppContext?, options: TakeP
   guard let fs = appContext?.fileSystem else {
     throw Exceptions.FileSystemModuleNotFound()
   }
-  let path = fs.generatePath(inDirectory: fs.cachesDirectory.appending("Camera"), withExtension: ".jpg")
+  let path = fs.generatePath(inDirectory: fs.cachesDirectory.appending("/Camera"), withExtension: ".jpg")
   let generatedPhoto = EXCameraUtils.generatePhoto(of: CGSize(width: 200, height: 200))
   let photoData = generatedPhoto.jpegData(compressionQuality: options.quality)
 

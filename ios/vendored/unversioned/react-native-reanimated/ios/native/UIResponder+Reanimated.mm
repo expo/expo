@@ -13,6 +13,7 @@ typedef HermesExecutorFactory ExecutorFactory;
 typedef JSCExecutorFactory ExecutorFactory;
 #endif
 
+#ifndef RCT_NEW_ARCH_ENABLED
 #ifndef DONT_AUTOINSTALL_REANIMATED
 
 @implementation UIResponder (Reanimated)
@@ -20,7 +21,7 @@ typedef JSCExecutorFactory ExecutorFactory;
 {
   const auto installer = reanimated::REAJSIExecutorRuntimeInstaller(bridge, NULL);
 
-#if RNVERSION >= 64
+#if REACT_NATIVE_MINOR_VERSION >= 64
   // installs globals such as console, nativePerformanceNow, etc.
   return std::make_unique<ExecutorFactory>(RCTJSIExecutorRuntimeInstaller(installer));
 #else
@@ -30,4 +31,5 @@ typedef JSCExecutorFactory ExecutorFactory;
 
 @end
 
-#endif
+#endif // DONT_AUTOINSTALL_REANIMATED
+#endif // RCT_NEW_ARCH_ENABLED

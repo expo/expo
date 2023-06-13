@@ -6,9 +6,41 @@
 
 ### 🎉 New features
 
+- Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
+
+## 0.9.2 — 2023-05-08
+
+### 💡 Others
+
+- iOS: convert to swift. ([#21646](https://github.com/expo/expo/pull/21646) by [@wschurman](https://github.com/wschurman))
+
+## 0.9.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 0.9.0 — 2023-02-03
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.8.1 — 2022-11-02
+
+### 💡 Others
+
+- Removed deprecated Android `kotlin-android-extensions` plugin ([#19732](https://github.com/expo/expo/pull/19732) by [@josephyanks](https://github.com/josephyanks))
+
+## 0.8.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
 
 ## 0.7.0 — 2022-07-07
 

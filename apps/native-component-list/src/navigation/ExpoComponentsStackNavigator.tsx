@@ -5,6 +5,7 @@ import * as React from 'react';
 import TabIcon from '../components/TabIcon';
 import { Layout } from '../constants';
 import ExpoComponents from '../screens/ExpoComponentsScreen';
+import { ImageScreens } from '../screens/Image/ImageScreen';
 import getStackConfig from './StackConfig';
 import { optionalRequire } from './routeBuilder';
 
@@ -71,18 +72,6 @@ export const Screens = [
       return optionalRequire(() => require('../screens/TouchablesScreen'));
     },
     name: 'Touchables',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/ProgressViewIOSScreen'));
-    },
-    name: 'ProgressViewIOS',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/ProgressBarAndroidScreen'));
-    },
-    name: 'ProgressBarAndroid',
   },
   {
     getComponent() {
@@ -290,6 +279,14 @@ export const Screens = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/GL/GLViewOnBusyThread'));
+    },
+    name: 'GLViewOnBusyThread',
+    options: { title: 'Creating GLView when a thread is busy' },
+    route: 'gl/busythread',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/GestureHandlerPinchScreen'));
     },
     name: 'GestureHandlerPinch',
@@ -320,18 +317,6 @@ export const Screens = [
       return optionalRequire(() => require('../screens/Image/ImageScreen'));
     },
     name: 'Image',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/Image/ImageTestsScreen'));
-    },
-    name: 'ImageTests',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/Image/ImageTestScreen'));
-    },
-    name: 'ImageTest',
   },
   {
     getComponent() {
@@ -389,6 +374,12 @@ export const Screens = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/ExpoMaps/ExpoMapsScreen'));
+    },
+    name: 'ExpoMaps',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/AV/VideoScreen'));
     },
     name: 'Video',
@@ -424,6 +415,7 @@ export const Screens = [
     },
     name: 'FlashList',
   },
+  ...ImageScreens,
 ];
 
 function ExpoComponentsStackNavigator(props: { navigation: BottomTabNavigationProp<any> }) {

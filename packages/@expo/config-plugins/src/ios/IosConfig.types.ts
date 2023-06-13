@@ -26,11 +26,6 @@ export type InfoPlist = Record<string, JSONValue | undefined> & {
   CFBundleDevelopmentRegion?: string;
   ITSAppUsesNonExemptEncryption?: boolean;
   LSApplicationQueriesSchemes?: string[];
-  FacebookAppID?: string;
-  FacebookDisplayName?: string;
-  FacebookAutoInitEnabled?: boolean;
-  FacebookAutoLogAppEventsEnabled?: boolean;
-  FacebookAdvertiserIDCollectionEnabled?: boolean;
   UIBackgroundModes?: string[];
   UISupportedInterfaceOrientations?: InterfaceOrientation[];
   GMSApiKey?: string;
@@ -47,7 +42,7 @@ export type ExpoPlist = {
   EXUpdatesLaunchWaitMs?: number;
   EXUpdatesReleaseChannel?: string;
   EXUpdatesRuntimeVersion?: string;
-  EXUpdatesRequestHeaders: Record<string, string>;
+  EXUpdatesRequestHeaders?: Record<string, string>;
   EXUpdatesSDKVersion?: string;
   EXUpdatesURL?: string;
   EXUpdatesCodeSigningCertificate?: string;

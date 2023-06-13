@@ -34,6 +34,7 @@ describe(logIncorrectDependencies, () => {
         actualVersion: '1.0.0',
         packageName: 'react-native',
         expectedVersionOrRange: '~2.0.0',
+        packageType: 'dependencies',
       },
     ]);
 
@@ -42,10 +43,7 @@ describe(logIncorrectDependencies, () => {
       expect.stringContaining('Some dependencies are incompatible')
     );
     expect(Log.warn).toHaveBeenNthCalledWith(2, expect.stringContaining('expected version'));
-    expect(Log.warn).toHaveBeenNthCalledWith(
-      3,
-      expect.stringContaining('npx expo install react-native@~2.0.0')
-    );
+    expect(Log.warn).toHaveBeenNthCalledWith(3, expect.stringContaining('npx expo install --fix'));
   });
 });
 
@@ -111,6 +109,38 @@ describe(validateDependenciesVersionsAsync, () => {
     expect(Log.warn).toHaveBeenNthCalledWith(3, expect.stringContaining('expo-updates'));
   });
 
+  it('skips packages do not match bundled native modules but are in package.json expo.install.exclude', async () => {
+    asMock(Log.warn).mockReset();
+    vol.fromJSON(
+      {
+        'node_modules/expo-splash-screen/package.json': JSON.stringify({
+          version: '0.2.3',
+        }),
+        'node_modules/expo-updates/package.json': JSON.stringify({
+          version: '1.3.4',
+        }),
+      },
+      projectRoot
+    );
+    const exp = {
+      sdkVersion: '41.0.0',
+    };
+    const pkg = {
+      dependencies: { 'expo-splash-screen': '~0.2.3', 'expo-updates': '~1.3.4' },
+      expo: { install: { exclude: ['expo-splash-screen'] } },
+    };
+
+    await expect(validateDependenciesVersionsAsync(projectRoot, exp as any, pkg)).resolves.toBe(
+      false
+    );
+    expect(Log.warn).toHaveBeenNthCalledWith(
+      1,
+      expect.stringContaining('Some dependencies are incompatible with the installed')
+    );
+    expect(Log.warn).toHaveBeenCalledWith(expect.stringContaining('expo-updates'));
+    expect(Log.warn).not.toHaveBeenCalledWith(expect.stringContaining('expo-splash-screen'));
+  });
+
   it('resolves to true when installed package uses "exports"', async () => {
     const packageJsonPath = path.join(projectRoot, 'node_modules/firebase/package.json');
 
@@ -149,5 +179,20 @@ describe(validateDependenciesVersionsAsync, () => {
     await expect(validateDependenciesVersionsAsync(projectRoot, exp as any, pkg)).resolves.toBe(
       true
     );
+  });
+
+  it('skips validating dependencies when running in offline mode', async () => {
+    jest.resetModules();
+    jest.mock('../../../../api/settings', () => ({ APISettings: { isOffline: true } }));
+
+    const { validateDependenciesVersionsAsync } = require('../validateDependenciesVersions');
+    const exp = { sdkVersion: '46.0.0' };
+    const pkg = {
+      dependencies: { expo: '^46.0.0' },
+    };
+
+    await expect(
+      validateDependenciesVersionsAsync(projectRoot, exp as any, pkg)
+    ).resolves.toBeNull();
   });
 });

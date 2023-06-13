@@ -12,14 +12,14 @@ import {
   Heading,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { Linking, RefreshControl } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import { Linking, RefreshControl, ScrollView } from 'react-native';
 
 import { ActivityIndicator } from '../components/ActivityIndicator';
 import { AppHeader } from '../components/AppHeader';
 import { EASBranchRow, EASEmptyBranchRow } from '../components/EASUpdatesRows';
 import { EmptyBranchesMessage } from '../components/EmptyBranchesMessage';
 import { ListButton } from '../components/ListButton';
+import { ScreenContainer } from '../components/ScreenContainer';
 import { useThrottle } from '../hooks/useDebounce';
 import { useOnUpdatePress } from '../hooks/useOnUpdatePress';
 import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
@@ -72,7 +72,7 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
             <RefreshControl refreshing={throttledRefreshing} onRefresh={() => refetch()} />
           ) : null
         }>
-        <View flex="1">
+        <ScreenContainer>
           {compatibleExtensions.length === 0 && (
             <>
               <Spacer.Vertical size="medium" />
@@ -99,13 +99,13 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
                   {/* <Spacer.Vertical size="small" />
 
                   <View align="centered">
-                    <Button.ScaleOnPressContainer bg="ghost" rounded="small">
+                    <Button.FadeOnPressContainer bg="ghost" rounded="small">
                       <View border="default" px="small" py="2" rounded="small">
                         <Button.Text color="ghost" weight="semibold" size="small">
                           Learn More
                         </Button.Text>
                       </View>
-                    </Button.ScaleOnPressContainer>
+                    </Button.FadeOnPressContainer>
                   </View> */}
 
                   <Spacer.Vertical size="medium" />
@@ -150,7 +150,7 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
                 <Spacer.Vertical size="large" />
 
                 <View>
-                  <Button.ScaleOnPressContainer
+                  <Button.FadeOnPressContainer
                     bg="tertiary"
                     rounded="medium"
                     onPress={onLoginPress}
@@ -160,11 +160,11 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
                         Log In
                       </Button.Text>
                     </View>
-                  </Button.ScaleOnPressContainer>
+                  </Button.FadeOnPressContainer>
 
                   <Spacer.Vertical size="small" />
 
-                  <Button.ScaleOnPressContainer
+                  <Button.FadeOnPressContainer
                     bg="secondary"
                     rounded="medium"
                     onPress={onSignupPress}
@@ -174,7 +174,7 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
                         Sign Up
                       </Button.Text>
                     </View>
-                  </Button.ScaleOnPressContainer>
+                  </Button.FadeOnPressContainer>
                 </View>
               </View>
               <Spacer.Vertical size="medium" />
@@ -208,7 +208,7 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
               <ActivityIndicator />
             </View>
           )}
-        </View>
+        </ScreenContainer>
       </ScrollView>
     </View>
   );
@@ -263,7 +263,7 @@ function EASUpdatesPreview({
           );
         })}
         {emptyBranches.length > 1 && (
-          <Button.ScaleOnPressContainer
+          <Button.FadeOnPressContainer
             onPress={onSeeAllBranchesPress}
             bg="default"
             roundedTop="none"
@@ -275,7 +275,7 @@ function EASUpdatesPreview({
                 <ChevronRightIcon />
               </Row>
             </View>
-          </Button.ScaleOnPressContainer>
+          </Button.FadeOnPressContainer>
         )}
       </View>
     );
@@ -298,43 +298,41 @@ function EASUpdatesPreview({
 
   // some compatible branches, possible some empty branches
   return (
-    <View>
-      <View mx="medium">
-        <View py="small" px="small">
-          <Heading size="small" color="secondary">
-            EAS Updates
-          </Heading>
-        </View>
-        {branches?.slice(0, 2).map((branch, index, arr) => {
-          const isFirst = index === 0;
-          const isLast = index === arr.length - 1 && branchCount <= 1;
-          const isLoading = branch.updates[0]?.id === loadingUpdateId;
-
-          return (
-            <View key={branch.name}>
-              <EASBranchRow
-                branch={branch}
-                isFirst={isFirst}
-                isLast={isLast}
-                navigation={navigation}
-                isLoading={isLoading}
-                onUpdatePress={onUpdatePress}
-              />
-              <Divider />
-            </View>
-          );
-        })}
-
-        {branchCount > 1 && (
-          <ListButton onPress={onSeeAllBranchesPress} isLast>
-            <Row>
-              <Text size="medium">See all branches</Text>
-              <Spacer.Horizontal />
-              <ChevronRightIcon />
-            </Row>
-          </ListButton>
-        )}
+    <View mx="medium">
+      <View py="small" px="small">
+        <Heading size="small" color="secondary">
+          EAS Updates
+        </Heading>
       </View>
+      {branches?.slice(0, 2).map((branch, index, arr) => {
+        const isFirst = index === 0;
+        const isLast = index === arr.length - 1 && branchCount <= 1;
+        const isLoading = branch.updates[0]?.id === loadingUpdateId;
+
+        return (
+          <View key={branch.name}>
+            <EASBranchRow
+              branch={branch}
+              isFirst={isFirst}
+              isLast={isLast}
+              navigation={navigation}
+              isLoading={isLoading}
+              onUpdatePress={onUpdatePress}
+            />
+            <Divider />
+          </View>
+        );
+      })}
+
+      {branchCount > 1 && (
+        <ListButton onPress={onSeeAllBranchesPress} isLast>
+          <Row>
+            <Text size="medium">See all branches</Text>
+            <Spacer.Horizontal />
+            <ChevronRightIcon />
+          </Row>
+        </ListButton>
+      )}
     </View>
   );
 }

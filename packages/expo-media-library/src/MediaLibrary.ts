@@ -10,7 +10,7 @@ import {
 } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
-import MediaLibrary from './ExponentMediaLibrary';
+import MediaLibrary from './ExpoMediaLibrary';
 
 const eventEmitter = new EventEmitter(MediaLibrary);
 
@@ -370,6 +370,13 @@ function checkSortByKey(sortBy: any): void {
   }
 }
 
+function sortByOptionToString(sortBy: any) {
+  if (Array.isArray(sortBy)) {
+    return `${sortBy[0]} ${sortBy[1] ? 'ASC' : 'DESC'}`;
+  }
+  return `${sortBy} DESC`;
+}
+
 function dateToNumber(value?: Date | number): number | undefined {
   return value instanceof Date ? value.getTime() : value;
 }
@@ -431,7 +438,7 @@ export async function getPermissionsAsync(writeOnly: boolean = false): Promise<P
  *
  * @example
  * ```ts
- * const [status, requestPermission] = MediaLibrary.usePermissions();
+ * const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
  * ```
  */
 export const usePermissions = createPermissionHook<PermissionResponse, { writeOnly?: boolean }>({
@@ -592,7 +599,7 @@ export async function deleteAssetsAsync(assets: AssetRef[] | AssetRef): Promise<
  * Provides more information about an asset, including GPS location, local URI and EXIF metadata.
  * @param asset An [Asset](#asset) or its ID.
  * @param options
- * @return [AssetInfo](#assetinfo) object, which is an `Asset` extended by an additional fields.
+ * @return An [AssetInfo](#assetinfo) object, which is an `Asset` extended by an additional fields.
  */
 export async function getAssetInfoAsync(
   asset: AssetRef,
@@ -759,6 +766,7 @@ export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise
 
   options.sortBy.forEach(checkSortBy);
   options.mediaType.forEach(checkMediaType);
+  options.sortBy = options.sortBy.map(sortByOptionToString);
 
   return await MediaLibrary.getAssetsAsync(options);
 }

@@ -1,0 +1,103 @@
+---
+title: Using environment variables with EAS Update
+description: Learn how to set up and use environment variables with EAS Update.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+EAS Build and EAS Update allow setting and getting environment variables at different times. There are multiple steps to ensure the proper environment variables are available when developing, building, and publishing an update.
+
+## Setting up the app config
+
+To expose environment variables in a project, you'll have to set up the app config to allow it. After setting it up, you'll be able to access these variables throughout the entire project. As an example, the `API_URL` is used as an environment variable below. You can use any name for your environment variable.
+
+<Step label="1">
+
+Rename **app.json** to **app.config.js**, which will allow exporting the app's config, including JavaScript variables.
+
+</Step>
+
+<Step label="2">
+
+Add the environment variable to the app config of your project under `expo.extra` property:
+
+```js app.config.js
+export default () => ({
+  expo: {
+    extra: {
+      API_URL: process.env.API_URL || null,
+    },
+    // ...
+  },
+});
+```
+
+The code above sets the `extra` property to an object with the environment variable as a member. Now, you need to set and get the variable in the project.
+
+</Step>
+
+## Setting and getting environment variables during development
+
+To set the `API_URL` environment variable during development, you can prepend the variables before running `npx expo start` as shown below:
+
+<Terminal cmd={['API_URL="http://localhost:3000" expo start']} />
+
+The command above will set the `API_URL` to `"http://localhost:3000"`. Install the [`expo-constants`](/versions/latest/sdk/constants/#installation) library then use the `Constants.expoConfig.extra.API_URL` property to access it inside a project.
+
+## Setting and getting environment variables when building
+
+To set the `API_URL` environment variable during a build, you can include an `"env"` property in an **eas.json** build profile as shown below:
+
+```json eas.json
+{
+  "production": {
+    "env": {
+      "API_URL": "https://prod.example.com"
+    }
+  },
+  "staging": {
+    "env": {
+      "API_URL": "https://staging.example.com"
+    }
+  }
+}
+```
+
+When you run the command such as `eas build --profile production`, the `"env"` property in the `"production"` build profile will set the `API_URL` to `https://prod.example.com/` inside the build. Install the [`expo-constants`](/versions/latest/sdk/constants/#installation) library then use the `Constants.expoConfig.extra.API_URL` property to access it inside a project.
+
+## Setting and getting environment variables when publishing an update
+
+To set the `API_URL` environment variable when publishing an update, you can prepend the environment variables before running `eas update` as shown below:
+
+<Terminal cmd={['API_URL="https://prod.example.com" eas update --branch production']} />
+
+When EAS CLI creates the update, it will set the `API_URL` to `https://prod.example.com` inside the update's bundle. Install the [`expo-constants`](/versions/latest/sdk/constants/#installation) library then use the `Constants.expoConfig.extra.API_URL` property to access it inside a project.
+
+> You can also use the `expo-updates` library to access `API_URL`. It is under `Updates.manifest?.extra?.expoClient?.extra?.eas?.API_URL`. However, `Updates.manifest` is only present when an update is currently running. If the project is in development, `Updates.manifest` will be `undefined`. In addition, if a build is running without an update (for example, it was just downloaded or there are no updates yet), `Updates.manifest` will also be `undefined`.
+
+## Creating an Env.ts file to get environment variables
+
+Many developers often create a file named **Env.ts** in their project, which they import into any file that needs to access environment variables. Combining the information above, you can write the following code snippet to access `API_URL`:
+
+```ts Env.ts
+import Constants from 'expo-constants';
+
+function getApiUrl() {
+  const API_URL = Constants.expoConfig.extra.API_URL;
+
+  if (!API_URL) {
+    throw new Error('API_URL is missing.');
+  }
+
+  return API_URL;
+}
+
+export const Env = {
+  API_URL: getApiUrl(),
+};
+```
+
+## Using a Babel plugin
+
+Alternatively, you can use a Babel plugin to fill in environment variables. For more information, see [using Babel to inline environment variables during build time](/guides/environment-variables/#using-babel-to-inline-environment-variables-during).

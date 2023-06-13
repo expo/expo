@@ -33,7 +33,11 @@
 
 - (void)dispatchEvent:(nonnull NSString *)eventName payload:(nullable id)payload;
 
-- (void)updateProp:(nonnull NSString *)propName withValue:(nonnull id)value;
+- (void)updateProps:(nonnull NSDictionary<NSString *, id> *)props;
+
+- (void)viewDidUpdateProps;
+
+- (BOOL)supportsPropWithName:(nonnull NSString *)name;
 
 - (void)prepareForRecycle;
 

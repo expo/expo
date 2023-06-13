@@ -26,26 +26,6 @@ const mapBuildProfileToConfig: Record<string, ExpoConfig> = {
       },
     },
   },
-  'versioned-client-signed': {
-    ...base,
-    slug: 'versioned-expo-go',
-    name: 'Expo Go (versioned)',
-    extra: {
-      eas: {
-        projectId: '97ab66f4-49e2-4ec7-85cc-922c56a68bae',
-      },
-    },
-  },
-  'versioned-client-signed-apk': {
-    ...base,
-    slug: 'versioned-expo-go',
-    name: 'Expo Go (versioned)',
-    extra: {
-      eas: {
-        projectId: '97ab66f4-49e2-4ec7-85cc-922c56a68bae',
-      },
-    },
-  },
   'unversioned-client': {
     ...base,
     slug: 'unversioned-expo-go',
@@ -53,6 +33,26 @@ const mapBuildProfileToConfig: Record<string, ExpoConfig> = {
     extra: {
       eas: {
         projectId: '09066dbe-ef65-460e-9201-b7aa931abbf4',
+      },
+    },
+  },
+  'release-client': {
+    ...base,
+    slug: 'release-expo-go',
+    name: 'Expo Go',
+    extra: {
+      eas: {
+        projectId: '79a64298-2d61-42ae-9cc9-b2a358d6869e',
+      },
+    },
+  },
+  'publish-client': {
+    ...base,
+    slug: 'release-expo-go',
+    name: 'Expo Go',
+    extra: {
+      eas: {
+        projectId: '79a64298-2d61-42ae-9cc9-b2a358d6869e',
       },
     },
   },

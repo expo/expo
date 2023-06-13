@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { createPermissionHook, PermissionStatus, Platform, UnavailabilityError, } from 'expo-modules-core';
 import { CellularGeneration } from './Cellular.types';
 import ExpoCellular from './ExpoCellular';
 export { CellularGeneration };
@@ -107,6 +107,10 @@ export const mobileNetworkCode = ExpoCellular
 /**
  * @return Returns a promise which fulfils with a [`Cellular.CellularGeneration`](#cellulargeneration)
  * enum value that represents the current cellular-generation type.
+ *
+ * You will need to check if the native permission has been accepted to obtain generation.
+ * If the permission is denied `getCellularGenerationAsync` will resolve to `Cellular.Cellular Generation.UNKNOWN`.
+
  *
  * On web, this method uses [`navigator.connection.effectiveType`](https://developer.mozilla.org/en-US/docs/Web/API/NetworkInformation/effectiveType)
  * to detect the effective type of the connection using a combination of recently observed
@@ -238,4 +242,45 @@ export async function getMobileNetworkCodeAsync() {
     }
     return await ExpoCellular.getMobileNetworkCodeAsync();
 }
+/**
+ * Checks user's permissions for accessing phone state.
+ */
+export async function getPermissionsAsync() {
+    if (Platform.OS === 'android') {
+        return await ExpoCellular.getPermissionsAsync();
+    }
+    return {
+        status: PermissionStatus.GRANTED,
+        expires: 'never',
+        granted: true,
+        canAskAgain: true,
+    };
+}
+/**
+ * Asks the user to grant permissions for accessing the phone state.
+ */
+export async function requestPermissionsAsync() {
+    if (Platform.OS === 'android') {
+        return await ExpoCellular.requestPermissionsAsync();
+    }
+    return {
+        status: PermissionStatus.GRANTED,
+        expires: 'never',
+        granted: true,
+        canAskAgain: true,
+    };
+}
+/**
+ * Check or request permissions to access the phone state.
+ * This uses both `Cellular.requestPermissionsAsync` and `Cellular.getPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Cellular.usePermissions();
+ * ```
+ */
+export const usePermissions = createPermissionHook({
+    getMethod: getPermissionsAsync,
+    requestMethod: requestPermissionsAsync,
+});
 //# sourceMappingURL=Cellular.js.map

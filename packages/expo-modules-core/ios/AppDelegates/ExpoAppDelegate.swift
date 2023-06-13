@@ -92,8 +92,12 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
       }
     }
 
-    subs.forEach {
-      $0.application?(application, handleEventsForBackgroundURLSession: identifier, completionHandler: handler)
+    if subs.isEmpty {
+      completionHandler()
+    } else {
+      subs.forEach {
+        $0.application?(application, handleEventsForBackgroundURLSession: identifier, completionHandler: handler)
+      }
     }
   }
 
@@ -115,27 +119,38 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
     let selector = #selector(application(_:didReceiveRemoteNotification:fetchCompletionHandler:))
     let subs = subscribers.filter { $0.responds(to: selector) }
     var subscribersLeft = subs.count
-    var fetchResult: UIBackgroundFetchResult = .noData
     let dispatchQueue = DispatchQueue(label: "expo.application.remoteNotification", qos: .userInteractive)
+    var failedCount = 0
+    var newDataCount = 0
 
     let handler = { (result: UIBackgroundFetchResult) in
       dispatchQueue.sync {
         if result == .failed {
-          fetchResult = .failed
-        } else if fetchResult != .failed && result == .newData {
-          fetchResult = .newData
+          failedCount += 1
+        } else if result == .newData {
+          newDataCount += 1
         }
 
         subscribersLeft -= 1
 
         if subscribersLeft == 0 {
-          completionHandler(fetchResult)
+          if newDataCount > 0 {
+            completionHandler(.newData)
+          } else if failedCount > 0 {
+            completionHandler(.failed)
+          } else {
+            completionHandler(.noData)
+          }
         }
       }
     }
 
-    subs.forEach { subscriber in
-      subscriber.application?(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: handler)
+    if subs.isEmpty {
+      completionHandler(.noData)
+    } else {
+      subs.forEach { subscriber in
+        subscriber.application?(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: handler)
+      }
     }
   }
 
@@ -205,8 +220,12 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
       }
     }
 
-    subs.forEach { subscriber in
-      subscriber.application?(application, performActionFor: shortcutItem, completionHandler: handler)
+    if subs.isEmpty {
+      completionHandler(result)
+    } else {
+      subs.forEach { subscriber in
+        subscriber.application?(application, performActionFor: shortcutItem, completionHandler: handler)
+      }
     }
   }
 
@@ -216,27 +235,38 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
     let selector = #selector(application(_:performFetchWithCompletionHandler:))
     let subs = subscribers.filter { $0.responds(to: selector) }
     var subscribersLeft = subs.count
-    var fetchResult: UIBackgroundFetchResult = .noData
     let dispatchQueue = DispatchQueue(label: "expo.application.performFetch", qos: .userInteractive)
+    var failedCount = 0
+    var newDataCount = 0
 
     let handler = { (result: UIBackgroundFetchResult) in
       dispatchQueue.sync {
         if result == .failed {
-          fetchResult = .failed
-        } else if fetchResult != .failed && result == .newData {
-          fetchResult = .newData
+          failedCount += 1
+        } else if result == .newData {
+          newDataCount += 1
         }
 
         subscribersLeft -= 1
 
         if subscribersLeft == 0 {
-          completionHandler(fetchResult)
+          if newDataCount > 0 {
+             completionHandler(.newData)
+           } else if failedCount > 0 {
+             completionHandler(.failed)
+           } else {
+             completionHandler(.noData)
+           }
         }
       }
     }
 
-    subs.forEach { subscriber in
-      subscriber.application?(application, performFetchWithCompletionHandler: handler)
+    if subs.isEmpty {
+      completionHandler(.noData)
+    } else {
+      subs.forEach { subscriber in
+        subscriber.application?(application, performFetchWithCompletionHandler: handler)
+      }
     }
   }
 

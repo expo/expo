@@ -3,7 +3,7 @@
 import React
 
 @objc
-class DevMenuAppInstance: DevMenuBaseAppInstance, RCTBridgeDelegate {
+class DevMenuAppInstance: DevMenuRCTCxxBridgeDelegate, RCTBridgeDelegate {
   static private var CloseEventName = "closeDevMenu"
   static private var OpenEventName = "openDevMenu"
 
@@ -33,7 +33,7 @@ class DevMenuAppInstance: DevMenuBaseAppInstance, RCTBridgeDelegate {
   public func sendCloseEvent() {
     bridge?.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [DevMenuAppInstance.CloseEventName])
   }
-  
+
   public func sendOpenEvent() {
     bridge?.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [DevMenuAppInstance.OpenEventName])
   }
@@ -43,16 +43,18 @@ class DevMenuAppInstance: DevMenuBaseAppInstance, RCTBridgeDelegate {
   func sourceURL(for bridge: RCTBridge!) -> URL! {
     #if DEBUG
     if let packagerHost = jsPackagerHost() {
-      return RCTBundleURLProvider.jsBundleURL(forBundleRoot: "index", packagerHost: packagerHost, enableDev: true, enableMinification: false)
+      return RCTBundleURLProvider.jsBundleURL(
+        forBundleRoot: "index",
+        packagerHost: packagerHost,
+        enableDev: true,
+        enableMinification: false)
     }
     #endif
     return jsSourceUrl()
   }
 
   func extraModules(for bridge: RCTBridge!) -> [RCTBridgeModule]! {
-    var modules: [RCTBridgeModule] = [DevMenuInternalModule(manager: manager)]
-    modules.append(contentsOf: DevMenuVendoredModulesUtils.vendoredModules(bridge, addReanimated2: true))
-    modules.append(DevMenuLoadingView.init())
+    var modules: [RCTBridgeModule] = [DevMenuLoadingView.init()]
     modules.append(DevMenuRCTDevSettings.init())
     return modules
   }

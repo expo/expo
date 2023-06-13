@@ -1,4 +1,4 @@
-export declare type ImageResult = {
+export type ImageResult = {
     /**
      * An URI to the modified image (usable as the source for an `Image` or `Video` element).
      */
@@ -19,7 +19,7 @@ export declare type ImageResult = {
      */
     base64?: string;
 };
-export declare type ActionResize = {
+export type ActionResize = {
     /**
      * Values correspond to the result image dimensions. If you specify only one value, the other will
      * be calculated automatically to preserve image ratio.
@@ -29,7 +29,7 @@ export declare type ActionResize = {
         height?: number;
     };
 };
-export declare type ActionRotate = {
+export type ActionRotate = {
     /**
      * Degrees to rotate the image. Rotation is clockwise when the value is positive and
      * counter-clockwise when negative.
@@ -40,14 +40,14 @@ export declare enum FlipType {
     Vertical = "vertical",
     Horizontal = "horizontal"
 }
-export declare type ActionFlip = {
+export type ActionFlip = {
     /**
      * An axis on which image will be flipped. Only one flip per transformation is available. If you
      * want to flip according to both axes then provide two separate transformations.
      */
     flip: FlipType;
 };
-export declare type ActionCrop = {
+export type ActionCrop = {
     /**
      * Fields specify top-left corner and dimensions of a crop rectangle.
      */
@@ -58,7 +58,7 @@ export declare type ActionCrop = {
         height: number;
     };
 };
-export declare type Action = ActionResize | ActionRotate | ActionFlip | ActionCrop;
+export type Action = ActionResize | ActionRotate | ActionFlip | ActionCrop;
 export declare enum SaveFormat {
     JPEG = "jpeg",
     PNG = "png",
@@ -70,7 +70,7 @@ export declare enum SaveFormat {
 /**
  * A map defining how modified image should be saved.
  */
-export declare type SaveOptions = {
+export type SaveOptions = {
     /**
      * Whether to also include the image data in Base64 format.
      */

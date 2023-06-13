@@ -1,6 +1,7 @@
 #import <AVFoundation/AVFoundation.h>
+#import <CoreMotion/CoreMotion.h>
 
-#import <ExpoModulesCore/EXBarCodeScannerProviderInterface.h>
+#import <ExpoModulesCore/EXBarcodeScannerProviderInterface.h>
 #import <EXCamera/EXCamera.h>
 #import <EXCamera/EXCameraUtils.h>
 #import <EXCamera/EXCameraCameraPermissionRequester.h>
@@ -19,9 +20,11 @@
 @property (nonatomic, strong) id<EXBarCodeScannerInterface> barCodeScanner;
 @property (nonatomic, weak) id<EXPermissionsInterface> permissionsManager;
 @property (nonatomic, weak) id<EXAppLifecycleService> lifecycleManager;
+@property (nonatomic, strong) CMMotionManager * motionManager;
 
 @property (nonatomic, assign, getter=isSessionPaused) BOOL paused;
 @property (nonatomic, assign) BOOL isValidVideoOptions;
+@property (nonatomic, assign) UIDeviceOrientation physicalOrientation;
 
 @property (nonatomic, strong) NSDictionary *photoCaptureOptions;
 @property (nonatomic, strong) EXPromiseResolveBlock photoCapturedResolve;
@@ -33,6 +36,7 @@
 @property (nonatomic, copy) EXDirectEventBlock onCameraReady;
 @property (nonatomic, copy) EXDirectEventBlock onMountError;
 @property (nonatomic, copy) EXDirectEventBlock onPictureSaved;
+@property (nonatomic, copy) EXDirectEventBlock onResponsiveOrientationChanged;
 
 @property (nonatomic, copy) EXDirectEventBlock onBarCodeScanned;
 @property (nonatomic, copy) EXDirectEventBlock onFacesDetected;
@@ -70,6 +74,9 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
                                                  name:UIDeviceOrientationDidChangeNotification
                                                object:nil];
     [_lifecycleManager registerAppLifecycleListener:self];
+    _motionManager = [[CMMotionManager alloc] init];
+    _motionManager.accelerometerUpdateInterval = 0.2;
+    _motionManager.gyroUpdateInterval = 0.2;
   }
   return self;
 }
@@ -111,6 +118,13 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 {
   if (_onPictureSaved) {
     _onPictureSaved(event);
+  }
+}
+
+- (void)onResponsiveOrientationChanged:(NSDictionary *)event
+{
+  if (_onResponsiveOrientationChanged) {
+    _onResponsiveOrientationChanged(event);
   }
 }
 
@@ -311,6 +325,24 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   [self updateSessionPreset:_pictureSize];
 }
 
+- (void)updateResponsiveOrientationWhenOrientationLocked
+{
+  if (self.responsiveOrientationWhenOrientationLocked) {
+    [self.motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue new]
+      withHandler:^(CMAccelerometerData  *accelerometerData, NSError *error) {
+        if (!error) {
+          UIDeviceOrientation deviceOrientation = [EXCameraUtils deviceOrientationForAccelerometerData:self.motionManager.accelerometerData defaultOrientation:self.physicalOrientation];
+          if (deviceOrientation != self.physicalOrientation) {
+            self.physicalOrientation = deviceOrientation;
+            [self onResponsiveOrientationChanged:@{@"orientation": [[NSNumber alloc] initWithInteger:deviceOrientation]}];
+          }
+        }
+    }];
+  } else {
+    [self.motionManager stopAccelerometerUpdates];
+  }
+}
+
 - (void)setIsScanningBarCodes:(BOOL)barCodeScanning
 {
   if (_barCodeScanner) {
@@ -354,7 +386,8 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     return;
   }
   AVCaptureConnection *connection = [_photoOutput connectionWithMediaType:AVMediaTypeVideo];
-  [connection setVideoOrientation:[EXCameraUtils videoOrientationForDeviceOrientation:[[UIDevice currentDevice] orientation]]];
+  UIDeviceOrientation deviceOrientation = self.responsiveOrientationWhenOrientationLocked ? self.physicalOrientation : [[UIDevice currentDevice] orientation];
+  [connection setVideoOrientation:[EXCameraUtils videoOrientationForDeviceOrientation:deviceOrientation]];
 
   _photoCapturedReject = reject;
   _photoCapturedResolve = resolve;
@@ -549,7 +582,8 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
     } else {
       [connection setPreferredVideoStabilizationMode:self.videoStabilizationMode];
     }
-    [connection setVideoOrientation:[EXCameraUtils videoOrientationForDeviceOrientation:[[UIDevice currentDevice] orientation]]];
+    UIDeviceOrientation deviceOrientation = self.responsiveOrientationWhenOrientationLocked ? self.physicalOrientation : [[UIDevice currentDevice] orientation];
+    [connection setVideoOrientation:[EXCameraUtils videoOrientationForDeviceOrientation:deviceOrientation]];
     
     AVCaptureSessionPreset preset;
     if (options[@"quality"]) {
@@ -741,6 +775,7 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
     if (self.barCodeScanner) {
       [self.barCodeScanner stopBarCodeScanning];
     }
+    [self.motionManager stopAccelerometerUpdates];
     [self.previewLayer removeFromSuperlayer];
     [self.session commitConfiguration];
     [self.session stopRunning];

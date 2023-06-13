@@ -1,15 +1,22 @@
-# expo-media-library
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/media-library/">
+    <img
+      src="../../.github/resources/expo-media-library.svg"
+      alt="expo-media-library"
+      height="64" />
+  </a>
+</p>
 
 Provides access to user's media library.
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/media-library.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/media-library.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/media-library/)
 
 # Installation in managed Expo projects
 
-For [managed](https://docs.expo.dev/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/media-library/).
+For [managed](https://docs.expo.dev/archive/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/media-library/).
 
 # Installation in bare React Native projects
 
@@ -18,7 +25,7 @@ For bare React Native projects, you must ensure that you have [installed and con
 ### Add the package to your npm dependencies
 
 ```
-expo install expo-media-library
+npx expo install expo-media-library
 ```
 
 ### Configure for iOS

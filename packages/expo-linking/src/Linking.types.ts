@@ -1,4 +1,4 @@
-import { ParsedQs } from 'qs';
+import type { ParsedQs } from 'qs';
 
 // @docsMissing
 export type QueryParams = ParsedQs;

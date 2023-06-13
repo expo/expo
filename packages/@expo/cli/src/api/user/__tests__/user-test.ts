@@ -70,6 +70,15 @@ describe(getUserAsync, () => {
     await loginAsync({ username: 'USERNAME', password: 'PASSWORD' });
     expect(await getUserAsync()).toMatchObject({ __typename: 'User' });
   });
+
+  it('skips fetching user when running in offline mode', async () => {
+    jest.resetModules();
+    jest.mock('../../settings', () => ({ APISettings: { isOffline: true } }));
+    const { getUserAsync } = require('../user');
+
+    process.env.EXPO_TOKEN = 'accesstoken';
+    await expect(getUserAsync()).resolves.toBeUndefined();
+  });
 });
 
 describe(loginAsync, () => {
@@ -79,11 +88,11 @@ describe(loginAsync, () => {
 
     expect(await fs.promises.readFile(getUserStatePath(), 'utf8')).toMatchInlineSnapshot(`
       "{
-        \\"auth\\": {
-          \\"sessionSecret\\": \\"SESSION_SECRET\\",
-          \\"userId\\": \\"USER_ID\\",
-          \\"username\\": \\"USERNAME\\",
-          \\"currentConnection\\": \\"Username-Password-Authentication\\"
+        "auth": {
+          "sessionSecret": "SESSION_SECRET",
+          "userId": "USER_ID",
+          "username": "USERNAME",
+          "currentConnection": "Username-Password-Authentication"
         }
       }
       "

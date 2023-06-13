@@ -1,23 +1,29 @@
-import { TagProps } from './Tag';
-import { labelStyle, tagFirstStyle, tagStyle, tagToCStyle } from './styles';
+import { mergeClasses } from '@expo/styleguide';
+import { Stars02Icon } from '@expo/styleguide-icons';
 
-import { formatName, getTagStyle } from '~/ui/components/Tag/helpers';
+import { TagProps } from './Tag';
+import { labelStyle, tagStyle, tagToCStyle } from './styles';
+
+import { formatName, TAG_CLASSES } from '~/ui/components/Tag/helpers';
 
 type StatusTagProps = Omit<TagProps, 'name'> & {
   status: 'deprecated' | 'experimental' | string;
+  note?: string;
 };
 
-export const StatusTag = ({ status, firstElement, type }: StatusTagProps) => {
+export const StatusTag = ({ status, type, note }: StatusTagProps) => {
   return (
     <div
-      css={[
-        tagStyle,
-        firstElement && tagFirstStyle,
-        status === 'deprecated' && getTagStyle('yellow'),
-        status === 'experimental' && getTagStyle('pink'),
-        type === 'toc' && tagToCStyle,
-      ]}>
-      <span css={labelStyle}>{formatName(status)}</span>
+      className={mergeClasses(
+        status === 'deprecated' && TAG_CLASSES['deprecated'],
+        status === 'experimental' && TAG_CLASSES['experimental']
+      )}
+      css={[tagStyle, type === 'toc' && tagToCStyle]}>
+      {status === 'experimental' && <Stars02Icon className="icon-xs text-palette-pink11" />}
+      <span css={labelStyle}>
+        {formatName(status)}
+        {note && `: ${note}`}
+      </span>
     </div>
   );
 };

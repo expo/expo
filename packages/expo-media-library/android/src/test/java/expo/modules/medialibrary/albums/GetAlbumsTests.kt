@@ -1,24 +1,24 @@
 package expo.modules.medialibrary.albums
 
-import android.content.Context
 import android.os.Bundle
 import android.provider.MediaStore.Images.Media
+import expo.modules.medialibrary.AlbumException
 import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD
 import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
-import org.junit.Assert.assertEquals
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import expo.modules.core.Promise
 import expo.modules.medialibrary.MockContext
 import expo.modules.medialibrary.MockData
 import expo.modules.medialibrary.mockContentResolver
 import expo.modules.medialibrary.mockCursor
 import expo.modules.medialibrary.throwableContentResolver
-import org.unimodules.test.core.PromiseMock
-import org.unimodules.test.core.assertRejectedWithCode
-import org.unimodules.test.core.promiseResolvedWithType
+import expo.modules.test.core.PromiseMock
+import expo.modules.test.core.assertRejectedWithCode
+import expo.modules.test.core.promiseResolvedWithType
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertThrows
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class GetAlbumsTests {
@@ -48,7 +48,7 @@ class GetAlbumsTests {
     val context = mockContext with mockContentResolver(cursor)
 
     // act
-    TestGetAlbums(context, promise).execute()
+    GetAlbums(context, promise).execute()
 
     // assert
     promiseResolvedWithType<List<Bundle>>(promise) {
@@ -77,7 +77,7 @@ class GetAlbumsTests {
     val context = mockContext with mockContentResolver(cursor)
 
     // act
-    TestGetAlbums(context, promise).execute()
+    GetAlbums(context, promise).execute()
 
     // assert
     promiseResolvedWithType<List<Bundle>>(promise) {
@@ -91,10 +91,10 @@ class GetAlbumsTests {
     val context = mockContext with mockContentResolver(null)
 
     // act
-    TestGetAlbums(context, promise).execute()
-
     // assert
-    assertRejectedWithCode(promise, ERROR_UNABLE_TO_LOAD)
+    assertThrows(AlbumException::class.java) {
+      GetAlbums(context, promise).execute()
+    }
   }
 
   @Test
@@ -103,7 +103,7 @@ class GetAlbumsTests {
     val context = mockContext with throwableContentResolver(SecurityException())
 
     // act
-    TestGetAlbums(context, promise).execute()
+    GetAlbums(context, promise).execute()
 
     // assert
     assertRejectedWithCode(promise, ERROR_UNABLE_TO_LOAD_PERMISSION)
@@ -115,14 +115,9 @@ class GetAlbumsTests {
     val context = mockContext with throwableContentResolver(IllegalArgumentException())
 
     // act
-    TestGetAlbums(context, promise).execute()
+    GetAlbums(context, promise).execute()
 
     // assert
     assertRejectedWithCode(promise, ERROR_UNABLE_TO_LOAD)
-  }
-
-  // hack for calling protected methods.
-  private class TestGetAlbums(mContext: Context, mPromise: Promise) : GetAlbums(mContext, mPromise) {
-    fun execute() = doInBackground()
   }
 }

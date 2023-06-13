@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
-import { darkTheme, spacing } from '@expo/styleguide';
-import React from 'react';
+import { spacing } from '@expo/styleguide-base';
+import { TerminalSquareIcon } from '@expo/styleguide-icons';
 
 import { Snippet } from '../Snippet';
 import { SnippetContent } from '../SnippetContent';
@@ -24,11 +24,11 @@ export const Terminal = ({
   includeMargin = true,
   title = 'Terminal',
 }: TerminalProps) => (
-  <Snippet style={wrapperStyle} includeMargin={includeMargin}>
-    <SnippetHeader alwaysDark title={title}>
+  <Snippet css={wrapperStyle} includeMargin={includeMargin}>
+    <SnippetHeader alwaysDark title={title} Icon={TerminalSquareIcon}>
       {renderCopyButton({ cmd, cmdCopy })}
     </SnippetHeader>
-    <SnippetContent alwaysDark hideOverflow={hideOverflow}>
+    <SnippetContent alwaysDark hideOverflow={hideOverflow} className="grid grid-cols-auto-min-1">
       {cmd.map(cmdMapper)}
     </SnippetContent>
   </Snippet>
@@ -63,12 +63,14 @@ function cmdMapper(line: string, index: number) {
   const key = `line-${index}`;
 
   if (line.trim() === '') {
-    return <br key={key} css={unselectableStyle} />;
+    return <br key={key} className="select-none" />;
   }
 
   if (line.startsWith('#')) {
     return (
-      <CODE key={key} css={[codeStyle, unselectableStyle, { color: darkTheme.code.comment }]}>
+      <CODE
+        key={key}
+        className="whitespace-pre !bg-[transparent] !border-none select-none !text-palette-gray10">
         {line}
       </CODE>
     );
@@ -77,21 +79,18 @@ function cmdMapper(line: string, index: number) {
   if (line.startsWith('$')) {
     return (
       <div key={key}>
-        <CODE
-          css={[
-            codeStyle,
-            unselectableStyle,
-            { display: 'inline', color: darkTheme.text.secondary },
-          ]}>
-          →&nbsp;
+        <CODE className="whitespace-pre !bg-[transparent] !border-none select-none !text-secondary">
+          -&nbsp;
         </CODE>
-        <CODE css={codeStyle}>{line.substring(1).trim()}</CODE>
+        <CODE className="whitespace-pre !bg-[transparent] !border-none text-default">
+          {line.substring(1).trim()}
+        </CODE>
       </div>
     );
   }
 
   return (
-    <CODE key={key} css={[codeStyle, { display: 'inherit' }]}>
+    <CODE key={key} className="whitespace-pre !bg-[transparent] !border-none text-default">
       {line}
     </CODE>
   );
@@ -102,16 +101,4 @@ const wrapperStyle = css`
     margin-top: ${spacing[4]}px;
     display: flex;
   }
-`;
-
-const unselectableStyle = css`
-  user-select: none;
-`;
-
-const codeStyle = css`
-  display: inline-block;
-  line-height: 140%;
-  background-color: transparent;
-  border: none;
-  color: ${darkTheme.text.default};
 `;

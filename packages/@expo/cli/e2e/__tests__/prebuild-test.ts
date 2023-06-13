@@ -132,11 +132,8 @@ it(
 
     const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
-    // Deleted
-    expect(pkg.main).toBe('node_modules/expo/AppEntry.js');
-
     // Added new packages
-    expect(Object.keys(pkg.dependencies).sort()).toStrictEqual([
+    expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
       'expo',
       'expo-splash-screen',
       'expo-status-bar',
@@ -153,12 +150,10 @@ it(
 
     // If this changes then everything else probably changed as well.
     expect(files).toMatchInlineSnapshot(`
-      Array [
+      [
         "App.js",
         "android/.gitignore",
-        "android/app/BUCK",
         "android/app/build.gradle",
-        "android/app/build_defs.bzl",
         "android/app/debug.keystore",
         "android/app/proguard-rules.pro",
         "android/app/src/debug/AndroidManifest.xml",
@@ -166,17 +161,6 @@ it(
         "android/app/src/main/AndroidManifest.xml",
         "android/app/src/main/java/com/example/minimal/MainActivity.java",
         "android/app/src/main/java/com/example/minimal/MainApplication.java",
-        "android/app/src/main/java/com/example/minimal/newarchitecture/MainApplicationReactNativeHost.java",
-        "android/app/src/main/java/com/example/minimal/newarchitecture/components/MainComponentsRegistry.java",
-        "android/app/src/main/java/com/example/minimal/newarchitecture/modules/MainApplicationTurboModuleManagerDelegate.java",
-        "android/app/src/main/jni/Android.mk",
-        "android/app/src/main/jni/MainApplicationModuleProvider.cpp",
-        "android/app/src/main/jni/MainApplicationModuleProvider.h",
-        "android/app/src/main/jni/MainApplicationTurboModuleManagerDelegate.cpp",
-        "android/app/src/main/jni/MainApplicationTurboModuleManagerDelegate.h",
-        "android/app/src/main/jni/MainComponentsRegistry.cpp",
-        "android/app/src/main/jni/MainComponentsRegistry.h",
-        "android/app/src/main/jni/OnLoad.cpp",
         "android/app/src/main/res/drawable/rn_edit_text_material.xml",
         "android/app/src/main/res/drawable/splashscreen.xml",
         "android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
@@ -193,6 +177,7 @@ it(
         "android/app/src/main/res/values/strings.xml",
         "android/app/src/main/res/values/styles.xml",
         "android/app/src/main/res/values-night/colors.xml",
+        "android/app/src/release/java/com/example/minimal/ReactNativeFlipper.java",
         "android/build.gradle",
         "android/gradle/wrapper/gradle-wrapper.jar",
         "android/gradle/wrapper/gradle-wrapper.properties",
@@ -214,6 +199,7 @@ it(
         "ios/basicprebuild/Info.plist",
         "ios/basicprebuild/SplashScreen.storyboard",
         "ios/basicprebuild/Supporting/Expo.plist",
+        "ios/basicprebuild/basicprebuild-Bridging-Header.h",
         "ios/basicprebuild/basicprebuild.entitlements",
         "ios/basicprebuild/main.m",
         "ios/basicprebuild/noop-file.swift",
@@ -221,7 +207,6 @@ it(
         "ios/basicprebuild.xcodeproj/project.xcworkspace/contents.xcworkspacedata",
         "ios/basicprebuild.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist",
         "ios/basicprebuild.xcodeproj/xcshareddata/xcschemes/basicprebuild.xcscheme",
-        "metro.config.js",
         "package.json",
         "yarn.lock",
       ]

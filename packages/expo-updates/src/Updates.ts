@@ -13,6 +13,7 @@ import {
   UpdateCheckResult,
   UpdateEvent,
   UpdateFetchResult,
+  UpdatesCheckAutomaticallyValue,
   UpdatesLogEntry,
 } from './Updates.types';
 
@@ -45,6 +46,19 @@ export const channel: string | null = ExpoUpdates.channel ?? null;
  */
 export const runtimeVersion: string | null = ExpoUpdates.runtimeVersion ?? null;
 
+const _checkAutomaticallyMapNativeToJS = {
+  ALWAYS: 'ON_LOAD',
+  ERROR_RECOVERY_ONLY: 'ON_ERROR_RECOVERY',
+  NEVER: 'NEVER',
+  WIFI_ONLY: 'WIFI_ONLY',
+};
+
+/**
+ * Determines if and when expo-updates checks for and downloads updates automatically on startup.
+ */
+export const checkAutomatically: UpdatesCheckAutomaticallyValue | null =
+  _checkAutomaticallyMapNativeToJS[ExpoUpdates.checkAutomatically] ?? null;
+
 // @docsMissing
 /**
  * @hidden
@@ -62,6 +76,12 @@ export const localAssets: LocalAssets = ExpoUpdates.localAssets ?? {};
  */
 export const isEmergencyLaunch: boolean = ExpoUpdates.isEmergencyLaunch || false;
 
+/**
+ * This will be true if the currently running update is the one embedded in the build,
+ * and not one downloaded from the updates server.
+ */
+export const isEmbeddedLaunch: boolean = ExpoUpdates.isEmbeddedLaunch || false;
+
 // @docsMissing
 /**
  * @hidden
@@ -70,8 +90,9 @@ export const isUsingEmbeddedAssets: boolean = ExpoUpdates.isUsingEmbeddedAssets 
 
 /**
  * If `expo-updates` is enabled, this is the
- * [manifest](/guides/how-expo-works#expo-development-server) object for the update that's currently
- * running.
+ * [manifest](/versions/latest/sdk/constants/#manifest) (or
+ * [classic manifest](/versions/latest/sdk/constants/#appmanifest))
+ * object for the update that's currently running.
  *
  * In development mode, or any other environment in which `expo-updates` is disabled, this object is
  * empty.
@@ -126,7 +147,7 @@ export async function reloadAsync(): Promise<void> {
   if (!ExpoUpdates.reload) {
     throw new UnavailabilityError('Updates', 'reloadAsync');
   }
-  if (__DEV__ && !isUsingExpoDevelopmentClient) {
+  if (!ExpoUpdates?.nativeDebug && (__DEV__ || isUsingExpoDevelopmentClient)) {
     throw new CodedError(
       'ERR_UPDATES_DISABLED',
       `You cannot use the Updates module in development mode in a production app. ${manualUpdatesInstructions}`
@@ -154,7 +175,7 @@ export async function checkForUpdateAsync(): Promise<UpdateCheckResult> {
   if (!ExpoUpdates.checkForUpdateAsync) {
     throw new UnavailabilityError('Updates', 'checkForUpdateAsync');
   }
-  if (__DEV__ || isUsingDeveloperTool) {
+  if (!ExpoUpdates?.nativeDebug && (__DEV__ || isUsingDeveloperTool)) {
     throw new CodedError(
       'ERR_UPDATES_DISABLED',
       `You cannot check for updates in development mode. ${manualUpdatesInstructions}`
@@ -168,6 +189,39 @@ export async function checkForUpdateAsync(): Promise<UpdateCheckResult> {
   }
 
   return result;
+}
+
+/**
+ * Retrieves the current extra params.
+ */
+export async function getExtraParamsAsync(): Promise<{ [key: string]: string }> {
+  if (!ExpoUpdates.getExtraParamsAsync) {
+    throw new UnavailabilityError('Updates', 'getExtraParamsAsync');
+  }
+
+  return await ExpoUpdates.getExtraParamsAsync();
+}
+
+/**
+ * Sets an extra param if value is non-null, otherwise unsets the param.
+ * Extra params are sent in a header of update requests.
+ * The update server may use these params when evaluating logic to determine which update to serve.
+ * EAS Update merges these params into the fields used to evaluate channel–branch mapping logic.
+ *
+ * @example An app may want to add a feature where users can opt-in to beta updates. In this instance,
+ * extra params could be set to `{userType: 'beta'}`, and then the server can use this information
+ * when deciding which update to serve. If using EAS Update, the channel-branch mapping can be set to
+ * discriminate branches based on the `userType`.
+ */
+export async function setExtraParamAsync(
+  key: string,
+  value: string | null | undefined
+): Promise<void> {
+  if (!ExpoUpdates.setExtraParamAsync) {
+    throw new UnavailabilityError('Updates', 'setExtraParamAsync');
+  }
+
+  return await ExpoUpdates.setExtraParamAsync(key, value ?? null);
 }
 
 /**
@@ -218,7 +272,7 @@ export async function fetchUpdateAsync(): Promise<UpdateFetchResult> {
   if (!ExpoUpdates.fetchUpdateAsync) {
     throw new UnavailabilityError('Updates', 'fetchUpdateAsync');
   }
-  if (__DEV__ || isUsingDeveloperTool) {
+  if (!ExpoUpdates?.nativeDebug && (__DEV__ || isUsingDeveloperTool)) {
     throw new CodedError(
       'ERR_UPDATES_DISABLED',
       `You cannot fetch updates in development mode. ${manualUpdatesInstructions}`
@@ -254,7 +308,7 @@ function _getEmitter(): EventEmitter {
 }
 
 function _emitEvent(params): void {
-  let newParams = params;
+  let newParams = { ...params };
   if (typeof params === 'string') {
     newParams = JSON.parse(params);
   }
@@ -271,7 +325,8 @@ function _emitEvent(params): void {
 
 /**
  * Adds a callback to be invoked when updates-related events occur (such as upon the initial app
- * load) due to auto-update settings chosen at build-time.
+ * load) due to auto-update settings chosen at build-time. See also the
+ * [`useUpdateEvents`](#useupdateeventslistener) React hook.
  *
  * @param listener A function that will be invoked with an [`UpdateEvent`](#updateevent) instance
  * and should not return any value.
