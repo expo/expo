@@ -572,6 +572,7 @@ describe('JS API tests', () => {
       newInstance: true,
     });
     await waitForAppToBecomeVisible();
+    await setTimeout(2000 * TIMEOUT_BIAS);
     {
       const logEntries: any[] = await readLogEntriesAsync();
       console.warn(
@@ -597,6 +598,7 @@ describe('JS API tests', () => {
       await device.terminateApp();
       await device.launchApp();
       await waitForAppToBecomeVisible();
+      await setTimeout(2000 * TIMEOUT_BIAS);
       {
         const logEntries: any[] = await readLogEntriesAsync();
         console.warn(
@@ -620,6 +622,7 @@ describe('JS API tests', () => {
     await device.terminateApp();
     await device.launchApp();
     await waitForAppToBecomeVisible();
+    await setTimeout(2000 * TIMEOUT_BIAS);
     {
       const logEntries: any[] = await readLogEntriesAsync();
       console.warn(
