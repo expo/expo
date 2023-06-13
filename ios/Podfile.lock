@@ -3695,13 +3695,7 @@ SPEC CHECKSUMS:
   ExpoLocalAuthentication: bd9d9037a96a11ccc456e327ddb404df02da10ca
   ExpoLocalization: c1201ba5cfcfb187972138e58c07cc708c5399db
   ExpoMailComposer: b9a4871714550d5b4e26d1873f0572e350c86478
-<<<<<<< HEAD
   ExpoModulesCore: fb49cd12163cbd5aa5d6288f9533715e8661c8c6
-||||||| parent of 761fc9c511 ([ios][clipboard] make changes)
-  ExpoModulesCore: 41ff5ce328543283207b509e834a7dd086fcc73e
-=======
-  ExpoModulesCore: 2c69bc93f9a2b522bba0bc041ff9fd5d066c89ec
->>>>>>> 761fc9c511 ([ios][clipboard] make changes)
   ExpoModulesTestCore: 42fce831c9601dcfaba09fe7a03dfe99e25754a4
   ExpoNetwork: ef59bebcdbeb6ea188157a8fc88e9ceafbff1f89
   ExpoPrint: 92311a7545d66959c6f3884e085bf336ba6c7c48
