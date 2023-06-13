@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Bump `babel-plugin-module-resolver` dev dependency.
+- Bump `babel-plugin-module-resolver` dev dependency. ([#22871](https://github.com/expo/expo/pull/22871) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 9.4.1 — 2023-06-13
 
