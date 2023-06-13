@@ -14,7 +14,7 @@
   "expo-app-loader-provider": "~8.0.0",
   "expo-apple-authentication": "~6.1.0",
   "expo-application": "~5.3.0",
-  "expo-asset": "~8.9.2",
+  "expo-asset": "~8.10.0",
   "expo-auth-session": "~4.1.0",
   "expo-av": "~13.3.0",
   "expo-background-fetch": "~11.2.0",
