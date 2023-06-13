@@ -98,6 +98,18 @@ export default function App() {
     });
   };
 
+  const handleClearLogEntries = () => {
+    const handleAsync = async () => {
+      setActive(true);
+      await Updates.clearLogEntriesAsync();
+      await delay(1000);
+      setActive(false);
+    };
+    handleAsync().catch((e) => {
+      console.warn(e);
+    });
+  };
+
   const handleDownloadUpdate = () => {
     setRunNow(true);
     downloadUpdate();
@@ -140,6 +152,7 @@ export default function App() {
       <TestButton testID="readAssetFiles" onPress={handleReadAssetFiles} />
       <TestButton testID="clearAssetFiles" onPress={handleClearAssetFiles} />
       <TestButton testID="readLogEntries" onPress={handleReadLogEntries} />
+      <TestButton testID="clearLogEntries" onPress={handleClearLogEntries} />
       <TestButton testID="checkForUpdate" onPress={checkForUpdate} />
       {isUpdateAvailable ? (
         <TestButton testID="downloadUpdate" onPress={handleDownloadUpdate} />

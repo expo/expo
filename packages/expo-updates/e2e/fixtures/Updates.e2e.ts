@@ -51,6 +51,14 @@ const readLogEntriesAsync = async () => {
   }
 };
 
+const clearLogEntriesAsync = async () => {
+  await element(by.id('clearLogEntries')).tap();
+  await setTimeout(20 * TIMEOUT_BIAS);
+  await waitFor(element(by.id('activity')))
+    .not.toBeVisible()
+    .withTimeout(2000);
+};
+
 const waitForAppToBecomeVisible = async () => {
   await waitFor(element(by.id('updateString')))
     .toBeVisible()
@@ -564,6 +572,17 @@ describe('JS API tests', () => {
       newInstance: true,
     });
     await waitForAppToBecomeVisible();
+    {
+      const logEntries: any[] = await readLogEntriesAsync();
+      console.warn(
+        'Total number of log entries = ' +
+          logEntries.length +
+          '\n' +
+          JSON.stringify(logEntries, null, 2)
+      );
+      await clearLogEntriesAsync();
+    }
+
     const lastUpdateEventType = await testElementValueAsync('lastUpdateEventType');
     // Server is not running, so error received
     console.warn(`lastUpdateEventType = ${lastUpdateEventType}`);
@@ -578,6 +597,17 @@ describe('JS API tests', () => {
       await device.terminateApp();
       await device.launchApp();
       await waitForAppToBecomeVisible();
+      {
+        const logEntries: any[] = await readLogEntriesAsync();
+        console.warn(
+          'Total number of log entries = ' +
+            logEntries.length +
+            '\n' +
+            JSON.stringify(logEntries, null, 2)
+        );
+        await clearLogEntriesAsync();
+      }
+
       lastUpdateEventType2 = await testElementValueAsync('lastUpdateEventType');
       console.warn(`lastUpdateEventType2 = ${lastUpdateEventType2}`);
       Server.stop();
@@ -590,17 +620,19 @@ describe('JS API tests', () => {
     await device.terminateApp();
     await device.launchApp();
     await waitForAppToBecomeVisible();
+    {
+      const logEntries: any[] = await readLogEntriesAsync();
+      console.warn(
+        'Total number of log entries = ' +
+          logEntries.length +
+          '\n' +
+          JSON.stringify(logEntries, null, 2)
+      );
+      await clearLogEntriesAsync();
+    }
+
     const lastUpdateEventType3 = await testElementValueAsync('lastUpdateEventType');
     console.warn(`lastUpdateEventType3 = ${lastUpdateEventType3}`);
-
-    // Write log entries to see what happened with the events
-    const logEntries: any[] = await readLogEntriesAsync();
-    console.warn(
-      'Total number of log entries = ' +
-        logEntries.length +
-        '\n' +
-        JSON.stringify(logEntries, null, 2)
-    );
 
     // Test passes if all the event types seen are the expected ones
     jestExpect(lastUpdateEventType).toEqual('error');
