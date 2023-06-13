@@ -1526,6 +1526,10 @@ PODS:
     - ExpoModulesCore
   - ExpoRandom (13.1.2):
     - ExpoModulesCore
+  - ExpoScreenOrientation (5.2.0):
+    - ExpoModulesCore
+    - RCT-Folly (= 2021.07.22.00)
+    - React-Core
   - ExpoSecureStore (12.2.0):
     - ExpoModulesCore
   - ExpoSharing (11.4.0):
@@ -1548,10 +1552,6 @@ PODS:
     - ExpoModulesCore
   - EXScreenCapture (5.2.0):
     - ExpoModulesCore
-  - EXScreenOrientation (5.2.0):
-    - ExpoModulesCore
-    - RCT-Folly (= 2021.07.22.00)
-    - React-Core
   - EXSensors (12.2.0):
     - ExpoModulesCore
   - EXSplashScreen (0.19.0):
@@ -2603,6 +2603,7 @@ DEPENDENCIES:
   - ExpoNetwork (from `../packages/expo-network/ios`)
   - ExpoPrint (from `../packages/expo-print/ios`)
   - ExpoRandom (from `../packages/expo-random/ios`)
+  - ExpoScreenOrientation (from `../packages/expo-screen-orientation/ios`)
   - ExpoSecureStore (from `../packages/expo-secure-store/ios`)
   - ExpoSharing (from `../packages/expo-sharing/ios`)
   - ExpoSMS (from `../packages/expo-sms/ios`)
@@ -2614,7 +2615,6 @@ DEPENDENCIES:
   - ExpoVideoThumbnails (from `../packages/expo-video-thumbnails/ios`)
   - ExpoWebBrowser (from `../packages/expo-web-browser/ios`)
   - EXScreenCapture (from `../packages/expo-screen-capture/ios`)
-  - EXScreenOrientation (from `../packages/expo-screen-orientation/ios`)
   - EXSensors (from `../packages/expo-sensors/ios`)
   - EXSplashScreen (from `../packages/expo-splash-screen/ios`)
   - EXStructuredHeaders (from `../packages/expo-structured-headers/ios`)
@@ -3272,6 +3272,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-print/ios"
   ExpoRandom:
     :path: "../packages/expo-random/ios"
+  ExpoScreenOrientation:
+    :path: "../packages/expo-screen-orientation/ios"
   ExpoSecureStore:
     :path: "../packages/expo-secure-store/ios"
   ExpoSharing:
@@ -3294,8 +3296,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-web-browser/ios"
   EXScreenCapture:
     :path: "../packages/expo-screen-capture/ios"
-  EXScreenOrientation:
-    :path: "../packages/expo-screen-orientation/ios"
   EXSensors:
     :path: "../packages/expo-sensors/ios"
   EXSplashScreen:
@@ -3700,6 +3700,7 @@ SPEC CHECKSUMS:
   ExpoNetwork: ef59bebcdbeb6ea188157a8fc88e9ceafbff1f89
   ExpoPrint: 92311a7545d66959c6f3884e085bf336ba6c7c48
   ExpoRandom: 2b8cb73f02f534b083a1f79b10b89ca0f0111b55
+  ExpoScreenOrientation: 952c90106290128866acfd1a7966ee47922938cf
   ExpoSecureStore: 69a8b8e66e53afbd1c88b97a95a22af7fde9f99b
   ExpoSharing: 3e3efb3d93e169dcce0f749aa8427317c033639f
   ExpoSMS: c360a9e17e3590f2b2f95adc57f5143baeec2793
@@ -3711,7 +3712,6 @@ SPEC CHECKSUMS:
   ExpoVideoThumbnails: 4c5aa4a1ed34041844da7f8ba2967630d2573bdc
   ExpoWebBrowser: eac23f0fd2b8ad7ec7056fc208091722bba17952
   EXScreenCapture: c55e42588fb2dc985a02b4b6aa1fb6e83157c653
-  EXScreenOrientation: a125ef7d93ab34b06fd87682360bb8c8eac9454f
   EXSensors: 6422e6bf51cfeee632d9cb61536d6038b680acfb
   EXSplashScreen: 8d00c7b625ec0f952a17ab685e1f03ac0e5c1795
   EXStructuredHeaders: f3a6d417d5d12ef369fd1a31320d1c188a1b0f4b
