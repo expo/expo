@@ -8,8 +8,8 @@
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
-    "lint": "expo-module lint && expo-module lint bundle",
-    "test": "expo-module test && expo-module test bundle",
+    "lint": "expo-module lint bundle && expo-module lint",
+    "test": "expo-module test bundle && expo-module test",
     "prepare": "yarn tsc:bundle && expo-module prepare",
     "prepublishOnly": "yarn tsc:bundle && expo-module prepublishOnly",
     "expo-module": "expo-module",
