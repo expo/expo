@@ -19,17 +19,19 @@ type ExtendedLocale = Intl.Locale &
     calendars: string[];
   }>;
 
+const WEB_LANGUAGE_CHANGE_EVENT = 'languagechange';
+
 export function addLocaleListener(listener: (event) => void): Subscription {
-  addEventListener('languagechange', listener);
+  addEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener);
   return {
-    remove: () => removeEventListener('languagechange', listener),
+    remove: () => removeEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener),
   };
 }
 
 export function addCalendarListener(listener: (event) => void): Subscription {
-  addEventListener('languagechange', listener);
+  addEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener);
   return {
-    remove: () => removeEventListener('languagechange', listener),
+    remove: () => removeEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener),
   };
 }
 export function removeSubscription(subscription: Subscription) {
