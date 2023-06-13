@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent source map requests for context modules from reaching Metro. ([#22874](https://github.com/expo/expo/pull/22874) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 0.9.1 — 2023-06-13
