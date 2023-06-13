@@ -19,6 +19,7 @@ import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import { getStaticRenderFunctions } from '../getStaticRenderFunctions';
+import { ContextModuleSourceMapsMiddleware } from '../middleware/ContextModuleSourceMapsMiddleware';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
@@ -263,13 +264,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const manifestMiddleware = await this.getManifestMiddlewareAsync(options);
 
+    // Important that we noop source maps for context modules as soon as possible.
+    prependMiddleware(middleware, new ContextModuleSourceMapsMiddleware().getHandler());
+
     // We need the manifest handler to be the first middleware to run so our
     // routes take precedence over static files. For example, the manifest is
     // served from '/' and if the user has an index.html file in their project
     // then the manifest handler will never run, the static middleware will run
     // and serve index.html instead of the manifest.
     // https://github.com/expo/expo/issues/13114
-
     prependMiddleware(middleware, manifestMiddleware.getHandler());
 
     middleware.use(
