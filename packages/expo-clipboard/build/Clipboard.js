@@ -1,4 +1,5 @@
 import { EventEmitter, UnavailabilityError, Platform } from 'expo-modules-core';
+import { ClipboardPasteButton } from './ClipboardPasteButton';
 import ExpoClipboard from './ExpoClipboard';
 const emitter = new EventEmitter(ExpoClipboard);
 const onClipboardEventName = 'onClipboardChanged';
@@ -205,20 +206,7 @@ export function removeClipboardListener(subscription) {
     emitter.removeSubscription(subscription);
 }
 /**
- * Dertermines if the `ClipboardPasteButton` is available.
- *
- * This requires the users device to be using at least iOS 16.
- *
- * @returns A boolean that is `true` if the component is available, and `false` otherwise.
- */
-export function pasteButtonIsAvailable() {
-    if (Platform.OS === 'android') {
-        return false;
-    }
-    return ExpoClipboard.pasteButtonIsAvailable();
-}
-/**
- * Property that dertermines if the `ClipboardPasteButton` is available.
+ * Property that determines if the `ClipboardPasteButton` is available.
  *
  * This requires the users device to be using at least iOS 16.
  *
@@ -226,5 +214,5 @@ export function pasteButtonIsAvailable() {
  */
 export const isPasteButtonAvailable = Platform.OS === 'ios' ? ExpoClipboard.isPasteButtonAvailable : false;
 export * from './Clipboard.types';
-export { default as ClipboardPasteButton } from './ClipboardPasteButton';
+export { ClipboardPasteButton };
 //# sourceMappingURL=Clipboard.js.map

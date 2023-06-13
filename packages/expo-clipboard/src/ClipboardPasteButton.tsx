@@ -1,8 +1,8 @@
 import React from 'react';
 import { NativeSyntheticEvent } from 'react-native';
 
-import { ApplePasteButtonProps, PasteEventPayload } from './Clipboard.types';
-import ExpoClipboardApplePasteButton from './ClipboardApplePasteButton';
+import { ClipboardPasteButtonProps, PasteEventPayload } from './Clipboard.types';
+import ExpoClipboardPasteButton from './ExpoClipboardPasteButton';
 
 // @needsAudit
 /**
@@ -13,17 +13,18 @@ import ExpoClipboardApplePasteButton from './ClipboardApplePasteButton';
  * a warning in development mode (`__DEV__ === true`).
  *
  * The properties of this component extend from `View`; however, you should not attempt to set
- * `backgroundColor`, 'color' or `borderRadius` with the `style` property. Use the relevant props instead.
+ * `backgroundColor`, `color` or `borderRadius` with the `style` property. Apple restricts customisation of this view.
+ * Instead, you should use the backgroundColor and foregroundColor properties to set the colors of the button, the cornerStyle property to change the border radius,
+ * and the displayMode property to change the appearance of the icon and label. The word "Paste" is not editable and neither is the icon.
  *
  * Make sure to attach height and width via the style props as without these styles, the button will
  * not appear on the screen.
  *
- * @see [Apple
- * Documentation](https://developer.apple.com/documentation/uikit/uipastecontrol)
- * for more details.
+ * @see [Apple Documentation]
+ * (https://developer.apple.com/documentation/uikit/uipastecontrol) for more details.
  */
-export default function ClipboardPasteButton({ onPress, ...restProps }: ApplePasteButtonProps) {
-  if (!ExpoClipboardApplePasteButton) {
+export function ClipboardPasteButton({ onPress, ...restProps }: ClipboardPasteButtonProps) {
+  if (!ExpoClipboardPasteButton) {
     if (__DEV__) {
       console.warn("'ApplePasteButton' is not available.");
     }
@@ -34,5 +35,5 @@ export default function ClipboardPasteButton({ onPress, ...restProps }: ApplePas
     onPress(nativeEvent);
   };
 
-  return <ExpoClipboardApplePasteButton onPastePressed={onPastePressed} {...restProps} />;
+  return <ExpoClipboardPasteButton onPastePressed={onPastePressed} {...restProps} />;
 }

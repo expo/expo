@@ -127,18 +127,15 @@ public class ClipboardModule: Module {
       }
 
       Prop("acceptedContentTypes") { (view, types: [AcceptedTypes]?) in
-        let newTypes = types ?? []
-        view.acceptedContentTypes = newTypes
+        view.acceptedContentTypes = types ?? []
       }
 
       Prop("cornerStyle") { (view, style: CornerStyle?) in
-        let newStyle = style ?? .capsule
-        view.cornerStyle = newStyle
+        view.cornerStyle = style ?? .capsule
       }
 
       Prop("displayMode") { (view, mode: DisplayMode?) in
-        let displayMode = mode ?? .iconAndLabel
-        view.displayMode = displayMode
+        view.displayMode = mode ?? .iconAndLabel
       }
 
       Prop("imageOptions") { (view, options: GetImageOptions) in

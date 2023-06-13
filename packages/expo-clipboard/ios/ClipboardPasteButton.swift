@@ -131,23 +131,15 @@ class ClipboardPasteButton: ExpoView {
       return
     }
 
-    let url = URL(fileURLWithPath: fileSystem.cachesDirectory)
-      .appendingPathComponent("clipboard-\(id).\(imageOptions.imageFormat.rawValue)")
-
-    do {
-      try data.write(to: url)
-      id += 1
-      self.onPastePressed([
-        "type": "image",
-        "data": url.absoluteString,
-        "size": [
-          "width": image.size.width,
-          "height": image.size.height
-        ]
-      ])
-    } catch {
-      log.error("Failed to write image data to file")
-    }
+    let imageData = "data:\(imageOptions.imageFormat.getMimeType());base64,\(data.base64EncodedString())"
+    self.onPastePressed([
+      "type": "image",
+      "data": imageData,
+      "size": [
+        "width": image.size.width,
+        "height": image.size.height
+      ]
+    ])
   }
 
   private func processHtml(data: String?) {

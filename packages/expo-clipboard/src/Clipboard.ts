@@ -7,6 +7,7 @@ import {
   GetStringOptions,
   SetStringOptions,
 } from './Clipboard.types';
+import { ClipboardPasteButton } from './ClipboardPasteButton';
 import ExpoClipboard from './ExpoClipboard';
 
 const emitter = new EventEmitter(ExpoClipboard);
@@ -245,22 +246,7 @@ export function removeClipboardListener(subscription: Subscription) {
 }
 
 /**
- * Dertermines if the `ClipboardPasteButton` is available.
- *
- * This requires the users device to be using at least iOS 16.
- *
- * @returns A boolean that is `true` if the component is available, and `false` otherwise.
- */
-export function pasteButtonIsAvailable(): boolean {
-  if (Platform.OS === 'android') {
-    return false;
-  }
-
-  return ExpoClipboard.pasteButtonIsAvailable();
-}
-
-/**
- * Property that dertermines if the `ClipboardPasteButton` is available.
+ * Property that determines if the `ClipboardPasteButton` is available.
  *
  * This requires the users device to be using at least iOS 16.
  *
@@ -270,4 +256,4 @@ export const isPasteButtonAvailable: boolean =
   Platform.OS === 'ios' ? ExpoClipboard.isPasteButtonAvailable : false;
 
 export * from './Clipboard.types';
-export { default as ClipboardPasteButton } from './ClipboardPasteButton';
+export { ClipboardPasteButton };

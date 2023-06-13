@@ -72,12 +72,12 @@ export interface SetStringOptions {
      */
     inputFormat?: StringFormat;
 }
-export interface ApplePasteButtonProps extends ViewProps {
+export interface ClipboardPasteButtonProps extends ViewProps {
     /**
      * A callback that is called with the result of the paste action.
      * Inspect the `type` property to determine the type of the pasted data.
      
-     * Can be one of `text` or `image`
+     * Can be one of `text` or `image`.
      *
      * @example
      * ```ts
