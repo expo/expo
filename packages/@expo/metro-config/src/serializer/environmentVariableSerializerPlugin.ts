@@ -4,8 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { Graph, MixedOutput, Module, SerializerOptions } from 'metro';
-import countLines from 'metro/src/lib/countLines';
+import { ReadOnlyGraph, MixedOutput, Module, SerializerOptions } from 'metro';
+// import countLines from 'metro/src/lib/countLines';
+import CountingSet from 'metro/src/lib/CountingSet';
 
 import { SerializerParameters } from './withExpoSerializers';
 
@@ -51,8 +52,8 @@ function getAllExpoPublicEnvVars() {
 
 export function environmentVariableSerializerPlugin(
   entryPoint: string,
-  preModules: readonly Module[],
-  graph: Graph,
+  preModules: readonly Module<MixedOutput>[],
+  graph: ReadOnlyGraph,
   options: SerializerOptions
 ): SerializerParameters {
   // Skip replacement in Node.js environments.
@@ -116,15 +117,15 @@ function getEnvPrelude(contents: string): Module<MixedOutput> {
   return {
     dependencies: new Map(),
     getSource: (): Buffer => Buffer.from(code),
-    inverseDependencies: new Set(),
+    inverseDependencies: new CountingSet(),
     path: name,
     output: [
       {
         type: 'js/script/virtual',
         data: {
           code,
-          lineCount: countLines(code),
-          map: [],
+          // lineCount: countLines(code),
+          // map: [],
         },
       },
     ],

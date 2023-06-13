@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix metro type issues.
+
 ### 💡 Others
 
 ## 0.9.0 — 2023-06-13

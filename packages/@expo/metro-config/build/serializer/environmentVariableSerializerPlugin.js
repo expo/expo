@@ -6,9 +6,9 @@ Object.defineProperty(exports, "__esModule", {
 exports.environmentVariableSerializerPlugin = environmentVariableSerializerPlugin;
 exports.getTransformEnvironment = getTransformEnvironment;
 exports.replaceEnvironmentVariables = replaceEnvironmentVariables;
-function _countLines() {
-  const data = _interopRequireDefault(require("metro/src/lib/countLines"));
-  _countLines = function () {
+function _CountingSet() {
+  const data = _interopRequireDefault(require("metro/src/lib/CountingSet"));
+  _CountingSet = function () {
     return data;
   };
   return data;
@@ -20,6 +20,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
+// import countLines from 'metro/src/lib/countLines';
 
 const debug = require('debug')('expo:metro-config:serializer:env-var');
 function replaceEnvironmentVariables(code, env) {
@@ -101,14 +103,14 @@ function getEnvPrelude(contents) {
   return {
     dependencies: new Map(),
     getSource: () => Buffer.from(code),
-    inverseDependencies: new Set(),
+    inverseDependencies: new (_CountingSet().default)(),
     path: name,
     output: [{
       type: 'js/script/virtual',
       data: {
-        code,
-        lineCount: (0, _countLines().default)(code),
-        map: []
+        code
+        // lineCount: countLines(code),
+        // map: [],
       }
     }]
   };
