@@ -1,18 +1,12 @@
 import mux from '@expo/mux';
 import { setStringAsync } from 'expo-clipboard';
-import Constants from 'expo-constants';
-import getInstallationIdAsync from 'expo/build/environment/getInstallationIdAsync';
 import React from 'react';
 import { Button, NativeModules, StyleSheet, Text, View } from 'react-native';
-import { v4 as uuidV4 } from 'uuid';
 
 // A workaround for `TypeError: Cannot read property 'now' of undefined` error thrown from reanimated code.
 global.performance = {
   now: () => 0,
 };
-
-const logUrl = Constants.manifest.logUrl;
-const sessionId = uuidV4();
 
 const { ExpoNativeModuleIntrospection } = NativeModules;
 
@@ -86,7 +80,7 @@ ${code}
 THE TEXT WAS ALSO COPIED TO YOUR CLIPBOARD
 
 `;
-    await _sendRawLogAsync(message, logUrl);
+    console.log(message);
   }
 
   render() {
@@ -105,35 +99,6 @@ THE TEXT WAS ALSO COPIED TO YOUR CLIPBOARD
       </View>
     );
   }
-}
-
-/**
- * Sends a log message without truncating it.
- */
-async function _sendRawLogAsync(message, logUrl) {
-  const headers = {
-    'Content-Type': 'application/json',
-    Connection: 'keep-alive',
-    'Proxy-Connection': 'keep-alive',
-    Accept: 'application/json',
-    'Device-Id': await getInstallationIdAsync(),
-    'Session-Id': sessionId,
-  };
-  if (Constants.deviceName) {
-    headers['Device-Name'] = Constants.deviceName;
-  }
-  await fetch(logUrl, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify([
-      {
-        count: 0,
-        level: 'info',
-        body: [message],
-        includesStack: false,
-      },
-    ]),
-  });
 }
 
 async function _getExpoModuleSpecsAsync() {

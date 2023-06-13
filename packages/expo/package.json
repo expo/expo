@@ -71,14 +71,11 @@
     "expo-keep-awake": "~12.2.0",
     "expo-modules-autolinking": "1.4.0",
     "expo-modules-core": "1.4.0",
-    "md5-file": "^3.2.3",
-    "node-fetch": "^2.6.7",
-    "uuid": "^3.4.0"
+    "md5-file": "^3.2.3"
   },
   "devDependencies": {
     "@types/react": "~18.0.14",
     "@types/react-test-renderer": "^18.0.0",
-    "@types/uuid": "^3.4.7",
     "expo-module-scripts": "^3.0.9",
     "react": "18.2.0",
     "react-dom": "18.2.0",
