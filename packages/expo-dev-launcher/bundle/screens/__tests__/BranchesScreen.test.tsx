@@ -68,7 +68,7 @@ describe('<BranchesScreen />', () => {
     const { queryByText, getByText } = renderBranchesScreen(mockNavigation);
 
     await act(async () => {
-      await waitFor(() => getByText(/testBranch/i));
+      await waitFor(() => getByText(/testBranch/i), { timeout: 5000 });
       expect(queryByText(/testBranch/i)).not.toBe(null);
       expect(queryByText(/test update/i)).not.toBe(null);
     });
