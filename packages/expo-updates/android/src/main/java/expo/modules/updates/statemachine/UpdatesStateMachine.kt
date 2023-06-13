@@ -160,7 +160,7 @@ class UpdatesStateMachine constructor(
 
   companion object {
     /**
-    For a particular machine state, only certain events may be processed.
+     For a particular machine state, only certain events may be processed.
      */
     val updatesStateAllowedEvents: Map<UpdatesStateValue, List<UpdatesStateEventType>> = mapOf(
       UpdatesStateValue.Idle to listOf(UpdatesStateEventType.Check, UpdatesStateEventType.Download, UpdatesStateEventType.Restart),
@@ -170,8 +170,8 @@ class UpdatesStateMachine constructor(
     )
 
     /**
-    For this state machine, each event has only one destination state that the
-    machine will transition to.
+     For this state machine, each event has only one destination state that the
+     machine will transition to.
      */
     val updatesStateTransitions: Map<UpdatesStateEventType, UpdatesStateValue> = mapOf(
       UpdatesStateEventType.Check to UpdatesStateValue.Checking,

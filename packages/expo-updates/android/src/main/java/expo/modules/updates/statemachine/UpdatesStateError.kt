@@ -6,7 +6,7 @@ package expo.modules.updates.statemachine
  */
 data class UpdatesStateError(
   var message: String
-){
+) {
   val json: MutableMap<String, String>
     get() {
       return mutableMapOf(

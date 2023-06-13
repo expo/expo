@@ -189,7 +189,8 @@ class UpdatesModule(
                 promise.resolve(updateInfo)
                 updatesServiceLocal.stateMachine?.processEvent(
                   UpdatesStateEvent(
-                  UpdatesStateEventType.CheckCompleteUnavailable)
+                    UpdatesStateEventType.CheckCompleteUnavailable
+                  )
                 )
                 return
               }
@@ -234,7 +235,8 @@ class UpdatesModule(
                 promise.resolve(updateInfo)
                 updatesServiceLocal.stateMachine?.processEvent(
                   UpdatesStateEvent(
-                  UpdatesStateEventType.CheckCompleteUnavailable)
+                    UpdatesStateEventType.CheckCompleteUnavailable
+                  )
                 )
               }
             }
@@ -335,7 +337,8 @@ class UpdatesModule(
                     updateInfo.putBoolean("isNew", false)
                     updatesServiceLocal.stateMachine?.processEvent(
                       UpdatesStateEvent(
-                      UpdatesStateEventType.DownloadComplete, mapOf())
+                        UpdatesStateEventType.DownloadComplete, mapOf()
+                      )
                     )
                   } else {
                     updatesServiceLocal.resetSelectionPolicy()
@@ -352,7 +355,8 @@ class UpdatesModule(
                     }
                     updatesServiceLocal.stateMachine?.processEvent(
                       UpdatesStateEvent(
-                      UpdatesStateEventType.DownloadComplete, body)
+                        UpdatesStateEventType.DownloadComplete, body
+                      )
                     )
                   }
                 }
