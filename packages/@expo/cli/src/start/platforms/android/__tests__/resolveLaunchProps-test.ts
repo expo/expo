@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 
-import rnFixture from '../../../prebuild/__tests__/fixtures/react-native-project';
+import rnFixture from '../../../../prebuild/__tests__/fixtures/react-native-project';
 import { resolveLaunchPropsAsync } from '../resolveLaunchProps';
 
 describe(resolveLaunchPropsAsync, () => {

@@ -2,7 +2,7 @@ import { AndroidDeviceManager } from '../../start/platforms/android/AndroidDevic
 import { BundlerProps, resolveBundlerPropsAsync } from '../resolveBundlerProps';
 import { resolveDeviceAsync } from './resolveDevice';
 import { GradleProps, resolveGradleProps } from './resolveGradleProps';
-import { LaunchProps, resolveLaunchPropsAsync } from './resolveLaunchProps';
+import { LaunchProps, resolveLaunchPropsAsync } from '../../start/platforms/android/resolveLaunchProps';
 
 export type Options = {
   variant?: string;
