@@ -42,8 +42,8 @@
     "md5-file": "^3.2.3",
     "path-browserify": "^1.0.0",
     "url-parse": "^1.5.9",
-    "expo-constants": "~14.3.0",
-    "expo-file-system": "~15.3.0"
+    "expo-constants": "~14.4.0",
+    "expo-file-system": "~15.4.0"
   },
   "devDependencies": {
     "@testing-library/react-hooks": "^7.0.1",

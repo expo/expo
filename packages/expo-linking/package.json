@@ -31,7 +31,7 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/linking",
   "dependencies": {
     "@types/qs": "^6.9.7",
-    "expo-constants": "~14.3.0",
+    "expo-constants": "~14.4.0",
     "invariant": "^2.2.4",
     "qs": "^6.11.0",
     "url-parse": "^1.5.9"
