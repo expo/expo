@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { ReadOnlyGraph, MixedOutput, Module, SerializerOptions } from 'metro';
-// import countLines from 'metro/src/lib/countLines';
 import CountingSet from 'metro/src/lib/CountingSet';
+import countLines from 'metro/src/lib/countLines';
 
 import { SerializerParameters } from './withExpoSerializers';
 
@@ -113,6 +113,7 @@ export function environmentVariableSerializerPlugin(
 function getEnvPrelude(contents: string): Module<MixedOutput> {
   const code = '// HMR env vars from Expo CLI (dev-only)\n' + contents;
   const name = '__env__';
+  const lineCount = countLines(code);
 
   return {
     dependencies: new Map(),
@@ -124,8 +125,9 @@ function getEnvPrelude(contents: string): Module<MixedOutput> {
         type: 'js/script/virtual',
         data: {
           code,
-          // lineCount: countLines(code),
-          // map: [],
+          // @ts-expect-error: typed incorrectly upstream
+          lineCount,
+          map: [],
         },
       },
     ],

@@ -13,6 +13,13 @@ function _CountingSet() {
   };
   return data;
 }
+function _countLines() {
+  const data = _interopRequireDefault(require("metro/src/lib/countLines"));
+  _countLines = function () {
+    return data;
+  };
+  return data;
+}
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 /**
  * Copyright © 2022 650 Industries.
@@ -20,8 +27,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-
-// import countLines from 'metro/src/lib/countLines';
 
 const debug = require('debug')('expo:metro-config:serializer:env-var');
 function replaceEnvironmentVariables(code, env) {
@@ -100,6 +105,7 @@ function environmentVariableSerializerPlugin(entryPoint, preModules, graph, opti
 function getEnvPrelude(contents) {
   const code = '// HMR env vars from Expo CLI (dev-only)\n' + contents;
   const name = '__env__';
+  const lineCount = (0, _countLines().default)(code);
   return {
     dependencies: new Map(),
     getSource: () => Buffer.from(code),
@@ -108,9 +114,10 @@ function getEnvPrelude(contents) {
     output: [{
       type: 'js/script/virtual',
       data: {
-        code
-        // lineCount: countLines(code),
-        // map: [],
+        code,
+        // @ts-expect-error: typed incorrectly upstream
+        lineCount,
+        map: []
       }
     }]
   };
