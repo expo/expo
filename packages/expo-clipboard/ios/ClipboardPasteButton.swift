@@ -13,7 +13,6 @@ class ClipboardPasteButton: ExpoView {
   var imageOptions = GetImageOptions()
 
   private var childView: UIView?
-  private var id = 0
 
   func update() {
     unmountChild()
