@@ -566,10 +566,11 @@ describe('JS API tests', () => {
     await waitForAppToBecomeVisible();
     const lastUpdateEventType = await testElementValueAsync('lastUpdateEventType');
     // Server is not running, so error received
-    jestExpect(lastUpdateEventType).toEqual('error');
+    console.warn(`lastUpdateEventType = ${lastUpdateEventType}`);
 
     // Start server with no update available directive,
     // then restart app, we should get "No update available" event
+    let lastUpdateEventType2 = '';
     if (protocolVersion === 1) {
       Server.start(Update.serverPort, protocolVersion);
       const directive = Update.getNoUpdateAvailableDirective();
@@ -577,8 +578,8 @@ describe('JS API tests', () => {
       await device.terminateApp();
       await device.launchApp();
       await waitForAppToBecomeVisible();
-      const lastUpdateEventType2 = await testElementValueAsync('lastUpdateEventType');
-      jestExpect(lastUpdateEventType2).toEqual('noUpdateAvailable');
+      lastUpdateEventType2 = await testElementValueAsync('lastUpdateEventType');
+      console.warn(`lastUpdateEventType2 = ${lastUpdateEventType2}`);
       Server.stop();
     }
 
@@ -590,6 +591,20 @@ describe('JS API tests', () => {
     await device.launchApp();
     await waitForAppToBecomeVisible();
     const lastUpdateEventType3 = await testElementValueAsync('lastUpdateEventType');
+    console.warn(`lastUpdateEventType3 = ${lastUpdateEventType3}`);
+
+    // Write log entries to see what happened with the events
+    const logEntries: any[] = await readLogEntriesAsync();
+    console.warn(
+      'Total number of log entries = ' +
+        logEntries.length +
+        '\n' +
+        JSON.stringify(logEntries, null, 2)
+    );
+
+    // Test passes if all the event types seen are the expected ones
+    jestExpect(lastUpdateEventType).toEqual('error');
+    jestExpect(lastUpdateEventType2).toEqual('noUpdateAvailable');
     jestExpect(lastUpdateEventType3).toEqual('updateAvailable');
   });
 });

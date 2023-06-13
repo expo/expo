@@ -12,7 +12,9 @@ import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.JSBundleLoader
+import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.modules.core.DeviceEventManagerModule
 import expo.modules.manifests.core.Manifest
 import expo.modules.updates.db.BuildData
 import expo.modules.updates.db.DatabaseHolder
@@ -118,6 +120,8 @@ class UpdatesController private constructor(
   private var isLoaderTaskFinished = false
   var isEmergencyLaunch = false
     private set
+
+  private var jsEventQueue: MutableList<Map<String, Any>> = mutableListOf()
 
   fun onDidCreateReactInstanceManager(reactInstanceManager: ReactInstanceManager) {
     if (isEmergencyLaunch || !updatesConfiguration.isEnabled) {
@@ -573,8 +577,87 @@ class UpdatesController private constructor(
     sendEventToJS(UPDATES_EVENT_NAME, eventType, params)
   }
 
-  fun sendEventToJS(eventName: String, eventType: String, params: WritableMap?) {
-    UpdatesUtils.sendEventToReactNative(reactNativeHost, eventName, eventType, params)
+  fun sendEventToJS(
+    eventName: String,
+    eventType: String,
+    params: WritableMap?
+  ) {
+    val host = reactNativeHost?.get()
+    if (host != null) {
+      AsyncTask.execute {
+        try {
+          var reactContext: ReactContext? = null
+          // in case we're trying to send an event before the reactContext has been initialized
+          // continue to retry for 5000ms
+          for (i in 0..9) {
+            // Calling host.reactInstanceManager has a side effect of creating a new
+            // reactInstanceManager if there isn't already one. We want to avoid this so we check
+            // if it has an instance first.
+            if (host.hasInstance()) {
+              reactContext = host.reactInstanceManager.currentReactContext
+              if (reactContext != null) {
+                break
+              }
+            }
+            Thread.sleep(1000)
+          }
+          if (reactContext != null) {
+            val emitter = reactContext.getJSModule(
+              DeviceEventManagerModule.RCTDeviceEventEmitter::class.java
+            )
+            if (emitter != null) {
+              // Handle events in the initial queue first
+              if (jsEventQueue.size > 0) {
+                logger.info("${jsEventQueue.size} events found queued to send to JS")
+                jsEventQueue.forEach {
+                  val itParams = it["params"] as? WritableMap ?: Arguments.createMap()
+                  val itEventType = it["eventType"] as? String ?: ""
+                  val itEventName = it["eventName"] as? String ?: ""
+                  itParams.putString("type", itEventType)
+                  emitter.emit(itEventName, itParams)
+                }
+              }
+              jsEventQueue = mutableListOf()
+              // Now fire the new event
+              var eventParams = params
+              if (eventParams == null) {
+                eventParams = Arguments.createMap()
+              }
+              eventParams!!.putString("type", eventType)
+              logger.info("Emitting event with name = ${eventName}, type = ${eventType}")
+              emitter.emit(eventName, eventParams)
+              return@execute
+            } else {
+              logger.warn("Could not emit $eventType event; no event emitter was found. Event added to queue.", UpdatesErrorCode.Unknown)
+              jsEventQueue.add(mapOf(
+                "eventName" to eventName,
+                "eventType" to eventType,
+                "params" to (params ?: Arguments.createMap())
+              ))
+            }
+          } else {
+            logger.warn("Could not emit $eventType event; no react context was found. Event added to queue.", UpdatesErrorCode.Unknown)
+            jsEventQueue.add(mapOf(
+              "eventName" to eventName,
+              "eventType" to eventType,
+              "params" to (params ?: Arguments.createMap())
+            ))
+          }
+        } catch (e: java.lang.Exception) {
+          logger.warn("Could not emit $eventType event; no react context was found. Event added to queue.", UpdatesErrorCode.Unknown)
+          jsEventQueue.add(mapOf(
+            "eventName" to eventName,
+            "eventType" to eventType,
+            "params" to (params ?: Arguments.createMap())
+          ))
+        }
+      }
+    } else {
+      logger.error(
+        "Could not emit $eventType event; UpdatesController was not initialized with an instance of ReactApplication.",
+        UpdatesErrorCode.Unknown
+      )
+    }
   }
 
   companion object {

@@ -151,59 +151,7 @@ object UpdatesUtils {
     } else asset.key + fileExtension
   }
 
-  fun sendEventToReactNative(
-    reactNativeHost: WeakReference<ReactNativeHost>?,
-    eventName: String,
-    eventType: String,
-    params: WritableMap?
-  ) {
-    val host = reactNativeHost?.get()
-    if (host != null) {
-      AsyncTask.execute {
-        try {
-          var reactContext: ReactContext? = null
-          // in case we're trying to send an event before the reactContext has been initialized
-          // continue to retry for 5000ms
-          for (i in 0..4) {
-            // Calling host.reactInstanceManager has a side effect of creating a new
-            // reactInstanceManager if there isn't already one. We want to avoid this so we check
-            // if it has an instance first.
-            if (host.hasInstance()) {
-              reactContext = host.reactInstanceManager.currentReactContext
-              if (reactContext != null) {
-                break
-              }
-            }
-            Thread.sleep(1000)
-          }
-          if (reactContext != null) {
-            val emitter = reactContext.getJSModule(
-              DeviceEventManagerModule.RCTDeviceEventEmitter::class.java
-            )
-            if (emitter != null) {
-              var eventParams = params
-              if (eventParams == null) {
-                eventParams = Arguments.createMap()
-              }
-              eventParams!!.putString("type", eventType)
-              emitter.emit(eventName, eventParams)
-              return@execute
-            }
-          }
-          Log.e(TAG, "Could not emit $eventType event; no event emitter was found.")
-        } catch (e: Exception) {
-          Log.e(TAG, "Could not emit $eventType event; no react context was found.")
-        }
-      }
-    } else {
-      Log.e(
-        TAG,
-        "Could not emit $eventType event; UpdatesController was not initialized with an instance of ReactApplication."
-      )
-    }
-  }
-
-  fun shouldCheckForUpdateOnLaunch(
+    fun shouldCheckForUpdateOnLaunch(
     updatesConfiguration: UpdatesConfiguration,
     context: Context
   ): Boolean {
