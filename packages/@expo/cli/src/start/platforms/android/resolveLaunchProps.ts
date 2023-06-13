@@ -1,7 +1,7 @@
 import { AndroidConfig } from '@expo/config-plugins';
 
-import { AndroidAppIdResolver } from '../../start/platforms/android/AndroidAppIdResolver';
-import { CommandError } from '../../utils/errors';
+import { AndroidAppIdResolver } from './AndroidAppIdResolver';
+import { CommandError } from '../../../utils/errors';
 
 export interface LaunchProps {
   packageName: string;
