@@ -6,6 +6,13 @@ Object.defineProperty(exports, "__esModule", {
 exports.environmentVariableSerializerPlugin = environmentVariableSerializerPlugin;
 exports.getTransformEnvironment = getTransformEnvironment;
 exports.replaceEnvironmentVariables = replaceEnvironmentVariables;
+function _CountingSet() {
+  const data = _interopRequireDefault(require("metro/src/lib/CountingSet"));
+  _CountingSet = function () {
+    return data;
+  };
+  return data;
+}
 function _countLines() {
   const data = _interopRequireDefault(require("metro/src/lib/countLines"));
   _countLines = function () {
@@ -98,16 +105,18 @@ function environmentVariableSerializerPlugin(entryPoint, preModules, graph, opti
 function getEnvPrelude(contents) {
   const code = '// HMR env vars from Expo CLI (dev-only)\n' + contents;
   const name = '__env__';
+  const lineCount = (0, _countLines().default)(code);
   return {
     dependencies: new Map(),
     getSource: () => Buffer.from(code),
-    inverseDependencies: new Set(),
+    inverseDependencies: new (_CountingSet().default)(),
     path: name,
     output: [{
       type: 'js/script/virtual',
       data: {
         code,
-        lineCount: (0, _countLines().default)(code),
+        // @ts-expect-error: typed incorrectly upstream
+        lineCount,
         map: []
       }
     }]

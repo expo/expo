@@ -1,6 +1,6 @@
 import type { Module } from 'metro';
 import { SerialAsset } from './serializerAssets';
-export type ReadOnlyDependencies<T = any> = Map<string, Module<T>>;
+export type ReadOnlyDependencies<T = any> = ReadonlyMap<string, Module<T>>;
 type Options = {
     processModuleFilter: (modules: Module) => boolean;
     assetPlugins: readonly string[];
@@ -22,7 +22,7 @@ export type JSModule = Module<{
     type: 'js/module';
 }>;
 export declare function filterJsModules(dependencies: ReadOnlyDependencies, { processModuleFilter, projectRoot }: Pick<Options, 'projectRoot' | 'processModuleFilter'>): JSModule[];
-export declare function getCssSerialAssets(dependencies: ReadOnlyDependencies, { processModuleFilter, projectRoot }: Pick<Options, 'projectRoot' | 'processModuleFilter'>): SerialAsset[];
+export declare function getCssSerialAssets<T extends any>(dependencies: ReadOnlyDependencies<T>, { processModuleFilter, projectRoot }: Pick<Options, 'projectRoot' | 'processModuleFilter'>): SerialAsset[];
 export declare function fileNameFromContents({ filepath, src }: {
     filepath: string;
     src: string;
