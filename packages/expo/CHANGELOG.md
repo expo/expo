@@ -2,11 +2,19 @@
 
 ## Unpublished
 
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 49.0.0-alpha.4 — 2023-06-13
+
 ### 📚 3rd party library updates
 
 - Updated `junit` to `4.13.2`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
-
-### 🛠 Breaking changes
 
 ### 🎉 New features
 
@@ -17,8 +25,6 @@
 
 - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 - Fixed build error when using Expo CLI on bare React Native projects without installing Expo Modules. ([#22649](https://github.com/expo/expo/pull/22649) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 49.0.0-alpha.3 — 2023-05-09
 

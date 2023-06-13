@@ -1,6 +1,17 @@
 # Changelog
 
 ## Unpublished
+
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.9.0 — 2023-06-13
+
 - Exclude dependencies from check/fix operations in `expo install` when set in package.json `expo.install.exclude`. ([#22736](https://github.com/expo/expo/pull/22736) by [@keith-kurak](https://github.com/keith-kurak))
 
 ### 🛠 Breaking changes
