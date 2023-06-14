@@ -96,6 +96,7 @@ describe(getSchemeAsync, () => {
         scheme: 'myapp',
       },
     });
+
     await expect(
       getSchemeAsync('fake-project', {
         customized: false,
@@ -105,7 +106,51 @@ describe(getSchemeAsync, () => {
     ).resolves.toEqual('myapp');
   });
 
-  it('should resolve to default native scheme in a project after prebuild', async () => {
+  it('should resolve to scheme which is intersecting with expo config and native files', async () => {
+    asMock(getConfig).mockReturnValueOnce({
+      exp: {
+        scheme: ['myapp', 'myapp2'],
+      },
+    });
+
+    const fakePlist = `
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+      <plist version="1.0">
+        <dict>
+          <key>fake</key>
+          <string>plist</string>
+        </dic>
+      </plist>
+    `;
+
+    vol.fromJSON({
+      [path.join('fake-project', 'ios', 'fake-pbxproject')]: fakePlist,
+    });
+
+    asMock(getInfoPlistPathFromPbxproj).mockReturnValueOnce('fake-pbxproject');
+    asMock(IOSConfig.Scheme.getSchemesFromPlist).mockReturnValueOnce([
+      'com.expo.test',
+      'myapp',
+      'myapp2',
+    ]);
+
+    await expect(
+      getSchemeAsync('fake-project', {
+        customized: true,
+        expoGoCompatible: false,
+        devClientInstalled: false,
+      })
+    ).resolves.toEqual('myapp');
+
+    vol.reset();
+  });
+
+  it('should resolve to default native scheme when no scheme specified in expo config', async () => {
+    asMock(getConfig).mockReturnValueOnce({
+      exp: {},
+    });
+
     const fakePlist = `
       <?xml version="1.0" encoding="UTF-8"?>
       <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">

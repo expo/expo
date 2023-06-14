@@ -16,6 +16,8 @@ import { intersecting } from './array';
 
 const debug = require('debug')('expo:utils:scheme') as typeof console.log;
 
+type SchemeResolver = (schemes: string[]) => string[];
+
 // sort longest to ensure uniqueness.
 // this might be undesirable as it causes the QR code to be longer.
 function sortLongest(obj: string[]): string[] {
@@ -33,7 +35,10 @@ function resolveExpoOrLongestScheme(schemes: string[]): string[] {
 }
 
 // TODO: Revisit and test after run code is merged.
-export async function getSchemesForIosAsync(projectRoot: string): Promise<string[]> {
+export async function getSchemesForIosAsync(
+  projectRoot: string,
+  resolver: SchemeResolver = resolveExpoOrLongestScheme
+): Promise<string[]> {
   try {
     const infoPlistBuildProperty = getInfoPlistPathFromPbxproj(projectRoot);
     debug(`ios application Info.plist path:`, infoPlistBuildProperty);
@@ -43,7 +48,7 @@ export async function getSchemesForIosAsync(projectRoot: string): Promise<string
       const plistObject = plist.parse(rawPlist);
       const schemes = IOSConfig.Scheme.getSchemesFromPlist(plistObject);
       debug(`ios application schemes:`, schemes);
-      return resolveExpoOrLongestScheme(schemes);
+      return resolver(schemes);
     }
   } catch (error) {
     debug(`expected error collecting ios application schemes for the main target:`, error);
@@ -53,13 +58,16 @@ export async function getSchemesForIosAsync(projectRoot: string): Promise<string
 }
 
 // TODO: Revisit and test after run code is merged.
-export async function getSchemesForAndroidAsync(projectRoot: string): Promise<string[]> {
+export async function getSchemesForAndroidAsync(
+  projectRoot: string,
+  resolver: SchemeResolver = resolveExpoOrLongestScheme
+): Promise<string[]> {
   try {
     const configPath = await AndroidConfig.Paths.getAndroidManifestAsync(projectRoot);
     const manifest = await AndroidConfig.Manifest.readAndroidManifestAsync(configPath);
     const schemes = await AndroidConfig.Scheme.getSchemesFromManifest(manifest);
     debug(`android application schemes:`, schemes);
-    return resolveExpoOrLongestScheme(schemes);
+    return resolver(schemes);
   } catch (error) {
     debug(`expected error collecting android application schemes for the main activity:`, error);
     // No android folder or some other error
@@ -89,14 +97,34 @@ export async function getSchemeAsync(
   projectRoot: string,
   projectState: ProjectState
 ): Promise<string | null> {
-  if (!projectState.customized) {
-    const { exp } = getConfig(projectRoot);
-    return Array.isArray(exp.scheme) ? exp.scheme[0] : exp.scheme ?? null;
+  const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true, skipPlugins: true });
+  let configSchemes: string[];
+  if (Array.isArray(exp.scheme)) {
+    configSchemes = exp.scheme;
+  } else if (exp.scheme != null) {
+    configSchemes = [exp.scheme];
+  } else {
+    configSchemes = [];
   }
 
+  if (!projectState.customized) {
+    return configSchemes[0] ?? null;
+  }
+
+  // Custom scheme resolve which to use the intersected schemes from both expo config and native files.
+  // That would increase the chance of using meaningful & user specified scheme.
+  const nativeSchemesResolver = (schemes: string[]) => {
+    let result = intersecting(configSchemes, schemes);
+    if (result.length === 0) {
+      // If there are no intersecting schemes, return all native schemes.
+      result = schemes;
+    }
+    return result;
+  };
+
   const [ios, android] = await Promise.all([
-    getSchemesForIosAsync(projectRoot),
-    getSchemesForAndroidAsync(projectRoot),
+    getSchemesForIosAsync(projectRoot, nativeSchemesResolver),
+    getSchemesForAndroidAsync(projectRoot, nativeSchemesResolver),
   ]);
 
   let matching: string;
