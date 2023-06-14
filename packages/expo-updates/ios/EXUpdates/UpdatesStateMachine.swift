@@ -276,7 +276,7 @@ internal class UpdatesStateMachine {
   }
 
   // MARK: - Static definitions of the state machine rules
-  
+
   /**
    For a particular machine state, only certain events may be processed.
    If the machine receives an unexpected event, an assertion failure will occur

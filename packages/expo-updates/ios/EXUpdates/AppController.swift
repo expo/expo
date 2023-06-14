@@ -1,7 +1,5 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-// swiftlint:disable file_length
-// swiftlint:disable type_body_length
 // swiftlint:disable line_length
 
 // this class used a bunch of implicit non-null patterns for member variables. not worth refactoring to appease lint.
@@ -702,3 +700,6 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     exception.raise()
   }
 }
+
+// swiftlint:enable line_length
+// swiftlint:enable force_unwrapping

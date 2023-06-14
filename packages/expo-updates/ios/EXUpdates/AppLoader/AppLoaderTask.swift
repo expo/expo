@@ -1,9 +1,7 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 // swiftlint:disable closure_body_length
-// swiftlint:disable type_body_length
-// swiftlint:disable function_body_length
-// swiftlint:disable file_length
+// swiftlint:disable superfluous_else
 
 // this class uses a ton of implicit non-null properties based on method call order. not worth changing to appease lint
 // swiftlint:disable force_unwrapping
@@ -542,3 +540,7 @@ public final class AppLoaderTask: NSObject {
     }
   }
 }
+
+// swiftlint:enable closure_body_length
+// swiftlint:enable force_unwrapping
+// swiftlint:enable superfluous_else

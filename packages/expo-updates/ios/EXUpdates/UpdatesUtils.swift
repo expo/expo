@@ -1,9 +1,8 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 // swiftlint:disable force_unwrapping
-// swiftlint:disable type_body_length
-// swiftlint:disable function_body_length
 // swiftlint:disable closure_body_length
+// swiftlint:disable superfluous_else
 
 import Foundation
 import SystemConfiguration
@@ -74,7 +73,6 @@ public final class UpdatesUtils: NSObject {
 
       let fileDownloader = FileDownloader(config: constants.config)
       fileDownloader.downloadRemoteUpdate(
-        // swiftlint:disable:next force_unwrapping
         fromURL: constants.config.updateUrl!,
         withDatabase: constants.database,
         extraHeaders: extraHeaders
@@ -141,7 +139,6 @@ public final class UpdatesUtils: NSObject {
         completionQueue: methodQueue
       )
       remoteAppLoader.loadUpdate(
-        // swiftlint:disable:next force_unwrapping
         fromURL: constants.config.updateUrl!
       ) { updateResponse in
         if let updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective {
@@ -380,3 +377,7 @@ public final class UpdatesUtils: NSObject {
     return (config, selectionPolicy, database, directory, launchedUpdate, embeddedUpdate)
   }
 }
+
+// swiftlint:enable force_unwrapping
+// swiftlint:enable closure_body_length
+// swiftlint:enable superfluous_else

@@ -1,7 +1,7 @@
 // Copyright 2019 650 Industries. All rights reserved.
 
 // swiftlint:disable closure_body_length
-// swiftlint:disable function_body_length
+// swiftlint:disable superfluous_else
 
 import ExpoModulesCore
 
@@ -196,4 +196,8 @@ public final class UpdatesModule: Module {
       }
     }
   }
+  // swiftlint:enable cyclomatic_complexity
 }
+
+// swiftlint:enable closure_body_length
+// swiftlint:enable superfluous_else
