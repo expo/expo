@@ -17,9 +17,9 @@ import {
   HomeScreenDataDocument,
   HomeScreenDataQuery,
   HomeScreenDataQueryVariables,
-  Home_CurrentUserDocument,
-  Home_CurrentUserQuery,
-  Home_CurrentUserQueryVariables,
+  Home_CurrentUserActorDocument,
+  Home_CurrentUserActorQuery,
+  Home_CurrentUserActorQueryVariables,
 } from './graphql/types';
 import Navigation from './navigation/Navigation';
 import HistoryActions from './redux/HistoryActions';
@@ -103,8 +103,8 @@ export default function HomeApp() {
       }
 
       const [currentUserQueryResult, persistedCurrentAccount] = await Promise.all([
-        ApolloClient.query<Home_CurrentUserQuery, Home_CurrentUserQueryVariables>({
-          query: Home_CurrentUserDocument,
+        ApolloClient.query<Home_CurrentUserActorQuery, Home_CurrentUserActorQueryVariables>({
+          query: Home_CurrentUserActorDocument,
           context: { headers: { 'expo-session': storedSession?.sessionSecret } },
         }),
         AsyncStorage.getItem('currentAccount'),
@@ -134,14 +134,14 @@ export default function HomeApp() {
         }),
       ]);
 
-      if (currentUserQueryResult.data && currentUserQueryResult.data.viewer) {
+      if (currentUserQueryResult.data && currentUserQueryResult.data.meUserActor) {
         let firstLoadAccountName = persistedCurrentAccount;
         if (firstLoadAccountName) {
           // if there was a persisted account, and it matches the accounts available to the current user, use it
           if (
             [
-              currentUserQueryResult.data.viewer.username,
-              ...currentUserQueryResult.data.viewer.accounts.map((account) => account.name),
+              currentUserQueryResult.data.meUserActor.username,
+              ...currentUserQueryResult.data.meUserActor.accounts.map((account) => account.name),
             ].includes(firstLoadAccountName)
           ) {
             setAccountName(firstLoadAccountName);
@@ -151,7 +151,7 @@ export default function HomeApp() {
           }
         } else {
           // if there was no persisted account, use the current user's personal account
-          firstLoadAccountName = currentUserQueryResult.data.viewer.username;
+          firstLoadAccountName = currentUserQueryResult.data.meUserActor.username;
           setAccountName(firstLoadAccountName);
         }
 

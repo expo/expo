@@ -6,13 +6,13 @@ import React from 'react';
 import { FlatList } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import { Home_CurrentUserQuery } from '../../graphql/types';
+import { Home_CurrentUserActorQuery } from '../../graphql/types';
 import { useDispatch } from '../../redux/Hooks';
 import SessionActions from '../../redux/SessionActions';
 import { useAccountName } from '../../utils/AccountNameContext';
 
 type Props = {
-  accounts: Exclude<Home_CurrentUserQuery['viewer'], undefined | null>['accounts'];
+  accounts: Exclude<Home_CurrentUserActorQuery['meUserActor'], undefined | null>['accounts'];
 };
 
 export function LoggedInAccountView({ accounts }: Props) {
@@ -72,9 +72,13 @@ export function LoggedInAccountView({ accounts }: Props) {
                   borderBottomWidth: index === accounts.length - 1 ? 1 : 0,
                   borderTopWidth: index === 0 ? 1 : 0,
                 }}>
-                <Row flex="1" align={!account.owner?.fullName ? 'center' : 'start'}>
-                  {account?.owner?.profilePhoto ? (
-                    <Image size="xl" rounded="full" source={{ uri: account.owner.profilePhoto }} />
+                <Row flex="1" align={!account.ownerUserActor?.fullName ? 'center' : 'start'}>
+                  {account?.ownerUserActor?.profilePhoto ? (
+                    <Image
+                      size="xl"
+                      rounded="full"
+                      source={{ uri: account.ownerUserActor.profilePhoto }}
+                    />
                   ) : (
                     <View rounded="full" height="xl" width="xl" bg="secondary" align="centered">
                       <UsersIcon color={theme.icon.default} size={iconSize.small} />
@@ -82,15 +86,15 @@ export function LoggedInAccountView({ accounts }: Props) {
                   )}
                   <Spacer.Horizontal size="small" />
                   <View flex="1">
-                    {account.owner ? (
+                    {account.ownerUserActor ? (
                       <>
-                        {account.owner.fullName ? (
+                        {account.ownerUserActor.fullName ? (
                           <>
                             <Text
                               type="InterBold"
                               style={{ paddingRight: spacing[4] }}
                               numberOfLines={1}>
-                              {account.owner.fullName}
+                              {account.ownerUserActor.fullName}
                             </Text>
                             <Spacer.Vertical size="tiny" />
                             <Text
@@ -99,7 +103,7 @@ export function LoggedInAccountView({ accounts }: Props) {
                               type="InterRegular"
                               numberOfLines={1}
                               size="small">
-                              {account.owner.username}
+                              {account.ownerUserActor.username}
                             </Text>
                           </>
                         ) : (
@@ -107,7 +111,7 @@ export function LoggedInAccountView({ accounts }: Props) {
                             type="InterBold"
                             style={{ paddingRight: spacing[4] }}
                             numberOfLines={1}>
-                            {account.owner.username}
+                            {account.ownerUserActor.username}
                           </Text>
                         )}
                       </>
