@@ -87,7 +87,6 @@ it('runs `npx expo start --help`', async () => {
                                                open-deep-link-dev-client: Launch expo-development-client with deep link
                                                open-deep-link-expo-go: Launch Expo Go with deep link
                                                open-redirect-page: Open the redirect page in browser
-        --dev-client                           Experimental: Starts the bundler for use with the expo-development-client
         --force-manifest-type <manifest-type>  Override auto detection of manifest type
         --private-key-path <path>              Path to private key for code signing. Default: "private-key.pem" in the same directory as the certificate specified by the expo-updates configuration in app.json.
         -h, --help                             Usage info
