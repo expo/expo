@@ -68,7 +68,7 @@ class UpdatesModule(
         constants["runtimeVersion"] = updatesServiceLocal.configuration.runtimeVersion ?: ""
         constants["checkAutomatically"] = updatesServiceLocal.configuration.checkOnLaunch.toJSString()
         constants["channel"] = updatesServiceLocal.configuration.requestHeaders["expo-channel-name"] ?: ""
-        constants["nativeDebug"] = true
+        constants["nativeDebug"] = BuildConfig.EX_UPDATES_NATIVE_DEBUG
 
         val launchedUpdate = updatesServiceLocal.launchedUpdate
         if (launchedUpdate != null) {
