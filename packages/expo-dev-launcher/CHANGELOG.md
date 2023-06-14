@@ -13,6 +13,7 @@
 - [Android] Added support for the new architecture. ([#22607](https://github.com/expo/expo/pull/22607) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Allow users to manually load apps without specifying a URL scheme. ([#22637](https://github.com/expo/expo/pull/22637) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
+- Run tsc and lint and tests on bundle. ([#22866](https://github.com/expo/expo/pull/22866) by [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 

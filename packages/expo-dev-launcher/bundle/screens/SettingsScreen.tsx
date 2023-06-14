@@ -29,7 +29,7 @@ import { useUser } from '../providers/UserContextProvider';
 
 export function SettingsScreen() {
   const { userData } = useUser();
-  const [clipboardError, setClipboardError] = React.useState('');
+  const [, setClipboardError] = React.useState('');
   const [clipboardContent, setClipboardContent] = React.useState('');
 
   const {
