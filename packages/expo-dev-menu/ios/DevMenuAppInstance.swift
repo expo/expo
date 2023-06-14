@@ -1,5 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+// swiftlint:disable implicitly_unwrapped_optional
+
 import React
 
 @objc
