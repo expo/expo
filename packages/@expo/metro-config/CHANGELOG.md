@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Strip `app/+html` files from client bundles.
+
 ### 🐛 Bug fixes
 
 - Fix metro type issues. ([#22867](https://github.com/expo/expo/pull/22867) by [@EvanBacon](https://github.com/EvanBacon))

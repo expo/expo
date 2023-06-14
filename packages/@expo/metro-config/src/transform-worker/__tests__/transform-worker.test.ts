@@ -217,3 +217,73 @@ describe('CSS Modules', () => {
     });
   });
 });
+
+describe('Expo Router server files (+html, +api)', () => {
+  it(`strips +html file from client bundles`, async () => {
+    const matchable = /\+html file was removed from the client/;
+    for (const file of [
+      'app/+html.js',
+      'app/+html.ts',
+      'app/+html.tsx',
+      'app/+html.web.jsx',
+      'app/+html.web.ts',
+    ]) {
+      jest.mocked(upstreamTransformer.transform).mockReset();
+
+      expect(
+        (
+          await doTransformForOutput(file, 'REMOVE ME!', {
+            dev: true,
+            minify: false,
+            customTransformOptions: {
+              environment: 'client',
+            },
+            platform: 'web',
+          })
+        ).input
+      ).toMatch(matchable);
+    }
+
+    // Ensure the server code doesn't leak into the client on any platform.
+    for (const platform of ['ios', 'android', 'web']) {
+      jest.mocked(upstreamTransformer.transform).mockReset();
+      expect(
+        (
+          await doTransformForOutput('app/+html.js', 'REMOVE ME!', {
+            dev: true,
+            minify: false,
+            customTransformOptions: {
+              environment: 'client',
+            },
+            platform,
+          })
+        ).input
+      ).toMatch(matchable);
+    }
+  });
+  it(`does nothing when custom transform options aren't defined`, async () => {
+    expect(
+      (
+        await doTransformForOutput('app/+html.js', 'KEEP', {
+          dev: true,
+          minify: false,
+          platform: 'web',
+        })
+      ).input
+    ).toMatch('KEEP');
+  });
+  it(`preserves when bundling for Node.js environments`, async () => {
+    expect(
+      (
+        await doTransformForOutput('app/+html.js', 'KEEP', {
+          dev: true,
+          minify: false,
+          customTransformOptions: {
+            environment: 'node',
+          },
+          platform: 'ios',
+        })
+      ).input
+    ).toMatch('KEEP');
+  });
+});
