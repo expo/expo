@@ -179,6 +179,10 @@ dependencies {
   // expo-application
   api 'com.android.installreferrer:installreferrer:1.0'
 
+  // expo-barcode-scanner
+  implementation "com.google.android.gms:play-services-vision:19.0.0"
+  implementation "com.google.zxing:core:3.3.3"
+
   // expo-store-review
   implementation "com.google.android.play:review:2.0.1"
   implementation "com.google.android.play:review-ktx:2.0.0"

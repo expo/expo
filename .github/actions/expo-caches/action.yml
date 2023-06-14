@@ -28,7 +28,7 @@ inputs:
     required: false
   ndk-version:
     description: 'NDK version used'
-    default: '21.4.7075529'
+    default: '23.1.7779620'
     required: false
   git-lfs:
     description: 'Restore Git LFS cache'
