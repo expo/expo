@@ -1,5 +1,5 @@
 query Home_ProfileSnacks($limit: Int!, $offset: Int!) {
-  me {
+  meUserActor {
     id
     snacks(limit: $limit, offset: $offset) {
       ...CommonSnackData

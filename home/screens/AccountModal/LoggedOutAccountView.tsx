@@ -6,7 +6,7 @@ import * as React from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import url from 'url';
 
-import ApolloClient from '../../api/ApolloClient';
+import { createApolloClient } from '../../api/ApolloClient';
 import Config from '../../api/Config';
 import {
   Home_ViewerPrimaryAccountNameDocument,
@@ -111,13 +111,7 @@ export function LoggedOutAccountView({ refetch }: Props) {
 
         const sessionSecret = decodeURIComponent(encodedSessionSecret);
 
-        dispatch(
-          SessionActions.setSession({
-            sessionSecret,
-          })
-        );
-
-        const viewerPrimaryAccountNameResult = await ApolloClient.query<
+        const viewerPrimaryAccountNameResult = await createApolloClient().query<
           Home_ViewerPrimaryAccountNameQuery,
           Home_ViewerPrimaryAccountNameQueryVariables
         >({
@@ -132,6 +126,12 @@ export function LoggedOutAccountView({ refetch }: Props) {
         if (!primaryAccountName) {
           throw new Error('Logged in user must have a primary account');
         }
+
+        dispatch(
+          SessionActions.setSession({
+            sessionSecret,
+          })
+        );
 
         setAccountName(primaryAccountName);
         setIsFinishedAuthenticating(true);

@@ -104,7 +104,7 @@ export class HomeScreenView extends React.Component<Props, State> {
 
     return (
       <View style={styles.container}>
-        <HomeScreenHeader currentUser={data} />
+        <HomeScreenHeader currentAccount={data} />
         <ScrollView
           refreshControl={
             <RefreshControl refreshing={isRefreshing} onRefresh={this._handleRefreshAsync} />
