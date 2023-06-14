@@ -1,23 +1,23 @@
 PODS:
   - boost (1.76.0)
   - DoubleConversion (1.1.6)
-  - EXApplication (5.2.0):
+  - EXApplication (5.3.0):
     - ExpoModulesCore
   - EXAV (13.3.0):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
-  - EXCamera (13.3.0):
+  - EXCamera (13.4.0):
     - ExpoModulesCore
-  - EXConstants (14.3.0):
+  - EXConstants (14.4.0):
     - ExpoModulesCore
-  - EXFileSystem (15.3.0):
+  - EXFileSystem (15.4.0):
     - ExpoModulesCore
-  - EXFont (11.2.0):
+  - EXFont (11.3.0):
     - ExpoModulesCore
   - EXJSONUtils (0.6.0)
   - EXManifests (0.6.0):
     - ExpoModulesCore
-  - Expo (49.0.0-alpha.3):
+  - Expo (49.0.0-alpha.4):
     - ExpoModulesCore
   - expo-dev-client (2.3.0):
     - EXManifests
@@ -164,19 +164,19 @@ PODS:
     - Yoga
   - ExpoAppleAuthentication (6.1.0):
     - ExpoModulesCore
-  - ExpoBlur (12.3.1):
+  - ExpoBlur (12.3.2):
     - ExpoModulesCore
-  - ExpoImage (1.2.3):
+  - ExpoImage (1.3.0):
     - ExpoModulesCore
     - SDWebImage (~> 5.15.8)
     - SDWebImageAVIFCoder (~> 0.10.0)
     - SDWebImageSVGCoder (~> 1.7.0)
     - SDWebImageWebPCoder (~> 0.11.0)
-  - ExpoKeepAwake (12.1.0):
+  - ExpoKeepAwake (12.2.0):
     - ExpoModulesCore
   - ExpoLinearGradient (12.2.0):
     - ExpoModulesCore
-  - ExpoModulesCore (1.3.2):
+  - ExpoModulesCore (1.4.0):
     - hermes-engine
     - RCT-Folly (= 2021.07.22.00)
     - RCTRequired
@@ -1453,25 +1453,25 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
-  EXApplication: 45c662ace096520d412e8f2c956482c8ffac1436
+  EXApplication: 02655a251434d564bb0e73291f5a490c74b5b76f
   EXAV: c661e742e2ee1986f5a6a030b48d9d3a3507d2f0
-  EXCamera: f231ff0f85e84dc6e8167f4a8e2881d2e4260e5c
-  EXConstants: 29269f841ed8786d483b753021953264ac04818f
-  EXFileSystem: 0b4a2c08c2dc92146849772145d61c1773144283
-  EXFont: 6a9d36ba12a7156095a251097a5f7136f37f975b
+  EXCamera: f9490df89710631d1c8377a66231cce0579b0df1
+  EXConstants: a0c9521f6d189a4e97d2e35b232a71c6ca032133
+  EXFileSystem: ca90b9a027c0ab4bde6f65ebc7a21c5c02c9dee4
+  EXFont: e5d1226176ae0e43300fadbc07502044815ffa4d
   EXJSONUtils: babb80f7eab885b0135ae00b633d2d52b4a44fff
   EXManifests: 37a0bb3514806cf432f6538fcc9825107fc23436
-  Expo: 0b569a9cefb602d6cb80633c990153ab921aa652
+  Expo: 64f946f27e2d1fddba37bded5a5d0e8766037af6
   expo-dev-client: b9a1eefeb4c93677753c734ad72072db3404caf9
-  expo-dev-launcher: bdc58c9d8148707573ab921c074443f9fcbe4f1a
+  expo-dev-launcher: 31ca8d121dfa8f62e08a8d3cf7d0dc5edf7d9630
   expo-dev-menu: 9e06bed7ce084d77f5a63a4510529684f177328c
   expo-dev-menu-interface: f74523f940ba5306b0d2f37a488a77b44d57f572
   ExpoAppleAuthentication: 7bdf1a2962ebfe9b00eb4183a17b78d736e57185
-  ExpoBlur: 83186055c9c5c7ea564d04c6ed766ef7896889ed
-  ExpoImage: f19f918d2ff1c9c9fbedc266e6a28d10aa335800
-  ExpoKeepAwake: 6604830433e76ce03306b82054e634e81a6b9bbb
+  ExpoBlur: 545dd91ddcf7f51207d6011a6c4d27db9c9ab95a
+  ExpoImage: bf714e0101812ccbbd1a4fdbfd34905feeefd9f5
+  ExpoKeepAwake: c3aa02ba9d2422679f2b7ce0849134324854504d
   ExpoLinearGradient: c206f987c810bf988b1896db8fa88db31b4687d6
-  ExpoModulesCore: 9eb951d4c5e7e3a9b4d74a5b7d03846f35944243
+  ExpoModulesCore: 4a486d6bce11151a574a334fad80e0b92791625b
   EXSplashScreen: af4000a2ba3dcd429859ec56bcd0b1454dee1d43
   EXUpdatesInterface: c08eaa7e4d1fdafff3820e0539a6d42a75fa0258
   FBLazyVector: 91795e0512b78676010d3749c823a6fca803f267
@@ -1505,7 +1505,7 @@ SPEC CHECKSUMS:
   React-perflogger: fdd8c2969761105b1c85432fecdfff0616100cc6
   React-RCTActionSheet: 5aaa270460794991553f80d393bcdcb97a372273
   React-RCTAnimation: f1e0d1a03ce881c0e45fa151b63b1fd8d4068841
-  React-RCTAppDelegate: 78e233541f17364e57b207c13971f97e9479fcf0
+  React-RCTAppDelegate: 8823bcd2f779fe862e8c1542b571e64ed270fd86
   React-RCTBlob: 5d83c1bd6d0b88b308f65a61685fac6cc9b58e84
   React-RCTFabric: f02272ef350bab1079393ccbd7e0a39088abbbfc
   React-RCTImage: 84508714b0a1858ae4aca6671bc7b4b19294f430
