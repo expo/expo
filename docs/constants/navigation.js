@@ -140,6 +140,7 @@ const general = [
       [
         makePage('guides/monorepos.mdx'),
         makePage('workflow/logging.mdx'),
+        makePage('workflow/continuous-native-generation.mdx'),
         makePage('workflow/development-mode.mdx'),
         makePage('workflow/android-studio-emulator.mdx'),
         makePage('workflow/ios-simulator.mdx'),
