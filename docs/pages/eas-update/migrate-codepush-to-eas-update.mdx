@@ -7,7 +7,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-Transition a [bare](https://docs.expo.dev/archive/managed-vs-bare/#bare-workflow) React Native project with CodePush to use EAS Update. This guide assumes that you are using the default React Native project structure.
+Transition a [bare](/bare/hello-world/) React Native project with CodePush to use EAS Update. This guide assumes that you are using the default React Native project structure.
 
 ## Prerequisites
 
@@ -53,7 +53,7 @@ Install the `expo` package by running the command:
 
 <Terminal cmd={['npx install-expo-modules@latest']} />
 
-If the command fails, follow the installation instructions [here](https://docs.expo.dev/bare/installing-expo-modules/#manual-installation)
+If the command fails, follow the installation instructions [here](/bare/installing-expo-modules/#manual-installation)
 
 </Step>
 
@@ -61,15 +61,15 @@ If the command fails, follow the installation instructions [here](https://docs.e
 ## Turn off resource bundle signing (XCode 14+ only)
 
 In Xcode 14 and higher, resource bundles are signed by default, which requires setting the development team for each resource bundle target.
-To resolve this issue, downgrade to an older Xcode version using the `image` field in eas.json, or turn off signing resource bundles in your Podfile: https://expo.fyi/r/disable-bundle-resource-signing
+To resolve this issue, downgrade to an older Xcode version using the `image` field in `eas.json`, or turn off signing resource bundles in your Podfile. See this [example here](https://expo.fyi/r/disable-bundle-resource-signing).
 
 </Step>
 
 <Step label="5">
-## Follow the main 'Getting Started' guide
+## Follow the Getting Started guide
 
-We have completed all the steps specific to a CodePush and bare React Native project. Follow the remaining steps to create a build and publish updates in [the main guide](https://docs.expo.dev/eas-update/getting-started/#create-a-build-for-the-project)
+We have completed all the steps specific to a CodePush and bare React Native project. Follow the steps in [the main guide](/eas-update/getting-started) to complete your setup.
 
-You may need to edit some of the code `eas update:configure` generates depending on how you build and run your project. See [Updating bare app](/bare/updating-your-app) for more details about the native changes.
+> You may need to edit some of the code `eas update:configure` generates depending on how you build and run your project. See [Updating bare app](/bare/updating-your-app) for more details about the native changes.
 
 </Step>
