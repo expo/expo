@@ -54,7 +54,7 @@ export async function transform(
         config,
         projectRoot,
         filename,
-        options.dev
+        !options.minify
           ? Buffer.from(
               // Use a string so this notice is visible in the bundle if the user is
               // looking for it.

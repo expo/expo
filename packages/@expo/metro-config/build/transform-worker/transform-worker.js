@@ -55,7 +55,7 @@ async function transform(config, projectRoot, filename, data, options) {
     // TODO: Add +api files.
     filename.match(new RegExp(`^app/\\+html(\\.${options.platform})?\\.([tj]sx?|[cm]js)?$`))) {
       // Remove the server-only +html file from the bundle when bundling for a client environment.
-      return _metroTransformWorker().default.transform(config, projectRoot, filename, options.dev ? Buffer.from(
+      return _metroTransformWorker().default.transform(config, projectRoot, filename, !options.minify ? Buffer.from(
       // Use a string so this notice is visible in the bundle if the user is
       // looking for it.
       '"> The server-only +html file was removed from the client JS bundle by Expo CLI."') : Buffer.from(''), options);

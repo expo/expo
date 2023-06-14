@@ -261,6 +261,20 @@ describe('Expo Router server files (+html, +api)', () => {
       ).toMatch(matchable);
     }
   });
+  it(`strips without warning when minify is enabled`, async () => {
+    expect(
+      (
+        await doTransformForOutput('app/+html.js', 'KEEP', {
+          dev: false,
+          minify: true,
+          customTransformOptions: {
+            environment: 'client',
+          },
+          platform: 'web',
+        })
+      ).input
+    ).toMatch('');
+  });
   it(`does nothing when custom transform options aren't defined`, async () => {
     expect(
       (
