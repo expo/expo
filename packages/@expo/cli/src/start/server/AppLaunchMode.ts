@@ -1,7 +1,14 @@
 export enum AppLaunchMode {
+  /** Directly start the app. */
   Start = 'start',
+
+  /** Launch expo-development-client with deep link. */
   OpenDeepLinkDevClient = 'open-deep-link-dev-client',
+
+  /** Launch Expo Go with deep link. */
   OpenDeepLinkExpoGo = 'open-deep-link-expo-go',
+
+  /** Open the redirect page in browser. */
   OpenRedirectPage = 'open-redirect-page',
 }
 
