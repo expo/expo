@@ -35,13 +35,18 @@ You'll also need to remove CodePush references from JS and native code. Follow t
 <Step label="2">
 ## Ensure `app.json` exists
 
-Ensure that your project has an `app.json` file. If you don't have one, you can create one by running the command:
+Ensure that your project has an `app.json` file with an `expo` object. If you don't have one, you can create one by running the command:
 
 <Terminal
   cmd={[
-    "# If app.json doesn't exist, create a basic one",
-    '[ -f app.json ] || echo "{}" > app.json',
+    `if [ ! -f app.json ] || [ ! -s app.json ]; then`,
+    `  echo '{"expo": {}}' > app.json;`,
+    `else`,
+    `  jq '.' app.json &> /dev/null || { echo "Error: Malformed JSON in app.json" >&2; }`,
+    `  jq 'if .expo == null then .expo = {} else . end' app.json > app.json.tmp && mv app.json.tmp app.json`,
+    `fi`,
   ]}
+  cmdCopy={`if [ ! -f app.json ] || [ ! -s app.json ]; then echo '{"expo": {}}' > app.json; else jq '.' app.json &> /dev/null || { echo "Error: Malformed JSON in app.json" >&2; }; jq 'if .expo == null then .expo = {} else . end' app.json > app.json.tmp && mv app.json.tmp app.json; fi`}
 />
 
 </Step>
