@@ -95,10 +95,30 @@ You can check whether you are logged in by running `eas whoami`.
 </Step>
 
 <Step label="7">
-## Configure project, deploy builds and beyond
+## Configure project, deploy builds and publish updates
 
 We have finished all the steps tailored for a CodePush-enabled bare React Native project. To proceed with the configuration of your project, please begin with Step 4 in [the main guide](https://docs.expo.dev/eas-update/getting-started/#create-a-build-for-the-project) and follow it through to completion.
 
 > You may need to edit some of the code `eas update:configure` generates depending on how you build and run your project. See [Updating bare app](/bare/updating-your-app) for more details about the native changes.
+
+</Step>
+
+<Step label="8">
+## Verifying the migration and resubmitting your app
+
+After completing the migration and setting up your project with EAS Update, you should test your app to ensure that over-the-air updates are working correctly. To do this:
+
+1. Install the currently published version of your app on a device or simulator.
+2. Deploy a new update to your app using EAS Update.
+3. Launch the app and ensure that it loads the latest update from EAS. Once the update is built and uploaded to EAS and the command completes, force close and reopen your app up to two times to download and view the update.
+
+Keep in mind that since you have changed the update provider from CodePush to EAS Update, you will need to rebuild your app and submit the new build to the respective app stores (Apple App Store and Google Play Store) to ensure the update mechanism works as expected for your end-users.
+
+Please follow the respective store guidelines for submitting a new build of your application:
+
+- [Submitting to Apple App Store](/submit/ios)
+- [Submitting to Google Play Store](/submit/android)
+
+After successfully submitting your app, users will be able to download and use the latest build with EAS Update integration.
 
 </Step>
