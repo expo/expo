@@ -66,10 +66,10 @@ class LoaderTask(
     fun onRemoteUpdateManifestResponseManifestLoaded(updateManifest: UpdateManifest)
     fun onSuccess(launcher: Launcher, isUpToDate: Boolean)
 
-    fun onCheckForUpdateStarted()
-    fun onCheckForUpdateFinished(body: Map<String, Any>)
-    fun onLoadUpdateStarted()
-    fun onAssetLoaded(asset: AssetEntity, successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int)
+    fun onCheckForUpdateStarted() {}
+    fun onCheckForUpdateFinished(body: Map<String, Any>) {}
+    fun onLoadUpdateStarted() {}
+    fun onAssetLoaded(asset: AssetEntity, successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int) {}
     fun onBackgroundUpdateFinished(
       status: BackgroundUpdateStatus,
       update: UpdateEntity?,
