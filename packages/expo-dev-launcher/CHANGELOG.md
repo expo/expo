@@ -22,6 +22,7 @@
 - Fixed Home screen KeyboardAvoidingView. ([#22661](https://github.com/expo/expo/pull/22661) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Refactored network inspector code and add unit tests. ([#22669](https://github.com/expo/expo/pull/22669), [#22693](https://github.com/expo/expo/pull/22693) by [@kudo](https://github.com/kudo))
 - Fixed `No compatible apps connected. JavaScript Debugging can only be used with the Hermes engine.` when using JavaScript debugger on Android. ([#20280](https://github.com/expo/expo/pull/20280) by [@kudo](https://github.com/kudo))
+- [iOS] Fixed incorrect `Linking.getInitialURL()` value when launching through expo-dev-client's deep links. ([#22879](https://github.com/expo/expo/pull/22879) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
