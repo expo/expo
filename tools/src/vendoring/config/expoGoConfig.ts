@@ -287,33 +287,35 @@ const config: VendoringTargetConfig = {
 `,
             },
             {
-              paths: 'RNCWebView.h',
-              find: /@interface RNCWebView : RCTView/,
+              paths: 'RNCWebViewImpl.h',
+              find: /@interface RNCWebViewImpl : RCTView/,
               replaceWith: '$&\n@property (nonatomic, strong) NSString *scopeKey;',
             },
             {
-              paths: 'RNCWebView.m',
+              paths: 'RNCWebViewImpl.m',
               find: /(\[\[RNCWKProcessPoolManager sharedManager\] sharedProcessPool)]/,
               replaceWith: '$1ForScopeKey:self.scopeKey]',
             },
             {
-              paths: 'RNCWebViewManager.m',
+              paths: 'RNCWebViewManager.mm',
               find: /@implementation RNCWebViewManager\s*{/,
               replaceWith: '$&\n  NSString *_scopeKey;',
             },
             {
-              paths: 'RNCWebViewManager.m',
+              paths: 'RNCWebViewManager.mm',
               find: '*webView = [RNCWebView new];',
               replaceWith: '*webView = [RNCWebView new];\n  webView.scopeKey = _scopeKey;',
             },
             {
-              paths: 'RNCWebViewManager.m',
-              find: /RCT_EXPORT_MODULE\(\)/,
-              replaceWith: `- (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
-                                        scopeKey:(NSString *)scopeKey
-                                    easProjectId:(NSString *)easProjectId
-                           kernelServiceDelegate:(id)kernelServiceInstance
-                                          params:(NSDictionary *)params
+              paths: 'RNCWebViewManager.mm',
+              find: /RCT_EXPORT_MODULE\(RNCWebView\)/,
+              replaceWith: `RCT_EXPORT_MODULE(RNCWebView)
+
+- (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
+                          scopeKey:(NSString *)scopeKey
+                      easProjectId:(NSString *)easProjectId
+              kernelServiceDelegate:(id)kernelServiceInstance
+                            params:(NSDictionary *)params
 {
   if (self = [super init]) {
     _scopeKey = scopeKey;

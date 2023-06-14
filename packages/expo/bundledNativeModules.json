@@ -95,7 +95,7 @@
   "react-native-shared-element": "0.8.8",
   "react-native-svg": "13.4.0",
   "react-native-view-shot": "3.6.0",
-  "react-native-webview": "11.26.0",
+  "react-native-webview": "13.2.1",
   "sentry-expo": "~6.2.0",
   "unimodules-app-loader": "~4.1.2",
   "unimodules-image-loader-interface": "~6.1.0",
