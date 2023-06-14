@@ -1,0 +1,120 @@
+---
+title: Migrating from CodePush to EAS Update
+description: A guide to help migrate from CodePush to EAS Update.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+Transition a [bare](https://docs.expo.dev/archive/managed-vs-bare/#bare-workflow) React Native project with CodePush to use EAS Update. This guide assumes that you are using the default React Native project structure.
+
+## Prerequisites
+
+<Collapsible summary="An Expo user account">
+
+EAS Update is available to anyone with an Expo account, regardless of whether you pay for EAS or use our free tier. You can sign up at [https://expo.dev/signup](https://expo.dev/signup).
+
+Learn more about different plans and benefits at [EAS pricing](https://expo.dev/pricing).
+
+</Collapsible>
+
+<Step label="1">
+## Uninstall CodePush
+
+To avoid conflicts and unexpected behavior, it's recommended to uninstall CodePush if you're using EAS Update. This is because your app could periodically fetch updates from both services, leading to issues, especially if you're using different configurations for each service.
+
+Remove the CodePush SDK from your project by uninstalling the `react-native-code-push` package:
+
+<Terminal cmd={['$ npm uninstall react-native-code-push']} />
+
+You'll also need to remove CodePush references from JS and native code. Follow this [guide](https://github.com/Microsoft/react-native-code-push/issues/1101#issuecomment-350204507) for more detailed instructions.
+
+</Step>
+
+<Step label="2">
+## Ensure `app.json` exists
+
+Ensure that your project has an `app.json` file. If you don't have one, you can create one by running the command:
+
+<Terminal
+  cmd={[
+    "# If app.json doesn't exist, create a basic one",
+    '[ -f app.json ] || echo "{}" > app.json',
+  ]}
+/>
+
+</Step>
+
+<Step label="3">
+## Install the `expo` package
+
+Install the `expo` package by running the command:
+
+<Terminal cmd={['npx install-expo-modules@latest']} />
+
+If the command fails, follow the installation instructions [here](https://docs.expo.dev/bare/installing-expo-modules/#manual-installation)
+
+</Step>
+
+<Step label="4">
+## Turn off resource bundle signing (XCode 14+ only)
+
+In Xcode 14 and higher, resource bundles are signed by default, which requires setting the development team for each resource bundle target.
+To resolve this issue, downgrade to an older Xcode version using the `image` field in eas.json, or turn off signing resource bundles in your Podfile: https://expo.fyi/r/disable-bundle-resource-signing
+
+</Step>
+
+<Step label="5">
+## Install the latest EAS CLI
+
+EAS CLI is the command-line app that you will use to interact with EAS services from your terminal. To install it, run the command:
+
+<Terminal cmd={['$ npm install -g eas-cli']} />
+
+You can also use the above command to check if a new version of EAS CLI is available. We encourage you to always stay up to date with the latest version.
+
+> We recommend using `npm` instead of `yarn` for global package installations. You may alternatively use `npx eas-cli`, just remember to use that instead of `eas` whenever it's called for in the documentation.
+
+</Step>
+
+<Step label="6">
+## Log in to your Expo account
+
+If you are already signed in to an Expo account using Expo CLI, you can skip the steps described in this section. If you are not, run the following command to log in:
+
+<Terminal cmd={['$ eas login']} />
+
+You can check whether you are logged in by running `eas whoami`.
+
+</Step>
+
+<Step label="7">
+## Configure your project
+
+To configure your project, run the following commands in the order they are specified:
+
+<Terminal
+  cmd={[
+    '# Install the latest `expo-updates` library',
+    '$ npx expo install expo-updates',
+    '',
+    '# Initialize your project with EAS Update',
+    '$ eas update:configure',
+    '',
+    '# Set up the configuration file for builds',
+    '$ eas build:configure',
+  ]}
+  cmdCopy="expo install expo-updates && eas update:configure && eas build:configure"
+/>
+
+You may need to edit some of the code `eas update:configure` generates depending on how you build and run your project. See [Updating bare app](/bare/updating-your-app) for more details about the native changes.
+
+</Step>
+
+<Step label="8">
+## Deploying Builds, Publishing Updates and Beyond
+
+We have completed all the steps specific to a CodePush and bare React Native project. Follow the remaining steps to create a build and publish updates in [the main guide](https://docs.expo.dev/eas-update/getting-started/#create-a-build-for-the-project)
+
+</Step>
