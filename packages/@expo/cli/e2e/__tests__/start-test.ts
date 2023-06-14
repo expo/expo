@@ -82,6 +82,11 @@ it('runs `npx expo start --help`', async () => {
         --scheme <scheme>                      Custom URI protocol to use when launching an app
         -p, --port <port>                      Port to start the dev server on (does not apply to web or tunnel). Default: 8081
         
+        --app-launch-mode <mode>               Override the app launch mode. If not specified, the app will try to determine the best launch mode based on the current project dependencies and workflow.
+                                               start: Directly start the app
+                                               open-deep-link-dev-client: Launch expo-development-client with deep link
+                                               open-deep-link-expo-go: Launch Expo Go with deep link
+                                               open-redirect-page: Open the redirect page in browser
         --dev-client                           Experimental: Starts the bundler for use with the expo-development-client
         --force-manifest-type <manifest-type>  Override auto detection of manifest type
         --private-key-path <path>              Path to private key for code signing. Default: "private-key.pem" in the same directory as the certificate specified by the expo-updates configuration in app.json.
