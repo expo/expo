@@ -43,6 +43,7 @@ const fakeUserProfile: UserData = {
   profilePhoto: '123',
   email: 'hello@joe.ca',
   accounts: fakeAccounts,
+  isExpoAdmin: false,
 };
 
 const fakeSessionSecret = '123';
@@ -65,7 +66,7 @@ describe('<UserProfileScreen />', () => {
     await act(async () => {
       const loginButton = getByA11yLabel(/log in/i);
 
-      expect(() => getByText(fakeAccounts[0].owner.username)).toThrow();
+      expect(() => getByText(fakeAccounts[0].owner!.username)).toThrow();
 
       fireEvent.press(loginButton);
 
@@ -74,7 +75,7 @@ describe('<UserProfileScreen />', () => {
       expect(getUserProfileAsync).toHaveBeenCalledTimes(0);
       expect(setSessionAsync).toHaveBeenCalledTimes(0);
 
-      await waitFor(() => getByText(fakeAccounts[0].owner.username));
+      await waitFor(() => getByText(fakeAccounts[0].owner!.username));
 
       expect(setSessionAsync).toHaveBeenCalledTimes(1);
       expect(setSessionAsync).toHaveBeenCalledWith(sessionSecret);
@@ -91,7 +92,7 @@ describe('<UserProfileScreen />', () => {
     await act(async () => {
       const signupButton = getByA11yLabel(/sign up/i);
 
-      expect(() => getByText(fakeAccounts[0].owner.username)).toThrow();
+      expect(() => getByText(fakeAccounts[0].owner!.username)).toThrow();
 
       fireEvent.press(signupButton);
 
@@ -100,7 +101,7 @@ describe('<UserProfileScreen />', () => {
       expect(getUserProfileAsync).toHaveBeenCalledTimes(0);
       expect(setSessionAsync).toHaveBeenCalledTimes(0);
 
-      await waitFor(() => getByText(fakeAccounts[0].owner.username));
+      await waitFor(() => getByText(fakeAccounts[0].owner!.username));
       expect(setSessionAsync).toHaveBeenCalledTimes(1);
       expect(setSessionAsync).toHaveBeenCalledWith(fakeSessionSecret);
       expect(getUserProfileAsync).toHaveBeenCalledTimes(1);
@@ -122,17 +123,17 @@ describe('<UserProfileScreen />', () => {
     const { getByA11yLabel, getByText } = renderProfileScreen();
 
     fakeAccounts.forEach((account) => {
-      expect(() => getByText(account.owner.username)).toThrow();
+      expect(() => getByText(account.owner!.username)).toThrow();
     });
 
     await act(async () => {
       const loginButton = getByA11yLabel(/log in/i);
       fireEvent.press(loginButton);
 
-      await waitFor(() => getByText(fakeAccounts[0].owner.username));
+      await waitFor(() => getByText(fakeAccounts[0].owner!.username));
 
       fakeAccounts.forEach((account) => {
-        getByText(account.owner.username);
+        getByText(account.owner!.username);
       });
     });
   });
@@ -148,7 +149,7 @@ describe('<UserProfileScreen />', () => {
 
       expect(() => getByTestId(`active-account-checkmark-${fakeAccounts[1].id}`)).toThrow();
 
-      fireEvent.press(getByText(fakeAccounts[1].owner.username));
+      fireEvent.press(getByText(fakeAccounts[1].owner!.username));
       await waitFor(() => getByTestId(`active-account-checkmark-${fakeAccounts[1].id}`));
       expect(() => getByTestId(`active-account-checkmark-${fakeAccounts[0].id}`)).toThrow();
     });
