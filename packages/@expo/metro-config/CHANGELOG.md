@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Strip `app/+html` files from client bundles.
+- Strip `app/+html` files from client bundles. ([#22881](https://github.com/expo/expo/pull/22881) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
