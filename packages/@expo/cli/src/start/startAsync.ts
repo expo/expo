@@ -186,7 +186,7 @@ async function trackAsync(projectRoot: string, exp: ExpoConfig): Promise<void> {
 
 export function resolveAppLaunchMode(
   projectState: ProjectState,
-  options?: Pick<Options, 'appLaunchMode' | 'devClient'>
+  options?: Partial<Pick<Options, 'appLaunchMode' | 'devClient'>>
 ): AppLaunchMode {
   if (options?.appLaunchMode) {
     const appLaunchMode = AppLaunchMode.valueOf(options.appLaunchMode);
@@ -207,15 +207,13 @@ export function resolveAppLaunchMode(
     return devClientInstalled ? AppLaunchMode.OpenDeepLinkDevClient : AppLaunchMode.Start;
   }
 
-  if (customized) {
-    if (devClientInstalled) {
-      return AppLaunchMode.OpenDeepLinkDevClient;
-    }
-    return expoGoCompatible ? AppLaunchMode.OpenDeepLinkExpoGo : AppLaunchMode.Start;
+  if (!customized && expoGoCompatible && devClientInstalled) {
+    return AppLaunchMode.OpenRedirectPage;
   }
 
   if (devClientInstalled) {
-    return AppLaunchMode.OpenRedirectPage;
+    return AppLaunchMode.OpenDeepLinkDevClient;
   }
+
   return expoGoCompatible ? AppLaunchMode.OpenDeepLinkExpoGo : AppLaunchMode.Start;
 }
