@@ -66,55 +66,10 @@ To resolve this issue, downgrade to an older Xcode version using the `image` fie
 </Step>
 
 <Step label="5">
-## Install the latest EAS CLI
-
-EAS CLI is the command-line app that you will use to interact with EAS services from your terminal. To install it, run the command:
-
-<Terminal cmd={['$ npm install -g eas-cli']} />
-
-You can also use the above command to check if a new version of EAS CLI is available. We encourage you to always stay up to date with the latest version.
-
-> We recommend using `npm` instead of `yarn` for global package installations. You may alternatively use `npx eas-cli`, just remember to use that instead of `eas` whenever it's called for in the documentation.
-
-</Step>
-
-<Step label="6">
-## Log in to your Expo account
-
-If you are already signed in to an Expo account using Expo CLI, you can skip the steps described in this section. If you are not, run the following command to log in:
-
-<Terminal cmd={['$ eas login']} />
-
-You can check whether you are logged in by running `eas whoami`.
-
-</Step>
-
-<Step label="7">
-## Configure your project
-
-To configure your project, run the following commands in the order they are specified:
-
-<Terminal
-  cmd={[
-    '# Install the latest `expo-updates` library',
-    '$ npx expo install expo-updates',
-    '',
-    '# Initialize your project with EAS Update',
-    '$ eas update:configure',
-    '',
-    '# Set up the configuration file for builds',
-    '$ eas build:configure',
-  ]}
-  cmdCopy="expo install expo-updates && eas update:configure && eas build:configure"
-/>
-
-You may need to edit some of the code `eas update:configure` generates depending on how you build and run your project. See [Updating bare app](/bare/updating-your-app) for more details about the native changes.
-
-</Step>
-
-<Step label="8">
-## Deploying Builds, Publishing Updates and Beyond
+## Follow the main 'Getting Started' guide
 
 We have completed all the steps specific to a CodePush and bare React Native project. Follow the remaining steps to create a build and publish updates in [the main guide](https://docs.expo.dev/eas-update/getting-started/#create-a-build-for-the-project)
+
+You may need to edit some of the code `eas update:configure` generates depending on how you build and run your project. See [Updating bare app](/bare/updating-your-app) for more details about the native changes.
 
 </Step>
