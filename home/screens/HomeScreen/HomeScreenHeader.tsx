@@ -11,10 +11,10 @@ import { HomeStackRoutes } from '../../navigation/Navigation.types';
 import { useTheme } from '../../utils/useTheme';
 
 type Props = {
-  currentUser?: Exclude<HomeScreenDataQuery['account']['byName'], null>;
+  currentAccount?: Exclude<HomeScreenDataQuery['account']['byName'], null>;
 };
 
-export function HomeScreenHeader({ currentUser }: Props) {
+export function HomeScreenHeader({ currentAccount }: Props) {
   const { theme, themeType } = useTheme();
   const navigation = useNavigation<NavigationProp<HomeStackRoutes>>();
 
@@ -25,12 +25,16 @@ export function HomeScreenHeader({ currentUser }: Props) {
 
   let rightContent: React.ReactNode | null = null;
 
-  if (currentUser) {
+  if (currentAccount) {
     rightContent = (
       <Button.Container onPress={onAccountButtonPress}>
         {/* Show profile picture for personal accounts / accounts with members */}
-        {currentUser?.owner?.profilePhoto ? (
-          <Image size="xl" rounded="full" source={{ uri: currentUser.owner.profilePhoto }} />
+        {currentAccount?.ownerUserActor?.profilePhoto ? (
+          <Image
+            size="xl"
+            rounded="full"
+            source={{ uri: currentAccount.ownerUserActor.profilePhoto }}
+          />
         ) : (
           <View rounded="full" height="xl" width="xl" bg="secondary" align="centered">
             <UsersIcon color={theme.icon.default} size={iconSize.small} />
