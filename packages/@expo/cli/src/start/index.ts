@@ -85,7 +85,8 @@ export const expoStart: Command = async (argv) => {
 
   const projectRoot = getProjectRoot(args);
   const { getProjectStateAsync } = await import('./project/projectState');
-  const projectState = await getProjectStateAsync(projectRoot);
+  const { profile } = await import('../utils/profile');
+  const projectState = await profile(getProjectStateAsync)(projectRoot);
 
   const { resolveOptionsAsync } = await import('./resolveOptions');
   const options = await resolveOptionsAsync(projectRoot, projectState, args).catch(logCmdError);

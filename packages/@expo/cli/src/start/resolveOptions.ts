@@ -2,6 +2,7 @@ import assert from 'assert';
 
 import { AbortCommandError, CommandError } from '../utils/errors';
 import { resolvePortAsync } from '../utils/port';
+import { profile } from '../utils/profile';
 import type { ProjectState } from './project/projectState';
 
 export type Options = {
@@ -83,7 +84,7 @@ export async function resolveSchemeAsync(
 
   // Attempt to find the scheme or warn the user how to setup a custom scheme
   const { getSchemeAsync } = await import('../utils/scheme');
-  return getSchemeAsync(projectRoot, projectState);
+  return profile(getSchemeAsync)(projectRoot, projectState);
 }
 
 /** Resolve and assert host type options. */
