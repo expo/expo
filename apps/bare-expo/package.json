@@ -95,7 +95,7 @@
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@types/react": "~18.0.14",
-    "babel-plugin-module-resolver": "^4.1.0",
+    "babel-plugin-module-resolver": "^5.0.0",
     "babel-preset-expo": "~9.4.0",
     "detox": "^20.1.1",
     "expo-module-scripts": "^3.0.0",
