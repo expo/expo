@@ -167,10 +167,10 @@ class ScopedContext @Throws(UnsupportedEncodingException::class) constructor(con
       filesDir = baseContext.filesDir
       cacheDir = baseContext.cacheDir
       noBackupDir = baseContext.noBackupFilesDir
-    } else {
-      listOf(filesDir, cacheDir, noBackupDir).forEach {
-        ensureDirExists(it)
-      }
+    }
+
+    listOf(filesDir, cacheDir, noBackupDir).forEach {
+      ensureDirExists(it)
     }
   }
 }
