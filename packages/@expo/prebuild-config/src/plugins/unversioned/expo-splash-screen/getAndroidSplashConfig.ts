@@ -8,7 +8,7 @@ export interface AndroidSplashConfig {
   mdpi: string | null;
   backgroundColor: string | null;
   resizeMode: 'contain' | 'cover' | 'native';
-  fadeTime: number;
+  fadeDurationMs: number;
 }
 
 const defaultResizeMode = 'contain';
@@ -28,7 +28,7 @@ export function getAndroidSplashConfig(
       mdpi: splash.mdpi ?? splash.image ?? null,
       backgroundColor: splash.backgroundColor ?? null,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
-      fadeTime: splash['fadeTime'] ?? 0,
+      fadeDurationMs: splash['fadeDurationMs'] ?? 0,
     };
   }
 
@@ -42,7 +42,7 @@ export function getAndroidSplashConfig(
       mdpi: splash.image ?? null,
       backgroundColor: splash.backgroundColor ?? null,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
-      fadeTime: splash['fadeTime'] ?? 0,
+      fadeDurationMs: splash['fadeDurationMs'] ?? 0,
     };
   }
 
@@ -54,7 +54,7 @@ export function getAndroidSplashConfig(
     mdpi: null,
     backgroundColor: null,
     resizeMode: defaultResizeMode,
-    fadeTime: 0,
+    fadeDurationMs: 0,
   };
 }
 
@@ -75,7 +75,7 @@ export function getAndroidDarkSplashConfig(
       backgroundColor: splash.backgroundColor ?? null,
       // Can't support dark resizeMode because the resize mode is hardcoded into the MainActivity.java
       resizeMode: lightTheme?.resizeMode ?? defaultResizeMode,
-      fadeTime: splash['fadeTime'] ?? 0,
+      fadeDurationMs: splash['fadeDurationMs'] ?? 0,
     };
   }
 

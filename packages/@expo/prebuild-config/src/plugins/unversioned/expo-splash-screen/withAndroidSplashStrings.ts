@@ -4,11 +4,11 @@ import { getAndroidSplashConfig } from './getAndroidSplashConfig';
 
 const RESIZE_MODE_KEY = 'expo_splash_screen_resize_mode';
 const STATUS_BAR_TRANSLUCENT_KEY = 'expo_splash_screen_status_bar_translucent';
-const FADE_TIME_KEY = 'expo_splash_screen_fade_time';
+const FADE_DURATION_MS_KEY = 'expo_splash_screen_fade_duration_ms';
 
 type ExtraProps = {
   resizeMode?: string;
-  fadeTime?: number;
+  fadeDurationMs?: number;
 };
 
 const defaultResizeMode = 'contain';
@@ -19,12 +19,12 @@ export const withAndroidSplashStrings: ConfigPlugin<ExtraProps> = (config, splas
     if (splashConfig) {
       const resizeMode = splash?.resizeMode || defaultResizeMode;
       const statusBarTranslucent = !!config.androidStatusBar?.translucent;
-      const fadeTime = `${splash?.fadeTime}`;
+      const fadeDurationMs = `${splash?.fadeDurationMs}`;
       config.modResults = setSplashStrings(
         config.modResults,
         resizeMode,
         statusBarTranslucent,
-        fadeTime
+        fadeDurationMs
       );
     }
     return config;
@@ -35,7 +35,7 @@ export function setSplashStrings(
   strings: AndroidConfig.Resources.ResourceXML,
   resizeMode: string,
   statusBarTranslucent: boolean,
-  fadeTime: string
+  fadeDurationMs: string
 ): AndroidConfig.Resources.ResourceXML {
   return AndroidConfig.Strings.setStringItem(
     [
@@ -50,8 +50,8 @@ export function setSplashStrings(
         translatable: false,
       }),
       AndroidConfig.Resources.buildResourceItem({
-        name: FADE_TIME_KEY,
-        value: String(fadeTime),
+        name: FADE_DURATION_MS_KEY,
+        value: String(fadeDurationMs),
         translatable: false,
       }),
     ],

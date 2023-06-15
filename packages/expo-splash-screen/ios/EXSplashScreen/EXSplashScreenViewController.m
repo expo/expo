@@ -4,10 +4,10 @@
 #import <ExpoModulesCore/EXDefines.h>
 #import <ExpoModulesCore/EXUtilities.h>
 
-static NSString * const InfoPlistFadeTimeKey = @"EXSplashScreenFadeTime";
+static NSString * const InfoPlistFadeDurationMsKey = @"EXSplashScreenFadeDurationMs";
 
-static NSTimeInterval const FadeTimeMinAllowedValue = 0.0;
-static NSTimeInterval const FadeTimeMaxAllowedValue = 5.0;
+static NSTimeInterval const FadeDurationMsMinAllowedValue = 0.0;
+static NSTimeInterval const FadeDurationMsMaxAllowedValue = 5.0;
 
 @interface EXSplashScreenViewController ()
 
@@ -16,7 +16,7 @@ static NSTimeInterval const FadeTimeMaxAllowedValue = 5.0;
 @property (nonatomic, assign) BOOL autoHideEnabled;
 @property (nonatomic, assign) BOOL splashScreenShown;
 @property (nonatomic, assign) BOOL appContentAppeared;
-@property (nonatomic, assign) NSTimeInterval fadeTime;
+@property (nonatomic, assign) NSTimeInterval fadeDurationMs;
 
 @end
 
@@ -30,12 +30,12 @@ static NSTimeInterval const FadeTimeMaxAllowedValue = 5.0;
     _splashScreenShown = NO;
     _appContentAppeared = NO;
     _splashScreenView = splashScreenView;
-    NSTimeInterval fadeTimeValue = [[[NSBundle mainBundle] objectForInfoDictionaryKey:InfoPlistFadeTimeKey] doubleValue] / 1000.0;
-    if (fadeTimeValue >= FadeTimeMinAllowedValue &&
-        fadeTimeValue <= FadeTimeMaxAllowedValue) {
-      _fadeTime = fadeTimeValue;
+    NSTimeInterval fadeDurationMsValue = [[[NSBundle mainBundle] objectForInfoDictionaryKey:InfoPlistFadeDurationMsKey] doubleValue] / 1000.0;
+    if (fadeDurationMsValue >= FadeDurationMsMinAllowedValue &&
+        fadeDurationMsValue <= FadeDurationMsMaxAllowedValue) {
+      _fadeDurationMs = fadeDurationMsValue;
     } else {
-      _fadeTime = 0.0;
+      _fadeDurationMs = 0.0;
     }
   }
   return self;
@@ -85,7 +85,7 @@ static NSTimeInterval const FadeTimeMaxAllowedValue = 5.0;
   EX_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
     EX_ENSURE_STRONGIFY(self);
-    if (self->_fadeTime > 0.0) {
+    if (self->_fadeDurationMs > 0.0) {
       [UIView animateWithDuration:1.0
            animations:^{self.splashScreenView.alpha = 0.0;}
            completion:^(BOOL finished){

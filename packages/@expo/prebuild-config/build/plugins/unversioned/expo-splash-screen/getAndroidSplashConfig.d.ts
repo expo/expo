@@ -7,7 +7,7 @@ export interface AndroidSplashConfig {
     mdpi: string | null;
     backgroundColor: string | null;
     resizeMode: 'contain' | 'cover' | 'native';
-    fadeTime: number;
+    fadeDurationMs: number;
 }
 export declare function getAndroidSplashConfig(config: Pick<ExpoConfig, 'splash' | 'android'>): AndroidSplashConfig | null;
 export declare function getAndroidDarkSplashConfig(config: Pick<ExpoConfig, 'splash' | 'android'>): AndroidSplashConfig | null;

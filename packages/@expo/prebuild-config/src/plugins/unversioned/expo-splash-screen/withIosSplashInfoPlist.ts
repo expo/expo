@@ -18,7 +18,7 @@ export function setSplashInfoPlist(
   infoPlist: InfoPlist,
   splash: IOSSplashConfig
 ): InfoPlist {
-  infoPlist['EXSplashScreenFadeTime'] = splash.fadeTime;
+  infoPlist['EXSplashScreenFadeDurationMs'] = splash.fadeDurationMs;
   const isDarkModeEnabled = !!(
     splash?.dark?.image ||
     splash?.dark?.tabletImage ||
