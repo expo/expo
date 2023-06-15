@@ -682,7 +682,7 @@ PODS:
     - React-Core
   - react-native-slider (4.4.2):
     - React-Core
-  - react-native-view-shot (3.5.0):
+  - react-native-view-shot (3.6.0):
     - React-Core
   - react-native-webview (11.26.0):
     - React-Core
@@ -1475,7 +1475,7 @@ SPEC CHECKSUMS:
   react-native-safe-area-context: 39c2d8be3328df5d437ac1700f4f3a4f75716acc
   react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
   react-native-slider: 33b8d190b59d4f67a541061bb91775d53d617d9d
-  react-native-view-shot: 792829857bbb23a9c8acdad9a640554bdee397a3
+  react-native-view-shot: 705f999ac2a24e4e6c909c0ca65c732ed33ca2ff
   react-native-webview: 994b9f8fbb504d6314dc40d83f94f27c6831b3bf
   React-NativeModulesApple: ae27f95a2a84a877785a20ce4c689995dd5f4a64
   React-perflogger: fdd8c2969761105b1c85432fecdfff0616100cc6
