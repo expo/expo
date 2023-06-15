@@ -116,6 +116,7 @@ class Shareable {
     HandleType,
     SynchronizedDataHolder,
     HostObjectType,
+    HostFunctionType,
   };
 
   explicit Shareable(ValueType valueType) : valueType_(valueType) {}
@@ -271,6 +272,27 @@ class ShareableHostObject : public Shareable {
 
  protected:
   std::shared_ptr<jsi::HostObject> hostObject_;
+};
+
+class ShareableHostFunction : public Shareable {
+ public:
+  ShareableHostFunction(jsi::Runtime &rt, jsi::Function function)
+      : Shareable(HostFunctionType),
+        hostFunction_(
+            (assert(function.isHostFunction(rt)),
+             function.getHostFunction(rt))),
+        name_(function.getProperty(rt, "name").asString(rt).utf8(rt)),
+        paramCount_(function.getProperty(rt, "length").asNumber()) {}
+
+  jsi::Value toJSValue(jsi::Runtime &rt) override {
+    return jsi::Function::createFromHostFunction(
+        rt, jsi::PropNameID::forUtf8(rt, name_), paramCount_, hostFunction_);
+  }
+
+ protected:
+  jsi::HostFunctionType hostFunction_;
+  std::string name_;
+  unsigned int paramCount_;
 };
 
 class ShareableWorklet : public ShareableObject {

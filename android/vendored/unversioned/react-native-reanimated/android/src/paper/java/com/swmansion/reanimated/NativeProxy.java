@@ -2,14 +2,11 @@ package com.swmansion.reanimated;
 
 import static com.swmansion.reanimated.Utils.simplifyStringNumbersList;
 
-import android.util.Log;
-
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
-import com.swmansion.reanimated.layoutReanimation.AnimationsManager;
 import com.swmansion.reanimated.layoutReanimation.LayoutAnimations;
 import com.swmansion.reanimated.layoutReanimation.NativeMethodsHolder;
 import com.swmansion.reanimated.nativeProxy.NativeProxyCommon;

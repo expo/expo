@@ -8,9 +8,11 @@
 
 ### 🐛 Bug fixes
 
-- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537) by [@kudo](https://github.com/kudo))
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
+
+- Bump `babel-plugin-module-resolver` dev dependency. ([#22871](https://github.com/expo/expo/pull/22871) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 2.3.0 — 2023-05-08
 

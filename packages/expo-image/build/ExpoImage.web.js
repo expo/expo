@@ -4,6 +4,21 @@ import ImageWrapper from './web/ImageWrapper';
 import loadStyle from './web/style';
 import useSourceSelection from './web/useSourceSelection';
 loadStyle();
+export const ExpoImageModule = {
+    prefetch(urls) {
+        const urlsArray = Array.isArray(urls) ? urls : [urls];
+        urlsArray.forEach((url) => {
+            const img = new Image();
+            img.src = url;
+        });
+    },
+    async clearMemoryCache() {
+        return false;
+    },
+    async clearDiskCache() {
+        return false;
+    },
+};
 function onLoadAdapter(onLoad) {
     return (event) => {
         const target = event.target;
@@ -65,14 +80,16 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
                 ...style,
             }, className: className, priority: priority, contentPosition: selectedSource ? contentPosition : { top: '50%', left: '50%' }, hashPlaceholderContentPosition: contentPosition, hashPlaceholderStyle: blurhashStyle, accessibilityLabel: props.accessibilityLabel })),
     ];
-    return (React.createElement("div", { ref: containerRef, className: "expo-image-container", style: {
+    return (React.createElement("div", { ref: containerRef, className: "expo-image-container", 
+        // @ts-expect-error
+        style: {
             aspectRatio: String(aspectRatio),
             backgroundColor: backgroundColor?.toString(),
             transform: transform?.toString(),
             borderColor: borderColor?.toString(),
-            ...style,
-            overflow: 'hidden',
             position: 'relative',
+            overflow: 'hidden',
+            ...style,
         } },
         React.createElement(AnimationManager, { transition: transition, recyclingKey: recyclingKey, initial: initialNode }, currentNode)));
 }

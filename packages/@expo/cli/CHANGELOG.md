@@ -4,18 +4,47 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+- Prevent source map requests for context modules from reaching Metro. ([#22874](https://github.com/expo/expo/pull/22874) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+## 0.9.1 — 2023-06-13
+
+### 🐛 Bug fixes
+
+- Fix metro types. ([#22867](https://github.com/expo/expo/pull/22867) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.9.0 — 2023-06-13
+
+- Exclude dependencies from check/fix operations in `expo install` when set in package.json `expo.install.exclude`. ([#22736](https://github.com/expo/expo/pull/22736) by [@keith-kurak](https://github.com/keith-kurak))
+
+### 🛠 Breaking changes
+
 - Remove entry file modification/index.js generation from `expo prebuild`. Arbitrary entry files in development only work when using `expo-dev-client` or `.expo/.virtual-metro-entry` (SDK +49). ([#22044](https://github.com/expo/expo/pull/22044) by [@EvanBacon](https://github.com/EvanBacon))
 - Drop `metro.config.js` copy step in `expo prebuild` in favor of `expo export:embed` and the new Xcode start script using Expo CLI--this only works when using Expo CLI for all bundling (SDK +49). ([#22045](https://github.com/expo/expo/pull/22045) by [@EvanBacon](https://github.com/EvanBacon))
+- Skip overwriting `react` and `react-native` dependencies during `expo prebuild`. ([#22624](https://github.com/expo/expo/pull/22624) by [@byCedric](https://github.com/byCedric))
 
 ### 🎉 New features
 
 - Add `npx expo add` as an alias to `npx expo install`. ([#22510](https://github.com/expo/expo/pull/22510) by [@EvanBacon](https://github.com/EvanBacon))
+- Add `--reset-cache` flag to `expo start` and `expo export` for interop with the Metro docs. ([#22589](https://github.com/expo/expo/pull/22589) by [@EvanBacon](https://github.com/EvanBacon))
+- Add `--no-minify` flag to `npx expo export` to prevent minifying output JavaScript. ([#22544](https://github.com/expo/expo/pull/22544) by [@EvanBacon](https://github.com/EvanBacon))
+- Add `lazy` query parameter for Metro requests and `EXPO_NO_METRO_LAZY` to disable the feature. ([#22724](https://github.com/expo/expo/pull/22724) by [@EvanBacon](https://github.com/EvanBacon))
+- Add support for the `src/app` directory in Expo Router. ([#22748](https://github.com/expo/expo/pull/22748) by [@EvanBacon](https://github.com/EvanBacon))
+- Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
 - Import `fetch` from `node-fetch` to support older Node.js versions. ([#22480](https://github.com/expo/expo/pull/22480) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix modern manifest serving for dev client without expo-updates. ([#22470](https://github.com/expo/expo/pull/22470) by [@wschurman](https://github.com/wschurman))
 - Fix static export for consecutive groups. ([#22504](https://github.com/expo/expo/pull/22504) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix externals for Metro Node.js rendering. ([#22695](https://github.com/expo/expo/pull/22695) by [@EvanBacon](https://github.com/EvanBacon))
+- Enable verbose package manager logs on CI. ([#22361](https://github.com/expo/expo/pull/22361) by [@byCedric](https://github.com/byCedric))
+- Fix static rendering when side effects are used. ([#22713](https://github.com/expo/expo/pull/22713) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 

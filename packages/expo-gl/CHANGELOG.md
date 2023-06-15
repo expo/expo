@@ -8,9 +8,19 @@
 
 ### 🐛 Bug fixes
 
-- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 13.0.0 — 2023-06-13
+
+### 🛠 Breaking changes
+
+- Require explicit prop `enableExperimentalWorkletSupport` to use GLView from Reanimated worklet. ([#22613](https://github.com/expo/expo/pull/22613) by [@wkozyra95](https://github.com/wkozyra95))
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- Fix deadlock when creating and destroying GLViews in a quick succession. ([#22484](https://github.com/expo/expo/pull/22484) by [@wkozyra95](https://github.com/wkozyra95))
+- Move creating GL context for worklet to UI thread. ([#22634](https://github.com/expo/expo/pull/22634) by [@wkozyra95](https://github.com/wkozyra95))
 
 ## 12.5.0 — 2023-05-08
 

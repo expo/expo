@@ -102,7 +102,7 @@ jni::local_ref<JavaCallback::JavaPart> createJavaCallbackFromJSIFunction(
       wrapperWasCalled = true;
     };
 
-  return JavaCallback::newObjectCxxArgs(std::move(fn));
+  return JavaCallback::newInstance(moduleRegistry, std::move(fn));
 }
 
 jobjectArray MethodMetadata::convertJSIArgsToJNI(

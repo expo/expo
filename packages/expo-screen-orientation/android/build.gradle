@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '5.2.0'
+version = '6.0.0-beta.1'
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -62,11 +62,12 @@ android {
     jvmTarget = JavaVersion.VERSION_11.majorVersion
   }
 
+  namespace "expo.modules.screenorientation"
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 7
-    versionName '5.2.0'
+    versionName '6.0.0-beta.1'
   }
   lintOptions {
     abortOnError false

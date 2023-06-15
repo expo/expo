@@ -8,7 +8,9 @@ import {
   logIncorrectDependencies,
 } from '../start/doctor/dependencies/validateDependenciesVersions';
 import { isInteractive } from '../utils/interactive';
+import { learnMore } from '../utils/link';
 import { confirmAsync } from '../utils/prompts';
+import { joinWithCommasAnd } from '../utils/strings';
 import { fixPackagesAsync } from './installAsync';
 import { Options } from './resolveOptions';
 
@@ -46,6 +48,16 @@ export async function checkPackagesAsync(
     // this wouldn't work unless we dangerously disable plugin serialization.
     skipPlugins: true,
   });
+
+  if (pkg.expo?.install?.exclude?.length) {
+    Log.log(
+      chalk`Skipped ${fix ? 'fixing' : 'checking'} dependencies: ${joinWithCommasAnd(
+        pkg.expo.install.exclude
+      )}. These dependencies are listed in {bold expo.install.exclude} in package.json. ${learnMore(
+        'https://expo.dev/more/expo-cli/#configuring-dependency-validation'
+      )}`
+    );
+  }
 
   const dependencies = await getVersionedDependenciesAsync(projectRoot, exp, pkg, packages);
 

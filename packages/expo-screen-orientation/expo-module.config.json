@@ -6,6 +6,7 @@
   },
   "ios": {
     "appDelegateSubscribers": ["ScreenOrientationAppDelegate"],
-    "reactDelegateHandlers": ["ScreenOrientationReactDelegateHandler"]
+    "reactDelegateHandlers": ["ScreenOrientationReactDelegateHandler"],
+    "modules": ["ScreenOrientationModule"]
   }
 }

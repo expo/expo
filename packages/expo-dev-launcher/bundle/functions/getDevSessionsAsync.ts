@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 
-import { restClient } from '../apiClient';
+import { restClient, restClientWithTimeout } from '../apiClient';
 import { DevSession } from '../types';
 
 // TODO -- move this into context / make it settable via JS
@@ -16,16 +16,22 @@ export async function getDevSessionsAsync({
   isAuthenticated = false,
   installationID = '',
   isDevice = false,
+  timeout,
+}: {
+  isAuthenticated?: boolean;
+  installationID?: string;
+  isDevice?: boolean;
+  timeout?: number;
 }): Promise<DevSession[]> {
   let devSessions: DevSession[] = [];
 
   if (isAuthenticated) {
-    const sessions = await fetchDevSessions();
+    const sessions = await fetchDevSessions(null, timeout);
     devSessions = devSessions.concat(sessions);
   }
 
   if (!devSessions.length && installationID) {
-    const sessions = await fetchDevSessions(installationID);
+    const sessions = await fetchDevSessions(installationID, timeout);
     devSessions = devSessions.concat(sessions);
   }
 
@@ -52,14 +58,14 @@ export async function getLocalPackagersAsync(): Promise<DevSession[]> {
             source: 'desktop',
           });
         }
-      } catch (e) {}
+      } catch {}
     })
   );
 
   return onlineDevSessions;
 }
 
-export async function fetchDevSessions(installationID?: string) {
+export async function fetchDevSessions(installationID?: string | null, timeout?: number) {
   let devSessionsEndpoint = `/development-sessions`;
   const headers = {};
 
@@ -68,6 +74,19 @@ export async function fetchDevSessions(installationID?: string) {
     headers['Expo-Dev-Client-ID'] = installationID;
   }
 
-  const sessions = await restClient<{ data: DevSession[] }>(devSessionsEndpoint, { headers });
-  return sessions.data ?? [];
+  if (timeout) {
+    const sessions = await restClientWithTimeout<{ data: DevSession[] }>(
+      devSessionsEndpoint,
+      timeout,
+      {
+        headers,
+      }
+    );
+    return sessions.data ?? [];
+  } else {
+    const sessions = await restClient<{ data: DevSession[] }>(devSessionsEndpoint, {
+      headers,
+    });
+    return sessions.data ?? [];
+  }
 }

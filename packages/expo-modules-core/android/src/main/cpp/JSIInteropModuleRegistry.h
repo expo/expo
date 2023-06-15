@@ -8,6 +8,7 @@
 #include "JavaScriptObject.h"
 #include "JavaReferencesCache.h"
 #include "JSReferencesCache.h"
+#include "JNIDeallocator.h"
 
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
@@ -39,6 +40,7 @@ public:
    */
   void installJSI(
     jlong jsRuntimePointer,
+    jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator,
     jni::alias_ref<react::CallInvokerHolder::javaobject> jsInvokerHolder,
     jni::alias_ref<react::CallInvokerHolder::javaobject> nativeInvokerHolder
   );
@@ -46,7 +48,9 @@ public:
   /**
    * Initializes the test runtime. Shouldn't be used in the production.
    */
-  void installJSIForTests();
+  void installJSIForTests(
+    jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator
+  );
 
   /**
    * Gets a module for a given name. It will throw an exception if the module doesn't exist.
@@ -97,6 +101,7 @@ public:
   std::shared_ptr<react::CallInvoker> nativeInvoker;
   std::shared_ptr<JavaScriptRuntime> runtimeHolder;
   std::unique_ptr<JSReferencesCache> jsRegistry;
+  jni::global_ref<JNIDeallocator::javaobject> jniDeallocator;
 private:
   friend HybridBase;
   jni::global_ref<JSIInteropModuleRegistry::javaobject> javaPart_;

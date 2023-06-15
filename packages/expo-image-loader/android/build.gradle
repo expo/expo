@@ -33,7 +33,7 @@ buildscript {
 }
 
 group = 'host.exp.exponent'
-version = '4.2.0'
+version = '4.3.0'
 
 afterEvaluate {
   publishing {
@@ -62,11 +62,12 @@ android {
     jvmTarget = JavaVersion.VERSION_11.majorVersion
   }
 
+  namespace "expo.modules.imageloader"
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 8
-    versionName "4.2.0"
+    versionName "4.3.0"
   }
   lintOptions {
     abortOnError false
@@ -82,10 +83,11 @@ repositories {
   mavenCentral()
 }
 
+def glideVersion = safeExtGet('glideVersion', '4.13.2')
+
 dependencies {
   implementation project(':expo-modules-core')
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
-  api 'com.github.bumptech.glide:glide:4.9.0'
-  api 'com.facebook.fresco:fresco:2.0.0'
+  api "com.github.bumptech.glide:glide:${glideVersion}"
 }

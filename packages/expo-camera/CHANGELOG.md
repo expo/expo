@@ -2,17 +2,21 @@
 
 ## Unpublished
 
-- Fixed `Expo camera - Cannot take landscape photos if screen orientation is locked'` on iOS. ([#21938](https://github.com/expo/expo/issues/21938) by [@chalenascholl](https://github.com/chalenascholl)) ([#21956](https://github.com/expo/expo/pull/21956) by [@chalenascholl](https://github.com/chalenascholl))
-
 ### 🛠 Breaking changes
 
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
-- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 13.4.0 — 2023-06-13
+
+- Fixed `Expo camera - Cannot take landscape photos if screen orientation is locked'` on iOS. ([#21938](https://github.com/expo/expo/issues/21938) by [@chalenascholl](https://github.com/chalenascholl)) ([#21956](https://github.com/expo/expo/pull/21956) by [@chalenascholl](https://github.com/chalenascholl))
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ## 13.3.0 — 2023-05-08
 

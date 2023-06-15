@@ -4,15 +4,17 @@
 
 ### 📚 3rd party library updates
 
-- Updated `junit` to `4.13.2`.  ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+- Updated `junit` to `4.13.2`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
 
 ### 🛠 Breaking changes
 
 ### 🎉 New features
 
+- Added `Manifests.getPluginProperties()` helper to query dedicated package's properties inside the `plugins` config. ([#22701](https://github.com/expo/expo/pull/22701) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
-- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537) by [@kudo](https://github.com/kudo))
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

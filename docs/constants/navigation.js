@@ -20,7 +20,8 @@ const archiveDirectories = ['archive'];
 /** Manual list of directories to categorize as "Reference" */
 const referenceDirectories = ['versions', 'technical-specs', 'more'];
 /** Private preview section which isn't linked in the documentation */
-const previewDirectories = ['feature-preview', 'preview'];
+const previewDirectories = ['feature-preview', 'preview', 'router', 'routing'];
+
 /** All other unlisted directories */
 const generalDirectories = fs
   .readdirSync(PAGES_DIR, { withFileTypes: true })
@@ -140,6 +141,7 @@ const general = [
       [
         makePage('guides/monorepos.mdx'),
         makePage('workflow/logging.mdx'),
+        makePage('workflow/continuous-native-generation.mdx'),
         makePage('workflow/development-mode.mdx'),
         makePage('workflow/android-studio-emulator.mdx'),
         makePage('workflow/ios-simulator.mdx'),
@@ -367,7 +369,40 @@ const preview = [
       makePage('preview/custom-build-config.mdx'),
       makePage('preview/custom-build-config-schema.mdx'),
     ]),
+    makeGroup('Routing', [
+      makePage('routing/introduction.mdx'),
+      makePage('routing/installation.mdx'),
+      makePage('routing/create-pages.mdx'),
+      makePage('routing/shared-routes-and-layouts.mdx'),
+      makePage('routing/appearance.mdx'),
+      makePage('routing/styling.mdx'),
+      makePage('routing/error-handling.mdx'),
+    ]),
     { expanded: true },
+  ]),
+  makeSection('Expo Router', [
+    makeGroup('Static rendering', [
+      makePage('router/static-rendering/async-routes.mdx'),
+      makePage('router/static-rendering/root-html.mdx'),
+    ]),
+    makeGroup('Advance layout patterns', [
+      makePage('router/advance/root-layout.mdx'),
+      makePage('router/advance/stack.mdx'),
+      makePage('router/advance/tabs.mdx'),
+      makePage('router/advance/nesting-navigators.mdx'),
+      makePage('router/advance/drawer.mdx'),
+      makePage('router/advance/modal.mdx'),
+      makePage('router/advance/router-settings.mdx'),
+    ]),
+    makeGroup('Reference', [
+      makePage('router/reference/roadmap.mdx'),
+      makePage('router/reference/sitemap.mdx'),
+      makePage('router/reference/typescript.mdx'),
+      makePage('router/reference/authentication.mdx'),
+      makePage('router/reference/screen-tracking.mdx'),
+      makePage('router/reference/troubleshooting.mdx'),
+      makePage('router/reference/faq.mdx'),
+    ]),
   ]),
 ];
 

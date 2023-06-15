@@ -185,7 +185,7 @@ if (CLIENT_SIDE_BUILD) {
 def reactNativeRootDir = Paths.get(projectDir.getPath(), '../../../../versioned-react-native').toFile()
 
 def reactProperties = new Properties()
-file("$reactNativeRootDir/../../react-native-lab/react-native/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
+file("$reactNativeRootDir/../../react-native-lab/react-native/packages/react-native/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
 
 def BOOST_VERSION = reactProperties.getProperty("BOOST_VERSION")
 def DOUBLE_CONVERSION_VERSION = reactProperties.getProperty("DOUBLE_CONVERSION_VERSION")
@@ -614,7 +614,7 @@ Task resolveFolly = resolveTaskFactory("resolveFolly", "folly-${FOLLY_VERSION}.t
 Task resolveGlog = resolveTaskFactory("resolveGlog", "glog-${GLOG_VERSION}.tar.gz", reactNativeAndroidDownloadDir, downloadsDir)
 
 if (isNewArchitectureEnabled()) {
-    def reactNativeAndroidProject = findProject(":ReactAndroid")
+    def reactNativeAndroidProject = findProject(":packages:react-native:ReactAndroid")
     if (reactNativeAndroidProject != null) {
         reactNativeAndroidProject.afterEvaluate {
             def resolveTasks = [resolveBoost, resolveGlog, resolveDoubleConversion, resolveFolly]
@@ -624,13 +624,13 @@ if (isNewArchitectureEnabled()) {
                 if (reactAndroidDownloadTask != null) {
                     task.dependsOn(reactAndroidDownloadTask)
                 } else {
-                    logger.warn("[Reanimated] Failed to find task named `$reactAndroidDownloadTaskName` in `:ReactAndroid` project." +
+                    logger.warn("[Reanimated] Failed to find task named `$reactAndroidDownloadTaskName` in `:packages:react-native:ReactAndroid` project." +
                             " Explicit dependency between it and $task.name task can not be set.")
                 }
             })
         }
     } else {
-        throw new GradleScriptException("[Reanimated] Failed to find `:ReactAndroid` project. Explicit dependency between download tasks can not be set.")
+        throw new GradleScriptException("[Reanimated] Failed to find `:packages:react-native:ReactAndroid` project. Explicit dependency between download tasks can not be set.")
     }
 }
 
@@ -1026,7 +1026,7 @@ if (CLIENT_SIDE_BUILD) {
 tasks.whenTaskAdded { task ->
   def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
   if (!task.name.contains("Clean") && (task.name.contains('externalNativeBuild') || task.name.startsWith('configureCMake') || task.name.startsWith('buildCMake') || task.name.startsWith('generateJsonModel'))) {
-    task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
+    task.dependsOn(":packages:react-native:ReactAndroid:copy${buildType}JniLibsProjectOnly")
   }
 }
 

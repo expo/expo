@@ -142,8 +142,6 @@ function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "functio
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 
-// @ts-expect-error: incorrectly typed
-
 const debug = require('debug')('expo:metro:config');
 function getProjectBabelConfigFile(projectRoot) {
   return _resolveFrom().default.silent(projectRoot, './babel.config.js') || _resolveFrom().default.silent(projectRoot, './.babelrc') || _resolveFrom().default.silent(projectRoot, './.babelrc.js');
@@ -249,10 +247,18 @@ function getDefaultConfig(projectRoot, options = {}) {
       additionalExts: envFiles.map(file => file.replace(/^\./, ''))
     },
     serializer: {
-      getModulesRunBeforeMainModule: () => [require.resolve(_path().default.join(reactNativePath, 'Libraries/Core/InitializeCore'))
-      // TODO: Bacon: load Expo side-effects
-      ],
+      getModulesRunBeforeMainModule: () => {
+        const preModules = [];
 
+        // We need to shift this to be the first module so web Fast Refresh works as expected.
+        // This will only be applied if the module is installed and imported somewhere in the bundle already.
+        const metroRuntime = _resolveFrom().default.silent(projectRoot, '@expo/metro-runtime');
+        if (metroRuntime) {
+          preModules.push(metroRuntime);
+        }
+        preModules.push(require.resolve(_path().default.join(reactNativePath, 'Libraries/Core/InitializeCore')));
+        return preModules;
+      },
       getPolyfills: () => require(_path().default.join(reactNativePath, 'rn-get-polyfills'))()
     },
     server: {

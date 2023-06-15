@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '12.4.0'
+version = '12.5.0'
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -62,11 +62,12 @@ android {
     jvmTarget = JavaVersion.VERSION_11.majorVersion
   }
 
+  namespace "expo.modules.barcodescanner"
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 26
-    versionName "12.4.0"
+    versionName "12.5.0"
   }
   lintOptions {
     abortOnError false
@@ -80,10 +81,7 @@ android {
 
 dependencies {
   implementation project(':expo-modules-core')
-
-  api 'com.google.android.gms:play-services-vision:19.0.0'
-  api 'com.google.zxing:core:3.3.3'
-
+  api 'com.google.mlkit:barcode-scanning:17.1.0'
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1")

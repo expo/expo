@@ -7,18 +7,22 @@ packageName: 'expo-face-detector'
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import { SnackInline} from '~/ui/components/Snippet';
+import { SnackInline } from '~/ui/components/Snippet';
 import { PlatformTags } from '~/ui/components/Tag';
 
 **`expo-face-detector`** lets you use the power of the [Google Mobile Vision](https://developers.google.com/vision/face-detection-concepts) framework to detect faces on images.
 
 <PlatformsSection android ios />
 
-#### Known issues&ensp;<PlatformTags platforms={['android']}  />
+#### Known issues&ensp;<PlatformTags platforms={['android']} />
 
 Face detector does not recognize faces that aren't aligned with the interface (top of the interface matches top of the head).
 
 ## Installation
+
+This module is **not** available in the [Expo Go app](https://expo.dev/expo-go) because it has dependencies that break builds for iOS Simulators.
+
+You can create a [development build](/develop/development-builds/create-a-build/) to work with this package.
 
 <APIInstallSection />
 

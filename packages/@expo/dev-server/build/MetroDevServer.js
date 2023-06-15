@@ -141,6 +141,7 @@ async function runMetroDevServerAsync(projectRoot, options) {
   };
   const server = await Metro.runServer(metroConfig, {
     hmrEnabled: true,
+    // @ts-expect-error: Inconsistent `websocketEndpoints` type between metro and @react-native-community/cli-server-api
     websocketEndpoints
   });
   if (attachToServer) {

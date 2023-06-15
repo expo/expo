@@ -7,7 +7,6 @@ description: Learn about different Metro bundler configurations that can be cust
 
 import { Terminal } from '~/ui/components/Snippet';
 import { YesIcon, NoIcon, PendingIcon } from '~/ui/components/DocIcons';
-import { Collapsible } from '~/ui/components/Collapsible';
 import { Step } from '~/ui/components/Step';
 
 Expo CLI uses Metro during [`npx expo start`](/more/expo-cli/#develop) and [`npx expo export`](/more/expo-cli/#exporting) to bundle your JavaScript code and assets. Metro is built and optimized for React Native, and used for large-scale applications such as Facebook and Instagram.
@@ -184,7 +183,7 @@ Note that aliases, resolution, and other bundler features are now universal acro
 
 ### Adding Web support to Metro
 
-To enable Metro web support, make sure your project is using Expo SDK 46 or newer. Then modify your [Expo config](/workflow/configuration) to enable the feature using the `expo.web.bundler` field:
+To enable Metro web support, make sure your project is using Expo SDK 46 or newer. Then modify your [app config](/workflow/configuration) to enable the feature using the `expo.web.bundler` field:
 
 ```json app.json
 {
@@ -242,11 +241,10 @@ You can overwrite the default **index.html** in Metro web by creating a **public
 
 In the future, this will work universally across platforms with EAS Update hosting. Currently, the feature is web-only based on the static host used for the native app, for example, the legacy Expo service updates do not support this feature.
 
-{/*
+{/* prettier-ignore */}
+{/* ## TypeScript
 
-## TypeScript
-
-> Available since SDK 49.
+> Available in SDK 49 and higher.
 
 Expo's Metro config has experimental support for the `compilerOptions.paths` and `compilerOptions.baseUrl` fields in the project's `tsconfig.json` (or `jsconfig.json`) file. This enables absolute imports and aliases in the project. Learn more in the [TypeScript guide](/guides/typescript).
 
@@ -254,8 +252,6 @@ These feature requires additional setup in bare projects. See the [versioned Met
 
 ## CSS
 
-> Since SDK 49.
+> Available in SDK 49 and higher.
 
-See the versioned [CSS guide](/versions/latest/config/metro#css) for more information.
-
-*/}
+See the versioned [CSS guide](/versions/latest/config/metro#css) for more information. \*/}

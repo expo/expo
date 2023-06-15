@@ -39,7 +39,7 @@ export async function consumeNavigationStateAsync() {
 
   try {
     navigationState = JSON.parse(serializedNavigationState);
-  } catch (error) {}
+  } catch {}
 
   // not necessary to await this as its effects are only applied on app launch
   clearNavigationStateAsync();

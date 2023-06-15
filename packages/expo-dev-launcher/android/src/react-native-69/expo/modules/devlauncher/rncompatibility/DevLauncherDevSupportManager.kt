@@ -139,6 +139,18 @@ class DevLauncherDevSupportManager(
     )
   }
 
+  override fun startInspector() {
+    // no-op for the default `startInspector` which would be implicitly called
+    // right after `ReactInstanceManager` construction.
+    // For dev-launcher, we should inject the correct dev server address and
+    // call our customized `startInspectorWhenDevLauncherReady`.
+    // Check `DevLauncherReactUtils.injectReactInterceptor()` for details.
+  }
+
+  fun startInspectorWhenDevLauncherReady() {
+    super.startInspector()
+  }
+
   // copied from https://github.com/facebook/react-native/blob/aa4da248c12e3ba41ecc9f1c547b21c208d9a15f/ReactAndroid/src/main/java/com/facebook/react/devsupport/BridgeDevSupportManager.java#L158-L165
   private fun getExecutorConnectCallback(
     future: SimpleSettableFuture<Boolean>

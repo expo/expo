@@ -3,9 +3,13 @@ title: Running builds on your own infrastructure
 description: Learn how to run EAS Build on your own custom infrastructure.
 ---
 
+import { Terminal } from '~/ui/components/Snippet';
+
 You can run the same build process that we run on the EAS Build servers directly on your machine with the `--local` flag.
 
-`eas build --platform android --local` or `eas build --platform ios --local`
+<Terminal cmd={['eas build --platform android --local', '# or', 'eas build --platform ios --local']} />
+
+> Note: if you use [Continuous Native Generation](/workflow/continuous-native-generation.mdx), you can run [prebuild](/workflow/prebuild.mdx) to generate your **android** and **ios** directories and then proceed open the projects in the respective IDEs and build them just like any native project. It's not necessary to run `eas build --local`, but it handles more of the build process for you — see ["Use cases for local builds"](#use-cases-for-local-builds).
 
 ## Prerequisites
 
@@ -19,7 +23,7 @@ You need to be authenticated with Expo:
 - Company policies that restrict the use of third-party CI/CD services. With local builds, the entire process runs on your infrastructure and the only communication with EAS servers is:
   - to make sure project `@account/slug` exists
   - if you are using managed credentials to download them.
-- [Debugging](#using-local-builds-for-debugging)
+- [Debugging](#using-local-builds-for-debugging) build failures on EAS servers.
 
 ## Using local builds for debugging
 

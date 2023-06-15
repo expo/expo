@@ -56,7 +56,7 @@
     "@babel/preset-typescript": "^7.7.4",
     "@testing-library/jest-native": "^4.0.4",
     "@testing-library/react-native": "^8.0.0",
-    "babel-plugin-module-resolver": "^4.1.0",
+    "babel-plugin-module-resolver": "^5.0.0",
     "babel-preset-expo": "~9.4.0",
     "expo-dev-client-components": "1.4.0",
     "expo-module-scripts": "^3.0.0",
@@ -64,7 +64,7 @@
     "graphql": "^15.3.0",
     "graphql-tag": "^2.10.1",
     "react": "18.2.0",
-    "react-native": "0.71.7",
+    "react-native": "0.72.0-rc.5",
     "use-subscription": "^1.8.0",
     "url": "^0.11.0"
   },
