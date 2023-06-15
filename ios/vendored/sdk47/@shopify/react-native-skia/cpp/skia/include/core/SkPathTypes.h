@@ -8,8 +8,6 @@
 #ifndef SkPathTypes_DEFINED
 #define SkPathTypes_DEFINED
 
-#include "include/core/SkTypes.h"
-
 enum class SkPathFillType {
     /** Specifies that "inside" is computed by a non-zero sum of signed edge crossings */
     kWinding,

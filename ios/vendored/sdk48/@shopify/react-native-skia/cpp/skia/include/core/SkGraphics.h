@@ -10,9 +10,12 @@
 
 #include "include/core/SkRefCnt.h"
 
+#include <memory>
+
 class SkData;
 class SkImageGenerator;
 class SkOpenTypeSVGDecoder;
+class SkPath;
 class SkTraceMemoryDump;
 
 class SK_API SkGraphics {
@@ -115,16 +118,6 @@ public:
      */
     static void PurgeAllCaches();
 
-    /**
-     *  Applications with command line options may pass optional state, such
-     *  as cache sizes, here, for instance:
-     *  font-cache-limit=12345678
-     *
-     *  The flags format is name=value[;name=value...] with no spaces.
-     *  This format is subject to change.
-     */
-    static void SetFlags(const char* flags);
-
     typedef std::unique_ptr<SkImageGenerator>
                                             (*ImageGeneratorFromEncodedDataFactory)(sk_sp<SkData>);
 
@@ -151,18 +144,28 @@ public:
     static OpenTypeSVGDecoderFactory GetOpenTypeSVGDecoderFactory();
 
     /**
-     *  Temporarily (until variable COLRv1 is released) pass a feature switch function for whether
-     *  variable COLRv1 is enabled. Needed for initializing FreeType with a property setting so that
-     *  variable COLRv1 can be enabled in Chrome Canaries during development.
-     */
-    using VariableColrV1EnabledFunc = bool (*)();
-    static VariableColrV1EnabledFunc SetVariableColrV1EnabledFunc(VariableColrV1EnabledFunc);
-    static bool GetVariableColrV1Enabled();
-
-    /**
      *  Call early in main() to allow Skia to use a JIT to accelerate CPU-bound operations.
      */
     static void AllowJIT();
+
+    /**
+     *  To override the default AA algorithm choice in the CPU backend, provide a function that
+     *  returns whether to use analytic (true) or supersampled (false) for a given path.
+     *
+     *  NOTE: This is a temporary API, intended for migration of all clients to one algorithm,
+     *        and should not be used.
+     */
+    typedef bool (*PathAnalyticAADeciderProc)(const SkPath&);
+    static void SetPathAnalyticAADecider(PathAnalyticAADeciderProc);
+
+    /*
+     *  Similar to above, but simply forces the CPU backend to always use analytic AA.
+     *
+     *  NOTE: This is a temporary API, intended for migration of all clients to one algorithm.
+     *        If the PathAnalyticAADeciderProc is *also* set, this setting has no effect.
+     *        Unlike that API, this function is thread-safe.
+     */
+    static void SetForceAnalyticAA(bool);
 };
 
 class SkAutoGraphics {

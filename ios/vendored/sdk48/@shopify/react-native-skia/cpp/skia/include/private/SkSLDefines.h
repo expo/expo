@@ -11,7 +11,7 @@
 #include <cstdint>
 
 #include "include/core/SkTypes.h"
-#include "include/private/SkTArray.h"
+#include "include/private/base/SkTArray.h"
 
 using SKSL_INT = int64_t;
 using SKSL_FLOAT = float;
@@ -21,17 +21,17 @@ namespace SkSL {
 class Expression;
 class Statement;
 
-using ComponentArray = SkSTArray<4, int8_t>; // for Swizzles
+using ComponentArray = skia_private::STArray<4, int8_t>; // for Swizzles
 
-class ExpressionArray : public SkSTArray<2, std::unique_ptr<Expression>> {
+class ExpressionArray : public skia_private::STArray<2, std::unique_ptr<Expression>> {
 public:
-    using SkSTArray::SkSTArray;
+    using STArray::STArray;
 
     /** Returns a new ExpressionArray containing a clone of every element. */
     ExpressionArray clone() const;
 };
 
-using StatementArray = SkSTArray<2, std::unique_ptr<Statement>>;
+using StatementArray = skia_private::STArray<2, std::unique_ptr<Statement>>;
 
 // Functions larger than this (measured in IR nodes) will not be inlined. This growth factor
 // accounts for the number of calls being inlined--i.e., a function called five times (that is, with
