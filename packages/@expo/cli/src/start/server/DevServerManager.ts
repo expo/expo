@@ -132,7 +132,7 @@ export class DevServerManager {
 
   /** Switch between Expo Go and Expo Dev Clients. */
   async toggleRuntimeMode(isUsingDevClient: boolean = !this.options.devClient): Promise<boolean> {
-    const nextMode = isUsingDevClient ? 'Dev Client' : 'Expo Go';
+    const nextMode = isUsingDevClient ? '--dev-client' : '--go';
     Log.log(printItem(chalk`Switching to {bold ${nextMode}}`));
 
     const nextScheme = await resolveSchemeAsync(this.projectRoot, {
