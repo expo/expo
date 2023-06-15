@@ -1,4 +1,4 @@
-#import "EXDevLauncherBridgeDelegate.h"
+#import "ExpoDevLauncherBridgeDelegateHandler.h"
 #import "EXDevLauncherController.h"
 
 #import <React/RCTBundleURLProvider.h>
@@ -22,7 +22,7 @@
 
 static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
-@interface EXDevLauncherBridgeDelegate () <RCTTurboModuleManagerDelegate, RCTCxxBridgeDelegate> {
+@interface ExpoDevLauncherBridgeDelegateHandler () <RCTTurboModuleManagerDelegate, RCTCxxBridgeDelegate> {
   std::shared_ptr<const facebook::react::ReactNativeConfig> _reactNativeConfig;
   facebook::react::ContextContainer::Shared _contextContainer;
 }
@@ -30,21 +30,14 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 #endif
 
-@implementation EXDevLauncherBridgeDelegate
+@implementation ExpoDevLauncherBridgeDelegateHandler
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge {
-  return [[EXDevLauncherController sharedInstance] sourceURLForBridge:bridge];
+  return [[EXDevLauncherController sharedInstance] sourceUrl];
 }
 
-- (RCTRootView *)createRootViewWithModuleName:(NSString *)moduleName launchOptions:(NSDictionary * _Nullable)launchOptions application:(UIApplication *)application{
-    BOOL enableTM = NO;
-#if RCT_NEW_ARCH_ENABLED
-    enableTM = YES;
-#endif
-
-    RCTAppSetupPrepareApp(application, enableTM);
-
-        self.bridge = [self createBridgeWithDelegate:self launchOptions:launchOptions];
+- (RCTBridge *)createBridgeWithAdapter:(NSDictionary * _Nullable)launchOptions {
+    self.bridge = [self createBridgeWithDelegate:self launchOptions:launchOptions];
 
 #ifdef RCT_NEW_ARCH_ENABLED
     _contextContainer = std::make_shared<facebook::react::ContextContainer const>();
@@ -55,18 +48,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
     self.bridge.surfacePresenter = self.bridgeAdapter.surfacePresenter;
 #endif
 
-    NSMutableDictionary *initProps = [NSMutableDictionary new];
-#ifdef RCT_NEW_ARCH_ENABLED
-    initProps[kRNConcurrentRoot] = @YES;
-#endif
-
-
-    return [super createRootViewWithBridge:self.bridge moduleName:moduleName initProps:initProps];
-}
-
-- (BOOL)concurrentRootEnabled
-{
-  return true;
+    return self.bridge;
 }
 
 @end

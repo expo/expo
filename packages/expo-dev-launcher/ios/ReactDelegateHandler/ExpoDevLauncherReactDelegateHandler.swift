@@ -5,12 +5,12 @@ import EXDevMenu
 import EXUpdatesInterface
 
 @objc
-public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTBridgeDelegate, EXDevLauncherControllerDelegate {
+public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDevLauncherControllerDelegate {
   @objc
   public static var enableAutoSetup: Bool = true
 
   private weak var reactDelegate: ExpoReactDelegate?
-  private var bridgeDelegate: RCTBridgeDelegate?
+  private var bridgeDelegateHandler = ExpoDevLauncherBridgeDelegateHandler()
   private var deferredRootView: EXDevLauncherDeferredRCTRootView?
   private var rootViewModuleName: String?
   private var rootViewInitialProperties: [AnyHashable : Any]?
@@ -42,16 +42,13 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTB
     ExpoDevMenuReactDelegateHandler.enableAutoSetup = false
 
     self.reactDelegate = reactDelegate
-    self.bridgeDelegate = EXRCTBridgeDelegateInterceptor(bridgeDelegate: bridgeDelegate, interceptor: self)
 
     EXDevLauncherController.sharedInstance().autoSetupPrepare(self, launchOptions: launchOptions)
     if let sharedController = UpdatesControllerRegistry.sharedInstance.controller {
       // for some reason the swift compiler and bridge are having issues here
       EXDevLauncherController.sharedInstance().updatesInterface = sharedController
     }
-    // swiftlint:disable force_unwrapping
-    return EXDevLauncherDeferredRCTBridge(delegate: self.bridgeDelegate!, launchOptions: launchOptions)
-    // swiftlint:enable force_unwrapping
+    return EXDevLauncherDeferredRCTBridge(delegate: self.bridgeDelegateHandler, launchOptions: launchOptions)
   }
 
   public override func createRootView(reactDelegate: ExpoReactDelegate, bridge: RCTBridge, moduleName: String, initialProperties: [AnyHashable : Any]?) -> RCTRootView? {
@@ -76,12 +73,13 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTB
   // MARK: EXDevelopmentClientControllerDelegate implementations
 
   public func devLauncherController(_ developmentClientController: EXDevLauncherController, didStartWithSuccess success: Bool) {
-    let bridge = RCTBridge(delegate: self.bridgeDelegate, launchOptions: developmentClientController.getLaunchOptions())
+    let bridge = self.bridgeDelegateHandler.createBridgeAndSetAdapter(launchOptions: developmentClientController.getLaunchOptions())
     developmentClientController.appBridge = bridge
 
-    // swiftlint:disable force_unwrapping
-    let rootView = RCTRootView(bridge: bridge!, moduleName: self.rootViewModuleName!, initialProperties: self.rootViewInitialProperties)
-    // swiftlint:enable force_unwrapping
+    // swiftlint:disable:next force_unwrapping
+    guard let rootView = self.bridgeDelegateHandler.createRootView(with: bridge, moduleName: self.rootViewModuleName!, initProps: self.rootViewInitialProperties)  else {
+        return
+    }
     rootView.backgroundColor = self.deferredRootView?.backgroundColor ?? UIColor.white
     let window = getWindow()
 
