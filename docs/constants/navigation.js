@@ -407,7 +407,6 @@ const preview = [
 ];
 
 const archive = [
-  makeSection('Archive', [makePage('archive/index.mdx')]),
   makeSection('Classic Builds', [
     makePage('archive/classic-updates/building-standalone-apps.mdx'),
     makePage('archive/classic-updates/turtle-cli.mdx'),
