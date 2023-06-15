@@ -151,7 +151,7 @@
   return [[DevMenuRCTBridge alloc] initWithDelegate:delegate launchOptions:launchOptions];
 }
 
-- (void)createBridgeWithAdapter:(NSDictionary * _Nullable)launchOptions {
+- (void)createBridgeAndSetAdapterWithLaunchOptions:(NSDictionary * _Nullable)launchOptions {
     self.bridge = [self createBridgeWithDelegate:self launchOptions:launchOptions];
 
 #ifdef RCT_NEW_ARCH_ENABLED

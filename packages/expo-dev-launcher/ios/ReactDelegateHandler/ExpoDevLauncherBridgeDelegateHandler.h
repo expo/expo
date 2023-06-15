@@ -3,6 +3,6 @@
 
 @interface ExpoDevLauncherBridgeDelegateHandler : RCTAppDelegate
 
-- (RCTBridge *)createBridgeWithAdapter:(NSDictionary *_Nullable)launchOptions;
+- (RCTBridge *)createBridgeAndSetAdapterWithLaunchOptions:(NSDictionary *_Nullable)launchOptions;
 
 @end
