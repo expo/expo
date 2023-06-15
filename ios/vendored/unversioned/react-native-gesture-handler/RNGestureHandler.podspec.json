@@ -1,6 +1,6 @@
 {
   "name": "RNGestureHandler",
-  "version": "2.10.1",
+  "version": "2.12.0",
   "summary": "Experimental implementation of a new declarative API for gesture handling in react-native",
   "homepage": "https://github.com/software-mansion/react-native-gesture-handler",
   "license": "MIT",
@@ -9,7 +9,7 @@
   },
   "source": {
     "git": "https://github.com/software-mansion/react-native-gesture-handler",
-    "tag": "2.10.1"
+    "tag": "2.12.0"
   },
   "source_files": "ios/**/*.{h,m,mm}",
   "requires_arc": true,
