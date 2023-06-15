@@ -2238,11 +2238,11 @@ PODS:
     - React-Core
   - RNGestureHandler (2.10.1):
     - React-Core
-  - RNReanimated (3.1.0):
+  - RNReanimated (3.3.0):
     - DoubleConversion
     - FBLazyVector
-    - FBReactNativeSpec
     - glog
+    - hermes-engine
     - RCT-Folly
     - RCTRequired
     - RCTTypeSafety
@@ -2252,11 +2252,13 @@ PODS:
     - React-Core/RCTWebSocket
     - React-CoreModules
     - React-cxxreact
+    - React-hermes
     - React-jsi
     - React-jsiexecutor
     - React-jsinspector
     - React-RCTActionSheet
     - React-RCTAnimation
+    - React-RCTAppDelegate
     - React-RCTBlob
     - React-RCTImage
     - React-RCTLinking
@@ -3716,7 +3718,7 @@ SPEC CHECKSUMS:
   EXSplashScreen: 8d00c7b625ec0f952a17ab685e1f03ac0e5c1795
   EXStructuredHeaders: f3a6d417d5d12ef369fd1a31320d1c188a1b0f4b
   EXTaskManager: a7a387c4e222176988261341680aa7e3f621a335
-  EXUpdates: 61a44f682e0805d64953017f411918d7acbb1041
+  EXUpdates: d01f25d40e711ac9b52f64c36410c1b30ac54e3b
   EXUpdatesInterface: c08eaa7e4d1fdafff3820e0539a6d42a75fa0258
   FBAEMKit: c7efe06720a8b15b1d25b68921ba46dee20996e0
   FBAudienceNetwork: e0fcc9091fced34910ed0b6da06f129db46ac9e6
@@ -3801,7 +3803,7 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: 8616bd5a58af409453ea4e1b246521bb76578d60
   RNFlashList: 399bf6a0db68f594ad2c86aaff3ea39564f39f8a
   RNGestureHandler: 42ec7c28dd02d540ed6c9159c57a98ff016492dc
-  RNReanimated: 48794d0f278349ecb6d94490e7bb184c9cdcd86f
+  RNReanimated: cbd1eeda5cc0df86c1253d131c8827a67767be72
   RNScreens: 218801c16a2782546d30bd2026bb625c0302d70f
   RNSVG: 07dbd870b0dcdecc99b3a202fa37c8ca163caec2
   SDWebImage: cb032eba469c54e0000e78bcb0a13cdde0a52798
