@@ -6,6 +6,9 @@
 
 ### 🎉 New features
 
+- Add `-g, --go` option to `expo start` to force using Expo Go by default.
+- Add `-d` as an alias to `--dev-client`.
+
 ### 🐛 Bug fixes
 
 - Prevent source map requests for context modules from reaching Metro. ([#22874](https://github.com/expo/expo/pull/22874) by [@EvanBacon](https://github.com/EvanBacon))
