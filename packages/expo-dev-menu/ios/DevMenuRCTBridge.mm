@@ -33,7 +33,6 @@
 #import <reacthermes/HermesExecutorFactory.h>
 #endif
 
-#import "RCTAppDelegate+Private.h"
 #import "RCTAppSetupUtils.h"
 
 #if RCT_NEW_ARCH_ENABLED
@@ -135,6 +134,13 @@
 @interface DevMenuRCTAppDelegate () <RCTCxxBridgeDelegate> {
   std::shared_ptr<facebook::react::RuntimeScheduler> _runtimeScheduler;
 }
+@end
+
+@interface RCTAppDelegate (DevMenuRCTAppDelegate)
+
+#ifdef __cplusplus
+- (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge;
+#endif
 @end
 
 @implementation DevMenuRCTAppDelegate

@@ -288,8 +288,7 @@
   }
 
   [self _removeInitModuleObserver];
-  UIApplication *application = [UIApplication sharedApplication];
-  UIView *rootView = [_bridgeDelegate createRootViewWithModuleName:@"main" launchOptions:_launchOptions application:application];
+  UIView *rootView = [_bridgeDelegate createRootViewWithModuleName:@"main" launchOptions:_launchOptions application:UIApplication.sharedApplication];
   _launcherBridge = _bridgeDelegate.bridge;
 
   [self _ensureUserInterfaceStyleIsInSyncWithTraitEnv:rootView];

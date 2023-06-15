@@ -40,7 +40,7 @@ class DevMenuAppInstance: DevMenuRCTAppDelegate {
 
   // MARK: RCTAppDelegate
 
-  @objc(sourceURLForBridge:) override func sourceURL(for bridge: RCTBridge!) -> URL! {
+  override func sourceURL(for bridge: RCTBridge!) -> URL! {
     #if DEBUG
     if let packagerHost = jsPackagerHost() {
       return RCTBundleURLProvider.jsBundleURL(
