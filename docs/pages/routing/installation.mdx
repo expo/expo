@@ -25,11 +25,11 @@ We recommend creating a new Expo app using `create-expo-app`. This will create a
 
 <Step label="2">
 
-Once setup, you can start your project by running:
+Once setup, you can start your project by running the development server with the following command:
 
 <Terminal cmd={['$ npx expo start']} />
 
-To view your app on a mobile device, we recommend starting with [Expo Go](/get-started/expo-go). As your application grows in complexity and you need more control, you can create a [development build](/develop/development-builds/introduction/).
+To view your app on a mobile device, we recommend starting with [Expo Go](/get-started/expo-go). As your application grows in complexity and you need more control and for that you can create a [development build](/develop/development-builds/introduction/).
 
 </Step>
 
@@ -63,7 +63,7 @@ You'll need to install the following dependencies:
   ]}
 />
 
-The above command will install versions of these libraries that are compatible with the Expo SDK version your project is using.
+The above command will install versions of these libraries that are compatible with your project's [Expo SDK version](/versions/latest/).
 
 </Step>
 
@@ -91,9 +91,9 @@ import 'expo-router/entry';
 
 ### Modify project configuration
 
-Add a deep linking `scheme` and enable [Metro web](/guides/customizing-metro/#web-support-how) in your app config (**app.json** or **app.config.js**):
+Add a deep linking `scheme` and enable [Metro web](/guides/customizing-metro/#web-support-how) in your [app config](/versions/latest/config/app/):
 
-```diff
+```diff app.json
 {
   "expo": {
 +   "scheme": "myapp",
@@ -102,6 +102,26 @@ Add a deep linking `scheme` and enable [Metro web](/guides/customizing-metro/#we
 +   }
   }
 }
+```
+
+</Step>
+
+<Step label="5">
+
+### Modify babel.config.js
+
+Add `expo-router/babel` plugin in the `plugins` array to your project's **babel.config.js**:
+
+```js babel.config.js
+module.exports = function (api) {
+  api.cache(true);
+  return {
+    presets: ['babel-preset-expo'],
+    /* @info Add it in the plugins list as the last plugin.*/
+    plugins: [require.resolve('expo-router/babel')],
+    /* @end */
+  };
+};
 ```
 
 </Step>

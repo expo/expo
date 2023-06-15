@@ -1,11 +1,287 @@
 ---
 title: Navigate between pages
 description: Learn how to use Expo Router library to navigate between different pages.
-hideFromSearch: true
 ---
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { BookOpen02Icon } from '@expo/styleguide-icons';
+import { APIBox } from '~/components/plugins/APIBox';
+import { FileTree } from '~/ui/components/FileTree';
+
+To navigate between different pages, use the `Link` component. It is conceptually similar to the `<a>` element in HTML.
+
+## Using `Link`
+
+For example, your project has two pages: **app/index.js** and **settings.js**. You can navigate from **index** to **settings** using the `Link` component as shown below:
+
+```js app/home.js
+/* @info */ import { Link } from 'expo-router'; /* @end */
+
+export default function Page() {
+  return (
+    <View>
+      /* @info */
+      <Link href="/settings">Settings</Link>
+      /* @end */
+    </View>
+  );
+}
+```
+
+The `href` attribute on the `Link` component:
+
+- Accepts relative paths such as `../settings` or full paths such as `/profile/settings`. Relative paths are useful for shared routes.
+- Also accepts an object such as `{ pathname: 'profile', params: { id: '123' } }` to navigate to dynamic routes.
+- Use the `replace` prop to replace the current route in the history instead of pushing a new route.
+
+The `Link` component renders a `<Text>` component by default. You can customize the component by passing `asChild`, which forwards all props to the first child of the `Link` component. The child component must support the `onPress` and `onClick` props. The `href` and `accessibilityRole` will also be passed down.
+
+{/* prettier-ignore */}
+```js app/page.js
+import { Pressable, Text } from 'react-native';
+import { Link } from 'expo-router';
+
+function Home() {
+  return (
+    /* @info */
+    <Link href="/other" asChild>
+    /* @end */
+      <Pressable>{({ hovered, pressed }) => <Text>Home</Text>}</Pressable>
+    </Link>
+  );
+}
+```
+
+## Hooks
+
+<APIBox header="useRouter">
+
+For more advanced use cases, you can use the imperative `useRouter` hook to navigate imperatively. Here is an example:
+
+{/* prettier-ignore */}
+```js app/page.js
+import { View, Text } from 'react-native';
+/* @info */
+import { useRouter } from 'expo-router';
+/* @end */
+
+export default function Page() {
+  /* @info */
+  const router = useRouter();
+  /* @end */
+  return (
+    <View>
+      <Text onPress={() => {/* @info */ router.push('/profile/settings'); /* @end */}}>
+        Settings
+      </Text>
+    </View>
+  );
+}
+```
+
+- **push**: `(href: Href) => void` &mdash; Navigate to a route. You can provide a full path such as `/profile/settings` or a relative path such as `../settings`. Navigate to dynamic routes by passing an object such as `{ pathname: 'profile', params: { id: '123' } }`.
+- **replace**: `(href: Href) => void` &mdash; Same API as `push`. Replaces the current route in history instead of pushing a new one. This is useful for redirects.
+- **back**: `() => void` &mdash; Navigate back to previous route.
+- **setParams**: `(params: Record<string, string>) => void` &mdash; Update the query params for the currently selected route.
+
+</APIBox>
+
+<APIBox header="usePathname">
+
+Returns the currently selected route location without search parameters. For example, `/acme?foo=bar` to `/acme`. Segments will be normalized. For example, `/[id]?id=normal` to`/normal`.
+
+**Example route:** `/profile/baconbrix?extra=info`
+
+```js app/profile/[user].tsx
+import { Text } from 'react-native';
+/* @info */
+import { usePathname } from 'expo-router';
+/* @end */
+
+export default function Route() {
+  /* @info pathname = "/profile/baconbrix"*/
+  const pathname = usePathname();
+  /* @end */
+  return <Text>User: {user}</Text>;
+}
+```
+
+</APIBox>
+
+<APIBox header="useSearchParams">
+
+Returns the URL search parameters for the globally selected route. For example, `/acme?foo=bar` as `{ foo: "bar" }`.
+
+**Example route:** `/profile/baconbrix?extra=info`
+
+```js app/profile/[user].js
+import { Text } from 'react-native';
+import { useSearchParams } from 'expo-router';
+export default function Route() {
+  /* @info */
+  const { user, extra } = useSearchParams();
+  /* @end */
+  return <Text>User: {user}</Text>;
+}
+```
+
+If a route is at **[first]/home/.tsx**, a hook is called when the URL is `/abc/home`, in this case, the results of `useSearchParams` are:
+
+```js
+{
+  id: '123';
+}
+```
+
+`useSearchParams` is used for the global URL. When `/abc/home` pushes `/123/shop`, it returns `{ first: undefined, second: '123' }` on **/app/[first]/home.tsx**.
+
+<FileTree files={['app/_layout.js', 'app/[first]/home.tsx', 'app/[second]/home.tsx']} />
+
+If you want the params on **/app/[first]/home.tsx** to remain as `{ first: 'abc' }` you can use [`useLocalSearchParams`](#uselocalsearchparams).
+
+</APIBox>
+
+<APIBox header="useLocalSearchParams">
+
+Returns the URL search parameters for the contextually selected route. For example, `/acme?foo=bar` as `{ foo: "bar" }`. This is useful for stacks where the previous screen is still mounted.
+
+<FileTree files={['app/_layout.js', 'app/[first]/home.tsx', 'app/[second]/home.tsx']} />
+
+**Example route:** `/profile/baconbrix?extra=info`
+
+```js app/profile/[user].tsx
+import { Text } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+
+export default function Route() {
+  /* @info */
+  const { user, extra } = useLocalSearchParams();
+  /* @end */
+
+  return <Text>User: {user}</Text>;
+}
+```
+
+If a route is at **[first]/home/.tsx** and the hook is called when the URL is `/abc/home`, in this case, the results of `useLocalSearchParams` are:
+
+```js
+{
+  home: 'abc';
+}
+```
+
+When `/abc/home` pushes `/123/shop`, this hook returns `{ home: "abc" }`.
+
+</APIBox>
+
+<APIBox header="useSegments">
+
+Returns a list of segments for the currently selected route. Segments are not normalized so that they will be the same as the file path. For example, `/[id]?id=normal` as `["[id]"]`.
+
+```js app/profile/[user].js
+import { Text } from 'react-native';
+/* @info */
+import { useSegments } from 'expo-router';
+/* @end */
+
+export default function Route() {
+  /* @info */
+  const segments = useSegments();
+  /* @end */
+  // segments = ["profile", "[user]"]
+
+  return <Text>Hello</Text>;
+}
+```
+
+</APIBox>
+
+<APIBox header="useNavigation">
+
+Access the underlying React Navigation [`navigation` prop](https://reactnavigation.org/docs/navigation-prop) to imperatively access layout-specific functionality like `navigation.openDrawer()` in a Drawer layout. See [Navigator dependent functions](https://reactnavigation.org/docs/navigation-prop/#navigator-dependent-functions) for more information.
+
+{/* prettier-ignore */}
+```js app/profile.js
+/* @info */
+import { useNavigation } from 'expo-router';
+/* @end */
+
+export default function Route() {
+  /* @info */
+  const navigation = useNavigation();
+  /* @end */
+
+  return (
+    <View>
+      <Text onPress={() => {/* @info */navigation.openDrawer();/* @end */}}>
+        Open Drawer
+      </Text>
+    </View>
+  );
+}
+```
+
+</APIBox>
+
+## Types
+
+<APIBox header="Href">
+
+The `Href` type is a union of the following types:
+
+- **string**: A full path like `/profile/settings` or a relative path like `../settings`.
+- **object**: An object with a `pathname` and optional `params` object. The `pathname` can be a full path like `/profile/settings` or a relative path like `../settings`. The `params` can be an object of key/value pairs.
+
+</APIBox>
+
+## Redirect
+
+You can immediately redirect from a particular screen by using the `Redirect` component:
+
+```js app/page.js
+import { View, Text } from 'react-native';
+/* @info */
+import { Redirect } from 'expo-router';
+/* @end */
+
+export default function Page() {
+  /* @info Some logic to determine if the user is logged in.*/
+  const { user } = useAuth();
+  /* @end */
+
+  if (!user) {
+    /* @info Redirect to the login screen if the user is not authenticated.*/
+    return <Redirect href="/login" />;
+    /* @end */
+  }
+
+  return (
+    <View>
+      <Text>Welcome Back!</Text>
+    </View>
+  );
+}
+```
+
+You can also redirect imperatively using the `useRouter` hook:
+
+```js app/page.js
+import { Text } from 'react-native';
+import { useRouter, useFocusEffect } from 'expo-router';
+
+export default function Page() {
+  const router = useRouter();
+
+  useFocusEffect(() => {
+    // Call the replace method to redirect to a new route without adding to the history.
+    // We do this in a useFocusEffect to ensure the redirect happens every time
+    // the screen is focused.
+    router.replace('/profile/settings');
+  });
+
+  return <Text>My Screen</Text>;
+}
+```
 
 ## Next steps
 

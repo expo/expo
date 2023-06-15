@@ -6,6 +6,8 @@ hideFromSearch: true
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { APIBox } from '~/components/plugins/APIBox';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { BookOpen02Icon } from '@expo/styleguide-icons';
 
 This guide specifies how to handle unmatched routes and errors in your app when using Expo Router.
 
@@ -17,14 +19,15 @@ This guide specifies how to handle unmatched routes and errors in your app when 
   style={{ maxWidth: 720 }}
 />
 
-Native apps don't have a server so there are technically no 404s. However, if you're implementing a router universally, then it makes sense to handle missing routes. This is done automatically for each app, but you can also customize it.
+Native apps don't have a server, so there are technically no 404s. However, if you're implementing a router universally, handling missing routes makes sense. It is done automatically for each app. However, you can also customize it.
 
 ```js app/[...unmatched].js
 import { Unmatched } from 'expo-router';
+
 export default Unmatched;
 ```
 
-This will render the default `Unmatched`. You can export any component you want to render instead. We recommend having a link to `/` so users can navigate back to the home screen.
+The above example will render the default `Unmatched`. You can export any component you want to render instead. We recommend having a link to `/` so users can navigate back to the home screen.
 
 ## Error handling
 
@@ -41,6 +44,7 @@ You can export a nested `ErrorBoundary` component from any route to intercept an
 {/* prettier-ignore */}
 ```tsx app/home.tsx
 import { View, Text } from 'react-native';
+
 /* @info */
 export function ErrorBoundary(props: ErrorBoundaryProps) {
 /* @end */
@@ -51,7 +55,6 @@ export function ErrorBoundary(props: ErrorBoundaryProps) {
     </View>
   );
 }
-export default function Page() { ... }
 ```
 
 When you export an `ErrorBoundary` the route will be wrapped with a React Error Boundary effectively:
@@ -72,7 +75,7 @@ When `ErrorBoundary` is not present, the error will be thrown to the nearest par
 
 <APIBox header="ErrorBoundaryProps">
 
-Each `ErrorBoundary` is passed the following props:
+Following props are passed to each `ErrorBoundary`:
 
 - **error:** `Error` &mdash; The error that was thrown.
 - **retry:** `() => Promise<void>` &mdash; A function that will rerender the route component.
@@ -93,8 +96,4 @@ export { ErrorBoundary } from 'expo-router';
 ### Work in progress
 
 - Metro errors need to be symbolicated to show the correct file name and line number on the web.
-- React Native LogBox needs to be presented less aggressively to develop with errors. Currently, it shows for `console.error` and `console.warn`. However, it should ideally only show for uncaught errors.
-
-## Next steps
-
-{/* Add link to the Advance section which is inside the "Guides". */}
+- React Native [LogBox](/debugging/errors-and-warnings/) needs to be presented less aggressively to develop with errors. Currently, it shows for `console.error` and `console.warn`. However, it should only show for uncaught errors.

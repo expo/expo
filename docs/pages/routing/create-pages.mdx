@@ -32,7 +32,7 @@ export default function Page() {
 }
 ```
 
-The above example will match the `/` route in the app and the browser Files named **index** adds no path segment to the URL. The route file named **index** at the route of the directory is automatically considered the "index" route for that directory. For example, **app/settings/index.js** will match `/settings` in the app.
+The above example will match the `/` route in the app and the browser. Files named **index** adds no path segment to the URL. The route file named **index** at the root of the directory is automatically considered the "index" route for that directory. For example, **app/settings/index.js** will match `/settings` in the app.
 
 > Metro platform extensions (for example, **.ios.js**, **.native.ts**) are not supported. The page can re-export a component from a platform extension file.
 
@@ -45,7 +45,7 @@ Dynamic routes match any unmatched path at a given segment level.
 | **app/blog/[slug].js**    | `/blog/123`          |
 | **app/blog/[...rest].js** | `/blog/123/settings` |
 
-Routes with higher specificity will be matched before a dynamic route. For example, `/blog/bacon` will match **blog/bacon.js** before **blog/[id].js**.
+Routes with higher specificity will be matched before a dynamic route. For example, `/blog/bacon` route will match **blog/bacon.js** before **blog/[id].js**.
 
 Multiple slugs can be matched in a single route by using the rest syntax (`...`). For example, **app/blog/[...id].js** will match `/blog/123/settings`.
 

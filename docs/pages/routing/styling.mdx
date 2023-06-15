@@ -9,32 +9,29 @@ import { BookOpen02Icon } from '@expo/styleguide-icons';
 
 ## React Native Stylesheet API
 
-Expo Router supports styling using React Native's `StyleSheet.create` method as well as inline styles.
+Expo Router supports styling using React Native's [`StyleSheet` API](https://reactnative.dev/docs/stylesheet#create) and inline styles.
 
 ### Limits of React Native styling
 
-React Native's in-built `StyleSheet` API was designed as a low-level API and does not provide support for modern features that simplify building universal applications.
-
-When targeting the web, we highly recommend using a different method of styling. Methods such as ([CSS](/router/styling/css_web/)) allow responsive styling while streaming and avoid flashes of unstyled content.
+The `StyleSheet` API is designed as a low-level API and does not support modern features that simplify building universal applications. When targeting the web, we highly recommend using a different method of styling such as [CSS](#css) that allows responsive styling while streaming and avoids flashes of unstyled content.
 
 ## CSS
 
-> The following sections refer to upcoming Expo Router features which are experimental, not covered by semantic versioning and you may need to be using the latest version on `main`.
+> **warning** The following sections refer to upcoming Expo Router features that are experimental, not covered by semantic versioning, and you may need to use the latest version on `main`.
 
-Expo Router provides a CSS interop for your application. This allows you to style your application using the CSS language or use a styling solution that compiles to CSS. This is not a full CSS implementation. Think of it as "CSS with the good bits".
+Expo Router provides a CSS interop for your application. This allows you to style your application using the CSS language or use a styling solution that compiles to CSS. This is not a full CSS implementation. Think of it as **CSS with the good bits**.
 
 ### Features
 
-The CSS-interop provides React Native polyfills for the following common CSS features:
+The CSS interop provides React Native polyfills for the following common CSS features:
 
-- Additional relative units
-  - `vw`,`vh`
+- Additional relative units: `vw`,`vh`
 - [Media Queries](https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries/Using_media_queries)
   - [Media features](https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries/Using_media_queries#targeting_media_features)
-  - [prefered-color-scheme](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme)
+  - [`prefers-color-scheme`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme)
   - [Accessibility](https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries/Using_Media_Queries_for_Accessibility)
 - [Container Queries](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Container_Queries)
-  - Dimentions
+  - Dimensions
   - Styles
 - Style variables
 - Psuedo classes
@@ -42,8 +39,8 @@ The CSS-interop provides React Native polyfills for the following common CSS fea
 
 Additionally, it includes the following bundling features:
 
-- When developing locally, changes to stylesheets will instantly reflect changes as edits are made.
-- When building for production, CSS files will be minified and common styles grouped.
+- When working on the development stage, any changes made to the stylesheet are immediately reflected.
+- When building for production, CSS files are minified and common styles are grouped.
 
 ### Usage
 
@@ -53,9 +50,10 @@ Expo Router supports styling components via the `className` prop. Simply `import
 
 ```js app/_layout.js
 import { Slot } from 'expo-router';
-/* @info Import your styles! */
+/* @info Import your styles. */
 import 'global.css';
 /* @end */
+
 export default function RootLayout() {
   return <Slot />;
 }
@@ -73,6 +71,7 @@ CSS Modules are available by using the `.module.css` extension. They locally sco
 
 ```js app/index.js
 import styles from './styles.module.css';
+
 export default function MyApp() {
   return <div styles={styles.container} />;
 }
@@ -82,7 +81,7 @@ export default function MyApp() {
 
 #### Flexbox
 
-Yoga (React Native's layout engine) uses a slightly different Flexbox model than web browsers, as such there are minor behavioral differences.
+Yoga (React Native's layout engine) uses a slightly different Flexbox model than web browsers, and there are minor behavioral differences.
 
 | Feature        | Difference                                                | Solution                         |
 | -------------- | --------------------------------------------------------- | -------------------------------- |
@@ -102,10 +101,10 @@ flex-basis: 0;
 
 #### No style inheritance
 
-The CSS interop does not support [CSS Cascade](https://developer.mozilla.org/en-US/docs/Web/CSS/Cascade). As such, allow CSS rules should be written as single selectors. We recommend using a CSS methodology such as:
+CSS interop does not support [CSS Cascade](https://developer.mozilla.org/en-US/docs/Web/CSS/Cascade). CSS rules should be written as single selectors. We recommend using a CSS methodology such as:
 
-- Atomic CSS (https://css-tricks.com/lets-define-exactly-atomic-css/)
-- BEM (https://getbem.com/introduction/)
+- [Atomic CSS](https://css-tricks.com/lets-define-exactly-atomic-css/)
+- [BEM](https://getbem.com/introduction/)
 
 #### Selectors
 
@@ -120,13 +119,13 @@ div {
 .container .text {
   color: red;
 }
-// ✔️
+// ✅
 .text-red {
   color: red;
 }
 ```
 
-You can still specify them, as they are still valid for web, but we recommend limiting usage to only `html`/`body`
+Since they are valid for the web, you can still specify them. However, we recommend limiting usage to only `html` or `body` tags.
 
 #### Specificity
 
@@ -136,13 +135,27 @@ Native styles are resolved right-to-left, while Web styles are resolved via [CSS
 
 #### rem
 
-`rem` is the relative CSS unit for the Font size of the root element. On native, the font size defaults to `14` and is _not relative_ to your root element. If you which to dynamically change the `rem` value, you need to set `inlineRem: false` in your **metro.config.js** file. Now the value of `rem` can be set by calling `StyleSheet.rem.set(<number>)`.
+Relative CSS unit `rem` refers to the font size of the root element. However, on native platforms, the font size defaults to `14` and is _not relative_ to your root element. If you want to dynamically change the `rem` value, you need to set `inlineRem: false` in **metro.config.js**. This allows the value of `rem` to be set by calling `StyleSheet.rem.set(<number>)`.
+
+{/* prettier-ignore */}
+```js metro.config.js
+module.exports = {
+  transformer: {
+    getTransformOptions: async () => ({
+      transform: {
+        /* @hide ... */ /* @end */
+        inlineRequires: true,
+      },
+    }),
+  },
+};
+```
 
 ## Troubleshooting
 
-### Elements are not appearing on Native
+### Elements are not appearing on native
 
-This is most likely due to minor differences in [React Native's flexbox model](#flexbox). A common offender is the differences between `flex-shrink` and simply setting `flex: 1` will resolve your issue.
+This is most likely due to minor differences in [React Native's flexbox model](#flexbox). A common offender is the differences between `flex-shrink` and setting `flex: 1` resolves the issue.
 
 ## Next steps
 

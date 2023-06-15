@@ -17,7 +17,7 @@ This is useful for adding layouts without adding additional segments to the URL.
 
 ## Shared routes
 
-To match the same URL with different layouts, use **groups** with overlapping child routes. This pattern is very common in native apps. For example, in the Twitter app, a profile can be viewed in every tab (such as home, search, and profile). However, there is only one URL that is required to access this route.
+Use **groups** with overlapping child routes to match the same URL with different layouts. This pattern is common in native apps. For example, in the Twitter app, the profile is viewable in every tab (such as home, search, and profile). However, only one URL is required to access this route.
 
 In the example below, **app/\_layout.js** is the tab bar and each route has its own header. The **app/(profile)/[user].js** route is shared between each tab.
 
@@ -33,8 +33,7 @@ In the example below, **app/\_layout.js** is the tab bar and each route has its 
   ]}
 />
 
-> When reloading the page, the first match (alphabetically) will be rendered.
-> Shared routes can be navigated directly by including the group name in the route. For example, `/(search)/baconbrix` navigates to `/baconbrix` in the "search" layout.
+> When you reload a page, the first match in alphabetical order will appear. You can access shared routes by including the group name to the route. For example, if you want to go to `/baconbrix` in the "search" layout, navigate to `/(search)/baconbrix`.
 
 ## Arrays
 
@@ -53,7 +52,7 @@ export default function DynamicLayout({ segment }) {
 
 ## Layouts
 
-Pages on their own fill the entire screen. Moving between them is a full-page transition with no animation. In native apps, users expect shared elements like headers and tab bars to persist between pages. These can be created using **layout routes**.
+Pages on their own fill the entire screen. Moving between them is a full-page transition with no animation. In native apps, users expect shared elements such as headers and tab bars to persist between pages. These can be created using **layout routes**.
 
 ### Create a layout route
 
@@ -61,6 +60,7 @@ To create a layout route for a directory, create a file named **\_layout.js** in
 
 ```js app/home/_layout.js
 import { Slot } from 'expo-router';
+
 export default function HomeLayout() {
   return <Slot />;
 }
@@ -70,6 +70,7 @@ From the above example, `Slot` will render the selected child route. This compon
 
 ```js app/home/_layout.js
 import { Slot } from 'expo-router';
+
 export default function HomeLayout() {
   return (
     <>
@@ -83,14 +84,15 @@ export default function HomeLayout() {
 
 ### Native layouts
 
-Mobile app users expect a refined platform-specific look and native feel for layouts. Expo Router provides a few drop-in native layouts that you can use to easily achieve familiar native behavior.
+Mobile app users expect a refined platform-specific look and native feel for layouts. Expo Router provides a few drop-in native layouts that you can use to achieve familiar native behavior.
 
-- `Stack`: Render a stack of screens like a deck of cards with a header on top. This is a native stack navigator that uses native animations and gestures. Extends the [`@react-navigation/native-stack`](https://reactnavigation.org/docs/native-stack-navigator) library.
-- `Tabs`: Render screens with a tab bar below. Extends the [`@react-navigation/bottom-tabs`](https://reactnavigation.org/docs/bottom-tab-navigator/) library.
+- `Stack`: Render a stack of screens like a deck of cards with a header on top. This is a native stack navigator that uses native animations and gestures. It extends the [`@react-navigation/native-stack`](https://reactnavigation.org/docs/native-stack-navigator) library.
+- `Tabs`: Render screens with a tab bar below. It extends the [`@react-navigation/bottom-tabs`](https://reactnavigation.org/docs/bottom-tab-navigator/) library.
 - `Navigator`: Render screens in a generic, unstyled wrapper. This is useful for creating custom layouts.
 
 ```js app/home/_layout.js
 import { Stack } from 'expo-router';
+
 export default function HomeLayout() {
     return (
         <Stack screenOptions={{ ... }} />
@@ -98,7 +100,7 @@ export default function HomeLayout() {
 }
 ```
 
-{/* Note: this was marked TODO so we decided to comment it out for now. */}
+{/* Note(@aman): this was marked TODO so we decided to comment it out for now. */}
 {/* ## Custom layouts */}
 
 ## Next steps
