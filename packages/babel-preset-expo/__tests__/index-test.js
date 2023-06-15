@@ -45,6 +45,24 @@ import { View } from 'react-native';
     expect(code).toMatchSnapshot();
   });
 
+  it(`transpiles non-standard exports`, () => {
+    const options = {
+      babelrc: false,
+      presets: [preset],
+      filename: 'unknown',
+      // Make the snapshot easier to read
+      retainLines: true,
+      caller,
+    };
+
+    const sourceCode = `
+export * as default from './Animated';
+`;
+    const { code } = babel.transform(sourceCode, options);
+
+    expect(code).toMatchSnapshot();
+  });
+
   it(`supports automatic JSX runtime`, () => {
     const options = {
       babelrc: false,

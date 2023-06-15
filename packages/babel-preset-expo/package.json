@@ -46,6 +46,7 @@
   },
   "dependencies": {
     "@babel/plugin-proposal-decorators": "^7.12.9",
+    "@babel/plugin-proposal-export-namespace-from": "^7.18.9",
     "@babel/plugin-proposal-object-rest-spread": "^7.12.13",
     "@babel/plugin-transform-react-jsx": "^7.12.17",
     "@babel/preset-env": "^7.20.0",
