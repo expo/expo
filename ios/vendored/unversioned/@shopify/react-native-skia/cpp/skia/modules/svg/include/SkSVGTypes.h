@@ -18,8 +18,9 @@
 #include "include/core/SkSpan.h"
 #include "include/core/SkString.h"
 #include "include/core/SkTypes.h"
-#include "include/private/SkTDArray.h"
-#include "src/core/SkTLazy.h"
+
+#include <optional>
+#include <vector>
 
 using SkSVGColorType     = SkColor;
 using SkSVGIntegerType   = int;
@@ -27,7 +28,7 @@ using SkSVGNumberType    = SkScalar;
 using SkSVGStringType    = SkString;
 using SkSVGViewBoxType   = SkRect;
 using SkSVGTransformType = SkMatrix;
-using SkSVGPointsType    = SkTDArray<SkPoint>;
+using SkSVGPointsType    = std::vector<SkPoint>;
 
 enum class SkSVGPropertyState {
     kUnspecified,
@@ -45,17 +46,17 @@ public:
     explicit SkSVGProperty(SkSVGPropertyState state) : fState(state) {}
 
     explicit SkSVGProperty(const T& value) : fState(SkSVGPropertyState::kValue) {
-        fValue.set(value);
+        fValue = value;
     }
 
     explicit SkSVGProperty(T&& value) : fState(SkSVGPropertyState::kValue) {
-        fValue.set(std::move(value));
+        fValue = std::move(value);
     }
 
     template <typename... Args>
     void init(Args&&... args) {
         fState = SkSVGPropertyState::kValue;
-        fValue.init(std::forward<Args>(args)...);
+        fValue.emplace(std::forward<Args>(args)...);
     }
 
     constexpr bool isInheritable() const { return kInheritable; }
@@ -63,7 +64,7 @@ public:
     bool isValue() const { return fState == SkSVGPropertyState::kValue; }
 
     T* getMaybeNull() const {
-        return fValue.getMaybeNull();
+        return fValue.has_value() ? &fValue.value() : nullptr;
     }
 
     void set(SkSVGPropertyState state) {
@@ -75,41 +76,41 @@ public:
 
     void set(const T& value) {
         fState = SkSVGPropertyState::kValue;
-        fValue.set(value);
+        fValue = value;
     }
 
     void set(T&& value) {
         fState = SkSVGPropertyState::kValue;
-        fValue.set(std::move(value));
+        fValue = std::move(value);
     }
 
     T* operator->() {
         SkASSERT(fState == SkSVGPropertyState::kValue);
-        SkASSERT(fValue.isValid());
-        return fValue.get();
+        SkASSERT(fValue.has_value());
+        return &fValue.value();
     }
 
     const T* operator->() const {
         SkASSERT(fState == SkSVGPropertyState::kValue);
-        SkASSERT(fValue.isValid());
-        return fValue.get();
+        SkASSERT(fValue.has_value());
+        return &fValue.value();
     }
 
     T& operator*() {
         SkASSERT(fState == SkSVGPropertyState::kValue);
-        SkASSERT(fValue.isValid());
+        SkASSERT(fValue.has_value());
         return *fValue;
     }
 
     const T& operator*() const {
         SkASSERT(fState == SkSVGPropertyState::kValue);
-        SkASSERT(fValue.isValid());
+        SkASSERT(fValue.has_value());
         return *fValue;
     }
 
 private:
     SkSVGPropertyState fState;
-    SkTLazy<T> fValue;
+    std::optional<T>   fValue;
 };
 
 class SkSVGLength {
@@ -180,7 +181,7 @@ public:
         kColor,
         kICCColor,
     };
-    using Vars = SkSTArray<1, SkString>;
+    using Vars = std::vector<SkString>;
 
     SkSVGColor() : SkSVGColor(SK_ColorBLACK) {}
     explicit SkSVGColor(const SkSVGColorType& c) : fType(Type::kColor), fColor(c), fVars(nullptr) {}
@@ -400,7 +401,7 @@ public:
 
     SkSVGDashArray()                : fType(Type::kNone) {}
     explicit SkSVGDashArray(Type t) : fType(t) {}
-    explicit SkSVGDashArray(SkTDArray<SkSVGLength>&& dashArray)
+    explicit SkSVGDashArray(std::vector<SkSVGLength>&& dashArray)
         : fType(Type::kDashArray)
         , fDashArray(std::move(dashArray)) {}
 
@@ -414,11 +415,11 @@ public:
 
     Type type() const { return fType; }
 
-    const SkTDArray<SkSVGLength>& dashArray() const { return fDashArray; }
+    const std::vector<SkSVGLength>& dashArray() const { return fDashArray; }
 
 private:
     Type fType;
-    SkTDArray<SkSVGLength> fDashArray;
+    std::vector<SkSVGLength> fDashArray;
 };
 
 class SkSVGStopColor {
@@ -673,7 +674,7 @@ enum class SkSVGFeColorMatrixType {
     kLuminanceToAlpha,
 };
 
-using SkSVGFeColorMatrixValues = SkTDArray<SkSVGNumberType>;
+using SkSVGFeColorMatrixValues = std::vector<SkSVGNumberType>;
 
 enum class SkSVGFeCompositeOperator {
     kOver,
