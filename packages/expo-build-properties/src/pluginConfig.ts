@@ -90,10 +90,11 @@ export interface PluginConfigTypeAndroid {
   flipper?: string;
 
   /**
-   * Enable the experimental Network Inspector for [Development builds](https://docs.expo.dev/develop/development-builds/introduction/).
-   * SDK 49+ is required.
+   * Enable the Network Inspector.
+   *
+   * @default true
    */
-  unstable_networkInspector?: boolean;
+  networkInspector?: boolean;
 
   /**
    * Add extra maven repositories to all gradle projects.
@@ -152,10 +153,11 @@ export interface PluginConfigTypeIos {
   flipper?: boolean | string;
 
   /**
-   * Enable the experimental Network Inspector for [Development builds](https://docs.expo.dev/develop/development-builds/introduction/).
-   * SDK 49+ is required.
+   * Enable the Network Inspector.
+   *
+   * @default true
    */
-  unstable_networkInspector?: boolean;
+  networkInspector?: boolean;
 
   /**
    * Add extra CocoaPods dependencies for all targets.
@@ -302,7 +304,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
           nullable: true,
         },
 
-        unstable_networkInspector: { type: 'boolean', nullable: true },
+        networkInspector: { type: 'boolean', nullable: true },
 
         extraMavenRepos: { type: 'array', items: { type: 'string' }, nullable: true },
       },
@@ -320,7 +322,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
           nullable: true,
         },
 
-        unstable_networkInspector: { type: 'boolean', nullable: true },
+        networkInspector: { type: 'boolean', nullable: true },
 
         extraPods: {
           type: 'array',
