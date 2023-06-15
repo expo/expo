@@ -166,10 +166,10 @@ open class DevMenuManager: NSObject {
   public func closeMenu(completion: (() -> Void)? = nil) -> Bool {
     if isVisible {
       if Thread.isMainThread {
-          window?.closeBottomSheet(completion: completion)
+        window?.closeBottomSheet(completion: completion)
       } else {
         DispatchQueue.main.async { [self] in
-            window?.closeBottomSheet(completion: completion)
+          window?.closeBottomSheet(completion: completion)
         }
       }
       return true

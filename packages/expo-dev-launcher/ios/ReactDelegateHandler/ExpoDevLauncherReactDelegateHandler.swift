@@ -78,7 +78,7 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
 
     // swiftlint:disable:next force_unwrapping
     guard let rootView = self.bridgeDelegateHandler.createRootView(with: bridge, moduleName: self.rootViewModuleName!, initProps: self.rootViewInitialProperties)  else {
-        return
+      return
     }
     rootView.backgroundColor = self.deferredRootView?.backgroundColor ?? UIColor.white
     let window = getWindow()
