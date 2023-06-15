@@ -6,7 +6,7 @@
   "@react-native-community/netinfo": "9.3.10",
   "@react-native-community/slider": "4.4.2",
   "@react-native-community/viewpager": "5.0.11",
-  "@react-native-picker/picker": "2.4.8",
+  "@react-native-picker/picker": "2.4.10",
   "@react-native-segmented-control/segmented-control": "2.4.0",
   "@stripe/stripe-react-native": "0.23.3",
   "expo-analytics-amplitude": "~11.3.0",
