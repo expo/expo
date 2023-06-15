@@ -1,7 +1,7 @@
 import { asMock } from '../../__tests__/asMock';
+import { hasDirectDevClientDependency } from '../../utils/analytics/getDevClientProperties';
 import { resolvePortAsync } from '../../utils/port';
 import { resolveHostType, resolveOptionsAsync, resolvePortsAsync } from '../resolveOptions';
-import { hasDirectDevClientDependency } from '../../utils/analytics/getDevClientProperties';
 
 jest.mock('../../utils/port', () => {
   return {
