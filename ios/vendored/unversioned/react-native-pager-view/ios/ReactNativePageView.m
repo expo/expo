@@ -9,7 +9,9 @@
 #import "RCTOnPageSelected.h"
 #import <math.h>
 
-@interface ReactNativePageView () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, UIScrollViewDelegate>
+@interface ReactNativePageView () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, UIScrollViewDelegate, UIGestureRecognizerDelegate>
+
+@property(nonatomic, assign) UIPanGestureRecognizer* panGestureRecognizer;
 
 @property(nonatomic, strong) UIPageViewController *reactPageViewController;
 @property(nonatomic, strong) RCTEventDispatcher *eventDispatcher;
@@ -45,6 +47,10 @@
         _cachedControllers = [NSHashTable hashTableWithOptions:NSHashTableStrongMemory];
         _overdrag = NO;
         _layoutDirection = @"ltr";
+        UIPanGestureRecognizer* panGestureRecognizer = [UIPanGestureRecognizer new];
+        self.panGestureRecognizer = panGestureRecognizer;
+        panGestureRecognizer.delegate = self;
+        [self addGestureRecognizer: panGestureRecognizer];
     }
     return self;
 }
@@ -375,6 +381,8 @@
         if ((isFirstPage && contentOffset <= topBound) || (isLastPage && contentOffset >= topBound)) {
             CGPoint croppedOffset = [self isHorizontal] ? CGPointMake(topBound, 0) : CGPointMake(0, topBound);
             *targetContentOffset = croppedOffset;
+            
+            [self.eventDispatcher sendEvent:[[RCTOnPageScrollStateChanged alloc] initWithReactTag:self.reactTag state:@"idle" coalescingKey:_coalescingKey++]];
         }
     }
 }
@@ -456,6 +464,28 @@
         }
     }
     return scrollDirection;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+
+    // Recognize simultaneously only if the other gesture is RN Screen's pan gesture (one that is used to perform fullScreenGestureEnabled)
+    if (gestureRecognizer == self.panGestureRecognizer && [NSStringFromClass([otherGestureRecognizer class]) isEqual: @"RNSPanGestureRecognizer"]) {
+        UIPanGestureRecognizer* panGestureRecognizer = (UIPanGestureRecognizer*) gestureRecognizer;
+        CGPoint velocity = [panGestureRecognizer velocityInView:self];
+        BOOL isLTR = [self isLtrLayout];
+        BOOL isBackGesture = (isLTR && velocity.x > 0) || (!isLTR && velocity.x < 0);
+        
+        if (self.currentIndex == 0 && isBackGesture) {
+            self.scrollView.panGestureRecognizer.enabled = false;
+        } else {
+            self.scrollView.panGestureRecognizer.enabled = self.scrollEnabled;
+        }
+        
+        return YES;
+    }
+    
+    self.scrollView.panGestureRecognizer.enabled = self.scrollEnabled;
+    return NO;
 }
 
 - (BOOL)isLtrLayout {
