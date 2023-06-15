@@ -436,9 +436,16 @@ RCTAutoInsetsProtocol>
   return wkWebViewConfig;
 }
 
+// react-native-mac os does not support didMoveToSuperView https://github.com/microsoft/react-native-macos/blob/main/React/Base/RCTUIKit.h#L388
+#if !TARGET_OS_OSX
 - (void)didMoveToSuperview
 {
   if (_webView == nil) {
+#else
+- (void)didMoveToWindow
+{
+  if (self.window != nil && _webView == nil) {
+#endif // !TARGET_OS_OSX
     WKWebViewConfiguration *wkWebViewConfig = [self setUpWkWebViewConfig];
     _webView = [[RNCWKWebView alloc] initWithFrame:self.bounds configuration: wkWebViewConfig];
     [self setBackgroundColor: _savedBackgroundColor];
