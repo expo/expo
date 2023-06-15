@@ -1,6 +1,7 @@
 import { asMock } from '../../__tests__/asMock';
 import { resolvePortAsync } from '../../utils/port';
 import { resolveHostType, resolveOptionsAsync, resolvePortsAsync } from '../resolveOptions';
+import { hasDirectDevClientDependency } from '../../utils/analytics/getDevClientProperties';
 
 jest.mock('../../utils/port', () => {
   return {
@@ -10,6 +11,11 @@ jest.mock('../../utils/port', () => {
 jest.mock('../../utils/scheme', () => {
   return {
     getOptionalDevClientSchemeAsync: jest.fn(async () => []),
+  };
+});
+jest.mock('../../utils/analytics/getDevClientProperties', () => {
+  return {
+    hasDirectDevClientDependency: jest.fn(() => false),
   };
 });
 
@@ -38,6 +44,14 @@ describe(resolveOptionsAsync, () => {
   });
   it(`sets devClient to true`, async () => {
     expect((await resolveOptionsAsync('/noop', { '--dev-client': true })).devClient).toBe(true);
+  });
+  it(`infers that devClient should be true`, async () => {
+    jest.mocked(hasDirectDevClientDependency).mockReturnValueOnce(true);
+    expect((await resolveOptionsAsync('/noop', {})).devClient).toBe(true);
+  });
+  it(`--go forces devClient to false`, async () => {
+    jest.mocked(hasDirectDevClientDependency).mockReturnValueOnce(true);
+    expect((await resolveOptionsAsync('/noop', { '--go': true })).devClient).toBe(false);
   });
 });
 

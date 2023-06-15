@@ -68,18 +68,25 @@ The UI that shows up in the process is referred to as the **Terminal UI**. It co
 
 | Keyboard shortcut               | Description                                                                                                                                                                              |
 | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <kbd>A</kbd>                    | Open the project in Expo Go on Android.                                                                                                                                                  |
+| <kbd>A</kbd>                    | Open the project on a connected Android device.                                                                                                                                          |
 | <kbd>Shift</kbd> + <kbd>A</kbd> | Select an Android device or emulator to open.                                                                                                                                            |
-| <kbd>I</kbd>                    | Open the project in Expo Go on iOS.                                                                                                                                                      |
+| <kbd>I</kbd>                    | Open the project in an iOS simulator.                                                                                                                                                    |
 | <kbd>Shift</kbd> + <kbd>I</kbd> | Select an iOS Simulator to open.                                                                                                                                                         |
 | <kbd>W</kbd>                    | Open the project in a web browser. This may require webpack to be installed in your project.                                                                                             |
 | <kbd>R</kbd>                    | Reload the app on any connected device.                                                                                                                                                  |
+| <kbd>S</kbd>                    | Switch the launch target between Expo Go and development builds.                                                                                                                         |
 | <kbd>M</kbd>                    | Open the dev menu on any connected native device (web not supported).                                                                                                                    |
 | <kbd>Shift</kbd> + <kbd>M</kbd> | Choose more commands to trigger on connected devices.<br/>This includes toggling the performance monitor, opening the element inspector, reloading the device, and opening the dev menu. |
 | <kbd>J</kbd>                    | Open Chrome Dev Tools for any connected device that is using Hermes as the JavaScript engine. [Learn more](/guides/using-hermes#javascript-inspector-for-hermes).                        |
 | <kbd>O</kbd>                    | Open project code in your editor. This can be configured with the `EXPO_EDITOR` and `EDITOR` [environment variables](#environment-variables).                                            |
 | <kbd>E</kbd>                    | Show the development server URL as a QR code in the terminal.                                                                                                                            |
 | <kbd>?</kbd>                    | Show all Terminal UI commands.                                                                                                                                                           |
+
+### Launch target
+
+The `npx expo start` command will automatically launch the app in Expo Go unless `expo-dev-client` in installed in the project, in which case it will open in the custom app. You can force the launch target by passing the `--dev-client` and `--go` flags. For example, running `npx expo start --go` will always launch the app in Expo Go, and `npx expo start --dev-client` will always attempt to launch the app in a development build.
+
+You can switch the launch target during runtime by pressing <kbd>S</kbd> in the **Terminal UI**. The run commands will also default to using `--dev-client` after compiling the development build.
 
 ### Server URL
 
@@ -326,6 +333,7 @@ For example, you are testing a new version of `react-native-reanimated` to verif
 You can exclude specific packages from the version checks while still allowing the `install` command to install, check, and fix any other dependencies. This configuration extends to the checking done by `npx expo-doctor`.
 
 To exclude packages from version checking, set the `expo.install` config object in your project's **package.json**:
+
 ```json package.json
 {
   "expo": {

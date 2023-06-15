@@ -8,6 +8,7 @@
 
 - Add `-g, --go` option to `expo start` to force using Expo Go by default. ([#22925](https://github.com/expo/expo/pull/22925) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `-d` as an alias to `--dev-client`. ([#22925](https://github.com/expo/expo/pull/22925) by [@EvanBacon](https://github.com/EvanBacon))
+- Auto enable `--dev-client` in `expo start` if `--go` is not passed and `expo-dev-client` is in the `package.json`.
 
 ### 🐛 Bug fixes
 
