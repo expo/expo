@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add ability to switch modes while running.
+
 ### 🐛 Bug fixes
 
 - Prevent source map requests for context modules from reaching Metro. ([#22874](https://github.com/expo/expo/pull/22874) by [@EvanBacon](https://github.com/EvanBacon))

@@ -10,6 +10,9 @@ import { TypeScriptProjectPrerequisite } from '../doctor/typescript/TypeScriptPr
 import * as AndroidDebugBridge from '../platforms/android/adb';
 import { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
 import { getPlatformBundlers } from './platformBundlers';
+import { Log } from '../../log';
+import { resolveSchemeAsync } from '../resolveOptions';
+import { BLT } from '../interface/commandsTable';
 
 const debug = require('debug')('expo:start:server:devServerManager') as typeof console.log;
 
@@ -125,6 +128,28 @@ export class DevServerManager {
         options: this.options,
       },
     ]);
+  }
+
+  /** Switch between Expo Go and Expo Dev Clients. */
+  async toggleRuntimeMode(isUsingDevClient: boolean = !this.options.devClient): Promise<boolean> {
+    const nextMode = isUsingDevClient ? 'Dev Client' : 'Expo Go';
+    Log.log(chalk`${BLT} Switching to {bold ${nextMode}}`);
+
+    const nextScheme = await resolveSchemeAsync(this.projectRoot, {
+      devClient: isUsingDevClient,
+    });
+
+    this.options.location.scheme = nextScheme;
+    this.options.devClient = isUsingDevClient;
+    for (const devServer of devServers) {
+      devServer.isDevClient = isUsingDevClient;
+      const urlCreator = devServer.getUrlCreator();
+      urlCreator.defaults ??= {};
+      urlCreator.defaults.scheme = nextScheme;
+    }
+
+    debug(`New runtime options (runtime: ${nextMode}):`, this.options);
+    return true;
   }
 
   /** Start all dev servers. */
