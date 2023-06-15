@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add ability to switch modes while running.
+- Add ability to switch modes while running. ([#22924](https://github.com/expo/expo/pull/22924) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 

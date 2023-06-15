@@ -41,8 +41,8 @@ export function printUsage(
   const isIosDisabled = !platforms.includes('ios');
   const isWebDisable = !platforms.includes('web');
 
-  const switchMsg = `switch to ${options.devClient === false ? 'Dev Client' : 'Expo Go'}`;
-  const target = options.devClient === false ? `Expo Go` : 'Dev Client';
+  const switchMsg = `switch to ${options.devClient === false ? 'development build' : 'Expo Go'}`;
+  const target = options.devClient === false ? `Expo Go` : 'development build';
 
   Log.log();
   Log.log(printItem(chalk`Using {cyan ${target}}`));
