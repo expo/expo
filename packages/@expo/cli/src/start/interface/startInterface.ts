@@ -44,6 +44,7 @@ export async function startInterfaceAsync(
 
   const usageOptions = {
     isWebSocketsEnabled,
+    devClient: devServerManager.options.devClient,
     ...options,
   };
 

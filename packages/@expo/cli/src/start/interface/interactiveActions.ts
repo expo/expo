@@ -48,7 +48,7 @@ export class DevServerManagerActions {
         } else {
           Log.log(
             printItem(
-              'Scan the QR code above to open the project in your development build. ' +
+              'Scan the QR code above to open the project in a development build. ' +
                 learnMore('https://expo.fyi/start')
             )
           );
