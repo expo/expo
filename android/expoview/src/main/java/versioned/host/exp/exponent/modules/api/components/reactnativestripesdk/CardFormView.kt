@@ -20,13 +20,12 @@ import com.google.android.material.shape.ShapeAppearanceModel
 import versioned.host.exp.exponent.modules.api.components.reactnativestripesdk.utils.*
 import versioned.host.exp.exponent.modules.api.components.reactnativestripesdk.utils.mapCardBrand
 import com.stripe.android.core.model.CountryCode
-import com.stripe.android.databinding.CardMultilineWidgetBinding
+import com.stripe.android.databinding.StripeCardMultilineWidgetBinding
 import com.stripe.android.databinding.StripeCardFormViewBinding
 import com.stripe.android.model.Address
 import com.stripe.android.model.PaymentMethodCreateParams
 import com.stripe.android.view.CardFormView
 import com.stripe.android.view.CardInputListener
-import host.exp.expoview.R
 
 class CardFormView(context: ThemedReactContext) : FrameLayout(context) {
   private var cardForm: CardFormView = CardFormView(context, null, R.style.StripeCardFormView_Borderless)
@@ -36,7 +35,7 @@ class CardFormView(context: ThemedReactContext) : FrameLayout(context) {
   var cardParams: PaymentMethodCreateParams.Card? = null
   var cardAddress: Address? = null
   private val cardFormViewBinding = StripeCardFormViewBinding.bind(cardForm)
-  private val multilineWidgetBinding = CardMultilineWidgetBinding.bind(cardFormViewBinding.cardMultilineWidget)
+  private val multilineWidgetBinding = StripeCardMultilineWidgetBinding.bind(cardFormViewBinding.cardMultilineWidget)
 
   init {
     cardFormViewBinding.cardMultilineWidgetContainer.isFocusable = true
