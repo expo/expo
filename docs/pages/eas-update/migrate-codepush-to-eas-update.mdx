@@ -33,21 +33,15 @@ You'll also need to remove CodePush references from JS and native code. Follow t
 </Step>
 
 <Step label="2">
-## Ensure `app.json` exists
+## Ensure proper `app.json`
 
-Ensure that your project has an `app.json` file with an `expo` object. If you don't have one, you can create one by running the command:
+Ensure that your project has an `app.json` file with an `expo` object. If you don't have anything specific to configure in your `app.json` file yet, you can simply create a minimal `app.json` file with an empty `expo` object like this:
 
-<Terminal
-  cmd={[
-    `if [ ! -f app.json ] || [ ! -s app.json ]; then`,
-    `  echo '{"expo": {}}' > app.json;`,
-    `else`,
-    `  jq '.' app.json &> /dev/null || { echo "Error: Malformed JSON in app.json" >&2; }`,
-    `  jq 'if .expo == null then .expo = {} else . end' app.json > app.json.tmp && mv app.json.tmp app.json`,
-    `fi`,
-  ]}
-  cmdCopy={`if [ ! -f app.json ] || [ ! -s app.json ]; then echo '{"expo": {}}' > app.json; else jq '.' app.json &> /dev/null || { echo "Error: Malformed JSON in app.json" >&2; }; jq 'if .expo == null then .expo = {} else . end' app.json > app.json.tmp && mv app.json.tmp app.json; fi`}
-/>
+```json app.json
+{
+  "expo": {}
+}
+```
 
 </Step>
 
@@ -122,3 +116,4 @@ Please follow the respective store guidelines for submitting a new build of your
 After successfully submitting your app, users will be able to download and use the latest build with EAS Update integration.
 
 </Step>
+```
