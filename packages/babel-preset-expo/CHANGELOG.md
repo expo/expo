@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `@babel/plugin-proposal-export-namespace-from`.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
