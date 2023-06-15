@@ -46,7 +46,12 @@ export class DevServerManagerActions {
             printItem('Scan the QR code above with Expo Go (Android) or the Camera app (iOS)')
           );
         } else {
-          Log.log(printItem('Scan the QR code above to open the project in your development build. Learn more: https://expo.fyi/start'))
+          Log.log(
+            printItem(
+              'Scan the QR code above to open the project in your development build. ' +
+                learnMore('https://expo.fyi/start')
+            )
+          );
         }
       } catch (error) {
         console.log('err', error);
