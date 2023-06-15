@@ -808,10 +808,11 @@ PODS:
     - React-Core
   - RNGestureHandler (2.10.1):
     - React-Core
-  - RNReanimated (3.1.0):
+  - RNReanimated (3.3.0):
     - DoubleConversion
     - FBLazyVector
     - glog
+    - hermes-engine
     - RCT-Folly
     - RCTRequired
     - RCTTypeSafety
@@ -821,11 +822,13 @@ PODS:
     - React-Core/RCTWebSocket
     - React-CoreModules
     - React-cxxreact
+    - React-hermes
     - React-jsi
     - React-jsiexecutor
     - React-jsinspector
     - React-RCTActionSheet
     - React-RCTAnimation
+    - React-RCTAppDelegate
     - React-RCTBlob
     - React-RCTImage
     - React-RCTLinking
@@ -1500,7 +1503,7 @@ SPEC CHECKSUMS:
   RNDateTimePicker: 00247f26c34683c80be94207f488f6f13448586e
   RNFlashList: 399bf6a0db68f594ad2c86aaff3ea39564f39f8a
   RNGestureHandler: 42ec7c28dd02d540ed6c9159c57a98ff016492dc
-  RNReanimated: b4f101902606e60b4b045e813e47204c2d7b38a7
+  RNReanimated: 11ef210bd11e80668ed3708f7a9dd846ae29e99c
   RNScreens: 218801c16a2782546d30bd2026bb625c0302d70f
   RNSharedElement: 504fa28a235b12505b6daedbb452a9ec96809bd0
   RNSVG: 07dbd870b0dcdecc99b3a202fa37c8ca163caec2
