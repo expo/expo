@@ -228,21 +228,21 @@ public class ViewShot implements UIBlock, LifecycleEventListener {
         mBgHandler.post(new Runnable() {
             @Override
             public void run() {
-                final View view;
-
-                if (tag == -1) {
-                    view = currentActivity.getWindow().getDecorView().findViewById(android.R.id.content);
-                } else {
-                    view = nativeViewHierarchyManager.resolveView(tag);
-                }
-
-                if (view == null) {
-                    Log.e(TAG, "No view found with reactTag: " + tag, new AssertionError());
-                    promise.reject(ERROR_UNABLE_TO_SNAPSHOT, "No view found with reactTag: " + tag);
-                    return;
-                }
-
                 try {
+                    final View view;
+
+                    if (tag == -1) {
+                        view = currentActivity.getWindow().getDecorView().findViewById(android.R.id.content);
+                    } else {
+                        view = nativeViewHierarchyManager.resolveView(tag);
+                    }
+
+                    if (view == null) {
+                        Log.e(TAG, "No view found with reactTag: " + tag, new AssertionError());
+                        promise.reject(ERROR_UNABLE_TO_SNAPSHOT, "No view found with reactTag: " + tag);
+                        return;
+                    }
+
                     final ReusableByteArrayOutputStream stream = new ReusableByteArrayOutputStream(outputBuffer);
                     stream.setSize(proposeSize(view));
                     outputBuffer = stream.innerBuffer();
