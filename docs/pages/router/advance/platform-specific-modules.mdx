@@ -6,7 +6,7 @@ hideTOC: true
 
 import { FileTree } from '~/ui/components/FileTree';
 
-While building your app, you may want to show specific content based on the current platform. Platform-specific modules can be used to make the experience more native to a given platform. There are a few ways to achieve this in Expo Router.
+While building your app, you may want to show specific content based on the current platform. Platform-specific modules can make the experience more native to a given platform. The following sections describe the ways you can achieve this with Expo Router.
 
 ### Platform module
 
@@ -41,7 +41,7 @@ export default function Layout() {
 
 ### Platform specific extensions
 
-Metro bundler's platform-specific extensions (e.g. `.ios.js`, `.native.ts`) are not supported in the app directory, this ensures that routes are universal across platforms for deep linking. However, you can create platform-specific files outside of the `/app` directory, and use them from within the `/app` directory.
+Metro bundler's platform-specific extensions (for example, **.ios.js** or **.native.ts**) are not supported in the **app** directory. This ensures that routes are universal across platforms for deep linking. However, you can create platform-specific files outside the **app** directory and use them from within the **app** directory.
 
 Consider the following project:
 
@@ -56,10 +56,10 @@ Consider the following project:
   ]}
 />
 
-Suppose the designs require you to build different `about` screens for each platform. In that case, you can create a component for each platform in the `components/` directory using platform extensions. When imported, Metro will ensure the correct version of the component is used based on the current platform. You can then re-export the the component as a screen in the app directory.
+For example, the designs require you to build different `about` screens for each platform. In that case, you can create a component for each platform in the **components** directory using platform extensions. When imported, Metro will ensure the correct component version is used based on the current platform. You can then re-export the the component as a screen in the **app** directory.
 
 ```js app/about.js
 export { default } from '../components/about';
 ```
 
-> **Best Practice:** Always provide a file without a platform extension to ensure every platform has a default implementation.
+>  **info** **Best practice:** Always provide a file without a platform extension to ensure every platform has a default implementation.
