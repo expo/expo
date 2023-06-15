@@ -3753,7 +3753,7 @@ SPEC CHECKSUMS:
   react-native-pager-view: 54bed894cecebe28cede54c01038d9d1e122de43
   react-native-safe-area-context: 39c2d8be3328df5d437ac1700f4f3a4f75716acc
   react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
-  react-native-skia: 522dd300cc54990b4aa8f9cd01e5ecf46fd39576
+  react-native-skia: d770660c767ab137636bd30bf18a1b70a18055c8
   react-native-slider: 33b8d190b59d4f67a541061bb91775d53d617d9d
   react-native-webview: 994b9f8fbb504d6314dc40d83f94f27c6831b3bf
   React-NativeModulesApple: ae27f95a2a84a877785a20ce4c689995dd5f4a64
