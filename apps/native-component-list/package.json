@@ -46,7 +46,7 @@
     "@react-native-community/datetimepicker": "6.7.3",
     "@react-native-community/netinfo": "9.3.10",
     "@react-native-community/slider": "4.4.2",
-    "@react-native-masked-view/masked-view": "0.2.8",
+    "@react-native-masked-view/masked-view": "0.2.9",
     "@react-native-picker/picker": "2.4.8",
     "@react-native-segmented-control/segmented-control": "2.4.0",
     "@react-navigation/bottom-tabs": "~6.4.0",
