@@ -11,7 +11,7 @@ import com.google.maps.android.heatmaps.WeightedLatLng;
 import com.google.maps.android.heatmaps.Gradient;
 
 
-public class AirMapHeatmapManager extends ViewGroupManager<AirMapHeatmap> {
+public class MapHeatmapManager extends ViewGroupManager<MapHeatmap> {
 
     @Override
     public String getName() {
@@ -19,12 +19,12 @@ public class AirMapHeatmapManager extends ViewGroupManager<AirMapHeatmap> {
     }
 
     @Override
-    public AirMapHeatmap createViewInstance(ThemedReactContext context) {
-        return new AirMapHeatmap(context);
+    public MapHeatmap createViewInstance(ThemedReactContext context) {
+        return new MapHeatmap(context);
     }
 
     @ReactProp(name = "points")
-    public void setPoints(AirMapHeatmap view, ReadableArray points) {
+    public void setPoints(MapHeatmap view, ReadableArray points) {
         WeightedLatLng[] p = new WeightedLatLng[points.size()];
         for (int i = 0; i < points.size(); i++) {
             ReadableMap point = points.getMap(i);
@@ -41,7 +41,7 @@ public class AirMapHeatmapManager extends ViewGroupManager<AirMapHeatmap> {
     }
 
     @ReactProp(name = "gradient")
-    public void setGradient(AirMapHeatmap view, ReadableMap gradient) {
+    public void setGradient(MapHeatmap view, ReadableMap gradient) {
         ReadableArray srcColors = gradient.getArray("colors");
         int[] colors = new int[srcColors.size()];
         for (int i = 0; i < srcColors.size(); i++) {
@@ -63,12 +63,12 @@ public class AirMapHeatmapManager extends ViewGroupManager<AirMapHeatmap> {
     }
 
     @ReactProp(name = "opacity")
-    public void setOpacity(AirMapHeatmap view, double opacity) {
+    public void setOpacity(MapHeatmap view, double opacity) {
         view.setOpacity(opacity);
     }
 
     @ReactProp(name = "radius")
-    public void setRadius(AirMapHeatmap view, int radius) {
+    public void setRadius(MapHeatmap view, int radius) {
         view.setRadius(radius);
     }
 }

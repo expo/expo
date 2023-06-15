@@ -23,12 +23,12 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class AirMapMarkerManager extends ViewGroupManager<AirMapMarker> {
+public class MapMarkerManager extends ViewGroupManager<MapMarker> {
 
   public static class AirMapMarkerSharedIcon {
     private BitmapDescriptor iconBitmapDescriptor;
     private Bitmap bitmap;
-    private final Map<AirMapMarker, Boolean> markers;
+    private final Map<MapMarker, Boolean> markers;
     private boolean loadImageStarted;
 
     public AirMapMarkerSharedIcon(){
@@ -57,7 +57,7 @@ public class AirMapMarkerManager extends ViewGroupManager<AirMapMarker> {
      *
      * @param marker
      */
-    public synchronized void addMarker(AirMapMarker marker) {
+    public synchronized void addMarker(MapMarker marker) {
       this.markers.put(marker, true);
       if (this.iconBitmapDescriptor != null) {
         marker.setIconBitmapDescriptor(this.iconBitmapDescriptor, this.bitmap);
@@ -71,7 +71,7 @@ public class AirMapMarkerManager extends ViewGroupManager<AirMapMarker> {
      *
      * @param marker
      */
-    public synchronized void removeMarker(AirMapMarker marker) {
+    public synchronized void removeMarker(MapMarker marker) {
       this.markers.remove(marker);
     }
 
@@ -101,7 +101,7 @@ public class AirMapMarkerManager extends ViewGroupManager<AirMapMarker> {
         return;
       }
 
-      for (Map.Entry<AirMapMarker, Boolean> markerEntry: markers.entrySet()) {
+      for (Map.Entry<MapMarker, Boolean> markerEntry: markers.entrySet()) {
         if (markerEntry.getKey() != null) {
           markerEntry.getKey().setIconBitmapDescriptor(bitmapDescriptor, bitmap);
         }
@@ -147,7 +147,7 @@ public class AirMapMarkerManager extends ViewGroupManager<AirMapMarker> {
     }
   }
 
-  public AirMapMarkerManager() {
+  public MapMarkerManager() {
   }
 
   @Override
@@ -156,27 +156,27 @@ public class AirMapMarkerManager extends ViewGroupManager<AirMapMarker> {
   }
 
   @Override
-  public AirMapMarker createViewInstance(ThemedReactContext context) {
-    return new AirMapMarker(context, this);
+  public MapMarker createViewInstance(ThemedReactContext context) {
+    return new MapMarker(context, this);
   }
 
   @ReactProp(name = "coordinate")
-  public void setCoordinate(AirMapMarker view, ReadableMap map) {
+  public void setCoordinate(MapMarker view, ReadableMap map) {
     view.setCoordinate(map);
   }
 
   @ReactProp(name = "title")
-  public void setTitle(AirMapMarker view, String title) {
+  public void setTitle(MapMarker view, String title) {
     view.setTitle(title);
   }
 
   @ReactProp(name = "identifier")
-  public void setIdentifier(AirMapMarker view, String identifier) {
+  public void setIdentifier(MapMarker view, String identifier) {
     view.setIdentifier(identifier);
   }
 
   @ReactProp(name = "description")
-  public void setDescription(AirMapMarker view, String description) {
+  public void setDescription(MapMarker view, String description) {
     view.setSnippet(description);
   }
 
@@ -195,7 +195,7 @@ public class AirMapMarkerManager extends ViewGroupManager<AirMapMarker> {
 //    }
 
   @ReactProp(name = "anchor")
-  public void setAnchor(AirMapMarker view, ReadableMap map) {
+  public void setAnchor(MapMarker view, ReadableMap map) {
     // should default to (0.5, 1) (bottom middle)
     double x = map != null && map.hasKey("x") ? map.getDouble("x") : 0.5;
     double y = map != null && map.hasKey("y") ? map.getDouble("y") : 1.0;
@@ -203,7 +203,7 @@ public class AirMapMarkerManager extends ViewGroupManager<AirMapMarker> {
   }
 
   @ReactProp(name = "calloutAnchor")
-  public void setCalloutAnchor(AirMapMarker view, ReadableMap map) {
+  public void setCalloutAnchor(MapMarker view, ReadableMap map) {
     // should default to (0.5, 0) (top middle)
     double x = map != null && map.hasKey("x") ? map.getDouble("x") : 0.5;
     double y = map != null && map.hasKey("y") ? map.getDouble("y") : 0.0;
@@ -211,7 +211,7 @@ public class AirMapMarkerManager extends ViewGroupManager<AirMapMarker> {
   }
 
   @ReactProp(name = "image")
-  public void setImage(AirMapMarker view, @Nullable String source) {
+  public void setImage(MapMarker view, @Nullable String source) {
     view.setImage(source);
   }
 //    public void setImage(AirMapMarker view, ReadableMap image) {
@@ -219,12 +219,12 @@ public class AirMapMarkerManager extends ViewGroupManager<AirMapMarker> {
 //    }
 
   @ReactProp(name = "icon")
-  public void setIcon(AirMapMarker view, @Nullable String source) {
+  public void setIcon(MapMarker view, @Nullable String source) {
     view.setImage(source);
   }
 
   @ReactProp(name = "pinColor", defaultInt = Color.RED, customType = "Color")
-  public void setPinColor(AirMapMarker view, int pinColor) {
+  public void setPinColor(MapMarker view, int pinColor) {
     float[] hsv = new float[3];
     Color.colorToHSV(pinColor, hsv);
     // NOTE: android only supports a hue
@@ -232,23 +232,23 @@ public class AirMapMarkerManager extends ViewGroupManager<AirMapMarker> {
   }
 
   @ReactProp(name = "rotation", defaultFloat = 0.0f)
-  public void setMarkerRotation(AirMapMarker view, float rotation) {
+  public void setMarkerRotation(MapMarker view, float rotation) {
     view.setRotation(rotation);
   }
 
   @ReactProp(name = "flat", defaultBoolean = false)
-  public void setFlat(AirMapMarker view, boolean flat) {
+  public void setFlat(MapMarker view, boolean flat) {
     view.setFlat(flat);
   }
 
   @ReactProp(name = "draggable", defaultBoolean = false)
-  public void setDraggable(AirMapMarker view, boolean draggable) {
+  public void setDraggable(MapMarker view, boolean draggable) {
     view.setDraggable(draggable);
   }
 
   @Override
   @ReactProp(name = "zIndex", defaultFloat = 0.0f)
-  public void setZIndex(AirMapMarker view, float zIndex) {
+  public void setZIndex(MapMarker view, float zIndex) {
     super.setZIndex(view, zIndex);
     int integerZIndex = Math.round(zIndex);
     view.setZIndex(integerZIndex);
@@ -256,22 +256,22 @@ public class AirMapMarkerManager extends ViewGroupManager<AirMapMarker> {
 
   @Override
   @ReactProp(name = "opacity", defaultFloat = 1.0f)
-  public void setOpacity(AirMapMarker view, float opacity) {
+  public void setOpacity(MapMarker view, float opacity) {
     super.setOpacity(view, opacity);
     view.setOpacity(opacity);
   }
 
   @ReactProp(name = "tracksViewChanges", defaultBoolean = true)
-  public void setTracksViewChanges(AirMapMarker view, boolean tracksViewChanges) {
+  public void setTracksViewChanges(MapMarker view, boolean tracksViewChanges) {
     view.setTracksViewChanges(tracksViewChanges);
   }
 
   @Override
-  public void addView(AirMapMarker parent, View child, int index) {
+  public void addView(MapMarker parent, View child, int index) {
     // if an <Callout /> component is a child, then it is a callout view, NOT part of the
     // marker.
-    if (child instanceof AirMapCallout) {
-      parent.setCalloutView((AirMapCallout) child);
+    if (child instanceof MapCallout) {
+      parent.setCalloutView((MapCallout) child);
     } else {
       super.addView(parent, child, index);
       parent.update(true);
@@ -279,13 +279,13 @@ public class AirMapMarkerManager extends ViewGroupManager<AirMapMarker> {
   }
 
   @Override
-  public void removeViewAt(AirMapMarker parent, int index) {
+  public void removeViewAt(MapMarker parent, int index) {
     super.removeViewAt(parent, index);
     parent.update(true);
   }
 
   @Override
-  public void receiveCommand(@NonNull AirMapMarker view, String commandId, @Nullable ReadableArray args) {
+  public void receiveCommand(@NonNull MapMarker view, String commandId, @Nullable ReadableArray args) {
     int duration;
     double lat;
     double lng;
@@ -347,7 +347,7 @@ public class AirMapMarkerManager extends ViewGroupManager<AirMapMarker> {
   }
 
   @Override
-  public void updateExtraData(AirMapMarker view, Object extraData) {
+  public void updateExtraData(MapMarker view, Object extraData) {
     // This method is called from the shadow node with the width/height of the rendered
     // marker view.
     HashMap<String, Float> data = (HashMap<String, Float>) extraData;

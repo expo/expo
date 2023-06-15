@@ -41,7 +41,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
-public class AirMapTileProvider implements TileProvider {
+public class MapTileProvider implements TileProvider {
 
 	class AIRMapUrlTileProvider extends UrlTileProvider {
     private String urlTemplate;
@@ -54,7 +54,7 @@ public class AirMapTileProvider implements TileProvider {
     @Override
     public URL getTileUrl(int x, int y, int zoom) {
 
-      if (AirMapTileProvider.this.flipY) {
+      if (MapTileProvider.this.flipY) {
         y = (1 << zoom) - y - 1;
       }
 
@@ -64,11 +64,11 @@ public class AirMapTileProvider implements TileProvider {
           .replace("{z}", Integer.toString(zoom));
       URL url;
 
-      if(AirMapTileProvider.this.maximumZ > 0 && zoom > AirMapTileProvider.this.maximumZ) {
+      if(MapTileProvider.this.maximumZ > 0 && zoom > MapTileProvider.this.maximumZ) {
         return null;
       }
 
-      if(AirMapTileProvider.this.minimumZ > 0 && zoom < AirMapTileProvider.this.minimumZ) {
+      if(MapTileProvider.this.minimumZ > 0 && zoom < MapTileProvider.this.minimumZ) {
         return null;
       }
 
@@ -101,9 +101,9 @@ public class AirMapTileProvider implements TileProvider {
 	protected Context context;
 	protected boolean customMode;
 
-	public AirMapTileProvider(int tileSizet, boolean doubleTileSize, String urlTemplate, 
-    int maximumZ, int maximumNativeZ, int minimumZ, boolean flipY, String tileCachePath, 
-    int tileCacheMaxAge, boolean offlineMode, Context context, boolean customMode) {
+	public MapTileProvider(int tileSizet, boolean doubleTileSize, String urlTemplate,
+                           int maximumZ, int maximumNativeZ, int minimumZ, boolean flipY, String tileCachePath,
+                           int tileCacheMaxAge, boolean offlineMode, Context context, boolean customMode) {
 		this.tileProvider = new AIRMapUrlTileProvider(tileSizet, tileSizet, urlTemplate);
 
 		this.tileSize = tileSizet;
@@ -179,7 +179,7 @@ public class AirMapTileProvider implements TileProvider {
 			Constraints constraints = new Constraints.Builder()
 				.setRequiredNetworkType(NetworkType.CONNECTED)
 				.build();
-			OneTimeWorkRequest tileRefreshWorkRequest = new OneTimeWorkRequest.Builder(AirMapTileWorker.class)
+			OneTimeWorkRequest tileRefreshWorkRequest = new OneTimeWorkRequest.Builder(MapTileWorker.class)
 				.setConstraints(constraints)
 				.addTag(fileName)
 				.setInputData(
@@ -328,7 +328,7 @@ public class AirMapTileProvider implements TileProvider {
 			Constraints constraints = new Constraints.Builder()
 				.setRequiredNetworkType(NetworkType.CONNECTED)
 				.build();
-			OneTimeWorkRequest tileRefreshWorkRequest = new OneTimeWorkRequest.Builder(AirMapTileWorker.class)
+			OneTimeWorkRequest tileRefreshWorkRequest = new OneTimeWorkRequest.Builder(MapTileWorker.class)
 				.setConstraints(constraints)
 				.addTag(fileName)
 				.setInputData(

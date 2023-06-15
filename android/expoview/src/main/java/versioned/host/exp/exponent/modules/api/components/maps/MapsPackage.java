@@ -1,65 +1,46 @@
 package versioned.host.exp.exponent.modules.api.components.maps;
 
-import android.app.Activity;
-
 import com.facebook.react.ReactPackage;
-import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MapsPackage implements ReactPackage {
-  public MapsPackage(Activity activity) {
-  } // backwards compatibility
-
-  public MapsPackage() {
-  }
 
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-    return Arrays.<NativeModule>asList(new AirMapModule(reactContext));
-  }
+    List<NativeModule> modules = new ArrayList<>();
 
-  // Deprecated RN 0.47
-  public List<Class<? extends JavaScriptModule>> createJSModules() {
-    return Collections.emptyList();
+    modules.add(new MapModule(reactContext));
+
+    return modules;
   }
 
   @Override
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-    AirMapCalloutManager calloutManager = new AirMapCalloutManager();
-    AirMapMarkerManager annotationManager = new AirMapMarkerManager();
-    AirMapPolylineManager polylineManager = new AirMapPolylineManager(reactContext);
-    AirMapGradientPolylineManager gradientPolylineManager = new AirMapGradientPolylineManager(reactContext);
-    AirMapPolygonManager polygonManager = new AirMapPolygonManager(reactContext);
-    AirMapCircleManager circleManager = new AirMapCircleManager(reactContext);
-    AirMapManager mapManager = new AirMapManager(reactContext);
-    AirMapLiteManager mapLiteManager = new AirMapLiteManager(reactContext);
-    AirMapUrlTileManager urlTileManager = new AirMapUrlTileManager(reactContext);
-    AirMapWMSTileManager gsUrlTileManager = new AirMapWMSTileManager(reactContext);
-    AirMapLocalTileManager localTileManager = new AirMapLocalTileManager(reactContext);
-    AirMapOverlayManager overlayManager = new AirMapOverlayManager(reactContext);
-    AirMapHeatmapManager heatmapManager = new AirMapHeatmapManager();
+    MapManager mapManager = new MapManager(reactContext);
+    MapMarkerManager annotationManager = new MapMarkerManager();
     mapManager.setMarkerManager(annotationManager);
 
-    return Arrays.<ViewManager>asList(
-        calloutManager,
-        annotationManager,
-        polylineManager,
-        gradientPolylineManager,
-        polygonManager,
-        circleManager,
-        mapManager,
-        mapLiteManager,
-        urlTileManager,
-        gsUrlTileManager,
-        localTileManager,
-        overlayManager,
-        heatmapManager
-    );
+    List<ViewManager> viewManagers = new ArrayList<>();
+
+    viewManagers.add(mapManager);
+    viewManagers.add(annotationManager);
+    viewManagers.add(new MapCalloutManager());
+    viewManagers.add(new MapPolylineManager(reactContext));
+    viewManagers.add(new MapGradientPolylineManager(reactContext));
+    viewManagers.add(new MapPolygonManager(reactContext));
+    viewManagers.add(new MapCircleManager(reactContext));
+    viewManagers.add(new MapLiteManager(reactContext));
+    viewManagers.add(new MapUrlTileManager(reactContext));
+    viewManagers.add(new MapWMSTileManager(reactContext));
+    viewManagers.add(new MapLocalTileManager(reactContext));
+    viewManagers.add(new MapOverlayManager(reactContext));
+    viewManagers.add(new MapHeatmapManager());
+
+    return viewManagers;
   }
 }

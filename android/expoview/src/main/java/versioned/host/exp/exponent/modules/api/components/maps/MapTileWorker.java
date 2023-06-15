@@ -18,10 +18,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
  
-public class AirMapTileWorker extends Worker {
+public class MapTileWorker extends Worker {
 	private static final int BUFFER_SIZE = 16 * 1024;
 
-	public AirMapTileWorker(
+	public MapTileWorker(
 			@NonNull Context context,
 			@NonNull WorkerParameters params) {
 			super(context, params);

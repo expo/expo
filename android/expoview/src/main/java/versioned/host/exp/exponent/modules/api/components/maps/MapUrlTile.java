@@ -11,10 +11,10 @@ import com.google.android.gms.maps.model.TileOverlayOptions;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class AirMapUrlTile extends AirMapFeature {
+public class MapUrlTile extends MapFeature {
   protected TileOverlayOptions tileOverlayOptions;
   protected TileOverlay tileOverlay;
-  protected AirMapTileProvider tileProvider;
+  protected MapTileProvider tileProvider;
 
   protected String urlTemplate;
   protected float zIndex;
@@ -31,7 +31,7 @@ public class AirMapUrlTile extends AirMapFeature {
   protected Context context;
   protected boolean customTileProviderNeeded = false;
 
-  public AirMapUrlTile(Context context) {
+  public MapUrlTile(Context context) {
     super(context);
     this.context = context;
   }
@@ -183,7 +183,7 @@ public class AirMapUrlTile extends AirMapFeature {
     TileOverlayOptions options = new TileOverlayOptions();
     options.zIndex(zIndex);
     options.transparency(1 - this.opacity);
-    this.tileProvider = new AirMapTileProvider((int)this.tileSize, this.doubleTileSize, this.urlTemplate, 
+    this.tileProvider = new MapTileProvider((int)this.tileSize, this.doubleTileSize, this.urlTemplate,
       (int)this.maximumZ, (int)this.maximumNativeZ, (int)this.minimumZ, this.flipY, this.tileCachePath, 
       (int)this.tileCacheMaxAge, this.offlineMode, this.context, this.customTileProviderNeeded);
     options.tileProvider(this.tileProvider);
@@ -196,12 +196,12 @@ public class AirMapUrlTile extends AirMapFeature {
   }
 
   @Override
-  public void addToMap(GoogleMap map) {
-    this.tileOverlay = map.addTileOverlay(getTileOverlayOptions());
+  public void addToMap(Object map) {
+    this.tileOverlay = ((GoogleMap) map).addTileOverlay(getTileOverlayOptions());
   }
 
   @Override
-  public void removeFromMap(GoogleMap map) {
+  public void removeFromMap(Object map) {
     tileOverlay.remove();
   }
 }
