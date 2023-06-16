@@ -11,11 +11,24 @@ export async function copyVendoredFilesAsync(
   files: Set<string>,
   options: Omit<CopyFileOptions, 'sourceFile'>
 ): Promise<void> {
+  const unusedTransforms = new Set(options.transforms?.content);
   for (const sourceFile of files) {
-    const { targetFile } = await copyFileWithTransformsAsync({ sourceFile, ...options });
+    const { targetFile } = await copyFileWithTransformsAsync(
+      {
+        sourceFile,
+        ...options,
+      },
+      unusedTransforms
+    );
 
     if (sourceFile !== targetFile) {
       logger.log('📂 Renamed %s to %s', chalk.magenta(sourceFile), chalk.magenta(targetFile));
     }
+  }
+  for (const unusedTransform of unusedTransforms) {
+    logger.warn(
+      '⚠️ A transform was never applied to vendored code.\nThis can indicate outdated transforms or bugs in the vendored package.\nPath(s): %s',
+      chalk.magenta(String(unusedTransform.paths))
+    );
   }
 }

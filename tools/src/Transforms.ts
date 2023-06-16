@@ -41,7 +41,8 @@ export function transformString(
 
 async function getTransformedFileContentAsync(
   filePath: string,
-  transforms: FileTransform[]
+  transforms: FileTransform[],
+  unusedTransforms?: Set<FileTransform>
 ): Promise<string> {
   // Transform source content.
   let result = await fs.readFile(filePath, 'utf8');
@@ -49,6 +50,9 @@ async function getTransformedFileContentAsync(
     const beforeTransformation = result;
     result = applySingleTransform(result, transform);
     await maybePrintDebugInfoAsync(beforeTransformation, result, filePath, transform);
+    if (result !== beforeTransformation) {
+      unusedTransforms?.delete(transform);
+    }
   }
   return result;
 }
@@ -132,7 +136,8 @@ export async function transformFilesAsync(files: string[], transforms: FileTrans
  * Copies a file from source directory to target directory with transformed relative path and content.
  */
 export async function copyFileWithTransformsAsync(
-  options: CopyFileOptions
+  options: CopyFileOptions,
+  unusedTransforms: Set<FileTransform>
 ): Promise<CopyFileResult> {
   const { sourceFile, sourceDirectory, targetDirectory, transforms } = options;
   const sourcePath = path.join(sourceDirectory, sourceFile);
@@ -147,7 +152,11 @@ export async function copyFileWithTransformsAsync(
   );
 
   // Transform source content.
-  const content = await getTransformedFileContentAsync(sourcePath, filteredContentTransforms);
+  const content = await getTransformedFileContentAsync(
+    sourcePath,
+    filteredContentTransforms,
+    unusedTransforms
+  );
 
   if (filteredContentTransforms.length > 0) {
     // Save transformed source file at renamed target path.
