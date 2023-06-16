@@ -40,9 +40,21 @@ export class DevServerManagerActions {
           );
         }
         Log.log(printItem(chalk`Metro waiting on {underline ${nativeRuntimeUrl}}`));
-        // TODO: if development build, change this message!
-        Log.log(printItem('Scan the QR code above with Expo Go (Android) or the Camera app (iOS)'));
+        if (options.devClient === false) {
+          // TODO: if development build, change this message!
+          Log.log(
+            printItem('Scan the QR code above with Expo Go (Android) or the Camera app (iOS)')
+          );
+        } else {
+          Log.log(
+            printItem(
+              'Scan the QR code above to open the project in a development build. ' +
+                learnMore('https://expo.fyi/start')
+            )
+          );
+        }
       } catch (error) {
+        console.log('err', error);
         // @ts-ignore: If there is no development build scheme, then skip the QR code.
         if (error.code !== 'NO_DEV_CLIENT_SCHEME') {
           throw error;

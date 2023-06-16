@@ -352,7 +352,7 @@ export abstract class BundlerDevServer {
     );
   }
 
-  protected getUrlCreator(options: Partial<Pick<BundlerStartOptions, 'port' | 'location'>> = {}) {
+  public getUrlCreator(options: Partial<Pick<BundlerStartOptions, 'port' | 'location'>> = {}) {
     if (!this.urlCreator) {
       assert(options?.port, 'Dev server instance not found');
       this.urlCreator = new UrlCreator(options.location, {

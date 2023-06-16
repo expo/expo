@@ -22,7 +22,7 @@ interface UrlComponents {
 }
 export class UrlCreator {
   constructor(
-    private defaults: CreateURLOptions | undefined,
+    public defaults: CreateURLOptions | undefined,
     private bundlerInfo: { port: number; getTunnelUrl?: () => string | null }
   ) {}
 
