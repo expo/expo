@@ -1,3 +1,4 @@
+import { Platform } from 'expo-modules-core';
 import ExpoDocumentPicker from './ExpoDocumentPicker';
 const DEPRECATED_RESULT_KEYS = [
     'name',
@@ -48,6 +49,9 @@ export async function getDocumentAsync({ type = '*/*', copyToCacheDirectory = tr
         copyToCacheDirectory,
         multiple,
     });
+    if (Platform.OS === 'web') {
+        return result;
+    }
     return mergeDeprecatedResult(result);
 }
 export * from './types';

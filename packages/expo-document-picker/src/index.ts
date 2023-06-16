@@ -1,3 +1,5 @@
+import { Platform } from 'expo-modules-core';
+
 import ExpoDocumentPicker from './ExpoDocumentPicker';
 import { DocumentPickerOptions, DocumentPickerResult } from './types';
 
@@ -60,6 +62,9 @@ export async function getDocumentAsync({
     copyToCacheDirectory,
     multiple,
   });
+  if (Platform.OS === 'web') {
+    return result;
+  }
   return mergeDeprecatedResult(result);
 }
 
