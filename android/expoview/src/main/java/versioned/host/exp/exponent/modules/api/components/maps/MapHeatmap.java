@@ -13,7 +13,7 @@ import com.google.maps.android.heatmaps.Gradient;
 import java.util.Arrays;
 import java.util.List;
 
-public class AirMapHeatmap extends AirMapFeature {
+public class MapHeatmap extends MapFeature {
 
     private TileOverlayOptions heatmapOptions;
     private TileOverlay heatmap;
@@ -24,7 +24,7 @@ public class AirMapHeatmap extends AirMapFeature {
     private Double opacity;
     private Integer radius;
 
-    public AirMapHeatmap(Context context) {
+    public MapHeatmap(Context context) {
         super(context);
     }
 
@@ -101,13 +101,12 @@ public class AirMapHeatmap extends AirMapFeature {
     }
 
     @Override
-    public void addToMap(GoogleMap map) {
-        Log.d("AirMapHeatmap", "ADD TO MAP");
-        heatmap = map.addTileOverlay(getHeatmapOptions());
+    public void addToMap(Object map) {
+        heatmap = ((GoogleMap) map).addTileOverlay(getHeatmapOptions());
     }
 
     @Override
-    public void removeFromMap(GoogleMap map) {
+    public void removeFromMap(Object map) {
         heatmap.remove();
     }
 

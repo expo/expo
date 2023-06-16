@@ -15,9 +15,9 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 
 import java.util.Map;
 
-public class AirMapOverlayManager extends ViewGroupManager<AirMapOverlay> {
+public class MapOverlayManager extends ViewGroupManager<MapOverlay> {
 
-  public AirMapOverlayManager(ReactApplicationContext reactContext) {
+  public MapOverlayManager(ReactApplicationContext reactContext) {
     super();
     DisplayMetrics metrics = new DisplayMetrics();
     ((WindowManager) reactContext.getSystemService(Context.WINDOW_SERVICE))
@@ -31,37 +31,37 @@ public class AirMapOverlayManager extends ViewGroupManager<AirMapOverlay> {
   }
 
   @Override
-  public AirMapOverlay createViewInstance(ThemedReactContext context) {
-    return new AirMapOverlay(context);
+  public MapOverlay createViewInstance(ThemedReactContext context) {
+    return new MapOverlay(context);
   }
 
   @ReactProp(name = "bounds")
-  public void setBounds(AirMapOverlay view, ReadableArray bounds) {
+  public void setBounds(MapOverlay view, ReadableArray bounds) {
     view.setBounds(bounds);
   }
 
   @ReactProp(name = "bearing")
-  public void setBearing(AirMapOverlay view, float bearing){
+  public void setBearing(MapOverlay view, float bearing){
     view.setBearing(bearing);
   }
 
   @ReactProp(name = "zIndex", defaultFloat = 1.0f)
-  public void setZIndex(AirMapOverlay view, float zIndex) {
+  public void setZIndex(MapOverlay view, float zIndex) {
     view.setZIndex(zIndex);
   }
 
   @ReactProp(name = "opacity", defaultFloat = 1.0f)
-  public void setOpacity(AirMapOverlay view, float opacity) {
+  public void setOpacity(MapOverlay view, float opacity) {
     view.setTransparency(1 - opacity);
   }
 
   @ReactProp(name = "image")
-  public void setImage(AirMapOverlay view, @Nullable String source) {
+  public void setImage(MapOverlay view, @Nullable String source) {
     view.setImage(source);
   }
 
   @ReactProp(name = "tappable", defaultBoolean = false)
-  public void setTappable(AirMapOverlay view, boolean tapabble) {
+  public void setTappable(MapOverlay view, boolean tapabble) {
     view.setTappable(tapabble);
   }
 

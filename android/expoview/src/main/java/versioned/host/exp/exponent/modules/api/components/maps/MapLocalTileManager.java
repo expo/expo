@@ -12,9 +12,9 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 /**
  * Created by zavadpe on 30/11/2017.
  */
-public class AirMapLocalTileManager extends ViewGroupManager<AirMapLocalTile> {
+public class MapLocalTileManager extends ViewGroupManager<MapLocalTile> {
 
-    public AirMapLocalTileManager(ReactApplicationContext reactContext) {
+    public MapLocalTileManager(ReactApplicationContext reactContext) {
         super();
         DisplayMetrics metrics = new DisplayMetrics();
         ((WindowManager) reactContext.getSystemService(Context.WINDOW_SERVICE))
@@ -28,27 +28,27 @@ public class AirMapLocalTileManager extends ViewGroupManager<AirMapLocalTile> {
     }
 
     @Override
-    public AirMapLocalTile createViewInstance(ThemedReactContext context) {
-        return new AirMapLocalTile(context);
+    public MapLocalTile createViewInstance(ThemedReactContext context) {
+        return new MapLocalTile(context);
     }
 
     @ReactProp(name = "pathTemplate")
-    public void setPathTemplate(AirMapLocalTile view, String pathTemplate) {
+    public void setPathTemplate(MapLocalTile view, String pathTemplate) {
         view.setPathTemplate(pathTemplate);
     }
 
     @ReactProp(name = "tileSize", defaultFloat = 256f)
-    public void setTileSize(AirMapLocalTile view, float tileSize) {
+    public void setTileSize(MapLocalTile view, float tileSize) {
         view.setTileSize(tileSize);
     }
 
     @ReactProp(name = "zIndex", defaultFloat = -1.0f)
-    public void setZIndex(AirMapLocalTile view, float zIndex) {
+    public void setZIndex(MapLocalTile view, float zIndex) {
         view.setZIndex(zIndex);
     }
 
     @ReactProp(name = "useAssets", defaultBoolean = false)
-    public void setUseAssets(AirMapLocalTile view, boolean useAssets) {
+    public void setUseAssets(MapLocalTile view, boolean useAssets) {
         view.setUseAssets(useAssets);
     }
 }

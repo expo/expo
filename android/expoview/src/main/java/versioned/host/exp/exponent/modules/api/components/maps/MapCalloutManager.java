@@ -10,7 +10,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 
 import java.util.Map;
 
-public class AirMapCalloutManager extends ViewGroupManager<AirMapCallout> {
+public class MapCalloutManager extends ViewGroupManager<MapCallout> {
 
   @Override
   public String getName() {
@@ -18,12 +18,12 @@ public class AirMapCalloutManager extends ViewGroupManager<AirMapCallout> {
   }
 
   @Override
-  public AirMapCallout createViewInstance(ThemedReactContext context) {
-    return new AirMapCallout(context);
+  public MapCallout createViewInstance(ThemedReactContext context) {
+    return new MapCallout(context);
   }
 
   @ReactProp(name = "tooltip", defaultBoolean = false)
-  public void setTooltip(AirMapCallout view, boolean tooltip) {
+  public void setTooltip(MapCallout view, boolean tooltip) {
     view.setTooltip(tooltip);
   }
 
@@ -42,7 +42,7 @@ public class AirMapCalloutManager extends ViewGroupManager<AirMapCallout> {
   }
 
   @Override
-  public void updateExtraData(AirMapCallout view, Object extraData) {
+  public void updateExtraData(MapCallout view, Object extraData) {
     // This method is called from the shadow node with the width/height of the rendered
     // marker view.
     //noinspection unchecked

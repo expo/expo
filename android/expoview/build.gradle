@@ -285,7 +285,7 @@ dependencies {
 
   api 'com.google.firebase:firebase-core:21.1.0'
   api 'com.google.firebase:firebase-messaging:22.0.0'
-  api 'com.google.maps.android:android-maps-utils:0.5'
+  api 'com.google.maps.android:android-maps-utils:3.4.0'
   // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
 
   // expo-file-system

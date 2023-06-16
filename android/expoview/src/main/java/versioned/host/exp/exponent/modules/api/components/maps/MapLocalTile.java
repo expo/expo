@@ -13,7 +13,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class AirMapLocalTile extends AirMapFeature {
+public class MapLocalTile extends MapFeature {
 
     class AIRMapLocalTileProvider implements TileProvider {
         private static final int BUFFER_SIZE = 16 * 1024;
@@ -80,14 +80,14 @@ public class AirMapLocalTile extends AirMapFeature {
 
     private TileOverlayOptions tileOverlayOptions;
     private TileOverlay tileOverlay;
-    private AirMapLocalTile.AIRMapLocalTileProvider tileProvider;
+    private MapLocalTile.AIRMapLocalTileProvider tileProvider;
 
     private String pathTemplate;
     private float tileSize;
     private float zIndex;
     private boolean useAssets;
 
-    public AirMapLocalTile(Context context) {
+    public MapLocalTile(Context context) {
         super(context);
     }
 
@@ -129,7 +129,7 @@ public class AirMapLocalTile extends AirMapFeature {
     private TileOverlayOptions createTileOverlayOptions() {
         TileOverlayOptions options = new TileOverlayOptions();
         options.zIndex(zIndex);
-        this.tileProvider = new AirMapLocalTile.AIRMapLocalTileProvider((int)this.tileSize, this.pathTemplate, this.useAssets);
+        this.tileProvider = new MapLocalTile.AIRMapLocalTileProvider((int)this.tileSize, this.pathTemplate, this.useAssets);
         options.tileProvider(this.tileProvider);
         return options;
     }
@@ -140,12 +140,12 @@ public class AirMapLocalTile extends AirMapFeature {
     }
 
     @Override
-    public void addToMap(GoogleMap map) {
-        this.tileOverlay = map.addTileOverlay(getTileOverlayOptions());
+    public void addToMap(Object map) {
+        this.tileOverlay = ((GoogleMap) map).addTileOverlay(getTileOverlayOptions());
     }
 
     @Override
-    public void removeFromMap(GoogleMap map) {
+    public void removeFromMap(Object map) {
         tileOverlay.remove();
     }
 }

@@ -9,7 +9,7 @@ public class ViewChangesTracker {
 
   private static ViewChangesTracker instance;
   private final Handler handler;
-  private final LinkedList<AirMapMarker> markers = new LinkedList<>();
+  private final LinkedList<MapMarker> markers = new LinkedList<>();
   private boolean hasScheduledFrame = false;
   private final Runnable updateRunnable;
   private final long fps = 40;
@@ -39,7 +39,7 @@ public class ViewChangesTracker {
     return instance;
   }
 
-  public void addMarker(AirMapMarker marker) {
+  public void addMarker(MapMarker marker) {
     markers.add(marker);
 
     if (!hasScheduledFrame) {
@@ -48,18 +48,18 @@ public class ViewChangesTracker {
     }
   }
 
-  public void removeMarker(AirMapMarker marker) {
+  public void removeMarker(MapMarker marker) {
     markers.remove(marker);
   }
 
-  public boolean containsMarker(AirMapMarker marker) {
+  public boolean containsMarker(MapMarker marker) {
     return markers.contains(marker);
   }
 
-  private final LinkedList<AirMapMarker> markersToRemove = new LinkedList<>();
+  private final LinkedList<MapMarker> markersToRemove = new LinkedList<>();
 
   public void update() {
-    for (AirMapMarker marker : markers) {
+    for (MapMarker marker : markers) {
       if (!marker.updateCustomForTracking()) {
         markersToRemove.add(marker);
       }

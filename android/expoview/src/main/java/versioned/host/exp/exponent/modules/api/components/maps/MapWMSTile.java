@@ -8,11 +8,11 @@ import com.google.android.gms.maps.model.UrlTileProvider;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class AirMapWMSTile extends AirMapUrlTile {
+public class MapWMSTile extends MapUrlTile {
   private static final double[] mapBound = {-20037508.34789244, 20037508.34789244};
   private static final double FULL = 20037508.34789244 * 2;
 
-  class AIRMapGSUrlTileProvider extends AirMapTileProvider {
+  class AIRMapGSUrlTileProvider extends MapTileProvider {
 
     class AIRMapWMSTileProvider extends UrlTileProvider {
     private String urlTemplate;
@@ -26,11 +26,11 @@ public class AirMapWMSTile extends AirMapUrlTile {
 
     @Override
     public URL getTileUrl(int x, int y, int zoom) {
-      if(AirMapWMSTile.this.maximumZ > 0 && zoom > maximumZ) {
+      if(MapWMSTile.this.maximumZ > 0 && zoom > maximumZ) {
           return null;
       }
 
-      if(AirMapWMSTile.this.minimumZ > 0 && zoom < minimumZ) {
+      if(MapWMSTile.this.minimumZ > 0 && zoom < minimumZ) {
           return null;
       }
 
@@ -76,7 +76,7 @@ public class AirMapWMSTile extends AirMapUrlTile {
     }
   }
 
-  public AirMapWMSTile(Context context) {
+  public MapWMSTile(Context context) {
     super(context);
   }
 

@@ -40,8 +40,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
-@ReactModule(name = AirMapModule.NAME)
-public class AirMapModule extends ReactContextBaseJavaModule {
+@ReactModule(name = MapModule.NAME)
+public class MapModule extends ReactContextBaseJavaModule {
 
   public static final String NAME = "AirMapModule";
   private static final String SNAPSHOT_RESULT_FILE = "file";
@@ -49,7 +49,7 @@ public class AirMapModule extends ReactContextBaseJavaModule {
   private static final String SNAPSHOT_FORMAT_PNG = "png";
   private static final String SNAPSHOT_FORMAT_JPG = "jpg";
 
-  public AirMapModule(ReactApplicationContext reactContext) {
+  public MapModule(ReactApplicationContext reactContext) {
     super(reactContext);
   }
 
@@ -98,7 +98,7 @@ public class AirMapModule extends ReactContextBaseJavaModule {
     UIManagerModule uiManager = context.getNativeModule(UIManagerModule.class);
     uiManager.addUIBlock(new UIBlock() {
       public void execute(NativeViewHierarchyManager nvhm) {
-        AirMapView view = (AirMapView) nvhm.resolveView(tag);
+        MapView view = (MapView) nvhm.resolveView(tag);
         if (view == null) {
           promise.reject("AirMapView not found");
           return;
@@ -160,7 +160,7 @@ public class AirMapModule extends ReactContextBaseJavaModule {
       @Override
       public void execute(NativeViewHierarchyManager nvhm)
       {
-        AirMapView view = (AirMapView) nvhm.resolveView(tag);
+        MapView view = (MapView) nvhm.resolveView(tag);
         if (view == null) {
           promise.reject("AirMapView not found");
           return;
@@ -197,7 +197,7 @@ public class AirMapModule extends ReactContextBaseJavaModule {
       @Override
       public void execute(NativeViewHierarchyManager nvhm)
       {
-        AirMapView view = (AirMapView) nvhm.resolveView(tag);
+        MapView view = (MapView) nvhm.resolveView(tag);
         if (view == null) {
           promise.reject("AirMapView not found");
           return;
@@ -258,7 +258,7 @@ public class AirMapModule extends ReactContextBaseJavaModule {
       @Override
       public void execute(NativeViewHierarchyManager nvhm)
       {
-        AirMapView view = (AirMapView) nvhm.resolveView(tag);
+        MapView view = (MapView) nvhm.resolveView(tag);
         if (view == null) {
           promise.reject("AirMapView not found");
           return;
@@ -295,7 +295,7 @@ public class AirMapModule extends ReactContextBaseJavaModule {
       @Override
       public void execute(NativeViewHierarchyManager nvhm)
       {
-        AirMapView view = (AirMapView) nvhm.resolveView(tag);
+        MapView view = (MapView) nvhm.resolveView(tag);
         if (view == null)
         {
           promise.reject("AirMapView not found");
@@ -328,7 +328,7 @@ public class AirMapModule extends ReactContextBaseJavaModule {
       @Override
       public void execute(NativeViewHierarchyManager nvhm)
       {
-        AirMapView view = (AirMapView) nvhm.resolveView(tag);
+        MapView view = (MapView) nvhm.resolveView(tag);
         if (view == null) {
           promise.reject("AirMapView not found");
           return;
