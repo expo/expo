@@ -11,17 +11,10 @@ import org.json.JSONObject
  * in a production app, instantiated as a property of UpdatesController.
  */
 class UpdatesStateMachine constructor(
-  androidContext: Context? = null
+  androidContext: Context
 ) {
 
-  /**
-   * The context and logger are null in unit tests,
-   * but are instantiated in a production app.
-   */
-  private val logger = when (androidContext) {
-    null -> null
-    else -> UpdatesLogger(androidContext)
-  }
+  private val logger = UpdatesLogger(androidContext)
 
   var changeEventSender: UpdatesStateChangeEventSender? = null
 

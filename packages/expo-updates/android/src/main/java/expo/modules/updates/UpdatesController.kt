@@ -13,7 +13,6 @@ import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.bridge.WritableMap
-import expo.modules.manifests.core.Manifest
 import expo.modules.updates.db.BuildData
 import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.Reaper
@@ -27,7 +26,7 @@ import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.launcher.Launcher.LauncherCallback
 import expo.modules.updates.launcher.NoDatabaseLauncher
 import expo.modules.updates.loader.*
-import expo.modules.updates.loader.LoaderTask.BackgroundUpdateStatus
+import expo.modules.updates.loader.LoaderTask.RemoteUpdateStatus
 import expo.modules.updates.loader.LoaderTask.LoaderTaskCallback
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogReader
@@ -283,23 +282,26 @@ class UpdatesController private constructor(
           return true
         }
 
-        override fun onCheckForUpdateStarted() {
+        override fun onRemoteCheckForUpdateStarted() {
           stateMachine.processEvent(UpdatesStateEvent(UpdatesStateEventType.Check))
         }
 
-        override fun onCheckForUpdateFinished(body: Map<String, Any>) {
+        override fun onRemoteCheckForUpdateFinished(result: LoaderTask.RemoteCheckResult) {
           var event = UpdatesStateEvent(UpdatesStateEventType.CheckCompleteUnavailable, mapOf())
-          val manifest: Manifest? = body["manifest"] as? Manifest
-          val rollback: Boolean? = body["isRollBackToEmbedded"] as? Boolean
-          if (manifest != null) {
+          if (result.manifest != null) {
             event = UpdatesStateEvent(
               UpdatesStateEventType.CheckCompleteAvailable,
               mapOf(
-                "manifest" to manifest.getRawJson()
+                "manifest" to result.manifest,
               )
             )
-          } else if (rollback == true) {
-            event = UpdatesStateEvent(UpdatesStateEventType.CheckCompleteAvailable, body)
+          } else if (result.isRollBackToEmbedded == true) {
+            event = UpdatesStateEvent(
+              UpdatesStateEventType.CheckCompleteAvailable,
+              mapOf(
+                "isRollBackToEmbedded" to result.isRollBackToEmbedded
+              )
+            )
           }
           stateMachine.processEvent(event)
         }
@@ -316,11 +318,11 @@ class UpdatesController private constructor(
           notifyController()
         }
 
-        override fun onLoadUpdateStarted() {
+        override fun onRemoteUpdateLoadStarted() {
           stateMachine.processEvent(UpdatesStateEvent(UpdatesStateEventType.Download))
         }
 
-        override fun onAssetLoaded(
+        override fun onRemoteUpdateAssetLoaded(
           asset: AssetEntity,
           successfulAssetCount: Int,
           failedAssetCount: Int,
@@ -337,13 +339,13 @@ class UpdatesController private constructor(
           logger.info("AppController appLoaderTask didLoadAsset: $body", UpdatesErrorCode.None, null, asset.expectedHash)
         }
 
-        override fun onBackgroundUpdateFinished(
-          status: BackgroundUpdateStatus,
+        override fun onRemoteUpdateFinished(
+          status: RemoteUpdateStatus,
           update: UpdateEntity?,
           exception: Exception?
         ) {
           when (status) {
-            BackgroundUpdateStatus.ERROR -> {
+            RemoteUpdateStatus.ERROR -> {
               if (exception == null) {
                 throw AssertionError("Background update with error status must have a nonnull exception object")
               }
@@ -358,17 +360,21 @@ class UpdatesController private constructor(
               )
               // Since errors can happen through a number of paths, we do these checks
               // to make sure the state machine is valid
-              if (stateMachine.state == UpdatesStateValue.Idle) {
-                stateMachine.processEvent(UpdatesStateEvent(UpdatesStateEventType.Download))
-                stateMachine.processEvent(UpdatesStateEvent(UpdatesStateEventType.DownloadError, body))
-              } else if (stateMachine.state == UpdatesStateValue.Checking) {
-                stateMachine.processEvent(UpdatesStateEvent(UpdatesStateEventType.CheckError, body))
-              } else {
-                // .downloading
-                stateMachine.processEvent(UpdatesStateEvent(UpdatesStateEventType.DownloadError, body))
+              when (stateMachine.state) {
+                UpdatesStateValue.Idle -> {
+                  stateMachine.processEvent(UpdatesStateEvent(UpdatesStateEventType.Download))
+                  stateMachine.processEvent(UpdatesStateEvent(UpdatesStateEventType.DownloadError, body))
+                }
+                UpdatesStateValue.Checking -> {
+                  stateMachine.processEvent(UpdatesStateEvent(UpdatesStateEventType.CheckError, body))
+                }
+                else -> {
+                  // .downloading
+                  stateMachine.processEvent(UpdatesStateEvent(UpdatesStateEventType.DownloadError, body))
+                }
               }
             }
-            BackgroundUpdateStatus.UPDATE_AVAILABLE -> {
+            RemoteUpdateStatus.UPDATE_AVAILABLE -> {
               if (update == null) {
                 throw AssertionError("Background update with error status must have a nonnull update object")
               }
@@ -386,7 +392,7 @@ class UpdatesController private constructor(
               }
               stateMachine.processEvent(UpdatesStateEvent(UpdatesStateEventType.DownloadComplete, body))
             }
-            BackgroundUpdateStatus.NO_UPDATE_AVAILABLE -> {
+            RemoteUpdateStatus.NO_UPDATE_AVAILABLE -> {
               remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
               logger.error("UpdatesController onBackgroundUpdateFinished: No update available", UpdatesErrorCode.NoUpdatesAvailable)
               sendLegacyUpdateEventToJS(UPDATE_NO_UPDATE_AVAILABLE_EVENT, null)
@@ -573,7 +579,7 @@ class UpdatesController private constructor(
     sendEventToJS(UPDATES_EVENT_NAME, eventType, params)
   }
 
-  fun sendEventToJS(eventName: String, eventType: String, params: WritableMap?) {
+  private fun sendEventToJS(eventName: String, eventType: String, params: WritableMap?) {
     UpdatesUtils.sendEventToReactNative(reactNativeHost, logger, eventName, eventType, params)
   }
 
