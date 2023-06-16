@@ -54,7 +54,7 @@ export default function App() {
 
   React.useEffect(() => {
     if (isUpdatePending && runNow) {
-      setTimeout(() => runUpdate(), 2000);
+      setTimeout(() => runUpdate(), 5000);
     }
   }, [isUpdatePending, runNow]);
 
@@ -139,7 +139,12 @@ export default function App() {
 
       <TestValue testID="state.isUpdateAvailable" value={`${state.isUpdateAvailable}`} />
       <TestValue testID="state.isUpdatePending" value={`${state.isUpdatePending}`} />
+      <TestValue testID="state.isRollback" value={`${state.isRollback}`} />
       <TestValue testID="state.latestManifest.id" value={`${state.latestManifest?.id || ''}`} />
+      <TestValue
+        testID="state.downloadedManifest.id"
+        value={`${state.downloadedManifest?.id || ''}`}
+      />
 
       <Text>Log messages</Text>
       <ScrollView style={styles.logEntriesContainer}>
@@ -149,14 +154,19 @@ export default function App() {
       </ScrollView>
 
       {active ? <ActivityIndicator testID="activity" size="small" color="#0000ff" /> : null}
-      <TestButton testID="readAssetFiles" onPress={handleReadAssetFiles} />
-      <TestButton testID="clearAssetFiles" onPress={handleClearAssetFiles} />
-      <TestButton testID="readLogEntries" onPress={handleReadLogEntries} />
-      <TestButton testID="clearLogEntries" onPress={handleClearLogEntries} />
-      <TestButton testID="checkForUpdate" onPress={checkForUpdate} />
-      {isUpdateAvailable ? (
-        <TestButton testID="downloadUpdate" onPress={handleDownloadUpdate} />
-      ) : null}
+      <View style={{ flexDirection: 'row' }}>
+        <View>
+          <TestButton testID="readAssetFiles" onPress={handleReadAssetFiles} />
+          <TestButton testID="clearAssetFiles" onPress={handleClearAssetFiles} />
+          <TestButton testID="readLogEntries" onPress={handleReadLogEntries} />
+          <TestButton testID="clearLogEntries" onPress={handleClearLogEntries} />
+        </View>
+        <View>
+          <TestButton testID="checkForUpdate" onPress={checkForUpdate} />
+          <TestButton testID="downloadUpdate" onPress={handleDownloadUpdate} />
+        </View>
+      </View>
+
       <StatusBar style="auto" />
     </View>
   );

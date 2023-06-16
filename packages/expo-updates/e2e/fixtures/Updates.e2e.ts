@@ -524,12 +524,17 @@ describe('JS API tests', () => {
     await waitForAppToBecomeVisible();
 
     // Check state
-    let isUpdatePending = await testElementValueAsync('state.isUpdatePending');
-    jestExpect(isUpdatePending).toEqual('false');
-    let isUpdateAvailable = await testElementValueAsync('state.isUpdateAvailable');
-    jestExpect(isUpdateAvailable).toEqual('false');
-    let latestManifestId = await testElementValueAsync('state.latestManifest.id');
-    jestExpect(latestManifestId).toEqual('');
+    const isUpdatePending = await testElementValueAsync('state.isUpdatePending');
+    const isUpdateAvailable = await testElementValueAsync('state.isUpdateAvailable');
+    const latestManifestId = await testElementValueAsync('state.latestManifest.id');
+    const downloadedManifestId = await testElementValueAsync('state.downloadedManifest.id');
+    const isRollback = await testElementValueAsync('state.isRollback');
+
+    console.warn(`isUpdatePending = ${isUpdatePending}`);
+    console.warn(`isUpdateAvailable = ${isUpdateAvailable}`);
+    console.warn(`isRollback = ${isRollback}`);
+    console.warn(`latestManifestId = ${latestManifestId}`);
+    console.warn(`downloadedManifestId = ${downloadedManifestId}`);
 
     // Now serve a manifest
     Server.start(Update.serverPort, protocolVersion);
@@ -537,16 +542,121 @@ describe('JS API tests', () => {
 
     // Check for update, and expect isUpdateAvailable to be true
     await pressTestButtonAsync('checkForUpdate');
-    isUpdateAvailable = await testElementValueAsync('state.isUpdateAvailable');
-    jestExpect(isUpdatePending).toEqual('false');
-    jestExpect(isUpdateAvailable).toEqual('true');
-    latestManifestId = await testElementValueAsync('state.latestManifest.id');
-    jestExpect(latestManifestId).toEqual(manifest.id);
+    await pressTestButtonAsync('checkForUpdate');
+    await pressTestButtonAsync('checkForUpdate');
+    await pressTestButtonAsync('checkForUpdate');
+
+    const isUpdatePending2 = await testElementValueAsync('state.isUpdatePending');
+    const isUpdateAvailable2 = await testElementValueAsync('state.isUpdateAvailable');
+    const latestManifestId2 = await testElementValueAsync('state.latestManifest.id');
+    const downloadedManifestId2 = await testElementValueAsync('state.downloadedManifest.id');
+    const isRollback2 = await testElementValueAsync('state.isRollback');
+
+    console.warn(`isUpdatePending2 = ${isUpdatePending2}`);
+    console.warn(`isUpdateAvailable2 = ${isUpdateAvailable2}`);
+    console.warn(`isRollback2 = ${isRollback2}`);
+    console.warn(`latestManifestId2 = ${latestManifestId2}`);
+    console.warn(`downloadedManifestId2 = ${downloadedManifestId2}`);
 
     // Download update and expect isUpdatePending to be true
     await pressTestButtonAsync('downloadUpdate');
+    await pressTestButtonAsync('downloadUpdate');
+    await pressTestButtonAsync('downloadUpdate');
+    await pressTestButtonAsync('downloadUpdate');
+
+    const isUpdatePending3 = await testElementValueAsync('state.isUpdatePending');
+    const isUpdateAvailable3 = await testElementValueAsync('state.isUpdateAvailable');
+    const latestManifestId3 = await testElementValueAsync('state.latestManifest.id');
+    const downloadedManifestId3 = await testElementValueAsync('state.downloadedManifest.id');
+    const isRollback3 = await testElementValueAsync('state.isRollback');
+    await waitFor(element(by.id('activity')))
+      .not.toBeVisible()
+      .withTimeout(2000);
+
+    console.warn(`isUpdatePending3 = ${isUpdatePending3}`);
+    console.warn(`isUpdateAvailable3 = ${isUpdateAvailable3}`);
+    console.warn(`isRollback3 = ${isRollback3}`);
+    console.warn(`latestManifestId3 = ${latestManifestId3}`);
+    console.warn(`downloadedManifestId3 = ${downloadedManifestId3}`);
+
+    // Terminate and relaunch app, we should be running the update, and back to the default state
+    await device.terminateApp();
+    await device.launchApp();
+    await waitForAppToBecomeVisible();
+
+    const isUpdatePending4 = await testElementValueAsync('state.isUpdatePending');
+    const isUpdateAvailable4 = await testElementValueAsync('state.isUpdateAvailable');
+    const latestManifestId4 = await testElementValueAsync('state.latestManifest.id');
+    const downloadedManifestId4 = await testElementValueAsync('state.downloadedManifest.id');
+    const isRollback4 = await testElementValueAsync('state.isRollback');
+
+    console.warn(`isUpdatePending4 = ${isUpdatePending4}`);
+    console.warn(`isUpdateAvailable4 = ${isUpdateAvailable4}`);
+    console.warn(`isRollback4 = ${isRollback4}`);
+    console.warn(`latestManifestId4 = ${latestManifestId4}`);
+    console.warn(`downloadedManifestId4 = ${downloadedManifestId4}`);
+
+    // Now serve a rollback
+    const rollbackDirective = Update.getRollbackDirective(new Date());
+    await Server.serveSignedDirective(rollbackDirective, projectRoot);
+
+    // Check for update, and expect isRollback to be true
+    await pressTestButtonAsync('checkForUpdate');
+
+    const isUpdatePending5 = await testElementValueAsync('state.isUpdatePending');
+    const isUpdateAvailable5 = await testElementValueAsync('state.isUpdateAvailable');
+    const latestManifestId5 = await testElementValueAsync('state.latestManifest.id');
+    const downloadedManifestId5 = await testElementValueAsync('state.downloadedManifest.id');
+    const isRollback5 = await testElementValueAsync('state.isRollback');
+
+    console.warn(`isUpdatePending5 = ${isUpdatePending5}`);
+    console.warn(`isUpdateAvailable5 = ${isUpdateAvailable5}`);
+    console.warn(`isRollback5 = ${isRollback5}`);
+    console.warn(`latestManifestId5 = ${latestManifestId5}`);
+    console.warn(`downloadedManifestId5 = ${downloadedManifestId5}`);
+
+    {
+      const logEntries: any[] = await readLogEntriesAsync();
+      console.warn(
+        'Total number of log entries = ' +
+          logEntries.length +
+          '\n' +
+          JSON.stringify(logEntries, null, 2)
+      );
+      await clearLogEntriesAsync();
+    }
+
+    // Verify correct behavior
+    // On launch
+    jestExpect(isUpdateAvailable).toEqual('false');
     jestExpect(isUpdatePending).toEqual('false');
-    jestExpect(isUpdateAvailable).toEqual('true');
+    jestExpect(isRollback).toEqual('false');
+    jestExpect(latestManifestId).toEqual('');
+    jestExpect(downloadedManifestId).toEqual('');
+    // After check for update and getting a manifest
+    jestExpect(isUpdateAvailable2).toEqual('true');
+    jestExpect(isUpdatePending2).toEqual('false');
+    jestExpect(isRollback2).toEqual('false');
+    jestExpect(latestManifestId2).toEqual(manifest.id);
+    jestExpect(downloadedManifestId2).toEqual('');
+    // After downloading the update
+    jestExpect(isUpdateAvailable3).toEqual('true');
+    jestExpect(isUpdatePending3).toEqual('true');
+    jestExpect(isRollback3).toEqual('false');
+    jestExpect(latestManifestId3).toEqual(manifest.id);
+    jestExpect(downloadedManifestId3).toEqual(manifest.id);
+    // After restarting
+    jestExpect(isUpdateAvailable4).toEqual('false');
+    jestExpect(isUpdatePending4).toEqual('false');
+    jestExpect(isRollback4).toEqual('false');
+    jestExpect(latestManifestId4).toEqual('');
+    jestExpect(downloadedManifestId4).toEqual('');
+    // After check for update and getting a rollback
+    jestExpect(isUpdateAvailable5).toEqual('true');
+    jestExpect(isUpdatePending5).toEqual('false');
+    jestExpect(isRollback5).toEqual('true');
+    jestExpect(latestManifestId5).toEqual('');
+    jestExpect(downloadedManifestId5).toEqual('');
   });
 
   it('Receives expected events when update available on start', async () => {
