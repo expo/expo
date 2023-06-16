@@ -1,4 +1,26 @@
-import { shouldAliasAssetRegistryForWeb } from '../withMetroMultiPlatform';
+import { getBareExtensions } from '@expo/config/paths';
+
+import { getNodejsExtensions, shouldAliasAssetRegistryForWeb } from '../withMetroMultiPlatform';
+
+describe(getNodejsExtensions, () => {
+  it(`should return the correct extensions for the node.js platform`, () => {
+    const sourceExts = getBareExtensions([], { isTS: true, isReact: true, isModern: true });
+
+    expect(getNodejsExtensions(sourceExts)).not.toEqual(sourceExts);
+
+    // Ensure mjs comes after js
+    expect(getNodejsExtensions(sourceExts)).toMatchInlineSnapshot(`
+      [
+        "ts",
+        "tsx",
+        "js",
+        "jsx",
+        "mjs",
+        "json",
+      ]
+    `);
+  });
+});
 
 describe(shouldAliasAssetRegistryForWeb, () => {
   it(`should return true if the incoming resolution is for the web platform and the AssetRegistry`, () => {

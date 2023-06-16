@@ -89,7 +89,7 @@ export function getDefaultConfig(
     // noop -- falls back to a hardcoded value.
   }
 
-  const sourceExtsConfig = { isTS: true, isReact: true, isModern: false };
+  const sourceExtsConfig = { isTS: true, isReact: true, isModern: true };
   const sourceExts = getBareExtensions([], sourceExtsConfig);
 
   // Add support for cjs (without platform extensions).
@@ -150,6 +150,8 @@ export function getDefaultConfig(
   const metroConfig: Partial<MetroConfig> = mergeConfig(metroDefaultValues, {
     watchFolders,
     resolver: {
+      // unstable_conditionsByPlatform: { web: ['browser'] },
+      // unstable_conditionNames: ['require', 'import', 'node'],
       resolverMainFields,
       platforms: ['ios', 'android'],
       assetExts: metroDefaultValues.resolver.assetExts

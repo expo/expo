@@ -177,7 +177,7 @@ function getDefaultConfig(projectRoot, options = {}) {
   const sourceExtsConfig = {
     isTS: true,
     isReact: true,
-    isModern: false
+    isModern: true
   };
   const sourceExts = (0, _paths().getBareExtensions)([], sourceExtsConfig);
 
@@ -236,6 +236,8 @@ function getDefaultConfig(projectRoot, options = {}) {
   const metroConfig = mergeConfig(metroDefaultValues, {
     watchFolders,
     resolver: {
+      // unstable_conditionsByPlatform: { web: ['browser'] },
+      // unstable_conditionNames: ['require', 'import', 'node'],
       resolverMainFields,
       platforms: ['ios', 'android'],
       assetExts: metroDefaultValues.resolver.assetExts.concat(
