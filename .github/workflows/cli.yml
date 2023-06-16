@@ -79,5 +79,5 @@ jobs:
         run: yarn typecheck
         working-directory: packages/@expo/cli
       - name: 🚨 Lint CLI
-        run: yarn lint
+        run: yarn lint --max-warnings 0
         working-directory: packages/@expo/cli
