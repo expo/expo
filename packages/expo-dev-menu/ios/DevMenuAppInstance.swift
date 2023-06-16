@@ -1,7 +1,5 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-// swiftlint:disable implicitly_unwrapped_optional
-
 import React
 
 @objc
@@ -40,6 +38,7 @@ class DevMenuAppInstance: DevMenuRCTAppDelegate {
 
   // MARK: RCTAppDelegate
 
+  // swiftlint:disable implicitly_unwrapped_optional
   override func sourceURL(for bridge: RCTBridge!) -> URL! {
     #if DEBUG
     if let packagerHost = jsPackagerHost() {
@@ -62,6 +61,7 @@ class DevMenuAppInstance: DevMenuRCTAppDelegate {
   override func bridge(_ bridge: RCTBridge!, didNotFindModule moduleName: String!) -> Bool {
     return moduleName == "DevMenu"
   }
+  // swiftlint:enable implicitly_unwrapped_optional
 
   func concurrentRootEnabled() -> Bool {
     return true
