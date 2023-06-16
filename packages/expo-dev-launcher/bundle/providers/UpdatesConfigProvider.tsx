@@ -10,7 +10,7 @@ const defaultUpdatesConfig: EXUpdatesConfig = {
   sdkVersion: '',
   appId: '',
   usesEASUpdates: false,
-  updatesUrl: '',
+  projectUrl: '',
 };
 
 const Context = React.createContext<EXUpdatesConfig>(defaultUpdatesConfig);
