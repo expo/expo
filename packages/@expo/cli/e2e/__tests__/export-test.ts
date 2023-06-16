@@ -73,7 +73,7 @@ it('runs `npx expo export --help`', async () => {
 });
 
 describe('server', () => {
-  beforeEach(() => ensurePortFreeAsync(19000));
+  beforeEach(() => ensurePortFreeAsync(8081));
   it(
     'runs `npx expo export`',
     async () => {

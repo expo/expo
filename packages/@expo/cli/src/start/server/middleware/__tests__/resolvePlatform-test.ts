@@ -21,7 +21,7 @@ describe(parsePlatformHeader, () => {
     ).toBe(null);
   });
   it(`parses from 'platform' query parameter`, () => {
-    expect(parsePlatformHeader(asRequest({ url: 'http://localhost:19000/?platform=ios' }))).toBe(
+    expect(parsePlatformHeader(asRequest({ url: 'http://localhost:8081/?platform=ios' }))).toBe(
       'ios'
     );
     // Handles arrays
@@ -53,7 +53,7 @@ describe(parsePlatformHeader, () => {
     expect(
       parsePlatformHeader(
         asRequest({
-          url: 'http://localhost:19000/?platform=ios',
+          url: 'http://localhost:8081/?platform=ios',
           headers: { 'expo-platform': 'android' },
         })
       )
@@ -63,7 +63,7 @@ describe(parsePlatformHeader, () => {
     expect(
       parsePlatformHeader(
         asRequest({
-          url: 'http://localhost:19000/',
+          url: 'http://localhost:8081/',
           headers: {
             'expo-platform': 'android',
             'exponent-platform': 'ios',

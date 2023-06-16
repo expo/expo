@@ -352,7 +352,7 @@ function Imgur({ redirectUri, prompt, usePKCE, useProxy }: any) {
       clientId = '5287e6c03ffac8b';
     } else {
       // Normalize the host to `localhost` for other testers
-      // Expects: exp://127.0.0.1:19000/--/redirect
+      // Expects: exp://127.0.0.1:8081/--/redirect
       clientId = '7ab2f3cc75427a0';
     }
   } else {

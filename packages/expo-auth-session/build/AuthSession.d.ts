@@ -54,7 +54,7 @@ export declare function getRedirectUrl(path?: string): string;
  *   path: 'redirect'
  * });
  * // Development Build: my-scheme://redirect
- * // Expo Go: exp://127.0.0.1:19000/--/redirect
+ * // Expo Go: exp://127.0.0.1:8081/--/redirect
  * // Web dev: https://localhost:19006/redirect
  * // Web prod: https://yourwebsite.com/redirect
  *
@@ -64,7 +64,7 @@ export declare function getRedirectUrl(path?: string): string;
  *   isTripleSlashed: true,
  * });
  * // Development Build: scheme2:///
- * // Expo Go: exp://localhost:19000
+ * // Expo Go: exp://localhost:8081
  * // Web dev: https://localhost:19006
  * // Web prod: https://yourwebsite.com
  * ```
