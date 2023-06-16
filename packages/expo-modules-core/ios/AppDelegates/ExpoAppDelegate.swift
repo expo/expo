@@ -288,7 +288,14 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
 
   // TODO: - Handling CloudKit Invitations
 
-  // TODO: - Managing Interface Geometry
+  // MARK: - Managing Interface Geometry
+
+  public func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+    // We want to create an intersection of all orientations set by subscribers.
+    return subscribers.reduce(.all) { result, subscriber in
+      return subscriber.application?(application, supportedInterfaceOrientationsFor: window).intersection(result) ?? result
+    }
+  }
 
   // MARK: - Statics
 
