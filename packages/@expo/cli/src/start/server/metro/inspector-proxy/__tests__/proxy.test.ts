@@ -78,6 +78,25 @@ it('creates a new device when a client connects', async () => {
   }
 });
 
+it('creates a new device with client-side device id when a client connects', async () => {
+  const { expoProxy } = createTestProxy();
+  const { server, deviceWebSocketUrl } = await createTestServer();
+  useWebsockets(server, expoProxy.createWebSocketListeners(server));
+
+  const device = new WS(`${deviceWebSocketUrl}?device=someuniqueid`);
+
+  try {
+    await new Promise((resolve) => device.on('open', resolve));
+
+    expect(device.readyState).toBe(device.OPEN);
+    expect(expoProxy.devices.size).toBe(1);
+    expect(expoProxy.devices.get('someuniqueid')).toBeDefined();
+  } finally {
+    server.close();
+    device.close();
+  }
+});
+
 it('removes device when client disconnects', async () => {
   const { expoProxy } = createTestProxy();
   const { server, deviceWebSocketUrl } = await createTestServer();
@@ -119,7 +138,7 @@ it('accepts debugger connections when device is connected', async () => {
 
     const deviceDebugHandler = jest.spyOn(device, 'handleDebuggerConnection');
 
-    debuggerWs = new WS(`${debuggerWebSocketUrl}?device=${device.id}&page=1`);
+    debuggerWs = new WS(`${debuggerWebSocketUrl}?device=${device._id}&page=1`);
     await new Promise((resolve) => debuggerWs?.on('open', resolve));
 
     expect(debuggerWs.readyState).toBe(debuggerWs.OPEN);
@@ -131,10 +150,71 @@ it('accepts debugger connections when device is connected', async () => {
   }
 });
 
+it('keeps debugger connection alive when device reconnects', async () => {
+  const { expoProxy } = createTestProxy();
+  const { server, deviceWebSocketUrl, debuggerWebSocketUrl } = await createTestServer();
+  useWebsockets(server, expoProxy.createWebSocketListeners(server));
+
+  let oldDeviceWs: WS | null = null;
+  let newDeviceWs: WS | null = null;
+  let debuggerWs: WS | null = null;
+
+  try {
+    // Connect the "old" device first
+    oldDeviceWs = new WS(`${deviceWebSocketUrl}?device=samedevice`);
+    await new Promise((resolve) => oldDeviceWs?.on('open', resolve));
+
+    const oldDevice = expoProxy.devices.get('samedevice');
+    expect(oldDevice).toBeDefined();
+
+    // Connect the debugger
+    const deviceDebugHandler = jest.spyOn(oldDevice!, 'handleDebuggerConnection');
+
+    debuggerWs = new WS(`${debuggerWebSocketUrl}?device=samedevice&page=1`);
+    await new Promise((resolve) => debuggerWs?.on('open', resolve));
+
+    expect(debuggerWs.readyState).toBe(debuggerWs.OPEN);
+    expect(deviceDebugHandler).toBeCalled();
+
+    // Reconnect the device using the "new" device connection
+    newDeviceWs = new WS(`${deviceWebSocketUrl}?device=samedevice`);
+
+    // Wait until both sockets have updated
+    await Promise.all([
+      new Promise((resolve) => oldDeviceWs?.on('close', resolve)),
+      new Promise((resolve) => newDeviceWs?.on('open', resolve)),
+    ]);
+
+    const newDevice = expoProxy.devices.get('samedevice');
+    expect(newDevice).not.toBe(oldDevice);
+    expect(expoProxy.devices.size).toBe(1);
+
+    // Check if the debugger and new device connections are still open
+    expect(debuggerWs.readyState).toBe(debuggerWs.OPEN);
+    expect(newDeviceWs.readyState).toBe(newDeviceWs.OPEN);
+    expect(oldDeviceWs.readyState).toBe(oldDeviceWs.CLOSED);
+  } finally {
+    server.close();
+    oldDeviceWs?.close();
+    newDeviceWs?.close();
+    debuggerWs?.close();
+  }
+});
+
 function createTestProxy() {
   class ExpoDevice {
-    constructor(public readonly id: number) {}
+    constructor(
+      public readonly _id: string,
+      public readonly _name: string,
+      public readonly _app: string,
+      public readonly _deviceSocket: WS
+    ) {}
+
     handleDebuggerConnection() {}
+
+    handleDuplicateDeviceConnection() {
+      this._deviceSocket.close();
+    }
   }
 
   const metroProxy = new MetroProxy();
