@@ -470,7 +470,7 @@ abstract class ReactNativeActivity :
     if (devSettings != null) {
       devSettings.setField("exponentActivityId", activityId)
       if (devSettings.call("isRemoteJSDebugEnabled") as Boolean) {
-        if (manifest?.jsEngine == "hermes") {
+        if (manifest?.getJSEngine() == "hermes") {
           // Disable remote debugging when running on Hermes
           devSettings.call("setRemoteJSDebugEnabled", false)
         }

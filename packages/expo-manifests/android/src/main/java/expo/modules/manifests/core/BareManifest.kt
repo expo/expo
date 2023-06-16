@@ -4,7 +4,16 @@ import expo.modules.jsonutils.require
 import org.json.JSONException
 import org.json.JSONObject
 
-class BareManifest(json: JSONObject) : BaseLegacyManifest(json) {
+data class BareManifest(private val json: JSONObject) : BaseLegacyManifest {
+  override fun getRawJson(): JSONObject {
+    return json
+  }
+
+  @Deprecated(message = "Prefer to use specific field getters")
+  override fun toString(): String {
+    return getRawJson().toString()
+  }
+
   /**
    * A UUID for this manifest.
    */

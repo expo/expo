@@ -6,31 +6,31 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
-abstract class BaseLegacyManifest(json: JSONObject) : Manifest(json) {
-  override fun getStableLegacyID(): String = json.getNullable("originalFullName") ?: getLegacyID()
+interface BaseLegacyManifest : Manifest {
+  override fun getStableLegacyID(): String = getRawJson().getNullable("originalFullName") ?: getLegacyID()
 
-  override fun getScopeKey(): String = json.getNullable("scopeKey") ?: getStableLegacyID()
+  override fun getScopeKey(): String = getRawJson().getNullable("scopeKey") ?: getStableLegacyID()
 
-  override fun getEASProjectID(): String? = json.getNullable("projectId")
+  override fun getEASProjectID(): String? = getRawJson().getNullable("projectId")
 
-  override fun getAssets(): JSONArray? = json.getNullable("assets")
+  override fun getAssets(): JSONArray? = getRawJson().getNullable("assets")
 
   @Throws(JSONException::class)
-  override fun getBundleURL(): String = json.require("bundleUrl")
+  override fun getBundleURL(): String = getRawJson().require("bundleUrl")
 
-  override fun getExpoGoSDKVersion(): String? = json.getNullable("sdkVersion")
+  override fun getExpoGoSDKVersion(): String? = getRawJson().getNullable("sdkVersion")
 
   override fun getExpoGoConfigRootObject(): JSONObject? {
-    return json
+    return getRawJson()
   }
 
   override fun getExpoClientConfigRootObject(): JSONObject? {
-    return json
+    return getRawJson()
   }
 
-  override fun getSlug(): String? = json.getNullable("slug")
+  override fun getSlug(): String? = getRawJson().getNullable("slug")
 
-  override fun getAppKey(): String? = json.getNullable("appKey")
+  override fun getAppKey(): String? = getRawJson().getNullable("appKey")
 
-  fun getCommitTime(): String? = json.getNullable("commitTime")
+  fun getCommitTime(): String? = getRawJson().getNullable("commitTime")
 }

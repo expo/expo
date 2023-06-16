@@ -260,7 +260,7 @@ object VersionedUtils {
     val appName = instanceManagerBuilderProperties.manifest.getName() ?: ""
     val deviceName = AndroidInfoHelpers.getFriendlyDeviceName()
 
-    val jsEngineFromManifest = instanceManagerBuilderProperties.manifest.jsEngine
+    val jsEngineFromManifest = instanceManagerBuilderProperties.manifest.getJSEngine()
     return if (jsEngineFromManifest == "hermes") HermesExecutorFactory() else JSCExecutorFactory(
       appName,
       deviceName

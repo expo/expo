@@ -6,7 +6,16 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
-open class LegacyManifest(json: JSONObject) : BaseLegacyManifest(json) {
+data class LegacyManifest(private val json: JSONObject) : BaseLegacyManifest {
+  override fun getRawJson(): JSONObject {
+    return json
+  }
+
+  @Deprecated(message = "Prefer to use specific field getters")
+  override fun toString(): String {
+    return getRawJson().toString()
+  }
+
   @Throws(JSONException::class)
   fun getBundleKey(): String? = json.getNullable("bundleKey")
 

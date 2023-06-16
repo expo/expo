@@ -6,46 +6,27 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
-interface InternalJSONMutator {
-  @Throws(JSONException::class)
-  fun updateJSON(json: JSONObject)
-}
-
-abstract class Manifest(protected val json: JSONObject) {
-  @Deprecated(message = "Strive for manifests to be immutable")
-  @Throws(JSONException::class)
-  fun mutateInternalJSONInPlace(internalJSONMutator: InternalJSONMutator) {
-    json.apply {
-      internalJSONMutator.updateJSON(this)
-    }
-  }
-
-  @Deprecated(message = "Prefer to use specific field getters")
-  fun getRawJson(): JSONObject = json
-
-  @Deprecated(message = "Prefer to use specific field getters")
-  override fun toString(): String {
-    return getRawJson().toString()
-  }
+interface Manifest {
+  fun getRawJson(): JSONObject
 
   /**
    * A best-effort immutable legacy ID for this experience. Stable through project transfers.
    * Should be used for calling Expo and EAS APIs during their transition to projectId.
    */
   @Deprecated(message = "Prefer scopeKey or projectId depending on use case")
-  abstract fun getStableLegacyID(): String?
+  fun getStableLegacyID(): String?
 
   /**
    * A stable immutable scoping key for this experience. Should be used for scoping data on the
    * client for this project when running in Expo Go.
    */
   @Throws(JSONException::class)
-  abstract fun getScopeKey(): String
+  fun getScopeKey(): String
 
   /**
    * A stable UUID for this EAS project. Should be used to call EAS APIs.
    */
-  abstract fun getEASProjectID(): String?
+  fun getEASProjectID(): String?
 
   /**
    * The legacy ID of this experience.
@@ -60,26 +41,26 @@ abstract class Manifest(protected val json: JSONObject) {
    */
   @Throws(JSONException::class)
   @Deprecated(message = "Prefer scopeKey or projectId depending on use case")
-  fun getLegacyID(): String = json.require("id")
+  fun getLegacyID(): String = getRawJson().require("id")
 
   @Throws(JSONException::class)
-  abstract fun getBundleURL(): String
+  fun getBundleURL(): String
 
   @Throws(JSONException::class)
   fun getRevisionId(): String = getExpoClientConfigRootObject()!!.require("revisionId")
 
-  fun getMetadata(): JSONObject? = json.getNullable("metadata")
+  fun getMetadata(): JSONObject? = getRawJson().getNullable("metadata")
 
   /**
    * Get the SDK version that should be attempted to be used in Expo Go. If no SDK version can be
    * determined, returns null
    */
-  abstract fun getExpoGoSDKVersion(): String?
+  fun getExpoGoSDKVersion(): String?
 
-  abstract fun getAssets(): JSONArray?
+  fun getAssets(): JSONArray?
 
-  abstract fun getExpoGoConfigRootObject(): JSONObject?
-  abstract fun getExpoClientConfigRootObject(): JSONObject?
+  fun getExpoGoConfigRootObject(): JSONObject?
+  fun getExpoClientConfigRootObject(): JSONObject?
 
   fun isDevelopmentMode(): Boolean {
     val expoGoRootObject = getExpoGoConfigRootObject() ?: return false
@@ -101,16 +82,16 @@ abstract class Manifest(protected val json: JSONObject) {
     return expoGoRootObject.getNullable<JSONObject>("developer")?.has("tool") ?: false
   }
 
-  abstract fun getSlug(): String?
+  fun getSlug(): String?
 
   fun getDebuggerHost(): String = getExpoGoConfigRootObject()!!.require("debuggerHost")
   fun getMainModuleName(): String = getExpoGoConfigRootObject()!!.require("mainModuleName")
   fun getLogUrl(): String? = getExpoGoConfigRootObject()?.getNullable("logUrl")
   fun getHostUri(): String? = getExpoClientConfigRootObject()?.getNullable("hostUri")
 
-  fun isVerified(): Boolean = json.getNullable("isVerified") ?: false
+  fun isVerified(): Boolean = getRawJson().getNullable("isVerified") ?: false
 
-  abstract fun getAppKey(): String?
+  fun getAppKey(): String?
 
   fun getName(): String? {
     val expoClientConfig = getExpoClientConfigRootObject() ?: return null
@@ -171,7 +152,7 @@ abstract class Manifest(protected val json: JSONObject) {
     return expoClientConfig.getNullable("androidNavigationBar")
   }
 
-  val jsEngine: String by lazy {
+  fun getJSEngine(): String {
     val expoClientConfig = getExpoClientConfigRootObject()
     var result = expoClientConfig
       ?.getNullable<JSONObject>("android")?.getNullable<String>("jsEngine") ?: expoClientConfig?.getNullable<String>("jsEngine")
@@ -180,7 +161,7 @@ abstract class Manifest(protected val json: JSONObject) {
       val sdkMajorVersion = if (sdkVersionComponents?.size == 3) sdkVersionComponents[0].toIntOrNull() else 0
       result = if (sdkMajorVersion in 1..47) "jsc" else "hermes"
     }
-    result
+    return result
   }
 
   fun getIconUrl(): String? {

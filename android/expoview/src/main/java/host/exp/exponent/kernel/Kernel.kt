@@ -372,7 +372,7 @@ class Kernel : KernelInterface() {
       val appName = manifest.getName() ?: ""
       val deviceName = AndroidInfoHelpers.getFriendlyDeviceName()
 
-      val jsEngineFromManifest = manifest.jsEngine
+      val jsEngineFromManifest = manifest.getJSEngine()
       return if (jsEngineFromManifest == "hermes") HermesExecutorFactory() else JSCExecutorFactory(
         appName,
         deviceName
@@ -739,13 +739,13 @@ class Kernel : KernelInterface() {
   @Throws(JSONException::class)
   private fun openManifestUrlStep2(
     manifestUrl: String,
-    manifest: Manifest,
+    unnormalizedManifest: Manifest,
     existingTask: AppTask?
   ) {
-    val bundleUrl = toHttp(manifest.getBundleURL())
+    val bundleUrl = toHttp(unnormalizedManifest.getBundleURL())
     val task = getExperienceActivityTask(manifestUrl)
     task.bundleUrl = bundleUrl
-    ExponentManifest.normalizeManifestInPlace(manifest, manifestUrl)
+    val manifest = ExponentManifest.normalizeManifest(unnormalizedManifest, manifestUrl)
     if (existingTask == null) {
       sendManifestToExperienceActivity(manifestUrl, manifest, bundleUrl)
     }

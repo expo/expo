@@ -8,7 +8,16 @@ import org.json.JSONObject
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-class NewManifest(json: JSONObject) : Manifest(json) {
+data class NewManifest(private val json: JSONObject) : Manifest {
+  override fun getRawJson(): JSONObject {
+    return json
+  }
+
+  @Deprecated(message = "Prefer to use specific field getters")
+  override fun toString(): String {
+    return getRawJson().toString()
+  }
+
   /**
    * An ID representing this manifest, not the ID for the experience.
    */
