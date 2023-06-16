@@ -12,6 +12,13 @@ Object.defineProperty(exports, "SerialAsset", {
 exports.createSerializerFromSerialProcessors = createSerializerFromSerialProcessors;
 exports.withExpoSerializers = withExpoSerializers;
 exports.withSerializerPlugins = withSerializerPlugins;
+function _jscSafeUrl() {
+  const data = require("jsc-safe-url");
+  _jscSafeUrl = function () {
+    return data;
+  };
+  return data;
+}
 function _baseJSBundle() {
   const data = _interopRequireDefault(require("metro/src/DeltaBundler/Serializers/baseJSBundle"));
   _baseJSBundle = function () {
@@ -95,7 +102,8 @@ function getDefaultSerializer(fallbackSerializer) {
     if (!options.sourceUrl) {
       return jsCode;
     }
-    const url = new URL(options.sourceUrl, 'https://expo.dev');
+    const sourceUrl = (0, _jscSafeUrl().isJscSafeUrl)(options.sourceUrl) ? (0, _jscSafeUrl().toNormalUrl)(options.sourceUrl) : options.sourceUrl;
+    const url = new URL(sourceUrl, 'https://expo.dev');
     if (url.searchParams.get('platform') !== 'web' || url.searchParams.get('serializer.output') !== 'static') {
       // Default behavior if `serializer.output=static` is not present in the URL.
       return jsCode;
