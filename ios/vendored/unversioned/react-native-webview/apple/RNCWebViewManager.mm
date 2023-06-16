@@ -37,7 +37,7 @@ RCT_ENUM_CONVERTER(RNCWebViewPermissionGrantType, (@{
 
 
 @implementation RNCWebViewManager {
-  NSString *_scopeKey;
+    NSString *_scopeKey;
     NSConditionLock *_shouldStartLoadLock;
     BOOL _shouldStartLoad;
 }
@@ -58,7 +58,9 @@ RCT_EXPORT_MODULE(RNCWebView)
 
 - (RNCView *)view
 {
-  return [[RNCWebViewImpl alloc] init];
+  RNCWebViewImpl *webview = [[RNCWebViewImpl alloc] init];
+  webview.scopeKey = _scopeKey;
+  return webview;
 }
 
 RCT_EXPORT_VIEW_PROPERTY(source, NSDictionary)

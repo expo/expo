@@ -299,12 +299,13 @@ const config: VendoringTargetConfig = {
             {
               paths: 'RNCWebViewManager.mm',
               find: /@implementation RNCWebViewManager\s*{/,
-              replaceWith: '$&\n  NSString *_scopeKey;',
+              replaceWith: '$&\n    NSString *_scopeKey;',
             },
             {
               paths: 'RNCWebViewManager.mm',
-              find: '*webView = [RNCWebView new];',
-              replaceWith: '*webView = [RNCWebView new];\n  webView.scopeKey = _scopeKey;',
+              find: 'return [[RNCWebViewImpl alloc] init];',
+              replaceWith:
+                'RNCWebViewImpl *webview = [[RNCWebViewImpl alloc] init];\n  webview.scopeKey = _scopeKey;\n  return webview;',
             },
             {
               paths: 'RNCWebViewManager.mm',
