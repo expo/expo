@@ -48,6 +48,18 @@ async function transform(config, projectRoot, filename, data, options) {
   const isCss = options.type !== 'asset' && /\.(s?css|sass)$/.test(filename);
   // If the file is not CSS, then use the default behavior.
   if (!isCss) {
+    var _options$customTransf;
+    const environment = (_options$customTransf = options.customTransformOptions) === null || _options$customTransf === void 0 ? void 0 : _options$customTransf.environment;
+    if (environment === 'client' &&
+    // TODO: Ensure this works with windows.
+    // TODO: Add +api files.
+    filename.match(new RegExp(`^app/\\+html(\\.${options.platform})?\\.([tj]sx?|[cm]js)?$`))) {
+      // Remove the server-only +html file from the bundle when bundling for a client environment.
+      return _metroTransformWorker().default.transform(config, projectRoot, filename, !options.minify ? Buffer.from(
+      // Use a string so this notice is visible in the bundle if the user is
+      // looking for it.
+      '"> The server-only +html file was removed from the client JS bundle by Expo CLI."') : Buffer.from(''), options);
+    }
     return _metroTransformWorker().default.transform(config, projectRoot, filename, data, options);
   }
 
