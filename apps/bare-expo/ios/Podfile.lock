@@ -668,9 +668,9 @@ PODS:
   - React-jsinspector (0.72.0-rc.5)
   - React-logger (0.72.0-rc.5):
     - glog
-  - react-native-netinfo (9.3.7):
+  - react-native-netinfo (9.3.10):
     - React-Core
-  - react-native-pager-view (6.1.2):
+  - react-native-pager-view (6.2.0):
     - React-Core
   - react-native-safe-area-context (4.5.0):
     - RCT-Folly
@@ -682,7 +682,7 @@ PODS:
     - React-Core
   - react-native-slider (4.4.2):
     - React-Core
-  - react-native-view-shot (3.5.0):
+  - react-native-view-shot (3.6.0):
     - React-Core
   - react-native-webview (11.26.0):
     - React-Core
@@ -798,7 +798,7 @@ PODS:
     - React-perflogger (= 0.72.0-rc.5)
   - RNCAsyncStorage (1.17.11):
     - React-Core
-  - RNCMaskedView (0.2.8):
+  - RNCMaskedView (0.2.9):
     - React-Core
   - RNCPicker (2.4.8):
     - React-Core
@@ -1470,12 +1470,12 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 98c1b1c1e60e137703597e5c5025f2ce3e4700fe
   React-jsinspector: 04038f19b6269374640d90371796f63d034d3542
   React-logger: 4e8c28425ddc27abb6cde80eece89cc765da7d86
-  react-native-netinfo: 2517ad504b3d303e90d7a431b0fcaef76d207983
-  react-native-pager-view: 54bed894cecebe28cede54c01038d9d1e122de43
+  react-native-netinfo: ccbe1085dffd16592791d550189772e13bf479e2
+  react-native-pager-view: 0ccb8bf60e2ebd38b1f3669fa3650ecce81db2df
   react-native-safe-area-context: 39c2d8be3328df5d437ac1700f4f3a4f75716acc
   react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
   react-native-slider: 33b8d190b59d4f67a541061bb91775d53d617d9d
-  react-native-view-shot: 792829857bbb23a9c8acdad9a640554bdee397a3
+  react-native-view-shot: 705f999ac2a24e4e6c909c0ca65c732ed33ca2ff
   react-native-webview: 994b9f8fbb504d6314dc40d83f94f27c6831b3bf
   React-NativeModulesApple: ae27f95a2a84a877785a20ce4c689995dd5f4a64
   React-perflogger: fdd8c2969761105b1c85432fecdfff0616100cc6
@@ -1495,7 +1495,7 @@ SPEC CHECKSUMS:
   React-utils: cbbe99dc2e49db0a3fbb425c304f511a422f0ca2
   ReactCommon: 01b6643cfeef0d9078c8125378066d20cc34ddfe
   RNCAsyncStorage: 8616bd5a58af409453ea4e1b246521bb76578d60
-  RNCMaskedView: bc0170f389056201c82a55e242e5d90070e18e5a
+  RNCMaskedView: 949696f25ec596bfc697fc88e6f95cf0c79669b6
   RNCPicker: 0bf8ef8f7800524f32d2bb2a8bcadd53eda0ecd1
   RNDateTimePicker: 00247f26c34683c80be94207f488f6f13448586e
   RNFlashList: 399bf6a0db68f594ad2c86aaff3ea39564f39f8a

@@ -5,7 +5,7 @@ import React from 'react';
 import { ActivityIndicator, Platform } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import { useHome_CurrentUserQuery } from '../../graphql/types';
+import { useHome_CurrentUserActorQuery } from '../../graphql/types';
 import { LoggedInAccountView } from './LoggedInAccountView';
 import { LoggedOutAccountView } from './LoggedOutAccountView';
 import { ModalHeader } from './ModalHeader';
@@ -13,7 +13,7 @@ import { ModalHeader } from './ModalHeader';
 export function AccountModal() {
   const theme = useExpoTheme();
 
-  const { data, loading, error, refetch } = useHome_CurrentUserQuery();
+  const { data, loading, error, refetch } = useHome_CurrentUserActorQuery();
 
   if (loading) {
     return (
@@ -84,8 +84,8 @@ export function AccountModal() {
   return (
     <View flex="1">
       {Platform.OS === 'ios' && <ModalHeader />}
-      {data?.viewer?.accounts ? (
-        <LoggedInAccountView accounts={data.viewer.accounts} />
+      {data?.meUserActor?.accounts ? (
+        <LoggedInAccountView accounts={data.meUserActor.accounts} />
       ) : (
         <LoggedOutAccountView
           refetch={async () => {
