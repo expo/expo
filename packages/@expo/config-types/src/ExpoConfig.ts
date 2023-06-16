@@ -259,7 +259,7 @@ export interface ExpoConfig {
      */
     tsconfigPaths?: boolean;
     /**
-     * Enable support for statically typed links in Expo Router. This feature requires TypeScript to be set up in your Expo Router v2 project.
+     * Enable support for statically typed links in Expo Router. This feature requires TypeScript be set up in your Expo Router v2 project.
      */
     typedRoutes?: boolean;
     /**
