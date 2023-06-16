@@ -73,7 +73,7 @@ class UpdatesController private constructor(
 
   var updatesDirectory: File? = null
   var updatesDirectoryException: Exception? = null
-  var stateMachine: UpdatesStateMachine = UpdatesStateMachine(context)
+  var stateMachine: UpdatesStateMachine = UpdatesStateMachine(context, this)
 
   private var launcher: Launcher? = null
   val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context))
@@ -237,8 +237,6 @@ class UpdatesController private constructor(
       return
     }
     isStarted = true
-
-    stateMachine.changeEventSender = this
 
     if (!updatesConfiguration.isEnabled) {
       launcher = NoDatabaseLauncher(context, updatesConfiguration)

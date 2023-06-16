@@ -18,7 +18,7 @@ data class UpdatesStateContext(
   var downloadError: UpdatesStateError? = null
 ) {
 
-  val json: MutableMap<String, Any>
+  val json: Map<String, Any>
     get() {
       val map: MutableMap<String, Any> = mutableMapOf(
         "isUpdateAvailable" to isUpdateAvailable,

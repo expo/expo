@@ -29,15 +29,15 @@ class UpdatesStateMachineInstrumentationTest {
 
   @Test
   fun test_defaultState() {
-    val machine = UpdatesStateMachine(androidContext)
+    val testStateChangeEventSender = TestStateChangeEventSender()
+    val machine = UpdatesStateMachine(androidContext, testStateChangeEventSender)
     Assert.assertEquals(UpdatesStateValue.Idle, machine.state)
   }
 
   @Test
   fun test_handleCheckAndCheckCompleteAvailable() {
-    val machine = UpdatesStateMachine(androidContext)
     val testStateChangeEventSender = TestStateChangeEventSender()
-    machine.changeEventSender = testStateChangeEventSender
+    val machine = UpdatesStateMachine(androidContext, testStateChangeEventSender)
 
     machine.processEvent(UpdatesStateEvent(UpdatesStateEventType.Check))
 
@@ -62,9 +62,8 @@ class UpdatesStateMachineInstrumentationTest {
 
   @Test
   fun test_handleCheckCompleteUnavailable() {
-    val machine = UpdatesStateMachine(androidContext)
     val testStateChangeEventSender = TestStateChangeEventSender()
-    machine.changeEventSender = testStateChangeEventSender
+    val machine = UpdatesStateMachine(androidContext, testStateChangeEventSender)
 
     machine.processEvent(UpdatesStateEvent(UpdatesStateEventType.Check))
 
@@ -83,9 +82,8 @@ class UpdatesStateMachineInstrumentationTest {
 
   @Test
   fun test_handleDownloadAndDownloadComplete() {
-    val machine = UpdatesStateMachine(androidContext)
     val testStateChangeEventSender = TestStateChangeEventSender()
-    machine.changeEventSender = testStateChangeEventSender
+    val machine = UpdatesStateMachine(androidContext, testStateChangeEventSender)
 
     machine.processEvent(UpdatesStateEvent(UpdatesStateEventType.Download))
 
@@ -112,9 +110,8 @@ class UpdatesStateMachineInstrumentationTest {
 
   @Test
   fun test_handleRollback() {
-    val machine = UpdatesStateMachine(androidContext)
     val testStateChangeEventSender = TestStateChangeEventSender()
-    machine.changeEventSender = testStateChangeEventSender
+    val machine = UpdatesStateMachine(androidContext, testStateChangeEventSender)
 
     machine.processEvent(UpdatesStateEvent(UpdatesStateEventType.Check))
 
@@ -139,9 +136,8 @@ class UpdatesStateMachineInstrumentationTest {
 
   @Test
   fun test_checkError() {
-    val machine = UpdatesStateMachine(androidContext)
     val testStateChangeEventSender = TestStateChangeEventSender()
-    machine.changeEventSender = testStateChangeEventSender
+    val machine = UpdatesStateMachine(androidContext, testStateChangeEventSender)
 
     machine.processEvent(UpdatesStateEvent(UpdatesStateEventType.Check))
 
@@ -166,7 +162,8 @@ class UpdatesStateMachineInstrumentationTest {
 
   @Test
   fun test_invalidTransitions() {
-    val machine = UpdatesStateMachine(androidContext)
+    val testStateChangeEventSender = TestStateChangeEventSender()
+    val machine = UpdatesStateMachine(androidContext, testStateChangeEventSender)
     machine.processEvent(UpdatesStateEvent(UpdatesStateEventType.Check))
     Assert.assertEquals(UpdatesStateValue.Checking, machine.state)
     // Test invalid transitions and ensure that state does not change
