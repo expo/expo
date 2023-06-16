@@ -1,15 +1,15 @@
 ---
-title: Typed Routes
-description: Learn how to use statically typed links and routes in Expo Router
+title: Typed routes
+description: Learn how to use statically typed links and routes in Expo Router.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 import { FileTree } from '~/ui/components/FileTree';
 
-> Expo Router supports standard TypeScript out of the box. [Learn how to setup TypeScript today](/guides/typescript/).
+> Expo Router supports standard TypeScript out of the box. See [TypeScript](/guides/typescript/) guide for more information on how to set it up.
 
-While the feature is in beta, you can enable it by setting `experiments.typedRoutes` to `true` in your **app.json**.
+While the feature is in beta, you can enable it by setting `experiments.typedRoutes` to `true` in your **app.json**:
 
 ```json app.json
 {
@@ -21,7 +21,7 @@ While the feature is in beta, you can enable it by setting `experiments.typedRou
 }
 ```
 
-Now run `npx expo start` to start the development server. You should now be able to use autocomplete in the Expo Router `<Link />` component's `href` prop.
+Now run `npx expo start` to start the development server. You can now use autocomplete in the Expo Router `<Link />` component's `href` prop.
 
 ## Statically typed routes
 
@@ -50,7 +50,7 @@ For dynamic routes, Href's need to be objects and their parameters are strictly 
 
 ### Relative paths
 
-Statically typed routes do not support relative paths. You'll need to use absolute paths for all routes.
+Statically typed routes do not support relative paths. You'll need to use absolute paths for all routes:
 
 ```tsx
 ✅ <Link href="/about" />
@@ -87,7 +87,7 @@ export function Button() {
 }
 ```
 
-Now, you can leverage `<Button />` from both `app/(feed)/feed.js` and `app/(search)/search.js` to push `./profile` while preserving the current tab.
+Now, you can leverage `<Button />` from both **app/(feed)/feed.js** and **app/(search)/search.js** to push `./profile` while preserving the current tab.
 
 ## Changes made to the environment
 
@@ -95,7 +95,7 @@ When typed routes is enabled, Expo CLI will generate a git ignored **expo-env.d.
 
 The `includes` field in your **tsconfig.json** gets updated to include **expo-env.d.ts** and a hidden **.expo** directory. These entries are required and should not be removed from the file.
 
-The generated **expo-env.d.ts** should not be removed or changed at any time. It should not be committed and should be ignored by version control. For example, do not add it inside the **.gitignore**.
+The generated **expo-env.d.ts** should not be removed or changed at any time. It should not be committed and should be ignored by version control. For example, don't add it inside the **.gitignore**.
 
 ### Global types
 
@@ -108,7 +108,7 @@ Expo CLI will add the following global types to your project when typed routes i
 
 ### React Native Web
 
-With typed routes enabled, Expo CLI will also augment the `react-native` types to support React Native Web. The following changes are made:
+With typed routes enabled, Expo CLI also augments the `react-native` types to support React Native Web. The following changes are made:
 
 - Add additional web-only styles for `ViewStyle`, `TextStyle`, `ImageStyle`
 - Add `tabIndex`, `accessibilityLevel`, `lang` to `TextProps`
