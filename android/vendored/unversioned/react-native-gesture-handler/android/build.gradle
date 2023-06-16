@@ -202,7 +202,7 @@ android {
             var appProject = rootProject.allprojects.find {it.plugins.hasPlugin('com.android.application')}
             externalNativeBuild {
                 cmake {
-                    cppFlags "-O2", "-frtti", "-fexceptions", "-Wall", "-Werror", "-std=c++17"
+                    cppFlags "-O2", "-frtti", "-fexceptions", "-Wall", "-Werror", "-std=c++17", "-DANDROID"
                     arguments "-DAPP_BUILD_DIR=${appProject.buildDir}",
                         "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
                         "-DANDROID_STL=c++_shared"

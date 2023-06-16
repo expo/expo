@@ -2236,7 +2236,7 @@ PODS:
     - React-Core
   - RNFlashList (1.4.3):
     - React-Core
-  - RNGestureHandler (2.10.1):
+  - RNGestureHandler (2.12.0):
     - React-Core
   - RNReanimated (3.1.0):
     - DoubleConversion
@@ -3800,7 +3800,7 @@ SPEC CHECKSUMS:
   ReactCommon: 01b6643cfeef0d9078c8125378066d20cc34ddfe
   RNCAsyncStorage: 8616bd5a58af409453ea4e1b246521bb76578d60
   RNFlashList: ade81b4e928ebd585dd492014d40fb8d0e848aab
-  RNGestureHandler: 42ec7c28dd02d540ed6c9159c57a98ff016492dc
+  RNGestureHandler: dec4645026e7401a0899f2846d864403478ff6a5
   RNReanimated: 48794d0f278349ecb6d94490e7bb184c9cdcd86f
   RNScreens: 218801c16a2782546d30bd2026bb625c0302d70f
   RNSVG: 53c661b76829783cdaf9b7a57258f3d3b4c28315
