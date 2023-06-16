@@ -143,8 +143,8 @@ Apart from publishing your module to npm, there are other ways to use it in your
 To test the published module in a new project, create a new app and install the module as a dependency:
 
 <Terminal
-  cmdCopy="npx create-expo-app my-app && cd my-app && npx expo install expo-settings"
-  cmd={['$ npx create-expo-app my-app', '$ cd my-app', '$ npx expo install expo-settings']}
+  cmdCopy="npm create expo my-app && cd my-app && npx expo install expo-settings"
+  cmd={['$ npm create expo my-app', '$ cd my-app', '$ npx expo install expo-settings']}
 />
 
 You should now be able to use the module inside your app! To test it, edit the **App.js** in the app and render the text message from **expo-settings**.

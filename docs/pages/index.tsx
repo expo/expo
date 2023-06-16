@@ -75,7 +75,7 @@ const Home = () => {
                 <RawH2>
                   <QuickStartIcon /> Quick Start
                 </RawH2>
-                <Terminal includeMargin={false} cmd={['$ npx create-expo-app my-app']} />
+                <Terminal includeMargin={false} cmd={['$ npx create expo my-app']} />
               </div>
             </GridCell>
             <GridCell

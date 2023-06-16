@@ -356,12 +356,12 @@ import { Terminal } from '~/ui/components/Snippet';
 
 <Terminal cmd={[
   "# Create a new native project",
-  "$ npx create-expo-app --template bare-minimum",
+  "$ npm create expo --template bare-minimum",
   "",
   "# If you don’t have expo-cli yet, get it",
   "$ npm i -g expo-cli",
   "",
-]} cmdCopy="npx create-expo-app --template bare-minimum && npm i -g expo-cli" />
+]} cmdCopy="npm create expo --template bare-minimum && npm i -g expo-cli" />
 ```
 
 ### Prettier

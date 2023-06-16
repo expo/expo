@@ -24,13 +24,13 @@ One way you can debug these issues is by looking at the [stack trace](/debugging
 
 - Search for the error message in Google and [Stack Overflow](https://stackoverflow.com/questions), it's likely you're not the first person to ever run into this.
 - **Isolate the code that's throwing the error**. This step is _vital_ in fixing obscure errors. To do this:
-  - Revert to a working version of your code. This may even be a completely blank `npx create-expo-app` project.
+  - Revert to a working version of your code. This may even be a completely blank `npm create expo` project.
   - Apply your recent changes piece by piece, until it breaks.
   - If the code you're adding in each "piece" is complex, you may want to simplify what you're doing. For example, if you use a state management library such as Redux, you can try removing that from the equation completely to see if the issue lies in your state management (which is common in React apps).
   - This should narrow down the possible sources of the error, and provide you with more information to search the internet for others who have had the same problem.
 - Use breakpoints (or `console.log`s) to check and make sure a certain piece of code is being run, or that a variable has a certain value. Using `console.log` for debugging isn't considered the best practice, however, it's fast, easy, and oftentimes provides some illuminating information.
 
-Simplifying code as much as possible to track down the source of error is a great way to debug your app and it gets exponentially easier. That's why many open-source repositories require a [minimal reproducible example](https://stackoverflow.com/help/minimal-reproducible-example) when you open an issue. It ensures you have isolated the issue and identified exactly where the problem occurs. If your app is too large and complex to do that, try and extract the functionality you're trying to add in a blank `npx create-expo-app` project, and go from there.
+Simplifying code as much as possible to track down the source of error is a great way to debug your app and it gets exponentially easier. That's why many open-source repositories require a [minimal reproducible example](https://stackoverflow.com/help/minimal-reproducible-example) when you open an issue. It ensures you have isolated the issue and identified exactly where the problem occurs. If your app is too large and complex to do that, try and extract the functionality you're trying to add in a blank `npm create expo` project, and go from there.
 
 ### Native debugging
 

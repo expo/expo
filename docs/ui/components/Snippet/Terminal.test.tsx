@@ -55,7 +55,7 @@ describe(Terminal, () => {
   });
 
   it('do not generate copyCmd if there is more than one command', () => {
-    render(<Terminal cmd={['$ npx create-expo-app init test', '$ cd test']} />);
+    render(<Terminal cmd={['$ npm create expo init test', '$ cd test']} />);
     expect(screen.queryByText('Copy')).toBe(null);
   });
 });
