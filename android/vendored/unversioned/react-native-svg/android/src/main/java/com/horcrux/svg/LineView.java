@@ -14,6 +14,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReactContext;
+import java.util.ArrayList;
 
 @SuppressLint("ViewConstructor")
 class LineView extends RenderableView {
@@ -96,6 +97,13 @@ class LineView extends RenderableView {
 
     path.moveTo((float) x1, (float) y1);
     path.lineTo((float) x2, (float) y2);
+
+    elements = new ArrayList<>();
+    elements.add(
+        new PathElement(ElementType.kCGPathElementMoveToPoint, new Point[] {new Point(x1, y1)}));
+    elements.add(
+        new PathElement(ElementType.kCGPathElementAddLineToPoint, new Point[] {new Point(x2, y2)}));
+
     return path;
   }
 }

@@ -10,17 +10,17 @@
 #import "RNSVGNode.h"
 #import "RNSVGPainter.h"
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 #import <React/RCTConversions.h>
 #import <React/RCTFabricComponentsPlugins.h>
 #import <react/renderer/components/rnsvg/ComponentDescriptors.h>
 #import <react/renderer/components/view/conversions.h>
 #import "RNSVGFabricConversions.h"
-#endif // RN_FABRIC_ENABLED
+#endif // RCT_NEW_ARCH_ENABLED
 
 @implementation RNSVGPattern
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 using namespace facebook::react;
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -52,7 +52,8 @@ using namespace facebook::react;
     self.patternwidth = [RNSVGLength lengthWithString:RCTNSStringFromString(newProps.width)];
   }
   self.patternUnits = newProps.patternUnits == 0 ? kRNSVGUnitsObjectBoundingBox : kRNSVGUnitsUserSpaceOnUse;
-  self.patternContentUnits = newProps.patternUnits == 0 ? kRNSVGUnitsObjectBoundingBox : kRNSVGUnitsUserSpaceOnUse;
+  self.patternContentUnits =
+      newProps.patternContentUnits == 0 ? kRNSVGUnitsObjectBoundingBox : kRNSVGUnitsUserSpaceOnUse;
   if (newProps.patternTransform.size() == 6) {
     self.patternTransform = CGAffineTransformMake(
         newProps.patternTransform.at(0),
@@ -91,7 +92,7 @@ using namespace facebook::react;
   _align = nil;
   _meetOrSlice = kRNSVGVBMOSMeet;
 }
-#endif // RN_FABRIC_ENABLED
+#endif // RCT_NEW_ARCH_ENABLED
 
 - (instancetype)init
 {
@@ -251,9 +252,9 @@ using namespace facebook::react;
 
 @end
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 Class<RCTComponentViewProtocol> RNSVGPatternCls(void)
 {
   return RNSVGPattern.class;
 }
-#endif // RN_FABRIC_ENABLED
+#endif // RCT_NEW_ARCH_ENABLED

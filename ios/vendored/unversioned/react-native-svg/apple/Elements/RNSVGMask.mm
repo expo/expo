@@ -10,17 +10,17 @@
 #import "RNSVGNode.h"
 #import "RNSVGPainter.h"
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 #import <React/RCTConversions.h>
 #import <React/RCTFabricComponentsPlugins.h>
 #import <react/renderer/components/rnsvg/ComponentDescriptors.h>
 #import <react/renderer/components/view/conversions.h>
 #import "RNSVGFabricConversions.h"
-#endif // RN_FABRIC_ENABLED
+#endif // RCT_NEW_ARCH_ENABLED
 
 @implementation RNSVGMask
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 using namespace facebook::react;
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -53,15 +53,6 @@ using namespace facebook::react;
   }
   self.maskUnits = newProps.maskUnits == 0 ? kRNSVGUnitsObjectBoundingBox : kRNSVGUnitsUserSpaceOnUse;
   self.maskContentUnits = newProps.maskUnits == 0 ? kRNSVGUnitsObjectBoundingBox : kRNSVGUnitsUserSpaceOnUse;
-  if (newProps.maskTransform.size() == 6) {
-    self.maskTransform = CGAffineTransformMake(
-        newProps.maskTransform.at(0),
-        newProps.maskTransform.at(1),
-        newProps.maskTransform.at(2),
-        newProps.maskTransform.at(3),
-        newProps.maskTransform.at(4),
-        newProps.maskTransform.at(5));
-  }
 
   setCommonGroupProps(newProps, self);
   _props = std::static_pointer_cast<RNSVGMaskProps const>(props);
@@ -76,9 +67,8 @@ using namespace facebook::react;
   _maskwidth = nil;
   _maskUnits = kRNSVGUnitsObjectBoundingBox;
   _maskContentUnits = kRNSVGUnitsObjectBoundingBox;
-  _maskTransform = CGAffineTransformIdentity;
 }
-#endif // RN_FABRIC_ENABLED
+#endif // RCT_NEW_ARCH_ENABLED
 
 - (RNSVGPlatformView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
@@ -151,17 +141,11 @@ using namespace facebook::react;
   [self invalidate];
 }
 
-- (void)setMaskTransform:(CGAffineTransform)maskTransform
-{
-  _maskTransform = maskTransform;
-  [self invalidate];
-}
-
 @end
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 Class<RCTComponentViewProtocol> RNSVGMaskCls(void)
 {
   return RNSVGMask.class;
 }
-#endif // RN_FABRIC_ENABLED
+#endif // RCT_NEW_ARCH_ENABLED

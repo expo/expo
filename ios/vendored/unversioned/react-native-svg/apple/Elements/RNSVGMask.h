@@ -10,6 +10,5 @@
 @property (nonatomic, strong) RNSVGLength *maskheight;
 @property (nonatomic, assign) RNSVGUnits maskUnits;
 @property (nonatomic, assign) RNSVGUnits maskContentUnits;
-@property (nonatomic, assign) CGAffineTransform maskTransform;
 
 @end

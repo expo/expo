@@ -149,6 +149,12 @@ class VirtualViewManager<V extends VirtualView> extends ViewGroupManager<Virtual
     mClassName = svgclass.toString();
   }
 
+  protected ViewManagerDelegate<V> mDelegate;
+
+  protected ViewManagerDelegate getDelegate() {
+    return mDelegate;
+  }
+
   static class RenderableShadowNode extends LayoutShadowNode {
 
     @SuppressWarnings({"unused", "EmptyMethod"})
@@ -464,11 +470,6 @@ class VirtualViewManager<V extends VirtualView> extends ViewGroupManager<Virtual
     }
   }
 
-  @ReactProp(name = "onLayout")
-  public void setOnLayout(V node, boolean onLayout) {
-    node.setOnLayout(onLayout);
-  }
-
   @ReactProp(name = "name")
   public void setName(V node, String name) {
     node.setName(name);
@@ -733,11 +734,7 @@ class RenderableViewManager<T extends RenderableView> extends VirtualViewManager
       mDelegate = new RNSVGGroupManagerDelegate(this);
     }
 
-    private final ViewManagerDelegate<GroupView> mDelegate;
-
-    protected ViewManagerDelegate getDelegate() {
-      return mDelegate;
-    }
+    public static final String REACT_CLASS = "RNSVGGroup";
   }
 
   static class PathViewManager extends RenderableViewManager<PathView>
@@ -747,11 +744,7 @@ class RenderableViewManager<T extends RenderableView> extends VirtualViewManager
       mDelegate = new RNSVGPathManagerDelegate(this);
     }
 
-    private final ViewManagerDelegate<PathView> mDelegate;
-
-    protected ViewManagerDelegate getDelegate() {
-      return mDelegate;
-    }
+    public static final String REACT_CLASS = "RNSVGPath";
 
     @ReactProp(name = "d")
     public void setD(PathView node, String d) {
@@ -828,24 +821,12 @@ class RenderableViewManager<T extends RenderableView> extends VirtualViewManager
       view.setMethod(value);
     }
 
-    public void setTextAnchor(K view, @Nullable String value) {
-      // TODO: is it available on Android?
-    }
-
     public void setDx(K view, @Nullable ReadableArray value) {
       view.setDeltaX(value);
     }
 
     public void setDy(K view, @Nullable ReadableArray value) {
       view.setDeltaY(value);
-    }
-
-    public void setPositionX(K view, @Nullable ReadableArray value) {
-      view.setPositionX(value);
-    }
-
-    public void setPositionY(K view, @Nullable ReadableArray value) {
-      view.setPositionY(value);
     }
 
     public void setX(K view, @Nullable ReadableArray value) {
@@ -892,11 +873,7 @@ class RenderableViewManager<T extends RenderableView> extends VirtualViewManager
       mDelegate = new RNSVGTextManagerDelegate(this);
     }
 
-    private final ViewManagerDelegate<TextView> mDelegate;
-
-    protected ViewManagerDelegate getDelegate() {
-      return mDelegate;
-    }
+    public static final String REACT_CLASS = "RNSVGText";
 
     TextViewManager(SVGClass svgClass) {
       super(svgClass);
@@ -911,15 +888,11 @@ class RenderableViewManager<T extends RenderableView> extends VirtualViewManager
       mDelegate = new RNSVGTSpanManagerDelegate(this);
     }
 
+    public static final String REACT_CLASS = "RNSVGTSpan";
+
     TSpanViewManager(SVGClass svgClass) {
       super(svgClass);
       mDelegate = new RNSVGTSpanManagerDelegate(this);
-    }
-
-    private final ViewManagerDelegate<TSpanView> mDelegate;
-
-    protected ViewManagerDelegate getDelegate() {
-      return mDelegate;
     }
 
     @ReactProp(name = "content")
@@ -935,15 +908,11 @@ class RenderableViewManager<T extends RenderableView> extends VirtualViewManager
       mDelegate = new RNSVGTextPathManagerDelegate(this);
     }
 
+    public static final String REACT_CLASS = "RNSVGTextPath";
+
     TextPathViewManager(SVGClass svgClass) {
       super(svgClass);
       mDelegate = new RNSVGTextPathManagerDelegate(this);
-    }
-
-    private final ViewManagerDelegate<TextPathView> mDelegate;
-
-    protected ViewManagerDelegate getDelegate() {
-      return mDelegate;
     }
 
     @ReactProp(name = "href")
@@ -998,11 +967,7 @@ class RenderableViewManager<T extends RenderableView> extends VirtualViewManager
       mDelegate = new RNSVGImageManagerDelegate(this);
     }
 
-    private final ViewManagerDelegate<ImageView> mDelegate;
-
-    protected ViewManagerDelegate getDelegate() {
-      return mDelegate;
-    }
+    public static final String REACT_CLASS = "RNSVGImage";
 
     @ReactProp(name = "x")
     public void setX(ImageView node, Dynamic x) {
@@ -1083,11 +1048,7 @@ class RenderableViewManager<T extends RenderableView> extends VirtualViewManager
       mDelegate = new RNSVGCircleManagerDelegate(this);
     }
 
-    private final ViewManagerDelegate<CircleView> mDelegate;
-
-    protected ViewManagerDelegate getDelegate() {
-      return mDelegate;
-    }
+    public static final String REACT_CLASS = "RNSVGCircle";
 
     @ReactProp(name = "cx")
     public void setCx(CircleView node, Dynamic cx) {
@@ -1139,11 +1100,7 @@ class RenderableViewManager<T extends RenderableView> extends VirtualViewManager
       mDelegate = new RNSVGEllipseManagerDelegate(this);
     }
 
-    private final ViewManagerDelegate<EllipseView> mDelegate;
-
-    protected ViewManagerDelegate getDelegate() {
-      return mDelegate;
-    }
+    public static final String REACT_CLASS = "RNSVGEllipse";
 
     @ReactProp(name = "cx")
     public void setCx(EllipseView node, Dynamic cx) {
@@ -1210,11 +1167,7 @@ class RenderableViewManager<T extends RenderableView> extends VirtualViewManager
       mDelegate = new RNSVGLineManagerDelegate(this);
     }
 
-    private final ViewManagerDelegate<LineView> mDelegate;
-
-    protected ViewManagerDelegate getDelegate() {
-      return mDelegate;
-    }
+    public static final String REACT_CLASS = "RNSVGLine";
 
     @ReactProp(name = "x1")
     public void setX1(LineView node, Dynamic x1) {
@@ -1281,11 +1234,7 @@ class RenderableViewManager<T extends RenderableView> extends VirtualViewManager
       mDelegate = new RNSVGRectManagerDelegate(this);
     }
 
-    private final ViewManagerDelegate<RectView> mDelegate;
-
-    protected ViewManagerDelegate getDelegate() {
-      return mDelegate;
-    }
+    public static final String REACT_CLASS = "RNSVGRect";
 
     @ReactProp(name = "x")
     public void setX(RectView node, Dynamic x) {
@@ -1379,11 +1328,7 @@ class RenderableViewManager<T extends RenderableView> extends VirtualViewManager
       mDelegate = new RNSVGClipPathManagerDelegate(this);
     }
 
-    private final ViewManagerDelegate<ClipPathView> mDelegate;
-
-    protected ViewManagerDelegate getDelegate() {
-      return mDelegate;
-    }
+    public static final String REACT_CLASS = "RNSVGClipPath";
   }
 
   static class DefsViewManager extends VirtualViewManager<DefsView>
@@ -1394,11 +1339,7 @@ class RenderableViewManager<T extends RenderableView> extends VirtualViewManager
       mDelegate = new RNSVGDefsManagerDelegate(this);
     }
 
-    private final ViewManagerDelegate<DefsView> mDelegate;
-
-    protected ViewManagerDelegate getDelegate() {
-      return mDelegate;
-    }
+    public static final String REACT_CLASS = "RNSVGDefs";
   }
 
   static class UseViewManager extends RenderableViewManager<UseView>
@@ -1409,11 +1350,7 @@ class RenderableViewManager<T extends RenderableView> extends VirtualViewManager
       mDelegate = new RNSVGUseManagerDelegate(this);
     }
 
-    private final ViewManagerDelegate<UseView> mDelegate;
-
-    protected ViewManagerDelegate getDelegate() {
-      return mDelegate;
-    }
+    public static final String REACT_CLASS = "RNSVGUse";
 
     @ReactProp(name = "href")
     public void setHref(UseView node, String href) {
@@ -1484,11 +1421,7 @@ class RenderableViewManager<T extends RenderableView> extends VirtualViewManager
       mDelegate = new RNSVGSymbolManagerDelegate(this);
     }
 
-    private final ViewManagerDelegate<SymbolView> mDelegate;
-
-    protected ViewManagerDelegate getDelegate() {
-      return mDelegate;
-    }
+    public static final String REACT_CLASS = "RNSVGSymbol";
 
     @ReactProp(name = "minX")
     public void setMinX(SymbolView node, float minX) {
@@ -1528,11 +1461,7 @@ class RenderableViewManager<T extends RenderableView> extends VirtualViewManager
       mDelegate = new RNSVGPatternManagerDelegate(this);
     }
 
-    private final ViewManagerDelegate<PatternView> mDelegate;
-
-    protected ViewManagerDelegate getDelegate() {
-      return mDelegate;
-    }
+    public static final String REACT_CLASS = "RNSVGPattern";
 
     @ReactProp(name = "x")
     public void setX(PatternView node, Dynamic x) {
@@ -1643,11 +1572,7 @@ class RenderableViewManager<T extends RenderableView> extends VirtualViewManager
       mDelegate = new RNSVGMaskManagerDelegate(this);
     }
 
-    private final ViewManagerDelegate<MaskView> mDelegate;
-
-    protected ViewManagerDelegate getDelegate() {
-      return mDelegate;
-    }
+    public static final String REACT_CLASS = "RNSVGMask";
 
     @ReactProp(name = "x")
     public void setX(MaskView node, Dynamic x) {
@@ -1714,11 +1639,6 @@ class RenderableViewManager<T extends RenderableView> extends VirtualViewManager
     public void setMaskContentUnits(MaskView node, int maskContentUnits) {
       node.setMaskContentUnits(maskContentUnits);
     }
-
-    @ReactProp(name = "maskTransform")
-    public void setMaskTransform(MaskView node, @Nullable ReadableArray matrixArray) {
-      node.setMaskTransform(matrixArray);
-    }
   }
 
   static class ForeignObjectManager extends GroupViewManagerAbstract<ForeignObjectView>
@@ -1728,11 +1648,7 @@ class RenderableViewManager<T extends RenderableView> extends VirtualViewManager
       mDelegate = new RNSVGForeignObjectManagerDelegate(this);
     }
 
-    private final ViewManagerDelegate<ForeignObjectView> mDelegate;
-
-    protected ViewManagerDelegate getDelegate() {
-      return mDelegate;
-    }
+    public static final String REACT_CLASS = "RNSVGForeignObject";
 
     @ReactProp(name = "x")
     public void setX(ForeignObjectView node, Dynamic x) {
@@ -1798,11 +1714,7 @@ class RenderableViewManager<T extends RenderableView> extends VirtualViewManager
       mDelegate = new RNSVGMarkerManagerDelegate(this);
     }
 
-    private final ViewManagerDelegate<MarkerView> mDelegate;
-
-    protected ViewManagerDelegate getDelegate() {
-      return mDelegate;
-    }
+    public static final String REACT_CLASS = "RNSVGMarker";
 
     @ReactProp(name = "refX")
     public void setRefX(MarkerView node, Dynamic refX) {
@@ -1909,11 +1821,7 @@ class RenderableViewManager<T extends RenderableView> extends VirtualViewManager
       mDelegate = new RNSVGLinearGradientManagerDelegate(this);
     }
 
-    private final ViewManagerDelegate<RectView> mDelegate;
-
-    protected ViewManagerDelegate getDelegate() {
-      return mDelegate;
-    }
+    public static final String REACT_CLASS = "RNSVGLinearGradient";
 
     @ReactProp(name = "x1")
     public void setX1(LinearGradientView node, Dynamic x1) {
@@ -1995,11 +1903,7 @@ class RenderableViewManager<T extends RenderableView> extends VirtualViewManager
       mDelegate = new RNSVGRadialGradientManagerDelegate(this);
     }
 
-    private final ViewManagerDelegate<RectView> mDelegate;
-
-    protected ViewManagerDelegate getDelegate() {
-      return mDelegate;
-    }
+    public static final String REACT_CLASS = "RNSVGRadialGradient";
 
     @ReactProp(name = "fx")
     public void setFx(RadialGradientView node, Dynamic fx) {

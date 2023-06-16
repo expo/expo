@@ -10,21 +10,25 @@ package com.horcrux.svg;
 
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.module.annotations.ReactModule;
+import com.horcrux.rnsvg.NativeSvgViewModuleSpec;
 import javax.annotation.Nonnull;
 
-class SvgViewModule extends ReactContextBaseJavaModule {
+@ReactModule(name = SvgViewModule.NAME)
+class SvgViewModule extends NativeSvgViewModuleSpec {
   SvgViewModule(ReactApplicationContext reactContext) {
     super(reactContext);
   }
 
+  public static final String NAME = "RNSVGSvgViewModule";
+
   @Nonnull
   @Override
   public String getName() {
-    return "RNSVGSvgViewManager";
+    return NAME;
   }
 
   private static void toDataURL(
@@ -76,7 +80,8 @@ class SvgViewModule extends ReactContextBaseJavaModule {
 
   @SuppressWarnings("unused")
   @ReactMethod
-  public void toDataURL(int tag, ReadableMap options, Callback successCallback) {
-    toDataURL(tag, options, successCallback, 0);
+  @Override
+  public void toDataURL(Double tag, ReadableMap options, Callback successCallback) {
+    toDataURL(tag.intValue(), options, successCallback, 0);
   }
 }

@@ -17,13 +17,13 @@
 static NSCharacterSet *RNSVGTSpan_separators = nil;
 static CGFloat RNSVGTSpan_radToDeg = 180 / (CGFloat)M_PI;
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 #import <React/RCTConversions.h>
 #import <React/RCTFabricComponentsPlugins.h>
 #import <react/renderer/components/rnsvg/ComponentDescriptors.h>
 #import <react/renderer/components/view/conversions.h>
 #import "RNSVGFabricConversions.h"
-#endif // RN_FABRIC_ENABLED
+#endif // RCT_NEW_ARCH_ENABLED
 
 @implementation RNSVGTSpan {
   CGFloat startOffset;
@@ -37,7 +37,7 @@ static CGFloat RNSVGTSpan_radToDeg = 180 / (CGFloat)M_PI;
   RNSVGPathMeasure *measure;
 }
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 using namespace facebook::react;
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -88,7 +88,7 @@ using namespace facebook::react;
   measure = [[RNSVGPathMeasure alloc] init];
   RNSVGTSpan_separators = [NSCharacterSet whitespaceCharacterSet];
 }
-#endif // RN_FABRIC_ENABLED
+#endif // RCT_NEW_ARCH_ENABLED
 
 - (id)init
 {
@@ -1117,9 +1117,9 @@ RNSVGTopAlignedLabel *label;
 
 @end
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 Class<RCTComponentViewProtocol> RNSVGTSpanCls(void)
 {
   return RNSVGTSpan.class;
 }
-#endif // RN_FABRIC_ENABLED
+#endif // RCT_NEW_ARCH_ENABLED
