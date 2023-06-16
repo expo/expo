@@ -801,6 +801,18 @@ exports[`built-in plugins introspects mods 1`] = `
           {
             "type": "empty",
           },
+          {
+            "type": "comment",
+            "value": "Remove this workaround when upgrading to react-native@0.72.1",
+          },
+          {
+            "key": "kotlin.jvm.target.validation.mode",
+            "type": "property",
+            "value": "warning",
+          },
+          {
+            "type": "empty",
+          },
         ],
         "manifest": {
           "manifest": {
