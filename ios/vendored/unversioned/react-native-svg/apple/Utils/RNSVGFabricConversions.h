@@ -82,6 +82,9 @@ void setCommonNodeProps(T nodeProps, RNSVGNode *node)
   } else {
     node.pointerEvents = RCTPointerEventsUnspecified;
   }
+  node.accessibilityIdentifier = RCTNSStringFromStringNilIfEmpty(nodeProps.testId);
+  node.isAccessibilityElement = nodeProps.accessible;
+  node.accessibilityLabel = RCTNSStringFromStringNilIfEmpty(nodeProps.accessibilityLabel);
 }
 
 static NSMutableArray<RNSVGLength *> *createLengthArrayFromStrings(std::vector<std::string> stringArray)
