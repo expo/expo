@@ -1,8 +1,5 @@
-#import <React-RCTAppDelegate/RCTAppDelegate.h>
-#import <React/RCTRootView.h>
+#import <EXDevMenu/DevClientAppDelegate.h>
 
-@interface ExpoDevLauncherBridgeDelegateHandler : RCTAppDelegate
-
-- (RCTBridge *)createBridgeAndSetAdapterWithLaunchOptions:(NSDictionary *_Nullable)launchOptions;
+@interface ExpoDevLauncherBridgeDelegateHandler : DevClientAppDelegate
 
 @end

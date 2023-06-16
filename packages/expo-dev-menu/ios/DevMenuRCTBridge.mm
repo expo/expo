@@ -35,26 +35,6 @@
 
 #import "RCTAppSetupUtils.h"
 
-#if RCT_NEW_ARCH_ENABLED
-#import <React/CoreModulesPlugins.h>
-#import <React/RCTComponentViewFactory.h>
-#import <React/RCTComponentViewProtocol.h>
-#import <React/RCTFabricSurfaceHostingProxyRootView.h>
-#import <React/RCTLegacyViewManagerInteropComponentView.h>
-#import <React/RCTSurfacePresenter.h>
-#import <React/RCTSurfacePresenterBridgeAdapter.h>
-#import <ReactCommon/RCTTurboModuleManager.h>
-#import <react/config/ReactNativeConfig.h>
-#import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
-#import "RCTLegacyInteropComponents.h"
-
-@interface DevMenuRCTAppDelegate () <RCTTurboModuleManagerDelegate> {
-  std::shared_ptr<const facebook::react::ReactNativeConfig> _reactNativeConfig;
-  facebook::react::ContextContainer::Shared _contextContainer;
-}
-@end
-
-#endif
 
 @implementation DevMenuRCTCxxBridge
 
@@ -131,12 +111,7 @@
 
 @end
 
-@interface DevMenuRCTAppDelegate () <RCTCxxBridgeDelegate> {
-  std::shared_ptr<facebook::react::RuntimeScheduler> _runtimeScheduler;
-}
-@end
-
-@interface RCTAppDelegate (DevMenuRCTAppDelegate)
+@interface DevClientAppDelegate (DevMenuRCTAppDelegate)
 
 #ifdef __cplusplus
 - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge;
@@ -149,19 +124,6 @@
 - (RCTBridge *)createBridgeWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
 {
   return [[DevMenuRCTBridge alloc] initWithDelegate:delegate launchOptions:launchOptions];
-}
-
-- (void)createBridgeAndSetAdapterWithLaunchOptions:(NSDictionary * _Nullable)launchOptions {
-    self.bridge = [self createBridgeWithDelegate:self launchOptions:launchOptions];
-
-#ifdef RCT_NEW_ARCH_ENABLED
-    _contextContainer = std::make_shared<facebook::react::ContextContainer const>();
-    _reactNativeConfig = std::make_shared<facebook::react::EmptyReactNativeConfig const>();
-    _contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
-    self.bridgeAdapter = [[RCTSurfacePresenterBridgeAdapter alloc] initWithBridge:self.bridge
-                                                                 contextContainer:_contextContainer];
-    self.bridge.surfacePresenter = self.bridgeAdapter.surfacePresenter;
-#endif
 }
 
 #pragma mark - RCTCxxBridgeDelegate

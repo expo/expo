@@ -1,7 +1,7 @@
-#import <React-RCTAppDelegate/RCTAppDelegate.h>
+#import <EXDevMenu/DevClientAppDelegate.h>
 #import <React/RCTRootView.h>
 
-@interface EXDevLauncherBridgeDelegate : RCTAppDelegate
+@interface EXDevLauncherBridgeDelegate : DevClientAppDelegate
 
 - (RCTRootView *)createRootViewWithModuleName:(NSString *)moduleName
                                 launchOptions:(NSDictionary *_Nullable)launchOptions
