@@ -185,7 +185,7 @@ static RNSVGRenderable *_contextElement;
   _strokeDashArrayData = nil;
 }
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
@@ -220,7 +220,7 @@ static RNSVGRenderable *_contextElement;
   _vectorEffect = kRNSVGVectorEffectDefault;
   _propList = nil;
 }
-#endif // RN_FABRIC_ENABLED
+#endif // RCT_NEW_ARCH_ENABLED
 
 UInt32 saturate(CGFloat value)
 {

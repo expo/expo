@@ -136,7 +136,7 @@ class ExponentPackage : ReactPackage {
         nativeModules.add(RNCWebViewModule(reactContext))
         nativeModules.add(NetInfoModule(reactContext))
         nativeModules.add(RNSharedElementModule(reactContext))
-        nativeModules.addAll(SvgPackage().createNativeModules(reactContext))
+        nativeModules.addAll(SvgPackage().getNativeModuleIterator(reactContext).map { it.module })
         nativeModules.addAll(MapsPackage().createNativeModules(reactContext))
         nativeModules.addAll(RNDateTimePickerPackage().createNativeModules(reactContext))
         nativeModules.addAll(stripePackage.createNativeModules(reactContext))

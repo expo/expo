@@ -15,6 +15,7 @@ import android.graphics.Path;
 import android.graphics.RectF;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReactContext;
+import java.util.ArrayList;
 
 @SuppressLint("ViewConstructor")
 class EllipseView extends RenderableView {
@@ -97,6 +98,27 @@ class EllipseView extends RenderableView {
     RectF oval =
         new RectF((float) (cx - rx), (float) (cy - ry), (float) (cx + rx), (float) (cy + ry));
     path.addOval(oval, Path.Direction.CW);
+
+    elements = new ArrayList<>();
+    elements.add(
+        new PathElement(
+            ElementType.kCGPathElementMoveToPoint, new Point[] {new Point(cx, cy - ry)}));
+    elements.add(
+        new PathElement(
+            ElementType.kCGPathElementAddLineToPoint,
+            new Point[] {new Point(cx, cy - ry), new Point(cx + rx, cy)}));
+    elements.add(
+        new PathElement(
+            ElementType.kCGPathElementAddLineToPoint,
+            new Point[] {new Point(cx + rx, cy), new Point(cx, cy + ry)}));
+    elements.add(
+        new PathElement(
+            ElementType.kCGPathElementAddLineToPoint,
+            new Point[] {new Point(cx, cy + ry), new Point(cx - rx, cy)}));
+    elements.add(
+        new PathElement(
+            ElementType.kCGPathElementAddLineToPoint,
+            new Point[] {new Point(cx - rx, cy), new Point(cx, cy - ry)}));
 
     return path;
   }

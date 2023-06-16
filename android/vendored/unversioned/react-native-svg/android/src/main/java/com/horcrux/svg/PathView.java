@@ -27,6 +27,12 @@ class PathView extends RenderableView {
   public void setD(String d) {
     mPath = PathParser.parse(d);
     elements = PathParser.elements;
+    for (PathElement elem : elements) {
+      for (Point point : elem.points) {
+        point.x *= mScale;
+        point.y *= mScale;
+      }
+    }
     invalidate();
   }
 

@@ -15,7 +15,14 @@
 
 #import <React/RCTImageSource.h>
 
+#ifdef RCT_NEW_ARCH_ENABLED
+#import <React/RCTImageResponseDelegate.h>
+#endif
+
 @interface RNSVGImage : RNSVGRenderable
+#ifdef RCT_NEW_ARCH_ENABLED
+                        <RCTImageResponseDelegate>
+#endif
 
 @property (nonatomic, weak) RCTBridge *bridge;
 @property (nonatomic, assign) RCTImageSource *src;
@@ -25,7 +32,5 @@
 @property (nonatomic, strong) RNSVGLength *imageheight;
 @property (nonatomic, strong) NSString *align;
 @property (nonatomic, assign) RNSVGVBMOS meetOrSlice;
-
-- (void)setImageSrc:(RCTImageSource *)source request:(NSURLRequest *)request;
 
 @end

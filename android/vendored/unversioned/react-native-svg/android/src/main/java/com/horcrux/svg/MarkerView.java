@@ -160,7 +160,7 @@ class MarkerView extends GroupView {
 
     markerTransform.reset();
     Point origin = position.origin;
-    markerTransform.setTranslate((float) origin.x * mScale, (float) origin.y * mScale);
+    markerTransform.setTranslate((float) origin.x, (float) origin.y);
 
     double markerAngle = "auto".equals(mOrient) ? -1 : Double.parseDouble(mOrient);
     float degrees = 180 + (float) (markerAngle == -1 ? position.angle : markerAngle);
@@ -168,7 +168,7 @@ class MarkerView extends GroupView {
 
     boolean useStrokeWidth = "strokeWidth".equals(mMarkerUnits);
     if (useStrokeWidth) {
-      markerTransform.preScale(strokeWidth, strokeWidth);
+      markerTransform.preScale(strokeWidth / mScale, strokeWidth / mScale);
     }
 
     double width = relativeOnWidth(mMarkerWidth) / mScale;

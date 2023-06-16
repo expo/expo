@@ -7,10 +7,10 @@ buildscript {
             mavenCentral()
             google()
         }
-        
+
         dependencies {
-            classpath("com.android.tools.build:gradle:3.6.1")
-            classpath "com.diffplug.spotless:spotless-plugin-gradle:5.15.0"
+            classpath("com.android.tools.build:gradle:7.4.2")
+            classpath "com.diffplug.spotless:spotless-plugin-gradle:6.17.0"
         }
     }
 }
@@ -39,7 +39,10 @@ def safeExtGet(prop, fallback) {
 
 android {
     compileSdkVersion safeExtGet('compileSdkVersion', 28)
-
+    def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
+    if (agpVersion.tokenize('.')[0].toInteger() >= 7) {
+        namespace "com.horcrux.svg"
+    }
     // Used to override the NDK path/version on internal CI or by allowing
     // users to customize the NDK path/version from their root project (e.g. for M1 support)
     if (rootProject.hasProperty("ndkPath")) {
@@ -54,6 +57,8 @@ android {
         //noinspection OldTargetApi
         targetSdkVersion safeExtGet('targetSdkVersion', 28)
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
+
+        consumerProguardFiles 'proguard-rules.pro'
     }
     lintOptions {
         abortOnError false
@@ -61,13 +66,9 @@ android {
 
     sourceSets.main {
         java {
-            if (isNewArchitectureEnabled()) {
+            if (!isNewArchitectureEnabled()) {
                 srcDirs += [
-                    "src/fabric/java",
-                ]
-            } else {
-                srcDirs += [
-                    "src/paper/java", 
+                    "src/paper/java",
                     "build/generated/source/codegen/java"
                 ]
             }
@@ -86,19 +87,5 @@ repositories {
 }
 
 dependencies {
-    if (isNewArchitectureEnabled()) {
-        implementation project(":packages:react-native:ReactAndroid")
-    } else {
-        implementation 'com.facebook.react:react-native:+'
-    }
-}
-
-if (isNewArchitectureEnabled()) {
-    react {
-        reactRoot = rootProject.file("../node_modules/react-native/")
-        jsRootDir = file("../src/fabric/")
-        codegenDir = rootProject.file("../node_modules/react-native-codegen/")
-        libraryName = "rnsvg"
-        codegenJavaPackageName = "com.horcrux.rnsvg"
-    }
+    implementation 'com.facebook.react:react-native:+'
 }
