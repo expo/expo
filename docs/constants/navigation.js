@@ -396,7 +396,7 @@ const preview = [
     makeGroup('Reference', [
       makePage('router/reference/roadmap.mdx'),
       makePage('router/reference/sitemap.mdx'),
-      makePage('router/reference/typescript.mdx'),
+      makePage('router/reference/typed-routes.mdx'),
       makePage('router/reference/authentication.mdx'),
       makePage('router/reference/screen-tracking.mdx'),
       makePage('router/reference/troubleshooting.mdx'),
