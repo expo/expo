@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import { theme, typography } from '@expo/styleguide';
 import { borderRadius, spacing } from '@expo/styleguide-base';
-import { FileCode01Icon } from '@expo/styleguide-icons';
+import { FileCode01Icon, LayoutAlt01Icon } from '@expo/styleguide-icons';
 import { Language, Prism } from 'prism-react-renderer';
 import * as React from 'react';
 import tippy, { roundArrow } from 'tippy.js';
@@ -219,7 +219,7 @@ export class Code extends React.Component<React.PropsWithChildren<Props>> {
 
     return value?.title ? (
       <Snippet>
-        <SnippetHeader title={value.title} Icon={FileCode01Icon}>
+        <SnippetHeader title={value.title} Icon={getIconForFile(value.title)}>
           <CopyAction text={cleanCopyValue(value.value)} />
         </SnippetHeader>
         <SnippetContent className="p-0">
@@ -277,3 +277,10 @@ export const CodeBlock = ({ children, inline = false }: CodeBlockProps) => {
     </Element>
   );
 };
+
+function getIconForFile(filename: string) {
+  if (/_layout\.[jt]sx?$/.test(filename)) {
+    return LayoutAlt01Icon;
+  }
+  return FileCode01Icon;
+}
