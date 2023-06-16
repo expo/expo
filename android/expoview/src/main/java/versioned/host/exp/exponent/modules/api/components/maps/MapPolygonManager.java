@@ -13,17 +13,13 @@ import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import com.google.android.gms.maps.model.ButtCap;
-import com.google.android.gms.maps.model.Cap;
-import com.google.android.gms.maps.model.RoundCap;
-import com.google.android.gms.maps.model.SquareCap;
 
 import java.util.Map;
 
-public class AirMapPolylineManager extends ViewGroupManager<AirMapPolyline> {
+public class MapPolygonManager extends ViewGroupManager<MapPolygon> {
   private final DisplayMetrics metrics;
 
-  public AirMapPolylineManager(ReactApplicationContext reactContext) {
+  public MapPolygonManager(ReactApplicationContext reactContext) {
     super();
     metrics = new DisplayMetrics();
     ((WindowManager) reactContext.getSystemService(Context.WINDOW_SERVICE))
@@ -33,68 +29,53 @@ public class AirMapPolylineManager extends ViewGroupManager<AirMapPolyline> {
 
   @Override
   public String getName() {
-    return "AIRMapPolyline";
+    return "AIRMapPolygon";
   }
 
   @Override
-  public AirMapPolyline createViewInstance(ThemedReactContext context) {
-    return new AirMapPolyline(context);
+  public MapPolygon createViewInstance(ThemedReactContext context) {
+    return new MapPolygon(context);
   }
 
   @ReactProp(name = "coordinates")
-  public void setCoordinate(AirMapPolyline view, ReadableArray coordinates) {
+  public void setCoordinate(MapPolygon view, ReadableArray coordinates) {
     view.setCoordinates(coordinates);
   }
 
+  @ReactProp(name = "holes")
+  public  void setHoles(MapPolygon view, ReadableArray holes) {
+    view.setHoles(holes);
+  }
+
   @ReactProp(name = "strokeWidth", defaultFloat = 1f)
-  public void setStrokeWidth(AirMapPolyline view, float widthInPoints) {
+  public void setStrokeWidth(MapPolygon view, float widthInPoints) {
     float widthInScreenPx = metrics.density * widthInPoints; // done for parity with iOS
-    view.setWidth(widthInScreenPx);
+    view.setStrokeWidth(widthInScreenPx);
+  }
+
+  @ReactProp(name = "fillColor", defaultInt = Color.RED, customType = "Color")
+  public void setFillColor(MapPolygon view, int color) {
+    view.setFillColor(color);
   }
 
   @ReactProp(name = "strokeColor", defaultInt = Color.RED, customType = "Color")
-  public void setStrokeColor(AirMapPolyline view, int color) {
-    view.setColor(color);
+  public void setStrokeColor(MapPolygon view, int color) {
+    view.setStrokeColor(color);
   }
 
   @ReactProp(name = "tappable", defaultBoolean = false)
-  public void setTappable(AirMapPolyline view, boolean tapabble) {
+  public void setTappable(MapPolygon view, boolean tapabble) {
     view.setTappable(tapabble);
   }
 
   @ReactProp(name = "geodesic", defaultBoolean = false)
-  public void setGeodesic(AirMapPolyline view, boolean geodesic) {
+  public void setGeodesic(MapPolygon view, boolean geodesic) {
     view.setGeodesic(geodesic);
   }
 
   @ReactProp(name = "zIndex", defaultFloat = 1.0f)
-  public void setZIndex(AirMapPolyline view, float zIndex) {
+  public void setZIndex(MapPolygon view, float zIndex) {
     view.setZIndex(zIndex);
-  }
-
-  @ReactProp(name = "lineCap")
-  public void setlineCap(AirMapPolyline view, String lineCap) {
-    Cap cap = null;
-    switch (lineCap) {
-      case "butt":
-        cap = new ButtCap();
-        break;
-      case "round":
-        cap = new RoundCap();
-        break;
-      case "square":
-        cap = new SquareCap();
-        break;
-      default:
-        cap = new RoundCap();
-        break;
-    }
-    view.setLineCap(cap);
-  }
-
-  @ReactProp(name = "lineDashPattern")
-  public void setLineDashPattern(AirMapPolyline view, ReadableArray patternValues) {
-      view.setLineDashPattern(patternValues);
   }
 
   @Override

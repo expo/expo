@@ -30,7 +30,7 @@ import java.util.List;
  * from Dagothig/ColoredPolylineOverlay
  * (https://gist.github.com/Dagothig/5f9cf0a4a7a42901a7b2)
  */
-public class AirMapGradientPolyline extends AirMapFeature {
+public class MapGradientPolyline extends MapFeature {
   private List<LatLng> points;
   private int[] colors;
   private float zIndex;
@@ -41,7 +41,7 @@ public class AirMapGradientPolyline extends AirMapFeature {
   private TileOverlay tileOverlay;
   protected final Context context;
 
-  public AirMapGradientPolyline(Context context) {
+  public MapGradientPolyline(Context context) {
     super(context);
     this.context = context;
   }
@@ -321,14 +321,13 @@ public class AirMapGradientPolyline extends AirMapFeature {
   }
 
   @Override
-  public void addToMap(GoogleMap map) {
-    Log.d("AirMapGradientPolyline", "ADDTOMAP");
-    this.map = map;
-    this.tileOverlay = map.addTileOverlay(createTileOverlayOptions());
+  public void addToMap(Object map) {
+    this.map = (GoogleMap) map;
+    this.tileOverlay = this.map.addTileOverlay(createTileOverlayOptions());
   }
 
   @Override
-  public void removeFromMap(GoogleMap map) {
+  public void removeFromMap(Object map) {
     tileOverlay.remove();
   }
 

@@ -21,7 +21,6 @@
 #import "AIRMapLocalTile.h"
 #import "AIRMapOverlay.h"
 
-const CLLocationDegrees AIRMapDefaultSpan = 0.005;
 const NSTimeInterval AIRMapRegionChangeObserveInterval = 0.1;
 const CGFloat AIRMapZoomBoundBuffer = 0.01;
 const NSInteger AIRMapMaxZoomLevel = 20;

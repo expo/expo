@@ -25,7 +25,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 
 import java.util.Map;
 
-public class AirMapManager extends ViewGroupManager<AirMapView> {
+public class MapManager extends ViewGroupManager<MapView> {
 
   private static final String REACT_CLASS = "AIRMap";
 
@@ -45,19 +45,19 @@ public class AirMapManager extends ViewGroupManager<AirMapView> {
   );
 
   private final ReactApplicationContext appContext;
-  private AirMapMarkerManager markerManager;
+  private MapMarkerManager markerManager;
 
   protected GoogleMapOptions googleMapOptions;
 
-  public AirMapManager(ReactApplicationContext context) {
+  public MapManager(ReactApplicationContext context) {
     this.appContext = context;
     this.googleMapOptions = new GoogleMapOptions();
   }
 
-  public AirMapMarkerManager getMarkerManager() {
+  public MapMarkerManager getMarkerManager() {
     return this.markerManager;
   }
-  public void setMarkerManager(AirMapMarkerManager markerManager) {
+  public void setMarkerManager(MapMarkerManager markerManager) {
     this.markerManager = markerManager;
   }
 
@@ -67,8 +67,8 @@ public class AirMapManager extends ViewGroupManager<AirMapView> {
   }
 
   @Override
-  protected AirMapView createViewInstance(ThemedReactContext context) {
-    return new AirMapView(context, this.appContext, this, googleMapOptions);
+  protected MapView createViewInstance(ThemedReactContext context) {
+    return new MapView(context, this.appContext, this, googleMapOptions);
   }
 
   private void emitMapError(ThemedReactContext context, String message, String type) {
@@ -82,38 +82,38 @@ public class AirMapManager extends ViewGroupManager<AirMapView> {
   }
 
   @ReactProp(name = "region")
-  public void setRegion(AirMapView view, ReadableMap region) {
+  public void setRegion(MapView view, ReadableMap region) {
     view.setRegion(region);
   }
 
   @ReactProp(name = "initialRegion")
-  public void setInitialRegion(AirMapView view, ReadableMap initialRegion) {
+  public void setInitialRegion(MapView view, ReadableMap initialRegion) {
     view.setInitialRegion(initialRegion);
   }
 
   @ReactProp(name = "camera")
-  public void setCamera(AirMapView view, ReadableMap camera) {
+  public void setCamera(MapView view, ReadableMap camera) {
     view.setCamera(camera);
   }
 
   @ReactProp(name = "initialCamera")
-  public void setInitialCamera(AirMapView view, ReadableMap initialCamera) {
+  public void setInitialCamera(MapView view, ReadableMap initialCamera) {
     view.setInitialCamera(initialCamera);
   }
 
   @ReactProp(name = "mapType")
-  public void setMapType(AirMapView view, @Nullable String mapType) {
+  public void setMapType(MapView view, @Nullable String mapType) {
     int typeId = MAP_TYPES.get(mapType);
     view.map.setMapType(typeId);
   }
 
   @ReactProp(name = "customMapStyleString")
-  public void setMapStyle(AirMapView view, @Nullable String customMapStyleString) {
+  public void setMapStyle(MapView view, @Nullable String customMapStyleString) {
     view.setMapStyle(customMapStyleString);
   }
 
   @ReactProp(name = "mapPadding")
-  public void setMapPadding(AirMapView view, @Nullable ReadableMap padding) {
+  public void setMapPadding(MapView view, @Nullable ReadableMap padding) {
     int left = 0;
     int top = 0;
     int right = 0;
@@ -143,141 +143,141 @@ public class AirMapManager extends ViewGroupManager<AirMapView> {
   }
 
   @ReactProp(name = "showsUserLocation", defaultBoolean = false)
-  public void setShowsUserLocation(AirMapView view, boolean showUserLocation) {
+  public void setShowsUserLocation(MapView view, boolean showUserLocation) {
     view.setShowsUserLocation(showUserLocation);
   }
 
   @ReactProp(name = "userLocationPriority")
-  public void setUserLocationPriority(AirMapView view, @Nullable String accuracy) {
+  public void setUserLocationPriority(MapView view, @Nullable String accuracy) {
     view.setUserLocationPriority(MY_LOCATION_PRIORITY.get(accuracy));
   }
 
   @ReactProp(name = "userLocationUpdateInterval", defaultInt = 5000)
-  public void setUserLocationUpdateInterval(AirMapView view, int updateInterval) {
+  public void setUserLocationUpdateInterval(MapView view, int updateInterval) {
     view.setUserLocationUpdateInterval(updateInterval);
   }
 
   @ReactProp(name = "userLocationFastestInterval", defaultInt = 5000)
-  public void setUserLocationFastestInterval(AirMapView view, int fastestInterval) {
+  public void setUserLocationFastestInterval(MapView view, int fastestInterval) {
     view.setUserLocationFastestInterval(fastestInterval);
   }
 
   @ReactProp(name = "showsMyLocationButton", defaultBoolean = true)
-  public void setShowsMyLocationButton(AirMapView view, boolean showMyLocationButton) {
+  public void setShowsMyLocationButton(MapView view, boolean showMyLocationButton) {
     view.setShowsMyLocationButton(showMyLocationButton);
   }
 
   @ReactProp(name = "toolbarEnabled", defaultBoolean = true)
-  public void setToolbarEnabled(AirMapView view, boolean toolbarEnabled) {
+  public void setToolbarEnabled(MapView view, boolean toolbarEnabled) {
     view.setToolbarEnabled(toolbarEnabled);
   }
 
   // This is a private prop to improve performance of panDrag by disabling it when the callback
   // is not set
   @ReactProp(name = "handlePanDrag", defaultBoolean = false)
-  public void setHandlePanDrag(AirMapView view, boolean handlePanDrag) {
+  public void setHandlePanDrag(MapView view, boolean handlePanDrag) {
     view.setHandlePanDrag(handlePanDrag);
   }
 
   @ReactProp(name = "showsTraffic", defaultBoolean = false)
-  public void setShowTraffic(AirMapView view, boolean showTraffic) {
+  public void setShowTraffic(MapView view, boolean showTraffic) {
     view.map.setTrafficEnabled(showTraffic);
   }
 
   @ReactProp(name = "showsBuildings", defaultBoolean = false)
-  public void setShowBuildings(AirMapView view, boolean showBuildings) {
+  public void setShowBuildings(MapView view, boolean showBuildings) {
     view.map.setBuildingsEnabled(showBuildings);
   }
 
   @ReactProp(name = "showsIndoors", defaultBoolean = false)
-  public void setShowIndoors(AirMapView view, boolean showIndoors) {
+  public void setShowIndoors(MapView view, boolean showIndoors) {
     view.map.setIndoorEnabled(showIndoors);
   }
 
   @ReactProp(name = "showsIndoorLevelPicker", defaultBoolean = false)
-  public void setShowsIndoorLevelPicker(AirMapView view, boolean showsIndoorLevelPicker) {
+  public void setShowsIndoorLevelPicker(MapView view, boolean showsIndoorLevelPicker) {
     view.map.getUiSettings().setIndoorLevelPickerEnabled(showsIndoorLevelPicker);
   }
 
   @ReactProp(name = "showsCompass", defaultBoolean = false)
-  public void setShowsCompass(AirMapView view, boolean showsCompass) {
+  public void setShowsCompass(MapView view, boolean showsCompass) {
     view.map.getUiSettings().setCompassEnabled(showsCompass);
   }
 
   @ReactProp(name = "scrollEnabled", defaultBoolean = false)
-  public void setScrollEnabled(AirMapView view, boolean scrollEnabled) {
+  public void setScrollEnabled(MapView view, boolean scrollEnabled) {
     view.map.getUiSettings().setScrollGesturesEnabled(scrollEnabled);
   }
 
   @ReactProp(name = "zoomEnabled", defaultBoolean = false)
-  public void setZoomEnabled(AirMapView view, boolean zoomEnabled) {
+  public void setZoomEnabled(MapView view, boolean zoomEnabled) {
     view.map.getUiSettings().setZoomGesturesEnabled(zoomEnabled);
   }
 
   @ReactProp(name = "zoomControlEnabled", defaultBoolean = true)
-  public void setZoomControlEnabled(AirMapView view, boolean zoomControlEnabled) {
+  public void setZoomControlEnabled(MapView view, boolean zoomControlEnabled) {
     view.map.getUiSettings().setZoomControlsEnabled(zoomControlEnabled);
   }
 
   @ReactProp(name = "rotateEnabled", defaultBoolean = false)
-  public void setRotateEnabled(AirMapView view, boolean rotateEnabled) {
+  public void setRotateEnabled(MapView view, boolean rotateEnabled) {
     view.map.getUiSettings().setRotateGesturesEnabled(rotateEnabled);
   }
 
   @ReactProp(name = "scrollDuringRotateOrZoomEnabled", defaultBoolean = true)
-  public void setScrollDuringRotateOrZoomEnabled(AirMapView view, boolean scrollDuringRotateOrZoomEnabled) {
+  public void setScrollDuringRotateOrZoomEnabled(MapView view, boolean scrollDuringRotateOrZoomEnabled) {
     view.map.getUiSettings().setScrollGesturesEnabledDuringRotateOrZoom(scrollDuringRotateOrZoomEnabled);
   }
 
   @ReactProp(name = "cacheEnabled", defaultBoolean = false)
-  public void setCacheEnabled(AirMapView view, boolean cacheEnabled) {
+  public void setCacheEnabled(MapView view, boolean cacheEnabled) {
     view.setCacheEnabled(cacheEnabled);
   }
 
   @ReactProp(name = "loadingEnabled", defaultBoolean = false)
-  public void setLoadingEnabled(AirMapView view, boolean loadingEnabled) {
+  public void setLoadingEnabled(MapView view, boolean loadingEnabled) {
     view.enableMapLoading(loadingEnabled);
   }
 
   @ReactProp(name = "moveOnMarkerPress", defaultBoolean = true)
-  public void setMoveOnMarkerPress(AirMapView view, boolean moveOnPress) {
+  public void setMoveOnMarkerPress(MapView view, boolean moveOnPress) {
     view.setMoveOnMarkerPress(moveOnPress);
   }
 
   @ReactProp(name = "loadingBackgroundColor", customType = "Color")
-  public void setLoadingBackgroundColor(AirMapView view, @Nullable Integer loadingBackgroundColor) {
+  public void setLoadingBackgroundColor(MapView view, @Nullable Integer loadingBackgroundColor) {
     view.setLoadingBackgroundColor(loadingBackgroundColor);
   }
 
   @ReactProp(name = "loadingIndicatorColor", customType = "Color")
-  public void setLoadingIndicatorColor(AirMapView view, @Nullable Integer loadingIndicatorColor) {
+  public void setLoadingIndicatorColor(MapView view, @Nullable Integer loadingIndicatorColor) {
     view.setLoadingIndicatorColor(loadingIndicatorColor);
   }
 
   @ReactProp(name = "pitchEnabled", defaultBoolean = false)
-  public void setPitchEnabled(AirMapView view, boolean pitchEnabled) {
+  public void setPitchEnabled(MapView view, boolean pitchEnabled) {
     view.map.getUiSettings().setTiltGesturesEnabled(pitchEnabled);
   }
 
   @ReactProp(name = "minZoomLevel")
-  public void setMinZoomLevel(AirMapView view, float minZoomLevel) {
+  public void setMinZoomLevel(MapView view, float minZoomLevel) {
     view.map.setMinZoomPreference(minZoomLevel);
   }
 
   @ReactProp(name = "maxZoomLevel")
-  public void setMaxZoomLevel(AirMapView view, float maxZoomLevel) {
+  public void setMaxZoomLevel(MapView view, float maxZoomLevel) {
     view.map.setMaxZoomPreference(maxZoomLevel);
   }
 
   @ReactProp(name = "kmlSrc")
-  public void setKmlSrc(AirMapView view, String kmlUrl) {
+  public void setKmlSrc(MapView view, String kmlUrl) {
     if (kmlUrl != null) {
       view.setKmlSrc(kmlUrl);
     }
   }
 
   @Override
-  public void receiveCommand(@NonNull AirMapView view, String commandId, @Nullable ReadableArray args) {
+  public void receiveCommand(@NonNull MapView view, String commandId, @Nullable ReadableArray args) {
     int duration;
     double lat;
     double lng;
@@ -399,27 +399,27 @@ public class AirMapManager extends ViewGroupManager<AirMapView> {
   }
 
   @Override
-  public void addView(AirMapView parent, View child, int index) {
+  public void addView(MapView parent, View child, int index) {
     parent.addFeature(child, index);
   }
 
   @Override
-  public int getChildCount(AirMapView view) {
+  public int getChildCount(MapView view) {
     return view.getFeatureCount();
   }
 
   @Override
-  public View getChildAt(AirMapView view, int index) {
+  public View getChildAt(MapView view, int index) {
     return view.getFeatureAt(index);
   }
 
   @Override
-  public void removeViewAt(AirMapView parent, int index) {
+  public void removeViewAt(MapView parent, int index) {
     parent.removeFeatureAt(index);
   }
 
   @Override
-  public void updateExtraData(AirMapView view, Object extraData) {
+  public void updateExtraData(MapView view, Object extraData) {
     view.updateExtraData(extraData);
   }
 
@@ -429,7 +429,7 @@ public class AirMapManager extends ViewGroupManager<AirMapView> {
   }
 
   @Override
-  public void onDropViewInstance(AirMapView view) {
+  public void onDropViewInstance(MapView view) {
     view.doDestroy();
     super.onDropViewInstance(view);
   }

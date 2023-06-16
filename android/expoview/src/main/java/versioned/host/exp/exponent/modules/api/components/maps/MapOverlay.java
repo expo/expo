@@ -4,15 +4,15 @@ import android.content.Context;
 import android.graphics.Bitmap;
 
 import com.facebook.react.bridge.ReadableArray;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.maps.android.collections.GroundOverlayManager;
 
-public class AirMapOverlay extends AirMapFeature implements ImageReadable {
+public class MapOverlay extends MapFeature implements ImageReadable {
 
   private GroundOverlayOptions groundOverlayOptions;
   private GroundOverlay groundOverlay;
@@ -24,9 +24,9 @@ public class AirMapOverlay extends AirMapFeature implements ImageReadable {
   private float transparency;
 
   private final ImageReader mImageReader;
-  private GoogleMap map;
+  private GroundOverlayManager.Collection groundOverlayCollection;
 
-  public AirMapOverlay(Context context) {
+  public MapOverlay(Context context) {
     super(context);
     this.mImageReader = new ImageReader(context, getResources(), this);
   }
@@ -107,24 +107,26 @@ public class AirMapOverlay extends AirMapFeature implements ImageReadable {
   }
 
   @Override
-  public void addToMap(GoogleMap map) {
+  public void addToMap(Object collection) {
+    GroundOverlayManager.Collection groundOverlayCollection = (GroundOverlayManager.Collection) collection;
     GroundOverlayOptions groundOverlayOptions = getGroundOverlayOptions();
     if (groundOverlayOptions != null) {
-      this.groundOverlay = map.addGroundOverlay(groundOverlayOptions);
-      this.groundOverlay.setClickable(this.tappable);
+      groundOverlay = groundOverlayCollection.addGroundOverlay(groundOverlayOptions);
+      groundOverlay.setClickable(this.tappable);
     } else {
-      this.map = map;
+      this.groundOverlayCollection = groundOverlayCollection;
     }
   }
 
   @Override
-  public void removeFromMap(GoogleMap map) {
-    this.map = null;
-    if (this.groundOverlay != null) {
-      this.groundOverlay.remove();
-      this.groundOverlay = null;
-      this.groundOverlayOptions = null;
+  public void removeFromMap(Object collection) {
+    if (groundOverlay != null) {
+      GroundOverlayManager.Collection groundOverlayCollection = (GroundOverlayManager.Collection) collection;
+      groundOverlayCollection.remove(groundOverlay);
+      groundOverlay = null;
+      groundOverlayOptions = null;
     }
+    groundOverlayCollection = null;
   }
 
   @Override
@@ -152,12 +154,12 @@ public class AirMapOverlay extends AirMapFeature implements ImageReadable {
     if (this.groundOverlay != null) {
       return this.groundOverlay;
     }
-    if (this.map == null) {
+    if (this.groundOverlayCollection == null) {
       return null;
     }
     GroundOverlayOptions groundOverlayOptions = getGroundOverlayOptions();
     if (groundOverlayOptions != null) {
-      return this.map.addGroundOverlay(groundOverlayOptions);
+      return this.groundOverlayCollection.addGroundOverlay(groundOverlayOptions);
     }
     return null;
   }

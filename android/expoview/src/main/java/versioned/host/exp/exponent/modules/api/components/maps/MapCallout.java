@@ -4,12 +4,12 @@ import android.content.Context;
 
 import com.facebook.react.views.view.ReactViewGroup;
 
-public class AirMapCallout extends ReactViewGroup {
+public class MapCallout extends ReactViewGroup {
   private boolean tooltip = false;
   public int width;
   public int height;
 
-  public AirMapCallout(Context context) {
+  public MapCallout(Context context) {
     super(context);
   }
 

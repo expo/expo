@@ -4,15 +4,15 @@ import android.content.Context;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.maps.android.collections.PolygonManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class AirMapPolygon extends AirMapFeature {
+public class MapPolygon extends MapFeature {
 
   private PolygonOptions polygonOptions;
   private Polygon polygon;
@@ -26,7 +26,7 @@ public class AirMapPolygon extends AirMapFeature {
   private boolean tappable;
   private float zIndex;
 
-  public AirMapPolygon(Context context) {
+  public MapPolygon(Context context) {
     super(context);
   }
 
@@ -148,13 +148,15 @@ public class AirMapPolygon extends AirMapFeature {
   }
 
   @Override
-  public void addToMap(GoogleMap map) {
-    polygon = map.addPolygon(getPolygonOptions());
+  public void addToMap(Object collection) {
+    PolygonManager.Collection polygonCollection = (PolygonManager.Collection) collection;
+    polygon = polygonCollection.addPolygon(getPolygonOptions());
     polygon.setClickable(this.tappable);
   }
 
   @Override
-  public void removeFromMap(GoogleMap map) {
-    polygon.remove();
+  public void removeFromMap(Object collection) {
+    PolygonManager.Collection polygonCollection = (PolygonManager.Collection) collection;
+    polygonCollection.remove(polygon);
   }
 }
