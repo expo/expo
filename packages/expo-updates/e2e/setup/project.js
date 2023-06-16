@@ -385,6 +385,8 @@ async function configureUpdatesSigningAsync(projectRoot) {
     ],
     { cwd: projectRoot, stdio: 'inherit' }
   );
+  // Archive the keys so that they are not filtered out when uploading to EAS
+  await spawnAsync('tar', ['cf', 'keys.tar', 'keys'], { cwd: projectRoot, stdio: 'inherit' });
 }
 
 async function initAsync(
