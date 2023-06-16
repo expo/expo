@@ -393,7 +393,6 @@ const preview = [
     makeGroup('Reference', [
       makePage('router/reference/static-rendering.mdx'),
       makePage('router/reference/async-routes.mdx'),
-      makePage('router/reference/roadmap.mdx'),
       makePage('router/reference/sitemap.mdx'),
       makePage('router/reference/typescript.mdx'),
       makePage('router/reference/authentication.mdx'),
