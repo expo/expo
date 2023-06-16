@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix metro type issues. ([#22867](https://github.com/expo/expo/pull/22867) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix metro JSC urls.
 
 ### 💡 Others
 
