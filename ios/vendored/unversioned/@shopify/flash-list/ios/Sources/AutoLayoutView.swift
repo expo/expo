@@ -48,11 +48,9 @@ import UIKit
 
     override func layoutSubviews() {
         fixLayout()
-        fixFooter()
         super.layoutSubviews()
 
-        let scrollView = getScrollView()
-        guard enableInstrumentation, let scrollView = scrollView else { return }
+        guard enableInstrumentation, let scrollView = getScrollView() else { return }
 
         let scrollContainerSize = horizontal ? scrollView.frame.width : scrollView.frame.height
         let currentScrollOffset = horizontal ? scrollView.contentOffset.x : scrollView.contentOffset.y
@@ -103,6 +101,7 @@ import UIKit
             }
             .sorted(by: { $0.index < $1.index })
         clearGaps(for: cellContainers)
+        fixFooter()
     }
 
     /// Checks for overlaps or gaps between adjacent items and then applies a correction.
@@ -124,6 +123,8 @@ import UIKit
             let nextCellTop = nextCell.frame.minY
             let nextCellLeft = nextCell.frame.minX
 
+			// Only apply correction if the next cell is consecutive.
+			let isNextCellConsecutive = nextCell.index == cellContainer.index + 1
 
             guard
                 isWithinBounds(
@@ -149,16 +150,18 @@ import UIKit
                 maxBound = max(maxBound, cellRight)
                 minBound = min(minBound, cellLeft)
                 maxBoundNextCell = maxBound
-                if cellTop < nextCellTop {
-                    if cellBottom != nextCellTop {
-                        nextCell.frame.origin.y = cellBottom
-                    }
-                    if cellLeft != nextCellLeft {
-                        nextCell.frame.origin.x = cellLeft
-                    }
-                } else {
-                    nextCell.frame.origin.x = maxBound
-                }
+				if isNextCellConsecutive {
+					if cellTop < nextCellTop {
+						if cellBottom != nextCellTop {
+							nextCell.frame.origin.y = cellBottom
+						}
+						if cellLeft != nextCellLeft {
+							nextCell.frame.origin.x = cellLeft
+						}
+					} else {
+						nextCell.frame.origin.x = maxBound
+					}
+				}
                 if isNextCellVisible {
                     maxBoundNextCell = max(maxBound, nextCell.frame.maxX)
                 }
@@ -166,16 +169,18 @@ import UIKit
                 maxBound = max(maxBound, cellBottom)
                 minBound = min(minBound, cellTop)
                 maxBoundNextCell = maxBound
-                if cellLeft < nextCellLeft {
-                    if cellRight != nextCellLeft {
-                        nextCell.frame.origin.x = cellRight
-                    }
-                    if cellTop != nextCellTop {
-                        nextCell.frame.origin.y = cellTop
-                    }
-                } else {
-                    nextCell.frame.origin.y = maxBound
-                }
+				if isNextCellConsecutive {
+					if cellLeft < nextCellLeft {
+						if cellRight != nextCellLeft {
+							nextCell.frame.origin.x = cellRight
+						}
+						if cellTop != nextCellTop {
+							nextCell.frame.origin.y = cellTop
+						}
+					} else {
+						nextCell.frame.origin.y = maxBound
+					}
+				}
                 if isNextCellVisible {
                     maxBoundNextCell = max(maxBound, nextCell.frame.maxY)
                 }
