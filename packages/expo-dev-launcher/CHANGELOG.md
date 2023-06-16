@@ -29,6 +29,7 @@
 
 - Migrate iOS native modules to use the new Module API. ([#22319](https://github.com/expo/expo/pull/22319) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Bump `babel-plugin-module-resolver` dev dependency. ([#22871](https://github.com/expo/expo/pull/22871) by [@EvanBacon](https://github.com/EvanBacon))
+- Improve URL input validation responsiveness. ([#22786](https://github.com/expo/expo/pull/22786) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 2.3.0 — 2023-05-08
 
