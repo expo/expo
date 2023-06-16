@@ -65,24 +65,6 @@ internal struct UpdatesStateEvent {
     }
     return isRollback
   }
-  var changedProperties: [String] {
-    return UpdatesStateEvent.updatesStateEventChangedProperties[type] ?? UpdatesStateContext.allProps
-  }
-
-  /**
-   For each event type, an array with the names of the context properties that change
-   when that event is processed.
-   */
-  static let updatesStateEventChangedProperties: [UpdatesStateEventType: [String]] = [
-    .check: ["isChecking"],
-    .checkCompleteAvailable: ["isChecking", "isUpdateAvailable", "checkError", "latestManifest", "isRollback"],
-    .checkCompleteUnavailable: ["isChecking", "isUpdateAvailable", "checkError", "latestManifest", "isRollback"],
-    .checkError: ["isChecking", "checkError"],
-    .download: ["isDownloading"],
-    .downloadComplete: ["isDownloading", "downloadError", "latestManifest", "downloadedManifest", "isUpdatePending", "isUpdateAvailable"],
-    .downloadError: ["isDownloading", "downloadError"],
-    .restart: ["isRestarting"]
-  ]
 }
 
 /**
@@ -109,36 +91,11 @@ internal struct UpdatesStateContext {
       "isDownloading": self.isDownloading,
       "isRestarting": self.isRestarting,
       "latestManifest": self.latestManifest ?? NSNull(),
-      "downloadedManifest": self.latestManifest ?? NSNull(),
+      "downloadedManifest": self.downloadedManifest ?? NSNull(),
       "checkError": self.checkError ?? NSNull(),
       "downloadError": self.downloadError ?? NSNull()
     ] as [String: Any]
   }
-
-  func partialJsonWithKeys(keys: [String]?) -> [String: Any] {
-    guard let keys = keys else {
-      return self.json
-    }
-    var json: [String: Any] = [:]
-    let fullJson = self.json
-    for key in keys {
-      json[key] = fullJson[key]
-    }
-    return json
-  }
-
-  static let allProps: [String] = [
-    "isUpdateAvailable",
-    "isUpdatePending",
-    "isRollback",
-    "isChecking",
-    "isDownloading",
-    "isRestarting",
-    "latestManifest",
-    "downloadedManifest",
-    "checkError",
-    "downloadError"
-  ]
 }
 
 // MARK: - State machine class
@@ -245,7 +202,7 @@ internal class UpdatesStateMachine {
       newContext.latestManifest = event.manifest ?? context.latestManifest
       newContext.downloadedManifest = event.manifest ?? context.downloadedManifest
       newContext.isUpdatePending = newContext.downloadedManifest != nil
-      newContext.isUpdateAvailable = event.manifest != nil || newContext.isUpdateAvailable
+      newContext.isUpdateAvailable = event.manifest != nil || context.isUpdateAvailable
     case .downloadError:
       newContext.isDownloading = false
       newContext.downloadError = event.error
@@ -256,22 +213,11 @@ internal class UpdatesStateMachine {
   }
 
   /**
-   If a state change event is passed in, the JS sender
-   is called with just the fields and values that changed.
-   During a reset, this method is called with no event passed in,
-   and then all the fields and the entire context are passed to the JS sender.
+   On each state change, all context properties are sent to JS
    */
   private func sendChangeEventToJS(_ event: UpdatesStateEvent? = nil) {
-    guard let event: UpdatesStateEvent = event else {
-      changeEventSender?.sendUpdateStateChangeEventToBridge(.restart, body: [
-        "fields": UpdatesStateContext.allProps,
-        "values": context.json
-      ])
-      return
-    }
-    changeEventSender?.sendUpdateStateChangeEventToBridge(event.type, body: [
-      "fields": event.changedProperties,
-      "values": context.partialJsonWithKeys(keys: event.changedProperties)
+    changeEventSender?.sendUpdateStateChangeEventToBridge(event?.type ?? .restart, body: [
+      "context": context.json
     ])
   }
 

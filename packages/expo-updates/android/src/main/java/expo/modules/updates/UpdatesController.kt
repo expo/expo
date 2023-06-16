@@ -565,8 +565,8 @@ class UpdatesController private constructor(
     )
   }
 
-  override fun sendUpdateStateChangeEventToBridge(eventType: UpdatesStateEventType, fields: List<String>, values: Map<String, Any>) {
-    sendEventToJS(UPDATES_STATE_CHANGE_EVENT_NAME, eventType.type, UpdatesStateMachine.paramsForJSEvent(fields, values))
+  override fun sendUpdateStateChangeEventToBridge(eventType: UpdatesStateEventType, context: Map<String, Any>) {
+    sendEventToJS(UPDATES_STATE_CHANGE_EVENT_NAME, eventType.type, UpdatesStateMachine.paramsForJSEvent(context))
   }
 
   fun sendLegacyUpdateEventToJS(eventType: String, params: WritableMap?) {

@@ -42,30 +42,4 @@ data class UpdatesStateContext(
       }
       return map
     }
-
-  fun partialJsonWithProps(props: List<String>): MutableMap<String, Any> {
-    val fullJson = json
-    val map: MutableMap<String, Any> = mutableMapOf()
-    for (key: String in props) {
-      if (fullJson.containsKey(key)) {
-        map[key] = fullJson[key] as Any
-      }
-    }
-    return map
-  }
-
-  companion object {
-    val allProps: List<String> = listOf(
-      "isUpdateAvailable",
-      "isUpdatePending",
-      "isRollback",
-      "isChecking",
-      "isDownloading",
-      "isRestarting",
-      "latestManifest",
-      "downloadedManifest",
-      "checkError",
-      "downloadError"
-    )
-  }
 }

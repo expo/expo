@@ -48,13 +48,13 @@ function _emitNativeStateChangeEvent(params) {
     if (typeof params === 'string') {
         newParams = JSON.parse(params);
     }
-    if (newParams.values.latestManifestString) {
-        newParams.values.latestManifest = JSON.parse(newParams.values.latestManifestString);
-        delete newParams.values.latestManifestString;
+    if (newParams.context.latestManifestString) {
+        newParams.context.latestManifest = JSON.parse(newParams.context.latestManifestString);
+        delete newParams.context.latestManifestString;
     }
-    if (newParams.values.downloadedManifestString) {
-        newParams.values.downloadedManifest = JSON.parse(newParams.values.downloadedManifestString);
-        delete newParams.values.downloadedManifestString;
+    if (newParams.context.downloadedManifestString) {
+        newParams.context.downloadedManifest = JSON.parse(newParams.context.downloadedManifestString);
+        delete newParams.context.downloadedManifestString;
     }
     if (!_emitter) {
         throw new Error(`EventEmitter must be initialized to use from its listener`);

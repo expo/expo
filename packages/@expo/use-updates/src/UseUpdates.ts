@@ -230,11 +230,7 @@ export const useUpdatesState: () => { [key: string]: any } = () => {
   });
   useEffect(() => {
     const subscription = addUpdatesStateChangeListener((event) => {
-      const state: { [key: string]: any } = {};
-      for (const key of event.fields) {
-        state[key] = event.values[key];
-      }
-      setLocalState((localState) => ({ ...localState, ...state }));
+      setLocalState(() => event.context);
     });
     return () => subscription.remove();
   }, []);

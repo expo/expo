@@ -48,7 +48,7 @@ class UpdatesStateMachineSpec: ExpoSpec {
         expect(machine.context.isUpdateAvailable) == true
         expect(machine.context.isUpdatePending) == false
         expect(testStateChangeEventSender.lastEventType) == .checkCompleteAvailable
-        let values = testStateChangeEventSender.lastEventBody?["values"] as? [String: Any] ?? [:]
+        let values = testStateChangeEventSender.lastEventBody?["context"] as? [String: Any] ?? [:]
         expect(values["isUpdateAvailable"] as? Bool ?? false) == true
       }
 

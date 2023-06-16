@@ -143,18 +143,9 @@ class UpdatesStateMachine constructor(
    * and then all the fields and the entire context are passed to the JS sender.
    */
   private fun sendChangeEventToJS(event: UpdatesStateEvent? = null) {
-    val fields = when (event) {
-      null -> UpdatesStateContext.allProps
-      else -> event.changedProperties
-    }
-    val values = when (event) {
-      null -> context.json
-      else -> context.partialJsonWithProps(event.changedProperties)
-    }
     changeEventSender?.sendUpdateStateChangeEventToBridge(
       event?.type ?: UpdatesStateEventType.Restart,
-      fields,
-      values
+      context.json
     )
   }
 
@@ -187,34 +178,29 @@ class UpdatesStateMachine constructor(
     /**
      * Creates a WritableMap to be sent to JS on a state change.
      */
-    fun paramsForJSEvent(fields: List<String>, values: Map<String, Any>): WritableMap {
-      val fieldArray = Arguments.createArray()
-      for (field: String in fields) {
-        fieldArray.pushString(field)
-      }
-      val valueMap = Arguments.createMap()
-      for (field: String in fields) {
+    fun paramsForJSEvent(context: Map<String, Any>): WritableMap {
+      val contextMap = Arguments.createMap()
+      for (field: String in context.keys) {
         if (field.startsWith("is")) {
-          valueMap.putBoolean(field, values[field] as Boolean)
+          contextMap.putBoolean(field, context[field] as Boolean)
         } else if (field.endsWith("Manifest")) {
-          if (values[field] != null) {
-            valueMap.putString("${field}String", (values[field] as JSONObject).toString())
+          if (context[field] != null) {
+            contextMap.putString("${field}String", (context[field] as JSONObject).toString())
           } else {
-            valueMap.putNull(field)
+            contextMap.putNull(field)
           }
         } else { // errors
-          if (values[field] != null) {
+          if (context[field] != null) {
             val errorMap = Arguments.createMap()
-            errorMap.putString("message", (values[field] as Map<*, *>)["message"] as String)
-            valueMap.putMap(field, errorMap)
+            errorMap.putString("message", (context[field] as Map<*, *>)["message"] as String)
+            contextMap.putMap(field, errorMap)
           } else {
-            valueMap.putNull(field)
+            contextMap.putNull(field)
           }
         }
       }
       val params = Arguments.createMap()
-      params.putArray("fields", fieldArray)
-      params.putMap("values", valueMap)
+      params.putMap("context", contextMap)
       return params
     }
   }

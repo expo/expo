@@ -223,11 +223,7 @@ export const useUpdatesState = () => {
     });
     useEffect(() => {
         const subscription = addUpdatesStateChangeListener((event) => {
-            const state = {};
-            for (const key of event.fields) {
-                state[key] = event.values[key];
-            }
-            setLocalState((localState) => ({ ...localState, ...state }));
+            setLocalState(() => event.context);
         });
         return () => subscription.remove();
     }, []);

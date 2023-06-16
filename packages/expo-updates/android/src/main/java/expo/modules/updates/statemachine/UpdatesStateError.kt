@@ -5,11 +5,11 @@ package expo.modules.updates.statemachine
  * For now, we just have the "message" property.
  */
 data class UpdatesStateError(
-  var message: String
+  val message: String
 ) {
-  val json: MutableMap<String, String>
+  val json: Map<String, String>
     get() {
-      return mutableMapOf(
+      return mapOf(
         "message" to message
       )
     }

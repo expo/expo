@@ -19,8 +19,7 @@ class UpdatesStateMachineInstrumentationTest {
 
     override fun sendUpdateStateChangeEventToBridge(
       eventType: UpdatesStateEventType,
-      fields: List<String>,
-      values: Map<String, Any>
+      context: Map<String, Any>
     ) {
       lastEventType = eventType
     }
