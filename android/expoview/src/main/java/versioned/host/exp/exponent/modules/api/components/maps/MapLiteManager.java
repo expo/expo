@@ -3,7 +3,7 @@ package versioned.host.exp.exponent.modules.api.components.maps;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.google.android.gms.maps.GoogleMapOptions;
 
-public class AirMapLiteManager extends AirMapManager {
+public class MapLiteManager extends MapManager {
 
   private static final String REACT_CLASS = "AIRMapLite";
 
@@ -12,7 +12,7 @@ public class AirMapLiteManager extends AirMapManager {
     return REACT_CLASS;
   }
 
-  public AirMapLiteManager(ReactApplicationContext context) {
+  public MapLiteManager(ReactApplicationContext context) {
     super(context);
     this.googleMapOptions = new GoogleMapOptions().liteMode(true);
   }
