@@ -21,7 +21,7 @@
     "native-component-list": "*",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-native": "0.72.0-rc.5"
+    "react-native": "0.72.0-rc.6"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"
