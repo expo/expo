@@ -15,7 +15,7 @@ export const PageVote = () => {
           Thank you for your vote! 💙
         </CALLOUT>
       ) : (
-        <div className="flex flex-row items-center gap-2 max-large:flex-col">
+        <div className="flex flex-row items-center gap-2 max-md-gutters:flex-col">
           <CALLOUT theme="secondary" weight="medium" className="px-2">
             Was this doc helpful?
           </CALLOUT>

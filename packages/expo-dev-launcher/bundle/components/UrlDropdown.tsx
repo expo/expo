@@ -12,6 +12,7 @@ import {
 import * as React from 'react';
 import { TextInput as NativeTextInput, Platform, StyleSheet } from 'react-native';
 
+import { debounce } from '../functions/debounce';
 import { validateUrl } from '../functions/validateUrl';
 import { ActivityIndicator } from './ActivityIndicator';
 
@@ -39,7 +40,7 @@ export function UrlDropdown({ onSubmit, isLoading, inputValue, setInputValue }: 
 
   const ref = React.useRef<NativeTextInput>();
   const [open, setOpen] = React.useState(false);
-  const [isValidUrl, setIsValidUrl] = React.useState(true);
+  const [isValidUrl, setIsValidUrl] = React.useState(validateUrl(inputValue));
 
   const [isPressing, setIsPressing] = React.useState(false);
 
@@ -50,24 +51,15 @@ export function UrlDropdown({ onSubmit, isLoading, inputValue, setInputValue }: 
 
   const onConnectPress = () => {
     onSubmit(inputValue);
-    ref.current.blur();
+    ref.current?.blur();
   };
 
   const onTogglePress = () => {
     setOpen(!open);
   };
 
-  const lastExecuted = React.useRef(Date.now());
-  const throttleValidationInterval = 500;
-
   const onChangeText = (input: string) => {
-    if (!isValidUrl && input !== '') {
-      if (Date.now() >= lastExecuted.current + throttleValidationInterval) {
-        setIsValidUrl(validateUrl(input));
-        lastExecuted.current = Date.now();
-      }
-    }
-
+    setIsValidUrl(validateUrl(input));
     setInputValue(input);
   };
 
@@ -113,8 +105,7 @@ export function UrlDropdown({ onSubmit, isLoading, inputValue, setInputValue }: 
               placeholder="http://10.0.0.25:8081"
               placeholderTextColor={theme.text.secondary}
               ref={ref as any}
-              value={inputValue}
-              onChangeText={onChangeText}
+              onChangeText={debounce(onChangeText)}
               onBlur={onBlur}
               testID="DevLauncherURLInput"
             />
