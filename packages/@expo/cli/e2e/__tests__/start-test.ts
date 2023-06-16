@@ -60,12 +60,15 @@ it('runs `npx expo start --help`', async () => {
 
       Options
         <dir>                                  Directory of the Expo project. Default: Current working directory
-        -a, --android                          Opens your app in Expo Go on a connected Android device
-        -i, --ios                              Opens your app in Expo Go in a currently running iOS simulator on your computer
-        -w, --web                              Opens your app in a web browser
+        -a, --android                          Open on a connected Android device
+        -i, --ios                              Open in an iOS simulator
+        -w, --web                              Open in a web browser
+        
+        -d, --dev-client                       Launch in a custom native app
+        -g, --go                               Launch in Expo Go
         
         -c, --clear                            Clear the bundler cache
-        --max-workers <num>                    Maximum number of tasks to allow Metro to spawn
+        --max-workers <number>                 Maximum number of tasks to allow Metro to spawn
         --no-dev                               Bundle in production mode
         --minify                               Minify JavaScript
         
@@ -80,9 +83,8 @@ it('runs `npx expo start --help`', async () => {
         --offline                              Skip network requests and use anonymous manifest signatures
         --https                                Start the dev server with https protocol
         --scheme <scheme>                      Custom URI protocol to use when launching an app
-        -p, --port <port>                      Port to start the dev server on (does not apply to web or tunnel). Default: 19000
+        -p, --port <number>                    Port to start the dev server on (does not apply to web or tunnel). Default: 19000
         
-        --dev-client                           Experimental: Starts the bundler for use with the expo-development-client
         --force-manifest-type <manifest-type>  Override auto detection of manifest type
         --private-key-path <path>              Path to private key for code signing. Default: "private-key.pem" in the same directory as the certificate specified by the expo-updates configuration in app.json.
         -h, --help                             Usage info

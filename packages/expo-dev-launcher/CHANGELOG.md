@@ -23,11 +23,13 @@
 - Fixed Home screen KeyboardAvoidingView. ([#22661](https://github.com/expo/expo/pull/22661) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Refactored network inspector code and add unit tests. ([#22669](https://github.com/expo/expo/pull/22669), [#22693](https://github.com/expo/expo/pull/22693) by [@kudo](https://github.com/kudo))
 - Fixed `No compatible apps connected. JavaScript Debugging can only be used with the Hermes engine.` when using JavaScript debugger on Android. ([#20280](https://github.com/expo/expo/pull/20280) by [@kudo](https://github.com/kudo))
+- Fix "multiple screens with the same name" warning on dev mode. ([#22847](https://github.com/expo/expo/pull/22847) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
 - Migrate iOS native modules to use the new Module API. ([#22319](https://github.com/expo/expo/pull/22319) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Bump `babel-plugin-module-resolver` dev dependency. ([#22871](https://github.com/expo/expo/pull/22871) by [@EvanBacon](https://github.com/EvanBacon))
+- Improve URL input validation responsiveness. ([#22786](https://github.com/expo/expo/pull/22786) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 2.3.0 — 2023-05-08
 

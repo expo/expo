@@ -395,7 +395,6 @@ const preview = [
       makePage('router/advance/router-settings.mdx'),
     ]),
     makeGroup('Reference', [
-      makePage('router/reference/roadmap.mdx'),
       makePage('router/reference/sitemap.mdx'),
       makePage('router/reference/typescript.mdx'),
       makePage('router/reference/authentication.mdx'),
@@ -407,7 +406,6 @@ const preview = [
 ];
 
 const archive = [
-  makeSection('Archive', [makePage('archive/index.mdx')]),
   makeSection('Classic Builds', [
     makePage('archive/classic-updates/building-standalone-apps.mdx'),
     makePage('archive/classic-updates/turtle-cli.mdx'),
