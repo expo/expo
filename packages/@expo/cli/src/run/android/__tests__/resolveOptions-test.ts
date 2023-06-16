@@ -50,7 +50,7 @@ describe(resolveOptionsAsync, () => {
         bundler: true,
         device: 'search',
         install: true,
-        port: 19000,
+        port: 8081,
         variant: 'firstSecondThird',
       })
     ).toEqual({
@@ -69,7 +69,7 @@ describe(resolveOptionsAsync, () => {
       launchActivity: 'com.bacon.mydevicefamilyproject/.MainActivity',
       mainActivity: '.MainActivity',
       packageName: 'com.bacon.mydevicefamilyproject',
-      port: 19000,
+      port: 8081,
       shouldStartBundler: true,
       variant: 'firstSecondThird',
     });

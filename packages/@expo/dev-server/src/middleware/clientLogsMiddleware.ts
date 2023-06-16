@@ -56,7 +56,7 @@ function isAppRegistryStartupMessage(body: any[]): boolean {
 export function getDevicePlatformFromAppRegistryStartupMessage(body: string[]): string | null {
   if (body.length === 1 && typeof body[0] === 'string') {
     // Dangerously pick the platform out of the request URL
-    // like: http:\\\\/\\\\/192.168.6.113:19000\\\\/index.bundle&platform=android\dev=true&hot=false&minify=false
+    // like: http:\\\\/\\\\/192.168.6.113:8081\\\\/index.bundle&platform=android\dev=true&hot=false&minify=false
     return body[0].match(/[?|&]platform=(\w+)[&|\\]/)?.[1] ?? null;
   }
   return null;

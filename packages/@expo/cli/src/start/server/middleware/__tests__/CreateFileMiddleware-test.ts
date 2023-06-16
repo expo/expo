@@ -31,14 +31,14 @@ describe('_shouldHandleRequest', () => {
   it(`returns false when the middleware should not handle`, () => {
     for (const req of [
       asReq({}),
-      asReq({ url: 'http://localhost:19000' }),
-      asReq({ url: 'http://localhost:19000/' }),
+      asReq({ url: 'http://localhost:8081' }),
+      asReq({ url: 'http://localhost:8081/' }),
     ]) {
       expect(middleware._shouldHandleRequest(req)).toBe(false);
     }
   });
   it(`returns true when the middleware should handle`, () => {
-    for (const req of [asReq({ url: 'http://localhost:19000/_expo/touch' })]) {
+    for (const req of [asReq({ url: 'http://localhost:8081/_expo/touch' })]) {
       expect(middleware._shouldHandleRequest(req)).toBe(true);
     }
   });
@@ -51,7 +51,7 @@ describe('handleRequestAsync', () => {
     const response = createMockResponse();
     await middleware.handleRequestAsync(
       asReq({
-        url: 'http://localhost:19000/_expo/touch',
+        url: 'http://localhost:8081/_expo/touch',
       }),
       response
     );
@@ -64,7 +64,7 @@ describe('handleRequestAsync', () => {
     const response = createMockResponse();
     await middleware.handleRequestAsync(
       asReq({
-        url: 'http://localhost:19000/_expo/touch',
+        url: 'http://localhost:8081/_expo/touch',
         method: 'POST',
         body: JSON.stringify({
           contents: 'hello world',
@@ -85,7 +85,7 @@ describe('handleRequestAsync', () => {
     const response = createMockResponse();
     await middleware.handleRequestAsync(
       asReq({
-        url: 'http://localhost:19000/_expo/touch',
+        url: 'http://localhost:8081/_expo/touch',
         method: 'POST',
         body: JSON.stringify({
           contents: 'hello world',
@@ -104,7 +104,7 @@ describe('handleRequestAsync', () => {
     const response = createMockResponse();
     await middleware.handleRequestAsync(
       asReq({
-        url: 'http://localhost:19000/_expo/touch',
+        url: 'http://localhost:8081/_expo/touch',
         method: 'POST',
         body: JSON.stringify({
           contents: 'hello world',

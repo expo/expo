@@ -24,7 +24,7 @@ const devSessionInstructionsRegex = /start a local development server with/i;
 const fetchingDevSessionsRegex = /searching for development servers/i;
 const refetchDevSessionsRegex = /fetch development servers/i;
 const textInputToggleRegex = /enter url manually/i;
-const textInputPlaceholder = 'http://10.0.0.25:19000';
+const textInputPlaceholder = 'http://10.0.0.25:8081';
 
 const mockLoadApp = loadApp as jest.Mock;
 

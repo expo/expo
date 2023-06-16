@@ -74,7 +74,7 @@ export const expoStart: Command = async (argv) => {
         `--offline                              Skip network requests and use anonymous manifest signatures`,
         `--https                                Start the dev server with https protocol`,
         `--scheme <scheme>                      Custom URI protocol to use when launching an app`,
-        chalk`-p, --port <number>                    Port to start the dev server on (does not apply to web or tunnel). {dim Default: 19000}`,
+        chalk`-p, --port <number>                    Port to start the dev server on (does not apply to web or tunnel). {dim Default: 8081}`,
         ``,
         `--force-manifest-type <manifest-type>  Override auto detection of manifest type`,
         chalk`--private-key-path <path>              Path to private key for code signing. {dim Default: "private-key.pem" in the same directory as the certificate specified by the expo-updates configuration in app.json.}`,
