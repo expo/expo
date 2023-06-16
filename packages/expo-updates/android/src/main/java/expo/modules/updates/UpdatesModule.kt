@@ -10,6 +10,7 @@ import expo.modules.core.ModuleRegistryDelegate
 import expo.modules.core.Promise
 import expo.modules.core.interfaces.ExpoMethod
 import expo.modules.updates.db.entity.AssetEntity
+import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.launcher.Launcher.LauncherCallback
 import expo.modules.updates.loader.*
 import expo.modules.updates.loader.FileDownloader.RemoteUpdateDownloadCallback
@@ -22,7 +23,7 @@ import java.util.Date
 
 // these unused imports must stay because of versioning
 /* ktlint-disable no-unused-imports */
-
+import expo.modules.updates.UpdatesConfiguration
 /* ktlint-enable no-unused-imports */
 
 /**
@@ -282,9 +283,15 @@ class UpdatesModule(
                   } else {
                     updatesServiceLocal.resetSelectionPolicy()
                     updateInfo.putBoolean("isNew", true)
+
+                    // We need the explicit casting here because when in versioned expo-updates,
+                    // the UpdateEntity and UpdatesModule are in different package namespace,
+                    // Kotlin cannot do the smart casting for that case.
+                    val updateEntity = loaderResult.updateEntity as UpdateEntity
+
                     updateInfo.putString(
                       "manifestString",
-                      loaderResult.updateEntity.manifest.toString()
+                      updateEntity.manifest.toString()
                     )
                   }
                 }
