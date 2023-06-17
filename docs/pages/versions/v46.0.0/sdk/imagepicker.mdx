@@ -164,3 +164,7 @@ The following usage description keys are used by the APIs in this library.
     'NSCameraUsageDescription',
   ]}
 />
+
+## Known issues
+
+There is a known issue on iOS with the underlying `UIImagePickerController`. When an image (usually of a [higher resolution](http://www.openradar.me/49866214)) is picked from the camera roll, the result of the cropped image gives the wrong value for the cropped rectangle in some cases. Unfortunately, this issue is due to a bug in the closed source tools built into iOS.
