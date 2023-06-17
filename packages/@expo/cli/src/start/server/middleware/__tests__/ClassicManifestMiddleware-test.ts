@@ -5,7 +5,7 @@ import { getUserAsync } from '../../../../api/user/user';
 import * as Log from '../../../../log';
 import { ClassicManifestMiddleware } from '../ClassicManifestMiddleware';
 import { ServerRequest } from '../server.types';
-import { env } from 'process';
+import { env } from '../../../../utils/env';
 
 jest.mock('../../../../api/signManifest', () => ({
   signClassicExpoGoManifestAsync: jest.fn((manifest) => JSON.stringify(manifest)),

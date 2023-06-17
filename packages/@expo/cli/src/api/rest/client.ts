@@ -68,10 +68,29 @@ export function wrapFetchWithCredentials(fetchFunction: FetchLike): FetchLike {
       }
     }
 
-    const results = await fetchFunction(url, {
-      ...options,
-      headers: resolvedHeaders,
-    }).catch((error) => {
+    try {
+      const results = await fetchFunction(url, {
+        ...options,
+        headers: resolvedHeaders,
+      });
+
+      if (results.status >= 400 && results.status < 500) {
+        const body = await results.text();
+        try {
+          const data = JSON.parse(body);
+          if (data?.errors?.length) {
+            throw new ApiV2Error(data.errors[0]);
+          }
+        } catch (error: any) {
+          // Server returned non-json response.
+          if (error.message.includes('in JSON at position')) {
+            throw new UnexpectedServerError(body);
+          }
+          throw error;
+        }
+      }
+      return results;
+    } catch (error: any) {
       // Specifically, when running `npx expo start` and the wifi is connected but not really (public wifi, airplanes, etc).
       if ('code' in error && error.code === 'ENOTFOUND') {
         throw new CommandError(
@@ -81,24 +100,7 @@ export function wrapFetchWithCredentials(fetchFunction: FetchLike): FetchLike {
       }
 
       throw error;
-    });
-
-    if (results.status >= 400 && results.status < 500) {
-      const body = await results.text();
-      try {
-        const data = JSON.parse(body);
-        if (data?.errors?.length) {
-          throw new ApiV2Error(data.errors[0]);
-        }
-      } catch (error: any) {
-        // Server returned non-json response.
-        if (error.message.includes('in JSON at position')) {
-          throw new UnexpectedServerError(body);
-        }
-        throw error;
-      }
     }
-    return results;
   };
 }
 

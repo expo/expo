@@ -2,6 +2,8 @@ import assert from 'assert';
 import chalk from 'chalk';
 
 import { fetchAsync } from '../api/rest/client';
+import { Log } from '../log';
+import { env } from './env';
 import { learnMore } from './link';
 import { isUrlAvailableAsync } from './url';
 
@@ -46,6 +48,11 @@ export async function getBundleIdWarningAsync(bundleId: string): Promise<string 
     return cachedBundleIdResults[bundleId];
   }
 
+  if (env.EXPO_OFFLINE) {
+    Log.warn('Skipping Apple bundle identifier reservation validation in offline-mode.');
+    return null;
+  }
+
   if (!(await isUrlAvailableAsync('itunes.apple.com'))) {
     debug(
       `Couldn't connect to iTunes Store to check bundle ID ${bundleId}. itunes.apple.com may be down.`
@@ -79,6 +86,11 @@ export async function getPackageNameWarningAsync(packageName: string): Promise<s
     return cachedPackageNameResults[packageName];
   }
 
+  if (env.EXPO_OFFLINE) {
+    Log.warn('Skipping Android package name reservation validation in offline-mode.');
+    return null;
+  }
+
   if (!(await isUrlAvailableAsync('play.google.com'))) {
     debug(
       `Couldn't connect to Play Store to check package name ${packageName}. play.google.com may be down.`
@@ -102,8 +114,8 @@ export async function getPackageNameWarningAsync(packageName: string): Promise<s
       return message;
     }
   } catch (error: any) {
-    debug(`Error checking package name ${packageName}: ${error.message}`);
     // Error fetching play store data or the page doesn't exist.
+    debug(`Error checking package name ${packageName}: ${error.message}`);
   }
   return null;
 }
