@@ -1113,13 +1113,12 @@ afterEvaluate {
         nativeBuildDependsOn(prepareThirdPartyNdkHeaders)
         nativeBuildDependsOn(extractAARHeaders)
         nativeBuildDependsOn(extractSOFiles)
-
-        tasks.forEach({ task ->
-            if (task.name.contains("JniLibFolders")) {
-                task.dependsOn(packageNdkLibs)
-            }
-        })
     }
+    tasks.forEach({ task ->
+        if (task.name.contains("JniLibFolders")) {
+            task.dependsOn(packageNdkLibs)
+        }
+    })
 
     if (JS_RUNTIME == "hermes") {
         if (REACT_NATIVE_MINOR_VERSION < 71) {

@@ -648,7 +648,7 @@ task downloadBoost(dependsOn: resolveBoost, type: Download) {
 }
 
 task prepareBoost(dependsOn: boostPath ? [] : [downloadBoost], type: Copy) {
-    from(boostPath ?: tarTree(resources.gzip(downloadBoost.dest)))
+    // from(boostPath ?: tarTree(resources.gzip(downloadBoost.dest)))
     from("$reactNativeThirdParty/boost/Android.mk")
     include("Android.mk", "boost_${BOOST_VERSION}/boost/**/*.hpp", "boost/boost/**/*.hpp")
     includeEmptyDirs = false
@@ -666,7 +666,7 @@ task downloadDoubleConversion(dependsOn: resolveDoubleConversion, type: Download
 }
 
 task prepareDoubleConversion(dependsOn: dependenciesPath ? [] : [downloadDoubleConversion], type: Copy) {
-    from(dependenciesPath ?: tarTree(downloadDoubleConversion.dest))
+    // from(dependenciesPath ?: tarTree(downloadDoubleConversion.dest))
     from("$reactNativeThirdParty/double-conversion/Android.mk")
     include("double-conversion-${DOUBLE_CONVERSION_VERSION}/src/**/*", "Android.mk")
     filesMatching("*/src/**/*", { fname -> fname.path = "double-conversion/${fname.name}" })
@@ -682,7 +682,7 @@ task downloadFolly(dependsOn: resolveFolly, type: Download) {
 }
 
 task prepareFolly(dependsOn: dependenciesPath ? [] : [downloadFolly], type: Copy) {
-    from(dependenciesPath ?: tarTree(downloadFolly.dest))
+    // from(dependenciesPath ?: tarTree(downloadFolly.dest))
     from("$reactNativeThirdParty/folly/Android.mk")
     include("folly-${FOLLY_VERSION}/folly/**/*", "Android.mk")
     eachFile { fname -> fname.path = (fname.path - "folly-${FOLLY_VERSION}/") }
@@ -704,7 +704,7 @@ task downloadGlog(dependsOn: resolveGlog, type: Download) {
 // executed by automake. This way we can avoid dependencies on make/automake
 task prepareGlog(dependsOn: dependenciesPath ? [] : [downloadGlog], type: Copy) {
     duplicatesStrategy = "include"
-    from(dependenciesPath ?: tarTree(downloadGlog.dest))
+    // from(dependenciesPath ?: tarTree(downloadGlog.dest))
     from("$reactNativeThirdParty/glog/")
     include("glog-${GLOG_VERSION}/src/**/*", "Android.mk", "config.h")
     includeEmptyDirs = false
