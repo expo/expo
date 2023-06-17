@@ -6,6 +6,9 @@ import {
   getRemoteVersionsForSdkAsync,
   getVersionedPackagesAsync,
 } from '../getVersionedPackages';
+import { Log } from '../../../../log';
+
+jest.mock('../../../../log');
 
 jest.mock('../../../../api/getVersions', () => ({
   getVersionsAsync: jest.fn(),
@@ -161,6 +164,21 @@ describe(getOperationLog, () => {
 });
 
 describe(getRemoteVersionsForSdkAsync, () => {
+  beforeEach(() => {
+    delete process.env.EXPO_OFFLINE;
+  });
+
+  it('returns an empty object in offline-mode', async () => {
+    process.env.EXPO_OFFLINE = '1';
+
+    expect(await getRemoteVersionsForSdkAsync({ sdkVersion: '1.0.0', skipCache: true })).toEqual(
+      {}
+    );
+    expect(Log.warn).toBeCalledWith(
+      expect.stringMatching(/Dependency validation is unreliable in offline-mode/)
+    );
+    expect(getVersionsAsync).not.toBeCalled();
+  });
   it('returns an empty object when the SDK version is not supported', async () => {
     asMock(getVersionsAsync).mockResolvedValueOnce({ sdkVersions: {} } as any);
 
