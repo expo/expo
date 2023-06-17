@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Gracefully catch exceptions during font loading on web with `fontfaceobserver`. ([#]() by [@bradjones1](https://github.com/bradjones1))
+
 ### 💡 Others
 
 ## 11.3.0 — 2023-06-13

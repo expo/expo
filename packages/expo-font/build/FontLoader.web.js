@@ -41,7 +41,12 @@ export async function loadSingleFontAsync(name, input) {
     if (typeof input !== 'object' || typeof input.uri !== 'string' || input.downloadAsync) {
         throwInvalidSourceError(input);
     }
-    await ExpoFontLoader.loadAsync(name, input);
+    try {
+        await ExpoFontLoader.loadAsync(name, input);
+    }
+    catch (e) {
+        // No-op.
+    }
 }
 export function getNativeFontName(name) {
     return name;

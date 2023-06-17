@@ -54,7 +54,12 @@ export async function loadSingleFontAsync(
     throwInvalidSourceError(input);
   }
 
-  await ExpoFontLoader.loadAsync(name, input);
+  try {
+    await ExpoFontLoader.loadAsync(name, input);
+  }
+  catch (e) {
+    // No-op.
+  }
 }
 
 export function getNativeFontName(name: string): string {
