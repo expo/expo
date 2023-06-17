@@ -2,6 +2,8 @@ import { PackageJSONConfig } from '@expo/config';
 import npmPackageArg from 'npm-package-arg';
 
 import { getVersionsAsync, SDKVersion } from '../../../api/getVersions';
+import { Log } from '../../../log';
+import { env } from '../../../utils/env';
 import { getVersionedNativeModulesAsync } from './bundledNativeModules';
 
 const debug = require('debug')(
@@ -56,6 +58,11 @@ export async function getRemoteVersionsForSdkAsync({
   sdkVersion,
   skipCache,
 }: { sdkVersion?: string; skipCache?: boolean } = {}): Promise<DependencyList> {
+  if (env.EXPO_OFFLINE) {
+    Log.warn('Dependency validation is unreliable in offline-mode');
+    return {};
+  }
+
   const { sdkVersions } = await getVersionsAsync({ skipCache });
 
   // We only want versioned dependencies so skip if they cannot be found.

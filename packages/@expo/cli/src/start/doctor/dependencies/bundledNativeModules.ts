@@ -3,8 +3,8 @@ import chalk from 'chalk';
 import resolveFrom from 'resolve-from';
 
 import { getNativeModuleVersionsAsync } from '../../../api/getNativeModuleVersions';
-import { APISettings } from '../../../api/settings';
 import * as Log from '../../../log';
+import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 
 const debug = require('debug')(
@@ -24,7 +24,7 @@ export async function getVersionedNativeModulesAsync(
   projectRoot: string,
   sdkVersion: string
 ): Promise<BundledNativeModules> {
-  if (sdkVersion !== 'UNVERSIONED' && !APISettings.isOffline) {
+  if (sdkVersion !== 'UNVERSIONED' && !env.EXPO_OFFLINE) {
     try {
       debug('Fetching bundled native modules from the server...');
       return await getNativeModuleVersionsAsync(sdkVersion);

@@ -55,6 +55,10 @@ function mockLoginRequest() {
 }
 
 describe(getUserAsync, () => {
+  beforeEach(() => {
+    delete process.env.EXPO_OFFLINE;
+    delete process.env.EXPO_TOKEN;
+  });
   it('skips fetching user without access token or session secret', async () => {
     expect(await getUserAsync()).toBeUndefined();
   });
@@ -73,7 +77,7 @@ describe(getUserAsync, () => {
 
   it('skips fetching user when running in offline mode', async () => {
     jest.resetModules();
-    jest.mock('../../settings', () => ({ APISettings: { isOffline: true } }));
+    process.env.EXPO_OFFLINE = '1';
     const { getUserAsync } = require('../user');
 
     process.env.EXPO_TOKEN = 'accesstoken';

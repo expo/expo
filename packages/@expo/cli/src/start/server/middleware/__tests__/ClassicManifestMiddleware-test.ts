@@ -1,11 +1,11 @@
 import { asMock } from '../../../../__tests__/asMock';
 import { ApiV2Error } from '../../../../api/rest/client';
-import { APISettings } from '../../../../api/settings';
 import { signClassicExpoGoManifestAsync } from '../../../../api/signManifest';
 import { getUserAsync } from '../../../../api/user/user';
 import * as Log from '../../../../log';
 import { ClassicManifestMiddleware } from '../ClassicManifestMiddleware';
 import { ServerRequest } from '../server.types';
+import { env } from 'process';
 
 jest.mock('../../../../api/signManifest', () => ({
   signClassicExpoGoManifestAsync: jest.fn((manifest) => JSON.stringify(manifest)),
@@ -16,11 +16,7 @@ jest.mock('../resolveAssets', () => ({
   resolveManifestAssets: jest.fn(),
   resolveGoogleServicesFile: jest.fn(),
 }));
-jest.mock('../../../../api/settings', () => ({
-  APISettings: {
-    isOffline: false,
-  },
-}));
+
 jest.mock('@expo/config', () => ({
   getProjectConfigDescriptionWithPaths: jest.fn(),
   getConfig: jest.fn(() => ({
@@ -42,7 +38,7 @@ jest.mock('../resolveEntryPoint', () => ({
 const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;
 
 beforeEach(() => {
-  APISettings.isOffline = false;
+  delete process.env.EXPO_OFFLINE;
 });
 
 describe('getParsedHeaders', () => {
@@ -79,6 +75,10 @@ describe('getParsedHeaders', () => {
 });
 
 describe('_fetchComputedManifestStringAsync', () => {
+  beforeEach(() => {
+    delete process.env.EXPO_OFFLINE;
+  });
+
   // Sanity
   it('returns a signed manifest', async () => {
     const middleware = new ClassicManifestMiddleware('/', {} as any);
@@ -120,7 +120,7 @@ describe('_fetchComputedManifestStringAsync', () => {
       )
     );
     expect(Log.warn).toBeCalledWith(expect.stringMatching(/Falling back to offline mode/));
-    expect(APISettings.isOffline).toBe(true);
+    expect(env.EXPO_OFFLINE).toBe(true);
   });
 
   it('handles a DNS error', async () => {
@@ -148,7 +148,7 @@ describe('_fetchComputedManifestStringAsync', () => {
       )
     );
     expect(Log.warn).toBeCalledWith(expect.stringMatching(/Falling back to offline mode/));
-    expect(APISettings.isOffline).toBe(true);
+    expect(env.EXPO_OFFLINE).toBe(true);
   });
 
   it('throws unhandled error', async () => {
@@ -168,7 +168,7 @@ describe('_fetchComputedManifestStringAsync', () => {
     expect(middleware._getManifestStringAsync).toBeCalledTimes(1);
 
     expect(Log.warn).not.toBeCalled();
-    expect(APISettings.isOffline).toBe(false);
+    expect(env.EXPO_OFFLINE).toBe(false);
   });
 
   it('memoizes warnings', async () => {
@@ -186,7 +186,7 @@ describe('_fetchComputedManifestStringAsync', () => {
           hostId: 'foobar',
         })
       ).rejects.toThrow();
-      APISettings.isOffline = false;
+      delete process.env.EXPO_OFFLINE;
     };
 
     // Call twice...
@@ -220,6 +220,10 @@ describe('_fetchComputedManifestStringAsync', () => {
 });
 
 describe('_getManifestResponseAsync', () => {
+  beforeEach(() => {
+    delete process.env.EXPO_OFFLINE;
+  });
+
   // Regression
   it('returns Exponent-Server header as json string', async () => {
     const middleware = new ClassicManifestMiddleware('/', {
@@ -248,7 +252,7 @@ describe(`_getManifestStringAsync`, () => {
     asMock(getUserAsync).mockImplementationOnce(async () => ({} as any));
     const middleware = new ClassicManifestMiddleware('/', {} as any);
 
-    APISettings.isOffline = true;
+    process.env.EXPO_OFFLINE = '1';
 
     expect(
       JSON.parse(
@@ -263,8 +267,6 @@ describe(`_getManifestStringAsync`, () => {
   it(`uses anon ID for unauthenticated users`, async () => {
     asMock(getUserAsync).mockImplementationOnce(async () => undefined);
     const middleware = new ClassicManifestMiddleware('/', {} as any);
-
-    APISettings.isOffline = false;
 
     expect(
       JSON.parse(
@@ -281,8 +283,6 @@ describe(`_getManifestStringAsync`, () => {
     asMock(getUserAsync).mockImplementationOnce(async () => undefined);
     const middleware = new ClassicManifestMiddleware('/', {} as any);
 
-    APISettings.isOffline = false;
-
     expect(
       JSON.parse(
         await middleware._getManifestStringAsync({
@@ -297,8 +297,6 @@ describe(`_getManifestStringAsync`, () => {
   it(`memoizes signature signing`, async () => {
     asMock(getUserAsync).mockImplementation(async () => ({} as any));
     const middleware = new ClassicManifestMiddleware('/', {} as any);
-
-    APISettings.isOffline = false;
 
     const invokeAsync = async (owner = 'bacon') => {
       await middleware._getManifestStringAsync({

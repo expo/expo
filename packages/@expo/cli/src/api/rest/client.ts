@@ -4,6 +4,7 @@ import fetchInstance from 'node-fetch';
 import path from 'path';
 
 import { env } from '../../utils/env';
+import { CommandError } from '../../utils/errors';
 import { getExpoApiBaseUrl } from '../endpoint';
 import UserSettings from '../user/UserSettings';
 import { FileSystemCache } from './cache/FileSystemCache';
@@ -70,6 +71,16 @@ export function wrapFetchWithCredentials(fetchFunction: FetchLike): FetchLike {
     const results = await fetchFunction(url, {
       ...options,
       headers: resolvedHeaders,
+    }).catch((error) => {
+      // Specifically, when running `npx expo start` and the wifi is connected but not really (public wifi, airplanes, etc).
+      if ('code' in error && error.code === 'ENOTFOUND') {
+        throw new CommandError(
+          'OFFLINE',
+          'Network connection is unreliable. Try again with the environment variable `EXPO_OFFLINE=1` to skip network requests.'
+        );
+      }
+
+      throw error;
     });
 
     if (results.status >= 400 && results.status < 500) {
