@@ -56,8 +56,7 @@ export async function loadSingleFontAsync(
 
   try {
     await ExpoFontLoader.loadAsync(name, input);
-  }
-  catch (e) {
+  } catch {
     // No-op.
   }
 }
