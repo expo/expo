@@ -32,7 +32,7 @@ public protocol AppControllerDelegate: AnyObject {
  */
 @objc(EXUpdatesAppController)
 @objcMembers
-public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelegate, UpdatesStateChangeEventSender {
+public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelegate, UpdatesStateChangeDelegate {
   private static let ErrorDomain = "EXUpdatesAppController"
   private static let EXUpdatesEventName = "Expo.nativeUpdatesEvent"
   private static let EXUpdatesStateChangeEventName = "Expo.nativeUpdatesStateChangeEvent"
@@ -95,7 +95,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
 
   private var eventsToSendToJS: [[String: Any]] = []
 
-  internal var stateMachine: UpdatesStateMachine
+  internal var stateMachine: UpdatesStateMachine?
 
   private var loaderTask: AppLoaderTask?
   private var candidateLauncher: AppLauncher?
@@ -134,13 +134,12 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     self.isEmergencyLaunch = false
     self.logger = UpdatesLogger()
     self.logger.info(message: "AppController sharedInstance created")
-    self.stateMachine = UpdatesStateMachine()
 
     super.init()
 
     self.errorRecovery.delegate = self
-    self.stateMachine.changeEventSender = self
-    self.stateMachine.reset()
+    self.stateMachine = UpdatesStateMachine(changeEventDelegate: self)
+    self.stateMachine?.reset()
   }
 
   /**
@@ -311,7 +310,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
   }
 
   public func requestRelaunch(completion: @escaping EXUpdatesAppRelaunchCompletionBlock) {
-    stateMachine.processEvent(UpdatesStateEvent(type: .restart))
+    stateMachine?.processEvent(UpdatesStateEvent(type: .restart))
     let launcherWithDatabase = AppLauncherWithDatabase(
       config: config,
       database: database,
@@ -328,7 +327,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
         RCTTriggerReloadCommandListeners("Requested by JavaScript - Updates.reloadAsync()")
         self.runReaper()
         // Reset the state machine
-        self.stateMachine.reset()
+        self.stateMachine?.reset()
       } else {
         NSLog("Failed to relaunch: %@", error!.localizedDescription)
         completion(false)
@@ -346,20 +345,20 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     return true
   }
 
-  public func appLoaderTask(_: AppLoaderTask, didStartCheckingForUpdate _: [String: Any]) {
-    stateMachine.processEvent(UpdatesStateEvent(type: .check))
+  public func appLoaderTask(_: AppLoaderTask, didStartCheckingForRemoteUpdate _: [String: Any]) {
+    stateMachine?.processEvent(UpdatesStateEvent(type: .check))
   }
 
-  public func appLoaderTask(_: AppLoaderTask, didFinishCheckingForUpdate body: [String: Any]) {
+  public func appLoaderTask(_: AppLoaderTask, didFinishCheckingForRemoteUpdate body: [String: Any]) {
     let manifest: [String: Any]? = body["manifest"] as? [String: Any]
     let rollback: Bool? = body["isRollBackToEmbedded"] as? Bool
     let eventType: UpdatesStateEventType = (rollback == true || manifest != nil) ? .checkCompleteAvailable : .checkCompleteUnavailable
-    stateMachine.processEvent(UpdatesStateEvent(type: eventType, body: body))
+    stateMachine?.processEvent(UpdatesStateEvent(type: eventType, body: body))
   }
 
   public func appLoaderTask(_: AppLoaderTask, didStartLoadingUpdate update: Update?) {
     logger.info(message: "AppController appLoaderTask didStartLoadingUpdate", code: .none, updateId: update?.loggingId(), assetId: nil)
-    stateMachine.processEvent(UpdatesStateEvent(type: .download))
+    stateMachine?.processEvent(UpdatesStateEvent(type: .download))
   }
 
   public func appLoaderTask(_: AppLoaderTask, didFinishWithLauncher launcher: AppLauncher, isUpToDate: Bool) {
@@ -410,7 +409,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     let body = [
       "message": error.localizedDescription
     ]
-    stateMachine.processEvent(UpdatesStateEvent(type: .downloadError, body: body))
+    stateMachine?.processEvent(UpdatesStateEvent(type: .downloadError, body: body))
     // Send legacy UpdateEvents to JS
     sendLegacyUpdateEventToBridge(AppController.ErrorEventName, body: body)
     emergencyLaunch(fatalError: error as NSError)
@@ -439,14 +438,14 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
       ]
       // Since errors can happen through a number of paths, we do these checks
       // to make sure the state machine is valid
-      if stateMachine.state == .idle {
-        stateMachine.processEvent(UpdatesStateEvent(type: .download))
-        stateMachine.processEvent(UpdatesStateEvent(type: .downloadError, body: body))
-      } else if stateMachine.state == .checking {
-        stateMachine.processEvent(UpdatesStateEvent(type: .checkError, body: body))
+      if stateMachine?.state == .idle {
+        stateMachine?.processEvent(UpdatesStateEvent(type: .download))
+        stateMachine?.processEvent(UpdatesStateEvent(type: .downloadError, body: body))
+      } else if stateMachine?.state == .checking {
+        stateMachine?.processEvent(UpdatesStateEvent(type: .checkError, body: body))
       } else {
         // .downloading
-        stateMachine.processEvent(UpdatesStateEvent(type: .downloadError, body: body))
+        stateMachine?.processEvent(UpdatesStateEvent(type: .downloadError, body: body))
       }
       // Send UpdateEvents to JS
       sendLegacyUpdateEventToBridge(AppController.ErrorEventName, body: body)
@@ -464,7 +463,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
       let body = [
         "manifest": update.manifest.rawManifestJSON()
       ]
-      stateMachine.processEvent(UpdatesStateEvent(type: .downloadComplete, body: body))
+      stateMachine?.processEvent(UpdatesStateEvent(type: .downloadComplete, body: body))
       // Send UpdateEvents to JS
       sendLegacyUpdateEventToBridge(AppController.UpdateAvailableEventName, body: body)
     case .noUpdateAvailable:
@@ -476,8 +475,8 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
         assetId: nil
       )
       // TODO: handle rollbacks properly, but this works for now
-      if stateMachine.state == .downloading {
-        stateMachine.processEvent(UpdatesStateEvent(type: .downloadComplete, body: [:]))
+      if stateMachine?.state == .downloading {
+        stateMachine?.processEvent(UpdatesStateEvent(type: .downloadComplete, body: [:]))
       }
       // Otherwise, we don't need to call the state machine here, it already transitioned to .checkCompleteUnavailable
       // Send UpdateEvents to JS

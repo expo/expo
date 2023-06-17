@@ -9,7 +9,7 @@ import ExpoModulesTestCore
 
 import EXManifests
 
-class TestStateChangeEventSender: UpdatesStateChangeEventSender {
+class TestStateChangeDelegate: UpdatesStateChangeDelegate {
   var lastEventType: EXUpdates.UpdatesStateEventType?
   var lastEventBody: [String: Any]?
   func sendUpdateStateChangeEventToBridge(_ eventType: EXUpdates.UpdatesStateEventType, body: [String: Any]) {
@@ -22,19 +22,18 @@ class UpdatesStateMachineSpec: ExpoSpec {
   override func spec() {
     describe("default state") {
       it("instantiates") {
-        let machine = UpdatesStateMachine()
+        let testStateChangeDelegate = TestStateChangeDelegate()
+        let machine = UpdatesStateMachine(changeEventDelegate: testStateChangeDelegate)
         expect(machine.state) == .idle
       }
 
       it("should handle check and checkCompleteAvailable") {
-        let machine = UpdatesStateMachine()
-        let testStateChangeEventSender: TestStateChangeEventSender = TestStateChangeEventSender()
-
-        machine.changeEventSender = testStateChangeEventSender
+        let testStateChangeDelegate = TestStateChangeDelegate()
+        let machine = UpdatesStateMachine(changeEventDelegate: testStateChangeDelegate)
 
         machine.processEvent(UpdatesStateEvent(type: .check))
         expect(machine.state) == .checking
-        expect(testStateChangeEventSender.lastEventType) == .check
+        expect(testStateChangeDelegate.lastEventType) == .check
 
         machine.processEvent(UpdatesStateEvent(type: .checkCompleteAvailable, body: [
           "manifest": [
@@ -47,13 +46,14 @@ class UpdatesStateMachineSpec: ExpoSpec {
         expect(machine.context.latestManifest?["updateId"] as? String ?? "") == "0000-xxxx"
         expect(machine.context.isUpdateAvailable) == true
         expect(machine.context.isUpdatePending) == false
-        expect(testStateChangeEventSender.lastEventType) == .checkCompleteAvailable
-        let values = testStateChangeEventSender.lastEventBody?["context"] as? [String: Any] ?? [:]
+        expect(testStateChangeDelegate.lastEventType) == .checkCompleteAvailable
+        let values = testStateChangeDelegate.lastEventBody?["context"] as? [String: Any] ?? [:]
         expect(values["isUpdateAvailable"] as? Bool ?? false) == true
       }
 
       it("should handle check and checkCompleteUnavailable") {
-        let machine = UpdatesStateMachine()
+        let testStateChangeDelegate = TestStateChangeDelegate()
+        let machine = UpdatesStateMachine(changeEventDelegate: testStateChangeDelegate)
 
         machine.processEvent(UpdatesStateEvent(type: .check))
         expect(machine.state) == .checking
@@ -68,7 +68,8 @@ class UpdatesStateMachineSpec: ExpoSpec {
       }
 
       it("should handle download and downloadComplete") {
-        let machine = UpdatesStateMachine()
+        let testStateChangeDelegate = TestStateChangeDelegate()
+        let machine = UpdatesStateMachine(changeEventDelegate: testStateChangeDelegate)
 
         machine.processEvent(UpdatesStateEvent(type: .download))
         expect(machine.state) == .downloading
@@ -89,7 +90,8 @@ class UpdatesStateMachineSpec: ExpoSpec {
       }
 
       it("should handle rollback") {
-        let machine = UpdatesStateMachine()
+        let testStateChangeDelegate = TestStateChangeDelegate()
+        let machine = UpdatesStateMachine(changeEventDelegate: testStateChangeDelegate)
 
         machine.processEvent(UpdatesStateEvent(type: .check))
         expect(machine.state) == .checking
@@ -107,13 +109,14 @@ class UpdatesStateMachineSpec: ExpoSpec {
       }
 
       it("invalid transitions are handled as expected") {
-        let machine = UpdatesStateMachine()
+        let testStateChangeDelegate = TestStateChangeDelegate()
+        let machine = UpdatesStateMachine(changeEventDelegate: testStateChangeDelegate)
 
         machine.processEvent(UpdatesStateEvent(type: .check))
         expect(machine.state) == .checking
-
-        let testStateChangeEventSender: TestStateChangeEventSender = TestStateChangeEventSender()
-        machine.changeEventSender = testStateChangeEventSender
+        // Reset the test delegate
+        testStateChangeDelegate.lastEventBody = nil
+        testStateChangeDelegate.lastEventType = nil
 
         // In .checking state, download events should be ignored,
         // state should not change, context should not change,
@@ -121,8 +124,8 @@ class UpdatesStateMachineSpec: ExpoSpec {
         machine.processEvent(UpdatesStateEvent(type: .download))
 
         expect(machine.state) == .checking
-        expect(testStateChangeEventSender.lastEventType).to(beNil())
-        expect(testStateChangeEventSender.lastEventBody).to(beNil())
+        expect(testStateChangeDelegate.lastEventType).to(beNil())
+        expect(testStateChangeDelegate.lastEventBody).to(beNil())
 
         machine.processEvent(UpdatesStateEvent(type: .downloadComplete, body: [
           "manifest": [

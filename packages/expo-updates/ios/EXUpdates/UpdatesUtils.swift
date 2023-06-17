@@ -59,7 +59,7 @@ public final class UpdatesUtils: NSObject {
   public static func checkForUpdate(_ block: @escaping ([String: Any]) -> Void) {
     sendStateEvent(.check)
     do {
-      let constants = try startAPICall()
+      let constants = try startJSAPICall()
 
       var extraHeaders: [String: Any] = [:]
       constants.database.databaseQueue.sync {
@@ -130,7 +130,7 @@ public final class UpdatesUtils: NSObject {
   public static func fetchUpdate(_ block: @escaping ([String: Any]) -> Void) {
     sendStateEvent(.download)
     do {
-      let constants = try startAPICall()
+      let constants = try startJSAPICall()
       let remoteAppLoader = RemoteAppLoader(
         config: constants.config,
         database: constants.database,
@@ -240,7 +240,7 @@ public final class UpdatesUtils: NSObject {
   }
 
   internal static func sendStateEvent(_ type: UpdatesStateEventType, body: [String: Any] = [:]) {
-    AppController.sharedInstance.stateMachine.processEvent(UpdatesStateEvent(type: type, body: body))
+    AppController.sharedInstance.stateMachine?.processEvent(UpdatesStateEvent(type: type, body: body))
   }
 
   internal static func getRuntimeVersion(withConfig config: UpdatesConfig) -> String {
@@ -346,7 +346,7 @@ public final class UpdatesUtils: NSObject {
    from the AppController.
    Throws if expo-updates is not enabled or not started.
    */
-  private static func startAPICall() throws -> (
+  private static func startJSAPICall() throws -> (
     config: UpdatesConfig,
     selectionPolicy: SelectionPolicy,
     database: UpdatesDatabase,

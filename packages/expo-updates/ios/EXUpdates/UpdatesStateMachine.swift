@@ -6,7 +6,7 @@ import Foundation
  Protocol with a method for sending state change events to JS.
  In production, this will be implemented by the AppController.sharedInstance.
  */
-internal protocol UpdatesStateChangeEventSender {
+internal protocol UpdatesStateChangeDelegate: AnyObject {
   func sendUpdateStateChangeEventToBridge(_ eventType: UpdatesStateEventType, body: [String: Any])
 }
 
@@ -90,6 +90,7 @@ internal struct UpdatesStateContext {
       "isChecking": self.isChecking,
       "isDownloading": self.isDownloading,
       "isRestarting": self.isRestarting,
+      // We pass NSNulls to keep this as a [String: Any] map
       "latestManifest": self.latestManifest ?? NSNull(),
       "downloadedManifest": self.downloadedManifest ?? NSNull(),
       "checkError": self.checkError ?? NSNull(),
@@ -107,12 +108,16 @@ internal struct UpdatesStateContext {
 internal class UpdatesStateMachine {
   private let logger = UpdatesLogger()
 
+  init(changeEventDelegate: (any UpdatesStateChangeDelegate)) {
+    self.changeEventDelegate = changeEventDelegate
+  }
+
   // MARK: - Public methods and properties
 
   /**
    In production, this is the AppController instance.
    */
-  internal var changeEventSender: (any UpdatesStateChangeEventSender)?
+  internal let changeEventDelegate: (any UpdatesStateChangeDelegate)
 
   /**
    The current state
@@ -150,13 +155,13 @@ internal class UpdatesStateMachine {
     }
   }
 
-  // MARK: - Private nethods
+  // MARK: - Private methods
 
   /**
    Make sure the state transition is allowed, and then update the state.
    */
   private func transition(_ event: UpdatesStateEvent) -> Bool {
-    let allowedEvents: [UpdatesStateEventType] = UpdatesStateMachine.updatesStateAllowedEvents[state] ?? []
+    let allowedEvents: Set<UpdatesStateEventType> = UpdatesStateMachine.updatesStateAllowedEvents[state] ?? []
     if !allowedEvents.contains(event.type) {
       // Uncomment the line below to halt execution on invalid state transitions,
       // very useful for testing
@@ -216,7 +221,7 @@ internal class UpdatesStateMachine {
    On each state change, all context properties are sent to JS
    */
   private func sendChangeEventToJS(_ event: UpdatesStateEvent? = nil) {
-    changeEventSender?.sendUpdateStateChangeEventToBridge(event?.type ?? .restart, body: [
+    changeEventDelegate.sendUpdateStateChangeEventToBridge(event?.type ?? .restart, body: [
       "context": context.json
     ])
   }
@@ -228,7 +233,7 @@ internal class UpdatesStateMachine {
    If the machine receives an unexpected event, an assertion failure will occur
    and the app will crash.
    */
-  static let updatesStateAllowedEvents: [UpdatesStateValue: [UpdatesStateEventType]] = [
+  static let updatesStateAllowedEvents: [UpdatesStateValue: Set<UpdatesStateEventType>] = [
     .idle: [.check, .download, .restart],
     .checking: [.checkCompleteAvailable, .checkCompleteUnavailable, .checkError],
     .downloading: [.downloadComplete, .downloadError],
