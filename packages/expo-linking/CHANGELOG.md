@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Drop support for `detach.scheme` schemes (ExpoKit).
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
