@@ -11,7 +11,7 @@ RCT_MULTI_ENUM_CONVERTER(
       @"bottom" : @(RNCSafeAreaViewEdgesBottom),
       @"left" : @(RNCSafeAreaViewEdgesLeft),
     }),
-    RNCSafeAreaViewEdgesAll,
+    RNCSafeAreaViewEdgesNone,
     integerValue);
 
 @end

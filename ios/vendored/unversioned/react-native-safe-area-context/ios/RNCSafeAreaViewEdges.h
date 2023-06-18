@@ -6,4 +6,5 @@ typedef NS_ENUM(NSInteger, RNCSafeAreaViewEdges) {
   RNCSafeAreaViewEdgesBottom = 0b0010,
   RNCSafeAreaViewEdgesLeft = 0b0001,
   RNCSafeAreaViewEdgesAll = 0b1111,
+  RNCSafeAreaViewEdgesNone = 0b0000,
 };
