@@ -8,6 +8,7 @@ import { Terminal } from '~/ui/components/Snippet';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Step } from '~/ui/components/Step';
 import { BoxLink } from '~/ui/components/BoxLink';
+import { BookOpen02Icon } from '@expo/styleguide-icons';
 
 The process of running a new Expo project consists of three steps. You start by initializing a new project, then start the development server with Expo CLI and finally open the app on your device with Expo Go to see your changes live.
 
@@ -38,10 +39,7 @@ To initialize a new project, use [`create-expo-app`](/more/glossary-of-terms/#cr
 
 To start the development server, run the following command:
 
-<Terminal
-  cmd={['$ npx expo start']}
-  cmdCopy="npx expo start"
-/>
+<Terminal cmd={['$ npx expo start']} />
 
 When you run the above command, the Expo CLI starts [Metro Bundler](/guides/customizing-metro). This bundler is an HTTP server that compiles the JavaScript code of your app using [Babel](https://babeljs.io/) and serves it to the Expo app. See how [Expo Development Server](/more/expo-cli/#develop) works for more information about this process.
 
@@ -51,7 +49,7 @@ When you run the above command, the Expo CLI starts [Metro Bundler](/guides/cust
 
 ## Open the app on your device
 
-To open the app your device that has Expo Go already installed:
+To open the app your device that has [Expo Go](/get-started/expo-go/) already installed:
 
 - On your Android device, press **Scan QR Code** on the **Home** tab of the Expo Go app and scan the QR code you see in the terminal.
 - On your iPhone or iPad, open the default Apple **Camera** app and scan the QR code you see in the terminal.
@@ -115,8 +113,12 @@ Expo Go is configured by default to automatically reload the app whenever a file
   title="Project structure"
   description="Now that you have your first project up and running, in the next step, you will learn more about your Expo project's structure."
   href="/develop/project-structure"
+  Icon={BookOpen02Icon}
 />
 
-{/* Add a link to the project structure page here to allow the user to continue their journey */}
-
-{/* Add a link to the tutorial here */}
+<BoxLink
+  title="Tutorial"
+  description="If you are new to Expo, learn more about the ecosystem by creating a universal app that runs on Android, iOS, and web."
+  href="/tutorial/introduction"
+  Icon={BookOpen02Icon}
+/>
