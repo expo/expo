@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Drop support for `detach.scheme` schemes (ExpoKit).
+- Drop support for `detach.scheme` schemes (ExpoKit). ([#22848](https://github.com/expo/expo/pull/22848) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
