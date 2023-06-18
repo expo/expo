@@ -15,7 +15,10 @@
 
 using namespace facebook::react;
 
-@interface RNCPagerViewComponentView () <RCTRNCViewPagerViewProtocol, UIPageViewControllerDataSource, UIPageViewControllerDelegate, UIScrollViewDelegate>
+@interface RNCPagerViewComponentView () <RCTRNCViewPagerViewProtocol, UIPageViewControllerDataSource, UIPageViewControllerDelegate, UIScrollViewDelegate, UIGestureRecognizerDelegate>
+
+@property(nonatomic, assign) UIPanGestureRecognizer* panGestureRecognizer;
+
 @end
 
 @implementation RNCPagerViewComponentView {
@@ -63,6 +66,11 @@ using namespace facebook::react;
         _destinationIndex = -1;
         _layoutDirection = @"ltr";
         _overdrag = NO;
+        UIPanGestureRecognizer* panGestureRecognizer = [UIPanGestureRecognizer new];
+        self.panGestureRecognizer = panGestureRecognizer;
+        panGestureRecognizer.delegate = self;
+        [self addGestureRecognizer: panGestureRecognizer];
+
     }
     
     return self;
@@ -260,6 +268,9 @@ using namespace facebook::react;
 
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
     
+    const auto strongEventEmitter = *std::dynamic_pointer_cast<const RNCViewPagerEventEmitter>(_eventEmitter);
+    strongEventEmitter.onPageScrollStateChanged(RNCViewPagerEventEmitter::OnPageScrollStateChanged{.pageScrollState =  RNCViewPagerEventEmitter::OnPageScrollStateChangedPageScrollState::Settling });
+    
     if (!_overdrag) {
         NSInteger maxIndex = _nativeChildrenViewControllers.count - 1;
         BOOL isFirstPage = [self isLtrLayout] ? _currentIndex == 0 : _currentIndex == maxIndex;
@@ -270,11 +281,12 @@ using namespace facebook::react;
         if ((isFirstPage && contentOffset <= topBound) || (isLastPage && contentOffset >= topBound)) {
             CGPoint croppedOffset = [self isHorizontal] ? CGPointMake(topBound, 0) : CGPointMake(0, topBound);
             *targetContentOffset = croppedOffset;
+            
+            strongEventEmitter.onPageScrollStateChanged(RNCViewPagerEventEmitter::OnPageScrollStateChanged{.pageScrollState =  RNCViewPagerEventEmitter::OnPageScrollStateChangedPageScrollState::Idle });
         }
     }
     
-    const auto strongEventEmitter = *std::dynamic_pointer_cast<const RNCViewPagerEventEmitter>(_eventEmitter);
-    strongEventEmitter.onPageScrollStateChanged(RNCViewPagerEventEmitter::OnPageScrollStateChanged{.pageScrollState =  RNCViewPagerEventEmitter::OnPageScrollStateChangedPageScrollState::Settling });
+   
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
@@ -393,6 +405,29 @@ using namespace facebook::react;
     return concreteComponentDescriptorProvider<RNCViewPagerComponentDescriptor>();
 }
 
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+
+    // Recognize simultaneously only if the other gesture is RN Screen's pan gesture (one that is used to perform fullScreenGestureEnabled)
+    if (gestureRecognizer == self.panGestureRecognizer && [NSStringFromClass([otherGestureRecognizer class]) isEqual: @"RNSPanGestureRecognizer"]) {
+        UIPanGestureRecognizer* panGestureRecognizer = (UIPanGestureRecognizer*) gestureRecognizer;
+        CGPoint velocity = [panGestureRecognizer velocityInView:self];
+        BOOL isLTR = [self isLtrLayout];
+        BOOL isBackGesture = (isLTR && velocity.x > 0) || (!isLTR && velocity.x < 0);
+        
+        if (self.currentIndex == 0 && isBackGesture) {
+            scrollView.panGestureRecognizer.enabled = false;
+        } else {
+            const auto &viewProps = *std::static_pointer_cast<const RNCViewPagerProps>(_props);
+            scrollView.panGestureRecognizer.enabled = viewProps.scrollEnabled;
+        }
+        
+        return YES;
+    }
+    const auto &viewProps = *std::static_pointer_cast<const RNCViewPagerProps>(_props);
+    scrollView.panGestureRecognizer.enabled = viewProps.scrollEnabled;
+    return NO;
+}
 
 @end
 

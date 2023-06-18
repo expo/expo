@@ -137,9 +137,9 @@ class Env {
     return process.env.HTTP_PROXY || process.env.http_proxy || '';
   }
 
-  /** **Experimental:** Use the network inspector by overriding the metro inspector proxy with a custom version */
-  get EXPO_USE_CUSTOM_INSPECTOR_PROXY(): boolean {
-    return boolish('EXPO_USE_CUSTOM_INSPECTOR_PROXY', false);
+  /** Use the network inspector by overriding the metro inspector proxy with a custom version */
+  get EXPO_NO_INSPECTOR_PROXY(): boolean {
+    return boolish('EXPO_NO_INSPECTOR_PROXY', false);
   }
 
   /** Disable lazy bundling in Metro bundler. */

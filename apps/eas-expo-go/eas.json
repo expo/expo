@@ -24,7 +24,7 @@
       },
       "ios": {
         "cache": {
-          "key": "sdk49-0.72.0",
+          "key": "sdk49-0.72.0-rc.6",
           "customPaths": [
             "../../ios/Pods"
           ]
@@ -92,6 +92,28 @@
           "disabled": true
         },
         "simulator": false
+      }
+    },
+    "publish-client": {
+      "extends": "versioned-client",
+      "env": {
+        "EAS_BUILD_PROFILE": "publish-client"
+      },
+      "android": {
+        "autoIncrement": "versionCode",
+        "cache": {
+          "disabled": true
+        },
+        "withoutCredentials": false,
+        "gradleCommand": ":app:assembleVersionedRelease"
+      },
+      "ios": {
+        "resourceClass": "m-large",
+        "autoIncrement": "buildNumber",
+        "cache": {
+          "disabled": true
+        },
+        "simulator": true
       }
     }
   },

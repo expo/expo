@@ -186,7 +186,7 @@ declare module 'metro' {
 }
 
 declare module 'metro/src/DeltaBundler/Serializers/baseJSBundle' {
-  import { Module, Graph, SerializerOptions } from 'metro';
+  import { ReadOnlyGraph, MixedOutput, Module, Graph, SerializerOptions } from 'metro';
 
   type ModuleMap = readonly [number, string][];
 
@@ -198,8 +198,8 @@ declare module 'metro/src/DeltaBundler/Serializers/baseJSBundle' {
 
   export default function baseJSBundle(
     entryPoint: string,
-    preModules: readonly Module[],
-    graph: Graph,
+    preModules: readonly Module<MixedOutput>[],
+    graph: ReadOnlyGraph,
     options: SerializerOptions
   ): Bundle;
 }
