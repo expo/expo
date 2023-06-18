@@ -105,7 +105,7 @@ private object MIGRATION_TO_NEXT : Migration(1, 2) {
     }
 }
 
-@Database(entities = [Entry::class], version = DATABASE_VERSION, exportSchema = true)
+@Database(entities = [Entry::class], version = DATABASE_VERSION, exportSchema = false)
 internal abstract class StorageDb : RoomDatabase() {
     abstract fun storage(): StorageDao
 
