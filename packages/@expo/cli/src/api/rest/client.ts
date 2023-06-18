@@ -6,6 +6,7 @@ import path from 'path';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
 import { getExpoApiBaseUrl } from '../endpoint';
+import { disableNetwork } from '../settings';
 import UserSettings from '../user/UserSettings';
 import { FileSystemCache } from './cache/FileSystemCache';
 import { wrapFetchWithCache } from './cache/wrapFetchWithCache';
@@ -93,6 +94,8 @@ export function wrapFetchWithCredentials(fetchFunction: FetchLike): FetchLike {
     } catch (error: any) {
       // Specifically, when running `npx expo start` and the wifi is connected but not really (public wifi, airplanes, etc).
       if ('code' in error && error.code === 'ENOTFOUND') {
+        disableNetwork();
+
         throw new CommandError(
           'OFFLINE',
           'Network connection is unreliable. Try again with the environment variable `EXPO_OFFLINE=1` to skip network requests.'

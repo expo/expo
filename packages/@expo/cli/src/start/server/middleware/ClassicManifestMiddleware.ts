@@ -141,9 +141,10 @@ export class ClassicManifestMiddleware extends ManifestMiddleware<ClassicManifes
             `Please request access from an admin of @${props.manifest.owner} or change the "owner" field to an account you belong to.\n` +
             learnMore('https://docs.expo.dev/versions/latest/config/app/#owner')
         );
+
         disableNetwork();
         return await this._getManifestStringAsync(props);
-      } else if (error.code === 'ENOTFOUND') {
+      } else if (error.code === 'ENOTFOUND' || error.code === 'OFFLINE') {
         // Got a DNS error, i.e. can't access exp.host, warn and enable offline mode.
         this.addSigningDisabledWarning(
           `Could not reach Expo servers, please check if you can access ${

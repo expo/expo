@@ -1,12 +1,12 @@
 import { asMock } from '../../../../__tests__/asMock';
 import { getVersionsAsync } from '../../../../api/getVersions';
+import { Log } from '../../../../log';
 import { getVersionedNativeModulesAsync } from '../bundledNativeModules';
 import {
   getOperationLog,
   getRemoteVersionsForSdkAsync,
   getVersionedPackagesAsync,
 } from '../getVersionedPackages';
-import { Log } from '../../../../log';
 
 jest.mock('../../../../log');
 

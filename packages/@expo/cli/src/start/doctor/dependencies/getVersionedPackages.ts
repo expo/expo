@@ -2,8 +2,10 @@ import { PackageJSONConfig } from '@expo/config';
 import npmPackageArg from 'npm-package-arg';
 
 import { getVersionsAsync, SDKVersion } from '../../../api/getVersions';
+import { disableNetwork } from '../../../api/settings';
 import { Log } from '../../../log';
 import { env } from '../../../utils/env';
+import { CommandError } from '../../../utils/errors';
 import { getVersionedNativeModulesAsync } from './bundledNativeModules';
 
 const debug = require('debug')(
@@ -63,21 +65,28 @@ export async function getRemoteVersionsForSdkAsync({
     return {};
   }
 
-  const { sdkVersions } = await getVersionsAsync({ skipCache });
+  try {
+    const { sdkVersions } = await getVersionsAsync({ skipCache });
 
-  // We only want versioned dependencies so skip if they cannot be found.
-  if (!sdkVersion || !(sdkVersion in sdkVersions)) {
-    debug(
-      `Skipping versioned dependencies because the SDK version is not found. (sdkVersion: ${sdkVersion}, available: ${Object.keys(
-        sdkVersions
-      ).join(', ')})`
-    );
-    return {};
+    // We only want versioned dependencies so skip if they cannot be found.
+    if (!sdkVersion || !(sdkVersion in sdkVersions)) {
+      debug(
+        `Skipping versioned dependencies because the SDK version is not found. (sdkVersion: ${sdkVersion}, available: ${Object.keys(
+          sdkVersions
+        ).join(', ')})`
+      );
+      return {};
+    }
+
+    const version = sdkVersions[sdkVersion as keyof typeof sdkVersions] as unknown as SDKVersion;
+
+    return normalizeSdkVersionObject(version);
+  } catch (error: any) {
+    if (error instanceof CommandError && error.code === 'OFFLINE') {
+      return getRemoteVersionsForSdkAsync({ sdkVersion, skipCache });
+    }
+    throw error;
   }
-
-  const version = sdkVersions[sdkVersion as keyof typeof sdkVersions] as unknown as SDKVersion;
-
-  return normalizeSdkVersionObject(version);
 }
 
 /**
