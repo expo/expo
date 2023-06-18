@@ -421,6 +421,7 @@ exports[`built-in plugins compiles mods 1`] = `
     },
     "googleServicesFile": "./config/GoogleService-Info.plist",
     "infoPlist": {
+      "CADisableMinimumFrameDurationOnPhone": true,
       "CFBundleDevelopmentRegion": "$(DEVELOPMENT_LANGUAGE)",
       "CFBundleDisplayName": "my cool app",
       "CFBundleExecutable": "$(EXECUTABLE_NAME)",
@@ -697,7 +698,7 @@ exports[`built-in plugins introspects mods 1`] = `
           {
             "key": "FLIPPER_VERSION",
             "type": "property",
-            "value": "0.125.0",
+            "value": "0.182.0",
           },
           {
             "type": "empty",
@@ -796,6 +797,18 @@ exports[`built-in plugins introspects mods 1`] = `
             "key": "expo.webp.animated",
             "type": "property",
             "value": "false",
+          },
+          {
+            "type": "empty",
+          },
+          {
+            "type": "comment",
+            "value": "Remove this workaround when upgrading to react-native@0.72.1",
+          },
+          {
+            "key": "kotlin.jvm.target.validation.mode",
+            "type": "property",
+            "value": "warning",
           },
           {
             "type": "empty",
@@ -1227,6 +1240,7 @@ exports[`built-in plugins introspects mods 1`] = `
           "EXUpdatesLaunchWaitMs": 650,
         },
         "infoPlist": {
+          "CADisableMinimumFrameDurationOnPhone": true,
           "CFBundleDevelopmentRegion": "$(DEVELOPMENT_LANGUAGE)",
           "CFBundleDisplayName": "my cool app",
           "CFBundleExecutable": "$(EXECUTABLE_NAME)",
@@ -1705,6 +1719,7 @@ exports[`built-in plugins introspects mods 1`] = `
     },
     "googleServicesFile": "./config/GoogleService-Info.plist",
     "infoPlist": {
+      "CADisableMinimumFrameDurationOnPhone": true,
       "CFBundleDevelopmentRegion": "$(DEVELOPMENT_LANGUAGE)",
       "CFBundleDisplayName": "my cool app",
       "CFBundleExecutable": "$(EXECUTABLE_NAME)",
@@ -2251,6 +2266,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
           "EXUpdatesLaunchWaitMs": 650,
         },
         "infoPlist": {
+          "CADisableMinimumFrameDurationOnPhone": true,
           "CFBundleDevelopmentRegion": "$(DEVELOPMENT_LANGUAGE)",
           "CFBundleDisplayName": "my cool app",
           "CFBundleExecutable": "$(EXECUTABLE_NAME)",
@@ -2683,6 +2699,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
     },
     "googleServicesFile": "./config/GoogleService-Info.plist",
     "infoPlist": {
+      "CADisableMinimumFrameDurationOnPhone": true,
       "CFBundleDevelopmentRegion": "$(DEVELOPMENT_LANGUAGE)",
       "CFBundleDisplayName": "my cool app",
       "CFBundleExecutable": "$(EXECUTABLE_NAME)",

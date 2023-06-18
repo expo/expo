@@ -48,6 +48,7 @@
 @property (nonatomic, strong) NSURL *possibleManifestURL;
 @property (nonatomic, strong) EXDevLauncherErrorManager *errorManager;
 @property (nonatomic, strong) EXDevLauncherInstallationIDHelper *installationIDHelper;
+@property (nonatomic, strong) EXDevLauncherNetworkInterceptor *networkInterceptor;
 @property (nonatomic, assign) BOOL isStarted;
 
 @end
@@ -73,8 +74,8 @@
     self.pendingDeepLinkRegistry = [EXDevLauncherPendingDeepLinkRegistry new];
     self.errorManager = [[EXDevLauncherErrorManager alloc] initWithController:self];
     self.installationIDHelper = [EXDevLauncherInstallationIDHelper new];
+    self.networkInterceptor = [EXDevLauncherNetworkInterceptor new];
     self.shouldPreferUpdatesInterfaceSourceUrl = NO;
-    [EXDevLauncherNetworkLogger.shared enable];
   }
   return self;
 }
@@ -180,14 +181,28 @@
 
 - (NSDictionary<UIApplicationLaunchOptionsKey, NSObject*> *)getLaunchOptions;
 {
+  NSMutableDictionary *launchOptions = [self.launchOptions mutableCopy];
   NSURL *deepLink = [self.pendingDeepLinkRegistry consumePendingDeepLink];
-  if (!deepLink) {
-    return nil;
+
+  if (deepLink) {
+    // Passes pending deep link to initialURL if any
+    launchOptions[UIApplicationLaunchOptionsURLKey] = deepLink;
+  } else if (launchOptions[UIApplicationLaunchOptionsURLKey] && [EXDevLauncherURLHelper isDevLauncherURL:launchOptions[UIApplicationLaunchOptionsURLKey]]) {
+    // Strips initialURL if it is from myapp://expo-development-client/?url=...
+    // That would make dev-launcher acts like a normal app.
+    launchOptions[UIApplicationLaunchOptionsURLKey] = nil;
   }
 
-  return @{
-    UIApplicationLaunchOptionsURLKey: deepLink
-  };
+  if ([launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey][UIApplicationLaunchOptionsUserActivityTypeKey] isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+    // Strips universal launch link if it is from https://expo-development-client/?url=...
+    // That would make dev-launcher acts like a normal app, though this case should rarely happen.
+    NSUserActivity *userActivity = launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey][@"UIApplicationLaunchOptionsUserActivityKey"];
+    if (userActivity.webpageURL && [EXDevLauncherURLHelper isDevLauncherURL:userActivity.webpageURL]) {
+      userActivity.webpageURL = nil;
+    }
+  }
+
+  return launchOptions;
 }
 
 - (EXManifestsManifest *)appManifest
