@@ -17,7 +17,7 @@
 class SkColorSpace;
 
 
-#if SK_SUPPORT_GPU
+#if defined(SK_GANESH)
 #include "include/gpu/GrBackendSurface.h"
 #include "include/gpu/GrContextThreadSafeProxy.h"
 #include "include/gpu/GrTypes.h"
@@ -118,7 +118,7 @@ public:
     bool isCompatible(const GrBackendTexture&) const;
 
 private:
-    friend class SkSurface_Gpu; // for 'set' & 'config'
+    friend class SkSurface_Ganesh;           // for 'set' & 'config'
     friend class GrVkSecondaryCBDrawContext; // for 'set' & 'config'
     friend class GrContextThreadSafeProxy; // for private ctor
     friend class SkDeferredDisplayListRecorder; // for 'config'
@@ -210,7 +210,7 @@ private:
     SkSurfaceProps                  fSurfaceProps;
 };
 
-#else// !SK_SUPPORT_GPU
+#else// !defined(SK_GANESH)
 class GrBackendFormat;
 
 class SK_API SkSurfaceCharacterization {

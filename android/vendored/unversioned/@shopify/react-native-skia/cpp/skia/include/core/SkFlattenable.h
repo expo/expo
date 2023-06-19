@@ -9,13 +9,15 @@
 #define SkFlattenable_DEFINED
 
 #include "include/core/SkRefCnt.h"
+#include "include/core/SkTypes.h"
+
+#include <cstddef>
 
 class SkData;
 class SkReadBuffer;
 class SkWriteBuffer;
-
-struct SkSerialProcs;
 struct SkDeserialProcs;
+struct SkSerialProcs;
 
 /** \class SkFlattenable
 

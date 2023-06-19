@@ -20,8 +20,10 @@ static PropId PropNameRotateZ = JsiPropId::get("rotateZ");
 
 class TransformProp : public DerivedProp<SkMatrix> {
 public:
-  explicit TransformProp(PropId name) : DerivedProp<SkMatrix>() {
-    _transformProp = addProperty(std::make_shared<NodeProp>(name));
+  explicit TransformProp(PropId name,
+                         const std::function<void(BaseNodeProp *)> &onChange)
+      : DerivedProp<SkMatrix>(onChange) {
+    _transformProp = defineProperty<NodeProp>(name);
   }
 
   void updateDerivedValue() override {

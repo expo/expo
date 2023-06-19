@@ -5,20 +5,20 @@
 #include <memory>
 #include <utility>
 
+#include "SkBlurTypes.h"
+
 namespace RNSkia {
 
 class BoxShadowProps : public DerivedProp<SkPaint> {
 public:
-  BoxShadowProps() : DerivedProp<SkPaint>() {
-    _dxProp = addProperty(std::make_shared<NodeProp>(JsiPropId::get("dx")));
-    _dyProp = addProperty(std::make_shared<NodeProp>(JsiPropId::get("dy")));
-    _spreadProp =
-        addProperty(std::make_shared<NodeProp>(JsiPropId::get("spread")));
-    _blurProp = addProperty(std::make_shared<NodeProp>(JsiPropId::get("blur")));
-    _colorProp =
-        addProperty(std::make_shared<ColorProp>(JsiPropId::get("color")));
-    _innerProp =
-        addProperty(std::make_shared<NodeProp>(JsiPropId::get("inner")));
+  explicit BoxShadowProps(const std::function<void(BaseNodeProp *)> &onChange)
+      : DerivedProp<SkPaint>(onChange) {
+    _dxProp = defineProperty<NodeProp>("dx");
+    _dyProp = defineProperty<NodeProp>("dy");
+    _spreadProp = defineProperty<NodeProp>("spread");
+    _blurProp = defineProperty<NodeProp>("blur");
+    _colorProp = defineProperty<ColorProp>("color");
+    _innerProp = defineProperty<NodeProp>("inner");
 
     _blurProp->require();
   }
