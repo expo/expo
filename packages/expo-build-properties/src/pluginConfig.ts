@@ -94,6 +94,25 @@ export interface PluginConfigTypeAndroid {
    * SDK 49+ is required.
    */
   unstable_networkInspector?: boolean;
+
+  /**
+   * Add extra maven repositories to all gradle projects.
+   *
+   * This acts like to add the following code to **android/build.gradle**:
+   * ```groovy
+   * allprojects {
+   *   repositories {
+   *     maven {
+   *       url [THE_EXTRA_MAVEN_REPOSITORY]
+   *     }
+   *   }
+   * }
+   * ```
+   *
+   * @hide For the implementation details,
+   * this property is actually handled by `expo-modules-autolinking` but not the config-plugins inside expo-build-properties.
+   */
+  extraMavenRepos?: string[];
 }
 
 /**
@@ -137,6 +156,94 @@ export interface PluginConfigTypeIos {
    * SDK 49+ is required.
    */
   unstable_networkInspector?: boolean;
+
+  /**
+   * Add extra CocoaPods dependencies for all targets.
+   *
+   * This acts like to add the following code to **ios/Podfile**:
+   * ```
+   * pod '[EXTRA_POD_NAME]', '~> [EXTRA_POD_VERSION]'
+   * # e.g.
+   * pod 'Protobuf', '~> 3.14.0'
+   * ```
+   *
+   * @hide For the implementation details,
+   * this property is actually handled by `expo-modules-autolinking` but not the config-plugins inside expo-build-properties.
+   */
+  extraPods?: ExtraIosPodDependency[];
+}
+
+/**
+ * Interface representing extra CocoaPods dependency.
+ * @see [Podfile syntax reference](https://guides.cocoapods.org/syntax/podfile.html#pod)
+ * @platform ios
+ */
+export interface ExtraIosPodDependency {
+  /**
+   * Name of the pod.
+   */
+  name: string;
+  /**
+   * Version of the pod.
+   * CocoaPods supports various [versioning options](https://guides.cocoapods.org/using/the-podfile.html#pod).
+   * @example `~> 0.1.2`
+   */
+  version?: string;
+  /**
+   * Build configurations for which the pod should be installed.
+   * @example `['Debug', 'Release']`
+   */
+  configurations?: string[];
+  /**
+   * Whether this pod should use modular headers.
+   */
+  modular_headers?: boolean;
+  /**
+   * Custom source to search for this dependency.
+   * @example `https://github.com/CocoaPods/Specs.git`
+   */
+  source?: string;
+  /**
+   * Custom local filesystem path to add the dependency.
+   * @example `~/Documents/AFNetworking`
+   */
+  path?: string;
+  /**
+   * Custom podspec path.
+   * @example `https://example.com/JSONKit.podspec`
+   */
+  podspec?: string;
+  /**
+   * Test specs can be optionally included via the :testspecs option. By default, none of a Pod's test specs are included.
+   * @example `['UnitTests', 'SomeOtherTests']`
+   */
+  testspecs?: string[];
+  /**
+   * Use the bleeding edge version of a Pod.
+   *
+   * @example
+   * ```
+   * { "name": "AFNetworking", "git": "https://github.com/gowalla/AFNetworking.git", "tag": "0.7.0" }
+   * ```
+   *
+   * This acts like to add this pod dependency statement:
+   * ```
+   * pod 'AFNetworking', :git => 'https://github.com/gowalla/AFNetworking.git', :tag => '0.7.0'
+   * ```
+   */
+  git?: string;
+  /**
+   * The git branch to fetch. See the {@link git} property for more information.
+   */
+  branch?: string;
+  /**
+   * The git tag to fetch. See the {@link git} property for more information.
+   */
+  tag?: string;
+  /**
+   * The git commit to fetch. See the {@link git} property for more information.
+   */
+  commit?: string;
 }
 
 /**
@@ -196,6 +303,8 @@ const schema: JSONSchemaType<PluginConfigType> = {
         },
 
         unstable_networkInspector: { type: 'boolean', nullable: true },
+
+        extraMavenRepos: { type: 'array', items: { type: 'string' }, nullable: true },
       },
       nullable: true,
     },
@@ -212,6 +321,29 @@ const schema: JSONSchemaType<PluginConfigType> = {
         },
 
         unstable_networkInspector: { type: 'boolean', nullable: true },
+
+        extraPods: {
+          type: 'array',
+          items: {
+            type: 'object',
+            required: ['name'],
+            properties: {
+              name: { type: 'string' },
+              version: { type: 'string', nullable: true },
+              configurations: { type: 'array', items: { type: 'string' }, nullable: true },
+              modular_headers: { type: 'boolean', nullable: true },
+              source: { type: 'string', nullable: true },
+              path: { type: 'string', nullable: true },
+              podspec: { type: 'string', nullable: true },
+              testspecs: { type: 'array', items: { type: 'string' }, nullable: true },
+              git: { type: 'string', nullable: true },
+              branch: { type: 'string', nullable: true },
+              tag: { type: 'string', nullable: true },
+              commit: { type: 'string', nullable: true },
+            },
+          },
+          nullable: true,
+        },
       },
       nullable: true,
     },

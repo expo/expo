@@ -89,4 +89,18 @@ describe(validateConfig, () => {
       })
     ).toThrow();
   });
+
+  it('should validate ios.extraPods', () => {
+    expect(() => {
+      validateConfig({ ios: { extraPods: [{ name: 'Protobuf' }] } });
+    }).not.toThrow();
+
+    expect(() => {
+      validateConfig({ ios: { extraPods: [{ name: 'Protobuf', version: '~> 0.1.2' }] } });
+    }).not.toThrow();
+
+    expect(() => {
+      validateConfig({ ios: { extraPods: [{}] } });
+    }).toThrow();
+  });
 });
