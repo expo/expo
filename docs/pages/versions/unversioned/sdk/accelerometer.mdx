@@ -1,5 +1,6 @@
 ---
 title: Accelerometer
+description: Expo Accelerometer provides access to the device accelerometer sensor(s) and responds to changes in acceleration in three-dimensional space.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-sensors'
 packageName: 'expo-sensors'
 iconUrl: '/static/images/packages/expo-sensors.png'
@@ -7,7 +8,7 @@ iconUrl: '/static/images/packages/expo-sensors.png'
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { SnackInline} from '~/ui/components/Snippet';
+import { SnackInline } from '~/ui/components/Snippet';
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
@@ -40,9 +41,7 @@ export default function App() {
   const _fast = () => Accelerometer.setUpdateInterval(16);
 
   const _subscribe = () => {
-    setSubscription(
-      Accelerometer.addListener(setData)
-    );
+    setSubscription(Accelerometer.addListener(setData));
   };
 
   const _unsubscribe = () => {
