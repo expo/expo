@@ -3,6 +3,8 @@
 
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRuntimeExecutorFromBridge.h>
+#import <React/RCTCxxBridgeDelegate.h>
+#import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #if __has_include(<React_RCTAppDelegate/RCTAppSetupUtils.h>)
 // for importing the header from framework, the dash will be transformed to underscore
 #import <React_RCTAppDelegate/RCTAppSetupUtils.h>
@@ -19,12 +21,8 @@
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import <react/config/ReactNativeConfig.h>
-#import <React/RCTCxxBridgeDelegate.h>
 
-
-#import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
-#import <React-RCTAppDelegate/RCTAppDelegate.h>
 
 @interface DevClientAppDelegate () <RCTTurboModuleManagerDelegate> {
   std::shared_ptr<const facebook::react::ReactNativeConfig> _reactNativeConfig;
