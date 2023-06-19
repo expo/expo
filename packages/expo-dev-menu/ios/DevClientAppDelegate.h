@@ -8,12 +8,6 @@
 #import <React_RCTAppDelegate/RCTAppDelegate.h>
 #endif
 
-@interface RCTAppDelegate (DevClientAppDelegate)
-
-- (void)unstable_registerLegacyComponents;
-
-@end
-
 @interface DevClientAppDelegate : RCTAppDelegate
 
 - (RCTBridge *)createBridgeAndSetAdapterWithLaunchOptions:(NSDictionary *_Nullable)launchOptions;

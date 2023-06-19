@@ -29,6 +29,12 @@
 
 #endif
 
+@interface RCTAppDelegate (DevClientAppDelegate)
+
+- (void)unstable_registerLegacyComponents;
+
+@end
+
 @interface DevClientAppDelegate () <RCTCxxBridgeDelegate> {
   std::shared_ptr<facebook::react::RuntimeScheduler> _runtimeScheduler;
 }
