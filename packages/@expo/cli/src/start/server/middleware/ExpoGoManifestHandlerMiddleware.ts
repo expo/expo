@@ -14,12 +14,12 @@ import {
   getCodeSigningInfoAsync,
   signManifestString,
 } from '../../../utils/codesigning';
+import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { stripPort } from '../../../utils/url';
 import { ManifestMiddleware, ManifestRequestInfo } from './ManifestMiddleware';
 import { assertRuntimePlatform, parsePlatformHeader } from './resolvePlatform';
 import { ServerHeaders, ServerRequest } from './server.types';
-import { env } from '../../../utils/env';
 
 const debug = require('debug')('expo:start:server:middleware:ExpoGoManifestHandlerMiddleware');
 

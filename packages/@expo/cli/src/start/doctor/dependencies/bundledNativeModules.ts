@@ -3,7 +3,6 @@ import chalk from 'chalk';
 import resolveFrom from 'resolve-from';
 
 import { getNativeModuleVersionsAsync } from '../../../api/getNativeModuleVersions';
-import { disableNetwork } from '../../../api/settings';
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
