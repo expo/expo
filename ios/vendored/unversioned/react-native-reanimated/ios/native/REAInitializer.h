@@ -1,30 +1,27 @@
+#ifndef RCT_NEW_ARCH_ENABLED
+
 #import <Foundation/Foundation.h>
-#import <RNReanimated/NativeProxy.h>
-#import <RNReanimated/REAEventDispatcher.h>
-#import <RNReanimated/REAModule.h>
-#import <React/RCTBridge+Private.h>
-#import <React/RCTCxxBridgeDelegate.h>
-#import <ReactCommon/RCTTurboModuleManager.h>
-#import <jsireact/JSIExecutor.h>
+#import <React/RCTBridge.h>
 
-#if REACT_NATIVE_MINOR_VERSION >= 64
+#if REACT_NATIVE_MINOR_VERSION <= 71
 #import <React/RCTJSIExecutorRuntimeInstaller.h>
-#endif
-
-#if REACT_NATIVE_MINOR_VERSION < 63
-#import <ReactCommon/BridgeJSCallInvoker.h>
-#endif
+using namespace facebook::react;
+#endif // REACT_NATIVE_MINOR_VERSION <= 71
 
 NS_ASSUME_NONNULL_BEGIN
 
 namespace reanimated {
 
-using namespace facebook;
-using namespace react;
+void REAInitializer(RCTBridge *bridge);
 
+#if REACT_NATIVE_MINOR_VERSION <= 71
 JSIExecutor::RuntimeInstaller REAJSIExecutorRuntimeInstaller(
     RCTBridge *bridge,
     JSIExecutor::RuntimeInstaller runtimeInstallerToWrap);
+#endif // REACT_NATIVE_MINOR_VERSION <= 71
 
 } // namespace reanimated
+
 NS_ASSUME_NONNULL_END
+
+#endif // RCT_NEW_ARCH_ENABLED

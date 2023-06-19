@@ -98,11 +98,14 @@ const config: VendoringTargetConfig = {
           return podspecPath;
         },
         async mutatePodspec(podspec: Podspec) {
-          const rnForkPath = path.join(REACT_NATIVE_SUBMODULE_DIR, '..');
-          const relativeForkPath = path.relative(path.join(EXPO_DIR, 'ios'), rnForkPath);
+          const reactCommonDir = path.relative(
+            EXPO_DIR,
+            path.join(REACT_NATIVE_SUBMODULE_DIR, 'packages', 'react-native', 'ReactCommon')
+          );
+          // `reanimated_utils.rb` generates wrong and confusing paths to ReactCommon headers, so we need to fix them.
           podspec.xcconfig['HEADER_SEARCH_PATHS'] = podspec.xcconfig[
             'HEADER_SEARCH_PATHS'
-          ]?.replace(rnForkPath, '${PODS_ROOT}/../' + relativeForkPath);
+          ]?.replace(/"\$\(PODS_ROOT\)\/\.\.\/.+?"/g, `"\${PODS_ROOT}/../../${reactCommonDir}"`);
         },
         transforms: {
           content: [
