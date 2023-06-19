@@ -8,7 +8,7 @@ const config_1 = require("@expo/config");
 const path_1 = __importDefault(require("path"));
 const mergeLinkingOptions_1 = require("./mergeLinkingOptions");
 /**
- * Gets the `expo-build-properties` settings from app config
+ * Gets the `expo-build-properties` settings from the app config.
  */
 async function getBuildPropertiesAsync() {
     const projectRoot = path_1.default.dirname(mergeLinkingOptions_1.projectPackageJsonPath);
@@ -18,7 +18,7 @@ async function getBuildPropertiesAsync() {
 }
 exports.getBuildPropertiesAsync = getBuildPropertiesAsync;
 /**
- * Resolves the extra dependencies from `expo-build-properties` properties of the app config
+ * Resolves the extra dependencies from `expo-build-properties` settings.
  */
 async function resolveExtraDependenciesAsync() {
     const buildProps = await getBuildPropertiesAsync();
