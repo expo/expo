@@ -29,14 +29,6 @@ public:
             std::move(context), std::make_shared<SkContourMeasureIter>(
                                     path, forceClosed, resScale)) {}
 
-  // TODO: declare in JsiSkWrappingSkPtrHostObject via extra template parameter?
-  JSI_PROPERTY_GET(__typename__) {
-    return jsi::String::createFromUtf8(runtime, "ContourMeasureIter");
-  }
-
-  JSI_EXPORT_PROPERTY_GETTERS(JSI_EXPORT_PROP_GET(JsiSkContourMeasureIter,
-                                                  __typename__), )
-
   JSI_HOST_FUNCTION(next) {
     auto next = getObject()->next();
     if (next == nullptr) {
@@ -48,17 +40,10 @@ public:
     return jsi::Object::createFromHostObject(runtime, std::move(nextObject));
   }
 
-  JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkContourMeasureIter, next))
+  EXPORT_JSI_API_TYPENAME(JsiSkContourMeasureIter, "ContourMeasureIter")
 
-  /**
-  Returns the underlying object from a host object of this type
- */
-  static std::shared_ptr<SkContourMeasureIter>
-  fromValue(jsi::Runtime &runtime, const jsi::Value &obj) {
-    return obj.asObject(runtime)
-        .asHostObject<JsiSkContourMeasureIter>(runtime)
-        ->getObject();
-  }
+  JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkContourMeasureIter, next),
+                       JSI_EXPORT_FUNC(JsiSkContourMeasureIter, dispose))
 
   /**
    * Creates the function for construction a new instance of the

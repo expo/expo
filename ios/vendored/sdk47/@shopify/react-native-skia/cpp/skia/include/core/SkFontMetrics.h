@@ -9,6 +9,7 @@
 #define SkFontMetrics_DEFINED
 
 #include "include/core/SkScalar.h"
+#include "include/private/base/SkTo.h"
 
 /** \class SkFontMetrics
     The metrics of an SkFont.

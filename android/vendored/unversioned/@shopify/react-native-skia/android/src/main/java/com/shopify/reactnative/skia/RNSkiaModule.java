@@ -57,7 +57,7 @@ public class RNSkiaModule extends ReactContextBaseJavaModule implements Lifecycl
         }
 
         try {
-            System.loadLibrary("reactskia");
+            System.loadLibrary("rnskia");
             ReactApplicationContext context = weakReactContext.get();
             if (context == null) {
                 Log.e(NAME, "React Application Context was null!");
