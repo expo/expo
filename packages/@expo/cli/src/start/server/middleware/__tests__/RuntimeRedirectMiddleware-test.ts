@@ -29,14 +29,14 @@ describe('_shouldHandleRequest', () => {
   it(`returns false when the middleware should not handle`, () => {
     for (const req of [
       asReq({}),
-      asReq({ url: 'http://localhost:19000' }),
-      asReq({ url: 'http://localhost:19000/' }),
+      asReq({ url: 'http://localhost:8081' }),
+      asReq({ url: 'http://localhost:8081/' }),
     ]) {
       expect(middleware._shouldHandleRequest(req)).toBe(false);
     }
   });
   it(`returns true when the middleware should handle`, () => {
-    for (const req of [asReq({ url: 'http://localhost:19000/_expo/link' })]) {
+    for (const req of [asReq({ url: 'http://localhost:8081/_expo/link' })]) {
       expect(middleware._shouldHandleRequest(req)).toBe(true);
     }
   });
@@ -49,7 +49,7 @@ describe('handleRequestAsync', () => {
     const response = createMockResponse();
     await middleware.handleRequestAsync(
       asReq({
-        url: 'http://localhost:19000/_expo/link',
+        url: 'http://localhost:8081/_expo/link',
         headers: { 'expo-platform': 'android' },
       }),
       response
@@ -68,7 +68,7 @@ describe('handleRequestAsync', () => {
     const response = createMockResponse();
     await middleware.handleRequestAsync(
       asReq({
-        url: 'http://localhost:19000/_expo/link',
+        url: 'http://localhost:8081/_expo/link',
         headers: {
           'user-agent':
             'Mozilla/5.0 (Linux; Android 11; Pixel 2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Mobile Safari/537.36',
@@ -90,7 +90,7 @@ describe('handleRequestAsync', () => {
     const response = createMockResponse();
     await middleware.handleRequestAsync(
       asReq({
-        url: 'http://localhost:19000/_expo/link?choice=expo-dev-client&platform=ios',
+        url: 'http://localhost:8081/_expo/link?choice=expo-dev-client&platform=ios',
       }),
       response
     );

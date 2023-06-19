@@ -10,6 +10,7 @@ const screens = [
   'Button',
   'Camera',
   'Checkbox',
+  'ClipboardPasteButton',
   'DateTimePicker',
   'DrawerLayoutAndroid',
   'ExpoMaps',
