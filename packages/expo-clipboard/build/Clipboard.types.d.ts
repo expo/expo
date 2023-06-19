@@ -93,9 +93,9 @@ export interface ClipboardPasteButtonProps extends ViewProps {
     onPress: (data: PasteEventPayload) => void;
     /**
      * The backgroundColor of the button.
-     * @default systemBlue
      * Leaving this as the default allows the color to adjust to the system theme settings.
      *
+     * @default systemBlue
      * @see [Apple Documentation](https://developer.apple.com/documentation/appkit/nscolor/2879260-systemblue)
      */
     backgroundColor?: string | null;
