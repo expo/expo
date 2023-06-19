@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const commander_1 = __importDefault(require("commander"));
 const ReactImportsPatcher_1 = require("./ReactImportsPatcher");
 const autolinking_1 = require("./autolinking");
+const extraDependencies_1 = require("./autolinking/extraDependencies");
 /**
  * Registers a command that only searches for available expo modules.
  */
@@ -59,11 +60,12 @@ module.exports = async function (args) {
     // Searches for available expo modules and resolves the results for given platform.
     registerResolveCommand('resolve', async (results, options) => {
         const modules = await (0, autolinking_1.resolveModulesAsync)(results, options);
+        const extraDependencies = await (0, extraDependencies_1.resolveExtraDependenciesAsync)();
         if (options.json) {
-            console.log(JSON.stringify({ modules }));
+            console.log(JSON.stringify({ extraDependencies, modules }));
         }
         else {
-            console.log(require('util').inspect({ modules }, false, null, true));
+            console.log(require('util').inspect({ extraDependencies, modules }, false, null, true));
         }
     }).option('-j, --json', 'Output results in the plain JSON format.', () => true, false);
     // Generates a source file listing all packages to link.

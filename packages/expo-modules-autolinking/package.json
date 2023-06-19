@@ -42,6 +42,7 @@
     "tempy": "^0.7.1"
   },
   "dependencies": {
+    "@expo/config": "~8.0.0",
     "chalk": "^4.1.0",
     "commander": "^7.2.0",
     "fast-glob": "^3.2.5",
