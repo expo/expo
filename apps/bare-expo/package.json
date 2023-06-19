@@ -89,7 +89,7 @@
     "react-native-shared-element": "0.8.8",
     "react-native-svg": "13.9.0",
     "react-native-view-shot": "3.6.0",
-    "react-native-webview": "11.26.0",
+    "react-native-webview": "13.2.2",
     "test-suite": "*"
   },
   "devDependencies": {
