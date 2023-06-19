@@ -9,14 +9,14 @@
 
 #include <jsi/jsi.h>
 
-#include <JsiValueWrapper.h>
-#include <RNSkView.h>
+#include "JsiValueWrapper.h"
+#include "RNSkView.h"
 
-#include <JsiSkPicture.h>
-#include <RNSkInfoParameter.h>
-#include <RNSkLog.h>
-#include <RNSkPlatformContext.h>
-#include <RNSkTimingInfo.h>
+#include "JsiSkPicture.h"
+#include "RNSkInfoParameter.h"
+#include "RNSkLog.h"
+#include "RNSkPlatformContext.h"
+#include "RNSkTimingInfo.h"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
@@ -72,10 +72,13 @@ private:
     canvasProvider->renderToCanvas([=](SkCanvas *canvas) {
       // Make sure to scale correctly
       auto pd = _platformContext->getPixelDensity();
+      canvas->clear(SK_ColorTRANSPARENT);
       canvas->save();
       canvas->scale(pd, pd);
 
       canvas->drawPicture(_picture->getObject());
+
+      canvas->restore();
     });
   }
 

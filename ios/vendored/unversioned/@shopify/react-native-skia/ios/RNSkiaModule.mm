@@ -3,14 +3,14 @@
 #import <React/RCTBridge+Private.h>
 
 @implementation RNSkiaModule {
-  SkiaManager* skiaManager;
+  SkiaManager *skiaManager;
 }
 
 RCT_EXPORT_MODULE(RNSkia)
 
 #pragma Accessors
 
--(SkiaManager*) manager {
+- (SkiaManager *)manager {
   return skiaManager;
 }
 
@@ -20,21 +20,19 @@ RCT_EXPORT_MODULE(RNSkia)
   return YES;
 }
 
-- (void)invalidate
-{
+- (void)invalidate {
   if (skiaManager != nil) {
     [skiaManager invalidate];
   }
   skiaManager = nil;
 }
 
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install)
-{
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install) {
   if (skiaManager != nil) {
     // Already initialized, ignore call.
     return @true;
   }
-  RCTBridge* bridge = [RCTBridge currentBridge];
+  RCTBridge *bridge = [RCTBridge currentBridge];
   skiaManager = [[SkiaManager alloc] initWithBridge:bridge];
   return @true;
 }

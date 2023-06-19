@@ -10,8 +10,12 @@
 
 #include "include/core/SkPoint.h"
 #include "include/core/SkRect.h"
+#include "include/core/SkScalar.h"
+#include "include/core/SkTypes.h"
 
-class SkPath;
+#include <cstdint>
+#include <cstring>
+
 class SkMatrix;
 class SkString;
 

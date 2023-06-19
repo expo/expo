@@ -1,6 +1,6 @@
 {
   "name": "lottie-react-native",
-  "version": "5.1.4",
+  "version": "5.1.6",
   "summary": "Lottie component for React Native (iOS and Android)",
   "authors": {
     "intelligibabble": "leland.m.richardson@gmail.com"
@@ -14,7 +14,7 @@
   },
   "source": {
     "git": "https://github.com/react-community/lottie-react-native.git",
-    "tag": "v5.1.4"
+    "tag": "v5.1.6"
   },
   "source_files": "src/ios/**/*.{h,m,swift}",
   "requires_arc": true,

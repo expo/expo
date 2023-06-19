@@ -22,7 +22,7 @@ RNSkDomRenderer::RNSkDomRenderer(std::function<void()> requestRedraw,
 
 RNSkDomRenderer::~RNSkDomRenderer() {
   if (_root != nullptr) {
-    _root->dispose();
+    _root->dispose(true);
     _root = nullptr;
   }
 }
@@ -63,7 +63,7 @@ void RNSkDomRenderer::renderImmediate(
 void RNSkDomRenderer::setRoot(std::shared_ptr<JsiDomRenderNode> node) {
   std::lock_guard<std::mutex> lock(_rootLock);
   if (_root != nullptr) {
-    _root->dispose();
+    _root->dispose(true);
     _root = nullptr;
   }
   _root = node;
@@ -79,14 +79,12 @@ void RNSkDomRenderer::renderCanvas(SkCanvas *canvas, float scaledWidth,
   _renderTimingInfo.beginTiming();
 
   auto pd = _platformContext->getPixelDensity();
-
+  canvas->clear(SK_ColorTRANSPARENT);
   canvas->save();
   canvas->scale(pd, pd);
 
   if (_drawingContext == nullptr) {
-    auto paint = std::make_shared<SkPaint>();
-    paint->setAntiAlias(true);
-    _drawingContext = std::make_shared<DrawingContext>(paint);
+    _drawingContext = std::make_shared<DrawingContext>();
 
     _drawingContext->setRequestRedraw([weakSelf = weak_from_this()]() {
       auto self = weakSelf.lock();

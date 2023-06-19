@@ -115,8 +115,20 @@ export async function getVersionedDependenciesAsync(
   const packageVersions = await resolvePackageVersionsAsync(projectRoot, resolvedPackagesToCheck);
   debug(`Package versions: %O`, packageVersions);
   // find incorrect dependencies by comparing the actual package versions with the bundled native module version ranges
-  const incorrectDeps = findIncorrectDependencies(pkg, packageVersions, combinedKnownPackages);
+  let incorrectDeps = findIncorrectDependencies(pkg, packageVersions, combinedKnownPackages);
   debug(`Incorrect dependencies: %O`, incorrectDeps);
+
+  if (pkg?.expo?.install?.exclude) {
+    const packagesToExclude = pkg.expo.install.exclude;
+    const incorrectAndExcludedDeps = incorrectDeps.filter((dep) =>
+      packagesToExclude.includes(dep.packageName)
+    );
+    debug(
+      `Incorrect dependency warnings filtered out by expo.install.exclude: %O`,
+      incorrectAndExcludedDeps.map((dep) => dep.packageName)
+    );
+    incorrectDeps = incorrectDeps.filter((dep) => !packagesToExclude.includes(dep.packageName));
+  }
 
   return incorrectDeps;
 }
