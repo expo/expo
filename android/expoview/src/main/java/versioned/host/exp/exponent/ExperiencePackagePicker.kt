@@ -55,6 +55,7 @@ import expo.modules.sensors.SensorsPackage
 import expo.modules.sharing.SharingModule
 import expo.modules.sms.SMSModule
 import expo.modules.speech.SpeechPackage
+import expo.modules.splashscreen.SplashScreenModule
 import expo.modules.splashscreen.SplashScreenPackage
 import expo.modules.sqlite.SQLitePackage
 import expo.modules.storereview.StoreReviewModule
@@ -139,6 +140,7 @@ object ExperiencePackagePicker : ModulesProvider {
     ScreenOrientationModule::class.java,
     SMSModule::class.java,
     SharingModule::class.java,
+    SplashScreenModule::class.java,
     StoreReviewModule::class.java,
     SystemUIModule::class.java,
     VideoThumbnailsModule::class.java,
