@@ -1,1 +1,1 @@
-{"version":3,"file":"ClipboardPasteButton.d.ts","sourceRoot":"","sources":["../src/ClipboardPasteButton.tsx"],"names":[],"mappings":"AAGA,OAAO,EAAE,yBAAyB,EAAqB,MAAM,mBAAmB,CAAC;AAIjF;;;;;;;;;;;;;;;;;GAiBG;AACH,wBAAgB,oBAAoB,CAAC,EAAE,OAAO,EAAE,GAAG,SAAS,EAAE,EAAE,yBAAyB,sBAaxF"}
+{"version":3,"file":"ClipboardPasteButton.d.ts","sourceRoot":"","sources":["../src/ClipboardPasteButton.tsx"],"names":[],"mappings":"AAGA,OAAO,EAAE,yBAAyB,EAAqB,MAAM,mBAAmB,CAAC;AAIjF;;;;;;;;;;;;;;;;GAgBG;AACH,wBAAgB,oBAAoB,CAAC,EAAE,OAAO,EAAE,GAAG,SAAS,EAAE,EAAE,yBAAyB,sBAaxF"}

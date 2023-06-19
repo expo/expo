@@ -104,9 +104,6 @@ export interface ClipboardPasteButtonProps extends ViewProps {
   /**
    * The backgroundColor of the button.
    * Leaving this as the default allows the color to adjust to the system theme settings.
-   *
-   * @default systemBlue
-   * @see [Apple Documentation](https://developer.apple.com/documentation/appkit/nscolor/2879260-systemblue)
    */
   backgroundColor?: string | null;
   /**
@@ -118,14 +115,14 @@ export interface ClipboardPasteButtonProps extends ViewProps {
    * The cornerStyle of the button.
    * @default capsule
    *
-   * @see [Apple Documetation](https://developer.apple.com/documentation/uikit/uibutton/configuration/cornerstyle) for more details.
+   * @see [Apple Documentation](https://developer.apple.com/documentation/uikit/uibutton/configuration/cornerstyle) for more details.
    */
   cornerStyle?: CornerStyle | null;
   /**
    * The displayMode of the button.
    * @default `iconAndLabel`
    *
-   * @see [Apple Documetation](https://developer.apple.com/documentation/uikit/uipastecontrol/displaymode) for more details.
+   * @see [Apple Documentation](https://developer.apple.com/documentation/uikit/uipastecontrol/displaymode) for more details.
    */
   displayMode?: DisplayMode | null;
   /**

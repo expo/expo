@@ -16,8 +16,7 @@ import ExpoClipboardPasteButton from './ExpoClipboardPasteButton';
  * Make sure to attach height and width via the style props as without these styles, the button will
  * not appear on the screen.
  *
- * @see [Apple Documentation]
- * (https://developer.apple.com/documentation/uikit/uipastecontrol) for more details.
+ * @see [Apple Documentation](https://developer.apple.com/documentation/uikit/uipastecontrol) for more details.
  */
 export function ClipboardPasteButton({ onPress, ...restProps }) {
     if (!ExpoClipboardPasteButton) {

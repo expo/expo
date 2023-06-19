@@ -48,53 +48,54 @@ class ClipboardPasteButton: ExpoView {
   }
 
   override func paste(itemProviders: [NSItemProvider]) {
-    if #available(iOS 14.0, *) {
-      for provider in itemProviders {
-        if provider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
-          _ = provider.loadObject(ofClass: UIImage.self) { data, error in
-            guard error == nil else {
-              log.error("Error loading pasted image")
-              return
-            }
-            self.processImage(item: data)
+    guard #available(iOS 14.0, *) else {
+      return
+    }
+    for provider in itemProviders {
+      if provider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
+        _ = provider.loadObject(ofClass: UIImage.self) { data, error in
+          guard error == nil else {
+            log.error("Error loading pasted image")
+            return
           }
-        } else if provider.hasItemConformingToTypeIdentifier(UTType.url.identifier) {
-          _ = provider.loadObject(ofClass: URL.self) { data, error in
-            guard error == nil else {
-              log.error("Error loading pasted content")
-              return
-            }
+          self.processImage(item: data)
+        }
+      } else if provider.hasItemConformingToTypeIdentifier(UTType.url.identifier) {
+        _ = provider.loadObject(ofClass: URL.self) { data, error in
+          guard error == nil else {
+            log.error("Error loading pasted content")
+            return
+          }
 
-            self.onPastePressed([
-              "type": "text",
-              "text": data?.absoluteString
-            ])
+          self.onPastePressed([
+            "type": "text",
+            "text": data?.absoluteString
+          ])
+        }
+      } else if provider.hasItemConformingToTypeIdentifier(UTType.html.identifier) && acceptedContentTypes.contains(.html) {
+        _ = provider.loadObject(ofClass: String.self) { data, error in
+          guard error == nil else {
+            log.error("Error loading pasted content")
+            return
           }
-        } else if provider.hasItemConformingToTypeIdentifier(UTType.html.identifier) && acceptedContentTypes.contains(.html) {
-          _ = provider.loadObject(ofClass: String.self) { data, error in
-            guard error == nil else {
-              log.error("Error loading pasted content")
-              return
-            }
-            self.processHtml(data: data)
+          self.processHtml(data: data)
+        }
+      } else if provider.hasItemConformingToTypeIdentifier(UTType.utf8PlainText.identifier) && !acceptedContentTypes.contains(.html) {
+        _ = provider.loadObject(ofClass: String.self) { data, error in
+          guard error == nil else {
+            log.error("Error loading pasted content")
+            return
           }
-        } else if provider.hasItemConformingToTypeIdentifier(UTType.utf8PlainText.identifier) && !acceptedContentTypes.contains(.html) {
-          _ = provider.loadObject(ofClass: String.self) { data, error in
-            guard error == nil else {
-              log.error("Error loading pasted content")
-              return
-            }
 
-            guard let data = data as? String else {
-              log.error("Failed to read text data")
-              return
-            }
-
-            self.onPastePressed([
-              "type": "text",
-              "text": data
-            ])
+          guard let data = data as? String else {
+            log.error("Failed to read text data")
+            return
           }
+
+          self.onPastePressed([
+            "type": "text",
+            "text": data
+          ])
         }
       }
     }
