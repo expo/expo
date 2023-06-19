@@ -11,5 +11,6 @@ RCT_EXPORT_VIEW_PROPERTY(disabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(onShippingMethodSelectedAction, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onShippingContactSelectedAction, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onCouponCodeEnteredAction, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onOrderTrackingAction, RCTDirectEventBlock)
 
 @end

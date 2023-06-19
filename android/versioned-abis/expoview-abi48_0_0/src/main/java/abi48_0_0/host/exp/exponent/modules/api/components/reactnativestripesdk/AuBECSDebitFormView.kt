@@ -12,7 +12,7 @@ import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import abi48_0_0.host.exp.exponent.modules.api.components.reactnativestripesdk.utils.getIntOrNull
 import abi48_0_0.host.exp.exponent.modules.api.components.reactnativestripesdk.utils.getValOr
-import com.stripe.android.databinding.BecsDebitWidgetBinding
+import com.stripe.android.databinding.StripeBecsDebitWidgetBinding
 import com.stripe.android.model.PaymentMethodCreateParams
 import com.stripe.android.view.BecsDebitWidget
 import com.stripe.android.view.StripeEditText
@@ -35,7 +35,7 @@ class AuBECSDebitFormView(private val context: ThemedReactContext) : FrameLayout
     if (!this::becsDebitWidget.isInitialized || value == null) {
       return
     }
-    val binding = BecsDebitWidgetBinding.bind(becsDebitWidget)
+    val binding = StripeBecsDebitWidgetBinding.bind(becsDebitWidget)
     val textColor = getValOr(value, "textColor", null)
     val textErrorColor = getValOr(value, "textErrorColor", null)
     val placeholderColor = getValOr(value, "placeholderColor", null)

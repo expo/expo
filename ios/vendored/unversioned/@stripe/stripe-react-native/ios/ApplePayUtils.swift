@@ -19,11 +19,7 @@ class ApplePayUtils {
         }
 
         if let additionalEnabledNetworks = params["additionalEnabledNetworks"] as? [String] {
-            do {
-                StripeAPI.additionalEnabledApplePayNetworks = try ApplePayUtils.mapToArrayOfPaymentNetworks(arrayOfStrings: additionalEnabledNetworks)
-            } catch {
-                return (Errors.createError(ErrorType.Failed, error.localizedDescription), nil)
-            }
+            StripeAPI.additionalEnabledApplePayNetworks = ApplePayUtils.mapToArrayOfPaymentNetworks(arrayOfStrings: additionalEnabledNetworks)
         } else if (params["jcbEnabled"] as? Bool == true) {
             StripeAPI.additionalEnabledApplePayNetworks = [.JCB]
         }
@@ -61,7 +57,7 @@ class ApplePayUtils {
         do {
             paymentRequest.paymentSummaryItems = try ApplePayUtils
                 .buildPaymentSummaryItems(items: summaryItems as? [[String : Any]])
-        } catch  {
+        } catch {
             return (Errors.createError(ErrorType.Failed, error.localizedDescription), nil)
         }
         
@@ -84,9 +80,78 @@ class ApplePayUtils {
                 paymentRequest.couponCode = couponCode
             }
         }
-        
+
+        do {
+            try paymentRequest.configureRequestType(requestParams: params["request"] as? NSDictionary)
+        } catch {
+            return (Errors.createError(ErrorType.Failed, error.localizedDescription), nil)
+        }
+
         return (nil, paymentRequest)
     }
+    
+#if compiler(>=5.7)
+    @available(iOS 16.0, *)
+    internal class func buildRecurringPaymentRequest(params: NSDictionary) throws -> PKRecurringPaymentRequest {
+        guard let description = params["description"] as? String else {
+            throw ApplePayUtilsError.missingParameter(nil, "description")
+        }
+        guard let urlString = params["managementUrl"] as? String else {
+            throw ApplePayUtilsError.missingParameter(nil, "managementUrl")
+        }
+        guard let url = URL(string: urlString) else {
+            throw ApplePayUtilsError.invalidUrl(urlString)
+        }
+        let regularBilling = try ApplePayUtils.createRecurringPaymentSummaryItem(item: params["billing"] as? [String : Any] ?? [:])
+        let request = PKRecurringPaymentRequest(paymentDescription: description, regularBilling: regularBilling, managementURL: url)
+        if let trialParams = params["trialBilling"] as? [String : Any] {
+            request.trialBilling = try ApplePayUtils.createRecurringPaymentSummaryItem(item: trialParams)
+        }
+        if let tokenNotificationURL = params["tokenNotificationURL"] as? String {
+            request.tokenNotificationURL = URL(string: tokenNotificationURL)
+        }
+        request.billingAgreement = params["billingAgreement"] as? String
+        return request
+    }
+    
+    @available(iOS 16.0, *)
+    internal class func buildAutomaticReloadPaymentRequest(params: NSDictionary) throws -> PKAutomaticReloadPaymentRequest {
+        guard let description = params["description"] as? String else {
+            throw ApplePayUtilsError.missingParameter(nil, "description")
+        }
+        guard let urlString = params["managementUrl"] as? String else {
+            throw ApplePayUtilsError.missingParameter(nil, "managementUrl")
+        }
+        guard let url = URL(string: urlString) else {
+            throw ApplePayUtilsError.invalidUrl(urlString)
+        }
+        let automaticReloadBilling = PKAutomaticReloadPaymentSummaryItem.init(label: params["label"] as? String ?? "", amount: NSDecimalNumber(string: params["reloadAmount"] as? String ?? ""))
+        guard let threshold = params["thresholdAmount"] as? String else {
+            throw ApplePayUtilsError.missingParameter(nil, "thresholdAmount")
+        }
+        automaticReloadBilling.thresholdAmount = NSDecimalNumber(string: threshold)
+        let request = PKAutomaticReloadPaymentRequest(paymentDescription: description, automaticReloadBilling: automaticReloadBilling, managementURL: url)
+        if let tokenNotificationURL = params["tokenNotificationURL"] as? String {
+            request.tokenNotificationURL = URL(string: tokenNotificationURL)
+        }
+        request.billingAgreement = params["billingAgreement"] as? String
+        return request
+    }
+    
+    @available(iOS 16.0, *)
+    internal class func buildPaymentTokenContexts(items: [[String : Any]]) -> [PKPaymentTokenContext] {
+        var result: [PKPaymentTokenContext] = []
+        for item in items {
+            let context = PKPaymentTokenContext.init(merchantIdentifier: item["merchantIdentifier"] as? String ?? "",
+                                                     externalIdentifier: item["externalIdentifier"] as? String ?? "",
+                                                     merchantName: item["merchantName"] as? String ?? "",
+                                                     merchantDomain: item["merchantDomain"] as? String,
+                                                     amount: NSDecimalNumber(string: item["thresholdAmount"] as? String ?? ""))
+            result.append(context)
+        }
+        return result
+    }
+#endif
     
     internal class func getMerchantCapabilityFrom(string: String?) -> PKMerchantCapability {
         switch string {
@@ -119,7 +184,7 @@ class ApplePayUtils {
     }
     
     @available(iOS 15.0, *)
-    internal class func createDeferredPaymentSummaryItem(item: [String : Any]) throws -> PKPaymentSummaryItem {
+    internal class func createDeferredPaymentSummaryItem(item: [String : Any]) throws -> PKDeferredPaymentSummaryItem {
         let label = item["label"] as? String ?? ""
         let amount = NSDecimalNumber(string: item["amount"] as? String ?? "")
         
@@ -135,7 +200,7 @@ class ApplePayUtils {
     }
     
     @available(iOS 15.0, *)
-    internal class func createRecurringPaymentSummaryItem(item: [String : Any]) throws -> PKPaymentSummaryItem {
+    internal class func createRecurringPaymentSummaryItem(item: [String : Any]) throws -> PKRecurringPaymentSummaryItem {
         let label = item["label"] as? String ?? ""
         let amount = NSDecimalNumber(string: item["amount"] as? String ?? "")
         
@@ -285,8 +350,8 @@ class ApplePayUtils {
         return (shippingAddressErrors, couponCodeErrors)
     }
     
-    internal class func mapToArrayOfPaymentNetworks(arrayOfStrings: [String]) throws -> [PKPaymentNetwork] {
-        let validNetworks: [PKPaymentNetwork?] = try arrayOfStrings.map { networkString in
+    internal class func mapToArrayOfPaymentNetworks(arrayOfStrings: [String]) -> [PKPaymentNetwork] {
+        let validNetworks: [PKPaymentNetwork?] = arrayOfStrings.map { networkString in
             return PKPaymentNetwork.init(rawValue: networkString)
         }
         return validNetworks.compactMap { $0 }
@@ -295,7 +360,9 @@ class ApplePayUtils {
     public class func buildPaymentSheetApplePayConfig(
         merchantIdentifier: String?,
         merchantCountryCode: String?,
-        paymentSummaryItems: [[String : Any]]?
+        paymentSummaryItems: [[String : Any]]?,
+        buttonType: NSNumber?,
+        customHandlers: PaymentSheet.ApplePayConfiguration.Handlers?
     ) throws -> PaymentSheet.ApplePayConfiguration {
         guard let merchantId = merchantIdentifier else {
             throw ApplePayUtilsError.missingMerchantId
@@ -306,20 +373,25 @@ class ApplePayUtils {
         let paymentSummaryItems = try ApplePayUtils.buildPaymentSummaryItems(
             items: paymentSummaryItems
         )
+        
         return PaymentSheet.ApplePayConfiguration.init(
             merchantId: merchantId,
             merchantCountryCode: countryCode,
-            paymentSummaryItems:paymentSummaryItems.count > 0 ? paymentSummaryItems : nil
+            buttonType: PKPaymentButtonType(rawValue: buttonType as? Int ?? 0) ?? .plain,
+            paymentSummaryItems: paymentSummaryItems.count > 0 ? paymentSummaryItems : nil,
+            customHandlers: customHandlers
         )
     }
 }
 
 enum ApplePayUtilsError : Error, Equatable {
     case invalidCartSummaryItemType(String)
-    case missingParameter(String, String)
+    case missingParameter(String?, String)
     case invalidTimeInterval(String)
     case invalidPaymentNetwork(String)
     case invalidErrorType(String)
+    case invalidUrl(String)
+    case invalidRequestType(String)
     case missingMerchantId
     case missingCountryCode
 }
@@ -330,7 +402,11 @@ extension ApplePayUtilsError: LocalizedError {
         case .invalidCartSummaryItemType(let type):
             return "Failed to ceate Apple Pay summary item. Expected `type` to be one of 'Immediate', 'Recurring', or 'Deferred', but received: \(type)"
         case .missingParameter(let label, let parameter):
-            return "Failed to create Apple Pay summary item with label: \(label). The \(parameter) item parameter is required, but none was provided."
+            if let label = label {
+                return "Failed to create Apple Pay summary item with label: \(label). The \(parameter) item parameter is required, but none was provided."
+            } else {
+                return "The \(parameter) item parameter is required, but none was provided."
+            }
         case .invalidTimeInterval(let providedInterval):
             return "Failed to create Apple Pay summary item. \(providedInterval) is not a valid timeInterval, must be one of: minute, hour, day, month, or year."
         case .invalidPaymentNetwork(let network):
@@ -341,6 +417,31 @@ extension ApplePayUtilsError: LocalizedError {
             return "`merchantIdentifier` is required, but none was found. Ensure you are passing this to initStripe your StripeProvider."
         case .missingCountryCode:
             return "`merchantCountryCode` is a required param, but was not provided."
+        case .invalidUrl(let url):
+            return "Invalid URL: \(url)."
+        case .invalidRequestType(let tyoe):
+            return "Apple Pay request type `\(tyoe)` is not supported."
         }
+    }
+}
+
+extension PKPaymentRequest {
+    func configureRequestType(requestParams: NSDictionary?) throws -> Void {
+#if compiler(>=5.7)
+        if #available(iOS 16.0, *) {
+            if let requestParams = requestParams {
+                switch requestParams["type"] as? String {
+                case "Recurring":
+                    self.recurringPaymentRequest = try ApplePayUtils.buildRecurringPaymentRequest(params: requestParams)
+                case "AutomaticReload":
+                    self.automaticReloadPaymentRequest = try ApplePayUtils.buildAutomaticReloadPaymentRequest(params: requestParams)
+                case "MultiMerchant":
+                    self.multiTokenContexts = ApplePayUtils.buildPaymentTokenContexts(items: requestParams["merchants"] as? [[String : Any]] ?? [])
+                default:
+                    throw ApplePayUtilsError.invalidRequestType(String(describing: requestParams["type"]))
+                }
+            }
+        }
+#endif
     }
 }

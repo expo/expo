@@ -34,7 +34,7 @@ enum class RetrieveSetupIntentErrorType {
 }
 
 enum class PaymentSheetErrorType {
-  Failed, Canceled
+  Failed, Canceled, Timeout
 }
 
 enum class GooglePayErrorType {
