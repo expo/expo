@@ -20,9 +20,10 @@
   if ((self = [super initWithFrame:frame])) {
     _color = [UIColor blackColor];
     _font = [UIFont systemFontOfSize:21]; // TODO: selected title default should be 23.5
-    _selectedIndex = NSNotFound;
-    _textAlign = NSTextAlignmentCenter;
     _numberOfLines = 1;
+    _selectedIndex = NSNotFound;
+    _selectionColor = 0;
+    _textAlign = NSTextAlignmentCenter;
     self.delegate = self;
     self.dataSource = self;
     [self selectRow:0 inComponent:0 animated:YES]; // Workaround for missing selection indicator lines (see https://stackoverflow.com/questions/39564660/uipickerview-selection-indicator-not-visible-in-ios10)
@@ -108,6 +109,12 @@ numberOfRowsInComponent:(__unused NSInteger)component
     [view insertSubview:label atIndex:0];
   }
 
+  if (@available(iOS 14.0, *)) {
+      if (_selectionColor) {
+          pickerView.subviews[1].backgroundColor = [RCTConvert UIColor:@(_selectionColor)];
+      }
+  }
+    
   RNCPickerLabel* label = view.subviews[0];
   label.font = _font;
 
