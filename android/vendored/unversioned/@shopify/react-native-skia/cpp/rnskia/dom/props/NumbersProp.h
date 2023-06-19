@@ -11,8 +11,10 @@ namespace RNSkia {
 
 class NumbersProp : public DerivedProp<std::vector<SkScalar>> {
 public:
-  explicit NumbersProp(PropId name) : DerivedProp<std::vector<SkScalar>>() {
-    _positionProp = addProperty(std::make_shared<NodeProp>(name));
+  explicit NumbersProp(PropId name,
+                       const std::function<void(BaseNodeProp *)> &onChange)
+      : DerivedProp<std::vector<SkScalar>>(onChange) {
+    _positionProp = defineProperty<NodeProp>(name);
   }
 
   void updateDerivedValue() override {
@@ -36,8 +38,10 @@ private:
 
 class Numbers16Prop : public DerivedProp<std::vector<u_int16_t>> {
 public:
-  explicit Numbers16Prop(PropId name) : DerivedProp<std::vector<u_int16_t>>() {
-    _prop = addProperty(std::make_shared<NodeProp>(name));
+  explicit Numbers16Prop(PropId name,
+                         const std::function<void(BaseNodeProp *)> &onChange)
+      : DerivedProp<std::vector<u_int16_t>>(onChange) {
+    _prop = defineProperty<NodeProp>(name);
   }
 
   void updateDerivedValue() override {

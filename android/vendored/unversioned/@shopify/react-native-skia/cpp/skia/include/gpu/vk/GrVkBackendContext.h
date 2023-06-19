@@ -72,7 +72,7 @@ struct SK_API GrVkBackendContext {
     bool                                fOwnsInstanceAndDevice = false;
     // Indicates that we are working with protected content and all CommandPool and Queue operations
     // should be done in a protected context.
-    GrProtected                         fProtectedContext = GrProtected::kNo;
+    skgpu::Protected                    fProtectedContext = skgpu::Protected::kNo;
 };
 
 #endif

@@ -2,9 +2,9 @@
 
 #include <memory>
 
+#include "JsiSkData.h"
 #include "JsiSkHostObjects.h"
-#include <JsiSkData.h>
-#include <JsiSkShader.h>
+#include "JsiSkShader.h"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
@@ -22,12 +22,6 @@ public:
   JsiSkPicture(std::shared_ptr<RNSkPlatformContext> context,
                const sk_sp<SkPicture> picture)
       : JsiSkWrappingSkPtrHostObject<SkPicture>(context, picture) {}
-
-  JSI_PROPERTY_GET(__typename__) {
-    return jsi::String::createFromUtf8(runtime, "Picture");
-  }
-
-  JSI_EXPORT_PROPERTY_GETTERS(JSI_EXPORT_PROP_GET(JsiSkPicture, __typename__))
 
   JSI_HOST_FUNCTION(makeShader) {
     auto tmx = (SkTileMode)arguments[0].asNumber();
@@ -66,18 +60,10 @@ public:
     return array;
   }
 
-  JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkPicture, makeShader),
-                       JSI_EXPORT_FUNC(JsiSkPicture, serialize))
+  EXPORT_JSI_API_TYPENAME(JsiSkPicture, "Picture")
 
-  /**
-   Returns the underlying object from a host object of this type
-  */
-  static sk_sp<SkPicture> fromValue(jsi::Runtime &runtime,
-                                    const jsi::Value &obj) {
-    return obj.asObject(runtime)
-        .asHostObject<JsiSkPicture>(runtime)
-        .get()
-        ->getObject();
-  }
+  JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkPicture, makeShader),
+                       JSI_EXPORT_FUNC(JsiSkPicture, serialize),
+                       JSI_EXPORT_FUNC(JsiSkPicture, dispose))
 };
 } // namespace RNSkia

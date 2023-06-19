@@ -51,6 +51,17 @@ SKCMS_API float skcms_TransferFunction_eval  (const skcms_TransferFunction*, flo
 SKCMS_API bool  skcms_TransferFunction_invert(const skcms_TransferFunction*,
                                               skcms_TransferFunction*);
 
+typedef enum skcms_TFType {
+    skcms_TFType_Invalid,
+    skcms_TFType_sRGBish,
+    skcms_TFType_PQish,
+    skcms_TFType_HLGish,
+    skcms_TFType_HLGinvish,
+} skcms_TFType;
+
+// Identify which kind of transfer function is encoded in an skcms_TransferFunction
+SKCMS_API skcms_TFType skcms_TransferFunction_getType(const skcms_TransferFunction*);
+
 // We can jam a couple alternate transfer function forms into skcms_TransferFunction,
 // including those matching the general forms of the SMPTE ST 2084 PQ function or HLG.
 //
@@ -307,6 +318,9 @@ typedef enum skcms_PixelFormat {
     skcms_PixelFormat_BGR_fff,        // Pointers must be 32-bit aligned.
     skcms_PixelFormat_RGBA_ffff,
     skcms_PixelFormat_BGRA_ffff,
+
+    skcms_PixelFormat_RGB_101010x_XR,  // Note: This is located here to signal no clamping.
+    skcms_PixelFormat_BGR_101010x_XR,  // Compatible with MTLPixelFormatBGR10_XR.
 } skcms_PixelFormat;
 
 // We always store any alpha channel linearly.  In the chart below, tf-1() is the inverse

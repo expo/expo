@@ -431,7 +431,7 @@ const config: VendoringTargetConfig = {
             podspec.pod_target_xcconfig = {};
           }
           podspec.pod_target_xcconfig['HEADER_SEARCH_PATHS'] =
-            '"$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging" "$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers"';
+            '"$(PODS_TARGET_SRCROOT)/cpp/"/** "$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging" "$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers"';
         },
       },
       android: {

@@ -20,11 +20,12 @@ namespace RNSkia {
 class NodePropsContainer {
 public:
   /**
-   Constructor. Pass the runtime and the JS object representing the properties,
-   and a function that will be called when any property was changed from within
-   this class as a result of a Skia value change.
+   Constructor for the node prop container
    */
-  explicit NodePropsContainer(PropId componentType) : _type(componentType) {}
+  explicit NodePropsContainer(
+      PropId componentType,
+      const std::function<void(BaseNodeProp *)> &onPropChanged)
+      : _onPropChanged(onPropChanged), _type(componentType) {}
 
   /**
    Returns true if there are any changes in the props container in the current
@@ -40,10 +41,30 @@ public:
   }
 
   /**
-   Returns a list of mappings betwen property names and property objects
+   Enumerate all mapped properties
    */
-  const std::map<PropId, std::vector<NodeProp *>> &getMappedProperties() {
-    return _mappedProperties;
+  void enumerateMappedProps(
+      const std::function<void(const PropId name,
+                               const std::vector<NodeProp *>)> &callback) {
+    std::lock_guard<std::mutex> lock(_mappedPropsLock);
+    for (auto &props : _mappedProperties) {
+      callback(props.first, props.second);
+    }
+  }
+
+  /**
+   Enumerates a named property instances from the mapped properties list
+   */
+  void
+  enumerateMappedPropsByName(const std::string &name,
+                             const std::function<void(NodeProp *)> &callback) {
+    std::lock_guard<std::mutex> lock(_mappedPropsLock);
+    auto propMapIt = _mappedProperties.find(JsiPropId::get(name));
+    if (propMapIt != _mappedProperties.end()) {
+      for (auto &prop : propMapIt->second) {
+        callback(prop);
+      }
+    }
   }
 
   /**
@@ -53,7 +74,7 @@ public:
   void updatePendingValues() {
     for (auto &prop : _properties) {
       prop->updatePendingChanges();
-      if (!prop->isSet() && prop->isRequired()) {
+      if (prop->isRequired() && !prop->isSet()) {
         throw std::runtime_error("Missing one or more required properties " +
                                  std::string(prop->getName()) + " in the " +
                                  _type + " component.");
@@ -74,6 +95,7 @@ public:
    Clears all props and data from the container
    */
   void dispose() {
+    std::lock_guard<std::mutex> lock(_mappedPropsLock);
     _properties.clear();
     _mappedProperties.clear();
   }
@@ -81,9 +103,17 @@ public:
   /**
    Called when the React / JS side sets properties on a node
    */
-  void setProps(jsi::Runtime &runtime, jsi::Object &&props) {
+  void setProps(jsi::Runtime &runtime, const jsi::Value &maybePropsObject) {
+    std::lock_guard<std::mutex> lock(_mappedPropsLock);
+
     // Clear property mapping
     _mappedProperties.clear();
+
+    if (!maybePropsObject.isObject()) {
+      throw jsi::JSError(runtime, "Expected property object.");
+    }
+
+    auto props = maybePropsObject.asObject(runtime);
 
     // Use specialized reader function to be able to intercept calls that
     // reads specific named values from the js property object.
@@ -102,28 +132,27 @@ public:
   }
 
   /**
-   Defines a property that will be updated with the container changes.
+   Defines a property that will be added to the container
    */
-  template <typename T = BaseNodeProp>
-  T *defineProperty(std::shared_ptr<T> prop) {
+  template <class _Tp, class... _Args,
+            class = std::enable_if_t<!std::is_array<_Tp>::value>>
+  _Tp *defineProperty(_Args &&...__args) {
+    // Create property and set onChange callback
+    auto prop =
+        std::make_shared<_Tp>(std::forward<_Args>(__args)..., _onPropChanged);
+
+    // Add to props list
     _properties.push_back(prop);
+
     return prop.get();
   }
 
-  /**
-   Defines a property that will be updated with the container changes.
-   */
-  template <class _Tp, class... _Args,
-            class = std::enable_if<!std::is_array<_Tp>::value>>
-  _Tp *defineProperty(_Args &&...__args) {
-    return defineProperty(
-        std::make_shared<_Tp>(std::forward<_Args>(__args)...));
-  }
-
 private:
+  std::function<void(BaseNodeProp *)> _onPropChanged;
   std::vector<std::shared_ptr<BaseNodeProp>> _properties;
   std::map<PropId, std::vector<NodeProp *>> _mappedProperties;
   PropId _type;
+  std::mutex _mappedPropsLock;
 };
 
 } // namespace RNSkia

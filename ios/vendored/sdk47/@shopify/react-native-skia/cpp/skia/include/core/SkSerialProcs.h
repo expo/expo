@@ -8,9 +8,15 @@
 #ifndef SkSerialProcs_DEFINED
 #define SkSerialProcs_DEFINED
 
-#include "include/core/SkImage.h"
-#include "include/core/SkPicture.h"
-#include "include/core/SkTypeface.h"
+#include "include/core/SkRefCnt.h"
+#include "include/private/base/SkAPI.h"
+
+#include <cstddef>
+
+class SkData;
+class SkImage;
+class SkPicture;
+class SkTypeface;
 
 /**
  *  A serial-proc is asked to serialize the specified object (e.g. picture or image).
@@ -22,30 +28,32 @@
  *  The default action for typefaces is to use Skia's internal format.
  */
 
-typedef sk_sp<SkData> (*SkSerialPictureProc)(SkPicture*, void* ctx);
-typedef sk_sp<SkData> (*SkSerialImageProc)(SkImage*, void* ctx);
-typedef sk_sp<SkData> (*SkSerialTypefaceProc)(SkTypeface*, void* ctx);
+using SkSerialPictureProc = sk_sp<SkData> (*)(SkPicture*, void* ctx);
+using SkSerialImageProc = sk_sp<SkData> (*)(SkImage*, void* ctx);
+using SkSerialTypefaceProc = sk_sp<SkData> (*)(SkTypeface*, void* ctx);
 
 /**
  *  Called with the encoded form of a picture (previously written with a custom
  *  SkSerialPictureProc proc). Return a picture object, or nullptr indicating failure.
  */
-typedef sk_sp<SkPicture> (*SkDeserialPictureProc)(const void* data, size_t length, void* ctx);
+using SkDeserialPictureProc = sk_sp<SkPicture> (*)(const void* data, size_t length, void* ctx);
 
 /**
- *  Called with the encoded from of an image. The proc can return an image object, or if it
+ *  Called with the encoded form of an image. The proc can return an image object, or if it
  *  returns nullptr, then Skia will take its default action to try to create an image from the data.
+ *
+ *  This will also be used to decode the internal mipmap layers that are saved on some images.
  *
  *  Note that unlike SkDeserialPictureProc and SkDeserialTypefaceProc, return nullptr from this
  *  does not indicate failure, but is a signal for Skia to take its default action.
  */
-typedef sk_sp<SkImage> (*SkDeserialImageProc)(const void* data, size_t length, void* ctx);
+using SkDeserialImageProc = sk_sp<SkImage> (*)(const void* data, size_t length, void* ctx);
 
 /**
  *  Called with the encoded form of a typeface (previously written with a custom
  *  SkSerialTypefaceProc proc). Return a typeface object, or nullptr indicating failure.
  */
-typedef sk_sp<SkTypeface> (*SkDeserialTypefaceProc)(const void* data, size_t length, void* ctx);
+using SkDeserialTypefaceProc = sk_sp<SkTypeface> (*)(const void* data, size_t length, void* ctx);
 
 struct SK_API SkSerialProcs {
     SkSerialPictureProc fPictureProc = nullptr;

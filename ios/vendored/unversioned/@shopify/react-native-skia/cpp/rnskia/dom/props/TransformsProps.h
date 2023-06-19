@@ -12,13 +12,11 @@ namespace RNSkia {
 
 class TransformsProps : public DerivedProp<SkMatrix> {
 public:
-  TransformsProps() : DerivedProp<SkMatrix>() {
-    _transformProp = addProperty(
-        std::make_shared<TransformProp>(JsiPropId::get("transform")));
-    _originProp =
-        addProperty(std::make_shared<PointProp>(JsiPropId::get("origin")));
-    _matrixProp =
-        addProperty(std::make_shared<MatrixProp>(JsiPropId::get("matrix")));
+  explicit TransformsProps(const std::function<void(BaseNodeProp *)> &onChange)
+      : DerivedProp<SkMatrix>(onChange) {
+    _transformProp = defineProperty<TransformProp>("transform");
+    _originProp = defineProperty<PointProp>("origin");
+    _matrixProp = defineProperty<MatrixProp>("matrix");
   }
 
   void updateDerivedValue() override {

@@ -12,6 +12,7 @@
 #include "include/core/SkClipOp.h"
 #include "include/core/SkColor.h"
 #include "include/core/SkFontTypes.h"
+#include "include/core/SkImageFilter.h"
 #include "include/core/SkImageInfo.h"
 #include "include/core/SkM44.h"
 #include "include/core/SkMatrix.h"
@@ -26,13 +27,13 @@
 #include "include/core/SkString.h"
 #include "include/core/SkSurfaceProps.h"
 #include "include/core/SkTypes.h"
-#include "include/private/SkDeque.h"
-#include "include/private/SkMacros.h"
+#include "include/private/base/SkCPUTypes.h"
+#include "include/private/base/SkDeque.h"
 
+#include <cstdint>
 #include <cstring>
 #include <memory>
 #include <optional>
-#include <vector>
 
 #ifndef SK_SUPPORT_LEGACY_GETTOTALMATRIX
 #define SK_SUPPORT_LEGACY_GETTOTALMATRIX
@@ -44,33 +45,38 @@ class GlyphRunList;
 }
 
 class AutoLayerForImageFilter;
-class GrBackendRenderTarget;
 class GrRecordingContext;
+
 class SkBaseDevice;
 class SkBitmap;
+class SkBlender;
 class SkData;
 class SkDrawable;
-struct SkDrawShadowRec;
 class SkFont;
 class SkImage;
-class SkImageFilter;
+class SkMesh;
 class SkPaintFilterCanvas;
 class SkPath;
 class SkPicture;
 class SkPixmap;
-class SkRegion;
 class SkRRect;
-struct SkRSXform;
-class SkMesh;
+class SkRegion;
+class SkShader;
 class SkSpecialImage;
 class SkSurface;
 class SkSurface_Base;
 class SkTextBlob;
 class SkVertices;
+struct SkDrawShadowRec;
+struct SkRSXform;
 
 namespace skgpu::graphite { class Recorder; }
 namespace sktext::gpu { class Slug; }
 namespace SkRecords { class Draw; }
+
+#if defined(SK_BUILD_FOR_ANDROID_FRAMEWORK) && defined(SK_GANESH)
+class GrBackendRenderTarget;
+#endif
 
 // TODO:
 // This is not ideal but Chrome is depending on a forward decl of GrSlug here.
@@ -650,7 +656,7 @@ public:
         SkRect bounds suggests but does not define layer size. To clip drawing to
         a specific rectangle, use clipRect().
 
-        alpha of zero is fully transparent, 255 is fully opaque.
+        alpha of zero is fully transparent, 1.0f is fully opaque.
 
         Call restoreToCount() with returned value to restore this and subsequent saves.
 
@@ -660,7 +666,11 @@ public:
 
         example: https://fiddle.skia.org/c/@Canvas_saveLayerAlpha
     */
-    int saveLayerAlpha(const SkRect* bounds, U8CPU alpha);
+    int saveLayerAlphaf(const SkRect* bounds, float alpha);
+    // Helper that accepts an int between 0 and 255, and divides it by 255.0
+    int saveLayerAlpha(const SkRect* bounds, U8CPU alpha) {
+        return this->saveLayerAlphaf(bounds, alpha * (1.0f / 255));
+    }
 
     /** \enum SkCanvas::SaveLayerFlagsSet
         SaveLayerFlags provides options that may be used in any combination in SaveLayerRec,
@@ -2173,7 +2183,7 @@ public:
 
     ///////////////////////////////////////////////////////////////////////////
 
-#if defined(SK_BUILD_FOR_ANDROID_FRAMEWORK) && SK_SUPPORT_GPU
+#if defined(SK_BUILD_FOR_ANDROID_FRAMEWORK) && defined(SK_GANESH)
     // These methods exist to support WebView in Android Framework.
     SkIRect topLayerBounds() const;
     GrBackendRenderTarget topLayerBackendRenderTarget() const;
@@ -2290,7 +2300,7 @@ protected:
 
     virtual void onDiscard();
 
-#if (SK_SUPPORT_GPU || defined(SK_GRAPHITE_ENABLED))
+#if (defined(SK_GANESH) || defined(SK_GRAPHITE))
     /** Experimental
      */
     virtual sk_sp<sktext::gpu::Slug> onConvertGlyphRunListToSlug(
@@ -2352,6 +2362,13 @@ private:
 
     // Encapsulate state needed to restore from saveBehind()
     struct BackImage {
+        // Out of line to avoid including SkSpecialImage.h
+        BackImage(sk_sp<SkSpecialImage>, SkIPoint);
+        BackImage(const BackImage&);
+        BackImage(BackImage&&);
+        BackImage& operator=(const BackImage&);
+        ~BackImage();
+
         sk_sp<SkSpecialImage> fImage;
         SkIPoint              fLoc;
     };
@@ -2406,7 +2423,7 @@ private:
         fSurfaceBase = sb;
     }
     friend class SkSurface_Base;
-    friend class SkSurface_Gpu;
+    friend class SkSurface_Ganesh;
 
     SkIRect fClipRestrictionRect = SkIRect::MakeEmpty();
     int fClipRestrictionSaveCount = -1;
@@ -2440,7 +2457,7 @@ private:
     SkCanvas& operator=(SkCanvas&&) = delete;
     SkCanvas& operator=(const SkCanvas&) = delete;
 
-#if (SK_SUPPORT_GPU || defined(SK_GRAPHITE_ENABLED))
+#if (defined(SK_GANESH) || defined(SK_GRAPHITE))
     friend class sktext::gpu::Slug;
     /** Experimental
      * Convert a SkTextBlob to a sktext::gpu::Slug using the current canvas state.

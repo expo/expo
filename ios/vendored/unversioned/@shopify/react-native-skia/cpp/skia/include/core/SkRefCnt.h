@@ -9,14 +9,14 @@
 #define SkRefCnt_DEFINED
 
 #include "include/core/SkTypes.h"
-#include "include/private/SkTemplates.h"
+#include "include/private/base/SkDebug.h"
 
-#include <atomic>       // std::atomic, std::memory_order_*
-#include <cstddef>      // std::nullptr_t
-#include <iosfwd>       // std::basic_ostream
-#include <memory>       // TODO: unused
-#include <type_traits>  // std::enable_if, std::is_convertible
-#include <utility>      // std::forward, std::swap
+#include <atomic>
+#include <cstddef>
+#include <cstdint>
+#include <iosfwd>
+#include <type_traits>
+#include <utility>
 
 /** \class SkRefCntBase
 
@@ -174,7 +174,7 @@ public:
 
     bool unique() const { return 1 == fRefCnt.load(std::memory_order_acquire); }
     void ref() const { (void)fRefCnt.fetch_add(+1, std::memory_order_relaxed); }
-    void  unref() const {
+    void unref() const {
         if (1 == fRefCnt.fetch_add(-1, std::memory_order_acq_rel)) {
             // restore the 1 for our destructor's assert
             SkDEBUGCODE(fRefCnt.store(1, std::memory_order_relaxed));
@@ -217,12 +217,7 @@ private:
  *  may be considered as trivially relocatable by the compiler so that destroying-move operations
  *  i.e. move constructor followed by destructor can be optimized to memcpy.
  */
-#if defined(__clang__) && defined(__has_cpp_attribute) && __has_cpp_attribute(clang::trivial_abi)
-#define SK_SP_TRIVIAL_ABI [[clang::trivial_abi]]
-#else
-#define SK_SP_TRIVIAL_ABI
-#endif
-template <typename T> class SK_SP_TRIVIAL_ABI sk_sp {
+template <typename T> class SK_TRIVIAL_ABI sk_sp {
 public:
     using element_type = T;
 

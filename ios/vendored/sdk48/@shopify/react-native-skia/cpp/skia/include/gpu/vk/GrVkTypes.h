@@ -9,7 +9,7 @@
 #ifndef GrVkTypes_DEFINED
 #define GrVkTypes_DEFINED
 
-#include "include/gpu/GrTypes.h"
+#include "include/gpu/GpuTypes.h"
 #include "include/gpu/vk/VulkanTypes.h"
 
 using GrVkBackendMemory = skgpu::VulkanBackendMemory;
@@ -72,7 +72,7 @@ struct GrVkImageInfo {
     uint32_t                 fSampleCount = 1;
     uint32_t                 fLevelCount = 0;
     uint32_t                 fCurrentQueueFamily = VK_QUEUE_FAMILY_IGNORED;
-    GrProtected              fProtected = GrProtected::kNo;
+    skgpu::Protected         fProtected = skgpu::Protected::kNo;
     GrVkYcbcrConversionInfo  fYcbcrConversionInfo;
     VkSharingMode            fSharingMode = VK_SHARING_MODE_EXCLUSIVE;
 #ifdef SK_BUILD_FOR_ANDROID_FRAMEWORK
@@ -137,7 +137,7 @@ struct GrVkDrawableInfo {
 struct GrVkSurfaceInfo {
     uint32_t fSampleCount = 1;
     uint32_t fLevelCount = 0;
-    GrProtected fProtected = GrProtected::kNo;
+    skgpu::Protected fProtected = skgpu::Protected::kNo;
 
     VkImageTiling fImageTiling = VK_IMAGE_TILING_OPTIMAL;
     VkFormat fFormat = VK_FORMAT_UNDEFINED;

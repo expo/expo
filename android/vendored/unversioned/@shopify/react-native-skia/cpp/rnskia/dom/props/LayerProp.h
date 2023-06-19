@@ -10,9 +10,11 @@ namespace RNSkia {
 
 class LayerProp : public DerivedProp<SkPaint> {
 public:
-  explicit LayerProp(PropId name) : DerivedProp<SkPaint>() {
-    _layerPaintProp = addProperty(std::make_shared<PaintProp>(name));
-    _layerBoolProp = addProperty(std::make_shared<NodeProp>(name));
+  explicit LayerProp(PropId name,
+                     const std::function<void(BaseNodeProp *)> &onChange)
+      : DerivedProp<SkPaint>(onChange) {
+    _layerPaintProp = defineProperty<PaintProp>(name);
+    _layerBoolProp = defineProperty<NodeProp>(name);
   }
 
   /**
@@ -31,7 +33,7 @@ public:
 
     if (_layerPaintProp->isSet()) {
       // We have a paint object for the layer property
-      setDerivedValue(_layerPaintProp->getDerivedValue());
+      setDerivedValue(_layerPaintProp->getUnsafeDerivedValue());
       _isBool = false;
     } else {
       _isBool = false;

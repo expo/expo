@@ -13,7 +13,7 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
 
-#include <SkVertices.h>
+#include "SkVertices.h"
 
 #pragma clang diagnostic pop
 
@@ -21,17 +21,13 @@ namespace RNSkia {
 
 class VerticesProps : public DerivedSkProp<SkVertices> {
 public:
-  VerticesProps() : DerivedSkProp<SkVertices>() {
-    _vertexModeProp =
-        addProperty(std::make_shared<VertexModeProp>(JsiPropId::get("mode")));
-    _colorsProp =
-        addProperty(std::make_shared<ColorsProp>(JsiPropId::get("colors")));
-    _verticesProp =
-        addProperty(std::make_shared<PointsProp>(JsiPropId::get("vertices")));
-    _texturesProp =
-        addProperty(std::make_shared<PointsProp>(JsiPropId::get("textures")));
-    _indicesProp =
-        addProperty(std::make_shared<Numbers16Prop>(JsiPropId::get("indices")));
+  explicit VerticesProps(const std::function<void(BaseNodeProp *)> &onChange)
+      : DerivedSkProp<SkVertices>(onChange) {
+    _vertexModeProp = defineProperty<VertexModeProp>("mode");
+    _colorsProp = defineProperty<ColorsProp>("colors");
+    _verticesProp = defineProperty<PointsProp>("vertices");
+    _texturesProp = defineProperty<PointsProp>("textures");
+    _indicesProp = defineProperty<Numbers16Prop>("indices");
 
     _vertexModeProp->require();
     _verticesProp->require();

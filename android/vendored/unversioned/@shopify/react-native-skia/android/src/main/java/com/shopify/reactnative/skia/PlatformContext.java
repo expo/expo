@@ -1,6 +1,7 @@
 package com.shopify.reactnative.skia;
 
 import android.app.Application;
+import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -53,7 +54,7 @@ public class PlatformContext {
         Choreographer.FrameCallback frameCallback = new Choreographer.FrameCallback() {
             @Override
             public void doFrame(long frameTimeNanos) {
-                if(_isPaused) {
+                if (_isPaused) {
                     return;
                 }
                 notifyDrawLoop();
@@ -63,6 +64,21 @@ public class PlatformContext {
             }
         };
         Choreographer.getInstance().postFrameCallback(frameCallback);
+    }
+
+    @DoNotStrip
+    public void notifyTaskReadyOnMainThread() {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                notifyTaskReady();
+            }
+        });
+    }
+
+    @DoNotStrip
+    Object takeScreenshotFromViewTag(int tag) {
+        return ViewScreenshotService.makeViewScreenshotFromTag(mContext, tag);
     }
 
     @DoNotStrip

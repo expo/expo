@@ -11,46 +11,26 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
 
-#include <SkPathEffect.h>
+#include "SkPathEffect.h"
 
 #pragma clang diagnostic pop
 
 namespace RNSkia {
 
-class JsiBasePathEffectNode
-    : public JsiDomDeclarationNode<JsiBasePathEffectNode, sk_sp<SkPathEffect>> {
+class JsiBasePathEffectNode : public JsiDomDeclarationNode {
 public:
   JsiBasePathEffectNode(std::shared_ptr<RNSkPlatformContext> context,
                         const char *type)
-      : JsiDomDeclarationNode<JsiBasePathEffectNode, sk_sp<SkPathEffect>>(
-            context, type) {}
+      : JsiDomDeclarationNode(context, type, DeclarationType::PathEffect) {}
 
 protected:
-  void setPathEffect(DrawingContext *context, sk_sp<SkPathEffect> f) {
-    set(context, f);
-  }
-
-  sk_sp<SkPathEffect> resolve(std::shared_ptr<JsiDomNode> child) override {
-    auto ptr = std::dynamic_pointer_cast<JsiBasePathEffectNode>(child);
-    if (ptr) {
-      return ptr->getCurrent();
-    }
-    return nullptr;
-  }
-
-  /**
-   Sets or composes the path effect
-   */
-  void set(DrawingContext *context, sk_sp<SkPathEffect> pathEffect) override {
-    auto paint = context->getMutablePaint();
-    if (paint->getPathEffect() != nullptr &&
-        paint->getPathEffect() != getCurrent().get()) {
-      paint->setPathEffect(
-          SkPathEffect::MakeCompose(paint->refPathEffect(), pathEffect));
-    } else {
-      paint->setPathEffect(pathEffect);
-    }
-    setCurrent(pathEffect);
+  void composeAndPush(DeclarationContext *context, sk_sp<SkPathEffect> pe1) {
+    context->save();
+    decorateChildren(context);
+    auto pe2 = context->getPathEffects()->popAsOne();
+    context->restore();
+    auto pe = pe2 ? SkPathEffect::MakeCompose(pe1, pe2) : pe1;
+    context->getPathEffects()->push(pe);
   }
 };
 
@@ -60,30 +40,28 @@ public:
   explicit JsiDashPathEffectNode(std::shared_ptr<RNSkPlatformContext> context)
       : JsiBasePathEffectNode(context, "skDashPathEffect") {}
 
-protected:
-  void decorate(DrawingContext *context) override {
-    if (isChanged(context)) {
+  void decorate(DeclarationContext *context) override {
 
-      // Phase
-      auto phase = _phase->isSet() ? _phase->value().getAsNumber() : 0;
+    // Phase
+    auto phase = _phase->isSet() ? _phase->value().getAsNumber() : 0;
 
-      // Copy intervals
-      std::vector<SkScalar> intervals;
-      auto intervalsArray = _intervals->value().getAsArray();
-      for (size_t i = 0; i < intervalsArray.size(); ++i) {
-        intervals.push_back(intervalsArray[i].getAsNumber());
-      }
-
-      // Create effect
-      auto pathEffect = SkDashPathEffect::Make(
-          intervals.data(), static_cast<int>(intervals.size()), phase);
-
-      setPathEffect(context, pathEffect);
+    // Copy intervals
+    std::vector<SkScalar> intervals;
+    auto intervalsArray = _intervals->value().getAsArray();
+    for (size_t i = 0; i < intervalsArray.size(); ++i) {
+      intervals.push_back(intervalsArray[i].getAsNumber());
     }
+
+    // Create effect
+    auto pathEffect = SkDashPathEffect::Make(
+        intervals.data(), static_cast<int>(intervals.size()), phase);
+
+    composeAndPush(context, pathEffect);
   }
 
+protected:
   void defineProperties(NodePropsContainer *container) override {
-    JsiBaseDomDeclarationNode::defineProperties(container);
+    JsiDomDeclarationNode::defineProperties(container);
 
     _intervals = container->defineProperty<NodeProp>("intervals");
     _phase = container->defineProperty<NodeProp>("phase");
@@ -104,22 +82,19 @@ public:
       std::shared_ptr<RNSkPlatformContext> context)
       : JsiBasePathEffectNode(context, "skDiscretePathEffect") {}
 
-protected:
-  void decorate(DrawingContext *context) override {
-    if (isChanged(context)) {
+  void decorate(DeclarationContext *context) override {
+    // Create effect
+    auto pathEffect =
+        SkDiscretePathEffect::Make(_lengthProp->value().getAsNumber(),
+                                   _deviationProp->value().getAsNumber(),
+                                   _seedProp->value().getAsNumber());
 
-      // Create effect
-      auto pathEffect =
-          SkDiscretePathEffect::Make(_lengthProp->value().getAsNumber(),
-                                     _deviationProp->value().getAsNumber(),
-                                     _seedProp->value().getAsNumber());
-
-      setPathEffect(context, pathEffect);
-    }
+    composeAndPush(context, pathEffect);
   }
 
+protected:
   void defineProperties(NodePropsContainer *container) override {
-    JsiBaseDomDeclarationNode::defineProperties(container);
+    JsiDomDeclarationNode::defineProperties(container);
 
     _lengthProp = container->defineProperty<NodeProp>("length");
     _deviationProp = container->defineProperty<NodeProp>("deviation");
@@ -142,19 +117,16 @@ public:
   explicit JsiCornerPathEffectNode(std::shared_ptr<RNSkPlatformContext> context)
       : JsiBasePathEffectNode(context, "skCornerPathEffect") {}
 
-protected:
-  void decorate(DrawingContext *context) override {
-    if (isChanged(context)) {
+  void decorate(DeclarationContext *context) override {
+    // Create effect
+    auto pathEffect = SkCornerPathEffect::Make(_rProp->value().getAsNumber());
 
-      // Create effect
-      auto pathEffect = SkCornerPathEffect::Make(_rProp->value().getAsNumber());
-
-      setPathEffect(context, pathEffect);
-    }
+    composeAndPush(context, pathEffect);
   }
 
+protected:
   void defineProperties(NodePropsContainer *container) override {
-    JsiBaseDomDeclarationNode::defineProperties(container);
+    JsiDomDeclarationNode::defineProperties(container);
 
     _rProp = container->defineProperty<NodeProp>("r");
     _rProp->require();
@@ -170,22 +142,19 @@ public:
   explicit JsiPath1DPathEffectNode(std::shared_ptr<RNSkPlatformContext> context)
       : JsiBasePathEffectNode(context, "skPath1DPathEffect") {}
 
-protected:
-  void decorate(DrawingContext *context) override {
-    if (isChanged(context)) {
+  void decorate(DeclarationContext *context) override {
+    // Create effect
+    auto pathEffect = SkPath1DPathEffect::Make(
+        *_pathProp->getDerivedValue(), _advanceProp->value().getAsNumber(),
+        _phaseProp->value().getAsNumber(),
+        getStyleFromStringValue(_styleProp->value().getAsString()));
 
-      // Create effect
-      auto pathEffect = SkPath1DPathEffect::Make(
-          *_pathProp->getDerivedValue(), _advanceProp->value().getAsNumber(),
-          _phaseProp->value().getAsNumber(),
-          getStyleFromStringValue(_styleProp->value().getAsString()));
-
-      setPathEffect(context, pathEffect);
-    }
+    composeAndPush(context, pathEffect);
   }
 
+protected:
   void defineProperties(NodePropsContainer *container) override {
-    JsiBaseDomDeclarationNode::defineProperties(container);
+    JsiDomDeclarationNode::defineProperties(container);
 
     _phaseProp = container->defineProperty<NodeProp>("phase");
     _advanceProp = container->defineProperty<NodeProp>("advance");
@@ -224,19 +193,17 @@ public:
       : JsiBasePathEffectNode(context, "skPath2DPathEffect") {}
 
 protected:
-  void decorate(DrawingContext *context) override {
-    if (isChanged(context)) {
+  void decorate(DeclarationContext *context) override {
 
-      // Create effect
-      auto pathEffect = SkPath2DPathEffect::Make(
-          *_matrixProp->getDerivedValue(), *_pathProp->getDerivedValue());
+    // Create effect
+    auto pathEffect = SkPath2DPathEffect::Make(*_matrixProp->getDerivedValue(),
+                                               *_pathProp->getDerivedValue());
 
-      setPathEffect(context, pathEffect);
-    }
+    composeAndPush(context, pathEffect);
   }
 
   void defineProperties(NodePropsContainer *container) override {
-    JsiBaseDomDeclarationNode::defineProperties(container);
+    JsiDomDeclarationNode::defineProperties(container);
 
     _matrixProp = container->defineProperty<MatrixProp>("matrix");
     _pathProp = container->defineProperty<PathProp>("path");
@@ -257,19 +224,17 @@ public:
       : JsiBasePathEffectNode(context, "skLine2DPathEffect") {}
 
 protected:
-  void decorate(DrawingContext *context) override {
-    if (isChanged(context)) {
+  void decorate(DeclarationContext *context) override {
 
-      // Create effect
-      auto pathEffect = SkLine2DPathEffect::Make(
-          _widthProp->value().getAsNumber(), *_matrixProp->getDerivedValue());
+    // Create effect
+    auto pathEffect = SkLine2DPathEffect::Make(
+        _widthProp->value().getAsNumber(), *_matrixProp->getDerivedValue());
 
-      setPathEffect(context, pathEffect);
-    }
+    composeAndPush(context, pathEffect);
   }
 
   void defineProperties(NodePropsContainer *container) override {
-    JsiBaseDomDeclarationNode::defineProperties(container);
+    JsiDomDeclarationNode::defineProperties(container);
 
     _matrixProp = container->defineProperty<MatrixProp>("matrix");
     _widthProp = container->defineProperty<NodeProp>("width");
@@ -290,12 +255,14 @@ public:
       : JsiBasePathEffectNode(context, "skSumPathEffect") {}
 
 protected:
-  void decorate(DrawingContext *context) override {
-    if (isChanged(context)) {
-      auto inner = requireChild(0);
-      auto outer = requireChild(1);
-      setPathEffect(context, SkPathEffect::MakeSum(inner, outer));
-    }
+  void decorate(DeclarationContext *context) override {
+    decorateChildren(context);
+    auto pe =
+        context->getPathEffects()->Declaration<sk_sp<SkPathEffect>>::popAsOne(
+            [=](sk_sp<SkPathEffect> inner, sk_sp<SkPathEffect> outer) {
+              return SkPathEffect::MakeSum(inner, outer);
+            });
+    context->getPathEffects()->push(pe);
   }
 };
 } // namespace RNSkia

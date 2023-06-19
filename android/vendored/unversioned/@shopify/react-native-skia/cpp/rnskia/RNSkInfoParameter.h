@@ -8,8 +8,8 @@
 
 #include <jsi/jsi.h>
 
-#include <JsiHostObject.h>
-#include <RNSkView.h>
+#include "JsiHostObject.h"
+#include "RNSkView.h"
 
 namespace RNSkia {
 

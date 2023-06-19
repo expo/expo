@@ -8,13 +8,14 @@
 #ifndef skgpu_graphite_VulkanGraphiteTypes_DEFINED
 #define skgpu_graphite_VulkanGraphiteTypes_DEFINED
 
+#include "include/gpu/graphite/GraphiteTypes.h"
 #include "include/gpu/vk/VulkanTypes.h"
 
 namespace skgpu::graphite {
 
 struct VulkanTextureInfo {
     uint32_t fSampleCount = 1;
-    uint32_t fLevelCount = 0;
+    Mipmapped fMipmapped = Mipmapped::kNo;
 
     // VkImageCreateInfo properties
     // Currently the only supported flag is VK_IMAGE_CREATE_PROTECTED_BIT. Any other flag will not
@@ -24,8 +25,6 @@ struct VulkanTextureInfo {
     VkImageTiling            fImageTiling = VK_IMAGE_TILING_OPTIMAL;
     VkImageUsageFlags        fImageUsageFlags = 0;
     VkSharingMode            fSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-    uint32_t                 fCurrentQueueFamily = VK_QUEUE_FAMILY_IGNORED;
-    VkImageLayout            fImageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
     // Properties related to the image view and sampling. These are less inherent properties of the
     // VkImage but describe how the VkImage should be used within Skia.
@@ -41,24 +40,20 @@ struct VulkanTextureInfo {
 
     VulkanTextureInfo() = default;
     VulkanTextureInfo(uint32_t sampleCount,
-                      uint32_t levelCount,
+                      Mipmapped mipmapped,
                       VkImageCreateFlags flags,
                       VkFormat format,
                       VkImageTiling imageTiling,
                       VkImageUsageFlags imageUsageFlags,
                       VkSharingMode sharingMode,
-                      uint32_t currentQueueFamily,
-                      VkImageLayout imageLayout,
                       VkImageAspectFlags aspectMask)
             : fSampleCount(sampleCount)
-            , fLevelCount(levelCount)
+            , fMipmapped(mipmapped)
             , fFlags(flags)
             , fFormat(format)
             , fImageTiling(imageTiling)
             , fImageUsageFlags(imageUsageFlags)
             , fSharingMode(sharingMode)
-            , fCurrentQueueFamily(currentQueueFamily)
-            , fImageLayout(imageLayout)
             , fAspectMask(aspectMask) {}
 };
 

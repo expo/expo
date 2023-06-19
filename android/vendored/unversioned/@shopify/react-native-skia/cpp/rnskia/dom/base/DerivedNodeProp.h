@@ -15,7 +15,8 @@ namespace RNSkia {
  */
 class BaseDerivedProp : public BaseNodeProp {
 public:
-  BaseDerivedProp() : BaseNodeProp() {}
+  explicit BaseDerivedProp(const std::function<void(BaseNodeProp *)> &onChange)
+      : _onChange(onChange), BaseNodeProp() {}
 
   /**
    Starts the process of updating and reading props
@@ -70,7 +71,11 @@ public:
   /**
    Adds a property to the derived property child props.
    */
-  template <typename P = BaseNodeProp> P *addProperty(std::shared_ptr<P> prop) {
+  template <class _Tp, class... _Args,
+            class = std::enable_if_t<!std::is_array<_Tp>::value>>
+  _Tp *defineProperty(_Args &&...__args) {
+    auto prop =
+        std::make_shared<_Tp>(std::forward<_Args>(__args)..., _onChange);
     _properties.push_back(prop);
     return prop.get();
   }
@@ -104,6 +109,7 @@ protected:
 private:
   std::vector<std::shared_ptr<BaseNodeProp>> _properties;
   std::atomic<bool> _isChanged = {false};
+  std::function<void(BaseNodeProp *)> _onChange;
 };
 
 /**
@@ -111,12 +117,21 @@ private:
  */
 template <typename T> class DerivedProp : public BaseDerivedProp {
 public:
-  DerivedProp() : BaseDerivedProp() {}
+  explicit DerivedProp(const std::function<void(BaseNodeProp *)> &onChange)
+      : BaseDerivedProp(onChange) {}
 
   /**
   Returns the derived value
    */
-  std::shared_ptr<const T> getDerivedValue() { return _derivedValue; }
+  std::shared_ptr<const T> getDerivedValue() {
+    return std::const_pointer_cast<const T>(_derivedValue);
+  }
+
+  /**
+   Returns a mutable version of the derived value. Used by the paint props to
+   keep a drawing context
+   */
+  std::shared_ptr<T> getUnsafeDerivedValue() { return _derivedValue; }
 
   /**
    Returns true if is optional and one of the child props has a value, or all
@@ -128,7 +143,7 @@ protected:
   /**
    Set derived value from sub classes
    */
-  void setDerivedValue(std::shared_ptr<const T> value) {
+  void setDerivedValue(std::shared_ptr<T> value) {
     setIsChanged(_derivedValue != value);
     _derivedValue = value;
   }
@@ -136,13 +151,13 @@ protected:
   /**
    Set derived value from sub classes
    */
-  void setDerivedValue(const T &&value) {
+  void setDerivedValue(T &&value) {
     setIsChanged(true);
-    _derivedValue = std::make_shared<const T>(std::move(value));
+    _derivedValue = std::make_shared<T>(std::move(value));
   }
 
 private:
-  std::shared_ptr<const T> _derivedValue;
+  std::shared_ptr<T> _derivedValue;
 };
 
 /**
@@ -150,7 +165,8 @@ private:
  */
 template <typename T> class DerivedSkProp : public BaseDerivedProp {
 public:
-  DerivedSkProp() : BaseDerivedProp() {}
+  explicit DerivedSkProp(const std::function<void(BaseNodeProp *)> &onChange)
+      : BaseDerivedProp(onChange) {}
 
   /**
   Returns the derived value

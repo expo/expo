@@ -10,7 +10,7 @@
 
 #include "include/core/SkPath.h"
 #include "include/core/SkRefCnt.h"
-#include "include/private/SkTDArray.h"
+#include "include/private/base/SkTDArray.h"
 
 struct SkConic;
 

@@ -33,7 +33,7 @@ static std::atomic<size_t> NodeIdent = 1000;
 typedef enum {
   RenderNode = 1,
   DeclarationNode = 2,
-} JsiDomNodeClass;
+} NodeClass;
 
 /**
  Implements an abstract base class for nodes in the Skia Reconciler. This node
@@ -46,8 +46,22 @@ public:
    Contructor. Takes as parameters the values comming from the JS world that
    initialized the class.
    */
-  JsiDomNode(std::shared_ptr<RNSkPlatformContext> context, const char *type)
-      : _type(type), _context(context), _nodeId(NodeIdent++), JsiHostObject() {}
+  JsiDomNode(std::shared_ptr<RNSkPlatformContext> context, const char *type,
+             NodeClass nodeClass)
+      : _type(type), _context(context), _nodeClass(nodeClass),
+        _nodeId(NodeIdent++), JsiHostObject() {
+#if SKIA_DOM_DEBUG
+    printDebugInfo("JsiDomNode." + std::string(_type) +
+                   " CTOR - nodeId: " + std::to_string(_nodeId));
+#endif
+  }
+
+  virtual ~JsiDomNode() {
+#if SKIA_DOM_DEBUG
+    printDebugInfo("JsiDomNode." + std::string(_type) +
+                   " DTOR - nodeId: " + std::to_string(_nodeId));
+#endif
+  }
 
   /**
    Called when creating the node, resolves properties from the node constructor.
@@ -63,7 +77,7 @@ public:
   JSI_HOST_FUNCTION(setProps) {
     if (count == 1) {
       // Initialize properties container
-      setProps(runtime, getArgumentAsObject(runtime, arguments, count, 0));
+      setProps(runtime, arguments[0]);
     } else {
       setEmptyProps();
     }
@@ -71,16 +85,35 @@ public:
   }
 
   /**
-   Empty setProp implementation - compatibility with JS node
+   Updates the selected property value
    */
-  JSI_HOST_FUNCTION(setProp) { return jsi::Value::undefined(); }
+  JSI_HOST_FUNCTION(setProp) {
+    if (_propsContainer == nullptr) {
+      // TODO: we ignore individual properties updates if the initial properties
+      // hasn't been defined. It is likely an error if we reach this branch and
+      // perhaps should throw an exception but platformContext isn't available
+      // here.
+      return jsi::Value::undefined();
+    }
+    auto propName = arguments[0].asString(runtime).utf8(runtime);
+    const jsi::Value &propValue = arguments[1];
+
+    // Enumerate all props with this name and update. The
+    // enumerateMappedPropsByName function is thread safe and locks props so it
+    // can be called from all threads.
+    _propsContainer->enumerateMappedPropsByName(propName, [&](NodeProp *prop) {
+      prop->updateValue(runtime, propValue);
+    });
+
+    return jsi::Value::undefined();
+  }
 
   /**
    JS Function to be called when the node is no longer part of the reconciler
    tree. Use for cleaning up.
    */
   JSI_HOST_FUNCTION(dispose) {
-    dispose();
+    dispose(false);
     return jsi::Value::undefined();
   }
 
@@ -183,7 +216,7 @@ public:
    Returns the class of node so that we can do loops faster without
    having to check using runtime type information
    */
-  virtual JsiDomNodeClass getNodeClass() = 0;
+  NodeClass getNodeClass() { return _nodeClass; }
 
   /**
    Updates any pending property changes in all nodes and child nodes. This
@@ -203,11 +236,6 @@ public:
       std::lock_guard<std::mutex> lock(_childrenLock);
       for (auto &op : _queuedNodeOps) {
         op();
-      }
-
-      // If there are any ops here we should invalidate the cached context
-      if (_queuedNodeOps.size() > 0) {
-        invalidateContext();
       }
 
       _queuedNodeOps.clear();
@@ -230,36 +258,9 @@ public:
       _propsContainer->markAsResolved();
     }
 
-    // Now let's dispose if needed
+    // Now let's invalidate if needed
     if (_isDisposing && !_isDisposed) {
-      _isDisposed = true;
-
-      this->setParent(nullptr);
-
-      // Callback signaling that we're done
-      if (_disposeCallback != nullptr) {
-        _disposeCallback();
-        _disposeCallback = nullptr;
-      }
-
-      // Clear props
-      if (_propsContainer != nullptr) {
-        _propsContainer->dispose();
-      }
-
-      // Remove children
-      std::vector<std::shared_ptr<JsiDomNode>> tmp;
-      {
-        std::lock_guard<std::mutex> lock(_childrenLock);
-        tmp.reserve(_children.size());
-        for (auto &child : _children) {
-          tmp.push_back(child);
-        }
-        _children.clear();
-      }
-      for (auto &child : tmp) {
-        child->dispose();
-      }
+      invalidate();
     }
 
     // Resolve children
@@ -268,7 +269,37 @@ public:
     }
   }
 
+  /**
+  Empty implementation of the decorate context method
+  */
+  virtual void decorateContext(DeclarationContext *context) {
+    // Empty implementation
+  }
+
+  /**
+   Called when a node has been removed from the dom tree and needs to be cleaned
+   up. If the invalidate parameter is set, we will invalidate the node directly.
+   Calling dispose from the JS dispose function calls this with invalidate set
+   to false, while the dom render view calls this with true.
+   */
+  virtual void dispose(bool immediate) {
+    if (_isDisposing) {
+      return;
+    }
+    _isDisposing = true;
+    if (immediate) {
+      invalidate();
+    }
+  }
+
 protected:
+  /**
+   Adds an operation that will be executed when the render cycle is finished.
+   */
+  void enqueAsynOperation(std::function<void()> &&fp) {
+    std::lock_guard<std::mutex> lock(_childrenLock);
+    _queuedNodeOps.push_back(std::move(fp));
+  }
   /**
    Override to define properties in node implementations
    */
@@ -288,23 +319,17 @@ protected:
 
   /**
    Native implementation of the set properties method. This is called from the
-   reconciler when properties are set due to changes in React. This method will
-   always call the onPropsSet method as a signal that things have changed.
+   reconciler when properties are set due to changes in React.
    */
-  void setProps(jsi::Runtime &runtime, jsi::Object &&props) {
+  void setProps(jsi::Runtime &runtime, const jsi::Value &maybeProps) {
 #if SKIA_DOM_DEBUG
     printDebugInfo("JS:setProps(nodeId: " + std::to_string(_nodeId) + ")");
 #endif
-    if (_propsContainer == nullptr) {
+    // Initialize properties container
+    ensurePropertyContainer();
 
-      // Initialize properties container
-      _propsContainer = std::make_shared<NodePropsContainer>(getType());
-
-      // Ask sub classes to define their properties
-      defineProperties(_propsContainer.get());
-    }
     // Update properties container
-    _propsContainer->setProps(runtime, std::move(props));
+    _propsContainer->setProps(runtime, maybeProps);
 
     // Invalidate context
     invalidateContext();
@@ -317,14 +342,8 @@ protected:
 #if SKIA_DOM_DEBUG
     printDebugInfo("JS:setEmptyProps(nodeId: " + std::to_string(_nodeId) + ")");
 #endif
-    if (_propsContainer == nullptr) {
-
-      // Initialize properties container
-      _propsContainer = std::make_shared<NodePropsContainer>(getType());
-
-      // Ask sub classes to define their properties
-      defineProperties(_propsContainer.get());
-    }
+    // Initialize properties container
+    ensurePropertyContainer();
   }
 
   /**
@@ -336,6 +355,11 @@ protected:
   }
 
   /**
+   Override to be notified when a node property has changed
+   */
+  virtual void onPropertyChanged(BaseNodeProp *prop) {}
+
+  /**
    Adds a child node to the array of children for this node
    */
   virtual void addChild(std::shared_ptr<JsiDomNode> child) {
@@ -343,10 +367,12 @@ protected:
     printDebugInfo("JS:addChild(childId: " + std::to_string(child->_nodeId) +
                    ")");
 #endif
-    std::lock_guard<std::mutex> lock(_childrenLock);
-    _queuedNodeOps.push_back([child, this]() {
-      _children.push_back(child);
-      child->setParent(this);
+    enqueAsynOperation([child, weakSelf = weak_from_this()]() {
+      auto self = weakSelf.lock();
+      if (self) {
+        self->_children.push_back(child);
+        child->setParent(self.get());
+      }
     });
   }
 
@@ -361,11 +387,14 @@ protected:
         "JS:insertChildBefore(childId: " + std::to_string(child->_nodeId) +
         ", beforeId: " + std::to_string(before->_nodeId) + ")");
 #endif
-    std::lock_guard<std::mutex> lock(_childrenLock);
-    _queuedNodeOps.push_back([child, before, this]() {
-      auto position = std::find(_children.begin(), _children.end(), before);
-      _children.insert(position, child);
-      child->setParent(this);
+    enqueAsynOperation([child, before, weakSelf = weak_from_this()]() {
+      auto self = weakSelf.lock();
+      if (self) {
+        auto position =
+            std::find(self->_children.begin(), self->_children.end(), before);
+        self->_children.insert(position, child);
+        child->setParent(self.get());
+      }
     });
   }
 
@@ -378,28 +407,25 @@ protected:
     printDebugInfo("JS:removeChild(childId: " + std::to_string(child->_nodeId) +
                    ")");
 #endif
-    std::lock_guard<std::mutex> lock(_childrenLock);
-    _queuedNodeOps.push_back([child, this]() {
-      // Delete child itself
-      _children.erase(
-          std::remove_if(_children.begin(), _children.end(),
-                         [child](const auto &node) { return node == child; }),
-          _children.end());
+    auto removeChild = [child,
+                        weakSelf = weak_from_this()](bool immediate = false) {
+      auto self = weakSelf.lock();
+      if (self) {
+        // Delete child itself
+        self->_children.erase(
+            std::remove_if(self->_children.begin(), self->_children.end(),
+                           [child](const auto &node) { return node == child; }),
+            self->_children.end());
 
-      child->dispose();
-    });
-  }
+        child->dispose(immediate);
+      }
+    };
 
-  /**
-   Called when a node has been removed from the dom tree and needs to be cleaned
-   up.
-   */
-  virtual void dispose() {
     if (_isDisposing) {
-      return;
+      removeChild(false);
+    } else {
+      enqueAsynOperation(removeChild);
     }
-
-    _isDisposing = true;
   }
 
 #if SKIA_DOM_DEBUG
@@ -429,7 +455,82 @@ protected:
   */
   JsiDomNode *getParent() { return _parent; }
 
+  /**
+  Loops through all declaration nodes and gives each one of them the
+  opportunity to decorate the context.
+  */
+  void decorateChildren(DeclarationContext *context) {
+    for (auto &child : getChildren()) {
+      // All JsiDomNodes has the decorateContext method - but only the
+      // JsiDomDeclarationNode is actually doing stuff inside this method.
+      child->decorateContext(context);
+    }
+  }
+
 private:
+  /**
+   Invalidates the node - meaning removing and clearing children and properties
+   **/
+  void invalidate() {
+    if (_isDisposing && !_isDisposed) {
+#if SKIA_DOM_DEBUG
+      printDebugInfo("JsiDomNode::invalidate: nodeid: " +
+                     std::to_string(_nodeId));
+#endif
+
+      _isDisposed = true;
+
+      // Clear parent
+      this->setParent(nullptr);
+
+      // Clear any async operations
+      _queuedNodeOps.clear();
+
+      // Callback signaling that we're done
+      if (_disposeCallback != nullptr) {
+        _disposeCallback();
+        _disposeCallback = nullptr;
+      }
+
+      // Clear props
+      if (_propsContainer != nullptr) {
+        _propsContainer->dispose();
+      }
+
+      // Remove children
+      std::vector<std::shared_ptr<JsiDomNode>> tmp;
+      {
+        std::lock_guard<std::mutex> lock(_childrenLock);
+        tmp.reserve(_children.size());
+        for (auto &child : _children) {
+          tmp.push_back(child);
+        }
+        _children.clear();
+      }
+      for (auto &child : tmp) {
+        child->dispose(true);
+      }
+    }
+  }
+
+  /**
+   Creates and sets up the property container
+   */
+  void ensurePropertyContainer() {
+    if (_propsContainer == nullptr) {
+      _propsContainer = std::make_shared<NodePropsContainer>(
+          getType(), [weakSelf = weak_from_this()](BaseNodeProp *p) {
+            auto self = weakSelf.lock();
+            if (self) {
+              self->onPropertyChanged(p);
+            }
+          });
+
+      // Ask sub classes to define their properties
+      defineProperties(_propsContainer.get());
+    }
+  }
+
   const char *_type;
   std::shared_ptr<RNSkPlatformContext> _context;
 
@@ -448,6 +549,8 @@ private:
   std::vector<std::function<void()>> _queuedNodeOps;
 
   JsiDomNode *_parent = nullptr;
+
+  NodeClass _nodeClass;
 };
 
 } // namespace RNSkia

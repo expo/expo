@@ -12,7 +12,7 @@
 #include "include/core/SkMatrix.h"
 #include "include/core/SkPath.h"
 #include "include/core/SkTypes.h"
-#include "include/private/SkNoncopyable.h"
+#include "include/private/base/SkNoncopyable.h"
 #include "modules/svg/include/SkSVGTypes.h"
 
 class SkSVGValue : public SkNoncopyable {

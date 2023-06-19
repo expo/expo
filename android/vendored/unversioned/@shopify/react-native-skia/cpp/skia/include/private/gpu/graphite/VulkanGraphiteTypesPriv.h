@@ -19,8 +19,6 @@ struct VulkanTextureSpec {
             , fImageTiling(VK_IMAGE_TILING_OPTIMAL)
             , fImageUsageFlags(0)
             , fSharingMode(VK_SHARING_MODE_EXCLUSIVE)
-            , fCurrentQueueFamily(VK_QUEUE_FAMILY_IGNORED)
-            , fImageLayout(VK_IMAGE_LAYOUT_UNDEFINED)
             , fAspectMask(VK_IMAGE_ASPECT_COLOR_BIT) {}
     VulkanTextureSpec(const VulkanTextureInfo& info)
             : fFlags(info.fFlags)
@@ -28,8 +26,6 @@ struct VulkanTextureSpec {
             , fImageTiling(info.fImageTiling)
             , fImageUsageFlags(info.fImageUsageFlags)
             , fSharingMode(info.fSharingMode)
-            , fCurrentQueueFamily(info.fCurrentQueueFamily)
-            , fImageLayout(info.fImageLayout)
             , fAspectMask(info.fAspectMask) {}
 
     bool operator==(const VulkanTextureSpec& that) const {
@@ -38,8 +34,6 @@ struct VulkanTextureSpec {
                fImageTiling == that.fImageTiling &&
                fImageUsageFlags == that.fImageUsageFlags &&
                fSharingMode == that.fSharingMode &&
-               fCurrentQueueFamily == that.fCurrentQueueFamily &&
-               fImageLayout == that.fImageLayout &&
                fAspectMask == that.fAspectMask;
     }
 
@@ -48,15 +42,13 @@ struct VulkanTextureSpec {
     VkImageTiling            fImageTiling;
     VkImageUsageFlags        fImageUsageFlags;
     VkSharingMode            fSharingMode;
-    uint32_t                 fCurrentQueueFamily;
-    VkImageLayout            fImageLayout;
     VkImageAspectFlags       fAspectMask;
     // GrVkYcbcrConversionInfo  fYcbcrConversionInfo;
 };
 
 VulkanTextureInfo VulkanTextureSpecToTextureInfo(const VulkanTextureSpec& vkSpec,
                                                  uint32_t sampleCount,
-                                                 uint32_t levelCount);
+                                                 Mipmapped mipmapped);
 
 } // namespace skgpu::graphite
 

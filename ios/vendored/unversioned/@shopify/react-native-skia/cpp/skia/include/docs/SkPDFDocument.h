@@ -12,7 +12,7 @@
 #include "include/core/SkScalar.h"
 #include "include/core/SkString.h"
 #include "include/core/SkTime.h"
-#include "include/private/SkNoncopyable.h"
+#include "include/private/base/SkNoncopyable.h"
 
 #define SKPDF_STRING(X) SKPDF_STRING_IMPL(X)
 #define SKPDF_STRING_IMPL(X) #X
@@ -142,6 +142,17 @@ struct Metadata {
         Experimental.
     */
     SkExecutor* fExecutor = nullptr;
+
+    /** PDF streams may be compressed to save space.
+        Use this to specify the desired compression vs time tradeoff.
+    */
+    enum class CompressionLevel : int {
+        Default = -1,
+        None = 0,
+        LowButFast = 1,
+        Average = 6,
+        HighButSlow = 9,
+    } fCompressionLevel = CompressionLevel::Default;
 
     /** Preferred Subsetter. Only respected if both are compiled in.
 

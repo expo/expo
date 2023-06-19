@@ -12,8 +12,10 @@ namespace RNSkia {
 
 class TextBlobProp : public DerivedSkProp<SkTextBlob> {
 public:
-  explicit TextBlobProp(PropId name) : DerivedSkProp<SkTextBlob>() {
-    _textBlobProp = addProperty(std::make_shared<NodeProp>(name));
+  explicit TextBlobProp(PropId name,
+                        const std::function<void(BaseNodeProp *)> &onChange)
+      : DerivedSkProp<SkTextBlob>(onChange) {
+    _textBlobProp = defineProperty<NodeProp>(name);
   }
 
   void updateDerivedValue() override {
@@ -37,14 +39,13 @@ private:
 
 class TextPathBlobProp : public DerivedSkProp<SkTextBlob> {
 public:
-  TextPathBlobProp() : DerivedSkProp<SkTextBlob>() {
-    _fontProp = addProperty(std::make_shared<FontProp>(JsiPropId::get("font")));
-    _textProp = addProperty(std::make_shared<NodeProp>(JsiPropId::get("text")));
-    _pathProp = addProperty(std::make_shared<PathProp>(JsiPropId::get("path")));
-    _offsetProp = addProperty(
-        std::make_shared<NodeProp>(JsiPropId::get("initialOffset")));
+  explicit TextPathBlobProp(const std::function<void(BaseNodeProp *)> &onChange)
+      : DerivedSkProp<SkTextBlob>(onChange) {
+    _fontProp = defineProperty<FontProp>("font");
+    _textProp = defineProperty<NodeProp>("text");
+    _pathProp = defineProperty<PathProp>("path");
+    _offsetProp = defineProperty<NodeProp>("initialOffset");
 
-    _fontProp->require();
     _textProp->require();
     _pathProp->require();
     _offsetProp->require();
@@ -56,66 +57,70 @@ public:
     auto path = _pathProp->getDerivedValue();
     auto offset = _offsetProp->value().getAsNumber();
 
-    // Get glyphs
-    auto numGlyphIds =
-        font->countText(text.c_str(), text.length(), SkTextEncoding::kUTF8);
+    if (font != nullptr) {
+      // Get glyphs
+      auto numGlyphIds =
+          font->countText(text.c_str(), text.length(), SkTextEncoding::kUTF8);
 
-    std::vector<SkGlyphID> glyphIds;
-    glyphIds.reserve(numGlyphIds);
-    auto ids = font->textToGlyphs(
-        text.c_str(), text.length(), SkTextEncoding::kUTF8,
-        static_cast<SkGlyphID *>(glyphIds.data()), numGlyphIds);
+      std::vector<SkGlyphID> glyphIds;
+      glyphIds.reserve(numGlyphIds);
+      auto ids = font->textToGlyphs(
+          text.c_str(), text.length(), SkTextEncoding::kUTF8,
+          static_cast<SkGlyphID *>(glyphIds.data()), numGlyphIds);
 
-    // Get glyph widths
-    int glyphsSize = static_cast<int>(ids);
-    std::vector<SkScalar> widthPtrs;
-    widthPtrs.resize(glyphsSize);
-    font->getWidthsBounds(glyphIds.data(), numGlyphIds,
-                          static_cast<SkScalar *>(widthPtrs.data()), nullptr,
-                          nullptr); // TODO: Should we use paint somehow here?
+      // Get glyph widths
+      int glyphsSize = static_cast<int>(ids);
+      std::vector<SkScalar> widthPtrs;
+      widthPtrs.resize(glyphsSize);
+      font->getWidthsBounds(glyphIds.data(), numGlyphIds,
+                            static_cast<SkScalar *>(widthPtrs.data()), nullptr,
+                            nullptr); // TODO: Should we use paint somehow here?
 
-    std::vector<SkRSXform> rsx;
-    SkContourMeasureIter meas(*path, false, 1);
+      std::vector<SkRSXform> rsx;
+      SkContourMeasureIter meas(*path, false, 1);
 
-    auto cont = meas.next();
-    auto dist = offset;
+      auto cont = meas.next();
+      auto dist = offset;
 
-    for (size_t i = 0; i < text.length() && cont != nullptr; ++i) {
-      auto width = widthPtrs[i];
-      dist += width / 2;
-      if (dist > cont->length()) {
-        // jump to next contour
-        cont = meas.next();
-        if (cont == nullptr) {
-          // We have come to the end of the path - terminate the string
-          // right here.
-          text = text.substr(0, i);
-          break;
+      for (size_t i = 0; i < text.length() && cont != nullptr; ++i) {
+        auto width = widthPtrs[i];
+        dist += width / 2;
+        if (dist > cont->length()) {
+          // jump to next contour
+          cont = meas.next();
+          if (cont == nullptr) {
+            // We have come to the end of the path - terminate the string
+            // right here.
+            text = text.substr(0, i);
+            break;
+          }
+          dist = width / 2;
         }
-        dist = width / 2;
-      }
-      // Gives us the (x, y) coordinates as well as the cos/sin of the tangent
-      // line at that position.
-      SkPoint pos;
-      SkVector tan;
-      if (!cont->getPosTan(dist, &pos, &tan)) {
-        throw std::runtime_error(
-            "Could not calculate distance when resolving text path");
-      }
-      auto px = pos.x();
-      auto py = pos.y();
-      auto tx = tan.x();
-      auto ty = tan.y();
+        // Gives us the (x, y) coordinates as well as the cos/sin of the tangent
+        // line at that position.
+        SkPoint pos;
+        SkVector tan;
+        if (!cont->getPosTan(dist, &pos, &tan)) {
+          throw std::runtime_error(
+              "Could not calculate distance when resolving text path");
+        }
+        auto px = pos.x();
+        auto py = pos.y();
+        auto tx = tan.x();
+        auto ty = tan.y();
 
-      auto adjustedX = px - (width / 2) * tx;
-      auto adjustedY = py - (width / 2) * ty;
+        auto adjustedX = px - (width / 2) * tx;
+        auto adjustedY = py - (width / 2) * ty;
 
-      rsx.push_back(SkRSXform::Make(tx, ty, adjustedX, adjustedY));
-      dist += width / 2;
+        rsx.push_back(SkRSXform::Make(tx, ty, adjustedX, adjustedY));
+        dist += width / 2;
+      }
+
+      setDerivedValue(SkTextBlob::MakeFromRSXform(text.c_str(), text.length(),
+                                                  rsx.data(), *font));
+    } else {
+      setDerivedValue(nullptr);
     }
-
-    setDerivedValue(SkTextBlob::MakeFromRSXform(text.c_str(), text.length(),
-                                                rsx.data(), *font));
   }
 
 private:

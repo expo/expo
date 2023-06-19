@@ -10,6 +10,8 @@
 
 #include "include/core/SkScalar.h"
 
+#include <cstdint>
+
 struct SkISize {
     int32_t fWidth;
     int32_t fHeight;

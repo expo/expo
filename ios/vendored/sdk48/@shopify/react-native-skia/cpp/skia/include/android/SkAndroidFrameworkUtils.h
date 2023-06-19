@@ -27,7 +27,7 @@ class SkShader;
 class SkAndroidFrameworkUtils {
 public:
 
-#if SK_SUPPORT_GPU
+#if defined(SK_GANESH)
     /**
      *  clipWithStencil draws the current clip into a stencil buffer with reference value and mask
      *  set to 0x1. This function works only on a GPU canvas.
@@ -37,7 +37,7 @@ public:
      *  @return true on success or false if clip is empty or not a GPU canvas.
      */
     static bool clipWithStencil(SkCanvas* canvas);
-#endif //SK_SUPPORT_GPU
+#endif //defined(SK_GANESH)
 
     static void SafetyNetLog(const char*);
 
@@ -57,12 +57,6 @@ public:
      *  @return SkCanvas that was found in the innermost SkPaintFilterCanvas.
      */
     static SkCanvas* getBaseWrappedCanvas(SkCanvas* canvas);
-
-    /**
-     * Skia will change the order in which local matrices concatenate. In order to not break Android
-     * apps targeting older API levels we offer this function to use the legacy concatenation order.
-     */
-    static void UseLegacyLocalMatrixConcatenation();
 
     /**
      *  If the shader represents a linear gradient ShaderAsALinearGradient

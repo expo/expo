@@ -8,7 +8,7 @@ RNSkJsRenderer::RNSkJsRenderer(std::function<void()> requestRedraw,
                                std::shared_ptr<RNSkPlatformContext> context)
     : RNSkRenderer(requestRedraw),
       _jsiCanvas(std::make_shared<JsiSkCanvas>(context)),
-      _platformContext(std::move(context)),
+      _platformContext(context),
       _infoObject(std::make_shared<RNSkInfoObject>()),
       _jsDrawingLock(std::make_shared<std::timed_mutex>()),
       _gpuDrawingLock(std::make_shared<std::timed_mutex>()),
@@ -197,11 +197,14 @@ void RNSkJsRenderer::drawInJsiCanvas(std::shared_ptr<JsiSkCanvas> jsiCanvas,
   if (_drawCallback != nullptr && skCanvas != nullptr) {
     // Make sure to scale correctly
     auto pd = _platformContext->getPixelDensity();
+    skCanvas->clear(SK_ColorTRANSPARENT);
     skCanvas->save();
     skCanvas->scale(pd, pd);
 
     // Call draw function.
     callJsDrawCallback(jsiCanvas, width / pd, height / pd, time);
+
+    skCanvas->restore();
   }
 }
 

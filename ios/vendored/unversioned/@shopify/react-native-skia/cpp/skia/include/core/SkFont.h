@@ -11,6 +11,7 @@
 #include "include/core/SkFontTypes.h"
 #include "include/core/SkScalar.h"
 #include "include/core/SkTypeface.h"
+#include "include/private/base/SkTemplates.h"
 
 #include <vector>
 

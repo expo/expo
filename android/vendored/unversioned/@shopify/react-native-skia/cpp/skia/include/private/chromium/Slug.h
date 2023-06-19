@@ -21,14 +21,6 @@ class SkStrikeClient;
 class SkWriteBuffer;
 
 namespace sktext::gpu {
-
-// You can use Slug to simulate drawTextBlob by defining the following at compile time.
-//    SK_EXPERIMENTAL_SIMULATE_DRAWGLYPHRUNLIST_WITH_SLUG
-// You can use Slug serialization to simulate drawTextBlob by defining the following:
-//    SK_EXPERIMENTAL_SIMULATE_DRAWGLYPHRUNLIST_WITH_SLUG_SERIALIZE
-// For Skia, add this to your args.gn file.
-//    extra_cflags = ["-D", "SK_EXPERIMENTAL_SIMULATE_DRAWGLYPHRUNLIST_WITH_SLUG"]
-
 // Slug encapsulates an SkTextBlob at a specific origin, using a specific paint. It can be
 // manipulated using matrix and clip changes to the canvas. If the canvas is transformed, then
 // the Slug will also transform with smaller glyphs using bi-linear interpolation to render. You
@@ -70,7 +62,6 @@ private:
     static uint32_t NextUniqueID();
     const uint32_t  fUniqueID{NextUniqueID()};
 };
-
 }  // namespace sktext::gpu
 
 #endif  // sktext_gpu_Slug_DEFINED

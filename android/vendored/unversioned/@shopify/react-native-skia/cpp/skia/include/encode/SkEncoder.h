@@ -9,8 +9,12 @@
 #define SkEncoder_DEFINED
 
 #include "include/core/SkPixmap.h"
-#include "include/private/SkNoncopyable.h"
-#include "include/private/SkTemplates.h"
+#include "include/private/base/SkAPI.h"
+#include "include/private/base/SkNoncopyable.h"
+#include "include/private/base/SkTemplates.h"
+
+#include <cstddef>
+#include <cstdint>
 
 class SK_API SkEncoder : SkNoncopyable {
 public:
@@ -53,7 +57,7 @@ protected:
 
     const SkPixmap&        fSrc;
     int                    fCurrRow;
-    SkAutoTMalloc<uint8_t> fStorage;
+    skia_private::AutoTMalloc<uint8_t> fStorage;
 };
 
 #endif

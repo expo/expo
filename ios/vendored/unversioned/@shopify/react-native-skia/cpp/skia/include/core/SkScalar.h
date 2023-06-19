@@ -8,10 +8,8 @@
 #ifndef SkScalar_DEFINED
 #define SkScalar_DEFINED
 
-#include "include/private/SkFloatingPoint.h"
-
-#undef SK_SCALAR_IS_FLOAT
-#define SK_SCALAR_IS_FLOAT  1
+#include "include/private/base/SkAssert.h"
+#include "include/private/base/SkFloatingPoint.h"
 
 typedef float SkScalar;
 

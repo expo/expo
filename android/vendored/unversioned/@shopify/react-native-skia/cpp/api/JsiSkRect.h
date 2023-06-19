@@ -33,10 +33,13 @@ public:
     return static_cast<double>(getObject()->bottom());
   }
 
+  JSI_API_TYPENAME("Rect");
+
   JSI_EXPORT_PROPERTY_GETTERS(JSI_EXPORT_PROP_GET(JsiSkRect, x),
                               JSI_EXPORT_PROP_GET(JsiSkRect, y),
                               JSI_EXPORT_PROP_GET(JsiSkRect, width),
-                              JSI_EXPORT_PROP_GET(JsiSkRect, height))
+                              JSI_EXPORT_PROP_GET(JsiSkRect, height),
+                              JSI_EXPORT_PROP_GET(JsiSkRect, __typename__))
 
   JSI_HOST_FUNCTION(setXYWH) {
     getObject()->setXYWH(arguments[0].asNumber(), arguments[1].asNumber(),
@@ -51,7 +54,8 @@ public:
   }
 
   JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkRect, setXYWH),
-                       JSI_EXPORT_FUNC(JsiSkRect, setLTRB), )
+                       JSI_EXPORT_FUNC(JsiSkRect, setLTRB),
+                       JSI_EXPORT_FUNC(JsiSkRect, dispose))
 
   /**
    Constructor

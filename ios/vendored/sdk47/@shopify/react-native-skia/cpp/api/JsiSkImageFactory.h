@@ -18,7 +18,7 @@ namespace ABI47_0_0RNSkia {
     public:
         JSI_HOST_FUNCTION(MakeImageFromEncoded) {
             auto data = JsiSkData::fromValue(runtime, arguments[0]);
-            auto image = SkImage::MakeFromEncoded(data);
+            auto image = SkImages::DeferredFromEncodedData(data);
             if(image == nullptr) {
                 return jsi::Value::null();
             }
@@ -30,7 +30,7 @@ namespace ABI47_0_0RNSkia {
             auto imageInfo = JsiSkImageInfo::fromValue(runtime, arguments[0]);
             auto pixelData = JsiSkData::fromValue(runtime, arguments[1]);
             auto bytesPerRow = arguments[2].asNumber();
-            auto image = SkImage::MakeRasterData(*imageInfo, pixelData, bytesPerRow);
+            auto image = SkImages::RasterFromData(*imageInfo, pixelData, bytesPerRow);
             if(image == nullptr) {
                 return jsi::Value::null();
             }

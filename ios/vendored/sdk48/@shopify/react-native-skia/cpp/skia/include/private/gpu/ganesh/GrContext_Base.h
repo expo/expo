@@ -19,6 +19,7 @@ class GrContextThreadSafeProxy;
 class GrDirectContext;
 class GrImageContext;
 class GrRecordingContext;
+enum class SkTextureCompressionType;
 
 class GrContext_Base : public SkRefCnt {
 public:
@@ -43,7 +44,7 @@ public:
      */
     SK_API GrBackendFormat defaultBackendFormat(SkColorType, GrRenderable) const;
 
-    SK_API GrBackendFormat compressedBackendFormat(SkImage::CompressionType) const;
+    SK_API GrBackendFormat compressedBackendFormat(SkTextureCompressionType) const;
 
     /**
      * Gets the maximum supported sample count for a color type. 1 is returned if only non-MSAA

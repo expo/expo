@@ -24,8 +24,13 @@ public:
 
   JSI_PROPERTY_GET(y) { return static_cast<double>(getObject()->y()); }
 
+  JSI_API_TYPENAME("Point");
+
   JSI_EXPORT_PROPERTY_GETTERS(JSI_EXPORT_PROP_GET(JsiSkPoint, x),
-                              JSI_EXPORT_PROP_GET(JsiSkPoint, y))
+                              JSI_EXPORT_PROP_GET(JsiSkPoint, y),
+                              JSI_EXPORT_PROP_GET(JsiSkPoint, __typename__))
+
+  JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkPoint, dispose))
 
   JsiSkPoint(std::shared_ptr<RNSkPlatformContext> context, const SkPoint &point)
       : JsiSkWrappingSharedPtrHostObject<SkPoint>(

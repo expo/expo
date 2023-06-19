@@ -21,9 +21,11 @@ protected:
     auto y = _yProp->value().getAsNumber();
     auto font = _fontProp->getDerivedValue();
 
-    context->getCanvas()->drawSimpleText(text, strlen(text),
-                                         SkTextEncoding::kUTF8, x, y, *font,
-                                         *context->getPaint());
+    if (font != nullptr) {
+      context->getCanvas()->drawSimpleText(text, strlen(text),
+                                           SkTextEncoding::kUTF8, x, y, *font,
+                                           *context->getPaint());
+    }
   }
 
   void defineProperties(NodePropsContainer *container) override {
@@ -34,7 +36,6 @@ protected:
     _xProp = container->defineProperty<NodeProp>("x");
     _yProp = container->defineProperty<NodeProp>("y");
 
-    _fontProp->require();
     _textProp->require();
     _xProp->require();
     _yProp->require();

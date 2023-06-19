@@ -8,12 +8,21 @@
 #ifndef skgpu_graphite_ContextOptions_DEFINED
 #define skgpu_graphite_ContextOptions_DEFINED
 
+#include "include/private/base/SkAPI.h"
+
 namespace skgpu { class ShaderErrorHandler; }
 
 namespace skgpu::graphite {
 
 struct SK_API ContextOptions {
     ContextOptions() {}
+
+    /**
+     * Disables correctness workarounds that are enabled for particular GPUs, OSes, or drivers.
+     * This does not affect code path choices that are made for perfomance reasons nor does it
+     * override other ContextOption settings.
+     */
+    bool fDisableDriverCorrectnessWorkarounds = false;
 
     /**
      * If present, use this object to report shader compilation failures. If not, report failures
@@ -55,18 +64,7 @@ struct SK_API ContextOptions {
      * fGlypheCacheTextureMaximumBytes.
      */
     bool fAllowMultipleGlyphCacheTextures = true;
-
-    /**
-     * If true, then add 1 pixel padding to all glyph masks in the atlas to support bi-lerp
-     * rendering of all glyphs. This must be set to true to use Slugs.
-     */
-    #if defined(SK_EXPERIMENTAL_SIMULATE_DRAWGLYPHRUNLIST_WITH_SLUG) || \
-        defined(SK_EXPERIMENTAL_SIMULATE_DRAWGLYPHRUNLIST_WITH_SLUG_SERIALIZE) || \
-        defined(SK_EXPERIMENTAL_SIMULATE_DRAWGLYPHRUNLIST_WITH_SLUG_STRIKE_SERIALIZE)
-    bool fSupportBilerpFromGlyphAtlas = true;
-    #else
     bool fSupportBilerpFromGlyphAtlas = false;
-    #endif
 
 #if GRAPHITE_TEST_UTILS
     /**
@@ -77,6 +75,12 @@ struct SK_API ContextOptions {
      * Maximum width and height of internal texture atlases.
      */
     int  fMaxTextureAtlasSize = 2048;
+
+    /**
+     * If true, will store a pointer in Recorder that points back to the Context
+     * that created it. Used by readPixels() and other methods that normally require a Context.
+     */
+    bool fStoreContextRefInRecorder = false;
 #endif
 };
 

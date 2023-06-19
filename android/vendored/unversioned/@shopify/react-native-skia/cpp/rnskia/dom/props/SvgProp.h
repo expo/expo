@@ -10,24 +10,32 @@ namespace RNSkia {
 
 class SvgProp : public DerivedSkProp<SkSVGDOM> {
 public:
-  explicit SvgProp(PropId name) : DerivedSkProp<SkSVGDOM>() {
-    _imageSvgProp = addProperty(std::make_shared<NodeProp>(name));
+  explicit SvgProp(PropId name,
+                   const std::function<void(BaseNodeProp *)> &onChange)
+      : DerivedSkProp<SkSVGDOM>(onChange) {
+    _imageSvgProp = defineProperty<NodeProp>(name);
   }
 
   void updateDerivedValue() override {
-    if (_imageSvgProp->value().getType() != PropType::HostObject) {
-      throw std::runtime_error(
-          "Expected SkSvgDom object for the svg property.");
-    }
+    if (_imageSvgProp->isSet()) {
 
-    auto ptr = std::dynamic_pointer_cast<JsiSkSVG>(
-        _imageSvgProp->value().getAsHostObject());
-    if (ptr == nullptr) {
-      throw std::runtime_error(
-          "Expected SkSvgDom object for the svg property.");
-    }
+      if (_imageSvgProp->value().getType() == PropType::HostObject) {
 
-    setDerivedValue(ptr->getObject());
+        auto ptr = std::dynamic_pointer_cast<JsiSkSVG>(
+            _imageSvgProp->value().getAsHostObject());
+        if (ptr == nullptr) {
+          throw std::runtime_error(
+              "Expected SkSvgDom object for the svg property.");
+        }
+        setDerivedValue(ptr->getObject());
+      } else {
+        throw std::runtime_error(
+            "Expected SkSvgDom object or null/undefined for the svg property.");
+      }
+
+    } else {
+      setDerivedValue(nullptr);
+    }
   }
 
 private:

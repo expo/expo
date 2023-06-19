@@ -25,23 +25,8 @@ public:
       : JsiSkWrappingSkPtrHostObject<SkPathEffect>(std::move(context),
                                                    std::move(pathEffect)) {}
 
-  // TODO: declare in JsiSkWrappingSkPtrHostObject via extra template parameter?
-  JSI_PROPERTY_GET(__typename__) {
-    return jsi::String::createFromUtf8(runtime, "PathEffect");
-  }
-
-  JSI_EXPORT_PROPERTY_GETTERS(JSI_EXPORT_PROP_GET(JsiSkPathEffect,
-                                                  __typename__))
-
-  /**
-    Returns the underlying object from a host object of this type
-   */
-  static sk_sp<SkPathEffect> fromValue(jsi::Runtime &runtime,
-                                       const jsi::Value &obj) {
-    return obj.asObject(runtime)
-        .asHostObject<JsiSkPathEffect>(runtime)
-        ->getObject();
-  }
+  EXPORT_JSI_API_TYPENAME(JsiSkPathEffect, "PathEffect")
+  JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkColorFilter, dispose))
 };
 
 } // namespace RNSkia

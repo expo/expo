@@ -7,7 +7,7 @@
 #include <chrono>
 #include <string>
 
-#include <RNSkLog.h>
+#include "RNSkLog.h"
 
 namespace RNSkia {
 

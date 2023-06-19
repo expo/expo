@@ -10,7 +10,7 @@
 
 #include "include/core/SkString.h"
 #include "include/gpu/vk/VulkanTypes.h"
-#include "include/private/SkTArray.h"
+#include "include/private/base/SkTArray.h"
 
 namespace skgpu {
 
@@ -48,7 +48,7 @@ public:
 #ifdef SK_DEBUG
     void dump() const {
         SkDebugf("**Vulkan Extensions**\n");
-        for (int i = 0; i < fExtensions.count(); ++i) {
+        for (int i = 0; i < fExtensions.size(); ++i) {
             SkDebugf("%s. Version: %d\n",
                      fExtensions[i].fName.c_str(), fExtensions[i].fSpecVersion);
         }
@@ -59,7 +59,7 @@ public:
 private:
     void getSpecVersions(VulkanGetProc getProc, VkInstance, VkPhysicalDevice);
 
-    SkTArray<Info> fExtensions;
+    skia_private::TArray<Info> fExtensions;
 };
 
 } // namespace skgpu
