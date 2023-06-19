@@ -5,8 +5,8 @@ class ClipboardPasteButton: ExpoView {
   let onPastePressed = EventDispatcher()
 
   // MARK: - Properties
-  var baseBackgroundColor: UIColor = .white
-  var baseForegroundColor: UIColor = .systemBlue
+  var baseBackgroundColor: UIColor?
+  var baseForegroundColor: UIColor?
   var cornerStyle: CornerStyle = .capsule
   var displayMode: DisplayMode = .iconAndLabel
   var acceptedContentTypes: [AcceptedTypes] = []

@@ -103,28 +103,31 @@ export interface ClipboardPasteButtonProps extends ViewProps {
   onPress: (data: PasteEventPayload) => void;
   /**
    * The backgroundColor of the button.
+   * Leaving this as the default allows the color to adjust to the system theme settings.
+   *
+   * @default systemBlue
+   * @see [Apple Documentation](https://developer.apple.com/documentation/appkit/nscolor/2879260-systemblue)
    */
-  backgroundColor?: string;
+  backgroundColor?: string | null;
   /**
    * The foregroundColor of the button.
+   * @default white
    */
-  foregroundColor?: string;
+  foregroundColor?: string | null;
   /**
    * The cornerStyle of the button.
    * @default capsule
    *
-   * @see [Apple
-   * Documetation](https://developer.apple.com/documentation/uikit/uibutton/configuration/cornerstyle) for more details.
+   * @see [Apple Documetation](https://developer.apple.com/documentation/uikit/uibutton/configuration/cornerstyle) for more details.
    */
-  cornerStyle?: CornerStyle;
+  cornerStyle?: CornerStyle | null;
   /**
    * The displayMode of the button.
    * @default `iconAndLabel`
    *
-   * @see [Apple
-   * Documetation](https://developer.apple.com/documentation/uikit/uipastecontrol/displaymode) for more details.
+   * @see [Apple Documetation](https://developer.apple.com/documentation/uikit/uipastecontrol/displaymode) for more details.
    */
-  displayMode?: DisplayMode;
+  displayMode?: DisplayMode | null;
   /**
    * The custom style to apply to the button. Should not include `backgroundColor`, `borderRadius` or `color`
    * properties.
@@ -133,7 +136,7 @@ export interface ClipboardPasteButtonProps extends ViewProps {
   /**
    * The options to use when pasting an image from the clipboard.
    */
-  imageOptions?: GetImageOptions;
+  imageOptions?: GetImageOptions | null;
   /**
    * An array of the content types that will cause the button to become active
    * @note do not include `plain-text` and `html` at the same time as this will cause all text to be treated as `html`

@@ -113,16 +113,14 @@ public class ClipboardModule: Module {
       Events("onPastePressed")
 
       Prop("backgroundColor") { (view, color: UIColor?) in
-        let backgroundColor = color ?? .white
-        if view.baseBackgroundColor != backgroundColor {
-          view.baseBackgroundColor = backgroundColor
+        if view.baseBackgroundColor != color {
+          view.baseBackgroundColor = color
         }
       }
 
       Prop("foregroundColor") { (view, color: UIColor?) in
-        let foregroundColor = color ?? .systemBlue
-        if view.baseForegroundColor != foregroundColor {
-          view.baseForegroundColor = foregroundColor
+        if view.baseForegroundColor != color {
+          view.baseForegroundColor = color
         }
       }
 
@@ -138,8 +136,8 @@ public class ClipboardModule: Module {
         view.displayMode = mode ?? .iconAndLabel
       }
 
-      Prop("imageOptions") { (view, options: GetImageOptions) in
-        view.imageOptions = options
+      Prop("imageOptions") { (view, options: GetImageOptions?) in
+        view.imageOptions = options ?? GetImageOptions()
       }
 
       OnViewDidUpdateProps { view in
