@@ -10,9 +10,13 @@
 
 #include "include/codec/SkEncodedOrigin.h"
 #include "include/core/SkImageInfo.h"
+#include "include/core/SkMatrix.h"
 #include "include/core/SkSize.h"
+#include "include/core/SkTypes.h"
 
 #include <array>
+#include <cstddef>
+#include <cstdint>
 #include <tuple>
 
 /**

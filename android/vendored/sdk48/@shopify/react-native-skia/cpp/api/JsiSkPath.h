@@ -7,6 +7,7 @@
 #include <jsi/jsi.h>
 
 #include "JsiSkHostObjects.h"
+#include "JsiSkMatrix.h"
 #include "JsiSkPoint.h"
 #include "JsiSkRRect.h"
 #include "JsiSkRect.h"
@@ -20,6 +21,7 @@
 #include "SkPathEffect.h"
 #include "SkPathOps.h"
 #include "SkPathTypes.h"
+#include "SkPathUtils.h"
 #include "SkString.h"
 #include "SkStrokeRec.h"
 #include "SkTextUtils.h"
@@ -289,8 +291,11 @@ public:
 
     auto jsiPrecision = opts.getProperty(runtime, "precision");
     auto precision = jsiPrecision.isUndefined() ? 1 : jsiPrecision.asNumber();
-    auto result = p.getFillPath(path, &path, nullptr, precision);
-    getObject()->swap(path);
+    auto result =
+        skpathutils::FillPathWithPaint(path, p, &path, nullptr, precision);
+    if (result) {
+        getObject()->swap(path);
+    }
     return result ? thisValue.getObject(runtime) : jsi::Value::null();
   }
 
@@ -325,8 +330,7 @@ public:
 
   JSI_HOST_FUNCTION(toSVGString) {
     SkPath path = *getObject();
-    SkString s;
-    SkParsePath::ToSVGString(path, &s);
+    auto s = SkParsePath::ToSVGString(path);
     return jsi::String::createFromUtf8(runtime, s.c_str());
   }
 

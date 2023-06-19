@@ -10,8 +10,7 @@
 
 #include "include/core/SkColor.h"
 #include "include/core/SkColorPriv.h"
-#include "include/private/SkTo.h"
-#include "include/private/SkVx.h"
+#include "include/private/base/SkTo.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Convert a 16bit pixel to a 32bit pixel
@@ -372,30 +371,6 @@ static inline SkPMColor SkPixel4444ToPixel32(U16CPU c) {
                  (SkGetPackedG4444(c) << SK_G32_SHIFT) |
                  (SkGetPackedB4444(c) << SK_B32_SHIFT);
     return d | (d << 4);
-}
-
-static inline skvx::float4 swizzle_rb(const skvx::float4& x) {
-    return skvx::shuffle<2, 1, 0, 3>(x);
-}
-
-static inline skvx::float4 swizzle_rb_if_bgra(const skvx::float4& x) {
-#ifdef SK_PMCOLOR_IS_BGRA
-    return swizzle_rb(x);
-#else
-    return x;
-#endif
-}
-
-static inline skvx::float4 Sk4f_fromL32(uint32_t px) {
-    return skvx::cast<float>(skvx::byte4::Load(&px)) * (1 / 255.0f);
-}
-
-static inline uint32_t Sk4f_toL32(const skvx::float4& px) {
-    uint32_t l32;
-    // For the expected positive color values, the +0.5 before the pin and cast effectively rounds
-    // to the nearest int without having to call round() or lrint().
-    skvx::cast<uint8_t>(pin(px * 255.f + 0.5f, skvx::float4(0.f), skvx::float4(255.f))).store(&l32);
-    return l32;
 }
 
 using SkPMColor4f = SkRGBA4f<kPremul_SkAlphaType>;

@@ -9,7 +9,7 @@
 #define SkSpinlock_DEFINED
 
 #include "include/core/SkTypes.h"
-#include "include/private/SkThreadAnnotations.h"
+#include "include/private/base/SkThreadAnnotations.h"
 #include <atomic>
 
 class SK_CAPABILITY("mutex") SkSpinlock {

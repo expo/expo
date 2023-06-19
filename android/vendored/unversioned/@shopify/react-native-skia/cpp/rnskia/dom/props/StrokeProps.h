@@ -8,7 +8,7 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
 
-#include <SkPaint.h>
+#include "SkPaint.h"
 
 #pragma clang diagnostic pop
 
@@ -16,8 +16,10 @@ namespace RNSkia {
 
 class StrokeCapProp : public DerivedProp<SkPaint::Cap> {
 public:
-  explicit StrokeCapProp(PropId name) : DerivedProp<SkPaint::Cap>() {
-    _strokeCap = addProperty(std::make_shared<NodeProp>(name));
+  explicit StrokeCapProp(PropId name,
+                         const std::function<void(BaseNodeProp *)> &onChange)
+      : DerivedProp<SkPaint::Cap>(onChange) {
+    _strokeCap = defineProperty<NodeProp>(name);
   }
 
   void updateDerivedValue() override {
@@ -45,8 +47,10 @@ private:
 
 class StrokeJoinProp : public DerivedProp<SkPaint::Join> {
 public:
-  explicit StrokeJoinProp(PropId name) : DerivedProp<SkPaint::Join>() {
-    _strokeJoin = addProperty(std::make_shared<NodeProp>(name));
+  explicit StrokeJoinProp(PropId name,
+                          const std::function<void(BaseNodeProp *)> &onChange)
+      : DerivedProp<SkPaint::Join>(onChange) {
+    _strokeJoin = defineProperty<NodeProp>(name);
   }
 
   void updateDerivedValue() override {

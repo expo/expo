@@ -10,8 +10,6 @@
 
 #include "include/core/SkTypes.h"
 
-#include <string>
-
 namespace SkSL {
 
 /**
@@ -76,8 +74,6 @@ public:
     bool isExplicit()      const { return fKind == Kind::kExplicit; }
     bool isUniformMatrix() const { return fKind == Kind::kUniformMatrix; }
     bool isFragCoord()     const { return fKind == Kind::kFragCoord; }
-
-    std::string constructor() const;
 
 private:
     Kind fKind = Kind::kNone;

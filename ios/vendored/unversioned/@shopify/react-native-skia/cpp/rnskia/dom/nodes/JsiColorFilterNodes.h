@@ -11,45 +11,26 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
 
-#include <SkColorFilter.h>
+#include "SkColorFilter.h"
 
 #pragma clang diagnostic pop
 
 namespace RNSkia {
 
-class JsiBaseColorFilterNode
-    : public JsiDomDeclarationNode<JsiBaseColorFilterNode,
-                                   sk_sp<SkColorFilter>> {
+class JsiBaseColorFilterNode : public JsiDomDeclarationNode {
 public:
   JsiBaseColorFilterNode(std::shared_ptr<RNSkPlatformContext> context,
                          const char *type)
-      : JsiDomDeclarationNode<JsiBaseColorFilterNode, sk_sp<SkColorFilter>>(
-            context, type) {}
+      : JsiDomDeclarationNode(context, type, DeclarationType::ColorFilter) {}
 
 protected:
-  sk_sp<SkColorFilter> resolve(std::shared_ptr<JsiDomNode> child) override {
-    auto ptr = std::dynamic_pointer_cast<JsiBaseColorFilterNode>(child);
-    if (ptr) {
-      return ptr->getCurrent();
-    }
-    return nullptr;
-  }
-
-  void setColorFilter(DrawingContext *context, sk_sp<SkColorFilter> f) {
-    set(context, f);
-  }
-
-  void set(DrawingContext *context, sk_sp<SkColorFilter> ColorFilter) override {
-    auto paint = context->getMutablePaint();
-    if (paint->getColorFilter() != nullptr &&
-        paint->getColorFilter() != getCurrent().get()) {
-      paint->setColorFilter(
-          SkColorFilters::Compose(ColorFilter, paint->refColorFilter()));
-    } else {
-      paint->setColorFilter(ColorFilter);
-    }
-
-    setCurrent(ColorFilter);
+  void composeAndPush(DeclarationContext *context, sk_sp<SkColorFilter> cf1) {
+    context->save();
+    decorateChildren(context);
+    auto cf2 = context->getColorFilters()->popAsOne();
+    context->restore();
+    auto cf = cf2 ? SkColorFilters::Compose(cf1, cf2) : cf1;
+    context->getColorFilters()->push(cf);
   }
 };
 
@@ -61,22 +42,20 @@ public:
       std::shared_ptr<RNSkPlatformContext> context)
       : JsiBaseColorFilterNode(context, "skMatrixColorFilter") {}
 
-protected:
-  void decorate(DrawingContext *context) override {
-    if (isChanged(context)) {
-      auto array = _matrixProp->value().getAsArray();
-      float matrix[20];
-      for (int i = 0; i < 20; i++) {
-        if (array.size() > i) {
-          matrix[i] = array[i].getAsNumber();
-        }
+  void decorate(DeclarationContext *context) override {
+    auto array = _matrixProp->value().getAsArray();
+    float matrix[20];
+    for (int i = 0; i < 20; i++) {
+      if (array.size() > i) {
+        matrix[i] = array[i].getAsNumber();
       }
-      setColorFilter(context, SkColorFilters::Matrix(matrix));
     }
+    composeAndPush(context, SkColorFilters::Matrix(matrix));
   }
 
+protected:
   void defineProperties(NodePropsContainer *container) override {
-    JsiBaseDomDeclarationNode::defineProperties(container);
+    JsiDomDeclarationNode::defineProperties(container);
     _matrixProp = container->defineProperty<NodeProp>("matrix");
     _matrixProp->require();
   }
@@ -91,17 +70,15 @@ public:
   explicit JsiBlendColorFilterNode(std::shared_ptr<RNSkPlatformContext> context)
       : JsiBaseColorFilterNode(context, "skBlendColorFilter") {}
 
-protected:
-  void decorate(DrawingContext *context) override {
-    if (isChanged(context)) {
-      setColorFilter(context,
-                     SkColorFilters::Blend(*_colorProp->getDerivedValue(),
-                                           *_blendModeProp->getDerivedValue()));
-    }
+  void decorate(DeclarationContext *context) override {
+    auto color = _colorProp->getDerivedValue();
+    auto mode = _blendModeProp->getDerivedValue();
+    composeAndPush(context, SkColorFilters::Blend(*color, *mode));
   }
 
+protected:
   void defineProperties(NodePropsContainer *container) override {
-    JsiBaseDomDeclarationNode::defineProperties(container);
+    JsiDomDeclarationNode::defineProperties(container);
     _blendModeProp = container->defineProperty<BlendModeProp>("mode");
     _colorProp = container->defineProperty<ColorProp>("color");
 
@@ -122,11 +99,8 @@ public:
       std::shared_ptr<RNSkPlatformContext> context)
       : JsiBaseColorFilterNode(context, "skLinearToSRGBGammaColorFilter") {}
 
-protected:
-  void decorate(DrawingContext *context) override {
-    if (isChanged(context)) {
-      setColorFilter(context, SkColorFilters::LinearToSRGBGamma());
-    }
+  void decorate(DeclarationContext *context) override {
+    composeAndPush(context, SkColorFilters::LinearToSRGBGamma());
   }
 };
 
@@ -138,11 +112,8 @@ public:
       std::shared_ptr<RNSkPlatformContext> context)
       : JsiBaseColorFilterNode(context, "skSRGBToLinearGammaColorFilter") {}
 
-protected:
-  void decorate(DrawingContext *context) override {
-    if (isChanged(context)) {
-      setColorFilter(context, SkColorFilters::SRGBToLinearGamma());
-    }
+  void decorate(DeclarationContext *context) override {
+    composeAndPush(context, SkColorFilters::SRGBToLinearGamma());
   }
 };
 
@@ -152,11 +123,8 @@ public:
   explicit JsiLumaColorFilterNode(std::shared_ptr<RNSkPlatformContext> context)
       : JsiBaseColorFilterNode(context, "skLumaColorFilter") {}
 
-protected:
-  void decorate(DrawingContext *context) override {
-    if (isChanged(context)) {
-      setColorFilter(context, SkLumaColorFilter::Make());
-    }
+  void decorate(DeclarationContext *context) override {
+    composeAndPush(context, SkLumaColorFilter::Make());
   }
 };
 
@@ -166,17 +134,25 @@ public:
   explicit JsiLerpColorFilterNode(std::shared_ptr<RNSkPlatformContext> context)
       : JsiBaseColorFilterNode(context, "skLerpColorFilter") {}
 
-protected:
-  void decorate(DrawingContext *context) override {
-    if (isChanged(context)) {
-      setColorFilter(context,
-                     SkColorFilters::Lerp(_tProp->value().getAsNumber(),
-                                          requireChild(0), requireChild(1)));
+  void decorate(DeclarationContext *context) override {
+    context->save();
+    decorateChildren(context);
+    auto second = context->getColorFilters()->pop();
+    auto first = context->getColorFilters()->pop();
+    context->restore();
+
+    if (first == nullptr || second == nullptr) {
+      throw std::runtime_error(
+          "LerpColorFilterNode: missing two color filters as children");
     }
+
+    auto t = _tProp->value().getAsNumber();
+    context->getColorFilters()->push(SkColorFilters::Lerp(t, first, second));
   }
 
+protected:
   void defineProperties(NodePropsContainer *container) override {
-    JsiBaseDomDeclarationNode::defineProperties(container);
+    JsiDomDeclarationNode::defineProperties(container);
     _tProp = container->defineProperty<NodeProp>("t");
     _tProp->require();
   }

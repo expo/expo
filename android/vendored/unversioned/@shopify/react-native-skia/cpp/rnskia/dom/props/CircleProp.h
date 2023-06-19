@@ -8,7 +8,7 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
 
-#include <SkPoint.h>
+#include "SkPoint.h"
 
 #pragma clang diagnostic pop
 
@@ -20,10 +20,11 @@ static PropId PropNameC = JsiPropId::get("c");
 
 class CircleProp : public DerivedProp<SkPoint> {
 public:
-  CircleProp() : DerivedProp<SkPoint>() {
-    _c = addProperty(std::make_shared<PointProp>(PropNameC));
-    _cx = addProperty(std::make_shared<NodeProp>(PropNameCx));
-    _cy = addProperty(std::make_shared<NodeProp>(PropNameCy));
+  explicit CircleProp(const std::function<void(BaseNodeProp *)> &onChange)
+      : DerivedProp<SkPoint>(onChange) {
+    _c = defineProperty<PointProp>("c");
+    _cx = defineProperty<NodeProp>("cx");
+    _cy = defineProperty<NodeProp>("cy");
   }
 
   void updateDerivedValue() override {
@@ -33,7 +34,7 @@ public:
       setDerivedValue(SkPoint::Make(_cx->value().getAsNumber(),
                                     _cy->value().getAsNumber()));
     } else if (_c->isSet()) {
-      setDerivedValue(_c->getDerivedValue());
+      setDerivedValue(_c->getUnsafeDerivedValue());
     } else {
       setDerivedValue(SkPoint::Make(0.0, 0.0));
     }

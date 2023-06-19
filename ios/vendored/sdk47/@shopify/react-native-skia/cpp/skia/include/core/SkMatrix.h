@@ -8,12 +8,19 @@
 #ifndef SkMatrix_DEFINED
 #define SkMatrix_DEFINED
 
+#include "include/core/SkPoint.h"
 #include "include/core/SkRect.h"
-#include "include/private/SkMacros.h"
-#include "include/private/SkTo.h"
+#include "include/core/SkScalar.h"
+#include "include/core/SkTypes.h"
+#include "include/private/base/SkMacros.h"
+#include "include/private/base/SkTo.h"
 
-struct SkRSXform;
+#include <cstdint>
+#include <cstring>
+
 struct SkPoint3;
+struct SkRSXform;
+struct SkSize;
 
 // Remove when clients are updated to live without this
 #define SK_SUPPORT_LEGACY_MATRIX_RECTTORECT
@@ -1812,7 +1819,10 @@ public:
         if (tx != 0.0f || ty != 0.0f) {
             mask |= kTranslate_Mask;
         }
-        this->setTypeMask(mask | kRectStaysRect_Mask);
+        if (sx != 0 && sy != 0) {
+            mask |= kRectStaysRect_Mask;
+        }
+        this->setTypeMask(mask);
     }
 
     /** Returns true if all elements of the matrix are finite. Returns false if any

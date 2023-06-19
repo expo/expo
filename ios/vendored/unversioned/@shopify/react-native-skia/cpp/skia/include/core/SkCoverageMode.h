@@ -8,8 +8,6 @@
 #ifndef SkCoverageMode_DEFINED
 #define SkCoverageMode_DEFINED
 
-#include "include/core/SkTypes.h"
-
 /**
  *  Describes geometric operations (ala SkRegion::Op) that can be applied to coverage bytes.
  *  These can be thought of as variants of porter-duff (SkBlendMode) modes, but only applied

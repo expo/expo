@@ -10,6 +10,7 @@
 #define GrGLTypes_DEFINED
 
 #include "include/core/SkRefCnt.h"
+#include "include/gpu/GpuTypes.h"
 #include "include/gpu/gl/GrGLConfig.h"
 
 /**
@@ -198,7 +199,7 @@ struct GrGLFramebufferInfo {
 struct GrGLSurfaceInfo {
     uint32_t fSampleCount = 1;
     uint32_t fLevelCount = 0;
-    GrProtected fProtected = GrProtected::kNo;
+    skgpu::Protected fProtected = skgpu::Protected::kNo;
 
     GrGLenum fTarget = 0;
     GrGLenum fFormat = 0;

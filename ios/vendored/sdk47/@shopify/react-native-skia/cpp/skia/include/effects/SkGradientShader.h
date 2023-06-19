@@ -62,10 +62,43 @@ public:
     struct Interpolation {
         enum class InPremul : bool { kNo = false, kYes = true };
 
-        InPremul fInPremul = InPremul::kNo;
+        enum class ColorSpace : uint8_t {
+            // Default Skia behavior: interpolate in the color space of the destination surface
+            kDestination,
+
+            // https://www.w3.org/TR/css-color-4/#interpolation-space
+            kSRGBLinear,
+            kLab,
+            kOKLab,
+            kLCH,
+            kOKLCH,
+            kSRGB,
+            kHSL,
+            kHWB,
+
+            kLastColorSpace = kHWB,
+        };
+        static constexpr int kColorSpaceCount = static_cast<int>(ColorSpace::kLastColorSpace) + 1;
+
+        enum class HueMethod : uint8_t {
+            // https://www.w3.org/TR/css-color-4/#hue-interpolation
+            kShorter,
+            kLonger,
+            kIncreasing,
+            kDecreasing,
+
+            kLastHueMethod = kDecreasing,
+        };
+        static constexpr int kHueMethodCount = static_cast<int>(HueMethod::kLastHueMethod) + 1;
+
+        InPremul   fInPremul = InPremul::kNo;
+        ColorSpace fColorSpace = ColorSpace::kDestination;
+        HueMethod  fHueMethod  = HueMethod::kShorter;  // Only relevant for LCH, OKLCH, HSL, or HWB
 
         static Interpolation FromFlags(uint32_t flags) {
-            return {flags & kInterpolateColorsInPremul_Flag ? InPremul::kYes : InPremul::kNo};
+            return {flags & kInterpolateColorsInPremul_Flag ? InPremul::kYes : InPremul::kNo,
+                    ColorSpace::kDestination,
+                    HueMethod::kShorter};
         }
     };
 
@@ -76,8 +109,11 @@ public:
         @param  pos     May be NULL. array[count] of SkScalars, or NULL, of the relative position of
                         each corresponding color in the colors array. If this is NULL,
                         the the colors are distributed evenly between the start and end point.
-                        If this is not null, the values must begin with 0, end with 1.0, and
-                        intermediate values must be strictly increasing.
+                        If this is not null, the values must lie between 0.0 and 1.0, and be
+                        strictly increasing. If the first value is not 0.0, then an additional
+                        color stop is added at position 0.0, with the same color as colors[0].
+                        If the the last value is not 1.0, then an additional color stop is added
+                        at position 1.0, with the same color as colors[count - 1].
         @param  count   Must be >=2. The number of colors (and pos if not NULL) entries.
         @param  mode    The tiling mode
 
@@ -95,8 +131,11 @@ public:
         @param  pos     May be NULL. array[count] of SkScalars, or NULL, of the relative position of
                         each corresponding color in the colors array. If this is NULL,
                         the the colors are distributed evenly between the start and end point.
-                        If this is not null, the values must begin with 0, end with 1.0, and
-                        intermediate values must be strictly increasing.
+                        If this is not null, the values must lie between 0.0 and 1.0, and be
+                        strictly increasing. If the first value is not 0.0, then an additional
+                        color stop is added at position 0.0, with the same color as colors[0].
+                        If the the last value is not 1.0, then an additional color stop is added
+                        at position 1.0, with the same color as colors[count - 1].
         @param  count   Must be >=2. The number of colors (and pos if not NULL) entries.
         @param  mode    The tiling mode
 
@@ -123,8 +162,11 @@ public:
         @param  pos     May be NULL. The array[count] of SkScalars, or NULL, of the relative position of
                         each corresponding color in the colors array. If this is NULL,
                         the the colors are distributed evenly between the center and edge of the circle.
-                        If this is not null, the values must begin with 0, end with 1.0, and
-                        intermediate values must be strictly increasing.
+                        If this is not null, the values must lie between 0.0 and 1.0, and be
+                        strictly increasing. If the first value is not 0.0, then an additional
+                        color stop is added at position 0.0, with the same color as colors[0].
+                        If the the last value is not 1.0, then an additional color stop is added
+                        at position 1.0, with the same color as colors[count - 1].
         @param  count   Must be >= 2. The number of colors (and pos if not NULL) entries
         @param  mode    The tiling mode
     */
@@ -141,8 +183,11 @@ public:
         @param  pos     May be NULL. The array[count] of SkScalars, or NULL, of the relative position of
                         each corresponding color in the colors array. If this is NULL,
                         the the colors are distributed evenly between the center and edge of the circle.
-                        If this is not null, the values must begin with 0, end with 1.0, and
-                        intermediate values must be strictly increasing.
+                        If this is not null, the values must lie between 0.0 and 1.0, and be
+                        strictly increasing. If the first value is not 0.0, then an additional
+                        color stop is added at position 0.0, with the same color as colors[0].
+                        If the the last value is not 1.0, then an additional color stop is added
+                        at position 1.0, with the same color as colors[count - 1].
         @param  count   Must be >= 2. The number of colors (and pos if not NULL) entries
         @param  mode    The tiling mode
     */
@@ -214,8 +259,11 @@ public:
         @param  pos        May be NULL. The array[count] of SkScalars, or NULL, of the relative
                            position of each corresponding color in the colors array. If this is
                            NULL, then the colors are distributed evenly within the angular range.
-                           If this is not null, the values must begin with 0, end with 1.0, and
-                           intermediate values must be strictly increasing.
+                           If this is not null, the values must lie between 0.0 and 1.0, and be
+                           strictly increasing. If the first value is not 0.0, then an additional
+                           color stop is added at position 0.0, with the same color as colors[0].
+                           If the the last value is not 1.0, then an additional color stop is added
+                           at position 1.0, with the same color as colors[count - 1].
         @param  count      Must be >= 2. The number of colors (and pos if not NULL) entries
         @param  mode       Tiling mode: controls drawing outside of the gradient angular range.
         @param  startAngle Start of the angular range, corresponding to pos == 0.
@@ -250,8 +298,11 @@ public:
         @param  pos        May be NULL. The array[count] of SkScalars, or NULL, of the relative
                            position of each corresponding color in the colors array. If this is
                            NULL, then the colors are distributed evenly within the angular range.
-                           If this is not null, the values must begin with 0, end with 1.0, and
-                           intermediate values must be strictly increasing.
+                           If this is not null, the values must lie between 0.0 and 1.0, and be
+                           strictly increasing. If the first value is not 0.0, then an additional
+                           color stop is added at position 0.0, with the same color as colors[0].
+                           If the the last value is not 1.0, then an additional color stop is added
+                           at position 1.0, with the same color as colors[count - 1].
         @param  count      Must be >= 2. The number of colors (and pos if not NULL) entries
         @param  mode       Tiling mode: controls drawing outside of the gradient angular range.
         @param  startAngle Start of the angular range, corresponding to pos == 0.

@@ -11,9 +11,9 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
 
+#include "RNSkLog.h"
 #include "SkPath.h"
 #include "SkPathOps.h"
-#include <RNSkLog.h>
 
 #pragma clang diagnostic pop
 

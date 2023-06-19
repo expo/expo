@@ -10,7 +10,7 @@
 
 #include "include/core/SkString.h"
 #include "include/gpu/gl/GrGLFunctions.h"
-#include "include/private/SkTArray.h"
+#include "include/private/base/SkTArray.h"
 
 #include <utility>
 
@@ -66,13 +66,13 @@ public:
      */
     void add(const char[]);
 
-    void reset() { fStrings.reset(); }
+    void reset() { fStrings.clear(); }
 
     void dumpJSON(SkJSONWriter*) const;
 
 private:
     bool fInitialized = false;
-    SkTArray<SkString> fStrings;
+    skia_private::TArray<SkString> fStrings;
 };
 
 #endif

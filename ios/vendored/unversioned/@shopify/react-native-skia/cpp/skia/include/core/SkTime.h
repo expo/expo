@@ -11,7 +11,7 @@
 #define SkTime_DEFINED
 
 #include "include/core/SkTypes.h"
-#include "include/private/SkMacros.h"
+#include "include/private/base/SkMacros.h"
 
 #include <cinttypes>
 

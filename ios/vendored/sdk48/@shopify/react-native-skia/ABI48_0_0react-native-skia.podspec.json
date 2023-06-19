@@ -17,10 +17,10 @@
   },
   "requires_arc": true,
   "pod_target_xcconfig": {
-    "GCC_PREPROCESSOR_DEFINITIONS": "$(inherited) SK_GL=1 SK_METAL=1",
+    "GCC_PREPROCESSOR_DEFINITIONS": "$(inherited) SK_METAL=1 SK_GANESH=1",
     "CLANG_CXX_LANGUAGE_STANDARD": "c++17",
     "DEFINES_MODULE": "YES",
-    "HEADER_SEARCH_PATHS": "\"$(PODS_ROOT)/Headers/Private/ABI48_0_0React-bridging/react/bridging\" \"$(PODS_CONFIGURATION_BUILD_DIR)/ABI48_0_0React-bridging/react_bridging.framework/Headers\""
+    "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)/cpp/\"/** \"$(PODS_ROOT)/Headers/Private/ABI48_0_0React-bridging/react/bridging\" \"$(PODS_CONFIGURATION_BUILD_DIR)/ABI48_0_0React-bridging/react_bridging.framework/Headers\""
   },
   "frameworks": [
     "GLKit",

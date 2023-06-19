@@ -25,25 +25,39 @@ static PropId PropNameFit = JsiPropId::get("fit");
 
 class ImageProp : public DerivedSkProp<SkImage> {
 public:
-  explicit ImageProp(PropId name) : DerivedSkProp<SkImage>() {
-    _imageProp = addProperty(std::make_shared<NodeProp>(name));
+  explicit ImageProp(PropId name,
+                     const std::function<void(BaseNodeProp *)> &onChange)
+      : DerivedSkProp<SkImage>(onChange) {
+    _imageProp = defineProperty<NodeProp>(name);
   }
 
   void updateDerivedValue() override {
-    if (!_imageProp->isSet() ||
-        _imageProp->value().getType() != PropType::HostObject) {
-      throw std::runtime_error("Expected SkImage object for the " +
-                               std::string(getName()) + " property.");
+    if (_imageProp->isSet()) {
+      // Check for host object
+      if (_imageProp->value().getType() == PropType::HostObject) {
+        // This should be an SkImage wrapper:
+        auto ptr = std::dynamic_pointer_cast<JsiSkImage>(
+            _imageProp->value().getAsHostObject());
+        if (ptr == nullptr) {
+          // If not - throw an exception
+          throw std::runtime_error("Expected SkImage object for the " +
+                                   std::string(getName()) +
+                                   " property. Got a " +
+                                   _imageProp->value().getTypeAsString(
+                                       _imageProp->value().getType()) +
+                                   ".");
+        }
+        setDerivedValue(ptr->getObject());
+      } else {
+        // Should be a host object if set
+        throw std::runtime_error(
+            "Expected SkImage object or null/undefined for the " +
+            std::string(getName()) + " property.");
+      }
+    } else {
+      // Set to null
+      setDerivedValue(nullptr);
     }
-
-    auto ptr = std::dynamic_pointer_cast<JsiSkImage>(
-        _imageProp->value().getAsHostObject());
-    if (ptr == nullptr) {
-      throw std::runtime_error("Expected SkImage object for the " +
-                               std::string(getName()) + " property.");
-    }
-
-    setDerivedValue(ptr->getObject());
   }
 
 private:
@@ -52,18 +66,20 @@ private:
 
 class ImageProps : public DerivedProp<FitRects> {
 public:
-  ImageProps() : DerivedProp<FitRects>() {
-    _fitProp = addProperty(std::make_shared<NodeProp>(PropNameFit));
-    _imageProp = addProperty(std::make_shared<ImageProp>(PropNameImage));
-    _rectProp = addProperty(std::make_shared<RectProps>(PropNameRect));
+  explicit ImageProps(const std::function<void(BaseNodeProp *)> &onChange)
+      : DerivedProp<FitRects>(onChange) {
+    _fitProp = defineProperty<NodeProp>(PropNameFit);
+    _imageProp = defineProperty<ImageProp>(PropNameImage);
+    _rectProp = defineProperty<RectProps>(PropNameRect);
   }
 
   void updateDerivedValue() override {
-    if (!_imageProp->isSet()) {
-      throw std::runtime_error("Image property is not set on the Image node.");
+    auto image = _imageProp->getDerivedValue();
+    if (image == nullptr) {
+      setDerivedValue(nullptr);
+      return;
     }
 
-    auto image = _imageProp->getDerivedValue();
     auto imageRect = SkRect::MakeXYWH(0, 0, image->width(), image->height());
 
     auto rect = _rectProp->getDerivedValue() ? *_rectProp->getDerivedValue()
@@ -74,6 +90,7 @@ public:
   }
 
   sk_sp<SkImage> getImage() { return _imageProp->getDerivedValue(); }
+
   std::shared_ptr<const SkRect> getRect() {
     return _rectProp->getDerivedValue();
   }

@@ -7,9 +7,9 @@
 
 #include "JsiSkHostObjects.h"
 
-#include <JsiSkCanvas.h>
-#include <JsiSkImage.h>
-#include <JsiSkSurfaceFactory.h>
+#include "JsiSkCanvas.h"
+#include "JsiSkImage.h"
+#include "JsiSkSurfaceFactory.h"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
@@ -29,15 +29,17 @@ public:
       : JsiSkWrappingSkPtrHostObject<SkSurface>(std::move(context),
                                                 std::move(surface)) {}
 
-  // TODO: declare in JsiSkWrappingSkPtrHostObject via extra template parameter?
-  JSI_PROPERTY_GET(__typename__) {
-    return jsi::String::createFromUtf8(runtime, "Surface");
-  }
+  EXPORT_JSI_API_TYPENAME(JsiSkSurface, "Surface")
 
   JSI_HOST_FUNCTION(getCanvas) {
     return jsi::Object::createFromHostObject(
         runtime,
         std::make_shared<JsiSkCanvas>(getContext(), getObject()->getCanvas()));
+  }
+
+  JSI_HOST_FUNCTION(flush) {
+    getObject()->flush();
+    return jsi::Value::undefined();
   }
 
   JSI_HOST_FUNCTION(makeImageSnapshot) {
@@ -53,19 +55,10 @@ public:
         runtime, std::make_shared<JsiSkImage>(getContext(), std::move(image)));
   }
 
-  JSI_EXPORT_PROPERTY_GETTERS(JSI_EXPORT_PROP_GET(JsiSkSurface, __typename__))
   JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkSurface, getCanvas),
-                       JSI_EXPORT_FUNC(JsiSkSurface, makeImageSnapshot))
-
-  /**
-    Returns the underlying object from a host object of this type
-   */
-  static sk_sp<SkSurface> fromValue(jsi::Runtime &runtime,
-                                    const jsi::Value &obj) {
-    return obj.asObject(runtime)
-        .asHostObject<JsiSkSurface>(runtime)
-        ->getObject();
-  }
+                       JSI_EXPORT_FUNC(JsiSkSurface, makeImageSnapshot),
+                       JSI_EXPORT_FUNC(JsiSkSurface, flush),
+                       JSI_EXPORT_FUNC(JsiSkSurface, dispose))
 };
 
 } // namespace RNSkia

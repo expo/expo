@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "JsiSkHostObjects.h"
-#include <RNSkLog.h>
+#include "RNSkLog.h"
 #include <jsi/jsi.h>
 
 #include "JsiSkPaint.h"
@@ -28,11 +28,6 @@ namespace jsi = facebook::jsi;
 
 class JsiSkFont : public JsiSkWrappingSharedPtrHostObject<SkFont> {
 public:
-  // TODO: declare in JsiSkWrappingSkPtrHostObject via extra template parameter?
-  JSI_PROPERTY_GET(__typename__) {
-    return jsi::String::createFromUtf8(runtime, "Font");
-  }
-
   JSI_HOST_FUNCTION(getGlyphWidths) {
     auto jsiGlyphs = arguments[0].asObject(runtime).asArray(runtime);
     std::vector<SkGlyphID> glyphs;
@@ -244,6 +239,8 @@ public:
     return jsi::Value::undefined();
   }
 
+  EXPORT_JSI_API_TYPENAME(JsiSkFont, "Font")
+
   JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkFont, getSize),
                        JSI_EXPORT_FUNC(JsiSkFont, getMetrics),
                        JSI_EXPORT_FUNC(JsiSkFont, getGlyphIDs),
@@ -262,19 +259,12 @@ public:
                        JSI_EXPORT_FUNC(JsiSkFont, setSubpixel),
                        JSI_EXPORT_FUNC(JsiSkFont, setTypeface),
                        JSI_EXPORT_FUNC(JsiSkFont, getGlyphWidths),
-                       JSI_EXPORT_FUNC(JsiSkFont, getTextWidth))
+                       JSI_EXPORT_FUNC(JsiSkFont, getTextWidth),
+                       JSI_EXPORT_FUNC(JsiSkFont, dispose))
 
   JsiSkFont(std::shared_ptr<RNSkPlatformContext> context, const SkFont &font)
       : JsiSkWrappingSharedPtrHostObject(std::move(context),
                                          std::make_shared<SkFont>(font)) {}
-
-  /**
-    Returns the underlying object from a host object of this type
-   */
-  static std::shared_ptr<SkFont> fromValue(jsi::Runtime &runtime,
-                                           const jsi::Value &obj) {
-    return obj.asObject(runtime).asHostObject<JsiSkFont>(runtime)->getObject();
-  }
 
   /**
    * Creates the function for construction a new instance of the SkFont

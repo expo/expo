@@ -10,17 +10,22 @@
 
 #include "include/core/SkString.h"
 #include "include/core/SkTypes.h"
-#include "include/private/SkNoncopyable.h"
 #include "include/private/SkOpts_spi.h"
-#include "include/private/SkTLogic.h"
+#include "include/private/base/SkTLogic.h"
 
 #include <string>
 #include <string_view>
+#include <type_traits>
 
-class SkChecksum : SkNoncopyable {
+class SkChecksum {
 public:
+    SkChecksum() = default;
+    // Make noncopyable
+    SkChecksum(const SkChecksum&) = delete;
+    SkChecksum& operator=(const SkChecksum&) = delete;
+
     /**
-     * uint32_t -> uint32_t hash, useful for when you're about to trucate this hash but you
+     * uint32_t -> uint32_t hash, useful for when you're about to truncate this hash but you
      * suspect its low bits aren't well mixed.
      *
      * This is the Murmur3 finalizer.
@@ -35,7 +40,7 @@ public:
     }
 
     /**
-     * uint32_t -> uint32_t hash, useful for when you're about to trucate this hash but you
+     * uint32_t -> uint32_t hash, useful for when you're about to truncate this hash but you
      * suspect its low bits aren't well mixed.
      *
      *  This version is 2-lines cheaper than Mix, but seems to be sufficient for the font cache.
@@ -52,12 +57,14 @@ public:
 // It should be both reasonably fast and high quality.
 struct SkGoodHash {
     template <typename K>
-    std::enable_if_t<sizeof(K) == 4, uint32_t> operator()(const K& k) const {
+    std::enable_if_t<std::has_unique_object_representations<K>::value && sizeof(K) == 4, uint32_t>
+    operator()(const K& k) const {
         return SkChecksum::Mix(*(const uint32_t*)&k);
     }
 
     template <typename K>
-    std::enable_if_t<sizeof(K) != 4, uint32_t> operator()(const K& k) const {
+    std::enable_if_t<std::has_unique_object_representations<K>::value && sizeof(K) != 4, uint32_t>
+    operator()(const K& k) const {
         return SkOpts::hash_fn(&k, sizeof(K), 0);
     }
 
@@ -71,6 +78,24 @@ struct SkGoodHash {
 
     uint32_t operator()(std::string_view k) const {
         return SkOpts::hash_fn(k.data(), k.size(), 0);
+    }
+};
+
+// The default hashing behavior in SkGoodHash requires the type to have a unique object
+// representation (i.e. all bits in contribute to its identity so can be hashed directly). This is
+// false when a struct has padding for alignment (which can be avoided by using
+// SK_BEGIN|END_REQUIRE_DENSE) or if the struct has floating point members since there are multiple
+// bit representations for NaN.
+//
+// Often Skia code has externally removed the possibility of NaN so the bit representation of a
+// non-NaN float will still hash correctly. SkForceDirectHash<K> produces the same as SkGoodHash
+// for K's that do not satisfy std::has_unique_object_representation. It should be used sparingly
+// and it's use may highlight design issues with the key's data that might warrant an explicitly
+// implemented hash function.
+template <typename K>
+struct SkForceDirectHash {
+    uint32_t operator()(const K& k) const {
+        return SkOpts::hash_fn(&k, sizeof(K), 0);
     }
 };
 

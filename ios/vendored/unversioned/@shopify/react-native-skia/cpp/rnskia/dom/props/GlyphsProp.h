@@ -19,8 +19,10 @@ struct GlyphInfo {
 
 class GlyphsProp : public DerivedProp<GlyphInfo> {
 public:
-  explicit GlyphsProp(PropId name) : DerivedProp<GlyphInfo>() {
-    _glyphsProp = addProperty(std::make_shared<NodeProp>(name));
+  explicit GlyphsProp(PropId name,
+                      const std::function<void(BaseNodeProp *)> &onChange)
+      : DerivedProp<GlyphInfo>(onChange) {
+    _glyphsProp = defineProperty<NodeProp>(name);
   }
 
   void updateDerivedValue() override {

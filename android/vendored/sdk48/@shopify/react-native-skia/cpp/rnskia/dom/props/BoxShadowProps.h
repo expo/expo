@@ -5,6 +5,8 @@
 #include <memory>
 #include <utility>
 
+#include <SkBlurTypes.h>
+
 namespace RNSkia {
 
 class BoxShadowProps : public DerivedProp<SkPaint> {

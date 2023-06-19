@@ -5,13 +5,13 @@
 
 #include <jsi/jsi.h>
 
-#include <JsiSkColor.h>
-#include <JsiSkColorFilter.h>
-#include <JsiSkHostObjects.h>
-#include <JsiSkImageFilter.h>
-#include <JsiSkMaskFilter.h>
-#include <JsiSkPathEffect.h>
-#include <JsiSkShader.h>
+#include "JsiSkColor.h"
+#include "JsiSkColorFilter.h"
+#include "JsiSkHostObjects.h"
+#include "JsiSkImageFilter.h"
+#include "JsiSkMaskFilter.h"
+#include "JsiSkPathEffect.h"
+#include "JsiSkShader.h"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
@@ -25,12 +25,7 @@ namespace jsi = facebook::jsi;
 
 class JsiSkPaint : public JsiSkWrappingSharedPtrHostObject<SkPaint> {
 public:
-  // TODO: declare in JsiSkWrappingSkPtrHostObject via extra template parameter?
-  JSI_PROPERTY_GET(__typename__) {
-    return jsi::String::createFromUtf8(runtime, "Paint");
-  }
-
-  JSI_EXPORT_PROPERTY_GETTERS(JSI_EXPORT_PROP_GET(JsiSkPaint, __typename__))
+  EXPORT_JSI_API_TYPENAME(JsiSkPaint, "Paint")
 
   JSI_HOST_FUNCTION(copy) {
     const auto *paint = getObject().get();
@@ -183,7 +178,8 @@ public:
                        JSI_EXPORT_FUNC(JsiSkPaint, setStrokeWidth),
                        JSI_EXPORT_FUNC(JsiSkPaint, setStyle),
                        JSI_EXPORT_FUNC(JsiSkPaint, setColor),
-                       JSI_EXPORT_FUNC(JsiSkPaint, setAlphaf))
+                       JSI_EXPORT_FUNC(JsiSkPaint, setAlphaf),
+                       JSI_EXPORT_FUNC(JsiSkPaint, dispose))
 
   JsiSkPaint(std::shared_ptr<RNSkPlatformContext> context, SkPaint paint)
       : JsiSkWrappingSharedPtrHostObject<SkPaint>(
@@ -194,14 +190,6 @@ public:
    */
   void fromPaint(const SkPaint &paint) {
     setObject(std::make_shared<SkPaint>(std::move(paint)));
-  }
-
-  /**
-   Returns the underlying object from a host object of this type
- */
-  static std::shared_ptr<SkPaint> fromValue(jsi::Runtime &runtime,
-                                            const jsi::Value &obj) {
-    return obj.asObject(runtime).asHostObject<JsiSkPaint>(runtime)->getObject();
   }
 
   /**
