@@ -7,7 +7,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-Transition a [bare](/bare/hello-world/) React Native project with CodePush to use EAS Update. This guide assumes that you are using the default React Native project structure. For assistance with migrating brownfield native apps to EAS Update––[reach out to us directly](https://chat.expo.dev/).
+This guide explains how to transition a React Native project that uses CodePush to use EAS Update. It assumes that you are using the default React Native project structure. For assistance with migrating brownfield native apps to EAS Update, [reach out to us directly](https://expo.dev/contact).
 
 ## Prerequisites
 
@@ -15,7 +15,7 @@ Transition a [bare](/bare/hello-world/) React Native project with CodePush to us
 
 EAS Update is available to anyone with an Expo account, regardless of whether you pay for EAS or use our free tier. You can sign up at [https://expo.dev/signup](https://expo.dev/signup).
 
-Learn more about different plans and benefits at [EAS pricing](https://expo.dev/pricing).
+[Learn more about different plans and benefits](https://expo.dev/pricing).
 
 </Collapsible>
 
@@ -54,15 +54,15 @@ Install the `expo` package by running the command:
 
 <Terminal cmd={['npx install-expo-modules@latest']} />
 
-If the command fails, follow the installation instructions [here](/bare/installing-expo-modules/#manual-installation)
+If the command fails, refer to the ["Installing Expo modules" guide](/bare/installing-expo-modules/#manual-installation).
 
 </Step>
 
 <Step label="4">
-## Turn off resource bundle signing (XCode 14+ only)
+## Turn off resource bundle signing (Xcode 14+ only)
 
 In Xcode 14 and higher, resource bundles are signed by default, which requires setting the development team for each resource bundle target.
-To resolve this issue, downgrade to an older Xcode version using the `image` field in `eas.json`, or turn off signing resource bundles in your Podfile. See this [example here](https://expo.fyi/r/disable-bundle-resource-signing).
+To resolve this issue, downgrade to an older Xcode version using the `image` field in **eas.json**, or turn off signing resource bundles in your Podfile. See the ["disable bundle resource signing" example](https://expo.fyi/r/disable-bundle-resource-signing).
 
 </Step>
 
