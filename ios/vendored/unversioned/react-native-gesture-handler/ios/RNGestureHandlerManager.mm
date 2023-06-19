@@ -3,6 +3,7 @@
 #import <React/RCTComponent.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTLog.h>
+#import <React/RCTModalHostViewController.h>
 #import <React/RCTRootContentView.h>
 #import <React/RCTRootView.h>
 #import <React/RCTUIManager.h>
@@ -15,6 +16,7 @@
 #import "RNRootViewGestureRecognizer.h"
 
 #ifdef RCT_NEW_ARCH_ENABLED
+#import <React/RCTFabricModalHostViewController.h>
 #import <React/RCTSurfaceTouchHandler.h>
 #import <React/RCTSurfaceView.h>
 #import <React/RCTViewComponentView.h>
@@ -199,15 +201,26 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 #ifdef RCT_NEW_ARCH_ENABLED
   UIView *touchHandlerView = childView;
 
-  while (touchHandlerView != nil && ![touchHandlerView isKindOfClass:[RCTSurfaceView class]]) {
-    touchHandlerView = touchHandlerView.superview;
+  if ([[childView reactViewController] isKindOfClass:[RCTFabricModalHostViewController class]]) {
+    touchHandlerView = [childView reactViewController].view;
+  } else {
+    while (touchHandlerView != nil && ![touchHandlerView isKindOfClass:[RCTSurfaceView class]]) {
+      touchHandlerView = touchHandlerView.superview;
+    }
   }
 #else
-  UIView *parent = childView;
-  while (parent != nil && ![parent respondsToSelector:@selector(touchHandler)])
-    parent = parent.superview;
+  UIView *touchHandlerView = nil;
 
-  UIView *touchHandlerView = [[parent performSelector:@selector(touchHandler)] view];
+  if ([[childView reactViewController] isKindOfClass:[RCTModalHostViewController class]]) {
+    touchHandlerView = [childView reactViewController].view.subviews[0];
+  } else {
+    UIView *parent = childView;
+    while (parent != nil && ![parent respondsToSelector:@selector(touchHandler)]) {
+      parent = parent.superview;
+    }
+
+    touchHandlerView = [[parent performSelector:@selector(touchHandler)] view];
+  }
 #endif // RCT_NEW_ARCH_ENABLED
 
   if (touchHandlerView == nil) {
@@ -247,20 +260,19 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   if ([gestureRecognizer.view isKindOfClass:[UIScrollView class]])
     return;
 
-#ifdef RCT_NEW_ARCH_ENABLED
   UIGestureRecognizer *touchHandler = nil;
 
-  // touchHandler (RCTSurfaceTouchHandler) is private in RCTFabricSurface so we have to do
-  // this little trick to get access to it
+  // this way we can extract the touch handler on both architectures relatively easily
   for (UIGestureRecognizer *recognizer in [viewWithTouchHandler gestureRecognizers]) {
+#ifdef RCT_NEW_ARCH_ENABLED
     if ([recognizer isKindOfClass:[RCTSurfaceTouchHandler class]]) {
+#else
+    if ([recognizer isKindOfClass:[RCTTouchHandler class]]) {
+#endif // RCT_NEW_ARCH_ENABLED
       touchHandler = recognizer;
       break;
     }
   }
-#else
-  RCTTouchHandler *touchHandler = [viewWithTouchHandler performSelector:@selector(touchHandler)];
-#endif // RCT_NEW_ARCH_ENABLED
   [touchHandler setEnabled:NO];
   [touchHandler setEnabled:YES];
 }

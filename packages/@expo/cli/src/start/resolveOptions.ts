@@ -27,6 +27,9 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
   if (forceManifestType) {
     assert.match(forceManifestType, /^(classic|expo-updates)$/);
   }
+  if (args['--dev-client'] && args['--go']) {
+    throw new CommandError('BAD_ARGS', 'Cannot use both --dev-client and --go together.');
+  }
   const host = resolveHostType({
     host: args['--host'],
     offline: args['--offline'],
@@ -35,9 +38,12 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
     tunnel: args['--tunnel'],
   });
 
+  // TODO: Add a third option which is auto detecting if the user is using `expo-dev-client` or `expo-dev-launcher`.
+  const isDevClient = !!args['--dev-client'] || (args['--go'] == null ? false : !args['--go']);
+
   const scheme = await resolveSchemeAsync(projectRoot, {
     scheme: args['--scheme'],
-    devClient: args['--dev-client'],
+    devClient: isDevClient,
   });
 
   return {
@@ -56,7 +62,7 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
     port: args['--port'],
     minify: !!args['--minify'],
 
-    devClient: !!args['--dev-client'],
+    devClient: isDevClient,
 
     scheme,
     host,
@@ -67,7 +73,7 @@ export async function resolveSchemeAsync(
   projectRoot: string,
   options: { scheme?: string; devClient?: boolean }
 ): Promise<string | null> {
-  const resolveFrom = await import('resolve-from').then((m) => m.default);
+  const resolveFrom = require('resolve-from') as typeof import('resolve-from');
 
   const isDevClientPackageInstalled = (() => {
     try {
@@ -84,7 +90,8 @@ export async function resolveSchemeAsync(
     // Use the custom scheme
     return options.scheme ?? null;
   } else if (options.devClient || isDevClientPackageInstalled) {
-    const { getOptionalDevClientSchemeAsync } = await import('../utils/scheme');
+    const { getOptionalDevClientSchemeAsync } =
+      require('../utils/scheme') as typeof import('../utils/scheme');
     // Attempt to find the scheme or warn the user how to setup a custom scheme
     return await getOptionalDevClientSchemeAsync(projectRoot);
   } else {
@@ -146,13 +153,12 @@ export async function resolvePortsAsync(
     }
     multiBundlerSettings.webpackPort = webpackPort;
   } else {
-    const devClientDefaultPort = process.env.RCT_METRO_PORT
+    const fallbackPort = process.env.RCT_METRO_PORT
       ? parseInt(process.env.RCT_METRO_PORT, 10)
       : 8081;
-    const expoGoDefaultPort = 19000;
     const metroPort = await resolvePortAsync(projectRoot, {
       defaultPort: options.port,
-      fallbackPort: options.devClient ? devClientDefaultPort : expoGoDefaultPort,
+      fallbackPort,
     });
     if (!metroPort) {
       throw new AbortCommandError();

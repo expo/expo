@@ -22,7 +22,7 @@ interface UrlComponents {
 }
 export class UrlCreator {
   constructor(
-    private defaults: CreateURLOptions | undefined,
+    public defaults: CreateURLOptions | undefined,
     private bundlerInfo: { port: number; getTunnelUrl?: () => string | null }
   ) {}
 
@@ -33,8 +33,8 @@ export class UrlCreator {
    * @param options options for creating the URL
    * @param platform when opening the URL from the CLI to a connected device we can specify the platform as a query parameter, otherwise it will be inferred from the unsafe user agent sniffing.
    *
-   * @returns URL like `http://localhost:19000/_expo/loading?platform=ios`
-   * @returns URL like `http://localhost:19000/_expo/loading` when no platform is provided.
+   * @returns URL like `http://localhost:8081/_expo/loading?platform=ios`
+   * @returns URL like `http://localhost:8081/_expo/loading` when no platform is provided.
    */
   public constructLoadingUrl(options: CreateURLOptions, platform: string | null): string {
     const url = new URL('_expo/loading', this.constructUrl({ scheme: 'http', ...options }));

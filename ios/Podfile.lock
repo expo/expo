@@ -2081,7 +2081,7 @@ PODS:
     - React-Core
   - react-native-pager-view (6.2.0):
     - React-Core
-  - react-native-safe-area-context (4.5.0):
+  - react-native-safe-area-context (4.5.3):
     - RCT-Folly
     - RCTRequired
     - RCTTypeSafety
@@ -2120,7 +2120,7 @@ PODS:
     - React-Core
   - react-native-slider (4.4.2):
     - React-Core
-  - react-native-webview (11.26.0):
+  - react-native-webview (13.2.2):
     - React-Core
   - React-NativeModulesApple (0.72.0-rc.5):
     - hermes-engine
@@ -2232,17 +2232,17 @@ PODS:
     - React-jsi (= 0.72.0-rc.5)
     - React-logger (= 0.72.0-rc.5)
     - React-perflogger (= 0.72.0-rc.5)
-  - RNCAsyncStorage (1.17.11):
+  - RNCAsyncStorage (1.18.2):
     - React-Core
-  - RNFlashList (1.4.0):
+  - RNFlashList (1.4.3):
     - React-Core
-  - RNGestureHandler (2.10.1):
+  - RNGestureHandler (2.12.0):
     - React-Core
-  - RNReanimated (3.3.0):
+  - RNReanimated (3.1.0):
     - DoubleConversion
     - FBLazyVector
+    - FBReactNativeSpec
     - glog
-    - hermes-engine
     - RCT-Folly
     - RCTRequired
     - RCTTypeSafety
@@ -2252,13 +2252,11 @@ PODS:
     - React-Core/RCTWebSocket
     - React-CoreModules
     - React-cxxreact
-    - React-hermes
     - React-jsi
     - React-jsiexecutor
     - React-jsinspector
     - React-RCTActionSheet
     - React-RCTAnimation
-    - React-RCTAppDelegate
     - React-RCTBlob
     - React-RCTImage
     - React-RCTLinking
@@ -2270,7 +2268,7 @@ PODS:
   - RNScreens (3.20.0):
     - React-Core
     - React-RCTImage
-  - RNSVG (13.4.0):
+  - RNSVG (13.9.0):
     - React-Core
   - SDWebImage (5.15.8):
     - SDWebImage/Core (= 5.15.8)
@@ -3778,11 +3776,11 @@ SPEC CHECKSUMS:
   React-logger: 4e8c28425ddc27abb6cde80eece89cc765da7d86
   react-native-netinfo: ccbe1085dffd16592791d550189772e13bf479e2
   react-native-pager-view: 0ccb8bf60e2ebd38b1f3669fa3650ecce81db2df
-  react-native-safe-area-context: 39c2d8be3328df5d437ac1700f4f3a4f75716acc
+  react-native-safe-area-context: b8979f5eda6ed5903d4dbc885be3846ea3daa753
   react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
   react-native-skia: ff2265fb802b2a3e1bf4a3c5a86d46936dd20354
   react-native-slider: 33b8d190b59d4f67a541061bb91775d53d617d9d
-  react-native-webview: 994b9f8fbb504d6314dc40d83f94f27c6831b3bf
+  react-native-webview: b8ec89966713985111a14d6e4bf98d8b54bced0d
   React-NativeModulesApple: ae27f95a2a84a877785a20ce4c689995dd5f4a64
   React-perflogger: fdd8c2969761105b1c85432fecdfff0616100cc6
   React-RCTActionSheet: 5aaa270460794991553f80d393bcdcb97a372273
@@ -3800,12 +3798,12 @@ SPEC CHECKSUMS:
   React-runtimescheduler: 7c3287c689ba5bbff52ef95400fb8d6964cc8eae
   React-utils: cbbe99dc2e49db0a3fbb425c304f511a422f0ca2
   ReactCommon: 01b6643cfeef0d9078c8125378066d20cc34ddfe
-  RNCAsyncStorage: 8616bd5a58af409453ea4e1b246521bb76578d60
-  RNFlashList: 399bf6a0db68f594ad2c86aaff3ea39564f39f8a
-  RNGestureHandler: 42ec7c28dd02d540ed6c9159c57a98ff016492dc
-  RNReanimated: cbd1eeda5cc0df86c1253d131c8827a67767be72
+  RNCAsyncStorage: ddc4ee162bfd41b0d2c68bf2d95acd81dd7f1f93
+  RNFlashList: ade81b4e928ebd585dd492014d40fb8d0e848aab
+  RNGestureHandler: dec4645026e7401a0899f2846d864403478ff6a5
+  RNReanimated: 48794d0f278349ecb6d94490e7bb184c9cdcd86f
   RNScreens: 218801c16a2782546d30bd2026bb625c0302d70f
-  RNSVG: 07dbd870b0dcdecc99b3a202fa37c8ca163caec2
+  RNSVG: 53c661b76829783cdaf9b7a57258f3d3b4c28315
   SDWebImage: cb032eba469c54e0000e78bcb0a13cdde0a52798
   SDWebImageAVIFCoder: 4aeea8fdf65af5c18525ecb5bdd8b8ed9bb45019
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c

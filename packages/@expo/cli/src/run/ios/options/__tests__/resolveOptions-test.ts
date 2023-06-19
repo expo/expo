@@ -47,7 +47,7 @@ describe(resolveOptionsAsync, () => {
         bundler: true,
         device: 'search',
         install: true,
-        port: 19000,
+        port: 8081,
         configuration: 'Release',
         scheme: 'MyScheme',
       })
@@ -56,7 +56,7 @@ describe(resolveOptionsAsync, () => {
       configuration: 'Release',
       device: { name: 'mock', udid: '123' },
       isSimulator: false,
-      port: 19000,
+      port: 8081,
       projectRoot: '/',
       scheme: 'MyScheme',
       shouldSkipInitialBundling: false,
