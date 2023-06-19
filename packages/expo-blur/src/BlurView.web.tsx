@@ -12,27 +12,15 @@ export default class BlurView extends React.Component<BlurViewProps> {
   }
 }
 
-function isBlurSupported(): boolean {
-  // https://developer.mozilla.org/en-US/docs/Web/API/CSS/supports
-  // https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter#Browser_compatibility
-  return (
-    typeof CSS !== 'undefined' &&
-    (CSS.supports('-webkit-backdrop-filter', 'blur(1px)') ||
-      CSS.supports('backdrop-filter', 'blur(1px)'))
-  );
-}
-
 function getBlurStyle({ intensity, tint }): Record<string, string> {
   const style: Record<string, string> = {
     backgroundColor: getBackgroundColor(intensity, tint),
   };
 
-  if (isBlurSupported()) {
-    const blur = `saturate(180%) blur(${intensity * 0.2}px)`;
-    style.backdropFilter = blur;
-    // Safari support
-    style['-webkit-backdrop-filter'] = blur;
-  }
+  const blur = `saturate(180%) blur(${intensity * 0.2}px)`;
+  style.backdropFilter = blur;
+  // Safari support
+  style['-webkit-backdrop-filter'] = blur;
 
   return style;
 }
