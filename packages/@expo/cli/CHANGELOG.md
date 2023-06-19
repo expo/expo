@@ -20,6 +20,8 @@
 
 ### 💡 Others
 
+- Only show EAS signing log in debug.
+
 ## 0.9.1 — 2023-06-13
 
 ### 🐛 Bug fixes
