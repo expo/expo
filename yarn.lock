@@ -3323,10 +3323,10 @@
   resolved "https://registry.yarnpkg.com/@react-native-picker/picker/-/picker-2.4.10.tgz#339c7bfc6e1d9a5e934122eaaa7767dc1c5fb725"
   integrity sha512-EvAlHmPEPOwvbP6Pjg/gtDV3XJzIjIxr10fXFNlX5r9HeHw582G1Zt2o8FLyB718nOttgj8HYUTGxvhu4N65sQ==
 
-"@react-native-segmented-control/segmented-control@2.4.0":
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/@react-native-segmented-control/segmented-control/-/segmented-control-2.4.0.tgz#0a88f22ad2c0fe07ecc002ee1e5d62c55a3dd0ae"
-  integrity sha512-2s1AaT6xk/Do5s6u7ioCXucqesAt02NQlLKBOM28dJWI7PTH9o89x6AwsGHIeMkTe4nQ6iENiJKzO7Y3SGG9Ew==
+"@react-native-segmented-control/segmented-control@2.4.1":
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/@react-native-segmented-control/segmented-control/-/segmented-control-2.4.1.tgz#ea612c8b12bfea7712c7ea456b7b98dfc6748485"
+  integrity sha512-c8Q7TP14CD6vJ38VO5SWoIcxfwLPIz/4zRKJnJOJ0xKkMxkrUu089m86Y0dSvo+T3c1NQyvBFRtKWrPqbqG6tg==
 
 "@react-native/assets-registry@^0.72.0":
   version "0.72.0"
