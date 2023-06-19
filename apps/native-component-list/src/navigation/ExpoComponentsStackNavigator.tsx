@@ -415,6 +415,12 @@ export const Screens = [
     },
     name: 'FlashList',
   },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/ClipboardPasteButtonScreen'));
+    },
+    name: 'ClipboardPasteButton',
+  },
   ...ImageScreens,
 ];
 
