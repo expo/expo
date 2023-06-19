@@ -1,21 +1,12 @@
+#ifndef RCT_NEW_ARCH_ENABLED
+
+#import <RNReanimated/REAEventDispatcher.h>
 #import <RNReanimated/REAInitializer.h>
 #import <RNReanimated/REAUIManager.h>
-#import <RNReanimated/ReanimatedVersion.h>
-
-@interface RCTEventDispatcher (Reanimated)
-
-- (void)setBridge:(RCTBridge *)bridge;
-
-@end
 
 namespace reanimated {
 
-using namespace facebook;
-using namespace react;
-
-JSIExecutor::RuntimeInstaller REAJSIExecutorRuntimeInstaller(
-    RCTBridge *bridge,
-    JSIExecutor::RuntimeInstaller runtimeInstallerToWrap)
+void REAInitializer(RCTBridge *bridge)
 {
   [bridge moduleForClass:[RCTUIManager class]];
   REAUIManager *reaUiManager = [REAUIManager new];
@@ -36,37 +27,17 @@ JSIExecutor::RuntimeInstaller REAJSIExecutorRuntimeInstaller(
   [eventDispatcher setBridge:bridge];
 #endif
   [bridge updateModuleWithInstance:eventDispatcher];
-  const auto runtimeInstaller = [bridge, runtimeInstallerToWrap](facebook::jsi::Runtime &runtime) {
-    if (!bridge) {
-      return;
-    }
-#if REACT_NATIVE_MINOR_VERSION >= 63
-    auto reanimatedModule = reanimated::createReanimatedModule(bridge, bridge.jsCallInvoker);
-#else
-    auto callInvoker = std::make_shared<react::BridgeJSCallInvoker>(bridge.reactInstance);
-    auto reanimatedModule = reanimated::createReanimatedModule(bridge, callInvoker);
-#endif
-    auto workletRuntimeValue = runtime.global()
-                                   .getProperty(runtime, "ArrayBuffer")
-                                   .asObject(runtime)
-                                   .asFunction(runtime)
-                                   .callAsConstructor(runtime, {static_cast<double>(sizeof(void *))});
-    uintptr_t *workletRuntimeData =
-        reinterpret_cast<uintptr_t *>(workletRuntimeValue.getObject(runtime).getArrayBuffer(runtime).data(runtime));
-    workletRuntimeData[0] = reinterpret_cast<uintptr_t>(reanimatedModule->runtime.get());
+}
 
-    runtime.global().setProperty(runtime, "_WORKLET_RUNTIME", workletRuntimeValue);
+#if REACT_NATIVE_MINOR_VERSION <= 71
 
-    runtime.global().setProperty(runtime, "_IS_FABRIC", false);
+JSIExecutor::RuntimeInstaller REAJSIExecutorRuntimeInstaller(
+    RCTBridge *bridge,
+    JSIExecutor::RuntimeInstaller runtimeInstallerToWrap)
+{
+  REAInitializer(bridge);
 
-    auto version = getReanimatedVersionString(runtime);
-    runtime.global().setProperty(runtime, "_REANIMATED_VERSION_CPP", version);
-
-    runtime.global().setProperty(
-        runtime,
-        jsi::PropNameID::forAscii(runtime, "__reanimatedModuleProxy"),
-        jsi::Object::createFromHostObject(runtime, reanimatedModule));
-
+  const auto runtimeInstaller = [runtimeInstallerToWrap](facebook::jsi::Runtime &runtime) {
     if (runtimeInstallerToWrap) {
       runtimeInstallerToWrap(runtime);
     }
@@ -74,4 +45,8 @@ JSIExecutor::RuntimeInstaller REAJSIExecutorRuntimeInstaller(
   return runtimeInstaller;
 }
 
+#endif // REACT_NATIVE_MINOR_VERSION <= 71
+
 } // namespace reanimated
+
+#endif // RCT_NEW_ARCH_ENABLED

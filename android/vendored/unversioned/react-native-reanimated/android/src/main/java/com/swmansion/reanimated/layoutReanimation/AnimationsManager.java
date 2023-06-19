@@ -84,7 +84,7 @@ public class AnimationsManager implements ViewHierarchyObserver {
     Integer tag = view.getId();
     mCallbacks.put(tag, callback);
 
-    if (!removeOrAnimateExitRecursive(view, parent, true)) {
+    if (!removeOrAnimateExitRecursive(view, true)) {
       removeView(view, parent);
     }
   }
@@ -473,7 +473,7 @@ public class AnimationsManager implements ViewHierarchyObserver {
     return mNativeMethodsHolder != null && mNativeMethodsHolder.isLayoutAnimationEnabled();
   }
 
-  private boolean removeOrAnimateExitRecursive(View view, ViewGroup parent, boolean shouldRemove) {
+  private boolean removeOrAnimateExitRecursive(View view, boolean shouldRemove) {
     int tag = view.getId();
     ViewManager viewManager = resolveViewManager(tag);
 
@@ -501,7 +501,7 @@ public class AnimationsManager implements ViewHierarchyObserver {
       ViewGroup viewGroup = (ViewGroup) view;
       for (int i = viewGroup.getChildCount() - 1; i >= 0; i--) {
         View child = viewGroup.getChildAt(i);
-        if (removeOrAnimateExitRecursive(child, viewGroup, shouldRemove)) {
+        if (removeOrAnimateExitRecursive(child, shouldRemove)) {
           hasAnimatedChildren = true;
         } else if (shouldRemove) {
           toBeRemoved.add(child);

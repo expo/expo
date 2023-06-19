@@ -1,7 +1,6 @@
 #ifndef REAKeyboardEventManager_h
 #define REAKeyboardEventManager_h
 
-#import <RNReanimated/REAEventDispatcher.h>
 #import <React/RCTEventDispatcher.h>
 
 typedef void (^KeyboardEventListenerBlock)(int keyboardState, int height);
