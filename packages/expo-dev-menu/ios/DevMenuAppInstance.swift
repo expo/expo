@@ -63,10 +63,6 @@ class DevMenuAppInstance: DevMenuRCTAppDelegate {
   }
   // swiftlint:enable implicitly_unwrapped_optional
 
-  func concurrentRootEnabled() -> Bool {
-    return true
-  }
-
   // MARK: private
 
   private func jsSourceUrl() -> URL? {

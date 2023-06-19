@@ -2,7 +2,7 @@
 #import "EXDevLauncherController.h"
 
 #import <React/RCTBundleURLProvider.h>
-#import "RCTAppSetupUtils.h"
+#import <React-RCTAppDelegate/RCTAppSetupUtils.h>
 
 #ifdef RCT_NEW_ARCH_ENABLED
 

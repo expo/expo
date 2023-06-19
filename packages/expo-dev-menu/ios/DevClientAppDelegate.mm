@@ -3,7 +3,7 @@
 
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRuntimeExecutorFromBridge.h>
-#import "RCTAppSetupUtils.h"
+#import <React-RCTAppDelegate/RCTAppSetupUtils.h>
 
 #ifdef RCT_NEW_ARCH_ENABLED
 #import <memory>

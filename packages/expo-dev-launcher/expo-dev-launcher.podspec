@@ -55,7 +55,6 @@ Pod::Spec.new do |s|
     'DEFINES_MODULE' => 'YES',
     'OTHER_CFLAGS[config=Debug]' => other_c_flags,
     'OTHER_SWIFT_FLAGS[config=Debug]' => other_swift_flags,
-    "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/Headers/Private/React-Core\"",
     "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
   }
 
@@ -64,6 +63,7 @@ Pod::Spec.new do |s|
   }
 
   s.dependency "React-Core"
+  s.dependency 'React-RCTAppDelegate'
   s.dependency "expo-dev-menu-interface"
   s.dependency "EXManifests"
   s.dependency "EXUpdatesInterface"

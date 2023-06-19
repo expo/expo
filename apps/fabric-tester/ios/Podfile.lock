@@ -42,6 +42,7 @@ PODS:
     - React-Fabric
     - React-graphics
     - React-NativeModulesApple
+    - React-RCTAppDelegate
     - React-RCTFabric
     - React-utils
     - ReactCommon/turbomodule/bridging
@@ -64,6 +65,7 @@ PODS:
     - React-Fabric
     - React-graphics
     - React-NativeModulesApple
+    - React-RCTAppDelegate
     - React-RCTFabric
     - React-utils
     - ReactCommon/turbomodule/bridging
@@ -85,6 +87,7 @@ PODS:
     - React-Fabric
     - React-graphics
     - React-NativeModulesApple
+    - React-RCTAppDelegate
     - React-RCTFabric
     - React-utils
     - ReactCommon/turbomodule/bridging
@@ -1463,7 +1466,7 @@ SPEC CHECKSUMS:
   EXManifests: 37a0bb3514806cf432f6538fcc9825107fc23436
   Expo: 64f946f27e2d1fddba37bded5a5d0e8766037af6
   expo-dev-client: b9a1eefeb4c93677753c734ad72072db3404caf9
-  expo-dev-launcher: 31ca8d121dfa8f62e08a8d3cf7d0dc5edf7d9630
+  expo-dev-launcher: 0e2b74bffd7eccfe60a45233a3dd43dc6e58a71b
   expo-dev-menu: 9e06bed7ce084d77f5a63a4510529684f177328c
   expo-dev-menu-interface: f74523f940ba5306b0d2f37a488a77b44d57f572
   ExpoAppleAuthentication: 7bdf1a2962ebfe9b00eb4183a17b78d736e57185

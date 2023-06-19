@@ -13,4 +13,3 @@
 #import "EXDevLauncherRedBoxProtocol.h"
 #import "EXDevLauncherRedBox.h"
 #import "RCTBundleURLProvider+Private.h"
-#import "RCTAppSetupUtils.h"

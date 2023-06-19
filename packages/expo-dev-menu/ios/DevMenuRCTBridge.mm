@@ -28,12 +28,12 @@
 #import <React/RCTCxxBridgeDelegate.h>
 #import <React/RCTJSIExecutorRuntimeInstaller.h>
 #import <React/RCTRuntimeExecutorFromBridge.h>
+#import <React-RCTAppDelegate/RCTAppSetupUtils.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #if __has_include(<reacthermes/HermesExecutorFactory.h>)
 #import <reacthermes/HermesExecutorFactory.h>
 #endif
 
-#import "RCTAppSetupUtils.h"
 
 
 @implementation DevMenuRCTCxxBridge
