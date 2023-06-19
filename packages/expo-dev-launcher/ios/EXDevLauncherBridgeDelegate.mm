@@ -2,7 +2,12 @@
 #import "EXDevLauncherController.h"
 
 #import <React/RCTBundleURLProvider.h>
+#if __has_include(<React_RCTAppDelegate/RCTAppSetupUtils.h>)
+// for importing the header from framework, the dash will be transformed to underscore
+#import <React_RCTAppDelegate/RCTAppSetupUtils.h>
+#else
 #import <React-RCTAppDelegate/RCTAppSetupUtils.h>
+#endif
 
 #ifdef RCT_NEW_ARCH_ENABLED
 

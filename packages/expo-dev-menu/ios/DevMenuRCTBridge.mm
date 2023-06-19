@@ -28,7 +28,12 @@
 #import <React/RCTCxxBridgeDelegate.h>
 #import <React/RCTJSIExecutorRuntimeInstaller.h>
 #import <React/RCTRuntimeExecutorFromBridge.h>
+#if __has_include(<React_RCTAppDelegate/RCTAppSetupUtils.h>)
+// for importing the header from framework, the dash will be transformed to underscore
+#import <React_RCTAppDelegate/RCTAppSetupUtils.h>
+#else
 #import <React-RCTAppDelegate/RCTAppSetupUtils.h>
+#endif
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #if __has_include(<reacthermes/HermesExecutorFactory.h>)
 #import <reacthermes/HermesExecutorFactory.h>
