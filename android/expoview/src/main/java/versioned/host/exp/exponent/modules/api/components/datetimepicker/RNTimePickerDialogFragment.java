@@ -8,8 +8,6 @@
 
 package versioned.host.exp.exponent.modules.api.components.datetimepicker;
 
-import host.exp.expoview.R;
-
 import static versioned.host.exp.exponent.modules.api.components.datetimepicker.Common.getDisplayTime;
 import static versioned.host.exp.exponent.modules.api.components.datetimepicker.Common.setButtonTextColor;
 import static versioned.host.exp.exponent.modules.api.components.datetimepicker.Common.setButtonTitles;
@@ -27,6 +25,8 @@ import android.text.format.DateFormat;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+
+import host.exp.expoview.R;
 
 @SuppressWarnings("ValidFragment")
 public class RNTimePickerDialogFragment extends DialogFragment {

@@ -665,6 +665,13 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         sourceAndroidPackage: 'com.reactcommunity.rndatetimepicker',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.datetimepicker',
       },
+      {
+        sourceAndroidPath: 'android/src/paper/java/com/reactcommunity/rndatetimepicker',
+        targetAndroidPath: 'modules/api/components/datetimepicker',
+        sourceAndroidPackage: 'com.reactcommunity.rndatetimepicker',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.datetimepicker',
+        cleanupTargetPath: false,
+      },
     ],
     warnings: [
       `NOTE: In Expo, native Android styles are prefixed with ${chalk.magenta(

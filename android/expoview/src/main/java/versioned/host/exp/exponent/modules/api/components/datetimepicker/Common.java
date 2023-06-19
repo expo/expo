@@ -62,7 +62,7 @@ public class Common {
 	}
 
 	@NonNull
-	public static DialogInterface.OnShowListener setButtonTextColor(@NonNull Context activityContext, final AlertDialog dialog, final Bundle args, final boolean needsColorOverride) {
+	public static DialogInterface.OnShowListener setButtonTextColor(@NonNull final Context activityContext, final AlertDialog dialog, final Bundle args, final boolean needsColorOverride) {
     return new DialogInterface.OnShowListener() {
       @Override
       public void onShow(DialogInterface dialogInterface) {
