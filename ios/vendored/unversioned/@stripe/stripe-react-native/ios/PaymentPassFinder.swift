@@ -13,14 +13,18 @@ internal class PaymentPassFinder: NSObject {
         case PAIRED_DEVICE
     }
     
-    class func findPassWithLast4(last4: String, hasPairedAppleWatch: Bool, completion: @escaping ((Bool, [PassLocation]) -> Void)) {
+    class func findPassWith(
+        primaryAccountIdentifier: String,
+        hasPairedAppleWatch: Bool,
+        completion: @escaping ((Bool, [PassLocation]) -> Void)
+    ) {
         let existingPassOnDevice: PKPass? = {
             if #available(iOS 13.4, *) {
                 return PKPassLibrary().passes(of: PKPassType.secureElement)
-                    .first(where: { $0.secureElementPass?.primaryAccountNumberSuffix == last4 && $0.secureElementPass?.passActivationState != .deactivated && !$0.isRemotePass })
+                    .first(where: { $0.secureElementPass?.primaryAccountIdentifier == primaryAccountIdentifier && $0.secureElementPass?.passActivationState != .deactivated && !$0.isRemotePass })
             } else {
                 return PKPassLibrary().passes(of: PKPassType.payment)
-                    .first(where: { $0.paymentPass?.primaryAccountNumberSuffix == last4 && $0.paymentPass?.passActivationState != .deactivated && !$0.isRemotePass })
+                    .first(where: { $0.paymentPass?.primaryAccountIdentifier == primaryAccountIdentifier && $0.paymentPass?.passActivationState != .deactivated && !$0.isRemotePass })
             }
         }()
         
@@ -41,10 +45,10 @@ internal class PaymentPassFinder: NSObject {
         let existingPassOnPairedDevices: PKPass? = {
             if #available(iOS 13.4, *) {
                 return PKPassLibrary().remoteSecureElementPasses
-                    .first(where: { $0.secureElementPass?.primaryAccountNumberSuffix == last4 && $0.secureElementPass?.passActivationState != .deactivated })
+                    .first(where: { $0.secureElementPass?.primaryAccountIdentifier == primaryAccountIdentifier && $0.secureElementPass?.passActivationState != .deactivated })
             } else {
                 return PKPassLibrary().remotePaymentPasses()
-                    .first(where: { $0.paymentPass?.primaryAccountNumberSuffix == last4 && $0.paymentPass?.passActivationState != .deactivated })
+                    .first(where: { $0.paymentPass?.primaryAccountIdentifier == primaryAccountIdentifier && $0.paymentPass?.passActivationState != .deactivated })
             }
         }()
         

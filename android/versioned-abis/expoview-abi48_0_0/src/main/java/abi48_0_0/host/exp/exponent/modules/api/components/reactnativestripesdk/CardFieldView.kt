@@ -22,7 +22,7 @@ import abi48_0_0.host.exp.exponent.modules.api.components.reactnativestripesdk.u
 import abi48_0_0.host.exp.exponent.modules.api.components.reactnativestripesdk.utils.mapCardBrand
 import com.stripe.android.core.model.CountryCode
 import com.stripe.android.core.model.CountryUtils
-import com.stripe.android.databinding.CardInputWidgetBinding
+import com.stripe.android.databinding.StripeCardInputWidgetBinding
 import com.stripe.android.model.Address
 import com.stripe.android.model.PaymentMethodCreateParams
 import com.stripe.android.view.CardInputListener
@@ -32,7 +32,7 @@ import com.stripe.android.view.StripeEditText
 
 class CardFieldView(context: ThemedReactContext) : FrameLayout(context) {
   private var mCardWidget: CardInputWidget = CardInputWidget(context)
-  private val cardInputWidgetBinding = CardInputWidgetBinding.bind(mCardWidget)
+  private val cardInputWidgetBinding = StripeCardInputWidgetBinding.bind(mCardWidget)
   val cardDetails: MutableMap<String, Any?> = mutableMapOf("brand" to "", "last4" to "", "expiryMonth" to null, "expiryYear" to null, "postalCode" to "", "validNumber" to "Unknown", "validCVC" to "Unknown", "validExpiryDate" to "Unknown")
   var cardParams: PaymentMethodCreateParams.Card? = null
   var cardAddress: Address? = null

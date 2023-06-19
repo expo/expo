@@ -37,6 +37,7 @@ class PaymentMethodCreateParamsFactory(
         PaymentMethod.Type.USBankAccount -> createUSBankAccountParams(paymentMethodData)
         PaymentMethod.Type.PayPal -> createPayPalParams()
         PaymentMethod.Type.Affirm -> createAffirmParams()
+        PaymentMethod.Type.CashAppPay -> createCashAppParams()
         else -> {
           throw Exception("This paymentMethodType is not supported yet")
         }
@@ -203,12 +204,16 @@ class PaymentMethodCreateParamsFactory(
   }
 
   @Throws(PaymentMethodCreateParamsException::class)
+  private fun createCashAppParams(): PaymentMethodCreateParams {
+    return PaymentMethodCreateParams.createCashAppPay(billingDetailsParams)
+  }
+
+  @Throws(PaymentMethodCreateParamsException::class)
   fun createParams(clientSecret: String, paymentMethodType: PaymentMethod.Type?, isPaymentIntent: Boolean): ConfirmStripeIntentParams {
     try {
       return when (paymentMethodType) {
         PaymentMethod.Type.Card -> createCardStripeIntentParams(clientSecret, isPaymentIntent)
         PaymentMethod.Type.USBankAccount -> createUSBankAccountStripeIntentParams(clientSecret, isPaymentIntent)
-        PaymentMethod.Type.PayPal -> createPayPalStripeIntentParams(clientSecret, isPaymentIntent)
         PaymentMethod.Type.Affirm -> createAffirmStripeIntentParams(clientSecret, isPaymentIntent)
         PaymentMethod.Type.Ideal,
         PaymentMethod.Type.Alipay,
@@ -223,7 +228,9 @@ class PaymentMethodCreateParamsFactory(
         PaymentMethod.Type.Fpx,
         PaymentMethod.Type.AfterpayClearpay,
         PaymentMethod.Type.AuBecsDebit,
-        PaymentMethod.Type.Klarna -> {
+        PaymentMethod.Type.Klarna,
+        PaymentMethod.Type.PayPal,
+        PaymentMethod.Type.CashAppPay -> {
           val params = createPaymentMethodParams(paymentMethodType)
 
           return if (isPaymentIntent) {
@@ -232,11 +239,13 @@ class PaymentMethodCreateParamsFactory(
                 paymentMethodCreateParams = params,
                 clientSecret = clientSecret,
                 setupFutureUsage = mapToPaymentIntentFutureUsage(getValOr(options, "setupFutureUsage")),
+                mandateData = buildMandateDataParams()
               )
           } else {
             ConfirmSetupIntentParams.create(
               paymentMethodCreateParams = params,
               clientSecret = clientSecret,
+              mandateData = buildMandateDataParams()
             )
           }
         }
@@ -340,20 +349,6 @@ class PaymentMethodCreateParamsFactory(
   }
 
   @Throws(PaymentMethodCreateParamsException::class)
-  private fun createPayPalStripeIntentParams(clientSecret: String, isPaymentIntent: Boolean): ConfirmStripeIntentParams {
-    if (!isPaymentIntent) {
-      throw PaymentMethodCreateParamsException("PayPal is not yet supported through SetupIntents.")
-    }
-
-    val params = createPayPalParams()
-
-    return ConfirmPaymentIntentParams.createWithPaymentMethodCreateParams(
-      paymentMethodCreateParams = params,
-      clientSecret = clientSecret,
-    )
-  }
-
-  @Throws(PaymentMethodCreateParamsException::class)
   private fun createAffirmStripeIntentParams(clientSecret: String, isPaymentIntent: Boolean): ConfirmStripeIntentParams {
     if (!isPaymentIntent) {
       throw PaymentMethodCreateParamsException("Affirm is not yet supported through SetupIntents.")
@@ -366,6 +361,7 @@ class PaymentMethodCreateParamsFactory(
         paymentMethodCreateParams = params,
         clientSecret = clientSecret,
         setupFutureUsage = mapToPaymentIntentFutureUsage(getValOr(options, "setupFutureUsage")),
+        mandateData = buildMandateDataParams()
       )
   }
 
@@ -400,6 +396,20 @@ class PaymentMethodCreateParamsFactory(
       billingDetailsParams,
       null
     )
+  }
+
+  private fun buildMandateDataParams(): MandateDataParams? {
+    getMapOrNull(paymentMethodData, "mandateData")?.let { mandateData ->
+      getMapOrNull(mandateData, "customerAcceptance")?.let { customerAcceptance ->
+        getMapOrNull(customerAcceptance, "online")?.let { onlineParams ->
+          return MandateDataParams(MandateDataParams.Type.Online(
+            ipAddress = getValOr(onlineParams, "ipAddress", "") ?: "",
+            userAgent = getValOr(onlineParams, "userAgent", "") ?: "",
+          ))
+        }
+      }
+    }
+    return null
   }
 }
 

@@ -172,12 +172,29 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
   }
 
   @ReactMethod
-  fun presentPaymentSheet(promise: Promise) {
-    paymentSheetFragment?.present(promise)
+  fun presentPaymentSheet(options: ReadableMap, promise: Promise) {
+    if (paymentSheetFragment == null) {
+      promise.resolve(PaymentSheetFragment.createMissingInitError())
+      return
+    }
+
+    val timeoutKey = "timeout"
+    if (options.hasKey(timeoutKey)) {
+      paymentSheetFragment?.presentWithTimeout(
+        options.getInt(timeoutKey).toLong(), promise
+      )
+    } else {
+      paymentSheetFragment?.present(promise)
+    }
   }
 
   @ReactMethod
   fun confirmPaymentSheetPayment(promise: Promise) {
+    if (paymentSheetFragment == null) {
+      promise.resolve(PaymentSheetFragment.createMissingInitError())
+      return
+    }
+
     paymentSheetFragment?.confirmPayment(promise)
   }
 
@@ -511,10 +528,11 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
 
   @ReactMethod
   fun isPlatformPaySupported(params: ReadableMap?, promise: Promise) {
+    val googlePayParams = params?.getMap("googlePay")
     val fragment = GooglePayPaymentMethodLauncherFragment(
       reactApplicationContext,
-      getBooleanOrFalse(params, "testEnv"),
-      getBooleanOrFalse(params, "existingPaymentMethodRequired"),
+      getBooleanOrFalse(googlePayParams, "testEnv"),
+      getBooleanOrFalse(googlePayParams, "existingPaymentMethodRequired"),
       promise
     )
 
@@ -679,7 +697,7 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
       return
     }
 
-    if (!PushProvisioningProxy.isNFCEnabled(reactApplicationContext)) {
+    if (params.getBooleanOr("supportsTapToPay", true) && !PushProvisioningProxy.isNFCEnabled(reactApplicationContext)) {
       promise.resolve(createCanAddCardResult(false, "UNSUPPORTED_DEVICE"))
       return
     }
