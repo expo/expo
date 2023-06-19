@@ -29,20 +29,20 @@ import static versioned.host.exp.exponent.modules.api.components.datetimepicker.
  * {@link NativeModule} that allows JS to show a native time picker dialog and get called back when
  * the user selects a time.
  */
-@ReactModule(name = RNTimePickerDialogModule.FRAGMENT_TAG)
-public class RNTimePickerDialogModule extends ReactContextBaseJavaModule {
+@ReactModule(name = TimePickerModule.NAME)
+public class TimePickerModule extends NativeModuleTimePickerSpec {
 
   @VisibleForTesting
-  public static final String FRAGMENT_TAG = "RNTimePickerAndroid";
+  public static final String NAME = "RNTimePicker";
 
-  public RNTimePickerDialogModule(ReactApplicationContext reactContext) {
+  public TimePickerModule(ReactApplicationContext reactContext) {
     super(reactContext);
   }
 
   @NonNull
   @Override
   public String getName() {
-    return FRAGMENT_TAG;
+    return NAME;
   }
 
   private class TimePickerDialogListener implements OnTimeSetListener, OnDismissListener, OnClickListener {
@@ -89,7 +89,7 @@ public class RNTimePickerDialogModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void dismiss(Promise promise) {
     FragmentActivity activity = (FragmentActivity) getCurrentActivity();
-    dismissDialog(activity, FRAGMENT_TAG, promise);
+    dismissDialog(activity, NAME, promise);
   }
 
   @ReactMethod
@@ -97,8 +97,8 @@ public class RNTimePickerDialogModule extends ReactContextBaseJavaModule {
     FragmentActivity activity = (FragmentActivity) getCurrentActivity();
     if (activity == null) {
       promise.reject(
-        RNConstants.ERROR_NO_ACTIVITY,
-        "Tried to open a TimePicker dialog while not attached to an Activity");
+              RNConstants.ERROR_NO_ACTIVITY,
+              "Tried to open a TimePicker dialog while not attached to an Activity");
       return;
     }
     // We want to support both android.app.Activity and the pre-Honeycomb FragmentActivity
@@ -109,7 +109,7 @@ public class RNTimePickerDialogModule extends ReactContextBaseJavaModule {
       @Override
       public void run() {
         RNTimePickerDialogFragment oldFragment =
-                (RNTimePickerDialogFragment) fragmentManager.findFragmentByTag(FRAGMENT_TAG);
+                (RNTimePickerDialogFragment) fragmentManager.findFragmentByTag(NAME);
 
         if (oldFragment != null) {
           oldFragment.update(createFragmentArguments(options));
@@ -124,7 +124,7 @@ public class RNTimePickerDialogModule extends ReactContextBaseJavaModule {
         fragment.setOnDismissListener(listener);
         fragment.setOnTimeSetListener(listener);
         fragment.setOnNeutralButtonActionListener(listener);
-        fragment.show(fragmentManager, FRAGMENT_TAG);
+        fragment.show(fragmentManager, NAME);
       }
     });
   }
