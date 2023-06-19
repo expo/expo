@@ -1,5 +1,6 @@
 import { Subscription } from 'expo-modules-core';
 import { ClipboardImage, ContentType, GetImageOptions, GetStringOptions, SetStringOptions } from './Clipboard.types';
+import { ClipboardPasteButton } from './ClipboardPasteButton';
 type ClipboardEvent = {
     /**
      * @deprecated Returns empty string. Use [`getStringAsync()`](#getstringasyncoptions) instead to retrieve clipboard content.
@@ -144,5 +145,14 @@ export declare function addClipboardListener(listener: (event: ClipboardEvent) =
  * ```
  */
 export declare function removeClipboardListener(subscription: Subscription): void;
+/**
+ * Property that determines if the `ClipboardPasteButton` is available.
+ *
+ * This requires the users device to be using at least iOS 16.
+ *
+ * `true` if the component is available, and `false` otherwise.
+ */
+export declare const isPasteButtonAvailable: boolean;
 export * from './Clipboard.types';
+export { ClipboardPasteButton };
 //# sourceMappingURL=Clipboard.d.ts.map
