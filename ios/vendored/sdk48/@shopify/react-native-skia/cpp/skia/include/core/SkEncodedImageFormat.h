@@ -1,36 +1,9 @@
 /*
- * Copyright 2015 Google Inc.
+ * Copyright 2023 Google LLC
  *
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
 
-#ifndef SkEncodedImageFormat_DEFINED
-#define SkEncodedImageFormat_DEFINED
-
-#include <stdint.h>
-
-/**
- *  Enum describing format of encoded data.
- */
-enum class SkEncodedImageFormat {
-#ifdef SK_BUILD_FOR_GOOGLE3
-    kUnknown,
-#endif
-    kBMP,
-    kGIF,
-    kICO,
-    kJPEG,
-    kPNG,
-    kWBMP,
-    kWEBP,
-    kPKM,
-    kKTX,
-    kASTC,
-    kDNG,
-    kHEIF,
-    kAVIF,
-    kJPEGXL,
-};
-
-#endif  // SkEncodedImageFormat_DEFINED
+// TODO(kjlubick) remove this shim after clients have been moved to the new location
+#include "include/codec/SkEncodedImageFormat.h" // IWYU pragma: export

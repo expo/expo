@@ -53,7 +53,7 @@
     "lodash": "^4.17.19",
     "react": "18.2.0",
     "react-native": "0.72.0-rc.6",
-    "react-native-gesture-handler": "~2.10.1",
+    "react-native-gesture-handler": "~2.12.0",
     "sinon": "^7.1.1"
   },
   "devDependencies": {

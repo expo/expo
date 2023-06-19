@@ -223,6 +223,7 @@ const general = [
     makePage('eas-update/code-signing.mdx'),
     makeGroup('More', [
       makePage('eas-update/migrate-to-eas-update.mdx'),
+      makePage('eas-update/codepush.mdx'),
       makePage('eas-update/rollouts.mdx'),
       makePage('eas-update/faq.mdx'),
       makePage('eas-update/known-issues.mdx'),

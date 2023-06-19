@@ -8,6 +8,7 @@ import {
   generatePackageListAsync,
   mergeLinkingOptionsAsync,
 } from './autolinking';
+import { resolveExtraDependenciesAsync } from './autolinking/extraDependencies';
 import { GenerateOptions, ResolveOptions, SearchOptions, SearchResults } from './types';
 
 /**
@@ -85,11 +86,12 @@ module.exports = async function (args: string[]) {
   // Searches for available expo modules and resolves the results for given platform.
   registerResolveCommand('resolve', async (results, options) => {
     const modules = await resolveModulesAsync(results, options);
+    const extraDependencies = await resolveExtraDependenciesAsync();
 
     if (options.json) {
-      console.log(JSON.stringify({ modules }));
+      console.log(JSON.stringify({ extraDependencies, modules }));
     } else {
-      console.log(require('util').inspect({ modules }, false, null, true));
+      console.log(require('util').inspect({ extraDependencies, modules }, false, null, true));
     }
   }).option<boolean>('-j, --json', 'Output results in the plain JSON format.', () => true, false);
 
