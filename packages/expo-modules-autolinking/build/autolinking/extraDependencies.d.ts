@@ -20,11 +20,11 @@ interface ExtraDependencies {
     iosPods?: IosPod[];
 }
 /**
- * Gets the `expo-build-properties` settings from app config
+ * Gets the `expo-build-properties` settings from the app config.
  */
 export declare function getBuildPropertiesAsync(): Promise<Record<string, any>>;
 /**
- * Resolves the extra dependencies from `expo-build-properties` properties of the app config
+ * Resolves the extra dependencies from `expo-build-properties` settings.
  */
 export declare function resolveExtraDependenciesAsync(): Promise<Partial<ExtraDependencies>>;
 export {};
