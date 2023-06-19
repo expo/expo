@@ -5,12 +5,12 @@ import EXDevMenu
 import EXUpdatesInterface
 
 @objc
-public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDevLauncherControllerDelegate {
+public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTBridgeDelegate, EXDevLauncherControllerDelegate {
   @objc
   public static var enableAutoSetup: Bool = true
 
   private weak var reactDelegate: ExpoReactDelegate?
-  private var bridgeDelegateHandler = ExpoDevLauncherBridgeDelegateHandler()
+  private var bridgeDelegateHandler: DevClientAppDelegate = ExpoDevLauncherBridgeDelegateHandler()
   private var deferredRootView: EXDevLauncherDeferredRCTRootView?
   private var rootViewModuleName: String?
   private var rootViewInitialProperties: [AnyHashable : Any]?
@@ -42,6 +42,7 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
     ExpoDevMenuReactDelegateHandler.enableAutoSetup = false
 
     self.reactDelegate = reactDelegate
+    self.bridgeDelegateHandler = EXRCTAppDelegateInterceptor(bridgeDelegate: bridgeDelegate, interceptor: self)
 
     EXDevLauncherController.sharedInstance().autoSetupPrepare(self, launchOptions: launchOptions)
     if let sharedController = UpdatesControllerRegistry.sharedInstance.controller {
@@ -76,8 +77,12 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
     let bridge = self.bridgeDelegateHandler.createBridgeAndSetAdapter(launchOptions: developmentClientController.getLaunchOptions())
     developmentClientController.appBridge = bridge
 
-    // swiftlint:disable:next force_unwrapping
-    guard let rootView = self.bridgeDelegateHandler.createRootView(with: bridge, moduleName: self.rootViewModuleName!, initProps: self.rootViewInitialProperties)  else {
+    guard let rootView = self.bridgeDelegateHandler.createRootView(
+      with: bridge,
+      // swiftlint:disable:next force_unwrapping
+      moduleName: self.rootViewModuleName!,
+      initProps: self.rootViewInitialProperties
+    ) else {
       return
     }
     rootView.backgroundColor = self.deferredRootView?.backgroundColor ?? UIColor.white
