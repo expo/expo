@@ -4,17 +4,17 @@ import * as rtlDetect from 'rtl-detect';
 const getNavigatorLocales = () => {
     return Platform.isDOMAvailable ? navigator.languages || [navigator.language] : [];
 };
-const WEB_LAUNGUAGE_CHANGE_EVENT = 'languagechange';
+const WEB_LANGUAGE_CHANGE_EVENT = 'languagechange';
 export function addLocaleListener(listener) {
-    addEventListener(WEB_LAUNGUAGE_CHANGE_EVENT, listener);
+    addEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener);
     return {
-        remove: () => removeEventListener(WEB_LAUNGUAGE_CHANGE_EVENT, listener),
+        remove: () => removeEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener),
     };
 }
 export function addCalendarListener(listener) {
-    addEventListener(WEB_LAUNGUAGE_CHANGE_EVENT, listener);
+    addEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener);
     return {
-        remove: () => removeEventListener(WEB_LAUNGUAGE_CHANGE_EVENT, listener),
+        remove: () => removeEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener),
     };
 }
 export function removeSubscription(subscription) {
