@@ -175,7 +175,7 @@ export interface PluginConfigTypeIos {
 
 /**
  * Interface representing extra CocoaPods dependency.
- * @see https://guides.cocoapods.org/syntax/podfile.html#pod
+ * @see [Podfile syntax reference](https://guides.cocoapods.org/syntax/podfile.html#pod)
  * @platform ios
  */
 export interface ExtraIosPodDependency {
