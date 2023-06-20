@@ -2,7 +2,6 @@ import { PackageJSONConfig } from '@expo/config';
 import npmPackageArg from 'npm-package-arg';
 
 import { getVersionsAsync, SDKVersion } from '../../../api/getVersions';
-import { disableNetwork } from '../../../api/settings';
 import { Log } from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
