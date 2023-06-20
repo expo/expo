@@ -13,6 +13,7 @@ export default class BlurView extends React.Component<BlurViewProps> {
 }
 
 function isBlurSupported(): boolean {
+  // TODO: Replace with CSS or static extraction to ensure hydration errors cannot happen.
   // Enable by default in Node.js
   if (typeof window === 'undefined') {
     return true;
