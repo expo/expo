@@ -20,6 +20,8 @@
 
 ### 💡 Others
 
+- Only show EAS signing log in debug. ([#22975](https://github.com/expo/expo/pull/22975) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.9.1 — 2023-06-13
 
 ### 🐛 Bug fixes
