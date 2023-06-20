@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Enable blurring by default when static rendering.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

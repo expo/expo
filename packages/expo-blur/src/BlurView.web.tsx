@@ -13,6 +13,10 @@ export default class BlurView extends React.Component<BlurViewProps> {
 }
 
 function isBlurSupported(): boolean {
+  // Enable by default in Node.js
+  if (typeof window === 'undefined') {
+    return true;
+  }
   // https://developer.mozilla.org/en-US/docs/Web/API/CSS/supports
   // https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter#Browser_compatibility
   return (
