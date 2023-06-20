@@ -78,6 +78,7 @@ PODS:
     - EXUpdatesInterface
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
+    - React-RCTAppDelegate
   - expo-dev-launcher/Main (2.3.0):
     - EXManifests
     - expo-dev-launcher/Unsafe
@@ -87,6 +88,7 @@ PODS:
     - EXUpdatesInterface
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
+    - React-RCTAppDelegate
   - expo-dev-launcher/Tests (2.3.0):
     - EXManifests
     - expo-dev-menu
@@ -100,6 +102,7 @@ PODS:
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-CoreModules
+    - React-RCTAppDelegate
   - expo-dev-launcher/Unsafe (2.3.0):
     - EXManifests
     - expo-dev-menu
@@ -108,6 +111,7 @@ PODS:
     - EXUpdatesInterface
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
+    - React-RCTAppDelegate
   - expo-dev-menu (3.0.0):
     - expo-dev-menu/Main (= 3.0.0)
     - RCT-Folly (= 2021.07.22.00)
@@ -678,7 +682,7 @@ PODS:
     - RCTTypeSafety
     - React-Core
     - ReactCommon/turbomodule/core
-  - react-native-segmented-control (2.4.0):
+  - react-native-segmented-control (2.4.1):
     - React-Core
   - react-native-slider (4.4.2):
     - React-Core
@@ -800,7 +804,7 @@ PODS:
     - React-Core
   - RNCMaskedView (0.2.9):
     - React-Core
-  - RNCPicker (2.4.8):
+  - RNCPicker (2.4.10):
     - React-Core
   - RNDateTimePicker (7.1.0):
     - React-Core
@@ -1384,7 +1388,7 @@ SPEC CHECKSUMS:
   EXPermissions: ee60d7978aba135b8b391185b039d78f151c376a
   Expo: 64f946f27e2d1fddba37bded5a5d0e8766037af6
   expo-dev-client: b9a1eefeb4c93677753c734ad72072db3404caf9
-  expo-dev-launcher: 14dee2001165730e6e3d262914ae12905c389ddd
+  expo-dev-launcher: 254de858279609498f5424185d11a181c0e5f542
   expo-dev-menu: eda22ea7732b1dc275195913dd59e73aca0b8868
   expo-dev-menu-interface: f74523f940ba5306b0d2f37a488a77b44d57f572
   ExpoAppleAuthentication: 7bdf1a2962ebfe9b00eb4183a17b78d736e57185
@@ -1476,7 +1480,7 @@ SPEC CHECKSUMS:
   react-native-netinfo: ccbe1085dffd16592791d550189772e13bf479e2
   react-native-pager-view: 0ccb8bf60e2ebd38b1f3669fa3650ecce81db2df
   react-native-safe-area-context: b8979f5eda6ed5903d4dbc885be3846ea3daa753
-  react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
+  react-native-segmented-control: 0e4b5d93911e2234f110057df2b41738b326ab3e
   react-native-slider: 33b8d190b59d4f67a541061bb91775d53d617d9d
   react-native-view-shot: 705f999ac2a24e4e6c909c0ca65c732ed33ca2ff
   react-native-webview: b8ec89966713985111a14d6e4bf98d8b54bced0d
@@ -1499,7 +1503,7 @@ SPEC CHECKSUMS:
   ReactCommon: 60d83b96ccf3ee5921a1ca908afcf686691f306c
   RNCAsyncStorage: ddc4ee162bfd41b0d2c68bf2d95acd81dd7f1f93
   RNCMaskedView: 949696f25ec596bfc697fc88e6f95cf0c79669b6
-  RNCPicker: 0bf8ef8f7800524f32d2bb2a8bcadd53eda0ecd1
+  RNCPicker: 0bc2f0a29abcca7b7ed44a2d036aac9ab6d25700
   RNDateTimePicker: 7ecd54a97fc3749f38c3c89a171f6cbd52f3c142
   RNFlashList: ade81b4e928ebd585dd492014d40fb8d0e848aab
   RNGestureHandler: dec4645026e7401a0899f2846d864403478ff6a5
