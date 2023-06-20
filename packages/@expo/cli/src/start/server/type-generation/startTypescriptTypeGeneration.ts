@@ -3,7 +3,6 @@ import fs from 'fs/promises';
 import { Server } from 'metro';
 import path from 'path';
 
-import { env } from '../../../utils/env';
 import { upsertGitIgnoreContents, removeFromGitIgnore } from '../../../utils/mergeGitIgnorePaths';
 import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo';
 import { ServerLike } from '../BundlerDevServer';
@@ -14,28 +13,36 @@ import { forceRemovalTSConfig, forceUpdateTSConfig } from './tsconfig';
 
 export interface TypeScriptTypeGenerationOptions {
   server: ServerLike;
-  metro?: Server | null;
+  metro: Server | null;
   projectRoot: string;
 }
 
-export async function typescriptTypeGeneration({
+const debug = require('debug')('expo:typed-routes') as typeof console.log;
+
+/** Setup all requisite features for statically typed routes in Expo Router v2 / SDK +49. */
+export async function startTypescriptTypeGenerationAsync({
   metro,
   projectRoot,
   server,
 }: TypeScriptTypeGenerationOptions) {
-  const gitIgnorePath = path.join(projectRoot, '.gitignore');
+  const { exp } = getConfig(projectRoot);
 
   // If typed routes are disabled, remove any files that were added.
-  if (!env.EXPO_USE_TYPED_ROUTES) {
+  if (!exp.experiments?.typedRoutes) {
+    debug('Removing typed routes side-effects (experiments.typedRoutes: false)');
+    const gitIgnorePath = path.join(projectRoot, '.gitignore');
     await Promise.all([
       forceRemovalTSConfig(projectRoot),
       removeExpoEnvDTS(projectRoot),
       removeFromGitIgnore(gitIgnorePath, 'expo-env.d.ts'),
     ]);
   } else {
-    const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
     const dotExpoDir = ensureDotExpoProjectDirectoryInitialized(projectRoot);
     const typesDirectory = path.resolve(dotExpoDir, './types');
+    debug(
+      'Ensuring typed routes side-effects are setup (experiments.typedRoutes: true, typesDirectory: %s)',
+      typesDirectory
+    );
 
     // Ensure the types directory exists.
     await fs.mkdir(typesDirectory, { recursive: true });
