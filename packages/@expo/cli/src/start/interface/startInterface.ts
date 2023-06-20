@@ -36,7 +36,7 @@ const PLATFORM_SETTINGS: Record<
 
 export async function startInterfaceAsync(
   devServerManager: DevServerManager,
-  options: Pick<StartOptions, 'platforms'>
+  options: Pick<StartOptions, 'devClient' | 'platforms'>
 ) {
   const actions = new DevServerManagerActions(devServerManager);
 
@@ -136,6 +136,14 @@ export async function startInterfaceAsync(
     }
 
     switch (key) {
+      case 's': {
+        Log.clear();
+        if (await devServerManager.toggleRuntimeMode()) {
+          usageOptions.devClient = devServerManager.options.devClient;
+          return actions.printDevServerInfo(usageOptions);
+        }
+        break;
+      }
       case 'w': {
         try {
           await devServerManager.ensureProjectPrerequisiteAsync(WebSupportProjectPrerequisite);

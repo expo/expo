@@ -23,8 +23,10 @@ class JsiDependencyManager
       public std::enable_shared_from_this<JsiDependencyManager> {
 public:
   JsiDependencyManager(std::shared_ptr<RNSkPlatformContext> context,
-                       jsi::Object &&registerValuesCallback)
-      : _registerValuesCallback(std::move(registerValuesCallback)),
+                       jsi::Runtime &runtime,
+                       const jsi::Value &registerValuesCallback)
+      : _registerValuesCallback(std::make_shared<jsi::Object>(
+            registerValuesCallback.asObject(runtime))),
         JsiHostObject() {}
 
   ~JsiDependencyManager() { unsubscribeAll(); }
@@ -62,53 +64,53 @@ public:
 
     // Enumerate registered keys for the given node to only handle known
     // properties
-    for (const auto &propMapping :
-         node->getPropsContainer()->getMappedProperties()) {
-      auto key = propMapping.first;
-      auto jsValue = nextProps.getProperty(runtime, key);
-      JsiValue nativeValue(runtime, jsValue);
+    node->getPropsContainer()->enumerateMappedProps(
+        [&](const PropId key, const std::vector<NodeProp *> &propMapping) {
+          auto jsValue = nextProps.getProperty(runtime, key);
+          JsiValue nativeValue(runtime, jsValue);
 
-      if (isAnimatedValue(nativeValue)) {
-        // Handle Skia Animation Values
-        auto animatedValue = getAnimatedValue(nativeValue);
-        auto unsubscribe = animatedValue->addListener(
-            [animatedValue, propMapping](jsi::Runtime &runtime) {
-              // Get value from animation value
-              auto nextJsValue = animatedValue->getCurrent(runtime);
-              // Update all props that listens to this animation value
-              for (auto &prop : propMapping.second) {
-                prop->updateValue(runtime, nextJsValue);
-              }
-            });
+          if (isAnimatedValue(nativeValue)) {
+            // Handle Skia Animation Values
+            auto animatedValue = getAnimatedValue(nativeValue);
+            auto unsubscribe = animatedValue->addListener(
+                [animatedValue, propMapping](jsi::Runtime &runtime) {
+                  // Get value from animation value
+                  auto nextJsValue = animatedValue->getCurrent(runtime);
+                  // Update all props that listens to this animation value
+                  for (auto &prop : propMapping) {
+                    prop->updateValue(runtime, nextJsValue);
+                  }
+                });
 
-        // Save unsubscribe methods
-        unsubscribers.push_back(std::make_pair(animatedValue, unsubscribe));
+            // Save unsubscribe methods
+            unsubscribers.push_back(std::make_pair(animatedValue, unsubscribe));
 
-      } else if (isSelector(nativeValue)) {
-        // Handle Skia Animation Value Selectors
-        auto animatedValue = std::dynamic_pointer_cast<RNSkReadonlyValue>(
-            nativeValue.getValue(PropNameValue).getAsHostObject());
+          } else if (isSelector(nativeValue)) {
+            // Handle Skia Animation Value Selectors
+            auto animatedValue = std::dynamic_pointer_cast<RNSkReadonlyValue>(
+                nativeValue.getValue(PropNameValue).getAsHostObject());
 
-        auto selector = nativeValue.getValue(PropNameSelector).getAsFunction();
-        // Add subscription to animated value in selector
-        auto unsubscribe = animatedValue->addListener(
-            [nativeValue, propMapping, selector = std::move(selector),
-             animatedValue](jsi::Runtime &runtime) {
-              // Get value from animation value
-              jsi::Value jsValue = animatedValue->getCurrent(runtime);
-              // Call selector to transform new value
-              auto selectedJsValue =
-                  selector(runtime, jsi::Value::null(), &jsValue, 1);
-              // Update all props that listens to this animation value
-              for (auto &prop : propMapping.second) {
-                prop->updateValue(runtime, selectedJsValue);
-              }
-            });
+            auto selector =
+                nativeValue.getValue(PropNameSelector).getAsFunction();
+            // Add subscription to animated value in selector
+            auto unsubscribe = animatedValue->addListener(
+                [nativeValue, propMapping, selector = std::move(selector),
+                 animatedValue](jsi::Runtime &runtime) {
+                  // Get value from animation value
+                  jsi::Value jsValue = animatedValue->getCurrent(runtime);
+                  // Call selector to transform new value
+                  auto selectedJsValue =
+                      selector(runtime, jsi::Value::null(), &jsValue, 1);
+                  // Update all props that listens to this animation value
+                  for (auto &prop : propMapping) {
+                    prop->updateValue(runtime, selectedJsValue);
+                  }
+                });
 
-        // Save unsubscribe methods
-        unsubscribers.push_back(std::make_pair(animatedValue, unsubscribe));
-      }
-    }
+            // Save unsubscribe methods
+            unsubscribers.push_back(std::make_pair(animatedValue, unsubscribe));
+          }
+        });
 
     // Now let's store the subscription info
     _subscriptions.emplace(node.get(), unsubscribers);
@@ -158,7 +160,7 @@ public:
     }
 
     // Call JS registerValues callback
-    auto func = _registerValuesCallback.asFunction(runtime);
+    auto func = _registerValuesCallback->asFunction(runtime);
     _unregisterValues = std::make_shared<jsi::Object>(
         func.call(runtime, array, 1).asObject(runtime));
 
@@ -187,6 +189,8 @@ public:
 
     unsubscribeAll();
 
+    _registerValuesCallback = nullptr;
+
     return jsi::Value::undefined();
   }
 
@@ -203,8 +207,8 @@ public:
     return JSI_HOST_FUNCTION_LAMBDA {
       // Params: registerValues: (values: Array<SkiaValue<unknown>>) => () =>
       // void
-      auto obj = std::make_shared<JsiDependencyManager>(
-          context, getArgumentAsObject(runtime, arguments, count, 0));
+      auto obj = std::make_shared<JsiDependencyManager>(context, runtime,
+                                                        arguments[0]);
 
       return jsi::Object::createFromHostObject(runtime, std::move(obj));
     };
@@ -283,7 +287,7 @@ private:
     return false;
   }
 
-  jsi::Object _registerValuesCallback;
+  std::shared_ptr<jsi::Object> _registerValuesCallback;
   std::shared_ptr<jsi::Object> _unregisterValues;
   std::map<JsiDomNode *,
            std::vector<std::pair<std::shared_ptr<RNSkReadonlyValue>,

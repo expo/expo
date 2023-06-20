@@ -4,7 +4,7 @@
 //  Created by David Cako on 29 April 2018.
 //
 
-#import <Google-Maps-iOS-Utils/GMUHeatmapTileLayer.h>
+#import "GMUHeatmapTileLayer.h"
 
 @interface AIRGoogleMapHeatmap : UIView
 

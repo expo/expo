@@ -32,6 +32,8 @@ import { importMetroResolverFromProject } from './resolveFromProject';
 import { getAppRouterRelativeEntryPath } from './router';
 import { withMetroResolvers } from './withMetroResolvers';
 
+type Mutable<T> = { -readonly [K in keyof T]: T[K] };
+
 const debug = require('debug')('expo:start:server:metro:multi-platform') as typeof console.log;
 
 function withWebPolyfills(config: ConfigT, projectRoot: string): ConfigT {
@@ -39,7 +41,7 @@ function withWebPolyfills(config: ConfigT, projectRoot: string): ConfigT {
     ? config.serializer.getPolyfills.bind(config.serializer)
     : () => [];
 
-  const getPolyfills = (ctx: { platform: string | null | undefined }): readonly string[] => {
+  const getPolyfills = (ctx: { platform: string | null }): readonly string[] => {
     if (ctx.platform === 'web') {
       return [
         // NOTE: We might need this for all platforms
@@ -164,7 +166,7 @@ export function withExtendedResolver(
     (immutableContext: ResolutionContext, moduleName: string, platform: string | null) => {
       let context = {
         ...immutableContext,
-      } as ResolutionContext & {
+      } as Mutable<ResolutionContext> & {
         mainFields: string[];
         customResolverOptions?: Record<string, string>;
       };
@@ -227,11 +229,12 @@ export function withExtendedResolver(
             preferNativePlatform: platform !== 'web',
             resolveRequest: undefined,
 
-            // @ts-expect-error
             mainFields,
+
             // Passing `mainFields` directly won't be considered (in certain version of Metro)
             // we need to extend the `getPackageMainPath` directly to
             // use platform specific `mainFields`.
+            // @ts-ignore
             getPackageMainPath(packageJsonPath) {
               // @ts-expect-error: mainFields is not on type
               const package_ = context.moduleCache.getPackage(packageJsonPath);
@@ -308,15 +311,17 @@ export async function withMetroMultiPlatformAsync(
     platformBundlers,
     isTsconfigPathsEnabled,
     webOutput,
+    routerDirectory,
   }: {
     config: ConfigT;
     isTsconfigPathsEnabled: boolean;
     platformBundlers: PlatformBundlers;
     webOutput?: 'single' | 'static';
+    routerDirectory: string;
   }
 ) {
-  // Auto pick App entry: this is injected with a custom serializer.
-  process.env.EXPO_ROUTER_APP_ROOT = getAppRouterRelativeEntryPath(projectRoot);
+  // Auto pick app entry for router.
+  process.env.EXPO_ROUTER_APP_ROOT = getAppRouterRelativeEntryPath(projectRoot, routerDirectory);
 
   // Required for @expo/metro-runtime to format paths in the web LogBox.
   process.env.EXPO_PUBLIC_PROJECT_ROOT = process.env.EXPO_PUBLIC_PROJECT_ROOT ?? projectRoot;
@@ -325,6 +330,13 @@ export async function withMetroMultiPlatformAsync(
     // Enable static rendering in runtime space.
     process.env.EXPO_PUBLIC_USE_STATIC = '1';
   }
+
+  // Ensure the cache is invalidated if these values change.
+  // @ts-expect-error
+  config.transformer._expoRouterRootDirectory = process.env.EXPO_ROUTER_APP_ROOT;
+  // @ts-expect-error
+  config.transformer._expoRouterWebRendering = webOutput;
+  // TODO: import mode
 
   if (platformBundlers.web === 'metro') {
     await new WebSupportProjectPrerequisite(projectRoot).assertAsync();

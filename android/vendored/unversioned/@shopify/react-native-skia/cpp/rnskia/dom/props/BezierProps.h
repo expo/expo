@@ -12,8 +12,10 @@ namespace RNSkia {
 
 class BezierProp : public DerivedProp<std::vector<SkPoint>> {
 public:
-  explicit BezierProp(PropId name) : DerivedProp<std::vector<SkPoint>>() {
-    _bezierProp = addProperty(std::make_shared<NodeProp>(name));
+  explicit BezierProp(PropId name,
+                      const std::function<void(BaseNodeProp *)> &onChange)
+      : DerivedProp<std::vector<SkPoint>>(onChange) {
+    _bezierProp = defineProperty<NodeProp>(name);
   }
 
   void updateDerivedValue() override {

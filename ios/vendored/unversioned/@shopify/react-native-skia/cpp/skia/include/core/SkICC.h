@@ -1,19 +1,9 @@
 /*
- * Copyright 2016 Google Inc.
+ * Copyright 2023 Google LLC
  *
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
 
-#ifndef SkICC_DEFINED
-#define SkICC_DEFINED
-
-#include "include/core/SkData.h"
-
-struct skcms_Matrix3x3;
-struct skcms_TransferFunction;
-
-SK_API sk_sp<SkData> SkWriteICCProfile(const skcms_TransferFunction&,
-                                       const skcms_Matrix3x3& toXYZD50);
-
-#endif//SkICC_DEFINED
+// TODO(kjlubick) remove this shim after clients have been moved to the new location
+#include "include/encode/SkICC.h" // IWYU pragma: export

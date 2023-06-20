@@ -1,5 +1,4 @@
-<manifest package="expo.modules.imagepicker"
-          xmlns:tools="http://schemas.android.com/tools"
+<manifest xmlns:tools="http://schemas.android.com/tools"
           xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Required for picking images from camera directly -->
     <uses-permission android:name="android.permission.CAMERA"/>
