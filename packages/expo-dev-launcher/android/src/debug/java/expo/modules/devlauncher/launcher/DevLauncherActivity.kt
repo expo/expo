@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
+import com.facebook.react.defaults.DefaultReactActivityDelegate
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.ReactContext
@@ -31,7 +33,7 @@ class DevLauncherActivity : ReactActivity(), ReactInstanceManager.ReactInstanceE
   override fun getMainComponentName() = "main"
 
   override fun createReactActivityDelegate(): ReactActivityDelegate {
-    return object : ReactActivityDelegate(this, mainComponentName) {
+    return object : DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled) {
 
       override fun getReactNativeHost() = controller.devClientHost
 
