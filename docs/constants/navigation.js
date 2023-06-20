@@ -395,7 +395,7 @@ const preview = [
       makePage('router/reference/static-rendering.mdx'),
       makePage('router/reference/async-routes.mdx'),
       makePage('router/reference/sitemap.mdx'),
-      makePage('router/reference/typescript.mdx'),
+      makePage('router/reference/typed-routes.mdx'),
       makePage('router/reference/authentication.mdx'),
       makePage('router/reference/screen-tracking.mdx'),
       makePage('router/reference/troubleshooting.mdx'),

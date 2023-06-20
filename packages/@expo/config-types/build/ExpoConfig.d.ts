@@ -226,16 +226,6 @@ export interface ExpoConfig {
         };
     };
     /**
-     * Is app detached
-     */
-    isDetached?: boolean;
-    /**
-     * Extra fields needed by detached apps
-     */
-    detach?: {
-        [k: string]: any;
-    };
-    /**
      * An array of file glob strings which point to assets that will be bundled within your standalone app binary. Read more in the [Offline Support guide](https://docs.expo.dev/guides/offline-support/)
      */
     assetBundlePatterns?: string[];
@@ -266,6 +256,10 @@ export interface ExpoConfig {
          * Enable tsconfig/jsconfig `compilerOptions.paths` and `compilerOptions.baseUrl` support for import aliases in Metro.
          */
         tsconfigPaths?: boolean;
+        /**
+         * Enable support for statically typed links in Expo Router. This feature requires TypeScript be set up in your Expo Router v2 project.
+         */
+        typedRoutes?: boolean;
         /**
          * Enables Turbo Modules, which are a type of native modules that use a different way of communicating between JS and platform code. When installing a Turbo Module you will need to enable this experimental option (the library still needs to be a part of Expo SDK already, like react-native-reanimated v2). Turbo Modules do not support remote debugging and enabling this option will disable remote debugging.
          */

@@ -70,17 +70,7 @@ export function collectManifestSchemes(): string[] {
       web: {},
     }) as SchemeConfig) ?? {};
 
-  const schemes = getSchemes(Constants.expoConfig);
-
-  // Add the detached scheme after the manifest scheme for legacy ExpoKit support.
-  if (Constants.expoConfig?.detach?.scheme) {
-    schemes.push(Constants.expoConfig.detach.scheme);
-  }
-
-  // Add the unimplemented platform schemes last.
-  schemes.push(...getSchemes(platformManifest));
-
-  return schemes;
+  return getSchemes(Constants.expoConfig).concat(getSchemes(platformManifest));
 }
 
 function getNativeAppIdScheme(): string | null {
