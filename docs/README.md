@@ -366,6 +366,20 @@ import { Terminal } from '~/ui/components/Snippet';
 ]} cmdCopy="npx create-expo-app --template bare-minimum && npm i -g expo-cli" />
 ```
 
+### Use callouts
+
+There are four different type of callouts that can be used with markdown syntax for `> ...` blockquote. Each callout represents a purpose.
+
+```md
+> Normal callout that doesn't demand much attention but is required to add as a note.
+
+> **info** Callout that is informative and demands attention is required to add as a note or a tip.
+
+> **warning** Callout that is used for warnings and deprecation messages.
+
+> **error** Callout that is used for errors and breaking changes or deprecated changes in the archive.
+```
+
 ### Prettier
 
 Please commit any sizeable diffs that are the result of `prettier` separately to make reviews as easy as possible.
