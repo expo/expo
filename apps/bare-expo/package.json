@@ -74,6 +74,7 @@
     "expo-face-detector": "~12.2.0",
     "expo-image": "~1.3.0",
     "expo-insights": "~0.2.0",
+    "expo-network-addons": "~0.1.0",
     "expo-notifications": "~0.20.0",
     "expo-random": "~13.2.0",
     "expo-splash-screen": "~0.20.0",
