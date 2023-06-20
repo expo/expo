@@ -24,9 +24,17 @@ abstract class DevLauncherPlugin : Plugin<Project> {
   override fun apply(project: Project) {
     val enableNetworkInspector = project.properties["EX_DEV_CLIENT_NETWORK_INSPECTOR"]?.toString()?.toBoolean()
     if (enableNetworkInspector != null && enableNetworkInspector) {
+      // When expo-network-addons is installed, we will let it to do the bytecode manipulation
+      val networkAddonsInstalled = project.findProject(":expo-network-addons") != null
+      if (networkAddonsInstalled) {
+        logger.warn("[DevLauncherPlugin] expo-network-addons is installed and will take the plugin's ownership")
+        return
+      }
+
       val androidComponents = project.extensions.getByType(AndroidComponentsExtension::class.java)
       androidComponents.onVariants(androidComponents.selector().withBuildType("debug")) { variant ->
         variant.instrumentation.transformClassesWith(DevLauncherClassVisitorFactory::class.java, InstrumentationScope.ALL) {
+          it.enabled.set(true)
         }
         variant.instrumentation.setAsmFramesComputationMode(FramesComputationMode.COMPUTE_FRAMES_FOR_INSTRUMENTED_METHODS)
       }
@@ -45,16 +53,16 @@ abstract class DevLauncherPlugin : Plugin<Project> {
       nextClassVisitor: ClassVisitor
     ): ClassVisitor {
       if (parameters.get().enabled.getOrElse(false)) {
-        return nextClassVisitor
+        return OkHttpClassVisitor(classContext, instrumentationContext.apiVersion.get(), nextClassVisitor)
       }
-      return OkHttpClassVisitor(classContext, instrumentationContext.apiVersion.get(), nextClassVisitor)
+      return nextClassVisitor
     }
 
     override fun isInstrumentable(classData: ClassData): Boolean {
       if (parameters.get().enabled.getOrElse(false)) {
-        return false
+        return classData.className in listOf("okhttp3.OkHttpClient\$Builder")
       }
-      return classData.className in listOf("okhttp3.OkHttpClient\$Builder")
+      return false
     }
   }
 
