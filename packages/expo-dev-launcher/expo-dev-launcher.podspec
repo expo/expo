@@ -55,6 +55,7 @@ Pod::Spec.new do |s|
     'DEFINES_MODULE' => 'YES',
     'OTHER_CFLAGS[config=Debug]' => other_c_flags,
     'OTHER_SWIFT_FLAGS[config=Debug]' => other_swift_flags,
+    "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/React-Core\"",
     "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
   }
 
