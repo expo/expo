@@ -3,6 +3,9 @@
 import Foundation
 import ExpoModulesCore
 
+let LOCALE_SETTINGS_CHANGED = "onLocaleSettingsChanged"
+let CALENDAR_SETTINGS_CHANGED = "onCalendarSettingsChanged"
+
 public class LocalizationModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoLocalization")
@@ -24,9 +27,29 @@ public class LocalizationModule: Module {
         self.setSupportsRTL(enableRTL)
       }
     }
+
+    Events(LOCALE_SETTINGS_CHANGED, CALENDAR_SETTINGS_CHANGED)
+
+    OnStartObserving {
+      NotificationCenter.default.addObserver(
+        self,
+        selector: #selector(LocalizationModule.localeChanged),
+        name: NSLocale.currentLocaleDidChangeNotification, // swiftlint:disable:this legacy_objc_type
+        object: nil
+      )
+    }
+
+    OnStopObserving {
+      NotificationCenter.default.removeObserver(
+        self,
+        name: NSLocale.currentLocaleDidChangeNotification, // swiftlint:disable:this legacy_objc_type
+        object: nil
+      )
+    }
   }
 
   func isRTLPreferredForCurrentLocale() -> Bool {
+    // swiftlint:disable:next legacy_objc_type
     return NSLocale.characterDirection(forLanguage: NSLocale.preferredLanguages.first ?? "en-US") == NSLocale.LanguageDirection.rightToLeft
   }
 
@@ -91,22 +114,44 @@ public class LocalizationModule: Module {
     }
   }
 
+  static func getMeasurementSystemForLocale(_ locale: Locale) -> String {
+    if #available(iOS 16, *) {
+      let measurementSystems = [
+        Locale.MeasurementSystem.us: "us",
+        Locale.MeasurementSystem.uk: "uk",
+        Locale.MeasurementSystem.metric: "metric"
+      ]
+      return measurementSystems[locale.measurementSystem] ?? "metric"
+    }
+    return locale.usesMetricSystem ? "metric" : "us"
+  }
+
   static func getLocales() -> [[String: Any?]] {
+    let userSettingsLocale = Locale.current
+
     return (Locale.preferredLanguages.isEmpty ? [Locale.current.identifier] : Locale.preferredLanguages)
       .map { languageTag -> [String: Any?] in
-        var locale = Locale.init(identifier: languageTag)
+        let languageLocale = Locale.init(identifier: languageTag)
+
         return [
           "languageTag": languageTag,
-          "languageCode": locale.languageCode,
-          "regionCode": locale.regionCode,
+          "languageCode": languageLocale.languageCode,
+          "regionCode": languageLocale.regionCode,
           "textDirection": Locale.characterDirection(forLanguage: languageTag) == .rightToLeft ? "rtl" : "ltr",
-          "decimalSeparator": locale.decimalSeparator,
-          "digitGroupingSeparator": locale.groupingSeparator,
-          "measurementSystem": locale.usesMetricSystem ? "metric" : "us",
-          "currencyCode": locale.currencyCode,
-          "currencySymbol": locale.currencySymbol
+          "decimalSeparator": userSettingsLocale.decimalSeparator,
+          "digitGroupingSeparator": userSettingsLocale.groupingSeparator,
+          "measurementSystem": getMeasurementSystemForLocale(userSettingsLocale),
+          "currencyCode": languageLocale.currencyCode,
+          "currencySymbol": languageLocale.currencySymbol
         ]
       }
+  }
+
+  @objc
+  private func localeChanged() {
+    // we send both events since on iOS it means both calendar and locale needs an update
+    sendEvent(LOCALE_SETTINGS_CHANGED)
+    sendEvent(CALENDAR_SETTINGS_CHANGED)
   }
 
   // https://stackoverflow.com/a/28183182
