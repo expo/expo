@@ -50,8 +50,9 @@ export function createBuildGradlePropsConfigPlugin<SourceConfigType extends Buil
 export const withJsEngineGradleProps = createBuildGradlePropsConfigPlugin<ExpoConfig>(
   [
     {
-      propName: 'expo.jsEngine',
-      propValueGetter: (config) => config.android?.jsEngine ?? config.jsEngine ?? 'hermes',
+      propName: 'hermesEnabled',
+      propValueGetter: (config) =>
+        ((config.android?.jsEngine ?? config.jsEngine ?? 'hermes') === 'hermes').toString(),
     },
   ],
   'withJsEngineGradleProps'

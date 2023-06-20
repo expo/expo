@@ -46,10 +46,10 @@ function createBuildGradlePropsConfigPlugin(configToPropertyRules, name) {
  * A config-plugin to update `android/gradle.properties` from the `jsEngine` in expo config
  */
 const withJsEngineGradleProps = createBuildGradlePropsConfigPlugin([{
-  propName: 'expo.jsEngine',
+  propName: 'hermesEnabled',
   propValueGetter: config => {
     var _ref, _config$android$jsEng, _config$android;
-    return (_ref = (_config$android$jsEng = (_config$android = config.android) === null || _config$android === void 0 ? void 0 : _config$android.jsEngine) !== null && _config$android$jsEng !== void 0 ? _config$android$jsEng : config.jsEngine) !== null && _ref !== void 0 ? _ref : 'hermes';
+    return (((_ref = (_config$android$jsEng = (_config$android = config.android) === null || _config$android === void 0 ? void 0 : _config$android.jsEngine) !== null && _config$android$jsEng !== void 0 ? _config$android$jsEng : config.jsEngine) !== null && _ref !== void 0 ? _ref : 'hermes') === 'hermes').toString();
   }
 }], 'withJsEngineGradleProps');
 exports.withJsEngineGradleProps = withJsEngineGradleProps;

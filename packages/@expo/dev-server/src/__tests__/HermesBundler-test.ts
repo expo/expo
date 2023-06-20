@@ -330,79 +330,9 @@ describe('maybeThrowFromInconsistentEngineAsync - android', () => {
   });
 
   describe('react native >= 0.71', () => {
-    it('should resolve if "hermesEnabled = true" in app/build.gradle and "jsEngine: \'hermes\'" in app.json', async () => {
-      const appBuildGradleTestCases = [
-        `
-  ext {
-      hermesEnabled = true
-  }`,
-        `
-  ext {
-      foo = 123
-      hermesEnabled= true
-  }`,
-        `
-  ext {
-      foo = 123,
-      hermesEnabled = true, // with comments
-      bar = 123
-  }`,
-      ];
-
-      for (const content of appBuildGradleTestCases) {
-        addMockedFiles({
-          '/expo/android/app/build.gradle': content,
-        });
-
-        await expect(
-          maybeThrowFromInconsistentEngineAsync(
-            '/expo',
-            '/expo/app.json',
-            'android',
-            /* isHermesManaged */ true
-          )
-        ).resolves.toBeUndefined();
-      }
-    });
-
-    it('should throw if "hermesEnabled = false" in app/build.gradle and "jsEngine: \'hermes\'" in app.json', async () => {
-      const appBuildGradleTestCases = [
-        `
-  // empty build.gradle`,
-        `
-  ext {
-  }`,
-        `
-  ext {
-      hermesEnabled= false
-  }`,
-        `
-  ext {
-      foo: 123,
-      hermesEnabled = false, // with comments
-      bar: 123
-  }`,
-      ];
-
-      for (const content of appBuildGradleTestCases) {
-        addMockedFiles({
-          '/expo/android/app/build.gradle': content,
-        });
-
-        await expect(
-          maybeThrowFromInconsistentEngineAsync(
-            '/expo',
-            '/expo/app.json',
-            'android',
-            /* isHermesManaged */ true
-          )
-        ).rejects.toThrow();
-      }
-    });
-
-    it('should resolve if "expo.jsEngine=hermes" in gradle.properties and "jsEngine: \'hermes\'" in app.json', async () => {
+    it('should resolve if "hermesEnabled=true" in gradle.properties and "jsEngine: \'hermes\'" in app.json', async () => {
       addMockedFiles({
-        '/expo/android/gradle.properties': 'expo.jsEngine=hermes',
+        '/expo/android/gradle.properties': 'hermesEnabled=true',
       });
 
       await expect(
@@ -415,49 +345,9 @@ describe('maybeThrowFromInconsistentEngineAsync - android', () => {
       ).resolves.toBeUndefined();
     });
 
-    it('should resolve if "expo.jsEngine=hermes" in gradle.properties but no "jsEngine: \'hermes\'" in app.json', async () => {
+    it('should resolve if "hermesEnabled=false" in gradle.properties but no "jsEngine: \'hermes\'" in app.json', async () => {
       addMockedFiles({
-        '/expo/android/app/build.gradle': `
-  ext {
-      hermesEnabled = true
-  }`,
-      });
-
-      await expect(
-        maybeThrowFromInconsistentEngineAsync(
-          '/expo',
-          '/expo/app.json',
-          'android',
-          /* isHermesManaged */ false
-        )
-      ).rejects.toThrow();
-    });
-
-    it('should resolve for sdk 41 bare project', async () => {
-      addMockedFiles({
-        '/expo/android/app/build.gradle': `
-  ext {
-      hermesEnabled = false
-  }`,
-      });
-
-      await expect(
-        maybeThrowFromInconsistentEngineAsync(
-          '/expo',
-          '/expo/app.json',
-          'android',
-          /* isHermesManaged */ false
-        )
-      ).resolves.toBeUndefined();
-    });
-
-    it('should handle the inconsistency between app/build.gradle and gradle.properties', async () => {
-      addMockedFiles({
-        '/expo/android/app/build.gradle': `
-  ext {
-      hermesEnabled = false
-  }`,
-        '/expo/android/gradle.properties': `expo.jsEngine=hermes`,
+        '/expo/android/gradle.properties': 'hermesEnabled=true',
       });
 
       await expect(
@@ -466,6 +356,21 @@ describe('maybeThrowFromInconsistentEngineAsync - android', () => {
           '/expo/app.json',
           'android',
           /* isHermesManaged */ true
+        )
+      ).resolves.toBeUndefined();
+    });
+
+    it('should throw if "hermesEnabled=true" in gradle.properties and "jsEngine: \'jsc\'" in app.json', async () => {
+      addMockedFiles({
+        '/expo/android/gradle.properties': 'hermesEnabled=true',
+      });
+
+      await expect(
+        maybeThrowFromInconsistentEngineAsync(
+          '/expo',
+          '/expo/app.json',
+          'android',
+          /* isHermesManaged */ false
         )
       ).rejects.toThrow();
     });

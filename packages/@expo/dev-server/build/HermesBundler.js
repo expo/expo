@@ -152,12 +152,12 @@ async function maybeThrowFromInconsistentEngineAsync(projectRoot, configFilePath
 async function maybeInconsistentEngineAndroidAsync(projectRoot, isHermesManaged) {
   // Trying best to check android native project if by chance to be consistent between app config
 
-  // Check android/app/build.gradle for "enableHermes: true"
+  // Check android/app/build.gradle for "enableHermes: true", for SDK < 48
   const appBuildGradlePath = _path().default.join(projectRoot, 'android', 'app', 'build.gradle');
   if (_fsExtra().default.existsSync(appBuildGradlePath)) {
     const content = await _fsExtra().default.readFile(appBuildGradlePath, 'utf8');
-    const isPropsReference = content.search(/^\s*(enableHermes:|hermesEnabled\s*=)\s*\(findProperty\('expo.jsEngine'\) \?: "(jsc|hermes)"\) == "hermes",?\s+/m) >= 0;
-    const isHermesBare = content.search(/^\s*(enableHermes:|hermesEnabled\s*=)\s*true,?\s+/m) >= 0;
+    const isPropsReference = content.search(/^\s*enableHermes:\s*\(findProperty\('expo.jsEngine'\) \?: "jsc"\) == "hermes",?\s+/m) >= 0;
+    const isHermesBare = content.search(/^\s*enableHermes:\s*true,?\s+/m) >= 0;
     if (!isPropsReference && isHermesManaged !== isHermesBare) {
       return true;
     }
@@ -167,7 +167,7 @@ async function maybeInconsistentEngineAndroidAsync(projectRoot, isHermesManaged)
   const gradlePropertiesPath = _path().default.join(projectRoot, 'android', 'gradle.properties');
   if (_fsExtra().default.existsSync(gradlePropertiesPath)) {
     const props = parseGradleProperties(await _fsExtra().default.readFile(gradlePropertiesPath, 'utf8'));
-    const isHermesBare = props['expo.jsEngine'] === 'hermes';
+    const isHermesBare = props['expo.jsEngine'] === 'hermes' || props['hermesEnabled'] === 'true';
     if (isHermesManaged !== isHermesBare) {
       return true;
     }
