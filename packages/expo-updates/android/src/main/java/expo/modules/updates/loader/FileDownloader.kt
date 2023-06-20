@@ -37,11 +37,13 @@ import java.security.cert.CertificateException
  * and assets, using an instance of [OkHttpClient].
  */
 open class FileDownloader(context: Context, private val client: OkHttpClient) {
-  constructor(context: Context) : this(context,
+  constructor(context: Context) : this(
+    context,
     OkHttpClient.Builder()
       .cache(getCache(context))
       .addInterceptor(BrotliInterceptor)
-      .build())
+      .build()
+  )
   private val logger = UpdatesLogger(context)
 
   interface FileDownloadCallback {
