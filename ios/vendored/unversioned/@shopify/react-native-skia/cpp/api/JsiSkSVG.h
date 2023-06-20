@@ -5,7 +5,7 @@
 
 #include <jsi/jsi.h>
 
-#include <JsiSkHostObjects.h>
+#include "JsiSkHostObjects.h"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
@@ -24,11 +24,19 @@ public:
       : JsiSkWrappingSkPtrHostObject<SkSVGDOM>(std::move(context),
                                                std::move(svgdom)) {}
 
-  JSI_PROPERTY_GET(__typename__) {
-    return jsi::String::createFromUtf8(runtime, "SVG");
+  EXPORT_JSI_API_TYPENAME(JsiSkSVG, "SVG")
+
+  JSI_HOST_FUNCTION(width) {
+    return static_cast<double>(getObject()->containerSize().width());
   }
 
-  JSI_EXPORT_PROPERTY_GETTERS(JSI_EXPORT_PROP_GET(JsiSkSVG, __typename__))
+  JSI_HOST_FUNCTION(height) {
+    return static_cast<double>(getObject()->containerSize().height());
+  }
+
+  JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkSVG, width),
+                       JSI_EXPORT_FUNC(JsiSkSVG, height),
+                       JSI_EXPORT_FUNC(JsiSkSVG, dispose))
 
   /**
     Returns the underlying object from a host object of this type

@@ -285,7 +285,7 @@ dependencies {
 
   api 'com.google.firebase:firebase-core:21.1.0'
   api 'com.google.firebase:firebase-messaging:22.0.0'
-  api 'com.google.maps.android:android-maps-utils:0.5'
+  api 'com.google.maps.android:android-maps-utils:3.4.0'
   // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
 
   // expo-file-system
@@ -322,8 +322,8 @@ dependencies {
   api 'com.github.troZee:ViewPager2:v1.0.6'
 
   // stripe-react-native
-  implementation('com.stripe:stripe-android:20.19.+')
-  implementation('com.stripe:financial-connections:20.19.+')
+  implementation('com.stripe:stripe-android:20.25.+')
+  implementation('com.stripe:financial-connections:20.25.+')
   compileOnly 'com.stripe:stripe-android-issuing-push-provisioning:1.1.0'
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0'
   implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"

@@ -18,7 +18,6 @@ import { AsyncNgrok } from './AsyncNgrok';
 import { DevelopmentSession } from './DevelopmentSession';
 import { CreateURLOptions, UrlCreator } from './UrlCreator';
 import { PlatformBundlers } from './platformBundlers';
-import { typescriptTypeGeneration } from './type-generation';
 
 const debug = require('debug')('expo:start:server:devServer') as typeof console.log;
 
@@ -168,12 +167,7 @@ export abstract class BundlerDevServer {
     return false;
   }
 
-  public async startTypeScriptServices(): Promise<void> {
-    return typescriptTypeGeneration({
-      server: this.instance!.server,
-      projectRoot: this.projectRoot,
-    });
-  }
+  public abstract startTypeScriptServices(): Promise<void>;
 
   public async watchEnvironmentVariables(): Promise<void> {
     // noop -- We've only implemented this functionality in Metro.
@@ -352,7 +346,7 @@ export abstract class BundlerDevServer {
     );
   }
 
-  protected getUrlCreator(options: Partial<Pick<BundlerStartOptions, 'port' | 'location'>> = {}) {
+  public getUrlCreator(options: Partial<Pick<BundlerStartOptions, 'port' | 'location'>> = {}) {
     if (!this.urlCreator) {
       assert(options?.port, 'Dev server instance not found');
       this.urlCreator = new UrlCreator(options.location, {

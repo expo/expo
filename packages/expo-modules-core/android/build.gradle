@@ -53,12 +53,12 @@ def customDownloadsDir = System.getenv("REACT_NATIVE_DOWNLOADS_DIR")
 def downloadsDir = customDownloadsDir ? new File(customDownloadsDir) : new File("$buildDir/downloads")
 def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
 
-def REACT_NATIVE_BUILD_FROM_SOURCE = findProject(":ReactAndroid") != null
+def REACT_NATIVE_BUILD_FROM_SOURCE = findProject(":packages:react-native:ReactAndroid") != null
 def REACT_NATIVE_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
-  ? findProject(":ReactAndroid").getProjectDir().parent
+  ? findProject(":packages:react-native:ReactAndroid").getProjectDir().parent
   : new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).parent
 def REACT_NATIVE_SO_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
-  ? Paths.get(findProject(":ReactAndroid").getProjectDir().toString(), "build", "intermediates", "library_*", "*", "jni")
+  ? Paths.get(findProject(":packages:react-native:ReactAndroid").getProjectDir().toString(), "build", "intermediates", "library_*", "*", "jni")
   : "${buildDir}/react/jni"
 
 def reactProperties = new Properties()
@@ -79,26 +79,20 @@ def reactNativeArchitectures() {
 def prebuiltHermesDir = findProperty("expo.prebuiltHermesDir") ?: file("${rootDir}/prebuiltHermes")
 def prebuiltHermesVersion = file("${prebuiltHermesDir}/.hermesversion").exists() ? file("${prebuiltHermesDir}/.hermesversion").text : null
 def currentHermesVersion = file("${REACT_NATIVE_DIR}/sdks/.hermesversion").exists() ? file("${REACT_NATIVE_DIR}/sdks/.hermesversion").text : null
-def hasHermesProject = findProject(":ReactAndroid:hermes-engine") != null
+def hasHermesProject = findProject(":packages:react-native:ReactAndroid:hermes-engine") != null
 def prebuiltHermesCacheHit = hasHermesProject && currentHermesVersion == prebuiltHermesVersion
 
 // By default we are going to download and unzip hermes inside the /sdks/hermes folder
 // but you can provide an override for where the hermes source code is located.
 def hermesDir = System.getenv("REACT_NATIVE_OVERRIDE_HERMES_DIR") ?: file("${REACT_NATIVE_DIR}/sdks/hermes")
 
-def USE_HERMES = false
+def USE_HERMES = true
 def NEED_DOWNLOAD_HERMES = false
 def HERMES_HEADER_DIR = null
 def HERMES_AAR = null
 if (findProject(":app")) {
-  def appProjectExt = project(":app").ext
-  if (appProjectExt.has("react")) {
-    USE_HERMES = project(":app").ext.react.enableHermes
-  } else {
-    USE_HERMES = (findProperty('expo.jsEngine') ?: "jsc") == "hermes"
-  }
-} else {
-  USE_HERMES = (findProperty('expo.jsEngine') ?: "jsc") == "hermes"
+  def appProject = project(":app")
+  USE_HERMES = appProject?.hermesEnabled?.toBoolean() || appProject?.ext?.react?.enableHermes?.toBoolean()
 }
 
 // Currently the needs for hermes/jsc are only for androidTest, so we turn on this flag only when `isExpoModulesCoreTests` is true
@@ -306,10 +300,10 @@ dependencies {
   androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
 
   if (USE_HERMES) {
-    def hermesProject = findProject(":ReactAndroid:hermes-engine")
-    androidTestImplementation (hermesProject ?: files(HERMES_AAR))
+    def hermesProject = findProject(":packages:react-native:ReactAndroid:hermes-engine")
+    compileOnly (hermesProject ?: files(HERMES_AAR))
   } else {
-    androidTestImplementation "org.webkit:android-jsc:+"
+    compileOnly "org.webkit:android-jsc:+"
   }
 }
 
@@ -415,7 +409,7 @@ afterEvaluate {
   if (USE_HERMES) {
     nativeBuildDependsOn(project, prepareHermes, null)
     if (hasHermesProject && !prebuiltHermesCacheHit) {
-      prepareHermes.dependsOn(":ReactAndroid:hermes-engine:assembleDebug")
+      prepareHermes.dependsOn(":packages:react-native:ReactAndroid:hermes-engine:assembleDebug")
     }
   }
 }

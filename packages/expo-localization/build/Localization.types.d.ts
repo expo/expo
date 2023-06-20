@@ -107,8 +107,6 @@ export type Locale = {
     textDirection: 'ltr' | 'rtl' | null;
     /**
      * The measurement system used in the locale.
-     * On iOS is one of `'metric'`, `'us'`. On Android is one of `'metric'`, `'us'`, `'uk'`.
-     *
      * Is `null` on Web, as user chosen measurement system is not exposed on the web and using locale to determine measurement systems is unreliable.
      * Ask for user preferences if possible.
      */
