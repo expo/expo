@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- CSS Modules now export web-compatible styles by default and `unstable_styles` for `react-native-web` style objects.
+
 ### 🎉 New features
 
 - Strip `app/+html` files from client bundles. ([#22881](https://github.com/expo/expo/pull/22881) by [@EvanBacon](https://github.com/EvanBacon))
