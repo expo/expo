@@ -16,11 +16,17 @@
 #import "EXDevLauncherUpdatesHelper.h"
 #import "RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h"
 
+#import "EXDevLauncherBridgeDelegate.h"
+
 #if __has_include(<EXDevLauncher/EXDevLauncher-Swift.h>)
 // For cocoapods framework, the generated swift header will be inside EXDevLauncher module
 #import <EXDevLauncher/EXDevLauncher-Swift.h>
 #else
 #import <EXDevLauncher-Swift.h>
+#endif
+
+#ifdef RCT_NEW_ARCH_ENABLED
+#import <React/RCTSurfaceView.h>
 #endif
 
 @import EXManifests;
@@ -50,6 +56,7 @@
 @property (nonatomic, strong) EXDevLauncherInstallationIDHelper *installationIDHelper;
 @property (nonatomic, strong) EXDevLauncherNetworkInterceptor *networkInterceptor;
 @property (nonatomic, assign) BOOL isStarted;
+@property (nonatomic, strong) EXDevLauncherBridgeDelegate *bridgeDelegate;
 
 @end
 
@@ -76,6 +83,7 @@
     self.installationIDHelper = [EXDevLauncherInstallationIDHelper new];
     self.networkInterceptor = [EXDevLauncherNetworkInterceptor new];
     self.shouldPreferUpdatesInterfaceSourceUrl = NO;
+    self.bridgeDelegate = [EXDevLauncherBridgeDelegate new];
   }
   return self;
 }
@@ -280,12 +288,8 @@
   }
 
   [self _removeInitModuleObserver];
-
-  _launcherBridge = [[EXDevLauncherRCTBridge alloc] initWithDelegate:self launchOptions:_launchOptions];
-
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:_launcherBridge
-                                                   moduleName:@"main"
-                                            initialProperties:@{}];
+  UIView *rootView = [_bridgeDelegate createRootViewWithModuleName:@"main" launchOptions:_launchOptions application:UIApplication.sharedApplication];
+  _launcherBridge = _bridgeDelegate.bridge;
 
   [self _ensureUserInterfaceStyleIsInSyncWithTraitEnv:rootView];
 
@@ -578,12 +582,18 @@
   [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTContentDidAppearNotification object:nil];
 
   dispatch_async(dispatch_get_main_queue(), ^{
+    #ifdef RCT_NEW_ARCH_ENABLED
+      #define EXPECTED_ROOT_VIEW RCTSurfaceView
+    #else
+      #define EXPECTED_ROOT_VIEW RCTRootContentView
+    #endif
     NSArray<UIView *> *views = [[[self->_window rootViewController] view] subviews];
     for (UIView *view in views) {
-      if (![view isKindOfClass:[RCTRootContentView class]]) {
+      if (![view isKindOfClass:[EXPECTED_ROOT_VIEW class]]) {
         [view removeFromSuperview];
       }
     }
+    #undef EXPECTED_ROOT_VIEW
   });
 }
 
