@@ -382,10 +382,6 @@ const preview = [
     { expanded: true },
   ]),
   makeSection('Expo Router', [
-    makeGroup('Static rendering', [
-      makePage('router/static-rendering/async-routes.mdx'),
-      makePage('router/static-rendering/root-html.mdx'),
-    ]),
     makeGroup('Advance layout patterns', [
       makePage('router/advance/root-layout.mdx'),
       makePage('router/advance/stack.mdx'),
@@ -396,6 +392,8 @@ const preview = [
       makePage('router/advance/router-settings.mdx'),
     ]),
     makeGroup('Reference', [
+      makePage('router/reference/static-rendering.mdx'),
+      makePage('router/reference/async-routes.mdx'),
       makePage('router/reference/sitemap.mdx'),
       makePage('router/reference/typescript.mdx'),
       makePage('router/reference/authentication.mdx'),
