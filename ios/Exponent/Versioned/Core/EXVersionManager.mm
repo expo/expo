@@ -149,8 +149,8 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
     RCTInspectorPackagerConnection *inspectorPackagerConnection = [RCTInspectorDevServerHelper connectWithBundleURL:bundleURL];
 
     NSDictionary<NSString *, id> *buildProps = [self.manifest getPluginPropertiesWithPackageName:@"expo-build-properties"];
-    BOOL enableNetworkInterceptor = [[[buildProps objectForKey:@"ios"] objectForKey:@"unstable_networkInspector"] boolValue];
-    if (enableNetworkInterceptor) {
+    NSNumber *enableNetworkInterceptor = [[buildProps objectForKey:@"ios"] objectForKey:@"unstable_networkInspector"];
+    if (enableNetworkInterceptor == nil || [enableNetworkInterceptor boolValue] != NO) {
       self.networkInterceptor = [[EXVersionedNetworkInterceptor alloc] initWithRCTInspectorPackagerConnection:inspectorPackagerConnection];
     }
   }

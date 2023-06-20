@@ -20,7 +20,7 @@ class ExpoNetworkInterceptor : Closeable, ExpoRequestCdpInterceptor.Delegate {
   fun start(manifest: Manifest, reactInstanceManager: ReactInstanceManager) {
     val buildProps = (manifest?.getPluginProperties("expo-build-properties")?.get("android") as? Map<*, *>)
       ?.mapKeys { it.key.toString() }
-    val enableNetworkInspector = buildProps?.get("unstable_networkInspector") as? Boolean ?: false
+    val enableNetworkInspector = buildProps?.get("networkInspector") as? Boolean ?: true
     isStarted = enableNetworkInspector
 
     this.onResume(reactInstanceManager)
