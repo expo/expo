@@ -27,13 +27,13 @@ export async function transformCssModuleWeb(props: {
   });
   const codeAsString = cssResults.code.toString();
 
-  const { styles, classes, variables } = convertLightningCssToReactNativeWebStyleSheet(
+  const { styles, reactNativeWeb, variables } = convertLightningCssToReactNativeWebStyleSheet(
     cssResults.exports!
   );
 
   let outputModule = `module.exports=Object.assign(${JSON.stringify(
     styles
-  )},{unstable_styles:${classes}}${JSON.stringify(variables)});`;
+  )},{unstable_styles:${JSON.stringify(reactNativeWeb)}}${JSON.stringify(variables)});`;
 
   if (props.options.dev) {
     const runtimeCss = wrapDevelopmentCSS({
@@ -55,7 +55,7 @@ export function convertLightningCssToReactNativeWebStyleSheet(
   input: import('lightningcss').CSSModuleExports
 ) {
   const styles: Record<string, string> = {};
-  const classes: Record<string, any> = {};
+  const reactNativeWeb: Record<string, any> = {};
   const variables: Record<string, string> = {};
   // e.g. { container: { name: 'ahs8IW_container', composes: [], isReferenced: false }, }
   Object.entries(input).map(([key, value]) => {
@@ -72,13 +72,13 @@ export function convertLightningCssToReactNativeWebStyleSheet(
     }
 
     styles[key] = className;
-    classes[key] = { $$css: true, [RNW_CSS_CLASS_ID]: className };
+    reactNativeWeb[key] = { $$css: true, [RNW_CSS_CLASS_ID]: className };
     return {
       [key]: { $$css: true, [RNW_CSS_CLASS_ID]: className },
     };
   });
 
-  return { styles, classes, variables };
+  return { styles, reactNativeWeb, variables };
 }
 
 export function matchCssModule(filePath: string): boolean {
