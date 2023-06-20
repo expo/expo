@@ -1,35 +1,33 @@
 # Expo Documentation
 
-This is the public documentation for **Expo**, its SDK, client, and services, like **EAS**.
+This is the public documentation for **Expo**, its SDK, client, and services (**EAS**). This documentation is built using Next.js and you can access it online at https://docs.expo.dev/.
 
-This documentation is built using Next.js and you can access it online at https://docs.expo.dev/.
-
-> **Note** **Contributors:** Please make sure that you edit the docs in the `pages/versions/unversioned` directory if you want your changes to apply to the next SDK version too!
+> **Note** **Contributors:** Please make sure that you edit the docs in the **pages/versions/unversioned** for SDK reference if you want your changes to apply to the next SDK version too!
 
 > **Note**
 > If you are looking for Expo Documentation Writing Style guidelines, please refer [Expo Documentation Style Guide](https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md).
 
-## Running Locally
+## To run locally in development mode
 
-Download the copy of this repository.
+1. Download a copy of this repository.
 
 ```sh
 git clone https://github.com/expo/expo.git
 ```
 
-Then `cd` into the `docs` directory and install dependencies with:
+2. Then `cd` into the `docs` directory and install dependencies with:
 
 ```sh
 yarn
 ```
 
-Then you can run the app with (make sure you have no server running on port `3002`):
+3. Then you can run the app with (make sure you have no server running on port `3002`):
 
 ```sh
 yarn run dev
 ```
 
-Now the documentation is running at http://localhost:3002, and any changes you make to markdown or JavaScript files will automatically trigger reloads.
+4. Now the documentation is running at `http://localhost:3002`, and any changes you make to markdown or JavaScript files will automatically trigger reloads.
 
 ### To run locally in production mode
 
@@ -38,21 +36,21 @@ yarn run export
 yarn run export-server
 ```
 
-## Editing Docs Content
+## Edit Docs Content
 
-All documentation-related content is inside the **pages** directory. We write docs in markdown with the help of custom React components that provide additional functionality, such as embedding Snack examples and so on.
+All documentation-related content is inside the **pages** directory. We write docs in markdown with the help of custom React components that provide additional functionality, such as embedding Snack examples, representing commands inside a terminal component and so on.
 
 The documentation is divided into four main sections:
 
 - **Home**: Provides a guided path from starting a project from scratch to deploying it to app stores.
 - **Guides**: General purpose and fundamental guides that help you understand how Expo works and how to use it. This section also contains all EAS related documentation.
-- **Reference**: Detailed reference documentation for all Expo APIs and modules. All Expo SDK API docs are located under **pages/versions** directory. We keep separate versions of documentation for each SDK version currently supported in Expo Go. See ["A note about versioning"](#a-note-about-versioning) for more information.
+- **Reference**: Detailed reference documentation for all Expo APIs and modules. All Expo SDK API docs are located under **pages/versions** directory. We keep separate versions of documentation for each SDK version currently supported in Expo Go. See [A note about versioning](#a-note-about-versioning) for more information.
 - **Learn**: Tutorials and guides that help you learn how to use Expo and React Native.
 
 > **Note**
-> We are currently in the process of moving our API documentation to being auto-generated using `expotools`'s `GenerateDocsAPIData` command.
+> We are currently in the process of moving our API documentation to being auto-generated using `expotools`'s `GenerateDocsAPIData` command for some Expo libraries.
 
-### Docs metadata
+### Metadata of a page
 
 Each markdown page can be provided metadata in the heading, distinguished by:
 
@@ -72,7 +70,7 @@ These metadata items include:
 - `sidebar_title`: The title of the page to display in the sidebar. Defaults to the page title.
 - `maxHeadingDepth`: The max level of headings shown in Table of Content on the right side. Defaults to `3`.
 
-### Editing Code
+### Edit Code
 
 The docs are written with Next.js and TypeScript. If you need to make code changes, follow steps from the [Running locally](#running-locally) section, then open a separate terminal and run the TypeScript compiler in watch mode - it will watch your code changes and notify you about errors.
 
@@ -109,15 +107,15 @@ You can add your own client-side redirect rules in `common/error-utilities.ts`.
 
 ## Search
 
-We use Algolia as a main search results provider for our docs. Besides the query, results are also filtered based on the `version` tag which represents the user current location. The tag set in the `components/DocumentationPage.tsx` head.
+We use Algolia as a main search results provider for our docs. Besides the query, results are also filtered based on the `version` tag which represents the user's current location. The tag is set in the `components/DocumentationPage.tsx` head.
 
 In `ui/components/CommandMenu/utils.ts`, you can see the `facetFilters` set to `[['version:none', 'version:{version}']]`. Translated to English, this means - search on all pages where `version` is `none`, or the currently selected version. Here are the rules we use to set this tag:
 
 - all unversioned pages use the version tag `none`,
-- all versioned pages use the SDK version (e.g. `v46.0.0` or `v47.0.0`),
+- all versioned pages use the SDK version (for example, `v46.0.0` or `v47.0.0`),
 - all pages with `hideFromSearch: true` frontmatter entry don't have the version tag.
 
-Currently, the base results for Expo docs are combined with other results from multiple sources, like:
+Currently, the base results for Expo docs are combined with other results from multiple sources, such as:
 
 - manually defined paths for Expo dashboard located in `ui/components/CommandMenu/expoEntries.ts`,
 - public Algolia index for React Native website,
@@ -125,7 +123,7 @@ Currently, the base results for Expo docs are combined with other results from m
 
 ## Quirks
 
-- You can't have curly brace without quotes: \`{}\` -> `{}`
+You can't have curly brace without quotes: \`{}\` -> `{}`.
 
 ## Deployment
 
@@ -140,9 +138,9 @@ If you need to link from one MDX file to another, please use the static/full pat
 - from: **tutorial/button.mdx**, to: **introduction/expo.mdx** -> `/introduction/expo`
 - from: **index.mdx**, to: **guides/errors.mdx#tracking-js-errors** -> `/guides/errors/#tracking-javascript-errors`
 
-You can validate all current links by running `yarn lint-links` script.
+Validate all current links by running `yarn lint-links` script.
 
-### Updating latest version of docs
+### Update latest version of docs
 
 When we release a new SDK, we copy the `unversioned` directory, and rename it to the new version. Latest version of docs is read from **package.json** so make sure to update the `version` key there as well.
 
@@ -153,7 +151,7 @@ That's all you need to do. The `versions` directory is listed on server start to
 Because the navbar is automatically generated from the directory structure, the default ordering of the links under each section is alphabetical. However, for many sections, this is not ideal UX.
 So, if you wish to override the alphabetical ordering, manipulate page titles in **constants/navigation.js**.
 
-### Updating API reference docs
+### Update API reference docs
 
 The API reference docs are generated from the TypeScript source code.
 
@@ -235,27 +233,27 @@ Now, in the terminal window, navigate to **expo/docs** repo and run the command 
 
 #### Tips
 
-##### Disabling changelog
+##### Disable changelog
 
 After making changes, when you are opening the PR, consider adding `<!-- disable:changelog-checks -->` in the PR description if the changes you are making are docs-related changes (such as updating the field description or fixing a typo, etc.)
 
 This will make sure that the ExpoBot on GitHub will not complain about updating the package’s changelog (some of these changes, as described above, are not worth mentioning in the changelog).
 
-##### Using the correct package name
+##### Use the correct package name
 
 Some of the packages have documentation spread over multiple pages. For example, `expo-av` package has a separate base interface, and some of the information is separated into `Audio` and `Video` components. For such packages, always make sure to check the [name of the package](https://github.com/expo/expo/blob/main/tools/src/commands/GenerateDocsAPIData.ts#L24) for `et` command.
 
-### Syncing app.json / app.config.js with the schema
+### Sync app.json/app.config.js with the schema
 
 To render the app.json / app.config.js properties table, we currently store a local copy of the appropriate version of the schema.
 
-If the schema is updated, in order to sync and rewrite our local copy, run `yarn run schema-sync <SDK version integer>` or `yarn run schema-sync unversioned`.
+If the schema is updated, to sync and rewrite our local copy, run `yarn run schema-sync <SDK version integer>` or `yarn run schema-sync unversioned`.
 
-### Adding Images and Assets
+### Add images and assets
 
-You can add images and assets to the `public/static` directory. They'll be served by the production and staging servers at `/static`.
+You can add images and assets to the **public/static** directory. They'll be served by the production and staging servers at **static**.
 
-#### Adding videos
+#### Add videos
 
 - Record the video using QuickTime
 - Install `ffmpeg` (`brew install ffmpeg`)
@@ -298,9 +296,9 @@ import SnackInline from '~/components/plugins/SnackInline';
 </SnackInline>
 ```
 
-### Embedding multiple options of code
+### Embed multiple options of code
 
-Sometimes it's useful to show multiple ways of doing something, for instance maybe you'd like to have an example using a React class component, and also an example of a functional component.
+Sometimes it's useful to show multiple ways of doing something, for instance, maybe you'd like to have an example using a React class component, and also an example of a functional component.
 The `Tabs` plugin is really useful for this, and this is how you'd use it in a markdown file:
 
 <!-- prettier-ignore -->
@@ -331,22 +329,22 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
 
 **Note:** The components should not be indented or they will not be parsed correctly.
 
-### Excluding pages from DocSearch
+### Exclude pages from DocSearch
 
 To ignore a page from the search result, use `hideFromSearch: true` on that page. This removes the `<meta name="docsearch:version">` tag from that page and filters it from our facet-based search.
 
 Please note that `hideFromSearch` only prevents the page from showing up in the internal docs search (Algolia). The page will still show up in search engine results like Google.
 For a page to be hidden even from search engine results, you need to edit the sitemap that is generated via our Next.js config (**next.config.js**).
 
-### Excluding directories from the sidebar
+### Exclude directories from the sidebar
 
-Certain directories are excluded from the sidebar in order to prevent it from getting too long and unnavigable. You can find a list of these directories, and add new ones, in **constants/navigation.js** under `hiddenSections`.
+Certain directories are excluded from the sidebar to prevent it from getting too long and unnavigable. You can find a list of these directories, and add new ones, in **constants/navigation.js** under `hiddenSections`.
 
 If you just want to hide a single page from the sidebar, set `hideInSidebar: true` in the page metadata.
 
 ### Use `Terminal` component for shell commands snippets
 
-Whenever shell commands are used or referred, use `Terminal` component to make the code snippets copy/pasteable. This component can be imported in any markdown file.
+Whenever shell commands are used or referred, use `Terminal` component to make the code snippets copy/pasteable. This component can be imported into any markdown file.
 
 ```jsx
 import { Terminal } from '~/ui/components/Snippet';
@@ -368,7 +366,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 ### Use callouts
 
-There are four different type of callouts that can be used with markdown syntax for `> ...` blockquote. Each callout represents a purpose.
+Four different types of callouts can be used with markdown syntax for `> ...` blockquote. Each callout represents a purpose.
 
 ```md
 > Normal callout that doesn't demand much attention but is required to add as a note.
