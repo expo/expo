@@ -4,11 +4,11 @@ public class ExpoPrintWithPrinter {
   var renderTasks: [ExpoWKPDFRenderer] = []
   var cachedPrinters: [String: UIPrinter] = [:]
   let delegate: ExpoPrintModuleDelegate
-  
+
   init(delegate: ExpoPrintModuleDelegate) {
     self.delegate = delegate
   }
-  
+
   func startPrint(options: PrintOptions, promise: Promise) {
     if let uri = options.uri {
       dataFromUri(uri: uri) { [self] data in
@@ -26,14 +26,14 @@ public class ExpoPrintWithPrinter {
       promise.reject(NoPrintDataException())
       return
     }
-    
+
     if !options.useMarkupFormatter {
       printFromHtmlWithoutMarkupFormatter(htmlString: htmlString, options: options, promise: promise)
     } else {
       printFromHtmlWithMarkupFormatter(htmlString: htmlString, options: options, promise: promise)
     }
   }
-  
+
   private func printFromHtmlWithoutMarkupFormatter(htmlString: String, options: PrintOptions, promise: Promise) {
     let renderTask = ExpoWKPDFRenderer(
       htmlString: htmlString,
@@ -52,7 +52,7 @@ public class ExpoPrintWithPrinter {
     self.renderTasks.append(renderTask)
     renderTask.pdfWithHtml()
   }
-  
+
   private func printFromHtmlWithMarkupFormatter(htmlString: String, options: PrintOptions, promise: Promise) {
     ExpoPrintToFile.pdfWithHtmlMarkupFormatter(
       htmlString: htmlString,
@@ -69,7 +69,7 @@ public class ExpoPrintWithPrinter {
       }
     }
   }
-  
+
   private func printWithData(printingData: Data, options: PrintOptions, promise: Promise) {
     let printerUrl = options.printerUrl ?? ""
     let candidateUrl = URL(string: printerUrl) ?? URL(fileURLWithPath: printerUrl)
@@ -117,7 +117,7 @@ public class ExpoPrintWithPrinter {
       printInteractionController.present(animated: true, completionHandler: completionHandler)
     }
   }
-  
+
   private func makePrintInteractionController(options: PrintOptions) -> UIPrintInteractionController {
     let uri = options.uri ?? ""
     let printInteractionController = UIPrintInteractionController()
@@ -137,7 +137,7 @@ public class ExpoPrintWithPrinter {
     
     return printInteractionController
   }
-  
+
   private func dataFromUri(uri: String, completion: @escaping (Data?) -> Void) {
     if uri.hasPrefix("http") {
       // Handle HTTP URL asynchronously
