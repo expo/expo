@@ -10,7 +10,7 @@ import org.json.JSONObject
  * The Updates state machine class. There should be only one instance of this class
  * in a production app, instantiated as a property of UpdatesController.
  */
-class UpdatesStateMachine constructor(
+class UpdatesStateMachine(
   androidContext: Context,
   val changeEventSender: UpdatesStateChangeEventSender
 ) {
@@ -108,63 +108,46 @@ class UpdatesStateMachine constructor(
      * made by processing the event.
      */
     private fun reduceContext(context: UpdatesStateContext, event: UpdatesStateEvent): UpdatesStateContext {
-      val newContext = UpdatesStateContext(
-        context.isUpdateAvailable,
-        context.isUpdatePending,
-        context.isRollback,
-        context.isChecking,
-        context.isDownloading,
-        context.isRestarting,
-        context.latestManifest,
-        context.downloadedManifest,
-        context.checkError,
-        context.downloadError
-      )
-      when (event.type) {
-        UpdatesStateEventType.Check -> {
-          newContext.isChecking = true
-        }
-        UpdatesStateEventType.CheckCompleteUnavailable -> {
-          newContext.isChecking = false
-          newContext.checkError = null
-          newContext.latestManifest = null
-          newContext.isUpdateAvailable = false
-          newContext.isRollback = false
-        }
-        UpdatesStateEventType.CheckCompleteAvailable -> {
-          newContext.isChecking = false
-          newContext.checkError = null
-          newContext.latestManifest = event.manifest
-          newContext.isRollback = event.isRollback
-          newContext.isUpdateAvailable = true
-        }
-        UpdatesStateEventType.CheckError -> {
-          newContext.isChecking = false
-          newContext.checkError = event.error
-        }
-        UpdatesStateEventType.Download -> {
-          newContext.isDownloading = true
-        }
-        UpdatesStateEventType.DownloadComplete -> {
-          newContext.isDownloading = false
-          newContext.downloadError = null
-          newContext.latestManifest = event.manifest ?: context.latestManifest
-          newContext.downloadedManifest = event.manifest ?: context.downloadedManifest
-          newContext.isUpdatePending = newContext.downloadedManifest != null
-          newContext.isUpdateAvailable = when (event.manifest) {
+      return when (event.type) {
+        UpdatesStateEventType.Check -> context.copy(isChecking = true)
+        UpdatesStateEventType.CheckCompleteUnavailable -> context.copy(
+          isChecking = false,
+          checkError = null,
+          latestManifest = null,
+          isUpdateAvailable = false,
+          isRollback = false
+        )
+        UpdatesStateEventType.CheckCompleteAvailable -> context.copy(
+          isChecking = false,
+          checkError = null,
+          latestManifest = event.manifest,
+          isUpdateAvailable = true,
+          isRollback = event.isRollback
+        )
+        UpdatesStateEventType.CheckError -> context.copy(
+          isChecking = false,
+          checkError = event.error
+        )
+        UpdatesStateEventType.Download -> context.copy(isDownloading = true)
+        UpdatesStateEventType.DownloadComplete -> context.copy(
+          isDownloading = false,
+          downloadError = null,
+          latestManifest = event.manifest ?: context.latestManifest,
+          downloadedManifest = event.manifest ?: context.downloadedManifest,
+          isUpdatePending = true,
+          isUpdateAvailable = when (event.manifest) {
             null -> context.isUpdateAvailable
             else -> true
           }
-        }
-        UpdatesStateEventType.DownloadError -> {
-          newContext.isDownloading = false
-          newContext.downloadError = event.error
-        }
-        UpdatesStateEventType.Restart -> {
-          newContext.isRestarting = true
-        }
+        )
+        UpdatesStateEventType.DownloadError -> context.copy(
+          isDownloading = false,
+          downloadError = event.error
+        )
+        UpdatesStateEventType.Restart -> context.copy(
+          isRestarting = true
+        )
       }
-      return newContext
     }
 
     /**

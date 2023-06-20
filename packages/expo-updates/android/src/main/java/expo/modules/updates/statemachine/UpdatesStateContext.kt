@@ -6,16 +6,16 @@ import org.json.JSONObject
 The state machine context, with information intended to be consumed by application JS code.
  */
 data class UpdatesStateContext(
-  var isUpdateAvailable: Boolean = false,
-  var isUpdatePending: Boolean = false,
-  var isRollback: Boolean = false,
-  var isChecking: Boolean = false,
-  var isDownloading: Boolean = false,
-  var isRestarting: Boolean = false,
-  var latestManifest: JSONObject? = null,
-  var downloadedManifest: JSONObject? = null,
-  var checkError: UpdatesStateError? = null,
-  var downloadError: UpdatesStateError? = null
+  val isUpdateAvailable: Boolean = false,
+  val isUpdatePending: Boolean = false,
+  val isRollback: Boolean = false,
+  val isChecking: Boolean = false,
+  val isDownloading: Boolean = false,
+  val isRestarting: Boolean = false,
+  val latestManifest: JSONObject? = null,
+  val downloadedManifest: JSONObject? = null,
+  val checkError: UpdatesStateError? = null,
+  val downloadError: UpdatesStateError? = null
 ) {
 
   val json: Map<String, Any>
@@ -29,16 +29,16 @@ data class UpdatesStateContext(
         "isRestarting" to isRestarting
       )
       if (latestManifest != null) {
-        map["latestManifest"] = latestManifest!!
+        map["latestManifest"] = latestManifest
       }
       if (downloadedManifest != null) {
-        map["downloadedManifest"] = downloadedManifest!!
+        map["downloadedManifest"] = downloadedManifest
       }
       if (checkError != null) {
-        map["checkError"] = checkError!!.json
+        map["checkError"] = checkError.json
       }
       if (downloadError != null) {
-        map["downloadError"] = downloadError!!.json
+        map["downloadError"] = downloadError.json
       }
       return map
     }

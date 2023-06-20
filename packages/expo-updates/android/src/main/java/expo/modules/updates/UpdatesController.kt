@@ -285,20 +285,18 @@ class UpdatesController private constructor(
         }
 
         override fun onRemoteCheckForUpdateFinished(result: LoaderTask.RemoteCheckResult) {
-          var event = UpdatesStateEvent(UpdatesStateEventType.CheckCompleteUnavailable, mapOf())
+          var event = UpdatesStateEvent(UpdatesStateEventType.CheckCompleteUnavailable)
           if (result.manifest != null) {
             event = UpdatesStateEvent(
               UpdatesStateEventType.CheckCompleteAvailable,
-              mapOf(
-                "manifest" to result.manifest,
-              )
+              result.manifest
             )
           } else if (result.isRollBackToEmbedded == true) {
             event = UpdatesStateEvent(
               UpdatesStateEventType.CheckCompleteAvailable,
-              mapOf(
-                "isRollBackToEmbedded" to result.isRollBackToEmbedded
-              )
+              null,
+              null,
+              true
             )
           }
           stateMachine.processEvent(event)
@@ -353,22 +351,37 @@ class UpdatesController private constructor(
               params.putString("message", exception.message)
               sendLegacyUpdateEventToJS(UPDATE_ERROR_EVENT, params)
 
-              val body: Map<String, Any> = mapOf(
-                "message" to (exception.message ?: "")
-              )
               // Since errors can happen through a number of paths, we do these checks
               // to make sure the state machine is valid
               when (stateMachine.state) {
                 UpdatesStateValue.Idle -> {
                   stateMachine.processEvent(UpdatesStateEvent(UpdatesStateEventType.Download))
-                  stateMachine.processEvent(UpdatesStateEvent(UpdatesStateEventType.DownloadError, body))
+                  stateMachine.processEvent(
+                    UpdatesStateEvent(
+                      UpdatesStateEventType.DownloadError,
+                      null,
+                      exception.message ?: ""
+                    )
+                  )
                 }
                 UpdatesStateValue.Checking -> {
-                  stateMachine.processEvent(UpdatesStateEvent(UpdatesStateEventType.CheckError, body))
+                  stateMachine.processEvent(
+                    UpdatesStateEvent(
+                      UpdatesStateEventType.CheckError,
+                      null,
+                      exception.message ?: ""
+                    )
+                  )
                 }
                 else -> {
                   // .downloading
-                  stateMachine.processEvent(UpdatesStateEvent(UpdatesStateEventType.DownloadError, body))
+                  stateMachine.processEvent(
+                    UpdatesStateEvent(
+                      UpdatesStateEventType.DownloadError,
+                      null,
+                      exception.message ?: ""
+                    )
+                  )
                 }
               }
             }
@@ -381,14 +394,12 @@ class UpdatesController private constructor(
               val params = Arguments.createMap()
               params.putString("manifestString", update.manifest.toString())
               sendLegacyUpdateEventToJS(UPDATE_AVAILABLE_EVENT, params)
-              val body = when (update.manifest != null) {
-                true -> mapOf(
-                  "manifest" to update.manifest!!
+              stateMachine.processEvent(
+                UpdatesStateEvent(
+                  UpdatesStateEventType.DownloadComplete,
+                  update.manifest
                 )
-
-                else -> mapOf()
-              }
-              stateMachine.processEvent(UpdatesStateEvent(UpdatesStateEventType.DownloadComplete, body))
+              )
             }
             RemoteUpdateStatus.NO_UPDATE_AVAILABLE -> {
               remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE

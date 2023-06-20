@@ -175,9 +175,9 @@ class UpdatesModule(
                   updatesServiceLocal.stateMachine?.processEvent(
                     UpdatesStateEvent(
                       UpdatesStateEventType.CheckCompleteAvailable,
-                      mapOf(
-                        "isRollBackToEmbedded" to true
-                      )
+                      null,
+                      null,
+                      true
                     )
                   )
                   return
@@ -205,9 +205,7 @@ class UpdatesModule(
                 updatesServiceLocal.stateMachine?.processEvent(
                   UpdatesStateEvent(
                     UpdatesStateEventType.CheckCompleteAvailable,
-                    mapOf(
-                      "manifest" to updateManifest.manifest.getRawJson()
-                    )
+                    updateManifest.manifest.getRawJson()
                   )
                 )
                 return
@@ -225,9 +223,7 @@ class UpdatesModule(
                 updatesServiceLocal.stateMachine?.processEvent(
                   UpdatesStateEvent(
                     UpdatesStateEventType.CheckCompleteAvailable,
-                    mapOf(
-                      "manifest" to updateManifest.manifest.getRawJson()
-                    )
+                    updateManifest.manifest.getRawJson()
                   )
                 )
               } else {
@@ -281,9 +277,8 @@ class UpdatesModule(
                 updatesServiceLocal.stateMachine?.processEvent(
                   UpdatesStateEvent(
                     UpdatesStateEventType.DownloadError,
-                    mapOf(
-                      "message" to "Failed to download new update: ${e.message}"
-                    )
+                    null,
+                    "Failed to download new update: ${e.message}"
                   )
                 )
               }
@@ -327,9 +322,9 @@ class UpdatesModule(
                   updatesServiceLocal.stateMachine?.processEvent(
                     UpdatesStateEvent(
                       UpdatesStateEventType.DownloadComplete,
-                      mapOf(
-                        "isRollBackToEmbedded" to true
-                      )
+                      null,
+                      null,
+                      true
                     )
                   )
                 } else {
@@ -337,7 +332,7 @@ class UpdatesModule(
                     updateInfo.putBoolean("isNew", false)
                     updatesServiceLocal.stateMachine?.processEvent(
                       UpdatesStateEvent(
-                        UpdatesStateEventType.DownloadComplete, mapOf()
+                        UpdatesStateEventType.DownloadComplete
                       )
                     )
                   } else {
@@ -347,15 +342,10 @@ class UpdatesModule(
                       "manifestString",
                       loaderResult.updateEntity.manifest.toString()
                     )
-                    val body: Map<String, Any> = when (loaderResult.updateEntity.manifest != null) {
-                      true -> mapOf(
-                        "manifest" to loaderResult.updateEntity.manifest!!
-                      )
-                      else -> mapOf()
-                    }
                     updatesServiceLocal.stateMachine?.processEvent(
                       UpdatesStateEvent(
-                        UpdatesStateEventType.DownloadComplete, body
+                        UpdatesStateEventType.DownloadComplete,
+                        loaderResult.updateEntity.manifest
                       )
                     )
                   }

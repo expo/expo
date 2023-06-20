@@ -47,9 +47,7 @@ class UpdatesStateMachineInstrumentationTest {
     machine.processEvent(
       UpdatesStateEvent(
         UpdatesStateEventType.CheckCompleteAvailable,
-        mapOf(
-          "manifest" to JSONObject("{\"updateId\":\"0000-xxxx\"}")
-        )
+        JSONObject("{\"updateId\":\"0000-xxxx\"}")
       )
     )
     Assert.assertEquals(UpdatesStateValue.Idle, machine.state)
@@ -93,9 +91,7 @@ class UpdatesStateMachineInstrumentationTest {
     machine.processEvent(
       UpdatesStateEvent(
         UpdatesStateEventType.DownloadComplete,
-        mapOf(
-          "manifest" to JSONObject("{\"updateId\":\"0000-xxxx\"}")
-        )
+        JSONObject("{\"updateId\":\"0000-xxxx\"}")
       )
     )
     Assert.assertEquals(UpdatesStateValue.Idle, machine.state)
@@ -121,9 +117,9 @@ class UpdatesStateMachineInstrumentationTest {
     machine.processEvent(
       UpdatesStateEvent(
         UpdatesStateEventType.CheckCompleteAvailable,
-        mapOf(
-          "isRollBackToEmbedded" to true
-        )
+        null,
+        null,
+        true
       )
     )
     Assert.assertEquals(UpdatesStateValue.Idle, machine.state)
@@ -147,9 +143,8 @@ class UpdatesStateMachineInstrumentationTest {
     machine.processEvent(
       UpdatesStateEvent(
         UpdatesStateEventType.CheckError,
-        mapOf(
-          "message" to "A serious error has occurred"
-        )
+        null,
+        "A serious error has occurred"
       )
     )
     Assert.assertEquals(UpdatesStateValue.Idle, machine.state)

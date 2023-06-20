@@ -268,7 +268,9 @@ object UpdatesUtils {
     return try {
       val formatter: DateFormat = when (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
         true -> SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'X'", Locale.US)
-        else -> SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+        false -> SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US).apply {
+          timeZone = TimeZone.getTimeZone("GMT")
+        }
       }
       formatter.parse(dateString)
     } catch (e: ParseException) {

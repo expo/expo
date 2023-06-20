@@ -148,7 +148,7 @@ class SelectionPolicyFilterAwareTest {
     // updateRollout1 has commitTime = 2021-01-12T19:39:22.480Z
     // roll back is 1 year later
     val actual = selectionPolicy.shouldLoadRollBackToEmbeddedDirective(
-      UpdateDirective.RollBackToEmbeddedUpdateDirective(UpdatesUtils.parseDateString("2022-01-12T19:39:22.480Z") ?: Date(), null),
+      UpdateDirective.RollBackToEmbeddedUpdateDirective(UpdatesUtils.parseDateString("2022-01-12T19:39:22.480Z")!!, null),
       updateRollout0,
       updateRollout1,
       manifestFilters
@@ -161,7 +161,7 @@ class SelectionPolicyFilterAwareTest {
     // updateRollout1 has commitTime = 2021-01-12T19:39:22.480Z
     // roll back is 1 year earlier
     val actual = selectionPolicy.shouldLoadRollBackToEmbeddedDirective(
-      UpdateDirective.RollBackToEmbeddedUpdateDirective(UpdatesUtils.parseDateString("2020-01-12T19:39:22.480Z") ?: Date(), null),
+      UpdateDirective.RollBackToEmbeddedUpdateDirective(UpdatesUtils.parseDateString("2020-01-12T19:39:22.480Z")!!, null),
       updateRollout0,
       updateRollout1,
       manifestFilters
