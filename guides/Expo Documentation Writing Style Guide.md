@@ -143,7 +143,7 @@ Do not add extra space between preceding and succeeding words and "/" just to em
 
 Try splitting phrases into separate sentences. Our goal is to make documentation easier to read and understand.
 
-In rare cases when it is necessary to split phrases, use em dashes (—) or use connections (such as then, however, and so on) rather than commas to split phrases that read as separate sentences.
+In rare cases when it is necessary to split phrases, [use em dashes](#use-mdash) (—) or use connections (such as then, however, and so on) rather than commas to split phrases that read as separate sentences.
 
 - Correct: JavaScript has come a long way since it was originally written in 10 days.
 - Incorrect: JavaScript has come a long way, it was originally written in 10 days.
@@ -282,7 +282,7 @@ Terms referred in this section are meant to be used consistently throughout the 
   - A Swift module is a namespaced unit of code that can be distributed. It includes a module map and conforms to some other technical details.
 - Library
   - An overarching name for code that application developers call into as a part of their apps. Examples of libraries are Expo modules, npm packages, and iOS APIs.
-  - **"Expo libraries" is a synonym for Expo modules** but for consistency reasons, let’s stick to **Expo modules.**
+  - **"Expo libraries" is a synonym for Expo modules** and for consistency reasons, let’s use **Expo Libraries**.
 - Package
   - **npm packages** are units of code that include a file named package.json and are typically installed with npm or Yarn. They almost always include JavaScript code.
   - Expo modules are distributed as npm packages.
