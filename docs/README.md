@@ -52,6 +52,8 @@ The documentation is divided into four main sections:
 > **Note**
 > We are currently in the process of moving our API documentation to being auto-generated using `expotools`'s `GenerateDocsAPIData` command.
 
+### Docs metadata
+
 Each markdown page can be provided metadata in the heading, distinguished by:
 
 ```
