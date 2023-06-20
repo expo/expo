@@ -115,7 +115,7 @@ class DevMenuWindow: UIWindow, OverlayContainerViewControllerDelegate {
     }
   }
 
-  func closeBottomSheet() {
-    bottomSheetController.moveOverlay(toNotchAt: OverlayNotch.hidden.rawValue, animated: true)
+  func closeBottomSheet(completion: (() -> Void)? = nil) {
+    bottomSheetController.moveOverlay(toNotchAt: OverlayNotch.hidden.rawValue, animated: true, completion: completion)
   }
 }
