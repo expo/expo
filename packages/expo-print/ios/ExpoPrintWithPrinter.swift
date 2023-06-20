@@ -20,7 +20,7 @@ public class ExpoPrintWithPrinter {
       }
       return
     }
-    
+
     // Do this for compatibility with deprecated markup formatter option
     guard let htmlString = options.markupFormatterIOS ?? options.html else {
       promise.reject(NoPrintDataException())
@@ -73,15 +73,15 @@ public class ExpoPrintWithPrinter {
   private func printWithData(printingData: Data, options: PrintOptions, promise: Promise) {
     let printerUrl = options.printerUrl ?? ""
     let candidateUrl = URL(string: printerUrl) ?? URL(fileURLWithPath: printerUrl)
-    
+
     guard let rootController = UIApplication.shared.keyWindow?.rootViewController else {
       promise.reject(ViewControllerNotFoundException())
       return
     }
-    
+
     let printInteractionController = makePrintInteractionController(options: options)
     printInteractionController.printingItem = printingData
-    
+
     let completionHandler = { (_: UIPrintInteractionController, completed: Bool, error: Error?) in
       if error != nil {
         promise.reject(PrintingJobFailedException(error?.localizedDescription))
@@ -92,18 +92,18 @@ public class ExpoPrintWithPrinter {
         promise.reject(PrintIncompleteException())
       }
     }
-    
+
     if !printerUrl.isEmpty {
       // Found by @tsapeta
       // In older versions of iOS there is a bug, where finding the printer using UIPrinter(url:) will fail
       // https://stackoverflow.com/questions/34602302/creating-a-working-uiprinter-object-from-url-for-dialogue-free-printing
       // the workaround is to use a printer saved during picking, fall back to this method if the regular one fails
-      
+
       // Also on ios 16 there is a bug when printing multiple files https://github.com/expo/expo/issues/19399.
       // Caching the previously used printer fixes the bug
       let printer = self.cachedPrinters[printerUrl] ?? UIPrinter(url: candidateUrl)
       self.cachedPrinters[printerUrl] = printer
-      
+
       printer.contactPrinter { available in
         if available {
           printInteractionController.print(to: printer, completionHandler: completionHandler)
@@ -122,7 +122,7 @@ public class ExpoPrintWithPrinter {
     let uri = options.uri ?? ""
     let printInteractionController = UIPrintInteractionController()
     printInteractionController.delegate = self.delegate
-    
+
     let printInfo = UIPrintInfo.printInfo()
     printInfo.outputType = UIPrintInfo.OutputType.general
     if let uri = options.uri {
@@ -130,11 +130,11 @@ public class ExpoPrintWithPrinter {
     }
     printInfo.duplex = UIPrintInfo.Duplex.longEdge
     printInfo.orientation = options.toUIPrintInfoOrientation()
-    
+
     printInteractionController.printInfo = printInfo
     printInteractionController.showsNumberOfCopies = true
     printInteractionController.showsPaperSelectionForLoadedPapers = true
-    
+
     return printInteractionController
   }
 
@@ -165,7 +165,7 @@ public class ExpoPrintWithPrinter {
     } else {
       // Handle local file path synchronously
       let adjustedUri = uri.hasPrefix("file://") ? String(uri.dropFirst(7)) : uri
-      
+
       if let data = try? Data(contentsOf: URL(fileURLWithPath: adjustedUri)) {
         completion(data)
       } else {
