@@ -261,10 +261,7 @@ object UpdatesUtils {
   }
 
   @Throws(ParseException::class)
-  fun parseDateString(dateString: String?): Date? {
-    if (dateString == null) {
-      return null
-    }
+  fun parseDateString(dateString: String): Date {
     return try {
       val formatter: DateFormat = when (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
         true -> SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'X'", Locale.US)
@@ -272,19 +269,19 @@ object UpdatesUtils {
           timeZone = TimeZone.getTimeZone("GMT")
         }
       }
-      formatter.parse(dateString)
+      formatter.parse(dateString) as Date
     } catch (e: ParseException) {
       Log.e(TAG, "Failed to parse date string on first try: $dateString", e)
       // some old Android versions don't support the 'X' character in SimpleDateFormat, so try without this
       val formatter: DateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
       formatter.timeZone = TimeZone.getTimeZone("GMT")
       // throw if this fails too
-      formatter.parse(dateString)
+      formatter.parse(dateString) as Date
     } catch (e: IllegalArgumentException) {
       Log.e(TAG, "Failed to parse date string on first try: $dateString", e)
       val formatter: DateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
       formatter.timeZone = TimeZone.getTimeZone("GMT")
-      formatter.parse(dateString)
+      formatter.parse(dateString) as Date
     }
   }
 }

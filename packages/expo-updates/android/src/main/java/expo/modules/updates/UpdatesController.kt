@@ -355,32 +355,20 @@ class UpdatesController private constructor(
               // to make sure the state machine is valid
               when (stateMachine.state) {
                 UpdatesStateValue.Idle -> {
-                  stateMachine.processEvent(UpdatesStateEvent(UpdatesStateEventType.Download))
+                  stateMachine.processEvent(UpdatesStateEvent.Download())
                   stateMachine.processEvent(
-                    UpdatesStateEvent(
-                      UpdatesStateEventType.DownloadError,
-                      null,
-                      exception.message ?: ""
-                    )
+                    UpdatesStateEvent.DownloadError(exception.message ?: "")
                   )
                 }
                 UpdatesStateValue.Checking -> {
                   stateMachine.processEvent(
-                    UpdatesStateEvent(
-                      UpdatesStateEventType.CheckError,
-                      null,
-                      exception.message ?: ""
-                    )
+                    UpdatesStateEvent.CheckError(exception.message ?: "")
                   )
                 }
                 else -> {
                   // .downloading
                   stateMachine.processEvent(
-                    UpdatesStateEvent(
-                      UpdatesStateEventType.DownloadError,
-                      null,
-                      exception.message ?: ""
-                    )
+                    UpdatesStateEvent.DownloadError(exception.message ?: "")
                   )
                 }
               }
@@ -395,10 +383,7 @@ class UpdatesController private constructor(
               params.putString("manifestString", update.manifest.toString())
               sendLegacyUpdateEventToJS(UPDATE_AVAILABLE_EVENT, params)
               stateMachine.processEvent(
-                UpdatesStateEvent(
-                  UpdatesStateEventType.DownloadComplete,
-                  update.manifest
-                )
+                UpdatesStateEvent.DownloadCompleteWithUpdate(update.manifest)
               )
             }
             RemoteUpdateStatus.NO_UPDATE_AVAILABLE -> {
@@ -407,7 +392,7 @@ class UpdatesController private constructor(
               sendLegacyUpdateEventToJS(UPDATE_NO_UPDATE_AVAILABLE_EVENT, null)
               // TODO: handle rollbacks properly, but this works for now
               if (stateMachine.state == UpdatesStateValue.Downloading) {
-                stateMachine.processEvent(UpdatesStateEvent(UpdatesStateEventType.DownloadComplete))
+                stateMachine.processEvent(UpdatesStateEvent.DownloadComplete())
               }
             }
           }

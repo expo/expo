@@ -19,7 +19,6 @@ import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.statemachine.UpdatesStateEvent
-import expo.modules.updates.statemachine.UpdatesStateEventType
 import java.util.Date
 
 // these unused imports must stay because of versioning
@@ -143,7 +142,7 @@ class UpdatesModule(
         )
         return
       }
-      updatesServiceLocal.stateMachine?.processEvent(UpdatesStateEvent(UpdatesStateEventType.Check))
+      updatesServiceLocal.stateMachine?.processEvent(UpdatesStateEvent.Check())
       AsyncTask.execute {
         val databaseHolder = updatesServiceLocal.databaseHolder
         val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(
@@ -173,12 +172,7 @@ class UpdatesModule(
                   updateInfo.putBoolean("isRollBackToEmbedded", true)
                   promise.resolve(updateInfo)
                   updatesServiceLocal.stateMachine?.processEvent(
-                    UpdatesStateEvent(
-                      UpdatesStateEventType.CheckCompleteAvailable,
-                      null,
-                      null,
-                      true
-                    )
+                    UpdatesStateEvent.CheckCompleteWithRollback()
                   )
                   return
                 }
@@ -188,9 +182,7 @@ class UpdatesModule(
                 updateInfo.putBoolean("isAvailable", false)
                 promise.resolve(updateInfo)
                 updatesServiceLocal.stateMachine?.processEvent(
-                  UpdatesStateEvent(
-                    UpdatesStateEventType.CheckCompleteUnavailable
-                  )
+                  UpdatesStateEvent.CheckComplete()
                 )
                 return
               }
@@ -203,8 +195,7 @@ class UpdatesModule(
                 updateInfo.putString("manifestString", updateManifest.manifest.toString())
                 promise.resolve(updateInfo)
                 updatesServiceLocal.stateMachine?.processEvent(
-                  UpdatesStateEvent(
-                    UpdatesStateEventType.CheckCompleteAvailable,
+                  UpdatesStateEvent.CheckCompleteWithUpdate(
                     updateManifest.manifest.getRawJson()
                   )
                 )
@@ -221,8 +212,7 @@ class UpdatesModule(
                 updateInfo.putString("manifestString", updateManifest.manifest.toString())
                 promise.resolve(updateInfo)
                 updatesServiceLocal.stateMachine?.processEvent(
-                  UpdatesStateEvent(
-                    UpdatesStateEventType.CheckCompleteAvailable,
+                  UpdatesStateEvent.CheckCompleteWithUpdate(
                     updateManifest.manifest.getRawJson()
                   )
                 )
@@ -230,9 +220,7 @@ class UpdatesModule(
                 updateInfo.putBoolean("isAvailable", false)
                 promise.resolve(updateInfo)
                 updatesServiceLocal.stateMachine?.processEvent(
-                  UpdatesStateEvent(
-                    UpdatesStateEventType.CheckCompleteUnavailable
-                  )
+                  UpdatesStateEvent.CheckComplete()
                 )
               }
             }
@@ -258,7 +246,7 @@ class UpdatesModule(
         )
         return
       }
-      updatesServiceLocal.stateMachine?.processEvent(UpdatesStateEvent(UpdatesStateEventType.Download))
+      updatesServiceLocal.stateMachine?.processEvent(UpdatesStateEvent.Download())
       AsyncTask.execute {
         val databaseHolder = updatesServiceLocal.databaseHolder
         RemoteLoader(
@@ -275,11 +263,7 @@ class UpdatesModule(
                 databaseHolder.releaseDatabase()
                 promise.reject("ERR_UPDATES_FETCH", "Failed to download new update", e)
                 updatesServiceLocal.stateMachine?.processEvent(
-                  UpdatesStateEvent(
-                    UpdatesStateEventType.DownloadError,
-                    null,
-                    "Failed to download new update: ${e.message}"
-                  )
+                  UpdatesStateEvent.DownloadError("Failed to download new update: ${e.message}")
                 )
               }
 
@@ -320,20 +304,13 @@ class UpdatesModule(
                 if (loaderResult.updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) {
                   updateInfo.putBoolean("isRollBackToEmbedded", true)
                   updatesServiceLocal.stateMachine?.processEvent(
-                    UpdatesStateEvent(
-                      UpdatesStateEventType.DownloadComplete,
-                      null,
-                      null,
-                      true
-                    )
+                    UpdatesStateEvent.DownloadCompleteWithRollback()
                   )
                 } else {
                   if (loaderResult.updateEntity == null) {
                     updateInfo.putBoolean("isNew", false)
                     updatesServiceLocal.stateMachine?.processEvent(
-                      UpdatesStateEvent(
-                        UpdatesStateEventType.DownloadComplete
-                      )
+                      UpdatesStateEvent.DownloadComplete()
                     )
                   } else {
                     updatesServiceLocal.resetSelectionPolicy()
@@ -343,10 +320,7 @@ class UpdatesModule(
                       loaderResult.updateEntity.manifest.toString()
                     )
                     updatesServiceLocal.stateMachine?.processEvent(
-                      UpdatesStateEvent(
-                        UpdatesStateEventType.DownloadComplete,
-                        loaderResult.updateEntity.manifest
-                      )
+                      UpdatesStateEvent.DownloadCompleteWithUpdate(loaderResult.updateEntity.manifest)
                     )
                   }
                 }

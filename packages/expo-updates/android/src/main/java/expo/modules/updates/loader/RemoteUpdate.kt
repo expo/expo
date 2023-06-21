@@ -23,7 +23,7 @@ sealed class UpdateDirective(val signingInfo: SigningInfo?) {
       return when (val messageType = json.require<String>("type")) {
         "noUpdateAvailable" -> NoUpdateAvailableUpdateDirective(signingInfo)
         "rollBackToEmbedded" -> RollBackToEmbeddedUpdateDirective(
-          parseDateString(json.require<JSONObject>("parameters").require("commitTime")) ?: Date(),
+          parseDateString(json.require<JSONObject>("parameters").require("commitTime")),
           signingInfo
         )
         else -> throw Error("Invalid message messageType: $messageType")
