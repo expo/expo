@@ -18,8 +18,8 @@ public protocol AppLoaderTaskDelegate: AnyObject {
    * AppLoaderTask proceed as usual.
    */
   func appLoaderTask(_: AppLoaderTask, didLoadCachedUpdate update: Update) -> Bool
-  func appLoaderTask(_: AppLoaderTask, didStartCheckingForRemoteUpdate body: [String: Any])
-  func appLoaderTask(_: AppLoaderTask, didFinishCheckingForRemoteUpdate body: [String: Any])
+  func didStartCheckingForRemoteUpdate()
+  func didFinishCheckingForRemoteUpdate(_ body: [String: Any])
   func appLoaderTask(_: AppLoaderTask, didStartLoadingUpdate update: Update?)
   func appLoaderTask(_: AppLoaderTask, didLoadAsset asset: UpdateAsset, successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int)
   func appLoaderTask(_: AppLoaderTask, didFinishWithLauncher launcher: AppLauncher, isUpToDate: Bool)
@@ -330,7 +330,7 @@ public final class AppLoaderTask: NSObject {
 
     if let delegate = self.delegate {
       self.delegateQueue.async {
-        delegate.appLoaderTask(self, didStartCheckingForRemoteUpdate: [:])
+        delegate.didStartCheckingForRemoteUpdate()
       }
     }
     remoteAppLoader!.loadUpdate(
@@ -342,7 +342,7 @@ public final class AppLoaderTask: NSObject {
           self.isUpToDate = true
           if let delegate = self.delegate {
             self.delegateQueue.async {
-              delegate.appLoaderTask(self, didFinishCheckingForRemoteUpdate: [:])
+              delegate.didFinishCheckingForRemoteUpdate([:])
             }
           }
           return false
@@ -350,7 +350,7 @@ public final class AppLoaderTask: NSObject {
           self.isUpToDate = false
           if let delegate = self.delegate {
             self.delegateQueue.async {
-              delegate.appLoaderTask(self, didFinishCheckingForRemoteUpdate: ["isRollBackToEmbedded": true])
+              delegate.didFinishCheckingForRemoteUpdate(["isRollBackToEmbedded": true])
               delegate.appLoaderTask(self, didStartLoadingUpdate: nil)
             }
           }
@@ -366,7 +366,7 @@ public final class AppLoaderTask: NSObject {
         self.isUpToDate = true
         if let delegate = self.delegate {
           self.delegateQueue.async {
-            delegate.appLoaderTask(self, didFinishCheckingForRemoteUpdate: [:])
+            delegate.didFinishCheckingForRemoteUpdate([:])
           }
         }
         return false
@@ -381,7 +381,7 @@ public final class AppLoaderTask: NSObject {
         self.isUpToDate = false
         if let delegate = self.delegate {
           self.delegateQueue.async {
-            delegate.appLoaderTask(self, didFinishCheckingForRemoteUpdate: ["manifest": update.manifest.rawManifestJSON()])
+            delegate.didFinishCheckingForRemoteUpdate(["manifest": update.manifest.rawManifestJSON()])
             delegate.appLoaderTask(self, didStartLoadingUpdate: update)
           }
         }
@@ -391,7 +391,7 @@ public final class AppLoaderTask: NSObject {
         self.isUpToDate = true
         if let delegate = self.delegate {
           self.delegateQueue.async {
-            delegate.appLoaderTask(self, didFinishCheckingForRemoteUpdate: [:])
+            delegate.didFinishCheckingForRemoteUpdate([:])
           }
         }
         return false

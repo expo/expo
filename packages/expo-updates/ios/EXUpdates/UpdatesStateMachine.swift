@@ -1,5 +1,7 @@
 //  Copyright © 2023 650 Industries. All rights reserved.
 
+// swiftlint:disable no_grouping_extension
+
 import Foundation
 
 /**
@@ -7,7 +9,7 @@ import Foundation
  In production, this will be implemented by the AppController.sharedInstance.
  */
 internal protocol UpdatesStateChangeDelegate: AnyObject {
-  func sendUpdateStateChangeEventToBridge(_ eventType: UpdatesStateEventType, body: [String: Any])
+  func sendUpdateStateChangeEventToBridge(_ eventType: UpdatesStateEventType, body: [String: Any?])
 }
 
 // MARK: - Enums
@@ -41,29 +43,30 @@ internal enum UpdatesStateEventType: String {
 
 /**
  Structure representing an event that can be sent to the machine.
- Convenience getters are provided to get derived properties that will be
- used to modify the context when the machine processes an event.
  */
 internal struct UpdatesStateEvent {
-  var type: UpdatesStateEventType
-  var body: [String: Any] = [:]
-  var manifest: [String: Any]? {
-    guard let manifest = self.body["manifest"] as? [String: Any] else {
-      return nil
-    }
-    return manifest
-  }
+  let type: UpdatesStateEventType
+  let manifest: [String: Any]?
+  let message: String?
+  let isRollback: Bool
+
   var error: Error? {
-    guard let message = self.body["message"] as? String else {
-      return nil
-    }
-    return UpdatesStateException(message)
+    return (message != nil) ? UpdatesStateException(message ?? "") : nil
   }
-  var isRollback: Bool {
-    guard let isRollback = self.body["isRollBackToEmbedded"] as? Bool else {
-      return false
-    }
-    return isRollback
+}
+
+extension UpdatesStateEvent {
+  init(type: UpdatesStateEventType) {
+    self.init(type: type, manifest: nil, message: nil, isRollback: false)
+  }
+  init(type: UpdatesStateEventType, message: String?) {
+    self.init(type: type, manifest: nil, message: message, isRollback: false)
+  }
+  init(type: UpdatesStateEventType, manifest: [String: Any]?) {
+    self.init(type: type, manifest: manifest, message: nil, isRollback: false)
+  }
+  init(type: UpdatesStateEventType, isRollback: Bool) {
+    self.init(type: type, manifest: nil, message: nil, isRollback: isRollback)
   }
 }
 
@@ -71,18 +74,18 @@ internal struct UpdatesStateEvent {
  The state machine context, with information that will be readable from JS.
  */
 internal struct UpdatesStateContext {
-  var isUpdateAvailable: Bool = false
-  var isUpdatePending: Bool = false
-  var isRollback: Bool = false
-  var isChecking: Bool = false
-  var isDownloading: Bool = false
-  var isRestarting: Bool = false
-  var latestManifest: [String: Any]?
-  var downloadedManifest: [String: Any]?
-  var checkError: Error?
-  var downloadError: Error?
+  let isUpdateAvailable: Bool
+  let isUpdatePending: Bool
+  let isRollback: Bool
+  let isChecking: Bool
+  let isDownloading: Bool
+  let isRestarting: Bool
+  let latestManifest: [String: Any]?
+  let downloadedManifest: [String: Any]?
+  let checkError: Error?
+  let downloadError: Error?
 
-  var json: [String: Any] {
+  var json: [String: Any?] {
     return [
       "isUpdateAvailable": self.isUpdateAvailable,
       "isUpdatePending": self.isUpdatePending,
@@ -91,11 +94,75 @@ internal struct UpdatesStateContext {
       "isDownloading": self.isDownloading,
       "isRestarting": self.isRestarting,
       // We pass NSNulls to keep this as a [String: Any] map
-      "latestManifest": self.latestManifest ?? NSNull(),
-      "downloadedManifest": self.downloadedManifest ?? NSNull(),
-      "checkError": self.checkError ?? NSNull(),
-      "downloadError": self.downloadError ?? NSNull()
-    ] as [String: Any]
+      "latestManifest": self.latestManifest,
+      "downloadedManifest": self.downloadedManifest,
+      "checkError": self.checkError,
+      "downloadError": self.downloadError
+    ] as [String: Any?]
+  }
+}
+
+extension UpdatesStateContext {
+  init() {
+    self.isUpdateAvailable = false
+    self.isUpdatePending = false
+    self.isRollback = false
+    self.isChecking = false
+    self.isDownloading = false
+    self.isRestarting = false
+    self.latestManifest = nil
+    self.downloadedManifest = nil
+    self.checkError = nil
+    self.downloadError = nil
+  }
+
+  // struct copy, lets you overwrite specific variables retaining the value of the rest
+  // using a closure to set the new values for the copy of the struct
+  func copy(build: (inout Builder) -> Void) -> UpdatesStateContext {
+    var builder = Builder(original: self)
+    build(&builder)
+    return builder.toContext()
+  }
+
+  struct Builder {
+    var isUpdateAvailable: Bool = false
+    var isUpdatePending: Bool = false
+    var isRollback: Bool = false
+    var isChecking: Bool = false
+    var isDownloading: Bool = false
+    var isRestarting: Bool = false
+    var latestManifest: [String: Any]?
+    var downloadedManifest: [String: Any]?
+    var checkError: Error?
+    var downloadError: Error?
+
+    fileprivate init(original: UpdatesStateContext) {
+      self.isUpdateAvailable = original.isUpdateAvailable
+      self.isUpdatePending = original.isUpdatePending
+      self.isRollback = original.isRollback
+      self.isChecking = original.isChecking
+      self.isDownloading = original.isDownloading
+      self.isRestarting = original.isRestarting
+      self.latestManifest = original.latestManifest
+      self.downloadedManifest = original.downloadedManifest
+      self.checkError = original.checkError
+      self.downloadError = original.downloadError
+    }
+
+    fileprivate func toContext() -> UpdatesStateContext {
+      return UpdatesStateContext(
+        isUpdateAvailable: isUpdateAvailable,
+        isUpdatePending: isUpdatePending,
+        isRollback: isRollback,
+        isChecking: isChecking,
+        isDownloading: isDownloading,
+        isRestarting: isRestarting,
+        latestManifest: latestManifest,
+        downloadedManifest: downloadedManifest,
+        checkError: checkError,
+        downloadError: downloadError
+      )
+    }
   }
 }
 
@@ -180,41 +247,55 @@ internal class UpdatesStateMachine {
    made by processing the event.
    */
   private func reducedContext(_ context: UpdatesStateContext, _ event: UpdatesStateEvent) -> UpdatesStateContext {
-    var newContext = context
     switch event.type {
     case .check:
-      newContext.isChecking = true
+      return context.copy {
+        $0.isChecking = true
+      }
     case .checkCompleteUnavailable:
-      newContext.isChecking = false
-      newContext.checkError = nil
-      newContext.latestManifest = nil
-      newContext.isUpdateAvailable = false
-      newContext.isRollback = false
+      return context.copy {
+        $0.isChecking = false
+        $0.checkError = nil
+        $0.latestManifest = nil
+        $0.isUpdateAvailable = false
+        $0.isRollback = false
+      }
     case .checkCompleteAvailable:
-      newContext.isChecking = false
-      newContext.checkError = nil
-      newContext.latestManifest = event.manifest
-      newContext.isRollback = event.isRollback
-      newContext.isUpdateAvailable = true
+      return context.copy {
+        $0.isChecking = false
+        $0.checkError = nil
+        $0.latestManifest = event.manifest
+        $0.isRollback = event.isRollback
+        $0.isUpdateAvailable = true
+      }
     case .checkError:
-      newContext.isChecking = false
-      newContext.checkError = event.error
+      return context.copy {
+        $0.isChecking = false
+        $0.checkError = event.error
+      }
     case .download:
-      newContext.isDownloading = true
+      return context.copy {
+        $0.isDownloading = true
+      }
     case .downloadComplete:
-      newContext.isDownloading = false
-      newContext.downloadError = nil
-      newContext.latestManifest = event.manifest ?? context.latestManifest
-      newContext.downloadedManifest = event.manifest ?? context.downloadedManifest
-      newContext.isUpdatePending = newContext.downloadedManifest != nil
-      newContext.isUpdateAvailable = event.manifest != nil || context.isUpdateAvailable
+      return context.copy {
+        $0.isDownloading = false
+        $0.downloadError = nil
+        $0.latestManifest = event.manifest ?? context.latestManifest
+        $0.downloadedManifest = event.manifest ?? context.downloadedManifest
+        $0.isUpdatePending = $0.downloadedManifest != nil
+        $0.isUpdateAvailable = event.manifest != nil || context.isUpdateAvailable
+      }
     case .downloadError:
-      newContext.isDownloading = false
-      newContext.downloadError = event.error
+      return context.copy {
+        $0.isDownloading = false
+        $0.downloadError = event.error
+      }
     case .restart:
-      newContext.isRestarting = true
+      return context.copy {
+        $0.isRestarting = true
+      }
     }
-    return newContext
   }
 
   /**
@@ -255,3 +336,5 @@ internal class UpdatesStateMachine {
     .restart: .restarting
   ]
 }
+
+// swiftlint:enable no_grouping_extension

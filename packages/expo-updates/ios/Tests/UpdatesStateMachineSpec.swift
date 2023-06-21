@@ -1,6 +1,5 @@
 //  Copyright (c) 2023 650 Industries, Inc. All rights reserved.
 
-// swiftlint:disable function_body_length
 // swiftlint:disable closure_body_length
 
 import ExpoModulesTestCore
@@ -11,8 +10,8 @@ import EXManifests
 
 class TestStateChangeDelegate: UpdatesStateChangeDelegate {
   var lastEventType: EXUpdates.UpdatesStateEventType?
-  var lastEventBody: [String: Any]?
-  func sendUpdateStateChangeEventToBridge(_ eventType: EXUpdates.UpdatesStateEventType, body: [String: Any]) {
+  var lastEventBody: [String: Any?]?
+  func sendUpdateStateChangeEventToBridge(_ eventType: EXUpdates.UpdatesStateEventType, body: [String: Any?]) {
     lastEventType = eventType
     lastEventBody = body
   }
@@ -35,10 +34,8 @@ class UpdatesStateMachineSpec: ExpoSpec {
         expect(machine.state) == .checking
         expect(testStateChangeDelegate.lastEventType) == .check
 
-        machine.processEvent(UpdatesStateEvent(type: .checkCompleteAvailable, body: [
-          "manifest": [
-            "updateId": "0000-xxxx"
-          ]
+        machine.processEvent(UpdatesStateEvent(type: .checkCompleteAvailable, manifest: [
+          "updateId": "0000-xxxx"
         ]))
         expect(machine.state) == .idle
         expect(machine.context.isChecking) == false
@@ -74,10 +71,8 @@ class UpdatesStateMachineSpec: ExpoSpec {
         machine.processEvent(UpdatesStateEvent(type: .download))
         expect(machine.state) == .downloading
 
-        machine.processEvent(UpdatesStateEvent(type: .downloadComplete, body: [
-          "manifest": [
-            "updateId": "0000-xxxx"
-          ]
+        machine.processEvent(UpdatesStateEvent(type: .downloadComplete, manifest: [
+          "updateId": "0000-xxxx"
         ]))
         expect(machine.state) == .idle
         expect(machine.context.isChecking) == false
@@ -96,9 +91,7 @@ class UpdatesStateMachineSpec: ExpoSpec {
         machine.processEvent(UpdatesStateEvent(type: .check))
         expect(machine.state) == .checking
 
-        machine.processEvent(UpdatesStateEvent(type: .checkCompleteAvailable, body: [
-          "isRollBackToEmbedded": true
-        ]))
+        machine.processEvent(UpdatesStateEvent(type: .checkCompleteAvailable, isRollback: true))
         expect(machine.state) == .idle
         expect(machine.context.isChecking) == false
         expect(machine.context.checkError).to(beNil())
@@ -127,10 +120,8 @@ class UpdatesStateMachineSpec: ExpoSpec {
         expect(testStateChangeDelegate.lastEventType).to(beNil())
         expect(testStateChangeDelegate.lastEventBody).to(beNil())
 
-        machine.processEvent(UpdatesStateEvent(type: .downloadComplete, body: [
-          "manifest": [
-            "updateId": "0000-xxxx"
-          ]
+        machine.processEvent(UpdatesStateEvent(type: .downloadComplete, manifest: [
+          "updateId": "0000-xxxx"
         ]))
 
         expect(machine.state) == .checking
@@ -154,3 +145,5 @@ class UpdatesStateMachineSpec: ExpoSpec {
     }
   }
 }
+
+// swiftlint:enable closure_body_length

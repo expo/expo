@@ -93,7 +93,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
   internal let assetFilesQueue: DispatchQueue
   public internal(set) var isStarted: Bool
 
-  private var eventsToSendToJS: [[String: Any]] = []
+  private var eventsToSendToJS: [[String: Any?]] = []
 
   internal var stateMachine: UpdatesStateMachine?
 
@@ -345,15 +345,20 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     return true
   }
 
-  public func appLoaderTask(_: AppLoaderTask, didStartCheckingForRemoteUpdate _: [String: Any]) {
+  public func didStartCheckingForRemoteUpdate() {
     stateMachine?.processEvent(UpdatesStateEvent(type: .check))
   }
 
-  public func appLoaderTask(_: AppLoaderTask, didFinishCheckingForRemoteUpdate body: [String: Any]) {
+  public func didFinishCheckingForRemoteUpdate(_ body: [String: Any]) {
     let manifest: [String: Any]? = body["manifest"] as? [String: Any]
-    let rollback: Bool? = body["isRollBackToEmbedded"] as? Bool
+    let rollback: Bool = body["isRollBackToEmbedded"] as? Bool ?? false
     let eventType: UpdatesStateEventType = (rollback == true || manifest != nil) ? .checkCompleteAvailable : .checkCompleteUnavailable
-    stateMachine?.processEvent(UpdatesStateEvent(type: eventType, body: body))
+    stateMachine?.processEvent(UpdatesStateEvent(
+      type: eventType,
+      manifest: manifest,
+      message: nil,
+      isRollback: rollback
+    ))
   }
 
   public func appLoaderTask(_: AppLoaderTask, didStartLoadingUpdate update: Update?) {
@@ -406,12 +411,11 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
   public func appLoaderTask(_: AppLoaderTask, didFinishWithError error: Error) {
     let logMessage = String(format: "AppController appLoaderTask didFinishWithError: %@", error.localizedDescription)
     logger.error(message: logMessage, code: .updateFailedToLoad)
-    let body = [
-      "message": error.localizedDescription
-    ]
-    stateMachine?.processEvent(UpdatesStateEvent(type: .downloadError, body: body))
+    stateMachine?.processEvent(UpdatesStateEvent(type: .downloadError, message: error.localizedDescription))
     // Send legacy UpdateEvents to JS
-    sendLegacyUpdateEventToBridge(AppController.ErrorEventName, body: body)
+    sendLegacyUpdateEventToBridge(AppController.ErrorEventName, body: [
+      "message": error.localizedDescription
+    ])
     emergencyLaunch(fatalError: error as NSError)
   }
 
@@ -433,22 +437,21 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
         updateId: update?.loggingId(),
         assetId: nil
       )
-      let body = [
-        "message": error.localizedDescription
-      ]
       // Since errors can happen through a number of paths, we do these checks
       // to make sure the state machine is valid
       if stateMachine?.state == .idle {
         stateMachine?.processEvent(UpdatesStateEvent(type: .download))
-        stateMachine?.processEvent(UpdatesStateEvent(type: .downloadError, body: body))
+        stateMachine?.processEvent(UpdatesStateEvent(type: .downloadError, message: error.localizedDescription))
       } else if stateMachine?.state == .checking {
-        stateMachine?.processEvent(UpdatesStateEvent(type: .checkError, body: body))
+        stateMachine?.processEvent(UpdatesStateEvent(type: .checkError, message: error.localizedDescription))
       } else {
         // .downloading
-        stateMachine?.processEvent(UpdatesStateEvent(type: .downloadError, body: body))
+        stateMachine?.processEvent(UpdatesStateEvent(type: .downloadError, message: error.localizedDescription))
       }
       // Send UpdateEvents to JS
-      sendLegacyUpdateEventToBridge(AppController.ErrorEventName, body: body)
+      sendLegacyUpdateEventToBridge(AppController.ErrorEventName, body: [
+        "message": error.localizedDescription
+      ])
     case .updateAvailable:
       remoteLoadStatus = .NewUpdateLoaded
       guard let update = update else {
@@ -460,12 +463,11 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
         updateId: update.loggingId(),
         assetId: nil
       )
-      let body = [
-        "manifest": update.manifest.rawManifestJSON()
-      ]
-      stateMachine?.processEvent(UpdatesStateEvent(type: .downloadComplete, body: body))
+      stateMachine?.processEvent(UpdatesStateEvent(type: .downloadComplete, manifest: update.manifest.rawManifestJSON()))
       // Send UpdateEvents to JS
-      sendLegacyUpdateEventToBridge(AppController.UpdateAvailableEventName, body: body)
+      sendLegacyUpdateEventToBridge(AppController.UpdateAvailableEventName, body: [
+        "manifest": update.manifest.rawManifestJSON()
+      ])
     case .noUpdateAvailable:
       remoteLoadStatus = .Idle
       logger.info(
@@ -476,7 +478,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
       )
       // TODO: handle rollbacks properly, but this works for now
       if stateMachine?.state == .downloading {
-        stateMachine?.processEvent(UpdatesStateEvent(type: .downloadComplete, body: [:]))
+        stateMachine?.processEvent(UpdatesStateEvent(type: .downloadComplete))
       }
       // Otherwise, we don't need to call the state machine here, it already transitioned to .checkCompleteUnavailable
       // Send UpdateEvents to JS
@@ -557,12 +559,12 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     sendEventToBridge(AppController.EXUpdatesEventName, eventType, body: body)
   }
 
-  internal func sendUpdateStateChangeEventToBridge(_ eventType: UpdatesStateEventType, body: [String: Any]) {
+  internal func sendUpdateStateChangeEventToBridge(_ eventType: UpdatesStateEventType, body: [String: Any?]) {
     logger.info(message: "sendUpdateStateChangeEventToBridge(): type = \(eventType)")
     sendEventToBridge(AppController.EXUpdatesStateChangeEventName, "\(eventType)", body: body)
   }
 
-  private func sendEventToBridge(_ eventName: String, _ eventType: String, body: [String: Any]) {
+  private func sendEventToBridge(_ eventName: String, _ eventType: String, body: [String: Any?]) {
     var mutableBody = body
     mutableBody["type"] = eventType
 
