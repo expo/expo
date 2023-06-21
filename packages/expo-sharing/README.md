@@ -1,4 +1,11 @@
-# expo-sharing
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/sharing/">
+    <img
+      src="../../.github/resources/expo-sharing.svg"
+      alt="expo-sharing"
+      height="64" />
+  </a>
+</p>
 
 Sharing standalone module
 

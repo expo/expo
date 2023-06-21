@@ -1,4 +1,11 @@
-# expo-calendar
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/calendar/">
+    <img
+      src="../../.github/resources/expo-calendar.svg"
+      alt="expo-calendar"
+      height="64" />
+  </a>
+</p>
 
 Provides an API for interacting with the device's system calendars, events, reminders, and associated records.
 
