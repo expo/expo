@@ -362,8 +362,8 @@ class UpdatesModule(
           null -> Bundle()
           else -> {
             Bundle().apply {
-              result.keys.forEach {
-                putString(it, result.get(it) as String)
+              result.forEach {
+                putString(it.key, it.value)
               }
             }
           }

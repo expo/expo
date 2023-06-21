@@ -169,7 +169,6 @@ internal struct UpdatesStateContext {
       "isChecking": self.isChecking,
       "isDownloading": self.isDownloading,
       "isRestarting": self.isRestarting,
-      // We pass NSNulls to keep this as a [String: Any] map
       "latestManifest": self.latestManifest,
       "downloadedManifest": self.downloadedManifest,
       "checkError": self.checkError,

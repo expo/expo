@@ -18,34 +18,37 @@ data class UpdatesStateEvent(
 
   companion object {
     fun Check(): UpdatesStateEvent {
-      return UpdatesStateEvent(UpdatesStateEventType.Check, null, null, false)
+      return UpdatesStateEvent(UpdatesStateEventType.Check)
     }
     fun Download(): UpdatesStateEvent {
-      return UpdatesStateEvent(UpdatesStateEventType.Download, null, null, false)
+      return UpdatesStateEvent(UpdatesStateEventType.Download)
     }
     fun CheckError(message: String): UpdatesStateEvent {
-      return UpdatesStateEvent(UpdatesStateEventType.CheckError, null, message, false)
+      return UpdatesStateEvent(UpdatesStateEventType.CheckError, errorMessage = message)
     }
     fun DownloadError(message: String): UpdatesStateEvent {
-      return UpdatesStateEvent(UpdatesStateEventType.DownloadError, null, message, false)
+      return UpdatesStateEvent(UpdatesStateEventType.DownloadError, errorMessage = message)
     }
     fun CheckComplete(): UpdatesStateEvent {
-      return UpdatesStateEvent(UpdatesStateEventType.CheckCompleteUnavailable, null, null, false)
+      return UpdatesStateEvent(UpdatesStateEventType.CheckCompleteUnavailable)
     }
     fun CheckCompleteWithUpdate(manifest: JSONObject?): UpdatesStateEvent {
-      return UpdatesStateEvent(UpdatesStateEventType.CheckCompleteAvailable, manifest, null, false)
+      return UpdatesStateEvent(UpdatesStateEventType.CheckCompleteAvailable, manifest = manifest)
     }
     fun CheckCompleteWithRollback(): UpdatesStateEvent {
-      return UpdatesStateEvent(UpdatesStateEventType.CheckCompleteAvailable, null, null, true)
+      return UpdatesStateEvent(UpdatesStateEventType.CheckCompleteAvailable, isRollback = true)
     }
     fun DownloadComplete(): UpdatesStateEvent {
-      return UpdatesStateEvent(UpdatesStateEventType.DownloadComplete, null, null, false)
+      return UpdatesStateEvent(UpdatesStateEventType.DownloadComplete)
     }
     fun DownloadCompleteWithUpdate(manifest: JSONObject?): UpdatesStateEvent {
-      return UpdatesStateEvent(UpdatesStateEventType.DownloadComplete, manifest, null, false)
+      return UpdatesStateEvent(UpdatesStateEventType.DownloadComplete, manifest = manifest)
     }
     fun DownloadCompleteWithRollback(): UpdatesStateEvent {
-      return UpdatesStateEvent(UpdatesStateEventType.DownloadComplete, null, null, true)
+      return UpdatesStateEvent(UpdatesStateEventType.DownloadComplete, isRollback = true)
+    }
+    fun Restart(): UpdatesStateEvent {
+      return UpdatesStateEvent(UpdatesStateEventType.Restart)
     }
   }
 }

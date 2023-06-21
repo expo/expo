@@ -282,23 +282,17 @@ class UpdatesController private constructor(
         }
 
         override fun onRemoteCheckForUpdateStarted() {
-          stateMachine.processEvent(UpdatesStateEvent(UpdatesStateEventType.Check))
+          stateMachine.processEvent(UpdatesStateEvent.Check())
         }
 
         override fun onRemoteCheckForUpdateFinished(result: LoaderTask.RemoteCheckResult) {
-          var event = UpdatesStateEvent(UpdatesStateEventType.CheckCompleteUnavailable)
+          var event = UpdatesStateEvent.CheckComplete()
           if (result.manifest != null) {
-            event = UpdatesStateEvent(
-              UpdatesStateEventType.CheckCompleteAvailable,
+            event = UpdatesStateEvent.CheckCompleteWithUpdate(
               result.manifest
             )
           } else if (result.isRollBackToEmbedded == true) {
-            event = UpdatesStateEvent(
-              UpdatesStateEventType.CheckCompleteAvailable,
-              null,
-              null,
-              true
-            )
+            event = UpdatesStateEvent.CheckCompleteWithRollback()
           }
           stateMachine.processEvent(event)
         }
@@ -316,7 +310,7 @@ class UpdatesController private constructor(
         }
 
         override fun onRemoteUpdateLoadStarted() {
-          stateMachine.processEvent(UpdatesStateEvent(UpdatesStateEventType.Download))
+          stateMachine.processEvent(UpdatesStateEvent.Download())
         }
 
         override fun onRemoteUpdateAssetLoaded(
@@ -514,7 +508,7 @@ class UpdatesController private constructor(
       return
     }
 
-    stateMachine.processEvent(UpdatesStateEvent(UpdatesStateEventType.Restart))
+    stateMachine.processEvent(UpdatesStateEvent.Restart())
 
     val oldLaunchAssetFile = launcher!!.launchAssetFile
 
