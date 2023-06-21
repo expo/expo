@@ -27,7 +27,6 @@ export function AuthSection({
   result,
   tokenResponse,
   promptAsync,
-  useProxy,
   disabled,
 }: {
   title: string;
@@ -37,7 +36,6 @@ export function AuthSection({
   promptAsync: (
     options?: AuthSession.AuthRequestPromptOptions
   ) => Promise<AuthSession.AuthSessionResult>;
-  useProxy?: boolean;
   disabled?: boolean;
 }) {
   // @ts-ignore
@@ -52,8 +50,6 @@ export function AuthSection({
         url={request?.url}
         onPress={(color) =>
           promptAsync({
-            useProxy,
-            projectNameForProxy: '@community/native-component-list',
             // Tint the controller
             toolbarColor: color,
             // iOS -- unused, possibly should remove the types

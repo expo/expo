@@ -14,7 +14,7 @@ import {
 } from '../AuthSession';
 import { generateHexStringAsync } from '../PKCE';
 import { ProviderAuthRequestConfig } from './Provider.types';
-import { applyRequiredScopes, useProxyEnabled } from './ProviderUtils';
+import { applyRequiredScopes } from './ProviderUtils';
 
 const settings = {
   windowFeatures: { width: 700, height: 600 },
@@ -125,19 +125,14 @@ export function useAuthRequest(
   AuthSessionResult | null,
   (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>
 ] {
-  const useProxy = useProxyEnabled(redirectUriOptions);
-
   const clientId = useMemo((): string => {
-    const propertyName = useProxy
-      ? 'expoClientId'
-      : Platform.select({
-          ios: 'iosClientId',
-          android: 'androidClientId',
-          default: 'webClientId',
-        });
+    const propertyName = Platform.select({
+      ios: 'iosClientId',
+      android: 'androidClientId',
+      default: 'webClientId',
+    });
     return config[propertyName as any] ?? config.clientId;
   }, [
-    useProxy,
     config.expoClientId,
     config.iosClientId,
     config.androidClientId,
@@ -153,10 +148,9 @@ export function useAuthRequest(
     return makeRedirectUri({
       // The redirect URI should be created using fb + client ID on native.
       native: `fb${clientId}://authorize`,
-      useProxy,
       ...redirectUriOptions,
     });
-  }, [useProxy, clientId, config.redirectUri, redirectUriOptions]);
+  }, [clientId, config.redirectUri, redirectUriOptions]);
 
   const extraParams = useMemo((): FacebookAuthRequestConfig['extraParams'] => {
     const output = config.extraParams ? { ...config.extraParams } : {};
@@ -180,7 +174,6 @@ export function useAuthRequest(
 
   const [result, promptAsync] = useAuthRequestResult(request, discovery, {
     windowFeatures: settings.windowFeatures,
-    useProxy,
   });
 
   return [request, result, promptAsync];

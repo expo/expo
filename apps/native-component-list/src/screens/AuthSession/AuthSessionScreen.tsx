@@ -12,7 +12,6 @@ import { getGUID } from '../../api/guid';
 import TitledPicker from '../../components/TitledPicker';
 import TitledSwitch from '../../components/TitledSwitch';
 import { AuthSection } from './AuthResult';
-import LegacyAuthSession from './LegacyAuthSession';
 
 maybeCompleteAuthSession();
 
@@ -28,7 +27,6 @@ const languages = [
 const PROJECT_NAME_FOR_PROXY = '@community/native-component-list';
 
 export default function AuthSessionScreen() {
-  const [useProxy, setProxy] = React.useState<boolean>(false);
   const [usePKCE, setPKCE] = React.useState<boolean>(true);
   const [prompt, setSwitch] = React.useState<undefined | AuthSession.Prompt>(undefined);
   const [language, setLanguage] = React.useState<any>(languages[0].key);
@@ -50,12 +48,6 @@ export default function AuthSessionScreen() {
         <View style={{ marginBottom: 8 }}>
           <H2>Settings</H2>
           <TitledSwitch
-            title="Use Proxy"
-            disabled={Platform.OS === 'web'}
-            value={useProxy}
-            setValue={setProxy}
-          />
-          <TitledSwitch
             title="Switch Accounts"
             value={!!prompt}
             setValue={(value) => setSwitch(value ? AuthSession.Prompt.SelectAccount : undefined)}
@@ -70,14 +62,7 @@ export default function AuthSessionScreen() {
           <H4>ID: {PROJECT_NAME_FOR_PROXY}</H4>
         </View>
         <H2>Services</H2>
-        <AuthSessionProviders
-          prompt={prompt}
-          usePKCE={usePKCE}
-          useProxy={useProxy}
-          language={language}
-        />
-        <H2>Legacy</H2>
-        <LegacyAuthSession />
+        <AuthSessionProviders prompt={prompt} usePKCE={usePKCE} language={language} />
       </ScrollView>
     </View>
   );
@@ -88,22 +73,18 @@ AuthSessionScreen.navigationOptions = {
 };
 
 function AuthSessionProviders(props: {
-  useProxy: boolean;
   usePKCE: boolean;
   prompt?: AuthSession.Prompt;
   language: string;
 }) {
-  const { useProxy, usePKCE, prompt, language } = props;
+  const { usePKCE, prompt, language } = props;
 
   const redirectUri = AuthSession.makeRedirectUri({
     path: 'redirect',
     preferLocalhost: Platform.select({ android: false, default: true }),
-    useProxy,
-    projectNameForProxy: PROJECT_NAME_FOR_PROXY,
   });
 
   const options = {
-    useProxy,
     usePKCE,
     prompt,
     redirectUri,
@@ -149,7 +130,6 @@ function Google({ prompt, language, usePKCE }: any) {
     },
     {
       path: 'redirect',
-      projectNameForProxy: PROJECT_NAME_FOR_PROXY,
       preferLocalhost: true,
     }
   );
@@ -160,18 +140,7 @@ function Google({ prompt, language, usePKCE }: any) {
     }
   }, [result]);
 
-  return (
-    <AuthSection
-      request={request}
-      title="google"
-      result={result}
-      promptAsync={() =>
-        promptAsync({
-          projectNameForProxy: PROJECT_NAME_FOR_PROXY,
-        })
-      }
-    />
-  );
+  return <AuthSection request={request} title="google" result={result} promptAsync={promptAsync} />;
 }
 
 function GoogleFirebase({ prompt, language, usePKCE }: any) {
@@ -185,7 +154,6 @@ function GoogleFirebase({ prompt, language, usePKCE }: any) {
     },
     {
       path: 'redirect',
-      projectNameForProxy: PROJECT_NAME_FOR_PROXY,
       preferLocalhost: true,
     }
   );
@@ -201,11 +169,7 @@ function GoogleFirebase({ prompt, language, usePKCE }: any) {
       request={request}
       title="google_firebase"
       result={result}
-      promptAsync={() =>
-        promptAsync({
-          projectNameForProxy: PROJECT_NAME_FOR_PROXY,
-        })
-      }
+      promptAsync={promptAsync}
     />
   );
 }
@@ -255,7 +219,7 @@ function GoogleFirebase({ prompt, language, usePKCE }: any) {
 //   );
 // }
 
-function Okta({ redirectUri, usePKCE, useProxy }: any) {
+function Okta({ redirectUri, usePKCE }: any) {
   const discovery = AuthSession.useAutoDiscovery('https://dev-720924.okta.com/oauth2/default');
   const [request, result, promptAsync] = useAuthRequest(
     {
@@ -267,38 +231,18 @@ function Okta({ redirectUri, usePKCE, useProxy }: any) {
     discovery
   );
 
-  return (
-    <AuthSection
-      title="okta"
-      request={request}
-      result={result}
-      promptAsync={() =>
-        promptAsync({
-          projectNameForProxy: PROJECT_NAME_FOR_PROXY,
-        })
-      }
-      useProxy={useProxy}
-    />
-  );
+  return <AuthSection title="okta" request={request} result={result} promptAsync={promptAsync} />;
 }
 
 // Reddit only allows one redirect uri per client Id
 // We'll only support bare, and proxy in this example
 // If the redirect is invalid with http instead of https on web, then the provider
 // will let you authenticate but it will redirect with no data and the page will appear broken.
-function Reddit({ redirectUri, prompt, usePKCE, useProxy }: any) {
+function Reddit({ redirectUri, prompt, usePKCE }: any) {
   let clientId: string;
 
   if (isInClient) {
-    if (useProxy) {
-      // Using the proxy in the client.
-      // This expects the URI to be 'https://auth.expo.dev/@community/native-component-list'
-      // so you'll need to be signed into community or be using the public demo
-      clientId = 'IlgcZIpcXF1eKw';
-    } else {
-      // // Normalize the host to `localhost` for other testers
-      clientId = 'CPc_adCUQGt9TA';
-    }
+    clientId = 'CPc_adCUQGt9TA';
   } else {
     if (Platform.OS === 'web') {
       // web apps with uri scheme `https://localhost:19006`
@@ -324,37 +268,18 @@ function Reddit({ redirectUri, prompt, usePKCE, useProxy }: any) {
     }
   );
 
-  return (
-    <AuthSection
-      title="reddit"
-      request={request}
-      result={result}
-      promptAsync={() =>
-        promptAsync({
-          projectNameForProxy: PROJECT_NAME_FOR_PROXY,
-        })
-      }
-      useProxy={useProxy}
-    />
-  );
+  return <AuthSection title="reddit" request={request} result={result} promptAsync={promptAsync} />;
 }
 
 // Imgur Docs https://api.imgur.com/oauth2
 // Create app https://api.imgur.com/oauth2/addclient
-function Imgur({ redirectUri, prompt, usePKCE, useProxy }: any) {
+function Imgur({ redirectUri, prompt, usePKCE }: any) {
   let clientId: string;
 
   if (isInClient) {
-    if (useProxy) {
-      // Using the proxy in the client.
-      // This expects the URI to be 'https://auth.expo.dev/@community/native-component-list'
-      // so you'll need to be signed into community or be using the public demo
-      clientId = '5287e6c03ffac8b';
-    } else {
-      // Normalize the host to `localhost` for other testers
-      // Expects: exp://127.0.0.1:8081/--/redirect
-      clientId = '7ab2f3cc75427a0';
-    }
+    // Normalize the host to `localhost` for other testers
+    // Expects: exp://127.0.0.1:19000/--/redirect
+    clientId = '7ab2f3cc75427a0';
   } else {
     if (Platform.OS === 'web') {
       // web apps with uri scheme `https://localhost:19006`
@@ -388,28 +313,20 @@ function Imgur({ redirectUri, prompt, usePKCE, useProxy }: any) {
       result={result}
       promptAsync={() =>
         promptAsync({
-          useProxy,
           windowFeatures: { width: 500, height: 750 },
-          projectNameForProxy: PROJECT_NAME_FOR_PROXY,
         })
       }
-      useProxy={useProxy}
     />
   );
 }
 
 // TODO: Add button to test using an invalid redirect URI. This is a good example of AuthError.
 // Works for all platforms
-function Github({ redirectUri, prompt, usePKCE, useProxy }: any) {
+function Github({ redirectUri, prompt, usePKCE }: any) {
   let clientId: string;
 
   if (isInClient) {
-    if (useProxy) {
-      // Using the proxy in the client.
-      clientId = '2e4298cafc7bc93ceab8';
-    } else {
-      clientId = '7eb5d82d8f160a434564';
-    }
+    clientId = '7eb5d82d8f160a434564';
   } else {
     if (Platform.OS === 'web') {
       // web apps
@@ -444,19 +361,16 @@ function Github({ redirectUri, prompt, usePKCE, useProxy }: any) {
       result={result}
       promptAsync={() =>
         promptAsync({
-          useProxy,
           windowFeatures: { width: 500, height: 750 },
-          projectNameForProxy: PROJECT_NAME_FOR_PROXY,
         })
       }
-      useProxy={useProxy}
     />
   );
 }
 
 // I couldn't get access to any scopes
 // This never returns to the app after authenticating
-function Uber({ redirectUri, prompt, usePKCE, useProxy }: any) {
+function Uber({ redirectUri, prompt, usePKCE }: any) {
   // https://developer.uber.com/docs/riders/guides/authentication/introduction
   const [request, result, promptAsync] = useAuthRequest(
     {
@@ -476,36 +390,19 @@ function Uber({ redirectUri, prompt, usePKCE, useProxy }: any) {
     }
   );
 
-  return (
-    <AuthSection
-      title="uber"
-      request={request}
-      result={result}
-      promptAsync={() =>
-        promptAsync({
-          projectNameForProxy: PROJECT_NAME_FOR_PROXY,
-        })
-      }
-      useProxy={useProxy}
-    />
-  );
+  return <AuthSection title="uber" request={request} result={result} promptAsync={promptAsync} />;
 }
 
 // https://dev.fitbit.com/apps/new
 // Easy to setup
 // Only allows one redirect URI per app (clientId)
 // Refresh doesn't seem to return a new access token :[
-function FitBit({ redirectUri, prompt, usePKCE, useProxy }: any) {
+function FitBit({ redirectUri, prompt, usePKCE }: any) {
   let clientId: string;
 
   if (isInClient) {
-    if (useProxy) {
-      // Using the proxy in the client.
-      clientId = '22BNXR';
-    } else {
-      // Client without proxy
-      clientId = '22BNXX';
-    }
+    // Client without proxy
+    clientId = '22BNXX';
   } else {
     if (Platform.OS === 'web') {
       // web apps with uri scheme `https://localhost:19006`
@@ -532,22 +429,10 @@ function FitBit({ redirectUri, prompt, usePKCE, useProxy }: any) {
     }
   );
 
-  return (
-    <AuthSection
-      title="fitbit"
-      request={request}
-      result={result}
-      promptAsync={() =>
-        promptAsync({
-          projectNameForProxy: PROJECT_NAME_FOR_PROXY,
-        })
-      }
-      useProxy={useProxy}
-    />
-  );
+  return <AuthSection title="fitbit" request={request} result={result} promptAsync={promptAsync} />;
 }
 
-function Facebook({ usePKCE, useProxy, language }: any) {
+function Facebook({ usePKCE, language }: any) {
   const [request, result, promptAsync] = FacebookAuthSession.useAuthRequest(
     {
       clientId: '145668956753819',
@@ -558,27 +443,16 @@ function Facebook({ usePKCE, useProxy, language }: any) {
     {
       path: 'redirect',
       preferLocalhost: true,
-      projectNameForProxy: PROJECT_NAME_FOR_PROXY,
-      useProxy,
     }
   );
   // Add fetch user example
 
   return (
-    <AuthSection
-      title="facebook"
-      request={request}
-      result={result}
-      promptAsync={() =>
-        promptAsync({
-          projectNameForProxy: PROJECT_NAME_FOR_PROXY,
-        })
-      }
-    />
+    <AuthSection title="facebook" request={request} result={result} promptAsync={promptAsync} />
   );
 }
 
-function Slack({ redirectUri, prompt, usePKCE, useProxy }: any) {
+function Slack({ redirectUri, prompt, usePKCE }: any) {
   // https://api.slack.com/apps
   // After you created an app, navigate to [Features > OAuth & Permissions]
   // - Add a redirect URI Under [Redirect URLs]
@@ -601,23 +475,11 @@ function Slack({ redirectUri, prompt, usePKCE, useProxy }: any) {
     }
   );
 
-  return (
-    <AuthSection
-      title="slack"
-      request={request}
-      result={result}
-      promptAsync={() =>
-        promptAsync({
-          projectNameForProxy: PROJECT_NAME_FOR_PROXY,
-        })
-      }
-      useProxy={useProxy}
-    />
-  );
+  return <AuthSection title="slack" request={request} result={result} promptAsync={promptAsync} />;
 }
 
 // Works on all platforms
-function Spotify({ redirectUri, prompt, usePKCE, useProxy }: any) {
+function Spotify({ redirectUri, prompt, usePKCE }: any) {
   const [request, result, promptAsync] = useAuthRequest(
     {
       clientId: 'a946eadd241244fd88d0a4f3d7dea22f',
@@ -637,21 +499,11 @@ function Spotify({ redirectUri, prompt, usePKCE, useProxy }: any) {
   );
 
   return (
-    <AuthSection
-      title="spotify"
-      request={request}
-      result={result}
-      promptAsync={() =>
-        promptAsync({
-          projectNameForProxy: PROJECT_NAME_FOR_PROXY,
-        })
-      }
-      useProxy={useProxy}
-    />
+    <AuthSection title="spotify" request={request} result={result} promptAsync={promptAsync} />
   );
 }
 
-function Strava({ redirectUri, prompt, usePKCE, useProxy }: any) {
+function Strava({ redirectUri, prompt, usePKCE }: any) {
   const discovery = {
     authorizationEndpoint: 'https://www.strava.com/oauth/mobile/authorize',
     tokenEndpoint: 'https://www.strava.com/oauth/token',
@@ -686,23 +538,11 @@ function Strava({ redirectUri, prompt, usePKCE, useProxy }: any) {
     }
   }, [result]);
 
-  return (
-    <AuthSection
-      title="strava"
-      request={request}
-      result={result}
-      promptAsync={() =>
-        promptAsync({
-          projectNameForProxy: PROJECT_NAME_FOR_PROXY,
-        })
-      }
-      useProxy={useProxy}
-    />
-  );
+  return <AuthSection title="strava" request={request} result={result} promptAsync={promptAsync} />;
 }
 
 // Works on all platforms
-function Identity({ redirectUri, prompt, useProxy }: any) {
+function Identity({ redirectUri, prompt }: any) {
   const discovery = AuthSession.useAutoDiscovery('https://demo.identityserver.io');
 
   const [request, result, promptAsync] = useAuthRequest(
@@ -716,22 +556,12 @@ function Identity({ redirectUri, prompt, useProxy }: any) {
   );
 
   return (
-    <AuthSection
-      title="identity4"
-      request={request}
-      result={result}
-      promptAsync={() =>
-        promptAsync({
-          projectNameForProxy: PROJECT_NAME_FOR_PROXY,
-        })
-      }
-      useProxy={useProxy}
-    />
+    <AuthSection title="identity4" request={request} result={result} promptAsync={promptAsync} />
   );
 }
 
 // Doesn't work with proxy
-function Coinbase({ redirectUri, prompt, usePKCE, useProxy }: any) {
+function Coinbase({ redirectUri, prompt, usePKCE }: any) {
   const [request, result, promptAsync] = useAuthRequest(
     {
       clientId: '13b2bc8d9114b1cb6d0132cf60c162bc9c2d5ec29c2599003556edf81cc5db4e',
@@ -749,22 +579,11 @@ function Coinbase({ redirectUri, prompt, usePKCE, useProxy }: any) {
   );
 
   return (
-    <AuthSection
-      disabled={useProxy}
-      title="coinbase"
-      request={request}
-      result={result}
-      promptAsync={() =>
-        promptAsync({
-          projectNameForProxy: PROJECT_NAME_FOR_PROXY,
-        })
-      }
-      useProxy={useProxy}
-    />
+    <AuthSection title="coinbase" request={request} result={result} promptAsync={promptAsync} />
   );
 }
 
-function Dropbox({ redirectUri, prompt, usePKCE, useProxy }: any) {
+function Dropbox({ redirectUri, prompt, usePKCE }: any) {
   const [request, result, promptAsync] = useAuthRequest(
     {
       clientId: 'pjvyj0c5kxxrsfs',
@@ -787,17 +606,12 @@ function Dropbox({ redirectUri, prompt, usePKCE, useProxy }: any) {
       title="dropbox"
       request={request}
       result={result}
-      promptAsync={() =>
-        promptAsync({
-          projectNameForProxy: PROJECT_NAME_FOR_PROXY,
-        })
-      }
-      useProxy={useProxy}
+      promptAsync={promptAsync}
     />
   );
 }
 
-function Twitch({ redirectUri, prompt, usePKCE, useProxy }: any) {
+function Twitch({ redirectUri, prompt, usePKCE }: any) {
   const [request, result, promptAsync] = useAuthRequest(
     {
       clientId: 'r7jomrc4hiz5wm1wgdzmwr1ccb454h',
@@ -813,18 +627,5 @@ function Twitch({ redirectUri, prompt, usePKCE, useProxy }: any) {
     }
   );
 
-  return (
-    <AuthSection
-      disabled={useProxy}
-      title="twitch"
-      request={request}
-      result={result}
-      promptAsync={() =>
-        promptAsync({
-          projectNameForProxy: PROJECT_NAME_FOR_PROXY,
-        })
-      }
-      useProxy={useProxy}
-    />
-  );
+  return <AuthSection title="twitch" request={request} result={result} promptAsync={promptAsync} />;
 }

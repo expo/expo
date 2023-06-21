@@ -3,7 +3,7 @@ import { Platform } from 'react-native';
 import { useAuthRequestResult, useLoadedAuthRequest } from '../AuthRequestHooks';
 import { AuthRequest, makeRedirectUri, ResponseType, } from '../AuthSession';
 import { generateHexStringAsync } from '../PKCE';
-import { applyRequiredScopes, useProxyEnabled } from './ProviderUtils';
+import { applyRequiredScopes } from './ProviderUtils';
 const settings = {
     windowFeatures: { width: 700, height: 600 },
     // These are required for Firebase to work properly which is a reasonable default.
@@ -76,18 +76,14 @@ class FacebookAuthRequest extends AuthRequest {
  * @param redirectUriOptions
  */
 export function useAuthRequest(config = {}, redirectUriOptions = {}) {
-    const useProxy = useProxyEnabled(redirectUriOptions);
     const clientId = useMemo(() => {
-        const propertyName = useProxy
-            ? 'expoClientId'
-            : Platform.select({
-                ios: 'iosClientId',
-                android: 'androidClientId',
-                default: 'webClientId',
-            });
+        const propertyName = Platform.select({
+            ios: 'iosClientId',
+            android: 'androidClientId',
+            default: 'webClientId',
+        });
         return config[propertyName] ?? config.clientId;
     }, [
-        useProxy,
         config.expoClientId,
         config.iosClientId,
         config.androidClientId,
@@ -101,10 +97,9 @@ export function useAuthRequest(config = {}, redirectUriOptions = {}) {
         return makeRedirectUri({
             // The redirect URI should be created using fb + client ID on native.
             native: `fb${clientId}://authorize`,
-            useProxy,
             ...redirectUriOptions,
         });
-    }, [useProxy, clientId, config.redirectUri, redirectUriOptions]);
+    }, [clientId, config.redirectUri, redirectUriOptions]);
     const extraParams = useMemo(() => {
         const output = config.extraParams ? { ...config.extraParams } : {};
         if (config.language) {
@@ -120,7 +115,6 @@ export function useAuthRequest(config = {}, redirectUriOptions = {}) {
     }, discovery, FacebookAuthRequest);
     const [result, promptAsync] = useAuthRequestResult(request, discovery, {
         windowFeatures: settings.windowFeatures,
-        useProxy,
     });
     return [request, result, promptAsync];
 }
