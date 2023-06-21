@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 8.1.0 — 2023-06-21
+
+_This version does not introduce any user-facing changes._
+
 ## 8.0.4 — 2023-05-08
 
 ### 🐛 Bug fixes
