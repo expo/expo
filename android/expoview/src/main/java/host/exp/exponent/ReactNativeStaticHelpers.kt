@@ -4,6 +4,8 @@ package host.exp.exponent
 import android.util.Log
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.common.JavascriptException
+import expo.modules.kotlin.devtools.ExpoNetworkInspectOkHttpAppInterceptor
+import expo.modules.kotlin.devtools.ExpoNetworkInspectOkHttpNetworkInterceptor
 import host.exp.exponent.network.ExponentNetwork
 import host.exp.expoview.Exponent
 import okhttp3.CookieJar
@@ -172,6 +174,8 @@ object ReactNativeStaticHelpers {
       .writeTimeout(0, TimeUnit.MILLISECONDS)
       .cookieJar(cookieJar as CookieJar)
       .cache(exponentNetwork!!.cache)
+      .addInterceptor(ExpoNetworkInspectOkHttpAppInterceptor())
+      .addNetworkInterceptor(ExpoNetworkInspectOkHttpNetworkInterceptor())
     return client.build()
   }
 }
