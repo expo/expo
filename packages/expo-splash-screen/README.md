@@ -1,4 +1,11 @@
-# expo-splash-screen
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/splash-screen/">
+    <img
+      src="../../.github/resources/expo-splash-screen.svg"
+      alt="expo-splash-screen"
+      height="64" />
+  </a>
+</p>
 
 `expo-splash-screen` allows you to customize your app's splash screen, which is the initial screen users see when the app is launched, before it has loaded. Splash screens (sometimes called launch screens) provide a user's first experience with your application.
 

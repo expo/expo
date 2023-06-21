@@ -1,4 +1,11 @@
-# expo-cellular
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/cellular/">
+    <img
+      src="../../.github/resources/expo-cellular.svg"
+      alt="expo-cellular"
+      height="64" />
+  </a>
+</p>
 
 Information about the user’s cellular service provider, such as its unique identifier, cellular connection type and whether it allows VoIP calls on its network.
 
