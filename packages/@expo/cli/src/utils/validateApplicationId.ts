@@ -2,6 +2,9 @@ import assert from 'assert';
 import chalk from 'chalk';
 
 import { fetchAsync } from '../api/rest/client';
+import { Log } from '../log';
+import { env } from './env';
+import { memoize } from './fn';
 import { learnMore } from './link';
 import { isUrlAvailableAsync } from './url';
 
@@ -36,14 +39,11 @@ export function assertValidPackage(value: string) {
   );
 }
 
-const cachedBundleIdResults: Record<string, string> = {};
-const cachedPackageNameResults: Record<string, string> = {};
-
-/** Returns a warning message if an iOS bundle identifier is potentially already in use. */
-export async function getBundleIdWarningAsync(bundleId: string): Promise<string | null> {
-  // Prevent fetching for the same ID multiple times.
-  if (cachedBundleIdResults[bundleId]) {
-    return cachedBundleIdResults[bundleId];
+/** @private */
+export async function getBundleIdWarningInternalAsync(bundleId: string): Promise<string | null> {
+  if (env.EXPO_OFFLINE) {
+    Log.warn('Skipping Apple bundle identifier reservation validation in offline-mode.');
+    return null;
   }
 
   if (!(await isUrlAvailableAsync('itunes.apple.com'))) {
@@ -61,9 +61,7 @@ export async function getBundleIdWarningAsync(bundleId: string): Promise<string 
     const json = await response.json();
     if (json.resultCount > 0) {
       const firstApp = json.results[0];
-      const message = formatInUseWarning(firstApp.trackName, firstApp.sellerName, bundleId);
-      cachedBundleIdResults[bundleId] = message;
-      return message;
+      return formatInUseWarning(firstApp.trackName, firstApp.sellerName, bundleId);
     }
   } catch (error: any) {
     debug(`Error checking bundle ID ${bundleId}: ${error.message}`);
@@ -72,11 +70,16 @@ export async function getBundleIdWarningAsync(bundleId: string): Promise<string 
   return null;
 }
 
-/** Returns a warning message if an Android package name is potentially already in use. */
-export async function getPackageNameWarningAsync(packageName: string): Promise<string | null> {
-  // Prevent fetching for the same ID multiple times.
-  if (cachedPackageNameResults[packageName]) {
-    return cachedPackageNameResults[packageName];
+/** Returns a warning message if an iOS bundle identifier is potentially already in use. */
+export const getBundleIdWarningAsync = memoize(getBundleIdWarningInternalAsync);
+
+/** @private */
+export async function getPackageNameWarningInternalAsync(
+  packageName: string
+): Promise<string | null> {
+  if (env.EXPO_OFFLINE) {
+    Log.warn('Skipping Android package name reservation validation in offline-mode.');
+    return null;
   }
 
   if (!(await isUrlAvailableAsync('play.google.com'))) {
@@ -95,15 +98,13 @@ export async function getPackageNameWarningAsync(packageName: string): Promise<s
     if (response.status === 200) {
       // There is no JSON API for the Play Store so we can't concisely
       // locate the app name and developer to match the iOS warning.
-      const message = `⚠️  The package ${chalk.bold(packageName)} is already in use. ${chalk.dim(
+      return `⚠️  The package ${chalk.bold(packageName)} is already in use. ${chalk.dim(
         learnMore(url)
       )}`;
-      cachedPackageNameResults[packageName] = message;
-      return message;
     }
   } catch (error: any) {
-    debug(`Error checking package name ${packageName}: ${error.message}`);
     // Error fetching play store data or the page doesn't exist.
+    debug(`Error checking package name ${packageName}: ${error.message}`);
   }
   return null;
 }
@@ -113,3 +114,6 @@ function formatInUseWarning(appName: string, author: string, id: string): string
     author
   )} is already using ${chalk.bold(id)}`;
 }
+
+/** Returns a warning message if an Android package name is potentially already in use. */
+export const getPackageNameWarningAsync = memoize(getPackageNameWarningInternalAsync);

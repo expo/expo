@@ -5,10 +5,10 @@ import { CurrentUserQuery } from '../../graphql/generated';
 import * as Log from '../../log';
 import * as Analytics from '../../utils/analytics/rudderstackClient';
 import { getDevelopmentCodeSigningDirectory } from '../../utils/codesigning';
+import { env } from '../../utils/env';
 import { graphqlClient } from '../graphql/client';
 import { UserQuery } from '../graphql/queries/UserQuery';
 import { fetchAsync } from '../rest/client';
-import { APISettings } from '../settings';
 import UserSettings from './UserSettings';
 
 export type Actor = NonNullable<CurrentUserQuery['meActor']>;
@@ -35,7 +35,7 @@ export function getActorDisplayName(user?: Actor): string {
 
 export async function getUserAsync(): Promise<Actor | undefined> {
   const hasCredentials = UserSettings.getAccessToken() || UserSettings.getSession()?.sessionSecret;
-  if (!APISettings.isOffline && !currentUser && hasCredentials) {
+  if (!env.EXPO_OFFLINE && !currentUser && hasCredentials) {
     const user = await UserQuery.currentUserAsync();
     currentUser = user ?? undefined;
     if (user) {

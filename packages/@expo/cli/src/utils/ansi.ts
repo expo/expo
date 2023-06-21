@@ -1,5 +1,5 @@
 /** Remove ansi characters from a string and return the sanitized results. */
-export function stripAnsi(str?: string) {
+export function stripAnsi(str?: string | null) {
   if (!str) {
     return str;
   }

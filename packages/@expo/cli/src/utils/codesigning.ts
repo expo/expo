@@ -19,12 +19,12 @@ import { Dictionary, parseDictionary } from 'structured-headers';
 import { getExpoGoIntermediateCertificateAsync } from '../api/getExpoGoIntermediateCertificate';
 import { getProjectDevelopmentCertificateAsync } from '../api/getProjectDevelopmentCertificate';
 import { AppQuery } from '../api/graphql/queries/AppQuery';
-import { APISettings } from '../api/settings';
 import { ensureLoggedInAsync } from '../api/user/actions';
 import { Actor } from '../api/user/user';
 import { AppByIdQuery, Permission } from '../graphql/generated';
 import * as Log from '../log';
 import { learnMore } from '../utils/link';
+import { env } from './env';
 import { CommandError } from './errors';
 
 const debug = require('debug')('expo:codesigning') as typeof console.log;
@@ -202,10 +202,10 @@ async function getExpoRootDevelopmentCodeSigningInfoAsync(
 
   // 1. If online, ensure logged in, generate key pair and CSR, fetch and cache certificate chain for projectId
   //    (overwriting existing dev cert in case projectId changed or it has expired)
-  if (!APISettings.isOffline) {
+  if (!env.EXPO_OFFLINE) {
     try {
       return await fetchAndCacheNewDevelopmentCodeSigningInfoAsync(easProjectId);
-    } catch (e) {
+    } catch (e: any) {
       if (validatedCodeSigningInfo) {
         Log.warn(
           'There was an error fetching the Expo development certificate, falling back to cached certificate'
