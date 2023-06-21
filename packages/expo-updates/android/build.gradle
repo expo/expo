@@ -120,6 +120,7 @@ dependencies {
 
   implementation("com.squareup.okhttp3:okhttp:4.9.2")
   implementation("com.squareup.okhttp3:okhttp-urlconnection:4.9.2")
+  implementation("com.squareup.okhttp3:okhttp-brotli:4.9.2")
   implementation("com.squareup.okio:okio:2.9.0")
   implementation("commons-codec:commons-codec:1.10")
   implementation("commons-io:commons-io:2.6")
