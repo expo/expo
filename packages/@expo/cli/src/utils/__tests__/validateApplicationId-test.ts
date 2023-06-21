@@ -1,16 +1,27 @@
 import fetch from 'node-fetch';
 
+import { Log } from '../../log';
 import { stripAnsi } from '../ansi';
 import { isUrlAvailableAsync } from '../url';
 import {
-  getBundleIdWarningAsync,
-  getPackageNameWarningAsync,
+  getBundleIdWarningInternalAsync,
+  getPackageNameWarningInternalAsync,
   validateBundleId,
   validatePackage,
 } from '../validateApplicationId';
 
-jest.mock('../url');
 jest.mock('node-fetch');
+jest.mock('../../log');
+jest.mock('../url');
+
+function resetOfflineMode() {
+  beforeEach(() => {
+    delete process.env.EXPO_OFFLINE;
+  });
+  afterAll(() => {
+    delete process.env.EXPO_OFFLINE;
+  });
+}
 
 describe(validateBundleId, () => {
   it(`validates`, () => {
@@ -35,15 +46,22 @@ describe(validatePackage, () => {
   });
 });
 
-describe(getBundleIdWarningAsync, () => {
+describe(getBundleIdWarningInternalAsync, () => {
+  resetOfflineMode();
   it(`returns null if the URL cannot be reached`, async () => {
-    (isUrlAvailableAsync as jest.Mock).mockResolvedValueOnce(false);
-    expect(await getBundleIdWarningAsync('bacon')).toBe(null);
+    jest.mocked(isUrlAvailableAsync).mockResolvedValueOnce(false);
+    expect(await getBundleIdWarningInternalAsync('bacon')).toBe(null);
+  });
+  it(`returns null and warns if running in offline-mode`, async () => {
+    process.env.EXPO_OFFLINE = '1';
+    await expect(getBundleIdWarningInternalAsync('bacon')).resolves.toBe(null);
+    expect(Log.warn).toBeCalledWith(expect.stringMatching(/offline-mode/));
   });
   it(`returns warning if in use`, async () => {
-    (isUrlAvailableAsync as jest.Mock).mockResolvedValueOnce(true);
+    jest.mocked(isUrlAvailableAsync).mockResolvedValueOnce(true);
 
-    (fetch as any).mockImplementationOnce(() => ({
+    jest.mocked(fetch).mockResolvedValueOnce({
+      status: 200,
       json() {
         return Promise.resolve({
           resultCount: 1,
@@ -58,27 +76,36 @@ describe(getBundleIdWarningAsync, () => {
           ],
         });
       },
-    }));
+    } as any);
+
     expect(
-      stripAnsi(await getBundleIdWarningAsync('com.bacon.pillarvalley'))
+      stripAnsi(await getBundleIdWarningInternalAsync('com.bacon.pillarvalley'))
     ).toMatchInlineSnapshot(
       `"⚠️  The app Pillar Valley by Evan Bacon is already using com.bacon.pillarvalley"`
     );
   });
 });
-describe(getPackageNameWarningAsync, () => {
+
+describe(getPackageNameWarningInternalAsync, () => {
+  resetOfflineMode();
+
   it(`returns null if the URL cannot be reached`, async () => {
-    (isUrlAvailableAsync as jest.Mock).mockResolvedValueOnce(false);
-    expect(await getPackageNameWarningAsync('bacon')).toBe(null);
+    jest.mocked(isUrlAvailableAsync).mockResolvedValueOnce(false);
+    expect(await getPackageNameWarningInternalAsync('bacon')).toBe(null);
+  });
+  it(`returns null and warns if running in offline-mode`, async () => {
+    process.env.EXPO_OFFLINE = '1';
+    expect(await getPackageNameWarningInternalAsync('123')).toBe(null);
+    expect(Log.warn).toBeCalledWith(expect.stringMatching(/offline-mode/));
   });
   it(`returns warning if in use`, async () => {
-    (isUrlAvailableAsync as jest.Mock).mockResolvedValueOnce(true);
-
-    (fetch as any).mockImplementationOnce(() => ({
+    jest.mocked(isUrlAvailableAsync).mockResolvedValueOnce(true);
+    jest.mocked(fetch).mockResolvedValueOnce({
       status: 200,
-    }));
+    } as any);
+
     expect(
-      stripAnsi(await getPackageNameWarningAsync('com.bacon.pillarvalley'))
+      stripAnsi(await getPackageNameWarningInternalAsync('com.bacon.pillarvalley'))
     ).toMatchInlineSnapshot(
       `"⚠️  The package com.bacon.pillarvalley is already in use. Learn more: https://play.google.com/store/apps/details?id=com.bacon.pillarvalley"`
     );

@@ -192,6 +192,9 @@ describe('uninstallExpoGoIfOutdatedAsync', () => {
 });
 
 describe('ensureAsync', () => {
+  beforeEach(() => {
+    delete process.env.EXPO_OFFLINE;
+  });
   function createDeviceManager(isAppInstalled: boolean) {
     return {
       name: 'Pixel 3',
@@ -250,8 +253,7 @@ describe('ensureAsync', () => {
   });
 
   it(`returns false when installed and running in offline mode`, async () => {
-    jest.resetModules();
-    jest.mock('../../../api/settings', () => ({ APISettings: { isOffline: true } }));
+    process.env.EXPO_OFFLINE = '1';
 
     // Reload the Expo Go installer to use the mocked settings
     const { ExpoGoInstaller } = require('../ExpoGoInstaller');
@@ -270,8 +272,7 @@ describe('ensureAsync', () => {
   });
 
   it(`throws when not installed and running in offline mode`, async () => {
-    jest.resetModules();
-    jest.mock('../../../api/settings', () => ({ APISettings: { isOffline: true } }));
+    process.env.EXPO_OFFLINE = '1';
 
     // Reload the Expo Go installer to use the mocked settings
     const { ExpoGoInstaller } = require('../ExpoGoInstaller');
