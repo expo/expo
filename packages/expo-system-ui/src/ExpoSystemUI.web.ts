@@ -13,9 +13,9 @@ export default {
       return null;
     }
   },
-  setBackgroundColorAsync(color: string) {
+  setBackgroundColorAsync(color: string | null) {
     if (Platform.isDOMAvailable) {
-      document.body.style.backgroundColor = color;
+      document.body.style.backgroundColor = color ?? 'white';
     }
   },
 };
