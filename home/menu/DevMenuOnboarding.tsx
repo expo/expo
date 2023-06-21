@@ -48,8 +48,7 @@ export function DevMenuOnboarding({ onClose }: Props) {
       <View flex="1" bg="default" py="medium" px="large">
         <View>
           <Text size="medium" maxFontSizeMultiplier={1.2}>
-            This is the developer menu. It gives you access to useful tools in your development
-            builds.
+            This is the developer menu. It gives you access to useful tools in Expo Go.
           </Text>
           <Spacer.Vertical size="medium" />
           <Text size="medium" maxFontSizeMultiplier={1.2}>
