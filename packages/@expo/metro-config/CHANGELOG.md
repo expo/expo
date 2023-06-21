@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- CSS Modules now export web-compatible styles by default and `unstable_styles` for `react-native-web` style objects.
+- CSS Modules now export web-compatible styles by default and `unstable_styles` for `react-native-web` style objects. ([#23002](https://github.com/expo/expo/pull/23002) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
