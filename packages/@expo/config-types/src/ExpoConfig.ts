@@ -154,7 +154,7 @@ export interface ExpoConfig {
     silentLaunch?: boolean;
   };
   /**
-   * **Custom Builds Only**. URL scheme(s) to link into your app. For example, if we set this to `'demo'`, then demo:// URLs would open your app when tapped.
+   * URL scheme(s) to link into your app. For example, if we set this to `'demo'`, then demo:// URLs would open your app when tapped. This is a build-time configuration, it has no effect in Expo Go.
    */
   scheme?: string | string[];
   /**
