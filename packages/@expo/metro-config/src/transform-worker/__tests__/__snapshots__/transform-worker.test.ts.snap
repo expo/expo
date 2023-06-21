@@ -2,7 +2,7 @@
 
 exports[`CSS Modules web transforms for dev, minified 1`] = `
 {
-  "input": "module.exports=Object.assign({"container":{"$$css":true,"_":"_R_BGG_container"}},{});
+  "input": "module.exports=Object.assign({"container":"_R_BGG_container"},{unstable_styles:{"container":{"$$css":true,"_":"_R_BGG_container"}}}{});
 (() => {
   if (typeof document === 'undefined') {
     return
@@ -44,7 +44,7 @@ exports[`CSS Modules web transforms for dev, minified 1`] = `
 
 exports[`CSS Modules web transforms for dev, not minified 1`] = `
 {
-  "input": "module.exports=Object.assign({"container":{"$$css":true,"_":"_R_BGG_container"}},{});
+  "input": "module.exports=Object.assign({"container":"_R_BGG_container"},{unstable_styles:{"container":{"$$css":true,"_":"_R_BGG_container"}}}{});
 (() => {
   if (typeof document === 'undefined') {
     return
@@ -90,9 +90,9 @@ exports[`CSS Modules web transforms for dev, not minified 1`] = `
 }
 `;
 
-exports[`CSS Modules web transforms for prod, minified 1`] = `"module.exports=Object.assign({"container":{"$$css":true,"_":"_R_BGG_container"}},{});"`;
+exports[`CSS Modules web transforms for prod, minified 1`] = `"module.exports=Object.assign({"container":"_R_BGG_container"},{unstable_styles:{"container":{"$$css":true,"_":"_R_BGG_container"}}}{});"`;
 
-exports[`CSS Modules web transforms for prod, not minified 1`] = `"module.exports=Object.assign({"container":{"$$css":true,"_":"_R_BGG_container"}},{});"`;
+exports[`CSS Modules web transforms for prod, not minified 1`] = `"module.exports=Object.assign({"container":"_R_BGG_container"},{unstable_styles:{"container":{"$$css":true,"_":"_R_BGG_container"}}}{});"`;
 
 exports[`transforms a global CSS file in dev for web 1`] = `
 {
