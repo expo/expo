@@ -50,7 +50,7 @@ const schema = {
                     },
                     nullable: true,
                 },
-                unstable_networkInspector: { type: 'boolean', nullable: true },
+                networkInspector: { type: 'boolean', nullable: true },
                 extraMavenRepos: { type: 'array', items: { type: 'string' }, nullable: true },
             },
             nullable: true,
@@ -65,7 +65,7 @@ const schema = {
                     type: ['boolean', 'string'],
                     nullable: true,
                 },
-                unstable_networkInspector: { type: 'boolean', nullable: true },
+                networkInspector: { type: 'boolean', nullable: true },
                 extraPods: {
                     type: 'array',
                     items: {
