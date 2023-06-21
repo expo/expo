@@ -25,7 +25,7 @@ export const withIosBuildProperties = createBuildPodfilePropsConfigPlugin<Plugin
     },
     {
       propName: 'EX_DEV_CLIENT_NETWORK_INSPECTOR',
-      propValueGetter: (config) => config.ios?.unstable_networkInspector?.toString(),
+      propValueGetter: (config) => (config.ios?.networkInspector ?? true).toString(),
     },
   ],
   'withIosBuildProperties'
