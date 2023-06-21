@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 1.5.0 — 2023-06-21
+
+### 💡 Others
+
 - [iOS] Added Interface Geometry Management section to ExpoAppDelegate. ([#22599](https://github.com/expo/expo/pull/22599) by [@behenate](https://github.com/behenate))
 
 ## 1.4.0 — 2023-06-13

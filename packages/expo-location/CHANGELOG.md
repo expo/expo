@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 16.0.0 — 2023-06-21
+
+_This version does not introduce any user-facing changes._
+
 ## 15.3.0 — 2023-06-13
 
 ### 📚 3rd party library updates

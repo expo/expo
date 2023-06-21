@@ -4,13 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- Drop support for `detach.scheme` schemes (ExpoKit). ([#22848](https://github.com/expo/expo/pull/22848) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 5.0.0 — 2023-06-21
+
+### 🛠 Breaking changes
+
+- Drop support for `detach.scheme` schemes (ExpoKit). ([#22848](https://github.com/expo/expo/pull/22848) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 4.1.0 — 2023-05-08
 

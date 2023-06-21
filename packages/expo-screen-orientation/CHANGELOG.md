@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 6.0.0 — 2023-06-21
+
+_This version does not introduce any user-facing changes._
+
 ## 6.0.0-beta.1 — 2023-06-13
 
 ### 🎉 New features

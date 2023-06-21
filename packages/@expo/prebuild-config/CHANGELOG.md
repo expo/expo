@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 6.2.0 — 2023-06-21
+
+### 💡 Others
+
 - Update `xml2js` version. ([#22872](https://github.com/expo/expo/pull/22872) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 6.1.0 — 2023-06-13
