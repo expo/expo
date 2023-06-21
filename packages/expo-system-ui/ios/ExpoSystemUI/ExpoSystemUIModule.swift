@@ -3,21 +3,27 @@
 import ExpoModulesCore
 
 public class ExpoSystemUIModule: Module {
+  private static let colorKey = "ExpoSystemUI.backgroundColor"
   public func definition() -> ModuleDefinition {
     Name("ExpoSystemUI")
 
     OnCreate {
       // TODO: Maybe read from the app manifest instead of from Info.plist.
       // Set / reset the initial color on reload and app start.
-      let color = Bundle.main.object(forInfoDictionaryKey: "RCTRootViewBackgroundColor") as? Int
-      Self.setBackgroundColorAsync(color: color)
+      let color = UserDefaults.standard.integer(forKey: Self.colorKey)
+
+      if color > 0 {
+        Self.setBackgroundColorAsync(color: color)
+      } else {
+        Self.setBackgroundColorAsync(color: nil)
+      }
     }
 
     AsyncFunction("getBackgroundColorAsync") { () -> String? in
       Self.getBackgroundColor()
     }
 
-    AsyncFunction("setBackgroundColorAsync") { (color: Int) in
+    AsyncFunction("setBackgroundColorAsync") { (color: Int?) in
       Self.setBackgroundColorAsync(color: color)
     }
   }
@@ -37,11 +43,22 @@ public class ExpoSystemUIModule: Module {
     EXUtilities.performSynchronously {
       if color == nil {
         if let window = UIApplication.shared.delegate?.window {
+          UserDefaults.standard.removeObject(forKey: colorKey)
+          let interfaceStyle = window?.traitCollection.userInterfaceStyle
           window?.backgroundColor = nil
-          window?.rootViewController?.view.backgroundColor = UIColor.white
+
+          switch interfaceStyle {
+          case .dark:
+            window?.rootViewController?.view.backgroundColor = .black
+          case .light:
+            window?.rootViewController?.view.backgroundColor = .white
+          default:
+            window?.rootViewController?.view.backgroundColor = .white
+          }
         }
         return
       }
+      UserDefaults.standard.set(color, forKey: colorKey)
       let backgroundColor = EXUtilities.uiColor(color)
       // Set the app-wide window, this could have future issues when running multiple React apps,
       // i.e. dev client can't use expo-system-ui.
