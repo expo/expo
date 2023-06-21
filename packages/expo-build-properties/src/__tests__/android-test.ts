@@ -118,12 +118,10 @@ describe(withAndroidFlipper, () => {
         modResults: [{ type: 'property', key: 'android.flipper', value: '0.999.0' }],
       }
     );
-    expect(androidModResults).toEqual([
-      {
-        type: 'property',
-        key: 'android.flipper',
-        value: '0.999.0',
-      },
-    ]);
+    expect(androidModResults).toContainEqual({
+      type: 'property',
+      key: 'android.flipper',
+      value: '0.999.0',
+    });
   });
 });

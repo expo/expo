@@ -65,7 +65,7 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
     },
     {
       propName: 'EX_DEV_CLIENT_NETWORK_INSPECTOR',
-      propValueGetter: (config) => config.android?.unstable_networkInspector?.toString(),
+      propValueGetter: (config) => (config.android?.networkInspector ?? true).toString(),
     },
   ],
   'withAndroidBuildProperties'

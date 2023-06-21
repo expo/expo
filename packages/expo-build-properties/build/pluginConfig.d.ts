@@ -68,10 +68,11 @@ export interface PluginConfigTypeAndroid {
      */
     flipper?: string;
     /**
-     * Enable the experimental Network Inspector for [Development builds](https://docs.expo.dev/develop/development-builds/introduction/).
-     * SDK 49+ is required.
+     * Enable the Network Inspector.
+     *
+     * @default true
      */
-    unstable_networkInspector?: boolean;
+    networkInspector?: boolean;
     /**
      * Add extra maven repositories to all gradle projects.
      *
@@ -125,10 +126,11 @@ export interface PluginConfigTypeIos {
      */
     flipper?: boolean | string;
     /**
-     * Enable the experimental Network Inspector for [Development builds](https://docs.expo.dev/develop/development-builds/introduction/).
-     * SDK 49+ is required.
+     * Enable the Network Inspector.
+     *
+     * @default true
      */
-    unstable_networkInspector?: boolean;
+    networkInspector?: boolean;
     /**
      * Add extra CocoaPods dependencies for all targets.
      *
