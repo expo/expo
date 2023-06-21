@@ -87,8 +87,10 @@ export const expoStart: Command = async (argv) => {
   const { resolveOptionsAsync } = await import('./resolveOptions');
   const options = await resolveOptionsAsync(projectRoot, args).catch(logCmdError);
 
-  const { APISettings } = await import('../api/settings');
-  APISettings.isOffline = options.offline;
+  if (options.offline) {
+    const { disableNetwork } = await import('../api/settings');
+    disableNetwork();
+  }
 
   const { startAsync } = await import('./startAsync');
   return startAsync(projectRoot, options, { webOnly: false }).catch(logCmdError);
