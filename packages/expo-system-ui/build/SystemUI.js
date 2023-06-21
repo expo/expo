@@ -11,7 +11,7 @@ import ExpoSystemUI from './ExpoSystemUI';
  * @param color Any valid [CSS 3 (SVG) color](http://www.w3.org/TR/css3-color/#svg-color).
  */
 export async function setBackgroundColorAsync(color) {
-    if (color === null) {
+    if (color == null) {
         return await ExpoSystemUI.setBackgroundColorAsync(null);
     }
     else {
