@@ -1,5 +1,6 @@
 import assert from 'assert';
 
+import { hasDirectDevClientDependency } from '../utils/analytics/getDevClientProperties';
 import { AbortCommandError, CommandError } from '../utils/errors';
 import { resolvePortAsync } from '../utils/port';
 
@@ -38,8 +39,19 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
     tunnel: args['--tunnel'],
   });
 
-  // TODO: Add a third option which is auto detecting if the user is using `expo-dev-client` or `expo-dev-launcher`.
-  const isDevClient = !!args['--dev-client'] || (args['--go'] == null ? false : !args['--go']);
+  // User can force the default target by passing either `--dev-client` or `--go`. They can also
+  // swap between them during development by pressing `s`.
+  const isUserDefinedDevClient =
+    !!args['--dev-client'] || (args['--go'] == null ? false : !args['--go']);
+
+  // If the user didn't specify `--dev-client` or `--go` we check if they have the dev client package
+  // in their package.json.
+  const isAutoDevClient =
+    args['--dev-client'] == null &&
+    args['--go'] == null &&
+    hasDirectDevClientDependency(projectRoot);
+
+  const isDevClient = isAutoDevClient || isUserDefinedDevClient;
 
   const scheme = await resolveSchemeAsync(projectRoot, {
     scheme: args['--scheme'],
