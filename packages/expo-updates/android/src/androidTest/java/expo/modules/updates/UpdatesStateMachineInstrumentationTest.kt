@@ -3,6 +3,7 @@ package expo.modules.updates
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.platform.app.InstrumentationRegistry
 import expo.modules.updates.statemachine.UpdatesStateChangeEventSender
+import expo.modules.updates.statemachine.UpdatesStateContext
 import expo.modules.updates.statemachine.UpdatesStateEvent
 import expo.modules.updates.statemachine.UpdatesStateEventType
 import expo.modules.updates.statemachine.UpdatesStateMachine
@@ -21,7 +22,7 @@ class UpdatesStateMachineInstrumentationTest {
 
     override fun sendUpdateStateChangeEventToBridge(
       eventType: UpdatesStateEventType,
-      context: Map<String, Any>
+      context: UpdatesStateContext
     ) {
       lastEventType = eventType
     }

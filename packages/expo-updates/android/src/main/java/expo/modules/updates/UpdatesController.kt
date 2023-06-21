@@ -35,6 +35,7 @@ import expo.modules.updates.manifest.UpdateManifest
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
 import expo.modules.updates.statemachine.UpdatesStateChangeEventSender
+import expo.modules.updates.statemachine.UpdatesStateContext
 import expo.modules.updates.statemachine.UpdatesStateEvent
 import expo.modules.updates.statemachine.UpdatesStateEventType
 import expo.modules.updates.statemachine.UpdatesStateMachine
@@ -565,8 +566,8 @@ class UpdatesController private constructor(
     )
   }
 
-  override fun sendUpdateStateChangeEventToBridge(eventType: UpdatesStateEventType, context: Map<String, Any>) {
-    sendEventToJS(UPDATES_STATE_CHANGE_EVENT_NAME, eventType.type, UpdatesStateMachine.paramsForJSEvent(context))
+  override fun sendUpdateStateChangeEventToBridge(eventType: UpdatesStateEventType, context: UpdatesStateContext) {
+    sendEventToJS(UPDATES_STATE_CHANGE_EVENT_NAME, eventType.type, context.writableMap)
   }
 
   fun sendLegacyUpdateEventToJS(eventType: String, params: WritableMap?) {

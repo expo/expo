@@ -73,7 +73,7 @@ class UpdatesStateMachine(
   private fun sendChangeEventToJS(event: UpdatesStateEvent? = null) {
     changeEventSender.sendUpdateStateChangeEventToBridge(
       event?.type ?: UpdatesStateEventType.Restart,
-      context.json
+      context.copy()
     )
   }
 
@@ -148,35 +148,6 @@ class UpdatesStateMachine(
           isRestarting = true
         )
       }
-    }
-
-    /**
-     * Creates a WritableMap to be sent to JS on a state change.
-     */
-    fun paramsForJSEvent(context: Map<String, Any>): WritableMap {
-      val contextMap = Arguments.createMap()
-      for (field: String in context.keys) {
-        if (field.startsWith("is")) {
-          contextMap.putBoolean(field, context[field] as Boolean)
-        } else if (field.endsWith("Manifest")) {
-          if (context[field] != null) {
-            contextMap.putString("${field}String", (context[field] as JSONObject).toString())
-          } else {
-            contextMap.putNull(field)
-          }
-        } else { // errors
-          if (context[field] != null) {
-            val errorMap = Arguments.createMap()
-            errorMap.putString("message", (context[field] as Map<*, *>)["message"] as String)
-            contextMap.putMap(field, errorMap)
-          } else {
-            contextMap.putNull(field)
-          }
-        }
-      }
-      val params = Arguments.createMap()
-      params.putMap("context", contextMap)
-      return params
     }
   }
 }
