@@ -340,6 +340,15 @@ const RENAMED_PAGES: Record<string, string> = {
   '/distribution/app-icons/': '/develop/user-interface/app-icons/',
   '/guides/using-libraries/': '/workflow/using-libraries/',
   '/tutorial/': '/tutorial/introduction/',
+
+  // EAS Update
+  '/eas-update/developing-with-eas-update/': '/eas-update/develop-faster/',
+  '/eas-update/eas-update-with-local-build/': '/eas-update/build-locally/',
+  '/eas-update/eas-update-and-eas-cli/': '/eas-update/eas-cli/',
+  '/eas-update/debug-updates/': '/eas-update/debug/',
+  '/eas-update/how-eas-update-works/': '/eas-update/how-it-works/',
+  '/eas-update/migrate-to-eas-update/': '/eas-update/migrate-from-classic-updates/',
+
   // Note (@aman): The following redirect is temporary until Guides section has an overview
   '/guides/': '/workflow/customizing/',
   '/archive/workflow/customizing/': '/workflow/customizing/',

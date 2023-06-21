@@ -210,16 +210,16 @@ const general = [
     makePage('eas-update/introduction.mdx'),
     makePage('eas-update/getting-started.mdx'),
     makePage('eas-update/github-actions.mdx'),
-    makePage('eas-update/eas-update-and-eas-cli.mdx'),
-    makePage('eas-update/developing-with-eas-update.mdx'),
+    makePage('eas-update/eas-cli.mdx'),
+    makePage('eas-update/develop-faster.mdx'),
     makeGroup('Concepts', [
-      makePage('eas-update/how-eas-update-works.mdx'),
+      makePage('eas-update/how-it-works.mdx'),
       makePage('eas-update/runtime-versions.mdx'),
       makePage('eas-update/deployment-patterns.mdx'),
     ]),
     makeGroup('Troubleshoot', [
-      makePage('eas-update/debug-updates.mdx'),
-      makePage('eas-update/eas-update-with-local-build.mdx'),
+      makePage('eas-update/debug.mdx'),
+      makePage('eas-update/build-locally.mdx'),
     ]),
     makeGroup('Advanced', [
       makePage('eas-update/optimize-assets.mdx'),
@@ -229,7 +229,7 @@ const general = [
       makePage('eas-update/rollouts.mdx'),
     ]),
     makeGroup('Reference', [
-      makePage('eas-update/migrate-to-eas-update.mdx'),
+      makePage('eas-update/migrate-from-classic-updates.mdx'),
       makePage('eas-update/codepush.mdx'),
       makePage('eas-update/faq.mdx'),
       makePage('eas-update/known-issues.mdx'),

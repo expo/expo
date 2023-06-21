@@ -26,7 +26,7 @@ export default [
     name: 'channel',
     type: 'string',
     description: [
-      'The channel is a name we can give to multiple builds to identify them easily. [Learn more](../../eas-update/how-eas-update-works). **This field only applies to the EAS Update service**, if your project still uses Classic Updates then use the [releaseChannel](#releasechannel) field instead.',
+      'The channel is a name we can give to multiple builds to identify them easily. [Learn more](../../eas-update/how-it-works). **This field only applies to the EAS Update service**, if your project still uses Classic Updates then use the [releaseChannel](#releasechannel) field instead.',
     ],
   },
   {

@@ -165,6 +165,14 @@ redirects[tutorial/text]=tutorial/introduction/
 # Push notifications
 redirects[push-notifications/using-fcm/]=push-notifications/push-notifications-setup/
 
+# EAS Update
+redirects[eas-update/developing-with-eas-update/]=eas-update/develop-faster/
+redirects[eas-update/eas-update-with-local-build/]=eas-update/build-locally/
+redirects[eas-update/eas-update-and-eas-cli/]=eas-update/eas-cli/
+redirects[eas-update/debug-updates/]=eas-update/debug/
+redirects[eas-update/how-eas-update-works/]=eas-update/how-it-works/
+redirects[eas-update/migrate-to-eas-update/]=eas-update/migrate-from-classic-updates/
+
 # Removed API reference docs
 redirects[versions/latest/sdk/facebook]=guides/authentication/
 redirects[versions/latest/sdk/taskmanager]=versions/latest/sdk/task-manager/
