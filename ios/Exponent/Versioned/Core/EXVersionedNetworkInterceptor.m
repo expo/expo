@@ -7,7 +7,6 @@
 #import <React/RCTInspectorPackagerConnection.h>
 #import <SocketRocket/SRWebSocket.h>
 
-#import "Expo_Go-Swift.h"
 #import "ExpoModulesCore-Swift.h"
 
 #pragma mark - RCTInspectorPackagerConnection category interface

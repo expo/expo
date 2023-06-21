@@ -21,6 +21,8 @@ public final class UpdatesModule: Module {
 
   public required init(appContext: AppContext) {
     updatesService = appContext.legacyModule(implementing: EXUpdatesModuleInterface.self)
+    // Ensures the universal UpdatesConfig can cast to versioned UpdatesConfig without exception in Swift
+    object_setClass(updatesService?.config, UpdatesConfig.self)
     super.init(appContext: appContext)
   }
 

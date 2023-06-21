@@ -2115,6 +2115,7 @@ PODS:
     - React-Codegen (= 0.72.0-rc.5)
     - React-Core/RCTAnimationHeaders (= 0.72.0-rc.5)
     - React-jsi (= 0.72.0-rc.5)
+    - React-NativeModulesApple (= 0.72.0-rc.5)
     - ReactCommon/turbomodule/core (= 0.72.0-rc.5)
   - React-RCTAppDelegate (0.72.0-rc.5):
     - RCT-Folly
@@ -2135,6 +2136,7 @@ PODS:
     - React-Core/RCTBlobHeaders (= 0.72.0-rc.5)
     - React-Core/RCTWebSocket (= 0.72.0-rc.5)
     - React-jsi (= 0.72.0-rc.5)
+    - React-NativeModulesApple (= 0.72.0-rc.5)
     - React-RCTNetwork (= 0.72.0-rc.5)
     - ReactCommon/turbomodule/core (= 0.72.0-rc.5)
   - React-RCTImage (0.72.0-rc.5):
@@ -2143,12 +2145,14 @@ PODS:
     - React-Codegen (= 0.72.0-rc.5)
     - React-Core/RCTImageHeaders (= 0.72.0-rc.5)
     - React-jsi (= 0.72.0-rc.5)
+    - React-NativeModulesApple (= 0.72.0-rc.5)
     - React-RCTNetwork (= 0.72.0-rc.5)
     - ReactCommon/turbomodule/core (= 0.72.0-rc.5)
   - React-RCTLinking (0.72.0-rc.5):
     - React-Codegen (= 0.72.0-rc.5)
     - React-Core/RCTLinkingHeaders (= 0.72.0-rc.5)
     - React-jsi (= 0.72.0-rc.5)
+    - React-NativeModulesApple (= 0.72.0-rc.5)
     - ReactCommon/turbomodule/core (= 0.72.0-rc.5)
   - React-RCTNetwork (0.72.0-rc.5):
     - RCT-Folly (= 2021.07.22.00)
@@ -2156,6 +2160,7 @@ PODS:
     - React-Codegen (= 0.72.0-rc.5)
     - React-Core/RCTNetworkHeaders (= 0.72.0-rc.5)
     - React-jsi (= 0.72.0-rc.5)
+    - React-NativeModulesApple (= 0.72.0-rc.5)
     - ReactCommon/turbomodule/core (= 0.72.0-rc.5)
   - React-RCTSettings (0.72.0-rc.5):
     - RCT-Folly (= 2021.07.22.00)
@@ -2163,6 +2168,7 @@ PODS:
     - React-Codegen (= 0.72.0-rc.5)
     - React-Core/RCTSettingsHeaders (= 0.72.0-rc.5)
     - React-jsi (= 0.72.0-rc.5)
+    - React-NativeModulesApple (= 0.72.0-rc.5)
     - ReactCommon/turbomodule/core (= 0.72.0-rc.5)
   - React-RCTText (0.72.0-rc.5):
     - React-Core/RCTTextHeaders (= 0.72.0-rc.5)
@@ -2171,6 +2177,7 @@ PODS:
     - React-Codegen (= 0.72.0-rc.5)
     - React-Core/RCTVibrationHeaders (= 0.72.0-rc.5)
     - React-jsi (= 0.72.0-rc.5)
+    - React-NativeModulesApple (= 0.72.0-rc.5)
     - ReactCommon/turbomodule/core (= 0.72.0-rc.5)
   - React-rncore (0.72.0-rc.5)
   - React-runtimeexecutor (0.72.0-rc.5):
@@ -3762,15 +3769,15 @@ SPEC CHECKSUMS:
   React-NativeModulesApple: ae27f95a2a84a877785a20ce4c689995dd5f4a64
   React-perflogger: fdd8c2969761105b1c85432fecdfff0616100cc6
   React-RCTActionSheet: 5aaa270460794991553f80d393bcdcb97a372273
-  React-RCTAnimation: f1e0d1a03ce881c0e45fa151b63b1fd8d4068841
+  React-RCTAnimation: 4babbd7ca872a4306eb538bfd27d8dec932189ed
   React-RCTAppDelegate: 187a149f532d9864f74d30fc8963fb7e824cbf29
-  React-RCTBlob: 5d83c1bd6d0b88b308f65a61685fac6cc9b58e84
-  React-RCTImage: 84508714b0a1858ae4aca6671bc7b4b19294f430
-  React-RCTLinking: ef848e8770be7d7f35c64309fb562dcdc884b9e0
-  React-RCTNetwork: d394c5490766ab69f6eb9ad8d66f704ca9ab0977
-  React-RCTSettings: 1f4386527e084c0638cce5c3ef059e8f1deab568
+  React-RCTBlob: 3b7fc9ad4db0672d6c84f8627e7a19952a76e73f
+  React-RCTImage: e89f9c93399a9771e7aa978c6bccd1fffdaac129
+  React-RCTLinking: 2e06f83ea08043c907a422d3b11f3cbe05b6a604
+  React-RCTNetwork: cb7a008607ccd989ccac5f76e8491405d508108d
+  React-RCTSettings: bb2762fc015fc8d660a0ef2afeda9e7c07f9b3c4
   React-RCTText: 0a7c41b2305f7627d0dd00242aabb9a10789cb4f
-  React-RCTVibration: 291e568b172f21b2dc9b4f7c1512e33a0930f918
+  React-RCTVibration: f61f5e804e10f7fd9bfd6319880997c8a60a01df
   React-rncore: 5a9fdee51d2b3761c203d2fc585f7c5cf821fb61
   React-runtimeexecutor: 6fdf535f19ae660f0b9537d0f2d1b750abe1f55d
   React-runtimescheduler: 7c3287c689ba5bbff52ef95400fb8d6964cc8eae
