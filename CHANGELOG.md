@@ -319,3 +319,7 @@ Package-specific changes not released in any SDK will be added here just before 
   - Removed deprecated fields from pick result type and deprecated `UIImagePickerPresentationStyle` enum values. ([#21078](https://github.com/expo/expo/pull/21078) by [@Simek](https://github.com/Simek))
 - **`expo-random`**
   - Deprecate the library in favor of expo-crypto. ([#20217](https://github.com/expo/expo/pull/20217) by [@aleqsio](https://github.com/aleqsio))
+
+## 47.0.0 — 2022-10-28
+
+For changelog entries prior to SDK 47, refer to: https://github.com/expo/expo/blob/ff35557463c0db1cf8683939d752c59baf127f21/CHANGELOG.md#L323
