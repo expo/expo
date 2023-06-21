@@ -40,9 +40,6 @@ jobs:
       - name: 🧶 Install node modules in root dir
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
-      - name: 🔎 Type Check CLI
-        run: yarn typecheck
-        working-directory: packages/@expo/cli
       - name: 🛠 Build CLI
         run: yarn prepare
         working-directory: packages/@expo/cli
@@ -63,3 +60,24 @@ jobs:
       #     status: ${{ job.status }}
       #     fields: job,message,ref,eventName,author,took
       #     author_name: Check packages
+  lint:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
+        with:
+          yarn-workspace: 'true'
+      - name: 🧶 Install node modules in root dir
+        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
+        run: yarn install --frozen-lockfile
+      - name: 🔎 Type Check CLI
+        run: yarn typecheck
+        working-directory: packages/@expo/cli
+      - name: 🚨 Lint CLI
+        run: yarn lint --max-warnings 0
+        working-directory: packages/@expo/cli

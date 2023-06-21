@@ -1,5 +1,5 @@
 import { ExpoConfig, ExpoGoConfig, getConfig, ProjectConfig } from '@expo/config';
-import findWorkspaceRoot from 'find-yarn-workspace-root';
+import { findWorkspaceRoot } from '@expo/package-manager';
 import path from 'path';
 import { resolve } from 'url';
 
@@ -18,16 +18,12 @@ import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './serv
 
 const debug = require('debug')('expo:start:server:middleware:manifest') as typeof console.log;
 
-/** Wraps `findWorkspaceRoot` and guards against having an empty `package.json` file in an upper directory. */
+/**
+ * Reuse the workspace root finder from `@expo/package-manager`, with support for all package managers.
+ * This method is a safe method and won't throw errors on JSON syntax issues.
+ */
 export function getWorkspaceRoot(projectRoot: string): string | null {
-  try {
-    return findWorkspaceRoot(projectRoot);
-  } catch (error: any) {
-    if (error.message.includes('Unexpected end of JSON input')) {
-      return null;
-    }
-    throw error;
-  }
+  return findWorkspaceRoot(projectRoot);
 }
 
 export function getEntryWithServerRoot(
