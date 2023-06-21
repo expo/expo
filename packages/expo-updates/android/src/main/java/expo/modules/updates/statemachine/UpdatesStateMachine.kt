@@ -1,10 +1,7 @@
 package expo.modules.updates.statemachine
 
 import android.content.Context
-import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.WritableMap
 import expo.modules.updates.logging.UpdatesLogger
-import org.json.JSONObject
 
 /**
  * The Updates state machine class. There should be only one instance of this class

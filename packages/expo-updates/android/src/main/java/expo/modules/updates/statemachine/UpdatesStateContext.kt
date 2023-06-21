@@ -73,6 +73,8 @@ data class UpdatesStateContext(
         errorMap.putString("message", downloadError.message)
         contextMap.putMap("downloadError", errorMap)
       }
-      return contextMap
+      val result = Arguments.createMap()
+      result.putMap("context", contextMap)
+      return result
     }
 }
