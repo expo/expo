@@ -23,7 +23,7 @@ import { SnackInline} from '~/ui/components/Snippet';
 <SnackInline label='Basic Battery Usage' dependencies={['expo-battery']}>
 
 ```jsx
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import * as Battery from "expo-battery";
 import { StyleSheet, Text, View } from "react-native";
 
@@ -43,15 +43,15 @@ export default function App() {
     );
   };
 
-  const _unsubscribe = () => {
+  const _unsubscribe = useCallback(() => {
     subscription && subscription.remove();
     setSubscription(null);
-  };
+  }, [subscription]);
 
   useEffect(() => {
     _subscribe();
     return () => _unsubscribe();
-  }, []);
+  }, [_unsubscribe]);
 
   return (
     <View style={styles.container}>
