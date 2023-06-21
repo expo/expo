@@ -223,7 +223,7 @@ const general = [
     makePage('eas-update/code-signing.mdx'),
     makeGroup('More', [
       makePage('eas-update/migrate-to-eas-update.mdx'),
-      makePage('eas-update/migrate-codepush-to-eas-update.mdx'),
+      makePage('eas-update/codepush.mdx'),
       makePage('eas-update/rollouts.mdx'),
       makePage('eas-update/faq.mdx'),
       makePage('eas-update/known-issues.mdx'),
@@ -382,10 +382,6 @@ const preview = [
     { expanded: true },
   ]),
   makeSection('Expo Router', [
-    makeGroup('Static rendering', [
-      makePage('router/static-rendering/async-routes.mdx'),
-      makePage('router/static-rendering/root-html.mdx'),
-    ]),
     makeGroup('Advance layout patterns', [
       makePage('router/advance/root-layout.mdx'),
       makePage('router/advance/stack.mdx'),
@@ -396,8 +392,10 @@ const preview = [
       makePage('router/advance/router-settings.mdx'),
     ]),
     makeGroup('Reference', [
+      makePage('router/reference/static-rendering.mdx'),
+      makePage('router/reference/async-routes.mdx'),
       makePage('router/reference/sitemap.mdx'),
-      makePage('router/reference/typescript.mdx'),
+      makePage('router/reference/typed-routes.mdx'),
       makePage('router/reference/authentication.mdx'),
       makePage('router/reference/screen-tracking.mdx'),
       makePage('router/reference/troubleshooting.mdx'),

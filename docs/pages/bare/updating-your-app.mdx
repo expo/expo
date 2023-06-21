@@ -3,6 +3,8 @@ title: Use EAS Update in an existing project
 description: Learn how to use EAS Update in an existing React Native project.
 ---
 
+import { DiffBlock } from '~/ui/components/Snippet';
+
 EAS update works with bare React Native projects created with `react-native init`. These projects have **android** and **ios** directories that you can modify native files directly.
 
 The steps for configuring a bare React Native project are identical to the steps for configuring an Expo project. However, you may need to edit some of the code `eas update:configure` generates depending on how you build and run your project.
@@ -71,15 +73,7 @@ Inside **AndroidManifest.xml**, you'll see the following additions:
 
 Inside **android/app/src/main/res/values/strings.xml**, you'll see the `expo_runtime_version` string entry in the `resources` object:
 
-```diff android/app/src/main/res/values/strings.xml
---- a/android/app/src/main/res/values/strings.xml
-+++ b/android/app/src/main/res/values/strings.xml
-@@ -1,3 +1,4 @@
- <resources>
-     <string name="app_name">MyApp</string>
-+    <string name="expo_runtime_version">1.0.0</string>
- </resources>
-```
+<DiffBlock source="/static/diffs/expo-update-strings-xml.diff" />
 
 The `EXPO_UPDATE_URL` value should contain your project's ID.
 

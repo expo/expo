@@ -98,11 +98,14 @@ const config: VendoringTargetConfig = {
           return podspecPath;
         },
         async mutatePodspec(podspec: Podspec) {
-          const rnForkPath = path.join(REACT_NATIVE_SUBMODULE_DIR, '..');
-          const relativeForkPath = path.relative(path.join(EXPO_DIR, 'ios'), rnForkPath);
+          const reactCommonDir = path.relative(
+            EXPO_DIR,
+            path.join(REACT_NATIVE_SUBMODULE_DIR, 'packages', 'react-native', 'ReactCommon')
+          );
+          // `reanimated_utils.rb` generates wrong and confusing paths to ReactCommon headers, so we need to fix them.
           podspec.xcconfig['HEADER_SEARCH_PATHS'] = podspec.xcconfig[
             'HEADER_SEARCH_PATHS'
-          ]?.replace(rnForkPath, '${PODS_ROOT}/../' + relativeForkPath);
+          ]?.replace(/"\$\(PODS_ROOT\)\/\.\.\/.+?"/g, `"\${PODS_ROOT}/../../${reactCommonDir}"`);
         },
         transforms: {
           content: [
@@ -287,33 +290,36 @@ const config: VendoringTargetConfig = {
 `,
             },
             {
-              paths: 'RNCWebView.h',
-              find: /@interface RNCWebView : RCTView/,
+              paths: 'RNCWebViewImpl.h',
+              find: /@interface RNCWebViewImpl : RCTView/,
               replaceWith: '$&\n@property (nonatomic, strong) NSString *scopeKey;',
             },
             {
-              paths: 'RNCWebView.m',
+              paths: 'RNCWebViewImpl.m',
               find: /(\[\[RNCWKProcessPoolManager sharedManager\] sharedProcessPool)]/,
               replaceWith: '$1ForScopeKey:self.scopeKey]',
             },
             {
-              paths: 'RNCWebViewManager.m',
+              paths: 'RNCWebViewManager.mm',
               find: /@implementation RNCWebViewManager\s*{/,
-              replaceWith: '$&\n  NSString *_scopeKey;',
+              replaceWith: '$&\n    NSString *_scopeKey;',
             },
             {
-              paths: 'RNCWebViewManager.m',
-              find: '*webView = [RNCWebView new];',
-              replaceWith: '*webView = [RNCWebView new];\n  webView.scopeKey = _scopeKey;',
+              paths: 'RNCWebViewManager.mm',
+              find: 'return [[RNCWebViewImpl alloc] init];',
+              replaceWith:
+                'RNCWebViewImpl *webview = [[RNCWebViewImpl alloc] init];\n  webview.scopeKey = _scopeKey;\n  return webview;',
             },
             {
-              paths: 'RNCWebViewManager.m',
-              find: /RCT_EXPORT_MODULE\(\)/,
-              replaceWith: `- (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
-                                        scopeKey:(NSString *)scopeKey
-                                    easProjectId:(NSString *)easProjectId
-                           kernelServiceDelegate:(id)kernelServiceInstance
-                                          params:(NSDictionary *)params
+              paths: 'RNCWebViewManager.mm',
+              find: /RCT_EXPORT_MODULE\(RNCWebView\)/,
+              replaceWith: `RCT_EXPORT_MODULE(RNCWebView)
+
+- (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
+                          scopeKey:(NSString *)scopeKey
+                      easProjectId:(NSString *)easProjectId
+              kernelServiceDelegate:(id)kernelServiceInstance
+                            params:(NSDictionary *)params
 {
   if (self = [super init]) {
     _scopeKey = scopeKey;
@@ -428,7 +434,7 @@ const config: VendoringTargetConfig = {
             podspec.pod_target_xcconfig = {};
           }
           podspec.pod_target_xcconfig['HEADER_SEARCH_PATHS'] =
-            '"$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging" "$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers"';
+            '"$(PODS_TARGET_SRCROOT)/cpp/"/** "$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging" "$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers"';
         },
       },
       android: {

@@ -78,6 +78,7 @@ PODS:
     - EXUpdatesInterface
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
+    - React-RCTAppDelegate
   - expo-dev-launcher/Main (2.3.0):
     - EXManifests
     - expo-dev-launcher/Unsafe
@@ -87,6 +88,7 @@ PODS:
     - EXUpdatesInterface
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
+    - React-RCTAppDelegate
   - expo-dev-launcher/Tests (2.3.0):
     - EXManifests
     - expo-dev-menu
@@ -100,6 +102,7 @@ PODS:
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-CoreModules
+    - React-RCTAppDelegate
   - expo-dev-launcher/Unsafe (2.3.0):
     - EXManifests
     - expo-dev-menu
@@ -108,6 +111,7 @@ PODS:
     - EXUpdatesInterface
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
+    - React-RCTAppDelegate
   - expo-dev-menu (3.0.0):
     - expo-dev-menu/Main (= 3.0.0)
     - RCT-Folly (= 2021.07.22.00)
@@ -672,19 +676,19 @@ PODS:
     - React-Core
   - react-native-pager-view (6.2.0):
     - React-Core
-  - react-native-safe-area-context (4.5.0):
+  - react-native-safe-area-context (4.5.3):
     - RCT-Folly
     - RCTRequired
     - RCTTypeSafety
     - React-Core
     - ReactCommon/turbomodule/core
-  - react-native-segmented-control (2.4.0):
+  - react-native-segmented-control (2.4.1):
     - React-Core
   - react-native-slider (4.4.2):
     - React-Core
   - react-native-view-shot (3.6.0):
     - React-Core
-  - react-native-webview (11.26.0):
+  - react-native-webview (13.2.2):
     - React-Core
   - React-NativeModulesApple (0.72.0-rc.6):
     - hermes-engine
@@ -796,22 +800,23 @@ PODS:
     - React-jsi (= 0.72.0-rc.6)
     - React-logger (= 0.72.0-rc.6)
     - React-perflogger (= 0.72.0-rc.6)
-  - RNCAsyncStorage (1.17.11):
+  - RNCAsyncStorage (1.18.2):
     - React-Core
   - RNCMaskedView (0.2.9):
     - React-Core
-  - RNCPicker (2.4.8):
+  - RNCPicker (2.4.10):
     - React-Core
-  - RNDateTimePicker (6.7.3):
+  - RNDateTimePicker (7.1.0):
     - React-Core
   - RNFlashList (1.4.3):
     - React-Core
   - RNGestureHandler (2.12.0):
     - React-Core
-  - RNReanimated (3.1.0):
+  - RNReanimated (3.3.0):
     - DoubleConversion
     - FBLazyVector
     - glog
+    - hermes-engine
     - RCT-Folly
     - RCTRequired
     - RCTTypeSafety
@@ -821,11 +826,13 @@ PODS:
     - React-Core/RCTWebSocket
     - React-CoreModules
     - React-cxxreact
+    - React-hermes
     - React-jsi
     - React-jsiexecutor
     - React-jsinspector
     - React-RCTActionSheet
     - React-RCTAnimation
+    - React-RCTAppDelegate
     - React-RCTBlob
     - React-RCTImage
     - React-RCTLinking
@@ -1381,7 +1388,7 @@ SPEC CHECKSUMS:
   EXPermissions: ee60d7978aba135b8b391185b039d78f151c376a
   Expo: 64f946f27e2d1fddba37bded5a5d0e8766037af6
   expo-dev-client: b9a1eefeb4c93677753c734ad72072db3404caf9
-  expo-dev-launcher: 14dee2001165730e6e3d262914ae12905c389ddd
+  expo-dev-launcher: 254de858279609498f5424185d11a181c0e5f542
   expo-dev-menu: eda22ea7732b1dc275195913dd59e73aca0b8868
   expo-dev-menu-interface: f74523f940ba5306b0d2f37a488a77b44d57f572
   ExpoAppleAuthentication: 7bdf1a2962ebfe9b00eb4183a17b78d736e57185
@@ -1472,11 +1479,11 @@ SPEC CHECKSUMS:
   React-logger: 51643121d274c21ca716923edee5fd5189428487
   react-native-netinfo: ccbe1085dffd16592791d550189772e13bf479e2
   react-native-pager-view: 0ccb8bf60e2ebd38b1f3669fa3650ecce81db2df
-  react-native-safe-area-context: 39c2d8be3328df5d437ac1700f4f3a4f75716acc
-  react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
+  react-native-safe-area-context: b8979f5eda6ed5903d4dbc885be3846ea3daa753
+  react-native-segmented-control: 0e4b5d93911e2234f110057df2b41738b326ab3e
   react-native-slider: 33b8d190b59d4f67a541061bb91775d53d617d9d
   react-native-view-shot: 705f999ac2a24e4e6c909c0ca65c732ed33ca2ff
-  react-native-webview: 994b9f8fbb504d6314dc40d83f94f27c6831b3bf
+  react-native-webview: b8ec89966713985111a14d6e4bf98d8b54bced0d
   React-NativeModulesApple: 8b5255fe93e8a49ebb53c7f3b508f2a4b0ec8cfc
   React-perflogger: c1a35079d1650dd3251f1124825d87ef89daf0d5
   React-RCTActionSheet: 328269f83b39c7d2bc081ab286b7b203df06d3c8
@@ -1494,13 +1501,13 @@ SPEC CHECKSUMS:
   React-runtimescheduler: db65884681ac1783322cd68883754743b306e774
   React-utils: d60ffef504983522e67ea57af91b9b06221e016f
   ReactCommon: 60d83b96ccf3ee5921a1ca908afcf686691f306c
-  RNCAsyncStorage: 8616bd5a58af409453ea4e1b246521bb76578d60
+  RNCAsyncStorage: ddc4ee162bfd41b0d2c68bf2d95acd81dd7f1f93
   RNCMaskedView: 949696f25ec596bfc697fc88e6f95cf0c79669b6
-  RNCPicker: 0bf8ef8f7800524f32d2bb2a8bcadd53eda0ecd1
-  RNDateTimePicker: 00247f26c34683c80be94207f488f6f13448586e
+  RNCPicker: 0bc2f0a29abcca7b7ed44a2d036aac9ab6d25700
+  RNDateTimePicker: 7ecd54a97fc3749f38c3c89a171f6cbd52f3c142
   RNFlashList: ade81b4e928ebd585dd492014d40fb8d0e848aab
   RNGestureHandler: dec4645026e7401a0899f2846d864403478ff6a5
-  RNReanimated: b4f101902606e60b4b045e813e47204c2d7b38a7
+  RNReanimated: 11ef210bd11e80668ed3708f7a9dd846ae29e99c
   RNScreens: 218801c16a2782546d30bd2026bb625c0302d70f
   RNSharedElement: 504fa28a235b12505b6daedbb452a9ec96809bd0
   RNSVG: 53c661b76829783cdaf9b7a57258f3d3b4c28315

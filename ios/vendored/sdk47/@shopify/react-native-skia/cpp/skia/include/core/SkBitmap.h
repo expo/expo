@@ -8,24 +8,32 @@
 #ifndef SkBitmap_DEFINED
 #define SkBitmap_DEFINED
 
+#include "include/core/SkAlphaType.h"
 #include "include/core/SkColor.h"
 #include "include/core/SkImageInfo.h"
-#include "include/core/SkMatrix.h"
 #include "include/core/SkPixmap.h"
 #include "include/core/SkPoint.h"
+#include "include/core/SkRect.h"
 #include "include/core/SkRefCnt.h"
-#include "include/core/SkShader.h"
-#include "include/core/SkTileMode.h"
+#include "include/core/SkSamplingOptions.h"
+#include "include/core/SkSize.h"
+#include "include/core/SkTypes.h"
+#include "include/private/base/SkCPUTypes.h"
+#include "include/private/base/SkDebug.h"
 
-class SkBitmap;
+#include <cstddef>
+#include <cstdint>
+
 class SkColorSpace;
-struct SkMask;
+class SkImage;
+class SkMatrix;
 class SkMipmap;
-struct SkIRect;
-struct SkRect;
 class SkPaint;
 class SkPixelRef;
 class SkShader;
+enum SkColorType : int;
+enum class SkTileMode;
+struct SkMask;
 
 /** \class SkBitmap
     SkBitmap describes a two-dimensional raster pixel array. SkBitmap is built on
@@ -766,11 +774,10 @@ public:
         treated as opaque. If colorType() is kAlpha_8_SkColorType, then RGB is ignored.
 
         @param c            unpremultiplied color
-        @param colorSpace   SkColorSpace of c
 
         example: https://fiddle.skia.org/c/@Bitmap_eraseColor
     */
-    void eraseColor(SkColor4f c, SkColorSpace* colorSpace = nullptr) const;
+    void eraseColor(SkColor4f) const;
 
     /** Replaces pixel values with c, interpreted as being in the sRGB SkColorSpace.
         All pixels contained by bounds() are affected. If the colorType() is
@@ -810,11 +817,9 @@ public:
 
         @param c            unpremultiplied color
         @param area         rectangle to fill
-        @param colorSpace   SkColorSpace of c
 
         example: https://fiddle.skia.org/c/@Bitmap_erase
     */
-    void erase(SkColor4f c, SkColorSpace* colorSpace, const SkIRect& area) const;
     void erase(SkColor4f c, const SkIRect& area) const;
 
     /** Replaces pixel values inside area with c. interpreted as being in the sRGB
@@ -1168,23 +1173,18 @@ public:
         example: https://fiddle.skia.org/c/@Bitmap_peekPixels
     */
     bool peekPixels(SkPixmap* pixmap) const;
+
+    /**
+     *  Make a shader with the specified tiling, matrix and sampling.
+     */
     sk_sp<SkShader> makeShader(SkTileMode tmx, SkTileMode tmy, const SkSamplingOptions&,
-                               const SkMatrix* = nullptr) const;
-
+                               const SkMatrix* localMatrix = nullptr) const;
     sk_sp<SkShader> makeShader(SkTileMode tmx, SkTileMode tmy, const SkSamplingOptions& sampling,
-                               const SkMatrix& localMatrix) const {
-        return this->makeShader(tmx, tmy, sampling, &localMatrix);
-    }
-
+                               const SkMatrix& lm) const;
+    /** Defaults to clamp in both X and Y. */
+    sk_sp<SkShader> makeShader(const SkSamplingOptions& sampling, const SkMatrix& lm) const;
     sk_sp<SkShader> makeShader(const SkSamplingOptions& sampling,
-                               const SkMatrix* localMatrix = nullptr) const {
-        return this->makeShader(SkTileMode::kClamp, SkTileMode::kClamp, sampling, localMatrix);
-    }
-
-    sk_sp<SkShader> makeShader(const SkSamplingOptions& sampling,
-                               const SkMatrix& localMatrix) const {
-        return this->makeShader(sampling, &localMatrix);
-    }
+                               const SkMatrix* lm = nullptr) const;
 
     /**
      *  Returns a new image from the bitmap. If the bitmap is marked immutable, this will
