@@ -1,4 +1,11 @@
-# expo-status-bar
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/status-bar/">
+    <img
+      src="../../.github/resources/expo-status-bar.svg"
+      alt="expo-status-bar"
+      height="64" />
+  </a>
+</p>
 
 Provides the same interface as the React Native [StatusBar API](https://reactnative.dev/docs/statusbar), but with slightly different defaults to work great in Expo environments.
 

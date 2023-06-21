@@ -1,4 +1,11 @@
-# expo-screen-orientation
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/screen-orientation/">
+    <img
+      src="../../.github/resources/expo-screen-orientation.svg"
+      alt="expo-screen-orientation"
+      height="64" />
+  </a>
+</p>
 
 Allows you to manage the orientation of your app's interface.
 

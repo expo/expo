@@ -1,4 +1,11 @@
-# expo-updates
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/updates/">
+    <img
+      src="../../.github/resources/expo-updates.svg"
+      alt="expo-updates"
+      height="64" />
+  </a>
+</p>
 
 `expo-updates` fetches and manages updates to your app stored on a remote server.
 
