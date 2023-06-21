@@ -127,27 +127,7 @@ describe(`getRedirectUrl`, () => {
               },
             },
           }
-        )((manifestObj) => {
-          it(`throws a useful error if originalFullName and id are not defined`, () => {
-            mockConstants({ executionEnvironment: execution }, manifestObj);
-
-            const { SessionUrlProvider } = require('../SessionUrlProvider');
-            const managedSessionUrlProvider = new SessionUrlProvider();
-
-            const errorName = {
-              [ExecutionEnvironment.StoreClient]: manifestObj.manifest2
-                ? `Cannot use the AuthSession proxy because the project full name is not defined. Prefer AuthRequest (with the useProxy option set to false) in combination with an Expo Development Client build of your application. To continue using the AuthSession proxy, specify the project full name (@owner/slug) using the projectNameForProxy option.`
-                : `Cannot use the AuthSession proxy because the project full name is not defined. Please report this as a bug`,
-              [ExecutionEnvironment.Bare]: manifestObj.manifest2
-                ? `Cannot use the AuthSession proxy because the project full name is not defined. Prefer AuthRequest (with the useProxy option set to false) in combination with an Expo Development Client build of your application. To continue using the AuthSession proxy, specify the project full name (@owner/slug) using the projectNameForProxy option.`
-                : `Cannot use the AuthSession proxy because the project full name is not defined. Please ensure you have the latest`,
-              [ExecutionEnvironment.Standalone]: `Cannot use the AuthSession proxy because the project full name is not defined.`,
-            };
-            expect(() => managedSessionUrlProvider.getRedirectUrl({})).toThrowError(
-              errorName[execution]
-            );
-          });
-        });
+        );
       }
     });
   }

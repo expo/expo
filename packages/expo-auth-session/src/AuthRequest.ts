@@ -14,7 +14,6 @@ import { DiscoveryDocument } from './Discovery';
 import { AuthError } from './Errors';
 import * as PKCE from './PKCE';
 import * as QueryParams from './QueryParams';
-import sessionUrlProvider from './SessionUrlProvider';
 import { TokenResponse } from './TokenRequest';
 
 let _authLock: boolean = false;
@@ -140,7 +139,7 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
    */
   async promptAsync(
     discovery: AuthDiscoveryDocument,
-    { url, proxyOptions, ...options }: AuthRequestPromptOptions = {}
+    { url, ...options }: AuthRequestPromptOptions = {}
   ): Promise<AuthSessionResult> {
     if (!url) {
       if (!this.url) {
@@ -160,15 +159,9 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
       'No authUrl provided to AuthSession.startAsync. An authUrl is required -- it points to the page where the user will be able to sign in.'
     );
 
-    let startUrl: string = url!;
-    let returnUrl: string = this.redirectUri;
-    if (options.useProxy) {
-      console.warn(
-        'The useProxy option is deprecated and will be removed in a future release, for more information check https://expo.fyi/auth-proxy-migration.'
-      );
-      returnUrl = sessionUrlProvider.getDefaultReturnUrl(proxyOptions?.path, proxyOptions);
-      startUrl = sessionUrlProvider.getStartUrl(url, returnUrl, options.projectNameForProxy);
-    }
+    const startUrl: string = url!;
+    const returnUrl: string = this.redirectUri;
+
     // Prevent multiple sessions from running at the same time, WebBrowser doesn't
     // support it this makes the behavior predictable.
     if (_authLock) {
@@ -186,8 +179,7 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
 
     let result: WebBrowser.WebBrowserAuthSessionResult;
     try {
-      const { useProxy, ...openOptions } = options;
-      result = await WebBrowser.openAuthSessionAsync(startUrl, returnUrl, openOptions);
+      result = await WebBrowser.openAuthSessionAsync(startUrl, returnUrl, options);
     } finally {
       _authLock = false;
     }
