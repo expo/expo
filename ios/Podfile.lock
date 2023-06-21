@@ -2660,7 +2660,7 @@ DEPENDENCIES:
   - RNReanimated (from `./vendored/unversioned/react-native-reanimated`)
   - RNScreens (from `./vendored/unversioned/react-native-screens`)
   - RNSVG (from `./vendored/unversioned/react-native-svg`)
-  - SocketRocket (~> 0.6.0)
+  - SocketRocket
   - "stripe-react-native (from `./vendored/unversioned/@stripe/stripe-react-native`)"
   - UMAppLoader (from `../packages/unimodules-app-loader/ios`)
   - Yoga (from `../react-native-lab/react-native/packages/react-native/ReactCommon/yoga`)
@@ -3800,6 +3800,6 @@ SPEC CHECKSUMS:
   Yoga: 258bd5f6f188432f18cc3f854497f1cf6a0f21c1
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: ab94beec1ce20b0cbcaf44b64fe086468412b31c
+PODFILE CHECKSUM: e93fdba4b82928a5067623f67dca0603beb4d28e
 
 COCOAPODS: 1.12.1
