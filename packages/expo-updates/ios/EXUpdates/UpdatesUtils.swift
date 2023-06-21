@@ -57,7 +57,7 @@ public final class UpdatesUtils: NSObject {
    The UpdatesService is passed in when this is called from JS through UpdatesModule
    */
   public static func checkForUpdate(_ block: @escaping ([String: Any]) -> Void) {
-    sendStateEvent(UpdatesStateEvent(type: .check))
+    sendStateEvent(UpdatesStateEventCheck())
     do {
       let constants = try startJSAPICall()
 
@@ -81,14 +81,14 @@ public final class UpdatesUtils: NSObject {
           switch updateDirective {
           case is NoUpdateAvailableUpdateDirective:
             block([:])
-            sendStateEvent(UpdatesStateEvent(type: .checkCompleteUnavailable))
+            sendStateEvent(UpdatesStateEventCheckComplete())
             return
           case is RollBackToEmbeddedUpdateDirective:
             let body = [
               "isRollBackToEmbedded": true
             ]
             block(body)
-            sendStateEvent(UpdatesStateEvent(type: .checkCompleteAvailable, isRollback: true))
+            sendStateEvent(UpdatesStateEventCheckCompleteWithRollback())
             return
           default:
             return handleCheckError(UpdatesUnsupportedDirectiveException(), block: block)
@@ -97,7 +97,7 @@ public final class UpdatesUtils: NSObject {
 
         guard let update = updateResponse.manifestUpdateResponsePart?.updateManifest else {
           block([:])
-          sendStateEvent(UpdatesStateEvent(type: .checkCompleteUnavailable))
+          sendStateEvent(UpdatesStateEventCheckComplete())
           return
         }
 
@@ -110,10 +110,10 @@ public final class UpdatesUtils: NSObject {
             "manifest": update.manifest.rawManifestJSON()
           ]
           block(body)
-          sendStateEvent(UpdatesStateEvent(type: .checkCompleteAvailable, manifest: update.manifest.rawManifestJSON()))
+          sendStateEvent(UpdatesStateEventCheckCompleteWithUpdate(manifest: update.manifest.rawManifestJSON()))
         } else {
           block([:])
-            sendStateEvent(UpdatesStateEvent(type: .checkCompleteUnavailable))
+            sendStateEvent(UpdatesStateEventCheckComplete())
         }
       } errorBlock: { error in
         return handleCheckError(error, block: block)
@@ -128,7 +128,7 @@ public final class UpdatesUtils: NSObject {
    The UpdatesService is passed in when this is called from JS through UpdatesModule
    */
   public static func fetchUpdate(_ block: @escaping ([String: Any]) -> Void) {
-    sendStateEvent(UpdatesStateEvent(type: .download))
+    sendStateEvent(UpdatesStateEventDownload())
     do {
       let constants = try startJSAPICall()
       let remoteAppLoader = RemoteAppLoader(
@@ -184,7 +184,7 @@ public final class UpdatesUtils: NSObject {
             "isRollBackToEmbedded": true
           ]
           block(body)
-          sendStateEvent(UpdatesStateEvent(type: .downloadComplete, isRollback: true))
+          sendStateEvent(UpdatesStateEventDownloadCompleteWithRollback())
           return
         } else {
           if let update = updateResponse?.manifestUpdateResponsePart?.updateManifest {
@@ -195,7 +195,7 @@ public final class UpdatesUtils: NSObject {
               "manifest": update.manifest.rawManifestJSON()
             ] as [String: Any]
             block(body)
-            sendStateEvent(UpdatesStateEvent(type: .downloadComplete, manifest: update.manifest.rawManifestJSON()))
+            sendStateEvent(UpdatesStateEventDownloadCompleteWithUpdate(manifest: update.manifest.rawManifestJSON()))
             return
           } else {
             let body = [
@@ -203,7 +203,7 @@ public final class UpdatesUtils: NSObject {
               "isRollBackToEmbedded": false
             ]
             block(body)
-            sendStateEvent(UpdatesStateEvent(type: .downloadComplete))
+            sendStateEvent(UpdatesStateEventDownloadComplete())
             return
           }
         }
@@ -323,7 +323,7 @@ public final class UpdatesUtils: NSObject {
    */
   private static func handleCheckError(_ error: Error, block: @escaping ([String: Any]) -> Void) {
     let body = ["message": error.localizedDescription]
-    sendStateEvent(UpdatesStateEvent(type: .checkError, message: error.localizedDescription))
+    sendStateEvent(UpdatesStateEventCheckError(message: error.localizedDescription))
     block(body)
   }
 
@@ -333,7 +333,7 @@ public final class UpdatesUtils: NSObject {
    */
   private static func handleFetchError(_ error: Error, block: @escaping ([String: Any]) -> Void) {
     let body = ["message": error.localizedDescription]
-    sendStateEvent(UpdatesStateEvent(type: .downloadError, message: error.localizedDescription))
+    sendStateEvent(UpdatesStateEventDownloadError(message: error.localizedDescription))
     block(body)
   }
 

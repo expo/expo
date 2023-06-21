@@ -1,6 +1,7 @@
 //  Copyright © 2023 650 Industries. All rights reserved.
 
 // swiftlint:disable no_grouping_extension
+// swiftlint:disable type_name
 
 import Foundation
 
@@ -42,32 +43,107 @@ internal enum UpdatesStateEventType: String {
 // MARK: - Data structures
 
 /**
- Structure representing an event that can be sent to the machine.
+ Protocol representing an event that can be sent to the machine, and
+ structs representing the different event types
  */
-internal struct UpdatesStateEvent {
-  let type: UpdatesStateEventType
-  let manifest: [String: Any]?
-  let message: String?
-  let isRollback: Bool
+internal protocol UpdatesStateEvent {
+  var type: UpdatesStateEventType { get }
+  var manifest: [String: Any]? { get }
+  var message: String? { get }
+  var isRollback: Bool { get }
+  var error: Error? { get }
+}
 
+internal struct UpdatesStateEventCheck: UpdatesStateEvent {
+  let type: UpdatesStateEventType = .check
+  let manifest: [String: Any]? = nil
+  let message: String? = nil
+  let isRollback: Bool = false
+  let error: Error? = nil
+}
+
+internal struct UpdatesStateEventDownload: UpdatesStateEvent {
+  let type: UpdatesStateEventType = .download
+  let manifest: [String: Any]? = nil
+  let message: String? = nil
+  let isRollback: Bool = false
+  let error: Error? = nil
+}
+
+internal struct UpdatesStateEventRestart: UpdatesStateEvent {
+  let type: UpdatesStateEventType = .restart
+  let manifest: [String: Any]? = nil
+  let message: String? = nil
+  let isRollback: Bool = false
+  let error: Error? = nil
+}
+
+internal struct UpdatesStateEventCheckError: UpdatesStateEvent {
+  let type: UpdatesStateEventType = .checkError
+  let manifest: [String: Any]? = nil
+  let message: String?
+  let isRollback: Bool = false
   var error: Error? {
     return (message != nil) ? UpdatesStateException(message ?? "") : nil
   }
 }
 
-extension UpdatesStateEvent {
-  init(type: UpdatesStateEventType) {
-    self.init(type: type, manifest: nil, message: nil, isRollback: false)
+internal struct UpdatesStateEventDownloadError: UpdatesStateEvent {
+  let type: UpdatesStateEventType = .downloadError
+  let manifest: [String: Any]? = nil
+  let message: String?
+  let isRollback: Bool = false
+  var error: Error? {
+    return (message != nil) ? UpdatesStateException(message ?? "") : nil
   }
-  init(type: UpdatesStateEventType, message: String?) {
-    self.init(type: type, manifest: nil, message: message, isRollback: false)
-  }
-  init(type: UpdatesStateEventType, manifest: [String: Any]?) {
-    self.init(type: type, manifest: manifest, message: nil, isRollback: false)
-  }
-  init(type: UpdatesStateEventType, isRollback: Bool) {
-    self.init(type: type, manifest: nil, message: nil, isRollback: isRollback)
-  }
+}
+
+internal struct UpdatesStateEventCheckCompleteWithUpdate: UpdatesStateEvent {
+  let type: UpdatesStateEventType = .checkCompleteAvailable
+  let manifest: [String: Any]?
+  let message: String? = nil
+  let isRollback: Bool = false
+  let error: Error? = nil
+}
+
+internal struct UpdatesStateEventCheckCompleteWithRollback: UpdatesStateEvent {
+  let type: UpdatesStateEventType = .checkCompleteAvailable
+  let manifest: [String: Any]? = nil
+  let message: String? = nil
+  let isRollback: Bool = true
+  let error: Error? = nil
+}
+
+internal struct UpdatesStateEventCheckComplete: UpdatesStateEvent {
+  let type: UpdatesStateEventType = .checkCompleteUnavailable
+  let manifest: [String: Any]? = nil
+  let message: String? = nil
+  let isRollback: Bool = false
+  let error: Error? = nil
+}
+
+internal struct UpdatesStateEventDownloadCompleteWithUpdate: UpdatesStateEvent {
+  let type: UpdatesStateEventType = .downloadComplete
+  let manifest: [String: Any]?
+  let message: String? = nil
+  let isRollback: Bool = false
+  let error: Error? = nil
+}
+
+internal struct UpdatesStateEventDownloadCompleteWithRollback: UpdatesStateEvent {
+  let type: UpdatesStateEventType = .downloadComplete
+  let manifest: [String: Any]? = nil
+  let message: String? = nil
+  let isRollback: Bool = true
+  let error: Error? = nil
+}
+
+internal struct UpdatesStateEventDownloadComplete: UpdatesStateEvent {
+  let type: UpdatesStateEventType = .downloadComplete
+  let manifest: [String: Any]? = nil
+  let message: String? = nil
+  let isRollback: Bool = false
+  let error: Error? = nil
 }
 
 /**
@@ -338,3 +414,4 @@ internal class UpdatesStateMachine {
 }
 
 // swiftlint:enable no_grouping_extension
+// swiftlint:enable type_name

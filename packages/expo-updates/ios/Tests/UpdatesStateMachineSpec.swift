@@ -30,11 +30,11 @@ class UpdatesStateMachineSpec: ExpoSpec {
         let testStateChangeDelegate = TestStateChangeDelegate()
         let machine = UpdatesStateMachine(changeEventDelegate: testStateChangeDelegate)
 
-        machine.processEvent(UpdatesStateEvent(type: .check))
+        machine.processEvent(UpdatesStateEventCheck())
         expect(machine.state) == .checking
         expect(testStateChangeDelegate.lastEventType) == .check
 
-        machine.processEvent(UpdatesStateEvent(type: .checkCompleteAvailable, manifest: [
+        machine.processEvent(UpdatesStateEventCheckCompleteWithUpdate(manifest: [
           "updateId": "0000-xxxx"
         ]))
         expect(machine.state) == .idle
@@ -52,10 +52,10 @@ class UpdatesStateMachineSpec: ExpoSpec {
         let testStateChangeDelegate = TestStateChangeDelegate()
         let machine = UpdatesStateMachine(changeEventDelegate: testStateChangeDelegate)
 
-        machine.processEvent(UpdatesStateEvent(type: .check))
+        machine.processEvent(UpdatesStateEventCheck())
         expect(machine.state) == .checking
 
-        machine.processEvent(UpdatesStateEvent(type: .checkCompleteUnavailable))
+        machine.processEvent(UpdatesStateEventCheckComplete())
         expect(machine.state) == .idle
         expect(machine.context.isChecking) == false
         expect(machine.context.checkError).to(beNil())
@@ -68,10 +68,10 @@ class UpdatesStateMachineSpec: ExpoSpec {
         let testStateChangeDelegate = TestStateChangeDelegate()
         let machine = UpdatesStateMachine(changeEventDelegate: testStateChangeDelegate)
 
-        machine.processEvent(UpdatesStateEvent(type: .download))
+        machine.processEvent(UpdatesStateEventDownload())
         expect(machine.state) == .downloading
 
-        machine.processEvent(UpdatesStateEvent(type: .downloadComplete, manifest: [
+        machine.processEvent(UpdatesStateEventDownloadCompleteWithUpdate(manifest: [
           "updateId": "0000-xxxx"
         ]))
         expect(machine.state) == .idle
@@ -88,10 +88,10 @@ class UpdatesStateMachineSpec: ExpoSpec {
         let testStateChangeDelegate = TestStateChangeDelegate()
         let machine = UpdatesStateMachine(changeEventDelegate: testStateChangeDelegate)
 
-        machine.processEvent(UpdatesStateEvent(type: .check))
+        machine.processEvent(UpdatesStateEventCheck())
         expect(machine.state) == .checking
 
-        machine.processEvent(UpdatesStateEvent(type: .checkCompleteAvailable, isRollback: true))
+        machine.processEvent(UpdatesStateEventCheckCompleteWithRollback())
         expect(machine.state) == .idle
         expect(machine.context.isChecking) == false
         expect(machine.context.checkError).to(beNil())
@@ -105,7 +105,7 @@ class UpdatesStateMachineSpec: ExpoSpec {
         let testStateChangeDelegate = TestStateChangeDelegate()
         let machine = UpdatesStateMachine(changeEventDelegate: testStateChangeDelegate)
 
-        machine.processEvent(UpdatesStateEvent(type: .check))
+        machine.processEvent(UpdatesStateEventCheck())
         expect(machine.state) == .checking
         // Reset the test delegate
         testStateChangeDelegate.lastEventBody = nil
@@ -114,13 +114,13 @@ class UpdatesStateMachineSpec: ExpoSpec {
         // In .checking state, download events should be ignored,
         // state should not change, context should not change,
         // no events should be sent to JS
-        machine.processEvent(UpdatesStateEvent(type: .download))
+        machine.processEvent(UpdatesStateEventDownload())
 
         expect(machine.state) == .checking
         expect(testStateChangeDelegate.lastEventType).to(beNil())
         expect(testStateChangeDelegate.lastEventBody).to(beNil())
 
-        machine.processEvent(UpdatesStateEvent(type: .downloadComplete, manifest: [
+        machine.processEvent(UpdatesStateEventDownloadCompleteWithUpdate(manifest: [
           "updateId": "0000-xxxx"
         ]))
 
@@ -129,17 +129,17 @@ class UpdatesStateMachineSpec: ExpoSpec {
 
         machine.reset() // go back to .idle
 
-        machine.processEvent(UpdatesStateEvent(type: .restart))
+        machine.processEvent(UpdatesStateEventRestart())
         expect(machine.state) == .restarting
 
         // If restarting, all events should be ignored
-        machine.processEvent(UpdatesStateEvent(type: .check))
+        machine.processEvent(UpdatesStateEventCheck())
         expect(machine.state) == .restarting
 
-        machine.processEvent(UpdatesStateEvent(type: .download))
+        machine.processEvent(UpdatesStateEventDownload())
         expect(machine.state) == .restarting
 
-        machine.processEvent(UpdatesStateEvent(type: .downloadComplete))
+        machine.processEvent(UpdatesStateEventDownloadComplete())
         expect(machine.state) == .restarting
       }
     }
