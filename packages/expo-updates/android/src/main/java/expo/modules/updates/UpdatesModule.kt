@@ -41,6 +41,8 @@ class UpdatesModule(
 ) : ExportedModule(context) {
   private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
 
+  private val logger = UpdatesLogger(context)
+
   private val updatesService: UpdatesInterface? by moduleRegistry()
 
   override fun onCreate(moduleRegistry: ModuleRegistry) {
@@ -338,6 +340,7 @@ class UpdatesModule(
 
   @ExpoMethod
   fun getExtraParamsAsync(promise: Promise) {
+    logger.debug("Called getExtraParamsAsync")
     val updatesServiceLocal = updatesService
     if (!updatesServiceLocal!!.configuration.isEnabled) {
       promise.reject(
@@ -349,17 +352,36 @@ class UpdatesModule(
 
     AsyncTask.execute {
       val databaseHolder = updatesServiceLocal.databaseHolder
-      promise.resolve(
-        ManifestMetadata.getExtraParams(
+      try {
+        val result = ManifestMetadata.getExtraParams(
           databaseHolder.database,
           updatesServiceLocal.configuration,
         )
-      )
+        databaseHolder.releaseDatabase()
+        val resultMap = when (result) {
+          null -> Bundle()
+          else -> {
+            Bundle().apply {
+              result.keys.forEach {
+                putString(it, result.get(it) as String)
+              }
+            }
+          }
+        }
+        promise.resolve(resultMap)
+      } catch (e: Exception) {
+        databaseHolder.releaseDatabase()
+        promise.reject(
+          "ERR_UPDATES_FETCH",
+          "Exception in getExtraParamsAsync: ${e.message}, ${e.stackTraceToString()}"
+        )
+      }
     }
   }
 
   @ExpoMethod
   fun setExtraParamAsync(key: String, value: String?, promise: Promise) {
+    logger.debug("Called setExtraParamAsync with key = $key, value = $value")
     val updatesServiceLocal = updatesService
     if (!updatesServiceLocal!!.configuration.isEnabled) {
       promise.reject(
@@ -371,13 +393,22 @@ class UpdatesModule(
 
     AsyncTask.execute {
       val databaseHolder = updatesServiceLocal.databaseHolder
-      ManifestMetadata.setExtraParam(
-        databaseHolder.database,
-        updatesServiceLocal.configuration,
-        key,
-        value
-      )
-      promise.resolve(null)
+      try {
+        ManifestMetadata.setExtraParam(
+          databaseHolder.database,
+          updatesServiceLocal.configuration,
+          key,
+          value
+        )
+        databaseHolder.releaseDatabase()
+        promise.resolve(null)
+      } catch (e: Exception) {
+        databaseHolder.releaseDatabase()
+        promise.reject(
+          "ERR_UPDATES_FETCH",
+          "Exception in setExtraParamAsync: ${e.message}, ${e.stackTraceToString()}"
+        )
+      }
     }
   }
 

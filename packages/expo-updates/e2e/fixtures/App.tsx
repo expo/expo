@@ -43,6 +43,7 @@ export default function App() {
   const [active, setActive] = React.useState(false);
   const [runNow, setRunNow] = React.useState(false);
   const [lastUpdateEventType, setLastUpdateEventType] = React.useState('');
+  const [extraParamsString, setExtraParamsString] = React.useState('');
 
   const { currentlyRunning, availableUpdate, isUpdateAvailable, isUpdatePending } = useUpdates();
 
@@ -57,6 +58,22 @@ export default function App() {
       setTimeout(() => runUpdate(), 5000);
     }
   }, [isUpdatePending, runNow]);
+
+  const handleSetExtraParams = () => {
+    const handleAsync = async () => {
+      setActive(true);
+      await Updates.setExtraParamAsync('testsetnull', 'testvalue');
+      await Updates.setExtraParamAsync('testsetnull', null);
+      await Updates.setExtraParamAsync('testparam', 'testvalue');
+      const params = await Updates.getExtraParamsAsync();
+      setExtraParamsString(JSON.stringify(params, null, 2));
+      await delay(1000);
+      setActive(false);
+    };
+    handleAsync().catch((e) => {
+      console.warn(e);
+    });
+  };
 
   const handleReadAssetFiles = () => {
     const handleAsync = async () => {
@@ -136,6 +153,7 @@ export default function App() {
       <TestValue testID="checkAutomatically" value={`${Updates.checkAutomatically}`} />
       <TestValue testID="isEmbeddedLaunch" value={`${currentlyRunning.isEmbeddedLaunch}`} />
       <TestValue testID="availableUpdateID" value={`${availableUpdate?.updateId}`} />
+      <TestValue testID="extraParamsString" value={`${extraParamsString}`} />
 
       <TestValue testID="state.isUpdateAvailable" value={`${state.isUpdateAvailable}`} />
       <TestValue testID="state.isUpdatePending" value={`${state.isUpdatePending}`} />
@@ -164,6 +182,7 @@ export default function App() {
         <View>
           <TestButton testID="checkForUpdate" onPress={checkForUpdate} />
           <TestButton testID="downloadUpdate" onPress={handleDownloadUpdate} />
+          <TestButton testID="setExtraParams" onPress={handleSetExtraParams} />
         </View>
       </View>
 
@@ -191,7 +210,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: 10,
+    fontSize: 8,
   },
   button: {
     alignItems: 'center',
@@ -218,6 +237,6 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   logEntriesText: {
-    fontSize: 8,
+    fontSize: 6,
   },
 });

@@ -481,6 +481,15 @@ describe('JS API tests', () => {
     jestExpect(isEmbedded).toEqual('true');
     const checkAutomatically = await testElementValueAsync('checkAutomatically');
     jestExpect(checkAutomatically).toEqual('ON_LOAD');
+
+    // Test extra params
+    await pressTestButtonAsync('setExtraParams');
+    const extraParamsString = await testElementValueAsync('extraParamsString');
+    console.warn(`extraParamsString = ${extraParamsString}`);
+    jestExpect(extraParamsString).toContain('testparam');
+    jestExpect(extraParamsString).toContain('testvalue');
+    jestExpect(extraParamsString).not.toContain('testsetnull');
+
     Server.start(Update.serverPort, protocolVersion);
     await Server.serveSignedManifest(manifest, projectRoot);
     await pressTestButtonAsync('checkForUpdate');

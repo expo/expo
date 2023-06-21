@@ -116,7 +116,7 @@ public final class UpdatesModule: Module {
       }
     }
 
-    AsyncFunction("getExtraClientParamsAsync") { (promise: Promise) in
+    AsyncFunction("getExtraParamsAsync") { (promise: Promise) in
       guard let updatesService = updatesService,
         let config = updatesService.config,
         config.isEnabled else {
