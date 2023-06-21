@@ -1,14 +1,15 @@
 import { lightTheme, darkTheme, borderRadius, shadows, palette } from '@expo/styleguide-native';
 import * as React from 'react';
-import { Pressable as RNPressable, Text as RNText, Animated, useColorScheme } from 'react-native';
-import { create } from 'react-native-primitives';
+import { Text as RNText, Animated, useColorScheme, Pressable as RNPressable, Easing, } from 'react-native';
+import { create } from './create-primitive';
 import { rounded, margin, padding, text } from './theme';
 const AnimatedPressable = Animated.createAnimatedComponent(RNPressable);
 const Text = create(RNText, {
     base: {
-        fontWeight: '400',
+        fontFamily: 'Inter-Regular',
         color: lightTheme.text.default,
         fontSize: 16,
+        lineHeight: 22,
     },
     props: {
         accessibilityRole: 'text',
@@ -85,7 +86,8 @@ const Container = create(AnimatedPressable, {
 });
 export const Button = {
     Container,
-    ScaleOnPressContainer,
+    FadeOnPressContainer,
+    HighlightOnPressContainer,
     Text,
 };
 const lightHighlightColorMap = {
@@ -110,37 +112,37 @@ const highlightColorMap = {
     dark: darkHighlightColorMap,
     light: lightHighlightColorMap,
 };
-function ScaleOnPressContainer({ minScale = 0.975, ...props }) {
-    const theme = useColorScheme();
-    const animatedValue = React.useRef(new Animated.Value(0));
-    const [isPressing, setIsPressing] = React.useState(false);
+function FadeOnPressContainer({ activeOpacity = 0.2, ...props }) {
+    const animatedValue = React.useRef(new Animated.Value(1));
     const onPressIn = React.useCallback(() => {
-        setIsPressing(true);
-        Animated.spring(animatedValue.current, {
-            toValue: 1,
-            stiffness: 1000,
-            damping: 500,
-            mass: 3,
-            overshootClamping: true,
+        Animated.timing(animatedValue.current, {
+            toValue: activeOpacity,
+            duration: 150,
+            easing: Easing.inOut(Easing.quad),
             useNativeDriver: true,
         }).start();
     }, []);
     const onPressOut = React.useCallback(() => {
-        setIsPressing(false);
-        Animated.spring(animatedValue.current, {
-            toValue: 0,
-            stiffness: 1000,
-            damping: 500,
-            mass: 3,
-            overshootClamping: true,
+        Animated.timing(animatedValue.current, {
+            toValue: 1,
+            duration: 150,
+            easing: Easing.inOut(Easing.quad),
             useNativeDriver: true,
         }).start();
     }, []);
-    const scale = animatedValue.current.interpolate({
-        inputRange: [0, 1],
-        outputRange: [1, minScale],
-    });
-    const scaleStyle = { transform: [{ scale }] };
+    return (React.createElement(Container, { onPressIn: onPressIn, onPressOut: onPressOut, ...props, style: {
+            opacity: animatedValue.current,
+        } }, props.children));
+}
+function HighlightOnPressContainer(props) {
+    const theme = useColorScheme();
+    const [isPressing, setIsPressing] = React.useState(false);
+    const onPressIn = React.useCallback(() => {
+        setIsPressing(true);
+    }, []);
+    const onPressOut = React.useCallback(() => {
+        setIsPressing(false);
+    }, []);
     let backgroundColor = 'transparent';
     if (props.bg && isPressing && theme != null) {
         backgroundColor = highlightColorMap[theme][props.bg];
@@ -148,7 +150,7 @@ function ScaleOnPressContainer({ minScale = 0.975, ...props }) {
     const underlayStyle = {
         backgroundColor,
     };
-    return (React.createElement(Container, { onPressIn: onPressIn, onPressOut: onPressOut, ...props, style: [scaleStyle] },
+    return (React.createElement(Container, { onPressIn: onPressIn, onPressOut: onPressOut, ...props },
         React.createElement(Animated.View, { style: underlayStyle }, props.children)));
 }
 //# sourceMappingURL=Button.js.map

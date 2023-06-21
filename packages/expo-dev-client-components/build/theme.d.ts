@@ -1,129 +1,25 @@
-export declare const scale: {
-    micro: number;
-    tiny: number;
-    small: number;
-    medium: number;
-    large: number;
-    xl: number;
-};
+import { spacing } from '@expo/styleguide-native';
+type SpacingKey = `${keyof typeof spacing}`;
+type DescriptiveScale = 'micro' | 'tiny' | 'small' | 'medium' | 'large' | 'xl';
+type ScaleKey = SpacingKey | DescriptiveScale;
+type Scale = Record<ScaleKey, number>;
+export declare const scale: Scale;
 export declare const padding: {
-    padding: {
-        micro: {
-            padding: number;
-        };
-        tiny: {
-            padding: number;
-        };
-        small: {
-            padding: number;
-        };
-        medium: {
-            padding: number;
-        };
-        large: {
-            padding: number;
-        };
-        xl: {
-            padding: number;
-        };
-    };
-    px: {
-        micro: {
-            paddingHorizontal: number;
-        };
-        tiny: {
-            paddingHorizontal: number;
-        };
-        small: {
-            paddingHorizontal: number;
-        };
-        medium: {
-            paddingHorizontal: number;
-        };
-        large: {
-            paddingHorizontal: number;
-        };
-        xl: {
-            paddingHorizontal: number;
-        };
-    };
-    py: {
-        micro: {
-            paddingVertical: number;
-        };
-        tiny: {
-            paddingVertical: number;
-        };
-        small: {
-            paddingVertical: number;
-        };
-        medium: {
-            paddingVertical: number;
-        };
-        large: {
-            paddingVertical: number;
-        };
-        xl: {
-            paddingVertical: number;
-        };
-    };
+    padding: Record<"0" | "1" | "2" | "3" | "4" | "0.5" | "1.5" | "2.5" | "3.5" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
+    px: Record<"0" | "1" | "2" | "3" | "4" | "0.5" | "1.5" | "2.5" | "3.5" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
+    py: Record<"0" | "1" | "2" | "3" | "4" | "0.5" | "1.5" | "2.5" | "3.5" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
+    pb: Record<"0" | "1" | "2" | "3" | "4" | "0.5" | "1.5" | "2.5" | "3.5" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
+    pt: Record<"0" | "1" | "2" | "3" | "4" | "0.5" | "1.5" | "2.5" | "3.5" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
 };
 export declare const margin: {
-    margin: {
-        micro: {
-            margin: number;
-        };
-        tiny: {
-            margin: number;
-        };
-        small: {
-            margin: number;
-        };
-        medium: {
-            margin: number;
-        };
-        large: {
-            margin: number;
-        };
-        xl: {
-            margin: number;
-        };
-    };
-    mx: {
-        micro: {
-            marginHorizontal: number;
-        };
-        tiny: {
-            marginHorizontal: number;
-        };
-        small: {
-            marginHorizontal: number;
-        };
-        medium: {
-            marginHorizontal: number;
-        };
-        large: {
-            marginHorizontal: number;
-        };
-    };
-    my: {
-        micro: {
-            marginHorizontal: number;
-        };
-        tiny: {
-            marginVertical: number;
-        };
-        small: {
-            marginVertical: number;
-        };
-        medium: {
-            marginVertical: number;
-        };
-        large: {
-            marginVertical: number;
-        };
-    };
+    margin: Record<"0" | "1" | "2" | "3" | "4" | "0.5" | "1.5" | "2.5" | "3.5" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
+    mx: Record<"0" | "1" | "2" | "3" | "4" | "0.5" | "1.5" | "2.5" | "3.5" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
+    my: Record<"0" | "1" | "2" | "3" | "4" | "0.5" | "1.5" | "2.5" | "3.5" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
+    mb: Record<"0" | "1" | "2" | "3" | "4" | "0.5" | "1.5" | "2.5" | "3.5" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
+    mt: Record<"0" | "1" | "2" | "3" | "4" | "0.5" | "1.5" | "2.5" | "3.5" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
 };
+export declare const width: Record<"0" | "1" | "2" | "3" | "4" | "0.5" | "1.5" | "2.5" | "3.5" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
+export declare const height: Record<"0" | "1" | "2" | "3" | "4" | "0.5" | "1.5" | "2.5" | "3.5" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "14" | "16" | "20" | "24" | "28" | "32" | "36" | "40" | "44" | "48" | "52" | "56" | "60" | "64" | "72" | "80" | "96" | DescriptiveScale, any>;
 export declare const rounded: {
     rounded: {
         none: {
@@ -201,10 +97,12 @@ export declare const text: {
         medium: {
             fontSize: number;
             lineHeight: number;
+            letterSpacing: number;
         };
         large: {
             fontSize: number;
             lineHeight: number;
+            letterSpacing: number;
         };
     };
     leading: {
@@ -216,34 +114,88 @@ export declare const text: {
         mono: {
             fontFamily: string;
         };
+        InterBlack: {
+            fontFamily: string;
+        };
+        InterBlackItalic: {
+            fontFamily: string;
+        };
+        InterBold: {
+            fontFamily: string;
+        };
+        InterBoldItalic: {
+            fontFamily: string;
+        };
+        InterExtraBold: {
+            fontFamily: string;
+        };
+        InterExtraBoldItalic: {
+            fontFamily: string;
+        };
+        InterExtraLight: {
+            fontFamily: string;
+        };
+        InterExtraLightItalic: {
+            fontFamily: string;
+        };
+        InterRegular: {
+            fontFamily: string;
+        };
+        InterItalic: {
+            fontFamily: string;
+        };
+        InterLight: {
+            fontFamily: string;
+        };
+        InterLightItalic: {
+            fontFamily: string;
+        };
+        InterMedium: {
+            fontFamily: string;
+        };
+        InterMediumItalic: {
+            fontFamily: string;
+        };
+        InterSemiBold: {
+            fontFamily: string;
+        };
+        InterSemiBoldItalic: {
+            fontFamily: string;
+        };
+        InterThin: {
+            fontFamily: string;
+        };
+        InterThinItalic: {
+            fontFamily: string;
+        };
     };
     weight: {
         thin: {
-            fontWeight: "100" | "normal" | "bold" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900" | undefined;
+            fontFamily: string;
         };
         extralight: {
-            fontWeight: "100" | "normal" | "bold" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900" | undefined;
+            fontFamily: string;
         };
         light: {
-            fontWeight: "100" | "normal" | "bold" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900" | undefined;
+            fontFamily: string;
         };
         normal: {
-            fontWeight: "100" | "normal" | "bold" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900" | undefined;
+            fontFamily: string;
         };
         medium: {
-            fontWeight: "100" | "normal" | "bold" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900" | undefined;
+            fontFamily: string;
         };
         semibold: {
-            fontWeight: "100" | "normal" | "bold" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900" | undefined;
+            fontFamily: string;
         };
         bold: {
-            fontWeight: "100" | "normal" | "bold" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900" | undefined;
+            fontFamily: string;
         };
         extrabold: {
-            fontWeight: "100" | "normal" | "bold" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900" | undefined;
+            fontFamily: string;
         };
         black: {
-            fontWeight: "100" | "normal" | "bold" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900" | undefined;
+            fontFamily: string;
         };
     };
     color: {
@@ -263,6 +215,9 @@ export declare const text: {
             color: string;
         };
         primary: {
+            color: string;
+        };
+        link: {
             color: string;
         };
     };
@@ -290,6 +245,9 @@ export declare const textDark: {
         primary: {
             color: string;
         };
+        link: {
+            color: string;
+        };
     };
 };
 export declare const bg: {
@@ -300,6 +258,9 @@ export declare const bg: {
         backgroundColor: string;
     };
     secondary: {
+        backgroundColor: string;
+    };
+    overlay: {
         backgroundColor: string;
     };
     success: {
@@ -319,6 +280,9 @@ export declare const bgDark: {
     secondary: {
         backgroundColor: string;
     };
+    overlay: {
+        backgroundColor: string;
+    };
     success: {
         backgroundColor: string;
     };
@@ -329,7 +293,7 @@ export declare const bgDark: {
         backgroundColor: string;
     };
 };
-declare type NavigationTheme = {
+type NavigationTheme = {
     dark: boolean;
     colors: {
         primary: string;
@@ -342,5 +306,37 @@ declare type NavigationTheme = {
 };
 export declare const lightNavigationTheme: NavigationTheme;
 export declare const darkNavigationTheme: NavigationTheme;
+export declare const border: {
+    default: {
+        borderColor: string;
+        borderWidth: number;
+    };
+    warning: {
+        borderColor: string;
+        borderWidth: number;
+    };
+    hairline: {
+        borderColor: string;
+        borderWidth: number;
+    };
+};
+export declare const borderDark: {
+    default: {
+        borderColor: string;
+        borderWidth: number;
+    };
+    warning: {
+        borderColor: string;
+        borderWidth: number;
+    };
+    error: {
+        borderColor: string;
+        borderWidth: number;
+    };
+    hairline: {
+        borderColor: string;
+        borderWidth: number;
+    };
+};
 export {};
 //# sourceMappingURL=theme.d.ts.map

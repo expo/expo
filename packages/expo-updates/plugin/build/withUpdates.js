@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const config_1 = require("@expo/config");
 const config_plugins_1 = require("expo/config-plugins");
 const pkg = require('expo-updates/package.json');
+// when making changes to this config plugin, ensure the same changes are also made in eas-cli and build-tools
 const withUpdates = (config, props = {}) => {
     // The username will be passed from the CLI when the plugin is automatically used.
     const expoUsername = (props || {}).expoUsername ?? (0, config_1.getAccountUsername)(config);

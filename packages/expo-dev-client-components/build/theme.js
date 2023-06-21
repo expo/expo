@@ -1,4 +1,5 @@
-import { spacing, lightTheme, darkTheme, borderRadius } from '@expo/styleguide-native';
+import { spacing, lightTheme, darkTheme, borderRadius, typography } from '@expo/styleguide-native';
+import { Platform, StyleSheet } from 'react-native';
 export const scale = {
     micro: spacing[0.5],
     tiny: spacing[1],
@@ -6,57 +7,36 @@ export const scale = {
     medium: spacing[4],
     large: spacing[6],
     xl: spacing[8],
+    ...spacing,
 };
+function fullSpacingScaleForAttributes(attributes) {
+    const obj = {};
+    Object.keys(scale).forEach((key) => {
+        key = `${key}`;
+        const value = {};
+        attributes.forEach((attribute) => {
+            value[attribute] = scale[key];
+        });
+        obj[key] = value;
+    });
+    return obj;
+}
 export const padding = {
-    padding: {
-        micro: { padding: scale.micro },
-        tiny: { padding: scale.tiny },
-        small: { padding: scale.small },
-        medium: { padding: scale.medium },
-        large: { padding: scale.large },
-        xl: { padding: scale.xl },
-    },
-    px: {
-        micro: { paddingHorizontal: scale.micro },
-        tiny: { paddingHorizontal: scale.tiny },
-        small: { paddingHorizontal: scale.small },
-        medium: { paddingHorizontal: scale.medium },
-        large: { paddingHorizontal: scale.large },
-        xl: { paddingHorizontal: scale.xl },
-    },
-    py: {
-        micro: { paddingVertical: scale.micro },
-        tiny: { paddingVertical: scale.tiny },
-        small: { paddingVertical: scale.small },
-        medium: { paddingVertical: scale.medium },
-        large: { paddingVertical: scale.large },
-        xl: { paddingVertical: scale.xl },
-    },
+    padding: fullSpacingScaleForAttributes(['padding']),
+    px: fullSpacingScaleForAttributes(['paddingHorizontal']),
+    py: fullSpacingScaleForAttributes(['paddingVertical']),
+    pb: fullSpacingScaleForAttributes(['paddingBottom']),
+    pt: fullSpacingScaleForAttributes(['paddingTop']),
 };
 export const margin = {
-    margin: {
-        micro: { margin: scale.micro },
-        tiny: { margin: scale.tiny },
-        small: { margin: scale.small },
-        medium: { margin: scale.medium },
-        large: { margin: scale.large },
-        xl: { margin: scale.xl },
-    },
-    mx: {
-        micro: { marginHorizontal: scale.micro },
-        tiny: { marginHorizontal: scale.tiny },
-        small: { marginHorizontal: scale.small },
-        medium: { marginHorizontal: scale.medium },
-        large: { marginHorizontal: scale.large },
-    },
-    my: {
-        micro: { marginHorizontal: scale.micro },
-        tiny: { marginVertical: scale.tiny },
-        small: { marginVertical: scale.small },
-        medium: { marginVertical: scale.medium },
-        large: { marginVertical: scale.large },
-    },
+    margin: fullSpacingScaleForAttributes(['margin']),
+    mx: fullSpacingScaleForAttributes(['marginHorizontal']),
+    my: fullSpacingScaleForAttributes(['marginVertical']),
+    mb: fullSpacingScaleForAttributes(['marginBottom']),
+    mt: fullSpacingScaleForAttributes(['marginTop']),
 };
+export const width = fullSpacingScaleForAttributes(['width']);
+export const height = fullSpacingScaleForAttributes(['height']);
 export const rounded = {
     rounded: {
         none: { borderRadius: 0 },
@@ -97,37 +77,46 @@ export const text = {
         center: { textAlign: 'center' },
     },
     size: {
-        small: {
-            fontSize: 12,
-            lineHeight: 14,
-        },
-        medium: {
-            fontSize: 16,
-            lineHeight: 18,
-        },
-        large: {
-            fontSize: 18,
-            lineHeight: 24,
-        },
+        small: typography.fontSizes[12],
+        medium: typography.fontSizes[16],
+        large: typography.fontSizes[18],
     },
     leading: {
         large: { lineHeight: 18 },
     },
     type: {
         mono: {
-            fontFamily: 'Menlo',
+            fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
         },
+        InterBlack: { fontFamily: 'Inter-Black' },
+        InterBlackItalic: { fontFamily: 'Inter-BlackItalic' },
+        InterBold: { fontFamily: 'Inter-Bold' },
+        InterBoldItalic: { fontFamily: 'Inter-BoldItalic' },
+        InterExtraBold: { fontFamily: 'Inter-ExtraBold' },
+        InterExtraBoldItalic: { fontFamily: 'Inter-ExtraBoldItalic' },
+        InterExtraLight: { fontFamily: 'Inter-ExtraLight' },
+        InterExtraLightItalic: { fontFamily: 'Inter-ExtraLightItalic' },
+        InterRegular: { fontFamily: 'Inter-Regular' },
+        InterItalic: { fontFamily: 'Inter-Italic' },
+        InterLight: { fontFamily: 'Inter-Light' },
+        InterLightItalic: { fontFamily: 'Inter-LightItalic' },
+        InterMedium: { fontFamily: 'Inter-Medium' },
+        InterMediumItalic: { fontFamily: 'Inter-MediumItalic' },
+        InterSemiBold: { fontFamily: 'Inter-SemiBold' },
+        InterSemiBoldItalic: { fontFamily: 'Inter-SemiBoldItalic' },
+        InterThin: { fontFamily: 'Inter-Thin' },
+        InterThinItalic: { fontFamily: 'Inter-ThinItalic' },
     },
     weight: {
-        thin: { fontWeight: '100' },
-        extralight: { fontWeight: '200' },
-        light: { fontWeight: '300' },
-        normal: { fontWeight: '400' },
-        medium: { fontWeight: '500' },
-        semibold: { fontWeight: '600' },
-        bold: { fontWeight: '700' },
-        extrabold: { fontWeight: '800' },
-        black: { fontWeight: '900' },
+        thin: { fontFamily: 'Inter-Thin' },
+        extralight: { fontFamily: 'Inter-ExtraLight' },
+        light: { fontFamily: 'Inter-Light' },
+        normal: { fontFamily: 'Inter-Regular' },
+        medium: { fontFamily: 'Inter-Medium' },
+        semibold: { fontFamily: 'Inter-SemiBold' },
+        bold: { fontFamily: 'Inter-Bold' },
+        extrabold: { fontFamily: 'Inter-ExtraBold' },
+        black: { fontFamily: 'Inter-Black' },
     },
     color: {
         default: { color: lightTheme.text.default },
@@ -136,6 +125,7 @@ export const text = {
         success: { color: lightTheme.text.success },
         secondary: { color: lightTheme.text.secondary },
         primary: { color: lightTheme.button.primary.background },
+        link: { color: lightTheme.link.default },
     },
 };
 export const textDark = {
@@ -149,12 +139,14 @@ export const textDark = {
         success: { color: darkTheme.text.success },
         secondary: { color: darkTheme.text.secondary },
         primary: { color: darkTheme.button.primary.background },
+        link: { color: darkTheme.link.default },
     },
 };
 export const bg = {
     none: { backgroundColor: 'transparent' },
     default: { backgroundColor: lightTheme.background.default },
     secondary: { backgroundColor: lightTheme.background.secondary },
+    overlay: { backgroundColor: lightTheme.background.overlay },
     success: { backgroundColor: lightTheme.background.success },
     warning: { backgroundColor: lightTheme.background.warning },
     error: { backgroundColor: lightTheme.background.error },
@@ -162,6 +154,7 @@ export const bg = {
 export const bgDark = {
     default: { backgroundColor: darkTheme.background.default },
     secondary: { backgroundColor: darkTheme.background.secondary },
+    overlay: { backgroundColor: darkTheme.background.overlay },
     success: { backgroundColor: darkTheme.background.success },
     warning: { backgroundColor: darkTheme.background.warning },
     error: { backgroundColor: darkTheme.background.error },
@@ -170,7 +163,7 @@ export const lightNavigationTheme = {
     dark: false,
     colors: {
         primary: lightTheme.button.primary.background,
-        background: lightTheme.background.secondary,
+        background: lightTheme.background.screen,
         card: lightTheme.background.default,
         text: lightTheme.text.default,
         border: lightTheme.border.default,
@@ -180,12 +173,23 @@ export const lightNavigationTheme = {
 export const darkNavigationTheme = {
     dark: true,
     colors: {
-        primary: darkTheme.button.primary.background,
-        background: darkTheme.background.secondary,
-        card: darkTheme.background.default,
+        primary: darkTheme.link.default,
+        background: darkTheme.background.screen,
+        card: darkTheme.background.screen,
         text: darkTheme.text.default,
         border: darkTheme.border.default,
         notification: darkTheme.highlight.accent,
     },
+};
+export const border = {
+    default: { borderColor: lightTheme.border.default, borderWidth: 1 },
+    warning: { borderColor: lightTheme.border.warning, borderWidth: 1 },
+    hairline: { borderColor: lightTheme.border.default, borderWidth: StyleSheet.hairlineWidth },
+};
+export const borderDark = {
+    default: { borderColor: darkTheme.border.default, borderWidth: 1 },
+    warning: { borderColor: darkTheme.border.warning, borderWidth: 1 },
+    error: { borderColor: darkTheme.border.error, borderWidth: 1 },
+    hairline: { borderColor: darkTheme.border.default, borderWidth: StyleSheet.hairlineWidth },
 };
 //# sourceMappingURL=theme.js.map
