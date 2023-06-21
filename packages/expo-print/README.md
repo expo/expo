@@ -1,4 +1,11 @@
-# expo-print
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/print/">
+    <img
+      src="../../.github/resources/expo-print.svg"
+      alt="expo-print"
+      height="64" />
+  </a>
+</p>
 
 Provides an API for iOS (AirPrint) and Android printing functionality.
 

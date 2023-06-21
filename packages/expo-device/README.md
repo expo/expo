@@ -1,4 +1,11 @@
-# expo-device
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/device/">
+    <img
+      src="../../.github/resources/expo-device.svg"
+      alt="expo-device"
+      height="64" />
+  </a>
+</p>
 
 Provides specific information about the device running the application.
 
