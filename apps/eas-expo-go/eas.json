@@ -11,9 +11,7 @@
       "android": {
         "image": "ubuntu-20.04-jdk-11-ndk-r21e",
         "cache": {
-          "customPaths": [
-            "../../android/prebuiltHermes"
-          ]
+          "customPaths": ["../../android/prebuiltHermes"]
         },
         "resourceClass": "large",
         "env": {
@@ -24,10 +22,8 @@
       },
       "ios": {
         "cache": {
-          "key": "sdk49-0.72.0-rc.6",
-          "customPaths": [
-            "../../ios/Pods"
-          ]
+          "key": "sdk49-0.72.0",
+          "customPaths": ["../../ios/Pods"]
         },
         "resourceClass": "m-medium",
         "env": {
