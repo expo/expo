@@ -2,7 +2,6 @@ package expo.modules.localization
 
 import android.content.Context
 import android.content.res.Configuration
-import android.util.Log
 import expo.modules.core.interfaces.ApplicationLifecycleListener
 import expo.modules.core.interfaces.Package
 
@@ -29,7 +28,7 @@ class LocalizationPackage : Package {
     return listOf(object : ApplicationLifecycleListener {
       override fun onConfigurationChanged(newConfig: Configuration?) {
         super.onConfigurationChanged(newConfig)
-        Notifier.onConfigurationChanged();
+        Notifier.onConfigurationChanged()
       }
     })
   }

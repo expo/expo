@@ -1,8 +1,6 @@
 package expo.modules.localization
 
-import android.app.Application
 import android.content.Context
-import android.content.res.Configuration
 import android.icu.util.LocaleData
 import android.icu.util.ULocale
 import android.os.Build.VERSION
@@ -16,8 +14,6 @@ import android.util.Log
 import android.view.View
 import androidx.core.os.LocaleListCompat
 import androidx.core.os.bundleOf
-import expo.modules.core.interfaces.ApplicationLifecycleListener
-import expo.modules.core.interfaces.Package
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import java.text.DecimalFormatSymbols
@@ -33,7 +29,7 @@ private const val LOCALE_SETTINGS_CHANGED = "onLocaleSettingsChanged"
 private const val CALENDAR_SETTINGS_CHANGED = "onCalendarSettingsChanged"
 
 class LocalizationModule : Module() {
-  private var observer : () -> Unit = {}
+  private var observer: () -> Unit = {}
 
   override fun definition() = ModuleDefinition {
     Name("ExpoLocalization")
@@ -61,8 +57,8 @@ class LocalizationModule : Module() {
         setRTLFromStringResources(it)
       }
       observer = {
-        this@LocalizationModule.sendEvent(LOCALE_SETTINGS_CHANGED);
-        this@LocalizationModule.sendEvent(CALENDAR_SETTINGS_CHANGED);
+        this@LocalizationModule.sendEvent(LOCALE_SETTINGS_CHANGED)
+        this@LocalizationModule.sendEvent(CALENDAR_SETTINGS_CHANGED)
       }
       Notifier.registerObserver(observer)
     }
@@ -70,7 +66,6 @@ class LocalizationModule : Module() {
     OnDestroy {
       Notifier.deregisterObserver(observer)
     }
-
   }
 
   private fun setRTLFromStringResources(context: Context) {
