@@ -15,6 +15,11 @@ class Env {
     return boolish('EXPO_DEBUG', false);
   }
 
+  /** Disable all network requests */
+  get EXPO_OFFLINE() {
+    return boolish('EXPO_OFFLINE', false);
+  }
+
   /** Enable the beta version of Expo (TODO: Should this just be in the beta version of expo releases?) */
   get EXPO_BETA() {
     return boolish('EXPO_BETA', false);

@@ -8,7 +8,6 @@ import { vol } from 'memfs';
 import nullthrows from 'nullthrows';
 
 import { asMock } from '../../../../__tests__/asMock';
-import { APISettings } from '../../../../api/settings';
 import { getUserAsync } from '../../../../api/user/user';
 import {
   mockExpoRootChain,
@@ -66,11 +65,6 @@ jest.mock('../resolveAssets', () => ({
   resolveManifestAssets: jest.fn(),
   resolveGoogleServicesFile: jest.fn(),
 }));
-jest.mock('../../../../api/settings', () => ({
-  APISettings: {
-    isOffline: false,
-  },
-}));
 jest.mock('../resolveEntryPoint', () => ({
   resolveEntryPoint: jest.fn(() => './index.js'),
 }));
@@ -108,6 +102,9 @@ beforeEach(() => {
 });
 
 describe('getParsedHeaders', () => {
+  beforeEach(() => {
+    delete process.env.EXPO_OFFLINE;
+  });
   const middleware = new ExpoGoManifestHandlerMiddleware('/', {} as any);
 
   it('defaults to "none" with no platform header', () => {
@@ -194,7 +191,7 @@ describe('getParsedHeaders', () => {
 
 describe('_getManifestResponseAsync', () => {
   beforeEach(() => {
-    APISettings.isOffline = false;
+    delete process.env.EXPO_OFFLINE;
     asMock(getUserAsync).mockImplementation(async () => ({
       __typename: 'User',
       id: 'userwat',
@@ -233,7 +230,7 @@ describe('_getManifestResponseAsync', () => {
   // Sanity
   it('returns an anon manifest when no code signing is requested', async () => {
     const middleware = createMiddleware();
-    APISettings.isOffline = true;
+    process.env.EXPO_OFFLINE = '1';
     const results = await middleware._getManifestResponseAsync({
       responseContentType: ResponseContentType.MULTIPART_MIXED,
       platform: 'android',
@@ -390,7 +387,7 @@ describe('_getManifestResponseAsync', () => {
       'custom/private/key/path/private-key.pem': mockSelfSigned.privateKey,
     });
 
-    APISettings.isOffline = true;
+    process.env.EXPO_OFFLINE = '1';
 
     const middleware = createMiddleware(
       {
@@ -445,7 +442,7 @@ describe('_getManifestResponseAsync', () => {
 
   it('returns a code signed manifest with expo-root chain when requested when offline and has cached dev cert', async () => {
     // start online to cache cert and stuff
-    APISettings.isOffline = false;
+    delete process.env.EXPO_OFFLINE;
 
     const middlewareOnline = createMiddleware();
     await middlewareOnline._getManifestResponseAsync({
@@ -456,7 +453,7 @@ describe('_getManifestResponseAsync', () => {
     });
 
     // go offline
-    APISettings.isOffline = true;
+    process.env.EXPO_OFFLINE = '1';
 
     const middleware = createMiddleware();
 
@@ -502,7 +499,7 @@ describe('_getManifestResponseAsync', () => {
 
   it('returns application/json when requested', async () => {
     const middleware = createMiddleware();
-    APISettings.isOffline = true;
+    process.env.EXPO_OFFLINE = '1';
     const results = await middleware._getManifestResponseAsync({
       responseContentType: ResponseContentType.APPLICATION_JSON,
       platform: 'android',
@@ -546,7 +543,7 @@ describe('_getManifestResponseAsync', () => {
 
   it('returns text/plain when explicitlyPrefersMultipartMixed is false', async () => {
     const middleware = createMiddleware();
-    APISettings.isOffline = true;
+    process.env.EXPO_OFFLINE = '1';
     const results = await middleware._getManifestResponseAsync({
       responseContentType: ResponseContentType.TEXT_PLAIN,
       platform: 'android',

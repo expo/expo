@@ -5,7 +5,6 @@ import crypto from 'crypto';
 import FormData from 'form-data';
 import { serializeDictionary, Dictionary } from 'structured-headers';
 
-import { APISettings } from '../../../api/settings';
 import UserSettings from '../../../api/user/UserSettings';
 import { ANONYMOUS_USERNAME } from '../../../api/user/user';
 import * as Log from '../../../log';
@@ -15,6 +14,7 @@ import {
   getCodeSigningInfoAsync,
   signManifestString,
 } from '../../../utils/codesigning';
+import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { stripPort } from '../../../utils/url';
 import { ManifestMiddleware, ManifestRequestInfo } from './ManifestMiddleware';
@@ -268,7 +268,7 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
     }
 
     Log.warn(
-      APISettings.isOffline
+      env.EXPO_OFFLINE
         ? 'Using anonymous scope key in manifest for offline mode.'
         : 'Using anonymous scope key in manifest.'
     );

@@ -1,5 +1,6 @@
 import openBrowserAsync from 'better-opn';
 
+import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
 import { isInteractive } from '../utils/interactive';
 import { learnMore } from '../utils/link';
@@ -13,6 +14,8 @@ export async function registerAsync() {
         'https://docs.expo.dev/accounts/programmatic-access/'
       )})`
     );
+  } else if (env.EXPO_OFFLINE) {
+    throw new CommandError('OFFLINE', `Cannot register an account in offline-mode`);
   }
 
   const registrationUrl = `https://expo.dev/signup`;

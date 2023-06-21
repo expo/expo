@@ -4,7 +4,9 @@ import fetchInstance from 'node-fetch';
 import path from 'path';
 
 import { env } from '../../utils/env';
+import { CommandError } from '../../utils/errors';
 import { getExpoApiBaseUrl } from '../endpoint';
+import { disableNetwork } from '../settings';
 import UserSettings from '../user/UserSettings';
 import { FileSystemCache } from './cache/FileSystemCache';
 import { wrapFetchWithCache } from './cache/wrapFetchWithCache';
@@ -67,27 +69,41 @@ export function wrapFetchWithCredentials(fetchFunction: FetchLike): FetchLike {
       }
     }
 
-    const results = await fetchFunction(url, {
-      ...options,
-      headers: resolvedHeaders,
-    });
+    try {
+      const results = await fetchFunction(url, {
+        ...options,
+        headers: resolvedHeaders,
+      });
 
-    if (results.status >= 400 && results.status < 500) {
-      const body = await results.text();
-      try {
-        const data = JSON.parse(body);
-        if (data?.errors?.length) {
-          throw new ApiV2Error(data.errors[0]);
+      if (results.status >= 400 && results.status < 500) {
+        const body = await results.text();
+        try {
+          const data = JSON.parse(body);
+          if (data?.errors?.length) {
+            throw new ApiV2Error(data.errors[0]);
+          }
+        } catch (error: any) {
+          // Server returned non-json response.
+          if (error.message.includes('in JSON at position')) {
+            throw new UnexpectedServerError(body);
+          }
+          throw error;
         }
-      } catch (error: any) {
-        // Server returned non-json response.
-        if (error.message.includes('in JSON at position')) {
-          throw new UnexpectedServerError(body);
-        }
-        throw error;
       }
+      return results;
+    } catch (error: any) {
+      // Specifically, when running `npx expo start` and the wifi is connected but not really (public wifi, airplanes, etc).
+      if ('code' in error && error.code === 'ENOTFOUND') {
+        disableNetwork();
+
+        throw new CommandError(
+          'OFFLINE',
+          'Network connection is unreliable. Try again with the environment variable `EXPO_OFFLINE=1` to skip network requests.'
+        );
+      }
+
+      throw error;
     }
-    return results;
   };
 }
 

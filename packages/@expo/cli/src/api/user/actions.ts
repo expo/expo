@@ -2,6 +2,8 @@ import assert from 'assert';
 import chalk from 'chalk';
 
 import * as Log from '../../log';
+import { env } from '../../utils/env';
+import { CommandError } from '../../utils/errors';
 import { learnMore } from '../../utils/link';
 import promptAsync, { Question } from '../../utils/prompts';
 import { ApiV2Error } from '../rest/client';
@@ -19,6 +21,9 @@ export async function showLoginPromptAsync({
   password?: string;
   otp?: string;
 } = {}): Promise<void> {
+  if (env.EXPO_OFFLINE) {
+    throw new CommandError('OFFLINE', 'Cannot authenticate in offline-mode');
+  }
   const hasCredentials = options.username && options.password;
 
   if (printNewLine) {
