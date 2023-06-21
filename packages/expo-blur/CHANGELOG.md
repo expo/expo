@@ -4,13 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- Enable blurring by default when static rendering. ([#23000](https://github.com/expo/expo/pull/23000) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 12.4.0 — 2023-06-21
+
+### 🛠 Breaking changes
+
+- Enable blurring by default when static rendering. ([#23000](https://github.com/expo/expo/pull/23000) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 12.3.2 — 2023-06-13
 

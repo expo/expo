@@ -2,11 +2,19 @@
 
 ## Unpublished
 
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.17.1 — 2023-06-21
+
 ### 📚 3rd party library updates
 
 - Updated `junit` to `4.13.2`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
-
-### 🛠 Breaking changes
 
 ### 🎉 New features
 
@@ -19,8 +27,6 @@
 - [Android] Resolve up the project root when creating production manifest. ([#22044](https://github.com/expo/expo/pull/22044) by [@EvanBacon](https://github.com/EvanBacon))
 - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 - Fixed broken `create-manifest-android.gradle` on Android Gradle version 8. ([#22538](https://github.com/expo/expo/pull/22538) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 0.17.0 — 2023-05-08
 
