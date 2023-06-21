@@ -12,6 +12,7 @@
 
 - [Android] Load updates in background thread and prevent ANR from initial launch. ([#20273](https://github.com/expo/expo/pull/20273) by [@kudo](https://github.com/kudo))
 - Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
+- Added the Brotli compression support for EAS Update on Android. ([#22982](https://github.com/expo/expo/pull/22982) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
