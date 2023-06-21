@@ -72,7 +72,7 @@ describe(convertLightningCssToReactNativeWebStyleSheet, () => {
         },
       })
     ).toEqual({
-      styles: {
+      reactNativeWeb: {
         '--accent-color': { $$css: true, _: '--a3Dm-a_accent-color' },
         betterContainer: {
           $$css: true,
@@ -82,6 +82,13 @@ describe(convertLightningCssToReactNativeWebStyleSheet, () => {
         container: { $$css: true, _: 'a3Dm-a_container' },
         pulse: { $$css: true, _: 'a3Dm-a_pulse' },
       },
+      styles: {
+        '--accent-color': '--a3Dm-a_accent-color',
+        betterContainer: 'a3Dm-a_betterContainer a3Dm-a_container',
+        container: 'a3Dm-a_container',
+        pulse: 'a3Dm-a_pulse',
+      },
+
       variables: { '--accent-color': '--a3Dm-a_accent-color' },
     });
   });

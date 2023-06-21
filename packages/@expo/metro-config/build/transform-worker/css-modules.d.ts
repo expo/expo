@@ -14,7 +14,8 @@ export declare function transformCssModuleWeb(props: {
     map: void | Buffer;
 }>;
 export declare function convertLightningCssToReactNativeWebStyleSheet(input: import('lightningcss').CSSModuleExports): {
-    styles: Record<string, any>;
+    styles: Record<string, string>;
+    reactNativeWeb: Record<string, any>;
     variables: Record<string, string>;
 };
 export declare function matchCssModule(filePath: string): boolean;
