@@ -382,7 +382,6 @@ const preview = [
       makePage('routing/create-pages.mdx'),
       makePage('routing/shared-routes-and-layouts.mdx'),
       makePage('routing/appearance.mdx'),
-      makePage('routing/styling.mdx'),
       makePage('routing/error-handling.mdx'),
     ]),
     { expanded: true },
