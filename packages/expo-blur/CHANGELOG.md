@@ -4,15 +4,11 @@
 
 ### 🛠 Breaking changes
 
-- `BlurView` can no longer be animated using the `Animated API`. Only `react-native-reanimated` is supported. ([#22783](https://github.com/expo/expo/pull/22783) by [@behenate](https://github.com/behenate))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
-
-- Updated the animated `BlurView` demo to work correctly with `react-native-reanimated`. ([#22783](https://github.com/expo/expo/pull/22783) by [@behenate](https://github.com/behenate))
 
 ## 12.4.0 — 2023-06-21
 

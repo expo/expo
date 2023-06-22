@@ -3,20 +3,18 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 const NativeBlurView = requireNativeViewManager('ExpoBlurView');
 export default class BlurView extends React.Component {
-    blurViewRef = null;
+    blurViewRef = React.createRef();
     /**
-     * When Animated.createAnimatedComponent(BlurView) is used Reanimated will detect and call this
+     * @hidden When Animated.createAnimatedComponent(BlurView) is used Reanimated will detect and call this
      * function to determine which component should be animated. We want to animate the NativeBlurView.
      */
     getAnimatableRef() {
-        return this.blurViewRef;
+        return this.blurViewRef?.current;
     }
     render() {
         const { tint = 'default', intensity = 50, blurReductionFactor = 4, style, children, ...props } = this.props;
         return (React.createElement(View, { ...props, style: [styles.container, style] },
-            React.createElement(NativeBlurView, { ref: (component) => {
-                    this.blurViewRef = component;
-                }, tint: tint, intensity: intensity, blurReductionFactor: blurReductionFactor, style: StyleSheet.absoluteFill }),
+            React.createElement(NativeBlurView, { ref: this.blurViewRef, tint: tint, intensity: intensity, blurReductionFactor: blurReductionFactor, style: StyleSheet.absoluteFill }),
             children));
     }
 }
