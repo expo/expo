@@ -1,6 +1,6 @@
 package versioned.host.exp.exponent.modules.api.safeareacontext
 
-import com.facebook.react.bridge.ReadableArray
+import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.ReactStylesDiffMap
 import com.facebook.react.uimanager.StateWrapper
@@ -39,26 +39,23 @@ class SafeAreaViewManager : ReactViewManager(), RNCSafeAreaViewManagerInterface<
   }
 
   @ReactProp(name = "edges")
-  override fun setEdges(view: SafeAreaView, propList: ReadableArray?) {
-    val edges = EnumSet.noneOf(SafeAreaViewEdges::class.java)
+  override fun setEdges(view: SafeAreaView, propList: ReadableMap?) {
     if (propList != null) {
-      for (i in 0 until propList.size()) {
-        when (propList.getString(i)) {
-          "top" -> {
-            edges.add(SafeAreaViewEdges.TOP)
-          }
-          "right" -> {
-            edges.add(SafeAreaViewEdges.RIGHT)
-          }
-          "bottom" -> {
-            edges.add(SafeAreaViewEdges.BOTTOM)
-          }
-          "left" -> {
-            edges.add(SafeAreaViewEdges.LEFT)
-          }
-        }
-      }
-      view.setEdges(edges)
+      view.setEdges(
+          SafeAreaViewEdges(
+              top = propList.getString("top")?.let { SafeAreaViewEdgeModes.valueOf(it.uppercase()) }
+                      ?: SafeAreaViewEdgeModes.OFF,
+              right =
+                  propList.getString("right")?.let { SafeAreaViewEdgeModes.valueOf(it.uppercase()) }
+                      ?: SafeAreaViewEdgeModes.OFF,
+              bottom =
+                  propList.getString("bottom")?.let {
+                    SafeAreaViewEdgeModes.valueOf(it.uppercase())
+                  }
+                      ?: SafeAreaViewEdgeModes.OFF,
+              left =
+                  propList.getString("left")?.let { SafeAreaViewEdgeModes.valueOf(it.uppercase()) }
+                      ?: SafeAreaViewEdgeModes.OFF))
     }
   }
 
