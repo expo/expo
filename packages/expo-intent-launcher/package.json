@@ -1,6 +1,6 @@
 {
   "name": "expo-intent-launcher",
-  "version": "10.6.0",
+  "version": "10.7.0",
   "description": "Provides a way to launch Android intents, e.g. opening a specific activity.",
   "main": "build/IntentLauncher.js",
   "types": "build/IntentLauncher.d.ts",

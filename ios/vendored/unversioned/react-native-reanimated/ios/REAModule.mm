@@ -2,6 +2,7 @@
 
 #ifdef RCT_NEW_ARCH_ENABLED
 #import <React/RCTFabricSurface.h>
+#import <React/RCTRuntimeExecutorFromBridge.h>
 #import <React/RCTScheduler.h>
 #import <React/RCTSurface.h>
 #import <React/RCTSurfacePresenter.h>
@@ -192,53 +193,7 @@ RCT_EXPORT_MODULE(ReanimatedModule);
   _nodesManager = [[REANodesManager alloc] initWithModule:self bridge:self.bridge surfacePresenter:_surfacePresenter];
 }
 
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(installTurboModule)
-{
-  facebook::jsi::Runtime *jsiRuntime = [self.bridge respondsToSelector:@selector(runtime)]
-      ? reinterpret_cast<facebook::jsi::Runtime *>(self.bridge.runtime)
-      : nullptr;
-
-  if (jsiRuntime) {
-    // Reanimated
-    jsi::Runtime &runtime = *jsiRuntime;
-
-    auto reanimatedModule = reanimated::createReanimatedModule(self.bridge, self.bridge.jsCallInvoker);
-
-    auto workletRuntimeValue = runtime.global()
-                                   .getProperty(runtime, "ArrayBuffer")
-                                   .asObject(runtime)
-                                   .asFunction(runtime)
-                                   .callAsConstructor(runtime, {static_cast<double>(sizeof(void *))});
-    uintptr_t *workletRuntimeData =
-        reinterpret_cast<uintptr_t *>(workletRuntimeValue.getObject(runtime).getArrayBuffer(runtime).data(runtime));
-    workletRuntimeData[0] = reinterpret_cast<uintptr_t>(reanimatedModule->runtime.get());
-
-    runtime.global().setProperty(runtime, "_WORKLET_RUNTIME", workletRuntimeValue);
-
-    runtime.global().setProperty(runtime, "_IS_FABRIC", true);
-
-    auto version = getReanimatedVersionString(runtime);
-    runtime.global().setProperty(runtime, "_REANIMATED_VERSION_CPP", version);
-
-    runtime.global().setProperty(
-        runtime,
-        jsi::PropNameID::forAscii(runtime, "__reanimatedModuleProxy"),
-        jsi::Object::createFromHostObject(runtime, reanimatedModule));
-    reanimatedModule_ = reanimatedModule;
-    if (_surfacePresenter != nil) {
-      // reload, uiManager is null right now, we need to wait for `installReanimatedUIManagerBindingAfterReload`
-      [self injectDependencies:runtime];
-    }
-  }
-  return nil;
-}
-
 #else
-
-RCT_EXPORT_METHOD(installTurboModule)
-{
-  // TODO: Move initialization from UIResponder+Reanimated to here
-}
 
 - (void)setBridge:(RCTBridge *)bridge
 {
@@ -309,6 +264,56 @@ RCT_EXPORT_METHOD(installTurboModule)
   if (hasListeners) {
     [super sendEventWithName:eventName body:body];
   }
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(installTurboModule)
+{
+  facebook::jsi::Runtime *jsiRuntime = [self.bridge respondsToSelector:@selector(runtime)]
+      ? reinterpret_cast<facebook::jsi::Runtime *>(self.bridge.runtime)
+      : nullptr;
+
+  if (jsiRuntime) {
+    jsi::Runtime &runtime = *jsiRuntime;
+
+    auto reanimatedModule = reanimated::createReanimatedModule(self.bridge, self.bridge.jsCallInvoker);
+
+    auto workletRuntimeValue = runtime.global()
+                                   .getProperty(runtime, "ArrayBuffer")
+                                   .asObject(runtime)
+                                   .asFunction(runtime)
+                                   .callAsConstructor(runtime, {static_cast<double>(sizeof(void *))});
+    uintptr_t *workletRuntimeData =
+        reinterpret_cast<uintptr_t *>(workletRuntimeValue.getObject(runtime).getArrayBuffer(runtime).data(runtime));
+    workletRuntimeData[0] = reinterpret_cast<uintptr_t>(reanimatedModule->runtime.get());
+
+    runtime.global().setProperty(runtime, "_WORKLET_RUNTIME", workletRuntimeValue);
+
+    runtime.global().setProperty(runtime, "_WORKLET", false);
+
+#ifdef RCT_NEW_ARCH_ENABLED
+    runtime.global().setProperty(runtime, "_IS_FABRIC", true);
+#else
+    runtime.global().setProperty(runtime, "_IS_FABRIC", false);
+#endif // RCT_NEW_ARCH_ENABLED
+
+    auto version = getReanimatedVersionString(runtime);
+    runtime.global().setProperty(runtime, "_REANIMATED_VERSION_CPP", version);
+
+    runtime.global().setProperty(
+        runtime,
+        jsi::PropNameID::forAscii(runtime, "__reanimatedModuleProxy"),
+        jsi::Object::createFromHostObject(runtime, reanimatedModule));
+
+#ifdef RCT_NEW_ARCH_ENABLED
+    reanimatedModule_ = reanimatedModule;
+    if (_surfacePresenter != nil) {
+      // reload, uiManager is null right now, we need to wait for `installReanimatedUIManagerBindingAfterReload`
+      [self injectDependencies:runtime];
+    }
+#endif // RCT_NEW_ARCH_ENABLED
+  }
+
+  return nil;
 }
 
 @end

@@ -12,7 +12,7 @@
 #include "include/core/SkPaint.h"
 #include "include/core/SkRefCnt.h"
 #include "include/core/SkString.h"
-#include "include/private/SkTemplates.h"
+#include "include/private/base/SkTemplates.h"
 
 #include <atomic>
 
@@ -491,7 +491,7 @@ private:
     friend class SkTextBlobPriv;
     friend class SkTextBlobBuilderPriv;
 
-    SkAutoTMalloc<uint8_t> fStorage;
+    skia_private::AutoTMalloc<uint8_t> fStorage;
     size_t                 fStorageSize;
     size_t                 fStorageUsed;
 

@@ -24,7 +24,7 @@ const devSessionInstructionsRegex = /start a local development server with/i;
 const fetchingDevSessionsRegex = /searching for development servers/i;
 const refetchDevSessionsRegex = /fetch development servers/i;
 const textInputToggleRegex = /enter url manually/i;
-const textInputPlaceholder = 'http://10.0.0.25:19000';
+const textInputPlaceholder = 'http://10.0.0.25:8081';
 
 const mockLoadApp = loadApp as jest.Mock;
 
@@ -109,7 +109,7 @@ describe('<HomeScreen />', () => {
   });
 
   test('select dev session by entered url', async () => {
-    const { getByText, getByPlaceholderText } = renderHomeScreen();
+    const { getByText, getByPlaceholderText, getByTestId } = renderHomeScreen();
 
     await act(async () => {
       expect(() => getByPlaceholderText(textInputPlaceholder)).toThrow();
@@ -120,6 +120,8 @@ describe('<HomeScreen />', () => {
       expect(loadApp).toHaveBeenCalledTimes(0);
 
       fireEvent.changeText(input, 'exp://tester');
+      const loadButton = getByTestId('DevLauncherLoadAppButton');
+      await waitFor(() => expect(loadButton).not.toBeDisabled());
       fireEvent.press(getByText(/connect/i));
 
       expect(loadApp).toHaveBeenCalledTimes(1);

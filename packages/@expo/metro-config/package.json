@@ -1,6 +1,6 @@
 {
   "name": "@expo/metro-config",
-  "version": "0.8.0",
+  "version": "0.10.0",
   "description": "A Metro config for running React Native projects with the Metro bundler",
   "main": "build/ExpoMetroConfig.js",
   "scripts": {
@@ -30,13 +30,14 @@
     "transformer"
   ],
   "dependencies": {
-    "@expo/config": "~8.0.0",
+    "@expo/config": "~8.1.0",
     "@expo/env": "~0.0.2",
     "@expo/json-file": "~8.2.37",
     "chalk": "^4.1.0",
     "debug": "^4.3.2",
     "find-yarn-workspace-root": "~2.0.0",
     "getenv": "^1.0.0",
+    "jsc-safe-url": "^0.2.4",
     "lightningcss": "~1.19.0",
     "postcss": "~8.4.21",
     "resolve-from": "^5.0.0",

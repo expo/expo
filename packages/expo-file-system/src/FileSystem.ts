@@ -201,7 +201,7 @@ export async function readDirectoryAsync(fileUri: string): Promise<string[]> {
   if (!ExponentFileSystem.readDirectoryAsync) {
     throw new UnavailabilityError('expo-file-system', 'readDirectoryAsync');
   }
-  return await ExponentFileSystem.readDirectoryAsync(fileUri, {});
+  return await ExponentFileSystem.readDirectoryAsync(fileUri);
 }
 
 /**
@@ -697,7 +697,7 @@ export namespace StorageAccessFramework {
         'StorageAccessFramework.readDirectoryAsync'
       );
     }
-    return await ExponentFileSystem.readSAFDirectoryAsync(dirUri, {});
+    return await ExponentFileSystem.readSAFDirectoryAsync(dirUri);
   }
 
   /**

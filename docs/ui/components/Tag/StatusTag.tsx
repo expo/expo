@@ -20,10 +20,7 @@ export const StatusTag = ({ status, type, note }: StatusTagProps) => {
       )}
       css={[tagStyle, type === 'toc' && tagToCStyle]}>
       {status === 'experimental' && <Stars02Icon className="icon-xs text-palette-pink11" />}
-      <span css={labelStyle}>
-        {formatName(status)}
-        {note && `: ${note}`}
-      </span>
+      <span css={labelStyle}>{status ? formatName(status) + (note ? `: ${note}` : '') : note}</span>
     </div>
   );
 };

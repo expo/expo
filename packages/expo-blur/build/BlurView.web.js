@@ -24,6 +24,11 @@ export default class BlurView extends React.Component {
     }
 }
 function isBlurSupported() {
+    // TODO: Replace with CSS or static extraction to ensure hydration errors cannot happen.
+    // Enable by default in Node.js
+    if (typeof window === 'undefined') {
+        return true;
+    }
     // https://developer.mozilla.org/en-US/docs/Web/API/CSS/supports
     // https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter#Browser_compatibility
     return (typeof CSS !== 'undefined' &&

@@ -1,4 +1,11 @@
-# expo-store-review
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/storereview/">
+    <img
+      src="../../.github/resources/expo-store-review.svg"
+      alt="expo-store-review"
+      height="64" />
+  </a>
+</p>
 
 `expo-store-review` allows users rate your application inside App Store.
 

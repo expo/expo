@@ -26,7 +26,7 @@ export default [
     name: 'channel',
     type: 'string',
     description: [
-      'The channel is a name we can give to multiple builds to identify them easily. [Learn more](../../eas-update/how-eas-update-works). **This field only applies to the EAS Update service**, if your project still uses Classic Updates then use the [releaseChannel](#releasechannel) field instead.',
+      'The channel is a name we can give to multiple builds to identify them easily. [Learn more](../../eas-update/how-it-works). **This field only applies to the EAS Update service**, if your project still uses Classic Updates then use the [releaseChannel](#releasechannel) field instead.',
     ],
   },
   {
@@ -53,7 +53,9 @@ export default [
     enum: ['default', 'medium', 'large'],
     description: [
       'The resource class that will be used to run this build.',
-      'To see mapping for `default` and `medium` resource classes for each platform, see [Android-specific resource class field](eas-json/#resourceclass-1) and [iOS-specific resource class field](eas-json/#resourceclass-2) documentation.',
+      'To see mapping for each platform, see [Android-specific resource class field](eas-json/#resourceclass-1) and [iOS-specific resource class field](eas-json/#resourceclass-2) documentation.',
+      '',
+      'The `large` resource class is not available on the free plan.',
     ],
   },
   {

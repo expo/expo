@@ -250,7 +250,7 @@ class RemoteLoaderTest {
   @Throws(JSONException::class)
   fun testRemoteLoader_DevelopmentModeManifest() {
     manifest = LegacyUpdateManifest.fromLegacyManifest(
-      LegacyManifest(JSONObject("{\"name\":\"updates-unit-test-template\",\"slug\":\"updates-unit-test-template\",\"sdkVersion\":\"42.0.0\",\"developer\":{\"tool\":\"expo-cli\",\"projectRoot\":\"/Users/eric/expo/updates-unit-test-template\"},\"packagerOpts\":{\"scheme\":null,\"hostType\":\"lan\",\"lanType\":\"ip\",\"dev\":true,\"minify\":false,\"urlRandomness\":null,\"https\":false},\"mainModuleName\":\"index\",\"debuggerHost\":\"127.0.0.1:19000\",\"logUrl\":\"http://127.0.0.1:19000/logs\",\"hostUri\":\"127.0.0.1:19000\",\"bundleUrl\":\"http://127.0.0.1:19000/index.bundle?platform=ios&dev=true&hot=false&minify=false\"}")),
+      LegacyManifest(JSONObject("{\"name\":\"updates-unit-test-template\",\"slug\":\"updates-unit-test-template\",\"sdkVersion\":\"42.0.0\",\"developer\":{\"tool\":\"expo-cli\",\"projectRoot\":\"/Users/eric/expo/updates-unit-test-template\"},\"packagerOpts\":{\"scheme\":null,\"hostType\":\"lan\",\"lanType\":\"ip\",\"dev\":true,\"minify\":false,\"urlRandomness\":null,\"https\":false},\"mainModuleName\":\"index\",\"debuggerHost\":\"127.0.0.1:8081\",\"logUrl\":\"http://127.0.0.1:8081/logs\",\"hostUri\":\"127.0.0.1:8081\",\"bundleUrl\":\"http://127.0.0.1:8081/index.bundle?platform=ios&dev=true&hot=false&minify=false\"}")),
       configuration
     )
 

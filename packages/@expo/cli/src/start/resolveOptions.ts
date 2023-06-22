@@ -1,5 +1,6 @@
 import assert from 'assert';
 
+import { hasDirectDevClientDependency } from '../utils/analytics/getDevClientProperties';
 import { AbortCommandError, CommandError } from '../utils/errors';
 import { resolvePortAsync } from '../utils/port';
 
@@ -27,6 +28,9 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
   if (forceManifestType) {
     assert.match(forceManifestType, /^(classic|expo-updates)$/);
   }
+  if (args['--dev-client'] && args['--go']) {
+    throw new CommandError('BAD_ARGS', 'Cannot use both --dev-client and --go together.');
+  }
   const host = resolveHostType({
     host: args['--host'],
     offline: args['--offline'],
@@ -35,9 +39,23 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
     tunnel: args['--tunnel'],
   });
 
+  // User can force the default target by passing either `--dev-client` or `--go`. They can also
+  // swap between them during development by pressing `s`.
+  const isUserDefinedDevClient =
+    !!args['--dev-client'] || (args['--go'] == null ? false : !args['--go']);
+
+  // If the user didn't specify `--dev-client` or `--go` we check if they have the dev client package
+  // in their package.json.
+  const isAutoDevClient =
+    args['--dev-client'] == null &&
+    args['--go'] == null &&
+    hasDirectDevClientDependency(projectRoot);
+
+  const isDevClient = isAutoDevClient || isUserDefinedDevClient;
+
   const scheme = await resolveSchemeAsync(projectRoot, {
     scheme: args['--scheme'],
-    devClient: args['--dev-client'],
+    devClient: isDevClient,
   });
 
   return {
@@ -56,7 +74,7 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
     port: args['--port'],
     minify: !!args['--minify'],
 
-    devClient: !!args['--dev-client'],
+    devClient: isDevClient,
 
     scheme,
     host,
@@ -67,7 +85,7 @@ export async function resolveSchemeAsync(
   projectRoot: string,
   options: { scheme?: string; devClient?: boolean }
 ): Promise<string | null> {
-  const resolveFrom = await import('resolve-from').then((m) => m.default);
+  const resolveFrom = require('resolve-from') as typeof import('resolve-from');
 
   const isDevClientPackageInstalled = (() => {
     try {
@@ -84,7 +102,8 @@ export async function resolveSchemeAsync(
     // Use the custom scheme
     return options.scheme ?? null;
   } else if (options.devClient || isDevClientPackageInstalled) {
-    const { getOptionalDevClientSchemeAsync } = await import('../utils/scheme');
+    const { getOptionalDevClientSchemeAsync } =
+      require('../utils/scheme') as typeof import('../utils/scheme');
     // Attempt to find the scheme or warn the user how to setup a custom scheme
     return await getOptionalDevClientSchemeAsync(projectRoot);
   } else {
@@ -146,13 +165,12 @@ export async function resolvePortsAsync(
     }
     multiBundlerSettings.webpackPort = webpackPort;
   } else {
-    const devClientDefaultPort = process.env.RCT_METRO_PORT
+    const fallbackPort = process.env.RCT_METRO_PORT
       ? parseInt(process.env.RCT_METRO_PORT, 10)
       : 8081;
-    const expoGoDefaultPort = 19000;
     const metroPort = await resolvePortAsync(projectRoot, {
       defaultPort: options.port,
-      fallbackPort: options.devClient ? devClientDefaultPort : expoGoDefaultPort,
+      fallbackPort,
     });
     if (!metroPort) {
       throw new AbortCommandError();

@@ -10,7 +10,7 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
 
-#include <SkRuntimeEffect.h>
+#include "SkRuntimeEffect.h"
 
 #pragma clang diagnostic pop
 
@@ -80,8 +80,10 @@ void processUniform(std::vector<SkScalar> &values, SkRuntimeEffect *source,
 
 class UniformsProp : public DerivedSkProp<SkData> {
 public:
-  UniformsProp(PropId name, NodeProp *sourceProp) : DerivedSkProp<SkData>() {
-    _uniformsProp = addProperty(std::make_shared<NodeProp>(name));
+  UniformsProp(PropId name, NodeProp *sourceProp,
+               const std::function<void(BaseNodeProp *)> &onChange)
+      : DerivedSkProp<SkData>(onChange) {
+    _uniformsProp = defineProperty<NodeProp>(name);
     _sourceProp = sourceProp;
   }
 

@@ -311,17 +311,6 @@ public:
                                        const CropRect& cropRect = {});
 
     /**
-     *  Create a filter that fills the output with the given paint.
-     *  @param paint    The paint to fill
-     *  @param cropRect Optional rectangle that will be filled. If null, the source bitmap's bounds
-     *                  are filled even though the source bitmap itself is not used.
-     *
-     * DEPRECATED: Use Shader() instead, since many features of SkPaint are ignored when filling
-     *             the target output, and paint color/alpha can be emulated with SkShaders::Color().
-     */
-    static sk_sp<SkImageFilter> Paint(const SkPaint& paint, const CropRect& cropRect = {});
-
-    /**
      *  Create a filter that produces the SkPicture as its output, drawn into targetRect. Note that
      *  the targetRect is not the same as the SkIRect cropRect that many filters accept. Returns
      *  null if 'pic' is null.

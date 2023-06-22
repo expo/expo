@@ -25,11 +25,7 @@ public:
       : JsiSkWrappingSharedPtrHostObject<SkRSXform>(
             std::move(context), std::make_shared<SkRSXform>(rsxform)) {}
 
-  // TODO: declare in JsiSkWrappingSkPtrHostObject via extra template parameter?
-
-  JSI_PROPERTY_GET(__typename__) {
-    return jsi::String::createFromUtf8(runtime, "RSXform");
-  }
+  JSI_API_TYPENAME("RSXform");
 
   JSI_PROPERTY_GET(scos) {
     return jsi::Value(SkScalarToDouble(getObject()->fSCos));
@@ -48,7 +44,9 @@ public:
                               JSI_EXPORT_PROP_GET(JsiSkRSXform, scos),
                               JSI_EXPORT_PROP_GET(JsiSkRSXform, ssin),
                               JSI_EXPORT_PROP_GET(JsiSkRSXform, tx),
-                              JSI_EXPORT_PROP_GET(JsiSkRSXform, ty), )
+                              JSI_EXPORT_PROP_GET(JsiSkRSXform, ty))
+
+  JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkRSXform, dispose))
 
   /**
   Returns the underlying object from a host object of this type

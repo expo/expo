@@ -1,21 +1,22 @@
 {
   "name": "expo-dev-launcher",
   "title": "Expo Development Launcher",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Pre-release version of the Expo development launcher package for testing.",
   "main": "build/DevLauncher.js",
   "types": "build/DevLauncher.d.ts",
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepare": "expo-module prepare",
-    "prepublishOnly": "expo-module prepublishOnly",
+    "lint": "expo-module lint bundle && expo-module lint",
+    "test": "expo-module test bundle && expo-module test",
+    "prepare": "yarn tsc:bundle && expo-module prepare",
+    "prepublishOnly": "yarn tsc:bundle && expo-module prepublishOnly",
     "expo-module": "expo-module",
     "start": "react-native start --port 8090",
     "bundle": "./write_embedded_bundle.sh",
-    "link:ios": "xcrun simctl openurl booted "
+    "link:ios": "xcrun simctl openurl booted",
+    "tsc:bundle": "tsc -p bundle/tsconfig.json"
   },
   "repository": {
     "type": "git",
@@ -29,7 +30,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev",
   "dependencies": {
-    "expo-dev-menu": "3.0.0",
+    "expo-dev-menu": "3.1.0",
     "resolve-from": "^5.0.0",
     "semver": "^7.3.5"
   },
@@ -41,15 +42,15 @@
     "@react-navigation/stack": "6.3.2",
     "@testing-library/jest-native": "^4.0.4",
     "@testing-library/react-native": "^8.0.0",
-    "babel-plugin-module-resolver": "^4.1.0",
-    "babel-preset-expo": "~9.4.0",
+    "babel-plugin-module-resolver": "^5.0.0",
+    "babel-preset-expo": "~9.5.0",
     "date-fns": "^2.28.0",
-    "expo-dev-client-components": "1.4.0",
+    "expo-dev-client-components": "1.5.0",
     "expo-module-scripts": "^3.0.0",
     "graphql": "^16.0.1",
     "graphql-request": "^3.6.1",
     "react": "18.2.0",
-    "react-native": "0.71.7",
+    "react-native": "0.72.0",
     "react-query": "^3.34.16",
     "url": "^0.11.0"
   },

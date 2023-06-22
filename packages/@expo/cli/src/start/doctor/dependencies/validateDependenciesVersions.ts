@@ -5,8 +5,8 @@ import chalk from 'chalk';
 import resolveFrom from 'resolve-from';
 import semver from 'semver';
 
-import { APISettings } from '../../../api/settings';
 import * as Log from '../../../log';
+import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { BundledNativeModules } from './bundledNativeModules';
 import { getCombinedKnownVersionsAsync } from './getVersionedPackages';
@@ -36,7 +36,7 @@ export async function validateDependenciesVersionsAsync(
   pkg: PackageJSONConfig,
   packagesToCheck?: string[]
 ): Promise<boolean | null> {
-  if (APISettings.isOffline) {
+  if (env.EXPO_OFFLINE) {
     Log.warn('Skipping dependency validation in offline mode');
     return null;
   }
@@ -115,8 +115,20 @@ export async function getVersionedDependenciesAsync(
   const packageVersions = await resolvePackageVersionsAsync(projectRoot, resolvedPackagesToCheck);
   debug(`Package versions: %O`, packageVersions);
   // find incorrect dependencies by comparing the actual package versions with the bundled native module version ranges
-  const incorrectDeps = findIncorrectDependencies(pkg, packageVersions, combinedKnownPackages);
+  let incorrectDeps = findIncorrectDependencies(pkg, packageVersions, combinedKnownPackages);
   debug(`Incorrect dependencies: %O`, incorrectDeps);
+
+  if (pkg?.expo?.install?.exclude) {
+    const packagesToExclude = pkg.expo.install.exclude;
+    const incorrectAndExcludedDeps = incorrectDeps.filter((dep) =>
+      packagesToExclude.includes(dep.packageName)
+    );
+    debug(
+      `Incorrect dependency warnings filtered out by expo.install.exclude: %O`,
+      incorrectAndExcludedDeps.map((dep) => dep.packageName)
+    );
+    incorrectDeps = incorrectDeps.filter((dep) => !packagesToExclude.includes(dep.packageName));
+  }
 
   return incorrectDeps;
 }

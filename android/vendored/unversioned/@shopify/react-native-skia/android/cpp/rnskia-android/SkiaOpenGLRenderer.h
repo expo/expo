@@ -26,6 +26,8 @@
 #pragma clang diagnostic pop
 
 namespace RNSkia {
+sk_sp<SkSurface> MakeOffscreenGLSurface(int width, int height);
+
 using OpenGLDrawingContext = struct {
   EGLContext glContext;
   EGLDisplay glDisplay;

@@ -33,7 +33,7 @@ object PushProvisioningProxy {
   fun isNFCEnabled(context: ReactApplicationContext): Boolean {
     return if (context.packageManager.hasSystemFeature(PackageManager.FEATURE_NFC)) {
       val adapter = NfcAdapter.getDefaultAdapter(context)
-      adapter.isEnabled
+      adapter?.isEnabled ?: false
     } else {
       false
     }

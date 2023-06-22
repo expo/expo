@@ -12,10 +12,10 @@
     "expo": "~49.0.0-alpha.1",
     "expo-router": "^1.5.3",
     "react": "18.2.0",
-    "react-native": "0.71.7"
+    "react-native": "0.72.0"
   },
   "devDependencies": {
-    "babel-preset-expo": "~9.4.0",
+    "babel-preset-expo": "~9.5.0",
     "expo-yarn-workspaces": "^2.0.0"
   },
   "private": true
