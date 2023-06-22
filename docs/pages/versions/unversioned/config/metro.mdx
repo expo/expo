@@ -283,8 +283,7 @@ In your entry file (`index.js`, `App.js`), add the following:
 const ctx = require.context(
   // If this require.context is not inside the root directory (next to the package.json) then adjust this file path
   // to resolve correctly.
-  './node_modules/.cache/expo/tailwind',
-  true
+  './node_modules/.cache/expo/tailwind'
 );
 if (ctx.keys().length) ctx(ctx.keys()[0]);
 ```
