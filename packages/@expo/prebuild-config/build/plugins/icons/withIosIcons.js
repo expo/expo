@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.ICON_CONTENTS = void 0;
+exports.generateUniversalIconAsync = generateUniversalIconAsync;
 exports.getIcons = getIcons;
 exports.setIconsAsync = setIconsAsync;
 exports.withIosIcons = void 0;
@@ -47,6 +47,8 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
 const {
   getProjectName
 } = _configPlugins().IOSConfig.XcodeUtils;
+const IMAGE_CACHE_NAME = 'icons';
+const IMAGESET_PATH = 'Images.xcassets/AppIcon.appiconset';
 const withIosIcons = config => {
   return (0, _configPlugins().withDangerousMod)(config, ['ios', async config => {
     await setIconsAsync(config, config.modRequest.projectRoot);
@@ -54,57 +56,6 @@ const withIosIcons = config => {
   }]);
 };
 exports.withIosIcons = withIosIcons;
-const IMAGE_CACHE_NAME = 'icons';
-const IMAGESET_PATH = 'Images.xcassets/AppIcon.appiconset';
-
-// Hard-coding seemed like the clearest and safest way to implement the sizes.
-const ICON_CONTENTS = [{
-  idiom: 'iphone',
-  sizes: [{
-    size: 20,
-    scales: [2, 3]
-  }, {
-    size: 29,
-    scales: [1, 2, 3]
-  }, {
-    size: 40,
-    scales: [2, 3]
-  }, {
-    size: 60,
-    scales: [2, 3]
-  }
-  // TODO: 76x76@2x seems unused now
-  // {
-  //   size: 76,
-  //   scales: [2],
-  // },
-  ]
-}, {
-  idiom: 'ipad',
-  sizes: [{
-    size: 20,
-    scales: [1, 2]
-  }, {
-    size: 29,
-    scales: [1, 2]
-  }, {
-    size: 40,
-    scales: [1, 2]
-  }, {
-    size: 76,
-    scales: [1, 2]
-  }, {
-    size: 83.5,
-    scales: [2]
-  }]
-}, {
-  idiom: 'ios-marketing',
-  sizes: [{
-    size: 1024,
-    scales: [1]
-  }]
-}];
-exports.ICON_CONTENTS = ICON_CONTENTS;
 function getIcons(config) {
   var _config$ios;
   // No support for empty strings.
@@ -124,58 +75,12 @@ async function setIconsAsync(config, projectRoot) {
   await fs().ensureDir((0, _path().join)(iosNamedProjectRoot, IMAGESET_PATH));
 
   // Store the image JSON data for assigning via the Contents.json
-  const imagesJson = [];
-
-  // keep track of icons that have been generated so we can reuse them in the Contents.json
-  const generatedIcons = {};
-  for (const platform of ICON_CONTENTS) {
-    const isMarketing = platform.idiom === 'ios-marketing';
-    for (const {
-      size,
-      scales
-    } of platform.sizes) {
-      for (const scale of scales) {
-        // The marketing icon is special because it makes no sense.
-        const filename = isMarketing ? 'ItunesArtwork@2x.png' : getAppleIconName(size, scale);
-        // Only create an image that hasn't already been generated.
-        if (!(filename in generatedIcons)) {
-          const iconSizePx = size * scale;
-
-          // Using this method will cache the images in `.expo` based on the properties used to generate them.
-          // this method also supports remote URLs and using the global sharp instance.
-          const {
-            source
-          } = await (0, _imageUtils().generateImageAsync)({
-            projectRoot,
-            cacheType: IMAGE_CACHE_NAME
-          }, {
-            src: icon,
-            name: filename,
-            width: iconSizePx,
-            height: iconSizePx,
-            removeTransparency: true,
-            // The icon should be square, but if it's not then it will be cropped.
-            resizeMode: 'cover',
-            // Force the background color to solid white to prevent any transparency.
-            // TODO: Maybe use a more adaptive option based on the icon color?
-            backgroundColor: '#ffffff'
-          });
-          // Write image buffer to the file system.
-          const assetPath = (0, _path().join)(iosNamedProjectRoot, IMAGESET_PATH, filename);
-          await fs().writeFile(assetPath, source);
-          // Save a reference to the generated image so we don't create a duplicate.
-          generatedIcons[filename] = true;
-        }
-        imagesJson.push({
-          idiom: platform.idiom,
-          size: `${size}x${size}`,
-          // @ts-ignore: template types not supported in TS yet
-          scale: `${scale}x`,
-          filename
-        });
-      }
-    }
-  }
+  const imagesJson = await generateUniversalIconAsync(projectRoot, {
+    icon,
+    cacheKey: 'universal-icon',
+    iosNamedProjectRoot,
+    platform: 'ios'
+  });
 
   // Finally, write the Config.json
   await (0, _AssetContents().writeContentsJsonAsync)((0, _path().join)(iosNamedProjectRoot, IMAGESET_PATH), {
@@ -194,5 +99,42 @@ function getIosNamedProjectPath(projectRoot) {
 }
 function getAppleIconName(size, scale) {
   return `App-Icon-${size}x${size}@${scale}x.png`;
+}
+async function generateUniversalIconAsync(projectRoot, {
+  icon,
+  cacheKey,
+  iosNamedProjectRoot,
+  platform
+}) {
+  const size = 1024;
+  const filename = getAppleIconName(size, 1);
+  // Using this method will cache the images in `.expo` based on the properties used to generate them.
+  // this method also supports remote URLs and using the global sharp instance.
+  const {
+    source
+  } = await (0, _imageUtils().generateImageAsync)({
+    projectRoot,
+    cacheType: IMAGE_CACHE_NAME + cacheKey
+  }, {
+    src: icon,
+    name: filename,
+    width: size,
+    height: size,
+    removeTransparency: true,
+    // The icon should be square, but if it's not then it will be cropped.
+    resizeMode: 'cover',
+    // Force the background color to solid white to prevent any transparency.
+    // TODO: Maybe use a more adaptive option based on the icon color?
+    backgroundColor: '#ffffff'
+  });
+  // Write image buffer to the file system.
+  const assetPath = (0, _path().join)(iosNamedProjectRoot, IMAGESET_PATH, filename);
+  await fs().writeFile(assetPath, source);
+  return [{
+    filename: getAppleIconName(size, 1),
+    idiom: 'universal',
+    platform,
+    size: `${size}x${size}`
+  }];
 }
 //# sourceMappingURL=withIosIcons.js.map
