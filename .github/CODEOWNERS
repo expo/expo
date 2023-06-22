@@ -36,7 +36,7 @@
 /packages/expo-firebase-analytics               @brentvatne
 /packages/expo-firebase-recaptcha               @brentvatne
 /packages/expo-font                             @tsapeta
-/packages/expo-gl                               @tsapeta @wkozyra95
+/packages/expo-gl                               @tsapeta
 /packages/expo-haptics                          @lukmccall
 /packages/expo-image                            @lukmccall @tsapeta @aleqsio
 /packages/expo-image-manipulator                @lukmccall
