@@ -111,7 +111,7 @@ class DocumentationSidebarRight extends React.Component<PropsWithHM, State> {
             theme="quaternary"
             size="xs"
             className={mergeClasses(
-              'ml-auto mr-2 px-2 transition-opacity opacity-1',
+              'ml-auto mr-2 px-2 transition-opacity duration-300',
               !this.state.showScrollTop && 'opacity-0 pointer-events-none'
             )}
             onClick={e => this.handleTopClick(e)}>
