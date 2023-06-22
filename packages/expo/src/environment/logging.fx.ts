@@ -21,8 +21,8 @@ if (__DEV__) {
 
       const logUrl = url + 'logs';
       Constants.__unsafeNoWarnManifest.logUrl = logUrl;
-      if (Constants.manifest) {
-        Constants.manifest.logUrl = logUrl;
+      if (Constants.expoGoConfig) {
+        Constants.expoGoConfig.logUrl = logUrl;
       }
     }
   } else if (
