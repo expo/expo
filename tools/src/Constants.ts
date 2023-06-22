@@ -13,7 +13,12 @@ export const ANDROID_DIR = Directories.getAndroidDir();
 export const TEMPLATES_DIR = Directories.getTemplatesDir();
 export const PACKAGES_DIR = Directories.getPackagesDir();
 export const VERSIONED_RN_IOS_DIR = Directories.getVersionedReactNativeIosDir();
-export const REACT_NATIVE_SUBMODULE_DIR = Directories.getReactNativeSubmoduleDir();
+export const REACT_NATIVE_SUBMODULE_MONOREPO_ROOT = Directories.getReactNativeSubmoduleDir();
+export const REACT_NATIVE_SUBMODULE_DIR = path.join(
+  REACT_NATIVE_SUBMODULE_MONOREPO_ROOT,
+  'packages',
+  'react-native'
+);
 
 // Vendored dirs
 export const ANDROID_VENDORED_DIR = path.join(ANDROID_DIR, 'vendored');

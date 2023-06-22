@@ -2,6 +2,7 @@ export const packagesToKeep: string[] = [
   'org.unimodules.apploader',
   'org.unimodules.core.interfaces.Consumer',
   'org.unimodules.core.interfaces.SingletonModule',
+  'expo.modules.annotation',
   'expo.modules.apploader',
   'expo.modules.interfaces.taskManager',
   'expo.modules.clipboard.CLIPBOARD_FILE_PROVIDER_PATHS',

@@ -88,7 +88,7 @@ const config: VendoringTargetConfig = {
         async preReadPodspecHookAsync(podspecPath: string): Promise<string> {
           const reaUtilsPath = path.join(podspecPath, '..', 'scripts', 'reanimated_utils.rb');
           assert(fs.existsSync(reaUtilsPath), 'Cannot find `reanimated_utils`.');
-          const rnForkPath = path.join(REACT_NATIVE_SUBMODULE_DIR, 'packages');
+          const rnForkPath = path.join(REACT_NATIVE_SUBMODULE_DIR, '..');
           let content = await fs.readFile(reaUtilsPath, 'utf-8');
           content = content.replace(
             'react_native_node_modules_dir = ',

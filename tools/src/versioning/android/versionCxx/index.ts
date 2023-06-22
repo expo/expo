@@ -42,7 +42,10 @@ export async function versionCxxExpoModulesAsync(version: string) {
     const versionedAbiRoot = path.join(ANDROID_DIR, 'versioned-abis', `expoview-${abiName}`);
     const packageFiles = await glob('**/*.{h,cpp,txt,gradle}', {
       cwd: path.join(PACKAGES_DIR, packageName),
-      ignore: ['android/{build,.cxx}/**/*', 'ios/**/*'],
+      ignore: [
+        '{android,android-annotation,android-annotation-processor}/{build,.cxx}/**/*',
+        'ios/**/*',
+      ],
       absolute: true,
     });
 

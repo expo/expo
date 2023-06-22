@@ -10,7 +10,7 @@ buildscript {
     dbFlowVersion = '4.2.4'
     buildToolsVersion = '33.0.0'
     kotlinVersion = '1.8.10'
-    gradlePluginVersion = '7.4.1'
+    gradlePluginVersion = '7.4.2'
     gradleDownloadTaskVersion = '5.0.1'
     repositoryUrl = "file:${System.env.HOME}/.m2/repository/"
 

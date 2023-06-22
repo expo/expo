@@ -7,7 +7,7 @@ export function vendoredModulesTransforms(prefix: string): Record<string, FileTr
       content: [
         {
           paths: 'build.gradle',
-          find: `def nodeModules = Paths.get(projectDir.getPath(), '../../../../../..', 'react-native-lab').toString()`,
+          find: `def nodeModules = Paths.get(projectDir.getPath(), '../../../../../..', 'react-native-lab/versioned-react-native/packages/react-native/packages').toString()`,
           replaceWith: `def nodeModules = Paths.get(projectDir.getPath(), '../../../../..').toString()`,
         },
         {
@@ -57,8 +57,8 @@ export function vendoredModulesTransforms(prefix: string): Record<string, FileTr
       content: [
         {
           paths: 'build.gradle',
-          find: `def reactNativeRootDir = Paths.get(projectDir.getPath(), '../../../../../react-native-lab/react-native').toFile()`,
-          replaceWith: `def reactNativeRootDir = Paths.get(projectDir.getPath(), '../../../../versioned-react-native').toFile()`,
+          find: `def reactNativeRootDir = Paths.get(projectDir.getPath(), '../../../../../react-native-lab/versioned-react-native/packages/react-native/packages/react-native').toFile()`,
+          replaceWith: `def reactNativeRootDir = Paths.get(projectDir.getPath(), '../../../../versioned-react-native/packages/react-native').toFile()`,
         },
         {
           paths: 'build.gradle',
@@ -81,7 +81,8 @@ export function vendoredModulesTransforms(prefix: string): Record<string, FileTr
           // Even though it not always correct, e.g. when ReactAndroid upgrades to newer version, the versions are inconsistent.
           // Since reanimated doesn't use these properties for react-native 0.71, that should be safe.
           find: '$reactNativeRootDir/ReactAndroid/gradle.properties',
-          replaceWith: '$rootDir/../react-native-lab/react-native/ReactAndroid/gradle.properties',
+          replaceWith:
+            '$rootDir/../react-native-lab/react-native/packages/react-native/ReactAndroid/gradle.properties',
         },
         {
           paths: 'CMakeLists.txt',
@@ -89,7 +90,7 @@ export function vendoredModulesTransforms(prefix: string): Record<string, FileTr
           replaceWith: `$1_${prefix}`,
         },
         {
-          paths: 'NativeProxy.java',
+          paths: 'NativeProxyCommon.java',
           find: new RegExp(`\\b(?<!${prefix}\\.)(com.swmansion.gesturehandler.)`, 'g'),
           replaceWith: `${prefix}.$1`,
         },

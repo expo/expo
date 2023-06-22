@@ -186,8 +186,8 @@ async function baseTransformsFactoryAsync(prefix: string): Promise<Required<File
       },
       {
         paths: '*.{java,kt}',
-        find: /\bimport (com\.swmansion\.)/g,
-        replaceWith: `import ${prefix}.$1`,
+        find: /\bimport (static )?(com\.swmansion\.)/g,
+        replaceWith: `import $1${prefix}.$2`,
       },
       {
         paths: '*.{java,kt}',
@@ -213,12 +213,13 @@ async function baseTransformsFactoryAsync(prefix: string): Promise<Required<File
           `    compileOnly 'com.facebook.infer.annotation:infer-annotation:+'\n` +
           `    compileOnly 'androidx.annotation:annotation:+'\n` +
           `    compileOnly 'com.google.code.findbugs:jsr305:+'\n` +
-          `    compileOnly 'androidx.appcompat:appcompat:+'\n`,
+          `    compileOnly 'androidx.appcompat:appcompat:+'\n` +
+          `    compileOnly 'androidx.swiperefreshlayout:swiperefreshlayout:+'\n`,
       },
       {
         paths: ['build.gradle', 'CMakeLists.txt'],
         find: /\/react-native\//g,
-        replaceWith: '/versioned-react-native/',
+        replaceWith: '/versioned-react-native/packages/react-native/',
       },
       {
         paths: 'CMakeLists.txt',
@@ -233,6 +234,11 @@ async function baseTransformsFactoryAsync(prefix: string): Promise<Required<File
       {
         paths: 'AndroidManifest.xml',
         find: /(\bpackage=")([\w.]+)(")/,
+        replaceWith: `$1${prefix}.$2$3`,
+      },
+      {
+        paths: 'build.gradle',
+        find: /(\bnamespace\s*=?\s*['"])([\w.]+)(['"])/,
         replaceWith: `$1${prefix}.$2$3`,
       },
     ],

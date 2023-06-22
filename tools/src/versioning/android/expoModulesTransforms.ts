@@ -1,10 +1,11 @@
 import escapeRegExp from 'lodash/escapeRegExp';
 
+import type { Package } from '../../Packages';
 import { FileTransforms } from '../../Transforms.types';
 import { packagesToKeep, packagesToRename } from './packagesConfig';
 import { deleteLinesBetweenTags } from './utils';
 
-function expoModulesBaseTransforms(abiVersion: string): FileTransforms {
+function expoModulesBaseTransforms(pkg: Package, abiVersion: string): FileTransforms {
   return {
     path: [
       {
@@ -21,6 +22,13 @@ function expoModulesBaseTransforms(abiVersion: string): FileTransforms {
       },
     ],
     content: [
+      {
+        // manifest-merger requires the legacy package name to be present in the manifest,
+        // filling the package name from `pkg.androidPackageNamespace`.
+        paths: './src/main/AndroidManifest.xml',
+        find: /^(<manifest)([\w\s>])/,
+        replaceWith: `$1 package="${pkg.androidPackageNamespace}"$2`,
+      },
       ...packagesToKeep.map((pkg: string) => ({
         paths: ['./src/main/{java,kotlin}/**/*.{java,kt}', './src/main/AndroidManifest.xml'],
         find: new RegExp(`([, ^(<])${escapeRegExp(pkg)}`, 'g'),
@@ -50,8 +58,9 @@ function expoModulesBaseTransforms(abiVersion: string): FileTransforms {
   };
 }
 
-export function expoModulesTransforms(module: string, abiVersion: string): FileTransforms {
-  const base = expoModulesBaseTransforms(abiVersion);
+export function expoModulesTransforms(pkg: Package, abiVersion: string): FileTransforms {
+  const module = pkg.packageName;
+  const base = expoModulesBaseTransforms(pkg, abiVersion);
   const moduleTransforms: Record<string, FileTransforms> = {
     'expo-modules-core': {
       content: [
@@ -76,8 +85,8 @@ export function expoModulesTransforms(module: string, abiVersion: string): FileT
             ),
         },
         {
-          paths: './src/main/{java,kotlin}/expo/modules/updates/UpdatesPackage.kt',
-          find: 'BuildConfig.EX_UPDATES_NATIVE_DEBUG',
+          paths: './**/*.kt',
+          find: /BuildConfig\.(EX_UPDATES_NATIVE_DEBUG|EX_UPDATES_ANDROID_DELAY_LOAD_APP)/g,
           replaceWith: 'false',
         },
       ],
