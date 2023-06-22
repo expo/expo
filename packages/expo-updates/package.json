@@ -1,6 +1,6 @@
 {
   "name": "expo-updates",
-  "version": "0.17.1",
+  "version": "0.18.0",
   "description": "Fetches and manages remotely-hosted assets and updates to your app's JS bundle.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -46,7 +46,7 @@
     "arg": "4.1.0",
     "expo-eas-client": "~0.6.0",
     "expo-manifests": "~0.7.0",
-    "expo-structured-headers": "~3.2.0",
+    "expo-structured-headers": "~3.3.0",
     "expo-updates-interface": "~0.10.0",
     "fbemitter": "^3.0.0",
     "resolve-from": "^5.0.0"

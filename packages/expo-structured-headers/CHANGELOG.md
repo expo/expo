@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 3.3.0 — 2023-06-22
+
+### 🐛 Bug fixes
+
 - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 - [iOS] Fix compile issue with native tests on Xcode 14. ([#22845](https://github.com/expo/expo/pull/22845) by [@douglowder](https://github.com/douglowder))
-
-### 💡 Others
 
 ## 3.2.0 — 2023-06-21
 

@@ -47,7 +47,7 @@
     "expo-permissions": "~14.2.0",
     "expo-splash-screen": "~0.20.0",
     "expo-task-manager": "~11.3.0",
-    "expo-updates": "~0.17.0",
+    "expo-updates": "~0.18.0",
     "expo-web-browser": "~12.3.0",
     "graphql": "^15.3.0",
     "immutable": "^4.0.0",
