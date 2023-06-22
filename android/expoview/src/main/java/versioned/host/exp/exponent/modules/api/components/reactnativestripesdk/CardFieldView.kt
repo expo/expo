@@ -209,6 +209,10 @@ class CardFieldView(context: ThemedReactContext) : FrameLayout(context) {
     }
   }
 
+  fun setDisabled(isDisabled: Boolean) {
+    mCardWidget.isEnabled = !isDisabled
+  }
+
   /**
    * We can reliable assume that setPostalCodeEnabled is called before
    * setCountryCode because of the order of the props in CardField.tsx

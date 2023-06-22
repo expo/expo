@@ -145,9 +145,8 @@ class StripeSdk: RCTEventEmitter, STPBankSelectionViewControllerDelegate, UIAdap
                     case .canceled:
                         resolve(Errors.createError(ErrorType.Canceled, "The payment flow has been canceled"))
                     case .failed(let error):
-                        resolve(Errors.createError(ErrorType.Failed, error.localizedDescription))
+                        resolve(Errors.createError(ErrorType.Failed, error))
                     }
-
                 }
             } else {
                 resolve(Errors.createError(ErrorType.Failed, "No payment sheet has been initialized yet"))
@@ -221,7 +220,7 @@ class StripeSdk: RCTEventEmitter, STPBankSelectionViewControllerDelegate, UIAdap
 
         STPAPIClient.shared.createToken(forCVCUpdate: cvc) { (token, error) in
             if error != nil || token == nil {
-                resolve(Errors.createError(ErrorType.Failed, error?.localizedDescription ?? ""))
+                resolve(Errors.createError(ErrorType.Failed, error as? NSError))
             } else {
                 let tokenId = token?.tokenId
                 resolve(["tokenId": tokenId])
@@ -558,7 +557,7 @@ class StripeSdk: RCTEventEmitter, STPBankSelectionViewControllerDelegate, UIAdap
         if let paymentMethodParams = paymentMethodParams {
             STPAPIClient.shared.createPaymentMethod(with: paymentMethodParams) { paymentMethod, error in
                 if let createError = error {
-                    resolve(Errors.createError(ErrorType.Failed, createError.localizedDescription))
+                    resolve(Errors.createError(ErrorType.Failed, createError as NSError))
                 } else {
                     resolve(
                         Mappers.createResult("paymentMethod", Mappers.mapFromPaymentMethod(paymentMethod))
@@ -908,7 +907,7 @@ class StripeSdk: RCTEventEmitter, STPBankSelectionViewControllerDelegate, UIAdap
                 if let lastPaymentError = paymentIntent?.lastPaymentError {
                     resolve(Errors.createError(ErrorType.Unknown, lastPaymentError))
                 } else {
-                    resolve(Errors.createError(ErrorType.Unknown, error?.localizedDescription))
+                    resolve(Errors.createError(ErrorType.Unknown, error as? NSError))
                 }
                 return
             }
@@ -932,7 +931,7 @@ class StripeSdk: RCTEventEmitter, STPBankSelectionViewControllerDelegate, UIAdap
                 if let lastSetupError = setupIntent?.lastSetupError {
                     resolve(Errors.createError(ErrorType.Unknown, lastSetupError))
                 } else {
-                    resolve(Errors.createError(ErrorType.Unknown, error?.localizedDescription))
+                    resolve(Errors.createError(ErrorType.Unknown, error as? NSError))
                 }
                 return
             }
