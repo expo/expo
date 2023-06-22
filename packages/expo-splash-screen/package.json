@@ -37,7 +37,7 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/prebuild-config": "6.2.0"
+    "@expo/prebuild-config": "6.2.1"
   },
   "devDependencies": {
     "expo-module-scripts": "^3.0.0"
