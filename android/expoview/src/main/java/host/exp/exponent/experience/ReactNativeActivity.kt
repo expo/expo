@@ -71,6 +71,9 @@ abstract class ReactNativeActivity :
     RNObject("com.facebook.react.ReactInstanceManager")
   protected var isCrashed = false
 
+  protected val networkInterceptor =
+    RNObject("host.exp.exponent.ExpoNetworkInterceptor")
+
   protected var manifestUrl: String? = null
   var experienceKey: ExperienceKey? = null
   protected var sdkVersion: String? = null
@@ -287,6 +290,7 @@ abstract class ReactNativeActivity :
   override fun onPause() {
     super.onPause()
     if (reactInstanceManager.isNotNull && !isCrashed) {
+      networkInterceptor.call("onPause")
       reactInstanceManager.onHostPause()
       // TODO: use onHostPause(activity)
     }
@@ -296,6 +300,7 @@ abstract class ReactNativeActivity :
     super.onResume()
     if (reactInstanceManager.isNotNull && !isCrashed) {
       reactInstanceManager.onHostResume(this, this)
+      networkInterceptor.call("onResume", reactInstanceManager.get())
     }
   }
 
@@ -486,6 +491,8 @@ abstract class ReactNativeActivity :
       appKey ?: KernelConstants.DEFAULT_APPLICATION_KEY,
       initialProps(bundle)
     )
+
+    networkInterceptor.loadVersion(sdkVersion).construct().call("start", manifest, mReactInstanceManager.get())
 
     // Requesting layout to make sure {@link ReactRootView} attached to {@link ReactInstanceManager}
     // Otherwise, {@link ReactRootView} will hang in {@link waitForReactRootViewToHaveChildrenAndRunCallback}.

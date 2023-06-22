@@ -3,6 +3,7 @@
 #import <React/RCTAssert.h>
 #include <math.h>
 
+#import "RNCSafeAreaViewEdgeMode.h"
 #import "RNCSafeAreaViewEdges.h"
 #import "RNCSafeAreaViewLocalData.h"
 #import "RNCSafeAreaViewMode.h"
@@ -109,23 +110,32 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
   CGFloat bottom = 0;
   CGFloat left = 0;
 
-  CGFloat insetTop = (edges & RNCSafeAreaViewEdgesTop) ? insets.top : 0;
-  CGFloat insetRight = (edges & RNCSafeAreaViewEdgesRight) ? insets.right : 0;
-  CGFloat insetBottom = (edges & RNCSafeAreaViewEdgesBottom) ? insets.bottom : 0;
-  CGFloat insetLeft = (edges & RNCSafeAreaViewEdgesLeft) ? insets.left : 0;
-
   if (mode == RNCSafeAreaViewModePadding) {
     [self extractEdges:_paddingMetaProps top:&top right:&right bottom:&bottom left:&left];
-    super.paddingTop = (YGValue){insetTop + top, YGUnitPoint};
-    super.paddingRight = (YGValue){insetRight + right, YGUnitPoint};
-    super.paddingBottom = (YGValue){insetBottom + bottom, YGUnitPoint};
-    super.paddingLeft = (YGValue){insetLeft + left, YGUnitPoint};
+    super.paddingTop = (YGValue){[self getEdgeValue:edges.top insetValue:insets.top edgeValue:top], YGUnitPoint};
+    super.paddingRight =
+        (YGValue){[self getEdgeValue:edges.right insetValue:insets.right edgeValue:right], YGUnitPoint};
+    super.paddingBottom =
+        (YGValue){[self getEdgeValue:edges.bottom insetValue:insets.bottom edgeValue:bottom], YGUnitPoint};
+    super.paddingLeft = (YGValue){[self getEdgeValue:edges.left insetValue:insets.left edgeValue:left], YGUnitPoint};
   } else if (mode == RNCSafeAreaViewModeMargin) {
     [self extractEdges:_marginMetaProps top:&top right:&right bottom:&bottom left:&left];
-    super.marginTop = (YGValue){insetTop + top, YGUnitPoint};
-    super.marginRight = (YGValue){insetRight + right, YGUnitPoint};
-    super.marginBottom = (YGValue){insetBottom + bottom, YGUnitPoint};
-    super.marginLeft = (YGValue){insetLeft + left, YGUnitPoint};
+    super.marginTop = (YGValue){[self getEdgeValue:edges.top insetValue:insets.top edgeValue:top], YGUnitPoint};
+    super.marginRight = (YGValue){[self getEdgeValue:edges.right insetValue:insets.right edgeValue:right], YGUnitPoint};
+    super.marginBottom =
+        (YGValue){[self getEdgeValue:edges.bottom insetValue:insets.bottom edgeValue:bottom], YGUnitPoint};
+    super.marginLeft = (YGValue){[self getEdgeValue:edges.left insetValue:insets.left edgeValue:left], YGUnitPoint};
+  }
+}
+
+- (CGFloat)getEdgeValue:(RNCSafeAreaViewEdgeMode)edgeMode insetValue:(CGFloat)insetValue edgeValue:(CGFloat)edgeValue
+{
+  if (edgeMode == RNCSafeAreaViewEdgeModeOff) {
+    return edgeValue;
+  } else if (edgeMode == RNCSafeAreaViewEdgeModeMaximum) {
+    return MAX(insetValue, edgeValue);
+  } else {
+    return insetValue + edgeValue;
   }
 }
 

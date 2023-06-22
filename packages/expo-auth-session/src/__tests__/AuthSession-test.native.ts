@@ -190,7 +190,7 @@ describe('Managed', () => {
       describeManifestTypes(
         {
           scheme: 'demo',
-          hostUri: '192.168.1.4:19000',
+          hostUri: '192.168.1.4:8081',
           developer: {
             projectRoot: '/Users/person/myapp',
             tool: 'expo-cli',
@@ -202,7 +202,7 @@ describe('Managed', () => {
               name: 'wat',
               slug: 'wat',
               scheme: 'demo',
-              hostUri: '192.168.1.4:19000',
+              hostUri: '192.168.1.4:8081',
             },
             expoGo: {
               developer: {
@@ -214,8 +214,8 @@ describe('Managed', () => {
         }
       )((manifestObj) => {
         const devConstants = {
-          linkingUri: 'exp://192.168.1.4:19000/',
-          experienceUrl: 'exp://192.168.1.4:19000',
+          linkingUri: 'exp://192.168.1.4:8081/',
+          experienceUrl: 'exp://192.168.1.4:8081',
           appOwnership: AppOwnership.Expo,
           executionEnvironment: ExecutionEnvironment.StoreClient,
         };
@@ -223,46 +223,17 @@ describe('Managed', () => {
         it(`creates a redirect URL`, () => {
           mockConstants(devConstants, manifestObj);
           const { makeRedirectUri } = require('../AuthSession');
-          expect(makeRedirectUri()).toBe('exp://192.168.1.4:19000');
+          expect(makeRedirectUri()).toBe('exp://192.168.1.4:8081');
         });
         it(`prefers localhost`, () => {
           mockConstants(devConstants, manifestObj);
           const { makeRedirectUri } = require('../AuthSession');
-          expect(makeRedirectUri({ preferLocalhost: true })).toBe('exp://localhost:19000');
+          expect(makeRedirectUri({ preferLocalhost: true })).toBe('exp://localhost:8081');
         });
         it(`creates a redirect URL with a custom path`, () => {
           mockConstants(devConstants, manifestObj);
           const { makeRedirectUri } = require('../AuthSession');
-          expect(makeRedirectUri({ path: 'bacon' })).toBe('exp://192.168.1.4:19000/--/bacon');
-        });
-      });
-    });
-
-    describe('Proxy', () => {
-      describeManifestTypes(
-        {
-          id: 'fake',
-          originalFullName: '@test/originaltest',
-        },
-        {
-          extra: {
-            expoClient: {
-              name: 'wat',
-              slug: 'wat',
-              originalFullName: '@test/originaltest',
-            },
-          },
-        }
-      )((manifestObj) => {
-        it(`creates a redirect URL with useProxy`, () => {
-          mockConstants({}, manifestObj);
-
-          const { makeRedirectUri } = require('../AuthSession');
-
-          // Should create a proxy URL and omit the extra path component
-          expect(makeRedirectUri({ path: 'bacon', useProxy: true })).toBe(
-            'https://auth.expo.io/@test/originaltest'
-          );
+          expect(makeRedirectUri({ path: 'bacon' })).toBe('exp://192.168.1.4:8081/--/bacon');
         });
       });
     });

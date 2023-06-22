@@ -28,7 +28,7 @@ inputs:
     required: false
   ndk-version:
     description: 'NDK version used'
-    default: '21.4.7075529'
+    default: '23.1.7779620'
     required: false
   git-lfs:
     description: 'Restore Git LFS cache'
@@ -175,14 +175,14 @@ runs:
       uses: actions/cache@v3
       with:
         path: android/prebuiltHermes
-        key: hermes-engine-aar-v2-${{ hashFiles('react-native-lab/react-native/sdks/.hermesversion') }}
+        key: hermes-engine-aar-v2-${{ hashFiles('react-native-lab/react-native/packages/react-native/sdks/.hermesversion') }}
     - name: Check hermes-engine cache-hit
       if: inputs.hermes-engine-aar == 'true'
       id: cache-hermes-engine-aar
       shell: bash
       run: |
         CURRENT_VERSION=$(test -f android/prebuiltHermes/.hermesversion && cat android/prebuiltHermes/.hermesversion) || true
-        TARGET_VERSION=$(test -f react-native-lab/react-native/sdks/.hermesversion && cat react-native-lab/react-native/sdks/.hermesversion) || true
+        TARGET_VERSION=$(test -f react-native-lab/react-native/packages/react-native/sdks/.hermesversion && cat react-native-lab/react-native/packages/react-native/sdks/.hermesversion) || true
         if [[ $CURRENT_VERSION == $TARGET_VERSION ]]; then
           echo "cache-hit=true" >> $GITHUB_OUTPUT
         else
@@ -195,11 +195,11 @@ runs:
         # Ensure node packages are installed when yarn-workspace cache miss
         yarn install --frozen-lockfile
         mkdir -p prebuiltHermes
-        cp -f ../react-native-lab/react-native/sdks/.hermesversion prebuiltHermes/
-        ./gradlew :ReactAndroid:hermes-engine:assembleRelease
-        ./gradlew :ReactAndroid:hermes-engine:assembleDebug
-        cp -f ../react-native-lab/react-native/ReactAndroid/hermes-engine/build/outputs/aar/hermes-engine-release.aar prebuiltHermes/
-        cp -f ../react-native-lab/react-native/ReactAndroid/hermes-engine/build/outputs/aar/hermes-engine-debug.aar prebuiltHermes/
+        cp -f ../react-native-lab/react-native/packages/react-native/sdks/.hermesversion prebuiltHermes/
+        ./gradlew :packages:react-native:ReactAndroid:hermes-engine:assembleRelease
+        ./gradlew :packages:react-native:ReactAndroid:hermes-engine:assembleDebug
+        cp -f ../react-native-lab/react-native/packages/react-native/ReactAndroid/hermes-engine/build/outputs/aar/hermes-engine-release.aar prebuiltHermes/
+        cp -f ../react-native-lab/react-native/packages/react-native/ReactAndroid/hermes-engine/build/outputs/aar/hermes-engine-debug.aar prebuiltHermes/
       env:
         # Reset reactNativeArchitectures to build all architectures
         ORG_GRADLE_PROJECT_reactNativeArchitectures:

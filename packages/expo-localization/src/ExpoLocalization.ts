@@ -1,5 +1,5 @@
 /* eslint-env browser */
-import { Platform } from 'expo-modules-core';
+import { Platform, Subscription } from 'expo-modules-core';
 import * as rtlDetect from 'rtl-detect';
 
 import { Localization, Calendar, Locale, CalendarIdentifier } from './Localization.types';
@@ -18,6 +18,25 @@ type ExtendedLocale = Intl.Locale &
     timeZone: string;
     calendars: string[];
   }>;
+
+const WEB_LANGUAGE_CHANGE_EVENT = 'languagechange';
+
+export function addLocaleListener(listener: (event) => void): Subscription {
+  addEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener);
+  return {
+    remove: () => removeEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener),
+  };
+}
+
+export function addCalendarListener(listener: (event) => void): Subscription {
+  addEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener);
+  return {
+    remove: () => removeEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener),
+  };
+}
+export function removeSubscription(subscription: Subscription) {
+  subscription.remove();
+}
 
 export default {
   get currency(): string | null {
@@ -130,6 +149,7 @@ export default {
       },
     ];
   },
+
   async getLocalizationAsync(): Promise<Omit<Localization, 'getCalendars' | 'getLocales'>> {
     const {
       currency,

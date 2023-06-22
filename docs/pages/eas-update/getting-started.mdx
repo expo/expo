@@ -1,6 +1,6 @@
 ---
-title: Getting started
-description: Learn how to get started with EAS Update and use in your project.
+title: Get started
+description: Learn how to get started with EAS Update and use it in your project.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
@@ -17,11 +17,22 @@ EAS CLI is the command line app you will use to interact with EAS services from 
 
 You can also use the above command to check if a new version of EAS CLI is available. We encourage you to always stay up to date with the latest version.
 
-> We recommend using `npm` instead of `yarn` for global package installations. You may alternatively use `npx eas-cli`; remember to use that instead of `eas` whenever it's called for in the documentation.
+> We recommend using `npm` instead of `yarn` for global package installations. You may alternatively use `npx eas-cli@latest`; remember to use that instead of `eas` whenever it's called for in the documentation.
 
 </Step>
 
 <Step label="2">
+## Log in to your Expo account
+
+If you are already signed in to an Expo account using Expo CLI, you can skip the steps described in this section. If you are not, run the following command to log in:
+
+<Terminal cmd={['$ eas login']} />
+
+You can check whether you are logged in by running `eas whoami`.
+
+</Step>
+
+<Step label="3">
 ## Create a project
 
 Create a project by running:
@@ -29,7 +40,7 @@ Create a project by running:
 <Terminal cmd={['$ npx create-expo-app']} />
 </Step>
 
-<Step label="3">
+<Step label="4">
 ## Configure your project
 
 To configure your project, run the following commands in the order they are specified:
@@ -73,7 +84,7 @@ The `channel` allows you to point updates at builds of that profile. For example
 
 </Step>
 
-<Step label="4">
+<Step label="5">
 ## Create a build for the project
 
 You need to create a build for Android or iOS. We recommend creating a build with the `preview` build profile first. See [Creating your first build](/build/setup/) on how to get started and set up [Internal distribution](/build/internal-distribution/#setting-up-internal-distribution) for your device or simulator.
@@ -82,7 +93,7 @@ Once you have a build running on your device or a simulator, you are ready to se
 
 </Step>
 
-<Step label="5">
+<Step label="6">
 ## Make changes locally
 
 After creating the build, you are ready to iterate on the project. Start a local development server with the following command:
@@ -93,7 +104,7 @@ Then, make any desired changes to your project's JavaScript, styling, or image a
 
 </Step>
 
-<Step label="6">
+<Step label="7">
 ## Publish an update
 
 To publish an update to the build, run the following command:

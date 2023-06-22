@@ -80,4 +80,15 @@ export declare const readLogEntries: (maxAge?: number) => void;
  * ```
  */
 export declare const useUpdates: () => UseUpdatesReturnType;
+/**
+ * Experimental hook to return the Updates state machine context maintained
+ * in native code.
+ *
+ * Eventually, this will be used to construct the information returned by `useUpdates()`.
+ *
+ * @returns A map of the state machine context.
+ */
+export declare const useUpdatesState: () => {
+    [key: string]: any;
+};
 //# sourceMappingURL=UseUpdates.d.ts.map

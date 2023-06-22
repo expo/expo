@@ -11,8 +11,10 @@
 #include "include/core/SkAlphaType.h"
 #include "include/core/SkScalar.h"
 #include "include/core/SkTypes.h"
+#include "include/private/base/SkCPUTypes.h"
 
 #include <array>
+#include <cstdint>
 
 /** \file SkColor.h
 

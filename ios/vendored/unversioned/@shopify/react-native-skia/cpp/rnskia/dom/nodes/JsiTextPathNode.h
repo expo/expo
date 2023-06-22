@@ -16,7 +16,9 @@ public:
 protected:
   void draw(DrawingContext *context) override {
     auto blob = _textBlobProp->getDerivedValue();
-    context->getCanvas()->drawTextBlob(blob, 0, 0, *context->getPaint());
+    if (blob != nullptr) {
+      context->getCanvas()->drawTextBlob(blob, 0, 0, *context->getPaint());
+    }
   }
 
   void defineProperties(NodePropsContainer *container) override {

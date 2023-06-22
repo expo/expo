@@ -7,10 +7,12 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Region;
 import android.view.View;
 import android.view.ViewParent;
+import android.view.accessibility.AccessibilityNodeInfo;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReactContext;
@@ -20,7 +22,7 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.OnLayoutEvent;
 import com.facebook.react.uimanager.PointerEvents;
-import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.view.ReactViewGroup;
 import java.util.ArrayList;
@@ -73,7 +75,6 @@ public abstract class VirtualView extends ReactViewGroup {
 
   final float mScale;
   private boolean mResponsible;
-  private boolean mOnLayout;
   String mDisplay;
   String mName;
 
@@ -105,6 +106,32 @@ public abstract class VirtualView extends ReactViewGroup {
 
   void setPointerEvents(PointerEvents pointerEvents) {
     mPointerEvents = pointerEvents;
+  }
+
+  @Override
+  public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
+    super.onInitializeAccessibilityNodeInfo(info);
+    if (mClientRect != null) {
+
+      SvgView root = getSvgView();
+
+      int[] rootPositionOnScreen = new int[2];
+      getSvgView().getLocationOnScreen(rootPositionOnScreen);
+      Rect infoBoundsInScreen = new Rect();
+      infoBoundsInScreen.left = rootPositionOnScreen[0] + (int) Math.floor(mClientRect.left);
+      infoBoundsInScreen.top = rootPositionOnScreen[1] + (int) Math.floor(mClientRect.top);
+      infoBoundsInScreen.right = infoBoundsInScreen.left + (int) Math.ceil(mClientRect.width());
+      infoBoundsInScreen.bottom = infoBoundsInScreen.top + (int) Math.ceil(mClientRect.height());
+
+      Rect rootVisibleRect = new Rect();
+      boolean isRootVisible = root.getGlobalVisibleRect(rootVisibleRect);
+      boolean infoIsVisibleToUser = isRootVisible && infoBoundsInScreen.intersect(rootVisibleRect);
+
+      String infoClassName = this.getClass().getCanonicalName();
+      info.setBoundsInScreen(infoBoundsInScreen);
+      info.setClassName(infoClassName);
+      info.setVisibleToUser(infoIsVisibleToUser);
+    }
   }
 
   @Override
@@ -249,11 +276,6 @@ public abstract class VirtualView extends ReactViewGroup {
     invalidate();
   }
 
-  public void setOnLayout(boolean onLayout) {
-    mOnLayout = onLayout;
-    invalidate();
-  }
-
   public void setMask(String mask) {
     mMask = mask;
     invalidate();
@@ -291,30 +313,27 @@ public abstract class VirtualView extends ReactViewGroup {
   }
 
   public void setMatrix(Dynamic matrixArray) {
-    ReadableType type = matrixArray.getType();
-    if (!matrixArray.isNull() && type.equals(ReadableType.Array)) {
-      ReadableArray matrix = matrixArray.asArray();
-      setMatrix(matrix);
+    boolean isArrayType = !matrixArray.isNull() && matrixArray.getType().equals(ReadableType.Array);
+    setMatrix(isArrayType ? matrixArray.asArray() : null);
+  }
+
+  public void setMatrix(@Nullable ReadableArray matrixArray) {
+    if (matrixArray != null) {
+      int matrixSize = PropHelper.toMatrixData(matrixArray, sRawMatrix, mScale);
+      if (matrixSize == 6) {
+        if (mMatrix == null) {
+          mMatrix = new Matrix();
+          mInvMatrix = new Matrix();
+        }
+        mMatrix.setValues(sRawMatrix);
+        mInvertible = mMatrix.invert(mInvMatrix);
+      } else if (matrixSize != -1) {
+        FLog.w(ReactConstants.TAG, "RNSVG: Transform matrices must be of size 6");
+      }
     } else {
       mMatrix.reset();
       mInvMatrix.reset();
       mInvertible = true;
-      super.invalidate();
-      clearParentCache();
-    }
-  }
-
-  public void setMatrix(ReadableArray matrixArray) {
-    int matrixSize = PropHelper.toMatrixData(matrixArray, sRawMatrix, mScale);
-    if (matrixSize == 6) {
-      if (mMatrix == null) {
-        mMatrix = new Matrix();
-        mInvMatrix = new Matrix();
-      }
-      mMatrix.setValues(sRawMatrix);
-      mInvertible = mMatrix.invert(mInvMatrix);
-    } else if (matrixSize != -1) {
-      FLog.w(ReactConstants.TAG, "RNSVG: Transform matrices must be of size 6");
     }
     super.invalidate();
     clearParentCache();
@@ -376,6 +395,7 @@ public abstract class VirtualView extends ReactViewGroup {
 
   abstract Path getPath(Canvas canvas, Paint paint);
 
+  @Nullable
   SvgView getSvgView() {
     if (svgView != null) {
       return svgView;
@@ -577,12 +597,11 @@ public abstract class VirtualView extends ReactViewGroup {
       setRight(right);
       setBottom(bottom);
     }
-    if (!mOnLayout) {
-      return;
-    }
     EventDispatcher eventDispatcher =
-        mContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
-    eventDispatcher.dispatchEvent(OnLayoutEvent.obtain(this.getId(), left, top, width, height));
+        UIManagerHelper.getEventDispatcherForReactTag(mContext, getId());
+    if (eventDispatcher != null) {
+      eventDispatcher.dispatchEvent(OnLayoutEvent.obtain(this.getId(), left, top, width, height));
+    }
   }
 
   RectF getClientRect() {

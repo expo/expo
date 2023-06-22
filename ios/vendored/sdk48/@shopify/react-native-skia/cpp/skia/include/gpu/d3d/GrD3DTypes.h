@@ -22,7 +22,7 @@
 // prepared to rename those identifiers.
 
 #include "include/core/SkRefCnt.h"
-#include "include/gpu/GrTypes.h"
+#include "include/gpu/GpuTypes.h"
 #include <d3d12.h>
 #include <dxgi1_4.h>
 
@@ -184,7 +184,7 @@ struct GrD3DTextureResourceInfo {
     uint32_t                 fSampleCount          = 1;
     uint32_t                 fLevelCount           = 0;
     unsigned int             fSampleQualityPattern = DXGI_STANDARD_MULTISAMPLE_QUALITY_PATTERN;
-    GrProtected              fProtected            = GrProtected::kNo;
+    skgpu::Protected         fProtected            = skgpu::Protected::kNo;
 
     GrD3DTextureResourceInfo() = default;
 
@@ -195,7 +195,7 @@ struct GrD3DTextureResourceInfo {
                              uint32_t sampleCount,
                              uint32_t levelCount,
                              unsigned int sampleQualityLevel,
-                             GrProtected isProtected = GrProtected::kNo)
+                             skgpu::Protected isProtected = skgpu::Protected::kNo)
             : fResource(resource)
             , fAlloc(alloc)
             , fResourceState(resourceState)
@@ -239,7 +239,7 @@ struct GrD3DFenceInfo {
 struct GrD3DSurfaceInfo {
     uint32_t fSampleCount = 1;
     uint32_t fLevelCount = 0;
-    GrProtected fProtected = GrProtected::kNo;
+    skgpu::Protected fProtected = skgpu::Protected::kNo;
 
     DXGI_FORMAT fFormat = DXGI_FORMAT_UNKNOWN;
     unsigned int fSampleQualityPattern = DXGI_STANDARD_MULTISAMPLE_QUALITY_PATTERN;

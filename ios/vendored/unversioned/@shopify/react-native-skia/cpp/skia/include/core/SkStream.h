@@ -11,15 +11,16 @@
 #include "include/core/SkData.h"
 #include "include/core/SkRefCnt.h"
 #include "include/core/SkScalar.h"
-#include "include/private/SkTo.h"
+#include "include/core/SkTypes.h"
+#include "include/private/base/SkCPUTypes.h"
+#include "include/private/base/SkTo.h"
 
-#include <memory.h>
-
-class SkStream;
-class SkStreamRewindable;
-class SkStreamSeekable;
+#include <cstdint>
+#include <cstdio>
+#include <cstring>
+#include <memory>
+#include <utility>
 class SkStreamAsset;
-class SkStreamMemory;
 
 /**
  *  SkStream -- abstraction for a source of bytes. Subclasses can be backed by
@@ -255,10 +256,10 @@ public:
 
     bool writeText(const char text[]) {
         SkASSERT(text);
-        return this->write(text, strlen(text));
+        return this->write(text, std::strlen(text));
     }
 
-    bool newline() { return this->write("\n", strlen("\n")); }
+    bool newline() { return this->write("\n", std::strlen("\n")); }
 
     bool writeDecAsText(int32_t);
     bool writeBigDecAsText(int64_t, int minDigits = 0);
@@ -295,8 +296,6 @@ private:
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////
-
-#include <stdio.h>
 
 /** A stream that wraps a C FILE* file stream. */
 class SK_API SkFILEStream : public SkStreamAsset {

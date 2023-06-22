@@ -10,6 +10,7 @@ class ApplePayButtonView: UIView {
     @objc var onShippingMethodSelectedAction: RCTDirectEventBlock?
     @objc var onShippingContactSelectedAction: RCTDirectEventBlock?
     @objc var onCouponCodeEnteredAction: RCTDirectEventBlock?
+    @objc var onOrderTrackingAction: RCTDirectEventBlock?
     
     @objc var type: NSNumber?
     @objc var buttonStyle: NSNumber?
@@ -33,6 +34,7 @@ class ApplePayButtonView: UIView {
             stripeSdk?.shippingMethodUpdateJSCallback = onShippingMethodSelectedAction
             stripeSdk?.shippingContactUpdateJSCallback = onShippingContactSelectedAction
             stripeSdk?.couponCodeEnteredJSCallback = onCouponCodeEnteredAction
+            stripeSdk?.platformPayOrderTrackingJSCallback = onOrderTrackingAction
         }
     }
     

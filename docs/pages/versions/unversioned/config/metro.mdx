@@ -33,7 +33,7 @@ For security purposes, client environment variables are inlined in the bundle, w
 
 ## CSS
 
-> Since SDK 49
+> Available in SDK 49 and higher.
 
 > **info** CSS support is under development and currently only works on web.
 
@@ -114,7 +114,7 @@ import 'emoji-mart/css/emoji-mart.css';
 
 CSS Modules are a way to scope CSS to a specific component. This is useful for avoiding naming collisions and for ensuring that styles are only applied to the intended component.
 
-In Expo, CSS Modules are defined by creating a file with the `.module.css` extension. The file can be imported from any component. The exported value is an object with the class names as keys and the React Native style objects as values.
+In Expo, CSS Modules are defined by creating a file with the `.module.css` extension. The file can be imported from any component. The exported value is an object with the class names as keys and the web-only scoped names as the values. The import `unstable_styles` can be used to access `react-native-web`-safe styles.
 
 CSS Modules support platform extensions to allow you to define different styles for different platforms. For example, you can define a `module.ios.css` and `module.android.css` file to define styles for iOS and Android respectively. You'll need to import without the extension, for example:
 
@@ -129,20 +129,34 @@ Flipping the extension, e.g. `App.ios.module.css` will not work and result in a 
 > You cannot pass styles to the `className` prop of a React Native or React Native for web component. Instead, you must use the `style` prop.
 
 ```js App.js
-import styles from './App.module.css';
+import styles, { unstable_styles } from './App.module.css';
 
 export default function Page() {
-  return <View style={styles.container}>Hello World</View>;
+  return (
+    <>
+      <Text
+        style={{
+          // This is how react-native-web class names are applied
+          $$css: true,
+          _: styles.text,
+        }}>
+        Hello World
+      </Text>
+      <Text style={unstable_styles.text}>Hello World</Text>
+      {/* Web-only usage: */}
+      <p className={styles.text}>Hello World</p>
+    </>
+  );
 }
 ```
 
 ```css App.module.css
-.container {
-  background-color: red;
+.text {
+  color: red;
 }
 ```
 
-- On web, all CSS values are available. CSS is not processed or auto-prefixed like it is with the React Native Web `StyleSheet` API.
+- On web, all CSS values are available. CSS is not processed or auto-prefixed like it is with the React Native Web `StyleSheet` API. You can use `postcss.config.js` to autoprefix your CSS.
 - CSS Modules use [lightningcss](https://github.com/parcel-bundler/lightningcss) under the hood, check [the issues](https://github.com/parcel-bundler/lightningcss/issues) for unsupported features.
 
 ### PostCSS

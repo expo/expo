@@ -82,6 +82,7 @@ export function createBundleUrlPath({
     dev: String(mode !== 'production'),
     // TODO: Is this still needed?
     hot: String(false),
+    lazy: String(!env.EXPO_NO_METRO_LAZY),
   });
 
   if (minify) {
@@ -259,6 +260,7 @@ export abstract class ManifestMiddleware<
       dev: String(this.options.mode !== 'production'),
       // TODO: Is this still needed?
       hot: String(false),
+      lazy: String(!env.EXPO_NO_METRO_LAZY),
     });
 
     if (this.options.minify) {
@@ -286,9 +288,9 @@ export abstract class ManifestMiddleware<
     hostname?: string | null;
   }): ExpoGoConfig {
     return {
-      // localhost:19000
+      // localhost:8081
       debuggerHost: this.options.constructUrl({ scheme: '', hostname }),
-      // http://localhost:19000/logs -- used to send logs to the CLI for displaying in the terminal.
+      // http://localhost:8081/logs -- used to send logs to the CLI for displaying in the terminal.
       // This is deprecated in favor of the WebSocket connection setup in Metro.
       logUrl: this.options.constructUrl({ scheme: 'http', hostname }) + '/logs',
       // Required for Expo Go to function.
@@ -304,8 +306,8 @@ export abstract class ManifestMiddleware<
       mainModuleName,
       // Add this string to make Flipper register React Native / Metro as "running".
       // Can be tested by running:
-      // `METRO_SERVER_PORT=19000 open -a flipper.app`
-      // Where 19000 is the port where the Expo project is being hosted.
+      // `METRO_SERVER_PORT=8081 open -a flipper.app`
+      // Where 8081 is the port where the Expo project is being hosted.
       __flipperHack: 'React Native packager is running',
     };
   }

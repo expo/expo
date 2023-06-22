@@ -1,9 +1,15 @@
 #import <Foundation/Foundation.h>
+#import "RNCSafeAreaViewEdgeMode.h"
 
-typedef NS_ENUM(NSInteger, RNCSafeAreaViewEdges) {
-  RNCSafeAreaViewEdgesTop = 0b1000,
-  RNCSafeAreaViewEdgesRight = 0b0100,
-  RNCSafeAreaViewEdgesBottom = 0b0010,
-  RNCSafeAreaViewEdgesLeft = 0b0001,
-  RNCSafeAreaViewEdgesAll = 0b1111,
-};
+typedef struct RNCSafeAreaViewEdges {
+  RNCSafeAreaViewEdgeMode top;
+  RNCSafeAreaViewEdgeMode right;
+  RNCSafeAreaViewEdgeMode bottom;
+  RNCSafeAreaViewEdgeMode left;
+} RNCSafeAreaViewEdges;
+
+RNCSafeAreaViewEdges RNCSafeAreaViewEdgesMake(
+    RNCSafeAreaViewEdgeMode top,
+    RNCSafeAreaViewEdgeMode right,
+    RNCSafeAreaViewEdgeMode bottom,
+    RNCSafeAreaViewEdgeMode left);
