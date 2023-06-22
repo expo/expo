@@ -3,8 +3,8 @@ import * as Linking from 'expo-linking';
 import { Platform } from 'expo-modules-core';
 import { dismissAuthSession } from 'expo-web-browser';
 import { AuthRequest } from './AuthRequest';
-import { CodeChallengeMethod, Prompt, ResponseType } from './AuthRequest.types';
-import { fetchDiscoveryAsync, resolveDiscoveryAsync } from './Discovery';
+import { CodeChallengeMethod, Prompt, ResponseType, } from './AuthRequest.types';
+import { fetchDiscoveryAsync, resolveDiscoveryAsync, } from './Discovery';
 import { generateHexStringAsync } from './PKCE';
 import sessionUrlProvider from './SessionUrlProvider';
 // @needsAudit
@@ -13,7 +13,7 @@ import sessionUrlProvider from './SessionUrlProvider';
  * then the Promise returned by the `AuthSession.startAsync()` that initiated it resolves to `{ type: 'dismiss' }`.
  */
 export function dismiss() {
-  dismissAuthSession();
+    dismissAuthSession();
 }
 export const getDefaultReturnUrl = sessionUrlProvider.getDefaultReturnUrl;
 // @needsAudit @docsMissing
@@ -35,7 +35,7 @@ export const getDefaultReturnUrl = sessionUrlProvider.getDefaultReturnUrl;
  * @deprecated Use `makeRedirectUri()` instead.
  */
 export function getRedirectUrl(path) {
-  return sessionUrlProvider.getRedirectUrl({ urlPath: path });
+    return sessionUrlProvider.getRedirectUrl({ urlPath: path });
 }
 // @needsAudit
 /**
@@ -71,40 +71,27 @@ export function getRedirectUrl(path) {
  * // Web prod: https://yourwebsite.com
  * ```
  */
-export function makeRedirectUri({
-  native,
-  scheme,
-  isTripleSlashed,
-  queryParams,
-  path,
-  preferLocalhost,
-} = {}) {
-  if (
-    Platform.OS !== 'web' &&
-    native &&
-    [ExecutionEnvironment.Standalone, ExecutionEnvironment.Bare].includes(
-      Constants.executionEnvironment
-    )
-  ) {
-    // Should use the user-defined native scheme in standalone builds
-    return native;
-  }
-  const url = Linking.createURL(path || '', {
-    isTripleSlashed,
-    scheme,
-    queryParams,
-  });
-  if (preferLocalhost) {
-    const ipAddress = url.match(
-      /\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/
-    );
-    // Only replace if an IP address exists
-    if (ipAddress?.length) {
-      const [protocol, path] = url.split(ipAddress[0]);
-      return `${protocol}localhost${path}`;
+export function makeRedirectUri({ native, scheme, isTripleSlashed, queryParams, path, preferLocalhost, } = {}) {
+    if (Platform.OS !== 'web' &&
+        native &&
+        [ExecutionEnvironment.Standalone, ExecutionEnvironment.Bare].includes(Constants.executionEnvironment)) {
+        // Should use the user-defined native scheme in standalone builds
+        return native;
     }
-  }
-  return url;
+    const url = Linking.createURL(path || '', {
+        isTripleSlashed,
+        scheme,
+        queryParams,
+    });
+    if (preferLocalhost) {
+        const ipAddress = url.match(/\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/);
+        // Only replace if an IP address exists
+        if (ipAddress?.length) {
+            const [protocol, path] = url.split(ipAddress[0]);
+            return `${protocol}localhost${path}`;
+        }
+    }
+    return url;
 }
 // @needsAudit
 /**
@@ -116,34 +103,19 @@ export function makeRedirectUri({
  * @return Returns an instance of `AuthRequest` that can be used to prompt the user for authorization.
  */
 export async function loadAsync(config, issuerOrDiscovery) {
-  const request = new AuthRequest(config);
-  const discovery = await resolveDiscoveryAsync(issuerOrDiscovery);
-  await request.makeAuthUrlAsync(discovery);
-  return request;
+    const request = new AuthRequest(config);
+    const discovery = await resolveDiscoveryAsync(issuerOrDiscovery);
+    await request.makeAuthUrlAsync(discovery);
+    return request;
 }
 export { useAutoDiscovery, useAuthRequest } from './AuthRequestHooks';
 export { AuthError, TokenError } from './Errors';
-export {
-  AuthRequest,
-  CodeChallengeMethod,
-  Prompt,
-  ResponseType,
-  resolveDiscoveryAsync,
-  fetchDiscoveryAsync,
-  generateHexStringAsync,
-};
-export {
-  // Token classes
-  TokenResponse,
-  AccessTokenRequest,
-  RefreshTokenRequest,
-  RevokeTokenRequest,
-  // Token methods
-  revokeAsync,
-  refreshAsync,
-  exchangeCodeAsync,
-  fetchUserInfoAsync,
-} from './TokenRequest';
+export { AuthRequest, CodeChallengeMethod, Prompt, ResponseType, resolveDiscoveryAsync, fetchDiscoveryAsync, generateHexStringAsync, };
+export { 
+// Token classes
+TokenResponse, AccessTokenRequest, RefreshTokenRequest, RevokeTokenRequest, 
+// Token methods
+revokeAsync, refreshAsync, exchangeCodeAsync, fetchUserInfoAsync, } from './TokenRequest';
 // Token types
 export * from './TokenRequest.types';
 //# sourceMappingURL=AuthSession.js.map
