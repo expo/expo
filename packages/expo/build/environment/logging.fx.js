@@ -18,8 +18,8 @@ if (__DEV__) {
             // The standard Expo logUrl is `http://localhost:8081/logs`, this code assumes that the `logs` endpoint doesn't change.
             const logUrl = url + 'logs';
             Constants.__unsafeNoWarnManifest.logUrl = logUrl;
-            if (Constants.manifest) {
-                Constants.manifest.logUrl = logUrl;
+            if (Constants.expoGoConfig) {
+                Constants.expoGoConfig.logUrl = logUrl;
             }
         }
     }
