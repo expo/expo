@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.18.0 — 2023-06-22
+
+_This version does not introduce any user-facing changes._
+
 ## 0.17.1 — 2023-06-21
 
 ### 📚 3rd party library updates
