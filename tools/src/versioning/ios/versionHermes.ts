@@ -18,6 +18,7 @@ const TRANSFORM_HEADERS_PUBLIC = [
   'DebuggerTypes',
   'GCConfig',
   'GCTripwireContext',
+  'HermesExport',
 ];
 
 const VERSIONED_JSI_DIR = 'versioned-jsi';
@@ -29,7 +30,7 @@ interface VersionHermesOptions {
   // specify custom hermes download dir, use temp dir by default
   hermesDir?: string;
 
-  // specify hermes git ref, use the version from *react-native-lab/react-native/sdks/.hermesversion* by default
+  // specify hermes git ref, use the version from *react-native-lab/react-native/packages/react-native/sdks/.hermesversion* by default
   hermesGitRef?: string;
 }
 
@@ -125,12 +126,6 @@ async function transformHermesAsync(
       )
     )
   );
-  // workaround for 0.69 as it doesn't support specifying custom JSI path
-  await spawnAsync('wget', [
-    '-O',
-    path.join(hermesRoot, 'utils/build-apple-framework.sh'),
-    'https://raw.githubusercontent.com/facebook/react-native/0.70-stable/sdks/hermes-engine/utils/build-apple-framework.sh',
-  ]);
 
   // copy versioned jsi files from react-native
   const versionedJsiDir = path.join(hermesRoot, VERSIONED_JSI_DIR);

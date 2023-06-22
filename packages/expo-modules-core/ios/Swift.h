@@ -3,6 +3,8 @@
 // The generated swift header may depend on some Objective-C declarations,
 // adding dependency imports here to prevent declarations not found errors.
 #import <ExpoModulesCore/EXDefines.h>
+#import <ExpoModulesCore/EXJavaScriptObject.h>
+#import <ExpoModulesCore/EXJavaScriptRuntime.h>
 #import <ExpoModulesCore/RCTComponentData+Privates.h>
 
 // When `use_frameworks!` is used, the generated Swift header is inside ExpoModulesCore module.

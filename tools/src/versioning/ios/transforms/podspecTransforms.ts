@@ -55,9 +55,14 @@ export function podspecTransforms(versionName: string): TransformPipeline {
       },
       {
         // Fixes HEADER_SEARCH_PATHS
-        paths: ['React-Core.podspec', 'ReactCommon.podspec'],
+        paths: [
+          'React-Core.podspec',
+          'ReactCommon.podspec',
+          'React-NativeModulesApple.podspec',
+          'React-RCTAppDelegate.podspec',
+        ],
         replace:
-          /(Headers\/Private\/|Headers\/Public\/|_BUILD_DIR\)\/)(React-Core|React-bridging|React-hermes|hermes-engine)/g,
+          /(Headers\/Private\/|Headers\/Public\/|_BUILD_DIR\)\/)(React-Core|React-bridging|React-hermes|hermes-engine|ReactCommon|React-RCTFabric)/g,
         with: `$1${versionName}$2`,
       },
       // React-cxxreact
@@ -86,10 +91,9 @@ export function podspecTransforms(versionName: string): TransformPipeline {
         with: `{${versionName}$1,${versionName}$2,${versionName}$3,${versionName}$4,${versionName}$5,${versionName}$6}`,
       },
 
-      // FBReactNativeSpec
+      // Remove codegen from build phase script
       {
-        // Remove codegen from build phase script
-        paths: 'FBReactNativeSpec.podspec',
+        paths: ['FBReactNativeSpec.podspec', 'React-rncore.podspec'],
         replace: /\n  use_react_native_codegen!\((.|\n)+?\n  }\)\n/gm,
         with: '',
       },

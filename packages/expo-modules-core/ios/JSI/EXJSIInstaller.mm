@@ -27,15 +27,15 @@ static NSString *modulesHostObjectLegacyPropertyName = @"ExpoModules";
 
 @implementation EXJavaScriptRuntimeManager
 
-+ (nullable ExpoRuntime *)runtimeFromBridge:(nonnull RCTBridge *)bridge
++ (nullable EXRuntime *)runtimeFromBridge:(nonnull RCTBridge *)bridge
 {
   jsi::Runtime *jsiRuntime = [bridge respondsToSelector:@selector(runtime)] ? reinterpret_cast<jsi::Runtime *>(bridge.runtime) : nullptr;
-  return jsiRuntime ? [[ExpoRuntime alloc] initWithRuntime:jsiRuntime callInvoker:bridge.jsCallInvoker] : nil;
+  return jsiRuntime ? [[EXRuntime alloc] initWithRuntime:jsiRuntime callInvoker:bridge.jsCallInvoker] : nil;
 }
 
 + (BOOL)installExpoModulesHostObject:(nonnull EXAppContext *)appContext
 {
-  ExpoRuntime *runtime = [appContext _runtime];
+  EXRuntime *runtime = [appContext _runtime];
 
   // The runtime may be unavailable, e.g. remote debugger is enabled or it hasn't been set yet.
   if (!runtime) {
