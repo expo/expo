@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Re-arrange the `Libraries/Core/InitializeCore` import. ([#23049](https://github.com/expo/expo/pull/23049) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 0.10.0 — 2023-06-21

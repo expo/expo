@@ -167,7 +167,10 @@ export function getDefaultConfig(
     },
     serializer: {
       getModulesRunBeforeMainModule: () => {
-        const preModules: string[] = [];
+        const preModules: string[] = [
+          // MUST be first
+          require.resolve(path.join(reactNativePath, 'Libraries/Core/InitializeCore')),
+        ];
 
         // We need to shift this to be the first module so web Fast Refresh works as expected.
         // This will only be applied if the module is installed and imported somewhere in the bundle already.
@@ -176,9 +179,6 @@ export function getDefaultConfig(
           preModules.push(metroRuntime);
         }
 
-        preModules.push(
-          require.resolve(path.join(reactNativePath, 'Libraries/Core/InitializeCore'))
-        );
         return preModules;
       },
       getPolyfills: () => require(path.join(reactNativePath, 'rn-get-polyfills'))(),
