@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 49.0.0-alpha.6 — 2023-06-22
+
+_This version does not introduce any user-facing changes._
+
 ## 49.0.0-alpha.5 — 2023-06-21
 
 _This version does not introduce any user-facing changes._
