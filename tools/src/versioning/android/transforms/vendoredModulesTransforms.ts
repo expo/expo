@@ -25,6 +25,12 @@ export function vendoredModulesTransforms(prefix: string): Record<string, FileTr
           find: '$nodeModules/versioned-react-native/ReactAndroid/gradle.properties',
           replaceWith: '$defaultDir/gradle.properties',
         },
+        {
+          paths: 'build.gradle',
+          find: /(        prefab\s*\{)([\s\S]*?)(^        \}\s)/gm,
+          replaceWith: (_, p1, p2, p3) =>
+            [p1, p2.replace('rnskia', `rnskia_${prefix}`), p3].join(''),
+        },
       ],
     },
     'react-native-svg': {
