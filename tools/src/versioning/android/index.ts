@@ -12,6 +12,7 @@ import { copyFileWithTransformsAsync } from '../../Transforms';
 import { searchFilesAsync } from '../../Utils';
 import { copyExpoviewAsync } from './copyExpoview';
 import { expoModulesTransforms } from './expoModulesTransforms';
+import { buildManifestMergerJarAsync } from './jarFiles';
 import { packagesToKeep } from './packagesConfig';
 import { versionCxxExpoModulesAsync } from './versionCxx';
 import { updateVersionedReactNativeAsync } from './versionReactNative';
@@ -53,8 +54,15 @@ const testSuiteTestsPath = path.join(
   appPath,
   'src/androidTest/java/host/exp/exponent/TestSuiteTests.kt'
 );
-const versionedReactAndroidPath = path.join(ANDROID_DIR, 'versioned-react-native/ReactAndroid');
-const versionedHermesPath = path.join(ANDROID_DIR, 'versioned-react-native/sdks/hermes');
+const versionedReactNativeMonorepoRoot = path.join(ANDROID_DIR, 'versioned-react-native');
+const versionedReactAndroidPath = path.join(
+  versionedReactNativeMonorepoRoot,
+  'packages/react-native/ReactAndroid'
+);
+const versionedHermesPath = path.join(
+  versionedReactNativeMonorepoRoot,
+  'packages/react-native/sdks/hermes'
+);
 
 async function transformFileAsync(filePath: string, regexp: RegExp, replacement: string = '') {
   const fileContent = await fs.readFile(filePath, 'utf8');
@@ -237,7 +245,7 @@ export async function removeVersionAsync(version: string) {
   }
 }
 
-async function copyExpoModulesAsync(version: string) {
+async function copyExpoModulesAsync(version: string, manifestMerger: string) {
   const packages = await getListOfPackagesAsync();
   for (const pkg of packages) {
     if (
@@ -248,7 +256,7 @@ async function copyExpoModulesAsync(version: string) {
       const abiVersion = `abi${version.replace(/\./g, '_')}`;
       const targetDirectory = path.join(ANDROID_DIR, `versioned-abis/expoview-${abiVersion}`);
       const sourceDirectory = path.join(pkg.path, pkg.androidSubdirectory);
-      const transforms = expoModulesTransforms(pkg.packageName, abiVersion);
+      const transforms = expoModulesTransforms(pkg, abiVersion);
 
       const files = await searchFilesAsync(sourceDirectory, [
         './src/main/java/**',
@@ -280,15 +288,15 @@ async function copyExpoModulesAsync(version: string) {
         'src/main/TemporaryExpoModuleAndroidManifest.xml'
       );
       const mainManifestPath = path.join(targetDirectory, 'src/main/AndroidManifest.xml');
-      await spawnAsync('java', [
-        '-jar',
-        path.join(SCRIPT_DIR, 'android-manifest-merger-3898d3a.jar'),
+      await spawnAsync(manifestMerger, [
         '--main',
         mainManifestPath,
         '--libs',
         temporaryPackageManifestPath,
         '--placeholder',
         'applicationId=${applicationId}',
+        '--placeholder',
+        'package=${applicationId}',
         '--out',
         mainManifestPath,
         '--log',
@@ -418,10 +426,9 @@ async function cleanUpAsync(version: string) {
 }
 
 async function exportReactNdks() {
-  const versionedRN = path.join(versionedReactAndroidPath, '..');
-  await spawnAsync(`./gradlew :ReactAndroid:packageReactNdkLibs`, [], {
+  await spawnAsync(`./gradlew :packages:react-native:ReactAndroid:packageReactNdkLibs`, [], {
     shell: true,
-    cwd: versionedRN,
+    cwd: versionedReactNativeMonorepoRoot,
     stdio: 'inherit',
     env: {
       ...process.env,
@@ -466,7 +473,8 @@ export async function addVersionAsync(version: string) {
   console.log(' ✅  4/9: Finished\n\n');
 
   console.log(' 🛠   5/9: Creating versioned expo-modules packages...');
-  await copyExpoModulesAsync(version);
+  const manifestMerger = await buildManifestMergerJarAsync();
+  await copyExpoModulesAsync(version, manifestMerger);
   console.log(' ✅  5/9: Finished\n\n');
 
   console.log(' 🛠   6/9: Versoning c++ libraries for expo-modules...');

@@ -299,6 +299,12 @@ dependencies {
   // expo-application
   api 'com.android.installreferrer:installreferrer:1.0'
 
+  // expo-blur
+  implementation 'com.github.Dimezis:BlurView:version-2.0.3'
+
+  // expo-modules-core android-annotation
+  api project(':expo-modules-core$android-annotation')
+
   // expo-store-review
   implementation "com.google.android.play:review:2.0.1"
   implementation "com.google.android.play:review-ktx:2.0.0"

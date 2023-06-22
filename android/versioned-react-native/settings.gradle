@@ -1,4 +1,5 @@
 includeBuild('../../react-native-lab/react-native/packages/react-native-gradle-plugin/')
-include ':ReactAndroid'
-include ':ReactAndroid:hermes-engine'
-project(':ReactAndroid:hermes-engine').projectDir = new File(rootDir, 'ReactAndroid/hermes-engine')
+include ':packages:react-native:ReactAndroid'
+project(':packages:react-native:ReactAndroid').projectDir = new File(rootDir, 'packages/react-native/ReactAndroid')
+include ':packages:react-native:ReactAndroid:hermes-engine'
+project(':packages:react-native:ReactAndroid:hermes-engine').projectDir = new File(rootDir, 'packages/react-native/ReactAndroid/hermes-engine')

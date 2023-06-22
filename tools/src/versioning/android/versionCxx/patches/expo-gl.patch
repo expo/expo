@@ -6,7 +6,7 @@ index 32784fe8a6..bbbea44599 100644
  def REACT_NATIVE_VERSION = System.getenv("REACT_NATIVE_OVERRIDE_VERSION") ?: reactProperties.getProperty("VERSION_NAME")
  def REACT_NATIVE_TARGET_VERSION = REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
 
-+REACT_NATIVE_DIR = "${rootDir}/versioned-react-native"
++REACT_NATIVE_DIR = "${rootDir}/versioned-react-native/packages/react-native"
 +REACT_NATIVE_BUILD_FROM_SOURCE = false
 +RN_SO_DIR = "${buildDir}/reactandroid-{VERSIONED_ABI_NAME}-*/jni"
 +
@@ -14,7 +14,7 @@ index 32784fe8a6..bbbea44599 100644
      def value = project.getProperties().get("reactNativeArchitectures")
      return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 diff --git a/packages/expo-gl/android/src/main/cpp/EXGLJniApi.cpp b/packages/expo-gl/android/src/main/cpp/EXGLJniApi.cpp
-index e9211d47ad..6b2c3fbb85 100644
+index f0f5f84821..0142daf4b1 100644
 --- a/packages/expo-gl/android/src/main/cpp/EXGLJniApi.cpp
 +++ b/packages/expo-gl/android/src/main/cpp/EXGLJniApi.cpp
 @@ -15,13 +15,13 @@ extern "C" {
@@ -33,7 +33,15 @@ index e9211d47ad..6b2c3fbb85 100644
  (JNIEnv *env, jclass clazz, jlong jsiPtr, jint exglCtxId, jobject glContext) {
    threadLocalEnv = env;
    jclass GLContextClass = env->GetObjectClass(glContext);
-@@ -35,55 +35,55 @@ Java_expo_modules_gl_cpp_EXGL_EXGLContextPrepare
+@@ -35,56 +35,56 @@ Java_expo_modules_gl_cpp_EXGL_EXGLContextPrepare
+ }
+ 
+ JNIEXPORT void JNICALL
+-Java_expo_modules_gl_cpp_EXGL_EXGLContextPrepareWorklet
++Java_{VERSIONED_ABI_NAME_JNI_ESCAPED}_expo_modules_gl_cpp_EXGL_EXGLContextPrepareWorklet
+ (JNIEnv *env, jclass clazz, jint exglCtxId) {
+   threadLocalEnv = env;
+   EXGLContextPrepareWorklet(exglCtxId);
  }
  
  JNIEXPORT void JNICALL
@@ -76,13 +84,6 @@ index e9211d47ad..6b2c3fbb85 100644
 +Java_{VERSIONED_ABI_NAME_JNI_ESCAPED}_expo_modules_gl_cpp_EXGL_EXGLContextGetObject
  (JNIEnv *env, jclass clazz, jint exglCtxId, jint exglObjId) {
    return EXGLContextGetObject(exglCtxId, exglObjId);
- }
- 
- JNIEXPORT void JNICALL
--Java_expo_modules_gl_cpp_EXGL_EXGLRegisterThread
-+Java_{VERSIONED_ABI_NAME_JNI_ESCAPED}_expo_modules_gl_cpp_EXGL_EXGLRegisterThread
- (JNIEnv *env, jclass clazz) {
-   threadLocalEnv = env;
  }
  
  JNIEXPORT bool JNICALL
