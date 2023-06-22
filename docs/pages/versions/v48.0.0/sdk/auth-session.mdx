@@ -136,7 +136,7 @@ import * as Facebook from 'expo-auth-session/providers/facebook';
 - Automatically uses the proxy in Expo Go because native auth is not supported due to custom build time configuration.
 - The URI redirect must be added to your **app.config.js** or **app.json** as `facebookScheme: 'fb<YOUR FBID>'`.
 - Disables PKCE for implicit auth response.
-- On web, the popup is presented with the dimensions `{ width: 700, height: 600 }`
+- On web, the popup is presented with the dimensions `{ width: 700, height: 600 }`.
 
 ### `useAuthRequest()`
 
@@ -158,6 +158,8 @@ A hook used for opinionated Facebook authentication that works across platforms.
 A [`DiscoveryDocument`](#discoverydocument) object containing the discovery URLs used for Facebook auth.
 
 ## Proxy Service
+
+> **warning** Expo proxy service is deprecated and will be removed in the future. See [blog post](https://blog.expo.dev/security-advisory-for-developers-using-authsessions-useproxy-options-and-auth-expo-io-e470fe9346df) for more information.
 
 `AuthSession` uses Expo servers to create a proxy between your application and the auth provider. If you'd like, you can also create your own proxy service.
 

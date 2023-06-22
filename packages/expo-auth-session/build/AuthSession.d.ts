@@ -1,15 +1,35 @@
 import * as Linking from 'expo-linking';
 import { AuthRequest } from './AuthRequest';
-import { AuthRequestConfig, AuthRequestPromptOptions, CodeChallengeMethod, Prompt, ResponseType } from './AuthRequest.types';
-import { AuthSessionOptions, AuthSessionRedirectUriOptions, AuthSessionResult } from './AuthSession.types';
-import { DiscoveryDocument, fetchDiscoveryAsync, Issuer, IssuerOrDiscovery, ProviderMetadata, resolveDiscoveryAsync } from './Discovery';
+import {
+  AuthRequestConfig,
+  AuthRequestPromptOptions,
+  CodeChallengeMethod,
+  Prompt,
+  ResponseType,
+} from './AuthRequest.types';
+import {
+  AuthSessionOptions,
+  AuthSessionRedirectUriOptions,
+  AuthSessionResult,
+} from './AuthSession.types';
+import {
+  DiscoveryDocument,
+  fetchDiscoveryAsync,
+  Issuer,
+  IssuerOrDiscovery,
+  ProviderMetadata,
+  resolveDiscoveryAsync,
+} from './Discovery';
 import { generateHexStringAsync } from './PKCE';
 /**
  * Cancels an active `AuthSession` if there is one. No return value, but if there is an active `AuthSession`
  * then the Promise returned by the `AuthSession.startAsync()` that initiated it resolves to `{ type: 'dismiss' }`.
  */
 export declare function dismiss(): void;
-export declare const getDefaultReturnUrl: (urlPath?: string | undefined, options?: Omit<Linking.CreateURLOptions, "queryParams"> | undefined) => string;
+export declare const getDefaultReturnUrl: (
+  urlPath?: string | undefined,
+  options?: Omit<Linking.CreateURLOptions, 'queryParams'> | undefined
+) => string;
 /**
  * Get the URL that your authentication provider needs to redirect to. For example: `https://auth.expo.io/@your-username/your-app-slug`. You can pass an additional path component to be appended to the default redirect URL.
  * > **Note** This method will throw an exception if you're using the bare workflow on native.
@@ -61,7 +81,14 @@ export declare function getRedirectUrl(path?: string): string;
  * // Web prod: https://yourwebsite.com
  * ```
  */
-export declare function makeRedirectUri({ native, scheme, isTripleSlashed, queryParams, path, preferLocalhost, }?: AuthSessionRedirectUriOptions): string;
+export declare function makeRedirectUri({
+  native,
+  scheme,
+  isTripleSlashed,
+  queryParams,
+  path,
+  preferLocalhost,
+}?: AuthSessionRedirectUriOptions): string;
 /**
  * Build an `AuthRequest` and load it before returning.
  *
@@ -70,11 +97,40 @@ export declare function makeRedirectUri({ native, scheme, isTripleSlashed, query
  * (Only `authorizationEndpoint` is required for requesting an authorization code).
  * @return Returns an instance of `AuthRequest` that can be used to prompt the user for authorization.
  */
-export declare function loadAsync(config: AuthRequestConfig, issuerOrDiscovery: IssuerOrDiscovery): Promise<AuthRequest>;
+export declare function loadAsync(
+  config: AuthRequestConfig,
+  issuerOrDiscovery: IssuerOrDiscovery
+): Promise<AuthRequest>;
 export { useAutoDiscovery, useAuthRequest } from './AuthRequestHooks';
 export { AuthError, TokenError } from './Errors';
-export { AuthSessionOptions, AuthSessionRedirectUriOptions, AuthSessionResult, AuthRequest, AuthRequestConfig, AuthRequestPromptOptions, CodeChallengeMethod, DiscoveryDocument, Issuer, IssuerOrDiscovery, Prompt, ProviderMetadata, ResponseType, resolveDiscoveryAsync, fetchDiscoveryAsync, generateHexStringAsync, };
-export { TokenResponse, AccessTokenRequest, RefreshTokenRequest, RevokeTokenRequest, revokeAsync, refreshAsync, exchangeCodeAsync, fetchUserInfoAsync, } from './TokenRequest';
+export {
+  AuthSessionOptions,
+  AuthSessionRedirectUriOptions,
+  AuthSessionResult,
+  AuthRequest,
+  AuthRequestConfig,
+  AuthRequestPromptOptions,
+  CodeChallengeMethod,
+  DiscoveryDocument,
+  Issuer,
+  IssuerOrDiscovery,
+  Prompt,
+  ProviderMetadata,
+  ResponseType,
+  resolveDiscoveryAsync,
+  fetchDiscoveryAsync,
+  generateHexStringAsync,
+};
+export {
+  TokenResponse,
+  AccessTokenRequest,
+  RefreshTokenRequest,
+  RevokeTokenRequest,
+  revokeAsync,
+  refreshAsync,
+  exchangeCodeAsync,
+  fetchUserInfoAsync,
+} from './TokenRequest';
 export * from './TokenRequest.types';
 export { GoogleAuthRequestConfig } from './providers/Google';
 export { FacebookAuthRequestConfig } from './providers/Facebook';
