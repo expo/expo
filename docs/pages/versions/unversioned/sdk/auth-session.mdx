@@ -99,7 +99,6 @@ import * as Google from 'expo-auth-session/providers/google';
 - Provides an extra `loginHint` parameter. If the user's email address is known ahead of time, it can be supplied to be the default option.
 - Enforces minimum scopes to `['openid', 'https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email']` for optimal usage with services like Firebase and Auth0.
 - By default, the authorization `code` will be automatically exchanged for an access token. This can be overridden with `shouldAutoExchangeCode`.
-- Automatically uses the proxy in Expo Go because native auth is not supported due to custom build time configuration. This can be overridden with `redirectUriOptions.useProxy`.
 - Defaults to using the bundle ID and package name for the native URI redirect instead of the reverse client ID.
 - Disables PKCE for implicit and id-token based auth responses.
 - On web, the popup is presented with the dimensions that are optimized for the Google login UI (`{ width: 515, height: 680 }`).
@@ -133,7 +132,6 @@ import * as Facebook from 'expo-auth-session/providers/facebook';
 - See the guide for more info on usage: [Facebook Authentication](/guides/authentication.mdx#facebook).
 - Enforces minimum scopes to `['public_profile', 'email']` for optimal usage with services like Firebase and Auth0.
 - Uses `display=popup` for better UI results.
-- Automatically uses the proxy in Expo Go because native auth is not supported due to custom build time configuration.
 - The URI redirect must be added to your **app.config.js** or **app.json** as `facebookScheme: 'fb<YOUR FBID>'`.
 - Disables PKCE for implicit auth response.
 - On web, the popup is presented with the dimensions `{ width: 700, height: 600 }`
@@ -156,61 +154,6 @@ A hook used for opinionated Facebook authentication that works across platforms.
 ### `discovery`
 
 A [`DiscoveryDocument`](#discoverydocument) object containing the discovery URLs used for Facebook auth.
-
-## Proxy Service
-
-`AuthSession` uses Expo servers to create a proxy between your application and the auth provider. If you'd like, you can also create your own proxy service.
-
-This service is responsible for:
-
-- redirecting traffic from your application to the authentication service
-- redirecting response from the auth service to your application using a deep link
-
-To better understand how it works, check out this implementation in Node.js:
-
-```js
-const http = require('http');
-const url = require('url');
-
-const PORT = PORT;
-const DEEP_LINK = DEEP_LINK_TO_YOUR_APPLICATION;
-
-const redirect = (response, url) => {
-  response.writeHead(302, {
-    Location: url,
-  });
-  response.end();
-};
-
-http
-  .createServer((request, response) => {
-    // get parameters from request
-    const parameters = url.parse(request.url, true).query;
-
-    // if parameters contain authServiceUrl, this request comes from the application
-    if (parameters.authServiceUrl) {
-      // redirect user to the authUrl
-      redirect(response, decodeURIComponent(parameters.authServiceUrl));
-      return;
-    }
-
-    // redirect response from the auth service to your application
-    redirect(response, DEEP_LINK);
-  })
-  .listen(PORT);
-```
-
-Client code which works with this service:
-
-```js
-const authServiceUrl = encodeURIComponent(YOUR_AUTH_URL); // we encode this, because it will be send as a query parameter
-const authServiceUrlParameter = `authServiceUrl=${authServiceUrl}`;
-const authUrl = `YOUR_PROXY_SERVICE_URL?${authServiceUrlParameter}`;
-const result = await AuthSession.startAsync({
-  authUrl,
-  returnUrl: YOUR_DEEP_LINK,
-});
-```
 
 ## Advanced usage
 
