@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Re-arrange the `Libraries/Core/InitializeCore` import.
+
 ### 💡 Others
 
 ## 0.10.0 — 2023-06-21
