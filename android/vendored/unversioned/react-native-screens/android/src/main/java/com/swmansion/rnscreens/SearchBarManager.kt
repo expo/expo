@@ -1,11 +1,18 @@
 package com.swmansion.rnscreens
 
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException
+import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.common.MapBuilder
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewGroupManager
 import com.facebook.react.uimanager.annotations.ReactProp
+import com.swmansion.rnscreens.events.SearchBarBlurEvent
+import com.swmansion.rnscreens.events.SearchBarChangeTextEvent
+import com.swmansion.rnscreens.events.SearchBarCloseEvent
+import com.swmansion.rnscreens.events.SearchBarFocusEvent
+import com.swmansion.rnscreens.events.SearchBarOpenEvent
+import com.swmansion.rnscreens.events.SearchBarSearchButtonPressEvent
 
 @ReactModule(name = SearchBarManager.REACT_CLASS)
 class SearchBarManager : ViewGroupManager<SearchBarView>() {
@@ -90,15 +97,32 @@ class SearchBarManager : ViewGroupManager<SearchBarView>() {
         view.shouldShowHintSearchIcon = shouldShowHintSearchIcon ?: true
     }
 
+    override fun receiveCommand(root: SearchBarView, commandId: String?, args: ReadableArray?) {
+        when (commandId) {
+            "focus" -> root.handleFocusJsRequest()
+            "blur" -> root.handleBlurJsRequest()
+            "clearText" -> root.handleClearTextJsRequest()
+            "toggleCancelButton" -> root.handleToggleCancelButtonJsRequest(false) // just a dummy argument
+            "setText" -> root.handleSetTextJsRequest(args?.getString(0))
+            else -> throw JSApplicationIllegalArgumentException("Unsupported native command received: $commandId")
+        }
+    }
+
     override fun getExportedCustomDirectEventTypeConstants(): Map<String, Any>? {
-        return MapBuilder.builder<String, Any>()
-            .put("onChangeText", MapBuilder.of("registrationName", "onChangeText"))
-            .put("onSearchButtonPress", MapBuilder.of("registrationName", "onSearchButtonPress"))
-            .put("onFocus", MapBuilder.of("registrationName", "onFocus"))
-            .put("onBlur", MapBuilder.of("registrationName", "onBlur"))
-            .put("onClose", MapBuilder.of("registrationName", "onClose"))
-            .put("onOpen", MapBuilder.of("registrationName", "onOpen"))
-            .build()
+        return MapBuilder.of(
+            SearchBarBlurEvent.EVENT_NAME,
+            MapBuilder.of("registrationName", "onBlur"),
+            SearchBarChangeTextEvent.EVENT_NAME,
+            MapBuilder.of("registrationName", "onChangeText"),
+            SearchBarCloseEvent.EVENT_NAME,
+            MapBuilder.of("registrationName", "onClose"),
+            SearchBarFocusEvent.EVENT_NAME,
+            MapBuilder.of("registrationName", "onFocus"),
+            SearchBarOpenEvent.EVENT_NAME,
+            MapBuilder.of("registrationName", "onOpen"),
+            SearchBarSearchButtonPressEvent.EVENT_NAME,
+            MapBuilder.of("registrationName", "onSearchButtonPress"),
+        )
     }
 
     companion object {

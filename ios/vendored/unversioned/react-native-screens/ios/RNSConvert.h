@@ -1,4 +1,4 @@
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 #import <react/renderer/components/rnscreens/Props.h>
 #import "RNSEnums.h"
 
@@ -19,6 +19,12 @@
 + (RNSScreenSwipeDirection)RNSScreenSwipeDirectionFromCppEquivalent:
     (facebook::react::RNSScreenSwipeDirection)swipeDirection;
 
++ (RNSScreenDetentType)RNSScreenDetentTypeFromAllowedDetents:
+    (facebook::react::RNSScreenSheetAllowedDetents)allowedDetents;
+
++ (RNSScreenDetentType)RNSScreenDetentTypeFromLargestUndimmedDetent:
+    (facebook::react::RNSScreenSheetLargestUndimmedDetent)detent;
+
 + (NSDictionary *)gestureResponseDistanceDictFromCppStruct:
     (const facebook::react::RNSScreenGestureResponseDistanceStruct &)gestureResponseDistance;
 
@@ -27,4 +33,4 @@
 
 @end
 
-#endif // RN_FABRIC_ENABLED
+#endif // RCT_NEW_ARCH_ENABLED

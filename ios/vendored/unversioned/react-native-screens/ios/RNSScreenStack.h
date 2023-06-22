@@ -1,4 +1,4 @@
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 #import <React/RCTViewComponentView.h>
 #else
 #import <React/RCTUIManagerObserverCoordinator.h>
@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface RNSScreenStackView :
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
     RCTViewComponentView <RNSScreenContainerDelegate>
 #else
     UIView <RNSScreenContainerDelegate, RCTInvalidating>
@@ -23,10 +23,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)markChildUpdated;
 - (void)didUpdateChildren;
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 #else
 @property (nonatomic, copy) RCTDirectEventBlock onFinishTransitioning;
-#endif // RN_FABRIC_ENABLED
+#endif // RCT_NEW_ARCH_ENABLED
 
 @end
 

@@ -36,6 +36,10 @@ class CustomSearchView(context: Context, fragment: Fragment) : SearchView(contex
         requestFocusFromTouch()
     }
 
+    fun clearText() = setQuery("", false)
+
+    fun setText(text: String) = setQuery(text, false)
+
     override fun setOnCloseListener(listener: OnCloseListener?) {
         mCustomOnCloseListener = listener
     }

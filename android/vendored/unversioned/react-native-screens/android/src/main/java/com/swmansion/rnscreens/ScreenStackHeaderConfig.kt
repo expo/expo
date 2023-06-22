@@ -16,9 +16,10 @@ import androidx.fragment.app.Fragment
 import com.facebook.react.ReactApplication
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException
 import com.facebook.react.bridge.ReactContext
-import com.facebook.react.bridge.WritableMap
-import com.facebook.react.uimanager.events.RCTEventEmitter
+import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.views.text.ReactTypefaceUtils
+import com.swmansion.rnscreens.events.HeaderAttachedEvent
+import com.swmansion.rnscreens.events.HeaderDetachedEvent
 
 class ScreenStackHeaderConfig(context: Context) : ViewGroup(context) {
     private val mConfigSubviews = ArrayList<ScreenStackHeaderSubview>(3)
@@ -64,11 +65,6 @@ class ScreenStackHeaderConfig(context: Context) : ViewGroup(context) {
         }
     }
 
-    private fun sendEvent(eventName: String, eventContent: WritableMap?) {
-        (context as ReactContext).getJSModule(RCTEventEmitter::class.java)
-            ?.receiveEvent(id, eventName, eventContent)
-    }
-
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
         // no-op
     }
@@ -80,7 +76,8 @@ class ScreenStackHeaderConfig(context: Context) : ViewGroup(context) {
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         mIsAttachedToWindow = true
-        sendEvent("onAttached", null)
+        UIManagerHelper.getEventDispatcherForReactTag(context as ReactContext, id)
+            ?.dispatchEvent(HeaderAttachedEvent(id))
         // we want to save the top inset before the status bar can be hidden, which would resolve in
         // inset being 0
         if (headerTopInset == null) {
@@ -96,7 +93,8 @@ class ScreenStackHeaderConfig(context: Context) : ViewGroup(context) {
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         mIsAttachedToWindow = false
-        sendEvent("onDetached", null)
+        UIManagerHelper.getEventDispatcherForReactTag(context as ReactContext, id)
+            ?.dispatchEvent(HeaderDetachedEvent(id))
     }
 
     private val screen: Screen?
