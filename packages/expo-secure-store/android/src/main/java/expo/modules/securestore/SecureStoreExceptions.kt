@@ -1,6 +1,7 @@
 package expo.modules.securestore
 
-import expo.modules.core.errors.CodedException
+import expo.modules.kotlin.exception.CodedException
+
 
 internal class NullKeyException :
   CodedException("SecureStore keys must not be null")
@@ -25,3 +26,6 @@ internal class SecureStoreJSONException(message: String?, cause: Throwable?) :
 
 internal class DeleteException(message: String?, cause: Throwable?) :
   CodedException(message ?: "An unexpected error occurred when deleting from SecureStore", cause)
+
+internal class AuthenticationException(message: String?, cause: Throwable?) :
+  CodedException(message ?: "An unexpected error occurred when authenticating the user", cause)

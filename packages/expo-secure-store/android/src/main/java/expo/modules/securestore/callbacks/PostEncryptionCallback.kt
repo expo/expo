@@ -1,6 +1,6 @@
-package expo.modules.securestore
+package expo.modules.securestore.callbacks
 
-import expo.modules.core.Promise
+import expo.modules.kotlin.Promise
 import org.json.JSONException
 import java.security.GeneralSecurityException
 

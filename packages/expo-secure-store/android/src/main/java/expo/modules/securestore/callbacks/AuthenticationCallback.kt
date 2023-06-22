@@ -1,7 +1,7 @@
-package expo.modules.securestore
+package expo.modules.securestore.callbacks
 
-import expo.modules.core.Promise
-import expo.modules.core.arguments.ReadableArguments
+import expo.modules.kotlin.Promise
+import expo.modules.securestore.SecureStoreOptions
 import javax.crypto.Cipher
 import javax.crypto.spec.GCMParameterSpec
 
@@ -11,7 +11,7 @@ interface AuthenticationCallback {
     promise: Promise,
     cipher: Cipher,
     gcmParameterSpec: GCMParameterSpec,
-    options: ReadableArguments,
+    options: SecureStoreOptions,
     encryptionCallback: EncryptionCallback,
     postEncryptionCallback: PostEncryptionCallback?
   )
@@ -21,7 +21,7 @@ interface AuthenticationCallback {
     requiresAuthentication: Boolean,
     cipher: Cipher,
     gcmParameterSpec: GCMParameterSpec,
-    options: ReadableArguments,
+    options: SecureStoreOptions,
     encryptionCallback: EncryptionCallback,
     postEncryptionCallback: PostEncryptionCallback?
   )
