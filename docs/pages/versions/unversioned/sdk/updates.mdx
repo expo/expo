@@ -51,7 +51,7 @@ Learn how to configure the native projects in the [installation instructions in 
 
 ## Usage
 
-Most of the methods and constants in this module can only be used or tested in release mode. In debug builds, the default behavior is to always load the latest JavaScript from a development server. It is possible to [build a debug version of your app with the same updates behavior as a release build](/eas-update/debug/#debugging-of-native-code-in-an-app). Such an app will not open the latest JavaScript from your development server &mdash; it will load published updates just as a release build does. This may be useful for debugging the behavior of your app when it is not connected to a development server.
+Most of the methods and constants in this module can only be used or tested in release mode. In debug builds, the default behavior is to always load the latest JavaScript from a development server. It is possible to [build a debug version of your app with the same updates behavior as a release build](/eas-update/debug-advanced/#debugging-of-native-code-while-loading-the-app-through-expo-updates). Such an app will not open the latest JavaScript from your development server &mdash; it will load published updates just as a release build does. This may be useful for debugging the behavior of your app when it is not connected to a development server.
 
 **To test manual updates in the Expo Go app**, run [`eas update`](/eas-update/introduction) and then open the published version of your app with Expo Go.
 
