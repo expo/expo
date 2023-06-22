@@ -44,7 +44,7 @@ public:
   /**
    Render to a canvas
    */
-  virtual void renderToCanvas(const std::function<void(SkCanvas *)> &) = 0;
+  virtual bool renderToCanvas(const std::function<void(SkCanvas *)> &) = 0;
 
 protected:
   std::function<void()> _requestRedraw;
@@ -123,8 +123,9 @@ public:
   /**
    Render to a canvas
    */
-  void renderToCanvas(const std::function<void(SkCanvas *)> &cb) override {
+  bool renderToCanvas(const std::function<void(SkCanvas *)> &cb) override {
     cb(_surface->getCanvas());
+    return true;
   };
 
 private:
@@ -223,6 +224,15 @@ public:
    * thread and js runtime.
    */
   void requestRedraw() { _redrawRequestCounter++; }
+
+  /**
+   Renders immediate. Be carefull to not call this method from another thread
+   than the UI thread
+   */
+  void renderImmediate() {
+    _renderer->renderImmediate(_canvasProvider);
+    _redrawRequestCounter = 0;
+  }
 
   /**
    Sets the native id of the view
@@ -409,6 +419,7 @@ private:
 
   size_t _drawingLoopId = 0;
   std::atomic<int> _redrawRequestCounter = {1};
+  bool _initialDrawingDone = false;
 };
 
 } // namespace RNSkia

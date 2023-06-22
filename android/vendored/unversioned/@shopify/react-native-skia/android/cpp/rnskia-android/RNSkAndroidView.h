@@ -42,6 +42,10 @@ public:
   void surfaceAvailable(jobject surface, int width, int height) override {
     std::static_pointer_cast<RNSkOpenGLCanvasProvider>(T::getCanvasProvider())
         ->surfaceAvailable(surface, width, height);
+
+    // Try to render directly when the surface has been set so that
+    // we don't have to wait until the draw loop returns.
+    RNSkView::renderImmediate();
   }
 
   void surfaceDestroyed() override {
