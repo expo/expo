@@ -59,6 +59,10 @@ class CardFormView(context: ThemedReactContext) : FrameLayout(context) {
     setCountry(defaults.getString("countryCode"))
   }
 
+  fun setDisabled(isDisabled: Boolean) {
+    cardForm.isEnabled = !isDisabled
+  }
+
   private fun setCountry(countryString: String?) {
     if (countryString != null) {
       cardFormViewBinding.countryLayout.setSelectedCountryCode(CountryCode(countryString))

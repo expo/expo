@@ -6,8 +6,8 @@
 RCT_EXPORT_VIEW_PROPERTY(onFormComplete, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(dangerouslyGetFullCardDetails, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(autofocus, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(isUserInteractionEnabledValue, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(cardStyle, NSDictionary)
+RCT_EXPORT_VIEW_PROPERTY(disabled, BOOL)
 RCT_EXTERN_METHOD(focus:(nonnull NSNumber*) reactTag)
 RCT_EXTERN_METHOD(blur:(nonnull NSNumber*) reactTag)
-RCT_EXPORT_VIEW_PROPERTY(cardStyle, NSDictionary)
 @end

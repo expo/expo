@@ -12,6 +12,12 @@ class CardFieldView: UIView, STPPaymentCardTextFieldDelegate {
     public var cardParams: STPPaymentMethodParams? = nil
     public var cardPostalCode: String? = nil
 
+    @objc var disabled: Bool = false {
+        didSet {
+            cardField.isUserInteractionEnabled = !disabled
+        }
+    }
+    
     @objc var postalCodeEnabled: Bool = true {
         didSet {
             cardField.postalCodeEntryEnabled = postalCodeEnabled
