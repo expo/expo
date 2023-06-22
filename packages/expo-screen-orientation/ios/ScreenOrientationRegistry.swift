@@ -20,7 +20,13 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   weak var currentTraitCollection: UITraitCollection?
   var lastOrientationMask: UIInterfaceOrientationMask
   var rootViewController: UIViewController? {
-    return UIApplication.shared.keyWindow?.rootViewController
+    let keyWindow = UIApplication
+      .shared
+      .connectedScenes
+      .flatMap { ($0 as? UIWindowScene)?.windows ?? [] }
+      .last { $0.isKeyWindow }
+
+    return keyWindow?.rootViewController
   }
 
   var currentOrientationMask: UIInterfaceOrientationMask {
