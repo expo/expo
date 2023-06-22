@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.10.0 — 2023-06-21
+
+### 🛠 Breaking changes
+
 - Changed the default dev server port from 19000 to 8081 for Expo Go. ([#22880](https://github.com/expo/expo/pull/22880) by [@kudo](https://github.com/kudo))
 
 ### 🎉 New features
@@ -13,6 +23,8 @@
 - Add `-d` as an alias to `--dev-client`. ([#22925](https://github.com/expo/expo/pull/22925) by [@EvanBacon](https://github.com/EvanBacon))
 - Allow client-side device ids to reuse debugger sessions when restarting app. ([#22742](https://github.com/expo/expo/pull/22742) by [@byCedric](https://github.com/byCedric))
 - Enable inspector proxy with network support by default. ([#22936](https://github.com/expo/expo/pull/22936) by [@byCedric](https://github.com/byCedric))
+- Auto enable `--dev-client` in `expo start` if `--go` is not passed and `expo-dev-client` is in the `package.json`. ([#22926](https://github.com/expo/expo/pull/22926) by [@EvanBacon](https://github.com/EvanBacon))
+- Add `EXPO_OFFLINE` environment variable to disable network requests across the entire CLI. ([#22961](https://github.com/expo/expo/pull/22961) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 

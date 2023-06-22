@@ -1,9 +1,9 @@
 import semver from 'semver';
 
 import { getVersionsAsync } from '../../api/getVersions';
-import { APISettings } from '../../api/settings';
 import * as Log from '../../log';
 import { downloadExpoGoAsync } from '../../utils/downloadExpoGoAsync';
+import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
 import { logNewSection } from '../../utils/ora';
 import { confirmAsync } from '../../utils/prompts';
@@ -85,13 +85,14 @@ export class ExpoGoInstaller<IDevice> {
   async ensureAsync(deviceManager: DeviceManager<IDevice>): Promise<boolean> {
     let shouldInstall = !(await deviceManager.isAppInstalledAsync(this.appId));
 
-    if (APISettings.isOffline && !shouldInstall) {
-      Log.warn(`Skipping Expo Go version validation in offline mode`);
-      return false;
-    } else if (APISettings.isOffline && shouldInstall) {
+    if (env.EXPO_OFFLINE) {
+      if (!shouldInstall) {
+        Log.warn(`Skipping Expo Go version validation in offline mode`);
+        return false;
+      }
       throw new CommandError(
         'NO_EXPO_GO',
-        `Expo Go is not installed on device "${deviceManager.name}", while running in offline mode. Manually install Expo Go or run without --offline flag.`
+        `Expo Go is not installed on device "${deviceManager.name}", while running in offline mode. Manually install Expo Go or run without --offline flag (or EXPO_OFFLINE environment variable).`
       );
     }
 

@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 14.3.0 — 2023-06-21
+
+### 🎉 New features
+
 - Changing locale on Android no longer reloads the app if the `expo-localization` config plugin is added to app.json. ([#22763](https://github.com/expo/expo/pull/22763) by [@aleqsio](https://github.com/aleqsio))
 - Added hooks to get current locale and calendar. ([#22763](https://github.com/expo/expo/pull/22763) by [@aleqsio](https://github.com/aleqsio))
 - Measurement system now returns `uk` and `us` values on iOS 16 and higher. ([#22763](https://github.com/expo/expo/pull/22763) by [@aleqsio](https://github.com/aleqsio))
@@ -14,8 +22,6 @@
 
 - User settings for delimiters and other locale preferences now override default locale settings for each locale in the list. ([#22763](https://github.com/expo/expo/pull/22763) by [@aleqsio](https://github.com/aleqsio))
 - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 14.2.0 — 2023-05-08
 

@@ -237,34 +237,5 @@ describe('Managed', () => {
         });
       });
     });
-
-    describe('Proxy', () => {
-      describeManifestTypes(
-        {
-          id: 'fake',
-          originalFullName: '@test/originaltest',
-        },
-        {
-          extra: {
-            expoClient: {
-              name: 'wat',
-              slug: 'wat',
-              originalFullName: '@test/originaltest',
-            },
-          },
-        }
-      )((manifestObj) => {
-        it(`creates a redirect URL with useProxy`, () => {
-          mockConstants({}, manifestObj);
-
-          const { makeRedirectUri } = require('../AuthSession');
-
-          // Should create a proxy URL and omit the extra path component
-          expect(makeRedirectUri({ path: 'bacon', useProxy: true })).toBe(
-            'https://auth.expo.io/@test/originaltest'
-          );
-        });
-      });
-    });
   });
 });

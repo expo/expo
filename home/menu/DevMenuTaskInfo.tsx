@@ -1,24 +1,17 @@
-import { Row, View, Text, Divider, Spacer } from 'expo-dev-client-components';
+import { Row, View, Text } from 'expo-dev-client-components';
 import React from 'react';
 import { Image, StyleSheet } from 'react-native';
-
-import DevIndicator from '../components/DevIndicator';
-import FriendlyUrls from '../legacy/FriendlyUrls';
 
 type Props = {
   task: { [key: string]: any };
 };
 
 export function DevMenuTaskInfo({ task }: Props) {
-  const taskUrl = task.manifestUrl ? FriendlyUrls.toFriendlyString(task.manifestUrl) : '';
   const manifest = task.manifestString && JSON.parse(task.manifestString);
   const iconUrl = manifest && (manifest.iconUrl ?? manifest.extra?.expoClient?.iconUrl);
   const taskName = manifest && (manifest.name ?? manifest.extra?.expoClient?.name);
   const sdkVersion = manifest && (manifest.sdkVersion ?? manifest.extra?.expoClient?.sdkVersion);
   const runtimeVersion = manifest && manifest.runtimeVersion;
-
-  const devServerName =
-    manifest && manifest.extra?.expoGo?.developer ? manifest.extra.expoGo.developer.tool : null;
 
   return (
     <View>
@@ -49,25 +42,6 @@ export function DevMenuTaskInfo({ task }: Props) {
           )}
         </View>
       </Row>
-      <Divider />
-      <View bg="default" padding="medium">
-        {devServerName ? (
-          <>
-            <Text size="small" type="InterRegular">
-              Connected to {devServerName}
-            </Text>
-            <Spacer.Vertical size="tiny" />
-          </>
-        ) : null}
-        <Row align="center">
-          {devServerName ? (
-            <DevIndicator style={styles.taskDevServerIndicator} isActive isNetworkAvailable />
-          ) : null}
-          <Text type="InterRegular" size="medium" numberOfLines={1}>
-            {taskUrl}
-          </Text>
-        </Row>
-      </View>
     </View>
   );
 }
@@ -80,8 +54,5 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignSelf: 'center',
     backgroundColor: 'transparent',
-  },
-  taskDevServerIndicator: {
-    marginRight: 8,
   },
 });
