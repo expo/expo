@@ -9,7 +9,7 @@ import java.util.*
 
 @RunWith(AndroidJUnit4ClassRunner::class)
 class UpdatesUtilsInstrumentationTest {
-  @Test
+  @Test(expected = ParseException::class)
   @Throws(ParseException::class)
   fun testParseDateString_Z() {
     Assert.assertEquals(
@@ -18,7 +18,7 @@ class UpdatesUtilsInstrumentationTest {
     )
   }
 
-  @Test
+  @Test(expected = ParseException::class)
   @Throws(ParseException::class)
   fun testParseDateString_writtenTimezone() {
     Assert.assertEquals(
@@ -31,7 +31,7 @@ class UpdatesUtilsInstrumentationTest {
     )
   }
 
-  @Test
+  @Test(expected = ParseException::class)
   @Throws(ParseException::class)
   fun testParseDateString_writtenTimezoneWithColon() {
     Assert.assertEquals(

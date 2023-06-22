@@ -114,7 +114,7 @@ class LegacyUpdateManifest private constructor(
             Date()
           }
         } else {
-          Date()
+          throw JSONException("Missing commitTime")
         }
       }
 
