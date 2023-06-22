@@ -3,7 +3,7 @@
  */
 private let coreObjectPropertyName = "expo"
 
-@objc(ExpoRuntime)
+@objc(EXRuntime)
 public final class ExpoRuntime: JavaScriptRuntime {
   /**
    The core object of the Expo runtime that is used to scope native Expo-specific functionalities.

@@ -78,6 +78,28 @@ export function postTransforms(versionName: string): TransformPipeline {
         with: `$1/$2/${versionName}`,
       },
       {
+        // Files inside fabric directory used to have nested import paths and we transformed it wrong.
+        // This rules are here to fix it.
+        // e.g. `#include <react/debug/react_native_assert.h>`
+        //   -> `#include <ABI49_0_0React/ABI49_0_0debug/ABI49_0_0React_native_assert.h>`
+        //   -> `#include <ABI49_0_0React/debug/ABI49_0_0React_native_assert.h>`
+        paths: ['ReactCommon/react/', 'React/'],
+        replace: new RegExp(
+          `(^(#include|#import) <${versionName}React)/${versionName}([^/\\n]+?)/(${versionName})?([^/\\n]+?\\.h>$)`,
+          'gm'
+        ),
+        with: `$1/$3/${versionName}$5`,
+      },
+      {
+        // Same as above but for difference nested level.
+        paths: ['Libraries/AppDelegate/', 'ReactCommon/react/', 'React/'],
+        replace: new RegExp(
+          `(^(#include|#import) <${versionName}React)/${versionName}([^/\\n]+?)\\/([^/\\n]+?)\\/(${versionName})?([^/\\n]+?\\.h>$)`,
+          'gm'
+        ),
+        with: `$1/$3/$4/${versionName}$6`,
+      },
+      {
         // Codegen adds methods to `RCTCxxConvert` that start with `JS_`, which refer to `JS::`
         // C++ namespace that we prefix, so these methods must be prefixed as well.
         paths: ['FBReactNativeSpec.h', 'FBReactNativeSpec-generated.mm'],
@@ -139,6 +161,11 @@ export function postTransforms(versionName: string): TransformPipeline {
         paths: 'AIRGoogleMapWMSTile',
         replace: /\b(WMSTileOverlay)\b/g,
         with: `${versionName}$1`,
+      },
+      {
+        paths: 'AIRGoogleMap',
+        replace: new RegExp(`^#import "${versionName}(GMU.+?\\.h)"`, 'gm'),
+        with: `#import <Google-Maps-iOS-Utils/$1>`,
       },
 
       // react-native-webview

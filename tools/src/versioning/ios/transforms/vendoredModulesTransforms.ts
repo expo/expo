@@ -27,23 +27,18 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
     'react-native-webview': {
       content: [
         {
-          paths: 'RNCWebView.m',
-          find: new RegExp(`#import "objc/${prefix}runtime\\.h"`, ''),
-          replaceWith: '#import "objc/runtime.h"',
-        },
-        {
-          paths: 'RNCWebView.m',
+          paths: 'RNCWebViewImpl.m',
           find: /\b(_SwizzleHelperWK)\b/g,
           replaceWith: `${prefix}$1`,
         },
         {
           // see issue: https://github.com/expo/expo/issues/4463
-          paths: 'RNCWebView.m',
+          paths: 'RNCWebViewImpl.m',
           find: /MessageHandlerName = @"ABI\d+_\d+_\d+ReactNativeWebView";/,
           replaceWith: `MessageHandlerName = @"ReactNativeWebView";`,
         },
         {
-          paths: 'RNCWebView.m',
+          paths: 'RNCWebViewImpl.m',
           find: 'NSString *const CUSTOM_SELECTOR',
           replaceWith: 'static NSString *const CUSTOM_SELECTOR',
         },
@@ -103,28 +98,70 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
           replaceWith: `${prefix}$1`,
         },
         {
-          paths: 'REANodesManager.m',
+          paths: 'REANodesManager.mm',
           find: /\b(ComponentUpdate)\b/g,
           replaceWith: `${prefix}$1`,
         },
         {
-          // versioning reacthermes import
-          paths: 'NativeProxy.mm',
-          find: new RegExp(
-            `(#if\\s+__has_include\\(|#import\\s+)<reacthermes\\/${prefix}HermesExecutorFactory.h>`,
-            'g'
-          ),
-          replaceWith: `$1<${prefix}reacthermes/${prefix}HermesExecutorFactory.h>`,
+          paths: 'REASnapshot.m',
+          find: /^(const int (ScreenStackPresentationModal|DEFAULT_MODAL_TOP_OFFSET))/gm,
+          replaceWith: `static $1`,
         },
         {
-          paths: '**/*.{h,mm}',
-          find: new RegExp(`${prefix}(REACT_NATIVE_MINOR_VERSION)`, 'g'),
-          replaceWith: '$1',
+          paths: [
+            'NativeProxy.mm',
+            'ReanimatedRuntime.h',
+            'ReanimatedRuntime.cpp',
+            'ReanimatedHermesRuntime.h',
+            'ReanimatedHermesRuntime.cpp',
+            'REAMessageThread.h',
+          ],
+          find: new RegExp(
+            `(__has_include\\(|#import\\s+|#include\\s+)<(cxxreact|reacthermes)\\/(${prefix})?(MessageQueueThread|HermesExecutorFactory)(\\.h>\\)?)`,
+            'g'
+          ),
+          replaceWith: `$1<${prefix}$2/${prefix}$4$5`,
+        },
+        {
+          paths: ['ReanimatedRuntime.h', 'ReanimatedHermesRuntime.h'],
+          find: `        <reacthermes/${prefix}HermesExecutorFactory.h>) || __has_include(<hermes/hermes.h>))`,
+          replaceWith: `        <${prefix}reacthermes/${prefix}HermesExecutorFactory.h>) || __has_include(<hermes/hermes.h>))`,
+        },
+        {
+          paths: ['ReanimatedHermesRuntime.h', 'ReanimatedHermesRuntime.cpp'],
+          find: /^((#if __has_include|#include).+\/)(RuntimeAdapter|Registration)(\.h>)$/gm,
+          replaceWith: `$1${prefix}$3$4`,
+        },
+        {
+          paths: 'RCTAppDelegate+Reanimated.h',
+          find: new RegExp(`<${prefix}React-${prefix}RCTAppDelegate/`, 'g'),
+          replaceWith: `<${prefix}React-RCTAppDelegate/`,
+        },
+        {
+          paths: 'RCTAppDelegate+Reanimated.h',
+          find: new RegExp(
+            `(#if __has_include\\(|#import )<${prefix}React-cxxreact/cxxreact/JSExecutor\\.h>`,
+            'g'
+          ),
+          replaceWith: `$1<${prefix}React-cxxreact/${prefix}cxxreact/${prefix}JSExecutor.h>`,
+        },
+        {
+          // Workaround for jsi somehow be transformed back to unversioned path
+          find: /^#include <jsi\/jsi\.h>/gm,
+          replaceWith: `#include <${prefix}jsi/${prefix}jsi.h>`,
         },
         {
           paths: 'RNReanimated.podspec.json',
-          find: /(REANIMATED_VERSION)/g,
+          find: /(REACT_NATIVE_MINOR_VERSION|REANIMATED_VERSION)/g,
           replaceWith: `${prefix}$1`,
+        },
+        {
+          paths: 'RNReanimated.podspec.json',
+          find: new RegExp(
+            `\\/react-native-lab\\/react-native\\/packages\\/react-native\\/${prefix}ReactCommon`,
+            'g'
+          ),
+          replaceWith: `/ios/versioned-react-native/${prefix}/ReactNative/ReactCommon`,
         },
       ],
     },
@@ -175,7 +212,7 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
     '@shopify/react-native-skia': {
       path: [
         {
-          find: /\b(DisplayLink|PlatformContext|SkiaDrawView|SkiaDrawViewManager|SkiaManager|SkiaUIView|SkiaPictureViewManager|SkiaDomViewManager)/g,
+          find: /\b(DisplayLink|PlatformContext|SkiaDrawView|SkiaDrawViewManager|SkiaManager|SkiaUIView|SkiaPictureViewManager|SkiaDomViewManager|ViewScreenshotService)/g,
           replaceWith: `${prefix}$1`,
         },
       ],
@@ -186,7 +223,7 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
           replaceWith: `ReactCommon/${prefix}`,
         },
         {
-          find: /\b(DisplayLink|PlatformContext|SkiaDrawView|SkiaDrawViewManager|SkiaManager|RNJsi|SkiaUIView|SkiaPictureViewManager|SkiaDomViewManager)/g,
+          find: /\b(DisplayLink|PlatformContext|SkiaDrawView|SkiaDrawViewManager|SkiaManager|RNJsi|SkiaUIView|SkiaPictureViewManager|SkiaDomViewManager|ViewScreenshotService)/g,
           replaceWith: `${prefix}$1`,
         },
         {

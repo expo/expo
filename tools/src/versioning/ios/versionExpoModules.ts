@@ -16,7 +16,7 @@ import { getVersionPrefix, getVersionedDirectory } from './utils';
 const TIMER_LABEL = 'Versioning expo modules finished in';
 
 // The pattern that matches the dependency pods that need to be renamed in `*.podspec.json`.
-const PODSPEC_DEPS_TO_RENAME_PATTERN = /^(Expo|EX|UM|EAS|React|RCT|Yoga)/;
+const PODSPEC_DEPS_TO_RENAME_PATTERN = /^(Expo|EX|UM|EAS|React|RCT|Yoga)(?!-Folly)/;
 
 // The pattern that matches the file that need to be renamed in `*.podspec.json`.
 const PODSPEC_FILES_TO_RENAME_PATTERN = /^(Expo|EX|UM|EAS|React|RCT|Yoga|hermes-engine)(?!-Folly)/;

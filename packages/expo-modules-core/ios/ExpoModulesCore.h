@@ -8,6 +8,6 @@
 // Otherwise they won't be visible in `ExpoModulesCore-Swift.h`.
 #import <React/RCTView.h>
 
-#if __has_include("ExpoModulesCore-umbrella.h")
-#import "ExpoModulesCore-umbrella.h"
+#if __has_include(<ExpoModulesCore/ExpoModulesCore-umbrella.h>)
+#import <ExpoModulesCore/ExpoModulesCore-umbrella.h>
 #endif
