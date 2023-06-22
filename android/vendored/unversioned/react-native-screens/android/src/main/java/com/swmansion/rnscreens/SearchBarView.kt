@@ -3,11 +3,17 @@ package com.swmansion.rnscreens
 import android.annotation.SuppressLint
 import android.text.InputType
 import androidx.appcompat.widget.SearchView
-import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactContext
-import com.facebook.react.bridge.WritableMap
-import com.facebook.react.uimanager.events.RCTEventEmitter
+import com.facebook.react.uimanager.UIManagerHelper
+import com.facebook.react.uimanager.events.Event
+import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.views.view.ReactViewGroup
+import com.swmansion.rnscreens.events.SearchBarBlurEvent
+import com.swmansion.rnscreens.events.SearchBarChangeTextEvent
+import com.swmansion.rnscreens.events.SearchBarCloseEvent
+import com.swmansion.rnscreens.events.SearchBarFocusEvent
+import com.swmansion.rnscreens.events.SearchBarOpenEvent
+import com.swmansion.rnscreens.events.SearchBarSearchButtonPressEvent
 
 @SuppressLint("ViewConstructor")
 class SearchBarView(reactContext: ReactContext?) : ReactViewGroup(reactContext) {
@@ -95,32 +101,47 @@ class SearchBarView(reactContext: ReactContext?) : ReactViewGroup(reactContext) 
     }
 
     private fun handleTextChange(newText: String?) {
-        val event = Arguments.createMap()
-        event.putString("text", newText)
-        sendEvent("onChangeText", event)
+        sendEvent(SearchBarChangeTextEvent(id, newText))
     }
 
     private fun handleFocusChange(hasFocus: Boolean) {
-        sendEvent(if (hasFocus) "onFocus" else "onBlur", null)
+        sendEvent(if (hasFocus) SearchBarFocusEvent(id) else SearchBarBlurEvent(id))
     }
 
     private fun handleClose() {
-        sendEvent("onClose", null)
+        sendEvent(SearchBarCloseEvent(id))
     }
 
     private fun handleOpen() {
-        sendEvent("onOpen", null)
+        sendEvent(SearchBarOpenEvent(id))
     }
 
     private fun handleTextSubmit(newText: String?) {
-        val event = Arguments.createMap()
-        event.putString("text", newText)
-        sendEvent("onSearchButtonPress", event)
+        sendEvent(SearchBarSearchButtonPressEvent(id, newText))
     }
 
-    private fun sendEvent(eventName: String, eventContent: WritableMap?) {
-        (context as ReactContext).getJSModule(RCTEventEmitter::class.java)
-            ?.receiveEvent(id, eventName, eventContent)
+    private fun sendEvent(event: Event<*>) {
+        val eventDispatcher: EventDispatcher? =
+            UIManagerHelper.getEventDispatcherForReactTag(context as ReactContext, id)
+        eventDispatcher?.dispatchEvent(event)
+    }
+
+    fun handleClearTextJsRequest() {
+        screenStackFragment?.searchView?.clearText()
+    }
+
+    fun handleFocusJsRequest() {
+        screenStackFragment?.searchView?.focus()
+    }
+
+    fun handleBlurJsRequest() {
+        screenStackFragment?.searchView?.clearFocus()
+    }
+
+    fun handleToggleCancelButtonJsRequest(flag: Boolean) = Unit
+
+    fun handleSetTextJsRequest(text: String?) {
+        text?.let { screenStackFragment?.searchView?.setText(it) }
     }
 
     enum class SearchBarAutoCapitalize {
