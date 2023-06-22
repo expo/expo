@@ -78,7 +78,7 @@ export function postTransforms(versionName: string): TransformPipeline {
         with: `$1/$2/${versionName}`,
       },
       {
-        // Files inside fabric diretory used to have nested import paths and we transformed it wrong.
+        // Files inside fabric directory used to have nested import paths and we transformed it wrong.
         // This rules are here to fix it.
         // e.g. `#include <react/debug/react_native_assert.h>`
         //   -> `#include <ABI49_0_0React/ABI49_0_0debug/ABI49_0_0React_native_assert.h>`
