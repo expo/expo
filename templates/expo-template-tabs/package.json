@@ -1,5 +1,6 @@
 {
   "name": "expo-template-tabs",
+  "main": "expo-router/entry",
   "description": "The Tab Navigation project template includes several example screens.",
   "version": "49.0.1",
   "scripts": {
@@ -22,7 +23,7 @@
     "expo-status-bar": "~1.6.0",
     "expo-system-ui": "~2.4.0",
     "expo-web-browser": "~12.3.0",
-    "expo-router": "^1.0.0-rc5",
+    "expo-router": "^2.0.0-rc.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.72.0",
@@ -37,5 +38,11 @@
     "jest-expo": "~48.0.0",
     "react-test-renderer": "18.2.0",
     "typescript": "^4.9.4"
+  },
+  "overrides": {
+    "react-refresh": "~0.14.0"
+  },
+  "resolutions": {
+    "react-refresh": "~0.14.0"
   }
 }
