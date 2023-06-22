@@ -9,7 +9,7 @@ import java.util.*
 
 @RunWith(AndroidJUnit4ClassRunner::class)
 class UpdatesUtilsInstrumentationTest {
-  @Test(expected = ParseException::class)
+  @Test
   @Throws(ParseException::class)
   fun testParseDateString_Z() {
     Assert.assertEquals(
