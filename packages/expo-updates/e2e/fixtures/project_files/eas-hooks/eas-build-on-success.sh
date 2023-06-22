@@ -30,6 +30,9 @@ export NO_FLIPPER=1
 
 mkdir ./logs
 
+# Unpack keys
+tar xf keys.tar
+# Generate test bundles
 yarn generate-test-update-bundles
 
 if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then

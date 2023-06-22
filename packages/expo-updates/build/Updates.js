@@ -1,4 +1,4 @@
-import { RCTDeviceEventEmitter, CodedError, NativeModulesProxy, UnavailabilityError, } from 'expo-modules-core';
+import { DeviceEventEmitter, CodedError, NativeModulesProxy, UnavailabilityError, } from 'expo-modules-core';
 import { EventEmitter } from 'fbemitter';
 import ExpoUpdates from './ExpoUpdates';
 export * from './Updates.types';
@@ -240,7 +240,7 @@ let _emitter;
 function _getEmitter() {
     if (!_emitter) {
         _emitter = new EventEmitter();
-        RCTDeviceEventEmitter.addListener('Expo.nativeUpdatesEvent', _emitEvent);
+        DeviceEventEmitter.addListener('Expo.nativeUpdatesEvent', _emitEvent);
     }
     return _emitter;
 }

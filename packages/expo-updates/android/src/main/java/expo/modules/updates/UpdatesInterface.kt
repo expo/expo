@@ -10,7 +10,8 @@ import java.io.File
 
 // this unused import must stay because of versioning
 /* ktlint-disable no-unused-imports */
-import expo.modules.updates.UpdatesConfiguration
+import expo.modules.updates.statemachine.UpdatesStateMachine
+
 /* ktlint-enable no-unused-imports */
 
 /**
@@ -23,6 +24,7 @@ interface UpdatesInterface {
   val directory: File?
   val databaseHolder: DatabaseHolder
   val fileDownloader: FileDownloader
+  val stateMachine: UpdatesStateMachine?
 
   val isEmergencyLaunch: Boolean
   val isEmbeddedLaunch: Boolean

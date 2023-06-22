@@ -1,5 +1,11 @@
 import { Inter_900Black } from '@expo-google-fonts/inter';
-import { useUpdates, checkForUpdate, downloadUpdate, runUpdate } from '@expo/use-updates';
+import {
+  useUpdates,
+  checkForUpdate,
+  downloadUpdate,
+  runUpdate,
+  useUpdatesState,
+} from '@expo/use-updates';
 import { NativeModulesProxy } from 'expo-modules-core';
 import { StatusBar } from 'expo-status-bar';
 import * as Updates from 'expo-updates';
@@ -14,8 +20,10 @@ Inter_900Black;
 function TestValue(props: { testID: string; value: string }) {
   return (
     <View>
-      <Text>{props.testID}</Text>
-      <Text testID={props.testID}>{props.value}</Text>
+      <View style={{ flexDirection: 'row' }}>
+        <Text>{props.testID}</Text>
+        <Text testID={props.testID}>{props.value}</Text>
+      </View>
       <Text>---</Text>
     </View>
   );
@@ -35,8 +43,11 @@ export default function App() {
   const [active, setActive] = React.useState(false);
   const [runNow, setRunNow] = React.useState(false);
   const [lastUpdateEventType, setLastUpdateEventType] = React.useState('');
+  const [extraParamsString, setExtraParamsString] = React.useState('');
 
   const { currentlyRunning, availableUpdate, isUpdateAvailable, isUpdatePending } = useUpdates();
+
+  const state = useUpdatesState();
 
   Updates.useUpdateEvents((event) => {
     setLastUpdateEventType(event.type);
@@ -44,9 +55,25 @@ export default function App() {
 
   React.useEffect(() => {
     if (isUpdatePending && runNow) {
-      setTimeout(() => runUpdate(), 2000);
+      setTimeout(() => runUpdate(), 5000);
     }
   }, [isUpdatePending, runNow]);
+
+  const handleSetExtraParams = () => {
+    const handleAsync = async () => {
+      setActive(true);
+      await Updates.setExtraParamAsync('testsetnull', 'testvalue');
+      await Updates.setExtraParamAsync('testsetnull', null);
+      await Updates.setExtraParamAsync('testparam', 'testvalue');
+      const params = await Updates.getExtraParamsAsync();
+      setExtraParamsString(JSON.stringify(params, null, 2));
+      await delay(1000);
+      setActive(false);
+    };
+    handleAsync().catch((e) => {
+      console.warn(e);
+    });
+  };
 
   const handleReadAssetFiles = () => {
     const handleAsync = async () => {
@@ -88,6 +115,18 @@ export default function App() {
     });
   };
 
+  const handleClearLogEntries = () => {
+    const handleAsync = async () => {
+      setActive(true);
+      await Updates.clearLogEntriesAsync();
+      await delay(1000);
+      setActive(false);
+    };
+    handleAsync().catch((e) => {
+      console.warn(e);
+    });
+  };
+
   const handleDownloadUpdate = () => {
     setRunNow(true);
     downloadUpdate();
@@ -114,6 +153,17 @@ export default function App() {
       <TestValue testID="checkAutomatically" value={`${Updates.checkAutomatically}`} />
       <TestValue testID="isEmbeddedLaunch" value={`${currentlyRunning.isEmbeddedLaunch}`} />
       <TestValue testID="availableUpdateID" value={`${availableUpdate?.updateId}`} />
+      <TestValue testID="extraParamsString" value={`${extraParamsString}`} />
+
+      <TestValue testID="state.isUpdateAvailable" value={`${state.isUpdateAvailable}`} />
+      <TestValue testID="state.isUpdatePending" value={`${state.isUpdatePending}`} />
+      <TestValue testID="state.isRollback" value={`${state.isRollback}`} />
+      <TestValue testID="state.latestManifest.id" value={`${state.latestManifest?.id || ''}`} />
+      <TestValue
+        testID="state.downloadedManifest.id"
+        value={`${state.downloadedManifest?.id || ''}`}
+      />
+
       <Text>Log messages</Text>
       <ScrollView style={styles.logEntriesContainer}>
         <Text testID="logEntries" style={styles.logEntriesText}>
@@ -122,13 +172,20 @@ export default function App() {
       </ScrollView>
 
       {active ? <ActivityIndicator testID="activity" size="small" color="#0000ff" /> : null}
-      <TestButton testID="readAssetFiles" onPress={handleReadAssetFiles} />
-      <TestButton testID="clearAssetFiles" onPress={handleClearAssetFiles} />
-      <TestButton testID="readLogEntries" onPress={handleReadLogEntries} />
-      <TestButton testID="checkForUpdate" onPress={checkForUpdate} />
-      {isUpdateAvailable ? (
-        <TestButton testID="downloadUpdate" onPress={handleDownloadUpdate} />
-      ) : null}
+      <View style={{ flexDirection: 'row' }}>
+        <View>
+          <TestButton testID="readAssetFiles" onPress={handleReadAssetFiles} />
+          <TestButton testID="clearAssetFiles" onPress={handleClearAssetFiles} />
+          <TestButton testID="readLogEntries" onPress={handleReadLogEntries} />
+          <TestButton testID="clearLogEntries" onPress={handleClearLogEntries} />
+        </View>
+        <View>
+          <TestButton testID="checkForUpdate" onPress={checkForUpdate} />
+          <TestButton testID="downloadUpdate" onPress={handleDownloadUpdate} />
+          <TestButton testID="setExtraParams" onPress={handleSetExtraParams} />
+        </View>
+      </View>
+
       <StatusBar style="auto" />
     </View>
   );
@@ -153,7 +210,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: 10,
+    fontSize: 8,
   },
   button: {
     alignItems: 'center',
@@ -180,6 +237,6 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   logEntriesText: {
-    fontSize: 8,
+    fontSize: 6,
   },
 });

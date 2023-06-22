@@ -9,6 +9,7 @@ import expo.modules.updates.UpdatesInterface
 import expo.modules.updates.UpdatesService
 import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.selectionpolicy.SelectionPolicy
+import expo.modules.updates.statemachine.UpdatesStateMachine
 import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.db.entity.AssetEntity
@@ -59,6 +60,8 @@ class UpdatesBinding(context: Context, experienceProperties: Map<String, Any?>) 
   override fun canRelaunch(): Boolean {
     return true
   }
+  override val stateMachine: UpdatesStateMachine?
+    get() = null
 
   override val embeddedUpdate: UpdateEntity? = null
 
