@@ -97,6 +97,11 @@ EX_REGISTER_MODULE();
   return EXUpdatesAppController.sharedInstance.isStarted;
 }
 
+- (BOOL)canCheckForUpdateAndFetchUpdate
+{
+  return YES;
+}
+
 - (void)requestRelaunchWithCompletion:(EXUpdatesAppRelaunchCompletionBlock)completion
 {
   return [EXUpdatesAppController.sharedInstance requestRelaunchWithCompletion:completion];

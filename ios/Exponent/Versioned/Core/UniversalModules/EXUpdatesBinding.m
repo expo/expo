@@ -87,6 +87,12 @@ NS_ASSUME_NONNULL_BEGIN
   return YES;
 }
 
+- (BOOL)canCheckForUpdateAndFetchUpdate
+{
+  // not allowed in managed
+  return NO;
+}
+
 - (void)requestRelaunchWithCompletion:(EXUpdatesAppRelaunchCompletionBlock)completion
 {
   return [_updatesKernelService requestRelaunchForScopeKey:_scopeKey withCompletion:completion];

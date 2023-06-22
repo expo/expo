@@ -1,6 +1,6 @@
 {
   "name": "@expo/use-updates",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "description": "An easier to use, declarative JavaScript API for the expo-updates module.",
   "main": "build/index.js",
   "types": "build/index.d.ts",

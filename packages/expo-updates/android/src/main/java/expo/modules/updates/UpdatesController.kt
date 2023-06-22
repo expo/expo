@@ -12,6 +12,7 @@ import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.JSBundleLoader
+import com.facebook.react.bridge.WritableMap
 import expo.modules.updates.db.BuildData
 import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.Reaper
@@ -25,7 +26,7 @@ import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.launcher.Launcher.LauncherCallback
 import expo.modules.updates.launcher.NoDatabaseLauncher
 import expo.modules.updates.loader.*
-import expo.modules.updates.loader.LoaderTask.BackgroundUpdateStatus
+import expo.modules.updates.loader.LoaderTask.RemoteUpdateStatus
 import expo.modules.updates.loader.LoaderTask.LoaderTaskCallback
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogReader
@@ -33,6 +34,12 @@ import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.UpdateManifest
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
+import expo.modules.updates.statemachine.UpdatesStateChangeEventSender
+import expo.modules.updates.statemachine.UpdatesStateContext
+import expo.modules.updates.statemachine.UpdatesStateEvent
+import expo.modules.updates.statemachine.UpdatesStateEventType
+import expo.modules.updates.statemachine.UpdatesStateMachine
+import expo.modules.updates.statemachine.UpdatesStateValue
 import java.io.File
 import java.lang.ref.WeakReference
 
@@ -58,7 +65,7 @@ import java.lang.ref.WeakReference
 class UpdatesController private constructor(
   context: Context,
   var updatesConfiguration: UpdatesConfiguration
-) {
+) : UpdatesStateChangeEventSender {
   private var reactNativeHost: WeakReference<ReactNativeHost>? = if (context is ReactApplication) {
     WeakReference((context as ReactApplication).reactNativeHost)
   } else {
@@ -67,6 +74,7 @@ class UpdatesController private constructor(
 
   var updatesDirectory: File? = null
   var updatesDirectoryException: Exception? = null
+  var stateMachine: UpdatesStateMachine = UpdatesStateMachine(context, this)
 
   private var launcher: Launcher? = null
   val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context))
@@ -273,6 +281,22 @@ class UpdatesController private constructor(
           return true
         }
 
+        override fun onRemoteCheckForUpdateStarted() {
+          stateMachine.processEvent(UpdatesStateEvent.Check())
+        }
+
+        override fun onRemoteCheckForUpdateFinished(result: LoaderTask.RemoteCheckResult) {
+          var event = UpdatesStateEvent.CheckComplete()
+          if (result.manifest != null) {
+            event = UpdatesStateEvent.CheckCompleteWithUpdate(
+              result.manifest
+            )
+          } else if (result.isRollBackToEmbedded == true) {
+            event = UpdatesStateEvent.CheckCompleteWithRollback()
+          }
+          stateMachine.processEvent(event)
+        }
+
         override fun onRemoteUpdateManifestResponseManifestLoaded(updateManifest: UpdateManifest) {
           remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADING
         }
@@ -285,13 +309,34 @@ class UpdatesController private constructor(
           notifyController()
         }
 
-        override fun onBackgroundUpdateFinished(
-          status: BackgroundUpdateStatus,
+        override fun onRemoteUpdateLoadStarted() {
+          stateMachine.processEvent(UpdatesStateEvent.Download())
+        }
+
+        override fun onRemoteUpdateAssetLoaded(
+          asset: AssetEntity,
+          successfulAssetCount: Int,
+          failedAssetCount: Int,
+          totalAssetCount: Int
+        ) {
+          val body = mapOf(
+            "assetInfo" to mapOf(
+              "name" to asset.embeddedAssetFilename,
+              "successfulAssetCount" to successfulAssetCount,
+              "failedAssetCount" to failedAssetCount,
+              "totalAssetCount" to totalAssetCount
+            )
+          )
+          logger.info("AppController appLoaderTask didLoadAsset: $body", UpdatesErrorCode.None, null, asset.expectedHash)
+        }
+
+        override fun onRemoteUpdateFinished(
+          status: RemoteUpdateStatus,
           update: UpdateEntity?,
           exception: Exception?
         ) {
           when (status) {
-            BackgroundUpdateStatus.ERROR -> {
+            RemoteUpdateStatus.ERROR -> {
               if (exception == null) {
                 throw AssertionError("Background update with error status must have a nonnull exception object")
               }
@@ -299,9 +344,31 @@ class UpdatesController private constructor(
               remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
               val params = Arguments.createMap()
               params.putString("message", exception.message)
-              UpdatesUtils.sendEventToReactNative(reactNativeHost, UPDATE_ERROR_EVENT, params)
+              sendLegacyUpdateEventToJS(UPDATE_ERROR_EVENT, params)
+
+              // Since errors can happen through a number of paths, we do these checks
+              // to make sure the state machine is valid
+              when (stateMachine.state) {
+                UpdatesStateValue.Idle -> {
+                  stateMachine.processEvent(UpdatesStateEvent.Download())
+                  stateMachine.processEvent(
+                    UpdatesStateEvent.DownloadError(exception.message ?: "")
+                  )
+                }
+                UpdatesStateValue.Checking -> {
+                  stateMachine.processEvent(
+                    UpdatesStateEvent.CheckError(exception.message ?: "")
+                  )
+                }
+                else -> {
+                  // .downloading
+                  stateMachine.processEvent(
+                    UpdatesStateEvent.DownloadError(exception.message ?: "")
+                  )
+                }
+              }
             }
-            BackgroundUpdateStatus.UPDATE_AVAILABLE -> {
+            RemoteUpdateStatus.UPDATE_AVAILABLE -> {
               if (update == null) {
                 throw AssertionError("Background update with error status must have a nonnull update object")
               }
@@ -309,16 +376,19 @@ class UpdatesController private constructor(
               logger.info("UpdatesController onBackgroundUpdateFinished: Update available", UpdatesErrorCode.None)
               val params = Arguments.createMap()
               params.putString("manifestString", update.manifest.toString())
-              UpdatesUtils.sendEventToReactNative(reactNativeHost, UPDATE_AVAILABLE_EVENT, params)
+              sendLegacyUpdateEventToJS(UPDATE_AVAILABLE_EVENT, params)
+              stateMachine.processEvent(
+                UpdatesStateEvent.DownloadCompleteWithUpdate(update.manifest)
+              )
             }
-            BackgroundUpdateStatus.NO_UPDATE_AVAILABLE -> {
+            RemoteUpdateStatus.NO_UPDATE_AVAILABLE -> {
               remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
               logger.error("UpdatesController onBackgroundUpdateFinished: No update available", UpdatesErrorCode.NoUpdatesAvailable)
-              UpdatesUtils.sendEventToReactNative(
-                reactNativeHost,
-                UPDATE_NO_UPDATE_AVAILABLE_EVENT,
-                null
-              )
+              sendLegacyUpdateEventToJS(UPDATE_NO_UPDATE_AVAILABLE_EVENT, null)
+              // TODO: handle rollbacks properly, but this works for now
+              if (stateMachine.state == UpdatesStateValue.Downloading) {
+                stateMachine.processEvent(UpdatesStateEvent.DownloadComplete())
+              }
             }
           }
           errorRecovery.notifyNewRemoteLoadStatus(remoteLoadStatus)
@@ -438,6 +508,8 @@ class UpdatesController private constructor(
       return
     }
 
+    stateMachine.processEvent(UpdatesStateEvent.Restart())
+
     val oldLaunchAssetFile = launcher!!.launchAssetFile
 
     val databaseLocal = getDatabase()
@@ -482,9 +554,22 @@ class UpdatesController private constructor(
           if (shouldRunReaper) {
             runReaper()
           }
+          stateMachine.reset()
         }
       }
     )
+  }
+
+  override fun sendUpdateStateChangeEventToBridge(eventType: UpdatesStateEventType, context: UpdatesStateContext) {
+    sendEventToJS(UPDATES_STATE_CHANGE_EVENT_NAME, eventType.type, context.writableMap)
+  }
+
+  fun sendLegacyUpdateEventToJS(eventType: String, params: WritableMap?) {
+    sendEventToJS(UPDATES_EVENT_NAME, eventType, params)
+  }
+
+  private fun sendEventToJS(eventName: String, eventType: String, params: WritableMap?) {
+    UpdatesUtils.sendEventToReactNative(reactNativeHost, logger, eventName, eventType, params)
   }
 
   companion object {
@@ -493,6 +578,9 @@ class UpdatesController private constructor(
     private const val UPDATE_AVAILABLE_EVENT = "updateAvailable"
     private const val UPDATE_NO_UPDATE_AVAILABLE_EVENT = "noUpdateAvailable"
     private const val UPDATE_ERROR_EVENT = "error"
+
+    private const val UPDATES_EVENT_NAME = "Expo.nativeUpdatesEvent"
+    private const val UPDATES_STATE_CHANGE_EVENT_NAME = "Expo.nativeUpdatesStateChangeEvent"
 
     private var singletonInstance: UpdatesController? = null
     @JvmStatic val instance: UpdatesController

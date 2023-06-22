@@ -5,6 +5,7 @@ import expo.modules.updates.UpdatesConfiguration.CheckAutomaticallyConfiguration
 import expo.modules.updates.db.entity.AssetEntity
 import android.os.AsyncTask
 import android.net.ConnectivityManager
+import android.os.Build
 import android.util.Base64
 import android.util.Log
 import com.facebook.react.ReactNativeHost
@@ -12,6 +13,8 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.modules.core.DeviceEventManagerModule
+import expo.modules.updates.logging.UpdatesErrorCode
+import expo.modules.updates.logging.UpdatesLogger
 import org.apache.commons.io.FileUtils
 import org.json.JSONArray
 import org.json.JSONObject
@@ -36,7 +39,6 @@ object UpdatesUtils {
   private val TAG = UpdatesUtils::class.java.simpleName
 
   private const val UPDATES_DIRECTORY_NAME = ".expo-internal"
-  private const val UPDATES_EVENT_NAME = "Expo.nativeUpdatesEvent"
 
   @Throws(Exception::class)
   fun getMapFromJSONString(stringifiedJSON: String): Map<String, String> {
@@ -153,7 +155,9 @@ object UpdatesUtils {
 
   fun sendEventToReactNative(
     reactNativeHost: WeakReference<ReactNativeHost>?,
+    logger: UpdatesLogger,
     eventName: String,
+    eventType: String,
     params: WritableMap?
   ) {
     val host = reactNativeHost?.get()
@@ -184,20 +188,21 @@ object UpdatesUtils {
               if (eventParams == null) {
                 eventParams = Arguments.createMap()
               }
-              eventParams!!.putString("type", eventName)
-              emitter.emit(UPDATES_EVENT_NAME, eventParams)
+              eventParams!!.putString("type", eventType)
+              logger.info("Emitted event: name = $eventName, type = $eventType")
+              emitter.emit(eventName, eventParams)
               return@execute
             }
           }
-          Log.e(TAG, "Could not emit $eventName event; no event emitter was found.")
+          logger.error("Could not emit $eventName $eventType event; no event emitter was found.", UpdatesErrorCode.JSRuntimeError)
         } catch (e: Exception) {
-          Log.e(TAG, "Could not emit $eventName event; no react context was found.")
+          logger.error("Could not emit $eventName $eventType event; no react context was found.", UpdatesErrorCode.JSRuntimeError)
         }
       }
     } else {
-      Log.e(
-        TAG,
-        "Could not emit $eventName event; UpdatesController was not initialized with an instance of ReactApplication."
+      logger.error(
+        "Could not emit $eventType event; UpdatesController was not initialized with an instance of ReactApplication.",
+        UpdatesErrorCode.Unknown
       )
     }
   }
@@ -256,22 +261,27 @@ object UpdatesUtils {
   }
 
   @Throws(ParseException::class)
-  fun parseDateString(dateString: String?): Date {
+  fun parseDateString(dateString: String): Date {
     return try {
-      val formatter: DateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.US)
-      formatter.parse(dateString)
+      val formatter: DateFormat = when (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        true -> SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'X'", Locale.US)
+        false -> SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US).apply {
+          timeZone = TimeZone.getTimeZone("GMT")
+        }
+      }
+      formatter.parse(dateString) as Date
     } catch (e: ParseException) {
       Log.e(TAG, "Failed to parse date string on first try: $dateString", e)
       // some old Android versions don't support the 'X' character in SimpleDateFormat, so try without this
       val formatter: DateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
       formatter.timeZone = TimeZone.getTimeZone("GMT")
       // throw if this fails too
-      formatter.parse(dateString)
+      formatter.parse(dateString) as Date
     } catch (e: IllegalArgumentException) {
       Log.e(TAG, "Failed to parse date string on first try: $dateString", e)
       val formatter: DateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
       formatter.timeZone = TimeZone.getTimeZone("GMT")
-      formatter.parse(dateString)
+      formatter.parse(dateString) as Date
     }
   }
 }
