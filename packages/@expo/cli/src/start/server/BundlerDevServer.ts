@@ -3,7 +3,6 @@ import assert from 'assert';
 import openBrowserAsync from 'better-opn';
 import resolveFrom from 'resolve-from';
 
-import { APISettings } from '../../api/settings';
 import * as Log from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
 import { resolveWithTimeout } from '../../utils/delay';
@@ -215,7 +214,7 @@ export abstract class BundlerDevServer {
   protected async postStartAsync(options: BundlerStartOptions) {
     if (
       options.location.hostType === 'tunnel' &&
-      !APISettings.isOffline &&
+      !env.EXPO_OFFLINE &&
       // This is a hack to prevent using tunnel on web since we block it upstream for some reason.
       this.isTargetingNative()
     ) {
