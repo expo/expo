@@ -42,7 +42,8 @@ export function vendoredModulesTransforms(prefix: string): Record<string, FileTr
             '$1\n' +
             "    compileOnly 'com.facebook.fresco:fresco:+'\n" +
             "    compileOnly 'com.facebook.fresco:imagepipeline-okhttp3:+'\n" +
-            "    compileOnly 'com.facebook.fresco:ui-common:+'",
+            "    compileOnly 'com.facebook.fresco:ui-common:+\n'" +
+            "    compileOnly 'javax.inject:javax.inject:+'",
         },
         {
           find: /\b(import (static )?)(com.horcrux.)/g,

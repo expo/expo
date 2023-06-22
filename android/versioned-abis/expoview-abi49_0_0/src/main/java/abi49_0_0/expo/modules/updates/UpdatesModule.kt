@@ -19,7 +19,7 @@ import abi49_0_0.expo.modules.updates.logging.UpdatesLogEntry
 import abi49_0_0.expo.modules.updates.logging.UpdatesLogReader
 import abi49_0_0.expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.ManifestMetadata
-import abi49_0_0.expo.modules.updates.statemachine.UpdatesStateEvent
+import expo.modules.updates.statemachine.UpdatesStateEvent
 import java.util.Date
 
 // these unused imports must stay because of versioning
@@ -329,7 +329,7 @@ class UpdatesModule(
                       updateEntity.manifest.toString()
                     )
                     updatesServiceLocal.stateMachine?.processEvent(
-                      UpdatesStateEvent.DownloadCompleteWithUpdate(loaderResult.updateEntity.manifest)
+                      UpdatesStateEvent.DownloadCompleteWithUpdate(updateEntity.manifest)
                     )
                   }
                 }

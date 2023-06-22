@@ -9,7 +9,7 @@ import expo.modules.updates.launcher.Launcher.LauncherCallback
 import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.manifest.EmbeddedManifest
 import expo.modules.updates.selectionpolicy.SelectionPolicy
-import abi49_0_0.expo.modules.updates.statemachine.UpdatesStateMachine
+import expo.modules.updates.statemachine.UpdatesStateMachine
 import java.io.File
 
 // these unused imports must stay because of versioning

@@ -9,7 +9,7 @@ import abi49_0_0.expo.modules.updates.UpdatesInterface
 import abi49_0_0.expo.modules.updates.UpdatesService
 import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.selectionpolicy.SelectionPolicy
-import abi49_0_0.expo.modules.updates.statemachine.UpdatesStateMachine
+import expo.modules.updates.statemachine.UpdatesStateMachine
 import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.db.entity.AssetEntity

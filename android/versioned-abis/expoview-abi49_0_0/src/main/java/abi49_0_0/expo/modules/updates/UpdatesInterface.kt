@@ -6,12 +6,12 @@ import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.launcher.Launcher.LauncherCallback
 import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.selectionpolicy.SelectionPolicy
+import expo.modules.updates.statemachine.UpdatesStateMachine
 import java.io.File
 
 // this unused import must stay because of versioning
 /* ktlint-disable no-unused-imports */
-import abi49_0_0.expo.modules.updates.statemachine.UpdatesStateMachine
-
+import expo.modules.updates.UpdatesConfiguration
 /* ktlint-enable no-unused-imports */
 
 /**

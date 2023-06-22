@@ -91,6 +91,7 @@ dependencies {
     compileOnly 'com.facebook.fresco:fresco:+'
     compileOnly 'com.facebook.fresco:imagepipeline-okhttp3:+'
     compileOnly 'com.facebook.fresco:ui-common:+'
+    compileOnly 'javax.inject:javax.inject:+'
     compileOnly 'com.facebook.fbjni:fbjni:+'
     compileOnly 'com.facebook.yoga:proguard-annotations:+'
     compileOnly 'com.facebook.soloader:soloader:+'
