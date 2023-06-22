@@ -34,6 +34,9 @@ public class RNSScreenStackHeaderConfigManagerDelegate<T extends View, U extends
       case "backTitleFontSize":
         mViewManager.setBackTitleFontSize(view, value == null ? 0 : ((Double) value).intValue());
         break;
+      case "backTitleVisible":
+        mViewManager.setBackTitleVisible(view, value == null ? true : (boolean) value);
+        break;
       case "color":
         mViewManager.setColor(view, ColorPropConverter.getColor(value, view.getContext()));
         break;

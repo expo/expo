@@ -4,7 +4,7 @@
 #import "RNSScreenContainer.h"
 #import "RNSScreenWindowTraits.h"
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 #import <React/RCTConversions.h>
 #import <React/RCTFabricComponentsPlugins.h>
 #import <React/RCTRootComponentView.h>
@@ -25,7 +25,7 @@
 #import "RNSScreenStackHeaderConfig.h"
 
 @interface RNSScreenView ()
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
     <RCTRNSScreenViewProtocol, UIAdaptivePresentationControllerDelegate>
 #else
     <UIAdaptivePresentationControllerDelegate, RCTInvalidating>
@@ -34,7 +34,7 @@
 
 @implementation RNSScreenView {
   __weak RCTBridge *_bridge;
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
   RCTSurfaceTouchHandler *_touchHandler;
   facebook::react::RNSScreenShadowNode::ConcreteState::Shared _state;
   // on fabric, they are not available by default so we need them exposed here too
@@ -45,7 +45,7 @@
 #endif
 }
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
@@ -57,7 +57,7 @@
 
   return self;
 }
-#endif // RN_FABRIC_ENABLED
+#endif // RCT_NEW_ARCH_ENABLED
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
@@ -82,6 +82,9 @@
   _hasStatusBarHiddenSet = NO;
   _hasOrientationSet = NO;
   _hasHomeIndicatorHiddenSet = NO;
+#if !TARGET_OS_TV
+  _sheetExpandsWhenScrolledToEdge = YES;
+#endif // !TARGET_OS_TV
 }
 
 - (UIViewController *)reactViewController
@@ -89,7 +92,7 @@
   return _controller;
 }
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 - (NSArray<UIView *> *)reactSubviews
 {
   return _reactSubviews;
@@ -98,7 +101,7 @@
 
 - (void)updateBounds
 {
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
   if (_state != nullptr) {
     auto newState = facebook::react::RNSScreenState{RCTSizeFromCGSize(self.bounds.size)};
     _state->updateState(std::move(newState));
@@ -158,7 +161,7 @@
     // https://developer.apple.com/documentation/uikit/uiviewcontroller/1621426-presentationcontroller?language=objc
     _controller.presentationController.delegate = self;
   } else if (_stackPresentation != RNSScreenStackPresentationPush) {
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
     // TODO: on Fabric, same controllers can be used as modals and then recycled and used a push which would result in
     // this error. It would be good to check if it doesn't leak in such case.
 #else
@@ -277,7 +280,7 @@
 
 - (void)notifyDismissedWithCount:(int)dismissCount
 {
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
   // If screen is already unmounted then there will be no event emitter
   // it will be cleaned in prepareForRecycle
   if (_eventEmitter != nullptr) {
@@ -299,7 +302,7 @@
 
 - (void)notifyDismissCancelledWithDismissCount:(int)dismissCount
 {
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
   // If screen is already unmounted then there will be no event emitter
   // it will be cleaned in prepareForRecycle
   if (_eventEmitter != nullptr) {
@@ -316,7 +319,7 @@
 
 - (void)notifyWillAppear
 {
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
   // If screen is already unmounted then there will be no event emitter
   // it will be cleaned in prepareForRecycle
   if (_eventEmitter != nullptr) {
@@ -339,7 +342,7 @@
   if (_hideKeyboardOnSwipe) {
     [self endEditing:YES];
   }
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
   // If screen is already unmounted then there will be no event emitter
   // it will be cleaned in prepareForRecycle
   if (_eventEmitter != nullptr) {
@@ -355,7 +358,7 @@
 
 - (void)notifyAppear
 {
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
   // If screen is already unmounted then there will be no event emitter
   // it will be cleaned in prepareForRecycle
   if (_eventEmitter != nullptr) {
@@ -375,7 +378,7 @@
 
 - (void)notifyDisappear
 {
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
   // If screen is already unmounted then there will be no event emitter
   // it will be cleaned in prepareForRecycle
   if (_eventEmitter != nullptr) {
@@ -391,7 +394,7 @@
 
 - (BOOL)isMountedUnderScreenOrReactRoot
 {
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 #define RNS_EXPECTED_VIEW RCTRootComponentView
 #else
 #define RNS_EXPECTED_VIEW RCTRootView
@@ -412,7 +415,7 @@
   // root application window.
   if (self.window != nil && ![self isMountedUnderScreenOrReactRoot]) {
     if (_touchHandler == nil) {
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
       _touchHandler = [RCTSurfaceTouchHandler new];
 #else
       _touchHandler = [[RCTTouchHandler alloc] initWithBridge:_bridge];
@@ -424,7 +427,7 @@
   }
 }
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 - (RCTSurfaceTouchHandler *)touchHandler
 #else
 - (RCTTouchHandler *)touchHandler
@@ -449,7 +452,7 @@
 
 - (void)notifyTransitionProgress:(double)progress closing:(BOOL)closing goingForward:(BOOL)goingForward
 {
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
   if (_eventEmitter != nullptr) {
     std::dynamic_pointer_cast<const facebook::react::RNSScreenEventEmitter>(_eventEmitter)
         ->onTransitionProgress(facebook::react::RNSScreenEventEmitter::OnTransitionProgress{
@@ -484,7 +487,7 @@
   // pulling down starting at some touchable item. Without "reset" the touchable
   // will never go back from highlighted state even when the modal start sliding
   // down.
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
   [_touchHandler setEnabled:NO];
   [_touchHandler setEnabled:YES];
 #else
@@ -514,8 +517,62 @@
   return self.stackPresentation != RNSScreenStackPresentationPush;
 }
 
+#if !TARGET_OS_TV
+/**
+ * Updates settings for sheet presentation controller.
+ * Note that this method should not be called inside `stackPresentation` setter, because on Paper we don't have
+ * guarantee that values of all related props had been updated earlier.
+ */
+- (void)updatePresentationStyle
+{
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_15_0) && \
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_0
+  if (@available(iOS 15.0, *)) {
+    UISheetPresentationController *sheet = _controller.sheetPresentationController;
+    if (_stackPresentation == RNSScreenStackPresentationFormSheet && sheet != nil) {
+      sheet.prefersScrollingExpandsWhenScrolledToEdge = _sheetExpandsWhenScrolledToEdge;
+      sheet.prefersGrabberVisible = _sheetGrabberVisible;
+      sheet.preferredCornerRadius =
+          _sheetCornerRadius < 0 ? UISheetPresentationControllerAutomaticDimension : _sheetCornerRadius;
+
+      if (_sheetLargestUndimmedDetent == RNSScreenDetentTypeMedium) {
+        sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
+      } else if (_sheetLargestUndimmedDetent == RNSScreenDetentTypeLarge) {
+        sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierLarge;
+      } else if (_sheetLargestUndimmedDetent == RNSScreenDetentTypeAll) {
+        sheet.largestUndimmedDetentIdentifier = nil;
+      } else {
+        RCTLogError(@"Unhandled value of sheetLargestUndimmedDetent passed");
+      }
+
+      if (_sheetAllowedDetents == RNSScreenDetentTypeMedium) {
+        sheet.detents = @[ UISheetPresentationControllerDetent.mediumDetent ];
+        if (sheet.selectedDetentIdentifier != UISheetPresentationControllerDetentIdentifierMedium) {
+          [sheet animateChanges:^{
+            sheet.selectedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
+          }];
+        }
+      } else if (_sheetAllowedDetents == RNSScreenDetentTypeLarge) {
+        sheet.detents = @[ UISheetPresentationControllerDetent.largeDetent ];
+        if (sheet.selectedDetentIdentifier != UISheetPresentationControllerDetentIdentifierLarge) {
+          [sheet animateChanges:^{
+            sheet.selectedDetentIdentifier = UISheetPresentationControllerDetentIdentifierLarge;
+          }];
+        }
+      } else if (_sheetAllowedDetents == RNSScreenDetentTypeAll) {
+        sheet.detents =
+            @[ UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent ];
+      } else {
+        RCTLogError(@"Unhandled value of sheetAllowedDetents passed");
+      }
+    }
+  }
+#endif // Check for max allowed iOS version
+}
+#endif // !TARGET_OS_TV
+
 #pragma mark - Fabric specific
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 
 + (facebook::react::ComponentDescriptorProvider)componentDescriptorProvider
 {
@@ -613,6 +670,19 @@
   if (newScreenProps.homeIndicatorHidden != oldScreenProps.homeIndicatorHidden) {
     [self setHomeIndicatorHidden:newScreenProps.homeIndicatorHidden];
   }
+
+  [self setSheetGrabberVisible:newScreenProps.sheetGrabberVisible];
+  [self setSheetCornerRadius:newScreenProps.sheetCornerRadius];
+  [self setSheetExpandsWhenScrolledToEdge:newScreenProps.sheetExpandsWhenScrolledToEdge];
+
+  if (newScreenProps.sheetAllowedDetents != oldScreenProps.sheetAllowedDetents) {
+    [self setSheetAllowedDetents:[RNSConvert RNSScreenDetentTypeFromAllowedDetents:newScreenProps.sheetAllowedDetents]];
+  }
+
+  if (newScreenProps.sheetLargestUndimmedDetent != oldScreenProps.sheetLargestUndimmedDetent) {
+    [self setSheetLargestUndimmedDetent:
+              [RNSConvert RNSScreenDetentTypeFromLargestUndimmedDetent:newScreenProps.sheetLargestUndimmedDetent]];
+  }
 #endif // !TARGET_OS_TV
 
   // Notice that we compare against _stackPresentation, not oldScreenProps.stackPresentation.
@@ -658,8 +728,23 @@
   // Explanation taken from `reactSetFrame`, which is old arch equivalent of this code.
 }
 
+- (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
+{
+#if !TARGET_OS_TV
+  [self updatePresentationStyle];
+#endif // !TARGET_OS_TV
+}
+
 #pragma mark - Paper specific
 #else
+
+- (void)didSetProps:(NSArray<NSString *> *)changedProps
+{
+  [super didSetProps:changedProps];
+#if !TARGET_OS_TV
+  [self updatePresentationStyle];
+#endif // !TARGET_OS_TV
+}
 
 - (void)setPointerEvents:(RCTPointerEvents)pointerEvents
 {
@@ -690,7 +775,7 @@
 
 @end
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 Class<RCTComponentViewProtocol> RNSScreenCls(void)
 {
   return RNSScreenView.class;
@@ -721,7 +806,7 @@ Class<RCTComponentViewProtocol> RNSScreenCls(void)
     self.view = view;
     _fakeView = [UIView new];
     _shouldNotify = YES;
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
     _initialView = (RNSScreenView *)view;
 #endif
   }
@@ -810,7 +895,7 @@ Class<RCTComponentViewProtocol> RNSScreenCls(void)
 - (void)viewDidDisappear:(BOOL)animated
 {
   [super viewDidDisappear:animated];
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
   [self resetViewToScreen];
 #endif
   if (self.parentViewController == nil && self.presentingViewController == nil) {
@@ -832,7 +917,7 @@ Class<RCTComponentViewProtocol> RNSScreenCls(void)
 
   _isSwiping = NO;
   _shouldNotify = YES;
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 #else
   [self traverseForScrollView:self.screenView];
 #endif
@@ -852,7 +937,7 @@ Class<RCTComponentViewProtocol> RNSScreenCls(void)
   BOOL isPresentedAsNativeModal = self.parentViewController == nil && self.presentingViewController != nil;
 
   if (isDisplayedWithinUINavController || isPresentedAsNativeModal) {
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
     [self.screenView updateBounds];
 #else
     if (!CGRectEqualToRect(_lastViewFrame, self.screenView.frame)) {
@@ -1074,7 +1159,7 @@ Class<RCTComponentViewProtocol> RNSScreenCls(void)
 // when we want to check props of ScreenView, we need to get them from _initialView
 - (RNSScreenView *)screenView
 {
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
   return _initialView;
 #else
   return (RNSScreenView *)self.view;
@@ -1101,7 +1186,7 @@ Class<RCTComponentViewProtocol> RNSScreenCls(void)
 
       BOOL wasSearchBarActive = prevNavigationItem.searchController.active;
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
       BOOL shouldHideHeader = !config.show;
 #else
       BOOL shouldHideHeader = config.hide;
@@ -1118,7 +1203,7 @@ Class<RCTComponentViewProtocol> RNSScreenCls(void)
 #endif
 }
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 #pragma mark - Fabric specific
 
 - (void)setViewToSnapshot:(UIView *)snapshot
@@ -1197,6 +1282,12 @@ RCT_EXPORT_VIEW_PROPERTY(statusBarAnimation, UIStatusBarAnimation)
 RCT_EXPORT_VIEW_PROPERTY(statusBarHidden, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(statusBarStyle, RNSStatusBarStyle)
 RCT_EXPORT_VIEW_PROPERTY(homeIndicatorHidden, BOOL)
+
+RCT_EXPORT_VIEW_PROPERTY(sheetAllowedDetents, RNSScreenDetentType);
+RCT_EXPORT_VIEW_PROPERTY(sheetLargestUndimmedDetent, RNSScreenDetentType);
+RCT_EXPORT_VIEW_PROPERTY(sheetGrabberVisible, BOOL);
+RCT_EXPORT_VIEW_PROPERTY(sheetCornerRadius, CGFloat);
+RCT_EXPORT_VIEW_PROPERTY(sheetExpandsWhenScrolledToEdge, BOOL);
 #endif
 
 #if !TARGET_OS_TV
@@ -1307,6 +1398,16 @@ RCT_ENUM_CONVERTER(
       @"dark" : @(RNSStatusBarStyleDark),
     }),
     RNSStatusBarStyleAuto,
+    integerValue)
+
+RCT_ENUM_CONVERTER(
+    RNSScreenDetentType,
+    (@{
+      @"large" : @(RNSScreenDetentTypeLarge),
+      @"medium" : @(RNSScreenDetentTypeMedium),
+      @"all" : @(RNSScreenDetentTypeAll),
+    }),
+    RNSScreenDetentTypeAll,
     integerValue)
 
 + (UIInterfaceOrientationMask)UIInterfaceOrientationMask:(id)json

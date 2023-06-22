@@ -11,6 +11,8 @@ import com.facebook.react.uimanager.ViewManagerDelegate
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.viewmanagers.RNSScreenStackHeaderConfigManagerDelegate
 import com.facebook.react.viewmanagers.RNSScreenStackHeaderConfigManagerInterface
+import com.swmansion.rnscreens.events.HeaderAttachedEvent
+import com.swmansion.rnscreens.events.HeaderDetachedEvent
 import javax.annotation.Nonnull
 
 @ReactModule(name = ScreenStackHeaderConfigViewManager.REACT_CLASS)
@@ -133,10 +135,12 @@ class ScreenStackHeaderConfigViewManager : ViewGroupManager<ScreenStackHeaderCon
     }
 
     override fun getExportedCustomDirectEventTypeConstants(): Map<String, Any>? {
-        return MapBuilder.builder<String, Any>()
-            .put("onAttached", MapBuilder.of("registrationName", "onAttached"))
-            .put("onDetached", MapBuilder.of("registrationName", "onDetached"))
-            .build()
+        return MapBuilder.of(
+            HeaderAttachedEvent.EVENT_NAME,
+            MapBuilder.of("registrationName", "onAttached"),
+            HeaderDetachedEvent.EVENT_NAME,
+            MapBuilder.of("registrationName", "onDetached"),
+        )
     }
 
     protected override fun getDelegate(): ViewManagerDelegate<ScreenStackHeaderConfig> = mDelegate
@@ -160,6 +164,10 @@ class ScreenStackHeaderConfigViewManager : ViewGroupManager<ScreenStackHeaderCon
 
     override fun setBackTitleFontSize(view: ScreenStackHeaderConfig?, value: Int) {
         logNotAvailable("backTitleFontSize")
+    }
+
+    override fun setBackTitleVisible(view: ScreenStackHeaderConfig?, value: Boolean) {
+        logNotAvailable("backTitleVisible")
     }
 
     override fun setLargeTitle(view: ScreenStackHeaderConfig?, value: Boolean) {

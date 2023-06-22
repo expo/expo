@@ -174,11 +174,34 @@
       }
     }
     if (newOrientation != UIInterfaceOrientationUnknown) {
-      [[UIDevice currentDevice] setValue:@(newOrientation) forKey:@"orientation"];
-      [UIViewController attemptRotationToDeviceOrientation];
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_16_0) && \
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
+      if (@available(iOS 16.0, *)) {
+        NSArray *array = [[[UIApplication sharedApplication] connectedScenes] allObjects];
+        UIWindowScene *scene = (UIWindowScene *)array[0];
+        UIWindowSceneGeometryPreferencesIOS *geometryPreferences =
+            [[UIWindowSceneGeometryPreferencesIOS alloc] initWithInterfaceOrientations:orientationMask];
+        [scene requestGeometryUpdateWithPreferences:geometryPreferences
+                                       errorHandler:^(NSError *_Nonnull error){
+                                       }];
+
+        // `attemptRotationToDeviceOrientation` is deprecated for modern OS versions
+        // so we need to use `setNeedsUpdateOfSupportedInterfaceOrientations`
+        UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
+        while (topController.presentedViewController) {
+          topController = topController.presentedViewController;
+        }
+
+        [topController setNeedsUpdateOfSupportedInterfaceOrientations];
+      } else
+#endif // Check for iOS 16
+      {
+        [[UIDevice currentDevice] setValue:@(newOrientation) forKey:@"orientation"];
+        [UIViewController attemptRotationToDeviceOrientation];
+      }
     }
   });
-#endif
+#endif // !TARGET_TV_OS
 }
 
 + (void)updateWindowTraits
