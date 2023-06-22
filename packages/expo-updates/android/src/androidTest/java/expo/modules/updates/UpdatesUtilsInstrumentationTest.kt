@@ -20,11 +20,16 @@ class UpdatesUtilsInstrumentationTest {
 
   @Test(expected = ParseException::class)
   @Throws(ParseException::class)
-  fun testParseDateString_writtenTimezone() {
+  fun testParseDateString_writtenTimezone1() {
     Assert.assertEquals(
       Date(1605053874699L),
       UpdatesUtils.parseDateString("2020-11-11T00:17:54.699+0000")
     )
+  }
+
+  @Test(expected = ParseException::class)
+  @Throws(ParseException::class)
+  fun testParseDateString_writtenTimezone2() {
     Assert.assertEquals(
       Date(1605050274699L),
       UpdatesUtils.parseDateString("2020-11-11T00:17:54.699+0100")
@@ -33,11 +38,16 @@ class UpdatesUtilsInstrumentationTest {
 
   @Test(expected = ParseException::class)
   @Throws(ParseException::class)
-  fun testParseDateString_writtenTimezoneWithColon() {
+  fun testParseDateString_writtenTimezoneWithColon1() {
     Assert.assertEquals(
       Date(1605053874699L),
       UpdatesUtils.parseDateString("2020-11-11T00:17:54.699+00:00")
     )
+  }
+
+  @Test(expected = ParseException::class)
+  @Throws(ParseException::class)
+  fun testParseDateString_writtenTimezoneWithColon2() {
     Assert.assertEquals(
       Date(1605050274699L),
       UpdatesUtils.parseDateString("2020-11-11T00:17:54.699+01:00")
