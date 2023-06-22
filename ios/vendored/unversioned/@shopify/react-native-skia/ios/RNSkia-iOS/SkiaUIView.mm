@@ -93,6 +93,16 @@
   assert(_impl == nullptr);
 }
 
+#pragma Render
+
+- (void)drawRect:(CGRect)rect {
+  // We override drawRect to ensure we to direct rendering when the
+  // underlying OS view needs to render:
+  if (_impl != nullptr) {
+    _impl->getDrawView()->renderImmediate();
+  }
+}
+
 #pragma mark Layout
 
 - (void)layoutSubviews {

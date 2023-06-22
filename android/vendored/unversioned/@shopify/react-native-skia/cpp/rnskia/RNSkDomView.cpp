@@ -36,15 +36,16 @@ bool RNSkDomRenderer::tryRender(
 
   // We render on the main thread
   if (_renderLock->try_lock()) {
+    bool result = false;
     // If we have a Dom Node we can render directly on the main thread
     if (_root != nullptr) {
-      canvasProvider->renderToCanvas(std::bind(
+      result = canvasProvider->renderToCanvas(std::bind(
           &RNSkDomRenderer::renderCanvas, this, std::placeholders::_1,
           canvasProvider->getScaledWidth(), canvasProvider->getScaledHeight()));
     }
 
     _renderLock->unlock();
-    return true;
+    return result;
   } else {
     return false;
   }

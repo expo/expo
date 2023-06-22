@@ -24,7 +24,7 @@ public:
   float getScaledWidth() override;
   float getScaledHeight() override;
 
-  void renderToCanvas(const std::function<void(SkCanvas *)> &cb) override;
+  bool renderToCanvas(const std::function<void(SkCanvas *)> &cb) override;
 
   void setSize(int width, int height);
 

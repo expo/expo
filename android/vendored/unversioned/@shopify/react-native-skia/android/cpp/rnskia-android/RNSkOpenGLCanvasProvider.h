@@ -25,7 +25,7 @@ public:
 
   float getScaledHeight() override;
 
-  void renderToCanvas(const std::function<void(SkCanvas *)> &cb) override;
+  bool renderToCanvas(const std::function<void(SkCanvas *)> &cb) override;
 
   void surfaceAvailable(jobject surface, int width, int height);
 
