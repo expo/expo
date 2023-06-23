@@ -27,17 +27,7 @@
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
-    "plugins": [
-      [
-        "expo-router",
-        {
-          "asyncRoutes": {
-            "default": "development",
-            "android": false
-          }
-        }
-      ]
-    ],
+    "plugins": ["expo-router"],
     "experiments": {
       "tsconfigPaths": true,
       "typedRoutes": true
