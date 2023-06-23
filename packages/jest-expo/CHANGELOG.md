@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Updated mocks for Expo SDK 49. ([#23062](https://github.com/expo/expo/pull/23062) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
