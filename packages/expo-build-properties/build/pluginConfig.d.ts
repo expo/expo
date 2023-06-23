@@ -91,6 +91,14 @@ export interface PluginConfigTypeAndroid {
      * this property is actually handled by `expo-modules-autolinking` but not the config-plugins inside expo-build-properties.
      */
     extraMavenRepos?: string[];
+    /**
+     * Indicates whether the app intends to use cleartext network traffic.
+     *
+     * @default false
+     *
+     * @see [Android documentation](https://developer.android.com/guide/topics/manifest/application-element#usesCleartextTraffic)
+     */
+    usesCleartextTraffic?: boolean;
 }
 /**
  * Interface representing available configuration for iOS native build properties.

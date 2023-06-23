@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update snapshots. ([#23043](https://github.com/expo/expo/pull/23043) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 6.2.1 — 2023-06-22
 
 ### 🛠 Breaking changes

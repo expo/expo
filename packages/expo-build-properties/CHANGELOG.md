@@ -19,6 +19,7 @@
 ### 🎉 New features
 
 - Added `android.extraMavenRepos` and `ios.extraPods` support. ([#22785](https://github.com/expo/expo/pull/22785) by [@kudo](https://github.com/kudo))
+- Added `android.usesCleartextTraffic` support. ([#23043](https://github.com/expo/expo/pull/23043) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 0.7.0 — 2023-05-08
 
