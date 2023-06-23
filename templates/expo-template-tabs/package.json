@@ -1,8 +1,8 @@
-{
+/{
   "name": "expo-template-tabs",
   "main": "expo-router/entry",
   "description": "The Tab Navigation project template includes several example screens.",
-  "version": "49.0.1",
+  "version": "49.0.2",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -24,6 +24,7 @@
     "expo-status-bar": "~1.6.0",
     "expo-system-ui": "~2.4.0",
     "expo-web-browser": "~12.3.0",
+    "expo-router": "^2.0.0-rc.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.72.0",
