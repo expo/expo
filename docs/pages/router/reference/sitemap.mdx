@@ -24,6 +24,12 @@ You can also search for links directly in a browser like Safari or Chrome to tes
   style={{ maxWidth: 720 }}
 />
 
-We currently inject a **/\_sitemap** which provides a list of all routes in the app. This is useful for debugging and development. This screen is only injected during development, and won't be available in production.
+Expo Router currently injects a **/\_sitemap** which provides a list of all routes in the app. This is especially useful for debugging.
 
-We may remove this feature for the official release, but it's useful for now.
+This can be removed by adding a **app/\_sitemap.js** file and returning a null component:
+
+```jsx app/_sitemap.js
+export default function Sitemap() {
+  return null;
+}
+```
