@@ -70,7 +70,7 @@
     "react-string-replace": "^0.4.4",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
-    "semver": "^7.3.5",
+    "semver": "^7.5.2",
     "sha1": "^1.1.1",
     "url": "^0.11.0"
   },

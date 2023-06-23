@@ -89,7 +89,7 @@
     "require-from-string": "^2.0.2",
     "requireg": "^0.2.2",
     "resolve-from": "^5.0.0",
-    "semver": "^6.3.0",
+    "semver": "^7.5.2",
     "send": "^0.18.0",
     "slugify": "^1.3.4",
     "structured-headers": "^0.4.1",

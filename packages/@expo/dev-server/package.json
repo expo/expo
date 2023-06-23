@@ -43,7 +43,7 @@
     "node-fetch": "^2.6.0",
     "open": "^8.3.0",
     "resolve-from": "^5.0.0",
-    "semver": "7.3.2",
+    "semver": "7.5.2",
     "serialize-error": "6.0.0",
     "temp-dir": "^2.0.0"
   },
