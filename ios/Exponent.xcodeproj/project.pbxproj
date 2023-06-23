@@ -120,6 +120,8 @@
 		8353B820277A17FC00AFCBDA /* EXStandaloneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8353B81E277A17FB00AFCBDA /* EXStandaloneViewController.m */; };
 		8353B821277A17FC00AFCBDA /* EXStandaloneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8353B81E277A17FB00AFCBDA /* EXStandaloneViewController.m */; };
 		837259A9280671D200E204C1 /* AIRMapUrlTileCachedOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A35BDC646C64B7988CCD0CA /* AIRMapUrlTileCachedOverlay.m */; };
+		837A38252A20D7090046BD8E /* EXVersionedNetworkInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 837A38242A20D7090046BD8E /* EXVersionedNetworkInterceptor.m */; };
+		837A38262A20D7090046BD8E /* EXVersionedNetworkInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 837A38242A20D7090046BD8E /* EXVersionedNetworkInterceptor.m */; };
 		83D00C72292CABD400CCEFAB /* EXTextDirectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F885A328FEC26000CFD75C /* EXTextDirectionController.swift */; };
 		84713BFB28584A0100E86B56 /* EXErrorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84713BFA28584A0100E86B56 /* EXErrorView.xib */; };
 		84713BFC28584A0100E86B56 /* EXErrorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84713BFA28584A0100E86B56 /* EXErrorView.xib */; };
@@ -718,6 +720,8 @@
 		79E446843BA3BF044F621CBE /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Expo Go-Expo Go (unversioned)/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		8353B81E277A17FB00AFCBDA /* EXStandaloneViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXStandaloneViewController.m; sourceTree = "<group>"; };
 		8353B81F277A17FC00AFCBDA /* EXStandaloneViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXStandaloneViewController.h; sourceTree = "<group>"; };
+		837A38232A20D6730046BD8E /* EXVersionedNetworkInterceptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXVersionedNetworkInterceptor.h; sourceTree = "<group>"; };
+		837A38242A20D7090046BD8E /* EXVersionedNetworkInterceptor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXVersionedNetworkInterceptor.m; sourceTree = "<group>"; };
 		84713BFA28584A0100E86B56 /* EXErrorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EXErrorView.xib; sourceTree = "<group>"; };
 		8746D75D24D04B2300BFAD22 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8764788C270F1AF30076CA5F /* EXAppLoadingProgressWindowViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EXAppLoadingProgressWindowViewController.swift; sourceTree = "<group>"; };
@@ -1638,6 +1642,8 @@
 				B5FB74241FF6DADB001C764B /* ScopedModule */,
 				31DBC6AA20B5B4C60049A476 /* UniversalModules */,
 				B5FB73FA1FF6DADB001C764B /* EXUnversioned.h */,
+				837A38232A20D6730046BD8E /* EXVersionedNetworkInterceptor.h */,
+				837A38242A20D7090046BD8E /* EXVersionedNetworkInterceptor.m */,
 				B5FB73FB1FF6DADB001C764B /* EXVersionManager.h */,
 				B5FB73FC1FF6DADB001C764B /* EXVersionManager.mm */,
 			);
@@ -2747,6 +2753,7 @@
 				31AD99F02285B51100F19090 /* AIRGoogleMap.m in Sources */,
 				31AD9A412285B53100F19090 /* AIRMapMarkerManager.m in Sources */,
 				B5ADEE951F7DB4E000C88D2F /* EXBuildConstants.m in Sources */,
+				837A38252A20D7090046BD8E /* EXVersionedNetworkInterceptor.m in Sources */,
 				31AD9A4D2285B53100F19090 /* RCTConvert+AirMap.m in Sources */,
 				8767F97624D19FA7009F9372 /* EXHomeAppSplashScreenViewProvider.m in Sources */,
 				2168B25C23E3058600A94C0D /* EXScopedFirebaseCore.m in Sources */,
@@ -2983,6 +2990,7 @@
 				F14218B0262CB68600BB97E6 /* AIRGoogleMapOverlayManager.m in Sources */,
 				F14218B1262CB68600BB97E6 /* EXKernelDevKeyCommands.m in Sources */,
 				F14218B2262CB68600BB97E6 /* AIRMapUrlTileManager.m in Sources */,
+				837A38262A20D7090046BD8E /* EXVersionedNetworkInterceptor.m in Sources */,
 				2D5265EC294998B5001BB2BB /* EXHomeLoader.m in Sources */,
 				F14218B3262CB68600BB97E6 /* EXKernelAppRegistry.m in Sources */,
 				F14218B4262CB68600BB97E6 /* EXErrorRecoveryManager.m in Sources */,

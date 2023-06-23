@@ -13,11 +13,15 @@ import android.os.StrictMode.ThreadPolicy
 import android.os.UserManager
 import com.facebook.common.internal.ByteStreams
 import com.facebook.drawee.backends.pipeline.Fresco
+import com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFactory
+import com.facebook.imagepipeline.producers.HttpUrlConnectionNetworkFetcher
 import com.raizlabs.android.dbflow.config.DatabaseConfig
 import com.raizlabs.android.dbflow.config.FlowConfig
 import com.raizlabs.android.dbflow.config.FlowManager
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.SingletonModule
+import expo.modules.kotlin.devtools.ExpoNetworkInspectOkHttpAppInterceptor
+import expo.modules.kotlin.devtools.ExpoNetworkInspectOkHttpNetworkInterceptor
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.*
 import host.exp.exponent.analytics.EXL
@@ -40,6 +44,7 @@ import versioned.host.exp.exponent.ExponentPackageDelegate
 import java.io.*
 import java.net.URLEncoder
 import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class Exponent private constructor(val context: Context, val application: Application) {
@@ -407,7 +412,15 @@ class Exponent private constructor(val context: Context, val application: Applic
     }
 
     try {
-      Fresco.initialize(context)
+      val okHttpClient = OkHttpClient.Builder()
+        .connectTimeout(HttpUrlConnectionNetworkFetcher.HTTP_DEFAULT_TIMEOUT.toLong(), TimeUnit.MILLISECONDS)
+        .readTimeout(0, TimeUnit.MILLISECONDS)
+        .writeTimeout(0, TimeUnit.MILLISECONDS)
+        .addInterceptor(ExpoNetworkInspectOkHttpAppInterceptor())
+        .addNetworkInterceptor(ExpoNetworkInspectOkHttpNetworkInterceptor())
+        .build()
+      val imagePipelineConfig = OkHttpImagePipelineConfigFactory.newBuilder(context, okHttpClient).build()
+      Fresco.initialize(context, imagePipelineConfig)
     } catch (e: RuntimeException) {
       EXL.testError(e)
     }

@@ -10,9 +10,9 @@
 
 #include <jsi/jsi.h>
 
-#include <JsiSkHostObjects.h>
-#include <JsiValueWrapper.h>
-#include <RNSkPlatformContext.h>
+#include "JsiSkHostObjects.h"
+#include "JsiValueWrapper.h"
+#include "RNSkPlatformContext.h"
 
 namespace RNSkia {
 namespace jsi = facebook::jsi;
@@ -72,13 +72,13 @@ public:
         });
   }
 
-  JSI_HOST_FUNCTION(__invalidate) {
+  JSI_HOST_FUNCTION(dispose) {
     invalidate();
     return jsi::Value::undefined();
   }
 
   JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(RNSkReadonlyValue, addListener),
-                       JSI_EXPORT_FUNC(RNSkReadonlyValue, __invalidate))
+                       JSI_EXPORT_FUNC(RNSkReadonlyValue, dispose))
 
   /**
    * Adds a callback that will be called whenever the value changes

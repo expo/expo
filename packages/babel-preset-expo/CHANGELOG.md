@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- Add `@babel/plugin-proposal-export-namespace-from`. ([#22899](https://github.com/expo/expo/pull/22899) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 9.5.0 — 2023-06-21
+
+### 🎉 New features
+
+- Add `@babel/plugin-proposal-export-namespace-from`. ([#22899](https://github.com/expo/expo/pull/22899) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 

@@ -1,4 +1,11 @@
-# expo-sqlite
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/sqlite/">
+    <img
+      src="../../.github/resources/expo-sqlite.svg"
+      alt="expo-sqlite"
+      height="64" />
+  </a>
+</p>
 
 Provides access to a database that can be queried through a WebSQL-like API (https://www.w3.org/TR/webdatabase/). The database is persisted across restarts of your app.
 

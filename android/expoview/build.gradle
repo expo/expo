@@ -299,6 +299,12 @@ dependencies {
   // expo-application
   api 'com.android.installreferrer:installreferrer:1.0'
 
+  // expo-blur
+  implementation 'com.github.Dimezis:BlurView:version-2.0.3'
+
+  // expo-modules-core android-annotation
+  api project(':expo-modules-core$android-annotation')
+
   // expo-store-review
   implementation "com.google.android.play:review:2.0.1"
   implementation "com.google.android.play:review-ktx:2.0.0"
@@ -322,8 +328,8 @@ dependencies {
   api 'com.github.troZee:ViewPager2:v1.0.6'
 
   // stripe-react-native
-  implementation('com.stripe:stripe-android:20.19.+')
-  implementation('com.stripe:financial-connections:20.19.+')
+  implementation('com.stripe:stripe-android:20.25.+')
+  implementation('com.stripe:financial-connections:20.25.+')
   compileOnly 'com.stripe:stripe-android-issuing-push-provisioning:1.1.0'
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0'
   implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"

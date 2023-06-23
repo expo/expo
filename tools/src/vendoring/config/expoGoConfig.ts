@@ -88,7 +88,7 @@ const config: VendoringTargetConfig = {
         async preReadPodspecHookAsync(podspecPath: string): Promise<string> {
           const reaUtilsPath = path.join(podspecPath, '..', 'scripts', 'reanimated_utils.rb');
           assert(fs.existsSync(reaUtilsPath), 'Cannot find `reanimated_utils`.');
-          const rnForkPath = path.join(REACT_NATIVE_SUBMODULE_DIR, 'packages');
+          const rnForkPath = path.join(REACT_NATIVE_SUBMODULE_DIR, '..');
           let content = await fs.readFile(reaUtilsPath, 'utf-8');
           content = content.replace(
             'react_native_node_modules_dir = ',
@@ -98,11 +98,14 @@ const config: VendoringTargetConfig = {
           return podspecPath;
         },
         async mutatePodspec(podspec: Podspec) {
-          const rnForkPath = path.join(REACT_NATIVE_SUBMODULE_DIR, '..');
-          const relativeForkPath = path.relative(path.join(EXPO_DIR, 'ios'), rnForkPath);
+          const reactCommonDir = path.relative(
+            EXPO_DIR,
+            path.join(REACT_NATIVE_SUBMODULE_DIR, 'packages', 'react-native', 'ReactCommon')
+          );
+          // `reanimated_utils.rb` generates wrong and confusing paths to ReactCommon headers, so we need to fix them.
           podspec.xcconfig['HEADER_SEARCH_PATHS'] = podspec.xcconfig[
             'HEADER_SEARCH_PATHS'
-          ]?.replace(rnForkPath, '${PODS_ROOT}/../' + relativeForkPath);
+          ]?.replace(/"\$\(PODS_ROOT\)\/\.\.\/.+?"/g, `"\${PODS_ROOT}/../../${reactCommonDir}"`);
         },
         transforms: {
           content: [
@@ -428,7 +431,7 @@ const config: VendoringTargetConfig = {
             podspec.pod_target_xcconfig = {};
           }
           podspec.pod_target_xcconfig['HEADER_SEARCH_PATHS'] =
-            '"$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging" "$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers"';
+            '"$(PODS_TARGET_SRCROOT)/cpp/"/** "$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging" "$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers"';
         },
       },
       android: {

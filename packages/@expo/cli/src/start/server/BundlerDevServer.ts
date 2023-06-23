@@ -3,7 +3,6 @@ import assert from 'assert';
 import openBrowserAsync from 'better-opn';
 import resolveFrom from 'resolve-from';
 
-import { APISettings } from '../../api/settings';
 import * as Log from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
 import { resolveWithTimeout } from '../../utils/delay';
@@ -18,7 +17,6 @@ import { AsyncNgrok } from './AsyncNgrok';
 import { DevelopmentSession } from './DevelopmentSession';
 import { CreateURLOptions, UrlCreator } from './UrlCreator';
 import { PlatformBundlers } from './platformBundlers';
-import { typescriptTypeGeneration } from './type-generation';
 
 const debug = require('debug')('expo:start:server:devServer') as typeof console.log;
 
@@ -168,12 +166,7 @@ export abstract class BundlerDevServer {
     return false;
   }
 
-  public async startTypeScriptServices(): Promise<void> {
-    return typescriptTypeGeneration({
-      server: this.instance!.server,
-      projectRoot: this.projectRoot,
-    });
-  }
+  public abstract startTypeScriptServices(): Promise<void>;
 
   public async watchEnvironmentVariables(): Promise<void> {
     // noop -- We've only implemented this functionality in Metro.
@@ -221,7 +214,7 @@ export abstract class BundlerDevServer {
   protected async postStartAsync(options: BundlerStartOptions) {
     if (
       options.location.hostType === 'tunnel' &&
-      !APISettings.isOffline &&
+      !env.EXPO_OFFLINE &&
       // This is a hack to prevent using tunnel on web since we block it upstream for some reason.
       this.isTargetingNative()
     ) {

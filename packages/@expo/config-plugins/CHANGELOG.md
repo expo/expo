@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 7.2.0 — 2023-06-21
+
+### 💡 Others
+
 - Update `xml2js` version. ([#22872](https://github.com/expo/expo/pull/22872) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 7.1.0 — 2023-06-13
@@ -66,3 +70,7 @@
 ### 💡 Others
 
 - Bump `@expo/json-file`, `@expo/plist`. ([#20720](https://github.com/expo/expo/pull/20720) by [@EvanBacon](https://github.com/EvanBacon))
+
+### ⚠️ Notices
+
+- Deprecate `expo.jsEngine` in **android/gradle.properties** and use `hermesEnabled` instead. (([#21067](https://github.com/expo/expo/pull/21067) by [@kudo](https://github.com/kudo))

@@ -1,6 +1,6 @@
 {
   "name": "expo-image-manipulator",
-  "version": "11.2.0",
+  "version": "11.3.0",
   "description": "Provides functions that let you manipulation images on the local file system, eg: resize, crop.",
   "main": "build/ImageManipulator.js",
   "types": "build/ImageManipulator.d.ts",

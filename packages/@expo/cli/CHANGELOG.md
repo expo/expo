@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.10.0 — 2023-06-21
+
+### 🛠 Breaking changes
+
 - Changed the default dev server port from 19000 to 8081 for Expo Go. ([#22880](https://github.com/expo/expo/pull/22880) by [@kudo](https://github.com/kudo))
 
 ### 🎉 New features
@@ -13,12 +23,16 @@
 - Add `-d` as an alias to `--dev-client`. ([#22925](https://github.com/expo/expo/pull/22925) by [@EvanBacon](https://github.com/EvanBacon))
 - Allow client-side device ids to reuse debugger sessions when restarting app. ([#22742](https://github.com/expo/expo/pull/22742) by [@byCedric](https://github.com/byCedric))
 - Enable inspector proxy with network support by default. ([#22936](https://github.com/expo/expo/pull/22936) by [@byCedric](https://github.com/byCedric))
+- Auto enable `--dev-client` in `expo start` if `--go` is not passed and `expo-dev-client` is in the `package.json`. ([#22926](https://github.com/expo/expo/pull/22926) by [@EvanBacon](https://github.com/EvanBacon))
+- Add `EXPO_OFFLINE` environment variable to disable network requests across the entire CLI. ([#22961](https://github.com/expo/expo/pull/22961) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
 - Prevent source map requests for context modules from reaching Metro. ([#22874](https://github.com/expo/expo/pull/22874) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
+
+- Only show EAS signing log in debug. ([#22975](https://github.com/expo/expo/pull/22975) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.9.1 — 2023-06-13
 
@@ -35,6 +49,7 @@
 - Remove entry file modification/index.js generation from `expo prebuild`. Arbitrary entry files in development only work when using `expo-dev-client` or `.expo/.virtual-metro-entry` (SDK +49). ([#22044](https://github.com/expo/expo/pull/22044) by [@EvanBacon](https://github.com/EvanBacon))
 - Drop `metro.config.js` copy step in `expo prebuild` in favor of `expo export:embed` and the new Xcode start script using Expo CLI--this only works when using Expo CLI for all bundling (SDK +49). ([#22045](https://github.com/expo/expo/pull/22045) by [@EvanBacon](https://github.com/EvanBacon))
 - Skip overwriting `react` and `react-native` dependencies during `expo prebuild`. ([#22624](https://github.com/expo/expo/pull/22624) by [@byCedric](https://github.com/byCedric))
+- Replace `EXPO_USE_TYPED_ROUTES` with `experiments.typedRoutes` in the `app.json`. ([#22848](https://github.com/expo/expo/pull/22848) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 

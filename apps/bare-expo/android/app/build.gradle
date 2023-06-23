@@ -61,11 +61,6 @@ react {
     // hermesFlags = ["-O", "-output-source-map"]
 }
 
-// Override `hermesEnabled` by `expo.jsEngine`
-ext {
-  hermesEnabled = (findProperty('expo.jsEngine') ?: "hermes") == "hermes"
-}
-
 // Override `debuggableVariants` for expo-updates debugging
 if (System.getenv('EX_UPDATES_NATIVE_DEBUG') == "1") {
   react {

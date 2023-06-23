@@ -2,18 +2,30 @@
 
 ## Unpublished
 
-### 📚 3rd party library updates
-
-- Updated `robolectric` to `4.10`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
-
 ### 🛠 Breaking changes
 
 ### 🎉 New features
 
-- [Android] Added support for the new architecture. ([#22607](https://github.com/expo/expo/pull/22607) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 2.4.1 — 2023-06-22
+
+_This version does not introduce any user-facing changes._
+
+## 2.4.0 — 2023-06-21
+
+### 📚 3rd party library updates
+
+- Updated `robolectric` to `4.10`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+
+### 🎉 New features
+
 - Allow users to manually load apps without specifying a URL scheme. ([#22637](https://github.com/expo/expo/pull/22637) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
 - Run tsc and lint and tests on bundle. ([#22866](https://github.com/expo/expo/pull/22866) by [@wschurman](https://github.com/wschurman))
+- Added support for the new architecture. ([#22607](https://github.com/expo/expo/pull/22607), [#22184](https://github.com/expo/expo/pull/22184) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 

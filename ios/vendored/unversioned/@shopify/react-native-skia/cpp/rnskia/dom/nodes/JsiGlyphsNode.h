@@ -20,12 +20,14 @@ protected:
     auto x = _xProp->value().getAsNumber();
     auto y = _yProp->value().getAsNumber();
     auto font = _fontProp->getDerivedValue();
-    auto glyphInfo = _glyphsProp->getDerivedValue();
+    if (font != nullptr) {
+      auto glyphInfo = _glyphsProp->getDerivedValue();
 
-    context->getCanvas()->drawGlyphs(
-        static_cast<int>(glyphInfo->glyphIds.size()),
-        glyphInfo->glyphIds.data(), glyphInfo->positions.data(),
-        SkPoint::Make(x, y), *font, *context->getPaint());
+      context->getCanvas()->drawGlyphs(
+          static_cast<int>(glyphInfo->glyphIds.size()),
+          glyphInfo->glyphIds.data(), glyphInfo->positions.data(),
+          SkPoint::Make(x, y), *font, *context->getPaint());
+    }
   }
 
   void defineProperties(NodePropsContainer *container) override {
@@ -36,7 +38,6 @@ protected:
     _xProp = container->defineProperty<NodeProp>("x");
     _yProp = container->defineProperty<NodeProp>("y");
 
-    _fontProp->require();
     _glyphsProp->require();
     _xProp->require();
     _yProp->require();
