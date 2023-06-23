@@ -239,3 +239,5 @@ public final class DevLauncherController: NSObject, UpdatesExternalInterface {
     }
   }
 }
+
+// swiftlint:enable force_unwrapping

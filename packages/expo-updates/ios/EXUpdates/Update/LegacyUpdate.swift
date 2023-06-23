@@ -49,7 +49,7 @@ internal final class LegacyUpdate: Update {
     if let manifestRuntimeVersion = manifestRuntimeVersion as? String {
       runtimeVersion = manifestRuntimeVersion
     } else {
-      runtimeVersion = manifest.expoGoSDKVersion().require("Manifest JSON must have a valid sdkVersion property defined")
+      runtimeVersion = manifest.expoGoSDKVersion().require("Manifest JSON must have either a valid runtimeVersion property or a valid sdkVersion property")
     }
 
     let bundleUrl = URL(string: bundleUrlString).require("Manifest JSON must have a valid URL as the bundleUrl property")
@@ -135,13 +135,13 @@ internal final class LegacyUpdate: Update {
       // The URL is valid and constant, so it'll never throw
       // swiftlint:disable:next force_unwrapping
       return URL(string: EXUpdatesExpoAssetBaseUrl)!
-    } else {
-      let assetsPathOrUrl = withManifest.assetUrlOverride() ?? "assets"
-      // assetUrlOverride may be an absolute or relative URL
-      // if relative, we should resolve with respect to the manifest URL
-      return URL(string: assetsPathOrUrl, relativeTo: manifestUrl).require(
-        "Invalid assetUrlOverride"
-      ).absoluteURL.standardized
     }
+
+    let assetsPathOrUrl = withManifest.assetUrlOverride() ?? "assets"
+    // assetUrlOverride may be an absolute or relative URL
+    // if relative, we should resolve with respect to the manifest URL
+    return URL(string: assetsPathOrUrl, relativeTo: manifestUrl).require(
+      "Invalid assetUrlOverride"
+    ).absoluteURL.standardized
   }
 }
