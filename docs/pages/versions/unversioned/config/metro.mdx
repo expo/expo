@@ -276,9 +276,9 @@ module.exports = (async () => {
 })();
 ```
 
-In the entry file (**index.js**, **App.js**), add the following:
+In your app main entry file, add the following:
 
-```js index.js
+```js index.js/App.js
 // Ensure we import the CSS for Tailwind so it's included in hot module reloads.
 const ctx = require.context(
   // If this require.context is not inside the root directory (next to the package.json) then adjust this file path
