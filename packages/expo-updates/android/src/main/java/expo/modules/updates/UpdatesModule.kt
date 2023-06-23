@@ -10,6 +10,7 @@ import expo.modules.core.ModuleRegistryDelegate
 import expo.modules.core.Promise
 import expo.modules.core.interfaces.ExpoMethod
 import expo.modules.updates.db.entity.AssetEntity
+import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.launcher.Launcher.LauncherCallback
 import expo.modules.updates.loader.*
 import expo.modules.updates.loader.FileDownloader.RemoteUpdateDownloadCallback
@@ -18,11 +19,12 @@ import expo.modules.updates.logging.UpdatesLogEntry
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.ManifestMetadata
+import expo.modules.updates.statemachine.UpdatesStateEvent
 import java.util.Date
 
 // these unused imports must stay because of versioning
 /* ktlint-disable no-unused-imports */
-
+import expo.modules.updates.UpdatesConfiguration
 /* ktlint-enable no-unused-imports */
 
 /**
@@ -39,6 +41,8 @@ class UpdatesModule(
   private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
 ) : ExportedModule(context) {
   private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
+
+  private val logger = UpdatesLogger(context)
 
   private val updatesService: UpdatesInterface? by moduleRegistry()
 
@@ -141,69 +145,91 @@ class UpdatesModule(
         )
         return
       }
-      val databaseHolder = updatesServiceLocal.databaseHolder
-      val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(
-        databaseHolder.database,
-        updatesServiceLocal.configuration,
-        updatesServiceLocal.launchedUpdate,
-        updatesServiceLocal.embeddedUpdate
-      )
-      databaseHolder.releaseDatabase()
-      updatesServiceLocal.fileDownloader.downloadRemoteUpdate(
-        updatesServiceLocal.configuration,
-        extraHeaders,
-        context,
-        object : RemoteUpdateDownloadCallback {
-          override fun onFailure(message: String, e: Exception) {
-            promise.reject("ERR_UPDATES_CHECK", message, e)
-            Log.e(TAG, message, e)
-          }
+      updatesServiceLocal.stateMachine?.processEvent(UpdatesStateEvent.Check())
+      AsyncTask.execute {
+        val databaseHolder = updatesServiceLocal.databaseHolder
+        val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(
+          databaseHolder.database,
+          updatesServiceLocal.configuration,
+          updatesServiceLocal.launchedUpdate,
+          updatesServiceLocal.embeddedUpdate
+        )
+        databaseHolder.releaseDatabase()
+        updatesServiceLocal.fileDownloader.downloadRemoteUpdate(
+          updatesServiceLocal.configuration,
+          extraHeaders,
+          context,
+          object : RemoteUpdateDownloadCallback {
+            override fun onFailure(message: String, e: Exception) {
+              promise.reject("ERR_UPDATES_CHECK", message, e)
+              Log.e(TAG, message, e)
+            }
 
-          override fun onSuccess(updateResponse: UpdateResponse) {
-            val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
-            val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
+            override fun onSuccess(updateResponse: UpdateResponse) {
+              val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
+              val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
 
-            val updateInfo = Bundle()
-            if (updateDirective != null) {
-              if (updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) {
-                updateInfo.putBoolean("isRollBackToEmbedded", true)
+              val updateInfo = Bundle()
+              if (updateDirective != null) {
+                if (updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) {
+                  updateInfo.putBoolean("isRollBackToEmbedded", true)
+                  promise.resolve(updateInfo)
+                  updatesServiceLocal.stateMachine?.processEvent(
+                    UpdatesStateEvent.CheckCompleteWithRollback()
+                  )
+                  return
+                }
+              }
+
+              if (updateManifest == null) {
+                updateInfo.putBoolean("isAvailable", false)
                 promise.resolve(updateInfo)
+                updatesServiceLocal.stateMachine?.processEvent(
+                  UpdatesStateEvent.CheckComplete()
+                )
                 return
               }
-            }
 
-            if (updateManifest == null) {
-              updateInfo.putBoolean("isAvailable", false)
-              promise.resolve(updateInfo)
-              return
-            }
+              val launchedUpdate = updatesServiceLocal.launchedUpdate
+              if (launchedUpdate == null) {
+                // this shouldn't ever happen, but if we don't have anything to compare
+                // the new manifest to, let the user know an update is available
+                updateInfo.putBoolean("isAvailable", true)
+                updateInfo.putString("manifestString", updateManifest.manifest.toString())
+                promise.resolve(updateInfo)
+                updatesServiceLocal.stateMachine?.processEvent(
+                  UpdatesStateEvent.CheckCompleteWithUpdate(
+                    updateManifest.manifest.getRawJson()
+                  )
+                )
+                return
+              }
 
-            val launchedUpdate = updatesServiceLocal.launchedUpdate
-            if (launchedUpdate == null) {
-              // this shouldn't ever happen, but if we don't have anything to compare
-              // the new manifest to, let the user know an update is available
-              updateInfo.putBoolean("isAvailable", true)
-              updateInfo.putString("manifestString", updateManifest.manifest.toString())
-              promise.resolve(updateInfo)
-              return
-            }
-
-            if (updatesServiceLocal.selectionPolicy.shouldLoadNewUpdate(
-                updateManifest.updateEntity,
-                launchedUpdate,
-                updateResponse.responseHeaderData?.manifestFilters
-              )
-            ) {
-              updateInfo.putBoolean("isAvailable", true)
-              updateInfo.putString("manifestString", updateManifest.manifest.toString())
-              promise.resolve(updateInfo)
-            } else {
-              updateInfo.putBoolean("isAvailable", false)
-              promise.resolve(updateInfo)
+              if (updatesServiceLocal.selectionPolicy.shouldLoadNewUpdate(
+                  updateManifest.updateEntity,
+                  launchedUpdate,
+                  updateResponse.responseHeaderData?.manifestFilters
+                )
+              ) {
+                updateInfo.putBoolean("isAvailable", true)
+                updateInfo.putString("manifestString", updateManifest.manifest.toString())
+                promise.resolve(updateInfo)
+                updatesServiceLocal.stateMachine?.processEvent(
+                  UpdatesStateEvent.CheckCompleteWithUpdate(
+                    updateManifest.manifest.getRawJson()
+                  )
+                )
+              } else {
+                updateInfo.putBoolean("isAvailable", false)
+                promise.resolve(updateInfo)
+                updatesServiceLocal.stateMachine?.processEvent(
+                  UpdatesStateEvent.CheckComplete()
+                )
+              }
             }
           }
-        }
-      )
+        )
+      }
     } catch (e: IllegalStateException) {
       promise.reject(
         "ERR_UPDATES_CHECK",
@@ -223,6 +249,7 @@ class UpdatesModule(
         )
         return
       }
+      updatesServiceLocal.stateMachine?.processEvent(UpdatesStateEvent.Download())
       AsyncTask.execute {
         val databaseHolder = updatesServiceLocal.databaseHolder
         RemoteLoader(
@@ -238,6 +265,9 @@ class UpdatesModule(
               override fun onFailure(e: Exception) {
                 databaseHolder.releaseDatabase()
                 promise.reject("ERR_UPDATES_FETCH", "Failed to download new update", e)
+                updatesServiceLocal.stateMachine?.processEvent(
+                  UpdatesStateEvent.DownloadError("Failed to download new update: ${e.message}")
+                )
               }
 
               override fun onAssetLoaded(
@@ -276,15 +306,30 @@ class UpdatesModule(
 
                 if (loaderResult.updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) {
                   updateInfo.putBoolean("isRollBackToEmbedded", true)
+                  updatesServiceLocal.stateMachine?.processEvent(
+                    UpdatesStateEvent.DownloadCompleteWithRollback()
+                  )
                 } else {
                   if (loaderResult.updateEntity == null) {
                     updateInfo.putBoolean("isNew", false)
+                    updatesServiceLocal.stateMachine?.processEvent(
+                      UpdatesStateEvent.DownloadComplete()
+                    )
                   } else {
                     updatesServiceLocal.resetSelectionPolicy()
                     updateInfo.putBoolean("isNew", true)
+
+                    // We need the explicit casting here because when in versioned expo-updates,
+                    // the UpdateEntity and UpdatesModule are in different package namespace,
+                    // Kotlin cannot do the smart casting for that case.
+                    val updateEntity = loaderResult.updateEntity as UpdateEntity
+
                     updateInfo.putString(
                       "manifestString",
-                      loaderResult.updateEntity.manifest.toString()
+                      updateEntity.manifest.toString()
+                    )
+                    updatesServiceLocal.stateMachine?.processEvent(
+                      UpdatesStateEvent.DownloadCompleteWithUpdate(loaderResult.updateEntity.manifest)
                     )
                   }
                 }
@@ -295,15 +340,14 @@ class UpdatesModule(
           )
       }
     } catch (e: IllegalStateException) {
-      promise.reject(
-        "ERR_UPDATES_FETCH",
-        "The updates module controller has not been properly initialized. If you're using a development client, you cannot fetch updates. Otherwise, make sure you have called the native method UpdatesController.initialize()."
-      )
+      val message = "The updates module controller has not been properly initialized. If you're using a development client, you cannot fetch updates. Otherwise, make sure you have called the native method UpdatesController.initialize()."
+      promise.reject("ERR_UPDATES_FETCH", message)
     }
   }
 
   @ExpoMethod
   fun getExtraParamsAsync(promise: Promise) {
+    logger.debug("Called getExtraParamsAsync")
     val updatesServiceLocal = updatesService
     if (!updatesServiceLocal!!.configuration.isEnabled) {
       promise.reject(
@@ -315,17 +359,36 @@ class UpdatesModule(
 
     AsyncTask.execute {
       val databaseHolder = updatesServiceLocal.databaseHolder
-      promise.resolve(
-        ManifestMetadata.getExtraParams(
+      try {
+        val result = ManifestMetadata.getExtraParams(
           databaseHolder.database,
           updatesServiceLocal.configuration,
         )
-      )
+        databaseHolder.releaseDatabase()
+        val resultMap = when (result) {
+          null -> Bundle()
+          else -> {
+            Bundle().apply {
+              result.forEach {
+                putString(it.key, it.value)
+              }
+            }
+          }
+        }
+        promise.resolve(resultMap)
+      } catch (e: Exception) {
+        databaseHolder.releaseDatabase()
+        promise.reject(
+          "ERR_UPDATES_FETCH",
+          "Exception in getExtraParamsAsync: ${e.message}, ${e.stackTraceToString()}"
+        )
+      }
     }
   }
 
   @ExpoMethod
   fun setExtraParamAsync(key: String, value: String?, promise: Promise) {
+    logger.debug("Called setExtraParamAsync with key = $key, value = $value")
     val updatesServiceLocal = updatesService
     if (!updatesServiceLocal!!.configuration.isEnabled) {
       promise.reject(
@@ -337,13 +400,22 @@ class UpdatesModule(
 
     AsyncTask.execute {
       val databaseHolder = updatesServiceLocal.databaseHolder
-      ManifestMetadata.setExtraParam(
-        databaseHolder.database,
-        updatesServiceLocal.configuration,
-        key,
-        value
-      )
-      promise.resolve(null)
+      try {
+        ManifestMetadata.setExtraParam(
+          databaseHolder.database,
+          updatesServiceLocal.configuration,
+          key,
+          value
+        )
+        databaseHolder.releaseDatabase()
+        promise.resolve(null)
+      } catch (e: Exception) {
+        databaseHolder.releaseDatabase()
+        promise.reject(
+          "ERR_UPDATES_FETCH",
+          "Exception in setExtraParamAsync: ${e.message}, ${e.stackTraceToString()}"
+        )
+      }
     }
   }
 

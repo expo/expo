@@ -2,74 +2,55 @@
 
 #include "JsiDomDeclarationNode.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 
 namespace RNSkia {
 
-class JsiBlendNode : public JsiBaseDomDeclarationNode,
+class JsiBlendNode : public JsiDomDeclarationNode,
                      public JsiDomNodeCtor<JsiBlendNode> {
 public:
   explicit JsiBlendNode(std::shared_ptr<RNSkPlatformContext> context)
-      : JsiBaseDomDeclarationNode(context, "skBlend") {}
+      : JsiDomDeclarationNode(context, "skBlend",
+                              DeclarationType::ImageFilter) {}
 
-protected:
-  void decorate(DrawingContext *context) override {
-    if (context->isChanged() || getPropsContainer()->isChanged()) {
-      auto children = getChildren();
-      auto childSize = children.size();
+  void decorate(DeclarationContext *context) override {
 
-      // No need to do anything if there are no children here
-      if (childSize == 0) {
-        return;
-      }
+    // No need to do anything if there are no children here
+    if (getChildren().size() == 0) {
+      return;
+    }
 
-      // Blend mode
-      auto blendMode = *_blendProp->getDerivedValue();
+    decorateChildren(context);
 
-      // Find the latest child and check if it is a shader or image filter
-      bool asShader = std::dynamic_pointer_cast<JsiBaseShaderNode>(
-                          children.at(childSize - 1)) != nullptr;
+    // Blend mode
+    auto blendMode = *_blendProp->getDerivedValue();
 
-      // Traverse children in reverse
-      sk_sp<SkShader> innerShader;
-      sk_sp<SkImageFilter> innerImageFilter;
+    // Shader
+    auto shader = context->getShaders()->popAsOne(
+        [blendMode](sk_sp<SkShader> inner, sk_sp<SkShader> outer) {
+          return SkShaders::Blend(blendMode, outer, inner);
+        });
 
-      for (size_t i = childSize - 1; i != (std::size_t)-1; i--) {
-        auto child = children.at(i);
-        auto maybeShader = std::dynamic_pointer_cast<JsiBaseShaderNode>(child);
-        auto maybeImageFilter =
-            std::dynamic_pointer_cast<JsiBaseImageFilterNode>(child);
+    if (shader != nullptr) {
+      context->getShaders()->push(shader);
+    }
 
-        if (maybeShader) {
-          sk_sp<SkShader> outer = maybeShader->getCurrent();
-          if (innerShader != nullptr) {
-            innerShader = SkShaders::Blend(blendMode, outer, innerShader);
-          } else {
-            innerShader = outer;
-          }
-        } else if (maybeImageFilter) {
-          sk_sp<SkImageFilter> outer = maybeImageFilter->getCurrent();
-          if (outer != nullptr) {
-            innerImageFilter = SkImageFilters::Blend(blendMode, outer,
-                                                     innerImageFilter, nullptr);
-          } else {
-            innerImageFilter = outer;
-          }
-        }
-      }
-
-      // Materialize
-      if (asShader) {
-        context->getMutablePaint()->setShader(innerShader);
-      } else {
-        context->getMutablePaint()->setImageFilter(innerImageFilter);
-      }
+    auto imageFilter =
+        context->getImageFilters()->Declaration<sk_sp<SkImageFilter>>::popAsOne(
+            [blendMode](sk_sp<SkImageFilter> inner,
+                        sk_sp<SkImageFilter> outer) {
+              return SkImageFilters::Blend(blendMode, outer, inner);
+            });
+    if (imageFilter != nullptr) {
+      context->getImageFilters()->push(imageFilter);
     }
   }
 
+protected:
   void defineProperties(NodePropsContainer *container) override {
-    JsiBaseDomDeclarationNode::defineProperties(container);
+    JsiDomDeclarationNode::defineProperties(container);
     _blendProp = container->defineProperty<BlendModeProp>("mode");
     _blendProp->require();
   }
@@ -78,7 +59,7 @@ protected:
    Validates that only declaration nodes can be children
    */
   void addChild(std::shared_ptr<JsiDomNode> child) override {
-    JsiBaseDomDeclarationNode::addChild(child);
+    JsiDomDeclarationNode::addChild(child);
     // Verify declaration of either shader or image filter
     verifyChild(child);
   }
@@ -88,15 +69,18 @@ protected:
    */
   void insertChildBefore(std::shared_ptr<JsiDomNode> child,
                          std::shared_ptr<JsiDomNode> before) override {
-    JsiBaseDomDeclarationNode::insertChildBefore(child, before);
+    JsiDomDeclarationNode::insertChildBefore(child, before);
     // Verify declaration of either shader or image filter
     verifyChild(child);
   }
 
 private:
   void verifyChild(std::shared_ptr<JsiDomNode> child) {
-    if (std::dynamic_pointer_cast<JsiBaseShaderNode>(child) == nullptr &&
-        std::dynamic_pointer_cast<JsiBaseImageFilterNode>(child) == nullptr) {
+    if (child->getNodeClass() != NodeClass::DeclarationNode ||
+        (std::static_pointer_cast<JsiDomDeclarationNode>(child)
+                 ->getDeclarationType() != DeclarationType::Shader &&
+         std::static_pointer_cast<JsiDomDeclarationNode>(child)
+                 ->getDeclarationType() != DeclarationType::ImageFilter)) {
       // We'll raise an error when other children are added.
       std::runtime_error("Blend nodes only supports either shaders or image "
                          "filters as children, got " +

@@ -6,13 +6,13 @@
 #include <unordered_map>
 #include <vector>
 
-#include <JsiValueWrapper.h>
-#include <RNSkPlatformContext.h>
-#include <RNSkValue.h>
+#include "JsiValueWrapper.h"
+#include "RNSkPlatformContext.h"
+#include "RNSkValue.h"
 
-#include <JsiSkImage.h>
-#include <JsiSkPoint.h>
-#include <JsiSkRect.h>
+#include "JsiSkImage.h"
+#include "JsiSkPoint.h"
+#include "JsiSkRect.h"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
@@ -44,7 +44,7 @@ public:
   /**
    Render to a canvas
    */
-  virtual void renderToCanvas(const std::function<void(SkCanvas *)> &) = 0;
+  virtual bool renderToCanvas(const std::function<void(SkCanvas *)> &) = 0;
 
 protected:
   std::function<void()> _requestRedraw;
@@ -88,23 +88,26 @@ protected:
 
 class RNSkImageCanvasProvider : public RNSkCanvasProvider {
 public:
-  RNSkImageCanvasProvider(std::function<void()> requestRedraw, float width,
+  RNSkImageCanvasProvider(std::shared_ptr<RNSkPlatformContext> context,
+                          std::function<void()> requestRedraw, float width,
                           float height)
       : RNSkCanvasProvider(requestRedraw), _width(width), _height(height) {
-    _surface = SkSurface::MakeRasterN32Premul(_width, _height);
+    _surface = context->makeOffscreenSurface(_width, _height);
   }
 
   /**
    Returns a snapshot of the current surface/canvas
    */
   sk_sp<SkImage> makeSnapshot(std::shared_ptr<SkRect> bounds) {
+    sk_sp<SkImage> image;
     if (bounds != nullptr) {
       SkIRect b = SkIRect::MakeXYWH(bounds->x(), bounds->y(), bounds->width(),
                                     bounds->height());
-      return _surface->makeImageSnapshot(b);
+      image = _surface->makeImageSnapshot(b);
     } else {
-      return _surface->makeImageSnapshot();
+      image = _surface->makeImageSnapshot();
     }
+    return image->makeNonTextureImage();
   }
 
   /**
@@ -120,8 +123,9 @@ public:
   /**
    Render to a canvas
    */
-  void renderToCanvas(const std::function<void(SkCanvas *)> &cb) override {
+  bool renderToCanvas(const std::function<void(SkCanvas *)> &cb) override {
     cb(_surface->getCanvas());
+    return true;
   };
 
 private:
@@ -222,6 +226,15 @@ public:
   void requestRedraw() { _redrawRequestCounter++; }
 
   /**
+   Renders immediate. Be carefull to not call this method from another thread
+   than the UI thread
+   */
+  void renderImmediate() {
+    _renderer->renderImmediate(_canvasProvider);
+    _redrawRequestCounter = 0;
+  }
+
+  /**
    Sets the native id of the view
    */
   virtual void setNativeId(size_t nativeId) {
@@ -261,8 +274,9 @@ public:
    Renders the view into an SkImage instead of the screen.
    */
   sk_sp<SkImage> makeImageSnapshot(std::shared_ptr<SkRect> bounds) {
+
     auto provider = std::make_shared<RNSkImageCanvasProvider>(
-        std::bind(&RNSkView::requestRedraw, this),
+        getPlatformContext(), std::bind(&RNSkView::requestRedraw, this),
         _canvasProvider->getScaledWidth(), _canvasProvider->getScaledHeight());
 
     _renderer->renderImmediate(provider);
@@ -405,6 +419,7 @@ private:
 
   size_t _drawingLoopId = 0;
   std::atomic<int> _redrawRequestCounter = {1};
+  bool _initialDrawingDone = false;
 };
 
 } // namespace RNSkia

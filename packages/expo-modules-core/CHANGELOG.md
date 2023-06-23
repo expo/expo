@@ -2,11 +2,29 @@
 
 ## Unpublished
 
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.5.1 — 2023-06-22
+
+_This version does not introduce any user-facing changes._
+
+## 1.5.0 — 2023-06-21
+
+### 💡 Others
+
+- [iOS] Added Interface Geometry Management section to ExpoAppDelegate. ([#22599](https://github.com/expo/expo/pull/22599) by [@behenate](https://github.com/behenate))
+
+## 1.4.0 — 2023-06-13
+
 ### 📚 3rd party library updates
 
 - Updated `robolectric` to `4.10` and `junit` to `4.13.2`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
-
-### 🛠 Breaking changes
 
 ### 🎉 New features
 

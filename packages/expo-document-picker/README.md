@@ -1,4 +1,11 @@
-# expo-document-picker
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/document-picker/">
+    <img
+      src="../../.github/resources/expo-document-picker.svg"
+      alt="expo-document-picker"
+      height="64" />
+  </a>
+</p>
 
 Provides access to the system's UI for selecting documents from the available providers on the user's device.
 

@@ -1,11 +1,58 @@
 import { asMock } from '../../__tests__/asMock';
+import { hasDirectDevClientDependency } from '../../utils/analytics/getDevClientProperties';
 import { resolvePortAsync } from '../../utils/port';
-import { resolveHostType, resolvePortsAsync } from '../resolveOptions';
+import { resolveHostType, resolveOptionsAsync, resolvePortsAsync } from '../resolveOptions';
 
 jest.mock('../../utils/port', () => {
   return {
     resolvePortAsync: jest.fn(),
   };
+});
+jest.mock('../../utils/scheme', () => {
+  return {
+    getOptionalDevClientSchemeAsync: jest.fn(async () => []),
+  };
+});
+jest.mock('../../utils/analytics/getDevClientProperties', () => {
+  return {
+    hasDirectDevClientDependency: jest.fn(() => false),
+  };
+});
+
+describe(resolveOptionsAsync, () => {
+  it(`prevents using --dev-client and --go together`, async () => {
+    await expect(
+      resolveOptionsAsync('/noop', {
+        '--dev-client': true,
+        '--go': true,
+      })
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"Cannot use both --dev-client and --go together."`
+    );
+  });
+  it(`--go sets devClient to false`, async () => {
+    expect(
+      (
+        await resolveOptionsAsync('/noop', {
+          '--go': true,
+        })
+      ).devClient
+    ).toBe(false);
+  });
+  it(`defaults to devClient being false`, async () => {
+    expect((await resolveOptionsAsync('/noop', {})).devClient).toBe(false);
+  });
+  it(`sets devClient to true`, async () => {
+    expect((await resolveOptionsAsync('/noop', { '--dev-client': true })).devClient).toBe(true);
+  });
+  it(`infers that devClient should be true`, async () => {
+    jest.mocked(hasDirectDevClientDependency).mockReturnValueOnce(true);
+    expect((await resolveOptionsAsync('/noop', {})).devClient).toBe(true);
+  });
+  it(`--go forces devClient to false`, async () => {
+    jest.mocked(hasDirectDevClientDependency).mockReturnValueOnce(true);
+    expect((await resolveOptionsAsync('/noop', { '--go': true })).devClient).toBe(false);
+  });
 });
 
 describe(resolveHostType, () => {
@@ -45,7 +92,7 @@ describe(resolvePortsAsync, () => {
   });
   it(`resolves default port for metro`, async () => {
     await expect(resolvePortsAsync('/noop', {}, { webOnly: false })).resolves.toStrictEqual({
-      metroPort: 19000,
+      metroPort: 8081,
     });
   });
   it(`resolves default port with given port`, async () => {

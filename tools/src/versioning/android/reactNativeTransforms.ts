@@ -18,12 +18,6 @@ export function reactNativeTransforms(
   return {
     path: [],
     content: [
-      // Update codegen folder to our customized folder
-      {
-        paths: './ReactAndroid/build.gradle',
-        find: /"REACT_GENERATED_SRC_DIR=.+?",/,
-        replaceWith: `"REACT_GENERATED_SRC_DIR=${versionedReactNativeRoot}",`,
-      },
       // Add generated java to sourceSets
       {
         paths: './ReactAndroid/build.gradle',
@@ -84,7 +78,10 @@ export function reactNativeTransforms(
           ].join(''),
       },
       ...packagesToRename.map((pkg: string) => ({
-        paths: ['./ReactCommon/**/*.{java,h,cpp}', './ReactAndroid/src/main/**/*.{java,h,cpp}'],
+        paths: [
+          './ReactCommon/**/*.{java,kt,h,cpp}',
+          './ReactAndroid/src/main/**/*.{java,kt,h,cpp}',
+        ],
         find: new RegExp(`${escapeRegExp(pathFromPkg(pkg))}`, 'g'),
         replaceWith: `${abiVersion}/${pathFromPkg(pkg)}`,
       })),
@@ -105,7 +102,7 @@ export function reactNativeTransforms(
         replaceWith: `targets "libhermes_${abiVersion}"`,
       },
       ...[...JniLibNames, 'fb', 'fbjni'].map((libName) => ({
-        paths: '*.java',
+        paths: '*.{java,kt}',
         find: new RegExp(`SoLoader.loadLibrary\\\("${escapeRegExp(libName)}"\\\)`),
         replaceWith: `SoLoader.loadLibrary("${libName}_${abiVersion}")`,
       })),
@@ -151,7 +148,7 @@ export function codegenTransforms(abiVersion: string): FileTransforms {
     path: [],
     content: [
       ...packagesToRename.map((pkg: string) => ({
-        paths: ['**/*.{java,h,cpp}'],
+        paths: ['**/*.{java,kt,h,cpp}'],
         find: new RegExp(`${escapeRegExp(pathFromPkg(pkg))}`, 'g'),
         replaceWith: `${abiVersion}/${pathFromPkg(pkg)}`,
       })),

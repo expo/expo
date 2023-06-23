@@ -61,7 +61,6 @@ export const runServer = async (
   const serverApp = connect();
 
   const { middleware, end, metroServer } = await Metro.createConnectMiddleware(config, {
-    // @ts-expect-error
     hasReducedPerformance,
     waitForBundler,
     watch,
@@ -70,7 +69,7 @@ export const runServer = async (
   serverApp.use(middleware);
 
   let inspectorProxy: InspectorProxy | ExpoInspectorProxy | null = null;
-  if (config.server.runInspectorProxy && env.EXPO_USE_CUSTOM_INSPECTOR_PROXY) {
+  if (config.server.runInspectorProxy && !env.EXPO_NO_INSPECTOR_PROXY) {
     inspectorProxy = createInspectorProxy(metroBundler, config.projectRoot);
   } else if (config.server.runInspectorProxy) {
     inspectorProxy = new InspectorProxy(config.projectRoot);

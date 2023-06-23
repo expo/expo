@@ -68,13 +68,13 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
       {
         // Prefix `Expo*` frameworks in imports.
         paths: objcFilesPattern,
-        find: /#(import|include) <(Expo|EAS)(.*?)\//g,
-        replaceWith: `#$1 <${prefix}$2$3/`,
+        find: /#(import |include |if __has_include\()<(Expo|EAS)(.*?)\//g,
+        replaceWith: `#$1<${prefix}$2$3/`,
       },
       {
         paths: objcFilesPattern,
-        find: /#import <(.*?)\/(Expo|EAS)(.*?)\.h>/g,
-        replaceWith: `#import <$1/${prefix}$2$3.h>`,
+        find: /#(import |include |if __has_include\()<(.*?)\/(Expo|EAS)(.*?)\.h>/g,
+        replaceWith: `#$1<$2/${prefix}$3$4.h>`,
       },
       {
         // Rename Swift compatibility headers from frameworks starting with `Expo`.
@@ -137,7 +137,7 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
       {
         paths: '*.h',
         // Use negative look ahead regexp for `prefix` to prevent duplicated versioning
-        find: new RegExp(`\b(!?${prefix})(\w+-umbrella\.h)\b`, 'g'),
+        find: new RegExp(`[\b/](!?${prefix})(\w+-umbrella\.h)\b`, 'g'),
         replaceWith: `${prefix}$1`,
       },
 

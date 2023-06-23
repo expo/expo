@@ -42,9 +42,6 @@ describe(collectManifestSchemes, () => {
       ...manifest,
       // @ts-ignore An array of strings is a secret feature until we drop turtle v1
       scheme: ['scheme.1', 'scheme.2'],
-      detach: {
-        scheme: 'detach.scheme.1',
-      },
       ios: {
         // @ts-ignore An array of strings is a secret feature until we drop turtle v1
         scheme: ['ios.scheme.1', null],
@@ -59,8 +56,8 @@ describe(collectManifestSchemes, () => {
 
     expect(collectManifestSchemes()).toStrictEqual(
       Platform.select({
-        ios: ['scheme.1', 'scheme.2', 'detach.scheme.1', 'ios.scheme.1'],
-        android: ['scheme.1', 'scheme.2', 'detach.scheme.1', 'android.scheme.1'],
+        ios: ['scheme.1', 'scheme.2', 'ios.scheme.1'],
+        android: ['scheme.1', 'scheme.2', 'android.scheme.1'],
       })
     );
   });

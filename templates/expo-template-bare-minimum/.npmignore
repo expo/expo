@@ -17,6 +17,7 @@ web-build/
 HelloWorld.xcworkspace
 Podfile.lock
 ios/Pods
+ios/.xcode.env.local
 android/.build
 android/app/build
 android/.gradle

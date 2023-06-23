@@ -13,6 +13,7 @@
 
 #include "include/core/SkData.h"
 #include "include/core/SkRefCnt.h"
+#include "include/core/SkTypeface.h"
 #include "include/utils/SkNoDrawCanvas.h"
 
 struct SkPackedGlyphID;
@@ -21,7 +22,6 @@ class SkStrikeCache;
 class SkStrikeClientImpl;
 class SkStrikeServer;
 class SkStrikeServerImpl;
-class SkTypeface;
 namespace sktext::gpu { class Slug; }
 
 using SkDiscardableHandleId = uint32_t;
@@ -61,9 +61,6 @@ public:
                                                         sk_sp<SkColorSpace> colorSpace,
                                                         bool DFTSupport,
                                                         bool DFTPerspSupport = true);
-
-    // Serializes the typeface to be transmitted using this server.
-    SK_SPI sk_sp<SkData> serializeTypeface(SkTypeface*);
 
     // Serializes the strike data captured using a canvas returned by ::makeAnalysisCanvas. Any
     // handles locked using the DiscardableHandleManager will be assumed to be
@@ -128,10 +125,6 @@ public:
                                    SkStrikeCache* strikeCache = nullptr);
     SK_SPI ~SkStrikeClient();
 
-    // Deserializes the typeface previously serialized using the SkStrikeServer. Returns null if the
-    // data is invalid.
-    SK_SPI sk_sp<SkTypeface> deserializeTypeface(const void* data, size_t length);
-
     // Deserializes the strike data from a SkStrikeServer. All messages generated
     // from a server when serializing the ops must be deserialized before the op
     // is rasterized.
@@ -142,9 +135,12 @@ public:
     // corresponding typefaceID on the GPU.
     SK_SPI bool translateTypefaceID(SkAutoDescriptor* descriptor) const;
 
+    // Testing helpers
+    sk_sp<SkTypeface> retrieveTypefaceUsingServerIDForTest(SkTypefaceID) const;
+
     // Given a buffer, unflatten into a slug making sure to do the typefaceID translation from
     // renderer to GPU. Returns nullptr if there was a problem.
-    sk_sp<sktext::gpu::Slug> deserializeSlug(const void* data, size_t size) const;
+    sk_sp<sktext::gpu::Slug> deserializeSlugForTest(const void* data, size_t size) const;
 
 private:
     std::unique_ptr<SkStrikeClientImpl> fImpl;

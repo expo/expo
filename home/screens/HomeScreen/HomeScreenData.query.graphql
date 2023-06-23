@@ -4,8 +4,8 @@ query HomeScreenData($accountName: String!) {
       id
       name
       isCurrent
-      owner {
-        ...CurrentUserData
+      ownerUserActor {
+        ...CurrentUserActorData
       }
       apps(limit: 5, offset: 0, includeUnpublished: true) {
         ...CommonAppData

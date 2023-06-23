@@ -9,12 +9,14 @@ import expo.modules.updates.launcher.Launcher.LauncherCallback
 import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.manifest.EmbeddedManifest
 import expo.modules.updates.selectionpolicy.SelectionPolicy
+import expo.modules.updates.statemachine.UpdatesStateMachine
 import java.io.File
 
 // these unused imports must stay because of versioning
 /* ktlint-disable no-unused-imports */
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesController
+
 /* ktlint-enable no-unused-imports */
 
 /**
@@ -46,6 +48,8 @@ open class UpdatesService(protected var context: Context) : InternalModule, Upda
     get() = launchedUpdate?.id?.equals(embeddedUpdate?.id) ?: false
   override val isUsingEmbeddedAssets: Boolean
     get() = UpdatesController.instance.isUsingEmbeddedAssets
+  override val stateMachine: UpdatesStateMachine?
+    get() = UpdatesController.instance.stateMachine
 
   override fun canRelaunch(): Boolean {
     return configuration.isEnabled && launchedUpdate != null

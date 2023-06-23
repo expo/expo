@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
   s.default_subspec = "Core"
   s.source = { :git => "http://github.com/expo/expo.git" }
   s.xcconfig = {
-    'CLANG_CXX_LANGUAGE_STANDARD' => 'gnu++14',
+    'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
     'SYSTEM_HEADER_SEARCH_PATHS' => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/Headers/Private/React-Core\"",
     'OTHER_CPLUSPLUSFLAGS' => [
       "$(OTHER_CFLAGS)",

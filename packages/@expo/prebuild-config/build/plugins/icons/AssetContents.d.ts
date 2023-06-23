@@ -1,4 +1,4 @@
-export type ContentsJsonImageIdiom = 'iphone' | 'ipad' | 'ios-marketing' | 'universal';
+export type ContentsJsonImageIdiom = 'iphone' | 'ipad' | 'watchos' | 'ios' | 'ios-marketing' | 'universal';
 export type ContentsJsonImageAppearance = {
     appearance: 'luminosity';
     value: 'dark';
@@ -8,8 +8,9 @@ export interface ContentsJsonImage {
     appearances?: ContentsJsonImageAppearance[];
     idiom: ContentsJsonImageIdiom;
     size?: string;
-    scale: ContentsJsonImageScale;
+    scale?: ContentsJsonImageScale;
     filename?: string;
+    platform?: ContentsJsonImageIdiom;
 }
 export interface ContentsJson {
     images: ContentsJsonImage[];
