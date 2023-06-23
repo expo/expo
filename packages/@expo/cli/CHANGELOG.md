@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for `web.favicon` to Metro web.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
