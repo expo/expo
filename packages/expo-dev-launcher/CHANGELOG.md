@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 2.4.2 — 2023-06-23
+
+### 🐛 Bug fixes
+
+- Fixed compatibility issue with react-native-reanimated on iOS. ([#23057](https://github.com/expo/expo/pull/23057) by [@kudo](https://github.com/kudo))
+
 ## 2.4.1 — 2023-06-22
 
 _This version does not introduce any user-facing changes._

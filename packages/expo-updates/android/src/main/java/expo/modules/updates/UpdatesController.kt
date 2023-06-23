@@ -286,7 +286,7 @@ class UpdatesController private constructor(
         }
 
         override fun onRemoteCheckForUpdateFinished(result: LoaderTask.RemoteCheckResult) {
-          var event = UpdatesStateEvent.CheckComplete()
+          var event: UpdatesStateEvent = UpdatesStateEvent.CheckCompleteUnavailable()
           if (result.manifest != null) {
             event = UpdatesStateEvent.CheckCompleteWithUpdate(
               result.manifest
@@ -378,7 +378,7 @@ class UpdatesController private constructor(
               params.putString("manifestString", update.manifest.toString())
               sendLegacyUpdateEventToJS(UPDATE_AVAILABLE_EVENT, params)
               stateMachine.processEvent(
-                UpdatesStateEvent.DownloadCompleteWithUpdate(update.manifest)
+                UpdatesStateEvent.DownloadCompleteWithUpdate(update.manifest!!)
               )
             }
             RemoteUpdateStatus.NO_UPDATE_AVAILABLE -> {
