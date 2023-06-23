@@ -31,7 +31,6 @@
       [
         "expo-router",
         {
-          "origin": false,
           "asyncRoutes": {
             "default": "development",
             "android": false
