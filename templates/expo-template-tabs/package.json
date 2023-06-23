@@ -2,7 +2,7 @@
   "name": "expo-template-tabs",
   "main": "expo-router/entry",
   "description": "The Tab Navigation project template includes several example screens.",
-  "version": "49.0.1",
+  "version": "49.0.2",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
