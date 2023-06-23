@@ -3,6 +3,7 @@
 #import "EXRCTAppDelegateInterceptor.h"
 
 #import <memory>
+#import <cxxreact/JSExecutor.h>
 #import <React/RCTCxxBridgeDelegate.h>
 
 #if __has_include(<RNReanimated/REAInitializer.h>)
