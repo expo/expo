@@ -283,6 +283,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/archive/classic-updates/getting-started/': '/eas-update/getting-started/',
 
   // Redirect bare guides to unified workflow guides
+  '/bare/hello-world/': '/bare/overview/',
   '/bare/using-libraries/': '/workflow/using-libraries/',
   '/bare/exploring-bare-workflow/': '/bare/overview/',
   '/bare/existing-apps/': '/bare/installing-expo-modules/',
