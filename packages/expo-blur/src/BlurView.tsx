@@ -4,23 +4,18 @@ import { View, StyleSheet } from 'react-native';
 
 import { BlurViewProps } from './BlurView.types';
 
-type BlurViewForwardedRefProp = {
-  forwardedRef: React.ForwardedRef<View>;
-};
-
 const NativeBlurView = requireNativeViewManager('ExpoBlurView');
-class BlurView extends React.Component<BlurViewProps & BlurViewForwardedRefProp> {
+export default class BlurView extends React.Component<BlurViewProps> {
+  blurViewRef? = React.createRef<typeof NativeBlurView>();
+
   /**
-   * This component is a composition of the two components, but from the outside it's
-   * just a simple View with additional properties. To properly handle `setNativeProps`
-   * method (used when animating props), we need to properly separate `ViewProps` from `BlurViewProps`
-   * and pass them to the proper underlying views.
-   *
-   * This method handles the native view reference obtained from the parent View component
-   * and overrides its original `setNativeProps` method that is available as its property.
-   * When the `NativeBlurView` native ref is available `BlurView`-only props are forwarded
-   * to this view using `setNativeProps` method exposed by the native runtime.
+   * @hidden
+   * When Animated.createAnimatedComponent(BlurView) is used Reanimated will detect and call this
+   * function to determine which component should be animated. We want to animate the NativeBlurView.
    */
+  getAnimatableRef() {
+    return this.blurViewRef?.current;
+  }
 
   render() {
     const {
@@ -29,15 +24,13 @@ class BlurView extends React.Component<BlurViewProps & BlurViewForwardedRefProp>
       blurReductionFactor = 4,
       style,
       children,
-      forwardedRef,
       ...props
     } = this.props;
     return (
       <View {...props} style={[styles.container, style]}>
         <NativeBlurView
-          ref={forwardedRef}
+          ref={this.blurViewRef}
           tint={tint}
-          // Android uses this prop instead of the `tint`
           intensity={intensity}
           blurReductionFactor={blurReductionFactor}
           style={StyleSheet.absoluteFill}
@@ -51,16 +44,3 @@ class BlurView extends React.Component<BlurViewProps & BlurViewForwardedRefProp>
 const styles = StyleSheet.create({
   container: { backgroundColor: 'transparent' },
 });
-
-// This `forwardedRef` mechanism is necessary to make this component work properly
-// with React's `ref` prop and to react to props updates as expected.
-/**
- * A React component that blurs everything underneath the view.
- */
-const BlurViewWithForwardedRef = React.forwardRef<View, BlurViewProps>(
-  (props: BlurViewProps, forwardRef: React.ForwardedRef<View>) => {
-    return <BlurView {...props} forwardedRef={forwardRef} />;
-  }
-);
-
-export default BlurViewWithForwardedRef;

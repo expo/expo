@@ -1,13 +1,7 @@
-import { BlurTint, BlurView, BlurViewProps } from 'expo-blur';
-import React, { useCallback, useRef, memo, useEffect } from 'react';
+import { BlurTint, BlurView } from 'expo-blur';
+import React, { useCallback, memo, useEffect } from 'react';
 import { View, StyleSheet, Text, Image } from 'react-native';
-import Animated, {
-  useAnimatedProps,
-  useSharedValue,
-  withRepeat,
-  withSequence,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 
 import useResettingState from '../../utilities/useResettingState';
 import Slider from './Slider';
@@ -15,7 +9,6 @@ import Slider from './Slider';
 const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 
 export default memo((props: { tint: BlurTint }) => {
-  const blurViewRef = useRef<View>(null);
   const animatedIntensity = useSharedValue(0);
   const manualIntensity = useSharedValue(0);
   const [manualIntensityIsActive, setManualIntensityIsActive] = useResettingState(false, 3000);
@@ -26,29 +19,18 @@ export default memo((props: { tint: BlurTint }) => {
   }, []);
 
   useEffect(() => {
-    // Use two with timing animations to make sure the animation always runs from 0 to 100
-    animatedIntensity.value = withRepeat(
-      withSequence(withTiming(100, { duration: 2000 }), withTiming(0, { duration: 2000 })),
-      -1,
-      true
-    );
+    animatedIntensity.value = withRepeat(withTiming(100, { duration: 2000 }), -1, true);
   }, []);
-
-  const animatedProps = useAnimatedProps(() => {
-    return {
-      proxiedProperties: {
-        intensity: manualIntensityIsActive ? manualIntensity.value : animatedIntensity.value,
-        tint: props.tint,
-      },
-    } as BlurViewProps;
-  });
 
   return (
     <View style={styles.container}>
       <View style={styles.innerContainer}>
         <Image style={styles.image} source={{ uri: 'https://source.unsplash.com/300x300' }} />
         <Text style={styles.blurredText}>This text is blurred</Text>
-        <AnimatedBlurView ref={blurViewRef} style={styles.blurView} animatedProps={animatedProps}>
+        <AnimatedBlurView
+          style={styles.blurView}
+          tint={props.tint}
+          intensity={manualIntensityIsActive ? manualIntensity : animatedIntensity}>
           <Text style={styles.nonBlurredText}>{props.tint}</Text>
           <Slider
             title="Manual intensity:"
