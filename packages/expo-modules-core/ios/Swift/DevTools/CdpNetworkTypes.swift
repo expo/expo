@@ -19,13 +19,13 @@ struct CdpNetwork {
     case other = "Other"
 
     static func fromMimeType(_ mimeType: String) -> ResourceType {
-      if (mimeType.starts(with: "image/")) {
+      if mimeType.starts(with: "image/") {
         return image
       }
-      if (mimeType.starts(with: "audio/") || mimeType.starts(with: "video/")) {
+      if mimeType.starts(with: "audio/") || mimeType.starts(with: "video/") {
         return media
       }
-      if (mimeType.starts(with: "font/")) {
+      if mimeType.starts(with: "font/") {
         return font
       }
       return other
