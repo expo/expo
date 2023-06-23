@@ -56,7 +56,7 @@ module.exports = config;
 
 Now you'll need to clear the Metro cache and restart the development server:
 
-<Terminal cmd={['$ npx expo start --clear']} cmdCopy="npx expo start --clear" />
+<Terminal cmd={['$ npx expo start --clear']} />
 
 Ensure you don't have a custom Metro transformer that processes CSS files. If you do, you'll need to remove it.
 
@@ -182,7 +182,7 @@ Expo Metro has _partial_ support for SCSS/SASS.
 
 To setup, install the `sass` package in your project:
 
-<Terminal cmd={['$ yarn add -D sass']} cmdCopy="yarn add -D sass" />
+<Terminal cmd={['$ yarn add -D sass']} />
 
 Then, ensure [CSS is setup](#css) in the `metro.config.js` file.
 
@@ -209,9 +209,9 @@ Then, ensure [CSS is setup](#css) in the `metro.config.js` file.
 
 To setup, install the `tailwindcss` package in your project:
 
-<Terminal cmd={['$ yarn add -D tailwindcss@^3.3.1']} cmdCopy="yarn add -D tailwindcss@^3.3.1" />
+<Terminal cmd={['$ yarn add -D tailwindcss@^3.3.1']} />
 
-In your `app.json` ensure the project is using Metro for web:
+In your **app.json** ensure the project is using Metro for web:
 
 ```json app.json
 {
@@ -223,7 +223,7 @@ In your `app.json` ensure the project is using Metro for web:
 }
 ```
 
-Create a `global.css` file in your project:
+Create a **global.css** file in your project:
 
 ```css global.css
 /* This file adds the requisite utility classes for Tailwind to work. */
@@ -232,7 +232,7 @@ Create a `global.css` file in your project:
 @tailwind utilities;
 ```
 
-Create a `tailwind.config.js` file in your project:
+Create a **tailwind.config.js** file in your project:
 
 ```js tailwind.config.js
 /** @type {import('tailwindcss').Config} */
@@ -250,7 +250,7 @@ module.exports = {
 };
 ```
 
-In your `metro.config.js` file, enable CSS support and run the Tailwind CLI:
+In your **metro.config.js** file, enable CSS support and run the Tailwind CLI:
 
 ```js metro.config.js
 const path = require('path');
@@ -292,7 +292,7 @@ if (ctx.keys().length) ctx(ctx.keys()[0]);
 
 You can use Tailwind with React DOM elements as-is:
 
-```js
+```jsx
 export default function Page() {
   return (
     <div className="bg-slate-100 rounded-xl">
@@ -304,7 +304,7 @@ export default function Page() {
 
 You can use the `{ $$css: true }` syntax to use Tailwind with React Native web elements:
 
-```js
+```jsx
 import { View, Text } from 'react-native';
 
 export default function Page() {
