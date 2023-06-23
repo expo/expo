@@ -102,7 +102,7 @@ export function DevMenuTaskInfo({ task }: Props) {
               />
               <Text
                 color="warning"
-                type="InterRegular"
+                type="InterSemiBold"
                 size="small"
                 style={{
                   marginRight: 4,
