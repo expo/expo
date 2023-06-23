@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 12.4.1 — 2023-06-23
+
+_This version does not introduce any user-facing changes._
+
 ## 12.4.0 — 2023-06-21
 
 ### 🛠 Breaking changes

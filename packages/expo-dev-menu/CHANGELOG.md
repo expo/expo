@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed compatibility issue with react-native-reanimated on iOS. ([#23057](https://github.com/expo/expo/pull/23057) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 3.1.2 — 2023-06-23
+
+### 🐛 Bug fixes
+
+- Fixed compatibility issue with react-native-reanimated on iOS. ([#23057](https://github.com/expo/expo/pull/23057) by [@kudo](https://github.com/kudo))
 
 ## 3.1.1 — 2023-06-22
 
