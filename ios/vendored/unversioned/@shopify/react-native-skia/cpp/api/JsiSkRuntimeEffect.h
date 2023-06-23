@@ -5,9 +5,9 @@
 #include <utility>
 #include <vector>
 
-#include <JsiSkHostObjects.h>
-#include <JsiSkMatrix.h>
-#include <JsiSkShader.h>
+#include "JsiSkHostObjects.h"
+#include "JsiSkMatrix.h"
+#include "JsiSkShader.h"
 
 #include <jsi/jsi.h>
 
@@ -32,12 +32,6 @@ struct RuntimeEffectUniform {
 class JsiSkRuntimeEffect
     : public JsiSkWrappingSkPtrHostObject<SkRuntimeEffect> {
 public:
-  static sk_sp<SkRuntimeEffect> fromValue(jsi::Runtime &runtime,
-                                          const jsi::Value &obj) {
-    const auto &object = obj.asObject(runtime);
-    return object.asHostObject<JsiSkRuntimeEffect>(runtime)->getObject();
-  }
-
   JSI_HOST_FUNCTION(makeShader) {
     auto uniforms = castUniforms(runtime, arguments[0]);
 
@@ -121,6 +115,8 @@ public:
     return jsi::String::createFromAscii(runtime, getObject()->source());
   }
 
+  EXPORT_JSI_API_TYPENAME(JsiSkRuntimeEffect, "RuntimeEffect")
+
   JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkRuntimeEffect, makeShader),
                        JSI_EXPORT_FUNC(JsiSkRuntimeEffect,
                                        makeShaderWithChildren),
@@ -129,7 +125,8 @@ public:
                                        getUniformFloatCount),
                        JSI_EXPORT_FUNC(JsiSkRuntimeEffect, getUniformName),
                        JSI_EXPORT_FUNC(JsiSkRuntimeEffect, getUniform),
-                       JSI_EXPORT_FUNC(JsiSkRuntimeEffect, source))
+                       JSI_EXPORT_FUNC(JsiSkRuntimeEffect, source),
+                       JSI_EXPORT_FUNC(JsiSkRuntimeEffect, dispose))
 
   JsiSkRuntimeEffect(std::shared_ptr<RNSkPlatformContext> context,
                      sk_sp<SkRuntimeEffect> rt)

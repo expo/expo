@@ -38,8 +38,6 @@ function getAndroidSplashConfig(config) {
   }
   return null;
 }
-
-// TODO: dark isn't supported in the Expo config spec yet.
 function getAndroidDarkSplashConfig(config) {
   var _config$android3, _config$android3$spla;
   // Respect the splash screen object, don't mix and match across different splash screen objects

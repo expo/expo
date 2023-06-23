@@ -1,6 +1,6 @@
 {
   "name": "expo-modules-autolinking",
-  "version": "1.3.0",
+  "version": "1.5.0",
   "description": "Scripts that autolink Expo modules.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -42,6 +42,7 @@
     "tempy": "^0.7.1"
   },
   "dependencies": {
+    "@expo/config": "~8.1.0",
     "chalk": "^4.1.0",
     "commander": "^7.2.0",
     "fast-glob": "^3.2.5",

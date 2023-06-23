@@ -753,16 +753,16 @@ exports[`built-in plugins introspects mods 1`] = `
           },
           {
             "type": "comment",
-            "value": "The hosted JavaScript engine",
+            "value": "Use this property to enable or disable the Hermes JS engine.",
           },
           {
             "type": "comment",
-            "value": "Supported values: expo.jsEngine = "hermes" | "jsc"",
+            "value": "If set to false, you will be using JSC instead.",
           },
           {
-            "key": "expo.jsEngine",
+            "key": "hermesEnabled",
             "type": "property",
-            "value": "hermes",
+            "value": "true",
           },
           {
             "type": "empty",
@@ -801,6 +801,18 @@ exports[`built-in plugins introspects mods 1`] = `
           {
             "type": "empty",
           },
+          {
+            "type": "comment",
+            "value": "Remove this workaround when upgrading to react-native@0.72.1",
+          },
+          {
+            "key": "kotlin.jvm.target.validation.mode",
+            "type": "property",
+            "value": "warning",
+          },
+          {
+            "type": "empty",
+          },
         ],
         "manifest": {
           "manifest": {
@@ -818,7 +830,6 @@ exports[`built-in plugins introspects mods 1`] = `
                   "android:name": ".MainApplication",
                   "android:roundIcon": "@mipmap/ic_launcher_round",
                   "android:theme": "@style/AppTheme",
-                  "android:usesCleartextTraffic": "true",
                 },
                 "activity": [
                   {
@@ -1874,9 +1885,9 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
         },
         "gradleProperties": [
           {
-            "key": "expo.jsEngine",
+            "key": "hermesEnabled",
             "type": "property",
-            "value": "hermes",
+            "value": "true",
           },
         ],
         "manifest": {

@@ -4,6 +4,7 @@ description: Learn how to add expo-updates to an existing React Native project.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
+import { DiffBlock } from '~/ui/components/Snippet';
 
 The `expo-updates` library fetches and manages updates received from a remote server. It supports [EAS Update](/eas-update/introduction), a hosted service that serves updates for projects using the `expo-updates` library.
 
@@ -52,7 +53,6 @@ The changes below add the updates URL to the Expo configuration.
  }
 ```
 
-
 ## Configuration for iOS
 
 Add the file **Podfile.properties.json** to the **ios** directory:
@@ -89,6 +89,7 @@ Modify **ios/Podfile** to check for the JS engine configuration (JSC or Hermes) 
      #
 
 ```
+
 Add the **Supporting** directory containing **Expo.plist** to your project in Xcode with the following content, to match the content in **app.json**:
 
 ```xml Expo.plist
@@ -152,21 +153,13 @@ Modify **android/app/src/main/AndroidManifest.xml** to add the `expo-updates` co
 
 Add the Expo runtime version string key to **android/app/src/main/res/values/strings.xml**:
 
-```diff android/app/src/main/res/values/strings.xml
---- a/android/app/src/main/res/values/strings.xml
-+++ b/android/app/src/main/res/values/strings.xml
-@@ -1,3 +1,4 @@
- <resources>
-     <string name="app_name">MyApp</string>
-+    <string name="expo_runtime_version">1.0.0</string>
- </resources>
-```
+<DiffBlock source="/static/diffs/expo-update-strings-xml.diff" />
 
 ## Next Steps
 
 See more information about usage in the [`expo-updates` README](https://github.com/expo/expo/tree/main/packages/expo-updates/README.md).
 
-See [this guide](/eas-update/eas-update-with-local-build/) for trying out EAS Update with a local build.
+See [this guide](/eas-update/build-locally/) for trying out EAS Update with a local build.
 
 To start trying out EAS Update with EAS Build, see the [EAS Update "Getting Started" guide](/eas-update/getting-started/).
 

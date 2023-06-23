@@ -1,5 +1,5 @@
 query Home_ProfileData2($appLimit: Int!, $snackLimit: Int!) {
-  me {
+  meUserActor {
     id
     username
     firstName

@@ -9,14 +9,14 @@
 
 #include <jsi/jsi.h>
 
-#include <JsiValueWrapper.h>
-#include <RNSkView.h>
+#include "JsiValueWrapper.h"
+#include "RNSkView.h"
 
-#include <JsiSkPicture.h>
-#include <RNSkInfoParameter.h>
-#include <RNSkLog.h>
-#include <RNSkPlatformContext.h>
-#include <RNSkTimingInfo.h>
+#include "JsiSkPicture.h"
+#include "RNSkInfoParameter.h"
+#include "RNSkLog.h"
+#include "RNSkPlatformContext.h"
+#include "RNSkTimingInfo.h"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
@@ -44,8 +44,7 @@ public:
       : RNSkRenderer(requestRedraw), _platformContext(context) {}
 
   bool tryRender(std::shared_ptr<RNSkCanvasProvider> canvasProvider) override {
-    performDraw(canvasProvider);
-    return true;
+    return performDraw(canvasProvider);
   }
 
   void
@@ -64,19 +63,21 @@ public:
   }
 
 private:
-  void performDraw(std::shared_ptr<RNSkCanvasProvider> canvasProvider) {
-    if (_picture == nullptr) {
-      return;
-    }
-
+  bool performDraw(std::shared_ptr<RNSkCanvasProvider> canvasProvider) {
     canvasProvider->renderToCanvas([=](SkCanvas *canvas) {
       // Make sure to scale correctly
       auto pd = _platformContext->getPixelDensity();
+      canvas->clear(SK_ColorTRANSPARENT);
       canvas->save();
       canvas->scale(pd, pd);
 
-      canvas->drawPicture(_picture->getObject());
+      if (_picture != nullptr) {
+        canvas->drawPicture(_picture->getObject());
+      }
+
+      canvas->restore();
     });
+    return true;
   }
 
   std::shared_ptr<RNSkPlatformContext> _platformContext;

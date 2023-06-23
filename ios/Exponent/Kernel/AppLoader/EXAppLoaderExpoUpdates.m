@@ -191,6 +191,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - EXUpdatesAppLoaderTaskDelegate
 
+// Implement empty stubs
+- (void)didStartCheckingForRemoteUpdate {}
+- (void)didFinishCheckingForRemoteUpdate:(NSDictionary<NSString *,id> *)body {}
+- (void)appLoaderTask:(EXUpdatesAppLoaderTask *)_ didLoadAsset:(EXUpdatesAsset *)asset successfulAssetCount:(NSInteger)successfulAssetCount failedAssetCount:(NSInteger)failedAssetCount totalAssetCount:(NSInteger)totalAssetCount {}
+
 - (BOOL)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didLoadCachedUpdate:(EXUpdatesUpdate *)update
 {
   [self _setShouldShowRemoteUpdateStatus:update.manifest];
@@ -201,7 +206,7 @@ NS_ASSUME_NONNULL_BEGIN
   return YES;
 }
 
-- (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didStartLoadingUpdate:(EXUpdatesUpdate *)update
+- (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didStartLoadingUpdate:(nullable EXUpdatesUpdate *)update
 {
   // expo-cli does not always respect our SDK version headers and respond with a compatible update or an error
   // so we need to check the compatibility here

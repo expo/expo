@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 5.0.0 — 2023-06-21
+
+### 💡 Others
+
+- Remove all auth proxy APIs. ([#22834](https://github.com/expo/expo/pull/22834) by [@alanhughes](https://github.com/alanjhughes))
+
 ## 4.1.0 — 2023-05-08
 
 ### 💡 Others

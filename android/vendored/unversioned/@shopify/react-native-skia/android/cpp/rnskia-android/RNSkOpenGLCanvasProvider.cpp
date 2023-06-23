@@ -23,11 +23,12 @@ float RNSkOpenGLCanvasProvider::getScaledWidth() { return _width; }
 
 float RNSkOpenGLCanvasProvider::getScaledHeight() { return _height; }
 
-void RNSkOpenGLCanvasProvider::renderToCanvas(
+bool RNSkOpenGLCanvasProvider::renderToCanvas(
     const std::function<void(SkCanvas *)> &cb) {
   if (_renderer != nullptr) {
-    _renderer->run(cb, _width, _height);
+    return _renderer->run(cb, _width, _height);
   }
+  return false;
 }
 
 void RNSkOpenGLCanvasProvider::surfaceAvailable(jobject surface, int width,

@@ -10,6 +10,21 @@
 
 ### 💡 Others
 
+## 0.8.1 — 2023-06-23
+
+_This version does not introduce any user-facing changes._
+
+## 0.8.0 — 2023-06-21
+
+### 🛠 Breaking changes
+
+- Replaced `unstable_networkInspector` as `networkInspector` and enabled the feature by default. ([#22994](https://github.com/expo/expo/pull/22994) by [@kudo](https://github.com/kudo))
+
+### 🎉 New features
+
+- Added `android.extraMavenRepos` and `ios.extraPods` support. ([#22785](https://github.com/expo/expo/pull/22785) by [@kudo](https://github.com/kudo))
+- Added `android.usesCleartextTraffic` support. ([#23043](https://github.com/expo/expo/pull/23043) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 0.7.0 — 2023-05-08
 
 ### 🐛 Bug fixes

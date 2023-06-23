@@ -8,7 +8,7 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
 
-#include <SkPoint.h>
+#include "SkPoint.h"
 
 #pragma clang diagnostic pop
 
@@ -16,8 +16,10 @@ namespace RNSkia {
 
 class RadiusProp : public DerivedProp<SkPoint> {
 public:
-  explicit RadiusProp(PropId name) : DerivedProp<SkPoint>() {
-    _radiusProp = addProperty(std::make_shared<NodeProp>(name));
+  explicit RadiusProp(PropId name,
+                      const std::function<void(BaseNodeProp *)> &onChange)
+      : DerivedProp<SkPoint>(onChange) {
+    _radiusProp = defineProperty<NodeProp>(name);
   }
 
   void updateDerivedValue() override {

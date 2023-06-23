@@ -54,7 +54,21 @@ function mockLoginRequest() {
     .reply(200, { data: { sessionSecret: 'SESSION_SECRET' } });
 }
 
+function resetEnv() {
+  beforeEach(() => {
+    delete process.env.EXPO_OFFLINE;
+    delete process.env.EXPO_TOKEN;
+  });
+  afterAll(() => {
+    delete process.env.EXPO_OFFLINE;
+    delete process.env.EXPO_TOKEN;
+  });
+}
+
+resetEnv();
+
 describe(getUserAsync, () => {
+  resetEnv();
   it('skips fetching user without access token or session secret', async () => {
     expect(await getUserAsync()).toBeUndefined();
   });
@@ -73,7 +87,7 @@ describe(getUserAsync, () => {
 
   it('skips fetching user when running in offline mode', async () => {
     jest.resetModules();
-    jest.mock('../../settings', () => ({ APISettings: { isOffline: true } }));
+    process.env.EXPO_OFFLINE = '1';
     const { getUserAsync } = require('../user');
 
     process.env.EXPO_TOKEN = 'accesstoken';
@@ -82,6 +96,7 @@ describe(getUserAsync, () => {
 });
 
 describe(loginAsync, () => {
+  resetEnv();
   it('saves user data to ~/.expo/state.json', async () => {
     mockLoginRequest();
     await loginAsync({ username: 'USERNAME', password: 'PASSWORD' });
@@ -101,6 +116,7 @@ describe(loginAsync, () => {
 });
 
 describe(logoutAsync, () => {
+  resetEnv();
   it('removes the session secret', async () => {
     mockLoginRequest();
     await loginAsync({ username: 'USERNAME', password: 'PASSWORD' });
@@ -123,6 +139,7 @@ describe(logoutAsync, () => {
 });
 
 describe(getActorDisplayName, () => {
+  resetEnv();
   it('returns anonymous for unauthenticated users', () => {
     expect(getActorDisplayName()).toBe('anonymous');
   });
