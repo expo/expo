@@ -18,6 +18,7 @@ import Video from '~/components/plugins/Video';
 import { SnackInline } from '~/ui/components/Snippet';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { GithubIcon } from '@expo/styleguide-icons';
+import { PlatformTags } from '~/ui/components/Tag';
 
 **`expo-image-picker`** provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.
 
@@ -28,6 +29,10 @@ import { GithubIcon } from '@expo/styleguide-icons';
 ## Installation
 
 <APIInstallSection />
+
+#### Known issues&ensp;<PlatformTags platforms={['ios']} />
+
+On iOS, when an image (usually of a [higher resolution](http://www.openradar.me/49866214)) is picked from the camera roll, the result of the cropped image gives the wrong value for the cropped rectangle in some cases. Unfortunately, this issue is with the underlying `UIImagePickerController` due to a bug in the closed-source tools built into iOS.
 
 ## Configuration in app.json/app.config.js
 
@@ -160,7 +165,7 @@ See [Amplify documentation](https://docs.amplify.aws/) guide to set up your proj
   title="Firebase storage example"
   description="An example of how to use Firebase storage can be found in with-firebase-storage-upload."
   Icon={GithubIcon}
-  href="https://github.com/expo/examples/tree/master/with-aws-storage-upload"
+  href="https://github.com/expo/examples/tree/master/with-firebase-storage-upload"
 />
 
 See [Using Firebase](/guides/using-firebase/) guide to set up your project correctly.
@@ -192,7 +197,3 @@ The following usage description keys are used by the APIs in this library.
     'NSCameraUsageDescription',
   ]}
 />
-
-## Known issue
-
-There is a known issue on iOS with the underlying `UIImagePickerController`. When an image (usually of a [higher resolution](http://www.openradar.me/49866214)) is picked from the camera roll, the result of the cropped image gives the wrong value for the cropped rectangle in some cases. Unfortunately, this issue is due to a bug in the closed source tools built into iOS.
