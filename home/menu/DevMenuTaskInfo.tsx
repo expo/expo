@@ -1,7 +1,8 @@
+import Ionicons from '@expo/vector-icons/build/Ionicons';
 import Constants from 'expo-constants';
-import { Row, View, Text } from 'expo-dev-client-components';
+import { Row, View, Text, useExpoTheme } from 'expo-dev-client-components';
 import React from 'react';
-import { Image, StyleSheet } from 'react-native';
+import { Image, Platform, StyleSheet } from 'react-native';
 
 type Props = {
   task: { manifestUrl: string; manifestString: string };
@@ -45,6 +46,8 @@ function getInfoFromManifest(
 }
 
 export function DevMenuTaskInfo({ task }: Props) {
+  const theme = useExpoTheme();
+
   const manifest = task.manifestString
     ? (JSON.parse(task.manifestString) as typeof Constants.manifest | typeof Constants.manifest2)
     : null;
@@ -77,9 +80,36 @@ export function DevMenuTaskInfo({ task }: Props) {
             </Text>
           )}
           {!manifestInfo?.isVerified && (
-            <Text size="small" type="InterRegular" color="error">
-              Unverified App
-            </Text>
+            <Row
+              bg="warning"
+              border="warning"
+              rounded="medium"
+              padding="0"
+              align="center"
+              style={{
+                alignSelf: 'flex-start',
+                marginTop: 3,
+              }}>
+              <Ionicons
+                name={Platform.select({ ios: 'ios-warning', default: 'md-warning' })}
+                size={14}
+                color={theme.text.warning}
+                lightColor={theme.text.warning}
+                darkColor={theme.text.warning}
+                style={{
+                  marginHorizontal: 4,
+                }}
+              />
+              <Text
+                color="warning"
+                type="InterRegular"
+                size="small"
+                style={{
+                  marginRight: 4,
+                }}>
+                Unverified
+              </Text>
+            </Row>
           )}
         </View>
       </Row>
