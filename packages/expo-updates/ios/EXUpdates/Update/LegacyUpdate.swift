@@ -46,8 +46,8 @@ internal final class LegacyUpdate: Update {
 
     var runtimeVersion: String
     let manifestRuntimeVersion = manifest.runtimeVersion()
-    if let manifestRuntimeVersion = manifestRuntimeVersion {
-      runtimeVersion = assertType(value: manifestRuntimeVersion, description: "Manifest JSON runtime version must be string")
+    if let manifestRuntimeVersion = manifestRuntimeVersion as? String {
+      runtimeVersion = manifestRuntimeVersion
     } else {
       runtimeVersion = manifest.expoGoSDKVersion().require("Manifest JSON must have a valid sdkVersion property defined")
     }
