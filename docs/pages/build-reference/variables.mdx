@@ -55,8 +55,7 @@ You can also set environment variables dynamically during the build process. The
 
 For example, you can add the following in one of the [EAS Build hooks](/build-reference/npm-hooks/) and the environment variable `EXAMPLE_ENV` will be available until the end of the build job.
 
-```bash
-set-env EXAMPLE_ENV "example value"
+<Terminal cmd={[ 'set-env EXAMPLE_ENV "example value"' ]} />
 
 ## Environment variables and app.config.js
 
