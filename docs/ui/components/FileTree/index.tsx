@@ -39,7 +39,7 @@ function renderStructure(structure: FileObject, level = 0): ReactNode {
       </div>
     ) : (
       <div className="mt-1 pl-3 pt-1 px-2 rounded-sm flex items-center">
-        {' '.repeat(level - 1)}
+        {' '.repeat(Math.max(level - 1, 0))}
         <FileIcon className="text-icon-tertiary mr-2" />
         <code className="text-default">{key}</code>
       </div>
