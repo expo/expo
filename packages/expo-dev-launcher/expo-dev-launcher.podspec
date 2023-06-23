@@ -2,6 +2,13 @@ require "json"
 
 package = JSON.parse(File.read(File.join(__dir__, "package.json")))
 
+should_include_reanimated = false
+begin
+  should_include_reanimated = !`node --print "require('react-native-reanimated/package.json').version"`.empty?
+rescue
+  should_include_reanimated = false
+end
+
 Pod::Spec.new do |s|
   s.name           = 'expo-dev-launcher'
   s.version        = package['version']
@@ -70,6 +77,7 @@ Pod::Spec.new do |s|
   s.dependency "EXUpdatesInterface"
   s.dependency "expo-dev-menu"
   s.dependency "ExpoModulesCore"
+  s.dependency "RNReanimated" if should_include_reanimated
 
   unless defined?(install_modules_dependencies)
     # `install_modules_dependencies` is defined from react_native_pods.rb.
