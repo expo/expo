@@ -300,6 +300,7 @@ const RENAMED_PAGES: Record<string, string> = {
   // Deleted or removed guides
   '/guides/setup-native-firebase/': '/guides/using-firebase/',
   '/guides/using-clojurescript/': '/guides/',
+  '/guides/using-graphql/': '/guides/',
 
   // Redirects from old to new tutorial
   '/tutorial/planning/': '/tutorial/introduction/',
