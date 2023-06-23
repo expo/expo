@@ -830,7 +830,6 @@ exports[`built-in plugins introspects mods 1`] = `
                   "android:name": ".MainApplication",
                   "android:roundIcon": "@mipmap/ic_launcher_round",
                   "android:theme": "@style/AppTheme",
-                  "android:usesCleartextTraffic": "true",
                 },
                 "activity": [
                   {

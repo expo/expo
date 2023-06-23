@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateAndroidProguardRules = exports.withAndroidPurgeProguardRulesOnce = exports.withAndroidProguardRules = exports.withAndroidFlipper = exports.withAndroidBuildProperties = void 0;
+exports.withAndroidCleartextTraffic = exports.updateAndroidProguardRules = exports.withAndroidPurgeProguardRulesOnce = exports.withAndroidProguardRules = exports.withAndroidFlipper = exports.withAndroidBuildProperties = void 0;
 const config_plugins_1 = require("expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
@@ -174,3 +174,20 @@ function updateAndroidProguardRules(contents, newProguardRules, updateMode) {
     return newContents;
 }
 exports.updateAndroidProguardRules = updateAndroidProguardRules;
+const withAndroidCleartextTraffic = (config, props) => {
+    return (0, config_plugins_1.withAndroidManifest)(config, (config) => {
+        if (props.android?.usesCleartextTraffic == null) {
+            return config;
+        }
+        config.modResults = setUsesCleartextTraffic(config.modResults, props.android?.usesCleartextTraffic);
+        return config;
+    });
+};
+exports.withAndroidCleartextTraffic = withAndroidCleartextTraffic;
+function setUsesCleartextTraffic(androidManifest, value) {
+    const mainApplication = config_plugins_1.AndroidConfig.Manifest.getMainApplicationOrThrow(androidManifest);
+    if (mainApplication?.$) {
+        mainApplication.$['android:usesCleartextTraffic'] = String(value);
+    }
+    return androidManifest;
+}
