@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Removed the deprecated `withPackageManifest` plugin to fix build warning on Android. ([#23056](https://github.com/expo/expo/pull/23056) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 6.2.1 — 2023-06-22
