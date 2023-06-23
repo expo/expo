@@ -1,4 +1,4 @@
-#import "ExpoDevLauncherBridgeDelegateHandler.h"
+#import "DevClientAppDelegate.h"
 #import "EXDevLauncherController.h"
 
 #import <React/RCTBundleURLProvider.h>
