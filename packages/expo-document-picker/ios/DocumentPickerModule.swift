@@ -110,7 +110,6 @@ public class DocumentPickerModule: Module, PickingResultHandler {
   }
 
   private func readDocumentDetails(documentUrl: URL, copy: Bool) throws -> DocumentInfo {
-    let pathExtension = documentUrl.pathExtension
     var newUrl = documentUrl
 
     guard let fileSystem = self.appContext?.fileSystem else {
@@ -122,13 +121,15 @@ public class DocumentPickerModule: Module, PickingResultHandler {
     }
 
     if copy {
-      let directory = fileSystem.cachesDirectory.appending("DocumentPicker")
-      let path = fileSystem.generatePath(inDirectory: directory, withExtension: pathExtension)
+      let directory = URL(fileURLWithPath: fileSystem.cachesDirectory).appendingPathComponent("DocumentPicker", isDirectory: true).path
+      let fileExtension = "." + documentUrl.pathExtension
+      let path = fileSystem.generatePath(inDirectory: directory, withExtension: fileExtension)
       newUrl = URL(fileURLWithPath: path)
+      
       try FileManager.default.copyItem(at: documentUrl, to: newUrl)
     }
 
-    let mimeType = self.getMimeType(from: pathExtension)
+    let mimeType = self.getMimeType(from: documentUrl.pathExtension)
 
     return DocumentInfo(
       uri: newUrl.absoluteString,
