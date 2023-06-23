@@ -5,6 +5,8 @@ description: Learn how to add expo-updates to an existing React Native project.
 
 import { Terminal } from '~/ui/components/Snippet';
 import { DiffBlock } from '~/ui/components/Snippet';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { CODE } from '~/ui/components/Text';
 
 The `expo-updates` library fetches and manages updates received from a remote server. It supports [EAS Update](/eas-update/introduction), a hosted service that serves updates for projects using the `expo-updates` library.
 
@@ -26,8 +28,7 @@ Once installation is complete, apply the changes from the following diffs to con
 
 ## Configuration in JavaScript and JSON
 
-Modify the `expo` section of **app.json**. (If you originally created your app using `npx react-native init`, you will need to add this section.)
-The changes below add the updates URL to the Expo configuration.
+Modify the `expo` section of **app.json**. (If you originally created your app using `npx react-native init`, you will need to add this section.) The changes below add the updates URL to the Expo configuration.
 
 > The example URL shown here is for use with a custom update server running on the same machine. When using EAS Update, the EAS CLI will set this URL correctly for the EAS Update service.
 
@@ -90,7 +91,7 @@ Modify **ios/Podfile** to check for the JS engine configuration (JSC or Hermes) 
 
 ```
 
-Add the **Supporting** directory containing **Expo.plist** to your project in Xcode with the following content, to match the content in **app.json**:
+Add the **Supporting** directory that contains **Expo.plist** to your project in Xcode with the following content, to match the content in **app.json**:
 
 ```xml Expo.plist
 <?xml version="1.0" encoding="UTF-8"?>
@@ -155,12 +156,42 @@ Add the Expo runtime version string key to **android/app/src/main/res/values/str
 
 <DiffBlock source="/static/diffs/expo-update-strings-xml.diff" />
 
-## Next Steps
+## Next steps
 
-See more information about usage in the [`expo-updates` README](https://github.com/expo/expo/tree/main/packages/expo-updates/README.md).
+<BoxLink
+  title={
+    <>
+      <CODE>expo-updates</CODE> Readme
+    </>
+  }
+  description={
+    <>
+      See <CODE>expo-updates</CODE> Readme for more information on how to use this library in a bare
+      React Native project
+    </>
+  }
+  href="https://github.com/expo/expo/tree/main/packages/expo-updates/README.md"
+/>
 
-See [this guide](/eas-update/build-locally/) for trying out EAS Update with a local build.
+<BoxLink
+  title="With a local build"
+  description="See EAS Update with a local build guide."
+  href="/eas-update/build-locally/"
+/>
 
-To start trying out EAS Update with EAS Build, see the [EAS Update "Getting Started" guide](/eas-update/getting-started/).
+<BoxLink
+  title="Use EAS Update with EAS Build"
+  description="See EAS Update get started guide for more information on how to use EAS Update with EAS Build."
+  href="/eas-update/getting-started/"
+/>
 
-It is also possible to use `expo-updates` with a custom server that implements the [Expo Updates protocol](/technical-specs/expo-updates-1/); see the [`custom-expo-updates-server` README](https://github.com/expo/custom-expo-updates-server#readme).
+<BoxLink
+  title="Custom expo-updates server"
+  description={
+    <>
+      Learn more about how to use <CODE>expo-updates</CODE> library with a custom server that
+      implements the Expo Updates protocol
+    </>
+  }
+  href="/eas-update/getting-started/"
+/>

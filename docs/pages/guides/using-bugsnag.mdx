@@ -1,74 +1,29 @@
 ---
 title: Use Bugsnag
+sidebar_title: Bugsnag
 description: A guide on installing and configuring Bugsnag for end-to-end error reporting and analytics.
+hideTOC: true
 ---
 
-import { Terminal } from '~/ui/components/Snippet';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { BookOpen02Icon } from '@expo/styleguide-icons';
 
 [Bugsnag](https://www.bugsnag.com) is a stability monitoring solution that provides rich, end-to-end error reporting and analytics to reproduce and fix errors with speed and precision.
-Bugsnag supports the full stack with open-source libraries for [50+ platforms](https://www.bugsnag.com/platforms), including [React Native](https://docs.bugsnag.com/platforms/react-native/react-native/).
+Bugsnag supports the full stack with open-source libraries for [50 and more platforms](https://www.bugsnag.com/platforms), including [React Native](https://docs.bugsnag.com/platforms/react-native/react-native/).
 
 With Bugsnag, developers and engineering organizations can:
 
-- **Stabilize:** Innovate faster by knowing when to build new features vs. fix bugs.
+- **Stabilize:** Innovate faster by knowing when to build new features vs. fix bugs. Use the release health dashboard, stability scores and targets, built-in alerts via email, Slack, PagerDuty, and more.
 
-  Use release health dashboard, stability scores and targets, built-in alerts via email, Slack, PagerDuty, and more.
+- **Prioritize:** Improve customer experience by identifying and prioritizing bugs that have the greatest impact on app stability. Analyze issues grouped by root cause and sorted by the business impact, customer segmentation, A/B testing and experiments results.
 
-- **Prioritize:** Improve customer experience by identifying and prioritizing bugs that have the greatest impact on app stability.
+- **Fix:** Increase productivity by spending less time on reproducing and fixing bugs. Utilize powerful diagnostic data, full stacktraces and automatic breadcrumbs.
 
-  Analyze issues grouped by root cause and sorted by business impact, customer segmentation, A/B testing and experiments results.
+**To add Bugsnag to your Expo project** and automatically capture and report JavaScript errors, follow the integration guide in their documentation:
 
-- **Fix:** Increase productivity by spending less time on reproducing and fixing bugs.
-
-  Utilize powerful diagnostic data, full stacktraces and automatic breadcrumbs.
-
-## Get Started
-
-Add Bugsnag to your Expo apps to automatically capture and report JavaScript errors.
-Follow the guide below and read the [blog post](https://www.bugsnag.com/blog/build-apps-in-expo-with-bugsnag) announcing Bugsnag’s Expo integration.
-If you’re new to Bugsnag, you can [create an account](https://app.bugsnag.com/user/new/) or [request a demo](https://www.bugsnag.com/demo-request).
-
-## Installation and configuration
-
-The easiest way to add Bugsnag to your Expo project is to use our CLI. Alternatively you can follow the [manual setup guide](https://docs.bugsnag.com/platforms/react-native/expo/manual-setup).
-
-<Terminal cmd={['$ npx bugsnag-expo-cli init']} />
-
-This will install the [`@bugsnag/expo`](https://www.npmjs.com/package/@bugsnag/expo) notifier, add some configuration to **app.json** and initialize Bugsnag in your application.
-
-### Capturing React render errors
-
-An [error boundary](https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary) component is included which you can use to wrap your application. When render errors happen, they will be reported to Bugsnag along with any React-specific info that was available at the time.
-
-To catch all render errors in your application and show a custom error screen to your users, follow this example:
-
-```jsx App.jsx
-const ErrorBoundary = Bugsnag.getPlugin('react');
-
-export default () => (
-  <ErrorBoundary FallbackComponent={ErrorView}>
-    <App />
-  </ErrorBoundary>
-);
-
-class App extends React.Component {
-  // Your main app component
-}
-
-class ErrorView extends React.Component {
-  // This component will be displayed when an error boundary catches an error
-}
-```
-
-See [React’s documentation on Error Boundaries](https://reactjs.org/docs/error-boundaries.html) to find out more.
-
-### TypeScript support
-
-Type definitions are provided and will be picked up automatically by the TypeScript compiler when you import `@bugsnag/expo`.
-
-## Next steps
-
-- Read the [full integration guide](https://docs.bugsnag.com/platforms/react-native/expo/)
-- View [`@bugsnag/js`](https://github.com/bugsnag/bugsnag-js), the library powering Bugsnag’s JavaScript error reporting, on GitHub
-- Explore [the example project](https://github.com/bugsnag/bugsnag-expo/tree/v48/next/examples/expo48)
-- Get [support](https://docs.bugsnag.com/#support) for your questions and feature requests
+<BoxLink
+  title="Expo and Bugsnag integration guide"
+  description="Add BugSnag to your Expo apps to report JavaScript errors."
+  href="https://docs.bugsnag.com/platforms/react-native/expo/"
+  Icon={BookOpen02Icon}
+/>

@@ -1,54 +1,68 @@
 ---
 title: Use TypeScript
+sidebar_title: TypeScript
 description: An in-depth guide on configuring an Expo project with TypeScript.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
-
-> Example project: [with-typescript](https://github.com/expo/examples/tree/master/with-typescript)
+import { BoxLink } from '~/ui/components/BoxLink';
+import { GithubIcon } from '@expo/styleguide-icons';
 
 Expo has first-class support for [TypeScript](https://www.typescriptlang.org/). The JavaScript interface of the Expo SDK is completely written in TypeScript.
 
-To get started, create a **tsconfig.json** in your project root:
+<BoxLink
+  title="with-typescript"
+  description="See the example project on GitHub."
+  href="https://github.com/expo/examples/tree/master/with-typescript"
+  Icon={GithubIcon}
+/>
+
+## Get started
+
+### Quick start with a template
+
+The easiest way to get started is to initialize your new project using a TypeScript template:
+
+<Terminal
+  cmd={['$ npx create-expo-app -t expo-template-blank-typescript']}
+  cmdCopy="npx create-expo-app -t expo-template-blank-typescript"
+/>
+
+Then, run `npx tsc` or `yarn tsc` to type check the project.
+
+When you create new source files in your project you should use the **.ts** extension or the **.tsx** if the file includes React components.
+
+### Start in an existing project
+
+To get started in an existing project, create a **tsconfig.json** in your project root:
 
 <Terminal cmd={['$ touch tsconfig.json']} />
 
-For SDK 48 and above, running `npx expo start` will prompt you to install the required dependencies, such as `typescript` and `@types/react`, and automatically configure your **tsconfig.json**. For SDK 47 and below, the command will also prompt to install `@types/react-native` as an additional dependency.
+**For SDK 48 and higher**, running `npx expo start` prompts you to install the required dependencies, such as `typescript` and `@types/react`, and automatically configure your **tsconfig.json**. **For SDK 47 and below**, the command also prompts to install `@types/react-native` as an additional dependency.
 
-Rename files to convert them to TypeScript. For example, you would rename **App.js** to **App.tsx**. Use the **.tsx** extension if the file includes React components (JSX). If the file did not include any JSX, you can use the **.ts** file extension.
+Rename files to convert them to TypeScript. For example, rename **App.js** to **App.tsx**. Use the **.tsx** extension if the file includes React components (JSX). If the file did not include any JSX, you can use the **.ts** file extension.
 
 <Terminal cmd={['$ mv App.js App.tsx']} />
 
-You can now run `yarn tsc` or `npx tsc` to typecheck the project.
+Then, you can use `npx tsc` or `yarn tsc` to type check the project.
 
 ## Base configuration
 
 > You can disable the TypeScript setup in Expo CLI with the environment variable `EXPO_NO_TYPESCRIPT_SETUP=1`
 
-A project's **tsconfig.json** should extend the `expo/tsconfig.base` by default. This sets the following default [compiler options][tsc-compileroptions] (which can be overwritten in your project's **tsconfig.json**):
+A project's **tsconfig.json** should extend the `expo/tsconfig.base` by default. This sets the following default [compiler options](https://www.typescriptlang.org/docs/handbook/compiler-options.html) (which can be overwritten in your project's **tsconfig.json**):
 
-- `"allowJs"`: `true`
-  - Allow JavaScript files to be compiled. If you project requires more strictness, you can disable this.
-- `"esModuleInterop"`: `true`
-  - Improve Babel ecosystem compatibility. This also sets `allowSyntheticDefaultImports` to `true`, allowing default imports from modules with no default export.
-- [`"jsx"`][tsc-jsx]: `"react-native"`
-  - Preserve JSX, and converts the `jsx` extension to `js`. This is optimized for bundlers that transform the JSX internally (like Metro).
-- `"lib"`: `["DOM", "ESNext"]`
-  - Allow using the latest [ECMAScript proposed features and libraries](https://github.com/tc39/proposals).
-- [`"moduleResolution"`][tsc-moduleresolution]: `"node"`
-  - Emulate how Metro and webpack resolve modules.
-- `"noEmit"`: `true`
-  - Only use the TypeScript compiler (TSC) to check the code. The Metro bundler is responsible for compiling TypeScript to JavaScript.
-- `"resolveJsonModule"`: `true`
-  - Enables importing **.json** files. Metro's default behavior is to allow importing json files as JS objects.
-- `"skipLibCheck"`: `true`
-  - Skip type checking of all declaration files (`*.d.ts`).
-- `"target"`: `"ESNext"`
-  - Compile to the latest version of ECMAScript.
-
-[tsc-jsx]: https://www.typescriptlang.org/docs/handbook/jsx.html
-[tsc-compileroptions]: https://www.typescriptlang.org/docs/handbook/compiler-options.html
-[tsc-moduleresolution]: https://www.typescriptlang.org/docs/handbook/module-resolution.html
+| Compiler options                                                                                      | Description                                                                                                                                                   |
+| ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`"allowJs"`]: `true`                                                                                 | Allow JavaScript files to be compiled. If your project requires more strictness, you can disable this.                                                        |
+| `"esModuleInterop"`: `true`                                                                           | Improve Babel ecosystem compatibility. This also sets `allowSyntheticDefaultImports` to `true`, allowing default imports from modules with no default export. |
+| [`"jsx"`](https://www.typescriptlang.org/docs/handbook/jsx.html): `"react-native"`                    | Preserve JSX, and converts the `jsx` extension to `js`. This is optimized for bundlers that transform the JSX internally (such as Metro).                     |
+| `"lib"`: `["DOM", "ESNext"]`                                                                          | Allow using the latest [ECMAScript proposed features and libraries](https://github.com/tc39/proposals).                                                       |
+| [`"moduleResolution"`](https://www.typescriptlang.org/docs/handbook/module-resolution.html): `"node"` | Emulate how Metro and webpack resolve modules.                                                                                                                |
+| `"noEmit"`: `true`                                                                                    | Only use the TypeScript compiler (TSC) to check the code. The Metro bundler is responsible for compiling TypeScript to JavaScript.                            |
+| `"resolveJsonModule"`: `true`                                                                         | Enables importing **.json** files. Metro's default behavior is to allow importing JSON files as JS objects.                                                   |
+| `"skipLibCheck"`: `true`                                                                              | Skip type checking of all declaration files (**\*.d.ts**).                                                                                                    |
+| `"target"`: `"ESNext"`                                                                                | Compile to the latest version of ECMAScript.                                                                                                                  |
 
 ## Project configuration
 
@@ -61,20 +75,9 @@ Expo CLI will automatically modify your **tsconfig.json** to the preferred defau
 }
 ```
 
-The default configuration is forgiving and makes it easier to adopt TypeScript. If you'd like to opt-in to more strict type checking, you can add `"strict": true` to the `compilerOptions`. We recommend enabling this to minimize the chance of introducing runtime errors.
+The default configuration for TypeScript is user-friendly and encourage adoption. However, if if you prefer strict type checking, you can enable it by adding `"strict": true` to the `compilerOptions`. We recommend enabling this to minimize the chance of introducing runtime errors.
 
-Certain language features may require additional configuration, for example if you'd like to use decorators you will need to add the `experimentalDecorators` option. For more information on the available properties see the [TypeScript compiler options documentation](https://www.typescriptlang.org/docs/handbook/compiler-options.html) documentation.
-
-## Starting from scratch: using a TypeScript template
-
-<Terminal
-  cmd={['$ npx create-expo-app -t expo-template-blank-typescript']}
-  cmdCopy="npx create-expo-app -t expo-template-blank-typescript"
-/>
-
-The easiest way to get started is to initialize your new project using a TypeScript template, then run `yarn tsc` or `npx tsc` to "typecheck" the project.
-
-When you create new source files in your project you should use the **.ts** extension or the **.tsx** if the file includes React components.
+Some language features may require additional configuration. For example, if want to use decorators you'll need to add the `experimentalDecorators` option. For more information on the available properties see the [TypeScript compiler options](https://www.typescriptlang.org/docs/handbook/compiler-options.html) documentation.
 
 {/* prettier-ignore */}
 {/*
@@ -170,7 +173,7 @@ The base directory can be modified in the **tsconfig.json** (or **jsconfig.json*
 
 ## TypeScript for config files
 
-You may find that you want to use TypeScript for the config files in your project, like the **webpack.config.js**, **metro.config.js**, or **app.config.js**. These will require a little extra setup. You can utilize the [`ts-node` require hook](https://github.com/TypeStrong/ts-node#programmatic) to _import_ TypeScript files into your JS config file, meaning any import can be TypeScript, but the root file will still need to be JavaScript.
+You may find that you want to use TypeScript for the config files in your project, like the **webpack.config.js**, **metro.config.js**, or **app.config.js**. These will require a little extra setup. You can utilize the [`ts-node` require hook](https://github.com/TypeStrong/ts-node#programmatic) to _import_ TypeScript files into your JS config file. It means any import can be TypeScript, however, the root files need to be JavaScript.
 
 <Terminal cmd={['$ yarn add -D ts-node typescript']} />
 
@@ -211,7 +214,7 @@ module.exports = config;
 
 ### app.config.js
 
-Technically **app.config.ts** is supported by default, but it doesn't support external TypeScript modules, or **tsconfig.json** customization. You can use the following approach to get a more comprehensive TypeScript setup.
+**app.config.ts** is supported by default. However, it doesn't support external TypeScript modules, or **tsconfig.json** customization. You can use the following approach to get a more comprehensive TypeScript setup.
 
 ```js app.config.js
 require('ts-node/register');
@@ -232,14 +235,10 @@ const config: ExpoConfig = {
 export default config;
 ```
 
-## Learning how to use TypeScript
+## Learn how to use TypeScript
 
 A good place to start learning TypeScript is the official [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html).
 
 ### TypeScript and React components
 
 We recommend reading over and referring to the [React TypeScript CheatSheet](https://github.com/typescript-cheatsheets/react) to learn how to type your React components in a variety of common situations.
-
-### Advanced types
-
-If you would like to go deeper and learn how to create more expressive and powerful types, we recommend the [Advanced Static Types in TypeScript course](https://egghead.io/courses/advanced-static-types-in-typescript) (this requires an egghead.io subscription).

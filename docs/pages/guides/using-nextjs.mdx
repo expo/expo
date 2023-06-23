@@ -1,28 +1,28 @@
 ---
 title: Use Next.js with Expo for Web
-sidebar_title: Use Next.js
+sidebar_title: Next.js
 description: A guide for integrating Next.js with Expo for the web.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 
-> **Warning:** Using Next.js is not an official part of Expo's universal app development workflow.
+> **warning** Using Next.js is not an official part of Expo's universal app development workflow.
 
-[Next.js][nextjs] is a React framework that provides simple page-based routing as well as server-side rendering. To use Next.js with the Expo SDK, we recommend using [`@expo/next-adapter`][next-adapter] library to handle the configuration.
+[Next.js](https://nextjs.org/) is a React framework that provides simple page-based routing as well as server-side rendering. To use Next.js with the Expo SDK, we recommend using [`@expo/next-adapter`](https://github.com/expo/expo-cli/tree/main/packages/next-adapter) library to handle the configuration.
 
 Using Expo with Next.js means you can share some of your existing components and APIs across your mobile and web app. Next.js has its own CLI that you'll need to use when developing for the web platform, so **you'll need to start your web projects with the Next.js CLI and not with `npx expo start`.**
 
-> Next.js can only be used with Expo for web, this doesn't provide Server-Side Rendering (SSR) for native apps.
+> Next.js can only be used with Expo for web as there is no support for Server-Side Rendering (SSR) for native apps.
 
-## Setup
+## Automatic setup
 
-To get started, create a new project with [the template](https://github.com/expo/examples/tree/master/with-nextjs):
+To quickly get started, create a new project using [with-nextjs](https://github.com/expo/examples/tree/master/with-nextjs) template:
 
 <Terminal cmd={['$ npx create-expo-app -e with-nextjs']} />
 
-- **Native**: `npx expo start` -- start the Expo project
-- **Web**: `npx next dev` -- start the Next.js project
+- **Native**: `npx expo start` &mdash; start the Expo project.
+- **Web**: `npx next dev` &mdash; start the Next.js project.
 
 ## Manual setup
 
@@ -36,9 +36,9 @@ Ensure you have `expo`, `next`, `@expo/next-adapter` installed in your project:
 
 Configure Next.js to transform language features:
 
-<Collapsible summary={<>Next.js with swc. (Recommended)</>}>
-  
-  When using Next.js with SWC, you can configure the **babel.config.js** to only account for native.
+#### Next.js with SWC
+
+Using Next.js with SWC is recommended. You can configure the **babel.config.js** to only account for native:
 
 ```js babel.config.js
 module.exports = function (api) {
@@ -59,11 +59,9 @@ module.exports = {
 };
 ```
 
-</Collapsible>
-
 <Collapsible summary={<>Next.js with Babel. (Not recommended)</>}>
-  
-  Adjust your **babel.config.js** to conditionally add `next/babel` when bundling with webpack for web.
+
+Adjust your **babel.config.js** to conditionally add `next/babel` when bundling with webpack for web.
 
 ```js babel.config.js
 module.exports = function (api) {
@@ -97,12 +95,12 @@ module.exports = withExpo({
   transpilePackages: [
     'react-native',
     'expo',
-    // Add more React Native / Expo packages here...
+    // Add more React Native/Expo packages here...
   ],
 });
 ```
 
-The fully qualified Next.js config may look like:
+The fully qualified Next.js config may look as shown below:
 
 ```js next.config.js
 const { withExpo } = require('@expo/next-adapter');
@@ -114,7 +112,7 @@ const nextConfig = withExpo({
   transpilePackages: [
     'react-native',
     'expo',
-    // Add more React Native / Expo packages here...
+    // Add more React Native/Expo packages here...
   ],
   experimental: {
     forceSwcTransforms: true,
@@ -218,43 +216,44 @@ module.exports = withExpo({
       // is aliased to `react-native`. Adding `react-native-web` will not work.
       'react-native',
       'expo',
-      // Add more React Native / Expo packages here...
+      // Add more React Native/Expo packages here...
     ],
   },
 });
 ```
 
-## Guides
-
-### Deploy to Vercel
-
-(Formerly ZEIT Now)
+## Deploy to Vercel
 
 This is Vercel's preferred method for deploying Next.js projects to production.
 
 - Add a **build** script to your **package.json**
-  ```json package.json
-  {
-    "scripts": {
-      "build": "next build"
-    }
-  }
-  ```
-- Install the Vercel CLI: `npm i -g vercel`
-- Deploy to Vercel: `vercel`
 
-## Limitations or differences comparing to the default Expo for Web
+```json package.json
+{
+  "scripts": {
+    "build": "next build"
+  }
+}
+```
+
+- Install the Vercel CLI:
+
+<Terminal cmd={['$ npm i -g vercel']} />
+
+- To deploy to Vercel, run:
+
+<Terminal cmd={['$ vercel']} />
+
+## Limitations or differences compared to the default Expo for Web
 
 Using Next.js for the web means you will be bundling with the Next.js webpack config. This will lead to some core differences in how you develop your app vs your website.
 
-- Expo Next.js adapter does not support the experimental app directory.
+- Expo Next.js adapter does not support the experimental **app** directory.
 - For File-based routing on native, we recommend using [Expo Router](https://github.com/expo/router).
 
 ## Contributing
 
-If you would like to help make Next.js support in Expo better, feel free to open a PR or submit an issue:
-
-- [@expo/next-adapter][next-adapter]
+If you want to help make Next.js support in Expo better, feel free to open a PR or submit an issue in [`@expo/next-adapter`](https://github.com/expo/expo-cli/tree/main/packages/next-adapter).
 
 ## Troubleshooting
 
@@ -270,16 +269,8 @@ module.exports = withExpo({
     transpilePackages: [
       'react-native',
       'expo',
-      // Add failing package here, and restart the server...
+      // Add the failing package here, and restart the server...
     ],
   },
 });
 ```
-
-{/* Footer */}
-
-[expo-packages]: https://github.com/expo/expo/tree/main/packages
-[nextjs]: https://nextjs.org/
-[next-adapter]: https://github.com/expo/expo-cli/tree/main/packages/next-adapter
-[next-docs]: https://nextjs.org/docs
-[next-optimized-images]: https://github.com/cyrilwanner/next-optimized-images

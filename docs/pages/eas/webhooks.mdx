@@ -1,27 +1,43 @@
 ---
 title: Webhooks
+sidebar_title: Configure EAS webhooks
 description: Learn how to configure webhooks to get alerts on EAS Build and EAS submit completion.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
 
-EAS can alert you as soon as your build or submission has completed via a webhook. Webhooks need to be configured per-project, so if you want to be alerted for both `@johndoe/awesomeApp` and `@johndoe/coolApp`, you need to run `eas webhook:create` in each directory.
+EAS can alert you as soon as your build or submission has been completed via a webhook. Webhooks need to be configured per project.
 
-After running `eas webhook:create`, you'll be prompted to choose the webhook event type (unless you provide the `--event BUILD|SUBMIT` parameter). Next, provide the webhook URL (or specify it with the `--url` flag) that handles HTTP POST requests. Additionally, you'll have to input a webhook signing secret, if you have not already provided it with the `--secret` flag. It must be at least 16 characters long, and it will be used to calculate the signature of the request body which we send as the value of the `expo-signature` HTTP header. You can use the signature to verify a webhook request is genuine (example code below).
+For example, if you want to be alerted for both `@johndoe/awesomeApp` and `@johndoe/coolApp`, you need to the following command in each directory:
+
+<Terminal cmd={['$ eas webhook:create']} />
+
+After running `eas webhook:create`, you'll be prompted to choose the webhook event type (unless you provide the `--event BUILD|SUBMIT` parameter). Next, provide the webhook URL (or specify it with the `--url` flag) that handles HTTP POST requests. Additionally, you'll have to input a webhook signing secret, if you have not already provided it with the `--secret` flag. It must be at least 16 characters long, and it will be used to calculate the signature of the request body which we send as the value of the `expo-signature` HTTP header. You can use the [signature to verify a webhook request](#webhook-server) is genuine.
 
 EAS calls your webhook using an HTTP POST request. All the data is passed in the request body. EAS sends the data as a JSON object. If the webhook responds with an HTTP status code outside of the 200-399 range, delivery will be attempted a few more times with exponential back-off.
 
 Additionally, we send an `expo-signature` HTTP header with the hash signature of the payload. You can use this signature to verify the authenticity of the request. The signature is a hex-encoded HMAC-SHA1 digest of the request body, using your webhook secret as the HMAC key.
 
-> If you want to test the above webhook locally, you have to use a service like [ngrok](https://ngrok.com/docs) to forward `localhost:8080` via a tunnel and make it publicly accessible with the URL `ngrok` gives you.
+> If you want to test the above webhook locally, you have to use a service such as [ngrok](https://ngrok.com/docs) to forward `localhost:8080` via a tunnel and make it publicly accessible with the URL `ngrok` gives you.
 
-You can always change your webhook URL and/or webhook secret using `eas webhook:update --id WEBHOOK_ID`. You can find the webhook ID by running `eas webhook:list`. If you would like us to stop sending requests to your webhook, run `eas webhook:delete` and choose the webhook from the list.
+You can always change your webhook URL and/or webhook secret by running:
+
+<Terminal cmd={['$ eas webhook:update --id WEBHOOK_ID']} />
+
+You can find the webhook ID by running:
+
+<Terminal cmd={['$ eas webhook:list']} />
+
+If you want us to stop sending requests to your webhook, run the command below and choose the webhook from the list:
+
+<Terminal cmd={['$ eas webhook:delete']} />
 
 ## Webhook payload
 
 <Collapsible summary="Build webhook payload">
 
-The build webhook payload looks something like this:
+The build webhook payload may look as the example below:
 
 ```json
 {
@@ -105,7 +121,7 @@ The build webhook payload looks something like this:
 
 <Collapsible summary="Submit webhook payload">
 
-The submit webhook payload looks something like this:
+The submit webhook payload may look as the example below:
 
 ```json
 {
@@ -142,7 +158,7 @@ The submit webhook payload looks something like this:
 
 Here's an example of how you can implement your server:
 
-```javascript
+```js server.js
 const crypto = require('crypto');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -159,7 +175,7 @@ app.post('/webhook', (req, res) => {
   if (!safeCompare(expoSignature, hash)) {
     res.status(500).send("Signatures didn't match!");
   } else {
-    // do something here, like send a notification to Slack!
+    // do something here, such as send a notification to Slack!
     // console.log(req.body);
     res.send('OK!');
   }

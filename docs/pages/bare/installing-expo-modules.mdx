@@ -7,11 +7,11 @@ import InstallSection from '~/components/plugins/InstallSection';
 import { DiffBlock } from '~/ui/components/Snippet';
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 
-To use Expo modules in your app, you will need to install and configure the `expo` package.
+To use Expo modules in your app, you'll need to install and configure the `expo` package.
 
 The `expo` package has a small footprint; it includes only a minimal set of packages that are needed in nearly every app and the module and autolinking infrastructure that other Expo SDK packages are built with. Once the `expo` package is installed and configured in your project, you can use `npx expo install` to add any other Expo module from the SDK.
 
-Depending on how you [initialized the project](/bare/hello-world/), there are two ways you can install the Expo modules: [automatic](#automatic-installation) or [manual](#manual-installation).
+Depending on how you [initialized the project](/bare/overview/), there are two ways you can install the Expo modules: [automatic](#automatic-installation) or [manual](#manual-installation).
 
 ## Automatic installation
 
@@ -68,7 +68,7 @@ Save all of your changes. In Xcode, update the iOS Deployment Target under `Targ
 
 ## Usage
 
-### Verifying installation
+### Verify installation
 
 You can verify that the installation was successful by logging a value from [`expo-constants`](/versions/latest/sdk/constants).
 
@@ -80,7 +80,7 @@ import Constants from 'expo-constants';
 console.log(Constants.systemFonts);
 ```
 
-### Using Expo SDK packages
+### Use Expo SDK packages
 
 Once the `expo` package is installed and configured in your project, you can use `npx expo install` to add any other Expo module from the SDK. See [Using Libraries](/workflow/using-libraries) for more information.
 
@@ -97,7 +97,7 @@ The following Expo modules are brought in as dependencies of the `expo` package:
 
 To exclude any of these modules, refer to the following guide on [excluding modules from autolinking](#excluding-specific-modules-from-autolinking).
 
-### Excluding specific modules from autolinking
+### Exclude specific modules from autolinking
 
 If you need to exclude Expo modules that you are not using but they got installed by other dependencies, you can use the `expo.autolinking` field in **package.json**:
 

@@ -284,12 +284,12 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Redirect bare guides to unified workflow guides
   '/bare/using-libraries/': '/workflow/using-libraries/',
-  '/bare/exploring-bare-workflow/': '/bare/hello-world/',
+  '/bare/exploring-bare-workflow/': '/bare/overview/',
   '/bare/existing-apps/': '/bare/installing-expo-modules/',
   '/bare/installing-unimodules/': '/bare/installing-expo-modules/',
   '/bare/using-web/': '/workflow/web/',
   '/guides/running-in-the-browser/': '/workflow/web/',
-  '/bare/unimodules-full-list/': '/bare/hello-world/',
+  '/bare/unimodules-full-list/': '/bare/overview/',
 
   // Consolidate distribution
   '/distribution/security/': '/app-signing/security/',

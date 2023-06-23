@@ -9,7 +9,7 @@ import { Step } from '~/ui/components/Step';
 
 The installation steps on this page are only required to add the `expo-dev-client` library to a React Native or a bare project.
 
-> To add the `expo-dev-client` library to an existing managed project, see [Create development builds](/develop/development-builds/create-a-build/).
+> To add the `expo-dev-client` library to an existing managed project, see [create development builds](/develop/development-builds/create-a-build/).
 
 If you're starting your project, you can create a new project with our `with-dev-client` template. Run the following command to initialize the project:
 
@@ -35,11 +35,11 @@ Add the `expo-dev-client` library to your **package.json**:
 
 <Terminal cmd={['$ npx expo install expo-dev-client']} />
 
-If your project has an **ios/** directory on disk, run the following command to fully install the native code for `expo-dev-client`:
+If your project has an **ios** directory on disk, run the following command to fully install the native code for `expo-dev-client`:
 
 <Terminal cmd={['$ npx pod-install']} />
 
-If your project doesn't have an **ios/** directory, you can skip this step.
+If your project doesn't have an **ios** directory, you can skip this step.
 
 </Step>
 
@@ -79,15 +79,13 @@ import App from "./App";
 
 For more information, see [Error handling](/develop/development-builds/use-development-builds/#add-error-handling).
 
-### Loading published updates
+### Load published updates
 
-Development builds can also open and preview published updates to your app.
-
-To add this feature, install `expo-updates` in your project:
+Development builds can also open and preview published updates to your app. To add this feature, install `expo-updates` in your project:
 
 <Terminal cmd={['$ npx expo install expo-updates']} />
 
-After doing so, if your project has an **ios/** directory on disk, you will need to reinstall CocoaPods:
+After doing so, if your project has an **ios** directory on disk, you will need to reinstall CocoaPods:
 
 <Terminal cmd={['$ npx pod-install']} />
 
@@ -97,6 +95,6 @@ After doing so, if your project has an **ios/** directory on disk, you will need
 
 ## Build and install
 
-You're now ready to [build your first development build](develop/development-builds/create-a-build/#initialize-eas-build).
+You're now ready to [build your first development build](/develop/development-builds/create-a-build/#initialize-eas-build).
 
 </Step>

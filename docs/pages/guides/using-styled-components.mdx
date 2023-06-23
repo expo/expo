@@ -1,14 +1,15 @@
 ---
 title: Use Styled Components
+sidebar_title: Styled Components
 description: A guide for using Styled Components with Expo.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
 import { DiffBlock } from '~/ui/components/Snippet';
 
-Styled Components is a CSS-in-JS solution that enables you to create React components with a given style very easily. Using `styled-components` with Expo, you can create universal styles that'll work the same across web, mobile, and desktop!
+[Styled Components](https://styled-components.com/docs) is a CSS-in-JS solution that enables you to create React components with a given style very easily. Using `styled-components` with Expo, you can create universal styles that'll work the same across web, mobile, and desktop!
 
-## Getting Started
+## Get Started
 
 Install the Styled Components package:
 
@@ -16,7 +17,7 @@ Install the Styled Components package:
 
 Use `styled-components/native` instead of `styled-components`:
 
-```tsx
+```jsx
 import React from 'react';
 import styled from 'styled-components/native';
 
@@ -85,12 +86,13 @@ diff --git a/Container.jsx b/Container.jsx
 @@ -1,5 +1,5 @@
 - import styled from 'styled-components/native';
 + import styled from 'styled-components';
-  
-- const Container = styled.View\`
-+ const Container = styled(View)\`
-    background-color: #fff;
-  \`
-`}
-/>
 
-But doing this in the browser will throw the error: `Warning: Using the "className" prop on <View> is deprecated.`.
+- const Container = styled.View\`
+
+* const Container = styled(View)\`
+  background-color: #fff;
+  \`
+  `}
+  />
+
+However, doing this in the browser will throw the error: `Warning: Using the "className" prop on <View> is deprecated.`.
