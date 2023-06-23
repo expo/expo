@@ -4,13 +4,13 @@
 
 ### 🛠 Breaking changes
 
-- Remove the long-deprecated `Constants.deviceYearClass` and `Constants.platform.ios.model`. These properties now live on `expo-device`.
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Remove the long-deprecated `Constants.deviceYearClass` and `Constants.platform.ios.model`. These properties now live on `expo-device`.
 
 ## 14.4.1 — 2023-06-22
 
