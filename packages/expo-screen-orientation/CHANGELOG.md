@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [ios] Fix crash when reading rootViewController value. ([#23039](https://github.com/expo/expo/pull/23039) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Fix crash when reading `rootViewController` value. ([#23039](https://github.com/expo/expo/pull/23039) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
