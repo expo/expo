@@ -1,8 +1,4 @@
 import {
-  StringBoolean,
-  getMainApplicationOrThrow,
-} from '@expo/config-plugins/build/android/Manifest';
-import {
   AndroidConfig,
   ConfigPlugin,
   History,
@@ -232,10 +228,12 @@ function setUsesCleartextTraffic(
   androidManifest: AndroidConfig.Manifest.AndroidManifest,
   value: boolean
 ) {
-  const mainApplication = getMainApplicationOrThrow(androidManifest);
+  const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(androidManifest);
 
   if (mainApplication?.$) {
-    mainApplication.$['android:usesCleartextTraffic'] = String(value) as StringBoolean;
+    mainApplication.$['android:usesCleartextTraffic'] = String(
+      value
+    ) as AndroidConfig.Manifest.StringBoolean;
   }
 
   return androidManifest;
