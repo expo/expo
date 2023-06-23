@@ -49,14 +49,14 @@ and `npx react-native run-ios`. You can pass in the `--device` flag to select a 
 ## Starting the bundler
 
 `npx expo run:[android|ios]` will start the bundler/development server. You can skip that by passing in `--no-bundler` flag.
-Start the development server independently with `npx expo start --dev-client`.
 
 ## Common questions
 
 <Collapsible summary="Can I use Expo CLI without installing the Expo Modules API?">
 
-When you install the `expo` package with `npx install-expo-modules`, you will also install the Expo Modules API. If you just want to try out Expo CLI for now,
-you can install the `expo` package with `npm install` and then configure your **react-native.config.js** to exclude the package from autolinking:
+**In SDK 49 and higher**, all you need to do to use Expo CLI in any React Native app is to install the `expo` package.
+
+**In SDK 48 and lower**, you will need to install the native module side (`npx install-expo-modules@latest`) or explicitly opt out of with autolinking. when you install the `expo` package with `npx install-expo-modules`. If you just want to try out Expo CLI for now, you can install the `expo` package with `npm install` and then configure your **react-native.config.js** to exclude the package from autolinking:
 
 ```js
 module.exports = {
