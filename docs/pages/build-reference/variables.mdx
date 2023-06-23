@@ -49,6 +49,14 @@ You can access these variables in your application using the techniques describe
 
 See the [eas.json reference](/build/eas-json) for more information.
 
+### Setting environment variables dynamically
+
+You can also set environment variables dynamically during the build process. The `set-env` executable is available in the `PATH` on EAS Build workers, and can be used to set environment variables that will be visible in the next build phases.
+
+For example, you can add the following in one of the [EAS Build hooks](/build-reference/npm-hooks/) and the environment variable `EXAMPLE_ENV` will be available until the end of the build job.
+
+<Terminal cmd={[ 'set-env EXAMPLE_ENV "example value"' ]} />
+
 ## Environment variables and app.config.js
 
 Environment variables used in your build profile will also be used to evaluate **app.config.js** when you run `eas build`. This is important to ensure that the result of evaluating **app.config.js** is the same when it's done locally while initiating the build (to gather metadata for the build job) and when it occurs on the remote builder, for example, to configure the project during `npx expo prebuild` or to embed the configuration data in the app.
