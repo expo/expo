@@ -1,7 +1,6 @@
 import { vol } from 'memfs';
 
 import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
-import { readAndroidManifestAsync } from '../Manifest';
 import {
   getApplicationIdAsync,
   getPackage,
@@ -9,7 +8,6 @@ import {
   renamePackageOnDiskForType,
   setPackageInBuildGradle,
 } from '../Package';
-import { getAndroidManifestAsync } from '../Paths';
 
 jest.mock('fs');
 

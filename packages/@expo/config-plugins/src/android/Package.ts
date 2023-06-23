@@ -5,11 +5,10 @@ import { sync as globSync } from 'glob';
 import path from 'path';
 
 import { ConfigPlugin } from '../Plugin.types';
-import { createAndroidManifestPlugin, withAppBuildGradle } from '../plugins/android-plugins';
+import { withAppBuildGradle } from '../plugins/android-plugins';
 import { withDangerousMod } from '../plugins/withDangerousMod';
 import { directoryExistsAsync } from '../utils/modules';
 import { addWarningAndroid } from '../utils/warnings';
-import { AndroidManifest } from './Manifest';
 import { getAppBuildGradleFilePath, getProjectFilePath } from './Paths';
 
 const debug = Debug('expo:config-plugins:android:package');
