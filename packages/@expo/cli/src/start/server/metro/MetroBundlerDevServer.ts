@@ -36,6 +36,7 @@ import { instantiateMetroAsync } from './instantiateMetro';
 import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import { observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
+import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
@@ -306,6 +307,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
       // This MUST be after the manifest middleware so it doesn't have a chance to serve the template `public/index.html`.
       middleware.use(new ServeStaticMiddleware(this.projectRoot).getHandler());
+
+      // This should come after the static middleware so it doesn't serve the favicon from `public/favicon.ico`.
+      middleware.use(new FaviconMiddleware(this.projectRoot).getHandler());
 
       if (useWebSSG) {
         middleware.use(async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
