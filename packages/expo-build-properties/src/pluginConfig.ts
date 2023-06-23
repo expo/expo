@@ -90,10 +90,11 @@ export interface PluginConfigTypeAndroid {
   flipper?: string;
 
   /**
-   * Enable the experimental Network Inspector for [Development builds](https://docs.expo.dev/develop/development-builds/introduction/).
-   * SDK 49+ is required.
+   * Enable the Network Inspector.
+   *
+   * @default true
    */
-  unstable_networkInspector?: boolean;
+  networkInspector?: boolean;
 
   /**
    * Add extra maven repositories to all gradle projects.
@@ -113,6 +114,14 @@ export interface PluginConfigTypeAndroid {
    * this property is actually handled by `expo-modules-autolinking` but not the config-plugins inside expo-build-properties.
    */
   extraMavenRepos?: string[];
+  /**
+   * Indicates whether the app intends to use cleartext network traffic.
+   *
+   * @default false
+   *
+   * @see [Android documentation](https://developer.android.com/guide/topics/manifest/application-element#usesCleartextTraffic)
+   */
+  usesCleartextTraffic?: boolean;
 }
 
 /**
@@ -152,10 +161,11 @@ export interface PluginConfigTypeIos {
   flipper?: boolean | string;
 
   /**
-   * Enable the experimental Network Inspector for [Development builds](https://docs.expo.dev/develop/development-builds/introduction/).
-   * SDK 49+ is required.
+   * Enable the Network Inspector.
+   *
+   * @default true
    */
-  unstable_networkInspector?: boolean;
+  networkInspector?: boolean;
 
   /**
    * Add extra CocoaPods dependencies for all targets.
@@ -302,9 +312,11 @@ const schema: JSONSchemaType<PluginConfigType> = {
           nullable: true,
         },
 
-        unstable_networkInspector: { type: 'boolean', nullable: true },
+        networkInspector: { type: 'boolean', nullable: true },
 
         extraMavenRepos: { type: 'array', items: { type: 'string' }, nullable: true },
+
+        usesCleartextTraffic: { type: 'boolean', nullable: true },
       },
       nullable: true,
     },
@@ -320,7 +332,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
           nullable: true,
         },
 
-        unstable_networkInspector: { type: 'boolean', nullable: true },
+        networkInspector: { type: 'boolean', nullable: true },
 
         extraPods: {
           type: 'array',

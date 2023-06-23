@@ -292,28 +292,29 @@ class ScreenStack(context: Context?) : ScreenContainer<ScreenStackFragment>(cont
     }
 
     override fun drawChild(canvas: Canvas, child: View, drawingTime: Long): Boolean {
-        drawingOps.add(obtainDrawingOp().set(canvas, child, drawingTime))
+        drawingOps.add(
+            obtainDrawingOp().apply {
+                this.canvas = canvas
+                this.child = child
+                this.drawingTime = drawingTime
+            }
+        )
         return true
     }
 
     private fun performDraw(op: DrawingOp) {
-        super.drawChild(op.canvas, op.child, op.drawingTime)
+        // Canvas parameter can not be null here https://developer.android.com/reference/android/view/ViewGroup#drawChild(android.graphics.Canvas,%20android.view.View,%20long)
+        // So if we are passing null here, we would crash anyway
+        super.drawChild(op.canvas!!, op.child, op.drawingTime)
     }
 
     private fun obtainDrawingOp(): DrawingOp =
-        if (drawingOpPool.isEmpty()) DrawingOp() else drawingOpPool.removeAt(drawingOpPool.size - 1)
+        if (drawingOpPool.isEmpty()) DrawingOp() else drawingOpPool.removeLast()
 
     private inner class DrawingOp {
         var canvas: Canvas? = null
         var child: View? = null
         var drawingTime: Long = 0
-
-        operator fun set(canvas: Canvas?, child: View?, drawingTime: Long): DrawingOp {
-            this.canvas = canvas
-            this.child = child
-            this.drawingTime = drawingTime
-            return this
-        }
 
         fun draw() {
             performDraw(this)

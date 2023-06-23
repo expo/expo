@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '14.4.0'
+version = '14.4.1'
 
 apply from: "../scripts/get-app-config-android.gradle"
 
@@ -69,7 +69,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 33
-    versionName "14.4.0"
+    versionName "14.4.1"
   }
   lintOptions {
     abortOnError false

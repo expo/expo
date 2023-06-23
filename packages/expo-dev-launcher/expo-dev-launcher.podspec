@@ -55,7 +55,8 @@ Pod::Spec.new do |s|
     'DEFINES_MODULE' => 'YES',
     'OTHER_CFLAGS[config=Debug]' => other_c_flags,
     'OTHER_SWIFT_FLAGS[config=Debug]' => other_swift_flags,
-    "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/React-Core\"",
+    "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/React-Core\" \"$(PODS_ROOT)/Headers/Public/RNReanimated\"",
+    'FRAMEWORK_SEARCH_PATHS' => '"${PODS_CONFIGURATION_BUILD_DIR}/RNReanimated"',
     "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
   }
 

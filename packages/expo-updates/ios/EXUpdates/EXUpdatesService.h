@@ -26,6 +26,7 @@ typedef void (^EXUpdatesAppRelaunchCompletionBlock)(BOOL success);
 @property (nonatomic, readonly, assign) BOOL isStarted;
 @property (nonatomic, readonly, assign) BOOL isEmergencyLaunch;
 @property (nonatomic, readonly, assign) BOOL canRelaunch;
+@property (nonatomic, readonly, assign) BOOL canCheckForUpdateAndFetchUpdate;
 
 - (void)requestRelaunchWithCompletion:(EXUpdatesAppRelaunchCompletionBlock)completion;
 - (void)resetSelectionPolicy;

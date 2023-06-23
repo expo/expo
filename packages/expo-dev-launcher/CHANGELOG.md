@@ -2,11 +2,25 @@
 
 ## Unpublished
 
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+- Fixed compatibility issue with react-native-reanimated on iOS. ([#23057](https://github.com/expo/expo/pull/23057) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+## 2.4.1 — 2023-06-22
+
+_This version does not introduce any user-facing changes._
+
+## 2.4.0 — 2023-06-21
+
 ### 📚 3rd party library updates
 
 - Updated `robolectric` to `4.10`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
-
-### 🛠 Breaking changes
 
 ### 🎉 New features
 

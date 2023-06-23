@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 1.5.0 — 2023-06-21
+
+### 🐛 Bug fixes
+
 - Fixed Spacers background color in dark mode. ([#22612](https://github.com/expo/expo/pull/22612) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others

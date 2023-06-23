@@ -4,6 +4,8 @@
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
 
+#define STENCIL_BUFFER_SIZE 8
+
 namespace RNSkia {
 /** Static members */
 sk_sp<SkSurface> MakeOffscreenGLSurface(int width, int height) {
@@ -137,7 +139,7 @@ SkiaOpenGLRenderer::~SkiaOpenGLRenderer() {
   _nativeWindow = nullptr;
 }
 
-void SkiaOpenGLRenderer::run(const std::function<void(SkCanvas *)> &cb,
+bool SkiaOpenGLRenderer::run(const std::function<void(SkCanvas *)> &cb,
                              int width, int height) {
   switch (_renderState) {
   case RenderState::Initializing: {
@@ -148,31 +150,48 @@ void SkiaOpenGLRenderer::run(const std::function<void(SkCanvas *)> &cb,
   case RenderState::Rendering: {
     // Make sure to initialize the rendering pipeline
     if (!ensureInitialised()) {
-      break;
-    }
-
-    // Ensure we have the Skia surface to draw on. We need to
-    // pass width and height since the surface will be recreated
-    // when the view is resized.
-    if (!ensureSkiaSurface(width, height)) {
-      return;
+      return false;
     }
 
     if (cb != nullptr) {
-      // Reset Skia Context since it might be modified by another Skia View
-      // during rendering.
+      // RNSkLogger::logToConsole("SKIARENDER - Render begin");
+
       getThreadDrawingContext()->skContext->resetContext();
 
+      SkColorType colorType;
+      // setup surface for fbo0
+      GrGLFramebufferInfo fboInfo;
+      fboInfo.fFBOID = 0;
+      fboInfo.fFormat = 0x8058;
+      colorType = kN32_SkColorType;
+
+      GrBackendRenderTarget backendRT(width, height, 0, STENCIL_BUFFER_SIZE,
+                                      fboInfo);
+
+      SkSurfaceProps props(0, kUnknown_SkPixelGeometry);
+
+      sk_sp<SkSurface> renderTarget(SkSurface::MakeFromBackendRenderTarget(
+          getThreadDrawingContext()->skContext.get(), backendRT,
+          kBottomLeft_GrSurfaceOrigin, colorType, nullptr, &props));
+
+      auto canvas = renderTarget->getCanvas();
+
       // Draw picture into surface
-      cb(_skSurface->getCanvas());
+      cb(canvas);
+
       // Flush
-      _skSurface->flushAndSubmit();
+      canvas->flush();
 
       if (!eglSwapBuffers(getThreadDrawingContext()->glDisplay, _glSurface)) {
         RNSkLogger::logToConsole("eglSwapBuffers failed: %d\n", eglGetError());
+        return false;
       }
+
+      // RNSkLogger::logToConsole("SKIARENDER - render done");
+      return true;
     }
-    break;
+
+    return false;
   }
   case RenderState::Finishing: {
     _renderState = RenderState::Done;
@@ -184,14 +203,11 @@ void SkiaOpenGLRenderer::run(const std::function<void(SkCanvas *)> &cb,
       _glSurface = EGL_NO_SURFACE;
     }
 
-    // Release Skia Surface
-    _skSurface = nullptr;
-
-    break;
+    return true;
   }
   case RenderState::Done: {
     // Do nothing. We're done.
-    break;
+    return true;
   }
   }
 }
@@ -324,56 +340,6 @@ bool SkiaOpenGLRenderer::initGLSurface() {
     return false;
   }
 
-  return true;
-}
-
-bool SkiaOpenGLRenderer::ensureSkiaSurface(int width, int height) {
-  if (getThreadDrawingContext()->skContext == nullptr) {
-    return false;
-  }
-
-  if (_skSurface == nullptr || !_skRenderTarget.isValid() ||
-      _prevWidth != width || _prevHeight != height) {
-    glViewport(0, 0, width, height);
-
-    _prevWidth = width;
-    _prevHeight = height;
-
-    GLint buffer;
-    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &buffer);
-
-    GLint stencil;
-    glGetIntegerv(GL_STENCIL_BITS, &stencil);
-
-    GLint samples;
-    glGetIntegerv(GL_SAMPLES, &samples);
-
-    auto maxSamples =
-        getThreadDrawingContext()->skContext->maxSurfaceSampleCountForColorType(
-            kRGBA_8888_SkColorType);
-
-    if (samples > maxSamples)
-      samples = maxSamples;
-
-    GrGLFramebufferInfo fbInfo;
-    fbInfo.fFBOID = buffer;
-    fbInfo.fFormat = 0x8058;
-
-    _skRenderTarget =
-        GrBackendRenderTarget(width, height, samples, stencil, fbInfo);
-
-    _skSurface = SkSurface::MakeFromBackendRenderTarget(
-        getThreadDrawingContext()->skContext.get(), _skRenderTarget,
-        kBottomLeft_GrSurfaceOrigin, kRGBA_8888_SkColorType, nullptr, nullptr);
-
-    if (!_skSurface) {
-      RNSkLogger::logToConsole(
-          "JniSkiaDrawView::setupSurface - skSurface could not be created!");
-      return false;
-    }
-
-    return true;
-  }
   return true;
 }
 } // namespace RNSkia
