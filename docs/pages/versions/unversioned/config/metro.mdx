@@ -192,9 +192,9 @@ Then, ensure [CSS is setup](#css) in the `metro.config.js` file.
 
 ### Tailwind
 
-> Tailwind does not support native platforms, this is web-only.
+> **info** Tailwind does not support native platforms, this is web-only.
 
-[Tailwind](https://tailwindcss.com/) can be used with Metro for web, however due to the advanced caching system in Metro, the setup is a little different from the default Tailwind setup. The following files will be modified:
+[Tailwind](https://tailwindcss.com/) can be used with Metro for web. However, due to the advanced caching system in Metro, the setup is a little different from the default Tailwind setup. The following files are modified:
 
 <FileTree
   files={[
@@ -223,7 +223,7 @@ In your **app.json** ensure the project is using Metro for web:
 }
 ```
 
-Create a **global.css** file in your project:
+Create **global.css** in your project:
 
 ```css global.css
 /* This file adds the requisite utility classes for Tailwind to work. */
@@ -232,7 +232,7 @@ Create a **global.css** file in your project:
 @tailwind utilities;
 ```
 
-Create a **tailwind.config.js** file in your project:
+Create **tailwind.config.js** in your project:
 
 ```js tailwind.config.js
 /** @type {import('tailwindcss').Config} */
@@ -276,7 +276,7 @@ module.exports = (async () => {
 })();
 ```
 
-In your entry file (`index.js`, `App.js`), add the following:
+In the entry file (**index.js**, **App.js**), add the following:
 
 ```js index.js
 // Ensure we import the CSS for Tailwind so it's included in hot module reloads.
