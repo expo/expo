@@ -9,7 +9,7 @@ import expo.modules.updates.logging.UpdatesLogger
  */
 class UpdatesStateMachine(
   androidContext: Context,
-  val changeEventSender: UpdatesStateChangeEventSender
+  private val changeEventSender: UpdatesStateChangeEventSender
 ) {
 
   private val logger = UpdatesLogger(androidContext)
@@ -32,7 +32,7 @@ class UpdatesStateMachine(
     state = UpdatesStateValue.Idle
     context = UpdatesStateContext()
     logger.info("Updates state change: reset, context = ${context.json}")
-    sendChangeEventToJS()
+    sendChangeEventToJS(UpdatesStateEvent.Restart())
   }
 
   /**
@@ -61,15 +61,9 @@ class UpdatesStateMachine(
     return true
   }
 
-  /**
-   * If a state change event is passed in, the JS sender
-   * is called with just the fields and values that changed.
-   * During a reset, this method is called with no event passed in,
-   * and then all the fields and the entire context are passed to the JS sender.
-   */
-  private fun sendChangeEventToJS(event: UpdatesStateEvent? = null) {
+  private fun sendChangeEventToJS(event: UpdatesStateEvent) {
     changeEventSender.sendUpdateStateChangeEventToBridge(
-      event?.type ?: UpdatesStateEventType.Restart,
+      event.type,
       context.copy()
     )
   }
@@ -105,43 +99,57 @@ class UpdatesStateMachine(
      * made by processing the event.
      */
     private fun reduceContext(context: UpdatesStateContext, event: UpdatesStateEvent): UpdatesStateContext {
-      return when (event.type) {
-        UpdatesStateEventType.Check -> context.copy(isChecking = true)
-        UpdatesStateEventType.CheckCompleteUnavailable -> context.copy(
+      return when (event) {
+        is UpdatesStateEvent.Check -> context.copy(isChecking = true)
+        is UpdatesStateEvent.CheckCompleteUnavailable -> context.copy(
           isChecking = false,
           checkError = null,
           latestManifest = null,
           isUpdateAvailable = false,
           isRollback = false
         )
-        UpdatesStateEventType.CheckCompleteAvailable -> context.copy(
+        is UpdatesStateEvent.CheckCompleteWithRollback -> context.copy(
+          isChecking = false,
+          checkError = null,
+          latestManifest = null,
+          isUpdateAvailable = true,
+          isRollback = true
+        )
+        is UpdatesStateEvent.CheckCompleteWithUpdate -> context.copy(
           isChecking = false,
           checkError = null,
           latestManifest = event.manifest,
           isUpdateAvailable = true,
-          isRollback = event.isRollback
+          isRollback = false
         )
-        UpdatesStateEventType.CheckError -> context.copy(
+        is UpdatesStateEvent.CheckError -> context.copy(
           isChecking = false,
           checkError = event.error
         )
-        UpdatesStateEventType.Download -> context.copy(isDownloading = true)
-        UpdatesStateEventType.DownloadComplete -> context.copy(
+        is UpdatesStateEvent.Download -> context.copy(isDownloading = true)
+        is UpdatesStateEvent.DownloadComplete -> context.copy(
           isDownloading = false,
           downloadError = null,
-          latestManifest = event.manifest ?: context.latestManifest,
-          downloadedManifest = event.manifest ?: context.downloadedManifest,
           isUpdatePending = true,
-          isUpdateAvailable = when (event.manifest) {
-            null -> context.isUpdateAvailable
-            else -> true
-          }
         )
-        UpdatesStateEventType.DownloadError -> context.copy(
+        is UpdatesStateEvent.DownloadCompleteWithRollback -> context.copy(
+          isDownloading = false,
+          downloadError = null,
+          isUpdatePending = true,
+        )
+        is UpdatesStateEvent.DownloadCompleteWithUpdate -> context.copy(
+          isDownloading = false,
+          downloadError = null,
+          latestManifest = event.manifest,
+          downloadedManifest = event.manifest,
+          isUpdatePending = true,
+          isUpdateAvailable = true
+        )
+        is UpdatesStateEvent.DownloadError -> context.copy(
           isDownloading = false,
           downloadError = event.error
         )
-        UpdatesStateEventType.Restart -> context.copy(
+        is UpdatesStateEvent.Restart -> context.copy(
           isRestarting = true
         )
       }
