@@ -146,6 +146,7 @@
     "nullthrows": "^1.1.1",
     "structured-headers": "^0.4.1",
     "taskr": "1.1.0",
-    "tree-kill": "^1.2.2"
+    "tree-kill": "^1.2.2",
+    "tsd": "^0.28.1"
   }
 }
