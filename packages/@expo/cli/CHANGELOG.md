@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Remove invalid `none` platform from manifest middleware.
+- Remove invalid `none` platform from manifest middleware. ([#23080](https://github.com/expo/expo/pull/23080) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
