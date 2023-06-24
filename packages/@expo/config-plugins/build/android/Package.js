@@ -8,9 +8,8 @@ exports.getPackage = getPackage;
 exports.renameJniOnDiskForType = renameJniOnDiskForType;
 exports.renamePackageOnDisk = renamePackageOnDisk;
 exports.renamePackageOnDiskForType = renamePackageOnDiskForType;
-exports.setPackageInAndroidManifest = setPackageInAndroidManifest;
 exports.setPackageInBuildGradle = setPackageInBuildGradle;
-exports.withPackageRefactor = exports.withPackageManifest = exports.withPackageGradle = void 0;
+exports.withPackageRefactor = exports.withPackageGradle = void 0;
 function _debug() {
   const data = _interopRequireDefault(require("debug"));
   _debug = function () {
@@ -76,8 +75,6 @@ function _Paths() {
 }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 const debug = (0, _debug().default)('expo:config-plugins:android:package');
-const withPackageManifest = (0, _androidPlugins().createAndroidManifestPlugin)(setPackageInAndroidManifest, 'withPackageManifest');
-exports.withPackageManifest = withPackageManifest;
 const withPackageGradle = config => {
   return (0, _androidPlugins().withAppBuildGradle)(config, config => {
     if (config.modResults.language === 'groovy') {
@@ -272,15 +269,6 @@ function setPackageInBuildGradle(config, buildGradle) {
   }
   const pattern = new RegExp(`(applicationId|namespace) ['"].*['"]`, 'g');
   return buildGradle.replace(pattern, `$1 '${packageName}'`);
-}
-function setPackageInAndroidManifest(config, androidManifest) {
-  const packageName = getPackage(config);
-  if (packageName) {
-    androidManifest.manifest.$.package = packageName;
-  } else {
-    delete androidManifest.manifest.$.package;
-  }
-  return androidManifest;
 }
 async function getApplicationIdAsync(projectRoot) {
   var _matchResult$;

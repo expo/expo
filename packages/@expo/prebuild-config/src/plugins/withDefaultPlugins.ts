@@ -93,7 +93,6 @@ export const withAndroidExpoPlugins: ConfigPlugin<{
     AndroidConfig.Version.withVersion,
 
     // AndroidManifest.xml
-    AndroidConfig.Package.withPackageManifest,
     AndroidConfig.AllowBackup.withAllowBackup,
     AndroidConfig.WindowSoftInputMode.withWindowSoftInputMode,
     // Note: The withAndroidIntentFilters plugin must appear before the withScheme
