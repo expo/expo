@@ -35,7 +35,8 @@ export default async function () {
       )
         // The Template produces a global module .d.ts declaration
         // These replacements turn it into a local module
-        .replace(/declare module "expo-router" {|(^}\\Z)/, '')
+        .replaceAll(/^  /gm, '')
+        .replace(/declare module "expo-router" {/, '')
         .replaceAll(/export function/g, 'export declare function')
         .replaceAll(/export const/g, 'export declare const')
         // Remove the last `}`
