@@ -219,6 +219,7 @@ const general = [
     ]),
     makeGroup('Troubleshoot', [
       makePage('eas-update/debug.mdx'),
+      makePage('eas-update/debug-advanced.mdx'),
       makePage('eas-update/build-locally.mdx'),
     ]),
     makeGroup('Advanced', [
