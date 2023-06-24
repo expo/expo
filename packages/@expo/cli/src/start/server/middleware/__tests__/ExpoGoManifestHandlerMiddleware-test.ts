@@ -107,7 +107,7 @@ describe('getParsedHeaders', () => {
   });
   const middleware = new ExpoGoManifestHandlerMiddleware('/', {} as any);
 
-  it('defaults to "none" with no platform header', () => {
+  it('defaults to "ios" with no platform header', () => {
     expect(
       middleware.getParsedHeaders(
         asReq({
@@ -119,7 +119,7 @@ describe('getParsedHeaders', () => {
       expectSignature: null,
       responseContentType: ResponseContentType.TEXT_PLAIN,
       hostname: null,
-      platform: 'none',
+      platform: 'ios',
     });
   });
 
