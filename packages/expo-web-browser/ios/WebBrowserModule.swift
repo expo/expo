@@ -1,20 +1,14 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-import AuthenticationServices
-import ExpoModulesCore
 import SafariServices
+import ExpoModulesCore
+import AuthenticationServices
 
 final public class WebBrowserModule: Module {
   private var currentWebBrowserSession: WebBrowserSession?
   private var currentAuthSession: WebAuthSession?
-
-  private func isValidUrl(urlString: String?) -> Bool {
-    guard let urlString = urlString,
-      let url = URL(string: urlString)
-    else {
-      return false
-    }
-
+  
+  private func isValid(url: URL) -> Bool {
     return url.scheme == "http" || url.scheme == "https"
   }
 
@@ -25,8 +19,8 @@ final public class WebBrowserModule: Module {
       guard self.currentWebBrowserSession == nil else {
         throw WebBrowserAlreadyOpenException()
       }
-
-      guard self.isValidUrl(urlString: url.absoluteString) else {
+      
+      guard self.isValid(url: url) else {
         throw WebBrowserInvalidURLException()
       }
 
@@ -34,7 +28,7 @@ final public class WebBrowserModule: Module {
         promise.resolve(["type": type])
         self.currentWebBrowserSession = nil
       }
-
+      
       self.currentWebBrowserSession?.open()
     }
     .runOnQueue(.main)
@@ -51,8 +45,7 @@ final public class WebBrowserModule: Module {
       guard self.currentAuthSession?.isOpen != true else {
         throw WebBrowserAlreadyOpenException()
       }
-      self.currentAuthSession = WebAuthSession(
-        authUrl: authUrl, redirectUrl: redirectUrl, options: options)
+      self.currentAuthSession = WebAuthSession(authUrl: authUrl, redirectUrl: redirectUrl, options: options)
       self.currentAuthSession?.open(promise)
     }
     .runOnQueue(.main)
