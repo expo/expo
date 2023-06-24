@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Remove invalid `none` platform from manifest middleware.
+
 ### 💡 Others
 
 ## 0.10.2 — 2023-06-24
