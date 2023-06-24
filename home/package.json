@@ -39,7 +39,7 @@
     "expo-barcode-scanner": "~12.5.0",
     "expo-blur": "~12.4.0",
     "expo-camera": "~13.4.0",
-    "expo-constants": "~14.4.0",
+    "expo-constants": "~14.4.2",
     "expo-device": "~5.4.0",
     "expo-font": "~11.4.0",
     "expo-linear-gradient": "~12.3.0",
