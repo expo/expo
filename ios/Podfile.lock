@@ -1502,13 +1502,13 @@ PODS:
     - ExpoModulesCore
   - ExpoMailComposer (12.3.0):
     - ExpoModulesCore
-  - ExpoModulesCore (1.5.2):
+  - ExpoModulesCore (1.5.3):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-NativeModulesApple
     - React-RCTAppDelegate
     - ReactCommon/turbomodule/core
-  - ExpoModulesCore/Tests (1.5.2):
+  - ExpoModulesCore/Tests (1.5.3):
     - ExpoModulesTestCore
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
@@ -1554,7 +1554,7 @@ PODS:
     - ExpoModulesCore
   - EXSensors (12.3.0):
     - ExpoModulesCore
-  - EXSplashScreen (0.20.0):
+  - EXSplashScreen (0.20.1):
     - ExpoModulesCore
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
@@ -3680,7 +3680,7 @@ SPEC CHECKSUMS:
   ExpoLocalAuthentication: bd9d9037a96a11ccc456e327ddb404df02da10ca
   ExpoLocalization: be37fdd0b5930c6a49cd307b4542f4b426d6134c
   ExpoMailComposer: feaebd62095efad901ede864b95406f02bf61681
-  ExpoModulesCore: c3d934d6472822a6e26f6e292ace124a4aa320c6
+  ExpoModulesCore: c7fc9558697e1dc7efef2b4841096cd6ab2b760f
   ExpoModulesTestCore: f116cd4cc4288e0e0005a1f910efc7cedf455659
   ExpoNetwork: 6ee4b3b6cfdba3bfb90b07f483d1111308a9c76a
   ExpoPrint: 2f5fd8fb92bf630eb196e4da122b02e5caa8a339
@@ -3698,7 +3698,7 @@ SPEC CHECKSUMS:
   ExpoWebBrowser: b0a2dcd2b246b83cc264559c87113d0d0a744e47
   EXScreenCapture: 81002ba5fb40a367fba9047d223068abb558594d
   EXSensors: d26e160b5c91ada2df4a638859ef0c5731bf6404
-  EXSplashScreen: ca269bd698a7a40a6dac452eff88042a18a40f1b
+  EXSplashScreen: 76a140851af574dfe1d22d7ec189cd183f28ab49
   EXStructuredHeaders: 324cc3130571d2696357fafd8be7fd9a0b5fdf6e
   EXTaskManager: f1730c315eb6fe457a3a2ee4ed899a51d717f302
   EXUpdates: 70ba0b35e978c96a9fa16ec88a6418e1a0b6c0c7
