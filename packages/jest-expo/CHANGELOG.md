@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Updated mocks for Expo SDK 49. ([#23062](https://github.com/expo/expo/pull/23062) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 49.0.0-alpha.4 — 2023-06-24
+
+### 🎉 New features
+
+- Updated mocks for Expo SDK 49. ([#23062](https://github.com/expo/expo/pull/23062) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 49.0.0-alpha.3 — 2023-06-22
 
