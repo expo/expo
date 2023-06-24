@@ -30,8 +30,7 @@ final public class WebBrowserModule: Module {
         throw WebBrowserInvalidURLException()
       }
 
-      self.currentWebBrowserSession = WebBrowserSession(url: url, options: options) {
-        [promise] type in
+      self.currentWebBrowserSession = WebBrowserSession(url: url, options: options) { [promise] type in
         promise.resolve(["type": type])
         self.currentWebBrowserSession = nil
       }
@@ -48,8 +47,7 @@ final public class WebBrowserModule: Module {
 
     // MARK: - AuthSession
 
-    AsyncFunction("openAuthSessionAsync") {
-      (authUrl: URL, redirectUrl: URL?, options: AuthSessionOptions, promise: Promise) throws in
+    AsyncFunction("openAuthSessionAsync") { (authUrl: URL, redirectUrl: URL?, options: AuthSessionOptions, promise: Promise) throws in
       guard self.currentAuthSession?.isOpen != true else {
         throw WebBrowserAlreadyOpenException()
       }
