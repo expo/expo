@@ -7,7 +7,7 @@ import AuthenticationServices
 final public class WebBrowserModule: Module {
   private var currentWebBrowserSession: WebBrowserSession?
   private var currentAuthSession: WebAuthSession?
-  
+
   private func isValid(url: URL) -> Bool {
     return url.scheme == "http" || url.scheme == "https"
   }
@@ -19,7 +19,7 @@ final public class WebBrowserModule: Module {
       guard self.currentWebBrowserSession == nil else {
         throw WebBrowserAlreadyOpenException()
       }
-      
+
       guard self.isValid(url: url) else {
         throw WebBrowserInvalidURLException()
       }
@@ -28,7 +28,7 @@ final public class WebBrowserModule: Module {
         promise.resolve(["type": type])
         self.currentWebBrowserSession = nil
       }
-      
+
       self.currentWebBrowserSession?.open()
     }
     .runOnQueue(.main)
