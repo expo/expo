@@ -4,7 +4,7 @@ import { generateImageAsync } from '@expo/image-utils';
 import * as fs from 'fs-extra';
 import { join } from 'path';
 
-import { ContentsJson, writeContentsJsonAsync } from './AssetContents';
+import { ContentsJson, ContentsJsonImage, writeContentsJsonAsync } from './AssetContents';
 
 const { getProjectName } = IOSConfig.XcodeUtils;
 
@@ -108,4 +108,48 @@ export async function generateUniversalIconAsync(
       size: `${size}x${size}`,
     },
   ];
+}
+
+export async function generateXrIconLayerAsync(
+  projectRoot: string,
+  {
+    icon,
+    cacheKey,
+
+    removeTransparency,
+  }: { icon: string; cacheKey: string; removeTransparency?: boolean }
+): Promise<{ images: ContentsJson['images']; asset: { filename: string; source: Buffer } }> {
+  const size = 1024;
+  const filename = getAppleIconName(size, 2);
+  // Using this method will cache the images in `.expo` based on the properties used to generate them.
+  // this method also supports remote URLs and using the global sharp instance.
+  const { source } = await generateImageAsync(
+    { projectRoot, cacheType: IMAGE_CACHE_NAME + cacheKey },
+    {
+      src: icon,
+      name: filename,
+      width: size,
+      height: size,
+      removeTransparency,
+      // The icon should be square, but if it's not then it will be cropped.
+      resizeMode: 'cover',
+      // Force the background color to solid white to prevent any transparency.
+      // TODO: Maybe use a more adaptive option based on the icon color?
+      backgroundColor: removeTransparency ? '#ffffff' : 'transparent',
+    }
+  );
+
+  return {
+    images: [
+      {
+        filename,
+        idiom: 'reality',
+        scale: '2x',
+      },
+    ],
+    asset: {
+      filename,
+      source,
+    },
+  };
 }

@@ -6,6 +6,7 @@ export type ContentsJsonImageIdiom =
   | 'ipad'
   | 'watchos'
   | 'ios'
+  | 'reality'
   | 'ios-marketing'
   | 'universal';
 
@@ -25,8 +26,13 @@ export interface ContentsJsonImage {
   platform?: ContentsJsonImageIdiom;
 }
 
+export interface ContentsJsonLayer {
+  filename: string;
+}
+
 export interface ContentsJson {
-  images: ContentsJsonImage[];
+  images?: ContentsJsonImage[];
+  layers?: ContentsJsonLayer[];
   info: {
     version: number;
     author: string;
@@ -45,23 +51,24 @@ export function createContentsJsonItem(item: ContentsJsonImage): ContentsJsonIma
  */
 export async function writeContentsJsonAsync(
   directory: string,
-  { images }: Pick<ContentsJson, 'images'>
+  { images, layers }: Partial<Omit<ContentsJson, 'info'>> = {}
 ): Promise<void> {
   await fs.ensureDir(directory);
 
-  await fs.writeFile(
-    join(directory, 'Contents.json'),
-    JSON.stringify(
-      {
-        images,
-        info: {
-          version: 1,
-          // common practice is for the tool that generated the icons to be the "author"
-          author: 'expo',
-        },
-      },
-      null,
-      2
-    )
-  );
+  const data: Partial<ContentsJson> = {
+    info: {
+      version: 1,
+      // common practice is for the tool that generated the icons to be the "author"
+      author: 'expo',
+    },
+  };
+
+  if (images) {
+    data.images = images;
+  }
+  if (layers) {
+    data.layers = layers;
+  }
+
+  await fs.writeFile(join(directory, 'Contents.json'), JSON.stringify(data, null, 2));
 }

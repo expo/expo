@@ -1,0 +1,80 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`createXrosIconAsync create xros icons 2`] = `
+{
+  "Back.solidimagestacklayer/Content.imageset/Contents.json": "{
+  "info": {
+    "version": 1,
+    "author": "expo"
+  },
+  "images": [
+    {
+      "filename": "App-Icon-1024x1024@2x.png",
+      "idiom": "reality",
+      "scale": "2x"
+    }
+  ]
+}",
+  "Back.solidimagestacklayer/Contents.json": "{
+  "info": {
+    "version": 1,
+    "author": "expo"
+  }
+}",
+  "Contents.json": "{
+  "info": {
+    "version": 1,
+    "author": "expo"
+  },
+  "layers": [
+    {
+      "filename": "Front.solidimagestacklayer"
+    },
+    {
+      "filename": "Middle.solidimagestacklayer"
+    },
+    {
+      "filename": "Back.solidimagestacklayer"
+    }
+  ]
+}",
+  "Front.solidimagestacklayer/Content.imageset/Contents.json": "{
+  "info": {
+    "version": 1,
+    "author": "expo"
+  },
+  "images": [
+    {
+      "filename": "App-Icon-1024x1024@2x.png",
+      "idiom": "reality",
+      "scale": "2x"
+    }
+  ]
+}",
+  "Front.solidimagestacklayer/Contents.json": "{
+  "info": {
+    "version": 1,
+    "author": "expo"
+  }
+}",
+  "Middle.solidimagestacklayer/Content.imageset/Contents.json": "{
+  "info": {
+    "version": 1,
+    "author": "expo"
+  },
+  "images": [
+    {
+      "filename": "App-Icon-1024x1024@2x.png",
+      "idiom": "reality",
+      "scale": "2x"
+    }
+  ]
+}",
+  "Middle.solidimagestacklayer/Contents.json": "{
+  "info": {
+    "version": 1,
+    "author": "expo"
+  }
+}",
+}
+`;
