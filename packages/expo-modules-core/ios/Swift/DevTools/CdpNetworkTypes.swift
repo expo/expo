@@ -17,6 +17,19 @@ struct CdpNetwork {
     case script = "Script"
     case fetch = "Fetch"
     case other = "Other"
+
+    static func fromMimeType(_ mimeType: String) -> ResourceType {
+      if mimeType.starts(with: "image/") {
+        return image
+      }
+      if mimeType.starts(with: "audio/") || mimeType.starts(with: "video/") {
+        return media
+      }
+      if mimeType.starts(with: "font/") {
+        return font
+      }
+      return other
+    }
   }
 
   struct ConnectTiming: Encodable {
@@ -91,7 +104,7 @@ struct CdpNetwork {
       } else {
         self.redirectResponse = nil
       }
-      self.type = ResourceType.fetch
+      self.type = ResourceType.other
     }
   }
 
@@ -119,8 +132,8 @@ struct CdpNetwork {
     init(now: TimeInterval, requestId: RequestId, request: URLRequest, response: HTTPURLResponse) {
       self.requestId = requestId
       self.timestamp = now
-      self.type = ResourceType.fetch
       self.response = Response(response)
+      self.type = ResourceType.fromMimeType(self.response.mimeType)
     }
   }
 

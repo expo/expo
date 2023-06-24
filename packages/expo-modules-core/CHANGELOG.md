@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Supported other network CDP types like `Image` and `Media` rather than `Fetch`. ([#23058](https://github.com/expo/expo/pull/23058) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

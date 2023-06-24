@@ -21,7 +21,16 @@ enum class ResourceType(val value: String) {
   FONT("Font"),
   SCRIPT("Script"),
   FETCH("Fetch"),
-  OTHER("Other")
+  OTHER("Other");
+
+  companion object {
+    fun fromMimeType(mimeType: String): ResourceType = when {
+      mimeType.startsWith("image/") -> IMAGE
+      mimeType.startsWith("audio") || mimeType.startsWith("video") -> MEDIA
+      mimeType.startsWith("font") -> FONT
+      else -> OTHER
+    }
+  }
 }
 
 interface JsonSerializable {
@@ -120,7 +129,7 @@ data class RequestWillBeSentParams(
     wallTime = now,
     redirectHasExtraInfo = redirectResponse != null,
     redirectResponse = redirectResponse?.let { Response(it) },
-    type = ResourceType.FETCH,
+    type = ResourceType.OTHER,
   )
 
   override fun toJSONObject(): JSONObject {
@@ -172,11 +181,11 @@ data class ResponseReceivedParams(
   val response: Response,
   val hasExtraInfo: Boolean = false,
 ) : JsonSerializable {
-  constructor(now: BigDecimal, requestId: RequestId, request: okhttp3.Request, repsonse: okhttp3.Response) : this(
+  constructor(now: BigDecimal, requestId: RequestId, request: okhttp3.Request, okhttpResponse: okhttp3.Response) : this(
     requestId = requestId,
     timestamp = now,
-    type = ResourceType.FETCH,
-    response = Response(repsonse),
+    type = ResourceType.fromMimeType(okhttpResponse.header("Content-Type", "") ?: ""),
+    response = Response(okhttpResponse),
   )
 
   override fun toJSONObject(): JSONObject {
