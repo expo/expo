@@ -1449,11 +1449,11 @@ PODS:
     - ExpoModulesCore
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
-  - EXNotifications (0.20.0):
+  - EXNotifications (0.20.1):
     - ExpoModulesCore
   - EXPermissions (14.2.0):
     - ExpoModulesCore
-  - Expo (49.0.0-alpha.8):
+  - Expo (49.0.0-alpha.9):
     - ExpoModulesCore
   - ExpoAppleAuthentication (6.1.0):
     - ExpoModulesCore
@@ -3658,9 +3658,9 @@ SPEC CHECKSUMS:
   EXLocation: 231f4a3683fabfed254c9498b226f7f40a40f9d8
   EXManifests: 083496dbda4035c42608ae76970f463b4611b767
   EXMediaLibrary: dd08edb824ee92519a989211720956cfd381f212
-  EXNotifications: 88e6d5fe30d3c6be68f0756f39a16c917ffecf4c
+  EXNotifications: 09394cbd7165f9a4a00a53328aa09bf874bae717
   EXPermissions: 336b5b8409f4e1368a8b0636f04282e7f04ced3b
-  Expo: 4c1b9101eba58afb2aaa820f708d572b363e3d1a
+  Expo: 6b689537ea5c16b928f715d77ad9d0f2c5f3e711
   ExpoAppleAuthentication: 7bdf1a2962ebfe9b00eb4183a17b78d736e57185
   ExpoBattery: e9d7a71960cbc40733d956a29f8ba240173feb08
   ExpoBlur: a2c90bdfa4ff9f459cdb0f83191bddf020e3e2db
