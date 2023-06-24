@@ -146,7 +146,7 @@ export function getTypedRoutesUtils(appRoot: string) {
         }
 
         set.add(
-          route.replaceAll(CATCH_ALL, '${CatchAllSlug<T>}').replaceAll(SLUG, '${SafeSlug<T>}')
+          route.replaceAll(CATCH_ALL, '${CatchAllSlug<T>}').replaceAll(SLUG, '${CleanRoutePart<T>}')
         );
       } else {
         let set = staticRoutes.get(originalRoute);
@@ -247,13 +247,30 @@ const routerDotTSTemplate = unsafeTemplate`declare module "expo-router" {
   type DynamicRoutes<T extends string> = ${'dynamicRoutes'}
   type DynamicRouteTemplate = ${'dynamicRouteParams'} 
 
-  type SearchOrHash = \`?\${string}\` | \`#\${string}\`;
-
   type RelativePathString = \`./\${string}\` | \`../\${string}\` | '..';
+  type AbsoluteRoute = DynamicRouteTemplate | StaticRoutes;
+  type AllRoutes = DynamicRouteTemplate | StaticRoutes | RelativePathString;
 
+  /****************
+   * Route Utils  *
+   ****************/
+
+  type SearchOrHash = \`?\${string}\` | \`#\${string}\`;
   type Suffix = "" | SearchOrHash;
 
-  type SafeSlug<S extends string> = S extends \`\${string}/\${string}\`
+  /**
+   * Return only the RoutePart of a string. If the string has multiple parts return never
+   *
+   * string   | type
+   * ---------|------
+   * 123      | 123
+   * /123/abc | never
+   * 123?abc  | never
+   * ./123    | never
+   * /123     | never
+   * 123/../  | never
+   */
+  type CleanRoutePart<S extends string> = S extends \`\${string}/\${string}\`
     ? never
     : S extends \`\${string}\${SearchOrHash}\`
     ? never
@@ -261,28 +278,84 @@ const routerDotTSTemplate = unsafeTemplate`declare module "expo-router" {
     ? never
     : S;
 
+  /**
+   * Return only the CatchAll slug of a string. If the string has search parameters or a hash return never
+   */
   type CatchAllSlug<S extends string> = S extends \`\${string}\${SearchOrHash}\`
     ? never
     : S extends ""
     ? never
     : S;
 
-  type InvaildPartialSlug = | \`\${string | never}\${'[' | ']'}\${string | never}\`
+  type InvaildPartialSlug = \`\${string | never}\${'[' | ']'}\${string | never}\`;
 
-  type IsParameter<Part> = Part extends \`[\${infer ParamName}]\`
+  /**
+   * Return the name of a route parameter
+   * '[test]'    -> 'test'
+   * 'test'     -> never
+   * '[...test]' -> '...test'
+   */
+  type IsParameter<Part extends string> = Part extends \`[\${infer ParamName}]\`
     ? ParamName
     : never;
 
-  type FilteredParts<Path> = Path extends \`\${infer PartA}/\${infer PartB}\`
-    ? IsParameter<PartA> | FilteredParts<PartB>
-    : IsParameter<Path>;
+  /**
+   * Return a union of all parameter names. If there are no names return never
+   *
+   * /[test]         -> 'test'
+   * /[abc]/[...def] -> 'abc'|'...def'
+   */
+  type ParameterNames<Path extends string> =
+    Path extends \`\${infer PartA}/\${infer PartB}\`
+      ? IsParameter<PartA> | ParameterNames<PartB>
+      : IsParameter<Path>;
 
-  type RouteParams<Path> = {
-    [Key in FilteredParts<Path> as Key extends \`...\${infer Name}\` ? Name : Key]: 
-      Key extends \`...\${string}\` ? string[] : string;
+  /**
+   * Returns all segements of a route.
+   *
+   * /(group)/123/abc/[id]/[...rest] -> ['(group)', '123', 'abc', '[id]', '[...rest]'
+   */
+  type RouteSegments<Path> = Path extends \`\${infer PartA}/\${infer PartB}\`
+    ? PartA extends "" | '.'
+      ? [...RouteSegments<PartB>]
+      : [PartA, ...RouteSegments<PartB>]
+    : Path extends ""
+    ? []
+    : [Path];
+
+  /**
+   * Returns a Record of the routes parameters as strings and CatchAll parameters as string[]
+   *
+   * /[id]/[...rest] -> { id: string, rest: string[] }
+   * /no-params      -> {}
+   */
+  type RouteParams<Path extends string> = {
+    [Key in ParameterNames<Path> as Key extends \`...\${infer Name}\`
+      ? Name
+      : Key]: Key extends \`...\${string}\` ? string[] : string;
   };
 
-  type Route<T> = T extends DynamicRouteTemplate
+  /**
+   * Returns the search parameters for a route
+   */
+  export type SearchParams<T extends AllRoutes> = T extends DynamicRouteTemplate
+    ? RouteParams<T>
+    : {};
+
+  /**
+   * Route is mostly used as part of Href to ensure that a valid route is provided
+   *
+   * Given a dynamic route, this will return never. This is helpful for conditional logic
+   *
+   * /test         -> /test, /test2, etc
+   * /test/[abc]   -> never
+   * /test/resolve -> /test, /test2, etc
+   *
+   * Note that if we provide a value for [abc] then the route is allowed
+   *
+   * This is named Route to prevent confusion, as users they will often see it in tooltips
+   */
+  type Route<T extends string> = T extends DynamicRouteTemplate
     ? never
     :
         | StaticRoutes
@@ -294,10 +367,17 @@ const routerDotTSTemplate = unsafeTemplate`declare module "expo-router" {
               : T
             : never);
 
-  export type Href<T> = Route<T> | HrefObject<T> | DynamicRouteTemplate
+  /*********
+   * Href  *
+   *********/
+
+  export type Href<T = AllRoutes> =
+    | Route<T>
+    | HrefObject<T>
+    | DynamicRouteTemplate;
 
   export type HrefObject<T> = {
-    pathname: Route<T> | DynamicRouteTemplate
+    pathname: Route<T> | DynamicRouteTemplate;
   } & HrefObjectParams<T>;
 
   type HrefObjectParams<T> = T extends RelativePathString
@@ -306,11 +386,47 @@ const routerDotTSTemplate = unsafeTemplate`declare module "expo-router" {
     ? { params: RouteParams<InferPathName<T>> }
     : unknown;
 
-  /** Returns the search parameters for a route **/
-  export type SearchParams<T extends DynamicRouteTemplate | StaticRoutes | RelativePathString> =
-    T extends DynamicRouteTemplate ? RouteParams<T> : {};
-
   type InferPathName<T> = T extends { pathname: infer P } ? P : never;
+
+  /***********************
+   * Expo Router Exports *
+   ***********************/
+
+  export type Router = {
+    /** Navigate to the provided href. */
+    push: <T>(href: Href<T>) => void;
+    /** Navigate to route without appending to the history. */
+    replace: <T>(href: Href<T>) => void;
+    /** Go back in the history. */
+    back: () => void;
+    /** Update the current route query params. */
+    setParams: <T extends string = "">(
+      params?: T extends "" ? Record<string, string> : RouteParams<T>
+    ) => void;
+  };
+
+  export function useRouter<T>(): Router<T>;
+
+  export function useSearchParams<
+    T extends AllRoutes | SearchParams<DynamicRouteTemplate>
+  >(): T extends AllRoutes ? SearchParams<T> : T;
+
+  export function useGlobalSearchParams<
+    T extends AllRoutes | SearchParams<DynamicRouteTemplate>
+  >(): T extends AllRoutes ? SearchParams<T> : T;
+
+  export function useSegments<
+    T extends AbsoluteRoute | RouteSegments<AbsoluteRoute> | string
+  >(): T extends AbsoluteRoute
+    ? RouteSegments<T>
+    : T extends string
+    ? string[]
+    : T;
+
+  /************
+   * <Link /> *
+   ************/
+  export const Link: LinkComponent;
 
   export interface LinkProps<T> extends OriginalLinkProps {
     href: T extends DynamicRouteTemplate ? HrefObject<T> : Href<T>;
@@ -321,21 +437,5 @@ const routerDotTSTemplate = unsafeTemplate`declare module "expo-router" {
     /** Helper method to resolve an Href object into a string. */
     resolveHref: <T>(href: Href<T>) => string;
   }
-
-  export const Link: LinkComponent;
-
-  export type Router = {
-    /** Navigate to the provided href. */
-    push: <T>(href: Href<T>) => void;
-    /** Navigate to route without appending to the history. */
-    replace: <T>(href: Href<T>) => void;
-    /** Go back in the history. */
-    back: () => void;
-    /** Update the current route query params. */
-    setParams: <T extends string = ''>(params?: T extends '' ? Record<string, string> : RouteParams<T>) => void;
-  };
-
-  export function useRouter<T>(): Router<T>
-  export function useLocalSearchParams<T extends DynamicRouteTemplate | StaticRoutes | RelativePathString>(): SearchParams<T>
 }
 `;

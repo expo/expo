@@ -68,6 +68,7 @@ _This version does not introduce any user-facing changes._
 - Add `lazy` query parameter for Metro requests and `EXPO_NO_METRO_LAZY` to disable the feature. ([#22724](https://github.com/expo/expo/pull/22724) by [@EvanBacon](https://github.com/EvanBacon))
 - Add support for the `src/app` directory in Expo Router. ([#22748](https://github.com/expo/expo/pull/22748) by [@EvanBacon](https://github.com/EvanBacon))
 - Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
+- Add generated types for Expo Router `useSegment` ([#22629](https://github.com/expo/expo/pull/22629) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🐛 Bug fixes
 
