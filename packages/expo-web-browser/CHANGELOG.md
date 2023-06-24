@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- On `iOS`, fixed crash when opening an invalid URL in the web browser. ([#22986](https://github.com/expo/expo/pull/23084) by [@hirbod](https://github.com/hirbod))
+
 ### 💡 Others
 
 ## 12.3.0 — 2023-06-21
