@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add support for `web.favicon` to Metro web.
+- Add support for `web.favicon` to Metro web. ([#23072](https://github.com/expo/expo/pull/23072) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
