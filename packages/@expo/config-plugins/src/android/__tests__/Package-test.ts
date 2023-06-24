@@ -1,16 +1,13 @@
 import { vol } from 'memfs';
 
 import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
-import { readAndroidManifestAsync } from '../Manifest';
 import {
   getApplicationIdAsync,
   getPackage,
   renameJniOnDiskForType,
   renamePackageOnDiskForType,
-  setPackageInAndroidManifest,
   setPackageInBuildGradle,
 } from '../Package';
-import { getAndroidManifestAsync } from '../Paths';
 
 jest.mock('fs');
 
@@ -59,21 +56,6 @@ describe('package', () => {
     expect(
       setPackageInBuildGradle({ android: { package: 'my.new.app' } }, EXAMPLE_BUILD_GRADLE)
     ).toMatch("namespace 'my.new.app'");
-  });
-
-  it('adds package to android manifest', async () => {
-    const projectRoot = '/';
-    vol.fromJSON(rnFixture, projectRoot);
-
-    let androidManifestJson = await readAndroidManifestAsync(
-      await getAndroidManifestAsync(projectRoot)
-    );
-    androidManifestJson = await setPackageInAndroidManifest(
-      { android: { package: 'com.test.package' } },
-      androidManifestJson
-    );
-
-    expect(androidManifestJson.manifest.$.package).toMatch('com.test.package');
   });
 });
 
