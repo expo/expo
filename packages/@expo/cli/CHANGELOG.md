@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix css modules syntax.
+
 ### 💡 Others
 
 ## 0.10.2 — 2023-06-24
