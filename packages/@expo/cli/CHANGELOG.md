@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix css modules syntax.
+- Fix css modules syntax. ([#23086](https://github.com/expo/expo/pull/23086) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
