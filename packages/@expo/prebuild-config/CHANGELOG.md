@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add plugin to generate xrOS icon.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
