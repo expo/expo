@@ -21,6 +21,7 @@ import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../Bun
 import { getStaticRenderFunctions } from '../getStaticRenderFunctions';
 import { ContextModuleSourceMapsMiddleware } from '../middleware/ContextModuleSourceMapsMiddleware';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
+import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
 import { createBundleUrlPath, resolveMainModuleName } from '../middleware/ManifestMiddleware';
@@ -36,7 +37,6 @@ import { instantiateMetroAsync } from './instantiateMetro';
 import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import { observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
-import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
