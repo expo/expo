@@ -1422,7 +1422,7 @@ PODS:
     - ExpoModulesCore
   - EXCamera (13.4.0):
     - ExpoModulesCore
-  - EXConstants (14.4.1):
+  - EXConstants (14.4.2):
     - ExpoModulesCore
   - EXContacts (12.2.0):
     - ExpoModulesCore
@@ -1453,7 +1453,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (14.2.0):
     - ExpoModulesCore
-  - Expo (49.0.0-alpha.7):
+  - Expo (49.0.0-alpha.8):
     - ExpoModulesCore
   - ExpoAppleAuthentication (6.1.0):
     - ExpoModulesCore
@@ -1502,13 +1502,13 @@ PODS:
     - ExpoModulesCore
   - ExpoMailComposer (12.3.0):
     - ExpoModulesCore
-  - ExpoModulesCore (1.5.1):
+  - ExpoModulesCore (1.5.2):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-NativeModulesApple
     - React-RCTAppDelegate
     - ReactCommon/turbomodule/core
-  - ExpoModulesCore/Tests (1.5.1):
+  - ExpoModulesCore/Tests (1.5.2):
     - ExpoModulesTestCore
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
@@ -1563,7 +1563,7 @@ PODS:
   - EXTaskManager (11.3.0):
     - ExpoModulesCore
     - UMAppLoader
-  - EXUpdates (0.18.2):
+  - EXUpdates (0.18.3):
     - ASN1Decoder (~> 1.8)
     - EASClient
     - EXManifests
@@ -1573,7 +1573,7 @@ PODS:
     - RCT-Folly (= 2021.07.22.00)
     - ReachabilitySwift
     - React-Core
-  - EXUpdates/Tests (0.18.2):
+  - EXUpdates/Tests (0.18.3):
     - ASN1Decoder (~> 1.8)
     - EASClient
     - EXManifests
@@ -3649,7 +3649,7 @@ SPEC CHECKSUMS:
   EXBranch: c01fc99d0a5e4ac6402b81f3c61ed180e5d355b7
   EXCalendar: 6756a5cf09a5ad90d3abf40e2bbdfb5993ae0911
   EXCamera: f9490df89710631d1c8377a66231cce0579b0df1
-  EXConstants: dd6262fb9833de825c44b929e2f07cf2e8909879
+  EXConstants: ce5bbea779da8031ac818c36bea41b10e14d04e1
   EXContacts: 9e8626eefc90c428af3d61a9e2869ac413d2569b
   EXFileSystem: ca90b9a027c0ab4bde6f65ebc7a21c5c02c9dee4
   EXFont: 738c44c390953ebcbab075a4848bfbef025fd9ee
@@ -3660,7 +3660,7 @@ SPEC CHECKSUMS:
   EXMediaLibrary: dd08edb824ee92519a989211720956cfd381f212
   EXNotifications: 88e6d5fe30d3c6be68f0756f39a16c917ffecf4c
   EXPermissions: 336b5b8409f4e1368a8b0636f04282e7f04ced3b
-  Expo: a0ea090e2bc5e00eb3c8d8bf592a91edb0163d1f
+  Expo: 4c1b9101eba58afb2aaa820f708d572b363e3d1a
   ExpoAppleAuthentication: 7bdf1a2962ebfe9b00eb4183a17b78d736e57185
   ExpoBattery: e9d7a71960cbc40733d956a29f8ba240173feb08
   ExpoBlur: a2c90bdfa4ff9f459cdb0f83191bddf020e3e2db
@@ -3680,7 +3680,7 @@ SPEC CHECKSUMS:
   ExpoLocalAuthentication: bd9d9037a96a11ccc456e327ddb404df02da10ca
   ExpoLocalization: be37fdd0b5930c6a49cd307b4542f4b426d6134c
   ExpoMailComposer: feaebd62095efad901ede864b95406f02bf61681
-  ExpoModulesCore: cd40112162d783132a8275b63d35d81d130e2f63
+  ExpoModulesCore: c3d934d6472822a6e26f6e292ace124a4aa320c6
   ExpoModulesTestCore: f116cd4cc4288e0e0005a1f910efc7cedf455659
   ExpoNetwork: 6ee4b3b6cfdba3bfb90b07f483d1111308a9c76a
   ExpoPrint: 2f5fd8fb92bf630eb196e4da122b02e5caa8a339
@@ -3701,7 +3701,7 @@ SPEC CHECKSUMS:
   EXSplashScreen: ca269bd698a7a40a6dac452eff88042a18a40f1b
   EXStructuredHeaders: 324cc3130571d2696357fafd8be7fd9a0b5fdf6e
   EXTaskManager: f1730c315eb6fe457a3a2ee4ed899a51d717f302
-  EXUpdates: 112bfbaba4e3b050eddabda409669c7775766837
+  EXUpdates: 70ba0b35e978c96a9fa16ec88a6418e1a0b6c0c7
   EXUpdatesInterface: 65a425322c67e3c96952b47ac110df3fef65c6b3
   FBAEMKit: c7efe06720a8b15b1d25b68921ba46dee20996e0
   FBAudienceNetwork: e0fcc9091fced34910ed0b6da06f129db46ac9e6

@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Ignore `@expo/metro-runtime` in stacks. ([#22738](https://github.com/expo/expo/pull/22738) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.10.2 — 2023-06-24
+
+### 🎉 New features
+
+- Ignore `@expo/metro-runtime` in stacks. ([#22738](https://github.com/expo/expo/pull/22738) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.10.1 — 2023-06-22
 
