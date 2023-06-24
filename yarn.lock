@@ -4224,11 +4224,11 @@
   integrity sha512-jhuKLIRrhvCPLqwPcx6INqmKeiA5EWrsCOPhrlFSrbrmU4ZMPjj5Ul/oLCMDO98XRUIwVm78xICz4EPCektzeQ==
 
 "@types/minipass@*", "@types/minipass@^3.1.2":
-  version "3.3.5"
-  resolved "https://registry.yarnpkg.com/@types/minipass/-/minipass-3.3.5.tgz#ba65aaae3fe7318520bd4a40bc71c53fc8826e45"
-  integrity sha512-M2BLHQdEmDmH671h0GIlOQQJrgezd1vNqq7PVj1VOsHZ2uQQb4iPiQIl0SlMdhxZPUsLIfEklmeEHXg8DJRewA==
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/@types/minipass/-/minipass-3.1.2.tgz#e2d7f9df0698aff421dcf145b4fc05b8183b9030"
+  integrity sha512-foLGjgrJkUjLG/o2t2ymlZGEoBNBa/TfoUZ7oCTkOjP1T43UGBJspovJou/l3ZuHvye2ewR5cZNtp2zyWgILMA==
   dependencies:
-    minipass "*"
+    "@types/node" "*"
 
 "@types/ms@*":
   version "0.7.31"
