@@ -43,7 +43,7 @@ async function transformCssModuleWeb(props) {
     reactNativeWeb,
     variables
   } = convertLightningCssToReactNativeWebStyleSheet(cssResults.exports);
-  let outputModule = `module.exports=Object.assign(${JSON.stringify(styles)},{unstable_styles:${JSON.stringify(reactNativeWeb)}}${JSON.stringify(variables)});`;
+  let outputModule = `module.exports=Object.assign(${JSON.stringify(styles)},{unstable_styles:${JSON.stringify(reactNativeWeb)}},${JSON.stringify(variables)});`;
   if (props.options.dev) {
     const runtimeCss = (0, _css().wrapDevelopmentCSS)({
       ...props,
