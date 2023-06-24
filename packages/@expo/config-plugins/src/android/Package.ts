@@ -5,19 +5,13 @@ import { sync as globSync } from 'glob';
 import path from 'path';
 
 import { ConfigPlugin } from '../Plugin.types';
-import { createAndroidManifestPlugin, withAppBuildGradle } from '../plugins/android-plugins';
+import { withAppBuildGradle } from '../plugins/android-plugins';
 import { withDangerousMod } from '../plugins/withDangerousMod';
 import { directoryExistsAsync } from '../utils/modules';
 import { addWarningAndroid } from '../utils/warnings';
-import { AndroidManifest } from './Manifest';
 import { getAppBuildGradleFilePath, getProjectFilePath } from './Paths';
 
 const debug = Debug('expo:config-plugins:android:package');
-
-export const withPackageManifest = createAndroidManifestPlugin(
-  setPackageInAndroidManifest,
-  'withPackageManifest'
-);
 
 export const withPackageGradle: ConfigPlugin = (config) => {
   return withAppBuildGradle(config, (config) => {
@@ -240,21 +234,6 @@ export function setPackageInBuildGradle(config: Pick<ExpoConfig, 'android'>, bui
 
   const pattern = new RegExp(`(applicationId|namespace) ['"].*['"]`, 'g');
   return buildGradle.replace(pattern, `$1 '${packageName}'`);
-}
-
-export function setPackageInAndroidManifest(
-  config: Pick<ExpoConfig, 'android'>,
-  androidManifest: AndroidManifest
-) {
-  const packageName = getPackage(config);
-
-  if (packageName) {
-    androidManifest.manifest.$.package = packageName;
-  } else {
-    delete androidManifest.manifest.$.package;
-  }
-
-  return androidManifest;
 }
 
 export async function getApplicationIdAsync(projectRoot: string): Promise<string | null> {
