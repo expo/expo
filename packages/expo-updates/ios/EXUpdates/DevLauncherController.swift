@@ -147,7 +147,7 @@ public final class DevLauncherController: NSObject, UpdatesExternalInterface {
     let controller = AppController.sharedInstance
     var updatesConfiguration: UpdatesConfig
     do {
-      updatesConfiguration = try UpdatesConfig.configWithExpoPlist(mergingOtherDictionary: nil)
+      updatesConfiguration = try UpdatesConfig.configWithExpoPlist(mergingOtherDictionary: configuration as? [String: Any] ?? [:])
     } catch {
       errorBlock(NSError(
         domain: DevLauncherController.ErrorDomain,
@@ -239,3 +239,5 @@ public final class DevLauncherController: NSObject, UpdatesExternalInterface {
     }
   }
 }
+
+// swiftlint:enable force_unwrapping
