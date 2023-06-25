@@ -68,7 +68,7 @@ class UpdatesStateMachineInstrumentationTest {
     Assert.assertEquals(UpdatesStateValue.Checking, machine.state)
     Assert.assertEquals(UpdatesStateEventType.Check, testStateChangeEventSender.lastEventType)
 
-    machine.processEvent(UpdatesStateEvent.CheckComplete())
+    machine.processEvent(UpdatesStateEvent.CheckCompleteUnavailable())
 
     Assert.assertEquals(UpdatesStateValue.Idle, machine.state)
     Assert.assertFalse(machine.context.isChecking)

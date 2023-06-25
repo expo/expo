@@ -817,7 +817,6 @@ exports[`built-in plugins introspects mods 1`] = `
         "manifest": {
           "manifest": {
             "$": {
-              "package": "com.bacon.todo",
               "xmlns:android": "http://schemas.android.com/apk/res/android",
               "xmlns:tools": "http://schemas.android.com/tools",
             },
@@ -830,7 +829,6 @@ exports[`built-in plugins introspects mods 1`] = `
                   "android:name": ".MainApplication",
                   "android:roundIcon": "@mipmap/ic_launcher_round",
                   "android:theme": "@style/AppTheme",
-                  "android:usesCleartextTraffic": "true",
                 },
                 "activity": [
                   {

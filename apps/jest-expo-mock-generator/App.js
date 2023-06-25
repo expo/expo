@@ -11,7 +11,7 @@ global.performance = {
   now: () => 0,
 };
 
-const logUrl = Constants.manifest.logUrl;
+const logUrl = Constants.expoGoConfig.logUrl;
 const sessionId = uuidV4();
 
 const { ExpoNativeModuleIntrospection } = NativeModules;
@@ -74,7 +74,7 @@ export default class App extends React.Component {
     const moduleSpecs = await _getExpoModuleSpecsAsync();
     const code = `module.exports = ${JSON.stringify(moduleSpecs, replacer)};`;
     await setStringAsync(code);
-    this.setState({ moduleSpecs });
+    this.setState({ moduleSpecs: code });
     const message = `
 
 ------------------------------COPY THE TEXT BELOW------------------------------

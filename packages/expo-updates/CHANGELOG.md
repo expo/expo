@@ -10,6 +10,23 @@
 
 ### 💡 Others
 
+## 0.18.3 — 2023-06-24
+
+### 🐛 Bug fixes
+
+- [Android] fix instrumentation tests. ([#23037](https://github.com/expo/expo/pull/23037) by [@douglowder](https://github.com/douglowder))
+- [iOS] Fix crash when dev-client and updates used together. ([#23070](https://github.com/expo/expo/pull/23070) by [@douglowder](https://github.com/douglowder))
+
+## 0.18.2 — 2023-06-23
+
+### 🐛 Bug fixes
+
+- [Android] fix instrumentation tests. ([#23037](https://github.com/expo/expo/pull/23037) by [@douglowder](https://github.com/douglowder))
+
+## 0.18.1 — 2023-06-22
+
+_This version does not introduce any user-facing changes._
+
 ## 0.18.0 — 2023-06-22
 
 _This version does not introduce any user-facing changes._

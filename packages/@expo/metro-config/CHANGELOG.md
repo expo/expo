@@ -8,7 +8,21 @@
 
 ### 🐛 Bug fixes
 
+- Fix css modules syntax. ([#23086](https://github.com/expo/expo/pull/23086) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
+
+## 0.10.2 — 2023-06-24
+
+### 🎉 New features
+
+- Ignore `@expo/metro-runtime` in stacks. ([#22738](https://github.com/expo/expo/pull/22738) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.10.1 — 2023-06-22
+
+### 🐛 Bug fixes
+
+- Re-arrange the `Libraries/Core/InitializeCore` import. ([#23049](https://github.com/expo/expo/pull/23049) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.10.0 — 2023-06-21
 
