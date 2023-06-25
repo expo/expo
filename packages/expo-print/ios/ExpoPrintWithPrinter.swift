@@ -11,8 +11,8 @@ public class ExpoPrintWithPrinter {
 
   func startPrint(options: PrintOptions, promise: Promise) {
     if let uri = options.uri {
-      dataFromUri(uri: uri) { [self] data in
-        if let printingData = data {
+      dataFromUri(uri: uri) { [weak self] data in
+        if let self = self, let printingData = data {
           self.printWithData(printingData: printingData, options: options, promise: promise)
         } else {
           promise.reject(InvalidUrlException())
@@ -138,39 +138,39 @@ public class ExpoPrintWithPrinter {
     return printInteractionController
   }
 
+  let printURLSession = URLSession(configuration: .default)
+  var dataTask: URLSessionDataTask?
+
   private func dataFromUri(uri: String, completion: @escaping (Data?) -> Void) {
-    if uri.hasPrefix("http") {
-      // Handle HTTP URL asynchronously
-      DispatchQueue.global().async {
-        if let url = URL(string: uri), let data = try? Data(contentsOf: url) {
+    guard var url = URL(string: uri) else {
+      completion(nil)
+      return
+    }
+
+    // Assume that URLs without a scheme eq. /home/user/file.pdf will be local file urls
+    if url.scheme == nil {
+      url = URL(fileURLWithPath: uri)
+    }
+
+    // process http and https requests asynchronously
+    if url.scheme == "http" || url.scheme == "https" {
+      dataTask = printURLSession.dataTask(with: URLRequest(url: url)) { [weak self] data, response, error in
+        defer {
+          self?.dataTask = nil
+        }
+
+        if error == nil, let response = response as? HTTPURLResponse, response.statusCode == 200 {
           DispatchQueue.main.async {
             completion(data)
           }
-        } else {
-          DispatchQueue.main.async {
-            completion(nil)
-          }
+          return
         }
-      }
-    } else if uri.hasPrefix("data:") {
-      // Handle base64 encoded data URI
-      if let commaIndex = uri.firstIndex(of: ",") {
-        let base64String = String(uri[uri.index(after: commaIndex)...])
-        if let data = Data(base64Encoded: base64String) {
-          completion(data)
-        } else {
-          completion(nil)
-        }
-      }
-    } else {
-      // Handle local file path synchronously
-      let adjustedUri = uri.hasPrefix("file://") ? String(uri.dropFirst(7)) : uri
-
-      if let data = try? Data(contentsOf: URL(fileURLWithPath: adjustedUri)) {
-        completion(data)
-      } else {
         completion(nil)
-      }
+      };
+      dataTask?.resume()
+    } else {
+      let data = try? Data(contentsOf: url)
+      completion(data)
     }
   }
 }
