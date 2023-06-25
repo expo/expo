@@ -11,10 +11,10 @@ import com.google.mlkit.vision.common.InputImage
 import expo.modules.interfaces.barcodescanner.BarCodeScannerResult
 import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
 import kotlinx.coroutines.*
+import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 class MLKitBarCodeScanner(context: Context) : ExpoBarCodeScanner(context) {
-
   private var barcodeScannerOptions =
     BarcodeScannerOptions.Builder()
       .setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS)
@@ -24,15 +24,13 @@ class MLKitBarCodeScanner(context: Context) : ExpoBarCodeScanner(context) {
   override val isAvailable: Boolean
     get() = true
 
-  override fun scan(imageData: ByteArray, width: Int, height: Int, rotation: Int): BarCodeScannerResult? {
-    return try {
-      val inputImage = InputImage.fromByteArray(imageData, width, height, rotation, InputImage.IMAGE_FORMAT_NV21)
-      val results = scanBlocking(inputImage)
-      if (results.isNotEmpty()) results[0] else null
-    } catch (e: Exception) {
-      Log.e(TAG, "Failed to detect barcode: " + e.message)
-      null
-    }
+  override fun scan(imageData: ByteArray, width: Int, height: Int, rotation: Int) = try {
+    val inputImage = InputImage.fromByteArray(imageData, width, height, rotation, InputImage.IMAGE_FORMAT_NV21)
+    val results = scanBlocking(inputImage)
+    if (results.isNotEmpty()) results[0] else null
+  } catch (e: Exception) {
+    Log.e(TAG, "Failed to detect barcode: " + e.message)
+    null
   }
 
   override fun scanMultiple(bitmap: Bitmap): List<BarCodeScannerResult> {
@@ -40,11 +38,11 @@ class MLKitBarCodeScanner(context: Context) : ExpoBarCodeScanner(context) {
     return scanBlocking(inputImage)
   }
 
-  private fun scanBlocking(inputImage: InputImage): List<BarCodeScannerResult> = runBlocking(Dispatchers.IO) {
+  private fun scanBlocking(inputImage: InputImage): List<BarCodeScannerResult> = runBlocking {
     try {
-      val result: List<Barcode>? = barcodeScanner.process(inputImage).await()
+      val result: List<Barcode> = barcodeScanner.process(inputImage).await()
       val results = mutableListOf<BarCodeScannerResult>()
-      if (result == null) {
+      if (result.isEmpty()) {
         return@runBlocking results
       }
       for (barcode in result) {
@@ -58,10 +56,10 @@ class MLKitBarCodeScanner(context: Context) : ExpoBarCodeScanner(context) {
 
         results.add(BarCodeScannerResult(barcode.format, displayValue, cornerPoints, inputImage.height, inputImage.width))
       }
-      results
+      return@runBlocking results
     } catch (e: Exception) {
       Log.e(TAG, "Failed to detect barcode: " + e.message)
-      emptyList()
+      return@runBlocking emptyList()
     }
   }
 
@@ -86,12 +84,9 @@ class MLKitBarCodeScanner(context: Context) : ExpoBarCodeScanner(context) {
   }
 }
 
-@OptIn(ExperimentalCoroutinesApi::class)
 suspend fun <T> Task<T>.await(): T = suspendCancellableCoroutine { continuation ->
   addOnSuccessListener { result ->
-    continuation.resume(result) { exception ->
-      Log.e("Task", "Task is failed: ${exception.message}")
-    }
+    continuation.resume(result)
   }
   addOnFailureListener { exception ->
     continuation.resumeWithException(exception)
