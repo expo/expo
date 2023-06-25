@@ -166,7 +166,7 @@ public class ExpoPrintWithPrinter {
           return
         }
         completion(nil)
-      };
+      }
       dataTask?.resume()
     } else {
       let data = try? Data(contentsOf: url)
