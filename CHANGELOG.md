@@ -15,8 +15,6 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🐛 Bug fixes
 
-- Fixed a regression in `expo-print` after refactoring to Swift. ([#22997](https://github.com/expo/expo/pull/22997) by [@mroswald](https://github.com/mroswald), [@behenate](https://github.com/behenate))
-
 ### ⚠️ Notices
 
 - Removed the `Remote JS debugger` option from Expo Go menu when using SDK 49 or above. ([#22027](https://github.com/expo/expo/pull/22027) by [@gabrieldonadel](https://github.com/gabrieldonadel))
