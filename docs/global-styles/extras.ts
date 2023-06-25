@@ -13,6 +13,12 @@ export const globalExtras = css`
     line-height: 1;
   }
 
+  *:focus-visible {
+    outline: 3px ridge ${theme.button.tertiary.icon};
+    outline-offset: 1px;
+    border-radius: 3px;
+  }
+
   ::selection {
     background-color: ${theme.palette.blue5};
     color: ${theme.text.default};

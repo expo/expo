@@ -17,6 +17,11 @@ const STYLES_LINK = css`
   text-overflow: ellipsis;
   align-items: center;
   justify-content: space-between;
+
+  :focus-visible {
+    position: relative;
+    z-index: 10;
+  }
 `;
 
 const STYLES_LINK_LABEL = css`
