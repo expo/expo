@@ -73,7 +73,7 @@ def use_release_tarball(source, version, build_type)
 end
 
 def release_tarball_url(version, build_type)
-    return "https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/#{version}/react-native-artifacts-#{version}-hermes-ios-#{build_type.to_s}.tar.gz"
+    return "https://github.com/expo/react-native/releases/download/sdk-49.0.0/ABI49_0_0hermes.tar.gz"
 end
 
 def use_nightly_tarball(source, react_native_path, version)

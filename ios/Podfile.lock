@@ -3382,7 +3382,7 @@ DEPENDENCIES:
   - ABI49_0_0EXUpdatesInterface (from `./versioned/sdk49/EXUpdatesInterface`)
   - ABI49_0_0FBLazyVector (from `./versioned-react-native/ABI49_0_0/ReactNative/Libraries/FBLazyVector`)
   - ABI49_0_0FBReactNativeSpec (from `./versioned-react-native/ABI49_0_0/ReactNative/React/FBReactNativeSpec`)
-  - ABI49_0_0hermes-engine (from `./versioned-react-native/ABI49_0_0/ReactNative/sdks/hermes-engine`)
+  - ABI49_0_0hermes-engine (from `./versioned-react-native/ABI49_0_0/ReactNative/sdks/hermes-engine/ABI49_0_0hermes-engine.podspec`)
   - ABI49_0_0lottie-react-native (from `./vendored/sdk49/lottie-react-native`)
   - ABI49_0_0RCTRequired (from `./versioned-react-native/ABI49_0_0/ReactNative/Libraries/RCTRequired`)
   - ABI49_0_0RCTTypeSafety (from `./versioned-react-native/ABI49_0_0/ReactNative/Libraries/TypeSafety`)
@@ -4197,7 +4197,7 @@ EXTERNAL SOURCES:
   ABI49_0_0FBReactNativeSpec:
     :path: "./versioned-react-native/ABI49_0_0/ReactNative/React/FBReactNativeSpec"
   ABI49_0_0hermes-engine:
-    :path: "./versioned-react-native/ABI49_0_0/ReactNative/sdks/hermes-engine"
+    :podspec: "./versioned-react-native/ABI49_0_0/ReactNative/sdks/hermes-engine/ABI49_0_0hermes-engine.podspec"
     :tag: hermes-2023-03-20-RNv0.72.0-49794cfc7c81fb8f69fd60c3bbf85a7480cc5a77
   ABI49_0_0lottie-react-native:
     :path: "./vendored/sdk49/lottie-react-native"
@@ -4832,7 +4832,7 @@ SPEC CHECKSUMS:
   ABI49_0_0EXUpdatesInterface: 062955a2318e142b8bcd8a1f870a951e6a9233f1
   ABI49_0_0FBLazyVector: c6f91103acf736b8a2be8216fbdb98c23db04df2
   ABI49_0_0FBReactNativeSpec: 3d417407dc9771eb6843f8e08e1e82b541e7c339
-  ABI49_0_0hermes-engine: c1cdc100886885f95058061c6a6d9368c3c0dc55
+  ABI49_0_0hermes-engine: 88a62d3733128b974a5fabfab09ce2b341d5f7bd
   ABI49_0_0lottie-react-native: 77a9609fed173aeb15d251691b32f9e8413c4e2a
   ABI49_0_0RCTRequired: 29363ea7dbfd130132ca62fb45e351130e006cfc
   ABI49_0_0RCTTypeSafety: 3898adf76998a6ed385039579356d3c38f81bd55
