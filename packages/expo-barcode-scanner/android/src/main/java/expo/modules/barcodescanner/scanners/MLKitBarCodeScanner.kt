@@ -13,21 +13,6 @@ import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
 import kotlinx.coroutines.*
 import kotlin.coroutines.resumeWithException
 
-@OptIn(ExperimentalCoroutinesApi::class)
-suspend fun <T> Task<T>.await(): T = suspendCancellableCoroutine { continuation ->
-  addOnSuccessListener { result ->
-    continuation.resume(result) { exception ->
-      Log.e("Task", "Task is failed: ${exception.message}")
-    }
-  }
-  addOnFailureListener { exception ->
-    continuation.resumeWithException(exception)
-  }
-  addOnCanceledListener {
-    continuation.cancel()
-  }
-}
-
 class MLKitBarCodeScanner(context: Context) : ExpoBarCodeScanner(context) {
 
   private var barcodeScannerOptions =
@@ -57,24 +42,26 @@ class MLKitBarCodeScanner(context: Context) : ExpoBarCodeScanner(context) {
 
   private fun scanBlocking(inputImage: InputImage): List<BarCodeScannerResult> = runBlocking(Dispatchers.IO) {
     try {
-      val result = barcodeScanner.process(inputImage).await()
+      val result: List<Barcode>? = barcodeScanner.process(inputImage).await()
       val results = mutableListOf<BarCodeScannerResult>()
-      if (result == null) { results }
-      for (i in 0 until result.size) {
-        val barcode = result[i]
-        val value = barcode.rawValue ?: barcode.rawBytes?.let { String(it) }
+      if (result == null) {
+        return@runBlocking results
+      }
+      for (barcode in result) {
+        val displayValue = barcode.displayValue
         val cornerPoints = mutableListOf<Int>()
         barcode.cornerPoints?.let { points ->
           for (point in points) {
             cornerPoints.addAll(listOf(point.x, point.y))
           }
         }
-        results.add(BarCodeScannerResult(barcode.format, value, cornerPoints, inputImage.height, inputImage.width))
+
+        results.add(BarCodeScannerResult(barcode.format, displayValue, cornerPoints, inputImage.height, inputImage.width))
       }
       results
     } catch (e: Exception) {
       Log.e(TAG, "Failed to detect barcode: " + e.message)
-      mutableListOf<BarCodeScannerResult>()
+      emptyList()
     }
   }
 
@@ -96,5 +83,20 @@ class MLKitBarCodeScanner(context: Context) : ExpoBarCodeScanner(context) {
 
   companion object {
     private val TAG = MLKitBarCodeScanner::class.java.simpleName
+  }
+}
+
+@OptIn(ExperimentalCoroutinesApi::class)
+suspend fun <T> Task<T>.await(): T = suspendCancellableCoroutine { continuation ->
+  addOnSuccessListener { result ->
+    continuation.resume(result) { exception ->
+      Log.e("Task", "Task is failed: ${exception.message}")
+    }
+  }
+  addOnFailureListener { exception ->
+    continuation.resumeWithException(exception)
+  }
+  addOnCanceledListener {
+    continuation.cancel()
   }
 }
