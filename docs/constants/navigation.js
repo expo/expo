@@ -219,12 +219,12 @@ const general = [
     ]),
     makeGroup('Troubleshoot', [
       makePage('eas-update/debug.mdx'),
+      makePage('eas-update/expo-dev-client.mdx'),
       makePage('eas-update/build-locally.mdx'),
     ]),
     makeGroup('Advanced', [
       makePage('eas-update/optimize-assets.mdx'),
       makePage('eas-update/environment-variables.mdx'),
-      makePage('eas-update/expo-dev-client.mdx'),
       makePage('eas-update/code-signing.mdx'),
       makePage('eas-update/rollouts.mdx'),
     ]),
