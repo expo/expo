@@ -62,7 +62,7 @@
   "expo-permissions": "~14.2.0",
   "expo-print": "~12.4.0",
   "expo-random": "~13.2.0",
-  "expo-router": "2.0.0-rc.5",
+  "expo-router": "2.0.0-rc.6",
   "expo-screen-capture": "~5.3.0",
   "expo-screen-orientation": "~6.0.1",
   "expo-secure-store": "~12.3.0",
