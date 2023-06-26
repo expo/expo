@@ -8,16 +8,16 @@ import org.json.JSONObject
 The state machine context, with information intended to be consumed by application JS code.
  */
 data class UpdatesStateContext(
-  private val isUpdateAvailable: Boolean = false,
-  private val isUpdatePending: Boolean = false,
-  private val isRollback: Boolean = false,
-  private val isChecking: Boolean = false,
-  private val isDownloading: Boolean = false,
-  private val isRestarting: Boolean = false,
-  private val latestManifest: JSONObject? = null,
-  private val downloadedManifest: JSONObject? = null,
-  private val checkError: UpdatesStateError? = null,
-  private val downloadError: UpdatesStateError? = null
+  val isUpdateAvailable: Boolean = false,
+  val isUpdatePending: Boolean = false,
+  val isRollback: Boolean = false,
+  val isChecking: Boolean = false,
+  val isDownloading: Boolean = false,
+  val isRestarting: Boolean = false,
+  val latestManifest: JSONObject? = null,
+  val downloadedManifest: JSONObject? = null,
+  val checkError: UpdatesStateError? = null,
+  val downloadError: UpdatesStateError? = null
 ) {
 
   val json: Map<String, Any>

@@ -5,7 +5,7 @@ package expo.modules.updates.statemachine
  * For now, we just have the "message" property.
  */
 data class UpdatesStateError(
-  private val message: String
+  val message: String
 ) {
   val json: Map<String, String>
     get() {
