@@ -142,7 +142,7 @@ export const kbdStyle = css({
 });
 
 const { h1, h2, h3, h4, h5 } = typography.headers.default;
-const codeInHeaderStyle = { '& code': { fontSize: 'inherit' } };
+const codeInHeaderStyle = { '& code': { fontSize: '95%' } };
 
 const h1Style = {
   ...h1,
@@ -157,6 +157,7 @@ const h2Style = {
   fontWeight: 600,
   marginTop: spacing[8],
   marginBottom: spacing[3.5],
+  '& a:focus-visible': { outlineOffset: spacing[1] },
   ...codeInHeaderStyle,
 };
 
@@ -165,6 +166,7 @@ const h3Style = {
   fontWeight: 600,
   marginTop: spacing[6],
   marginBottom: spacing[2.5],
+  '& a:focus-visible': { outlineOffset: spacing[1] },
   ...codeInHeaderStyle,
 };
 

@@ -62,7 +62,7 @@ exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
       </button>
     </p>
     <a
-      class="css-1qdw8ng"
+      class="css-vmf6tj"
       href="#base-level-heading"
     >
       <p
@@ -73,7 +73,7 @@ exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
       </p>
     </a>
     <a
-      class="css-5qfo0n"
+      class="css-1p8gu4x"
       href="#level-3-subheading"
     >
       <p
@@ -84,7 +84,7 @@ exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
       </p>
     </a>
     <a
-      class="css-5qfo0n"
+      class="css-1p8gu4x"
       href="#code-heading-depth-1"
     >
       <code

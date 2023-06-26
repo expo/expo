@@ -3,7 +3,7 @@
 exports[`APISection expo-apple-authentication 1`] = `
 <div>
   <h2
-    class="  css-10bv6vo-TextComponent"
+    class="  css-1qsxz84-TextComponent"
     data-heading="true"
   >
     <a
@@ -20,7 +20,7 @@ exports[`APISection expo-apple-authentication 1`] = `
         Component
       </span>
       <span
-        class="css-1n7zw4g"
+        class="css-13330di"
       >
         <svg
           aria-label="permalink"
@@ -53,7 +53,7 @@ exports[`APISection expo-apple-authentication 1`] = `
     class="css-1fultt1"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -75,7 +75,7 @@ exports[`APISection expo-apple-authentication 1`] = `
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -291,7 +291,7 @@ for more details.
       </div>
     </blockquote>
     <h2
-      class="  css-10bv6vo-TextComponent"
+      class="  css-1qsxz84-TextComponent"
       data-heading="true"
     >
       <a
@@ -308,7 +308,7 @@ for more details.
           Props
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -342,7 +342,7 @@ for more details.
         class="css-11xr3cd"
       >
         <h3
-          class="  css-bbneh1-TextComponent"
+          class="  css-wbzzgj-TextComponent"
           data-heading="true"
         >
           <a
@@ -364,7 +364,7 @@ for more details.
               </code>
             </span>
             <span
-              class="css-1n7zw4g"
+              class="css-13330di"
             >
               <svg
                 aria-label="permalink"
@@ -426,7 +426,7 @@ for more details.
         class="css-11xr3cd"
       >
         <h3
-          class="  css-bbneh1-TextComponent"
+          class="  css-wbzzgj-TextComponent"
           data-heading="true"
         >
           <a
@@ -448,7 +448,7 @@ for more details.
               </code>
             </span>
             <span
-              class="css-1n7zw4g"
+              class="css-13330di"
             >
               <svg
                 aria-label="permalink"
@@ -510,7 +510,7 @@ for more details.
         class="css-11xr3cd"
       >
         <h3
-          class="  css-bbneh1-TextComponent"
+          class="  css-wbzzgj-TextComponent"
           data-heading="true"
         >
           <a
@@ -532,7 +532,7 @@ for more details.
               </code>
             </span>
             <span
-              class="css-1n7zw4g"
+              class="css-13330di"
             >
               <svg
                 aria-label="permalink"
@@ -602,7 +602,7 @@ for more details.
         class="css-11xr3cd"
       >
         <h3
-          class="  css-bbneh1-TextComponent"
+          class="  css-wbzzgj-TextComponent"
           data-heading="true"
         >
           <a
@@ -624,7 +624,7 @@ for more details.
               </code>
             </span>
             <span
-              class="css-1n7zw4g"
+              class="css-13330di"
             >
               <svg
                 aria-label="permalink"
@@ -696,7 +696,7 @@ in here.
         class="css-11xr3cd"
       >
         <h3
-          class="  css-bbneh1-TextComponent"
+          class="  css-wbzzgj-TextComponent"
           data-heading="true"
         >
           <a
@@ -718,7 +718,7 @@ in here.
               </code>
             </span>
             <span
-              class="css-1n7zw4g"
+              class="css-13330di"
             >
               <svg
                 aria-label="permalink"
@@ -826,7 +826,7 @@ properties.
         </p>
       </div>
       <h3
-        class="  css-bbneh1-TextComponent"
+        class="  css-wbzzgj-TextComponent"
         data-heading="true"
       >
         <a
@@ -843,7 +843,7 @@ properties.
             Inherited Props
           </span>
           <span
-            class="css-1n7zw4g"
+            class="css-13330di"
           >
             <svg
               aria-label="permalink"
@@ -897,7 +897,7 @@ properties.
     </div>
   </div>
   <h2
-    class="  css-10bv6vo-TextComponent"
+    class="  css-1qsxz84-TextComponent"
     data-heading="true"
   >
     <a
@@ -914,7 +914,7 @@ properties.
         Methods
       </span>
       <span
-        class="css-1n7zw4g"
+        class="css-13330di"
       >
         <svg
           aria-label="permalink"
@@ -947,7 +947,7 @@ properties.
     class="css-11xr3cd"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -969,7 +969,7 @@ properties.
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -1215,7 +1215,7 @@ value depending on the state of the credential.
     class="css-11xr3cd"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -1237,7 +1237,7 @@ value depending on the state of the credential.
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -1351,7 +1351,7 @@ value depending on the state of the credential.
     class="css-11xr3cd"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -1373,7 +1373,7 @@ value depending on the state of the credential.
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -1584,7 +1584,7 @@ refresh operation.
     class="css-11xr3cd"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -1606,7 +1606,7 @@ refresh operation.
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -1864,7 +1864,7 @@ sign-in operation.
     class="css-11xr3cd"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -1886,7 +1886,7 @@ sign-in operation.
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -2128,7 +2128,7 @@ sign-out operation.
     </p>
   </div>
   <h2
-    class="  css-10bv6vo-TextComponent"
+    class="  css-1qsxz84-TextComponent"
     data-heading="true"
   >
     <a
@@ -2145,7 +2145,7 @@ sign-out operation.
         Event Subscriptions
       </span>
       <span
-        class="css-1n7zw4g"
+        class="css-13330di"
       >
         <svg
           aria-label="permalink"
@@ -2178,7 +2178,7 @@ sign-out operation.
     class="css-11xr3cd"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -2200,7 +2200,7 @@ sign-out operation.
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -2342,7 +2342,7 @@ sign-out operation.
     <br />
   </div>
   <h2
-    class="  css-10bv6vo-TextComponent"
+    class="  css-1qsxz84-TextComponent"
     data-heading="true"
   >
     <a
@@ -2359,7 +2359,7 @@ sign-out operation.
         Types
       </span>
       <span
-        class="css-1n7zw4g"
+        class="css-13330di"
       >
         <svg
           aria-label="permalink"
@@ -2392,7 +2392,7 @@ sign-out operation.
     class="css-1fultt1"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -2414,7 +2414,7 @@ sign-out operation.
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -2917,7 +2917,7 @@ developers.
     class="css-1fultt1"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -2939,7 +2939,7 @@ developers.
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -3224,7 +3224,7 @@ may be
     class="css-1fultt1"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -3246,7 +3246,7 @@ may be
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -3534,7 +3534,7 @@ OAuth 2.0 protocol
     class="css-1fultt1"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -3556,7 +3556,7 @@ OAuth 2.0 protocol
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -3865,7 +3865,7 @@ OAuth 2.0 protocol
     class="css-1fultt1"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -3887,7 +3887,7 @@ OAuth 2.0 protocol
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -4105,7 +4105,7 @@ OAuth 2.0 protocol
     class="css-1fultt1"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -4127,7 +4127,7 @@ OAuth 2.0 protocol
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -4221,7 +4221,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <h2
-    class="  css-10bv6vo-TextComponent"
+    class="  css-1qsxz84-TextComponent"
     data-heading="true"
   >
     <a
@@ -4238,7 +4238,7 @@ OAuth 2.0 protocol
         Enums
       </span>
       <span
-        class="css-1n7zw4g"
+        class="css-13330di"
       >
         <svg
           aria-label="permalink"
@@ -4271,7 +4271,7 @@ OAuth 2.0 protocol
     class="css-1gsbrid"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -4293,7 +4293,7 @@ OAuth 2.0 protocol
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -4344,7 +4344,7 @@ OAuth 2.0 protocol
       class="css-11xr3cd"
     >
       <h4
-        class="  css-1pbwa47-TextComponent"
+        class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
@@ -4366,7 +4366,7 @@ OAuth 2.0 protocol
             </code>
           </span>
           <span
-            class="css-1n7zw4g"
+            class="css-13330di"
           >
             <svg
               aria-label="permalink"
@@ -4412,7 +4412,7 @@ OAuth 2.0 protocol
       class="css-11xr3cd"
     >
       <h4
-        class="  css-1pbwa47-TextComponent"
+        class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
@@ -4434,7 +4434,7 @@ OAuth 2.0 protocol
             </code>
           </span>
           <span
-            class="css-1n7zw4g"
+            class="css-13330di"
           >
             <svg
               aria-label="permalink"
@@ -4480,7 +4480,7 @@ OAuth 2.0 protocol
       class="css-11xr3cd"
     >
       <h4
-        class="  css-1pbwa47-TextComponent"
+        class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
@@ -4502,7 +4502,7 @@ OAuth 2.0 protocol
             </code>
           </span>
           <span
-            class="css-1n7zw4g"
+            class="css-13330di"
           >
             <svg
               aria-label="permalink"
@@ -4549,7 +4549,7 @@ OAuth 2.0 protocol
     class="css-1gsbrid"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -4571,7 +4571,7 @@ OAuth 2.0 protocol
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -4622,7 +4622,7 @@ OAuth 2.0 protocol
       class="css-11xr3cd"
     >
       <h4
-        class="  css-1pbwa47-TextComponent"
+        class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
@@ -4644,7 +4644,7 @@ OAuth 2.0 protocol
             </code>
           </span>
           <span
-            class="css-1n7zw4g"
+            class="css-13330di"
           >
             <svg
               aria-label="permalink"
@@ -4690,7 +4690,7 @@ OAuth 2.0 protocol
       class="css-11xr3cd"
     >
       <h4
-        class="  css-1pbwa47-TextComponent"
+        class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
@@ -4712,7 +4712,7 @@ OAuth 2.0 protocol
             </code>
           </span>
           <span
-            class="css-1n7zw4g"
+            class="css-13330di"
           >
             <svg
               aria-label="permalink"
@@ -4791,7 +4791,7 @@ OAuth 2.0 protocol
       </div>
       <br />
       <h4
-        class="  css-1pbwa47-TextComponent"
+        class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
@@ -4813,7 +4813,7 @@ OAuth 2.0 protocol
             </code>
           </span>
           <span
-            class="css-1n7zw4g"
+            class="css-13330di"
           >
             <svg
               aria-label="permalink"
@@ -4860,7 +4860,7 @@ OAuth 2.0 protocol
     class="css-1gsbrid"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -4882,7 +4882,7 @@ OAuth 2.0 protocol
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -4986,7 +4986,7 @@ for more details.
       class="css-11xr3cd"
     >
       <h4
-        class="  css-1pbwa47-TextComponent"
+        class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
@@ -5008,7 +5008,7 @@ for more details.
             </code>
           </span>
           <span
-            class="css-1n7zw4g"
+            class="css-13330di"
           >
             <svg
               aria-label="permalink"
@@ -5048,7 +5048,7 @@ for more details.
       class="css-11xr3cd"
     >
       <h4
-        class="  css-1pbwa47-TextComponent"
+        class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
@@ -5070,7 +5070,7 @@ for more details.
             </code>
           </span>
           <span
-            class="css-1n7zw4g"
+            class="css-13330di"
           >
             <svg
               aria-label="permalink"
@@ -5110,7 +5110,7 @@ for more details.
       class="css-11xr3cd"
     >
       <h4
-        class="  css-1pbwa47-TextComponent"
+        class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
@@ -5132,7 +5132,7 @@ for more details.
             </code>
           </span>
           <span
-            class="css-1n7zw4g"
+            class="css-13330di"
           >
             <svg
               aria-label="permalink"
@@ -5172,7 +5172,7 @@ for more details.
       class="css-11xr3cd"
     >
       <h4
-        class="  css-1pbwa47-TextComponent"
+        class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
@@ -5194,7 +5194,7 @@ for more details.
             </code>
           </span>
           <span
-            class="css-1n7zw4g"
+            class="css-13330di"
           >
             <svg
               aria-label="permalink"
@@ -5235,7 +5235,7 @@ for more details.
     class="css-1gsbrid"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -5257,7 +5257,7 @@ for more details.
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -5290,7 +5290,7 @@ for more details.
       class="css-11xr3cd"
     >
       <h4
-        class="  css-1pbwa47-TextComponent"
+        class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
@@ -5312,7 +5312,7 @@ for more details.
             </code>
           </span>
           <span
-            class="css-1n7zw4g"
+            class="css-13330di"
           >
             <svg
               aria-label="permalink"
@@ -5358,7 +5358,7 @@ for more details.
       class="css-11xr3cd"
     >
       <h4
-        class="  css-1pbwa47-TextComponent"
+        class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
@@ -5380,7 +5380,7 @@ for more details.
             </code>
           </span>
           <span
-            class="css-1n7zw4g"
+            class="css-13330di"
           >
             <svg
               aria-label="permalink"
@@ -5420,7 +5420,7 @@ for more details.
       class="css-11xr3cd"
     >
       <h4
-        class="  css-1pbwa47-TextComponent"
+        class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
@@ -5442,7 +5442,7 @@ for more details.
             </code>
           </span>
           <span
-            class="css-1n7zw4g"
+            class="css-13330di"
           >
             <svg
               aria-label="permalink"
@@ -5482,7 +5482,7 @@ for more details.
       class="css-11xr3cd"
     >
       <h4
-        class="  css-1pbwa47-TextComponent"
+        class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
@@ -5504,7 +5504,7 @@ for more details.
             </code>
           </span>
           <span
-            class="css-1n7zw4g"
+            class="css-13330di"
           >
             <svg
               aria-label="permalink"
@@ -5545,7 +5545,7 @@ for more details.
     class="css-1gsbrid"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -5567,7 +5567,7 @@ for more details.
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -5715,7 +5715,7 @@ for more details.
       class="css-11xr3cd"
     >
       <h4
-        class="  css-1pbwa47-TextComponent"
+        class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
@@ -5737,7 +5737,7 @@ for more details.
             </code>
           </span>
           <span
-            class="css-1n7zw4g"
+            class="css-13330di"
           >
             <svg
               aria-label="permalink"
@@ -5777,7 +5777,7 @@ for more details.
       class="css-11xr3cd"
     >
       <h4
-        class="  css-1pbwa47-TextComponent"
+        class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
@@ -5799,7 +5799,7 @@ for more details.
             </code>
           </span>
           <span
-            class="css-1n7zw4g"
+            class="css-13330di"
           >
             <svg
               aria-label="permalink"
@@ -5840,7 +5840,7 @@ for more details.
     class="css-1gsbrid"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -5862,7 +5862,7 @@ for more details.
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -5954,7 +5954,7 @@ for more details.
       class="css-11xr3cd"
     >
       <h4
-        class="  css-1pbwa47-TextComponent"
+        class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
@@ -5976,7 +5976,7 @@ for more details.
             </code>
           </span>
           <span
-            class="css-1n7zw4g"
+            class="css-13330di"
           >
             <svg
               aria-label="permalink"
@@ -6022,7 +6022,7 @@ for more details.
       class="css-11xr3cd"
     >
       <h4
-        class="  css-1pbwa47-TextComponent"
+        class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
@@ -6044,7 +6044,7 @@ for more details.
             </code>
           </span>
           <span
-            class="css-1n7zw4g"
+            class="css-13330di"
           >
             <svg
               aria-label="permalink"
@@ -6090,7 +6090,7 @@ for more details.
       class="css-11xr3cd"
     >
       <h4
-        class="  css-1pbwa47-TextComponent"
+        class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
@@ -6112,7 +6112,7 @@ for more details.
             </code>
           </span>
           <span
-            class="css-1n7zw4g"
+            class="css-13330di"
           >
             <svg
               aria-label="permalink"
@@ -6161,7 +6161,7 @@ for more details.
 exports[`APISection expo-barcode-scanner 1`] = `
 <div>
   <h2
-    class="  css-10bv6vo-TextComponent"
+    class="  css-1qsxz84-TextComponent"
     data-heading="true"
   >
     <a
@@ -6178,7 +6178,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
         Component
       </span>
       <span
-        class="css-1n7zw4g"
+        class="css-13330di"
       >
         <svg
           aria-label="permalink"
@@ -6211,7 +6211,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
     class="css-1fultt1"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -6233,7 +6233,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -6291,7 +6291,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
       </code>
     </p>
     <h2
-      class="  css-10bv6vo-TextComponent"
+      class="  css-1qsxz84-TextComponent"
       data-heading="true"
     >
       <a
@@ -6308,7 +6308,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
           Props
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -6342,7 +6342,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
         class="css-11xr3cd"
       >
         <h3
-          class="  css-bbneh1-TextComponent"
+          class="  css-wbzzgj-TextComponent"
           data-heading="true"
         >
           <a
@@ -6364,7 +6364,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
               </code>
             </span>
             <span
-              class="css-1n7zw4g"
+              class="css-13330di"
             >
               <svg
                 aria-label="permalink"
@@ -6465,7 +6465,7 @@ minimize battery usage.
         class="css-11xr3cd"
       >
         <h3
-          class="  css-bbneh1-TextComponent"
+          class="  css-wbzzgj-TextComponent"
           data-heading="true"
         >
           <a
@@ -6487,7 +6487,7 @@ minimize battery usage.
               </code>
             </span>
             <span
-              class="css-1n7zw4g"
+              class="css-13330di"
             >
               <svg
                 aria-label="permalink"
@@ -6626,7 +6626,7 @@ data has been retrieved.
         class="css-11xr3cd"
       >
         <h3
-          class="  css-bbneh1-TextComponent"
+          class="  css-wbzzgj-TextComponent"
           data-heading="true"
         >
           <a
@@ -6648,7 +6648,7 @@ data has been retrieved.
               </code>
             </span>
             <span
-              class="css-1n7zw4g"
+              class="css-13330di"
             >
               <svg
                 aria-label="permalink"
@@ -6760,7 +6760,7 @@ Same as
         </p>
       </div>
       <h3
-        class="  css-bbneh1-TextComponent"
+        class="  css-wbzzgj-TextComponent"
         data-heading="true"
       >
         <a
@@ -6777,7 +6777,7 @@ Same as
             Inherited Props
           </span>
           <span
-            class="css-1n7zw4g"
+            class="css-13330di"
           >
             <svg
               aria-label="permalink"
@@ -6831,7 +6831,7 @@ Same as
     </div>
   </div>
   <h2
-    class="  css-10bv6vo-TextComponent"
+    class="  css-1qsxz84-TextComponent"
     data-heading="true"
   >
     <a
@@ -6848,7 +6848,7 @@ Same as
         Hooks
       </span>
       <span
-        class="css-1n7zw4g"
+        class="css-13330di"
       >
         <svg
           aria-label="permalink"
@@ -6881,7 +6881,7 @@ Same as
     class="css-11xr3cd"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -6903,7 +6903,7 @@ Same as
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -7197,7 +7197,7 @@ This uses both
     <br />
   </div>
   <h2
-    class="  css-10bv6vo-TextComponent"
+    class="  css-1qsxz84-TextComponent"
     data-heading="true"
   >
     <a
@@ -7214,7 +7214,7 @@ This uses both
         Methods
       </span>
       <span
-        class="css-1n7zw4g"
+        class="css-13330di"
       >
         <svg
           aria-label="permalink"
@@ -7247,7 +7247,7 @@ This uses both
     class="css-11xr3cd"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -7269,7 +7269,7 @@ This uses both
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -7386,7 +7386,7 @@ This uses both
     class="css-11xr3cd"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -7408,7 +7408,7 @@ This uses both
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -7547,7 +7547,7 @@ This uses both
     class="css-11xr3cd"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -7569,7 +7569,7 @@ This uses both
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -7836,7 +7836,7 @@ code.
     </p>
   </div>
   <h2
-    class="  css-10bv6vo-TextComponent"
+    class="  css-1qsxz84-TextComponent"
     data-heading="true"
   >
     <a
@@ -7853,7 +7853,7 @@ code.
         Interfaces
       </span>
       <span
-        class="css-1n7zw4g"
+        class="css-13330di"
       >
         <svg
           aria-label="permalink"
@@ -7886,7 +7886,7 @@ code.
     class="css-11xr3cd"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -7908,7 +7908,7 @@ code.
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -8129,7 +8129,7 @@ in order to enable/disable the permission.
     <br />
   </div>
   <h2
-    class="  css-10bv6vo-TextComponent"
+    class="  css-1qsxz84-TextComponent"
     data-heading="true"
   >
     <a
@@ -8146,7 +8146,7 @@ in order to enable/disable the permission.
         Types
       </span>
       <span
-        class="css-1n7zw4g"
+        class="css-13330di"
       >
         <svg
           aria-label="permalink"
@@ -8179,7 +8179,7 @@ in order to enable/disable the permission.
     class="css-1fultt1"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -8201,7 +8201,7 @@ in order to enable/disable the permission.
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -8344,7 +8344,7 @@ in order to enable/disable the permission.
     class="css-1fultt1"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -8366,7 +8366,7 @@ in order to enable/disable the permission.
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -8486,7 +8486,7 @@ in order to enable/disable the permission.
     class="css-1fultt1"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -8508,7 +8508,7 @@ in order to enable/disable the permission.
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -8608,7 +8608,7 @@ in order to enable/disable the permission.
     class="css-1fultt1"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -8630,7 +8630,7 @@ in order to enable/disable the permission.
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -8784,7 +8784,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     class="css-1fultt1"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -8807,7 +8807,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -8909,7 +8909,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     class="css-1fultt1"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -8931,7 +8931,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -9188,7 +9188,7 @@ you don't get this value.
     class="css-1fultt1"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -9210,7 +9210,7 @@ you don't get this value.
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -9343,7 +9343,7 @@ you don't get this value.
     class="css-1fultt1"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -9365,7 +9365,7 @@ you don't get this value.
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -9421,7 +9421,7 @@ you don't get this value.
     </p>
   </div>
   <h2
-    class="  css-10bv6vo-TextComponent"
+    class="  css-1qsxz84-TextComponent"
     data-heading="true"
   >
     <a
@@ -9438,7 +9438,7 @@ you don't get this value.
         Enums
       </span>
       <span
-        class="css-1n7zw4g"
+        class="css-13330di"
       >
         <svg
           aria-label="permalink"
@@ -9471,7 +9471,7 @@ you don't get this value.
     class="css-1gsbrid"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -9493,7 +9493,7 @@ you don't get this value.
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -9526,7 +9526,7 @@ you don't get this value.
       class="css-11xr3cd"
     >
       <h4
-        class="  css-1pbwa47-TextComponent"
+        class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
@@ -9548,7 +9548,7 @@ you don't get this value.
             </code>
           </span>
           <span
-            class="css-1n7zw4g"
+            class="css-13330di"
           >
             <svg
               aria-label="permalink"
@@ -9594,7 +9594,7 @@ you don't get this value.
       class="css-11xr3cd"
     >
       <h4
-        class="  css-1pbwa47-TextComponent"
+        class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
@@ -9616,7 +9616,7 @@ you don't get this value.
             </code>
           </span>
           <span
-            class="css-1n7zw4g"
+            class="css-13330di"
           >
             <svg
               aria-label="permalink"
@@ -9662,7 +9662,7 @@ you don't get this value.
       class="css-11xr3cd"
     >
       <h4
-        class="  css-1pbwa47-TextComponent"
+        class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
@@ -9684,7 +9684,7 @@ you don't get this value.
             </code>
           </span>
           <span
-            class="css-1n7zw4g"
+            class="css-13330di"
           >
             <svg
               aria-label="permalink"
@@ -9733,7 +9733,7 @@ you don't get this value.
 exports[`APISection expo-pedometer 1`] = `
 <div>
   <h2
-    class="  css-10bv6vo-TextComponent"
+    class="  css-1qsxz84-TextComponent"
     data-heading="true"
   >
     <a
@@ -9750,7 +9750,7 @@ exports[`APISection expo-pedometer 1`] = `
         Methods
       </span>
       <span
-        class="css-1n7zw4g"
+        class="css-13330di"
       >
         <svg
           aria-label="permalink"
@@ -9783,7 +9783,7 @@ exports[`APISection expo-pedometer 1`] = `
     class="css-11xr3cd"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -9805,7 +9805,7 @@ exports[`APISection expo-pedometer 1`] = `
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -9937,7 +9937,7 @@ exports[`APISection expo-pedometer 1`] = `
     </div>
     <br />
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -9959,7 +9959,7 @@ exports[`APISection expo-pedometer 1`] = `
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -10251,7 +10251,7 @@ a start date that is more than seven days in the past returns only the available
     class="css-11xr3cd"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -10273,7 +10273,7 @@ a start date that is more than seven days in the past returns only the available
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -10381,7 +10381,7 @@ available on this device.
     class="css-11xr3cd"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -10403,7 +10403,7 @@ available on this device.
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -10502,7 +10502,7 @@ available on this device.
     class="css-11xr3cd"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -10524,7 +10524,7 @@ available on this device.
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -10719,7 +10719,7 @@ provided with a single argument that is
     </p>
   </div>
   <h2
-    class="  css-10bv6vo-TextComponent"
+    class="  css-1qsxz84-TextComponent"
     data-heading="true"
   >
     <a
@@ -10736,7 +10736,7 @@ provided with a single argument that is
         Interfaces
       </span>
       <span
-        class="css-1n7zw4g"
+        class="css-13330di"
       >
         <svg
           aria-label="permalink"
@@ -10769,7 +10769,7 @@ provided with a single argument that is
     class="css-11xr3cd"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -10791,7 +10791,7 @@ provided with a single argument that is
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -11012,7 +11012,7 @@ in order to enable/disable the permission.
     <br />
   </div>
   <h2
-    class="  css-10bv6vo-TextComponent"
+    class="  css-1qsxz84-TextComponent"
     data-heading="true"
   >
     <a
@@ -11029,7 +11029,7 @@ in order to enable/disable the permission.
         Types
       </span>
       <span
-        class="css-1n7zw4g"
+        class="css-13330di"
       >
         <svg
           aria-label="permalink"
@@ -11062,7 +11062,7 @@ in order to enable/disable the permission.
     class="css-1fultt1"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -11084,7 +11084,7 @@ in order to enable/disable the permission.
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -11184,7 +11184,7 @@ in order to enable/disable the permission.
     class="css-1fultt1"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -11207,7 +11207,7 @@ in order to enable/disable the permission.
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -11315,7 +11315,7 @@ in order to enable/disable the permission.
     class="css-1fultt1"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -11337,7 +11337,7 @@ in order to enable/disable the permission.
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -11402,7 +11402,7 @@ in order to enable/disable the permission.
     class="css-1fultt1"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -11424,7 +11424,7 @@ in order to enable/disable the permission.
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -11518,7 +11518,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <h2
-    class="  css-10bv6vo-TextComponent"
+    class="  css-1qsxz84-TextComponent"
     data-heading="true"
   >
     <a
@@ -11535,7 +11535,7 @@ in order to enable/disable the permission.
         Enums
       </span>
       <span
-        class="css-1n7zw4g"
+        class="css-13330di"
       >
         <svg
           aria-label="permalink"
@@ -11568,7 +11568,7 @@ in order to enable/disable the permission.
     class="css-1gsbrid"
   >
     <h3
-      class="  css-bbneh1-TextComponent"
+      class="  css-wbzzgj-TextComponent"
       data-heading="true"
     >
       <a
@@ -11590,7 +11590,7 @@ in order to enable/disable the permission.
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -11623,7 +11623,7 @@ in order to enable/disable the permission.
       class="css-11xr3cd"
     >
       <h4
-        class="  css-1pbwa47-TextComponent"
+        class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
@@ -11645,7 +11645,7 @@ in order to enable/disable the permission.
             </code>
           </span>
           <span
-            class="css-1n7zw4g"
+            class="css-13330di"
           >
             <svg
               aria-label="permalink"
@@ -11691,7 +11691,7 @@ in order to enable/disable the permission.
       class="css-11xr3cd"
     >
       <h4
-        class="  css-1pbwa47-TextComponent"
+        class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
@@ -11713,7 +11713,7 @@ in order to enable/disable the permission.
             </code>
           </span>
           <span
-            class="css-1n7zw4g"
+            class="css-13330di"
           >
             <svg
               aria-label="permalink"
@@ -11759,7 +11759,7 @@ in order to enable/disable the permission.
       class="css-11xr3cd"
     >
       <h4
-        class="  css-1pbwa47-TextComponent"
+        class="  css-1y1xevk-TextComponent"
         data-heading="true"
       >
         <a
@@ -11781,7 +11781,7 @@ in order to enable/disable the permission.
             </code>
           </span>
           <span
-            class="css-1n7zw4g"
+            class="css-13330di"
           >
             <svg
               aria-label="permalink"
