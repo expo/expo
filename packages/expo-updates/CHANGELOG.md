@@ -10,7 +10,6 @@
 
 - [iOS] Use weak delegate for state machine. ([#23060](https://github.com/expo/expo/pull/23060) by [@wschurman](https://github.com/wschurman))
 - [Android] Convert LoaderTask.RemoteCheckResult to sealed class. ([#23061](https://github.com/expo/expo/pull/23061) by [@wschurman](https://github.com/wschurman))
-- [Android] Restrict property visibility on state machine objects. ([#23063](https://github.com/expo/expo/pull/23063) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 
