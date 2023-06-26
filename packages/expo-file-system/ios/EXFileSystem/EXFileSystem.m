@@ -501,7 +501,6 @@ EX_EXPORT_METHOD_AS(makeDirectoryAsync,
 
 EX_EXPORT_METHOD_AS(readDirectoryAsync,
                     readDirectoryAsyncWithURI:(NSString *)uriString
-                    withOptions:(NSDictionary *)options
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
