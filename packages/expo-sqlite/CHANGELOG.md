@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Migrated Android codebase to Expo Modules API.
+- Migrated Android codebase to Expo Modules API. ([#23115](https://github.com/expo/expo/pull/23115) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
