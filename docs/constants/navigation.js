@@ -303,7 +303,6 @@ const general = [
         makePage('guides/google-authentication.mdx'),
         makePage('guides/using-nextjs.mdx'),
         makePage('guides/using-sentry.mdx'),
-        makePage('guides/using-styled-components.mdx'),
         makePage('guides/typescript.mdx'),
       ]),
       makeSection('Expo accounts', [
