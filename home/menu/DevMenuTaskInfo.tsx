@@ -1,44 +1,115 @@
-import { Row, View, Text } from 'expo-dev-client-components';
+import Ionicons from '@expo/vector-icons/build/Ionicons';
+import Constants from 'expo-constants';
+import { Row, View, Text, useExpoTheme } from 'expo-dev-client-components';
 import React from 'react';
-import { Image, StyleSheet } from 'react-native';
+import { Image, Platform, StyleSheet } from 'react-native';
 
 type Props = {
-  task: { [key: string]: any };
+  task: { manifestUrl: string; manifestString: string };
 };
 
+function stringOrUndefined<T>(anything: T): string | undefined {
+  if (typeof anything === 'string') {
+    return anything;
+  }
+
+  return undefined;
+}
+
+function getInfoFromManifest(
+  manifest: NonNullable<typeof Constants.manifest | typeof Constants.manifest2>
+): {
+  iconUrl?: string;
+  taskName?: string;
+  sdkVersion?: string;
+  runtimeVersion?: string;
+  isVerified?: boolean;
+} {
+  if ('metadata' in manifest) {
+    // modern manifest
+    return {
+      iconUrl: undefined, // no icon for modern manifests
+      taskName: manifest.extra?.expoClient?.name,
+      sdkVersion: manifest.extra?.expoClient?.sdkVersion,
+      runtimeVersion: stringOrUndefined(manifest.runtimeVersion),
+      isVerified: (manifest as any).isVerified,
+    };
+  } else {
+    return {
+      iconUrl: manifest.iconUrl,
+      taskName: manifest.name,
+      sdkVersion: manifest.sdkVersion,
+      runtimeVersion: stringOrUndefined(manifest.runtimeVersion),
+      isVerified: manifest.isVerified,
+    };
+  }
+}
+
 export function DevMenuTaskInfo({ task }: Props) {
-  const manifest = task.manifestString && JSON.parse(task.manifestString);
-  const iconUrl = manifest && (manifest.iconUrl ?? manifest.extra?.expoClient?.iconUrl);
-  const taskName = manifest && (manifest.name ?? manifest.extra?.expoClient?.name);
-  const sdkVersion = manifest && (manifest.sdkVersion ?? manifest.extra?.expoClient?.sdkVersion);
-  const runtimeVersion = manifest && manifest.runtimeVersion;
+  const theme = useExpoTheme();
+
+  const manifest = task.manifestString
+    ? (JSON.parse(task.manifestString) as typeof Constants.manifest | typeof Constants.manifest2)
+    : null;
+  const manifestInfo = manifest ? getInfoFromManifest(manifest) : null;
 
   return (
     <View>
       <Row bg="default" padding="medium">
-        {!manifest?.metadata?.branchName && iconUrl ? (
-          // EAS Updates don't have icons
-          <Image source={{ uri: iconUrl }} style={styles.taskIcon} />
+        {manifestInfo?.iconUrl ? (
+          <Image source={{ uri: manifestInfo.iconUrl }} style={styles.taskIcon} />
         ) : null}
         <View flex="1" style={{ justifyContent: 'center' }}>
           <Text type="InterBold" color="default" size="medium" numberOfLines={1}>
-            {taskName ? taskName : 'Untitled Experience'}
+            {manifestInfo?.taskName ? manifestInfo.taskName : 'Untitled Experience'}
           </Text>
-          {sdkVersion && (
+          {manifestInfo?.sdkVersion && (
             <Text size="small" type="InterRegular" color="secondary">
               SDK version:{' '}
               <Text type="InterSemiBold" color="secondary" size="small">
-                {sdkVersion}
+                {manifestInfo.sdkVersion}
               </Text>
             </Text>
           )}
-          {runtimeVersion && (
+          {manifestInfo?.runtimeVersion && (
             <Text size="small" type="InterRegular" color="secondary">
               Runtime version:{' '}
               <Text type="InterSemiBold" color="secondary" size="small">
-                {runtimeVersion}
+                {manifestInfo.runtimeVersion}
               </Text>
             </Text>
+          )}
+          {!manifestInfo?.isVerified && (
+            <Row
+              bg="warning"
+              border="warning"
+              rounded="medium"
+              padding="0"
+              align="center"
+              style={{
+                alignSelf: 'flex-start',
+                marginTop: 3,
+              }}>
+              <Ionicons
+                name={Platform.select({ ios: 'ios-warning', default: 'md-warning' })}
+                size={14}
+                color={theme.text.warning}
+                lightColor={theme.text.warning}
+                darkColor={theme.text.warning}
+                style={{
+                  marginHorizontal: 4,
+                }}
+              />
+              <Text
+                color="warning"
+                type="InterSemiBold"
+                size="small"
+                style={{
+                  marginRight: 4,
+                }}>
+                Unverified
+              </Text>
+            </Row>
           )}
         </View>
       </Row>
