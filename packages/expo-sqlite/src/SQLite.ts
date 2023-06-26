@@ -4,7 +4,14 @@ import customOpenDatabase from '@expo/websql/custom';
 import { requireNativeModule } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
-import { Query, ResultSet, ResultSetError, SQLiteCallback, WebSQLDatabase } from './SQLite.types';
+import type {
+  Query,
+  ResultSet,
+  ResultSetError,
+  SQLiteCallback,
+  SQLTransactionAsyncCallback,
+  SQLTransactionAsync,
+} from './SQLite.types';
 
 const ExpoSQLite = requireNativeModule('ExpoSQLite');
 
@@ -16,7 +23,8 @@ function zipObject(keys: string[], values: any[]) {
   return result;
 }
 
-class SQLiteDatabase {
+/** The database returned by `openDatabase()` */
+export class SQLiteDatabase {
   _name: string;
   _closed: boolean = false;
 
@@ -24,6 +32,9 @@ class SQLiteDatabase {
     this._name = name;
   }
 
+  /**
+   * Executes the SQL statement and returns a callback resolving with the result.
+   */
   exec(queries: Query[], readOnly: boolean, callback: SQLiteCallback): void {
     if (this._closed) {
       throw new Error(`The SQLite database is closed`);
@@ -40,11 +51,39 @@ class SQLiteDatabase {
     );
   }
 
-  close() {
+  /**
+   * Executes the SQL statement and returns a Promise resolving with the result.
+   */
+  async execAsync(queries: Query[], readOnly: boolean): Promise<ResultSet[]> {
+    if (this._closed) {
+      throw new Error(`The SQLite database is closed`);
+    }
+
+    const nativeResultSets = await ExpoSQLite.exec(
+      this._name,
+      queries.map(_serializeQuery),
+      readOnly
+    );
+    return nativeResultSets.map(_deserializeResultSet);
+  }
+
+  /**
+   * @deprecated Use `closeAsync()` instead.
+   */
+  close = this.closeAsync;
+
+  /**
+   * Close the database.
+   */
+  closeAsync(): void {
     this._closed = true;
     return ExpoSQLite.close(this._name);
   }
 
+  /**
+   * Delete the database file.
+   * > The database has to be closed prior to deletion.
+   */
   deleteAsync(): Promise<void> {
     if (!this._closed) {
       throw new Error(
@@ -53,6 +92,26 @@ class SQLiteDatabase {
     }
 
     return ExpoSQLite.deleteAsync(this._name);
+  }
+
+  /**
+   * Creates a new transaction with Promise support.
+   * @param asyncCallback A `SQLTransactionAsyncCallback` function that can perform SQL statements in a transaction.
+   * @param readOnly true if all the SQL statements in the callback are read only.
+   */
+  async transactionAsync(
+    asyncCallback: SQLTransactionAsyncCallback,
+    readOnly: boolean = false
+  ): Promise<void> {
+    await this.execAsync([{ sql: 'BEGIN;', args: [] }], false);
+    try {
+      const transaction = new ExpoSQLTransactionAsync(this, readOnly);
+      await asyncCallback(transaction);
+      await this.execAsync([{ sql: 'END;', args: [] }], false);
+    } catch (e: unknown) {
+      await this.execAsync([{ sql: 'ROLLBACK;', args: [] }], false);
+      throw e;
+    }
   }
 }
 
@@ -114,14 +173,31 @@ export function openDatabase(
   version: string = '1.0',
   description: string = name,
   size: number = 1,
-  callback?: (db: WebSQLDatabase) => void
-): WebSQLDatabase {
+  callback?: (db: SQLiteDatabase) => void
+): SQLiteDatabase {
   if (name === undefined) {
     throw new TypeError(`The database name must not be undefined`);
   }
   const db = _openExpoSQLiteDatabase(name, version, description, size, callback);
   db.exec = db._db.exec.bind(db._db);
-  db.closeAsync = db._db.close.bind(db._db);
+  db.closeAsync = db._db.closeAsync.bind(db._db);
   db.deleteAsync = db._db.deleteAsync.bind(db._db);
+  db.transactionAsync = db._db.transactionAsync.bind(db._db);
   return db;
+}
+
+/**
+ * Internal data structure for the async transaction API.
+ * @internal
+ */
+export class ExpoSQLTransactionAsync implements SQLTransactionAsync {
+  constructor(private readonly db: SQLiteDatabase, private readonly readOnly: boolean) {}
+
+  async executeSqlAsync(sqlStatement: string, args?: (number | string)[]): Promise<ResultSet> {
+    const resultSets = await this.db.execAsync(
+      [{ sql: sqlStatement, args: args ?? [] }],
+      this.readOnly
+    );
+    return resultSets[0];
+  }
 }

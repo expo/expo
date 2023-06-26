@@ -455,4 +455,136 @@ export function test(t) {
       });
     }
   });
+
+  if (Platform.OS !== 'web') {
+    t.describe('SQLiteAsync', () => {
+      const throws = async (run) => {
+        let error = null;
+        try {
+          await run();
+        } catch (e) {
+          error = e;
+        }
+        t.expect(error).toBeTruthy();
+      };
+
+      t.it('should support async transaction', async () => {
+        const db = SQLite.openDatabase('test.db');
+
+        // create table
+        await db.transactionAsync(async (tx) => {
+          await tx.executeSqlAsync('DROP TABLE IF EXISTS Users;', []);
+          await tx.executeSqlAsync(
+            'CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));',
+            []
+          );
+        });
+
+        // fetch data from network
+        async function fakeUserFetcher(userID) {
+          switch (userID) {
+            case 1: {
+              return Promise.resolve('Tim Duncan');
+            }
+            case 2: {
+              return Promise.resolve('Manu Ginobili');
+            }
+            case 3: {
+              return Promise.resolve('Nikhilesh Sigatapu');
+            }
+            default: {
+              return null;
+            }
+          }
+        }
+
+        const userName = await fakeUserFetcher(1);
+        await db.transactionAsync(async (tx) => {
+          await tx.executeSqlAsync('INSERT INTO Users (name) VALUES (?)', [userName]);
+
+          const currentUser = (await tx.executeSqlAsync('SELECT * FROM Users LIMIT 1')).rows[0]
+            .name;
+          t.expect(currentUser).toEqual('Tim Duncan');
+        });
+      });
+
+      t.it('should support Promise.all', async () => {
+        const db = SQLite.openDatabase('test.db');
+
+        // create table
+        await db.transactionAsync(async (tx) => {
+          await tx.executeSqlAsync('DROP TABLE IF EXISTS Users;', []);
+          await tx.executeSqlAsync(
+            'CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));',
+            []
+          );
+        });
+
+        await db.transactionAsync(async (tx) => {
+          await Promise.all([
+            tx.executeSqlAsync('INSERT INTO Users (name) VALUES (?)', ['aaa']),
+            tx.executeSqlAsync('INSERT INTO Users (name) VALUES (?)', ['bbb']),
+            tx.executeSqlAsync('INSERT INTO Users (name) VALUES (?)', ['ccc']),
+          ]);
+
+          const recordCount = (await tx.executeSqlAsync('SELECT COUNT(*) FROM Users')).rows[0][
+            'COUNT(*)'
+          ];
+          t.expect(recordCount).toEqual(3);
+        });
+      });
+
+      t.it(
+        'should return `could not prepare ...` error when having write statements in readOnly transaction',
+        async () => {
+          const db = SQLite.openDatabase('test.db');
+
+          // create table in readOnly transaction
+          await db.transactionAsync(async (tx) => {
+            const result = await tx.executeSqlAsync('DROP TABLE IF EXISTS Users;', []);
+            t.expect(result.error).toBeDefined();
+            t.expect(result.error.message).toContain('could not prepare ');
+          }, true);
+        }
+      );
+
+      t.it('should rollback transaction when exception happens inside a transaction', async () => {
+        const db = SQLite.openDatabase('test.db');
+
+        // create table
+        await db.transactionAsync(async (tx) => {
+          await tx.executeSqlAsync('DROP TABLE IF EXISTS Users;', []);
+          await tx.executeSqlAsync(
+            'CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));',
+            []
+          );
+        });
+        await db.transactionAsync(async (tx) => {
+          await tx.executeSqlAsync('INSERT INTO Users (name) VALUES (?)', ['aaa']);
+        });
+        await db.transactionAsync(async (tx) => {
+          const recordCount = (await tx.executeSqlAsync('SELECT COUNT(*) FROM Users')).rows[0][
+            'COUNT(*)'
+          ];
+          t.expect(recordCount).toEqual(1);
+        }, true);
+
+        await throws(() =>
+          db.transactionAsync(async (tx) => {
+            await tx.executeSqlAsync('INSERT INTO Users (name) VALUES (?)', ['bbb']);
+            await tx.executeSqlAsync('INSERT INTO Users (name) VALUES (?)', ['ccc']);
+            // exeuting invalid sql statement will throw an exception
+            await tx.executeSqlAsync(undefined);
+          })
+        );
+
+        await db.transactionAsync(async (tx) => {
+          const recordCount = (await tx.executeSqlAsync('SELECT COUNT(*) FROM Users')).rows[0][
+            'COUNT(*)'
+          ];
+          t.expect(recordCount).toEqual(1);
+        }, true);
+      });
+    }); // t.describe('SQLiteAsync')
+  }
 }
