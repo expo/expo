@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed a regression after refactoring to Swift (restore functionality to print from web url or data string). ([#22997](https://github.com/expo/expo/pull/22997) by [@mroswald](https://github.com/mroswald), [@behenate](https://github.com/behenate))
+
 ### 💡 Others
 
 ## 12.4.0 — 2023-06-21
