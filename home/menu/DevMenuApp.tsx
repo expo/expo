@@ -36,13 +36,19 @@ function useAppColorScheme(uuid: string): ColorTheme {
   return theme === 'light' ? ColorTheme.LIGHT : ColorTheme.DARK;
 }
 
-class DevMenuRoot extends React.PureComponent<{ task: { [key: string]: any }; uuid: string }, any> {
+class DevMenuRoot extends React.PureComponent<
+  { task: { manifestUrl: string; manifestString: string }; uuid: string },
+  any
+> {
   render() {
     return <DevMenuApp {...this.props} />;
   }
 }
 
-function DevMenuApp(props: { task: { [key: string]: any }; uuid: string }) {
+function DevMenuApp(props: {
+  task: { manifestUrl: string; manifestString: string };
+  uuid: string;
+}) {
   const theme = useAppColorScheme(props.uuid);
 
   return (
