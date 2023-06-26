@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 import { theme, DocsLogo } from '@expo/styleguide';
-import { spacing } from '@expo/styleguide-base';
+import { breakpoints, spacing } from '@expo/styleguide-base';
 import {
   ArrowLeftIcon,
   GraduationHat02DuotoneIcon,
@@ -10,6 +10,7 @@ import {
 } from '@expo/styleguide-icons';
 
 import { shouldShowFeaturePreviewLink } from '~/constants/FeatureFlags.cjs';
+import { ThemeSelector } from '~/ui/components/Header/ThemeSelector';
 import { Search } from '~/ui/components/Search';
 import { SidebarSingleEntry } from '~/ui/components/Sidebar/SidebarSingleEntry';
 import { A } from '~/ui/components/Text';
@@ -32,7 +33,12 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
 
   return (
     <div css={sidebarHeadContainerStyle}>
-      <Search />
+      <div className="flex gap-3">
+        <Search />
+        <div css={hideOnMobileStyle}>
+          <ThemeSelector />
+        </div>
+      </div>
       <SidebarSingleEntry
         href="/"
         title="Home"
@@ -84,3 +90,9 @@ const sidebarBackLinkStyle = css({
   gap: spacing[3],
   alignItems: 'center',
 });
+
+const hideOnMobileStyle = css`
+  @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
+    display: none;
+  }
+`;

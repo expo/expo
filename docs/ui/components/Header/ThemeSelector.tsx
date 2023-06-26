@@ -41,19 +41,19 @@ export const ThemeSelector = () => {
           {themeName === 'light' && <SunSolidIcon className={ICON_CLASSES} />}
         </>
       )}
-      <ChevronDownIcon className="icon-xs text-icon-secondary absolute right-2 top-3 pointer-events-none" />
+      <ChevronDownIcon className="icon-xs text-icon-secondary absolute right-2 top-3.5 pointer-events-none" />
     </div>
   );
 };
 
-const ICON_CLASSES = 'icon-sm absolute left-2.5 top-2.5 text-icon-secondary pointer-events-none';
+const ICON_CLASSES = 'icon-sm absolute left-2.5 top-3 text-icon-secondary pointer-events-none';
 
 const selectStyle = css`
   ${typography.fontSizes[14]}
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 36px;
+  height: 40px;
   color: ${theme.text.default};
   line-height: 1.3;
   padding: 0;

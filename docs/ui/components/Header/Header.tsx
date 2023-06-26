@@ -26,39 +26,29 @@ export const Header = ({
   const isArchive = sidebarActiveGroup === 'archive';
   return (
     <>
-      <nav css={[containerStyle, isMobileMenuVisible]}>
+      <nav css={containerStyle}>
         <div css={[columnStyle, leftColumnStyle]}>
           <Logo subgroup={isArchive ? 'Archive' : undefined} />
-        </div>
-        <div css={[columnStyle, rightColumnStyle]}>
-          <Button
-            openInNewTab
-            theme="quaternary"
-            className="px-2 text-secondary"
-            href="https://blog.expo.dev">
-            Blog
-          </Button>
           <Button
             openInNewTab
             theme="quaternary"
             href="https://github.com/expo/expo"
             aria-label="GitHub"
             className="px-2">
-            <GithubIcon className="icon-lg" />
+            <GithubIcon className="icon-lg text-icon-secondary" />
           </Button>
-          <div css={hideOnMobileStyle}>
-            <ThemeSelector />
-          </div>
-          <div css={showOnMobileStyle}>
-            <Button
-              theme="quaternary"
-              css={[mobileButtonStyle, isMobileMenuVisible && mobileButtonActiveStyle]}
-              onClick={() => {
-                setMobileMenuVisible(!isMobileMenuVisible);
-              }}>
-              <Menu01Icon className="icon-sm" />
-            </Button>
-          </div>
+          <Button
+            theme="quaternary"
+            css={[
+              mobileButtonStyle,
+              showOnMobileStyle,
+              isMobileMenuVisible && mobileButtonActiveStyle,
+            ]}
+            onClick={() => {
+              setMobileMenuVisible(!isMobileMenuVisible);
+            }}>
+            <Menu01Icon className="icon-sm" />
+          </Button>
         </div>
       </nav>
       {isMobileMenuVisible && (
@@ -105,13 +95,14 @@ const columnStyle = css`
   background-color: transparent;
 
   @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
-    gap: ${spacing[4]}px;
+    gap: ${spacing[2]}px;
   }
 `;
 
 const leftColumnStyle = css`
   flex-grow: 1;
   align-items: center;
+  gap: ${spacing[2]}px;
 
   @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
     flex-basis: auto;
@@ -137,12 +128,6 @@ const showOnMobileStyle = css`
   }
 `;
 
-const hideOnMobileStyle = css`
-  @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
-    display: none;
-  }
-`;
-
 const mobileButtonStyle = css`
   padding: 0 ${spacing[3]}px;
 
@@ -153,7 +138,7 @@ const mobileButtonStyle = css`
 `;
 
 const mobileButtonActiveStyle = css`
-  background-color: ${theme.background.subtle};
+  background-color: ${theme.background.selected};
 `;
 
 const mobileSidebarStyle = css`

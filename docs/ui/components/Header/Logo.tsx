@@ -1,7 +1,6 @@
 import { css } from '@emotion/react';
 import { theme, typography, Logo as LogoIcon, WordMarkLogo, LinkBase } from '@expo/styleguide';
 import { breakpoints, spacing, borderRadius } from '@expo/styleguide-base';
-import { ChevronRightIcon } from '@expo/styleguide-icons';
 
 import { DocumentationIcon } from '~/ui/components/Sidebar/icons/Documentation';
 
@@ -10,7 +9,7 @@ type Props = {
 };
 
 export const Logo = ({ subgroup }: Props) => (
-  <div className="flex items-center gap-4">
+  <div className="flex flex-1 items-center gap-4">
     <LinkBase css={linkStyle} href="https://expo.dev">
       <WordMarkLogo
         className="w-[72px] mt-[1px] h-5 text-default my-1"
@@ -19,18 +18,12 @@ export const Logo = ({ subgroup }: Props) => (
       />
       <LogoIcon className="icon-lg mt-[1px] text-default" css={showOnMobile} title="Expo" />
     </LinkBase>
-    <LinkBase css={linkStyle} href="/">
+    <LinkBase css={linkStyle} href={subgroup ? `/${subgroup.toLowerCase()}/` : '/'}>
       <div css={iconContainer}>
         <DocumentationIcon className="icon-sm" />
       </div>
-      <span css={subtitleStyle}>Docs</span>
+      <span css={subtitleStyle}>{subgroup ?? 'Docs'}</span>
     </LinkBase>
-    {subgroup && (
-      <>
-        <ChevronRightIcon className="text-icon-secondary" css={[chevronStyle, hideOnMobile]} />
-        <span css={[subtitleStyle, hideOnMobile]}>{subgroup}</span>
-      </>
-    )}
   </div>
 );
 
@@ -41,15 +34,7 @@ const linkStyle = css`
   text-decoration: none;
   user-select: none;
   gap: ${spacing[2]}px;
-  outline-offset: 4px;
-`;
-
-const chevronStyle = css`
-  margin: 0 ${-spacing[2]}px;
-
-  @media screen and (max-width: ${breakpoints.medium}px) {
-    margin-left: ${spacing[0.5]}px;
-  }
+  outline-offset: 5px;
 `;
 
 const hideOnMobile = css`

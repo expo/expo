@@ -37,8 +37,18 @@ const STYLES_HEADER = css`
   width: 100%;
 
   @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
+    display: none;
+  }
+`;
+
+const STYLES_HEADER_MOBILE = css`
+  display: none;
+
+  @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
+    display: block;
+    flex-shrink: 0;
+    width: 100%;
     position: sticky;
-    top: -57px;
     z-index: 3;
     max-height: 100vh;
   }
@@ -222,9 +232,10 @@ export default class DocumentationNestedScrollLayout extends React.Component<Pro
 
     return (
       <div css={STYLES_CONTAINER}>
-        <div css={STYLES_HEADER}>{header}</div>
+        <div css={STYLES_HEADER_MOBILE}>{header}</div>
         <div css={STYLES_CONTENT}>
           <div css={[STYLES_SIDEBAR, STYLES_LEFT]}>
+            <div css={STYLES_HEADER}>{header}</div>
             <SidebarHead sidebarActiveGroup={sidebarActiveGroup} />
             <ScrollContainer ref={this.sidebarRef} scrollPosition={sidebarScrollPosition}>
               {sidebar}

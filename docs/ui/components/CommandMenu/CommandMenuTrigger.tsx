@@ -34,7 +34,7 @@ export const CommandMenuTrigger = ({ setOpen }: Props) => {
 
   return (
     <Button theme="secondary" css={buttonStyle} onClick={() => setOpen(true)}>
-      <SearchSmIcon />
+      <SearchSmIcon className="text-icon-secondary" />
       <CALLOUT css={labelStyle}>Search</CALLOUT>
       {isMac !== null && (
         <div css={[keysWrapperStyle, hideOnMobileStyle]}>
@@ -53,6 +53,7 @@ const buttonStyle = css({
   marginBottom: spacing[2.5],
   minHeight: spacing[10],
   display: 'flex',
+  flex: 1,
 
   '&:focus': {
     boxShadow: shadows.xs,
