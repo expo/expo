@@ -82,7 +82,7 @@ if (gradle.startParameter.taskRequests.args[0].toString().contains("Release")) {
 }
 
 def reactProperties = new Properties()
-file("$nodeModules/versioned-react-native/packages/react-native/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
+file("$defaultDir/gradle.properties").withInputStream { reactProperties.load(it) }
 def FULL_RN_VERSION =  (System.getenv("REACT_NATIVE_OVERRIDE_VERSION") ?: reactProperties.getProperty("VERSION_NAME"))
 def REACT_NATIVE_VERSION = FULL_RN_VERSION.split("\\.")[1].toInteger()
 def ENABLE_PREFAB = REACT_NATIVE_VERSION > 68

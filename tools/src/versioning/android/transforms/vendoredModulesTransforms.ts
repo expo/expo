@@ -22,7 +22,7 @@ export function vendoredModulesTransforms(prefix: string): Record<string, FileTr
           // Even though it not always correct, e.g. when ReactAndroid upgrades to newer version, the versions are inconsistent.
           // Since skia current only uses the `REACT_NATIVE_VERSION` property,
           // after we prebuild the lib and cleanup CMakeLists.txt, these properties are actually not be used.
-          find: '$nodeModules/versioned-react-native/ReactAndroid/gradle.properties',
+          find: '$nodeModules/versioned-react-native/packages/react-native/ReactAndroid/gradle.properties',
           replaceWith: '$defaultDir/gradle.properties',
         },
         {
