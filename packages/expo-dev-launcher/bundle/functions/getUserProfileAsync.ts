@@ -5,7 +5,6 @@ import { apiClient } from '../apiClient';
 export type UserData = {
   id: string;
   appCount: number;
-  email: string;
   username: string;
   profilePhoto: string;
   accounts: UserAccount[];
@@ -15,19 +14,18 @@ export type UserData = {
 export type UserAccount = {
   id: string;
   name: string;
-  owner?: {
+  ownerUserActor?: {
     username: string;
     fullName?: string;
-    profilePhoto?: string;
+    profilePhoto: string;
   };
 };
 
 const query = gql`
   {
-    me {
+    meUserActor {
       id
       appCount
-      email
       profilePhoto
       username
       isExpoAdmin
@@ -35,7 +33,7 @@ const query = gql`
       accounts {
         id
         name
-        owner {
+        ownerUserActor {
           username
           fullName
           profilePhoto
@@ -46,5 +44,6 @@ const query = gql`
 `;
 
 export async function getUserProfileAsync() {
-  return apiClient.request(query).then((data) => data.me as UserData);
+  const data = await apiClient.request(query);
+  return data.meUserActor as UserData;
 }

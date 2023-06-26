@@ -220,7 +220,6 @@ function renderBranchesScreen(mockNavigation: any) {
         appCount: 10,
         username: 'fakeUsername',
         profilePhoto: '123',
-        email: 'hello@joe.ca',
         isExpoAdmin: true,
         accounts: [],
       },
