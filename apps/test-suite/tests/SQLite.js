@@ -585,6 +585,29 @@ export function test(t) {
           t.expect(recordCount).toEqual(1);
         }, true);
       });
+
+      t.it('should support async PRAGMA statements', async () => {
+        const db = SQLite.openDatabase('test.db');
+        await db.transactionAsync(async (tx) => {
+          await tx.executeSqlAsync('DROP TABLE IF EXISTS SomeTable;', []);
+          await tx.executeSqlAsync(
+            'CREATE TABLE IF NOT EXISTS SomeTable (id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));',
+            []
+          );
+          // a result-returning pragma
+          let results = await tx.executeSqlAsync('PRAGMA table_info(SomeTable);', []);
+          t.expect(results.rows.length).toEqual(2);
+          t.expect(results.rows[0].name).toEqual('id');
+          t.expect(results.rows[1].name).toEqual('name');
+          // a no-result pragma
+          await tx.executeSqlAsync('PRAGMA case_sensitive_like = true;', []);
+          // a setter/getter pragma
+          await tx.executeSqlAsync('PRAGMA user_version = 123;', []);
+          results = await tx.executeSqlAsync('PRAGMA user_version;', []);
+          t.expect(results.rows.length).toEqual(1);
+          t.expect(results.rows[0].user_version).toEqual(123);
+        });
+      });
     }); // t.describe('SQLiteAsync')
   }
 }
