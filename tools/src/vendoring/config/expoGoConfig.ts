@@ -378,9 +378,6 @@ const config: VendoringTargetConfig = {
         excludeFiles: ['android/gradle{/**,**}', 'android/settings.gradle'],
       },
     },
-    'react-native-shared-element': {
-      source: 'https://github.com/IjzerenHein/react-native-shared-element',
-    },
     '@react-native-segmented-control/segmented-control': {
       source: 'https://github.com/react-native-segmented-control/segmented-control',
       ios: {},

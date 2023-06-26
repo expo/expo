@@ -36,7 +36,6 @@ const screens = [
   'Screens',
   'ScrollView',
   'SegmentedControl',
-  'SharedElement',
   'Slider',
   'Switch',
   'Text',
