@@ -43,7 +43,7 @@ const generalDirectories = fs
 // --- Navigation ---
 
 const home = [
-  makeSection('', [makePage('overview.mdx')]),
+  makePage('overview.mdx'),
   makeSection('Get started', [
     makePage('get-started/installation.mdx'),
     makePage('get-started/expo-go.mdx'),
