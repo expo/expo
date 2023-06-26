@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Use weak delegate for state machine. ([#23060](https://github.com/expo/expo/pull/23060) by [@wschurman](https://github.com/wschurman))
+
 ### 💡 Others
 
 ## 0.18.3 — 2023-06-24

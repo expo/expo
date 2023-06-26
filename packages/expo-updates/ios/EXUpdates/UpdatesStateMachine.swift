@@ -259,7 +259,7 @@ internal class UpdatesStateMachine {
   /**
    In production, this is the AppController instance.
    */
-  internal let changeEventDelegate: (any UpdatesStateChangeDelegate)
+  private weak var changeEventDelegate: (any UpdatesStateChangeDelegate)?
 
   /**
    The current state
@@ -377,7 +377,7 @@ internal class UpdatesStateMachine {
    On each state change, all context properties are sent to JS
    */
   private func sendChangeEventToJS(_ event: UpdatesStateEvent? = nil) {
-    changeEventDelegate.sendUpdateStateChangeEventToBridge(event?.type ?? .restart, body: [
+    changeEventDelegate?.sendUpdateStateChangeEventToBridge(event?.type ?? .restart, body: [
       "context": context.json
     ])
   }
