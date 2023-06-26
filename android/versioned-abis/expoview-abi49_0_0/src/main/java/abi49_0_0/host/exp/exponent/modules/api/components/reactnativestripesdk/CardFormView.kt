@@ -120,7 +120,8 @@ class CardFormView(context: ThemedReactContext) : FrameLayout(context) {
 
   private fun onChangeFocus() {
     mEventDispatcher?.dispatchEvent(
-      CardFocusEvent(id, currentFocusedField))
+      CardFocusEvent(id, currentFocusedField)
+    )
   }
 
   fun setCardStyle(value: ReadableMap) {
@@ -241,7 +242,8 @@ class CardFormView(context: ThemedReactContext) : FrameLayout(context) {
           }
 
           mEventDispatcher?.dispatchEvent(
-            CardFormCompleteEvent(id, cardDetails, isValid, dangerouslyGetFullCardDetails))
+            CardFormCompleteEvent(id, cardDetails, isValid, dangerouslyGetFullCardDetails)
+          )
 
           cardAddress = Address.Builder()
             .setPostalCode(it.address?.postalCode)
@@ -254,7 +256,8 @@ class CardFormView(context: ThemedReactContext) : FrameLayout(context) {
         cardParams = null
         cardAddress = null
         mEventDispatcher?.dispatchEvent(
-          CardFormCompleteEvent(id, null, isValid, dangerouslyGetFullCardDetails))
+          CardFormCompleteEvent(id, null, isValid, dangerouslyGetFullCardDetails)
+        )
       }
     }
 
@@ -264,19 +267,19 @@ class CardFormView(context: ThemedReactContext) : FrameLayout(context) {
     val postalCodeEditText = cardFormViewBinding.postalCode
 
     cardNumberEditText.onFocusChangeListener = OnFocusChangeListener { _, hasFocus ->
-      currentFocusedField = if (hasFocus) CardInputListener.FocusField.CardNumber.toString() else  null
+      currentFocusedField = if (hasFocus) CardInputListener.FocusField.CardNumber.toString() else null
       onChangeFocus()
     }
     cvcEditText.onFocusChangeListener = OnFocusChangeListener { _, hasFocus ->
-      currentFocusedField = if (hasFocus) CardInputListener.FocusField.Cvc.toString() else  null
+      currentFocusedField = if (hasFocus) CardInputListener.FocusField.Cvc.toString() else null
       onChangeFocus()
     }
     expiryEditText.onFocusChangeListener = OnFocusChangeListener { _, hasFocus ->
-      currentFocusedField = if (hasFocus) CardInputListener.FocusField.ExpiryDate.toString() else  null
+      currentFocusedField = if (hasFocus) CardInputListener.FocusField.ExpiryDate.toString() else null
       onChangeFocus()
     }
     postalCodeEditText.onFocusChangeListener = OnFocusChangeListener { _, hasFocus ->
-      currentFocusedField = if (hasFocus) CardInputListener.FocusField.PostalCode.toString() else  null
+      currentFocusedField = if (hasFocus) CardInputListener.FocusField.PostalCode.toString() else null
       onChangeFocus()
     }
   }
@@ -312,7 +315,8 @@ class CardFormView(context: ThemedReactContext) : FrameLayout(context) {
   private val mLayoutRunnable = Runnable {
     measure(
       MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
-      MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY))
+      MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY)
+    )
     layout(left, top, right, bottom)
   }
 }

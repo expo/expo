@@ -3,7 +3,6 @@ package abi49_0_0.host.exp.exponent.modules.api.components.reactnativestripesdk.
 import android.os.Bundle
 import android.util.Log
 import android.widget.FrameLayout
-import abi49_0_0.com.facebook.react.bridge.Arguments
 import abi49_0_0.com.facebook.react.bridge.ReadableMap
 import abi49_0_0.com.facebook.react.bridge.WritableMap
 import abi49_0_0.com.facebook.react.bridge.WritableNativeMap
@@ -18,7 +17,6 @@ import abi49_0_0.host.exp.exponent.modules.api.components.reactnativestripesdk.u
 import com.stripe.android.paymentsheet.PaymentSheet
 import com.stripe.android.paymentsheet.addresselement.AddressDetails
 import com.stripe.android.paymentsheet.addresselement.AddressLauncher
-import com.stripe.android.paymentsheet.addresselement.AddressLauncherResult
 
 class AddressSheetView(private val context: ThemedReactContext) : FrameLayout(context) {
   private var eventDispatcher: EventDispatcher? = context.getNativeModule(UIManagerModule::class.java)?.eventDispatcher

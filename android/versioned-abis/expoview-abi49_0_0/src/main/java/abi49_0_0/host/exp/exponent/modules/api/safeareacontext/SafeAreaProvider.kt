@@ -8,7 +8,7 @@ import abi49_0_0.com.facebook.react.views.view.ReactViewGroup
 typealias OnInsetsChangeHandler = (view: SafeAreaProvider, insets: EdgeInsets, frame: Rect) -> Unit
 
 class SafeAreaProvider(context: Context?) :
-    ReactViewGroup(context), ViewTreeObserver.OnPreDrawListener {
+  ReactViewGroup(context), ViewTreeObserver.OnPreDrawListener {
   private var mInsetsChangeHandler: OnInsetsChangeHandler? = null
   private var mLastInsets: EdgeInsets? = null
   private var mLastFrame: Rect? = null

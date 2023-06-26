@@ -81,7 +81,8 @@ class CardFieldView(context: ThemedReactContext) : FrameLayout(context) {
 
   private fun onChangeFocus() {
     mEventDispatcher?.dispatchEvent(
-      CardFocusEvent(id, currentFocusedField))
+      CardFocusEvent(id, currentFocusedField)
+    )
   }
 
   fun setCardStyle(value: ReadableMap) {
@@ -173,7 +174,8 @@ class CardFieldView(context: ThemedReactContext) : FrameLayout(context) {
     } catch (e: Exception) {
       Log.e(
         "StripeReactNative",
-        "Unable to set card brand tint color: " + e.message)
+        "Unable to set card brand tint color: " + e.message
+      )
     }
   }
 
@@ -252,7 +254,8 @@ class CardFieldView(context: ThemedReactContext) : FrameLayout(context) {
 
   private fun sendCardDetailsEvent() {
     mEventDispatcher?.dispatchEvent(
-      CardChangedEvent(id, cardDetails, mCardWidget.postalCodeEnabled, isCardValid, dangerouslyGetFullCardDetails))
+      CardChangedEvent(id, cardDetails, mCardWidget.postalCodeEnabled, isCardValid, dangerouslyGetFullCardDetails)
+    )
   }
 
   private fun setListeners() {
@@ -375,7 +378,8 @@ class CardFieldView(context: ThemedReactContext) : FrameLayout(context) {
   private val mLayoutRunnable = Runnable {
     measure(
       MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
-      MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY))
+      MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY)
+    )
     layout(left, top, right, bottom)
   }
 }

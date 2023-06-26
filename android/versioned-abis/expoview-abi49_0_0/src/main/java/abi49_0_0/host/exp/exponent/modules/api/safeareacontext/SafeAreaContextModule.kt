@@ -8,7 +8,7 @@ import abi49_0_0.com.facebook.react.module.annotations.ReactModule
 
 @ReactModule(name = SafeAreaContextModule.NAME)
 class SafeAreaContextModule(reactContext: ReactApplicationContext?) :
-    NativeSafeAreaContextSpec(reactContext) {
+  NativeSafeAreaContextSpec(reactContext) {
   override fun getName(): String {
     return NAME
   }

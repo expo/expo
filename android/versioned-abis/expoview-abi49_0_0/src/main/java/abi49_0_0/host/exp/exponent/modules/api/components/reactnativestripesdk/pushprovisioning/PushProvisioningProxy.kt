@@ -14,7 +14,6 @@ import abi49_0_0.host.exp.exponent.modules.api.components.reactnativestripesdk.u
 import com.stripe.android.pushProvisioning.PushProvisioningActivity
 import com.stripe.android.pushProvisioning.PushProvisioningActivityStarter
 
-
 object PushProvisioningProxy {
   private const val TAG = "StripePushProvisioning"
   private var description = "Added by Stripe"
@@ -40,11 +39,11 @@ object PushProvisioningProxy {
   }
 
   fun invoke(
-          context: ReactApplicationContext,
-          view: AddToWalletButtonView,
-          cardDescription: String,
-          ephemeralKey: String,
-          token: ReadableMap?
+    context: ReactApplicationContext,
+    view: AddToWalletButtonView,
+    cardDescription: String,
+    ephemeralKey: String,
+    token: ReadableMap?
   ) {
     try {
       Class.forName("com.stripe.android.pushProvisioning.PushProvisioningActivityStarter")
@@ -61,7 +60,8 @@ object PushProvisioningProxy {
         view.dispatchEvent(
           createError(
             "Failed",
-            "Activity doesn't exist yet. You can safely retry.")
+            "Activity doesn't exist yet. You can safely retry."
+          )
         )
       }
     } catch (e: Exception) {
@@ -121,9 +121,9 @@ class DefaultPushProvisioningProxy {
     description: String,
     provider: EphemeralKeyProvider
   ) {
-      PushProvisioningActivityStarter(
-        activity,
-        PushProvisioningActivityStarter.Args(description, provider, false)
-      ).startForResult()
+    PushProvisioningActivityStarter(
+      activity,
+      PushProvisioningActivityStarter.Args(description, provider, false)
+    ).startForResult()
   }
 }

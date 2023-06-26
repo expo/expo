@@ -79,9 +79,9 @@ class SafeAreaViewShadowNode : LayoutShadowNode() {
   }
 
   private fun getEdgeValue(
-      edgeMode: SafeAreaViewEdgeModes,
-      insetValue: Float,
-      edgeValue: Float
+    edgeMode: SafeAreaViewEdgeModes,
+    insetValue: Float,
+    edgeValue: Float
   ): Float {
     if (edgeMode == SafeAreaViewEdgeModes.OFF) {
       return edgeValue
@@ -129,41 +129,45 @@ class SafeAreaViewShadowNode : LayoutShadowNode() {
 
   // Names needs to reflect exact order in LayoutShadowNode.java
   @ReactPropGroup(
-      names =
-          [
-              ViewProps.PADDING,
-              ViewProps.PADDING_VERTICAL,
-              ViewProps.PADDING_HORIZONTAL,
-              ViewProps.PADDING_START,
-              ViewProps.PADDING_END,
-              ViewProps.PADDING_TOP,
-              ViewProps.PADDING_BOTTOM,
-              ViewProps.PADDING_LEFT,
-              ViewProps.PADDING_RIGHT])
+    names =
+    [
+      ViewProps.PADDING,
+      ViewProps.PADDING_VERTICAL,
+      ViewProps.PADDING_HORIZONTAL,
+      ViewProps.PADDING_START,
+      ViewProps.PADDING_END,
+      ViewProps.PADDING_TOP,
+      ViewProps.PADDING_BOTTOM,
+      ViewProps.PADDING_LEFT,
+      ViewProps.PADDING_RIGHT
+    ]
+  )
   override fun setPaddings(index: Int, padding: Dynamic) {
     val spacingType = ViewProps.PADDING_MARGIN_SPACING_TYPES[index]
     mPaddings[spacingType] =
-        if (padding.type == ReadableType.Number) padding.asDouble().toFloat() else Float.NaN
+      if (padding.type == ReadableType.Number) padding.asDouble().toFloat() else Float.NaN
     super.setPaddings(index, padding)
     mNeedsUpdate = true
   }
 
   @ReactPropGroup(
-      names =
-          [
-              ViewProps.MARGIN,
-              ViewProps.MARGIN_VERTICAL,
-              ViewProps.MARGIN_HORIZONTAL,
-              ViewProps.MARGIN_START,
-              ViewProps.MARGIN_END,
-              ViewProps.MARGIN_TOP,
-              ViewProps.MARGIN_BOTTOM,
-              ViewProps.MARGIN_LEFT,
-              ViewProps.MARGIN_RIGHT])
+    names =
+    [
+      ViewProps.MARGIN,
+      ViewProps.MARGIN_VERTICAL,
+      ViewProps.MARGIN_HORIZONTAL,
+      ViewProps.MARGIN_START,
+      ViewProps.MARGIN_END,
+      ViewProps.MARGIN_TOP,
+      ViewProps.MARGIN_BOTTOM,
+      ViewProps.MARGIN_LEFT,
+      ViewProps.MARGIN_RIGHT
+    ]
+  )
   override fun setMargins(index: Int, margin: Dynamic) {
     val spacingType = ViewProps.PADDING_MARGIN_SPACING_TYPES[index]
     mMargins[spacingType] =
-        if (margin.type == ReadableType.Number) margin.asDouble().toFloat() else Float.NaN
+      if (margin.type == ReadableType.Number) margin.asDouble().toFloat() else Float.NaN
     super.setMargins(index, margin)
     mNeedsUpdate = true
   }

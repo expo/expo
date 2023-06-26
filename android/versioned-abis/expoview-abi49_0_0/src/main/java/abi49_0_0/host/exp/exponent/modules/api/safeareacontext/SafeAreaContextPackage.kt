@@ -1,5 +1,4 @@
 package abi49_0_0.host.exp.exponent.modules.api.safeareacontext
-import host.exp.expoview.BuildConfig
 
 import abi49_0_0.com.facebook.react.TurboReactPackage
 import abi49_0_0.com.facebook.react.bridge.NativeModule
@@ -26,14 +25,15 @@ class SafeAreaContextPackage : TurboReactPackage() {
     for (moduleClass in moduleList) {
       val reactModule = moduleClass.getAnnotation(ReactModule::class.java) ?: continue
       reactModuleInfoMap[reactModule.name] =
-          ReactModuleInfo(
-              reactModule.name,
-              moduleClass.name,
-              true,
-              reactModule.needsEagerInit,
-              reactModule.hasConstants,
-              reactModule.isCxxModule,
-              TurboModule::class.java.isAssignableFrom(moduleClass))
+        ReactModuleInfo(
+          reactModule.name,
+          moduleClass.name,
+          true,
+          reactModule.needsEagerInit,
+          reactModule.hasConstants,
+          reactModule.isCxxModule,
+          TurboModule::class.java.isAssignableFrom(moduleClass)
+        )
     }
     return ReactModuleInfoProvider { reactModuleInfoMap }
   }

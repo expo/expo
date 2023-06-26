@@ -291,11 +291,13 @@ class PaymentMethodCreateParamsFactory(
             paymentMethodId,
             paymentMethodOptions = paymentMethodOptionParams,
             clientSecret = clientSecret,
-            setupFutureUsage = setupFutureUsage)
+            setupFutureUsage = setupFutureUsage
+          )
         else
           ConfirmSetupIntentParams.create(
             paymentMethodId,
-            clientSecret)
+            clientSecret
+          )
         )
     } else {
       val paymentMethodCreateParams = createCardPaymentMethodParams()
@@ -305,7 +307,8 @@ class PaymentMethodCreateParamsFactory(
             .createWithPaymentMethodCreateParams(
               paymentMethodCreateParams,
               clientSecret,
-              setupFutureUsage = setupFutureUsage)
+              setupFutureUsage = setupFutureUsage
+            )
         else
           ConfirmSetupIntentParams
             .create(paymentMethodCreateParams, clientSecret)
@@ -383,12 +386,16 @@ class PaymentMethodCreateParamsFactory(
         getValOr(
           params,
           "accountType",
-          null)),
+          null
+        )
+      ),
       mapToUSBankAccountHolderType(
         getValOr(
           params,
           "accountHolderType",
-          null))
+          null
+        )
+      )
     )
 
     return PaymentMethodCreateParams.Companion.create(
@@ -402,10 +409,12 @@ class PaymentMethodCreateParamsFactory(
     getMapOrNull(paymentMethodData, "mandateData")?.let { mandateData ->
       getMapOrNull(mandateData, "customerAcceptance")?.let { customerAcceptance ->
         getMapOrNull(customerAcceptance, "online")?.let { onlineParams ->
-          return MandateDataParams(MandateDataParams.Type.Online(
-            ipAddress = getValOr(onlineParams, "ipAddress", "") ?: "",
-            userAgent = getValOr(onlineParams, "userAgent", "") ?: "",
-          ))
+          return MandateDataParams(
+            MandateDataParams.Type.Online(
+              ipAddress = getValOr(onlineParams, "ipAddress", "") ?: "",
+              userAgent = getValOr(onlineParams, "userAgent", "") ?: "",
+            )
+          )
         }
       }
     }

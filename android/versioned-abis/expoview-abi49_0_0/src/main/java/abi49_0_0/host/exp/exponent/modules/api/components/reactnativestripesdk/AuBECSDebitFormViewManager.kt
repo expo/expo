@@ -11,7 +11,8 @@ class AuBECSDebitFormViewManager : SimpleViewManager<AuBECSDebitFormView>() {
 
   override fun getExportedCustomDirectEventTypeConstants(): MutableMap<String, Any> {
     return MapBuilder.of(
-      FormCompleteEvent.EVENT_NAME, MapBuilder.of("registrationName", "onCompleteAction"))
+      FormCompleteEvent.EVENT_NAME, MapBuilder.of("registrationName", "onCompleteAction")
+    )
   }
 
   @ReactProp(name = "companyName")

@@ -20,7 +20,8 @@ object TapAndPayProxy {
       val tapAndPayClass = Class.forName("com.google.android.gms.tapandpay.TapAndPay")
       val getClientMethod = tapAndPayClass.getMethod(
         "getClient",
-        Activity::class.java)
+        Activity::class.java
+      )
       val client = getClientMethod.invoke(null, activity)
 
       val tapAndPayClientClass = Class.forName("com.google.android.gms.tapandpay.TapAndPayClient")
@@ -44,7 +45,6 @@ object TapAndPayProxy {
     }
   }
 
-
   fun findExistingToken(activity: Activity, newCardLastFour: String, callback: TokenCheckHandler) {
     val tokens = getTapandPayTokens(activity)
     if (tokens == null) {
@@ -56,7 +56,7 @@ object TapAndPayProxy {
       if (task.isSuccessful) {
         for (token in task.result) {
           if (isTokenInWallet(token, newCardLastFour)) {
-            callback(true,  mapFromTokenInfo(token), null)
+            callback(true, mapFromTokenInfo(token), null)
             return@addOnCompleteListener
           }
         }
@@ -71,13 +71,15 @@ object TapAndPayProxy {
     try {
       val tapAndPayClientClass = Class.forName("com.google.android.gms.tapandpay.TapAndPayClient")
       val tokenizeMethod = tapAndPayClientClass::class.java.getMethod("tokenize", Activity::class.java, String::class.java, Int::class.java, String::class.java, Int::class.java, Int::class.java)
-      tokenizeMethod.invoke(tapAndPayClient,
-                            activity,
-                            tokenReferenceId,
-                            token.getInt("serviceProvider"),
-                            cardDescription,
-                            token.getInt("network"),
-                            REQUEST_CODE_TOKENIZE)
+      tokenizeMethod.invoke(
+        tapAndPayClient,
+        activity,
+        tokenReferenceId,
+        token.getInt("serviceProvider"),
+        cardDescription,
+        token.getInt("network"),
+        REQUEST_CODE_TOKENIZE
+      )
     } catch (e: Exception) {
       Log.e(TAG, "Google TapAndPay dependency not found.")
     }
@@ -90,25 +92,33 @@ object TapAndPayProxy {
         val tokenInfoClass = Class.forName("com.google.android.gms.tapandpay.issuer.TokenInfo")
         result.putString(
           "id",
-          tokenInfoClass.getMethod("getIssuerTokenId").invoke(it) as String)
+          tokenInfoClass.getMethod("getIssuerTokenId").invoke(it) as String
+        )
         result.putString(
           "cardLastFour",
-          tokenInfoClass.getMethod("getFpanLastFour").invoke(it) as String)
+          tokenInfoClass.getMethod("getFpanLastFour").invoke(it) as String
+        )
         result.putString(
           "issuer",
-          tokenInfoClass.getMethod("getIssuerName").invoke(it) as String)
+          tokenInfoClass.getMethod("getIssuerName").invoke(it) as String
+        )
         result.putString(
           "status",
-          mapFromTokenState(tokenInfoClass.getMethod("getTokenState").invoke(it) as Int))
+          mapFromTokenState(tokenInfoClass.getMethod("getTokenState").invoke(it) as Int)
+        )
         result.putInt(
           "network",
-          tokenInfoClass.getMethod("getNetwork").invoke(it) as Int)
+          tokenInfoClass.getMethod("getNetwork").invoke(it) as Int
+        )
         result.putInt(
           "serviceProvider",
-          tokenInfoClass.getMethod("getTokenServiceProvider").invoke(it) as Int)
+          tokenInfoClass.getMethod("getTokenServiceProvider").invoke(it) as Int
+        )
       } catch (e: Exception) {
-        Log.e(TAG,
-          "There was a problem finding the class com.google.android.gms.tapandpay.issuer.TokenInfo. Make sure you've included Google's TapAndPay dependency.")
+        Log.e(
+          TAG,
+          "There was a problem finding the class com.google.android.gms.tapandpay.issuer.TokenInfo. Make sure you've included Google's TapAndPay dependency."
+        )
       }
     }
     return result
@@ -127,8 +137,10 @@ object TapAndPayProxy {
         else -> "UNKNOWN"
       }
     } catch (e: Exception) {
-      Log.e(TAG,
-            "There was a problem finding Google's TapAndPay dependency.")
+      Log.e(
+        TAG,
+        "There was a problem finding Google's TapAndPay dependency."
+      )
       return "UNKNOWN"
     }
   }

@@ -3,7 +3,6 @@ package abi49_0_0.host.exp.exponent.modules.api.components.reactnativestripesdk
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import abi49_0_0.com.facebook.react.bridge.ReactContext
 import abi49_0_0.host.exp.exponent.modules.api.components.reactnativestripesdk.utils.PaymentSheetAppearanceException
 import com.stripe.android.paymentsheet.PaymentSheet
 
@@ -30,7 +29,7 @@ private fun buildTypography(fontParams: Bundle?, context: Context): PaymentSheet
 
 @Throws(PaymentSheetAppearanceException::class)
 private fun colorFromHexOrDefault(hexString: String?, default: Int): Int {
-  return hexString?.trim()?.replace("#","")?.let {
+  return hexString?.trim()?.replace("#", "")?.let {
     if (it.length == 6 || it.length == 8) {
       return Color.parseColor("#$it")
     } else throw PaymentSheetAppearanceException("Failed to set Payment Sheet appearance. Expected hex string of length 6 or 8, but received: $it")
@@ -129,7 +128,7 @@ private fun getFontResId(bundle: Bundle?, key: String, defaultValue: Int?, conte
   }
 
   val fontFileName = bundle.getString(key)
-          ?: throw PaymentSheetAppearanceException("$fontErrorPrefix expected String for font.$key, but received null.")
+    ?: throw PaymentSheetAppearanceException("$fontErrorPrefix expected String for font.$key, but received null.")
   if (Regex("[^a-z0-9]").containsMatchIn(fontFileName)) {
     throw PaymentSheetAppearanceException(
       "$fontErrorPrefix appearance.font.$key should only contain lowercase alphanumeric characters on Android, but received '$fontFileName'. This value must match the filename in android/app/src/main/res/font"

@@ -7,10 +7,10 @@ import abi49_0_0.com.facebook.react.uimanager.events.Event
 import abi49_0_0.com.facebook.react.uimanager.events.RCTEventEmitter
 
 internal class InsetsChangeEvent(
-    @Suppress("UNUSED_PARAMETER") surfaceId: Int,
-    viewTag: Int,
-    private val mInsets: EdgeInsets,
-    private val mFrame: Rect
+  @Suppress("UNUSED_PARAMETER") surfaceId: Int,
+  viewTag: Int,
+  private val mInsets: EdgeInsets,
+  private val mFrame: Rect
 // New ctor is only available in RN 0.65.
 ) : Event<InsetsChangeEvent>(viewTag) {
   override fun getEventName() = EVENT_NAME

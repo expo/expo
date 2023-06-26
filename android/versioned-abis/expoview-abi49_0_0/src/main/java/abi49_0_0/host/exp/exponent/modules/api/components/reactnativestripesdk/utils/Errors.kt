@@ -68,7 +68,8 @@ internal fun createMissingActivityError(): WritableMap {
     null,
     null,
     null,
-    null)
+    null
+  )
 }
 
 internal fun createError(code: String, error: PaymentIntent.Error?): WritableMap {
@@ -101,7 +102,8 @@ internal fun createError(code: String, error: Throwable): WritableMap {
   (error as? Exception)?.let {
     return createError(
       code,
-      it)
+      it
+    )
   }
   return mapError(
     code,
@@ -109,7 +111,8 @@ internal fun createError(code: String, error: Throwable): WritableMap {
     error.localizedMessage,
     null,
     null,
-    null)
+    null
+  )
 }
 
 internal fun createMissingInitError(): WritableMap {

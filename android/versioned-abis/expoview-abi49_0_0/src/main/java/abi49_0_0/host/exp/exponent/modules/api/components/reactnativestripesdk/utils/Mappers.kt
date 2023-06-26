@@ -41,7 +41,6 @@ internal fun mapIntentStatus(status: StripeIntent.Status?): String {
   }
 }
 
-
 internal fun mapCaptureMethod(captureMethod: PaymentIntent.CaptureMethod?): String {
   return when (captureMethod) {
     PaymentIntent.CaptureMethod.Automatic -> "Automatic"
@@ -310,7 +309,6 @@ internal fun mapFromCard(card: Card?): WritableMap? {
   return cardMap
 }
 
-
 internal fun mapFromToken(token: Token): WritableMap {
   val tokenMap: WritableMap = WritableNativeMap()
   tokenMap.putString("id", token.id)
@@ -332,66 +330,95 @@ internal fun mapFromPaymentMethod(paymentMethod: PaymentMethod): WritableMap {
   pm.putBoolean("livemode", paymentMethod.liveMode)
   pm.putString("customerId", paymentMethod.customerId)
   pm.putMap("billingDetails", mapFromBillingDetails(paymentMethod.billingDetails))
-  pm.putMap("Card", WritableNativeMap().also {
-    it.putString("brand", mapCardBrand(paymentMethod.card?.brand))
-    it.putString("country", paymentMethod.card?.country)
-    paymentMethod.card?.expiryYear?.let { year ->
-      it.putInt("expYear", year)
+  pm.putMap(
+    "Card",
+    WritableNativeMap().also {
+      it.putString("brand", mapCardBrand(paymentMethod.card?.brand))
+      it.putString("country", paymentMethod.card?.country)
+      paymentMethod.card?.expiryYear?.let { year ->
+        it.putInt("expYear", year)
+      }
+      paymentMethod.card?.expiryMonth?.let { month ->
+        it.putInt("expMonth", month)
+      }
+      it.putString("funding", paymentMethod.card?.funding)
+      it.putString("last4", paymentMethod.card?.last4)
+      it.putString("fingerprint", paymentMethod.card?.fingerprint)
+      it.putString("preferredNetwork", paymentMethod.card?.networks?.preferred)
+      it.putArray("availableNetworks", paymentMethod.card?.networks?.available?.toList() as? ReadableArray)
+      it.putMap(
+        "threeDSecureUsage",
+        WritableNativeMap().also { threeDSecureUsageMap ->
+          threeDSecureUsageMap.putBoolean("isSupported", paymentMethod.card?.threeDSecureUsage?.isSupported ?: false)
+        }
+      )
     }
-    paymentMethod.card?.expiryMonth?.let { month ->
-      it.putInt("expMonth", month)
+  )
+  pm.putMap(
+    "SepaDebit",
+    WritableNativeMap().also {
+      it.putString("bankCode", paymentMethod.sepaDebit?.bankCode)
+      it.putString("country", paymentMethod.sepaDebit?.country)
+      it.putString("fingerprint", paymentMethod.sepaDebit?.fingerprint)
+      it.putString("last4", paymentMethod.sepaDebit?.branchCode)
     }
-    it.putString("funding", paymentMethod.card?.funding)
-    it.putString("last4", paymentMethod.card?.last4)
-    it.putString("fingerprint", paymentMethod.card?.fingerprint)
-    it.putString("preferredNetwork", paymentMethod.card?.networks?.preferred)
-    it.putArray("availableNetworks", paymentMethod.card?.networks?.available?.toList() as? ReadableArray)
-    it.putMap("threeDSecureUsage", WritableNativeMap().also { threeDSecureUsageMap ->
-      threeDSecureUsageMap.putBoolean("isSupported", paymentMethod.card?.threeDSecureUsage?.isSupported ?: false)
-    })
-  })
-  pm.putMap("SepaDebit", WritableNativeMap().also {
-    it.putString("bankCode", paymentMethod.sepaDebit?.bankCode)
-    it.putString("country", paymentMethod.sepaDebit?.country)
-    it.putString("fingerprint", paymentMethod.sepaDebit?.fingerprint)
-    it.putString("last4", paymentMethod.sepaDebit?.branchCode)
-  })
-  pm.putMap("BacsDebit", WritableNativeMap().also {
-    it.putString("fingerprint", paymentMethod.bacsDebit?.fingerprint)
-    it.putString("last4", paymentMethod.bacsDebit?.last4)
-    it.putString("sortCode", paymentMethod.bacsDebit?.sortCode)
-  })
-  pm.putMap("AuBecsDebit",
+  )
+  pm.putMap(
+    "BacsDebit",
+    WritableNativeMap().also {
+      it.putString("fingerprint", paymentMethod.bacsDebit?.fingerprint)
+      it.putString("last4", paymentMethod.bacsDebit?.last4)
+      it.putString("sortCode", paymentMethod.bacsDebit?.sortCode)
+    }
+  )
+  pm.putMap(
+    "AuBecsDebit",
     WritableNativeMap().also {
       it.putString("bsbNumber", paymentMethod.bacsDebit?.sortCode)
       it.putString("fingerprint", paymentMethod.bacsDebit?.fingerprint)
       it.putString("last4", paymentMethod.bacsDebit?.last4)
-    })
-  pm.putMap("Sofort", WritableNativeMap().also {
-    it.putString("country", paymentMethod.sofort?.country)
-  })
-  pm.putMap("Ideal", WritableNativeMap().also {
-    it.putString("bankName", paymentMethod.ideal?.bank)
-    it.putString("bankIdentifierCode", paymentMethod.ideal?.bankIdentifierCode)
-  })
-  pm.putMap("Fpx", WritableNativeMap().also {
-    it.putString("accountHolderType", paymentMethod.fpx?.accountHolderType)
-    it.putString("bank", paymentMethod.fpx?.bank)
-  })
-  pm.putMap("Upi", WritableNativeMap().also {
-    it.putString("vpa", paymentMethod.upi?.vpa)
-  })
-  pm.putMap("USBankAccount", WritableNativeMap().also {
-    it.putString("routingNumber", paymentMethod.usBankAccount?.routingNumber)
-    it.putString("accountType", mapFromUSBankAccountType(paymentMethod.usBankAccount?.accountType))
-    it.putString("accountHolderType", mapFromUSBankAccountHolderType(paymentMethod.usBankAccount?.accountHolderType))
-    it.putString("last4", paymentMethod.usBankAccount?.last4)
-    it.putString("bankName", paymentMethod.usBankAccount?.bankName)
-    it.putString("linkedAccount", paymentMethod.usBankAccount?.linkedAccount)
-    it.putString("fingerprint", paymentMethod.usBankAccount?.fingerprint)
-    it.putString("preferredNetworks", paymentMethod.usBankAccount?.networks?.preferred)
-    it.putArray("supportedNetworks", paymentMethod.usBankAccount?.networks?.supported as? ReadableArray)
-  })
+    }
+  )
+  pm.putMap(
+    "Sofort",
+    WritableNativeMap().also {
+      it.putString("country", paymentMethod.sofort?.country)
+    }
+  )
+  pm.putMap(
+    "Ideal",
+    WritableNativeMap().also {
+      it.putString("bankName", paymentMethod.ideal?.bank)
+      it.putString("bankIdentifierCode", paymentMethod.ideal?.bankIdentifierCode)
+    }
+  )
+  pm.putMap(
+    "Fpx",
+    WritableNativeMap().also {
+      it.putString("accountHolderType", paymentMethod.fpx?.accountHolderType)
+      it.putString("bank", paymentMethod.fpx?.bank)
+    }
+  )
+  pm.putMap(
+    "Upi",
+    WritableNativeMap().also {
+      it.putString("vpa", paymentMethod.upi?.vpa)
+    }
+  )
+  pm.putMap(
+    "USBankAccount",
+    WritableNativeMap().also {
+      it.putString("routingNumber", paymentMethod.usBankAccount?.routingNumber)
+      it.putString("accountType", mapFromUSBankAccountType(paymentMethod.usBankAccount?.accountType))
+      it.putString("accountHolderType", mapFromUSBankAccountHolderType(paymentMethod.usBankAccount?.accountHolderType))
+      it.putString("last4", paymentMethod.usBankAccount?.last4)
+      it.putString("bankName", paymentMethod.usBankAccount?.bankName)
+      it.putString("linkedAccount", paymentMethod.usBankAccount?.linkedAccount)
+      it.putString("fingerprint", paymentMethod.usBankAccount?.fingerprint)
+      it.putString("preferredNetworks", paymentMethod.usBankAccount?.networks?.preferred)
+      it.putArray("supportedNetworks", paymentMethod.usBankAccount?.networks?.supported as? ReadableArray)
+    }
+  )
 
   return pm
 }
@@ -402,11 +429,14 @@ internal fun mapFromPaymentIntentResult(paymentIntent: PaymentIntent): WritableM
   map.putString("clientSecret", paymentIntent.clientSecret)
   map.putBoolean("livemode", paymentIntent.isLiveMode)
   map.putString("paymentMethodId", paymentIntent.paymentMethodId)
-  map.putMap("paymentMethod", paymentIntent.paymentMethod?.let {
-    mapFromPaymentMethod(it)
-  } ?: run {
-    null
-  })
+  map.putMap(
+    "paymentMethod",
+    paymentIntent.paymentMethod?.let {
+      mapFromPaymentMethod(it)
+    } ?: run {
+      null
+    }
+  )
   map.putString("receiptEmail", paymentIntent.receiptEmail)
   map.putString("currency", paymentIntent.currency)
   map.putString("status", mapIntentStatus(paymentIntent.status))
@@ -487,7 +517,7 @@ internal fun mapNextAction(type: NextActionType?, data: NextActionData?): Writab
     NextActionType.AlipayRedirect -> { // TODO: Can't access, private
       return null
     }
-    NextActionType.CashAppRedirect, NextActionType.BlikAuthorize, NextActionType.UseStripeSdk, NextActionType.UpiAwaitNotification,  null -> {
+    NextActionType.CashAppRedirect, NextActionType.BlikAuthorize, NextActionType.UseStripeSdk, NextActionType.UpiAwaitNotification, null -> {
       return null
     }
   }
@@ -556,7 +586,7 @@ internal fun mapToBillingDetails(billingDetails: ReadableMap?, cardAddress: Addr
     return null
   }
   val address = mapToAddress(getMapOrNull(billingDetails, "address"), cardAddress)
-  val paymentMethodBillingDetailsBuilder =  PaymentMethod.BillingDetails.Builder()
+  val paymentMethodBillingDetailsBuilder = PaymentMethod.BillingDetails.Builder()
 
   if (billingDetails != null) {
     paymentMethodBillingDetailsBuilder
@@ -622,35 +652,35 @@ fun mapToUICustomization(params: ReadableMap): PaymentAuthConfig.Stripe3ds2UiCus
   val continueButtonCustomizationBuilder = PaymentAuthConfig.Stripe3ds2ButtonCustomization.Builder()
   val resendButtonCustomizationBuilder = PaymentAuthConfig.Stripe3ds2ButtonCustomization.Builder()
 
-  getStringOrNull(labelCustomization,"headingTextColor")?.let {
+  getStringOrNull(labelCustomization, "headingTextColor")?.let {
     labelCustomizationBuilder.setHeadingTextColor(it)
   }
-  getStringOrNull(labelCustomization,"textColor")?.let {
+  getStringOrNull(labelCustomization, "textColor")?.let {
     labelCustomizationBuilder.setTextColor(it)
   }
-  getIntOrNull(labelCustomization,"headingFontSize")?.let {
+  getIntOrNull(labelCustomization, "headingFontSize")?.let {
     labelCustomizationBuilder.setHeadingTextFontSize(it)
   }
-  getIntOrNull(labelCustomization,"textFontSize")?.let {
+  getIntOrNull(labelCustomization, "textFontSize")?.let {
     labelCustomizationBuilder.setTextFontSize(it)
   }
 
-  getStringOrNull(navigationBarCustomization,"headerText")?.let {
+  getStringOrNull(navigationBarCustomization, "headerText")?.let {
     toolbarCustomizationBuilder.setHeaderText(it)
   }
-  getStringOrNull(navigationBarCustomization,"buttonText")?.let {
+  getStringOrNull(navigationBarCustomization, "buttonText")?.let {
     toolbarCustomizationBuilder.setButtonText(it)
   }
-  getStringOrNull(navigationBarCustomization,"textColor")?.let {
+  getStringOrNull(navigationBarCustomization, "textColor")?.let {
     toolbarCustomizationBuilder.setTextColor(it)
   }
-  getStringOrNull(navigationBarCustomization,"statusBarColor")?.let {
+  getStringOrNull(navigationBarCustomization, "statusBarColor")?.let {
     toolbarCustomizationBuilder.setStatusBarColor(it)
   }
-  getStringOrNull(navigationBarCustomization,"backgroundColor")?.let {
+  getStringOrNull(navigationBarCustomization, "backgroundColor")?.let {
     toolbarCustomizationBuilder.setBackgroundColor(it)
   }
-  getIntOrNull(navigationBarCustomization,"textFontSize")?.let {
+  getIntOrNull(navigationBarCustomization, "textFontSize")?.let {
     toolbarCustomizationBuilder.setTextFontSize(it)
   }
 
@@ -740,8 +770,6 @@ fun mapToUICustomization(params: ReadableMap): PaymentAuthConfig.Stripe3ds2UiCus
     resendButtonCustomizationBuilder.setTextFontSize(it)
   }
 
-
-
   val uiCustomization = PaymentAuthConfig.Stripe3ds2UiCustomization.Builder()
     .setLabelCustomization(
       labelCustomizationBuilder.build()
@@ -786,11 +814,14 @@ internal fun mapFromSetupIntentResult(setupIntent: SetupIntent): WritableMap {
   map.putBoolean("livemode", setupIntent.isLiveMode)
   map.putString("clientSecret", setupIntent.clientSecret)
   map.putString("paymentMethodId", setupIntent.paymentMethodId)
-  map.putMap("paymentMethod", setupIntent.paymentMethod?.let {
-    mapFromPaymentMethod(it)
-  } ?: run {
-    null
-  })
+  map.putMap(
+    "paymentMethod",
+    setupIntent.paymentMethod?.let {
+      mapFromPaymentMethod(it)
+    } ?: run {
+      null
+    }
+  )
   map.putString("usage", mapSetupIntentUsage(setupIntent.usage))
   map.putString("created", convertToUnixTimestamp(setupIntent.created))
   map.putMap("nextAction", mapNextAction(setupIntent.nextActionType, setupIntent.nextActionData))
@@ -832,9 +863,9 @@ internal fun mapSetupIntentUsage(type: StripeIntent.Usage?): String {
 
 fun mapToPaymentIntentFutureUsage(type: String?): ConfirmPaymentIntentParams.SetupFutureUsage? {
   return when (type) {
-    "OffSession" ->  ConfirmPaymentIntentParams.SetupFutureUsage.OffSession
-    "OnSession" ->  ConfirmPaymentIntentParams.SetupFutureUsage.OnSession
-    else ->  null
+    "OffSession" -> ConfirmPaymentIntentParams.SetupFutureUsage.OffSession
+    "OnSession" -> ConfirmPaymentIntentParams.SetupFutureUsage.OnSession
+    else -> null
   }
 }
 

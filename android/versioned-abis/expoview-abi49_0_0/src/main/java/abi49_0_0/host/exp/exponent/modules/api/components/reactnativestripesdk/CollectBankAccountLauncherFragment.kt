@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import abi49_0_0.com.facebook.react.bridge.Promise
 import abi49_0_0.com.facebook.react.bridge.ReactApplicationContext
@@ -27,13 +26,16 @@ class CollectBankAccountLauncherFragment(
   private val stripeAccountId: String?,
   private val clientSecret: String,
   private val isPaymentIntent: Boolean,
-  private val collectParams:  CollectBankAccountConfiguration.USBankAccount,
+  private val collectParams: CollectBankAccountConfiguration.USBankAccount,
   private val promise: Promise
 ) : Fragment() {
   private lateinit var collectBankAccountLauncher: CollectBankAccountLauncher
 
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                            savedInstanceState: Bundle?): View {
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?
+  ): View {
     collectBankAccountLauncher = createBankAccountLauncher()
 
     return FrameLayout(requireActivity()).also {
@@ -44,7 +46,8 @@ class CollectBankAccountLauncherFragment(
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(
       view,
-      savedInstanceState)
+      savedInstanceState
+    )
 
     if (isPaymentIntent) {
       collectBankAccountLauncher.presentWithPaymentIntent(

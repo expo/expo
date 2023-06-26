@@ -15,10 +15,11 @@ fun edgeInsetsToJsMap(insets: EdgeInsets): WritableMap {
 
 fun edgeInsetsToJavaMap(insets: EdgeInsets): Map<String, Float> {
   return mapOf(
-      "top" to PixelUtil.toDIPFromPixel(insets.top),
-      "right" to PixelUtil.toDIPFromPixel(insets.right),
-      "bottom" to PixelUtil.toDIPFromPixel(insets.bottom),
-      "left" to PixelUtil.toDIPFromPixel(insets.left))
+    "top" to PixelUtil.toDIPFromPixel(insets.top),
+    "right" to PixelUtil.toDIPFromPixel(insets.right),
+    "bottom" to PixelUtil.toDIPFromPixel(insets.bottom),
+    "left" to PixelUtil.toDIPFromPixel(insets.left)
+  )
 }
 
 fun rectToJsMap(rect: Rect): WritableMap {
@@ -32,8 +33,9 @@ fun rectToJsMap(rect: Rect): WritableMap {
 
 fun rectToJavaMap(rect: Rect): Map<String, Float> {
   return mapOf(
-      "x" to PixelUtil.toDIPFromPixel(rect.x),
-      "y" to PixelUtil.toDIPFromPixel(rect.y),
-      "width" to PixelUtil.toDIPFromPixel(rect.width),
-      "height" to PixelUtil.toDIPFromPixel(rect.height))
+    "x" to PixelUtil.toDIPFromPixel(rect.x),
+    "y" to PixelUtil.toDIPFromPixel(rect.y),
+    "width" to PixelUtil.toDIPFromPixel(rect.width),
+    "height" to PixelUtil.toDIPFromPixel(rect.height)
+  )
 }

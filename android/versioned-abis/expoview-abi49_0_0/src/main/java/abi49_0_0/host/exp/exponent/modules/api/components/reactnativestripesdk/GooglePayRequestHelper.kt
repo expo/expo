@@ -40,7 +40,7 @@ class GooglePayRequestHelper {
         allowCreditCards = googlePayParams.getBooleanOr("allowCreditCards", true)
       )
 
-      val walletOptions =  Wallet.WalletOptions.Builder()
+      val walletOptions = Wallet.WalletOptions.Builder()
         .setEnvironment(if (googlePayParams.getBoolean("testEnv")) WalletConstants.ENVIRONMENT_TEST else WalletConstants.ENVIRONMENT_PRODUCTION)
         .build()
       return Wallet.getPaymentsClient(activity, walletOptions).loadPaymentData(PaymentDataRequest.fromJson(request.toString()))
@@ -153,4 +153,3 @@ class GooglePayRequestHelper {
     }
   }
 }
-

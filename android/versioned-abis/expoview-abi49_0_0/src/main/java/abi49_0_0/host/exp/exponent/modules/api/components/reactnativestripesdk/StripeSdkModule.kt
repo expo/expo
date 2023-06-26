@@ -22,7 +22,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-
 @ReactModule(name = StripeSdkModule.NAME)
 class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
   override fun getName(): String {
@@ -207,9 +206,10 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
   private fun payWithFpx() {
     getCurrentActivityOrResolveWithError(confirmPromise)?.let {
       AddPaymentMethodActivityStarter(it)
-        .startForResult(AddPaymentMethodActivityStarter.Args.Builder()
-                          .setPaymentMethodType(PaymentMethod.Type.Fpx)
-                          .build()
+        .startForResult(
+          AddPaymentMethodActivityStarter.Args.Builder()
+            .setPaymentMethodType(PaymentMethod.Type.Fpx)
+            .build()
         )
     }
   }
@@ -337,7 +337,6 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
         promise.resolve(createError(CreateTokenErrorType.Failed.toString(), it.message))
       }
     }
-
   }
 
   private fun createTokenFromCard(params: ReadableMap, promise: Promise) {
@@ -628,23 +627,29 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
           when (launcherResult) {
             GooglePayLauncher.Result.Completed -> {
               if (isPaymentIntent) {
-                stripe.retrievePaymentIntent(clientSecret, stripeAccountId, expand = listOf("payment_method"), object : ApiResultCallback<PaymentIntent> {
-                  override fun onError(e: Exception) {
-                    promise.resolve(createResult("paymentIntent", WritableNativeMap()))
+                stripe.retrievePaymentIntent(
+                  clientSecret, stripeAccountId, expand = listOf("payment_method"),
+                  object : ApiResultCallback<PaymentIntent> {
+                    override fun onError(e: Exception) {
+                      promise.resolve(createResult("paymentIntent", WritableNativeMap()))
+                    }
+                    override fun onSuccess(result: PaymentIntent) {
+                      promise.resolve(createResult("paymentIntent", mapFromPaymentIntentResult(result)))
+                    }
                   }
-                  override fun onSuccess(result: PaymentIntent) {
-                    promise.resolve(createResult("paymentIntent", mapFromPaymentIntentResult(result)))
-                  }
-                })
+                )
               } else {
-                stripe.retrieveSetupIntent(clientSecret, stripeAccountId, expand = listOf("payment_method"),  object : ApiResultCallback<SetupIntent> {
-                  override fun onError(e: Exception) {
-                    promise.resolve(createResult("setupIntent", WritableNativeMap()))
+                stripe.retrieveSetupIntent(
+                  clientSecret, stripeAccountId, expand = listOf("payment_method"),
+                  object : ApiResultCallback<SetupIntent> {
+                    override fun onError(e: Exception) {
+                      promise.resolve(createResult("setupIntent", WritableNativeMap()))
+                    }
+                    override fun onSuccess(result: SetupIntent) {
+                      promise.resolve(createResult("setupIntent", mapFromSetupIntentResult(result)))
+                    }
                   }
-                  override fun onSuccess(result: SetupIntent) {
-                    promise.resolve(createResult("setupIntent", mapFromSetupIntentResult(result)))
-                  }
-                })
+                )
               }
             }
             GooglePayLauncher.Result.Canceled -> {

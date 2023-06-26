@@ -27,8 +27,11 @@ class FinancialConnectionsSheetFragment : Fragment() {
   private lateinit var configuration: FinancialConnectionsSheet.Configuration
   private lateinit var mode: Mode
 
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                            savedInstanceState: Bundle?): View {
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?
+  ): View {
     return FrameLayout(requireActivity()).also {
       it.visibility = View.GONE
     }
@@ -56,7 +59,7 @@ class FinancialConnectionsSheetFragment : Fragment() {
   }
 
   private fun onFinancialConnectionsSheetForTokenResult(result: FinancialConnectionsSheetForTokenResult) {
-    when(result) {
+    when (result) {
       is FinancialConnectionsSheetForTokenResult.Canceled -> {
         promise.resolve(
           createError(ErrorType.Canceled.toString(), "The flow has been canceled")
@@ -75,7 +78,7 @@ class FinancialConnectionsSheetFragment : Fragment() {
   }
 
   private fun onFinancialConnectionsSheetForDataResult(result: FinancialConnectionsSheetResult) {
-    when(result) {
+    when (result) {
       is FinancialConnectionsSheetResult.Canceled -> {
         promise.resolve(
           createError(ErrorType.Canceled.toString(), "The flow has been canceled")
@@ -88,9 +91,9 @@ class FinancialConnectionsSheetFragment : Fragment() {
       }
       is FinancialConnectionsSheetResult.Completed -> {
         promise.resolve(
-            WritableNativeMap().also {
-              it.putMap("session", mapFromSession(result.financialConnectionsSession))
-            }
+          WritableNativeMap().also {
+            it.putMap("session", mapFromSession(result.financialConnectionsSession))
+          }
         )
         (context.currentActivity as? FragmentActivity)?.supportFragmentManager?.beginTransaction()?.remove(this)?.commitAllowingStateLoss()
       }

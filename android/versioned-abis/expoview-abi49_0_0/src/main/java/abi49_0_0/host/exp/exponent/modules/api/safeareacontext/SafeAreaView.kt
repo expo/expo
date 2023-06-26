@@ -16,7 +16,7 @@ import kotlin.concurrent.withLock
 private const val MAX_WAIT_TIME_NANO = 500000000L // 500ms
 
 class SafeAreaView(context: Context?) :
-    ReactViewGroup(context), ViewTreeObserver.OnPreDrawListener, HasFabricViewStateManager {
+  ReactViewGroup(context), ViewTreeObserver.OnPreDrawListener, HasFabricViewStateManager {
   private var mMode = SafeAreaViewMode.PADDING
   private var mInsets: EdgeInsets? = null
   private var mEdges: SafeAreaViewEdges? = null
@@ -31,12 +31,13 @@ class SafeAreaView(context: Context?) :
     val insets = mInsets
     if (insets != null) {
       val edges =
-          mEdges
-              ?: SafeAreaViewEdges(
-                  SafeAreaViewEdgeModes.ADDITIVE,
-                  SafeAreaViewEdgeModes.ADDITIVE,
-                  SafeAreaViewEdgeModes.ADDITIVE,
-                  SafeAreaViewEdgeModes.ADDITIVE)
+        mEdges
+          ?: SafeAreaViewEdges(
+            SafeAreaViewEdgeModes.ADDITIVE,
+            SafeAreaViewEdgeModes.ADDITIVE,
+            SafeAreaViewEdgeModes.ADDITIVE,
+            SafeAreaViewEdgeModes.ADDITIVE
+          )
       if (mFabricViewStateManager.hasStateWrapper()) {
         mFabricViewStateManager.setState {
           val map = Arguments.createMap()
