@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed hard crash on iOS when calling readDirectoryAsync.
+
 ### 💡 Others
 
 ## 15.4.0 — 2023-06-13
