@@ -135,6 +135,7 @@ export function openDatabase(name, version = '1.0', description = name, size = 1
     }
     const db = _openExpoSQLiteDatabase(name, version, description, size, callback);
     db.exec = db._db.exec.bind(db._db);
+    db.execAsync = db._db.execAsync.bind(db._db);
     db.closeAsync = db._db.closeAsync.bind(db._db);
     db.deleteAsync = db._db.deleteAsync.bind(db._db);
     db.transactionAsync = db._db.transactionAsync.bind(db._db);
