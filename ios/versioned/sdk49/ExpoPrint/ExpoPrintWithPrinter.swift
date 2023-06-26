@@ -4,6 +4,8 @@ public class ExpoPrintWithPrinter {
   var renderTasks: [ExpoWKPDFRenderer] = []
   var cachedPrinters: [String: UIPrinter] = [:]
   let delegate: ExpoPrintModuleDelegate
+  let printURLSession = URLSession(configuration: .default)
+  var dataTask: URLSessionDataTask?
 
   init(delegate: ExpoPrintModuleDelegate) {
     self.delegate = delegate
@@ -11,15 +13,16 @@ public class ExpoPrintWithPrinter {
 
   func startPrint(options: PrintOptions, promise: Promise) {
     if let uri = options.uri {
-      guard let printingData = dataFromUri(uri: uri) else {
-        promise.reject(InvalidUrlException())
-        return
+      dataFromUri(uri: uri) { [weak self] data in
+        if let self = self, let printingData = data {
+          self.printWithData(printingData: printingData, options: options, promise: promise)
+        } else {
+          promise.reject(InvalidUrlException())
+        }
       }
-      printWithData(printingData: printingData, options: options, promise: promise)
+      return
     }
 
-    let pageSize = options.toPageSize()
-    let printableRect = options.toPrintableRect()
     // Do this for compatibility with deprecated markup formatter option
     guard let htmlString = options.markupFormatterIOS ?? options.html else {
       promise.reject(NoPrintDataException())
@@ -137,11 +140,36 @@ public class ExpoPrintWithPrinter {
     return printInteractionController
   }
 
-  private func dataFromUri(uri: String) -> Data? {
-    do {
-      return try Data(contentsOf: URL(fileURLWithPath: uri))
-    } catch {
-      return nil
+  private func dataFromUri(uri: String, completion: @escaping (Data?) -> Void) {
+    guard var url = URL(string: uri) else {
+      completion(nil)
+      return
+    }
+
+    // Assume that URLs without a scheme eq. /home/user/file.pdf will be local file urls
+    if url.scheme == nil {
+      url = URL(fileURLWithPath: uri)
+    }
+
+    // process http and https requests asynchronously
+    if url.scheme == "http" || url.scheme == "https" {
+      dataTask = printURLSession.dataTask(with: URLRequest(url: url)) { [weak self] data, response, error in
+        defer {
+          self?.dataTask = nil
+        }
+
+        if error == nil, let response = response as? HTTPURLResponse, response.statusCode == 200 {
+          DispatchQueue.main.async {
+            completion(data)
+          }
+          return
+        }
+        completion(nil)
+      }
+      dataTask?.resume()
+    } else {
+      let data = try? Data(contentsOf: url)
+      completion(data)
     }
   }
 }

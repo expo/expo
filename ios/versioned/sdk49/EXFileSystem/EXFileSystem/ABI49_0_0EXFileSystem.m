@@ -501,7 +501,6 @@ ABI49_0_0EX_EXPORT_METHOD_AS(makeDirectoryAsync,
 
 ABI49_0_0EX_EXPORT_METHOD_AS(readDirectoryAsync,
                     readDirectoryAsyncWithURI:(NSString *)uriString
-                    withOptions:(NSDictionary *)options
                     resolver:(ABI49_0_0EXPromiseResolveBlock)resolve
                     rejecter:(ABI49_0_0EXPromiseRejectBlock)reject)
 {
