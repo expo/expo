@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Upgrade `semver` lib. ([#23113](https://github.com/expo/expo/pull/23113) by [@felipemillhouse](https://github.com/felipemillhouse))
+- Remove unused fonts. ([#23107](https://github.com/expo/expo/pull/23107) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 3.1.2 — 2023-06-23
 
