@@ -242,7 +242,6 @@ function renderAuthenticatedScreen({ mockNavigation }) {
     appCount: 10,
     username: 'fakeUsername',
     profilePhoto: '123',
-    email: 'hello@joe.ca',
     accounts: [],
     isExpoAdmin: true,
   };
