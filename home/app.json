@@ -4,8 +4,8 @@
     "description": "",
     "slug": "home",
     "privacy": "unlisted",
-    "sdkVersion": "48.0.0",
-    "version": "48.0.0",
+    "sdkVersion": "49.0.0",
+    "version": "49.0.0",
     "orientation": "portrait",
     "platforms": [
       "ios",
@@ -14,6 +14,7 @@
     "primaryColor": "#cccccc",
     "icon": "https://s3.amazonaws.com/exp-brand-assets/ExponentEmptyManifest_192.png",
     "updates": {
+      "useClassicUpdates": true,
       "checkAutomatically": "ON_LOAD",
       "fallbackToCacheTimeout": 0
     },
