@@ -32,7 +32,7 @@
   "dependencies": {
     "expo-dev-menu": "3.1.2",
     "resolve-from": "^5.0.0",
-    "semver": "^7.3.5"
+    "semver": "^7.5.3"
   },
   "devDependencies": {
     "@babel/plugin-proposal-export-namespace-from": "^7.18.6",
