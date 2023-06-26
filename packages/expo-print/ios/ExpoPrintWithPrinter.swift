@@ -4,6 +4,8 @@ public class ExpoPrintWithPrinter {
   var renderTasks: [ExpoWKPDFRenderer] = []
   var cachedPrinters: [String: UIPrinter] = [:]
   let delegate: ExpoPrintModuleDelegate
+  let printURLSession = URLSession(configuration: .default)
+  var dataTask: URLSessionDataTask?
 
   init(delegate: ExpoPrintModuleDelegate) {
     self.delegate = delegate
@@ -137,9 +139,6 @@ public class ExpoPrintWithPrinter {
 
     return printInteractionController
   }
-
-  let printURLSession = URLSession(configuration: .default)
-  var dataTask: URLSessionDataTask?
 
   private func dataFromUri(uri: String, completion: @escaping (Data?) -> Void) {
     guard var url = URL(string: uri) else {
