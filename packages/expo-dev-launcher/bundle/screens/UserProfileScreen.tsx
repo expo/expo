@@ -186,8 +186,8 @@ function UserAccountSelector({
   const orgs: UserAccount[] = [];
 
   for (const account of userData.accounts) {
-    if (account != null) {
-      if (account.owner != null) {
+    if (account) {
+      if (account.ownerUserActor) {
         accounts.push(account);
       } else {
         orgs.push(account);
@@ -217,13 +217,13 @@ function UserAccountSelector({
                   <Image
                     size="large"
                     rounded="full"
-                    source={{ uri: account.owner?.profilePhoto }}
+                    source={{ uri: account.ownerUserActor?.profilePhoto }}
                   />
                 </View>
                 <Spacer.Horizontal size="small" />
 
                 <View>
-                  <Heading>{account.owner?.username ?? account.name}</Heading>
+                  <Heading>{account.ownerUserActor?.username ?? account.name}</Heading>
                 </View>
 
                 <Spacer.Vertical />

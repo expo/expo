@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for SSO users. ([#22873](https://github.com/expo/expo/pull/22873) by [@wschurman](https://github.com/wschurman))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
