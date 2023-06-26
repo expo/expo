@@ -15,7 +15,13 @@ import { Container, Row, ScreenClassProvider } from 'react-grid-system';
 
 import DocumentationPage from '~/components/DocumentationPage';
 import { AppJSBanner } from '~/ui/components/AppJSBanner';
-import { APIGridCell, CommunityGridCell, GridCell, HomeButton } from '~/ui/components/Home';
+import {
+  APIGridCell,
+  CommunityGridCell,
+  GridCell,
+  HomeButton,
+  TalkGridCell,
+} from '~/ui/components/Home';
 import {
   APICameraIcon,
   APIListIcon,
@@ -232,6 +238,34 @@ const Home = () => {
             <APIGridCell title="View all APIs" link="/versions/latest/" icon={<APIListIcon />} />
           </Row>
         </CellContainer>
+        <RawH3>Watch the latest talks</RawH3>
+        <Description>
+          Explore our team's presentations. Stay informed and gain expertise.
+        </Description>
+        <CellContainer>
+          <Row>
+            <TalkGridCell
+              title="Keynote: community & workflows"
+              description="Charlie Cheever & James Ide"
+              videoId="xHMu4oT6-SQ"
+            />
+            <TalkGridCell
+              title="EAS: Iterate with confidence"
+              description="Jon Samp"
+              videoId="LTui_5dqXyM"
+            />
+            <TalkGridCell
+              title="Expo Router: Write Once, Route Everywhere"
+              description="Evan Bacon"
+              videoId="608r8etX_cg"
+            />
+            <TalkGridCell
+              title="Debugging should be easier"
+              description="Cedric van Putten"
+              videoId="sRLunWEzwHI"
+            />
+          </Row>
+        </CellContainer>
         <RawH3>Join the community</RawH3>
         <JoinTheCommunity />
       </DocumentationPage>
@@ -289,11 +323,11 @@ export function JoinTheCommunity() {
 }
 
 const docsTitleStyle = css({
-  marginTop: 0,
+  marginTop: spacing[2],
   marginBottom: spacing[2],
   paddingBottom: 0,
   borderBottomWidth: 0,
-  fontWeight: '900',
+  fontWeight: '800',
 });
 
 const baseGradientStyle = css({

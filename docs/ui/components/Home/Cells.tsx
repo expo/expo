@@ -5,7 +5,7 @@ import { ArrowRightIcon, ArrowUpRightIcon } from '@expo/styleguide-icons';
 import { PropsWithChildren } from 'react';
 import { Col, ColProps } from 'react-grid-system';
 
-import { A, P } from '~/ui/components/Text';
+import { A, CALLOUT, LABEL, P } from '~/ui/components/Text';
 
 const CustomCol = ({ children, sm, md, lg, xl, xxl }: PropsWithChildren<ColProps>) => (
   <>
@@ -51,9 +51,44 @@ export const APIGridCell = ({
   <CustomCol css={cellWrapperStyle} md={md} sm={sm} lg={lg} xl={xl}>
     <A href={link} css={[cellStyle, cellAPIStyle, cellHoverStyle]} className={className} isStyled>
       <div css={cellIconWrapperStyle}>{icon}</div>
-      <div css={cellTitleWrapperStyle}>
+      <LABEL css={cellTitleWrapperStyle}>
         {title}
         <ArrowRightIcon className="text-icon-secondary" />
+      </LABEL>
+    </A>
+  </CustomCol>
+);
+
+type TalkGridCellProps = ColProps & {
+  title?: string;
+  description?: string;
+  videoId?: string;
+};
+
+export const TalkGridCell = ({
+  title,
+  description,
+  videoId,
+  className,
+  sm = 6,
+  md = 6,
+  lg = 6,
+  xl = 3,
+}: TalkGridCellProps) => (
+  <CustomCol css={cellWrapperStyle} md={md} sm={sm} lg={lg} xl={xl}>
+    <A
+      openInNewTab
+      href={`https://www.youtube.com/watch?v=${videoId}`}
+      css={[cellStyle, cellAPIStyle, cellHoverStyle]}
+      className={className}
+      isStyled>
+      <img src={`https://i3.ytimg.com/vi/${videoId}/maxresdefault.jpg`} alt="Thumbnail" />
+      <div css={cellTitleWrapperStyle}>
+        <div>
+          <LABEL className="block !leading-normal !mb-1">{title}</LABEL>
+          <CALLOUT theme="secondary">{description}</CALLOUT>
+        </div>
+        <ArrowUpRightIcon className="text-icon-secondary shrink-0" />
       </div>
     </A>
   </CustomCol>
@@ -161,20 +196,18 @@ const cellAPIStyle = css({
 
 const cellIconWrapperStyle = css({
   display: 'flex',
-  minHeight: 136,
+  minHeight: 142,
   justifyContent: 'space-around',
   alignItems: 'center',
 });
 
 const cellTitleWrapperStyle = css({
-  ...typography.fontSizes[15],
   display: 'flex',
   justifyContent: 'space-between',
   backgroundColor: theme.background.default,
   padding: spacing[4],
   textDecoration: 'none',
-  fontWeight: 500,
-  lineHeight: '30px',
+  minHeight: 30,
   color: theme.text.default,
   alignItems: 'center',
 });
