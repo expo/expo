@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Remove unused fonts. ([#23107](https://github.com/expo/expo/pull/23107) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 3.1.2 — 2023-06-23
 
 ### 🐛 Bug fixes
