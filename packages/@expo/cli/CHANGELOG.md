@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Upgrade `semver` lib. ([#23113](https://github.com/expo/expo/pull/23113) by [@felipemillhouse](https://github.com/felipemillhouse))
+
 ## 0.10.2 — 2023-06-24
 
 _This version does not introduce any user-facing changes._

@@ -38,7 +38,7 @@
     "jest-watch-select-projects": "^2.0.0",
     "jest-watch-typeahead": "2.2.1",
     "jest-environment-jsdom": "^29.2.1",
-    "json5": "^2.1.0",
+    "json5": "^2.2.3",
     "lodash": "^4.17.19",
     "react-test-renderer": "18.2.0"
   },
