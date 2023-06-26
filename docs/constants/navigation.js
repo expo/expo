@@ -297,7 +297,6 @@ const general = [
       makePage('eas/webhooks.mdx'),
       makeSection('Integrations', [
         makePage('guides/using-analytics.mdx'),
-        makePage('guides/using-bugsnag.mdx'),
         makePage('guides/facebook-authentication.mdx'),
         makePage('guides/using-firebase.mdx'),
         makePage('guides/using-flipper.mdx'),
