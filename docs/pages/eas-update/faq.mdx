@@ -4,6 +4,10 @@ sidebar_title: FAQ
 description: Frequently asked questions about EAS Update.
 ---
 
+### How can I implement a custom update strategy for my app?
+
+The default update strategy for `expo-updates` is to check for updates every time the app is loaded. You can implement a custom update strategy with the [Updates API](/versions/latest/sdk/updates) and [app.json configuration](/versions/latest/config/app/#updates).
+
 ### What guidelines must I follow when publishing updates?
 
 One of the rules of EAS Update is that you need to follow the rules of the platforms and app stores you are building for. This means your updates need to follow the App Store and Play Store guidelines, including the content of the updates and how you use them. This usually means changes to your app’s behavior need to be reviewed.

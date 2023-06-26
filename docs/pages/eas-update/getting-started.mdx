@@ -119,7 +119,7 @@ To publish an update to the build, run the following command:
   cmdCopy={null}
 />
 
-Once the update is built and uploaded to EAS and the command completes, force close and reopen your app up to two times to download and view the update. If your app is not updating as expected, [validate your configuration](/eas-update/debug).
+Once the update is built and uploaded to EAS and the command completes, force close and reopen your app up to two times to download and view the update. The default strategy for `expo-updates` is to check for updates every time the app is loaded, but you can also implement a custom strategy with the [Updates API](/versions/latest/sdk/updates) and [app.json configuration](/versions/latest/config/app/#updates). If your app is not updating as expected, [validate your configuration](/eas-update/debug).
 
 </Step>
 
