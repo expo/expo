@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed hard crash on iOS when calling readDirectoryAsync. ([#23106](https://github.com/expo/expo/pull/23106) by [@aleqsio](https://github.com/aleqsio))
+
 ### 💡 Others
 
 ## 15.4.0 — 2023-06-13
