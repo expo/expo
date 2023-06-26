@@ -18,13 +18,11 @@ class UpdatesStateMachine(
    * The current state
    */
   var state: UpdatesStateValue = UpdatesStateValue.Idle
-    private set
 
   /**
    * The context
    */
   var context: UpdatesStateContext = UpdatesStateContext()
-    private set
 
   /**
    Called after the app restarts (reloadAsync()) to reset the machine to its
