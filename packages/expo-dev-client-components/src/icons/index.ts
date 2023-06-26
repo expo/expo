@@ -1,3 +1,4 @@
+export * from './BuildingIcon';
 export * from './BranchIcon';
 export * from './CheckIcon';
 export * from './ChevronRightIcon';

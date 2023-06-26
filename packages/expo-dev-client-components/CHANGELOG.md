@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add Building icon. ([#23114](https://github.com/expo/expo/pull/23114) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
