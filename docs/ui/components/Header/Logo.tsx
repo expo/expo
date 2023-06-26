@@ -13,7 +13,7 @@ export const Logo = ({ subgroup }: Props) => (
   <div className="flex items-center gap-4">
     <LinkBase css={linkStyle} href="https://expo.dev">
       <WordMarkLogo
-        className="w-[72px] mt-[1px] h-5 text-default"
+        className="w-[72px] mt-[1px] h-5 text-default my-1"
         css={hideOnMobile}
         title="Expo"
       />
@@ -41,6 +41,7 @@ const linkStyle = css`
   text-decoration: none;
   user-select: none;
   gap: ${spacing[2]}px;
+  outline-offset: 4px;
 `;
 
 const chevronStyle = css`
