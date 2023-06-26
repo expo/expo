@@ -121,11 +121,12 @@ public class DocumentPickerModule: Module, PickingResultHandler {
     }
 
     if copy {
-      let directory = URL(fileURLWithPath: fileSystem.cachesDirectory).appendingPathComponent("DocumentPicker", isDirectory: true).path
+      let cacheDirURL = URL(fileURLWithPath: fileSystem.cachesDirectory)
+      let directory = cacheDirURL.appendingPathComponent("DocumentPicker", isDirectory: true).path
       let fileExtension = "." + documentUrl.pathExtension
       let path = fileSystem.generatePath(inDirectory: directory, withExtension: fileExtension)
       newUrl = URL(fileURLWithPath: path)
-      
+
       try FileManager.default.copyItem(at: documentUrl, to: newUrl)
     }
 
