@@ -14,6 +14,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix `copyToCacheDirectory` on iOS.
 - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ## 11.4.0 — 2023-05-08
