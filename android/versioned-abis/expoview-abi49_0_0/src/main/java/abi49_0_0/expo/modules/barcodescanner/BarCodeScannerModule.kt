@@ -3,8 +3,10 @@ package abi49_0_0.expo.modules.barcodescanner
 import android.Manifest
 import android.content.Context
 import android.graphics.Bitmap
+import android.util.Log
 import com.google.mlkit.vision.barcode.common.Barcode
 import abi49_0_0.expo.modules.barcodescanner.utils.BarCodeScannerResultSerializer
+import abi49_0_0.expo.modules.core.errors.ModuleDestroyedException
 import abi49_0_0.expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
 import abi49_0_0.expo.modules.interfaces.imageloader.ImageLoaderInterface.ResultListener
 import abi49_0_0.expo.modules.interfaces.permissions.Permissions
@@ -12,6 +14,10 @@ import abi49_0_0.expo.modules.kotlin.Promise
 import abi49_0_0.expo.modules.kotlin.exception.Exceptions
 import abi49_0_0.expo.modules.kotlin.modules.Module
 import abi49_0_0.expo.modules.kotlin.modules.ModuleDefinition
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
 class BarCodeScannerModule : Module() {
   private val barCodeScannerProvider = BarCodeScannerProvider()
@@ -19,6 +25,7 @@ class BarCodeScannerModule : Module() {
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
   private val permissionsManager: Permissions
     get() = appContext.permissions ?: throw Exceptions.PermissionsModuleNotFound()
+  private val moduleCoroutineScope = CoroutineScope(Dispatchers.IO)
 
   override fun definition() = ModuleDefinition {
     Name("ExpoBarCodeScanner")
@@ -72,10 +79,13 @@ class BarCodeScannerModule : Module() {
                 putTypes(barCodeTypes)
               }
             )
-            val resultList = scanner.scanMultiple(bitmap)
-              .filter { barCodeTypes.contains(it.type) }
-              .map { BarCodeScannerResultSerializer.toBundle(it, 1.0f) }
-            promise.resolve(resultList)
+
+            moduleCoroutineScope.launch {
+              val barcodes = scanner.scanMultiple(bitmap)
+                .filter { barCodeTypes.contains(it.type) }
+                .map { BarCodeScannerResultSerializer.toBundle(it, 1.0f) }
+              promise.resolve(barcodes)
+            }
           }
 
           override fun onFailure(cause: Throwable?) {
@@ -83,6 +93,14 @@ class BarCodeScannerModule : Module() {
           }
         }
       )
+    }
+
+    OnDestroy {
+      try {
+        moduleCoroutineScope.cancel(ModuleDestroyedException())
+      } catch (e: IllegalStateException) {
+        Log.e(TAG, "The scope does not have a job in it")
+      }
     }
 
     View(BarCodeScannerView::class) {
@@ -101,5 +119,9 @@ class BarCodeScannerModule : Module() {
         }
       }
     }
+  }
+
+  companion object {
+    internal val TAG = BarCodeScannerModule::class.java.simpleName
   }
 }

@@ -185,7 +185,7 @@ class UpdatesModule(
                 updateInfo.putBoolean("isAvailable", false)
                 promise.resolve(updateInfo)
                 updatesServiceLocal.stateMachine?.processEvent(
-                  UpdatesStateEvent.CheckComplete()
+                  UpdatesStateEvent.CheckCompleteUnavailable()
                 )
                 return
               }
@@ -223,7 +223,7 @@ class UpdatesModule(
                 updateInfo.putBoolean("isAvailable", false)
                 promise.resolve(updateInfo)
                 updatesServiceLocal.stateMachine?.processEvent(
-                  UpdatesStateEvent.CheckComplete()
+                  UpdatesStateEvent.CheckCompleteUnavailable()
                 )
               }
             }
@@ -329,7 +329,7 @@ class UpdatesModule(
                       updateEntity.manifest.toString()
                     )
                     updatesServiceLocal.stateMachine?.processEvent(
-                      UpdatesStateEvent.DownloadCompleteWithUpdate(updateEntity.manifest)
+                      UpdatesStateEvent.DownloadCompleteWithUpdate(updateEntity.manifest!!)
                     )
                   }
                 }

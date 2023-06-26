@@ -2,8 +2,6 @@ package abi49_0_0.expo.modules.constants
 
 import org.apache.commons.io.IOUtils
 
-import com.facebook.device.yearclass.YearClass
-
 import abi49_0_0.expo.modules.core.interfaces.InternalModule
 import abi49_0_0.expo.modules.core.utilities.EmulatorUtilities
 import abi49_0_0.expo.modules.interfaces.constants.ConstantsInterface
@@ -45,7 +43,6 @@ open class ConstantsService(private val context: Context) : InternalModule, Cons
       "sessionId" to sessionId,
       "executionEnvironment" to ExecutionEnvironment.BARE.string,
       "statusBarHeight" to statusBarHeightInternal,
-      "deviceYearClass" to deviceYearClass,
       "deviceName" to deviceName,
       "isDevice" to isDevice,
       "systemFonts" to systemFonts,
@@ -74,8 +71,6 @@ open class ConstantsService(private val context: Context) : InternalModule, Cons
   override fun getAppOwnership() = "guest"
 
   override fun getDeviceName(): String = Build.MODEL
-
-  override fun getDeviceYearClass() = YearClass.get(context)
 
   override fun getIsDevice() = !EmulatorUtilities.isRunningOnEmulator()
 
