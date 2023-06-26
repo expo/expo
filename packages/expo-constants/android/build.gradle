@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '14.4.1'
+version = '14.4.2'
 
 apply from: "../scripts/get-app-config-android.gradle"
 
@@ -69,7 +69,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 33
-    versionName "14.4.1"
+    versionName "14.4.2"
   }
   lintOptions {
     abortOnError false
@@ -88,7 +88,6 @@ repositories {
 dependencies {
   implementation project(':expo-modules-core')
 
-  api 'com.facebook.device.yearclass:yearclass:2.1.0'
   api "androidx.annotation:annotation:1.0.0"
   implementation "commons-io:commons-io:2.6"
 

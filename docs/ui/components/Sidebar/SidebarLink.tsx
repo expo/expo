@@ -84,10 +84,9 @@ const STYLES_LINK = css`
   color: ${theme.text.secondary};
   transition: 50ms ease color;
   align-items: center;
-  padding-left: ${spacing[2]}px;
   scroll-margin: 60px;
   width: 100%;
-  margin-left: -${spacing[4] + spacing[0.5]}px;
+  margin-left: -${spacing[2] + spacing[0.5]}px;
 
   &:hover {
     color: ${theme.text.link};

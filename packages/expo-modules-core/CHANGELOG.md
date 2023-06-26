@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 1.5.3 — 2023-06-24
+
+### 🎉 New features
+
+- Supported other network CDP types like `Image` and `Media` rather than `Fetch`. ([#23058](https://github.com/expo/expo/pull/23058) by [@kudo](https://github.com/kudo))
+
+## 1.5.2 — 2023-06-24
+
+_This version does not introduce any user-facing changes._
+
 ## 1.5.1 — 2023-06-22
 
 _This version does not introduce any user-facing changes._

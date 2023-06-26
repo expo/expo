@@ -133,4 +133,23 @@ class ExpoRequestCdpInterceptorTest {
     Truth.assertThat(params.getString("body")).isNotEmpty()
     Truth.assertThat(params.getBoolean("base64Encoded")).isTrue()
   }
+
+  @Test
+  fun `respect image mimeType to CDP event`() {
+    client.newCall(Request.Builder().url("https://avatars.githubusercontent.com/u/12504344").build()).execute()
+    Truth.assertThat(mockDelegate.events.size).isEqualTo(5)
+
+    // Network.requestWillBeSent
+    // Network.requestWillBeSentExtraInfo
+
+    // Network.responseReceived
+    val json = JSONObject(mockDelegate.events[2])
+    val method = json.getString("method")
+    val params = json.getJSONObject("params")
+    val response = params.getJSONObject("response")
+    Truth.assertThat(method).isEqualTo("Network.responseReceived")
+    Truth.assertThat(response.getInt("status")).isEqualTo(200)
+    Truth.assertThat(response.getString("mimeType")).isEqualTo("image/png")
+    Truth.assertThat(params.getString("type")).isEqualTo("Image")
+  }
 }
