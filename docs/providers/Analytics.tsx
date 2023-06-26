@@ -4,7 +4,7 @@ import Script from 'next/script';
 import React, { PropsWithChildren, useEffect } from 'react';
 
 /** The global analytics measurement ID */
-const MEASUREMENT_ID = 'UA-107832480-3';
+const MEASUREMENT_ID = 'G-YKNPYCMLWY';
 
 type AnalyticsProps = PropsWithChildren<object>;
 
