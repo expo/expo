@@ -26,6 +26,9 @@
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
 #import <React/RCTAppearance.h>
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI49_0_0React/ABI49_0_0RCTAppearance.h>)
+#import <ABI49_0_0React/ABI49_0_0RCTAppearance.h>
+#endif
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI48_0_0React/ABI48_0_0RCTAppearance.h>)
 #import <ABI48_0_0React/ABI48_0_0RCTAppearance.h>
 #endif
@@ -636,6 +639,9 @@ NS_ASSUME_NONNULL_BEGIN
     appearancePreference = nil;
   }
   RCTOverrideAppearancePreference(appearancePreference);
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI49_0_0React/ABI49_0_0RCTAppearance.h>)
+  ABI49_0_0RCTOverrideAppearancePreference(appearancePreference);
+#endif
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI48_0_0React/ABI48_0_0RCTAppearance.h>)
   ABI48_0_0RCTOverrideAppearancePreference(appearancePreference);
 #endif
