@@ -52,10 +52,18 @@ class LoaderTask(
   enum class RemoteUpdateStatus {
     ERROR, NO_UPDATE_AVAILABLE, UPDATE_AVAILABLE
   }
-  data class RemoteCheckResult(
-    val isRollBackToEmbedded: Boolean? = null,
-    val manifest: JSONObject? = null
-  )
+
+  sealed class RemoteCheckResult(private val status: Status) {
+    private enum class Status {
+      NO_UPDATE_AVAILABLE,
+      UPDATE_AVAILABLE,
+      ROLL_BACK_TO_EMBEDDED
+    }
+
+    class NoUpdateAvailable : RemoteCheckResult(Status.NO_UPDATE_AVAILABLE)
+    class UpdateAvailable(val manifest: JSONObject) : RemoteCheckResult(Status.UPDATE_AVAILABLE)
+    class RollBackToEmbedded : RemoteCheckResult(Status.ROLL_BACK_TO_EMBEDDED)
+  }
 
   interface LoaderTaskCallback {
     fun onFailure(e: Exception)
@@ -327,12 +335,12 @@ class LoaderTask(
               return when (updateDirective) {
                 is UpdateDirective.RollBackToEmbeddedUpdateDirective -> {
                   isUpToDate = true
-                  callback.onRemoteCheckForUpdateFinished(RemoteCheckResult(true, null))
+                  callback.onRemoteCheckForUpdateFinished(RemoteCheckResult.RollBackToEmbedded())
                   Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
                 }
                 is UpdateDirective.NoUpdateAvailableUpdateDirective -> {
                   isUpToDate = true
-                  callback.onRemoteCheckForUpdateFinished(RemoteCheckResult())
+                  callback.onRemoteCheckForUpdateFinished(RemoteCheckResult.NoUpdateAvailable())
                   Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
                 }
               }
@@ -341,7 +349,7 @@ class LoaderTask(
             val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
             if (updateManifest == null) {
               isUpToDate = true
-              callback.onRemoteCheckForUpdateFinished(RemoteCheckResult())
+              callback.onRemoteCheckForUpdateFinished(RemoteCheckResult.NoUpdateAvailable())
               return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
             }
 
@@ -353,12 +361,12 @@ class LoaderTask(
             ) {
               isUpToDate = false
               callback.onRemoteUpdateManifestResponseManifestLoaded(updateManifest)
-              callback.onRemoteCheckForUpdateFinished(RemoteCheckResult(null, updateManifest.manifest.getRawJson()))
+              callback.onRemoteCheckForUpdateFinished(RemoteCheckResult.UpdateAvailable(updateManifest.manifest.getRawJson()))
               callback.onRemoteUpdateLoadStarted()
               Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
             } else {
               isUpToDate = true
-              callback.onRemoteCheckForUpdateFinished(RemoteCheckResult())
+              callback.onRemoteCheckForUpdateFinished(RemoteCheckResult.NoUpdateAvailable())
               Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
             }
           }
