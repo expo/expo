@@ -16,7 +16,7 @@ import { DevMenuServerInfo } from './DevMenuServerInfo';
 import { DevMenuTaskInfo } from './DevMenuTaskInfo';
 
 type Props = {
-  task: { [key: string]: any };
+  task: { manifestUrl: string; manifestString: string };
   uuid: string;
 };
 
