@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- [iOS] Use swift enum for AppLoaderTask delegate. ([#23064](https://github.com/expo/expo/pull/23064) by [@wschurman](https://github.com/wschurman))
+
 ## 0.18.3 — 2023-06-24
 
 ### 🐛 Bug fixes

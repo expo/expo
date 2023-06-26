@@ -191,10 +191,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - EXUpdatesAppLoaderTaskDelegate
 
-// Implement empty stubs
-- (void)appLoaderTaskDidStartCheckingForRemoteUpdate:(EXUpdatesAppLoaderTask *)_ {}
-- (void)appLoaderTask:(EXUpdatesAppLoaderTask *)_ didLoadAsset:(EXUpdatesAsset *)asset successfulAssetCount:(NSInteger)successfulAssetCount failedAssetCount:(NSInteger)failedAssetCount totalAssetCount:(NSInteger)totalAssetCount {}
-
 - (BOOL)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didLoadCachedUpdate:(EXUpdatesUpdate *)update
 {
   [self _setShouldShowRemoteUpdateStatus:update.manifest];

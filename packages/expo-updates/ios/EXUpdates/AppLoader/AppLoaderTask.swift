@@ -18,9 +18,7 @@ public protocol AppLoaderTaskDelegate: AnyObject {
    * AppLoaderTask proceed as usual.
    */
   func appLoaderTask(_: AppLoaderTask, didLoadCachedUpdate update: Update) -> Bool
-  func appLoaderTaskDidStartCheckingForRemoteUpdate(_: AppLoaderTask)
   func appLoaderTask(_: AppLoaderTask, didStartLoadingUpdate update: Update?)
-  func appLoaderTask(_: AppLoaderTask, didLoadAsset asset: UpdateAsset, successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int)
   func appLoaderTask(_: AppLoaderTask, didFinishWithLauncher launcher: AppLauncher, isUpToDate: Bool)
   func appLoaderTask(_: AppLoaderTask, didFinishWithError error: Error)
   func appLoaderTask(
@@ -38,7 +36,9 @@ public enum RemoteCheckResult {
 }
 
 public protocol AppLoaderTaskSwiftDelegate: AnyObject {
+  func appLoaderTaskDidStartCheckingForRemoteUpdate(_: AppLoaderTask)
   func appLoaderTask(_: AppLoaderTask, didFinishCheckingForRemoteUpdateWithRemoteCheckResult remoteCheckResult: RemoteCheckResult)
+  func appLoaderTask(_: AppLoaderTask, didLoadAsset asset: UpdateAsset, successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int)
 }
 
 @objc(EXUpdatesBackgroundUpdateStatus)
@@ -338,9 +338,9 @@ public final class AppLoaderTask: NSObject {
       completionQueue: loaderTaskQueue
     )
 
-    if let delegate = self.delegate {
+    if let swiftDelegate = self.swiftDelegate {
       self.delegateQueue.async {
-        delegate.appLoaderTaskDidStartCheckingForRemoteUpdate(self)
+        swiftDelegate.appLoaderTaskDidStartCheckingForRemoteUpdate(self)
       }
     }
     remoteAppLoader!.loadUpdate(
@@ -423,9 +423,9 @@ public final class AppLoaderTask: NSObject {
         return false
       }
     } asset: { asset, successfulAssetCount, failedAssetCount, totalAssetCount in
-      if let delegate = self.delegate {
+      if let swiftDelegate = self.swiftDelegate {
         self.delegateQueue.async {
-          delegate.appLoaderTask(
+          swiftDelegate.appLoaderTask(
             self,
             didLoadAsset: asset,
             successfulAssetCount: successfulAssetCount,
