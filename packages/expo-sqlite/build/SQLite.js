@@ -10,12 +10,16 @@ function zipObject(keys, values) {
     }
     return result;
 }
-class SQLiteDatabase {
+/** The database returned by `openDatabase()` */
+export class SQLiteDatabase {
     _name;
     _closed = false;
     constructor(name) {
         this._name = name;
     }
+    /**
+     * Executes the SQL statement and returns a callback resolving with the result.
+     */
     exec(queries, readOnly, callback) {
         if (this._closed) {
             throw new Error(`The SQLite database is closed`);
@@ -27,15 +31,53 @@ class SQLiteDatabase {
             callback(error instanceof Error ? error : new Error(error));
         });
     }
-    close() {
+    /**
+     * Executes the SQL statement and returns a Promise resolving with the result.
+     */
+    async execAsync(queries, readOnly) {
+        if (this._closed) {
+            throw new Error(`The SQLite database is closed`);
+        }
+        const nativeResultSets = await ExpoSQLite.exec(this._name, queries.map(_serializeQuery), readOnly);
+        return nativeResultSets.map(_deserializeResultSet);
+    }
+    /**
+     * @deprecated Use `closeAsync()` instead.
+     */
+    close = this.closeAsync;
+    /**
+     * Close the database.
+     */
+    closeAsync() {
         this._closed = true;
         return ExpoSQLite.close(this._name);
     }
+    /**
+     * Delete the database file.
+     * > The database has to be closed prior to deletion.
+     */
     deleteAsync() {
         if (!this._closed) {
             throw new Error(`Unable to delete '${this._name}' database that is currently open. Close it prior to deletion.`);
         }
         return ExpoSQLite.deleteAsync(this._name);
+    }
+    /**
+     * Creates a new transaction with Promise support.
+     * @param asyncCallback A `SQLTransactionAsyncCallback` function that can perform SQL statements in a transaction.
+     * @param readOnly true if all the SQL statements in the callback are read only.
+     */
+    async transactionAsync(asyncCallback, readOnly = false) {
+        await this.execAsync([{ sql: 'BEGIN;', args: [] }], false);
+        try {
+            const transaction = new ExpoSQLTransactionAsync(this, readOnly);
+            await asyncCallback(transaction);
+            await this.execAsync([{ sql: 'END;', args: [] }], false);
+        }
+        catch (e) {
+            await this.execAsync([{ sql: 'ROLLBACK;', args: [] }], false);
+            throw e;
+        }
     }
 }
 function _serializeQuery(query) {
@@ -93,8 +135,25 @@ export function openDatabase(name, version = '1.0', description = name, size = 1
     }
     const db = _openExpoSQLiteDatabase(name, version, description, size, callback);
     db.exec = db._db.exec.bind(db._db);
-    db.closeAsync = db._db.close.bind(db._db);
+    db.closeAsync = db._db.closeAsync.bind(db._db);
     db.deleteAsync = db._db.deleteAsync.bind(db._db);
+    db.transactionAsync = db._db.transactionAsync.bind(db._db);
     return db;
+}
+/**
+ * Internal data structure for the async transaction API.
+ * @internal
+ */
+export class ExpoSQLTransactionAsync {
+    db;
+    readOnly;
+    constructor(db, readOnly) {
+        this.db = db;
+        this.readOnly = readOnly;
+    }
+    async executeSqlAsync(sqlStatement, args) {
+        const resultSets = await this.db.execAsync([{ sql: sqlStatement, args: args ?? [] }], this.readOnly);
+        return resultSets[0];
+    }
 }
 //# sourceMappingURL=SQLite.js.map
