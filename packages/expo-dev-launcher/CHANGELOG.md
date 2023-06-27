@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed network inspector losing events when the dev-server listening on port other than 8081. ([#23122](https://github.com/expo/expo/pull/23122) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 2.4.3 — 2023-06-27
