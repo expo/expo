@@ -235,7 +235,7 @@ const Home = () => {
         </CellContainer>
         <div className="flex items-center gap-2">
           <div>
-            <RawH3>Watch the latest talks</RawH3>
+            <RawH3>Watch our latest talks</RawH3>
             <Description>
               Explore our team's presentations. Stay informed and gain expertise.
             </Description>
