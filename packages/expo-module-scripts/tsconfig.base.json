@@ -5,10 +5,11 @@
     "jsx": "react",
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "types": ["jest", "jest-require"],
+    "types": ["node", "jest", "jest-require"],
     "typeRoots": [
       "./ts-declarations",
-      "node_modules/@types"
+      "./node_modules/@types",
+      "../../node_modules/@types",
     ],
     "sourceMap": true,
     "declaration": true,
