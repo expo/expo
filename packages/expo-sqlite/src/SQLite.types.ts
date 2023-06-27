@@ -135,7 +135,7 @@ export declare class SQLError {
   message: string;
 }
 
-// @docsMissing
+/** @deprecated Use `SQLiteDatabase` instead. */
 export interface WebSQLDatabase extends Database {
   exec(queries: Query[], readOnly: boolean, callback: SQLiteCallback): void;
 
@@ -181,3 +181,12 @@ export type SQLiteCallback = (
   error?: Error | null,
   resultSet?: (ResultSetError | ResultSet)[]
 ) => void;
+
+/** A transaction object to perform SQL statements in async mode. */
+export interface SQLTransactionAsync {
+  /** Executes a SQL statement in async mode. */
+  executeSqlAsync(sqlStatement: string, args?: (number | string)[]): Promise<ResultSet>;
+}
+
+/** A transaction callback with given `SQLTransactionAsync` object to perform SQL statements in async mode. */
+export type SQLTransactionAsyncCallback = (transaction: SQLTransactionAsync) => Promise<void>;
