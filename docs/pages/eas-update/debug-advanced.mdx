@@ -10,7 +10,8 @@ import { Terminal } from '~/ui/components/Snippet';
 After verifying our EAS Update configuration in our [basic guide](/eas-update/debug), we can move on to more advanced debugging strategies. The following sections describe common classes of problems and strategies on how to tackle them.
 
 ## General strategies
-We recommend trying these strategies before using the more specific ones mentioned in this guide. 
+
+We recommend trying these strategies before using the more specific ones mentioned in this guide.
 
 ### Use `expo-dev-client`
 
@@ -18,7 +19,8 @@ Create a [development version of your build](/eas-update/expo-dev-client). It wi
 
 ### In-app debugging
 
-The `expo-updates` library exports a variety of functions to interact with updates once the app is already running. In certain cases, making a call to fetch an update and seeing an error message can help us narrow down the root cause. We can make a simulator build of the project and manually check to see if updates are available or if there are errors when fetching updates. 
+The `expo-updates` library exports a variety of functions to interact with updates once the app is already running. In certain cases, making a call to fetch an update and seeing an error message can help us narrow down the root cause. We can make a simulator build of the project and manually check to see if updates are available or if there are errors when fetching updates.
+
 - Print the [Update.Constants](/versions/latest/sdk/updates/#constants) to verify your configuration.
 - [Examine log entries](/versions/latest/sdk/updates/#updatesreadlogentriesasyncmaxage) surfaced from the native layer.
 - Fetch and [load updates manually](/versions/latest/sdk/updates/#check-for-updates-manually).
@@ -134,6 +136,7 @@ Below is a screenshot showing the request of a successful update manifest reques
 />
 
 ## Runtime issues
+
 You are able to load the expected update but your project is displaying unexpected behavior.
 
 ### Debugging of native code while loading the app through expo-updates
@@ -190,6 +193,7 @@ Alternatively, we can use EAS to create a debug build where `expo-updates` is en
 ```
 
 ## Publishing issues
+
 You are not able to publish an update, or parts of your update are not being published as expected.
 
 ### Inspecting the latest update locally
@@ -203,3 +207,49 @@ When we publish an update with EAS Update, it creates a **/dist** folder in the 
 It may be helpful to see which assets are included in our update bundle. We can see a list of named assets by running:
 
 <Terminal cmd={['$ npx expo export']} />
+
+## Mitigation steps
+
+Once we've found the root cause of the issue, there are various mitigation steps we might want to take. One of the most common problems is pushing an update that has a bug inside it. When this happens, we can re-publish a previous update to resolve the issue.
+
+### Re-publishing a previous update
+
+The fastest way to "undo" a bad publish is to re-publish a known good update. Imagine we have a branch with two updates:
+
+```bash
+branch: "production"
+updates: [
+  update 2 (id: xyz2) "fixes typo"     // bad update
+  update 1 (id: abc1) "updates color"  // good update
+]
+```
+
+If "update 2" turned out to be a bad update, we can re-publish "update 1" with a command like this:
+
+<Terminal
+  cmd={[
+    '# eas update:republish --group [update-group-id]',
+    '',
+    '# eas update:republish --branch [branch-name]',
+    '',
+    '',
+    '# Example',
+    '$ eas update:republish --group abc1',
+    '$ eas update:republish --branch production',
+  ]}
+/>
+
+The example command above would result in a branch that now appears like this:
+
+```bash
+branch: "production"
+updates: [
+  update 3 (id: def3) "updates color"  // re-publish of update 1 (id: abc1)
+  update 2 (id: xyz2) "fixes typo"     // bad update
+  update 1 (id: abc1) "updates color"  // good update
+]
+```
+
+Since "update 3" is now the most recent update on the "production" branch, all users who query for an update in the future will receive "update 3" instead of the bad update, "update 2".
+
+While this will prevent all new users from seeing the bad update, users who've already received the bad update will run it until they can download the latest update. Since mobile networks are not always able to download the most recent update, sometimes users may run a bad update for a long time. When viewing error logs for our app, it's normal to see a lingering long tail of errors as our users' apps get the most recent update or build. We'll know we solved the bug when we see the error rate decline dramatically; however, it likely will not disappear completely if we have a diverse user base across many locations and mobile networks.
