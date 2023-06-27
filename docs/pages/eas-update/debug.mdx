@@ -33,7 +33,7 @@ The following section describes common problems and how to fix them. Below is a 
   style={{ maxWidth: 600 }}
 />
 
-If the deployment channel is unexpected, it means our build was not built with the correct channel. To fix this, [configure our channel](/#configure-channel).
+If the deployment channel is unexpected, it means our build was not built with the correct channel. To fix this, [configure our channel](/#configure-channel) and rebuild our app.
 
 ### Unexpected runtime version
 
@@ -43,7 +43,7 @@ If the deployment channel is unexpected, it means our build was not built with t
   style={{ maxWidth: 600 }}
 />
 
-If the deployment runtime version is unexpected, it means our build was not built with the correct runtime version. To fix this, [configure our runtime version](/#configure-runtime-version).
+If the deployment runtime version is unexpected, it means our build was not built with the correct runtime version. To fix this, [configure our runtime version](/#configure-runtime-version) and rebuild our app.
 
 ### Unexpected branch
 
@@ -77,7 +77,7 @@ The displayed deployment has the correct channel, but it is not linked to a bran
 
 ### Missing deployment
 
-If your deployment is not displayed, this means our build is not configured properly with EAS Update. To fix this, [configure our channel](/#configure-channel) and [configure our runtime version](/#configure-runtime-version).
+If your deployment is not displayed, this means our build is not configured properly with EAS Update. To fix this, [configure our channel](/#configure-channel), [configure our runtime version](/#configure-runtime-version) and rebuild our app.
 
 ## Solutions
 
@@ -115,7 +115,7 @@ To verify our runtime version, we make sure our app config (**app.json**/**app.c
 }
 ```
 
-By default, it is `{ "policy": "sdkVersion" }`, but we can change our runtime to [use a different policy or a specific version](/eas-update/runtime-versions).
+By default, it is `{ "policy": "sdkVersion" }`, but we can change our runtime to [use a different policy or a specific version](/eas-update/runtime-versions). Then, we can run a command like `eas build --profile preview` to create a build with the runtime version we expect.
 
 ### Map channel to branch
 
