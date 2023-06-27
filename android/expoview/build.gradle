@@ -207,6 +207,9 @@ dependencies {
 
   // Versioned react native
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
+  // BEGIN_SDK_49
+  versionedApi 'host.exp:reactandroid-abi49_0_0:1.0.0'
+  // END_SDK_49
   // BEGIN_SDK_48
   versionedApi 'host.exp:reactandroid-abi48_0_0:1.0.0'
   // END_SDK_48
