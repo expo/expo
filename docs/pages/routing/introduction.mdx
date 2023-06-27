@@ -10,18 +10,19 @@ import { Terminal } from '~/ui/components/Snippet';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { GithubIcon, BookOpen02Icon, Rocket02Icon } from '@expo/styleguide-icons';
 
-Expo Router is a routing library for React Native applications built with Expo. It allows you to manage navigation between screens in your app, allowing users to move between different parts of your app's UI seamlessly, using the same components on multiple platforms (Android, iOS, and web).
+Expo Router is a File-based router for React Native and web applications. It allows you to manage navigation between screens in your app, allowing users to move between different parts of your app's UI seamlessly, using the same components on multiple platforms (Android, iOS, and web).
 
-It brings the best file-system routing concepts from the web to a universal application &mdash; allowing your routing to work across every platform. When a file is added to the **app** directory, it automatically becomes a route in your mobile navigation. It makes building, maintaining, and scaling your project easier than ever. It's built on top of our powerful [React Navigation suite](https://reactnavigation.org/), enabling truly native navigation. The entire deep linking system is automatically generated live so that users can share links to any route in your app.
+It brings the best file-system routing concepts from the web to a universal application &mdash; allowing your routing to work across every platform. When a file is added to the **app** directory, the file automatically becomes a route in your navigation.
 
 ## Features
 
-- **Native**: Truly native navigation with the most cutting-edge developer experience.
-- **Deep linking**: Every screen in your app is automatically deep linkable. Making any part of your app shareable.
+- **Native**: Built on top of our powerful [React Navigation suite](https://reactnavigation.org/), Expo Router navigation is truly native and platform-optimized by default.
+- **Shareable**: Every screen in your app is automatically deep linkable. Making any route in your app shareable with links.
 - **Offline-first**: Apps are cached and run offline-first, with automatic updates when you publish a new version. Handles all incoming native URLs without a network connection or server.
-- **Scale**: Apps are built with a modular architecture that scales to any size. Refactoring and upgrading are a breeze due to the declarative nature of the API.
+- **Optimized**: Routes are automatically optimized with lazy-evaluation in production, and defered bundling in development.
 - **Iteration**: Universal Fast Refresh across Android, iOS, and web, along with artifact memoization in the bundler to keep you moving fast at scale.
-- **Cross-Platform**: Expo Router is a large step towards universal React apps. The same codebase can be used to build Android, iOS, and web apps.
+- **Universal**: iOS, Android, and web share a unified navigation structure, with the ability to drop-down to platform-specific APIs at the route level.
+- **Discoverable**: Expo Router enables build-time static rendering on web, and universal linking to native. Meaning your app content can be indexed by search engines.
 
 ## Next steps
 
