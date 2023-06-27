@@ -78,6 +78,10 @@ abstract class DevLauncherPlugin : Plugin<Project> {
 
   class OkHttpClientCustomBuildMethod(api: Int, methodVisitor: MethodVisitor) : MethodVisitor(api, methodVisitor) {
     override fun visitCode() {
+      //
+      // NOTE: The following code should be in sync with **packages/expo-network-addons/expo-network-addons-gradle-plugin/src/main/kotlin/expo/modules/networkaddons/NetworkAddonsPlugin.kt**
+      //
+
       // opcodes for `this.addInterceptor(expo.modules.kotlin.devtools.ExpoNetworkInspectOkHttpAppInterceptor())`
       visitVarInsn(Opcodes.ALOAD, 0)
       visitTypeInsn(Opcodes.NEW, "expo/modules/kotlin/devtools/ExpoNetworkInspectOkHttpAppInterceptor")

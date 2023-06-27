@@ -97,6 +97,10 @@ abstract class NetworkAddonsPlugin : Plugin<Project> {
       visitMethodInsn(Opcodes.INVOKEVIRTUAL, "okhttp3/OkHttpClient\$Builder", "addInterceptor", "(Lokhttp3/Interceptor;)Lokhttp3/OkHttpClient\$Builder;", false)
 
       if (parameters.debugVariant.getOrElse(false) && parameters.devLauncherInstalled.getOrElse(false)) {
+        //
+        // NOTE: The following code should be in sync with **packages/expo-dev-launcher/expo-dev-launcher-gradle-plugin/src/main/kotlin/expo/modules/devlauncher/DevLauncherPlugin.kt**
+        //
+
         // opcodes for `this.addInterceptor(expo.modules.kotlin.devtools.ExpoNetworkInspectOkHttpAppInterceptor())`
         visitVarInsn(Opcodes.ALOAD, 0)
         visitTypeInsn(Opcodes.NEW, "expo/modules/kotlin/devtools/ExpoNetworkInspectOkHttpAppInterceptor")
