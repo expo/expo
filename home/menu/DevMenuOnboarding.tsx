@@ -1,7 +1,8 @@
-import { View, Text, Button, Spacer } from 'expo-dev-client-components';
+import { View, Text, Button, Spacer, padding, scale } from 'expo-dev-client-components';
 import { isDevice } from 'expo-device';
 import React from 'react';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type Props = {
   onClose: () => void;
@@ -43,41 +44,34 @@ const simulatorMessage = Platform.select({
 });
 
 export function DevMenuOnboarding({ onClose }: Props) {
+  const { bottom } = useSafeAreaInsets();
+
   return (
-    <View style={styles.onboardingContainer}>
-      <View flex="1" bg="default" py="medium" px="large">
-        <View>
-          <Text size="medium" maxFontSizeMultiplier={1.2}>
-            This is the developer menu. It gives you access to useful tools in Expo Go.
-          </Text>
-          <Spacer.Vertical size="medium" />
-          <Text size="medium" maxFontSizeMultiplier={1.2}>
-            {isDevice ? deviceMessage : simulatorMessage}
-          </Text>
-        </View>
-
-        <Spacer.Vertical size="large" />
-
-        <Button.FadeOnPressContainer bg="primary" onPress={onClose}>
-          <View py="small">
-            <Button.Text align="center" size="medium" color="primary" weight="medium">
-              Continue
-            </Button.Text>
-          </View>
-        </Button.FadeOnPressContainer>
+    <View
+      flex="1"
+      bg="default"
+      pt="medium"
+      px="large"
+      style={{ paddingBottom: bottom + scale.medium }}>
+      <View>
+        <Text size="medium" maxFontSizeMultiplier={1.2}>
+          This is the developer menu. It gives you access to useful tools in Expo Go.
+        </Text>
+        <Spacer.Vertical size="medium" />
+        <Text size="medium" maxFontSizeMultiplier={1.2}>
+          {isDevice ? deviceMessage : simulatorMessage}
+        </Text>
       </View>
+
+      <Spacer.Vertical size="large" />
+
+      <Button.FadeOnPressContainer bg="primary" onPress={onClose}>
+        <View py="small">
+          <Button.Text align="center" size="medium" color="primary" weight="medium">
+            Continue
+          </Button.Text>
+        </View>
+      </Button.FadeOnPressContainer>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  onboardingContainer: {
-    flex: 1,
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-    zIndex: 2,
-  },
-});
