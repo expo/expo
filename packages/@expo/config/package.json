@@ -1,6 +1,6 @@
 {
   "name": "@expo/config",
-  "version": "8.1.0",
+  "version": "8.1.1",
   "description": "A library for interacting with the app.json",
   "main": "build/index.js",
   "scripts": {
