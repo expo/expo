@@ -107,10 +107,10 @@ public final class UpdatesUtils: NSObject {
           filters: updateResponse.responseHeaderData?.manifestFilters
         ) {
           let body = [
-            "manifest": update.manifest.rawManifestJSON()
+            "manifest": update.manifest!.rawManifestJSON()
           ]
           block(body)
-          sendStateEvent(UpdatesStateEventCheckCompleteWithUpdate(manifest: update.manifest.rawManifestJSON()))
+          sendStateEvent(UpdatesStateEventCheckCompleteWithUpdate(manifest: update.manifest!.rawManifestJSON()))
         } else {
           block([:])
             sendStateEvent(UpdatesStateEventCheckComplete())
@@ -192,10 +192,10 @@ public final class UpdatesUtils: NSObject {
             let body = [
               "isNew": true,
               "isRollBackToEmbedded": false,
-              "manifest": update.manifest.rawManifestJSON()
+              "manifest": update.manifest!.rawManifestJSON()
             ] as [String: Any]
             block(body)
-            sendStateEvent(UpdatesStateEventDownloadCompleteWithUpdate(manifest: update.manifest.rawManifestJSON()))
+            sendStateEvent(UpdatesStateEventDownloadCompleteWithUpdate(manifest: update.manifest!.rawManifestJSON()))
             return
           } else {
             let body = [

@@ -42,7 +42,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
         
         expect(errorOccurred).to(beNil())
         expect(resultUpdateResponse?.manifestUpdateResponsePart).notTo(beNil())
-        expect(resultUpdateResponse?.manifestUpdateResponsePart?.updateManifest.manifest.isVerified()) == false
+        expect(resultUpdateResponse?.manifestUpdateResponsePart?.updateManifest.manifest?.isVerified()) == false
       }
       
       it("multipart body") {
@@ -80,7 +80,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
         expect(errorOccurred).to(beNil())
         expect(resultUpdateResponse).notTo(beNil())
         expect(resultUpdateResponse?.manifestUpdateResponsePart).notTo(beNil())
-        expect(resultUpdateResponse?.manifestUpdateResponsePart?.updateManifest.manifest.isVerified()) == false
+        expect(resultUpdateResponse?.manifestUpdateResponsePart?.updateManifest.manifest?.isVerified()) == false
         
         expect(resultUpdateResponse?.directiveUpdateResponsePart).notTo(beNil())
         expect(resultUpdateResponse?.directiveUpdateResponsePart?.updateDirective is NoUpdateAvailableUpdateDirective) == true
@@ -357,7 +357,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
         
         expect(errorOccurred).to(beNil())
         expect(resultUpdateResponse?.manifestUpdateResponsePart).notTo(beNil())
-        expect(resultUpdateResponse?.manifestUpdateResponsePart?.updateManifest.manifest.isVerified()) == true
+        expect(resultUpdateResponse?.manifestUpdateResponsePart?.updateManifest.manifest?.isVerified()) == true
       }
       
       it("multipart body signed") {
@@ -402,7 +402,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
         expect(resultUpdateResponse).notTo(beNil())
         expect(resultUpdateResponse).notTo(beNil())
         expect(resultUpdateResponse?.manifestUpdateResponsePart).notTo(beNil())
-        expect(resultUpdateResponse?.manifestUpdateResponsePart?.updateManifest.manifest.isVerified()) == true
+        expect(resultUpdateResponse?.manifestUpdateResponsePart?.updateManifest.manifest?.isVerified()) == true
         
         expect(resultUpdateResponse?.directiveUpdateResponsePart).notTo(beNil())
         expect(resultUpdateResponse?.directiveUpdateResponsePart?.updateDirective is NoUpdateAvailableUpdateDirective) == true
@@ -484,7 +484,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
         
         expect(errorOccurred).to(beNil())
         expect(resultUpdateResponse).notTo(beNil())
-        expect(resultUpdateResponse?.manifestUpdateResponsePart?.updateManifest.manifest.isVerified()) == true
+        expect(resultUpdateResponse?.manifestUpdateResponsePart?.updateManifest.manifest?.isVerified()) == true
         
         expect(resultUpdateResponse?.directiveUpdateResponsePart).notTo(beNil())
         expect(resultUpdateResponse?.directiveUpdateResponsePart?.updateDirective is NoUpdateAvailableUpdateDirective) == true

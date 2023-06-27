@@ -47,7 +47,7 @@ internal final class BareUpdate: Update {
     }
 
     let update = Update.init(
-      manifest: manifest,
+      manifest: nil, // https://github.com/expo/expo/pull/12818 changed this to be nil
       config: config,
       database: database,
       updateId: uuid,

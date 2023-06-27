@@ -54,7 +54,7 @@ public final class UpdatesModule: Module {
         "isEmbeddedLaunch": updatesService.isEmbeddedLaunch,
         "isUsingEmbeddedAssets": updatesService.isUsingEmbeddedAssets,
         "updateId": launchedUpdate.updateId.uuidString,
-        "manifest": launchedUpdate.manifest.rawManifestJSON(),
+        "manifest": launchedUpdate.manifest?.rawManifestJSON() ?? [:],
         "localAssets": updatesService.assetFilesMap ?? [:],
         "isEmergencyLaunch": updatesService.isEmergencyLaunch,
         "isMissingRuntimeVersion": isMissingRuntimeVersion,
