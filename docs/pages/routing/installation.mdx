@@ -29,13 +29,19 @@ Once setup, you can start your project by running:
 
 <Terminal cmd={['$ npx expo start']} />
 
-To view your app on a mobile device, we recommend starting with [Expo Go](/get-started/expo-go). As your application grows in complexity and you need more control, you can create a [development build](/develop/development-builds/introduction/).
+- To view your app on a mobile device, we recommend starting with [Expo Go](/get-started/expo-go). As your application grows in complexity and you need more control, you can create a [development build](/develop/development-builds/introduction/).
+- Open the project in a web browser by pressing <kbd>w</kbd> in the Terminal UI. Press <kbd>a</kbd> for Android (Android Studio is required), or <kbd>i</kbd> for iOS (macOS with Xcode is required).
 
 </Step>
 
 ## Manual installation
 
-> Expo Router supports Expo SDK 48 and above. Some features may require the latest SDK.
+Ensure the version of Expo Router is compatible with the Expo SDK version your project is using.
+
+| Expo SDK | Expo Router |
+| -------- | ----------- |
+| ^49.0.0  | ^2.0.0      |
+| ^48.0.0  | ^1.0.0      |
 
 ### Prerequisites
 
@@ -71,19 +77,39 @@ The above command will install versions of these libraries that are compatible w
 
 ### Setup entry point
 
-Either delete the entry point in your **package.json** or replace it with **index.js** to be explicit:
+<Tabs>
 
-```json package.json
-{
-  "main": "index.js"
-}
-```
+<Tab label="SDK +49">
 
-Create a new file **index.js** in the root of your project. If it exists already, replace it with the following:
+    Use the `expo-router/entry` file in the **package.json**. The initial client file will be [**app/_layout.js**](/router/advanced/root-layout).
 
-```js index.js
-import 'expo-router/entry';
-```
+    ```json package.json
+    {
+      "main": "expo-router/entry"
+    }
+    ```
+
+</Tab>
+
+<Tab label="SDK 48">
+
+    Either delete the entry point in your **package.json** or replace it with **index.js** to be explicit:
+
+    ```json package.json
+    {
+      "main": "index.js"
+    }
+    ```
+
+    Create a new file **index.js** in the root of your project. If it exists already, replace it with the following:
+
+    ```js index.js
+    import 'expo-router/entry';
+    ```
+
+</Tab>
+
+</Tabs>
 
 </Step>
 

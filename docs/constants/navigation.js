@@ -380,6 +380,7 @@ const preview = [
       makePage('routing/introduction.mdx'),
       makePage('routing/installation.mdx'),
       makePage('routing/create-pages.mdx'),
+      makePage('routing/navigating-pages.mdx'),
       makePage('routing/shared-routes-and-layouts.mdx'),
       makePage('routing/appearance.mdx'),
       makePage('routing/error-handling.mdx'),
