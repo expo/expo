@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Avoid changing required dependency versions when prebuilding.
+
 ### 💡 Others
 
 - Removed prebuild side effect that adding `--dev-client` to the npm start script. ([#23121](https://github.com/expo/expo/pull/23121) by [@kudo](https://github.com/kudo))
