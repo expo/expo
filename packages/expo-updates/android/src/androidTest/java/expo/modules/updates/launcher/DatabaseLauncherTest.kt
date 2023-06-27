@@ -17,6 +17,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verify
+import org.json.JSONObject
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -59,7 +60,7 @@ class DatabaseLauncherTest {
 
   @Test
   fun testGetUpdateIds_DBWithOneUpdate() {
-    val testUpdate = UpdateEntity(UUID.randomUUID(), Date(), "1.0", "scopeKey")
+    val testUpdate = UpdateEntity(UUID.randomUUID(), Date(), "1.0", "scopeKey", JSONObject("{}"))
     testUpdate.lastAccessed = Date(Date().time - DateUtils.DAY_IN_MILLIS) // yesterday
     testUpdate.status = UpdateStatus.READY
     db.updateDao().insertUpdate(testUpdate)
@@ -80,12 +81,12 @@ class DatabaseLauncherTest {
 
   @Test
   fun testGetUpdateIds_DBWithOneReadyUpdate() {
-    val testUpdate1 = UpdateEntity(UUID.randomUUID(), Date(), "1.0", "scopeKey")
+    val testUpdate1 = UpdateEntity(UUID.randomUUID(), Date(), "1.0", "scopeKey", JSONObject("{}"))
     testUpdate1.lastAccessed = Date(Date().time - DateUtils.DAY_IN_MILLIS) // yesterday
     testUpdate1.status = UpdateStatus.READY
     db.updateDao().insertUpdate(testUpdate1)
 
-    val testUpdate2 = UpdateEntity(UUID.randomUUID(), Date(), "1.0", "scopeKey")
+    val testUpdate2 = UpdateEntity(UUID.randomUUID(), Date(), "1.0", "scopeKey", JSONObject("{}"))
     testUpdate2.lastAccessed = Date(Date().time - DateUtils.DAY_IN_MILLIS) // yesterday
     testUpdate2.status = UpdateStatus.PENDING
     db.updateDao().insertUpdate(testUpdate2)
@@ -106,7 +107,7 @@ class DatabaseLauncherTest {
 
   @Test
   fun testLaunch_MarkUpdateAccessed() {
-    val testUpdate = UpdateEntity(UUID.randomUUID(), Date(), "1.0", "scopeKey")
+    val testUpdate = UpdateEntity(UUID.randomUUID(), Date(), "1.0", "scopeKey", JSONObject("{}"))
     testUpdate.lastAccessed = Date(Date().time - DateUtils.DAY_IN_MILLIS) // yesterday
     db.updateDao().insertUpdate(testUpdate)
 
