@@ -78,7 +78,7 @@ If you don't specify this list, `Linking.canOpenURL` may return `false` regardle
 To save you the trouble of inserting a bunch of conditionals based on the environment that you're in and hardcoding urls, we provide some helper methods in our extension of the `Linking` module. When you want to provide a service with a url that it needs to redirect back into your app, you can call `Linking.createURL()` and it will resolve to the following:
 
 - _Custom builds_: `myapp://`
-- _Development in Expo Go_: `exp://127.0.0.1:19000`
+- _Development in Expo Go_: `exp://127.0.0.1:8081`. For SDK 48 and lower, the port number is `19000`.
 - _Published app in Expo Go_: `exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]`
 
 You can also change the returned url by passing optional parameters into `Linking.createURL()`. These will be used by your app to receive data, which we will talk about in the next section.
@@ -96,7 +96,7 @@ const redirectUrl = Linking.createURL('path/into/app', {
 This will resolve into the following, depending on the environment:
 
 - _Custom builds_: `myapp://path/into/app?hello=world`
-- _Development in Expo Go_: `exp://127.0.0.1:19000/--/path/into/app?hello=world`
+- _Development in Expo Go_: `exp://127.0.0.1:8081/--/path/into/app?hello=world`. For SDK 48 and lower, the port number is `19000`.
 - _Published app in Expo Go_: `exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]/--/path/into/app?hello=world`
 
 > Notice in Expo Go that `/--/` is added to the URL when a path is specified. This indicates to Expo Go that the substring after it corresponds to the deep link path, and is not part of the path to the app itself.
@@ -194,7 +194,7 @@ You can test it to ensure it works like this:
 
 [Expo Go][expo-go] uses the `exp://` scheme, however, if we link to `exp://` without any address afterward, it will open the app to the home screen.
 
-In development, your app will live at a url like `exp://127.0.0.1:19000`. When published, an experience will be hosted at a URL like `exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]`, where `u.expo.dev/[project-id]` is the hosted URL that Expo Go fetches from.
+In development, your app will live at a url like `exp://127.0.0.1:8081` (for SDK 48 and lower, the port number is `19000`). When published, an experience will be hosted at a URL like `exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]`, where `u.expo.dev/[project-id]` is the hosted URL that Expo Go fetches from.
 
 You can test this mechanism in your mobile browser by searching `exp://u.expo.dev/F767ADF57-B487-4D8F-9522-85549C39F43F?channel-name=main&runtime-version=exposdk:45.0.0`, this will redirect to your experience in the Expo Go app.
 
@@ -255,8 +255,10 @@ You can open a URL like:
     '# Custom builds',
     '$ npx uri-scheme open myapp://somepath/into/app?hello=world --ios',
     '',
-    '# Expo Go in development (adjust the `127.0.0.1:19000` to match your dev server URL)',
-    '$ npx uri-scheme open exp://127.0.0.1:19000/--/somepath/into/app?hello=world --ios',
+    '# Expo Go in development (adjust the `127.0.0.1:8081` to match your dev server URL)',
+    '$ npx uri-scheme open exp://127.0.0.1:8081/--/somepath/into/app?hello=world --ios',
+    '',
+    '# For SDK 48 and lower, use 19000 as the port number',
   ]}
 />
 

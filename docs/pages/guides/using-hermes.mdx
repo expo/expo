@@ -78,7 +78,7 @@ Alternatively, you can use the JavaScript inspector from the following tools:
 - Internally, the app will establish a WebSocket connection, make sure your app is connected to the development server.
 
   - Try to reload the app by pressing <kbd>r</kbd> in the Expo CLI Terminal UI.
-  - Test debugging availability by running the command: `curl http://127.0.0.1:19000/json/list` (adjust the `127.0.0.1:19000` to match your dev server URL). The HTTP response should be an array, as shown below. If it is an empty response, add either the `--localhost` or `--tunnel` flag to the `npx expo start` command.
+  - Test debugging availability by running the command: `curl http://127.0.0.1:8081/json/list` (adjust the `127.0.0.1:8081` to match your dev server URL). The HTTP response should be an array, as shown below. If it is an empty response, add either the `--localhost` or `--tunnel` flag to the `npx expo start` command.
 
   ```json
   [
@@ -87,9 +87,9 @@ Alternatively, you can use the JavaScript inspector from the following tools:
       "description": "host.exp.Exponent",
       "title": "Hermes ABI47_0_0React Native",
       "faviconUrl": "https://react.dev/favicon.ico",
-      "devtoolsFrontendUrl": "devtools://devtools/bundled/js_app.html?experiments=true&v8only=true&ws=%5B%3A%3A1%5D%3A19000%2Finspector%2Fdebug%3Fdevice%3D0%26page%3D2",
+      "devtoolsFrontendUrl": "devtools://devtools/bundled/js_app.html?experiments=true&v8only=true&ws=%5B%3A%3A1%5D%3A8081%2Finspector%2Fdebug%3Fdevice%3D0%26page%3D2",
       "type": "node",
-      "webSocketDebuggerUrl": "ws://[::1]:19000/inspector/debug?device=0&page=2",
+      "webSocketDebuggerUrl": "ws://[::1]:8081/inspector/debug?device=0&page=2",
       "vm": "Hermes"
     },
     {
@@ -97,9 +97,9 @@ Alternatively, you can use the JavaScript inspector from the following tools:
       "description": "host.exp.Exponent",
       "title": "React Native Experimental (Improved Chrome Reloads)",
       "faviconUrl": "https://react.dev/favicon.ico",
-      "devtoolsFrontendUrl": "devtools://devtools/bundled/js_app.html?experiments=true&v8only=true&ws=%5B%3A%3A1%5D%3A19000%2Finspector%2Fdebug%3Fdevice%3D0%26page%3D-1",
+      "devtoolsFrontendUrl": "devtools://devtools/bundled/js_app.html?experiments=true&v8only=true&ws=%5B%3A%3A1%5D%3A8081%2Finspector%2Fdebug%3Fdevice%3D0%26page%3D-1",
       "type": "node",
-      "webSocketDebuggerUrl": "ws://[::1]:19000/inspector/debug?device=0&page=-1",
+      "webSocketDebuggerUrl": "ws://[::1]:8081/inspector/debug?device=0&page=-1",
       "vm": "don't use"
     }
   ]

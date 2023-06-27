@@ -87,7 +87,7 @@ You can install it via the [release page](https://github.com/jhen0409/react-nati
 
 #### Startup
 
-After firing up React Native Debugger, you'll need to specify the port (shortcuts: <kbd>Cmd ⌘</kbd> + <kbd>t</kbd> on macOS, <kbd>Ctrl</kbd> + <kbd>t</kbd> on Linux/Windows) to `19000` (if you use SDK &lt;= 39, the port should be `19001`&gt;). After that, run your project with `npx expo start`, and select `Debug remote JS` from the Developer Menu. The debugger should automatically connect.
+After firing up React Native Debugger, you'll need to specify the port (shortcuts: <kbd>Cmd ⌘</kbd> + <kbd>t</kbd> on macOS, <kbd>Ctrl</kbd> + <kbd>t</kbd> on Linux/Windows) to `8081` (for SDK 48 and lower, the port is `19000`). After that, run your project with `npx expo start`, and select `Debug remote JS` from the Developer Menu. The debugger should automatically connect.
 
 In the debugger console, you can see the Element tree, as well as the props, state, and children of whatever element you select. You also have the Chrome console on the right, and if you type `$r` in the console, you will see the breakdown of your selected element.
 
@@ -113,7 +113,7 @@ There are however [some limitations](https://github.com/jhen0409/react-native-de
 [Redux](https://redux.js.org/) is a popular library for managing and centralizing application state shared throughout the app. You can use Redux DevTools on React Native Debugger for debugging the application's state changes. The setup is as follows:
 
 1. Download React Native Debugger from the [releases page](https://github.com/jhen0409/react-native-debugger/releases).
-2. Open the app, press <kbd>Cmd ⌘</kbd> + <kbd>t</kbd> or <kbd>Ctrl</kbd> + <kbd>t</kbd> to open a new window, then set the port to 19000.
+2. Open the app, press <kbd>Cmd ⌘</kbd> + <kbd>t</kbd> or <kbd>Ctrl</kbd> + <kbd>t</kbd> to open a new window, then set the port to 8081. For SDK 48 and lower, set it to 19000.
 3. Start your app, open the in-app developer menu, and select “Debug JS Remotely.”
 4. Configure `__REDUX_DEVTOOLS_EXTENSION__` as [shown here](https://github.com/zalmoxisus/redux-devtools-extension#11-basic-store).
 
@@ -149,13 +149,15 @@ You can debug React Native apps using the Chrome debugger tools. Rather than run
 
 - If you are using `npx expo start --lan`, make sure your device is on the same Wi-Fi network as your development machine. This may not work on some public networks. `npx expo start --localhost` will not work for iOS unless you are in the simulator, and it only works on Android if your device is connected to your machine via USB.
 
-- Open the app on your device, reveal the developer menu then tap on `Debug JS Remotely`. This should open up a Chrome tab with the URL `http://localhost:19000/debugger-ui`. From there, you can set breakpoints and interact through the JavaScript console. Shake the device and stop Chrome debugging when you're done.
+- Open the app on your device, reveal the developer menu then tap on `Debug JS Remotely`. This should open up a Chrome tab with the URL `http://localhost:8081/debugger-ui`. For SDK 48 and lower, use `19000` as the port number. From there, you can set breakpoints and interact through the JavaScript console. Shake the device and stop Chrome debugging when you're done.
 
 - Line numbers for `console.log` statements don't work by default when using Chrome debugging. To get correct line numbers open up the Chrome Dev Tools settings, go to the "Blackboxing" tab, make sure that "Blackbox content scripts" is checked, and add **expo/build/logs/RemoteConsole.js** as a pattern with "Blackbox" selected.
 
 #### Troubleshooting localhost debugging
 
-When you run a project on your device with `npx expo start` or `npx expo run:android`, the Expo CLI automatically tells your device to forward `localhost:19000` to your development machine, as long as your device is plugged in or emulator is running. If you are using `localhost` for debugging and it isn't working, close the app and open it up again using `Open on Android`. Alternatively, you can use the following `adb` command if you have the Android developer tools installed: `adb reverse tcp:19000 tcp:19000`.
+> For SDK 48 and lower, use `19000` as the port number.
+
+When you run a project on your device with `npx expo start` or `npx expo run:android`, the Expo CLI automatically tells your device to forward `localhost:8081` to your development machine, as long as your device is plugged in or emulator is running. If you are using `localhost` for debugging and it isn't working, close the app and open it up again using `Open on Android`. Alternatively, you can use the following `adb` command if you have the Android developer tools installed: `adb reverse tcp:8081 tcp:8081`.
 
 #### Source maps and async functions
 
