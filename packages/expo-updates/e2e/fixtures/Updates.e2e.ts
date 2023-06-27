@@ -555,8 +555,10 @@ describe('JS API tests', () => {
     console.warn(`latestManifestId = ${latestManifestId}`);
     console.warn(`downloadedManifestId = ${downloadedManifestId}`);
 
-    const expoConfigEmbeddedString = await testElementValueAsync('expoConfig');
-    console.warn(`expoConfigEmbedded = ${expoConfigEmbeddedString}`);
+    const updatesExpoConfigEmbeddedString = await testElementValueAsync('updates.expoConfig');
+    const constantsExpoConfigEmbeddedString = await testElementValueAsync('constants.expoConfig');
+    console.warn(`updatesExpoConfigEmbedded = ${updatesExpoConfigEmbeddedString}`);
+    console.warn(`constantsExpoConfigEmbedded = ${constantsExpoConfigEmbeddedString}`);
 
     // Now serve a manifest
     Server.start(Update.serverPort, protocolVersion);
@@ -618,8 +620,10 @@ describe('JS API tests', () => {
     console.warn(`latestManifestId4 = ${latestManifestId4}`);
     console.warn(`downloadedManifestId4 = ${downloadedManifestId4}`);
 
-    const expoConfigUpdateString = await testElementValueAsync('expoConfig');
-    console.warn(`expoConfigUpdateString = ${expoConfigUpdateString}`);
+    const updatesExpoConfigUpdateString = await testElementValueAsync('updates.expoConfig');
+    const constantsExpoConfigUpdateString = await testElementValueAsync('constants.expoConfig');
+    console.warn(`updatesExpoConfigUpdate = ${updatesExpoConfigUpdateString}`);
+    console.warn(`constantsExpoConfigUpdate = ${constantsExpoConfigUpdateString}`);
 
     // Now serve a rollback
     const rollbackDirective = Update.getRollbackDirective(new Date());
@@ -667,16 +671,14 @@ describe('JS API tests', () => {
     console.warn(`latestManifestId6 = ${latestManifestId6}`);
     console.warn(`downloadedManifestId6 = ${downloadedManifestId6}`);
 
-    const expoConfigRollbackString = await testElementValueAsync('expoConfig');
-    console.warn(`expoConfigRollbackString = ${expoConfigRollbackString}`);
+    const updatesExpoConfigRollbackString = await testElementValueAsync('updates.expoConfig');
+    const constantsExpoConfigRollbackString = await testElementValueAsync('constants.expoConfig');
+    console.warn(`updatesExpoConfigRollback = ${updatesExpoConfigRollbackString}`);
+    console.warn(`constantsExpoConfigRollback = ${constantsExpoConfigRollbackString}`);
 
     // Unpack expo config values and check them
-    const expoConfigEmbedded = JSON.parse(expoConfigEmbeddedString);
-    jestExpect(expoConfigEmbedded).not.toBeNull();
-    // const expoConfigUpdate = JSON.parse(expoConfigUpdateString);
-    // const expoConfigRollback = JSON.parse(expoConfigRollbackString);
-    // expect(expoConfigUpdate).toEqual(expoConfigEmbedded);
-    // expect(expoConfigRollback).toEqual(expoConfigEmbedded);
+    const updatesExpoConfigEmbedded = JSON.parse(updatesExpoConfigEmbeddedString);
+    jestExpect(updatesExpoConfigEmbedded).not.toBeNull();
 
     // Verify correct behavior
     // On launch

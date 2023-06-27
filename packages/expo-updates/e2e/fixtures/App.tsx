@@ -175,9 +175,16 @@ export default function App() {
         </Text>
       </ScrollView>
 
-      <Text>expoConfig</Text>
+      <Text>Updates expoConfig</Text>
       <ScrollView style={styles.logEntriesContainer}>
-        <Text testID="expoConfig" style={styles.logEntriesText}>
+        <Text testID="updates.expoConfig" style={styles.logEntriesText}>
+          {JSON.stringify(Updates.manifest.extra?.expoConfig || {})}
+        </Text>
+      </ScrollView>
+
+      <Text>Constants expoConfig</Text>
+      <ScrollView style={styles.logEntriesContainer}>
+        <Text testID="constants.expoConfig" style={styles.logEntriesText}>
           {JSON.stringify(Constants.expoConfig)}
         </Text>
       </ScrollView>
