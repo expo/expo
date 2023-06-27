@@ -11,23 +11,23 @@ After verifying our EAS Update configuration in our [basic guide](/eas-update/de
 
 ## General strategies
 
-We recommend trying these strategies before using the more specific ones mentioned in this guide.
+Try these strategies before using the more specific ones mentioned in this guide.
 
 ### Use `expo-dev-client`
 
-Create a [development version of your build](/eas-update/expo-dev-client). It will help you preview published updates inside a problematic build.
+Create a [development version of our build](/eas-update/expo-dev-client). It will help us preview published updates inside a problematic build.
 
 ### In-app debugging
 
 The `expo-updates` library exports a variety of functions to interact with updates once the app is already running. In certain cases, making a call to fetch an update and seeing an error message can help us narrow down the root cause. We can make a simulator build of the project and manually check to see if updates are available or if there are errors when fetching updates.
 
-- Print the [Update.Constants](/versions/latest/sdk/updates/#constants) to verify your configuration.
+- Print the [Update.Constants](/versions/latest/sdk/updates/#constants) to verify our configuration.
 - [Examine log entries](/versions/latest/sdk/updates/#updatesreadlogentriesasyncmaxage) surfaced from the native layer.
 - Fetch and [load updates manually](/versions/latest/sdk/updates/#check-for-updates-manually).
 
 ## Configuration issues
 
-Your app is still not receiving the expected update despite following the [basic guide](/eas-update/debug).
+Our app is still not receiving the expected update despite following the [basic guide](/eas-update/debug).
 
 ### `expo-updates` configuration
 
@@ -37,7 +37,7 @@ The `expo-updates` library runs inside an end-user's app and makes requests to a
 
 When we set up EAS Update, we likely ran `eas update:configure` to configure expo-updates to work with EAS Update. This command makes changes to our app config (**app.json**/**app.config.js**). Here are the fields we'd expect to see:
 
-- `runtimeVersion` should be set. By default, it is `{ "policy": "sdkVersion" }`.
+- `runtimeVersion` should be set. By default, it is `{ "policy": "sdkVersion" }`. If our project has **android** and **ios** directories, we'll have to set the `runtimeVersion` manually.
 - `updates.url` should be a value like `https://u.expo.dev/your-project-id`, where `your-project-id` matches the ID of our project. We can see this ID on [our website](https://expo.dev/accounts/[account]/projects/[project]).
 - `updates.enabled` should not be `false`. It's `true` by default if it is not specified.
 
@@ -106,7 +106,7 @@ When an update is published with EAS Update, we create a manifest that end-user 
 
 Inside our project's app config (**app.json**/**app.config.json**), the URL we can GET is under `updates.url`.
 
-This `url` is EAS' "https://u.expo.dev" domain, followed by the project's ID on EAS' servers. If we go to the URL directly, we'll see an error about missing a header. We can view a manifest by adding three query parameters to the URL: `runtime-version`, `channel-name`, and `platform`. If we published an update with a runtime version of `1.0.0`, a channel of `production` and a platform of `android`, the full URL you could visit would be similar to this:
+This `url` is EAS' "https://u.expo.dev" domain, followed by the project's ID on EAS' servers. If we go to the URL directly, we'll see an error about missing a header. We can view a manifest by adding three query parameters to the URL: `runtime-version`, `channel-name`, and `platform`. If we published an update with a runtime version of `1.0.0`, a channel of `production` and a platform of `android`, the full URL we could visit would be similar to this:
 
 ```
 https://u.expo.dev/your-project-id?runtime-version=1.0.0&channel-name=production&platform=android
@@ -137,7 +137,7 @@ Below is a screenshot showing the request of a successful update manifest reques
 
 ## Runtime issues
 
-You are able to load the expected update but your project is displaying unexpected behavior.
+We are able to load the expected update but our project is displaying unexpected behavior.
 
 ### Debugging of native code while loading the app through expo-updates
 
@@ -151,7 +151,7 @@ We also provide a [step-by-step guide to try out EAS Update quickly](/eas-update
 
 - Set the debug environment variable: `export EX_UPDATES_NATIVE_DEBUG=1`
 - Reinstall pods with `npx pod-install`. The `expo-updates` podspec now detects this environment variable, and makes changes so that the debug code that would normally load from the Metro packager is bypassed, and the app is built with the EXUpdates bundle and other dependencies needed to load updates from EAS.
-- [Ensure the desired channel is set in your **Expo.plist**](/bare/updating-your-app/#configuring-the-channel-manually)
+- [Ensure the desired channel is set in our **Expo.plist**](/bare/updating-your-app/#configuring-the-channel-manually)
 - Modify the application Xcode project file to force bundling of the application JavaScript for both release and debug builds:
 
 ```
@@ -194,7 +194,7 @@ Alternatively, we can use EAS to create a debug build where `expo-updates` is en
 
 ## Publishing issues
 
-You are not able to publish an update, or parts of your update are not being published as expected.
+We are not able to publish an update, or parts of our update are not being published as expected.
 
 ### Inspecting the latest update locally
 
