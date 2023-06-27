@@ -9,6 +9,7 @@
 // swiftlint:disable identifier_name
 // swiftlint:disable type_body_length
 // swiftlint:disable legacy_objc_type
+// swiftlint:disable force_unwrapping
 
 import Foundation
 import ABI49_0_0EASClient

@@ -11,7 +11,7 @@ public final class SelectionPolicies: NSObject {
     }
 
     guard let manifest = update.manifest,
-          let metadata = manifest.rawManifestJSON()["metadata"] as? [String: AnyObject] else {
+      let metadata = manifest.rawManifestJSON()["metadata"] as? [String: AnyObject] else {
       return true
     }
 
