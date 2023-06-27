@@ -77,13 +77,13 @@ The displayed deployment has the correct channel, but it is not linked to a bran
 
 ### Missing deployment
 
-If your deployment is not displayed, this means our build is not configured properly with EAS Update. To fix this, [configure our channel](/#configure-channel), [configure our runtime version](/#configure-runtime-version) and rebuild our app.
+If our deployment is not displayed, it means our build is not configured properly for EAS Update. To fix this, [configure our channel](/#configure-channel), [configure our runtime version](/#configure-runtime-version) and verify our [general configuration](/debug-advanced/#verifying-app-configuration). We'll need to rebuild our app after making these changes.
 
 ## Solutions
 
 ### Configure channel
 
-To verify that a build has a specific channel, make sure your build profile in **eas.json** has a channel property:
+To verify that a build has a specific channel, make sure our build profile in **eas.json** has a channel property:
 
 ```json eas.json
 {
