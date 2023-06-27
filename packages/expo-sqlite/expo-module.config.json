@@ -3,5 +3,8 @@
   "platforms": ["ios", "android"],
   "ios": {
     "modules": ["SQLiteModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.sqlite.SQLiteModule"]
   }
 }

@@ -39,7 +39,12 @@ class SQLiteDatabase {
     }
 }
 function _serializeQuery(query) {
-    return [query.sql, Platform.OS === 'android' ? query.args.map(_escapeBlob) : query.args];
+    return Platform.OS === 'android'
+        ? {
+            sql: query.sql,
+            args: query.args.map(_escapeBlob),
+        }
+        : [query.sql, query.args];
 }
 function _deserializeResultSet(nativeResult) {
     const [errorMessage, insertId, rowsAffected, columns, rows] = nativeResult;
