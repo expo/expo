@@ -9,7 +9,6 @@
 // swiftlint:disable identifier_name
 // swiftlint:disable type_body_length
 // swiftlint:disable legacy_objc_type
-// swiftlint:disable force_unwrapping
 
 import Foundation
 import EASClient
@@ -949,7 +948,10 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
             return
           }
 
+          // swiftlint:disable force_unwrapping
           let manifestForProjectInformation = update.manifest!
+          // swiftlint:enable force_unwrapping
+          
           if expoProjectInformation.projectId != manifestForProjectInformation.easProjectId() ||
             expoProjectInformation.scopeKey != manifestForProjectInformation.scopeKey() {
             let message = "Invalid certificate for manifest project ID or scope key"
