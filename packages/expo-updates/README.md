@@ -7,7 +7,7 @@
   </a>
 </p>
 
-The `expo-updates` module allows your app to download and manage updates to your application code that are stored on a remote server.
+The `expo-updates` module allows your app to download and manage remote updates to your application code.
 
 This module works with a server that implements the [Expo Update protocol](https://docs.expo.dev/technical-specs/expo-updates-1/).
 
@@ -20,7 +20,7 @@ To build a custom server that implements the protocol, see the example server so
 - [Getting started](https://docs.expo.dev/eas-update/getting-started/)
 - [How EAS Update works](https://docs.expo.dev/eas-update/how-it-works/)
 - [Debugging](https://docs.expo.dev/eas-update/debug/)
-- [Migration from classic updates](https://docs.expo.dev/eas-update/migrate-from-classic-updates/)
+- [Migration from Classic Updates](https://docs.expo.dev/eas-update/migrate-from-classic-updates/)
 - [Updates JS API](https://docs.expo.dev/versions/latest/sdk/updates/)
 
 # Installation in bare React Native projects
