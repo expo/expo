@@ -803,6 +803,18 @@ exports[`built-in plugins introspects mods 1`] = `
           },
           {
             "type": "comment",
+            "value": "Enable network inspector",
+          },
+          {
+            "key": "EX_DEV_CLIENT_NETWORK_INSPECTOR",
+            "type": "property",
+            "value": "true",
+          },
+          {
+            "type": "empty",
+          },
+          {
+            "type": "comment",
             "value": "Remove this workaround when upgrading to react-native@0.72.1",
           },
           {
@@ -1299,6 +1311,7 @@ exports[`built-in plugins introspects mods 1`] = `
           },
         },
         "podfileProperties": {
+          "EX_DEV_CLIENT_NETWORK_INSPECTOR": "true",
           "expo.jsEngine": "hermes",
         },
         "splashScreenStoryboard": {
