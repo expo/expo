@@ -7,7 +7,7 @@ description: Learn how to debug EAS Update.
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 
-This guide shows how to verify our configuration so that we can find the source of problems like an app not showing a published update. It's important to tell the current state of our app at any given time, so we built EAS Update with this in mind. Once we know which updates are running on which builds, we can make changes so that our apps are in the state we expect.
+This guide shows how to verify our configuration so that we can find the source of problems like an app not showing a published update. It's important to tell the current state of our app at any given time, so EAS Update was built with this in mind. Once we know which updates are running on which builds, we can make changes so that our apps are in the state we expect.
 
 ## Go to the Deployments page
 
@@ -53,7 +53,7 @@ If the deployment runtime version is unexpected, it means our build was not buil
   style={{ maxWidth: 600 }}
 />
 
-If the deployment has an unexpected branch, we will need to [map our channel to the correct branch](/#map-channel-to-branch).
+If the deployment has an unexpected branch, we need to [map our channel to the correct branch](/#map-channel-to-branch).
 
 ### Missing updates
 
@@ -83,7 +83,7 @@ If your deployment is not displayed, this means our build is not configured prop
 
 ### Configure channel
 
-To verify that a build has a specific channel, make sure that your build profile in **eas.json** has a channel property:
+To verify that a build has a specific channel, make sure your build profile in **eas.json** has a channel property:
 
 ```json eas.json
 {
@@ -131,7 +131,7 @@ If the channel is not mapped to the branch we expect, we can change the link wit
   ]}
 />
 
-If our branch is not listed, we can create a new branch with `eas branch:create`
+If our branch is not listed, we can create a new branch with `eas branch:create`.
 
 ### Publish update
 
