@@ -44,6 +44,9 @@ Pod::Spec.new do |s|
     'OTHER_CFLAGS[config=Debug]' => other_c_flags,
     'OTHER_SWIFT_FLAGS[config=Debug]' => other_swift_flags
   }
+  s.user_target_xcconfig = {
+    'HEADER_SEARCH_PATHS' => '"${PODS_CONFIGURATION_BUILD_DIR}/EXUpdates/Swift Compatibility Header"',
+  }
 
   if !ex_updates_native_debug && !$ExpoUseSources&.include?(package['name']) && ENV['EXPO_USE_SOURCE'].to_i == 0 && File.exist?("#{s.name}.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
     s.source_files = "#{s.name}/**/*.h"
