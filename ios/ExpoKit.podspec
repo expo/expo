@@ -1,6 +1,10 @@
 
 # generated from template-files/ios/ExpoKit.podspec
 
+folly_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'
+folly_compiler_flags = folly_flags + ' ' + '-Wno-comma -Wno-shorten-64-to-32'
+boost_compiler_flags = '-Wno-documentation'
+
 Pod::Spec.new do |s|
   s.name = "ExpoKit"
   s.version = "49.0.0"
@@ -14,18 +18,10 @@ Pod::Spec.new do |s|
   s.swift_version  = '5.4'
   s.default_subspec = "Core"
   s.source = { :git => "http://github.com/expo/expo.git" }
-  s.xcconfig = {
-    'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
-    'SYSTEM_HEADER_SEARCH_PATHS' => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/Headers/Private/React-Core\"",
-    'OTHER_CPLUSPLUSFLAGS' => [
-      "$(OTHER_CFLAGS)",
-      "-DFOLLY_NO_CONFIG",
-      "-DFOLLY_MOBILE=1",
-      "-DFOLLY_USE_LIBCPP=1"
-    ]
-  }
+  s.compiler_flags = folly_compiler_flags + ' ' + boost_compiler_flags
 
   s.pod_target_xcconfig = {
+    'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
     'USE_HEADERMAP' => 'YES',
     'DEFINES_MODULE' => 'YES',
   }
