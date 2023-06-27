@@ -84,9 +84,14 @@ The UI that shows up in the process is referred to as the **Terminal UI**. It co
 
 ### Launch target
 
-The `npx expo start` command will automatically launch the app in Expo Go unless `expo-dev-client` in installed in the project, in which case it will open in the custom app. You can force the launch target by passing the `--dev-client` and `--go` flags. For example, running `npx expo start --go` will always launch the app in Expo Go, and `npx expo start --dev-client` will always attempt to launch the app in a development build.
+The `npx expo start` command automatically launches the app in a development build if `expo-dev-client` is installed in the project. Otherwise, it launches the app in Expo Go.
 
-You can switch the launch target during runtime by pressing <kbd>S</kbd> in the **Terminal UI**. The run commands will also default to using `--dev-client` after compiling the development build.
+Alternatively, you can force the launch target by passing the following flags to the command:
+
+- `--dev-client`: Always launch the app in a development build.
+- `--go`: Always launch the app in Expo Go.
+
+You can also switch the launch target during runtime by pressing <kbd>S</kbd> in the **Terminal UI**. The `run` commands also use `--dev-client` after compiling the development build, by default.
 
 ### Server URL
 
