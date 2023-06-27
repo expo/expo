@@ -57,7 +57,7 @@ import abi49_0_0.expo.modules.sms.SMSModule
 import abi49_0_0.expo.modules.speech.SpeechPackage
 import abi49_0_0.expo.modules.splashscreen.SplashScreenModule
 import abi49_0_0.expo.modules.splashscreen.SplashScreenPackage
-import abi49_0_0.expo.modules.sqlite.SQLitePackage
+import abi49_0_0.expo.modules.sqlite.SQLiteModule
 import abi49_0_0.expo.modules.storereview.StoreReviewModule
 import abi49_0_0.expo.modules.systemui.SystemUIModule
 import abi49_0_0.expo.modules.systemui.SystemUIPackage
@@ -87,7 +87,6 @@ object ExperiencePackagePicker : ModulesProvider {
     NavigationBarPackage(),
     NotificationsPackage(),
     PermissionsPackage(),
-    SQLitePackage(),
     SecureStorePackage(),
     SensorsPackage(),
     SpeechPackage(),
@@ -142,6 +141,7 @@ object ExperiencePackagePicker : ModulesProvider {
     SharingModule::class.java,
     SplashScreenModule::class.java,
     StoreReviewModule::class.java,
+    SQLiteModule::class.java,
     SystemUIModule::class.java,
     VideoThumbnailsModule::class.java,
     VideoViewModule::class.java,
