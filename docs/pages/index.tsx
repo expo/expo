@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { theme, typography } from '@expo/styleguide';
+import { Button, theme, typography } from '@expo/styleguide';
 import { spacing, breakpoints, borderRadius } from '@expo/styleguide-base';
 import {
   ArrowUpRightIcon,
@@ -11,11 +11,13 @@ import {
   TwitterIcon,
 } from '@expo/styleguide-icons';
 import type { PropsWithChildren } from 'react';
-import { Container, Row, ScreenClassProvider } from 'react-grid-system';
+import { Row, ScreenClassProvider } from 'react-grid-system';
 
 import DocumentationPage from '~/components/DocumentationPage';
+import TALKS from '~/public/static/talks';
 import { AppJSBanner } from '~/ui/components/AppJSBanner';
 import {
+  CellContainer,
   APIGridCell,
   CommunityGridCell,
   GridCell,
@@ -38,13 +40,6 @@ import {
 } from '~/ui/components/Home/resources';
 import { Terminal } from '~/ui/components/Snippet';
 import { H1, RawH2, RawH3, P } from '~/ui/components/Text';
-
-export const CellContainer = ({ children }: PropsWithChildren<object>) => (
-  // https://github.com/sealninja/react-grid-system/issues/175
-  <Container fluid style={{ paddingLeft: -15, paddingRight: -15, marginBottom: spacing[6] }}>
-    {children}
-  </Container>
-);
 
 const Description = ({ children }: PropsWithChildren<object>) => (
   <P css={css({ marginTop: spacing[1], marginBottom: spacing[3], color: theme.text.secondary })}>
@@ -238,32 +233,22 @@ const Home = () => {
             <APIGridCell title="View all APIs" link="/versions/latest/" icon={<APIListIcon />} />
           </Row>
         </CellContainer>
-        <RawH3>Watch the latest talks</RawH3>
-        <Description>
-          Explore our team's presentations. Stay informed and gain expertise.
-        </Description>
+        <div className="flex items-center gap-2">
+          <div>
+            <RawH3>Watch the latest talks</RawH3>
+            <Description>
+              Explore our team's presentations. Stay informed and gain expertise.
+            </Description>
+          </div>
+          <Button theme="secondary" className="ml-auto" rightSlot={<ArrowRightIcon />} href="/additional-resources/#talks">
+            See more talks
+          </Button>
+        </div>
         <CellContainer>
           <Row>
-            <TalkGridCell
-              title="Keynote: community & workflows"
-              description="Charlie Cheever & James Ide"
-              videoId="xHMu4oT6-SQ"
-            />
-            <TalkGridCell
-              title="EAS: Iterate with confidence"
-              description="Jon Samp"
-              videoId="LTui_5dqXyM"
-            />
-            <TalkGridCell
-              title="Expo Router: Write Once, Route Everywhere"
-              description="Evan Bacon"
-              videoId="608r8etX_cg"
-            />
-            <TalkGridCell
-              title="Debugging should be easier"
-              description="Cedric van Putten"
-              videoId="sRLunWEzwHI"
-            />
+            {TALKS.filter(talk => talk.home).map(talk => (
+              <TalkGridCell {...talk} />
+            ))}
           </Row>
         </CellContainer>
         <RawH3>Join the community</RawH3>

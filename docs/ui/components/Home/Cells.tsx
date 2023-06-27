@@ -3,9 +3,16 @@ import { shadows, theme, typography } from '@expo/styleguide';
 import { borderRadius, breakpoints, palette, spacing } from '@expo/styleguide-base';
 import { ArrowRightIcon, ArrowUpRightIcon } from '@expo/styleguide-icons';
 import { PropsWithChildren } from 'react';
-import { Col, ColProps } from 'react-grid-system';
+import { Container, Col, ColProps } from 'react-grid-system';
 
 import { A, CALLOUT, LABEL, P } from '~/ui/components/Text';
+
+export const CellContainer = ({ children }: PropsWithChildren<object>) => (
+  // https://github.com/sealninja/react-grid-system/issues/175
+  <Container fluid style={{ paddingLeft: -15, paddingRight: -15, marginBottom: spacing[6] }}>
+    {children}
+  </Container>
+);
 
 const CustomCol = ({ children, sm, md, lg, xl, xxl }: PropsWithChildren<ColProps>) => (
   <>
@@ -61,12 +68,14 @@ export const APIGridCell = ({
 
 type TalkGridCellProps = ColProps & {
   title?: string;
+  event?: string;
   description?: string;
   videoId?: string;
 };
 
 export const TalkGridCell = ({
   title,
+  event,
   description,
   videoId,
   className,
@@ -82,11 +91,12 @@ export const TalkGridCell = ({
       css={[cellStyle, cellAPIStyle, cellHoverStyle]}
       className={className}
       isStyled>
-      <img src={`https://i3.ytimg.com/vi/${videoId}/maxresdefault.jpg`} alt="Thumbnail" />
-      <div css={cellTitleWrapperStyle}>
+      <img src={`https://i3.ytimg.com/vi/${videoId}/maxresdefault.jpg`} alt="Thumbnail" className="border-b border-b-default" />
+      <div css={cellTitleWrapperStyle} className="gap-1">
         <div>
           <LABEL className="block !leading-normal !mb-1">{title}</LABEL>
           <CALLOUT theme="secondary">{description}</CALLOUT>
+          <CALLOUT theme="secondary">{event}</CALLOUT>
         </div>
         <ArrowUpRightIcon className="text-icon-secondary shrink-0" />
       </div>

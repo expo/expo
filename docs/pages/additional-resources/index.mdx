@@ -2,6 +2,12 @@
 title: Additional resources
 ---
 
+import { Row } from 'react-grid-system';
+
+import { chunkArray } from '~/common/utilities';
+import TALKS from '~/public/static/talks';
+import { TalkGridCell, CellContainer } from '~/ui/components/Home';
+
 The following resources are useful for learning about Expo tooling and services.
 
 ## Expo Blog
@@ -42,7 +48,11 @@ The following resources are useful for learning about Expo tooling and services.
 
 ## Talks
 
-- [App.js Conf - Expo keynote (2022)](https://youtu.be/ObeaMae0hug)
-- [React Advanced - Expo overview (2021)](https://www.youtube.com/watch?v=YjJ0NG9MFkg)
-- [React Europe - Expo Snack](https://www.youtube.com/watch?v=U0vnAW4UNXE)
-- [React Europe - Building li.st for Android with Expo and React Native](https://www.youtube.com/watch?v=cI9bDvDEsYE)
+
+<CellContainer>
+  {chunkArray(TALKS, 4).map(talks => (
+    <Row>
+      {talks.map(talk => <TalkGridCell {...talk} />)}
+    </Row>
+  ))}
+</CellContainer>
