@@ -145,7 +145,6 @@ it(
     expect(pkg.scripts).toStrictEqual({
       android: 'expo run:android',
       ios: 'expo run:ios',
-      start: 'expo start --dev-client',
     });
 
     // If this changes then everything else probably changed as well.
