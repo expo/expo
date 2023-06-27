@@ -21,6 +21,4 @@ npx expo install expo-network-addons
 
 ## Contributing
 
-Contributions are very welcome! Please refer to guidelines described in the [contributing guide][../../contributing.md].
-
-[contributing]: https://github.com/expo/expo#contributing
+Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).
