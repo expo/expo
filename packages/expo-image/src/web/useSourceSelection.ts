@@ -89,11 +89,16 @@ function selectSource(
   };
 }
 
+type UseSourceSelectionReturn = {
+  containerRef: (element: HTMLDivElement) => void;
+  source: ImageSource | SrcSetSource | null;
+};
+
 export default function useSourceSelection(
   sources?: ImageSource[],
   responsivePolicy: ImageProps['responsivePolicy'] = 'static',
   measurementCallback?: (target: HTMLElement, size: DOMRect) => void
-): { containerRef: (element: HTMLDivElement) => void; source: ImageSource | SrcSetSource | null } {
+): UseSourceSelectionReturn {
   const hasMoreThanOneSource = (sources?.length ?? 0) > 1;
   // null - not calculated yet, DOMRect - size available
   const [size, setSize] = useState<null | DOMRect>(null);
