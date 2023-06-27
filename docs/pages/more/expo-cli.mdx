@@ -135,6 +135,15 @@ Offline will prevent the CLI from making network requests. If you don't use the 
 
 Expo CLI makes network requests to sign manifests with your user credentials to ensure sensitive information is sandboxed in reusable runtimes like Expo Go.
 
+### .expo directory
+
+When the you start the development server in a project for the first time, a **.expo** directory is created at the root of that project. It contains two files:
+
+- **devices.json**: Contains information about devices that have opened this project recently.
+- **settings.json**: Contains information about server configuration that is used to serve the project's manifest.
+
+Both of these files have information that is specific to your local computer. This is the reason why **.expo** directory is included in the **.gitignore** file, by default, when a new project is created. It is not meant to be shared with other developers.
+
 ## Building
 
 A React Native app consists of two parts: a native runtime ([compiling](#compiling)), and static files like JavaScript bundles and assets ([exporting](#exporting)). Expo CLI provides commands for performing both tasks.
