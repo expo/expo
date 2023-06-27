@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- On Android, fixed an issue where certain text characters would not be recognised. ([#23094](https://github.com/expo/expo/pull/23094) by [@alanhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 12.5.1 — 2023-06-27
+
+### 🐛 Bug fixes
+
+- On Android, fixed an issue where certain text characters would not be recognised. ([#23094](https://github.com/expo/expo/pull/23094) by [@alanhughes](https://github.com/alanjhughes))
 
 ## 12.5.0 — 2023-06-13
 
