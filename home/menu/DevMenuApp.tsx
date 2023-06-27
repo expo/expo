@@ -3,6 +3,7 @@ import { ThemePreference, ThemeProvider as DCCThemeProvider } from 'expo-dev-cli
 import React from 'react';
 import { AppRegistry, useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { ColorTheme } from '../constants/Colors';
 import Themes from '../constants/Themes';
@@ -53,13 +54,15 @@ function DevMenuApp(props: {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <DevMenuBottomSheet uuid={props.uuid}>
-        <DCCThemeProvider themePreference={theme as ThemePreference}>
-          <ThemeProvider value={Themes[theme]}>
-            <DevMenuView {...props} />
-          </ThemeProvider>
-        </DCCThemeProvider>
-      </DevMenuBottomSheet>
+      <SafeAreaProvider>
+        <DevMenuBottomSheet uuid={props.uuid}>
+          <DCCThemeProvider themePreference={theme as ThemePreference}>
+            <ThemeProvider value={Themes[theme]}>
+              <DevMenuView {...props} />
+            </ThemeProvider>
+          </DCCThemeProvider>
+        </DevMenuBottomSheet>
+      </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 }
