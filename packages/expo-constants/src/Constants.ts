@@ -39,7 +39,7 @@ if (!ExponentConstants) {
 
 let rawManifest: AppManifest | Manifest | null = null;
 // If expo-updates defines a non-empty manifest, prefer that one
-if (NativeModulesProxy.ExpoUpdates) {
+if (NativeModulesProxy.ExpoUpdates && !NativeModulesProxy.ExpoUpdates.isEmbeddedLaunch) {
   let updatesManifest;
   if (NativeModulesProxy.ExpoUpdates.manifest) {
     updatesManifest = NativeModulesProxy.ExpoUpdates.manifest;
