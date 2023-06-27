@@ -629,29 +629,27 @@ async function generateExpoKitPodspecAsync(
     fileString = fileString.replace(/(?<=s.version = ").*?(?=")/g, versionNumber);
 
     // add Reanimated V2 RCT-Folly dependency
-    fileString = fileString
-      .replace(
-        /(?=Pod::Spec.new do \|s\|)/,
-        `
-folly_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'
-folly_compiler_flags = folly_flags + ' ' + '-Wno-comma -Wno-shorten-64-to-32'
-boost_compiler_flags = '-Wno-documentation'\n\n`
-      )
-      .replace(
-        /(?=  s.subspec "Expo" do \|ss\|)/g,
-        `
+    fileString = fileString.replace(
+      /(?=  s.subspec "Expo" do \|ss\|)/g,
+      `
+  header_search_paths = [
+    '"$(PODS_ROOT)/boost"',
+    '"$(PODS_ROOT)/glog"',
+    '"$(PODS_ROOT)/DoubleConversion"',
+    '"$(PODS_ROOT)/RCT-Folly"',
+    '"$(PODS_ROOT)/Headers/Private/${versionName}React-Core"',
+    '"$(PODS_CONFIGURATION_BUILD_DIR)/${versionName}ExpoModulesCore/Swift Compatibility Header"',
+    '"$(PODS_CONFIGURATION_BUILD_DIR)/${versionName}EXUpdatesInterface/Swift Compatibility Header"',
+    '"$(PODS_CONFIGURATION_BUILD_DIR)/${versionName}EXUpdates/Swift Compatibility Header"',
+  ]
   s.pod_target_xcconfig    = {
+    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
     "USE_HEADERMAP"       => "YES",
     "DEFINES_MODULE"      => "YES",
-    "HEADER_SEARCH_PATHS" => "\\"$(PODS_TARGET_SRCROOT)/ReactCommon\\" \\"$(PODS_TARGET_SRCROOT)\\" \\"$(PODS_ROOT)/RCT-Folly\\" \\"$(PODS_ROOT)/boost\\" \\"$(PODS_ROOT)/DoubleConversion\\" \\"$(PODS_ROOT)/Headers/Private/${versionName}React-Core\\" \\"\$(PODS_CONFIGURATION_BUILD_DIR)/${versionName}ExpoModulesCore/Swift Compatibility Header\\""
+    "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
   }
-  s.compiler_flags = folly_compiler_flags + ' ' + boost_compiler_flags
-  s.xcconfig               = {
-    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
-    "HEADER_SEARCH_PATHS" => "\\"$(PODS_ROOT)/boost\\" \\"$(PODS_ROOT)/glog\\" \\"$(PODS_ROOT)/RCT-Folly\\" \\"$(PODS_ROOT)/Headers/Private/${versionName}React-Core\\" \\"\$(PODS_CONFIGURATION_BUILD_DIR)/${versionName}ExpoModulesCore/Swift Compatibility Header\\"",
-    "OTHER_CFLAGS"        => "$(inherited)" + " " + folly_flags
-  }\n\n`
-      );
+  \n\n`
+    );
 
     return fileString;
   });
@@ -828,6 +826,9 @@ if pod_name.start_with?('${versionedPodNames.React}') || pod_name == '${versione
       ${configValues.join(`\n${indent}`)}
       -fmodule-map-file="\${PODS_ROOT}/Headers/Public/${versionName}React-Core/${versionName}React/${versionName}React-Core.modulemap"
       -fmodule-map-file="\${PODS_ROOT}/Headers/Public/${versionName}ExpoModulesCore/${versionName}ExpoModulesCore.modulemap"
+      -fmodule-map-file="\${PODS_ROOT}/Headers/Public/${versionName}ExpoModulesCore/${versionName}ExpoModulesCore.modulemap"
+      -fmodule-map-file="\${PODS_ROOT}/Headers/Public/${versionName}EXUpdates/${versionName}EXUpdates.modulemap"
+      -fmodule-map-file="\${PODS_ROOT}/Headers/Public/${versionName}EXUpdatesInterface/${versionName}EXUpdatesInterface.modulemap"
     ]
     config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
     config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << '${versionName}RCT_DEV=1'

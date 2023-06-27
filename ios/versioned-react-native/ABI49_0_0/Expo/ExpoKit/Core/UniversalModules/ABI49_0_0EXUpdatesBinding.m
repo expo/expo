@@ -4,6 +4,16 @@
 
 #import "ABI49_0_0EXUpdatesBinding.h"
 
+#import <objc/runtime.h>
+
+#import "ABI49_0_0ExpoModulesCore-Swift.h"
+#if __has_include(<ABI49_0_0EXUpdatesInterface/ABI49_0_0EXUpdatesInterface-Swift.h>)
+#import <ABI49_0_0EXUpdatesInterface/ABI49_0_0EXUpdatesInterface-Swift.h>
+#else
+#import "ABI49_0_0EXUpdatesInterface-Swift.h"
+#endif
+#import "ABI49_0_0EXUpdates-Swift.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ABI49_0_0EXUpdatesBinding ()
@@ -34,7 +44,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable ABI49_0_0EXUpdatesConfig *)config
 {
-  return [_updatesKernelService configForScopeKey:_scopeKey];
+  ABI49_0_0EXUpdatesConfig *config = [_updatesKernelService configForScopeKey:_scopeKey];
+  // Ensures the universal UpdatesConfig can cast to versioned UpdatesConfig without exception in Swift
+  object_setClass(config, [ABI49_0_0EXUpdatesConfig class]);
+  return config;
 }
 
 - (ABI49_0_0EXUpdatesDatabase *)database
@@ -59,7 +72,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable ABI49_0_0EXUpdatesUpdate *)launchedUpdate
 {
-  return [_updatesKernelService launchedUpdateForScopeKey:_scopeKey];
+  ABI49_0_0EXUpdatesUpdate *update = [_updatesKernelService launchedUpdateForScopeKey:_scopeKey];
+  // Ensures the universal UpdatesUpdate can cast to versioned UpdatesUpdate without exception in Swift
+  object_setClass(update, [ABI49_0_0EXUpdatesUpdate class]);
+  return update;
 }
 
 - (nullable NSDictionary *)assetFilesMap
