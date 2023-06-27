@@ -629,10 +629,9 @@ async function generateExpoKitPodspecAsync(
     fileString = fileString.replace(/(?<=s.version = ").*?(?=")/g, versionNumber);
 
     // add Reanimated V2 RCT-Folly dependency
-    fileString = fileString
-      .replace(
-        /(?=  s.subspec "Expo" do \|ss\|)/g,
-        `
+    fileString = fileString.replace(
+      /(?=  s.subspec "Expo" do \|ss\|)/g,
+      `
   header_search_paths = [
     '"$(PODS_ROOT)/boost"',
     '"$(PODS_ROOT)/glog"',
@@ -650,7 +649,7 @@ async function generateExpoKitPodspecAsync(
     "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
   }
   \n\n`
-      );
+    );
 
     return fileString;
   });
