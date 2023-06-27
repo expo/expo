@@ -1,0 +1,200 @@
+---
+title: Using Search Parameters
+description: Learn how to access and modify search parameters in your app.
+hideFromSearch: true
+sidebar_title: Search Parameters
+---
+
+import { FileTree } from '~/ui/components/FileTree';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+Search parameters (also known as query params) are serializable fields that can be added to a URL. They are commonly used to pass data between pages.
+
+Expo Router provides hooks for accessing and modifying search parameters.
+
+In nested apps, you'll often have multiple "pages" mounted at a time, for example a stack has the previous page and current page in memory when a new route is pushed. Because of this, Expo Router provides two different hooks for accessing search parameters:
+
+- **useLocalSearchParams**: returns the search parameters for the current component. This only updates when the global URL conforms to the route.
+- **useGlobalSearchParams**: returns the global URL regardless of the component. This updates on every search param change and might cause components to update extaneously in the background.
+
+Both hooks are typed and accessed the same way, the only difference is how frequently they update. Consider the following example:
+
+## Local vs. Global Search Parameters
+
+The following example demonstrates the difference between `useLocalSearchParams` and `useGlobalSearchParams`.
+
+<FileTree files={['app/_layout.js', 'app/index.js', 'app/[user].js']} />
+
+<Step label="1">
+
+    The Root Layout will be a stack navigator.
+
+    ```js app/_layout.js
+    import { Stack } from 'expo-router';
+
+    export default function Layout() {
+      return <Stack />;
+    }
+    ```
+
+</Step>
+
+<Step label="2">
+
+    The initial route will redirect to the dynamic **app/[user].js** route, with **user=evanbacon**.
+
+    ```js app/index.js
+    import { Redirect } from 'expo-router';
+
+    export default function Route() {
+      return <Redirect href="/evanbacon" />;
+    }
+    ```
+
+</Step>
+
+<Step label="3">
+
+    The dynamic **app/[user]** screen will print out the global and local search params, and enable pushing new instances of the same route.
+
+    ```js app/[user].js
+    import { Text, View } from 'react-native';
+    import { useLocalSearchParams, useGlobalSearchParams, Link } from 'expo-router';
+
+    const friends = ['charlie', 'james']
+
+    export default function Route() {
+      const glob = useGlobalSearchParams();
+      const local = useLocalSearchParams();
+
+      console.log("Local:", local.user, "Global:", glob.user);
+
+      return (
+        <View>
+          <Text>User: {local.user}</Text>
+          {friends.map(friend => (
+            <Link key={friend} href={`/${friend}`}>
+              Visit {friend}
+            </Link>
+          ))}
+        </View>
+      );
+    }
+    ```
+
+</Step>
+
+<Step label="4">
+
+When the app starts, you should see the following log:
+
+<Terminal cmd={['Local: evanbacon Global: evanbacon']} />
+
+Pressing "Visit charlie" will push a new instance of `/[user]` with **user=charlie**, and log the following:
+
+<Terminal
+  cmd={[
+    '# This log came from the new screen',
+    'Local: charlie Global: charlie',
+    '# This log came from the first screen',
+    'Local: evanbacon Global: charlie',
+  ]}
+/>
+
+Pressing "Visit james" will have a similar effect:
+
+<Terminal
+  cmd={[
+    '# This log came from the new, "/james" screen',
+    'Local: james Global: james',
+    '# This log came from the "/evanbacon" screen',
+    'Local: evanbacon Global: james',
+    '# This log came from the "/charlie" screen',
+    'Local: charlie Global: james',
+  ]}
+/>
+
+    **Results:**
+
+    - `useGlobalSearchParams` made the background screens re-render when the search params changed. This can cause performance issues if overused.
+    - Global re-renders are executed in order of the stack, so the first screen re-rendered first, then the **user=charlie** screen re-rendered after.
+    - `useLocalSearchParams` remained the same, even when the global search params changed. You can leverage this behavior for data fetching to ensure the previous screen's data is still available when you navigate back.
+
+</Step>
+
+## Statically-typed Search Parameters
+
+Both the `useLocalSearchParams` and `useGlobalSearchParams` can be statically typed using a generic:
+
+```tsx app/search.tsx
+import { Text } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+
+export default function Route() {
+  const { user } = useLocalSearchParams<{ user: string }>();
+
+  return <Text>User: {user}</Text>;
+}
+```
+
+Any additional search parameters should be typed optionally:
+
+```tsx
+const { user, query } = useLocalSearchParams<{ user: string; query?: string }>();
+```
+
+When used with the rest syntax (`...`), implement a string array:
+
+```tsx app/[...everything].tsx
+import { Text } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+
+export default function Route() {
+  const { user } = useLocalSearchParams<{
+    /* @info <b>everything</b> will be an array of path segments, even if there's only one */
+    everything: string[];
+    /* @end */
+  }>();
+
+  return <Text>User: {user}</Text>;
+}
+```
+
+## Updating Search Parameters
+
+Search parameters can be updated using the **router.setParams** function from the imperative API. In the following example, a text input is used to update the search parameter **q**. This action will not push anything new to the history stack.
+
+```tsx app/search.tsx
+import { useLocalSearchParams, router } from 'expo-router';
+import React from 'react';
+import { TextInput, View } from 'react-native';
+
+export default function Page() {
+  const params = useLocalSearchParams<{ q?: string }>();
+  const [search, setSearch] = React.useState(params.q);
+
+  return (
+    <TextInput
+      value={search}
+      onChangeText={search => {
+        setSearch(search);
+        /* @info Set the search parameter <b>q</b> to the text input <b>search</b> */
+        router.setParams({ q: search });
+        /* @end */
+      }}
+      placeholderTextColor="#A0A0A0"
+      placeholder="Search"
+      style={{
+        borderRadius: 12,
+        backgroundColor: '#fff',
+        fontSize: 24,
+        color: '#000',
+        margin: 12,
+        padding: 16,
+      }}
+    />
+  );
+}
+```

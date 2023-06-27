@@ -70,6 +70,24 @@ Routes with higher specificity will be matched before a dynamic route. For examp
 
 Multiple slugs can be matched in a single route by using the rest syntax (`...`). For example, **app/blog/[...id].js** will match `/blog/123/settings`.
 
+Dynamic segments will be accessible as [search parameters](/router/reference/search-parameters) in the page component.
+
+{/* prettier-ignore */}
+```js app/blog/[slug].js
+/* @info Import the <b>useLocalSearchParams</b> React hook */
+import { useLocalSearchParams } from 'expo-router';
+/* @end */
+import { Text } from 'react-native';
+
+export default function Page() {
+  /* @info Access the query parameter named <b>slug</b> */
+  const { slug } = useLocalSearchParams();
+  /* @end */
+
+  return <Text>Blog post: {slug}</Text>;
+}
+```
+
 ## Next steps
 
 <BoxLink

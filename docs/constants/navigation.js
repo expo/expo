@@ -398,6 +398,7 @@ const preview = [
       makePage('router/advance/router-settings.mdx'),
     ]),
     makeGroup('Reference', [
+      makePage('router/reference/search-parameters.mdx'),
       makePage('router/reference/static-rendering.mdx'),
       makePage('router/reference/async-routes.mdx'),
       makePage('router/reference/sitemap.mdx'),
