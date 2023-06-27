@@ -951,7 +951,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
           // swiftlint:disable force_unwrapping
           let manifestForProjectInformation = update.manifest!
           // swiftlint:enable force_unwrapping
-          
+
           if expoProjectInformation.projectId != manifestForProjectInformation.easProjectId() ||
             expoProjectInformation.scopeKey != manifestForProjectInformation.scopeKey() {
             let message = "Invalid certificate for manifest project ID or scope key"
