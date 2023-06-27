@@ -463,10 +463,10 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
         updateId: update.loggingId(),
         assetId: nil
       )
-      stateMachine?.processEvent(UpdatesStateEventDownloadCompleteWithUpdate(manifest: update.manifest.rawManifestJSON()))
+      stateMachine?.processEvent(UpdatesStateEventDownloadCompleteWithUpdate(manifest: update.manifest!.rawManifestJSON()))
       // Send UpdateEvents to JS
       sendLegacyUpdateEventToBridge(AppController.UpdateAvailableEventName, body: [
-        "manifest": update.manifest.rawManifestJSON()
+        "manifest": update.manifest!.rawManifestJSON()
       ])
     case .noUpdateAvailable:
       remoteLoadStatus = .Idle

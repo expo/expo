@@ -88,7 +88,7 @@ public class Update: NSObject {
   public let isDevelopmentMode: Bool
   private let assetsFromManifest: [UpdateAsset]?
 
-  public let manifest: Manifest
+  public let manifest: Manifest?
 
   public var status: UpdateStatus
   public var lastAccessed: Date
@@ -99,7 +99,7 @@ public class Update: NSObject {
   private let database: UpdatesDatabase?
 
   public init(
-    manifest: Manifest,
+    manifest: Manifest?,
     config: UpdatesConfig,
     database: UpdatesDatabase?,
     updateId: UUID,

@@ -102,7 +102,7 @@ public final class UpdatesDatabase: NSObject {
         update.scopeKey,
         update.commitTime,
         update.runtimeVersion,
-        update.manifest.rawManifestJSON(),
+        update.manifest?.rawManifestJSON(),
         update.status.rawValue,
         update.lastAccessed,
         update.successfulLaunchCount,

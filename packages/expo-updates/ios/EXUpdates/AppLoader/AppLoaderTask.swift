@@ -381,7 +381,7 @@ public final class AppLoaderTask: NSObject {
         self.isUpToDate = false
         if let delegate = self.delegate {
           self.delegateQueue.async {
-            delegate.didFinishCheckingForRemoteUpdate(["manifest": update.manifest.rawManifestJSON()])
+            delegate.didFinishCheckingForRemoteUpdate(["manifest": update.manifest?.rawManifestJSON()])
             delegate.appLoaderTask(self, didStartLoadingUpdate: update)
           }
         }

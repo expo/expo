@@ -10,8 +10,8 @@ public final class SelectionPolicies: NSObject {
       return true
     }
 
-    let metadata = update.manifest.rawManifestJSON()["metadata"]
-    guard let metadata = metadata as? [String: AnyObject] else {
+    guard let manifest = update.manifest,
+          let metadata = manifest.rawManifestJSON()["metadata"] as? [String: AnyObject] else {
       return true
     }
 

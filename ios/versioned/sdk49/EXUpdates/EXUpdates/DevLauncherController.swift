@@ -100,7 +100,7 @@ public final class DevLauncherController: NSObject, UpdatesExternalInterface {
         return false
       }
 
-      return manifestBlock(update.manifest.rawManifestJSON())
+      return manifestBlock(update.manifest!.rawManifestJSON())
     } asset: { _, successfulAssetCount, failedAssetCount, totalAssetCount in
       progressBlock(UInt(successfulAssetCount), UInt(failedAssetCount), UInt(totalAssetCount))
     } success: { updateResponse in
@@ -234,7 +234,7 @@ public final class DevLauncherController: NSObject, UpdatesExternalInterface {
 
       controller.isStarted = true
       controller.launcher = launcher
-      successBlock(launcher.launchedUpdate?.manifest.rawManifestJSON())
+      successBlock(launcher.launchedUpdate?.manifest?.rawManifestJSON())
       controller.runReaper()
     }
   }

@@ -21,7 +21,8 @@ public final class EXExpoGoLauncherSelectionPolicyFilterAware: NSObject, Launche
   public func launchableUpdate(fromUpdates updates: [Update], filters: [String: Any]?) -> Update? {
     var runnableUpdate: Update?
     for update in updates {
-      guard let updateSDKVersion = update.manifest.expoGoSDKVersion() else {
+      guard let manifest = update.manifest,
+        let updateSDKVersion = manifest.expoGoSDKVersion() else {
         continue
       }
 
