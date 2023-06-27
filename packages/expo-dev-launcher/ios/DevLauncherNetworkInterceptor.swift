@@ -60,7 +60,10 @@ extension RCTInspectorDevServerHelper {
       A0: bundleURL
     ) as? RCTInspectorPackagerConnection
 
-    DevLauncherNetworkInterceptor.inspectorPackagerConn = inspectorPackagerConn
+    // Exclude the connections for dev-client bundles
+    if !bundleURL.absoluteString.starts(with: Bundle.main.bundleURL.absoluteString) {
+      DevLauncherNetworkInterceptor.inspectorPackagerConn = inspectorPackagerConn
+    }
     return inspectorPackagerConn
   }
 }
