@@ -19,7 +19,7 @@ _This version does not introduce any user-facing changes._
 ### 💡 Others
 
 - Remove all auth proxy APIs. ([#22834](https://github.com/expo/expo/pull/22834) by [@alanhughes](https://github.com/alanjhughes))
-- Remove references to `startAsync` from js doc.
+- Remove references to `startAsync` from js doc. ([#23150](https://github.com/expo/expo/pull/23150) by [@alanhughes](https://github.com/alanjhughes))
 
 ## 4.1.0 — 2023-05-08
 
