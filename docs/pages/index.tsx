@@ -240,7 +240,11 @@ const Home = () => {
               Explore our team's presentations. Stay informed and gain expertise.
             </Description>
           </div>
-          <Button theme="secondary" className="ml-auto" rightSlot={<ArrowRightIcon />} href="/additional-resources/#talks">
+          <Button
+            theme="secondary"
+            className="ml-auto"
+            rightSlot={<ArrowRightIcon />}
+            href="/additional-resources/#talks">
             See more talks
           </Button>
         </div>

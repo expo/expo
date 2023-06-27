@@ -63,18 +63,6 @@ export default [
     description: 'Evan Bacon',
     videoId: 'YjJ0NG9MFkg',
   },
-  {
-    title: 'Expo Snack',
-    event: 'ReactEurope 2017',
-    description: 'Brent Vatne',
-    videoId: 'U0vnAW4UNXE',
-  },
-  {
-    title: 'Building li.st for Android',
-    event: 'ReactEurope 2016',
-    description: 'Brent Vatne',
-    videoId: 'cI9bDvDEsYE',
-  }
 ] as Talk[];
 
 export type Talk = {

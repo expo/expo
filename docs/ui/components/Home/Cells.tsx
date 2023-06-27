@@ -91,7 +91,11 @@ export const TalkGridCell = ({
       css={[cellStyle, cellAPIStyle, cellHoverStyle]}
       className={className}
       isStyled>
-      <img src={`https://i3.ytimg.com/vi/${videoId}/maxresdefault.jpg`} alt="Thumbnail" className="border-b border-b-default" />
+      <img
+        src={`https://i3.ytimg.com/vi/${videoId}/maxresdefault.jpg`}
+        alt="Thumbnail"
+        className="border-b border-b-default"
+      />
       <div css={cellTitleWrapperStyle} className="gap-1">
         <div>
           <LABEL className="block !leading-normal !mb-1">{title}</LABEL>
