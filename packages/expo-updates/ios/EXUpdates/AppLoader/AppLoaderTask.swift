@@ -18,10 +18,7 @@ public protocol AppLoaderTaskDelegate: AnyObject {
    * AppLoaderTask proceed as usual.
    */
   func appLoaderTask(_: AppLoaderTask, didLoadCachedUpdate update: Update) -> Bool
-  func didStartCheckingForRemoteUpdate()
-  func didFinishCheckingForRemoteUpdate(_ body: [String: Any])
   func appLoaderTask(_: AppLoaderTask, didStartLoadingUpdate update: Update?)
-  func appLoaderTask(_: AppLoaderTask, didLoadAsset asset: UpdateAsset, successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int)
   func appLoaderTask(_: AppLoaderTask, didFinishWithLauncher launcher: AppLauncher, isUpToDate: Bool)
   func appLoaderTask(_: AppLoaderTask, didFinishWithError error: Error)
   func appLoaderTask(
@@ -30,6 +27,18 @@ public protocol AppLoaderTaskDelegate: AnyObject {
     update: Update?,
     error: Error?
   )
+}
+
+public enum RemoteCheckResult {
+  case noUpdateAvailable
+  case updateAvailable(manifest: [String: Any])
+  case rollBackToEmbedded
+}
+
+public protocol AppLoaderTaskSwiftDelegate: AnyObject {
+  func appLoaderTaskDidStartCheckingForRemoteUpdate(_: AppLoaderTask)
+  func appLoaderTask(_: AppLoaderTask, didFinishCheckingForRemoteUpdateWithRemoteCheckResult remoteCheckResult: RemoteCheckResult)
+  func appLoaderTask(_: AppLoaderTask, didLoadAsset asset: UpdateAsset, successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int)
 }
 
 @objc(EXUpdatesBackgroundUpdateStatus)
@@ -64,6 +73,7 @@ public final class AppLoaderTask: NSObject {
   private static let ErrorDomain = "EXUpdatesAppLoaderTask"
 
   public weak var delegate: AppLoaderTaskDelegate?
+  public weak var swiftDelegate: AppLoaderTaskSwiftDelegate?
 
   private let config: UpdatesConfig
   private let database: UpdatesDatabase
@@ -328,9 +338,9 @@ public final class AppLoaderTask: NSObject {
       completionQueue: loaderTaskQueue
     )
 
-    if let delegate = self.delegate {
+    if let swiftDelegate = self.swiftDelegate {
       self.delegateQueue.async {
-        delegate.didStartCheckingForRemoteUpdate()
+        swiftDelegate.appLoaderTaskDidStartCheckingForRemoteUpdate(self)
       }
     }
     remoteAppLoader!.loadUpdate(
@@ -340,17 +350,23 @@ public final class AppLoaderTask: NSObject {
         switch updateDirective {
         case is NoUpdateAvailableUpdateDirective:
           self.isUpToDate = true
-          if let delegate = self.delegate {
+          if let swiftDelegate = self.swiftDelegate {
             self.delegateQueue.async {
-              delegate.didFinishCheckingForRemoteUpdate([:])
+              swiftDelegate.appLoaderTask(self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.noUpdateAvailable)
             }
           }
           return false
         case is RollBackToEmbeddedUpdateDirective:
           self.isUpToDate = false
+
+          if let swiftDelegate = self.swiftDelegate {
+            self.delegateQueue.async {
+              swiftDelegate.appLoaderTask(self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.rollBackToEmbedded)
+            }
+          }
+
           if let delegate = self.delegate {
             self.delegateQueue.async {
-              delegate.didFinishCheckingForRemoteUpdate(["isRollBackToEmbedded": true])
               delegate.appLoaderTask(self, didStartLoadingUpdate: nil)
             }
           }
@@ -364,9 +380,9 @@ public final class AppLoaderTask: NSObject {
       guard let update = updateResponse.manifestUpdateResponsePart?.updateManifest else {
         // No response, so no update available
         self.isUpToDate = true
-        if let delegate = self.delegate {
+        if let swiftDelegate = self.swiftDelegate {
           self.delegateQueue.async {
-            delegate.didFinishCheckingForRemoteUpdate([:])
+            swiftDelegate.appLoaderTask(self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.noUpdateAvailable)
           }
         }
         return false
@@ -379,9 +395,19 @@ public final class AppLoaderTask: NSObject {
       ) {
         // got a response, and it is new so should be downloaded
         self.isUpToDate = false
+        if let swiftDelegate = self.swiftDelegate {
+          self.delegateQueue.async {
+            swiftDelegate.appLoaderTask(
+              self,
+              didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.updateAvailable(
+                manifest: update.manifest.rawManifestJSON()
+              )
+            )
+          }
+        }
+
         if let delegate = self.delegate {
           self.delegateQueue.async {
-            delegate.didFinishCheckingForRemoteUpdate(["manifest": update.manifest.rawManifestJSON()])
             delegate.appLoaderTask(self, didStartLoadingUpdate: update)
           }
         }
@@ -389,17 +415,17 @@ public final class AppLoaderTask: NSObject {
       } else {
         // got a response, but we already have it
         self.isUpToDate = true
-        if let delegate = self.delegate {
+        if let swiftDelegate = self.swiftDelegate {
           self.delegateQueue.async {
-            delegate.didFinishCheckingForRemoteUpdate([:])
+            swiftDelegate.appLoaderTask(self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.noUpdateAvailable)
           }
         }
         return false
       }
     } asset: { asset, successfulAssetCount, failedAssetCount, totalAssetCount in
-      if let delegate = self.delegate {
+      if let swiftDelegate = self.swiftDelegate {
         self.delegateQueue.async {
-          delegate.appLoaderTask(
+          swiftDelegate.appLoaderTask(
             self,
             didLoadAsset: asset,
             successfulAssetCount: successfulAssetCount,
