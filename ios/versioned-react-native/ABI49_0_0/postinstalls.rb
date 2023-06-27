@@ -22,6 +22,8 @@ if pod_name.start_with?('ABI49_0_0React') || pod_name == 'ABI49_0_0ExpoKit'
       -DgNodeInstanceCount=ABI49_0_0ReactgNodeInstanceCount
       -fmodule-map-file="${PODS_ROOT}/Headers/Public/ABI49_0_0React-Core/ABI49_0_0React/ABI49_0_0React-Core.modulemap"
       -fmodule-map-file="${PODS_ROOT}/Headers/Public/ABI49_0_0ExpoModulesCore/ABI49_0_0ExpoModulesCore.modulemap"
+      -fmodule-map-file="${PODS_ROOT}/Headers/Public/ABI49_0_0EXUpdates/ABI49_0_0EXUpdates.modulemap"
+      -fmodule-map-file="${PODS_ROOT}/Headers/Public/ABI49_0_0EXUpdatesInterface/ABI49_0_0EXUpdatesInterface.modulemap"
     ]
     config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
     config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'ABI49_0_0RCT_DEV=1'

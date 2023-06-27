@@ -19,16 +19,7 @@ Pod::Spec.new do |s|
   s.swift_version  = '5.4'
   s.default_subspec = "Core"
   s.source = { :git => "http://github.com/expo/expo.git" }
-  s.xcconfig = {
-    'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
-    'SYSTEM_HEADER_SEARCH_PATHS' => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/Headers/Private/React-Core\"",
-    'OTHER_CPLUSPLUSFLAGS' => [
-      "$(OTHER_CFLAGS)",
-      "-DFOLLY_NO_CONFIG",
-      "-DFOLLY_MOBILE=1",
-      "-DFOLLY_USE_LIBCPP=1"
-    ]
-  }
+  s.compiler_flags = folly_compiler_flags + ' ' + boost_compiler_flags
 
   s.pod_target_xcconfig = {
     'USE_HEADERMAP' => 'YES',
@@ -36,16 +27,21 @@ Pod::Spec.new do |s|
   }
 
 
+  header_search_paths = [
+    '"$(PODS_ROOT)/boost"',
+    '"$(PODS_ROOT)/glog"',
+    '"$(PODS_ROOT)/DoubleConversion"',
+    '"$(PODS_ROOT)/RCT-Folly"',
+    '"$(PODS_ROOT)/Headers/Private/ABI49_0_0React-Core"',
+    '"$(PODS_CONFIGURATION_BUILD_DIR)/ABI49_0_0ExpoModulesCore/Swift Compatibility Header"',
+    '"$(PODS_CONFIGURATION_BUILD_DIR)/ABI49_0_0EXUpdatesInterface/Swift Compatibility Header"',
+    '"$(PODS_CONFIGURATION_BUILD_DIR)/ABI49_0_0EXUpdates/Swift Compatibility Header"',
+  ]
   s.pod_target_xcconfig    = {
+    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
     "USE_HEADERMAP"       => "YES",
     "DEFINES_MODULE"      => "YES",
-    "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/Headers/Private/ABI49_0_0React-Core\" \"$(PODS_CONFIGURATION_BUILD_DIR)/ABI49_0_0ExpoModulesCore/Swift Compatibility Header\""
-  }
-  s.compiler_flags = folly_compiler_flags + ' ' + boost_compiler_flags
-  s.xcconfig               = {
-    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
-    "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/glog\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/Headers/Private/ABI49_0_0React-Core\" \"$(PODS_CONFIGURATION_BUILD_DIR)/ABI49_0_0ExpoModulesCore/Swift Compatibility Header\"",
-    "OTHER_CFLAGS"        => "$(inherited)" + " " + folly_flags
+    "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
   }
 
   s.subspec "Expo" do |ss|

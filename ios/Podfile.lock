@@ -4801,7 +4801,7 @@ SPEC CHECKSUMS:
   ABI49_0_0ExpoImagePicker: 8355e9cf4fdc820f8cfa26add2a423dbd49d70cc
   ABI49_0_0ExpoInsights: d4433e3114fc7fd01edbc82aa8cb72c0e346f40d
   ABI49_0_0ExpoKeepAwake: 5508e162548e92d0087811d63218030135ad45e0
-  ABI49_0_0ExpoKit: fa5acd90ed671ccf3fa62fc70ae8b8a8502041ce
+  ABI49_0_0ExpoKit: 10bd3eaf309f90689d5e783712d9c903eeae45f2
   ABI49_0_0ExpoLinearGradient: 98f9ba2f1b8bf7cc3974c1681114d58a2c07341f
   ABI49_0_0ExpoLocalAuthentication: fbc31ba5781a6b74fe8cd4f4dbbac4200ff8b076
   ABI49_0_0ExpoLocalization: ecce53a514e89c84e43ce3ed9fe38bf30258c99b
@@ -4949,7 +4949,7 @@ SPEC CHECKSUMS:
   EXSplashScreen: 76a140851af574dfe1d22d7ec189cd183f28ab49
   EXStructuredHeaders: 324cc3130571d2696357fafd8be7fd9a0b5fdf6e
   EXTaskManager: f1730c315eb6fe457a3a2ee4ed899a51d717f302
-  EXUpdates: 5e7b88f34f110798fdd759a057a4d3749d62fd10
+  EXUpdates: 0c0c896ef50a67ea38f3348fe0053b4e205dcc69
   EXUpdatesInterface: 65a425322c67e3c96952b47ac110df3fef65c6b3
   FBAEMKit: c7efe06720a8b15b1d25b68921ba46dee20996e0
   FBAudienceNetwork: e0fcc9091fced34910ed0b6da06f129db46ac9e6
