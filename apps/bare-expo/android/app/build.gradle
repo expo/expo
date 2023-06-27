@@ -107,6 +107,9 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0.0"
+
+        buildConfigField("boolean", "REACT_NATIVE_UNSTABLE_USE_RUNTIME_SCHEDULER_ALWAYS", (findProperty("reactNative.unstable_useRuntimeSchedulerAlways") ?: true).toString())
+
         manifestPlaceholders = [
             // [Custom]: Required for expo-app-auth
             appAuthRedirectScheme: "dev.expo.payments"
