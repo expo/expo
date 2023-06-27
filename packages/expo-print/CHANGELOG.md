@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed missing constants on iOS, restricted possibility of starting multiple print jobs at once, which would lead to crashes. ([#23128](https://github.com/expo/expo/pull/23128) by [@behenate](https://github.com/behenate))
+
 ### 💡 Others
 
 ## 12.4.1 — 2023-06-27
