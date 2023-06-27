@@ -2,7 +2,6 @@ package abi49_0_0.expo.modules.sqlite
 
 import java.io.File
 import java.io.IOException
-import java.util.ArrayList
 
 @Throws(IOException::class)
 internal fun ensureDirExists(dir: File): File {
@@ -77,7 +76,7 @@ private fun startsWithCaseInsensitive(str: String, substr: String): Boolean {
   return str.trimStart().startsWith(substr, true)
 }
 
-internal fun convertParamsToStringArray(paramArrayArg: ArrayList<Any?>): Array<String?> {
+internal fun convertParamsToStringArray(paramArrayArg: List<Any?>): Array<String?> {
   return paramArrayArg.map { param ->
     when (param) {
       is String -> unescapeBlob(param)
