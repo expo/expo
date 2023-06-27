@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Resolved an issue on Android where recording a video, even with the mute: true option, would still result in an audio permission exception. Furthermore, the mute flag was incorrectly referred to as muteValue, causing it to be consistently ignored ([#23145](https://github.com/expo/expo/pull/23145) by [@hirbod](https://github.com/hirbod))
+
 ### 💡 Others
 
 ## 13.4.0 — 2023-06-13
