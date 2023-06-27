@@ -25,19 +25,36 @@ describe('router.push()', () => {
 
     it('works for dynamic urls', () => {
       expectType<void>(router.push('/colors/blue'));
-      expectError(router.push('/colors/blue/test'));
+    });
 
+    it('works for CatchAll routes', () => {
       expectType<void>(router.push('/animals/bear'));
       expectType<void>(router.push('/animals/bear/cat/dog'));
+      expectType<void>(router.push('/mix/apple/blue/cat/dog'));
+    });
 
-      // This will fail because it is missing params
+    it.skip('works for optional CatchAll routes', () => {
+      // CatchAll routes are not currently optional
+      // expectType<void>(router.push('/animals/'));
+    });
+
+    it('will error when providing extra parameters', () => {
+      expectError(router.push('/colors/blue/test'));
+    });
+
+    it('will error when providing too few parameters', () => {
       expectError(router.push('/mix/apple'));
       expectError(router.push('/mix/apple/cat'));
-      expectType<void>(router.push('/mix/apple/blue/cat/dog'));
     });
 
     it('can accept any external url', () => {
       expectType<void>(router.push('http://expo.dev'));
+    });
+
+    it('throws if using inline search params', () => {
+      // While this is allowed in Expo Router, the Typed Routes version throws as we cannot type it
+      expectError(router.push('/colors?color=blue'));
+      expectError(router.push('/animals/bear?color=blue'));
     });
   });
 

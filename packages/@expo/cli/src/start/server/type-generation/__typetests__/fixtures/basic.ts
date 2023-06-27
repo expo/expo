@@ -23,7 +23,6 @@ type AllRoutes = ExpoRouterRoutes | ExternalPathString;
  ****************/
 
 type SearchOrHash = `?${string}` | `#${string}`;
-type Suffix = '' | SearchOrHash;
 
 /**
  * Return only the RoutePart of a string. If the string has multiple parts return never
@@ -39,14 +38,22 @@ type Suffix = '' | SearchOrHash;
  */
 type SingleRoutePart<S extends string> = S extends `${string}/${string}`
   ? never
+  : S extends `${string}${SearchOrHash}`
+  ? never
   : S extends ''
   ? never
   : S;
 
 /**
- * Return only the CatchAll slug of a string. If the string has search parameters or a hash return never
+ * Return only the CatchAll router part. If the string has search parameters or a hash return never
  */
-type CatchAllRoutePart<S extends string> = S extends '' ? never : S;
+type CatchAllRoutePart<S extends string> = S extends `${string}${SearchOrHash}`
+  ? never
+  : S extends ''
+  ? never
+  : S;
+
+// type OptionalCatchAllRoutePart<S extends string> = S extends `${string}${SearchOrHash}` ? never : S
 
 /**
  * Return the name of a route parameter
@@ -116,10 +123,10 @@ export type SearchParams<T extends AllRoutes> = T extends DynamicRouteTemplate
 export type Route<T> = T extends DynamicRouteTemplate
   ? never
   :
-      | `${StaticRoutes}${Suffix}`
+      | StaticRoutes
       | RelativePathString
       | ExternalPathString
-      | (T extends `${DynamicRoutes<infer _>}${Suffix}` ? T : never);
+      | (T extends DynamicRoutes<infer _> ? T : never);
 
 /*********
  * Href  *
