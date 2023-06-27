@@ -29,8 +29,7 @@ import sessionUrlProvider from './SessionUrlProvider';
 
 // @needsAudit
 /**
- * Cancels an active `AuthSession` if there is one. No return value, but if there is an active `AuthSession`
- * then the Promise returned by the `AuthSession.startAsync()` that initiated it resolves to `{ type: 'dismiss' }`.
+ * Cancels an active `AuthSession` if there is one.
  */
 export function dismiss() {
   dismissAuthSession();

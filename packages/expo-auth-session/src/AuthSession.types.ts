@@ -32,8 +32,6 @@ export type AuthSessionOptions = {
  * - If the authentication is dismissed manually with `AuthSession.dismiss()`, the result is `{ type: 'dismiss' }`.
  * - If the authentication flow is successful, the result is `{ type: 'success', params: Object, event: Object }`.
  * - If the authentication flow is returns an error, the result is `{ type: 'error', params: Object, error: string, event: Object }`.
- * - If you call `AuthSession.startAsync()` more than once before the first call has returned, the result is `{ type: 'locked' }`,
- *   because only one `AuthSession` can be in progress at any time.
  */
 export type AuthSessionResult =
   | {
