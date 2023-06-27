@@ -91,13 +91,20 @@ AuthSession has built-in support for some popular providers to make usage as eas
 
 ## Google
 
-```tsx
+> **warning** **Deprecated:** This provider is deprecated and will be removed in a future SDK version. See [Google authentication](/guides/google-authentication/) instead.
+
+```jsx
 import * as Google from 'expo-auth-session/providers/google';
 ```
 
 - See the guide for more info on usage: [Google Authentication](/guides/authentication.mdx#google).
 - Provides an extra `loginHint` parameter. If the user's email address is known ahead of time, it can be supplied to be the default option.
-- Enforces minimum scopes to `['openid', 'https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email']` for optimal usage with services like Firebase and Auth0.
+- Enforces minimum scopes to the following APIs for optimal usage with services like Firebase and Auth0.
+
+  ```
+  ['openid', 'https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email']
+  ```
+
 - By default, the authorization `code` will be automatically exchanged for an access token. This can be overridden with `shouldAutoExchangeCode`.
 - Defaults to using the bundle ID and package name for the native URI redirect instead of the reverse client ID.
 - Disables PKCE for implicit and id-token based auth responses.
@@ -124,7 +131,9 @@ A [`DiscoveryDocument`](#discoverydocument) object containing the discovery URLs
 
 ## Facebook
 
-```tsx
+> **warning** **Deprecated:** This provider is deprecated and will be removed in a future SDK version. See [Facebook authentication](/guides/facebook-authentication/) instead.
+
+```jsx
 import * as Facebook from 'expo-auth-session/providers/facebook';
 ```
 
