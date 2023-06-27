@@ -7,7 +7,23 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
-- Updated `react-native-gesture-handler` from `2.9.0` to `2.10.1`. ([#22621](https://github.com/expo/expo/pull/22621) by [@kudo](https://github.com/kudo))
+- Updated `@react-native-community/datetimepicker` from `6.7.3` to `7.2.0`. ([#23034](https://github.com/expo/expo/pull/23034) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Updated `@react-native-community/netinfo` from `9.3.7` to `9.3.10`. ([#22892](https://github.com/expo/expo/pull/22892) by [@douglowder](https://github.com/douglowder))
+- Updated `@react-native-masked-view/masked-view` from `0.2.8` to `0.2.9`. ([#22875](https://github.com/expo/expo/pull/22875) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Updated `@react-native-picker/picker` from `2.4.8` to `2.4.10`. ([#22919](https://github.com/expo/expo/pull/22919) by [@keith-kurak](https://github.com/keith-kurak))
+- Updated `@react-native-segmented-control/segmented-control` from `2.4.0` to `2.4.1`. ([#22911](https://github.com/expo/expo/pull/22911) by [@keith-kurak](https://github.com/keith-kurak))
+- Updated `@shopify/flash-list` from `1.4.0` to `1.4.3`. ([#22893](https://github.com/expo/expo/pull/22893) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Updated `@shopify/react-native-skia` from `0.1.172` to `0.1.195`. ([#23036](https://github.com/expo/expo/pull/23036) by [@kudo](https://github.com/kudo))
+- Updated `lottie-react-native` from `5.1.4` to `5.1.6`. ([#22868](https://github.com/expo/expo/pull/22868) by [@alanjhughes](https://github.com/alanjhughes))
+- Updated `react-native-gesture-handler` from `2.10.1` to `2.12.0`. ([#22621](https://github.com/expo/expo/pull/22906) by [@aleqsio](https://github.com/aleqsio))
+- Updated `react-native-maps` from `1.3.2` to `1.7.1`. ([#22908](https://github.com/expo/expo/pull/22908) by [@aleqsio](https://github.com/aleqsio)) 
+- Updated `react-native-pager-view` from `6.1.2` to `6.2.0`. ([#22892](https://github.com/expo/expo/pull/22892) by [@douglowder](https://github.com/douglowder))
+- Updated `react-native-reanimated` from `2.14.4` to `3.3.0`. ([#22907](https://github.com/expo/expo/pull/22907) by [@kudo](https://github.com/kudo))
+- Updated `react-native-safe-area-context` from `4.5.0` to `4.6.3`. ([#23026](https://github.com/expo/expo/pull/23026) by [@tsapeta](https://github.com/tsapeta))
+- Updated `react-native-screens` from `3.20.0` to `3.22.0`. ([#23022](https://github.com/expo/expo/pull/23022) by [@tsapeta](https://github.com/tsapeta))
+- Updated `react-native-svg` from `13.4.0` to `13.9.0`. ([#22934](https://github.com/expo/expo/pull/22934) by [@alanjhughes](https://github.com/alanjhughes))
+- Updated `react-native-view-shot` from `3.5.0` to `3.7.0`. ([#23024](https://github.com/expo/expo/pull/23024) by [@tsapeta](https://github.com/tsapeta)))
+- Updated `react-native-webview` from `11.26.0` to `13.2.2`. ([#22913](https://github.com/expo/expo/pull/22913) by [@aleqsio](https://github.com/aleqsio))
 
 ### 🛠 Breaking changes
 
@@ -55,7 +71,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - **`expo-av`**
   - Added `PosterComponent` prop to `Video` component. ([#19625](https://github.com/expo/expo/pull/19625) by [@youedd](https://github.com/youedd)
 - **`expo-barcode-scanner`**
-  - Native module for barcode scanner view is now written in Swift and Kotlin using the new API. ([#20441](https://github.com/expo/expo/pull/20441) and ([#20668](https://github.com/expo/expo/pull/20668) by [@alanhughes](https://github.com/alanjhughes)) ([#20441](https://github.com/expo/expo/pull/20441), [#20668](https://github.com/expo/expo/pull/20668) by [@alanjhughes](https://github.com/alanjhughes))
+  - Native module for barcode scanner view is now written in Swift and Kotlin using the new API. ([#20441](https://github.com/expo/expo/pull/20441) and ([#20668](https://github.com/expo/expo/pull/20668) by [@alanjhughes](https://github.com/alanjhughes)) ([#20441](https://github.com/expo/expo/pull/20441), [#20668](https://github.com/expo/expo/pull/20668) by [@alanjhughes](https://github.com/alanjhughes))
 - **`expo-blur`**
   - Migrated iOS codebase to Swift and the new Expo modules API. ([#19786](https://github.com/expo/expo/pull/19786) by [@tsapeta](https://github.com/tsapeta))
 - **`expo-brightness`**
