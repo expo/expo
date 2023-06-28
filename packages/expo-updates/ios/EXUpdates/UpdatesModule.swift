@@ -101,7 +101,8 @@ public final class UpdatesModule: Module {
         if result["manifest"] != nil {
           promise.resolve([
             "isAvailable": true,
-            "manifest": result["manifest"]
+            "manifest": result["manifest"],
+            "isRollBackToEmbedded": false
           ])
           return
         }
@@ -112,7 +113,7 @@ public final class UpdatesModule: Module {
           ])
           return
         }
-        promise.resolve(["isAvailable": false])
+        promise.resolve(["isAvailable": false, "isRollBackToEmbedded": false])
       }
     }
 
