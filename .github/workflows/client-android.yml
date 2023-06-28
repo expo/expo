@@ -52,6 +52,10 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
+      - name: 💎 Setup Ruby and install gems
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
