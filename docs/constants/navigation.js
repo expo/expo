@@ -381,7 +381,7 @@ const preview = [
       makePage('routing/installation.mdx'),
       makePage('routing/create-pages.mdx'),
       makePage('routing/navigating-pages.mdx'),
-      makePage('routing/shared-routes-and-layouts.mdx'),
+      makePage('routing/layouts.mdx'),
       makePage('routing/appearance.mdx'),
       makePage('routing/error-handling.mdx'),
     ]),
@@ -395,6 +395,7 @@ const preview = [
       makePage('router/advance/nesting-navigators.mdx'),
       makePage('router/advance/drawer.mdx'),
       makePage('router/advance/modal.mdx'),
+      makePage('router/advance/shared-routes.mdx'),
       makePage('router/advance/router-settings.mdx'),
     ]),
     makeGroup('Reference', [

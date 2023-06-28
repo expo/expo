@@ -1,0 +1,58 @@
+---
+title: Shared routes
+description: Learn how to define shared routes or use arrays to use the same route multiple times with different layouts using Expo Router.
+hideFromSearch: true
+---
+
+import { FileTree } from '~/ui/components/FileTree';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { BookOpen02Icon } from '@expo/styleguide-icons';
+
+You can prevent a segment from showing in the URL by using the group syntax `()`.
+
+- **app/root/home.js** which matches `/root/home`
+- **app/(root)/home.js** which matches `/home`
+
+This is useful for adding layouts without adding additional segments to the URL.
+
+## Shared routes
+
+To match the same URL with different layouts, use **groups** with overlapping child routes. This pattern is very common in native apps. For example, in the Twitter app, a profile can be viewed in every tab (such as home, search, and profile). However, there is only one URL that is required to access this route.
+
+In the example below, **app/\_layout.js** is the tab bar and each route has its own header. The **app/(profile)/[user].js** route is shared between each tab.
+
+<FileTree
+  files={[
+    'app/_layout.js',
+    'app/(home)/_layout.js',
+    'app/(home)/[user].js',
+    'app/(search)/_layout.js',
+    'app/(search)/[user].js',
+    'app/(profile)/_layout.js',
+    'app/(profile)/[user].js',
+  ]}
+/>
+
+> When reloading the page, the first match (alphabetically) will be rendered.
+
+Shared routes can be navigated directly by including the group name in the route. For example, `/(search)/baconbrix` navigates to `/baconbrix` in the "search" layout.
+
+## Arrays
+
+> Array syntax is an advanced concept that is unique to native app development.
+
+Instead of defining the same route multiple times with different layouts, use the array syntax `(,)` to duplicate the children of a group.
+
+- `app/(home,search)/[user].js` -- creates `app/(home)/[user].js` and `app/(search)/[user].js` in memory.
+
+Distinguishing between the two routes using the `segment` prop of a layout.
+
+```js title="app/(home,search)/_layout.js"
+export default function DynamicLayout({ segment }) {
+  if (segment === '(search)') {
+    return <SearchStack />;
+  }
+
+  return <Stack />;
+}
+```
