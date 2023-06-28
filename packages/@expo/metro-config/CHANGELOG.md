@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Use partial `MetroConfig` type.
+- Use partial `MetroConfig` type. ([#23172](https://github.com/expo/expo/pull/23172) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
