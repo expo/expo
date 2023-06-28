@@ -331,7 +331,18 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             return;
           } catch (error: any) {
             res.setHeader('Content-Type', 'text/html');
-            res.end(await this.renderStaticErrorAsync(error));
+            try {
+              res.end(await this.renderStaticErrorAsync(error));
+            } catch (staticError: any) {
+              // Fallback error for when Expo Router is misconfigured in the project.
+              res.end(
+                '<span><h3>Internal Error:</h3><b>Project is not setup correctly for static rendering (check terminal for more info):</b><br/>' +
+                  error.message +
+                  '<br/><br/>' +
+                  staticError.message +
+                  '</span>'
+              );
+            }
           }
         });
       }

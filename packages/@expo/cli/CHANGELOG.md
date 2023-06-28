@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add error message for static rendering without Expo Router.
+
 ### 🐛 Bug fixes
 
 - Avoid changing required dependency versions when prebuilding. ([#23146](https://github.com/expo/expo/pull/23146) by [@byCedric](https://github.com/byCedric))
