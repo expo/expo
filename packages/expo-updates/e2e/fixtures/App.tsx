@@ -6,6 +6,7 @@ import {
   runUpdate,
   useUpdatesState,
 } from '@expo/use-updates';
+import Constants from 'expo-constants';
 import { NativeModulesProxy } from 'expo-modules-core';
 import { StatusBar } from 'expo-status-bar';
 import * as Updates from 'expo-updates';
@@ -21,8 +22,11 @@ function TestValue(props: { testID: string; value: string }) {
   return (
     <View>
       <View style={{ flexDirection: 'row' }}>
-        <Text>{props.testID}</Text>
-        <Text testID={props.testID}>{props.value}</Text>
+        <Text style={styles.labelText}>{props.testID}</Text>
+        <Text style={styles.labelText}>&nbsp;</Text>
+        <Text style={styles.labelText} testID={props.testID}>
+          {props.value}
+        </Text>
       </View>
       <Text>---</Text>
     </View>
@@ -171,6 +175,20 @@ export default function App() {
         </Text>
       </ScrollView>
 
+      <Text>Updates expoConfig</Text>
+      <ScrollView style={styles.logEntriesContainer}>
+        <Text testID="updates.expoConfig" style={styles.logEntriesText}>
+          {JSON.stringify(Updates.manifest.extra?.expoConfig || {})}
+        </Text>
+      </ScrollView>
+
+      <Text>Constants expoConfig</Text>
+      <ScrollView style={styles.logEntriesContainer}>
+        <Text testID="constants.expoConfig" style={styles.logEntriesText}>
+          {JSON.stringify(Constants.expoConfig)}
+        </Text>
+      </ScrollView>
+
       {active ? <ActivityIndicator testID="activity" size="small" color="#0000ff" /> : null}
       <View style={{ flexDirection: 'row' }}>
         <View>
@@ -210,7 +228,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: 8,
   },
   button: {
     alignItems: 'center',
@@ -224,6 +241,10 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: 'white',
+    fontSize: 6,
+  },
+  labelText: {
+    fontSize: 6,
   },
   logEntriesContainer: {
     margin: 10,
