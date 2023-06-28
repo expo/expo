@@ -12,7 +12,7 @@ There are five EAS Build lifecycle npm hooks that you can set in your **package.
 - `eas-build-on-success` - this hook is triggered at the end of the build process if the build was successful.
 - `eas-build-on-error` - this hook is triggered at the end of the build process if the build failed.
 - `eas-build-on-complete` - this hook is triggered at the end of the build process. You can check the build's status with the `EAS_BUILD_STATUS` environment variable. It's either `finished` or `errored`.
-- `eas-build-on-cancel` - this hook is triggered if the build gets canceled before it can finish. It is executed at the end of cleanup phase, just before the build worker gets terminated.
+- `eas-build-on-cancel` - this hook is triggered if the build is canceled.
 
 Below is an example of how your **package.json** can look with lifecycle hooks:
 
