@@ -1,5 +1,5 @@
 ---
-title: Using Google authentication
+title: Use Google authentication
 description: A guide on using @react-native-google-signin/google-signin library to integrate Google authentication in your Expo project.
 ---
 
@@ -13,7 +13,6 @@ This guide provides additional information on how to configure the library for y
 ## Prerequisites
 
 The `@react-native-google-signin/google-signin` library can't be used in the Expo Go app because it requires custom native code. Learn more about [adding custom native code to your app](/workflow/customizing/).
-
 
 ## Installation
 
@@ -53,7 +52,7 @@ Once you've uploaded your app, you can provide an SHA-1 certificate fingerprint 
 For more instructions on how to configure your Google project for Android with Firebase:
 
 <BoxLink
-  title="Firebase guide"
+  title="Firebase"
   href="https://github.com/react-native-google-signin/google-signin/blob/master/docs/get-config-file.md"
 />
 
@@ -68,7 +67,7 @@ For more instructions on how to configure your Google project for iOS with Fireb
 
 #### Upload google-services.json and GoogleService-Info.plist to EAS
 
-If you use the Firebase method for Android and iOS (as shared below), you'll need to upload **google-services.json** and **GoogleService-Info.plist** to EAS and add them to **.gitignore** to avoid checking them in the repository.
+If you use the Firebase method for Android and iOS (as shared in sections above), you'll need to upload **google-services.json** and **GoogleService-Info.plist** to EAS and add them to **.gitignore** to avoid checking them in the repository.
 
 <BoxLink
   title="Upload a secret file to EAS and use in the app config"
@@ -77,13 +76,15 @@ If you use the Firebase method for Android and iOS (as shared below), you'll nee
 
 ### With Google API
 
+This is an alternate method to configure a Google project when you are not using [Firebase](#with-firebase).
+
 #### Android
 
 For more instructions on how to configure your Google project for Android with Google API:
 
 <BoxLink
-  title="Google API"
-  href="https://github.com/react-native-google-signin/google-signin/blob/master/docs/android-guide.md#1b---if-youre-not-using-firebase"
+  title="Configure a Google API Console project"
+  href="https://developers.google.com/identity/sign-in/android/start#configure-a-google-api-console-project"
 />
 
 #### iOS
@@ -91,8 +92,8 @@ For more instructions on how to configure your Google project for Android with G
 For iOS, if you use Google API instead of Firebase, you'll need to generate an OAuth client id. Follow the instructions below to generate the client id:
 
 <BoxLink
-  title="Google API"
-  href="https://github.com/react-native-google-signin/google-signin/blob/master/docs/get-config-file.md#without-firebase"
+  title="Get an OAuth client ID from a Google API Console project"
+  href="https://developers.google.com/identity/sign-in/ios/start-integrating#get_an_oauth_client_id"
 />
 
 After you have created the iOS client id, you'll also need to provide the iOS URL scheme value in the app config. You can find the value in the Google API console under **API and Services** > **Credentials** > **OAuth 2.0 Client IDs** > **name of your iOS client id** > **Additional information** > **iOS URL scheme**.
