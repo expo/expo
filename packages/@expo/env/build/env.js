@@ -68,6 +68,7 @@ function createControlledEnvironment() {
   let memoEnvironment = undefined;
   function _getForce(projectRoot, options = {}) {
     if (!isEnabled()) {
+      debug(`Skipping .env files because EXPO_NO_DOTENV is defined`);
       return {};
     }
     if (!userDefinedEnvironment) {
@@ -130,6 +131,7 @@ function createControlledEnvironment() {
   /** Get the environment variables without mutating the environment. This returns memoized values unless the `force` property is provided. */
   function get(projectRoot, options = {}) {
     if (!isEnabled()) {
+      debug(`Skipping .env files because EXPO_NO_DOTENV is defined`);
       return {};
     }
     if (!options.force && memoEnvironment) {
@@ -142,6 +144,7 @@ function createControlledEnvironment() {
   /** Load environment variables from .env files and mutate the current `process.env` with the results. */
   function load(projectRoot, options = {}) {
     if (!isEnabled()) {
+      debug(`Skipping .env files because EXPO_NO_DOTENV is defined`);
       return process.env;
     }
     const env = get(projectRoot, options);
@@ -161,6 +164,7 @@ function getFiles(mode, {
   silent = false
 } = {}) {
   if (!isEnabled()) {
+    debug(`Skipping .env files because EXPO_NO_DOTENV is defined`);
     return [];
   }
   if (!mode) {
