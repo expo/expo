@@ -1,6 +1,6 @@
 {
   "name": "expo-notifications",
-  "version": "0.19.0",
+  "version": "0.20.1",
   "description": "Notifications module",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -42,8 +42,8 @@
     "abort-controller": "^3.0.0",
     "assert": "^2.0.0",
     "badgin": "^1.1.5",
-    "expo-application": "~5.2.0",
-    "expo-constants": "~14.3.0",
+    "expo-application": "~5.3.0",
+    "expo-constants": "~14.4.2",
     "fs-extra": "^9.1.0",
     "uuid": "^3.4.0"
   },

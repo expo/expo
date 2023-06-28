@@ -8,9 +8,23 @@
 
 ### 🐛 Bug fixes
 
-- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+### 💡 Others
+
+## 14.4.2 — 2023-06-24
 
 ### 💡 Others
+
+- Remove the long-deprecated `Constants.deviceYearClass` and `Constants.platform.ios.model`. These properties now live on `expo-device`. ([#23068](https://github.com/expo/expo/pull/23068) by [@brentvatne](https://github.com/brentvatne))
+
+## 14.4.1 — 2023-06-22
+
+_This version does not introduce any user-facing changes._
+
+## 14.4.0 — 2023-06-13
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ## 14.3.0 — 2023-05-08
 

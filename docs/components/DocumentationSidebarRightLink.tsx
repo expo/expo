@@ -17,12 +17,14 @@ const STYLES_LINK = css`
   text-overflow: ellipsis;
   align-items: center;
   justify-content: space-between;
+
+  :focus-visible {
+    position: relative;
+    z-index: 10;
+  }
 `;
 
 const STYLES_LINK_LABEL = css`
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   color: ${theme.text.secondary};
 
   :hover {
@@ -31,6 +33,9 @@ const STYLES_LINK_LABEL = css`
 `;
 
 const STYLES_LINK_MONOSPACE = css`
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   ${typography.fontSizes[13]}
 `;
 
@@ -142,15 +147,15 @@ const DocumentationSidebarRightLink = React.forwardRef<HTMLAnchorElement, Sideba
 
     return (
       <>
-        {tooltipVisible && (
+        {tooltipVisible && isCode && (
           <Tooltip topOffset={tooltipOffset} isCode={isCode}>
             {displayTitle}
           </Tooltip>
         )}
         <Link
           ref={ref}
-          onMouseOver={onMouseOver}
-          onMouseOut={onMouseOut}
+          onMouseOver={isCode ? onMouseOver : undefined}
+          onMouseOut={isCode ? onMouseOut : undefined}
           href={'#' + slug}
           onClick={onClick}
           css={[STYLES_LINK, paddingLeft && { paddingLeft }]}>

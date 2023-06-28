@@ -166,6 +166,18 @@ export class Package {
     return match?.[1] ?? null;
   }
 
+  get androidPackageNamespace(): string | null {
+    if (!this.isSupportedOnPlatform('android')) {
+      return null;
+    }
+    const buildGradle = fs.readFileSync(
+      path.join(this.path, this.androidSubdirectory, 'build.gradle'),
+      'utf8'
+    );
+    const match = buildGradle.match(/^\s+namespace\s*=?\s*['"]([\w.]+)['"]/m);
+    return match?.[1] ?? null;
+  }
+
   get changelogPath(): string {
     return path.join(this.path, 'CHANGELOG.md');
   }

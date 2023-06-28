@@ -32,8 +32,6 @@ export type AuthSessionOptions = {
  * - If the authentication is dismissed manually with `AuthSession.dismiss()`, the result is `{ type: 'dismiss' }`.
  * - If the authentication flow is successful, the result is `{ type: 'success', params: Object, event: Object }`.
  * - If the authentication flow is returns an error, the result is `{ type: 'error', params: Object, error: string, event: Object }`.
- * - If you call `AuthSession.startAsync()` more than once before the first call has returned, the result is `{ type: 'locked' }`,
- *   because only one `AuthSession` can be in progress at any time.
  */
 export type AuthSessionResult =
   | {
@@ -80,33 +78,18 @@ export type AuthSessionRedirectUriOptions = {
   path?: string;
   /**
    * URI protocol `<scheme>://` that must be built into your native app.
-   * Passed to `Linking.createURL()` when `useProxy` is `false`.
    */
   scheme?: string;
   /**
-   * Optional native scheme to use when proxy is disabled.
+   * Optional native scheme
    * URI protocol `<scheme>://` that must be built into your native app.
-   * Passed to `Linking.createURL()` when `useProxy` is `false`.
    */
   queryParams?: Record<string, string | undefined>;
   /**
    * Should the URI be triple slashed `scheme:///path` or double slashed `scheme://path`.
    * Defaults to `false`.
-   * Passed to `Linking.createURL()` when `useProxy` is `false`.
    */
   isTripleSlashed?: boolean;
-  /**
-   * Should use the \`auth.expo.io\` proxy.
-   * This is useful for testing managed native apps that require a custom URI scheme.
-   *
-   * @default false
-   * @deprecated This option will be removed in a future release, for more information check [the migration guide](https://expo.fyi/auth-proxy-migration).
-   */
-  useProxy?: boolean;
-  /**
-   * Project name to use for the `auth.expo.io` proxy when `useProxy` is `true`.
-   */
-  projectNameForProxy?: string;
   /**
    * Attempt to convert the Expo server IP address to localhost.
    * This is useful for testing when your IP changes often, this will only work for iOS simulator.

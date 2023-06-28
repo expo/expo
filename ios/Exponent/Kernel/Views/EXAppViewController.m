@@ -25,11 +25,10 @@
 #import <React/RCTUtils.h>
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
-#if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
-#import <EXScreenOrientation/EXScreenOrientationRegistry.h>
-#endif
-
 #import <React/RCTAppearance.h>
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI49_0_0React/ABI49_0_0RCTAppearance.h>)
+#import <ABI49_0_0React/ABI49_0_0RCTAppearance.h>
+#endif
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI48_0_0React/ABI48_0_0RCTAppearance.h>)
 #import <ABI48_0_0React/ABI48_0_0RCTAppearance.h>
 #endif
@@ -44,6 +43,8 @@
 #endif // defined(EX_DETACHED)
 
 @import EXManifests;
+
+@import ExpoScreenOrientation;
 
 #define EX_INTERFACE_ORIENTATION_USE_MANIFEST 0
 
@@ -567,6 +568,8 @@ NS_ASSUME_NONNULL_BEGIN
   [self refresh];
 }
 
+// In Expo Go the ScreenOrientationViewController.swift is not used, therefore it is necessary to write the same
+// functionality into the EXAppViewController
 #pragma mark - orientation
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
@@ -575,12 +578,10 @@ NS_ASSUME_NONNULL_BEGIN
     return [super supportedInterfaceOrientations];
   }
 
-#if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
-  EXScreenOrientationRegistry *screenOrientationRegistry = (EXScreenOrientationRegistry *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
-  if (screenOrientationRegistry && [screenOrientationRegistry requiredOrientationMask] > 0) {
-    return [screenOrientationRegistry requiredOrientationMask];
+  if ([ScreenOrientationRegistry.shared requiredOrientationMask] > 0) {
+    return [ScreenOrientationRegistry.shared requiredOrientationMask];
   }
-#endif
+
 
   return [self orientationMaskFromManifestOrDefault];
 }
@@ -615,10 +616,7 @@ NS_ASSUME_NONNULL_BEGIN
   if ((self.traitCollection.verticalSizeClass != previousTraitCollection.verticalSizeClass)
       || (self.traitCollection.horizontalSizeClass != previousTraitCollection.horizontalSizeClass)) {
 
-    #if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
-      EXScreenOrientationRegistry *screenOrientationRegistryController = (EXScreenOrientationRegistry *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
-      [screenOrientationRegistryController traitCollectionDidChangeTo:self.traitCollection];
-    #endif
+    [ScreenOrientationRegistry.shared traitCollectionDidChangeTo:self.traitCollection];
   }
 }
 
@@ -641,6 +639,9 @@ NS_ASSUME_NONNULL_BEGIN
     appearancePreference = nil;
   }
   RCTOverrideAppearancePreference(appearancePreference);
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI49_0_0React/ABI49_0_0RCTAppearance.h>)
+  ABI49_0_0RCTOverrideAppearancePreference(appearancePreference);
+#endif
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI48_0_0React/ABI48_0_0RCTAppearance.h>)
   ABI48_0_0RCTOverrideAppearancePreference(appearancePreference);
 #endif

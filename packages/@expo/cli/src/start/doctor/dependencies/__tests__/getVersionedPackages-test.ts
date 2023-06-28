@@ -1,11 +1,14 @@
 import { asMock } from '../../../../__tests__/asMock';
 import { getVersionsAsync } from '../../../../api/getVersions';
+import { Log } from '../../../../log';
 import { getVersionedNativeModulesAsync } from '../bundledNativeModules';
 import {
   getOperationLog,
   getRemoteVersionsForSdkAsync,
   getVersionedPackagesAsync,
 } from '../getVersionedPackages';
+
+jest.mock('../../../../log');
 
 jest.mock('../../../../api/getVersions', () => ({
   getVersionsAsync: jest.fn(),
@@ -36,6 +39,7 @@ describe(getVersionedPackagesAsync, () => {
     const { packages, messages } = await getVersionedPackagesAsync('/', {
       sdkVersion: '1.0.0',
       packages: ['@expo/vector-icons', 'react@next', 'expo-camera', 'uuid@^3.4.0'],
+      pkg: {},
     });
 
     expect(packages).toEqual([
@@ -48,6 +52,93 @@ describe(getVersionedPackagesAsync, () => {
     ]);
 
     expect(messages).toEqual(['2 SDK 1.0.0 compatible native modules', '2 other packages']);
+  });
+
+  it('should not specify versions for excluded packages', async () => {
+    asMock(getVersionedNativeModulesAsync).mockResolvedValueOnce({});
+    asMock(getVersionsAsync).mockResolvedValueOnce({
+      sdkVersions: {
+        '1.0.0': {
+          relatedPackages: {
+            '@expo/vector-icons': '3.0.0',
+            'react-native': 'default',
+            react: 'default',
+            'react-dom': 'default',
+            'expo-sms': 'default',
+          },
+          facebookReactVersion: 'facebook-react',
+          facebookReactNativeVersion: 'facebook-rn',
+        },
+      },
+    } as any);
+    const { packages, messages, excludedNativeModules } = await getVersionedPackagesAsync('/', {
+      sdkVersion: '1.0.0',
+      packages: ['@expo/vector-icons', 'react@next', 'expo-camera', 'uuid@^3.4.0'],
+      pkg: {
+        expo: {
+          install: {
+            exclude: ['@expo/vector-icons'],
+          },
+        },
+      },
+    });
+
+    expect(packages).toEqual([
+      // Excluded
+      '@expo/vector-icons',
+      // Custom
+      'react@facebook-react',
+      // Passthrough
+      'expo-camera',
+      'uuid@^3.4.0',
+    ]);
+
+    expect(messages).toEqual(['1 SDK 1.0.0 compatible native module', '3 other packages']);
+    expect(excludedNativeModules).toEqual([
+      { name: '@expo/vector-icons', bundledNativeVersion: '3.0.0' },
+    ]);
+  });
+
+  it('should not list packages in expo.install.exclude that do not have a bundledNativeVersion', async () => {
+    asMock(getVersionedNativeModulesAsync).mockResolvedValueOnce({});
+    asMock(getVersionsAsync).mockResolvedValueOnce({
+      sdkVersions: {
+        '1.0.0': {
+          relatedPackages: {
+            '@expo/vector-icons': '3.0.0',
+            'react-native': 'default',
+            react: 'default',
+            'react-dom': 'default',
+            'expo-sms': 'default',
+          },
+          facebookReactVersion: 'facebook-react',
+          facebookReactNativeVersion: 'facebook-rn',
+        },
+      },
+    } as any);
+    const { packages, messages, excludedNativeModules } = await getVersionedPackagesAsync('/', {
+      sdkVersion: '1.0.0',
+      packages: ['@expo/vector-icons', 'react@next', 'expo-camera', 'uuid@^3.4.0'],
+      pkg: {
+        expo: {
+          install: {
+            exclude: ['expo-camera'],
+          },
+        },
+      },
+    });
+
+    expect(packages).toEqual([
+      // Custom
+      '@expo/vector-icons@3.0.0',
+      'react@facebook-react',
+      // Passthrough
+      'expo-camera', // but also excluded
+      'uuid@^3.4.0',
+    ]);
+
+    expect(messages).toEqual(['2 SDK 1.0.0 compatible native modules', '2 other packages']);
+    expect(excludedNativeModules).toEqual([]);
   });
 });
 
@@ -73,6 +164,21 @@ describe(getOperationLog, () => {
 });
 
 describe(getRemoteVersionsForSdkAsync, () => {
+  beforeEach(() => {
+    delete process.env.EXPO_OFFLINE;
+  });
+
+  it('returns an empty object in offline-mode', async () => {
+    process.env.EXPO_OFFLINE = '1';
+
+    expect(await getRemoteVersionsForSdkAsync({ sdkVersion: '1.0.0', skipCache: true })).toEqual(
+      {}
+    );
+    expect(Log.warn).toBeCalledWith(
+      expect.stringMatching(/Dependency validation is unreliable in offline-mode/)
+    );
+    expect(getVersionsAsync).not.toBeCalled();
+  });
   it('returns an empty object when the SDK version is not supported', async () => {
     asMock(getVersionsAsync).mockResolvedValueOnce({ sdkVersions: {} } as any);
 

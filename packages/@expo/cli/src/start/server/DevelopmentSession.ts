@@ -1,11 +1,11 @@
 import { ExpoConfig, getConfig } from '@expo/config';
 
-import { APISettings } from '../../api/settings';
 import {
   closeDevelopmentSessionAsync,
   updateDevelopmentSessionAsync,
 } from '../../api/updateDevelopmentSession';
 import { getUserAsync } from '../../api/user/user';
+import { env } from '../../utils/env';
 import * as ProjectDevices from '../project/devices';
 
 const debug = require('debug')('expo:start:server:developmentSession') as typeof console.log;
@@ -46,8 +46,10 @@ export class DevelopmentSession {
     runtime: 'native' | 'web';
   }): Promise<void> {
     try {
-      if (APISettings.isOffline) {
-        debug('Development session will not ping because the server is offline.');
+      if (env.EXPO_OFFLINE) {
+        debug(
+          'This project will not be suggested in Expo Go or Dev Clients because Expo CLI is running in offline-mode.'
+        );
         this.stopNotifying();
         return;
       }

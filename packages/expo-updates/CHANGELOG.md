@@ -2,24 +2,65 @@
 
 ## Unpublished
 
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- README.md changes. ([#23142](https://github.com/expo/expo/pull/23142) by [@douglowder](https://github.com/douglowder))
+
+## 0.18.4 — 2023-06-27
+
+### 🐛 Bug fixes
+
+- [iOS] Use weak delegate for state machine. ([#23060](https://github.com/expo/expo/pull/23060) by [@wschurman](https://github.com/wschurman))
+- [Android] Convert LoaderTask.RemoteCheckResult to sealed class. ([#23061](https://github.com/expo/expo/pull/23061) by [@wschurman](https://github.com/wschurman))
+
+- [iOS] Use swift enum for AppLoaderTask delegate. ([#23064](https://github.com/expo/expo/pull/23064) by [@wschurman](https://github.com/wschurman))
+
+## 0.18.3 — 2023-06-24
+
+### 🐛 Bug fixes
+
+- [Android] fix instrumentation tests. ([#23037](https://github.com/expo/expo/pull/23037) by [@douglowder](https://github.com/douglowder))
+- [iOS] Fix crash when dev-client and updates used together. ([#23070](https://github.com/expo/expo/pull/23070) by [@douglowder](https://github.com/douglowder))
+- [Android] Use sealed class for UpdatesStateEvent. ([#23038](https://github.com/expo/expo/pull/23038) by [@wschurman](https://github.com/wschurman))
+
+## 0.18.2 — 2023-06-23
+
+### 🐛 Bug fixes
+
+- [Android] fix instrumentation tests. ([#23037](https://github.com/expo/expo/pull/23037) by [@douglowder](https://github.com/douglowder))
+
+## 0.18.1 — 2023-06-22
+
+_This version does not introduce any user-facing changes._
+
+## 0.18.0 — 2023-06-22
+
+_This version does not introduce any user-facing changes._
+
+## 0.17.1 — 2023-06-21
+
 ### 📚 3rd party library updates
 
 - Updated `junit` to `4.13.2`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
-
-### 🛠 Breaking changes
 
 ### 🎉 New features
 
 - [Android] Load updates in background thread and prevent ANR from initial launch. ([#20273](https://github.com/expo/expo/pull/20273) by [@kudo](https://github.com/kudo))
 - Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
+- Added the Brotli compression support for EAS Update on Android. ([#22982](https://github.com/expo/expo/pull/22982) by [@kudo](https://github.com/kudo))
+- [Android][iOS] State machine implementation. ([#22845](https://github.com/expo/expo/pull/22845) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 
 - [Android] Resolve up the project root when creating production manifest. ([#22044](https://github.com/expo/expo/pull/22044) by [@EvanBacon](https://github.com/EvanBacon))
 - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 - Fixed broken `create-manifest-android.gradle` on Android Gradle version 8. ([#22538](https://github.com/expo/expo/pull/22538) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 0.17.0 — 2023-05-08
 

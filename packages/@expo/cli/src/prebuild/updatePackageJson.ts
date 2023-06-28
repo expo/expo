@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
+import { intersects as semverIntersects, Range as SemverRange } from 'semver';
 
 import * as Log from '../log';
 import { isModuleSymlinked } from '../utils/isModuleSymlinked';
@@ -113,6 +114,7 @@ export function updatePkgDependencies(
   }: {
     pkg: PackageJSONConfig;
     templatePkg: PackageJSONConfig;
+    /** @deprecated Required packages are not overwritten, only added when missing */
     skipDependencyUpdate?: string[];
   }
 ): DependenciesModificationResults {
@@ -128,30 +130,38 @@ export function updatePkgDependencies(
     ...pkg.dependencies,
   });
 
+  // These dependencies are only added, not overwritten from the project
   const requiredDependencies = ['expo', 'expo-splash-screen', 'react', 'react-native'].filter(
     (depKey) => !!defaultDependencies[depKey]
   );
 
   const symlinkedPackages: string[] = [];
+  const nonRecommendedPackages: string[] = [];
 
   for (const dependenciesKey of requiredDependencies) {
-    if (
-      // If the local package.json defined the dependency that we want to overwrite...
-      pkg.dependencies?.[dependenciesKey]
-    ) {
-      if (
-        // Then ensure it isn't symlinked (i.e. the user has a custom version in their yarn workspace).
-        isModuleSymlinked(projectRoot, { moduleId: dependenciesKey, isSilent: true })
-      ) {
+    // If the local package.json defined the dependency that we want to overwrite...
+    if (pkg.dependencies?.[dependenciesKey]) {
+      // Then ensure it isn't symlinked (i.e. the user has a custom version in their yarn workspace).
+      if (isModuleSymlinked(projectRoot, { moduleId: dependenciesKey, isSilent: true })) {
         // If the package is in the project's package.json and it's symlinked, then skip overwriting it.
         symlinkedPackages.push(dependenciesKey);
         continue;
       }
+
+      // Do not modify manually skipped dependencies
       if (skipDependencyUpdate.includes(dependenciesKey)) {
         continue;
       }
+
+      // Warn users for outdated dependencies when prebuilding
+      const hasRecommendedVersion = versionRangesIntersect(
+        pkg.dependencies[dependenciesKey],
+        String(defaultDependencies[dependenciesKey])
+      );
+      if (!hasRecommendedVersion) {
+        nonRecommendedPackages.push(`${dependenciesKey}@${defaultDependencies[dependenciesKey]}`);
+      }
     }
-    combinedDependencies[dependenciesKey] = defaultDependencies[dependenciesKey];
   }
 
   if (symlinkedPackages.length) {
@@ -159,6 +169,14 @@ export function updatePkgDependencies(
       `\u203A Using symlinked ${symlinkedPackages
         .map((pkg) => chalk.bold(pkg))
         .join(', ')} instead of recommended version(s).`
+    );
+  }
+
+  if (nonRecommendedPackages.length) {
+    Log.warn(
+      `\u203A Using current versions instead of recommended ${nonRecommendedPackages
+        .map((pkg) => chalk.bold(pkg))
+        .join(', ')}.`
     );
   }
 
@@ -225,9 +243,6 @@ function updatePkgScripts({ pkg }: { pkg: PackageJSONConfig }) {
   if (!pkg.scripts) {
     pkg.scripts = {};
   }
-  if (!pkg.scripts.start?.includes('--dev-client')) {
-    pkg.scripts.start = 'expo start --dev-client';
-  }
   if (!pkg.scripts.android?.includes('run')) {
     pkg.scripts.android = 'expo run:android';
   }
@@ -251,4 +266,16 @@ export function hashForDependencyMap(deps: DependenciesMap = {}): string {
 export function createFileHash(contents: string): string {
   // this doesn't need to be secure, the shorter the better.
   return crypto.createHash('sha1').update(contents).digest('hex');
+}
+
+/**
+ * Determine if two semver ranges are overlapping or intersecting.
+ * This is a safe version of `semver.intersects` that does not throw.
+ */
+function versionRangesIntersect(rangeA: string | SemverRange, rangeB: string | SemverRange) {
+  try {
+    return semverIntersects(rangeA, rangeB);
+  } finally {
+    return false;
+  }
 }

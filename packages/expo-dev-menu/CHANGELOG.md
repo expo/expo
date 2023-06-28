@@ -2,16 +2,41 @@
 
 ## Unpublished
 
-### 📚 3rd party library updates
-
-- Updated `robolectric` to `4.10`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
-
 ### 🛠 Breaking changes
 
 ### 🎉 New features
 
-- [Android] Added support for the new architecture. ([#22607](https://github.com/expo/expo/pull/22607) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 3.1.3 — 2023-06-27
+
+### 💡 Others
+
+- Upgrade `semver` lib. ([#23113](https://github.com/expo/expo/pull/23113) by [@felipemillhouse](https://github.com/felipemillhouse))
+- Remove unused fonts. ([#23107](https://github.com/expo/expo/pull/23107) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 3.1.2 — 2023-06-23
+
+### 🐛 Bug fixes
+
+- Fixed compatibility issue with react-native-reanimated on iOS. ([#23057](https://github.com/expo/expo/pull/23057) by [@kudo](https://github.com/kudo))
+
+## 3.1.1 — 2023-06-22
+
+_This version does not introduce any user-facing changes._
+
+## 3.1.0 — 2023-06-21
+
+### 📚 3rd party library updates
+
+- Updated `robolectric` to `4.10`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+
+### 🎉 New features
+
 - Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
+- Added support for the new architecture. ([#22607](https://github.com/expo/expo/pull/22607), [#22184](https://github.com/expo/expo/pull/22184) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 
@@ -21,6 +46,7 @@
 ### 💡 Others
 
 - Update onboarding text to be more concise and clear, and fix compat with large text accessibiltiy settings. ([#22712](https://github.com/expo/expo/pull/22712) by [@brentvatne](https://github.com/brentvatne))
+- Bump `babel-plugin-module-resolver` dev dependency. ([#22871](https://github.com/expo/expo/pull/22871) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.0.0 — 2023-05-08
 

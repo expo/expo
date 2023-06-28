@@ -14,7 +14,7 @@
 #include "include/core/SkMatrix.h"
 #include "include/core/SkScalar.h"
 #include "include/core/SkTypes.h"
-#include "include/private/SkNoncopyable.h"
+#include "include/private/base/SkNoncopyable.h"
 
 // NOTE -- This entire header / impl is deprecated, and will be removed from Skia soon.
 //

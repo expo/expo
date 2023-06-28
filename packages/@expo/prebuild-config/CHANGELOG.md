@@ -6,11 +6,45 @@
 
 ### 🎉 New features
 
-- Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 6.2.4 — 2023-06-27
+
+### 💡 Others
+
+- Upgrade `semver` lib. ([#23113](https://github.com/expo/expo/pull/23113) by [@felipemillhouse](https://github.com/felipemillhouse))
+
+## 6.2.3 — 2023-06-24
+
+### 🐛 Bug fixes
+
+- Removed the deprecated `withPackageManifest` plugin to fix build warning on Android. ([#23056](https://github.com/expo/expo/pull/23056) by [@kudo](https://github.com/kudo))
+
+## 6.2.2 — 2023-06-23
+
+### 💡 Others
+
+- Update snapshots. ([#23043](https://github.com/expo/expo/pull/23043) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 6.2.1 — 2023-06-22
+
+### 🛠 Breaking changes
+
+- Generate universal 1024x1024 iOS icon only. Supports [Xcode +14 only](https://developer.apple.com/documentation/xcode-release-notes/xcode-14-release-notes), min iOS 12, min watchOS 4. ([#22833](https://github.com/expo/expo/pull/22833) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 6.2.0 — 2023-06-21
+
+### 💡 Others
+
+- Update `xml2js` version. ([#22872](https://github.com/expo/expo/pull/22872) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 6.1.0 — 2023-06-13
+
+### 🎉 New features
+
+- Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
 
 ## 6.0.2 — 2023-05-08
 

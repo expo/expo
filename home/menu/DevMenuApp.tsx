@@ -3,6 +3,7 @@ import { ThemePreference, ThemeProvider as DCCThemeProvider } from 'expo-dev-cli
 import React from 'react';
 import { AppRegistry, useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { ColorTheme } from '../constants/Colors';
 import Themes from '../constants/Themes';
@@ -36,24 +37,32 @@ function useAppColorScheme(uuid: string): ColorTheme {
   return theme === 'light' ? ColorTheme.LIGHT : ColorTheme.DARK;
 }
 
-class DevMenuRoot extends React.PureComponent<{ task: { [key: string]: any }; uuid: string }, any> {
+class DevMenuRoot extends React.PureComponent<
+  { task: { manifestUrl: string; manifestString: string }; uuid: string },
+  any
+> {
   render() {
     return <DevMenuApp {...this.props} />;
   }
 }
 
-function DevMenuApp(props: { task: { [key: string]: any }; uuid: string }) {
+function DevMenuApp(props: {
+  task: { manifestUrl: string; manifestString: string };
+  uuid: string;
+}) {
   const theme = useAppColorScheme(props.uuid);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <DevMenuBottomSheet uuid={props.uuid}>
-        <DCCThemeProvider themePreference={theme as ThemePreference}>
-          <ThemeProvider value={Themes[theme]}>
-            <DevMenuView {...props} />
-          </ThemeProvider>
-        </DCCThemeProvider>
-      </DevMenuBottomSheet>
+      <SafeAreaProvider>
+        <DevMenuBottomSheet uuid={props.uuid}>
+          <DCCThemeProvider themePreference={theme as ThemePreference}>
+            <ThemeProvider value={Themes[theme]}>
+              <DevMenuView {...props} />
+            </ThemeProvider>
+          </DCCThemeProvider>
+        </DevMenuBottomSheet>
+      </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 }

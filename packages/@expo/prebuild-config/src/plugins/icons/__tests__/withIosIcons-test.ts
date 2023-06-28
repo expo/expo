@@ -4,7 +4,7 @@ import * as path from 'path';
 
 import rnFixture from '../../__tests__/fixtures/react-native-project';
 import { getDirFromFS } from '../../__tests__/getDirFromFS';
-import { getIcons, ICON_CONTENTS, setIconsAsync } from '../withIosIcons';
+import { getIcons, setIconsAsync } from '../withIosIcons';
 
 const fsReal = jest.requireActual('fs') as typeof fs;
 
@@ -52,10 +52,6 @@ describe('iOS Icons', () => {
   });
 });
 
-const totalPossibleIcons = ICON_CONTENTS.reduce((prev, curr) => {
-  return prev.concat(curr.sizes.reduce((prev, curr) => prev.concat(curr.scales), []));
-}, []).length;
-
 describe('e2e: iOS icons', () => {
   const iconPath = path.resolve(__dirname, '../../__tests__/fixtures/icon.png');
 
@@ -91,10 +87,7 @@ describe('e2e: iOS icons', () => {
       value.startsWith('ios/HelloWorld/Images.xcassets/AppIcon.appiconset/App-Icon')
     );
 
-    expect(icons.length).toBe(14);
-    // Ensure we generate less icons than the possible combos,
-    // this is because the Contents.json lets us reuse icons across platforms.
-    expect(icons.length).toBeLessThan(totalPossibleIcons);
+    expect(icons.length).toBe(1);
 
     // Test the Contents.json file
     const contents = JSON.parse(
@@ -103,6 +96,6 @@ describe('e2e: iOS icons', () => {
     expect(contents.images).toMatchSnapshot();
 
     // Ensure all icons are assigned as expected.
-    expect(contents.images.length).toBe(totalPossibleIcons);
+    expect(contents.images.length).toBe(1);
   });
 });

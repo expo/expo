@@ -16,15 +16,19 @@ public:
 protected:
   void draw(DrawingContext *context) override {
     auto rects = _imageProps->getDerivedValue();
+    auto image = _imageProps->getImage();
+    if (image == nullptr) {
+      return;
+    }
+
     context->getCanvas()->drawImageRect(
-        _imageProps->getImage(), rects->src, rects->dst, SkSamplingOptions(),
+        image, rects->src, rects->dst, SkSamplingOptions(),
         context->getPaint().get(), SkCanvas::kStrict_SrcRectConstraint);
   }
 
   void defineProperties(NodePropsContainer *container) override {
     JsiDomDrawingNode::defineProperties(container);
     _imageProps = container->defineProperty<ImageProps>();
-    _imageProps->require();
   }
 
 private:

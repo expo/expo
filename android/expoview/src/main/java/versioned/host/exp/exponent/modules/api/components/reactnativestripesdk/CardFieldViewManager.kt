@@ -56,6 +56,11 @@ class CardFieldViewManager : SimpleViewManager<CardFieldView>() {
     view.setPlaceHolders(placeholders)
   }
 
+  @ReactProp(name = "disabled")
+  fun setDisabled(view: CardFieldView, isDisabled: Boolean) {
+    view.setDisabled(isDisabled)
+  }
+
   override fun createViewInstance(reactContext: ThemedReactContext): CardFieldView {
     val stripeSdkModule: StripeSdkModule? = reactContext.getNativeModule(StripeSdkModule::class.java)
     val view = CardFieldView(reactContext)

@@ -161,5 +161,31 @@ final class ExpoRequestCdpInterceptorSpec: ExpoSpec {
         }.resume()
       }
     }
+
+
+    it("respect image mimeType to CDP event") {
+      waitUntil(timeout: .seconds(2)) { done in
+        self.session.dataTask(with: URL(string: "https://avatars.githubusercontent.com/u/12504344")!) { (data, response, error) in
+          DispatchQueue.main.async {
+            expect(self.mockDelegate.events.count).to(equal(5))
+
+            // Network.requestWillBeSent
+            // Network.requestWillBeSentExtraInfo
+
+            // Network.responseReceived
+            let json = self.parseJSON(data: self.mockDelegate.events[2])
+            let method = json["method"] as! String
+            let params = json["params"] as! [String: Any]
+            let response = params["response"] as! [String: Any]
+            expect(method).to(equal("Network.responseReceived"))
+            expect(response["status"] as? Int).to(equal(200))
+            expect(response["mimeType"] as? String).to(equal("image/png"))
+            expect(params["type"] as? String).to(equal("Image"))
+
+            done()
+          }
+        }.resume()
+      }
+    }
   }
 }

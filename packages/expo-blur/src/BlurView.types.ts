@@ -9,8 +9,7 @@ export type BlurViewProps = {
   /**
    * A number from `1` to `100` to control the intensity of the blur effect.
    *
-   * You can animate this property using `Animated API` from React Native or using `react-native-reanimated`.
-   * > Animating this property using `Animated API` from React Native with `setNativeDriver: true` does not work.
+   * You can animate this property using `react-native-reanimated`.
    *
    * @default 50
    */

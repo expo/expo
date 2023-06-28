@@ -2,20 +2,30 @@
 
 ## Unpublished
 
-### 📚 3rd party library updates
-
-- Updated `robolectric` to `4.10`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
-
 ### 🛠 Breaking changes
 
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 12.3.1 — 2023-06-27
+
+### 🐛 Bug fixes
+
+- On `iOS`, fixed crash when opening an invalid URL in the web browser. ([#22986](https://github.com/expo/expo/pull/23084) by [@hirbod](https://github.com/hirbod))
+
+## 12.3.0 — 2023-06-21
+
+### 📚 3rd party library updates
+
+- Updated `robolectric` to `4.10`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+
+### 🐛 Bug fixes
+
 - On `iOS` fix browser session being kept alive after view controller is dismissed. ([#22415](https://github.com/expo/expo/pull/22415) by [@alanjhughes](https://github.com/alanjhughes))
 - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 12.2.0 — 2023-05-08
 

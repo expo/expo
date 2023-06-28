@@ -28,6 +28,7 @@ export const expoStart: Command = async (argv) => {
       '--lan': Boolean,
       '--localhost': Boolean,
       '--offline': Boolean,
+      '--go': Boolean,
       // Aliases
       '-h': '--help',
       '-c': '--clear',
@@ -36,6 +37,8 @@ export const expoStart: Command = async (argv) => {
       '-i': '--ios',
       '-w': '--web',
       '-m': '--host',
+      '-d': '--dev-client',
+      '-g': '--go',
       // Alias for adding interop with the Metro docs and RedBox errors.
       '--reset-cache': '--clear',
     },
@@ -47,33 +50,35 @@ export const expoStart: Command = async (argv) => {
       `Start a local dev server for the app`,
       chalk`npx expo start {dim <dir>}`,
       [
-        chalk`<dir>                                  Directory of the Expo project. {dim Default: Current working directory}`,
-        `-a, --android                          Opens your app in Expo Go on a connected Android device`,
-        `-i, --ios                              Opens your app in Expo Go in a currently running iOS simulator on your computer`,
-        `-w, --web                              Opens your app in a web browser`,
+        chalk`<dir>                           Directory of the Expo project. {dim Default: Current working directory}`,
+        `-a, --android                   Open on a connected Android device`,
+        `-i, --ios                       Open in an iOS simulator`,
+        `-w, --web                       Open in a web browser`,
         ``,
-        `-c, --clear                            Clear the bundler cache`,
-        `--max-workers <num>                    Maximum number of tasks to allow Metro to spawn`,
-        `--no-dev                               Bundle in production mode`,
-        `--minify                               Minify JavaScript`,
+        chalk`-d, --dev-client                Launch in a custom native app`,
+        chalk`-g, --go                        Launch in Expo Go`,
         ``,
-        chalk`-m, --host <mode>                      Dev server hosting type. {dim Default: lan}`,
-        chalk`                                       {bold lan}: Use the local network`,
-        chalk`                                       {bold tunnel}: Use any network by tunnel through ngrok`,
-        chalk`                                       {bold localhost}: Connect to the dev server over localhost`,
-        `--tunnel                               Same as --host tunnel`,
-        `--lan                                  Same as --host lan`,
-        `--localhost                            Same as --host localhost`,
+        `-c, --clear                     Clear the bundler cache`,
+        `--max-workers <number>          Maximum number of tasks to allow Metro to spawn`,
+        `--no-dev                        Bundle in production mode`,
+        `--minify                        Minify JavaScript`,
         ``,
-        `--offline                              Skip network requests and use anonymous manifest signatures`,
-        `--https                                Start the dev server with https protocol`,
-        `--scheme <scheme>                      Custom URI protocol to use when launching an app`,
-        chalk`-p, --port <port>                      Port to start the dev server on (does not apply to web or tunnel). {dim Default: 19000}`,
+        chalk`-m, --host <string>             Dev server hosting type. {dim Default: lan}`,
+        chalk`                                {bold lan}: Use the local network`,
+        chalk`                                {bold tunnel}: Use any network by tunnel through ngrok`,
+        chalk`                                {bold localhost}: Connect to the dev server over localhost`,
+        `--tunnel                        Same as --host tunnel`,
+        `--lan                           Same as --host lan`,
+        `--localhost                     Same as --host localhost`,
         ``,
-        chalk`--dev-client                           {yellow Experimental:} Starts the bundler for use with the expo-development-client`,
-        `--force-manifest-type <manifest-type>  Override auto detection of manifest type`,
-        `--private-key-path <path>              Path to private key for code signing. Default: "private-key.pem" in the same directory as the certificate specified by the expo-updates configuration in app.json.`,
-        `-h, --help                             Usage info`,
+        `--offline                       Skip network requests and use anonymous manifest signatures`,
+        `--https                         Start the dev server with https protocol`,
+        `--scheme <scheme>               Custom URI protocol to use when launching an app`,
+        chalk`-p, --port <number>             Port to start the dev server on (does not apply to web or tunnel). {dim Default: 8081}`,
+        ``,
+        chalk`--force-manifest-type <string>  Override auto detection of manifest type. {dim Options: expo-updates, classic}`,
+        chalk`--private-key-path <path>       Path to private key for code signing. {dim Default: "private-key.pem" in the same directory as the certificate specified by the expo-updates configuration in app.json.}`,
+        `-h, --help                      Usage info`,
       ].join('\n')
     );
   }
@@ -82,8 +87,10 @@ export const expoStart: Command = async (argv) => {
   const { resolveOptionsAsync } = await import('./resolveOptions');
   const options = await resolveOptionsAsync(projectRoot, args).catch(logCmdError);
 
-  const { APISettings } = await import('../api/settings');
-  APISettings.isOffline = options.offline;
+  if (options.offline) {
+    const { disableNetwork } = await import('../api/settings');
+    disableNetwork();
+  }
 
   const { startAsync } = await import('./startAsync');
   return startAsync(projectRoot, options, { webOnly: false }).catch(logCmdError);

@@ -1,6 +1,6 @@
 {
   "name": "babel-preset-expo",
-  "version": "9.4.0",
+  "version": "9.5.0",
   "description": "The Babel preset for Expo projects",
   "main": "index.js",
   "files": [
@@ -46,10 +46,11 @@
   },
   "dependencies": {
     "@babel/plugin-proposal-decorators": "^7.12.9",
+    "@babel/plugin-proposal-export-namespace-from": "^7.18.9",
     "@babel/plugin-proposal-object-rest-spread": "^7.12.13",
     "@babel/plugin-transform-react-jsx": "^7.12.17",
     "@babel/preset-env": "^7.20.0",
-    "babel-plugin-module-resolver": "^4.1.0",
+    "babel-plugin-module-resolver": "^5.0.0",
     "babel-plugin-react-native-web": "~0.18.10",
     "metro-react-native-babel-preset": "0.76.5"
   },

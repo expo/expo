@@ -39,11 +39,31 @@ if [[ "$EAS_BUILD_PROFILE" == "release-client" ]]; then
 
   TITLE=""
   if [[ "$EAS_BUILD_PLATFORM" = "android" ]]; then
-    TITLE="Successfull Expo Go release build. Submitting build to the Play Store."
+    TITLE="Successful Expo Go release build. Submitting build to the Play Store."
   elif [[ "$EAS_BUILD_PLATFORM" = "ios" ]]; then
-    TITLE="Successfull Expo Go release build. Submitting build to the TestFlight."
+    TITLE="Successful Expo Go release build. Submitting build to the TestFlight."
   fi
   MESSAGE="Release triggered by: $EAS_BUILD_USERNAME\\nCommit author: $COMMIT_AUTHOR\\n$EAS_BUILD_MESSAGE_PART\\n$GITHUB_MESSAGE_PART"
 
   notify_slack "$TITLE" "$MESSAGE"
+fi
+
+if [[ "$EAS_BUILD_PROFILE" == "publish-client" ]]; then
+  SLUG="publish-client"
+  COMMIT_HASH="$(git rev-parse HEAD)"
+  COMMIT_AUTHOR="$(git log --pretty=format:"%an - %ae" | head -n 1)"
+
+  EAS_BUILD_MESSAGE_PART="EAS Build: <https://expo.dev/accounts/expo-ci/projects/$SLUG/builds/$EAS_BUILD_ID|$EAS_BUILD_ID>"
+  GITHUB_MESSAGE_PART="GitHub: <https://github.com/expo/expo/commit/$COMMIT_HASH|$COMMIT_HASH>"
+
+  MESSAGE="Release triggered by: $EAS_BUILD_USERNAME\\nCommit author: $COMMIT_AUTHOR\\n$EAS_BUILD_MESSAGE_PART\\n$GITHUB_MESSAGE_PART"
+
+  source $ROOT_DIR/secrets/expotools.env
+  if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
+    et eas android-apk-publish
+    notify_slack "Successful Expo Go Android APK build. Published to S3 and updated staging versions endpoint" "$MESSAGE"
+  elif [[ "$EAS_BUILD_PLATFORM" == "ios" ]]; then
+    et eas ios-simulator-publish
+    notify_slack "Successful Expo Go iOS simulator build. Published to S3 and updated staging versions endpoint" "$MESSAGE"
+  fi
 fi
