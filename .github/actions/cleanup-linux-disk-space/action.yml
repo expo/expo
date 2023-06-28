@@ -1,5 +1,5 @@
 name: 'Cleanup GitHub Linux Runner Disk Space'
-description: 'Cleanup unused preinstalled packages on the GitHub Ubuntu runners"
+description: 'Cleanup unused preinstalled packages on the GitHub Ubuntu runners'
 
 runs:
   using: 'composite'
