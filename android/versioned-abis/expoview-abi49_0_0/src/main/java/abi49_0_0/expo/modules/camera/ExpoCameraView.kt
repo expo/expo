@@ -165,7 +165,7 @@ class ExpoCameraView(
       val path = FileSystemUtils.generateOutputPath(cacheDirectory, "Camera", ".mp4")
       val profile = getCamcorderProfile(cameraView.cameraId, options.quality)
       options.videoBitrate?.let { profile.videoBitRate = it }
-      if (cameraView.record(path, options.maxDuration * 1000, options.maxFileSize, !options.muteValue, profile)) {
+      if (cameraView.record(path, options.maxDuration * 1000, options.maxFileSize, !options.mute, profile)) {
         videoRecordedPromise = promise
       } else {
         promise.reject("E_RECORDING_FAILED", "Starting video recording failed. Another recording might be in progress.", null)
