@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.10.4 — 2023-06-28
+
+### 🐛 Bug fixes
+
 - Avoid changing required dependency versions when prebuilding. ([#23146](https://github.com/expo/expo/pull/23146) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
