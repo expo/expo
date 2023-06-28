@@ -9,7 +9,7 @@ runs:
       run: |
         echo 'Disk space before cleanup'
         df -aH
-        sudo apt-get remove -y --purge '^mysql-.*' '^mongodb-.*' '^postgresql-.*' ''^dotnet-.*' '^php.*-.*'
+        sudo apt-get remove -y --purge '^mysql-.*' '^mongodb-.*' '^postgresql-.*' '^dotnet-.*' '^php.*-.*'
         sudo apt-get autoremove -y
         echo 'Disk space after cleanup'
         df -aH
