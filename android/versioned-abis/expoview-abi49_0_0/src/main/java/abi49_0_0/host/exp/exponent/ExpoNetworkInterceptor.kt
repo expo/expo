@@ -27,7 +27,7 @@ class ExpoNetworkInterceptor : Closeable, ExpoRequestCdpInterceptor.Delegate {
   }
 
   fun onResume(reactInstanceManager: ReactInstanceManager) {
-    if (!isStarted) {
+    if (!isStarted || !reactInstanceManager.devSupportManager.devSupportEnabled) {
       return
     }
     this.reactInstanceManager = reactInstanceManager
