@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.18.5 — 2023-06-28
+
+### 💡 Others
+
 - README.md changes. ([#23142](https://github.com/expo/expo/pull/23142) by [@douglowder](https://github.com/douglowder))
 
 ## 0.18.4 — 2023-06-27
