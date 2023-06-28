@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View } from 'react-native-web';
 
 import { ImageNativeProps, ImageSource, ImageLoadEventData } from './Image.types';
 import AnimationManager, { AnimationManagerNode } from './web/AnimationManager';
