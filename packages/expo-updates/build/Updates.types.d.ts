@@ -28,15 +28,15 @@ export type ClassicManifest = typeof Constants.manifest;
 export type Manifest = ClassicManifest | typeof Constants.manifest2;
 type UpdateCheckResultRollBackToEmbedded = {
     /**
-     * This property is false for a roll back update.
+     * Whether an update is available. This property is false for a roll back update.
      */
     isAvailable: false;
     /**
-     * No manifest, since this is a roll back update.
+     * The manifest of the update when available.
      */
     manifest: undefined;
     /**
-     * Signifies that a roll back update is available.
+     * Whether a roll back to embedded update is available.
      */
     isRollBackToEmbedded: true;
 };
@@ -45,15 +45,15 @@ type UpdateCheckResultRollBackToEmbedded = {
  */
 export type UpdateCheckResultSuccess = {
     /**
-     * Signifies that an update is available.
+     * Whether an update is available. This property is false for a roll back update.
      */
     isAvailable: true;
     /**
-     * The manifest of the available update.
+     * The manifest of the update when available.
      */
     manifest: Manifest;
     /**
-     * This property is false for a new update.
+     * Whether a roll back to embedded update is available.
      */
     isRollBackToEmbedded: false;
 };
@@ -62,15 +62,15 @@ export type UpdateCheckResultSuccess = {
  */
 export type UpdateCheckResultFailure = {
     /**
-     * Signifies that the app is already running the latest available update.
+     * Whether an update is available. This property is false for a roll back update.
      */
     isAvailable: false;
     /**
-     * No manifest, since the app is already running the latest available version.
+     * The manifest of the update when available.
      */
     manifest: undefined;
     /**
-     * Signifies that no roll back update is available.
+     * Whether a roll back to embedded update is available.
      */
     isRollBackToEmbedded: false;
 };
@@ -83,41 +83,59 @@ export type UpdateCheckResult = UpdateCheckResultRollBackToEmbedded | UpdateChec
  */
 export type UpdateFetchResultSuccess = {
     /**
-     * Signifies that the fetched bundle is new (that is, a different version than what's currently
-     * running).
+     * Whether the fetched update is new (that is, a different version than what's currently running).
+     * False when roll back to embedded is true.
      */
     isNew: true;
     /**
-     * The manifest of the newly downloaded update.
+     * The manifest of the fetched update.
      */
     manifest: Manifest;
+    /**
+     * Whether the fetched update is a roll back to the embedded update.
+     */
+    isRollBackToEmbedded: false;
 };
 /**
  * The failed result of fetching a new update.
  */
 export type UpdateFetchResultFailure = {
     /**
-     * Signifies that the fetched bundle is the same as version which is currently running.
+     * Whether the fetched update is new (that is, a different version than what's currently running).
+     * False when roll back to embedded is true.
      */
     isNew: false;
     /**
-     * No manifest, since there is no update.
+     * The manifest of the fetched update.
      */
     manifest: undefined;
+    /**
+     * Whether the fetched update is a roll back to the embedded update.
+     */
+    isRollBackToEmbedded: false;
 };
 /**
- * The rollback to embedded result of fetching a new update.
+ * The roll back to embedded result of fetching a new update.
  */
-type UpdateFetchResultRollbackToEmbedded = {
+type UpdateFetchResultRollBackToEmbedded = {
     /**
-     * Signifies that the update was a roll back to the embedded update.
+     * Whether the fetched update is new (that is, a different version than what's currently running).
+     * False when roll back to embedded is true.
+     */
+    isNew: false;
+    /**
+     * The manifest of the fetched update.
+     */
+    manifest: undefined;
+    /**
+     * Whether the fetched update is a roll back to the embedded update.
      */
     isRollBackToEmbedded: true;
 };
 /**
  * The result of fetching a new update.
  */
-export type UpdateFetchResult = UpdateFetchResultSuccess | UpdateFetchResultFailure | UpdateFetchResultRollbackToEmbedded;
+export type UpdateFetchResult = UpdateFetchResultSuccess | UpdateFetchResultFailure | UpdateFetchResultRollBackToEmbedded;
 /**
  * An object that is passed into each event listener when an auto-update check occurs.
  */
