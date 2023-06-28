@@ -124,7 +124,8 @@ describe('Basic tests', () => {
       hash,
       'test-update-1-key',
       bundleFilename,
-      []
+      [],
+      projectRoot
     );
 
     Server.start(Update.serverPort, protocolVersion);
@@ -168,7 +169,8 @@ describe('Basic tests', () => {
       hash,
       'test-update-1-key',
       bundleFilename,
-      []
+      [],
+      projectRoot
     );
 
     Server.start(Update.serverPort, protocolVersion);
@@ -229,7 +231,8 @@ describe('Basic tests', () => {
       hash,
       'test-update-2-key',
       bundleFilename,
-      assets
+      assets,
+      projectRoot
     );
 
     Server.start(Update.serverPort, protocolVersion);
@@ -306,7 +309,8 @@ describe('Basic tests', () => {
       hash,
       'test-update-2-key',
       bundleFilename,
-      assets
+      assets,
+      projectRoot
     );
 
     Server.start(Update.serverPort, protocolVersion);
@@ -345,7 +349,8 @@ describe('Basic tests', () => {
       hash,
       'test-update-old-key',
       bundleFilename,
-      []
+      [],
+      projectRoot
     );
 
     Server.start(Update.serverPort, protocolVersion);
@@ -384,7 +389,8 @@ describe('Basic tests', () => {
       hash,
       'test-update-3-key',
       bundleFilename,
-      []
+      [],
+      projectRoot
     );
 
     Server.start(Update.serverPort, protocolVersion);
@@ -468,7 +474,8 @@ describe('JS API tests', () => {
       hash,
       'test-update-1-key',
       bundleFilename,
-      []
+      [],
+      projectRoot
     );
     await device.installApp();
     await device.launchApp({
@@ -522,8 +529,11 @@ describe('JS API tests', () => {
       hash,
       'test-update-1-key',
       bundleFilename,
-      []
+      [],
+      projectRoot
     );
+
+    console.warn(`signed manifest = ${JSON.stringify(manifest, null, 2)}`);
 
     // Launch app
     await device.installApp();
@@ -544,6 +554,11 @@ describe('JS API tests', () => {
     console.warn(`isRollback = ${isRollback}`);
     console.warn(`latestManifestId = ${latestManifestId}`);
     console.warn(`downloadedManifestId = ${downloadedManifestId}`);
+
+    const updatesExpoConfigEmbeddedString = await testElementValueAsync('updates.expoConfig');
+    const constantsExpoConfigEmbeddedString = await testElementValueAsync('constants.expoConfig');
+    console.warn(`updatesExpoConfigEmbedded = ${updatesExpoConfigEmbeddedString}`);
+    console.warn(`constantsExpoConfigEmbedded = ${constantsExpoConfigEmbeddedString}`);
 
     // Now serve a manifest
     Server.start(Update.serverPort, protocolVersion);
@@ -605,6 +620,11 @@ describe('JS API tests', () => {
     console.warn(`latestManifestId4 = ${latestManifestId4}`);
     console.warn(`downloadedManifestId4 = ${downloadedManifestId4}`);
 
+    const updatesExpoConfigUpdateString = await testElementValueAsync('updates.expoConfig');
+    const constantsExpoConfigUpdateString = await testElementValueAsync('constants.expoConfig');
+    console.warn(`updatesExpoConfigUpdate = ${updatesExpoConfigUpdateString}`);
+    console.warn(`constantsExpoConfigUpdate = ${constantsExpoConfigUpdateString}`);
+
     // Now serve a rollback
     const rollbackDirective = Update.getRollbackDirective(new Date());
     await Server.serveSignedDirective(rollbackDirective, projectRoot);
@@ -623,7 +643,6 @@ describe('JS API tests', () => {
     console.warn(`isRollback5 = ${isRollback5}`);
     console.warn(`latestManifestId5 = ${latestManifestId5}`);
     console.warn(`downloadedManifestId5 = ${downloadedManifestId5}`);
-
     {
       const logEntries: any[] = await readLogEntriesAsync();
       console.warn(
@@ -634,6 +653,32 @@ describe('JS API tests', () => {
       );
       await clearLogEntriesAsync();
     }
+
+    // Terminate and relaunch app, we should be running the original bundle again, and back to the default state
+    await device.terminateApp();
+    await device.launchApp();
+    await waitForAppToBecomeVisible();
+
+    const isUpdatePending6 = await testElementValueAsync('state.isUpdatePending');
+    const isUpdateAvailable6 = await testElementValueAsync('state.isUpdateAvailable');
+    const latestManifestId6 = await testElementValueAsync('state.latestManifest.id');
+    const downloadedManifestId6 = await testElementValueAsync('state.downloadedManifest.id');
+    const isRollback6 = await testElementValueAsync('state.isRollback');
+
+    console.warn(`isUpdatePending6 = ${isUpdatePending6}`);
+    console.warn(`isUpdateAvailable6 = ${isUpdateAvailable6}`);
+    console.warn(`isRollback6 = ${isRollback6}`);
+    console.warn(`latestManifestId6 = ${latestManifestId6}`);
+    console.warn(`downloadedManifestId6 = ${downloadedManifestId6}`);
+
+    const updatesExpoConfigRollbackString = await testElementValueAsync('updates.expoConfig');
+    const constantsExpoConfigRollbackString = await testElementValueAsync('constants.expoConfig');
+    console.warn(`updatesExpoConfigRollback = ${updatesExpoConfigRollbackString}`);
+    console.warn(`constantsExpoConfigRollback = ${constantsExpoConfigRollbackString}`);
+
+    // Unpack expo config values and check them
+    const updatesExpoConfigEmbedded = JSON.parse(updatesExpoConfigEmbeddedString);
+    jestExpect(updatesExpoConfigEmbedded).not.toBeNull();
 
     // Verify correct behavior
     // On launch
@@ -683,7 +728,8 @@ describe('JS API tests', () => {
       hash,
       'test-update-1-key',
       bundleFilename,
-      []
+      [],
+      projectRoot
     );
     // Launch app
     await device.installApp();
@@ -930,7 +976,8 @@ describe('Asset deletion recovery tests', () => {
       bundleHash,
       'test-assets-bundle',
       bundleFilename,
-      assets
+      assets,
+      projectRoot
     );
 
     // Install the app and launch it so that it downloads the new update we're hosting
