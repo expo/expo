@@ -2344,7 +2344,7 @@ PODS:
   - EXTaskManager (11.3.0):
     - ExpoModulesCore
     - UMAppLoader
-  - EXUpdates (0.18.4):
+  - EXUpdates (0.18.5):
     - ASN1Decoder (~> 1.8)
     - EASClient
     - EXManifests
@@ -2354,7 +2354,7 @@ PODS:
     - RCT-Folly (= 2021.07.22.00)
     - ReachabilitySwift
     - React-Core
-  - EXUpdates/Tests (0.18.4):
+  - EXUpdates/Tests (0.18.5):
     - ASN1Decoder (~> 1.8)
     - EASClient
     - EXManifests
@@ -4949,7 +4949,7 @@ SPEC CHECKSUMS:
   EXSplashScreen: 76a140851af574dfe1d22d7ec189cd183f28ab49
   EXStructuredHeaders: 324cc3130571d2696357fafd8be7fd9a0b5fdf6e
   EXTaskManager: f1730c315eb6fe457a3a2ee4ed899a51d717f302
-  EXUpdates: 0c0c896ef50a67ea38f3348fe0053b4e205dcc69
+  EXUpdates: fa9eed08c743d34b18f21f526893645ff16eb246
   EXUpdatesInterface: 65a425322c67e3c96952b47ac110df3fef65c6b3
   FBAEMKit: c7efe06720a8b15b1d25b68921ba46dee20996e0
   FBAudienceNetwork: e0fcc9091fced34910ed0b6da06f129db46ac9e6
