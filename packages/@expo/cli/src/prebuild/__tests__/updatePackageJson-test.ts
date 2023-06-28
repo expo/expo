@@ -137,11 +137,16 @@ describe(updatePkgDependencies, () => {
     expect(pkg.dependencies).toStrictEqual({
       ...requiredPackages,
       'react-native': 'version-from-project', // add-only package, do not overwrite
-      expo: 'version-from-template',
+      expo: 'version-from-project',
     });
     expect(Log.warn).toBeCalledWith(
       expect.stringContaining(
-        `instead of recommended ${chalk.bold('react-native@version-from-template-required-1')}`
+        `instead of recommended ${[
+          `expo@version-from-template`,
+          `react-native@version-from-template-required-1`,
+        ]
+          .map((dep) => chalk.bold(dep))
+          .join(', ')}`
       )
     );
   });
