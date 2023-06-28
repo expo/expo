@@ -1,0 +1,15 @@
+name: 'Cleanup GitHub Linux Runner Disk Space'
+description: 'Cleanup unused preinstalled packages on the GitHub Ubuntu runners"
+
+runs:
+  using: 'composite'
+  steps:
+    - name: '🧹 Cleanup preinstalled packages'
+      shell: bash
+      run: |
+        echo 'Disk space before cleanup'
+        df -aH
+        sudo apt-get remove -y --purge '^mysql-.*' '^mongodb-.*' '^postgresql-.*' ''^dotnet-.*' '^php.*-.*'
+        sudo apt-get autoremove -y
+        echo 'Disk space after cleanup'
+        df -aH
