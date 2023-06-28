@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Support discriminated unions for JS API method result types. ([#23173](https://github.com/expo/expo/pull/23173) by [@wschurman](https://github.com/wschurman))
+
 ### 💡 Others
 
 ## 0.18.5 — 2023-06-28
