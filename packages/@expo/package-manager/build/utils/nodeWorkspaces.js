@@ -3,7 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.findPnpmWorkspaceRoot = exports.findYarnOrNpmWorkspaceRoot = exports.PNPM_WORKSPACE_FILE = exports.PNPM_LOCK_FILE = exports.YARN_LOCK_FILE = exports.NPM_LOCK_FILE = void 0;
+exports.findRushWorkspaceRoot = exports.findPnpmWorkspaceRoot = exports.findYarnOrNpmWorkspaceRoot = exports.RUSH_WORKSPACE_FILE = exports.PNPM_WORKSPACE_FILE = exports.PNPM_LOCK_FILE = exports.YARN_LOCK_FILE = exports.NPM_LOCK_FILE = void 0;
+const rush_sdk_1 = require("@rushstack/rush-sdk");
 const find_up_1 = require("find-up");
 const find_yarn_workspace_root_1 = __importDefault(require("find-yarn-workspace-root"));
 const fs_1 = __importDefault(require("fs"));
@@ -14,6 +15,7 @@ exports.NPM_LOCK_FILE = 'package-lock.json';
 exports.YARN_LOCK_FILE = 'yarn.lock';
 exports.PNPM_LOCK_FILE = 'pnpm-lock.yaml';
 exports.PNPM_WORKSPACE_FILE = 'pnpm-workspace.yaml';
+exports.RUSH_WORKSPACE_FILE = 'rush.json';
 /** Wraps `find-yarn-workspace-root` and guards against having an empty `package.json` file in an upper directory. */
 function findYarnOrNpmWorkspaceRoot(projectRoot) {
     try {
@@ -58,4 +60,11 @@ function findPnpmWorkspaceRoot(projectRoot) {
     return null;
 }
 exports.findPnpmWorkspaceRoot = findPnpmWorkspaceRoot;
+function findRushWorkspaceRoot(projectRoot) {
+    const rushJsonLocation = rush_sdk_1.RushConfiguration.tryFindRushJsonLocation({
+        startingFolder: projectRoot,
+    });
+    return rushJsonLocation ? path_1.default.dirname(rushJsonLocation) : null;
+}
+exports.findRushWorkspaceRoot = findRushWorkspaceRoot;
 //# sourceMappingURL=nodeWorkspaces.js.map
