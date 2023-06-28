@@ -20,14 +20,13 @@ import com.raizlabs.android.dbflow.config.FlowConfig
 import com.raizlabs.android.dbflow.config.FlowManager
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.SingletonModule
-import expo.modules.kotlin.devtools.ExpoNetworkInspectOkHttpAppInterceptor
-import expo.modules.kotlin.devtools.ExpoNetworkInspectOkHttpNetworkInterceptor
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.*
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.kernel.ExponentUrls
 import host.exp.exponent.kernel.KernelConstants
+import host.exp.exponent.kernel.KernelNetworkInterceptor
 import host.exp.exponent.network.ExpoResponse
 import host.exp.exponent.network.ExponentHttpClient.SafeCallback
 import host.exp.exponent.network.ExponentNetwork
@@ -416,8 +415,8 @@ class Exponent private constructor(val context: Context, val application: Applic
         .connectTimeout(HttpUrlConnectionNetworkFetcher.HTTP_DEFAULT_TIMEOUT.toLong(), TimeUnit.MILLISECONDS)
         .readTimeout(0, TimeUnit.MILLISECONDS)
         .writeTimeout(0, TimeUnit.MILLISECONDS)
-        .addInterceptor(ExpoNetworkInspectOkHttpAppInterceptor())
-        .addNetworkInterceptor(ExpoNetworkInspectOkHttpNetworkInterceptor())
+        .addInterceptor(KernelNetworkInterceptor.okhttpAppInterceptorProxy)
+        .addNetworkInterceptor(KernelNetworkInterceptor.okhttpNetworkInterceptorProxy)
         .build()
       val imagePipelineConfig = OkHttpImagePipelineConfigFactory.newBuilder(context, okHttpClient).build()
       Fresco.initialize(context, imagePipelineConfig)
