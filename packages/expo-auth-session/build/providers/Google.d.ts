@@ -1,6 +1,9 @@
 import { AuthRequest, AuthRequestConfig, AuthRequestPromptOptions, AuthSessionRedirectUriOptions, AuthSessionResult, DiscoveryDocument } from '../AuthSession';
 import { ProviderAuthRequestConfig } from './Provider.types';
 export declare const discovery: DiscoveryDocument;
+/**
+ * @deprecated See [Google authentication](/guides/google-authentication/).
+ */
 export interface GoogleAuthRequestConfig extends ProviderAuthRequestConfig {
     /**
      * If the user's email address is known ahead of time, it can be supplied to be the default option.
