@@ -10,6 +10,7 @@ const originalEnv = process.env;
 
 function resetEnv() {
   process.env = originalEnv;
+  delete process.env.EXPO_NO_DOTENV;
 }
 
 beforeEach(() => {
@@ -20,8 +21,13 @@ afterAll(() => {
 });
 
 describe(getFiles, () => {
+  const originalError = console.error;
   beforeEach(() => {
+    console.error = jest.fn();
     resetEnv();
+  });
+  afterEach(() => {
+    console.error = originalError;
   });
 
   it(`gets development files`, () => {
@@ -44,12 +50,11 @@ describe(getFiles, () => {
     // important
     expect(getFiles('test')).toEqual(['.env.test.local', '.env.test', '.env']);
   });
-  const originalError = console.error;
-  beforeEach(() => {
-    console.error = jest.fn();
-  });
-  afterEach(() => {
-    console.error = originalError;
+  it(`gets no files when dotenv is disabled`, () => {
+    process.env.EXPO_NO_DOTENV = '1';
+    ['development', 'production', 'test'].forEach((mode) => {
+      expect(getFiles(mode)).toEqual([]);
+    });
   });
 
   it(`throws if NODE_ENV is not set`, () => {
@@ -170,6 +175,21 @@ describe('_getForce', () => {
     expect(envRuntime._getForce('/')).toEqual({
       FOO: 'default-local',
     });
+  });
+
+  it(`skips modifying the environment with dotenv if disabled with EXPO_NO_DOTENV`, () => {
+    delete process.env.FOO;
+    process.env.EXPO_NO_DOTENV = '1';
+    const envRuntime = createControlledEnvironment();
+    vol.fromJSON(
+      {
+        '.env': 'FOO=default',
+        '.env.local': 'FOO=default-local',
+      },
+      '/'
+    );
+
+    expect(envRuntime._getForce('/')).toEqual({});
   });
 
   it(`does not return the env var if the initial the value of the environment variable`, () => {

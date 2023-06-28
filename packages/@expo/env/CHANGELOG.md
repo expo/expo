@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add ability to fully disable dotenv loading with `EXPO_NO_DOTENV` environment variable.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

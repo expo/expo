@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Silence dotenv file watching warnings.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
