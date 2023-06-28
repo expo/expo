@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
-import { intersects as semverIntersects } from 'semver';
+import { intersects as semverIntersects, Range as SemverRange } from 'semver';
 
 import * as Log from '../log';
 import { isModuleSymlinked } from '../utils/isModuleSymlinked';
@@ -114,6 +114,7 @@ export function updatePkgDependencies(
   }: {
     pkg: PackageJSONConfig;
     templatePkg: PackageJSONConfig;
+    /** @deprecated Required packages are not overwritten, only added when missing */
     skipDependencyUpdate?: string[];
   }
 ): DependenciesModificationResults {
@@ -129,9 +130,7 @@ export function updatePkgDependencies(
     ...pkg.dependencies,
   });
 
-  const addWhenMissingDependencies = ['react', 'react-native'].filter(
-    (depKey) => !!defaultDependencies[depKey]
-  );
+  // These dependencies are only added, not overwritten from the project
   const requiredDependencies = ['expo', 'expo-splash-screen', 'react', 'react-native'].filter(
     (depKey) => !!defaultDependencies[depKey]
   );
@@ -154,27 +153,15 @@ export function updatePkgDependencies(
         continue;
       }
 
-      // Ensure the package only needs to be added when missing
-      if (addWhenMissingDependencies.includes(dependenciesKey)) {
-        let projectHasRecommended: boolean | null = null;
-        // Check if the version intersects with the recommended versions
-        try {
-          projectHasRecommended = semverIntersects(
-            pkg.dependencies[dependenciesKey],
-            String(defaultDependencies[dependenciesKey])
-          );
-        } catch {
-          // If the version is invalid, just warn the user
-        }
-        // When the versions can't be parsed `null`, or does not intersect `false`, warn the user
-        if (projectHasRecommended !== true) {
-          nonRecommendedPackages.push(`${dependenciesKey}@${defaultDependencies[dependenciesKey]}`);
-        }
-        // Do not modify add-only dependencies
-        continue;
+      // Warn users for outdated dependencies when prebuilding
+      const hasRecommendedVersion = versionRangesIntersect(
+        pkg.dependencies[dependenciesKey],
+        String(defaultDependencies[dependenciesKey])
+      );
+      if (!hasRecommendedVersion) {
+        nonRecommendedPackages.push(`${dependenciesKey}@${defaultDependencies[dependenciesKey]}`);
       }
     }
-    combinedDependencies[dependenciesKey] = defaultDependencies[dependenciesKey];
   }
 
   if (symlinkedPackages.length) {
@@ -279,4 +266,16 @@ export function hashForDependencyMap(deps: DependenciesMap = {}): string {
 export function createFileHash(contents: string): string {
   // this doesn't need to be secure, the shorter the better.
   return crypto.createHash('sha1').update(contents).digest('hex');
+}
+
+/**
+ * Determine if two semver ranges are overlapping or intersecting.
+ * This is a safe version of `semver.intersects` that does not throw.
+ */
+function versionRangesIntersect(rangeA: string | SemverRange, rangeB: string | SemverRange) {
+  try {
+    return semverIntersects(rangeA, rangeB);
+  } finally {
+    return false;
+  }
 }
