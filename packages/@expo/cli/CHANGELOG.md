@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add error message for static rendering without Expo Router.
+- Add error message for static rendering without Expo Router. ([#23170](https://github.com/expo/expo/pull/23170) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
