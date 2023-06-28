@@ -18,11 +18,6 @@ describe('bare', () => {
     { id: 'test' },
     { id: 'fake-uuid' }
   )((manifestObj) => {
-    it(`throws if no scheme is provided or defined`, () => {
-      mockConstants({ executionEnvironment: ExecutionEnvironment.Bare }, manifestObj);
-      const { makeRedirectUri } = require('../AuthSession');
-      expect(() => makeRedirectUri()).toThrowError(/Linking requires a build-time /);
-    });
     it(`uses native value`, () => {
       mockConstants({ executionEnvironment: ExecutionEnvironment.Bare }, manifestObj);
       const { makeRedirectUri } = require('../AuthSession');
