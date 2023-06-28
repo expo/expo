@@ -5,8 +5,10 @@ export interface SrcSetSource extends ImageSource {
     uri: string;
     type: 'srcset';
 }
-export default function useSourceSelection(sources?: ImageSource[], responsivePolicy?: ImageProps['responsivePolicy'], measurementCallback?: (target: HTMLElement, size: DOMRect) => void): {
+type UseSourceSelectionReturn = {
     containerRef: (element: HTMLDivElement) => void;
     source: ImageSource | SrcSetSource | null;
 };
+export default function useSourceSelection(sources?: ImageSource[], responsivePolicy?: ImageProps['responsivePolicy'], measurementCallback?: (target: HTMLElement, size: DOMRect) => void): UseSourceSelectionReturn;
+export {};
 //# sourceMappingURL=useSourceSelection.d.ts.map
