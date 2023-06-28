@@ -9,7 +9,7 @@ runs:
       run: |
         echo 'Disk space before cleanup'
         df -aH
-        sudo apt-get remove -y --no-upgrade --purge '^mysql-.*' '^mongodb-.*' '^postgresql-.*' '^dotnet-.*' '^php.*-.*' 'mono-complete' 
+        sudo apt-get remove -y --purge '^mysql-.*' '^mongodb-.*' '^postgresql-.*' '^aspnetcore-*' '^dotnet-.*' '^php.*-.*' 'mono-complete' 
         sudo apt-get autoremove -y
         sudo rm -rf /usr/share/dotnet
         echo 'Disk space after cleanup'
