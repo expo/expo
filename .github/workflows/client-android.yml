@@ -45,6 +45,8 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: true
+      - name: 🧹 Cleanup GitHub Linux runner disk space
+        uses: ./.github/actions/cleanup-linux-disk-space
       - name: 🔨 Use JDK 11
         uses: actions/setup-java@v3
         with:
