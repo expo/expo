@@ -24,10 +24,10 @@ abstract class DevLauncherPlugin : Plugin<Project> {
   override fun apply(project: Project) {
     val enableNetworkInspector = project.properties["EX_DEV_CLIENT_NETWORK_INSPECTOR"]?.toString()?.toBoolean()
     if (enableNetworkInspector != null && enableNetworkInspector) {
-      // When expo-network-addons is installed, we will let it to do the bytecode manipulation
+      // When expo-network-addons is installed, we will let it do the bytecode manipulation
       val networkAddonsInstalled = project.findProject(":expo-network-addons") != null
       if (networkAddonsInstalled) {
-        logger.warn("[DevLauncherPlugin] expo-network-addons is installed and will take the plugin's ownership")
+        logger.warn("[DevLauncherPlugin] expo-network-addons is installed and will take this plugin's responsibilities")
         return
       }
 
@@ -79,7 +79,7 @@ abstract class DevLauncherPlugin : Plugin<Project> {
   class OkHttpClientCustomBuildMethod(api: Int, methodVisitor: MethodVisitor) : MethodVisitor(api, methodVisitor) {
     override fun visitCode() {
       //
-      // NOTE: The following code should be in sync with **packages/expo-network-addons/expo-network-addons-gradle-plugin/src/main/kotlin/expo/modules/networkaddons/NetworkAddonsPlugin.kt**
+      // NOTE: The following code should be kept in sync with **packages/expo-network-addons/expo-network-addons-gradle-plugin/src/main/kotlin/expo/modules/networkaddons/NetworkAddonsPlugin.kt**
       //
 
       // opcodes for `this.addInterceptor(expo.modules.kotlin.devtools.ExpoNetworkInspectOkHttpAppInterceptor())`

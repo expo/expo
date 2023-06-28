@@ -98,7 +98,7 @@ abstract class NetworkAddonsPlugin : Plugin<Project> {
 
       if (parameters.debugVariant.getOrElse(false) && parameters.devLauncherInstalled.getOrElse(false)) {
         //
-        // NOTE: The following code should be in sync with **packages/expo-dev-launcher/expo-dev-launcher-gradle-plugin/src/main/kotlin/expo/modules/devlauncher/DevLauncherPlugin.kt**
+        // NOTE: The following code should be kept in sync with **packages/expo-dev-launcher/expo-dev-launcher-gradle-plugin/src/main/kotlin/expo/modules/devlauncher/DevLauncherPlugin.kt**
         //
 
         // opcodes for `this.addInterceptor(expo.modules.kotlin.devtools.ExpoNetworkInspectOkHttpAppInterceptor())`
