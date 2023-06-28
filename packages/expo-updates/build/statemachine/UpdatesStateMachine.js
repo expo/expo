@@ -18,7 +18,7 @@ const checkCompleteAvailableAction = assign({
     checkError: () => undefined,
     isChecking: () => false,
     isUpdateAvailable: () => true,
-    isRollback: (context, event) => event.body?.isRollBackToEmbedded,
+    isRollback: (context, event) => Boolean(event.body?.isRollBackToEmbedded),
 });
 const checkCompleteUnavailableAction = assign({
     latestManifest: () => undefined,
@@ -28,6 +28,7 @@ const checkCompleteUnavailableAction = assign({
     isRollback: () => false,
 });
 const checkErrorAction = assign({
+    // @ts-ignore: FIXME
     isChecking: () => false,
     checkError: (event) => new Error(event.body?.message || 'checkError'),
 });
@@ -40,6 +41,7 @@ const downloadCompleteAction = assign({
     isUpdateAvailable: (context, event) => event.body?.manifest !== undefined || context.isUpdateAvailable,
 });
 const downloadErrorAction = assign({
+    // @ts-ignore: FIXME
     downloadError: (event) => new Error(event.body?.message || 'downloadError'),
     isDownloading: () => false,
 });

@@ -55,7 +55,7 @@ const checkCompleteAvailableAction = assign({
   isChecking: () => false,
   isUpdateAvailable: () => true,
   isRollback: (context: UpdatesStateMachineContext, event: UpdatesStateMachineEvent) =>
-    event.body?.isRollBackToEmbedded,
+    Boolean(event.body?.isRollBackToEmbedded),
 });
 
 const checkCompleteUnavailableAction = assign({
@@ -67,6 +67,7 @@ const checkCompleteUnavailableAction = assign({
 });
 
 const checkErrorAction = assign({
+  // @ts-ignore: FIXME
   isChecking: () => false,
   checkError: (event: UpdatesStateMachineEvent) => new Error(event.body?.message || 'checkError'),
 });
@@ -85,6 +86,7 @@ const downloadCompleteAction = assign({
 });
 
 const downloadErrorAction = assign({
+  // @ts-ignore: FIXME
   downloadError: (event: UpdatesStateMachineEvent) =>
     new Error(event.body?.message || 'downloadError'),
   isDownloading: () => false,
