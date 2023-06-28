@@ -1974,7 +1974,7 @@ PODS:
     - RCT-Folly
   - ABI49_0_0react-native-segmented-control (2.4.1):
     - ABI49_0_0React-Core
-  - ABI49_0_0react-native-skia (0.1.195):
+  - ABI49_0_0react-native-skia (0.1.196):
     - ABI49_0_0React
     - ABI49_0_0React-callinvoker
     - ABI49_0_0React-Core
@@ -4853,7 +4853,7 @@ SPEC CHECKSUMS:
   ABI49_0_0react-native-pager-view: 3085538cedbfd658da66107d636e09a6fa713574
   ABI49_0_0react-native-safe-area-context: 485f2482d15324f6570466b190bf4d8034ebb314
   ABI49_0_0react-native-segmented-control: af3039721178c2e16ba6ad97a519c3381bdd3436
-  ABI49_0_0react-native-skia: 5328891d4643494f8843a350be24b105e5c6faea
+  ABI49_0_0react-native-skia: d73265f61bc43159ccd6c1f85b2e90a8486814b0
   ABI49_0_0react-native-slider: f3d7912b17549c80ede3b9bc576446a63f4ce9bf
   ABI49_0_0react-native-webview: b1f4262ca5ded7143d619044d8fa589c3781cbe4
   ABI49_0_0React-NativeModulesApple: da1d30c9519eab1755b6d05fd692c5d697e197a0
