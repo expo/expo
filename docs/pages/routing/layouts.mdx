@@ -9,7 +9,7 @@ import { GithubIcon, BookOpen02Icon, Rocket02Icon } from '@expo/styleguide-icons
 import { BoxLink } from '~/ui/components/BoxLink';
 import { CODE } from '~/ui/components/Text';
 
-By default, routes fill the entire screen. Moving between them is a full-page transition with no animation. In native apps, users expect shared elements like headers and tab bars to persist between pages. These can be created using **layout routes**.
+By default, routes fill the entire screen. Moving between them is a full-page transition with no animation. In native apps, users expect shared elements like headers and tab bars to persist between pages. These are created using **layout routes**.
 
 ## Create a layout route
 
@@ -17,6 +17,7 @@ To create a layout route for a directory, create a file named **\_layout.js** in
 
 ```js app/home/_layout.js
 import { Slot } from 'expo-router';
+
 export default function HomeLayout() {
   return <Slot />;
 }
@@ -26,6 +27,7 @@ From the above example, **Slot** will render the current child route, think of t
 
 ```js app/home/_layout.js
 import { Slot } from 'expo-router';
+
 export default function HomeLayout() {
   return (
     <>
@@ -81,7 +83,7 @@ Groups are also good for organizing sections of the app. In the following exampl
 
 ## Native layouts
 
-One of the best advantages to React Native is being able to use native UI components. Expo Router provides a few drop-in native layouts that you can use to easily achieve familiar native behavior. You can change between truly-native layouts on certain platforms and custom layouts on others by following the [Platform-specific modules guide](router/advance/platform-specific-modules).
+One of the best advantages to React Native is being able to use native UI components. Expo Router provides a few drop-in native layouts that you can use to easily achieve familiar native behavior. To change between truly-native layouts on certain platforms and custom layouts on others, see [Platform-specific modules](router/advance/platform-specific-modules).
 
 ```js app/home/_layout.js
 import { Stack } from 'expo-router';

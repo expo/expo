@@ -9,9 +9,8 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { BookOpen02Icon } from '@expo/styleguide-icons';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
-When a file is created in the **/app** directory, it automatically becomes a route in the app.
+When a file is created in the **app** directory, it automatically becomes a route in the app. For example, the following files will create the following routes:
 
-For example, the following files will create the following routes:
 
 - **app/home.js** matches `/home`
 - **app/settings/index.js** matches `/settings`
@@ -27,7 +26,7 @@ For example, create the **app** directory in your project and then create a file
 
 <Tab label="Universal">
 
-    Render text on any platform with the `<Text />` component from React Native.
+    Render text on any platform with the `<Text>` component from React Native.
 
     ```js app/index.js
     import { Text } from 'react-native';
@@ -41,7 +40,7 @@ For example, create the **app** directory in your project and then create a file
 
 <Tab label="Web-only">
 
-    Alternatively, you can write web-only React components like `<div />`, `<p />`, etc. However, these won't render on native platforms.
+    Alternatively, you can write web-only React components such as `<div>`, `<p>`, and so on. However, these won't render on native platforms.
 
     ```js app/index.js
     export default function Page() {
@@ -53,9 +52,9 @@ For example, create the **app** directory in your project and then create a file
 
 </Tabs>
 
-The above example will match the `/` route in the app and the browser. Files named **index** match the parent directory and do not add a path segment. For example, **app/settings/index.js** will match `/settings` in the app.
+The above example matches the `/` route in the app and the browser. Files named **index** match the parent directory and do not add a path segment. For example, **app/settings/index.js** matches `/settings` in the app.
 
-> Platform extensions (for example, **.ios.js**, **.native.ts**) are not supported in the **app** directory. Learn more: [Platform-specific modules](/routing/advance/platform-specific-modules).
+> Platform extensions (for example, **.ios.js**, **.native.ts**) are not supported in the **app** directory. See [Platform-specific modules](/routing/advance/platform-specific-modules), for more information.
 
 ## Dynamic routes
 
@@ -68,9 +67,9 @@ Dynamic routes match any unmatched path at a given segment level.
 
 Routes with higher specificity will be matched before a dynamic route. For example, `/blog/bacon` will match **blog/bacon.js** before **blog/[id].js**.
 
-Multiple slugs can be matched in a single route by using the rest syntax (`...`). For example, **app/blog/[...id].js** will match `/blog/123/settings`.
+Multiple slugs can be matched in a single route by using the rest syntax (`...`). For example, **app/blog/[...id].js**  matches `/blog/123/settings`.
 
-Dynamic segments will be accessible as [search parameters](/router/reference/search-parameters) in the page component.
+Dynamic segments are accessible as [search parameters](/router/reference/search-parameters) in the page component.
 
 {/* prettier-ignore */}
 ```js app/blog/[slug].js

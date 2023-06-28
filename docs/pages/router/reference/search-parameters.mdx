@@ -10,26 +10,24 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
-Search parameters (also known as query params) are serializable fields that can be added to a URL. They are commonly used to pass data between pages.
+Search parameters (also known as query params) are serializable fields that can be added to a URL. They are commonly used to pass data between pages. Expo Router provides hooks for accessing and modifying these parameters.
 
-Expo Router provides hooks for accessing and modifying search parameters.
+In nested apps, you'll often have **multiple pages mounted** at the same time. For example, a stack has the previous page and current page in memory when a new route is pushed. Because of this, Expo Router provides two different hooks for accessing search parameters:
 
-In nested apps, you'll often have multiple "pages" mounted at a time, for example a stack has the previous page and current page in memory when a new route is pushed. Because of this, Expo Router provides two different hooks for accessing search parameters:
+- **useLocalSearchParams**: Returns the search parameters for the current component. It only updates when the global URL conforms to the route.
+- **useGlobalSearchParams**: Returns the global URL regardless of the component. It updates on every search param change and might cause components to update extraneously in the background.
 
-- **useLocalSearchParams**: returns the search parameters for the current component. This only updates when the global URL conforms to the route.
-- **useGlobalSearchParams**: returns the global URL regardless of the component. This updates on every search param change and might cause components to update extaneously in the background.
+Both hooks are typed and accessed the same way. However, the only difference is how frequently they update. Consider the following example:
 
-Both hooks are typed and accessed the same way, the only difference is how frequently they update. Consider the following example:
+## Local vs. global search parameters
 
-## Local vs. Global Search Parameters
-
-The following example demonstrates the difference between `useLocalSearchParams` and `useGlobalSearchParams`.
+The example below demonstrates the difference between `useLocalSearchParams` and `useGlobalSearchParams`. It uses the following **app** directory structure:
 
 <FileTree files={['app/_layout.js', 'app/index.js', 'app/[user].js']} />
 
 <Step label="1">
 
-    The Root Layout will be a stack navigator.
+    The Root Layout is a stack navigator:
 
     ```js app/_layout.js
     import { Stack } from 'expo-router';
@@ -43,7 +41,7 @@ The following example demonstrates the difference between `useLocalSearchParams`
 
 <Step label="2">
 
-    The initial route will redirect to the dynamic **app/[user].js** route, with **user=evanbacon**.
+    The initial route redirects to the dynamic **app/[user].js** route, with **user=evanbacon**:
 
     ```js app/index.js
     import { Redirect } from 'expo-router';
@@ -57,7 +55,7 @@ The following example demonstrates the difference between `useLocalSearchParams`
 
 <Step label="3">
 
-    The dynamic **app/[user]** screen will print out the global and local search params, and enable pushing new instances of the same route.
+    The dynamic **app/[user]** screen prints out the global and local search param. It also enables pushing new instances of the same route:
 
     ```js app/[user].js
     import { Text, View } from 'react-native';
@@ -88,11 +86,11 @@ The following example demonstrates the difference between `useLocalSearchParams`
 
 <Step label="4">
 
-When the app starts, you should see the following log:
+When the app starts, the following log is shown:
 
 <Terminal cmd={['Local: evanbacon Global: evanbacon']} />
 
-Pressing "Visit charlie" will push a new instance of `/[user]` with **user=charlie**, and log the following:
+Pressing "Visit charlie" pushes a new instance of `/[user]` with **user=charlie**, and log the following:
 
 <Terminal
   cmd={[
@@ -103,7 +101,7 @@ Pressing "Visit charlie" will push a new instance of `/[user]` with **user=charl
   ]}
 />
 
-Pressing "Visit james" will have a similar effect:
+Pressing "Visit james" has a similar effect:
 
 <Terminal
   cmd={[
@@ -118,8 +116,8 @@ Pressing "Visit james" will have a similar effect:
 
     **Results:**
 
-    - `useGlobalSearchParams` made the background screens re-render when the search params changed. This can cause performance issues if overused.
-    - Global re-renders are executed in order of the stack, so the first screen re-rendered first, then the **user=charlie** screen re-rendered after.
+    - `useGlobalSearchParams` made the background screens re-render when the search params changed. It can cause performance issues if overused.
+    - Global re-renders are executed in order of the stack, so the first screen is re-rendered first, then the **user=charlie** screen is re-rendered after.
     - `useLocalSearchParams` remained the same, even when the global search params changed. You can leverage this behavior for data fetching to ensure the previous screen's data is still available when you navigate back.
 
 </Step>
@@ -139,13 +137,13 @@ export default function Route() {
 }
 ```
 
-Any additional search parameters should be typed optionally:
+Any additional search parameters are to be typed optionally:
 
 ```tsx
 const { user, query } = useLocalSearchParams<{ user: string; query?: string }>();
 ```
 
-When used with the rest syntax (`...`), implement a string array:
+When used with the rest syntax (`...`), implements a string array:
 
 ```tsx app/[...everything].tsx
 import { Text } from 'react-native';
@@ -164,7 +162,7 @@ export default function Route() {
 
 ## Updating Search Parameters
 
-Search parameters can be updated using the **router.setParams** function from the imperative API. In the following example, a text input is used to update the search parameter **q**. This action will not push anything new to the history stack.
+Search parameters can be updated using the **router.setParams** function from the imperative API. The following example uses a `<TextInput>` to update the search parameter **q**. This action will not push anything new to the history stack.
 
 ```tsx app/search.tsx
 import { useLocalSearchParams, router } from 'expo-router';

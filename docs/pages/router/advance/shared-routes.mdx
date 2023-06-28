@@ -33,7 +33,7 @@ In the example below, **app/\_layout.js** is the tab bar and each route has its 
   ]}
 />
 
-> When reloading the page, the first match (alphabetically) will be rendered.
+> When reloading the page, the first alphabetical match is rendered.
 
 Shared routes can be navigated directly by including the group name in the route. For example, `/(search)/baconbrix` navigates to `/baconbrix` in the "search" layout.
 
@@ -41,13 +41,12 @@ Shared routes can be navigated directly by including the group name in the route
 
 > Array syntax is an advanced concept that is unique to native app development.
 
-Instead of defining the same route multiple times with different layouts, use the array syntax `(,)` to duplicate the children of a group.
+Instead of defining the same route multiple times with different layouts, use the array syntax `(,)` to duplicate the children of a group. For example, `app/(home,search)/[user].js` &mdash; creates `app/(home)/[user].js` and `app/(search)/[user].js` in memory.
 
-- `app/(home,search)/[user].js` -- creates `app/(home)/[user].js` and `app/(search)/[user].js` in memory.
 
-Distinguishing between the two routes using the `segment` prop of a layout.
+To distinguish between the two routes use a layout's `segment` prop:
 
-```js title="app/(home,search)/_layout.js"
+```js app/(home,search)/_layout.js
 export default function DynamicLayout({ segment }) {
   if (segment === '(search)') {
     return <SearchStack />;
