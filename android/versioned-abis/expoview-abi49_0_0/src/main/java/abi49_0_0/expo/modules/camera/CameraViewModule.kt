@@ -83,7 +83,7 @@ class CameraViewModule : Module() {
     }.runOnQueue(Queues.MAIN)
 
     AsyncFunction("record") { options: RecordingOptions, viewTag: Int, promise: Promise ->
-      if (!permissionsManager.hasGrantedPermissions(Manifest.permission.RECORD_AUDIO)) {
+      if (!options.mute && !permissionsManager.hasGrantedPermissions(Manifest.permission.RECORD_AUDIO)) {
         throw Exceptions.MissingPermissions(Manifest.permission.RECORD_AUDIO)
       }
 

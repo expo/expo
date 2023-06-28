@@ -19,6 +19,6 @@ class RecordingOptions : Record {
   @Field val maxDuration: Int = -1
   @Field val maxFileSize: Int = -1
   @Field val quality: Int = CamcorderProfile.QUALITY_HIGH
-  @Field val muteValue: Boolean = false
+  @Field val mute: Boolean = false
   @Field val videoBitrate: Int? = null
 }
