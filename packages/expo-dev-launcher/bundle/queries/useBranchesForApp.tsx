@@ -105,13 +105,13 @@ async function getBranchesAsync({
 
       // side-effect: prime the cache with the first paginated updates for a branch
       primeCacheWithUpdates(appId, branch.name, branch.updates);
-
-      return {
-        branches,
-        incompatibleBranches,
-        page,
-      };
     });
+
+    return {
+      branches,
+      incompatibleBranches,
+      page,
+    };
   }
 
   return {
