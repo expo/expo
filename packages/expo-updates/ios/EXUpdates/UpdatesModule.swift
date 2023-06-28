@@ -102,7 +102,7 @@ public final class UpdatesModule: Module {
           promise.resolve([
             "isAvailable": true,
             "manifest": result["manifest"],
-            "isRollBackToEmbedded": false,
+            "isRollBackToEmbedded": false
           ])
           return
         }
