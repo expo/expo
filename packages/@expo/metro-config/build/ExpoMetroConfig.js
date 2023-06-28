@@ -13,7 +13,7 @@ Object.defineProperty(exports, "INTERNAL_CALLSITES_REGEX", {
 Object.defineProperty(exports, "MetroConfig", {
   enumerable: true,
   get: function () {
-    return _metroConfig().ConfigT;
+    return _metroConfig().MetroConfig;
   }
 });
 exports.getDefaultConfig = getDefaultConfig;

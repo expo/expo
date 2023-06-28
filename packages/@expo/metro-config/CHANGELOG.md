@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Use partial `MetroConfig` type.
+
 ### 💡 Others
 
 ## 0.10.3 — 2023-06-27

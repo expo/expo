@@ -6,7 +6,7 @@ import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
 import { Reporter } from 'metro';
 import { stableHash } from 'metro-cache';
-import { ConfigT as MetroConfig, InputConfigT } from 'metro-config';
+import { MetroConfig } from 'metro-config';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -63,7 +63,7 @@ let hasWarnedAboutExotic = false;
 export function getDefaultConfig(
   projectRoot: string,
   options: DefaultConfigOptions = {}
-): InputConfigT {
+): MetroConfig {
   const { getDefaultConfig: getDefaultMetroConfig, mergeConfig } = importMetroConfig(projectRoot);
 
   const isExotic = options.mode === 'exotic' || env.EXPO_USE_EXOTIC;
@@ -147,7 +147,7 @@ export function getDefaultConfig(
 
   // Merge in the default config from Metro here, even though loadConfig uses it as defaults.
   // This is a convenience for getDefaultConfig use in metro.config.js, e.g. to modify assetExts.
-  const metroConfig: Partial<MetroConfig> = mergeConfig(metroDefaultValues, {
+  const metroConfig = mergeConfig(metroDefaultValues, {
     watchFolders,
     resolver: {
       resolverMainFields,

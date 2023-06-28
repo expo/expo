@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
-import { MixedOutput } from 'metro';
+import { MetroConfig, MixedOutput } from 'metro';
 import { InputConfigT, SerializerConfigT } from 'metro-config';
 import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
 import bundleToString from 'metro/src/lib/bundleToString';
@@ -23,7 +23,7 @@ export type SerializerParameters = Parameters<Serializer>;
 // Unlike a serializer, these can be chained together.
 export type SerializerPlugin = (...props: SerializerParameters) => SerializerParameters;
 
-export function withExpoSerializers(config: InputConfigT): InputConfigT {
+export function withExpoSerializers(config: InputConfigT): MetroConfig {
   const processors: SerializerPlugin[] = [];
   if (!env.EXPO_NO_CLIENT_ENV_VARS) {
     processors.push(environmentVariableSerializerPlugin);
