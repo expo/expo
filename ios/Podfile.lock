@@ -2870,7 +2870,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - react-native-segmented-control (2.4.1):
     - React-Core
-  - react-native-skia (0.1.195):
+  - react-native-skia (0.1.196):
     - React
     - React-callinvoker
     - React-Core
@@ -5011,7 +5011,7 @@ SPEC CHECKSUMS:
   react-native-pager-view: 0ccb8bf60e2ebd38b1f3669fa3650ecce81db2df
   react-native-safe-area-context: 36cc67648134e89465663b8172336a19eeda493d
   react-native-segmented-control: 0e4b5d93911e2234f110057df2b41738b326ab3e
-  react-native-skia: a1bb816972960f3506c1339738eac794814fbac0
+  react-native-skia: 4753a9e236c5dfc73cfb98dccfff3496f12fd877
   react-native-slider: 33b8d190b59d4f67a541061bb91775d53d617d9d
   react-native-webview: b8ec89966713985111a14d6e4bf98d8b54bced0d
   React-NativeModulesApple: 038cd625999ff352fc13d11fd335ea7509794599
