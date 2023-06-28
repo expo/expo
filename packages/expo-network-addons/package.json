@@ -32,8 +32,7 @@
   ],
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "expo-module-scripts": "^3.0.4"
   },
