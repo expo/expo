@@ -55,10 +55,9 @@ public:
   void setPicture(std::shared_ptr<jsi::HostObject> picture) {
     if (picture == nullptr) {
       _picture = nullptr;
-      return;
+    } else {
+      _picture = std::dynamic_pointer_cast<JsiSkPicture>(picture);
     }
-
-    _picture = std::dynamic_pointer_cast<JsiSkPicture>(picture);
     _requestRedraw();
   }
 
@@ -107,7 +106,6 @@ public:
           // Clear picture
           std::static_pointer_cast<ABI49_0_0RNSkPictureRenderer>(getRenderer())
               ->setPicture(nullptr);
-          requestRedraw();
           continue;
         } else if (prop.second.getType() !=
                    ABI49_0_0RNJsi::JsiWrapperValueType::HostObject) {
@@ -119,9 +117,6 @@ public:
         // Save picture
         std::static_pointer_cast<ABI49_0_0RNSkPictureRenderer>(getRenderer())
             ->setPicture(prop.second.getAsHostObject());
-
-        // Request redraw
-        requestRedraw();
       }
     }
   }

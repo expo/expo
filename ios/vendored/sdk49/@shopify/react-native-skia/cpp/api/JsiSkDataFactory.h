@@ -3,17 +3,15 @@
 #include <memory>
 #include <utility>
 
-#include <ABI49_0_0ReactCommon/ABI49_0_0TurboModuleUtils.h>
 #include <ABI49_0_0jsi/ABI49_0_0jsi.h>
 
-#include "SkBase64.h"
-
+#include "JsiPromises.h"
 #include "JsiSkData.h"
+#include "SkBase64.h"
 
 namespace ABI49_0_0RNSkia {
 
 namespace jsi = ABI49_0_0facebook::jsi;
-namespace ABI49_0_0React = ABI49_0_0facebook::ABI49_0_0React;
 
 class JsiSkDataFactory : public JsiSkHostObject {
 public:
@@ -21,11 +19,11 @@ public:
     auto jsiLocalUri = arguments[0].asString(runtime);
     auto localUri = jsiLocalUri.utf8(runtime);
     auto context = getContext();
-    return ABI49_0_0React::createPromiseAsJSIValue(
+    return ABI49_0_0RNJsi::JsiPromises::createPromiseAsJSIValue(
         runtime,
         [context = std::move(context), localUri = std::move(localUri)](
             jsi::Runtime &runtime,
-            std::shared_ptr<ABI49_0_0React::Promise> promise) -> void {
+            std::shared_ptr<ABI49_0_0RNJsi::JsiPromises::Promise> promise) -> void {
           // Create a stream operation - this will be run in a
           // separate thread
           context->performStreamOperation(
