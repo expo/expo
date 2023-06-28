@@ -1,7 +1,7 @@
 import { StackScreenProps } from '@react-navigation/stack';
-import { useCurrentTheme, useExpoTheme } from 'expo-dev-client-components';
+import { View, useCurrentTheme, useExpoTheme } from 'expo-dev-client-components';
 import * as React from 'react';
-import { SafeAreaView } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HomeScreenDataQuery } from '../../graphql/types';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
@@ -49,9 +49,10 @@ export function HomeScreen(props: NavigationProps) {
   const themeType = useCurrentTheme();
   const { accountName } = useAccountName();
   const { homeScreenData } = useInitialData();
+  const insets = useSafeAreaInsets();
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background.default }}>
+    <View style={{ flex: 1, backgroundColor: theme.background.default, paddingTop: insets.top }}>
       <HomeScreenView
         theme={themeType}
         {...props}
@@ -63,6 +64,6 @@ export function HomeScreen(props: NavigationProps) {
         isAuthenticated={isAuthenticated}
         initialData={homeScreenData}
       />
-    </SafeAreaView>
+    </View>
   );
 }
