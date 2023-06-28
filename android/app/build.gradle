@@ -69,6 +69,10 @@ android {
   buildTypes {
     debug {
       debuggable true
+      firebaseCrashlytics {
+        nativeSymbolUploadEnabled false
+        mappingFileUploadEnabled false
+      }
     }
     release {
       minifyEnabled true
@@ -77,8 +81,10 @@ android {
       if (!System.getenv("ANDROID_UNSIGNED")) {
         signingConfig signingConfigs.release
       }
+      def shouldUploadCrashlytics = System.getenv("EAS_BUILD") != null
       firebaseCrashlytics {
-        nativeSymbolUploadEnabled true
+        nativeSymbolUploadEnabled shouldUploadCrashlytics
+        mappingFileUploadEnabled shouldUploadCrashlytics
       }
     }
   }
