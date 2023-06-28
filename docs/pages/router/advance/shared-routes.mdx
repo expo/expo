@@ -8,16 +8,7 @@ import { FileTree } from '~/ui/components/FileTree';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { BookOpen02Icon } from '@expo/styleguide-icons';
 
-You can prevent a segment from showing in the URL by using the group syntax `()`.
-
-- **app/root/home.js** which matches `/root/home`
-- **app/(root)/home.js** which matches `/home`
-
-This is useful for adding layouts without adding additional segments to the URL.
-
-## Shared routes
-
-To match the same URL with different layouts, use **groups** with overlapping child routes. This pattern is very common in native apps. For example, in the Twitter app, a profile can be viewed in every tab (such as home, search, and profile). However, there is only one URL that is required to access this route.
+To match the same URL with different layouts, use [**groups**](/routing/layouts#groups) with overlapping child routes. This pattern is very common in native apps. For example, in the Twitter app, a profile can be viewed in every tab (such as home, search, and profile). However, there is only one URL that is required to access this route.
 
 In the example below, **app/\_layout.js** is the tab bar and each route has its own header. The **app/(profile)/[user].js** route is shared between each tab.
 
@@ -42,7 +33,6 @@ Shared routes can be navigated directly by including the group name in the route
 > Array syntax is an advanced concept that is unique to native app development.
 
 Instead of defining the same route multiple times with different layouts, use the array syntax `(,)` to duplicate the children of a group. For example, `app/(home,search)/[user].js` &mdash; creates `app/(home)/[user].js` and `app/(search)/[user].js` in memory.
-
 
 To distinguish between the two routes use a layout's `segment` prop:
 
