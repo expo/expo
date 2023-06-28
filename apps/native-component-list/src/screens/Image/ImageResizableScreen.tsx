@@ -179,6 +179,7 @@ export default function ImageResizableScreen() {
           contentFit={contentFit}
           contentPosition={contentPosition}
           resizeMode={mapContentFitToResizeMode(contentFit)}
+          responsivePolicy="live"
         />
       </ResizableView>
 
