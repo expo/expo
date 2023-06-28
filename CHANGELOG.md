@@ -23,7 +23,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `@react-native-picker/picker` from `2.4.8` to `2.4.10`. ([#22919](https://github.com/expo/expo/pull/22919) by [@keith-kurak](https://github.com/keith-kurak))
 - Updated `@react-native-segmented-control/segmented-control` from `2.4.0` to `2.4.1`. ([#22911](https://github.com/expo/expo/pull/22911) by [@keith-kurak](https://github.com/keith-kurak))
 - Updated `@shopify/flash-list` from `1.4.0` to `1.4.3`. ([#22893](https://github.com/expo/expo/pull/22893) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- Updated `@shopify/react-native-skia` from `0.1.172` to `0.1.195`. ([#23036](https://github.com/expo/expo/pull/23036) by [@kudo](https://github.com/kudo))
+- Updated `@shopify/react-native-skia` from `0.1.172` to `0.1.196`. ([#22900](https://github.com/expo/expo/pull/22900), [#23036](https://github.com/expo/expo/pull/23036), [#23157](https://github.com/expo/expo/pull/23157) by [@kudo](https://github.com/kudo))
 - Updated `lottie-react-native` from `5.1.4` to `5.1.6`. ([#22868](https://github.com/expo/expo/pull/22868) by [@alanjhughes](https://github.com/alanjhughes))
 - Updated `react-native-gesture-handler` from `2.10.1` to `2.12.0`. ([#22621](https://github.com/expo/expo/pull/22906) by [@aleqsio](https://github.com/aleqsio))
 - Updated `react-native-maps` from `1.3.2` to `1.7.1`. ([#22908](https://github.com/expo/expo/pull/22908) by [@aleqsio](https://github.com/aleqsio))
