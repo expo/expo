@@ -1,7 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-import ExpoModulesCore
 import SDWebImage
+import ExpoModulesCore
 import VisionKit
 
 typealias SDWebImageContext = [SDWebImageContextOption: Any]
@@ -21,8 +21,8 @@ public final class ImageView: ExpoView {
   )
 
   var loadingOptions: SDWebImageOptions = [
-    .retryFailed,  // Don't blacklist URLs that failed downloading
-    .handleCookies,  // Handle cookies stored in the shared `HTTPCookieStore`
+    .retryFailed, // Don't blacklist URLs that failed downloading
+    .handleCookies // Handle cookies stored in the shared `HTTPCookieStore`
   ]
 
   var sources: [ImageSource]?
@@ -120,8 +120,7 @@ public final class ImageView: ExpoView {
 
     // Modify URL request to add headers.
     if let headers = source.headers {
-      context[SDWebImageContextOption.downloadRequestModifier] =
-        SDWebImageDownloaderRequestModifier(headers: headers)
+      context[SDWebImageContextOption.downloadRequestModifier] = SDWebImageDownloaderRequestModifier(headers: headers)
     }
 
     context[.cacheKeyFilter] = createCacheKeyFilter(source.cacheKey)
@@ -175,7 +174,7 @@ public final class ImageView: ExpoView {
     onProgress([
       "loaded": isPhotoLibraryAsset ? nil : receivedSize,
       "total": isPhotoLibraryAsset ? nil : expectedSize,
-      "progress": Double(receivedSize) / Double(expectedSize),
+      "progress": Double(receivedSize) / Double(expectedSize)
     ])
   }
 
@@ -203,8 +202,8 @@ public final class ImageView: ExpoView {
           "url": imageUrl?.absoluteString,
           "width": image.size.width,
           "height": image.size.height,
-          "mediaType": imageFormatToMediaType(image.sd_imageFormat),
-        ],
+          "mediaType": imageFormatToMediaType(image.sd_imageFormat)
+        ]
       ])
 
       let scale = window?.screen.scale ?? UIScreen.main.scale
@@ -253,8 +252,7 @@ public final class ImageView: ExpoView {
    Same as `bestSource`, but for placeholders.
    */
   var bestPlaceholder: ImageSource? {
-    return getBestSource(from: placeholderSources, forSize: bounds.size, scale: screenScale)
-      ?? placeholderSources.first
+    return getBestSource(from: placeholderSources, forSize: bounds.size, scale: screenScale) ?? placeholderSources.first
   }
 
   /**
@@ -285,8 +283,7 @@ public final class ImageView: ExpoView {
     // Some loaders (e.g. blurhash) need access to the source.
     context[ImageView.contextSourceKey] = placeholder
 
-    imageManager.loadImage(with: placeholder.uri, context: context, progress: nil) {
-      [weak self] placeholder, _, _, _, finished, _ in
+    imageManager.loadImage(with: placeholder.uri, context: context, progress: nil) { [weak self] placeholder, _, _, _, finished, _ in
       guard let self = self, let placeholder = placeholder, finished else {
         return
       }
@@ -311,7 +308,7 @@ public final class ImageView: ExpoView {
   private func createTransformPipeline() -> SDImagePipelineTransformer {
     let transformers: [SDImageTransformer] = [
       SDImageBlurTransformer(radius: blurRadius),
-      SDImageTintTransformer(color: imageTintColor),
+      SDImageTintTransformer(color: imageTintColor)
     ]
     return SDImagePipelineTransformer(transformers: transformers)
   }
@@ -404,9 +401,7 @@ public final class ImageView: ExpoView {
 
   var enableLiveTextInteraction: Bool = false {
     didSet {
-      guard #available(iOS 16.0, *), oldValue != enableLiveTextInteraction,
-        ImageAnalyzer.isSupported
-      else {
+      guard #available(iOS 16.0, *), oldValue != enableLiveTextInteraction, ImageAnalyzer.isSupported else {
         return
       }
       if enableLiveTextInteraction {
@@ -424,9 +419,7 @@ public final class ImageView: ExpoView {
     }
 
     Task {
-      guard let imageAnalyzer = Self.imageAnalyzer,
-        let imageAnalysisInteraction = findImageAnalysisInteraction()
-      else {
+      guard let imageAnalyzer = Self.imageAnalyzer, let imageAnalysisInteraction = findImageAnalysisInteraction() else {
         return
       }
       let configuration = ImageAnalyzer.Configuration([.text, .machineReadableCode])
