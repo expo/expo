@@ -9,3 +9,9 @@ export type ServerRequest = express.Request | http.IncomingMessage;
 export type ServerResponse = express.Response | http.ServerResponse;
 /** Next function */
 export type ServerNext = (err?: Error) => void;
+/** Middleware */
+export type ServerMiddleware = (
+  req: ServerRequest,
+  res: ServerResponse,
+  next: ServerNext
+) => Promise<void>;

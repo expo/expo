@@ -23,6 +23,7 @@ import { ContextModuleSourceMapsMiddleware } from '../middleware/ContextModuleSo
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
 import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
+import { withoutInspectorRequests } from '../middleware/InspectorMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
 import { createBundleUrlPath, resolveMainModuleName } from '../middleware/ManifestMiddleware';
 import { ReactDevToolsPageMiddleware } from '../middleware/ReactDevToolsPageMiddleware';
@@ -31,7 +32,6 @@ import {
   RuntimeRedirectMiddleware,
 } from '../middleware/RuntimeRedirectMiddleware';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
-import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
 import { instantiateMetroAsync } from './instantiateMetro';
 import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
@@ -312,49 +312,53 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       middleware.use(new FaviconMiddleware(this.projectRoot).getHandler());
 
       if (useWebSSG) {
-        middleware.use(async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
-          if (!req?.url) {
-            return next();
-          }
-
-          // TODO: Formal manifest for allowed paths
-          if (req.url.endsWith('.ico')) {
-            return next();
-          }
-          if (req.url.includes('serializer.output=static')) {
-            return next();
-          }
-
-          try {
-            const { content } = await this.getStaticPageAsync(req.url, {
-              mode: options.mode ?? 'development',
-            });
-
-            res.setHeader('Content-Type', 'text/html');
-            res.end(content);
-            return;
-          } catch (error: any) {
-            res.setHeader('Content-Type', 'text/html');
-            try {
-              res.end(await this.renderStaticErrorAsync(error));
-            } catch (staticError: any) {
-              // Fallback error for when Expo Router is misconfigured in the project.
-              res.end(
-                '<span><h3>Internal Error:</h3><b>Project is not setup correctly for static rendering (check terminal for more info):</b><br/>' +
-                  error.message +
-                  '<br/><br/>' +
-                  staticError.message +
-                  '</span>'
-              );
+        middleware.use(
+          withoutInspectorRequests(async (req, res, next) => {
+            if (!req?.url) {
+              return next();
             }
-          }
-        });
+
+            // TODO: Formal manifest for allowed paths
+            if (req.url.endsWith('.ico')) {
+              return next();
+            }
+            if (req.url.includes('serializer.output=static')) {
+              return next();
+            }
+
+            try {
+              const { content } = await this.getStaticPageAsync(req.url, {
+                mode: options.mode ?? 'development',
+              });
+
+              res.setHeader('Content-Type', 'text/html');
+              res.end(content);
+              return;
+            } catch (error: any) {
+              res.setHeader('Content-Type', 'text/html');
+              try {
+                res.end(await this.renderStaticErrorAsync(error));
+              } catch (staticError: any) {
+                // Fallback error for when Expo Router is misconfigured in the project.
+                res.end(
+                  '<span><h3>Internal Error:</h3><b>Project is not setup correctly for static rendering (check terminal for more info):</b><br/>' +
+                    error.message +
+                    '<br/><br/>' +
+                    staticError.message +
+                    '</span>'
+                );
+              }
+            }
+          })
+        );
       }
 
       // This MUST run last since it's the fallback.
       if (!useWebSSG) {
         middleware.use(
-          new HistoryFallbackMiddleware(manifestMiddleware.getHandler().internal).getHandler()
+          withoutInspectorRequests(
+            new HistoryFallbackMiddleware(manifestMiddleware.getHandler().internal).getHandler()
+          )
         );
       }
     }
