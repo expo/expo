@@ -135,6 +135,16 @@ public class Update: NSObject {
     config: UpdatesConfig,
     database: UpdatesDatabase
   ) throws -> Update {
+    // Sanity check for remotely getting a manifest through a tunnel
+    // from a dev-server, where manifest is modern but no protocol header
+    if withManifest["releaseId"] == nil {
+      return NewUpdate.update(
+        withNewManifest: NewManifest(rawManifestJSON: withManifest),
+        extensions: extensions,
+        config: config,
+        database: database
+      )
+    }
     let protocolVersion = responseHeaderData.protocolVersion
     switch protocolVersion {
     case nil:
@@ -166,13 +176,12 @@ public class Update: NSObject {
         config: config,
         database: database
       )
-    } else {
-      return BareUpdate.update(
-        withBareManifest: BareManifest(rawManifestJSON: withEmbeddedManifest),
-        config: config,
-        database: database
-      )
     }
+    return BareUpdate.update(
+      withBareManifest: BareManifest(rawManifestJSON: withEmbeddedManifest),
+      config: config,
+      database: database
+    )
   }
 
   /**
