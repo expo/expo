@@ -47,9 +47,9 @@ If you make changes to your project, you'll need to rebuild it for production. D
 
 </Tabs>
 
-### Serve Locally
+## Serve Locally
 
-[Serve CLI](https://www.npmjs.com/package/serve) provides a quick way to test locally how your app works in production. Run the following command to serve the static bundle:
+Use [Serve CLI](https://www.npmjs.com/package/serve) to quickly test locally how your website will be hosted in production. Run the following command to serve the static bundle:
 
 <Tabs>
 
@@ -83,7 +83,7 @@ Then, open [`http://localhost:5000`](http://localhost:5000) to see your project 
 
 ### Netlify
 
-[Netlify](https://www.netlify.com/) is a platform for deploying web apps.
+[Netlify](https://www.netlify.com/) is a mostly-unopinionated platform for deploying web apps. This has the highest compatibility with Expo web apps as it makes few assumptions about the framework.
 
 #### Manual deployment with the Netlify CDN
 
@@ -159,43 +159,9 @@ Netlify can also build and deploy when you push to git or open a new pull reques
 - Pick your Git hosting service and select your repository.
 - Click **Build your site**.
 
-### AWS Amplify Console
-
-The [AWS Amplify Console](https://console.amplify.aws) provides a Git-based workflow for continuously deploying and hosting full-stack serverless web apps. Amplify deploys your PWA from a repository instead of from your computer. In this guide, we'll use a GitHub repository. Before starting, [create a new repo on GitHub](https://github.com/new).
-
-<Step label="1">
-
-Add the [**amplify-explicit.yml**](https://github.com/expo/amplify-demo/blob/master/amplify-explicit.yml) file to the root of your repo.
-
-</Step>
-
-<Step label="2">
-
-Push your local Expo project to a GitHub repository. If you haven't pushed to GitHub yet, follow [GitHub's guide to add an existing project to GitHub](https://docs.github.com/en/get-started/importing-your-projects-to-github/importing-source-code-to-github/adding-locally-hosted-code-to-github).
-
-</Step>
-
-<Step label="3">
-
-Login to the [Amplify Console](https://console.aws.amazon.com/amplify/home) and choose **Get started** under **Deploy**. Grant Amplify permission to read from your GitHub account or the organization that owns your repo.
-
-</Step>
-
-<Step label="4">
-
-The Amplify Console will detect that the **amplify.yml** file is in your repo. Choose **Next**.
-
-</Step>
-
-<Step label="5">
-
-Review your settings and choose **Save and deploy**. Your app will now be deployed to a `https://branchname.xxxxxx.amplifyapp.com` URL.
-
-</Step>
-
 ### Vercel
 
-[Vercel](https://vercel.com/) has a single-command zero-config deployment flow.
+[Vercel](https://vercel.com/) has a single-command deployment flow.
 
 > For more information on hosting, check out [Vercel's pricing](https://vercel.com/pricing).
 
@@ -277,9 +243,45 @@ You should now see a URL that you can use to view your project online. Paste tha
 
 </Step>
 
+### AWS Amplify Console
+
+The [AWS Amplify Console](https://console.amplify.aws) provides a Git-based workflow for continuously deploying and hosting full-stack serverless web apps. Amplify deploys your PWA from a repository instead of from your computer. In this guide, we'll use a GitHub repository. Before starting, [create a new repo on GitHub](https://github.com/new).
+
+<Step label="1">
+
+Add the [**amplify-explicit.yml**](https://github.com/expo/amplify-demo/blob/master/amplify-explicit.yml) file to the root of your repo.
+
+</Step>
+
+<Step label="2">
+
+Push your local Expo project to a GitHub repository. If you haven't pushed to GitHub yet, follow [GitHub's guide to add an existing project to GitHub](https://docs.github.com/en/get-started/importing-your-projects-to-github/importing-source-code-to-github/adding-locally-hosted-code-to-github).
+
+</Step>
+
+<Step label="3">
+
+Login to the [Amplify Console](https://console.aws.amazon.com/amplify/home) and choose **Get started** under **Deploy**. Grant Amplify permission to read from your GitHub account or the organization that owns your repo.
+
+</Step>
+
+<Step label="4">
+
+The Amplify Console will detect that the **amplify.yml** file is in your repo. Choose **Next**.
+
+</Step>
+
+<Step label="5">
+
+Review your settings and choose **Save and deploy**. Your app will now be deployed to a `https://branchname.xxxxxx.amplifyapp.com` URL.
+
+</Step>
+
 ### GitHub Pages
 
 [GitHub Pages](https://pages.github.com/) allows you to publish a website directly from a GitHub repository.
+
+> Expo Router websites do not support deployment to GitHub Pages yet.
 
 <Step label="1">
 
@@ -371,13 +373,42 @@ Then, initialize your firebase project to host by running the command:
 
 <Terminal cmd={['$ firebase init']} />
 
+The settings will depend on how you built your Expo website:
+
+<Tabs>
+<Tab label="Expo Router">
+
+1. When asked about the public path, make sure to specify the **dist** directory.
+2. When prompted **Configure as a single-page app (rewrite all urls to /index.html)**, only select **Yes** if you used `web.output: "single"` (default). Otherwise, select **No**.
+
+</Tab>
+<Tab label="Webpack">
+
 When asked about the public path, make sure to specify the **web-build** directory. Also, when prompted **Configure as a single-page app (rewrite all urls to /index.html)**, select **Yes**.
+
+</Tab>
+</Tabs>
 
 </Step>
 
 <Step label="4">
 
 In the existing `scripts` property of **package.json**, add `predeploy` and `deploy` properties. Each has the following values:
+
+<Tabs>
+<Tab label="Expo Router">
+
+{/* prettier-ignore */}
+```json package.json
+"scripts": {
+  /* @hide ... */ /* @end */
+  "predeploy": "expo export -p web",
+  "deploy-hosting": "npm run predeploy && firebase deploy --only hosting",
+}
+```
+
+</Tab>
+<Tab label="Webpack">
 
 {/* prettier-ignore */}
 ```json package.json
@@ -387,6 +418,9 @@ In the existing `scripts` property of **package.json**, add `predeploy` and `dep
   "deploy-hosting": "npm run predeploy && firebase deploy --only hosting",
 }
 ```
+
+</Tab>
+</Tabs>
 
 </Step>
 
@@ -405,7 +439,7 @@ In case you want to change the header for hosting add the following config for `
   "hosting": [
     {
       /* @hide ... */ /* @end */
-  "headers": [
+      "headers": [
         {
           "source": "/**",
           "headers": [
