@@ -20,10 +20,10 @@ Simply move your **app** directory to **src/app** and restart the development se
   cmd={['$ npx expo start --clear', '', '# Or when exporting', '$ npx expo export --clear']}
 />
 
-**Notes**
+**Notes**:
 
 - The config files (**app.config.js**, **app.json**, **package.json**, **metro.config.js**, **tsconfig.json**) should remain in the root directory.
-- The more specific **src/app** directory takes higher precedence than the root **app** directory. If you have both, only the **src/app** directory will be used.
+- The **src/app** directory takes higher precedence than the root **app** directory. Only the **src/app** directory will be used if you have both.
 - The **public** directory should remain in the root directory.
 - Static rendering will automatically use the **src/app** directory if it exists.
 - You may consider updating any [type aliases](/guides/typescript#path-aliases) to point to the **src** directory instead of the root directory.
