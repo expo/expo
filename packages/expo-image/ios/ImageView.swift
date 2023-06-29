@@ -43,14 +43,12 @@ public final class ImageView: ExpoView {
 
   var recyclingKey: String? {
     didSet {
-      guard oldValue != nil else {
-        return
-      }
-      if recyclingKey != oldValue {
-        sdImageView.image = nil
+      if oldValue != nil && recyclingKey != oldValue {
+          sdImageView.image = nil
       }
     }
   }
+
 
   // MARK: - Events
 
