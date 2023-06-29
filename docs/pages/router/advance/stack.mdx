@@ -17,7 +17,7 @@ To create a `Stack` layout with two screens as shown in the file structure above
 import { Stack } from 'expo-router/stack';
 
 export default function Layout() {
-  return <Stack initialRouteName="index" />;
+  return <Stack />;
 }
 ```
 
@@ -31,7 +31,6 @@ import { Stack } from 'expo-router';
 export default function Layout() {
   return (
     <Stack
-      initialRouteName="home"
       screenOptions={{
         headerStyle: {
           backgroundColor: '#f4511e',
@@ -127,7 +126,6 @@ import { Stack } from 'expo-router';
 export default function Layout() {
   return (
     <Stack
-      initialRouteName="home"
       // https://reactnavigation.org/docs/headers#sharing-common-options-across-screens
       /* @info */
       screenOptions={{
