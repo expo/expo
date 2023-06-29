@@ -9,8 +9,6 @@ See more information about **metro.config.js** in the [customizing Metro guide](
 
 ## Environment variables
 
-> For SDK 49 and above
-
 Environment variables can be loaded using **.env** files. These files are loaded according to the [standard **.env** file resolution](https://github.com/bkeepers/dotenv/blob/c6e583a/README.md#what-other-env-files-can-i-use).
 
 If you are migrating an older project to SDK 49 or above, then you should ignore local env files by adding the following to your **.gitignore**:
@@ -19,6 +17,21 @@ If you are migrating an older project to SDK 49 or above, then you should ignore
 # local env files
 .env*.local
 ```
+
+> Dotenv files are Expo CLI-specific as of SDK 49. EAS CLI uses a different mechanism for environment variables until it invokes Expo CLI for compiling and bundling. Learn more about [environment variables in EAS](https://docs.expo.dev/build-reference/variables/).
+
+### Disabling dotenv files
+
+Dotenv file loading can be fully disabled in Expo CLI by enabling the `EXPO_NO_DOTENV` environment variable, before invoking any Expo CLI command.
+
+<Terminal
+  cmd={[
+    '# All users can run cross-env, followed by the Expo CLI command',
+    '$ npx cross-env EXPO_NO_DOTENV=1 expo start',
+    '# Alternatively, macOS users can define the environment variable, then run npx, followed by the Expo CLI command',
+    '$ EXPO_NO_DOTENV=1 npx expo start',
+  ]}
+/>
 
 ### Client environment variables
 
@@ -31,6 +44,7 @@ For security purposes, client environment variables are inlined in the bundle, w
 - Client environment variables should not contain secrets as they will be viewable in plain-text format in the production binary.
 - Use client environment variables for partially protected values, such as public API keys you don't want to commit to Git or hard-code in your app and that may change depending on the environment.
 - Expo environment variables can be updated while the development server (`npx expo start`) is running, without restarting or clearing the bundler cache — however, you'll need to modify and save an included source file to see the updates. You must also perform a client reload, as environment variables do not support Fast Refresh.
+- Client environment variable inlining can be disabled with the environment variable `EXPO_NO_CLIENT_ENV_VARS=1`, this must be defined before any bundling is performed.
 
 {/* TODO: Usage in EAS */}
 
