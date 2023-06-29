@@ -5,8 +5,8 @@ import chalk from 'chalk';
 import resolveFrom from 'resolve-from';
 import semver from 'semver';
 
-import { APISettings } from '../../../api/settings';
 import * as Log from '../../../log';
+import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { BundledNativeModules } from './bundledNativeModules';
 import { getCombinedKnownVersionsAsync } from './getVersionedPackages';
@@ -36,7 +36,7 @@ export async function validateDependenciesVersionsAsync(
   pkg: PackageJSONConfig,
   packagesToCheck?: string[]
 ): Promise<boolean | null> {
-  if (APISettings.isOffline) {
+  if (env.EXPO_OFFLINE) {
     Log.warn('Skipping dependency validation in offline mode');
     return null;
   }

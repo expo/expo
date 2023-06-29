@@ -2,13 +2,33 @@ import * as React from 'react';
 import { View } from 'react-native';
 import getBackgroundColor from './getBackgroundColor';
 export default class BlurView extends React.Component {
+    blurViewRef = React.createRef();
+    /**
+     * Reanimated will detect and call this function with animated styles passed as props on every
+     * animation frame. We want to extract intensity from the props, then create and apply new styles,
+     * which create the blur based on the intensity and current tint.
+     */
+    setNativeProps(nativeProps) {
+        const { style, tint, intensity: standardIntensity } = this.props;
+        const intensity = nativeProps.style.intensity ?? standardIntensity;
+        const blurStyle = getBlurStyle({ intensity, tint });
+        this.blurViewRef?.current?.setNativeProps({
+            ...nativeProps,
+            style: [style, blurStyle, nativeProps.style],
+        });
+    }
     render() {
         const { tint = 'default', intensity = 50, style, ...props } = this.props;
-        const blurStyle = getBlurStyle({ tint, intensity: Math.min(intensity, 100) });
-        return React.createElement(View, { ...props, style: [style, blurStyle] });
+        const blurStyle = getBlurStyle({ tint, intensity });
+        return React.createElement(View, { ...props, style: [style, blurStyle], ref: this.blurViewRef });
     }
 }
 function isBlurSupported() {
+    // TODO: Replace with CSS or static extraction to ensure hydration errors cannot happen.
+    // Enable by default in Node.js
+    if (typeof window === 'undefined') {
+        return true;
+    }
     // https://developer.mozilla.org/en-US/docs/Web/API/CSS/supports
     // https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter#Browser_compatibility
     return (typeof CSS !== 'undefined' &&
@@ -17,10 +37,10 @@ function isBlurSupported() {
 }
 function getBlurStyle({ intensity, tint }) {
     const style = {
-        backgroundColor: getBackgroundColor(intensity, tint),
+        backgroundColor: getBackgroundColor(Math.min(intensity, 100), tint),
     };
     if (isBlurSupported()) {
-        const blur = `saturate(180%) blur(${intensity * 0.2}px)`;
+        const blur = `saturate(180%) blur(${Math.min(intensity, 100) * 0.2}px)`;
         style.backdropFilter = blur;
         // Safari support
         style.WebkitBackdropFilter = blur;

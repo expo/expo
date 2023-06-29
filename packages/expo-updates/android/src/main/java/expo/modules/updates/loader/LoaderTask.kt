@@ -19,6 +19,7 @@ import expo.modules.updates.manifest.EmbeddedManifest
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.manifest.UpdateManifest
 import expo.modules.updates.selectionpolicy.SelectionPolicy
+import org.json.JSONObject
 import java.io.File
 
 /**
@@ -48,8 +49,20 @@ class LoaderTask(
   private val selectionPolicy: SelectionPolicy,
   private val callback: LoaderTaskCallback
 ) {
-  enum class BackgroundUpdateStatus {
+  enum class RemoteUpdateStatus {
     ERROR, NO_UPDATE_AVAILABLE, UPDATE_AVAILABLE
+  }
+
+  sealed class RemoteCheckResult(private val status: Status) {
+    private enum class Status {
+      NO_UPDATE_AVAILABLE,
+      UPDATE_AVAILABLE,
+      ROLL_BACK_TO_EMBEDDED
+    }
+
+    class NoUpdateAvailable : RemoteCheckResult(Status.NO_UPDATE_AVAILABLE)
+    class UpdateAvailable(val manifest: JSONObject) : RemoteCheckResult(Status.UPDATE_AVAILABLE)
+    class RollBackToEmbedded : RemoteCheckResult(Status.ROLL_BACK_TO_EMBEDDED)
   }
 
   interface LoaderTaskCallback {
@@ -65,8 +78,13 @@ class LoaderTask(
     fun onCachedUpdateLoaded(update: UpdateEntity): Boolean
     fun onRemoteUpdateManifestResponseManifestLoaded(updateManifest: UpdateManifest)
     fun onSuccess(launcher: Launcher, isUpToDate: Boolean)
-    fun onBackgroundUpdateFinished(
-      status: BackgroundUpdateStatus,
+
+    fun onRemoteCheckForUpdateStarted() {}
+    fun onRemoteCheckForUpdateFinished(result: RemoteCheckResult) {}
+    fun onRemoteUpdateLoadStarted() {}
+    fun onRemoteUpdateAssetLoaded(asset: AssetEntity, successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int) {}
+    fun onRemoteUpdateFinished(
+      status: RemoteUpdateStatus,
       update: UpdateEntity?,
       exception: Exception?
     )
@@ -292,12 +310,13 @@ class LoaderTask(
   private fun launchRemoteUpdateInBackground(context: Context, remoteUpdateCallback: Callback) {
     AsyncTask.execute {
       val database = databaseHolder.database
+      callback.onRemoteCheckForUpdateStarted()
       RemoteLoader(context, configuration, database, fileDownloader, directory, candidateLauncher?.launchedUpdate)
         .start(object : LoaderCallback {
           override fun onFailure(e: Exception) {
             databaseHolder.releaseDatabase()
             remoteUpdateCallback.onFailure(e)
-            callback.onBackgroundUpdateFinished(BackgroundUpdateStatus.ERROR, null, e)
+            callback.onRemoteUpdateFinished(RemoteUpdateStatus.ERROR, null, e)
             Log.e(TAG, "Failed to download remote update", e)
           }
 
@@ -307,6 +326,7 @@ class LoaderTask(
             failedAssetCount: Int,
             totalAssetCount: Int
           ) {
+            callback.onRemoteUpdateAssetLoaded(asset, successfulAssetCount, failedAssetCount, totalAssetCount)
           }
 
           override fun onUpdateResponseLoaded(updateResponse: UpdateResponse): Loader.OnUpdateResponseLoadedResult {
@@ -315,10 +335,12 @@ class LoaderTask(
               return when (updateDirective) {
                 is UpdateDirective.RollBackToEmbeddedUpdateDirective -> {
                   isUpToDate = true
+                  callback.onRemoteCheckForUpdateFinished(RemoteCheckResult.RollBackToEmbedded())
                   Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
                 }
                 is UpdateDirective.NoUpdateAvailableUpdateDirective -> {
                   isUpToDate = true
+                  callback.onRemoteCheckForUpdateFinished(RemoteCheckResult.NoUpdateAvailable())
                   Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
                 }
               }
@@ -327,6 +349,7 @@ class LoaderTask(
             val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
             if (updateManifest == null) {
               isUpToDate = true
+              callback.onRemoteCheckForUpdateFinished(RemoteCheckResult.NoUpdateAvailable())
               return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
             }
 
@@ -338,9 +361,12 @@ class LoaderTask(
             ) {
               isUpToDate = false
               callback.onRemoteUpdateManifestResponseManifestLoaded(updateManifest)
+              callback.onRemoteCheckForUpdateFinished(RemoteCheckResult.UpdateAvailable(updateManifest.manifest.getRawJson()))
+              callback.onRemoteUpdateLoadStarted()
               Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
             } else {
               isUpToDate = true
+              callback.onRemoteCheckForUpdateFinished(RemoteCheckResult.NoUpdateAvailable())
               Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
             }
           }
@@ -447,14 +473,14 @@ class LoaderTask(
                   remoteUpdateCallback.onSuccess()
                   if (hasLaunchedSynchronized) {
                     if (availableUpdate == null) {
-                      callback.onBackgroundUpdateFinished(
-                        BackgroundUpdateStatus.NO_UPDATE_AVAILABLE,
+                      callback.onRemoteUpdateFinished(
+                        RemoteUpdateStatus.NO_UPDATE_AVAILABLE,
                         null,
                         null
                       )
                     } else {
-                      callback.onBackgroundUpdateFinished(
-                        BackgroundUpdateStatus.UPDATE_AVAILABLE,
+                      callback.onRemoteUpdateFinished(
+                        RemoteUpdateStatus.UPDATE_AVAILABLE,
                         availableUpdate,
                         null
                       )

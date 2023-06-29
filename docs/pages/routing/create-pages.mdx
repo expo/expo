@@ -7,16 +7,14 @@ sidebar_title: Create pages
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { BookOpen02Icon } from '@expo/styleguide-icons';
+import { Tabs, Tab } from '~/ui/components/Tabs';
 
-The file-based routing convention enables developers to structure their apps logically and intuitively. Expo Router uses this convention to optimize the app by generating native deep links and web routes automatically.
+When a file is created in the **app** directory, it automatically becomes a route in the app. For example, the following files will create the following routes:
 
-The convention is based on the concept of nesting routes inside each other to create shared UI elements, such as tab bars and headers across multiple children. This format should feel familiar to React developers.
-
-File-based routing enables URLs for every page in your app. All routes must be created within the root **app** directory. You can create routes within this directory by defining files using the route name.
 
 - **app/home.js** matches `/home`
 - **app/settings/index.js** matches `/settings`
-- **app/[user].js** matches any unmatched path like `/evanbacon` or `/expo`
+- **app/[user].js** matches dynamic paths like `/expo` or `/evanbacon`
 
 ## Pages
 
@@ -24,17 +22,39 @@ Pages are defined by exporting a React component as the default value from a fil
 
 For example, create the **app** directory in your project and then create a file **index.js** inside it. Then, add the following snippet:
 
-```js app/index.js
-import { Text } from 'react-native';
+<Tabs>
 
-export default function Page() {
-  return <Text>Home page</Text>;
-}
-```
+<Tab label="Universal">
 
-The above example will match the `/` route in the app and the browser Files named **index** adds no path segment to the URL. The route file named **index** at the route of the directory is automatically considered the "index" route for that directory. For example, **app/settings/index.js** will match `/settings` in the app.
+    Render text on any platform with the `<Text>` component from React Native.
 
-> Metro platform extensions (for example, **.ios.js**, **.native.ts**) are not supported. The page can re-export a component from a platform extension file.
+    ```js app/index.js
+    import { Text } from 'react-native';
+
+    export default function Page() {
+      return <Text>Home page</Text>;
+    }
+    ```
+
+</Tab>
+
+<Tab label="Web-only">
+
+    Alternatively, you can write web-only React components such as `<div>`, `<p>`, and so on. However, these won't render on native platforms.
+
+    ```js app/index.js
+    export default function Page() {
+      return <p>Home page</p>;
+    }
+    ```
+
+</Tab>
+
+</Tabs>
+
+The above example matches the `/` route in the app and the browser. Files named **index** match the parent directory and do not add a path segment. For example, **app/settings/index.js** matches `/settings` in the app.
+
+> Platform extensions (for example, **.ios.js**, **.native.ts**) are not supported in the **app** directory. See [Platform-specific modules](/routing/advance/platform-specific-modules), for more information.
 
 ## Dynamic routes
 
@@ -47,7 +67,25 @@ Dynamic routes match any unmatched path at a given segment level.
 
 Routes with higher specificity will be matched before a dynamic route. For example, `/blog/bacon` will match **blog/bacon.js** before **blog/[id].js**.
 
-Multiple slugs can be matched in a single route by using the rest syntax (`...`). For example, **app/blog/[...id].js** will match `/blog/123/settings`.
+Multiple slugs can be matched in a single route by using the rest syntax (`...`). For example, **app/blog/[...id].js**  matches `/blog/123/settings`.
+
+Dynamic segments are accessible as [search parameters](/router/reference/search-parameters) in the page component.
+
+{/* prettier-ignore */}
+```js app/blog/[slug].js
+/* @info Import the <b>useLocalSearchParams</b> React hook */
+import { useLocalSearchParams } from 'expo-router';
+/* @end */
+import { Text } from 'react-native';
+
+export default function Page() {
+  /* @info Access the query parameter named <b>slug</b> */
+  const { slug } = useLocalSearchParams();
+  /* @end */
+
+  return <Text>Blog post: {slug}</Text>;
+}
+```
 
 ## Next steps
 

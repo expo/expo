@@ -10,6 +10,34 @@
 
 ### 💡 Others
 
+## 49.0.0-beta.0 — 2023-06-28
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-alpha.10 — 2023-06-27
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-alpha.9 — 2023-06-24
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-alpha.8 — 2023-06-24
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-alpha.7 — 2023-06-23
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-alpha.6 — 2023-06-22
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-alpha.5 — 2023-06-21
+
+_This version does not introduce any user-facing changes._
+
 ## 49.0.0-alpha.4 — 2023-06-13
 
 ### 📚 3rd party library updates

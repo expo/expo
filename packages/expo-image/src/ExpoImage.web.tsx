@@ -1,4 +1,5 @@
 import React from 'react';
+import { View } from 'react-native-web';
 
 import { ImageNativeProps, ImageSource, ImageLoadEventData } from './Image.types';
 import AnimationManager, { AnimationManagerNode } from './web/AnimationManager';
@@ -49,6 +50,7 @@ function onErrorAdapter(onError?: { (event: { error: string }): void }) {
   };
 }
 
+// Used for some transitions to mimic native animations
 const setCssVariables = (element: HTMLElement, size: DOMRect) => {
   element?.style.setProperty('--expo-image-width', `${size.width}px`);
   element?.style.setProperty('--expo-image-height', `${size.height}px`);
@@ -68,9 +70,9 @@ export default function ExpoImage({
   priority,
   blurRadius,
   recyclingKey,
+  style,
   ...props
 }: ImageNativeProps) {
-  const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
   const imagePlaceholderContentFit = placeholderContentFit || 'scale-down';
   const blurhashStyle = {
     objectFit: placeholderContentFit || contentFit,
@@ -144,22 +146,13 @@ export default function ExpoImage({
         ),
   ];
   return (
-    <div
+    <View
       ref={containerRef}
       className="expo-image-container"
-      // @ts-expect-error
-      style={{
-        aspectRatio: String(aspectRatio),
-        backgroundColor: backgroundColor?.toString(),
-        transform: transform?.toString(),
-        borderColor: borderColor?.toString(),
-        position: 'relative',
-        overflow: 'hidden',
-        ...style,
-      }}>
+      style={[{ overflow: 'hidden' }, style]}>
       <AnimationManager transition={transition} recyclingKey={recyclingKey} initial={initialNode}>
         {currentNode}
       </AnimationManager>
-    </div>
+    </View>
   );
 }

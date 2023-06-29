@@ -9,7 +9,13 @@ import path from 'path';
 import semver from 'semver';
 
 import { runReactNativeCodegenAsync } from '../../Codegen';
-import { EXPO_DIR, IOS_DIR, VERSIONED_RN_IOS_DIR } from '../../Constants';
+import {
+  EXPO_DIR,
+  IOS_DIR,
+  REACT_NATIVE_SUBMODULE_DIR,
+  REACT_NATIVE_SUBMODULE_MONOREPO_ROOT,
+  VERSIONED_RN_IOS_DIR,
+} from '../../Constants';
 import logger from '../../Logger';
 import { getListOfPackagesAsync, Package } from '../../Packages';
 import { copyFileWithTransformsAsync } from '../../Transforms';
@@ -35,7 +41,7 @@ import {
 export { versionVendoredModulesAsync, versionExpoModulesAsync };
 
 const UNVERSIONED_PLACEHOLDER = '__UNVERSIONED__';
-const RELATIVE_RN_PATH = './react-native-lab/react-native';
+const RELATIVE_RN_PATH = path.relative(EXPO_DIR, REACT_NATIVE_SUBMODULE_DIR);
 
 const EXTERNAL_REACT_ABI_DEPENDENCIES = [
   'Analytics',
@@ -216,6 +222,7 @@ async function generateVersionedReactNativeAsync(versionName: string): Promise<v
     'React-Core.podspec',
     'ReactCommon/ReactCommon.podspec',
     'ReactCommon/React-Fabric.podspec',
+    'ReactCommon/React-rncore.podspec',
     'ReactCommon/hermes/React-hermes.podspec',
     'sdks/hermes-engine/hermes-engine.podspec',
     'package.json',
@@ -240,7 +247,11 @@ async function generateVersionedReactNativeAsync(versionName: string): Promise<v
   console.log('Running react-native-codegen');
   await runReactNativeCodegenAsync({
     reactNativeRoot: path.join(EXPO_DIR, RELATIVE_RN_PATH),
-    codegenPkgRoot: path.join(EXPO_DIR, RELATIVE_RN_PATH, 'packages', 'react-native-codegen'),
+    codegenPkgRoot: path.join(
+      REACT_NATIVE_SUBMODULE_MONOREPO_ROOT,
+      'packages',
+      'react-native-codegen'
+    ),
     outputDir: path.join(versionedReactNativePath, 'codegen', 'ios'),
     name: `${versionName}FBReactNativeSpec`,
     type: 'modules',
@@ -248,7 +259,7 @@ async function generateVersionedReactNativeAsync(versionName: string): Promise<v
     jsSrcsDir: path.join(EXPO_DIR, RELATIVE_RN_PATH, 'Libraries'),
     keepIntermediateSchema: true,
   });
-  console.log(`Removing unused generated FBReactNativeSpecJSI files for 0.71`);
+  console.log(`Removing unused generated FBReactNativeSpecJSI files for 0.72`);
   await Promise.all(
     [
       `${versionName}FBReactNativeSpecJSI.h`,
@@ -334,6 +345,7 @@ async function generateReactNativePodScriptAsync(
     'RCTTypeSafety',
     'React-Core',
     'React-jsi',
+    'React-NativeModulesApple',
     'ReactCommon/turbomodule/core',
     'ReactCommon/turbomodule/bridging',
     'React-graphics',
@@ -388,20 +400,28 @@ async function generateReactNativePodScriptAsync(
       find: /^\s+CodegenUtils\.clean_up_build_folder\(.+$/gm,
       replaceWith: '',
     },
+    {
+      find: /^\s+build_codegen!\(.+$/gm,
+      replaceWith: '',
+    },
   ];
 
+  const hermesVersion = await fs.readFile(
+    path.join(REACT_NATIVE_SUBMODULE_DIR, 'sdks', '.hermesversion'),
+    'utf8'
+  );
   const hermesTransforms: StringTransform[] = [
     { find: /^\s+prepare_hermes[.\s\S]*abort unless prep_status == 0\n$/gm, replaceWith: '' },
     {
       find: new RegExp(
-        `^\\s*pod '${versionName}hermes-engine', :podspec => "#\\{react_native_path\\}\\/sdks\\/hermes-engine\\/hermes-engine.podspec"`,
+        `^\\s*pod '${versionName}hermes-engine', :podspec => "#\\{react_native_path\\}\\/sdks\\/hermes-engine\\/hermes-engine.podspec", :tag => hermestag`,
         'gm'
       ),
       replaceWith: `
     if File.exist?("#{react_native_path}/sdks/hermes-engine/destroot")
-      pod '${versionName}hermes-engine', :path => "#{react_native_path}/sdks/hermes-engine", :project_name => '${versionName}'
+      pod '${versionName}hermes-engine', :path => "#{react_native_path}/sdks/hermes-engine", :project_name => '${versionName}', :tag => '${hermesVersion}'
     else
-      pod '${versionName}hermes-engine', :podspec => "#{react_native_path}/sdks/hermes-engine/${versionName}hermes-engine.podspec", :project_name => '${versionName}'
+      pod '${versionName}hermes-engine', :podspec => "#{react_native_path}/sdks/hermes-engine/${versionName}hermes-engine.podspec", :project_name => '${versionName}', :tag => '${hermesVersion}'
     end`,
     },
     { find: new RegExp(`\\b${versionName}(libevent)\\b`, 'g'), replaceWith: '$1' },
@@ -609,27 +629,27 @@ async function generateExpoKitPodspecAsync(
     fileString = fileString.replace(/(?<=s.version = ").*?(?=")/g, versionNumber);
 
     // add Reanimated V2 RCT-Folly dependency
-    fileString = fileString
-      .replace(
-        /(?=Pod::Spec.new do \|s\|)/,
-        `
-folly_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'
-folly_compiler_flags = folly_flags + ' ' + '-Wno-comma -Wno-shorten-64-to-32'
-boost_compiler_flags = '-Wno-documentation'\n\n`
-      )
-      .replace(
-        /(?=  s.subspec "Expo" do \|ss\|)/g,
-        `
+    fileString = fileString.replace(
+      /(?=  s.subspec "Expo" do \|ss\|)/g,
+      `
+  header_search_paths = [
+    '"$(PODS_ROOT)/boost"',
+    '"$(PODS_ROOT)/glog"',
+    '"$(PODS_ROOT)/DoubleConversion"',
+    '"$(PODS_ROOT)/RCT-Folly"',
+    '"$(PODS_ROOT)/Headers/Private/${versionName}React-Core"',
+    '"$(PODS_CONFIGURATION_BUILD_DIR)/${versionName}ExpoModulesCore/Swift Compatibility Header"',
+    '"$(PODS_CONFIGURATION_BUILD_DIR)/${versionName}EXUpdatesInterface/Swift Compatibility Header"',
+    '"$(PODS_CONFIGURATION_BUILD_DIR)/${versionName}EXUpdates/Swift Compatibility Header"',
+  ]
   s.pod_target_xcconfig    = {
+    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
     "USE_HEADERMAP"       => "YES",
-    "HEADER_SEARCH_PATHS" => "\\"$(PODS_TARGET_SRCROOT)/ReactCommon\\" \\"$(PODS_TARGET_SRCROOT)\\" \\"$(PODS_ROOT)/RCT-Folly\\" \\"$(PODS_ROOT)/boost\\" \\"$(PODS_ROOT)/DoubleConversion\\" \\"$(PODS_ROOT)/Headers/Private/React-Core\\" "
+    "DEFINES_MODULE"      => "YES",
+    "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
   }
-  s.compiler_flags = folly_compiler_flags + ' ' + boost_compiler_flags
-  s.xcconfig               = {
-    "HEADER_SEARCH_PATHS" => "\\"$(PODS_ROOT)/boost\\" \\"$(PODS_ROOT)/glog\\" \\"$(PODS_ROOT)/RCT-Folly\\" \\"$(PODS_ROOT)/Headers/Private/${versionName}React-Core\\"",
-    "OTHER_CFLAGS"        => "$(inherited)" + " " + folly_flags
-  }\n\n`
-      );
+  \n\n`
+    );
 
     return fileString;
   });
@@ -804,10 +824,16 @@ if pod_name.start_with?('${versionedPodNames.React}') || pod_name == '${versione
   target_installation_result.native_target.build_configurations.each do |config|
     config.build_settings['OTHER_CFLAGS'] = %w[
       ${configValues.join(`\n${indent}`)}
+      -fmodule-map-file="\${PODS_ROOT}/Headers/Public/${versionName}React-Core/${versionName}React/${versionName}React-Core.modulemap"
+      -fmodule-map-file="\${PODS_ROOT}/Headers/Public/${versionName}ExpoModulesCore/${versionName}ExpoModulesCore.modulemap"
+      -fmodule-map-file="\${PODS_ROOT}/Headers/Public/${versionName}ExpoModulesCore/${versionName}ExpoModulesCore.modulemap"
+      -fmodule-map-file="\${PODS_ROOT}/Headers/Public/${versionName}EXUpdates/${versionName}EXUpdates.modulemap"
+      -fmodule-map-file="\${PODS_ROOT}/Headers/Public/${versionName}EXUpdatesInterface/${versionName}EXUpdatesInterface.modulemap"
     ]
     config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
     config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << '${versionName}RCT_DEV=1'
     config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << '${versionName}RCT_ENABLE_INSPECTOR=0'
+    config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << '${versionName}RCT_REMOTE_PROFILE=0'
     config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << '${versionName}RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION=0'
     # Enable Google Maps support
     config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << '${versionName}HAVE_GOOGLE_MAPS=1'

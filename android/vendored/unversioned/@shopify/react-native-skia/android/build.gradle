@@ -28,6 +28,11 @@ def safeExtGet(prop, fallback) {
 
 apply plugin: 'com.android.library'
 
+def reactNativeArchitectures() {
+  def value = project.getProperties().get("reactNativeArchitectures")
+  return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
+
 static def findNodeModules(baseDir) {
   def basePath = baseDir.toPath().normalize()
   // Node's module resolution algorithm searches up to the root directory,
@@ -76,15 +81,11 @@ if (gradle.startParameter.taskRequests.args[0].toString().contains("Release")) {
     buildType = "debug"
 }
 
-def reactNativeArchitectures() {
-    def value = project.getProperties().get("reactNativeArchitectures")
-    return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
-}
-
 def reactProperties = new Properties()
 file("$nodeModules/react-native/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
 def FULL_RN_VERSION =  (System.getenv("REACT_NATIVE_OVERRIDE_VERSION") ?: reactProperties.getProperty("VERSION_NAME"))
 def REACT_NATIVE_VERSION = FULL_RN_VERSION.split("\\.")[1].toInteger()
+def ENABLE_PREFAB = REACT_NATIVE_VERSION > 68
 
 logger.warn("react-native-skia: RN Version: ${REACT_NATIVE_VERSION} / ${FULL_RN_VERSION}")
 logger.warn("react-native-skia: isSourceBuild: ${sourceBuild}")
@@ -92,6 +93,7 @@ logger.warn("react-native-skia: PrebuiltDir: ${prebuiltDir}")
 logger.warn("react-native-skia: buildType: ${buildType}")
 logger.warn("react-native-skia: buildDir: ${buildDir}")
 logger.warn("react-native-skia: node_modules: ${nodeModules}")
+logger.warn("react-native-skia: Enable Prefab: ${ENABLE_PREFAB}")
 
 buildscript {
     // The Android Gradle plugin is only required when opening the android folder stand-alone.
@@ -135,14 +137,16 @@ android {
         abortOnError false
     }
 
-    externalNativeBuild {
-        cmake {
-            path file('CMakeLists.txt')            
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
         }
     }
 
-    buildFeatures {
-        prefab true
+    externalNativeBuild {
+        cmake {
+            path file('CMakeLists.txt')
+        }
     }
 
     packagingOptions {
@@ -151,8 +155,21 @@ android {
              "**/libfbjni.so",
              "**/libjsi.so",
              "**/libreact_nativemodule_core.so",
-             "**/libturbomodulejsijni.so"
+             "**/libturbomodulejsijni.so",
+             "META-INF/**"
         ]
+    }
+
+    if (ENABLE_PREFAB) {
+        buildFeatures {
+                prefab true
+                prefabPublishing true
+        }
+        prefab {
+            rnskia {
+                headers "${project.buildDir}/headers/rnskia/"
+            }
+        }
     }
 
     // Create new configurations that can be referred to in dependencies.
@@ -211,6 +228,17 @@ dependencies {
     }
 }
 
+afterEvaluate { project ->
+    android.libraryVariants.all { variant ->
+        def name = variant.name.capitalize()
+        def javaCompileTask = variant.javaCompileProvider.get()
+
+        task "jar${name}"(type: Jar, dependsOn: javaCompileTask) {
+            from javaCompileTask.destinationDir
+        }
+    }
+}
+
 task extractAARHeaders {
     doLast {
         configurations.extractHeaders.files.each {
@@ -239,6 +267,29 @@ task extractJNIFiles {
 
 extractJNIFiles.mustRunAfter extractAARHeaders
 
+if (ENABLE_PREFAB) {
+    // Package all the cpp code in a flattened directory structure
+    task prepareHeaders(type: Copy) {
+        from("./cpp")
+        into "${project.buildDir}/headers/rnskia/"
+        includeEmptyDirs = false
+        include "**/*.h"
+        eachFile {
+            String path = it.path
+
+            // Skip flattening third_party dir
+            if (path.contains("api/third_party")) {
+                path = path.substring("api/".length())
+            } else {
+                // flatten anything else
+                path = path.substring(path.lastIndexOf("/") + 1)
+            }
+            it.path = path
+        }
+    }
+    preBuild.dependsOn(prepareHeaders)
+}
+
 def nativeBuildDependsOn(dependsOnTask, variant) {
   def buildTasks = tasks.findAll({ task ->
       !task.name.contains("Clean") && (task.name.contains("externalNative") || task.name.contains("CMake")) })
@@ -250,5 +301,5 @@ def nativeBuildDependsOn(dependsOnTask, variant) {
 
 afterEvaluate {
   nativeBuildDependsOn(extractAARHeaders, null)
-  nativeBuildDependsOn(extractJNIFiles, null)  
+  nativeBuildDependsOn(extractJNIFiles, null)
 }

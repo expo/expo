@@ -30,6 +30,28 @@ export function createInspectorDeviceClass(
       return this.handlers.some((handler) => handler.onDebuggerMessage?.(message, info) ?? false);
     }
 
+    /**
+     * Handle a new device connection with the same device identifier.
+     * When the app and device name matches, we can reuse the debugger connection.
+     * Else, we have to shut the debugger connection down.
+     */
+    handleDuplicateDeviceConnection(newDevice: InstanceType<typeof MetroDeviceClass>) {
+      if (this._app !== newDevice._app || this._name !== newDevice._name) {
+        this._deviceSocket.close();
+        this._debuggerConnection?.socket.close();
+        return;
+      }
+
+      const oldDebugger = this._debuggerConnection;
+      this._debuggerConnection = null;
+
+      if (oldDebugger) {
+        oldDebugger.socket.removeAllListeners();
+        this._deviceSocket.close();
+        newDevice.handleDebuggerConnection(oldDebugger.socket, oldDebugger.pageId);
+      }
+    }
+
     /** Hook into the message life cycle to answer more complex CDP messages */
     async _processMessageFromDevice(message: DeviceRequest<any>, info: DebuggerInfo) {
       if (!this.onDeviceMessage(message, info)) {

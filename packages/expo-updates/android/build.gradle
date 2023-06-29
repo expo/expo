@@ -4,7 +4,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '0.17.0'
+version = '0.18.5'
 
 def ex_updates_native_debug = System.getenv("EX_UPDATES_NATIVE_DEBUG") == "1" ? "true" : "false"
 
@@ -70,7 +70,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 31
-    versionName '0.17.0'
+    versionName '0.18.5'
     consumerProguardFiles("proguard-rules.pro")
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -120,6 +120,7 @@ dependencies {
 
   implementation("com.squareup.okhttp3:okhttp:4.9.2")
   implementation("com.squareup.okhttp3:okhttp-urlconnection:4.9.2")
+  implementation("com.squareup.okhttp3:okhttp-brotli:4.9.2")
   implementation("com.squareup.okio:okio:2.9.0")
   implementation("commons-codec:commons-codec:1.10")
   implementation("commons-io:commons-io:2.6")

@@ -1,6 +1,7 @@
 {
   "name": "expo-docs",
   "version": "48.0.0",
+  "betaVersion": "49.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -98,7 +99,7 @@
     "remark-cli": "^11.0.0",
     "remark-validate-links": "^12.1.0",
     "rimraf": "^3.0.2",
-    "semver": "^7.3.8",
+    "semver": "^7.5.2",
     "sitemap": "^7.1.1",
     "tailwindcss": "^3.3.2",
     "typescript": "^4.9.4",

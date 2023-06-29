@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 9.5.0 — 2023-06-21
+
+### 🎉 New features
+
+- Add `@babel/plugin-proposal-export-namespace-from`. ([#22899](https://github.com/expo/expo/pull/22899) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Bump `babel-plugin-module-resolver` dev dependency. ([#22871](https://github.com/expo/expo/pull/22871) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 9.4.1 — 2023-06-13
 
 ### 📚 3rd party library updates

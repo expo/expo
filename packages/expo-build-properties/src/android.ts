@@ -2,6 +2,7 @@ import {
   AndroidConfig,
   ConfigPlugin,
   History,
+  withAndroidManifest,
   withDangerousMod,
   withGradleProperties,
 } from 'expo/config-plugins';
@@ -65,7 +66,7 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
     },
     {
       propName: 'EX_DEV_CLIENT_NETWORK_INSPECTOR',
-      propValueGetter: (config) => config.android?.unstable_networkInspector?.toString(),
+      propValueGetter: (config) => (config.android?.networkInspector ?? true).toString(),
     },
   ],
   'withAndroidBuildProperties'
@@ -206,4 +207,34 @@ export function updateAndroidProguardRules(
     newContents = appendContents(newContents, newProguardRules, options);
   }
   return newContents;
+}
+
+export const withAndroidCleartextTraffic: ConfigPlugin<PluginConfigType> = (config, props) => {
+  return withAndroidManifest(config, (config) => {
+    if (props.android?.usesCleartextTraffic == null) {
+      return config;
+    }
+
+    config.modResults = setUsesCleartextTraffic(
+      config.modResults,
+      props.android?.usesCleartextTraffic
+    );
+
+    return config;
+  });
+};
+
+function setUsesCleartextTraffic(
+  androidManifest: AndroidConfig.Manifest.AndroidManifest,
+  value: boolean
+) {
+  const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(androidManifest);
+
+  if (mainApplication?.$) {
+    mainApplication.$['android:usesCleartextTraffic'] = String(
+      value
+    ) as AndroidConfig.Manifest.StringBoolean;
+  }
+
+  return androidManifest;
 }

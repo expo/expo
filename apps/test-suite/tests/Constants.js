@@ -21,7 +21,6 @@ export function test(t) {
     );
     [
       'deviceName',
-      'deviceYearClass',
       'installationId',
       'isDevice',
       'sessionId',

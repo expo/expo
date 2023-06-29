@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 13.4.1 — 2023-06-28
+
+### 🐛 Bug fixes
+
+- Resolved an issue on Android where recording a video, even with the mute: true option, would still result in an audio permission exception. Furthermore, the mute flag was incorrectly referred to as muteValue, causing it to be consistently ignored ([#23145](https://github.com/expo/expo/pull/23145) by [@hirbod](https://github.com/hirbod))
+
 ## 13.4.0 — 2023-06-13
 
 - Fixed `Expo camera - Cannot take landscape photos if screen orientation is locked'` on iOS. ([#21938](https://github.com/expo/expo/issues/21938) by [@chalenascholl](https://github.com/chalenascholl)) ([#21956](https://github.com/expo/expo/pull/21956) by [@chalenascholl](https://github.com/chalenascholl))

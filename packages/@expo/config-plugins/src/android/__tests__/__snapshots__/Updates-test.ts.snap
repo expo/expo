@@ -61,11 +61,6 @@ react {
     // hermesFlags = ["-O", "-output-source-map"]
 }
 
-// Override \`hermesEnabled\` by \`expo.jsEngine\`
-ext {
-  hermesEnabled = (findProperty('expo.jsEngine') ?: "hermes") == "hermes"
-}
-
 /**
  * Set this to true to Run Proguard on Release builds to minify the Java bytecode.
  */
@@ -96,6 +91,8 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+
+        buildConfigField("boolean", "REACT_NATIVE_UNSTABLE_USE_RUNTIME_SCHEDULER_ALWAYS", (findProperty("reactNative.unstable_useRuntimeSchedulerAlways") ?: true).toString())
     }
     signingConfigs {
         debug {

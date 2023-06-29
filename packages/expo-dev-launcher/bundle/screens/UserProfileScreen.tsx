@@ -14,6 +14,7 @@ import * as React from 'react';
 import { ActivityIndicator, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { Avatar } from '../components/Avatar';
 import { LogoutConfirmationModal } from '../components/LogoutConfirmationModal';
 import { UserAccount, UserData } from '../functions/getUserProfileAsync';
 import { useModalStack } from '../providers/ModalStackProvider';
@@ -186,8 +187,8 @@ function UserAccountSelector({
   const orgs: UserAccount[] = [];
 
   for (const account of userData.accounts) {
-    if (account != null) {
-      if (account.owner != null) {
+    if (account) {
+      if (account.ownerUserActor) {
         accounts.push(account);
       } else {
         orgs.push(account);
@@ -213,17 +214,20 @@ function UserAccountSelector({
               roundedBottom={isLast ? 'large' : 'none'}
               roundedTop={isFirst ? 'large' : 'none'}>
               <Row align="center" py="small" px="medium" bg="default">
-                <View rounded="full" bg="secondary">
-                  <Image
-                    size="large"
-                    rounded="full"
-                    source={{ uri: account.owner?.profilePhoto }}
-                  />
-                </View>
+                <Avatar
+                  profilePhoto={account?.ownerUserActor?.profilePhoto}
+                  name={
+                    account?.ownerUserActor?.fullName
+                      ? account.ownerUserActor.fullName
+                      : account?.name
+                  }
+                  isOrganization={account?.ownerUserActor === null}
+                  size="large"
+                />
                 <Spacer.Horizontal size="small" />
 
                 <View>
-                  <Heading>{account.owner?.username ?? account.name}</Heading>
+                  <Heading>{account.ownerUserActor?.username ?? account.name}</Heading>
                 </View>
 
                 <Spacer.Vertical />

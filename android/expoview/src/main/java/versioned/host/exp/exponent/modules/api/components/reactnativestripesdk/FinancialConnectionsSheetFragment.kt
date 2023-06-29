@@ -180,16 +180,42 @@ class FinancialConnectionsSheetFragment : Fragment() {
       val map = WritableNativeMap()
       map.putDouble("asOf", balance.asOf * 1000.0)
       map.putString("type", mapFromBalanceType(balance.type))
-      map.putMap("current", balance.current as ReadableMap)
       WritableNativeMap().also {
-        it.putMap("available", balance.cash?.available as ReadableMap)
-        map.putMap("cash", it)
+        for (entry in balance.current.entries) {
+          it.putInt(entry.key, entry.value)
+        }
+        map.putMap("current", it)
       }
-      WritableNativeMap().also {
-        it.putMap("used", balance.credit?.used as ReadableMap)
-        map.putMap("credit", it)
-      }
+      map.putMap("cash", mapFromCashAvailable(balance))
+      map.putMap("credit", mapFromCreditUsed(balance))
+
       return map
+    }
+
+    private fun mapFromCashAvailable(balance: Balance): WritableNativeMap {
+      return WritableNativeMap().also { cashMap ->
+        WritableNativeMap().also { availableMap ->
+          balance.cash?.available?.entries?.let { entries ->
+            for (entry in entries) {
+              availableMap.putInt(entry.key, entry.value)
+            }
+          }
+          cashMap.putMap("available", availableMap)
+        }
+      }
+    }
+
+    private fun mapFromCreditUsed(balance: Balance): WritableNativeMap {
+      return WritableNativeMap().also { creditMap ->
+        WritableNativeMap().also { usedMap ->
+          balance.credit?.used?.entries?.let { entries ->
+            for (entry in entries) {
+              usedMap.putInt(entry.key, entry.value)
+            }
+          }
+          creditMap.putMap("used", usedMap)
+        }
+      }
     }
 
     private fun mapFromAccountBalanceRefresh(balanceRefresh: BalanceRefresh?): WritableMap? {

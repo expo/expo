@@ -6,7 +6,7 @@ index 6590d00d8c..c5c5be559f 100644
 
  def reactNativeThirdParty = new File("$REACT_NATIVE_DIR/ReactAndroid/src/main/jni/third-party")
 
-+REACT_NATIVE_DIR = "${rootDir}/versioned-react-native"
++REACT_NATIVE_DIR = "${rootDir}/versioned-react-native/packages/react-native"
 +REACT_NATIVE_BUILD_FROM_SOURCE = false
 +REACT_NATIVE_SO_DIR = "${buildDir}/reactandroid-{VERSIONED_ABI_NAME}-*/jni"
 +

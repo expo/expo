@@ -4,7 +4,7 @@ import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableType
 import com.facebook.react.uimanager.*
 import com.facebook.react.uimanager.annotations.ReactPropGroup
-import com.facebook.yoga.YogaNode
+import kotlin.math.max
 
 class SafeAreaViewShadowNode : LayoutShadowNode() {
   private var mLocalData: SafeAreaViewLocalData? = null
@@ -65,20 +65,30 @@ class SafeAreaViewShadowNode : LayoutShadowNode() {
     left = PixelUtil.toPixelFromDIP(left)
     val edges = localData.edges
     val insets = localData.insets
-    val insetTop: Float = if (edges.contains(SafeAreaViewEdges.TOP)) insets.top else 0.0f
-    val insetRight: Float = if (edges.contains(SafeAreaViewEdges.RIGHT)) insets.right else 0.0f
-    val insetBottom: Float = if (edges.contains(SafeAreaViewEdges.BOTTOM)) insets.bottom else 0.0f
-    val insetLeft: Float = if (edges.contains(SafeAreaViewEdges.LEFT)) insets.left else 0.0f
     if (localData.mode == SafeAreaViewMode.PADDING) {
-      super.setPadding(Spacing.TOP, insetTop + top)
-      super.setPadding(Spacing.RIGHT, insetRight + right)
-      super.setPadding(Spacing.BOTTOM, insetBottom + bottom)
-      super.setPadding(Spacing.LEFT, insetLeft + left)
+      super.setPadding(Spacing.TOP, getEdgeValue(edges.top, insets.top, top))
+      super.setPadding(Spacing.RIGHT, getEdgeValue(edges.right, insets.right, right))
+      super.setPadding(Spacing.BOTTOM, getEdgeValue(edges.bottom, insets.bottom, bottom))
+      super.setPadding(Spacing.LEFT, getEdgeValue(edges.left, insets.left, left))
     } else {
-      super.setMargin(Spacing.TOP, insetTop + top)
-      super.setMargin(Spacing.RIGHT, insetRight + right)
-      super.setMargin(Spacing.BOTTOM, insetBottom + bottom)
-      super.setMargin(Spacing.LEFT, insetLeft + left)
+      super.setMargin(Spacing.TOP, getEdgeValue(edges.top, insets.top, top))
+      super.setMargin(Spacing.RIGHT, getEdgeValue(edges.right, insets.right, right))
+      super.setMargin(Spacing.BOTTOM, getEdgeValue(edges.bottom, insets.bottom, bottom))
+      super.setMargin(Spacing.LEFT, getEdgeValue(edges.left, insets.left, left))
+    }
+  }
+
+  private fun getEdgeValue(
+      edgeMode: SafeAreaViewEdgeModes,
+      insetValue: Float,
+      edgeValue: Float
+  ): Float {
+    if (edgeMode == SafeAreaViewEdgeModes.OFF) {
+      return edgeValue
+    } else if (edgeMode == SafeAreaViewEdgeModes.MAXIMUM) {
+      return max(insetValue, edgeValue)
+    } else {
+      return insetValue + edgeValue
     }
   }
 

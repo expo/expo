@@ -99,6 +99,11 @@ struct SK_API SkV4 {
     }
     bool operator!=(const SkV4& v) const { return !(*this == v); }
 
+    static SkScalar Dot(const SkV4& a, const SkV4& b) {
+        return a.x*b.x + a.y*b.y + a.z*b.z + a.w*b.w;
+    }
+    static SkV4 Normalize(const SkV4& v) { return v * (1.0f / v.length()); }
+
     SkV4 operator-() const { return {-x, -y, -z, -w}; }
     SkV4 operator+(const SkV4& v) const { return { x + v.x, y + v.y, z + v.z, w + v.w }; }
     SkV4 operator-(const SkV4& v) const { return { x - v.x, y - v.y, z - v.z, w - v.w }; }
@@ -110,6 +115,12 @@ struct SK_API SkV4 {
         return { v.x*s, v.y*s, v.z*s, v.w*s };
     }
     friend SkV4 operator*(SkScalar s, const SkV4& v) { return v*s; }
+
+    SkScalar lengthSquared() const { return Dot(*this, *this); }
+    SkScalar length() const { return SkScalarSqrt(Dot(*this, *this)); }
+
+    SkScalar dot(const SkV4& v) const { return Dot(*this, v); }
+    SkV4 normalize()            const { return Normalize(*this); }
 
     const float* ptr() const { return &x; }
     float* ptr() { return &x; }
