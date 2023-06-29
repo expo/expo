@@ -2234,7 +2234,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (14.2.0):
     - ExpoModulesCore
-  - Expo (49.0.0-beta.0):
+  - Expo (49.0.0-beta.1):
     - ExpoModulesCore
   - ExpoAppleAuthentication (6.1.0):
     - ExpoModulesCore
@@ -2262,7 +2262,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoHaptics (12.4.0):
     - ExpoModulesCore
-  - ExpoImage (1.3.0):
+  - ExpoImage (1.3.1):
     - ExpoModulesCore
     - SDWebImage (~> 5.15.8)
     - SDWebImageAVIFCoder (~> 0.10.0)
@@ -2344,7 +2344,7 @@ PODS:
   - EXTaskManager (11.3.0):
     - ExpoModulesCore
     - UMAppLoader
-  - EXUpdates (0.18.5):
+  - EXUpdates (0.18.6):
     - ASN1Decoder (~> 1.8)
     - EASClient
     - EXManifests
@@ -2354,7 +2354,7 @@ PODS:
     - RCT-Folly (= 2021.07.22.00)
     - ReachabilitySwift
     - React-Core
-  - EXUpdates/Tests (0.18.5):
+  - EXUpdates/Tests (0.18.6):
     - ASN1Decoder (~> 1.8)
     - EASClient
     - EXManifests
@@ -4908,7 +4908,7 @@ SPEC CHECKSUMS:
   EXMediaLibrary: dd08edb824ee92519a989211720956cfd381f212
   EXNotifications: 09394cbd7165f9a4a00a53328aa09bf874bae717
   EXPermissions: 336b5b8409f4e1368a8b0636f04282e7f04ced3b
-  Expo: 9e72fb8ba10f6ee5e95745f69a845b16bceeef00
+  Expo: b882b17556df9703a6f2a5261ca3a2889bfa6e0e
   ExpoAppleAuthentication: 7bdf1a2962ebfe9b00eb4183a17b78d736e57185
   ExpoBattery: e9d7a71960cbc40733d956a29f8ba240173feb08
   ExpoBlur: a2c90bdfa4ff9f459cdb0f83191bddf020e3e2db
@@ -4920,7 +4920,7 @@ SPEC CHECKSUMS:
   ExpoDocumentPicker: 808d6daf4f7da566d589ab4cfb1394fd8f3991fb
   ExpoGL: ed2c434f1f28722eab63bb89f84ae07afdde33c6
   ExpoHaptics: 360af6898407ee4e8265d30a1a8fb16491a660eb
-  ExpoImage: bf714e0101812ccbbd1a4fdbfd34905feeefd9f5
+  ExpoImage: 71811c7cd8f08675a0efe91dd3ce59558b12e7c0
   ExpoImageManipulator: 851be0965dd9f78019771b140282f1816dcc25ea
   ExpoImagePicker: bb2dded9c95c0520d343e3d0ce18fff92780c3bf
   ExpoKeepAwake: be4cbd52d9b177cde0fd66daa1913afa3161fc1d
@@ -4949,7 +4949,7 @@ SPEC CHECKSUMS:
   EXSplashScreen: 04ae8fa26b4954c6a49780c5653860a3613db4a4
   EXStructuredHeaders: 324cc3130571d2696357fafd8be7fd9a0b5fdf6e
   EXTaskManager: f1730c315eb6fe457a3a2ee4ed899a51d717f302
-  EXUpdates: fa9eed08c743d34b18f21f526893645ff16eb246
+  EXUpdates: 432c9d8ef19cadcd962f8114a231761ff242ccd3
   EXUpdatesInterface: 65a425322c67e3c96952b47ac110df3fef65c6b3
   FBAEMKit: c7efe06720a8b15b1d25b68921ba46dee20996e0
   FBAudienceNetwork: e0fcc9091fced34910ed0b6da06f129db46ac9e6

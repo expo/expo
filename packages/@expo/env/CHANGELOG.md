@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Add ability to fully disable dotenv loading with `EXPO_NO_DOTENV` environment variable. ([#23169](https://github.com/expo/expo/pull/23169) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.0.4 — 2023-06-29
+
+### 🎉 New features
+
+- Add ability to fully disable dotenv loading with `EXPO_NO_DOTENV` environment variable. ([#23169](https://github.com/expo/expo/pull/23169) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.0.3 — 2023-05-08
 

@@ -61,7 +61,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (14.2.0):
     - ExpoModulesCore
-  - Expo (49.0.0-beta.0):
+  - Expo (49.0.0-beta.1):
     - ExpoModulesCore
   - expo-dev-client (2.4.2):
     - EXManifests
@@ -173,7 +173,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoHaptics (12.4.0):
     - ExpoModulesCore
-  - ExpoImage (1.3.0):
+  - ExpoImage (1.3.1):
     - ExpoModulesCore
     - SDWebImage (~> 5.15.8)
     - SDWebImageAVIFCoder (~> 0.10.0)
@@ -1381,7 +1381,7 @@ SPEC CHECKSUMS:
   EXMediaLibrary: dd08edb824ee92519a989211720956cfd381f212
   EXNotifications: 09394cbd7165f9a4a00a53328aa09bf874bae717
   EXPermissions: 336b5b8409f4e1368a8b0636f04282e7f04ced3b
-  Expo: 9e72fb8ba10f6ee5e95745f69a845b16bceeef00
+  Expo: b882b17556df9703a6f2a5261ca3a2889bfa6e0e
   expo-dev-client: 95aec73a232c2bcc4dab2f06f5ba1ae65967fa4f
   expo-dev-launcher: 6a5c2bc04d52a2b4208a1ca3540daedc88c73723
   expo-dev-menu: ff9a3b8043c61359a722abf4494a41de41cffdc7
@@ -1397,7 +1397,7 @@ SPEC CHECKSUMS:
   ExpoDocumentPicker: 808d6daf4f7da566d589ab4cfb1394fd8f3991fb
   ExpoGL: ed2c434f1f28722eab63bb89f84ae07afdde33c6
   ExpoHaptics: 360af6898407ee4e8265d30a1a8fb16491a660eb
-  ExpoImage: bf714e0101812ccbbd1a4fdbfd34905feeefd9f5
+  ExpoImage: 71811c7cd8f08675a0efe91dd3ce59558b12e7c0
   ExpoImageManipulator: 851be0965dd9f78019771b140282f1816dcc25ea
   ExpoImagePicker: bb2dded9c95c0520d343e3d0ce18fff92780c3bf
   ExpoInsights: 690de6c211e0d40846f57d28160bb3a2f07ee582
