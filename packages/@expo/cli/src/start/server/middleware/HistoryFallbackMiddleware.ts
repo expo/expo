@@ -1,3 +1,4 @@
+import { withoutInspectorRequests } from './InspectorMiddleware';
 import { parsePlatformHeader } from './resolvePlatform';
 import { ServerMiddleware } from './server.types';
 
@@ -8,8 +9,8 @@ import { ServerMiddleware } from './server.types';
 export class HistoryFallbackMiddleware {
   constructor(private indexMiddleware: ServerMiddleware) {}
 
-  getHandler(): ServerMiddleware {
-    return async (req, res, next) => {
+  getHandler() {
+    return withoutInspectorRequests(async (req, res, next) => {
       const platform = parsePlatformHeader(req);
 
       if (!platform || platform === 'web') {
@@ -19,6 +20,6 @@ export class HistoryFallbackMiddleware {
       }
 
       return next();
-    };
+    });
   }
 }

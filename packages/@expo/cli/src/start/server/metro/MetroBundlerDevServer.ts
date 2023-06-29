@@ -356,9 +356,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // This MUST run last since it's the fallback.
       if (!useWebSSG) {
         middleware.use(
-          withoutInspectorRequests(
-            new HistoryFallbackMiddleware(manifestMiddleware.getHandler().internal).getHandler()
-          )
+          new HistoryFallbackMiddleware(manifestMiddleware.getHandler().internal).getHandler()
         );
       }
     }
