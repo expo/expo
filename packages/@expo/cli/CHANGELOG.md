@@ -18,7 +18,7 @@
 ### 🐛 Bug fixes
 
 - Avoid changing required dependency versions when prebuilding. ([#23146](https://github.com/expo/expo/pull/23146) by [@byCedric](https://github.com/byCedric))
-- Avoid capturing inspector proxy requests when using SSG.
+- Avoid capturing inspector proxy requests when using SSG. ([#23192](https://github.com/expo/expo/pull/23192) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
