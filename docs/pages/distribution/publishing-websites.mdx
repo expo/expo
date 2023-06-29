@@ -21,7 +21,7 @@ Run the universal export command to compile the project for web:
 
 <Terminal cmd={['$ npx expo export -p web']} />
 
-The project files will be output in the **dist** folder. Any files inside the **public** directory will also be copied to the **dist** folder.
+The resulting project files are located in the **dist** directory. Any files inside the **public** directory are also copied to the **dist** directory.
 
 </Tab>
 
@@ -31,7 +31,7 @@ Run the webpack export command to compile the project for web:
 
 <Terminal cmd={['$ npx expo export:web']} />
 
-The project files will be output in the **web-build** folder. Any files inside the **web** directory will also be copied to the **web-build** folder.
+The resulting project files are in the **web-build** directory. Any files inside the **web** directory are also copied to the **web-build** directory.
 
 If you make changes to your project, you'll need to rebuild it for production. Don't edit the **web-build** directory directly.
 
@@ -63,7 +63,7 @@ Otherwise, use the `--single` flag to redirect all requests to the single **dist
 
 <Terminal cmd={['$ npx serve dist --single']} />
 
-Then, open [`http://localhost:5000`](http://localhost:5000) to see your project in action. This method is **HTTP only**, so permissions, camera, location, and many other secure features won't work.
+Open [`http://localhost:5000`](http://localhost:5000) to see your project in action. This method is **HTTP only**, so permissions, camera, location, and many other secure features won't work.
 
 </Tab>
 
@@ -73,7 +73,7 @@ Run the following command to serve the single-page application:
 
 <Terminal cmd={['$ npx serve web-build --single']} />
 
-Then, open [`http://localhost:5000`](http://localhost:5000) to see your project in action. This method is **HTTP only**, so permissions, camera, location, and many other things won't work.
+Open [`http://localhost:5000`](http://localhost:5000) to see your project in action. This method is **HTTP only**, so permissions, camera, location, and many other things won't work.
 
 </Tab>
 
@@ -105,27 +105,27 @@ Configure redirects for single-page applications.
 
 > If your app uses [static rendering](/router/reference/static-rendering), then you can skip this step.
 
-`expo.web.output: 'single'` generates a single-page application. This means there's only one **dist/index.html** file which all requests must be redirected to. This can be done in Netlify by creating a `./public/_redirects` file and redirecting all requests to `/index.html`.
+`expo.web.output: 'single'` generates a single-page application. It means there's only one **dist/index.html** file to which all requests must be redirected. This can be done in Netlify by creating a **./public/_redirects** file and redirecting all requests to **/index.html**.
 
 ```sh public/_redirects
 /*    /index.html   200
 ```
 
-If you modify this file, you will need to rebuild your project with `npx expo export -p web` to have it safely copied into the **dist** directory.
+If you modify this file, you must rebuild your project with `npx expo export -p web` to have it safely copied into the **dist** directory.
 
 </Tab>
 
 <Tab label="webpack">
 
-If your app implements any navigation, you'll need to configure Netlify to redirect requests to the single **web-build/index.html** file. This can be done in Netlify by creating a `./public/_redirects` file and redirecting all requests to `/index.html`.
+If your app implements any navigation, you'll need to configure Netlify to redirect requests to the single **web-build/index.html** file. This can be done in Netlify by creating a **./public/_redirects** file and redirecting all requests to **/index.html**.
 
-Navigate inside the **web-build** directory and run the following command to create **\_redirects** file with rule:
+Navigate inside the **web-build** directory and run the following command to create **\_redirects** file with follwing rule:
 
 ```sh web/_redirects
 /*    /index.html   200
 ```
 
-If you modify this file, you will need to rebuild your project with `npx expo export:web` to have it safely copied into the **web-build** directory.
+If you modify this file, you must rebuild your project with `npx expo export:web` to have it safely copied into the **web-build** directory.
 
 </Tab>
 
@@ -147,7 +147,7 @@ Deploy the web build folder by running the following command:
   </Tab>
 </Tabs>
 
-You will see a URL that you can use to view your project online.
+You'll see a URL that you can use to view your project online.
 
 </Step>
 
@@ -163,7 +163,6 @@ Netlify can also build and deploy when you push to git or open a new pull reques
 
 [Vercel](https://vercel.com/) has a single-command deployment flow.
 
-> For more information on hosting, check out [Vercel's pricing](https://vercel.com/pricing).
 
 <Step label="1">
 
@@ -178,7 +177,7 @@ Install the [Vercel CLI](https://vercel.com/docs/cli).
     <Tab label="Expo Router">
       > If your app uses [static rendering](/router/reference/static-rendering), then you can skip this step.
 
-      `expo.web.output: 'single'` generates a single-page application. This means there's only one **dist/index.html** file which all requests must be redirected to. This can be done in Vercel by creating a `./public/vercel.json` file and redirecting all requests to `/index.html`.
+      `expo.web.output: 'single'` generates a single-page application. It means there's only one **dist/index.html** file to which all requests must be redirected. This can be done in Vercel by creating a **./public/vercel.json** file and redirecting all requests to **/index.html**.
 
       ```json public/vercel.json
       {
@@ -194,7 +193,7 @@ Install the [Vercel CLI](https://vercel.com/docs/cli).
       If you modify this file, you will need to rebuild your project with `npx expo export -p web` to have it safely copied into the **dist** directory.
     </Tab>
     <Tab label="webpack">
-      If your app implements any navigation, you'll need to configure Vercel to redirect requests to the single **web-build/index.html** file. This can be done in Vercel by creating a `./public/vercel.json` file and redirecting all requests to `/index.html`.
+      If your app implements any navigation, you must configure Vercel to redirect requests to the single **web-build/index.html** file. This can be done in Vercel by creating a **`./public/vercel.json` file and redirecting all requests to `/index.html`.**
 
       Navigate inside the **web-build** directory and run the following command to create **\_redirects** file with rule:
 
@@ -239,7 +238,7 @@ Install the [Vercel CLI](https://vercel.com/docs/cli).
     </Tab>
   </Tabs>
 
-You should now see a URL that you can use to view your project online. Paste that URL into your browser when the build is complete, and you will see your deployed app.
+You'll now see a URL that you can use to view your project online. Paste that URL into your browser when the build is complete, and you'll see your deployed app.
 
 </Step>
 
@@ -281,7 +280,7 @@ Review your settings and choose **Save and deploy**. Your app will now be deploy
 
 [GitHub Pages](https://pages.github.com/) allows you to publish a website directly from a GitHub repository.
 
-> Expo Router websites do not support deployment to GitHub Pages yet.
+> **warning** Expo Router websites do not support deployment to GitHub Pages yet.
 
 <Step label="1">
 
