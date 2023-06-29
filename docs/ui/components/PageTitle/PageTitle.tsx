@@ -28,7 +28,9 @@ export const PageTitle = ({ title, packageName, iconUrl, sourceCodeUrl }: Props)
             css={linkStyle}
             title={`View source code of ${packageName} on GitHub`}>
             <GithubIcon className="text-icon-secondary" />
-            <CALLOUT theme="secondary">GitHub</CALLOUT>
+            <CALLOUT crawlable={false} theme="secondary">
+              GitHub
+            </CALLOUT>
           </A>
         )}
         <A
@@ -38,7 +40,9 @@ export const PageTitle = ({ title, packageName, iconUrl, sourceCodeUrl }: Props)
           css={linkStyle}
           title="View package in npm Registry">
           <BuildIcon className="text-icon-secondary" />
-          <CALLOUT theme="secondary">npm</CALLOUT>
+          <CALLOUT crawlable={false} theme="secondary">
+            npm
+          </CALLOUT>
         </A>
       </span>
     )}
