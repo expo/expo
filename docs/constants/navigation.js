@@ -389,15 +389,15 @@ const preview = [
     { expanded: true },
   ]),
   makeSection('Expo Router', [
-    makeGroup('Advance layout patterns', [
-      makePage('router/advance/root-layout.mdx'),
-      makePage('router/advance/stack.mdx'),
-      makePage('router/advance/tabs.mdx'),
-      makePage('router/advance/nesting-navigators.mdx'),
-      makePage('router/advance/drawer.mdx'),
-      makePage('router/advance/modal.mdx'),
-      makePage('router/advance/shared-routes.mdx'),
-      makePage('router/advance/router-settings.mdx'),
+    makeGroup('Advanced', [
+      makePage('router/advanced/root-layout.mdx'),
+      makePage('router/advanced/stack.mdx'),
+      makePage('router/advanced/tabs.mdx'),
+      makePage('router/advanced/nesting-navigators.mdx'),
+      makePage('router/advanced/drawer.mdx'),
+      makePage('router/advanced/modal.mdx'),
+      makePage('router/advanced/shared-routes.mdx'),
+      makePage('router/advanced/router-settings.mdx'),
     ]),
     makeGroup('Reference', [
       makePage('router/reference/search-parameters.mdx'),

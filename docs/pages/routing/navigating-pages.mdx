@@ -91,10 +91,10 @@ import { Link } from 'expo-router';
 export default function Page() {
   return (
     <View>
-      <Link 
-        href={{ 
+      <Link
+        href={{
           /* @info Navigate to <b>/user/bacon</b> */
-          pathname: "/user/[id]", 
+          pathname: "/user/[id]",
           params: { id: 'bacon' }
           /* @end */
         }}>
@@ -116,7 +116,7 @@ import { Link } from 'expo-router';
 export default function Page() {
   return (
     <View>
-      <Link 
+      <Link
         /* @info Navigate to <b>/feed</b> without adding it to the stack. */
         replace
       /* @end */
@@ -130,7 +130,7 @@ export default function Page() {
 
 Use **router.replace()** to replace the current screen imperatively.
 
-Native navigation does not always support `replace`. For example on Twitter, you wouldn't be able to "replace" directly from a profile to a tweet, this is because the UI requires a back button to return to the feed or other top-level tab screen. In this case, replace would switch to the feed tab, and push the tweet route on top of it, or if you were on a different tweet inside the feed tab, it would replace the current tweet with the new tweet. This exact behavior can be obtained in Expo Router by using [`unstable_settings`](/router/advance/router-settings).
+Native navigation does not always support `replace`. For example on Twitter, you wouldn't be able to "replace" directly from a profile to a tweet, this is because the UI requires a back button to return to the feed or other top-level tab screen. In this case, replace would switch to the feed tab, and push the tweet route on top of it, or if you were on a different tweet inside the feed tab, it would replace the current tweet with the new tweet. This exact behavior can be obtained in Expo Router by using [`unstable_settings`](/router/advanced/router-settings).
 
 ## Autocomplete
 
@@ -138,7 +138,7 @@ Expo Router can automatically generate static TypeScript types for all routes in
 
 ## Web behavior
 
-Expo Router supports the standard `<a>` element when running on web, however this will performa a full-page server-navigation. This is slower and doesn't take full advantage of React. Instead, the Expo Router `<Link>` component will perform client-side navigation, this will preserve the state of the website and navigate faster.
+Expo Router supports the standard `<a>` element when running on web. However, this will perform a full-page server-navigation. This is slower and doesn't take full advantage of React. Instead, the Expo Router `<Link>` component will perform client-side navigation, this will preserve the state of the website and navigate faster.
 
 Client-side navigation works with both single-page apps, and [static rendering](/router/reference/static-rendering).
 
