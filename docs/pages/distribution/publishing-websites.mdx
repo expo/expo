@@ -25,7 +25,7 @@ The project files will be output in the **dist** folder. Any files inside the **
 
 </Tab>
 
-<Tab label="Webpack">
+<Tab label="webpack">
 
 Run the webpack export command to compile the project for web:
 
@@ -67,7 +67,7 @@ Then, open [`http://localhost:5000`](http://localhost:5000) to see your project 
 
 </Tab>
 
-<Tab label="Webpack">
+<Tab label="webpack">
 
 Run the following command to serve the single-page application:
 
@@ -115,7 +115,7 @@ If you modify this file, you will need to rebuild your project with `npx expo ex
 
 </Tab>
 
-<Tab label="Webpack">
+<Tab label="webpack">
 
 If your app implements any navigation, you'll need to configure Netlify to redirect requests to the single **web-build/index.html** file. This can be done in Netlify by creating a `./public/_redirects` file and redirecting all requests to `/index.html`.
 
@@ -142,7 +142,7 @@ Deploy the web build folder by running the following command:
     <Terminal cmd={['$ netlify deploy --dir dist']} />
   </Tab>
 
-  <Tab label="Webpack">
+  <Tab label="webpack">
     <Terminal cmd={['$ netlify deploy --dir web-build']} />
   </Tab>
 </Tabs>
@@ -193,7 +193,7 @@ Install the [Vercel CLI](https://vercel.com/docs/cli).
       ```
       If you modify this file, you will need to rebuild your project with `npx expo export -p web` to have it safely copied into the **dist** directory.
     </Tab>
-    <Tab label="Webpack">
+    <Tab label="webpack">
       If your app implements any navigation, you'll need to configure Vercel to redirect requests to the single **web-build/index.html** file. This can be done in Vercel by creating a `./public/vercel.json` file and redirecting all requests to `/index.html`.
 
       Navigate inside the **web-build** directory and run the following command to create **\_redirects** file with rule:
@@ -222,7 +222,7 @@ Install the [Vercel CLI](https://vercel.com/docs/cli).
     <Tab label="Expo Router">
       <Terminal cmd={['# Compiles to ./dist', '$ npx expo export -p web']} />
     </Tab>
-    <Tab label="Webpack">
+    <Tab label="webpack">
       <Terminal cmd={['# Compiles to ./web-build', '$ npx expo export:web']} />
     </Tab>
   </Tabs>
@@ -234,7 +234,7 @@ Install the [Vercel CLI](https://vercel.com/docs/cli).
     <Tab label="Expo Router">
       <Terminal cmd={['$ vercel deploy dist --prebuilt']} />
     </Tab>
-    <Tab label="Webpack">
+    <Tab label="webpack">
       <Terminal cmd={['$ vercel deploy web-build --prebuilt']} />
     </Tab>
   </Tabs>
@@ -382,7 +382,7 @@ The settings will depend on how you built your Expo website:
 2. When prompted **Configure as a single-page app (rewrite all urls to /index.html)**, only select **Yes** if you used `web.output: "single"` (default). Otherwise, select **No**.
 
 </Tab>
-<Tab label="Webpack">
+<Tab label="webpack">
 
 When asked about the public path, make sure to specify the **web-build** directory. Also, when prompted **Configure as a single-page app (rewrite all urls to /index.html)**, select **Yes**.
 
@@ -408,7 +408,7 @@ In the existing `scripts` property of **package.json**, add `predeploy` and `dep
 ```
 
 </Tab>
-<Tab label="Webpack">
+<Tab label="webpack">
 
 {/* prettier-ignore */}
 ```json package.json
