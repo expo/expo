@@ -5,7 +5,7 @@
     "jsx": "react",
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "types": ["node", "jest", "jest-require"],
+    "types": ["jest", "jest-require"],
     "typeRoots": [
       "./ts-declarations",
       "./node_modules/@types",

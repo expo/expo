@@ -147,6 +147,7 @@ export type ViewProps = WebViewProps & Omit<NativeViewProps, 'style' | 'accessib
 
 let View = NativeView as ComponentType<ViewProps>;
 
+// @ts-expect-error: Cannot find name 'process'
 if (process.env.NODE_ENV !== 'production') {
   // Add better errors and warnings in development builds.
   View = createDevView(NativeView) as ComponentType<ViewProps>;
