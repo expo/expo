@@ -1425,7 +1425,7 @@ PODS:
     - ABI49_0_0ExpoModulesCore
   - ABI49_0_0EXPermissions (14.2.0):
     - ABI49_0_0ExpoModulesCore
-  - ABI49_0_0Expo (49.0.0-alpha.10):
+  - ABI49_0_0Expo (49.0.0-beta.0):
     - ABI49_0_0ExpoModulesCore
   - ABI49_0_0ExpoAppleAuthentication (6.1.0):
     - ABI49_0_0ExpoModulesCore
@@ -4784,7 +4784,7 @@ SPEC CHECKSUMS:
   ABI49_0_0EXMediaLibrary: 0e0e244712394523c90e1bda78127d8c76814434
   ABI49_0_0EXNotifications: b8a6fdc20a5c93452177fb980d07d8c1ca73138c
   ABI49_0_0EXPermissions: f43bc5235e58a3bc698d3fadd6aa1ecb27020b05
-  ABI49_0_0Expo: 110e062a5a397647d2f71eaa3e438d82ce636bec
+  ABI49_0_0Expo: 23b845aa7d73f621b1bb0663516ce4fc5369953f
   ABI49_0_0ExpoAppleAuthentication: af85867e111a296a561ddf9d3f659728ee8675d0
   ABI49_0_0ExpoBattery: 9417f9897691a8af49a93047d99b27c2c6c13528
   ABI49_0_0ExpoBlur: 9293857092c742630ef6dadbbd6378c0965cb317
