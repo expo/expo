@@ -29,10 +29,12 @@
     "dotenv": "~16.0.3",
     "dotenv-expand": "~10.0.0",
     "chalk": "^4.0.0",
-    "debug": "^4.3.4"
+    "debug": "^4.3.4",
+    "getenv": "^1.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.15.5"
+    "@babel/core": "^7.15.5",
+    "@types/getenv": "^1.0.0"
   },
   "publishConfig": {
     "access": "public"

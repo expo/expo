@@ -4,14 +4,23 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-
 import chalk from 'chalk';
 import * as dotenv from 'dotenv';
 import { expand } from 'dotenv-expand';
 import * as fs from 'fs';
+import { boolish } from 'getenv';
 import * as path from 'path';
 
+type LoadOptions = {
+  silent?: boolean;
+  force?: boolean;
+};
+
 const debug = require('debug')('expo:env') as typeof console.log;
+
+export function isEnabled(): boolean {
+  return !boolish('EXPO_NO_DOTENV', false);
+}
 
 export function createControlledEnvironment() {
   const IS_DEBUG = require('debug').enabled('expo:env');
@@ -19,13 +28,21 @@ export function createControlledEnvironment() {
   let userDefinedEnvironment: NodeJS.ProcessEnv | undefined = undefined;
   let memoEnvironment: NodeJS.ProcessEnv | undefined = undefined;
 
-  function _getForce(projectRoot: string): Record<string, string | undefined> {
+  function _getForce(
+    projectRoot: string,
+    options: LoadOptions = {}
+  ): Record<string, string | undefined> {
+    if (!isEnabled()) {
+      debug(`Skipping .env files because EXPO_NO_DOTENV is defined`);
+      return {};
+    }
+
     if (!userDefinedEnvironment) {
       userDefinedEnvironment = { ...process.env };
     }
 
     // https://github.com/bkeepers/dotenv#what-other-env-files-can-i-use
-    const dotenvFiles = getFiles(process.env.NODE_ENV);
+    const dotenvFiles = getFiles(process.env.NODE_ENV, options);
 
     const loadedEnvFiles: string[] = [];
     const parsed: dotenv.DotenvParseOutput = {};
@@ -85,20 +102,26 @@ export function createControlledEnvironment() {
   }
 
   /** Get the environment variables without mutating the environment. This returns memoized values unless the `force` property is provided. */
-  function get(
-    projectRoot: string,
-    { force }: { force?: boolean } = {}
-  ): Record<string, string | undefined> {
-    if (!force && memoEnvironment) {
+  function get(projectRoot: string, options: LoadOptions = {}): Record<string, string | undefined> {
+    if (!isEnabled()) {
+      debug(`Skipping .env files because EXPO_NO_DOTENV is defined`);
+      return {};
+    }
+    if (!options.force && memoEnvironment) {
       return memoEnvironment;
     }
-    memoEnvironment = _getForce(projectRoot);
+    memoEnvironment = _getForce(projectRoot, options);
     return memoEnvironment;
   }
 
   /** Load environment variables from .env files and mutate the current `process.env` with the results. */
-  function load(projectRoot: string, { force }: { force?: boolean } = {}) {
-    const env = get(projectRoot, { force });
+  function load(projectRoot: string, options: LoadOptions = {}) {
+    if (!isEnabled()) {
+      debug(`Skipping .env files because EXPO_NO_DOTENV is defined`);
+      return process.env;
+    }
+
+    const env = get(projectRoot, options);
     process.env = { ...process.env, ...env };
     return process.env;
   }
@@ -110,14 +133,26 @@ export function createControlledEnvironment() {
   };
 }
 
-export function getFiles(mode: string | undefined): string[] {
+export function getFiles(
+  mode: string | undefined,
+  { silent = false }: Pick<LoadOptions, 'silent'> = {}
+): string[] {
+  if (!isEnabled()) {
+    debug(`Skipping .env files because EXPO_NO_DOTENV is defined`);
+    return [];
+  }
+
   if (!mode) {
-    console.error(
-      chalk.red(
-        'The NODE_ENV environment variable is required but was not specified. Ensure the project is bundled with Expo CLI or NODE_ENV is set.'
-      )
-    );
-    console.error(chalk.red('Proceeding without mode-specific .env'));
+    if (silent) {
+      debug('NODE_ENV is not defined, proceeding without mode-specific .env');
+    } else {
+      console.error(
+        chalk.red(
+          'The NODE_ENV environment variable is required but was not specified. Ensure the project is bundled with Expo CLI or NODE_ENV is set.'
+        )
+      );
+      console.error(chalk.red('Proceeding without mode-specific .env'));
+    }
   }
 
   if (mode && !['development', 'test', 'production'].includes(mode)) {

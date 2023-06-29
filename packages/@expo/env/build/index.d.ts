@@ -5,10 +5,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { getFiles } from './env';
-declare const get: (projectRoot: string, { force }?: {
+import { getFiles, isEnabled } from './env';
+declare const get: (projectRoot: string, options?: {
+    silent?: boolean | undefined;
     force?: boolean | undefined;
-}) => Record<string, string | undefined>, load: (projectRoot: string, { force }?: {
+}) => Record<string, string | undefined>, load: (projectRoot: string, options?: {
+    silent?: boolean | undefined;
     force?: boolean | undefined;
 }) => NodeJS.ProcessEnv;
-export { getFiles, get, load };
+export { getFiles, get, load, isEnabled };
