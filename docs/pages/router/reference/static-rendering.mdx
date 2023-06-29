@@ -6,6 +6,9 @@ hideFromSearch: true
 
 import { Terminal } from '~/ui/components/Snippet';
 import { FileTree } from '~/ui/components/FileTree';
+import { Step } from '~/ui/components/Step';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+import { APIBox } from '~/components/plugins/APIBox';
 
 > Available from Expo SDK 49 and Expo Router v2.
 
@@ -13,20 +16,28 @@ To enable Search Engine Optimization (SEO) on the web you must statically render
 
 ## Setup
 
-Start by enabling static rendering in the project's [app config](/versions/latest/config/app/) (only available when `web.bundler` is set to `metro`):
+<Step label="1">
+  Enable metro bundler and static rendering in the project's [app config](/versions/latest/config/app/):
 
 ```json app.json
 {
   "expo": {
+    /* @hide ... */
+    /* @end */
     "web": {
+      /* @info Static rendering is only supported with Metro bundler and Expo Router */
       "bundler": "metro",
+      /* @end */
       "output": "static"
     }
   }
 }
 ```
 
-Next, if you have a **metro.config.js** in your project, ensure it extends `expo/metro-config` as shown below:
+</Step>
+
+<Step label="2">
+  If you have a **metro.config.js** file in your project, ensure it extends **expo/metro-config** as shown below:
 
 ```js metro.config.js
 // Learn more: https://docs.expo.dev/guides/customizing-metro/
@@ -40,17 +51,51 @@ const config = getDefaultConfig(__dirname, {
 module.exports = config;
 ```
 
-Finally, start the development server:
+</Step>
 
-<Terminal cmd={['$ npx expo start']} />
+<Step label="3">
+  Expo Router requires at least `react-refresh@0.14.0`. React Native hasn't upgraded yet, so you need to force upgrade your `react-refresh` version by setting a Yarn resolution or npm override.
+
+  <Tabs>
+    <Tab label="Yarn">
+        ```json package.json
+        {
+          /* @hide ... */
+          /* @end */
+          "resolutions": {
+            "react-refresh": "~0.14.0"
+          }
+        }
+        ```
+    </Tab>
+    <Tab label="npm">
+        ```json package.json
+        {
+          /* @hide ... */
+          /* @end */
+          "overrides": {
+            "react-refresh": "~0.14.0"
+          }
+        }
+        ```
+    </Tab>
+  </Tabs>
+</Step>
+
+<Step label="4">
+  Finally, start the development server:
+
+  <Terminal cmd={['$ npx expo start']} />
+</Step>
 
 ## Production
 
-To bundle your static website for production, run the following command:
+To bundle your static website for production, run the universal export command:
 
 <Terminal cmd={['$ npx expo export --platform web']} />
 
-This will create a **dist** directory with your statically rendered website. You can test this production build locally by running the following command and opening the linked URL in your browser:
+This will create a **dist** directory with your statically rendered website. If you have files in a local **public** directory, these will be copied over as well.
+You can test the production build locally by running the following command and opening the linked URL in your browser:
 
 <Terminal cmd={['$ npx serve dist']} />
 
@@ -64,7 +109,9 @@ The `static` output will generate HTML files for each route. This means dynamic 
 import { Text } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 
-export async function generateStaticParams() {
+/* @info This method is run in a Node.js environment at build-time. */
+export async function generateStaticParams(): Promise<Record<string, string>[]> {
+  /* @end */
   const posts = await getPosts();
   // Return an array of params to generate static HTML files for.
   // Each entry in the array will be a new page.
@@ -81,6 +128,48 @@ export default function Page() {
 This will output a file for each post in the **dist** directory. For example, if the `generateStaticParams` method returned `[{ id: "alpha" }, { id: "beta" }]`, the following files would be generated:
 
 <FileTree files={['dist/blog/alpha.html', 'dist/blog/beta.html']} />
+
+<APIBox header="generateStaticParams">
+
+A server-only function evaluated at build-time in a Node.js environment by Expo CLI. This means it has access to `__dirname`, `process.cwd()`, `process.env`, and more. It also has access to every environment variable that's available in the process, not just the values prefixed with **EXPO*PUBLIC***. **generateStaticParams** is not run in a browser environment, so it cannot access browser APIs like **localStorage** or **document**, nor can it access native Expo APIs such as **expo-camera** or **expo-location**.
+
+```js app/[id].tsx
+export async function generateStaticParams(): Promise<Record<string, string>[]> {
+  /* @info Prints the current working directory */
+  console.log(process.cwd());
+  /* @end */
+
+  return [];
+}
+```
+
+**generateStaticParams** cascades from nested parents down to children. The cascading parameters are passed to every dynamic child route that exports **generateStaticParams**.
+
+```js app/[id]/_layout.tsx
+export async function generateStaticParams(): Promise<Record<string, string>[]> {
+  /* @info Any dynamic children that export <b>generateStaticParams</b> will be invoked once for every entry in the array. */
+  return [{ id: 'one' }, { id: 'two' }];
+  /* @end */
+}
+```
+
+Now the dynamic child routes will be invoked twice, once with `{ id: 'one' }` and once with `{ id: 'two' }`. All variations must be accounted for.
+
+```js app/[id]/[comment].tsx
+export async function generateStaticParams(params: {
+  id: 'one' | 'two',
+}): Promise<Record<string, string>[]> {
+  const comments = await getComments(params.id);
+  return comments.map(comment => ({
+    /* @info Ensure the parent properties are passed down too. */
+    ...params,
+    /* @end */
+    comment: comment.id,
+  }));
+}
+```
+
+</APIBox>
 
 ## Root HTML
 

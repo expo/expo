@@ -5,6 +5,7 @@ description: Different ways to publish the Expo web app with third-party service
 
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { Tab, Tabs } from '~/ui/components/Tabs';
 
 A web app created using Expo can be served locally for testing out the production behavior. Once the testing phase checks out, you can choose from a variety of third-party services to host it.
 
@@ -12,9 +13,25 @@ A web app created using Expo can be served locally for testing out the productio
 
 Creating a build of the project is the first step to publishing a web app. Whether you want to serve it locally or host it on a third-party service, you'll need to export all JavaScript and assets of a project. This is known as a static bundle. It can be exported by running the following command:
 
+<Tabs>
+
+<Tab label="Expo Router">
+
+Run the universal export command to compile the project for web:
+
+<Terminal cmd={['$ npx expo export -p web']} />
+
+The resulting project files are located in the **dist** directory. Any files inside the **public** directory are also copied to the **dist** directory.
+
+</Tab>
+
+<Tab label="webpack">
+
+Run the webpack export command to compile the project for web:
+
 <Terminal cmd={['$ npx expo export:web']} />
 
-The above command uses webpack to [optimize the project](https://webpack.js.org/configuration/optimization/). It creates a production-ready static bundle in the **web-build** directory at the root of your project.
+The resulting project files are in the **web-build** directory. Any files inside the **web** directory are also copied to the **web-build** directory.
 
 If you make changes to your project, you'll need to rebuild it for production. Don't edit the **web-build** directory directly.
 
@@ -26,15 +43,204 @@ If you make changes to your project, you'll need to rebuild it for production. D
 > }
 > ```
 
-### Serve Locally
+</Tab>
 
-[Serve CLI](https://www.npmjs.com/package/serve) provides a quick way to test locally how your app works in production. Run the following command to serve the static bundle:
+</Tabs>
 
-<Terminal cmd={['$ npx serve web-build']} />
+## Serve Locally
 
-Then, open [`http://localhost:5000`](http://localhost:5000) to see your project in action. This method is **HTTP only**, so permissions, camera, location, and many other things won't work.
+Use [Serve CLI](https://www.npmjs.com/package/serve) to quickly test locally how your website will be hosted in production. Run the following command to serve the static bundle:
+
+<Tabs>
+
+<Tab label="Expo Router">
+
+If you're using [static rendering](/router/reference/static-rendering), then you can serve the static bundle with the following command:
+
+<Terminal cmd={['$ npx serve dist']} />
+
+Otherwise, use the `--single` flag to redirect all requests to the single **dist/index.html** file.
+
+<Terminal cmd={['$ npx serve dist --single']} />
+
+Open [`http://localhost:5000`](http://localhost:5000) to see your project in action. This method is **HTTP only**, so permissions, camera, location, and many other secure features won't work.
+
+</Tab>
+
+<Tab label="webpack">
+
+Run the following command to serve the single-page application:
+
+<Terminal cmd={['$ npx serve web-build --single']} />
+
+Open [`http://localhost:5000`](http://localhost:5000) to see your project in action. This method is **HTTP only**, so permissions, camera, location, and many other things won't work.
+
+</Tab>
+
+</Tabs>
 
 ## Hosting on third-party services
+
+### Netlify
+
+[Netlify](https://www.netlify.com/) is a mostly-unopinionated platform for deploying web apps. This has the highest compatibility with Expo web apps as it makes few assumptions about the framework.
+
+#### Manual deployment with the Netlify CDN
+
+<Step label="1">
+
+Install the Netlify CLI by running the following command:
+
+<Terminal cmd={['$ npm install -g netlify-cli']} />
+
+</Step>
+
+<Step label="2">
+
+Configure redirects for single-page applications.
+
+<Tabs>
+
+<Tab label="Expo Router">
+
+> If your app uses [static rendering](/router/reference/static-rendering), then you can skip this step.
+
+`expo.web.output: 'single'` generates a single-page application. It means there's only one **dist/index.html** file to which all requests must be redirected. This can be done in Netlify by creating a **./public/_redirects** file and redirecting all requests to **/index.html**.
+
+```sh public/_redirects
+/*    /index.html   200
+```
+
+If you modify this file, you must rebuild your project with `npx expo export -p web` to have it safely copied into the **dist** directory.
+
+</Tab>
+
+<Tab label="webpack">
+
+If your app implements any navigation, you'll need to configure Netlify to redirect requests to the single **web-build/index.html** file. This can be done in Netlify by creating a **./public/_redirects** file and redirecting all requests to **/index.html**.
+
+Navigate inside the **web-build** directory and run the following command to create **\_redirects** file with follwing rule:
+
+```sh web/_redirects
+/*    /index.html   200
+```
+
+If you modify this file, you must rebuild your project with `npx expo export:web` to have it safely copied into the **web-build** directory.
+
+</Tab>
+
+</Tabs>
+
+</Step>
+
+<Step label="3">
+
+Deploy the web build folder by running the following command:
+
+<Tabs>
+  <Tab label="Expo Router">
+    <Terminal cmd={['$ netlify deploy --dir dist']} />
+  </Tab>
+
+  <Tab label="webpack">
+    <Terminal cmd={['$ netlify deploy --dir web-build']} />
+  </Tab>
+</Tabs>
+
+You'll see a URL that you can use to view your project online.
+
+</Step>
+
+#### Continuous delivery
+
+Netlify can also build and deploy when you push to git or open a new pull request:
+
+- [Start a new Netlify project](https://app.netlify.com/signup).
+- Pick your Git hosting service and select your repository.
+- Click **Build your site**.
+
+### Vercel
+
+[Vercel](https://vercel.com/) has a single-command deployment flow.
+
+
+<Step label="1">
+
+Install the [Vercel CLI](https://vercel.com/docs/cli).
+
+<Terminal cmd={['$ npm install -g vercel@latest']} />
+
+</Step>
+<Step label="2">
+  Configure redirects for single-page applications.
+  <Tabs>
+    <Tab label="Expo Router">
+      > If your app uses [static rendering](/router/reference/static-rendering), then you can skip this step.
+
+      `expo.web.output: 'single'` generates a single-page application. It means there's only one **dist/index.html** file to which all requests must be redirected. This can be done in Vercel by creating a **./public/vercel.json** file and redirecting all requests to **/index.html**.
+
+      ```json public/vercel.json
+      {
+        "version": 2,
+        "routes": [
+          {
+            "src": "/(.*)",
+            "dest": "/"
+          }
+        ]
+      }
+      ```
+      If you modify this file, you will need to rebuild your project with `npx expo export -p web` to have it safely copied into the **dist** directory.
+    </Tab>
+    <Tab label="webpack">
+      If your app implements any navigation, you must configure Vercel to redirect requests to the single **web-build/index.html** file. This can be done in Vercel by creating a **`./public/vercel.json` file and redirecting all requests to `/index.html`.**
+
+      Navigate inside the **web-build** directory and run the following command to create **\_redirects** file with rule:
+
+      ```json web/vercel.json
+      {
+        "version": 2,
+        "routes": [
+          {
+            "src": "/(.*)",
+            "dest": "/"
+          }
+        ]
+      }
+      ```
+      If you modify this file, you will need to rebuild your project with `npx expo export:web` to have it safely copied into the **web-build** directory.
+
+    </Tab>
+
+  </Tabs>
+</Step>
+
+<Step label="3">
+  Compile the Expo website.
+  <Tabs>
+    <Tab label="Expo Router">
+      <Terminal cmd={['# Compiles to ./dist', '$ npx expo export -p web']} />
+    </Tab>
+    <Tab label="webpack">
+      <Terminal cmd={['# Compiles to ./web-build', '$ npx expo export:web']} />
+    </Tab>
+  </Tabs>
+</Step>
+
+<Step label="4">
+  Deploy the website.
+  <Tabs>
+    <Tab label="Expo Router">
+      <Terminal cmd={['$ vercel deploy dist --prebuilt']} />
+    </Tab>
+    <Tab label="webpack">
+      <Terminal cmd={['$ vercel deploy web-build --prebuilt']} />
+    </Tab>
+  </Tabs>
+
+You'll now see a URL that you can use to view your project online. Paste that URL into your browser when the build is complete, and you'll see your deployed app.
+
+</Step>
 
 ### AWS Amplify Console
 
@@ -70,108 +276,11 @@ Review your settings and choose **Save and deploy**. Your app will now be deploy
 
 </Step>
 
-### Vercel
-
-[Vercel](https://vercel.com/) has a single-command zero-config deployment flow.
-
-> For more information on unlimited hosting, check out [Vercel's pricing](https://vercel.com/pricing).
-
-<Step label="1">
-
-[Install the Vercel CLI](https://vercel.com/download).
-
-</Step>
-
-<Step label="2">
-
-Build your Expo web app with the `npx expo export:web` command.
-
-</Step>
-
-<Step label="3">
-
-To deploy, navigate to the **web-build** directory and run the `vercel` command:
-
-<Terminal cmd={['$ cd web-build', '', '$ vercel']} cmdCopy="cd web-build && vercel" />
-
-You should now see a URL that you can use to view your project online. Paste that URL into your browser when the build is complete, and you will see your deployed app.
-
-</Step>
-
-### Surge
-
-[Surge](https://surge.sh/) offers static web publishing directly from a command line interface.
-
-<Step label="1">
-
-[Install the surge CLI.](https://surge.sh/help/getting-started-with-surge)
-
-</Step>
-
-<Step label="2">
-
-Run the `surge` command, then log in or create a new account.
-
-</Step>
-
-<Step label="3">
-
-You will be prompted to specify the project path. Make sure to specify the **web-build** folder. For example:
-
-<Terminal cmd={['$ project path: /path/to/expo-project/web-build']} />
-
-</Step>
-
-> To support routers that use the HTML 5 `pushState` API, you'll need to rename the **web-build/index.html** to **web/200.html** before deploying.
-
-### Netlify
-
-[Netlify](https://www.netlify.com/) is a platform for deploying web apps.
-
-#### Manual deployment with the Netlify CDN
-
-<Step label="1">
-
-Install the Netlify CLI by running the following command:
-
-<Terminal cmd={['$ npm install -g netlify-cli']} />
-
-</Step>
-
-<Step label="2">
-
-If your app uses routes, add a **\_redirects** file inside the **web-build** directory so the client has complete control over the routing logic. This file should contain the `/* /index.html 200` rule.
-
-Navigate inside the **web-build** directory and run the following command to create **\_redirects** file with rule:
-
-<Terminal
-  cmd={['$ cd web-build', '', '$ echo "/* /index.html 200" > "_redirects"']}
-  cmdCopy='cd web-build && echo "/* /index.html 200" > "_redirects"'
-/>
-
-</Step>
-
-<Step label="3">
-
-To deploy your app, choose **web-build** as the publish directory. You start the deployment process by running the following command:
-
-<Terminal cmd={['$ netlify deploy']} />
-
-You will see a URL that you can use to view your project online.
-
-</Step>
-
-#### Continuous delivery
-
-Netlify can also build and deploy when you push to git or open a new pull request:
-
-- [Start a new Netlify project](https://app.netlify.com/signup).
-- Pick your Git hosting service and select your repository.
-- Click **Build your site**.
-
 ### GitHub Pages
 
 [GitHub Pages](https://pages.github.com/) allows you to publish a website directly from a GitHub repository.
+
+> **warning** Expo Router websites do not support deployment to GitHub Pages yet.
 
 <Step label="1">
 
@@ -263,13 +372,42 @@ Then, initialize your firebase project to host by running the command:
 
 <Terminal cmd={['$ firebase init']} />
 
+The settings will depend on how you built your Expo website:
+
+<Tabs>
+<Tab label="Expo Router">
+
+1. When asked about the public path, make sure to specify the **dist** directory.
+2. When prompted **Configure as a single-page app (rewrite all urls to /index.html)**, only select **Yes** if you used `web.output: "single"` (default). Otherwise, select **No**.
+
+</Tab>
+<Tab label="webpack">
+
 When asked about the public path, make sure to specify the **web-build** directory. Also, when prompted **Configure as a single-page app (rewrite all urls to /index.html)**, select **Yes**.
+
+</Tab>
+</Tabs>
 
 </Step>
 
 <Step label="4">
 
 In the existing `scripts` property of **package.json**, add `predeploy` and `deploy` properties. Each has the following values:
+
+<Tabs>
+<Tab label="Expo Router">
+
+{/* prettier-ignore */}
+```json package.json
+"scripts": {
+  /* @hide ... */ /* @end */
+  "predeploy": "expo export -p web",
+  "deploy-hosting": "npm run predeploy && firebase deploy --only hosting",
+}
+```
+
+</Tab>
+<Tab label="webpack">
 
 {/* prettier-ignore */}
 ```json package.json
@@ -279,6 +417,9 @@ In the existing `scripts` property of **package.json**, add `predeploy` and `dep
   "deploy-hosting": "npm run predeploy && firebase deploy --only hosting",
 }
 ```
+
+</Tab>
+</Tabs>
 
 </Step>
 
@@ -297,7 +438,7 @@ In case you want to change the header for hosting add the following config for `
   "hosting": [
     {
       /* @hide ... */ /* @end */
-  "headers": [
+      "headers": [
         {
           "source": "/**",
           "headers": [
