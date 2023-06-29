@@ -1,6 +1,6 @@
 ---
 title: Router Settings
-description: Learn about upcoming and experimental features for Expo Router.
+description: Learn how to configure layouts with static properties in Expo Router.
 hideTOC: true
 sidebar_title: Settings
 ---
@@ -8,13 +8,11 @@ sidebar_title: Settings
 import { APIBox } from '~/components/plugins/APIBox';
 import { FileTree } from '~/ui/components/FileTree';
 
-> **warning** This guide refers to upcoming Expo Router features which are experimental, not covered by semantic versioning and you may need to be using the latest version on `main`.
+> **warning** **Warning:** `unstable_settings` currently do not work with [async routes](/router/reference/async-routes/) (development-only). This is why the feature is designated _unstable_.
 
 <APIBox header="initialRouteName">
 
 When deep-linking to a route may want to provide a user with a "back" button. The `initialRouteName` sets the default screen of the stack and should match a valid filename (without the extension).
-
-> `initialRouteName` is ignored on Web.
 
 <FileTree files={['app/_layout.js', 'app/index.js', 'app/other.js']} />
 
