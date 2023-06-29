@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixed an issue where recyclingKey would reset the image source on mount. ([#23187](https://github.com/expo/expo/pull/23187) by [@hirbod](https://github.com/hirbod))
+- Fixed an issue where recyclingKey would reset the image source on mount. ([#23187](https://github.com/expo/expo/pull/23187) by [@hirbod](https://github.com/hirbod))
 
 ### 💡 Others
 
