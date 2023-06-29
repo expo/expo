@@ -7,69 +7,73 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 
-If you don't have an Android device available to test with, we recommend using the default emulator that comes with Android Studio.
-If you run into any problems setting it up, follow the steps in this guide.
+If you don't have an Android device available to test with, we recommend using the default emulator that comes with Android Studio. If you run into any problems setting it up, follow the steps in this guide.
 
 ## Set up Android Studio's tools
 
 <Step label="1">
 
-[Download](https://developer.android.com/studio) and install Android Studio 3.0+.
+[Download](https://developer.android.com/studio) and install Android Studio.
 
 </Step>
 
 <Step label="2">
 
-Select **"Standard"** for the **"Install Type"** inside the wizard.
+Open the **Android Studio** app, click **More Actions** and then select **SDK Manager**.
 
 </Step>
 
 <Step label="3">
-Inside Android Studio, go to **Preferences > Appearance & Behavior > System Settings > Android SDK**.
-Click on the **"SDK Tools"** tab and make sure you have at least one version of the **"Android SDK Build-Tools"** installed.
+
+Open Android Studio, go to **Preferences** &gt; **Appearance & Behavior** &gt; **System Settings** &gt; **Android SDK**. From **SDK Platforms**, select the latest Android version (API level).
+
+<ImageSpotlight alt="Android SDK Platforms" src="/static/images/android-studio/sdk-platforms.png" />
+
+Then, click on the **SDK Tools** tab and make sure you have at least one version of the **Android SDK Build-Tools** and **Android Emulator** installed.
 
 <ImageSpotlight
-  alt="Android SDK build tools"
-  src="/static/images/android-studio-build-tools.png"
+  alt="Android SDK build tools."
+  src="/static/images/android-studio/build-tools.png"
 />
 </Step>
 
 <Step label="4">
-Copy or remember the path listed in the box that says **"Android SDK Location"**.
+Copy or remember the path listed in the box that says **Android SDK Location**.
 
 <ImageSpotlight
-  alt="Android SDK location"
-  src="/static/images/android-studio-sdk-location.png"
+  alt="Android SDK location."
+  src="/static/images/android-studio/sdk-location.png"
 />
 </Step>
 
 <Step label="5">
-If you are on macOS or Linux, add an [environment variable](https://developer.android.com/studio/command-line/variables#envar) pointing to the Android SDK location
-in `~/.bash_profile` (or `~/.zshenv` if you use Zsh) - for example:`export ANDROID_HOME=/your/path/here`. Copy and paste these two lines to do this automatically for Bash and Zsh:
 
-```bash
-[ -d "$HOME/Library/Android/sdk" ] && ANDROID_HOME=$HOME/Library/Android/sdk || ANDROID_HOME=$HOME/Android/Sdk
-echo "export ANDROID_HOME=$ANDROID_HOME" >> ~/`[[ $SHELL == *"zsh" ]] && echo '.zshenv' || echo '.bash_profile'`
-```
+Click **Apply** and **OK** to install the Android SDK and related build tools.
 
 </Step>
 
 <Step label="6">
-On macOS, you will also need to add `platform-tools` to your `~/.bash_profile` (or `~/.zshenv` if you use Zsh) - for example: `export PATH=/your/path/here:$PATH`.
-Copy and paste this line to do this automatically for Bash and Zsh:
 
-```bash
-echo "export PATH=$ANDROID_HOME/platform-tools:\$PATH" >> ~/`[[ $SHELL == *"zsh" ]] && echo '.zshenv' || echo '.bash_profile'`
-```
+If you are on macOS or Linux, add an [environment variable](https://developer.android.com/studio/command-line/variables#envar) pointing to the Android SDK location in **~/.bash_profile** (or **~/.zshrc** if you use Zsh). For example: `export ANDROID_HOME=/your/path/here`.
+
+Add the following lines to your **/.zprofile** or **~/.zshrc** (if you are using bash, then **~/.bash_profile** or **~/.bashrc**) config file:
+
+<Terminal
+  cmd={[
+    'export ANDROID_HOME=$HOME/Library/Android/sdk',
+    'export PATH=$PATH:$ANDROID_HOME/emulator',
+    'export PATH=$PATH:$ANDROID_HOME/platform-tools',
+  ]}
+  cmdCopy="export ANDROID_HOME=$HOME/Library/Android/sdk && export PATH=$PATH:$ANDROID_HOME/emulator && export PATH=$PATH:$ANDROID_HOME/platform-tools"
+/>
 
 </Step>
 
 <Step label="7">
-Reload the path environment variables by running:
 
-```bash
-source ~/`[[ $SHELL == *"zsh" ]] && echo '.zshenv' || echo '.bash_profile'`
-```
+Reload the path environment variables in your current shell:
+
+<Terminal cmd={['# for bash', 'source $HOME/.bashrc', '', '# for zsh', 'source $HOME/.zshrc']} />
 
 </Step>
 
@@ -82,54 +86,65 @@ Finally, make sure that you can run `adb` from your terminal.
 ## Set up a virtual device
 
 <Step label="1">
-On the Android Studio main screen, click **"More Actions"**, then **"Virtual Device Manager"** in the dropdown.
+On the Android Studio main screen, click **More Actions**, then **Virtual Device Manager** in the dropdown.
 
 <ImageSpotlight
-  alt="Android Studio configure"
-  src="/static/images/android-studio-configure.png"
+  alt="Android Studio configure."
+  src="/static/images/android-studio/virtual-device.png"
   containerStyle={{ paddingBottom: 0 }}
 />
 
-If you already have a project, then the menu will show up under the three dots menu in the top right corner of the window.
-
-<ImageSpotlight
-  alt="Android Studio configure alternate"
-  src="/static/images/android-studio-configure-2.png"
-  containerStyle={{ paddingBottom: 0 }}
-/>
 </Step>
 
 <Step label="2">
-Press the **"Create device"** button.
+
+Click the **Create device** button.
 
 <ImageSpotlight
-  alt="Android Studio create virtual device"
-  src="/static/images/android-studio-avd-manager.png"
+  alt="Android Studio create virtual device."
+  src="/static/images/android-studio/create-device.png"
   containerStyle={{ paddingBottom: 0 }}
 />
+
 </Step>
 
 <Step label="3">
-  Choose the type of hardware you'd like to emulate. We recommend testing against a variety of
-  devices, but if you're unsure where to start, the newest device in the Pixel line could be a good
-  choice.
+
+Under **Select Hardware**, choose the type of hardware you'd like to emulate. We recommend testing against a variety of devices, but if you're unsure where to start, the newest device in the Pixel line could be a good choice.
+
+<ImageSpotlight
+  alt="Android Studio create virtual device hardware selection."
+  src="/static/images/android-studio/select-hardware.png"
+  containerStyle={{ paddingBottom: 0 }}
+/>
+
 </Step>
 
 <Step label="4">
-  Select an OS version to load on the emulator (probably one of the system images in the
-  **"Recommended"** tab), and download the image.
+
+Select an OS version to load on the emulator (probably one of the system images in the **Recommended** tab), and download the image.
+
+<ImageSpotlight
+  alt="Android Studio create virtual device os selection."
+  src="/static/images/android-studio/select-os.png"
+  containerStyle={{ paddingBottom: 0 }}
+/>
+
 </Step>
 
 <Step label="5">
-  Change any other settings you'd like, and press **"Finish"** to create the virtual device. You can
-  now run this device anytime by pressing the Play button in the AVD Manager window.
+
+Change any other settings you'd like, and press **Finish** to create the virtual device. You can now run this device anytime by pressing the Play button in the AVD Manager window.
+
 </Step>
 
 ### Multiple `adb` versions
 
-Having multiple `adb` versions on your system can result in the error `adb server version (xx) doesn't match this client (xx); killing...`
+Having multiple `adb` versions on your system can result in the following error:
 
-This is because the adb version on your system is different from the adb version on the android sdk platform-tools.
+<Terminal cmd={["$ adb server version (xx) doesn't match this client (xx); killing..."]} />
+
+This is because the `adb` version on your system is different from the `adb` version on the Android SDK platform-tools.
 
 <Step label="1">
 Open the terminal and check the `adb` version on the system:
