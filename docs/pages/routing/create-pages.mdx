@@ -11,7 +11,6 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
 
 When a file is created in the **app** directory, it automatically becomes a route in the app. For example, the following files will create the following routes:
 
-
 - **app/home.js** matches `/home`
 - **app/settings/index.js** matches `/settings`
 - **app/[user].js** matches dynamic paths like `/expo` or `/evanbacon`
@@ -54,7 +53,7 @@ For example, create the **app** directory in your project and then create a file
 
 The above example matches the `/` route in the app and the browser. Files named **index** match the parent directory and do not add a path segment. For example, **app/settings/index.js** matches `/settings` in the app.
 
-> Platform extensions (for example, **.ios.js**, **.native.ts**) are not supported in the **app** directory. See [Platform-specific modules](/routing/advance/platform-specific-modules), for more information.
+> Platform extensions (for example, **.ios.js**, **.native.ts**) are not supported in the **app** directory. See [Platform-specific modules](/router/advance/platform-specific-modules), for more information.
 
 ## Dynamic routes
 
@@ -67,7 +66,7 @@ Dynamic routes match any unmatched path at a given segment level.
 
 Routes with higher specificity will be matched before a dynamic route. For example, `/blog/bacon` will match **blog/bacon.js** before **blog/[id].js**.
 
-Multiple slugs can be matched in a single route by using the rest syntax (`...`). For example, **app/blog/[...id].js**  matches `/blog/123/settings`.
+Multiple slugs can be matched in a single route by using the rest syntax (`...`). For example, **app/blog/[...id].js** matches `/blog/123/settings`.
 
 Dynamic segments are accessible as [search parameters](/router/reference/search-parameters) in the page component.
 
