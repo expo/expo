@@ -67,7 +67,7 @@ const checkCompleteUnavailableAction = assign({
 });
 
 const checkErrorAction = assign({
-  // @ts-ignore: FIXME
+  // @ts-expect-error
   isChecking: () => false,
   checkError: (event: UpdatesStateMachineEvent) => new Error(event.body?.message || 'checkError'),
 });
@@ -86,7 +86,7 @@ const downloadCompleteAction = assign({
 });
 
 const downloadErrorAction = assign({
-  // @ts-ignore: FIXME
+  // @ts-expect-error
   downloadError: (event: UpdatesStateMachineEvent) =>
     new Error(event.body?.message || 'downloadError'),
   isDownloading: () => false,

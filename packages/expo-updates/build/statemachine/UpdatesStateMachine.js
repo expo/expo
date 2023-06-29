@@ -28,7 +28,7 @@ const checkCompleteUnavailableAction = assign({
     isRollback: () => false,
 });
 const checkErrorAction = assign({
-    // @ts-ignore: FIXME
+    // @ts-expect-error
     isChecking: () => false,
     checkError: (event) => new Error(event.body?.message || 'checkError'),
 });
@@ -41,7 +41,7 @@ const downloadCompleteAction = assign({
     isUpdateAvailable: (context, event) => event.body?.manifest !== undefined || context.isUpdateAvailable,
 });
 const downloadErrorAction = assign({
-    // @ts-ignore: FIXME
+    // @ts-expect-error
     downloadError: (event) => new Error(event.body?.message || 'downloadError'),
     isDownloading: () => false,
 });
