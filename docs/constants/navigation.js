@@ -407,6 +407,7 @@ const preview = [
       makePage('router/reference/typed-routes.mdx'),
       makePage('router/reference/authentication.mdx'),
       makePage('router/reference/screen-tracking.mdx'),
+      makePage('router/reference/src-directory.mdx'),
       makePage('router/reference/troubleshooting.mdx'),
       makePage('router/reference/faq.mdx'),
     ]),
