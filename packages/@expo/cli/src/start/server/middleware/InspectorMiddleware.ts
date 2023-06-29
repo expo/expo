@@ -9,7 +9,8 @@ const PAGES_LIST_JSON_URL = '/json';
 const PAGES_LIST_JSON_URL_2 = '/json/list';
 const PAGES_LIST_JSON_VERSION_URL = '/json/version';
 
-function isInspectorRequest(req: ServerRequest) {
+/** Exposed for testing */
+export function isInspectorRequest(req: ServerRequest) {
   const ua = req.headers['user-agent'];
   const url = req.url;
 
@@ -30,7 +31,8 @@ function isInspectorRequest(req: ServerRequest) {
   ].includes(url);
 }
 
-function isWebRequest(req: ServerRequest) {
+/** Exposed for testing */
+export function isWebRequest(req: ServerRequest) {
   const platform = parsePlatformHeader(req);
   return !platform || platform === 'web';
 }
