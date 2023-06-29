@@ -190,7 +190,9 @@ function getDefaultConfig(projectRoot, options = {}) {
     // when sass isn't installed.
     sourceExts.push('scss', 'sass', 'css');
   }
-  const envFiles = runtimeEnv().getFiles(process.env.NODE_ENV);
+  const envFiles = runtimeEnv().getFiles(process.env.NODE_ENV, {
+    silent: true
+  });
   const babelConfigPath = getProjectBabelConfigFile(projectRoot);
   const isCustomBabelConfigDefined = !!babelConfigPath;
   const resolverMainFields = [];
