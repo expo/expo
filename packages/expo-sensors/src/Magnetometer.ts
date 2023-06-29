@@ -37,7 +37,7 @@ export class MagnetometerSensor extends DeviceSensor<MagnetometerMeasurement> {
 
   /**
    * Subscribe for updates to the magnetometer.
-   * @param listener A callback that is invoked when a barometer update is available. When invoked, the listener is provided with a single argument that is `MagnetometerMeasurement`.
+   * @param listener A callback that is invoked when a magnetometer update is available. When invoked, the listener is provided with a single argument that is `MagnetometerMeasurement`.
    * @return A subscription that you can call `remove()` on when you would like to unsubscribe the listener.
    */
   addListener(listener: Listener<MagnetometerMeasurement>): Subscription {
