@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed an issue where recyclingKey would reset the image source on mount.
+
 ### 💡 Others
 
 ## 1.3.0 — 2023-06-13
