@@ -47,6 +47,7 @@
   "expo-in-app-purchases": "~14.3.0",
   "expo-insights": "~0.2.0",
   "expo-intent-launcher": "~10.7.0",
+  "expo-insights": "~0.2.0",
   "expo-keep-awake": "~12.3.0",
   "expo-linear-gradient": "~12.3.0",
   "expo-linking": "~5.0.2",
