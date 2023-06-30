@@ -87,7 +87,7 @@ export function SidebarCollapsible(props: Props) {
             css={!isOpen && chevronClosedStyle}
           />
         </div>
-        <CALLOUT>{info.name}</CALLOUT>
+        <CALLOUT crawlable={false}>{info.name}</CALLOUT>
       </ButtonBase>
       {isOpen && (
         <div aria-hidden={!isOpen ? 'true' : 'false'} css={childrenContainerStyle}>
