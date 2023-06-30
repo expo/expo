@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed ios build errors in `use_frameworks!` mode. ([#23218](https://github.com/expo/expo/pull/23218) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 3.1.4 — 2023-06-28
