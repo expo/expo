@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix expo-extra-params header. ([#23206](https://github.com/expo/expo/pull/23206) by [@wschurman](https://github.com/wschurman))
+
 ### 💡 Others
 
 ## 0.18.6 — 2023-06-29
