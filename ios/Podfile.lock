@@ -1618,6 +1618,7 @@ PODS:
   - ABI49_0_0ExpoScreenOrientation (6.0.1):
     - ABI49_0_0ExpoModulesCore
     - ABI49_0_0React-Core
+    - ExpoScreenOrientation
     - RCT-Folly (= 2021.07.22.00)
   - ABI49_0_0ExpoSecureStore (12.3.0):
     - ABI49_0_0ExpoModulesCore
@@ -4812,7 +4813,7 @@ SPEC CHECKSUMS:
   ABI49_0_0ExpoNetwork: 028f02f5d15379f89e529b37982559e445f86ab9
   ABI49_0_0ExpoPrint: 8065c3f088efcad86befd6ead6c2bc8adb425f24
   ABI49_0_0ExpoRandom: 83829ccecffd4afbdd4f711e053639e2109df0b6
-  ABI49_0_0ExpoScreenOrientation: 246531771c12e546098bfbac9fb44b0efc174830
+  ABI49_0_0ExpoScreenOrientation: 708f0a5e64698ac2775e227ca0b14418a37fda30
   ABI49_0_0ExpoSecureStore: 05b26374e173878efda9267822d64825c80f652e
   ABI49_0_0ExpoSharing: e915ee89f06fe8f6985bf35a5a854c44612f34d5
   ABI49_0_0ExpoSMS: 78e004b964755de5f25d07c5ad1aa09d968723ad
@@ -5055,6 +5056,6 @@ SPEC CHECKSUMS:
   Yoga: 1d6727ed193122f6adaf435c3de1a768326ff83b
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: e93fdba4b82928a5067623f67dca0603beb4d28e
+PODFILE CHECKSUM: 491e3a079001c45b62dcc853ab4973929f96a0c3
 
 COCOAPODS: 1.12.1
