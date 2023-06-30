@@ -87,16 +87,25 @@ describe('get', () => {
       '/'
     );
     expect(envRuntime.get('/')).toEqual({
-      FOO: 'default',
+      env: {
+        FOO: 'default',
+      },
+      files: [],
     });
 
     fs.writeFileSync('/.env', 'FOO=changed');
 
     expect(envRuntime.get('/')).toEqual({
-      FOO: 'default',
+      env: {
+        FOO: 'default',
+      },
+      files: [],
     });
     expect(envRuntime.get('/', { force: true })).toEqual({
-      FOO: 'changed',
+      env: {
+        FOO: 'changed',
+      },
+      files: [],
     });
   });
 });
