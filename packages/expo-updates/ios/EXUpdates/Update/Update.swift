@@ -135,24 +135,25 @@ public class Update: NSObject {
     config: UpdatesConfig,
     database: UpdatesDatabase
   ) throws -> Update {
-    // Sanity check for remotely getting a manifest through a tunnel
-    // from a dev-server, where manifest is modern but no protocol header
-    if withManifest["releaseId"] == nil {
-      return NewUpdate.update(
-        withNewManifest: NewManifest(rawManifestJSON: withManifest),
-        extensions: extensions,
-        config: config,
-        database: database
-      )
-    }
     let protocolVersion = responseHeaderData.protocolVersion
     switch protocolVersion {
     case nil:
-      return LegacyUpdate.update(
-        withLegacyManifest: LegacyManifest(rawManifestJSON: withManifest),
-        config: config,
-        database: database
-      )
+      // Sanity check for the correct type of manifest
+      switch withManifest["releaseId"] {
+      case nil:
+        return NewUpdate.update(
+          withNewManifest: NewManifest(rawManifestJSON: withManifest),
+          extensions: extensions,
+          config: config,
+          database: database
+        )
+      default:
+        return LegacyUpdate.update(
+          withLegacyManifest: LegacyManifest(rawManifestJSON: withManifest),
+          config: config,
+          database: database
+        )
+      }
     case 0, 1:
       return NewUpdate.update(
         withNewManifest: NewManifest(rawManifestJSON: withManifest),
