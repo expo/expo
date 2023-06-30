@@ -1,6 +1,6 @@
 ---
 title: Deep linking
-description: Learn how to use universal/app links to open your app from a standard web URL.
+description: Learn how to use app/unviversal links to open your app from a standard web URL.
 ---
 
 import { ConfigReactNative } from '~/components/plugins/ConfigSection';
@@ -9,16 +9,16 @@ import { Step } from '~/ui/components/Step';
 import { CODE } from '~/ui/components/Text';
 import { Terminal } from '~/ui/components/Snippet';
 
-Unlike standard deep links which use a custom URL scheme, universal links are regular HTTPS links that point to a specific route in your app. If your app isn't installed on when a user opens the link, they'll be taken to the associated website. This allows you to send notification emails with links that work as expected in the web browser on a desktop, while opening the content in your app on mobile. Android refers to this concept as "app links" and iOS refers to it as "universal links". In this section, universal links that do not use a custom URL scheme are specifically discussed.
+Universal links are different from standard deep links as they use regular HTTPS links to direct users to a specific route in your app. If a user doesn't have your app installed, the link will take them to the associated website. This allows you to send notification emails with links that work seamlessly on desktop web browsers while opening the content in your app on mobile. Android refers to this concept as **app links**, and iOS refers to it as **universal links**. This guide specifically discusses universal links that do not use a custom URL scheme.
 
 > Deferred deep links can be implemented with [`react-native-branch`](https://github.com/expo/config-plugins/tree/main/packages/react-native-branch).
 
-Before you can use App/Universal Links, you must setup the two-way association between website and app, for both iOS and Android:
+Before you can use an app/universal links, you've to setup the two-way association between the website and app for both Android and iOS:
 
 1. **Native app verification:** This requires some form of code signing that references the target website domain (URL).
-2. **Website verification:** This requires a file to be hosted on the target website in the `/.well-known` directory.
+2. **Website verification:** This requires a file to be hosted on the target website in the **/.well-known** directory.
 
-After the two-way association is setup, you need to setup runtime routing of the link in your app. This is done in JavaScript and must be configured for every route, then coordinated between web and native. Expo offers a fully automated solution for this called [Expo Router](/router/introduction).
+After the two-way association is setup, you've to setup the runtime routing of the link in your app. This is done in JavaScript and must be configured for every route, then coordinated between web and native. Expo offers a fully automated solution for this called [Expo Router](/router/introduction).
 
 > Universal links cannot be tested in the Expo Go app. You need to create a [development build](/develop/development-builds/introduction).
 
@@ -28,11 +28,11 @@ Universal links on iOS require a paid Apple Developer account as you must associ
 
 ### Native Apple configuration
 
-After deploying your AASA, you must also configure your app to use your associated domain:
+After deploying your apple-app-site-association (AASA) file, you must also configure your app to use your associated domain:
 
-Add [`expo.ios.associatedDomains`](/versions/latest/config/app/#associateddomains) to your [app config](/workflow/configuration/), and make sure to follow [Apple's specified format](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_associated-domains). Make sure _not_ to include the protocol (`https`) in your URL, this is a common mistake that will result in your universal links not working.
+Add [`expo.ios.associatedDomains`](/versions/latest/config/app/#associateddomains) to your [app config](/workflow/configuration/), and make sure to follow [Apple's specified format](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_associated-domains). Make sure _not_ to include the protocol (`https`) in your URL. This is a common mistake that will result in the universal links not working.
 
-For example, if an associated website is `https://expo.dev/`, the app links will be:
+For example, if an associated website is `https://expo.dev/`, the app links are:
 
 ```json app.json
 {
@@ -63,11 +63,11 @@ If you enable through the [Apple Developer Console](/build-reference/ios-capabil
 
 ### AASA configuration
 
-On the web-side, you must host a config file from `/.well-known/apple-app-site-association` (with no extension). This file contains JSON which specifies your Apple Developer Team ID, Bundler ID, and a list of supported paths to redirect to the native app.
+On the web-side, you've to host a config file from **/.well-known/apple-app-site-association** (with no extension). This file JSON specifies your Apple Developer Team ID, Bundler ID, and a list of supported paths to redirect to the native app.
 
 > You can run the **experimental** CLI command `npx setup-safari` to automatically register a bundle identifier to your Apple account, assign entitlements to the ID, and create an iTunes app entry in the store. The local setup will be printed and you can skip most the following. This is the easiest way to get started with universal links on iOS.
 
-If you're using [Expo Router](/router/introduction) to build your website (or another modern React framework like Remix, Next.js, etc.), create the file at `public/.well-known/apple-app-site-association`, legacy Expo Webpack projects can create the file at `web/.well-known/apple-app-site-association`.
+If you're using [Expo Router](/router/introduction) to build your website (or another modern React framework like Remix, Next.js, and so on), create the file at **public/.well-known/apple-app-site-association**. Legacy Expo webpack projects can create the file at **web/.well-known/apple-app-site-association**.
 
 ```json public/.well-known/apple-app-site-association
 {
@@ -152,11 +152,11 @@ To support all iOS versions, you can provide both the above formats in your `det
 
 Note that iOS will download your AASA when your app is first installed and when updates are installed from the App Store, but it will not refresh any more frequently. If you wish to change the paths in your AASA for a production app, you will need to issue a full update via the App Store so that all of your users' apps re-fetch your AASA and recognize the new paths.
 
-At this point, opening a link to your website on your mobile device should now open your app! If it doesn't, re-check the previous steps to ensure that your AASA is valid, the path is specified in the AASA, and you have correctly configured your App ID in the [Apple Developer Console](https://developer.apple.com/account/resources/identifiers/list). Once you've got your app opening, move to the [Handling links into your app](/guides/linking/#handling-links) section for details on how to handle the inbound link and show the user the content they requested.
+Now, a link to your website on your mobile device should open your app. If it doesn't, re-check the previous steps to ensure that your AASA is valid, the path is specified in the AASA, and you have correctly configured your App ID in the [Apple Developer Console](https://developer.apple.com/account/resources/identifiers/list). Once you've got your app opened, move to the [Handling links into your app](/guides/linking/#handling-links) section for details on how to handle the inbound link and show the user the content they requested.
 
 ### Apple Smart Banner
 
-If the user doesn't have your app installed, they'll be directed to the website. You can use the [Apple Smart Banner](https://developer.apple.com/documentation/webkit/promoting_apps_with_smart_app_banners) to show a banner at the top of the page that prompts the user to install the app. The banner will only be shown if the user is on a mobile device and doesn't have the app installed.
+If a user doesn't have your app installed, they'll be directed to the website. You can use the [Apple Smart Banner](https://developer.apple.com/documentation/webkit/promoting_apps_with_smart_app_banners) to show a banner at the top of the page that prompts the user to install the app. The banner only shows if the user is on a mobile device and doesn't have the app installed.
 
 To enable the banner, add the following meta tag to the `<head>` of your website, replacing `{ITUNES_ID}` with your app's iTunes ID:
 
@@ -168,7 +168,7 @@ If you're having trouble setting up the banner, run the following command to aut
 
 <Terminal cmd={['$ npx setup-safari']} />
 
-If you're building a [statically rendered website with Expo Router](/router/reference/static-rendering), then you should add this HTML tag to the **<head>** component in your [**app/+html.js** file](/router/reference/static-rendering#root-html).
+If you're building a [statically rendered website with Expo Router](/router/reference/static-rendering), then add this HTML tag to the `<head>` component in your [**app/+html.js** file](/router/reference/static-rendering#root-html).
 
 ```jsx app/+html.js
 export default function Root({ children }) {
@@ -188,7 +188,7 @@ export default function Root({ children }) {
 }
 ```
 
-The next time you deploy your website, the banner should appear when you visit it on a mobile device that doesn't have your app installed.
+Next time you deploy your website, the banner should appear when you visit it on a mobile device that doesn't have your app installed.
 
 ## Deep links on Android
 
@@ -223,12 +223,12 @@ Implementing deep links on Android (without a custom URL scheme) is somewhat sim
 
 It may be desirable for links to your domain to always open your app (without presenting the user a dialog where they can choose the browser or a different handler). You can implement this with Android App Links, which use a similar verification process as Universal Links on iOS.
 
-Create a JSON file for the website verification (aka [digital asset links](https://developers.google.com/digital-asset-links/v1/getting-started) file) at `public/.well-known/assetlinks.json` (or `web/.well-known/assetlinks.json` for legacy Expo Webpack websites), and collect the following information:
+Create a JSON file for the website verification (a.k.a. [digital asset links](https://developers.google.com/digital-asset-links/v1/getting-started) file) at **public/.well-known/assetlinks.json** (or **web/.well-known/assetlinks.json** for legacy Expo webpack websites), and collect the following information:
 
-- `package_name`: The Android [application ID](https://docs.expo.dev/versions/latest/config/app/#package) of your app (e.g. `com.bacon.app`). This can be found in the `app.json` file under `expo.android.package`.
+- `package_name`: The Android [application ID](/versions/latest/config/app/#package) of your app (for example, `com.bacon.app`). This can be found in the **app.json** file under `expo.android.package`.
 - `sha256_cert_fingerprints`: The SHA256 fingerprints of your app’s signing certificate. This can be obtained in one of two ways:
   1. After building an Android app with EAS Build, run `eas credentials -p android` and select the profile you wish to obtain the fingerprint for. The fingerprint will be listed under `SHA256 Fingerprint`.
-  2. by visiting the [Play Console](https://play.google.com/console/) developer account under **Release > Setup > App Integrity > App Signing**; if you do, then you'll also find the correct Digital Asset Links JSON snippet for your app on the same page. The value will look like `14:6D:E9:83...`
+  2. By visiting the [Play Console](https://play.google.com/console/) developer account under **Release > Setup > App Integrity > App Signing**. If you do, then you'll also find the correct Digital Asset Links JSON snippet for your app on the same page. The value will look like `14:6D:E9:83...`
 
 ```json public/.well-known/assetlinks.json
 [
@@ -402,7 +402,7 @@ Expo CLI enables you to test your universal links without deploying a website. U
   ]}
 />
 
-## Trouble Shooting
+## Troubleshooting
 
 - Ensure your apple app site association file is valid by using a [validator tool](https://branch.io/resources/aasa-validator/).
 - Ensure your website is served over HTTPS.
@@ -410,7 +410,7 @@ Expo CLI enables you to test your universal links without deploying a website. U
 - [Verify Android app links](https://developer.android.com/training/app-links/verify-android-applinks)
 - Ensure both website verification files are served with `content-type` `application/json`.
 - Android verification may take up to 20 seconds to take effect.
-- If you update your web files, be sure to rebuild the native app to trigger a server update on the vendor-side (Apple, Google).
+- If you update your web files, rebuild the native app to trigger a server update on the vendor side (Google, Apple).
 
 ## When to not use deep links
 
