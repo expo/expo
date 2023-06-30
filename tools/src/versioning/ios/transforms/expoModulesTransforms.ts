@@ -153,7 +153,10 @@ export function getCommonExpoModulesTransforms(prefix: string): FileTransforms {
   };
 }
 
-export function getVersioningModuleConfig(prefix: string, moduleName: string): VersioningModuleConfig {
+export function getVersioningModuleConfig(
+  prefix: string,
+  moduleName: string
+): VersioningModuleConfig {
   const config: Record<string, VersioningModuleConfig> = {
     'expo-constants': {
       mutatePodspec: removeScriptPhasesAndResourceBundles,
@@ -176,10 +179,10 @@ export function getVersioningModuleConfig(prefix: string, moduleName: string): V
               '',
               'typealias ScreenOrientationRegistry = ExpoScreenOrientation.ScreenOrientationRegistry',
               'typealias ScreenOrientationController = ExpoScreenOrientation.ScreenOrientationController',
-              ''
+              '',
             ].join('\n'),
           },
-        ]
+        ],
       },
       mutatePodspec(podspec: Podspec) {
         // Versioned screen orientation must depend on unversioned copy to use unversioned singleton object.
@@ -190,7 +193,7 @@ export function getVersioningModuleConfig(prefix: string, moduleName: string): V
         }
         podspec.dependencies[unversionedName] = [];
       },
-    }
+    },
   };
   return config[moduleName] ?? {};
 }

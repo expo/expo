@@ -9,9 +9,12 @@ import logger from '../../Logger';
 import { Package } from '../../Packages';
 import { FileTransforms, copyFileWithTransformsAsync } from '../../Transforms';
 import { arrayize, searchFilesAsync } from '../../Utils';
-import { getCommonExpoModulesTransforms, getVersioningModuleConfig } from './transforms/expoModulesTransforms';
-import { getVersionPrefix, getVersionedDirectory } from './utils';
 import { VersioningModuleConfig } from '../types';
+import {
+  getCommonExpoModulesTransforms,
+  getVersioningModuleConfig,
+} from './transforms/expoModulesTransforms';
+import { getVersionPrefix, getVersionedDirectory } from './utils';
 
 // Label of the console's timer used during versioning
 const TIMER_LABEL = 'Versioning expo modules finished in';
@@ -53,7 +56,12 @@ export async function versionExpoModulesAsync(
     const moduleConfig = getVersioningModuleConfig(prefix, pkg.packageName);
 
     // Create a podspec in JSON format so we don't have to keep `package.json`s
-    const podspec = await generateVersionedPodspecAsync(pkg, prefix, targetDirectory, moduleConfig.mutatePodspec);
+    const podspec = await generateVersionedPodspecAsync(
+      pkg,
+      prefix,
+      targetDirectory,
+      moduleConfig.mutatePodspec
+    );
 
     // Find files within the package based on source_files in the podspec, except the podspec itself.
     // Podspecs depend on the corresponding `package.json`,
@@ -97,7 +105,7 @@ async function generateVersionedPodspecAsync(
   pkg: Package,
   prefix: string,
   targetDirectory: string,
-  mutator?: VersioningModuleConfig['mutatePodspec'],
+  mutator?: VersioningModuleConfig['mutatePodspec']
 ): Promise<Podspec> {
   const podspec = await pkg.getPodspecAsync();
 
