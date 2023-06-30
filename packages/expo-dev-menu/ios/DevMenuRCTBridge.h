@@ -2,7 +2,7 @@
 
 #import <React/RCTBridge+Private.h>
 
-#import "DevClientAppDelegate.h"
+#import <EXDevMenu/DevClientAppDelegate.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

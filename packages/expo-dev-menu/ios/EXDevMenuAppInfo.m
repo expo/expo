@@ -1,5 +1,5 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
-#import "EXDevMenuAppInfo.h"
+#import <EXDevMenu/EXDevMenuAppInfo.h>
 #import <React/RCTBridge+Private.h>
 #if __has_include(<EXDevMenu/EXDevMenu-Swift.h>)
 #import <EXDevMenu/EXDevMenu-Swift.h>

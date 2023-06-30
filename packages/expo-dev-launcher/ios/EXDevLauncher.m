@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXDevLauncher.h"
-#import "EXDevLauncherController.h"
+#import <EXDevLauncher/EXDevLauncher.h>
+#import <EXDevLauncher/EXDevLauncherController.h>
 
 #if __has_include(<EXDevLauncher/EXDevLauncher-Swift.h>)
 // For cocoapods framework, the generated swift header will be inside EXDevLauncher module
