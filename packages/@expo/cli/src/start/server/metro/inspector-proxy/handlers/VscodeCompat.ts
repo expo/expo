@@ -4,6 +4,9 @@ import type { DebuggerInfo } from 'metro-inspector-proxy';
 import { CdpMessage, DebuggerRequest, DeviceResponse, InspectorHandler } from './types';
 
 export class VscodeCompatHandler implements InspectorHandler {
+  /** Only enable this handler for vscode debugging sessions */
+  debuggerType = 'vscode' as const;
+
   /** Keep track of `Runtime.getProperties` responses to intercept, by request id */
   interceptGetProperties = new Set<number>();
 
