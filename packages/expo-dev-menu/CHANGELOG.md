@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed the `Cannot read property 'addDevMenuCallbacks' of null` error when registering custom menu item on iOS. ([#23219](https://github.com/expo/expo/pull/23219) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 3.1.4 — 2023-06-28
