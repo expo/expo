@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 12.5.3 — 2023-06-30
+
+### 💡 Others
+
 - Update snapshots. ([#23238](https://github.com/expo/expo/pull/23238) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 12.5.2 — 2023-06-28

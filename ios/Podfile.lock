@@ -2190,7 +2190,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - EXBackgroundFetch (11.3.0):
     - ExpoModulesCore
-  - EXBarCodeScanner (12.5.2):
+  - EXBarCodeScanner (12.5.3):
     - EXImageLoader
     - ExpoModulesCore
     - ZXingObjC/OneD
@@ -2221,9 +2221,9 @@ PODS:
   - EXJSONUtils/Tests (0.7.0)
   - EXLocation (16.0.0):
     - ExpoModulesCore
-  - EXManifests (0.7.0):
+  - EXManifests (0.7.1):
     - ExpoModulesCore
-  - EXManifests/Tests (0.7.0):
+  - EXManifests/Tests (0.7.1):
     - ExpoModulesCore
     - ExpoModulesTestCore
   - EXMediaLibrary (15.4.0):
@@ -2234,7 +2234,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (14.2.0):
     - ExpoModulesCore
-  - Expo (49.0.0-beta.2):
+  - Expo (49.0.0-beta.3):
     - ExpoModulesCore
   - ExpoAppleAuthentication (6.1.0):
     - ExpoModulesCore
@@ -2344,7 +2344,7 @@ PODS:
   - EXTaskManager (11.3.0):
     - ExpoModulesCore
     - UMAppLoader
-  - EXUpdates (0.18.6):
+  - EXUpdates (0.18.7):
     - ASN1Decoder (~> 1.8)
     - EASClient
     - EXManifests
@@ -2354,7 +2354,7 @@ PODS:
     - RCT-Folly (= 2021.07.22.00)
     - ReachabilitySwift
     - React-Core
-  - EXUpdates/Tests (0.18.6):
+  - EXUpdates/Tests (0.18.7):
     - ASN1Decoder (~> 1.8)
     - EASClient
     - EXManifests
@@ -2365,7 +2365,7 @@ PODS:
     - RCT-Folly (= 2021.07.22.00)
     - ReachabilitySwift
     - React-Core
-  - EXUpdatesInterface (0.10.0)
+  - EXUpdatesInterface (0.10.1)
   - FBAEMKit (16.1.0):
     - FBSDKCoreKit_Basics (= 16.1.0)
   - FBAudienceNetwork (6.12.0)
@@ -4893,7 +4893,7 @@ SPEC CHECKSUMS:
   EXApplication: 02655a251434d564bb0e73291f5a490c74b5b76f
   EXAV: 4e66adbd7803d487044ee1f19bf87d4de9112e76
   EXBackgroundFetch: a4a45a5924d9ac6dd480d5d745aabe91bb17bb36
-  EXBarCodeScanner: 3d55a9f133da42444c5c986a41dd89b4707d42ca
+  EXBarCodeScanner: 44783bf0be375ab18a838dcfef29dd648397000a
   EXBranch: c01fc99d0a5e4ac6402b81f3c61ed180e5d355b7
   EXCalendar: 6756a5cf09a5ad90d3abf40e2bbdfb5993ae0911
   EXCamera: 4a67c2ca093d319ac4a5f28058e5f81ad93627fa
@@ -4904,11 +4904,11 @@ SPEC CHECKSUMS:
   EXImageLoader: 34b214f9387e98f3c73989f15d8d5b399c9ab3f7
   EXJSONUtils: 09273cf1b6a6bedc5bdae06121011123815c7f32
   EXLocation: 231f4a3683fabfed254c9498b226f7f40a40f9d8
-  EXManifests: ff19883eb51c38b8fd2e80d8389fe931e993f3e6
+  EXManifests: 8a4a480e3b58891d5657d3996a39229e5c96d912
   EXMediaLibrary: dd08edb824ee92519a989211720956cfd381f212
   EXNotifications: 09394cbd7165f9a4a00a53328aa09bf874bae717
   EXPermissions: 336b5b8409f4e1368a8b0636f04282e7f04ced3b
-  Expo: 9f361751c63d56c271546524d5151c1a773c6024
+  Expo: 933938fab2ef97ea1f9440aeea0a799880ed7869
   ExpoAppleAuthentication: 7bdf1a2962ebfe9b00eb4183a17b78d736e57185
   ExpoBattery: e9d7a71960cbc40733d956a29f8ba240173feb08
   ExpoBlur: a2c90bdfa4ff9f459cdb0f83191bddf020e3e2db
@@ -4949,8 +4949,8 @@ SPEC CHECKSUMS:
   EXSplashScreen: 04ae8fa26b4954c6a49780c5653860a3613db4a4
   EXStructuredHeaders: 324cc3130571d2696357fafd8be7fd9a0b5fdf6e
   EXTaskManager: f1730c315eb6fe457a3a2ee4ed899a51d717f302
-  EXUpdates: 432c9d8ef19cadcd962f8114a231761ff242ccd3
-  EXUpdatesInterface: bb7e6a992251f4b88a68adc10c3e7d3e42bfb566
+  EXUpdates: b35c74eba4ddcb360273ab5c6dbb02c6e28ef6d8
+  EXUpdatesInterface: 82ed48d417cdcd376c12ca1c2ce390d35500bed6
   FBAEMKit: c7efe06720a8b15b1d25b68921ba46dee20996e0
   FBAudienceNetwork: e0fcc9091fced34910ed0b6da06f129db46ac9e6
   FBLazyVector: bb17efca94c43508cbe54fb0a35e36df30da5213
