@@ -1,9 +1,11 @@
+import { Podspec } from '../../../CocoaPods';
 import { FileTransforms } from '../../../Transforms.types';
+import { VersioningModuleConfig } from '../../types';
 
 const objcFilesPattern = '*.{h,m,mm,cpp}';
 const swiftFilesPattern = '*.swift';
 
-export function expoModulesTransforms(prefix: string): FileTransforms {
+export function getCommonExpoModulesTransforms(prefix: string): FileTransforms {
   return {
     path: [
       // Here we prefix names of Objective-C/C++ files.
@@ -149,4 +151,52 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
       },
     ],
   };
+}
+
+export function getVersioningModuleConfig(prefix: string, moduleName: string): VersioningModuleConfig {
+  const config: Record<string, VersioningModuleConfig> = {
+    'expo-constants': {
+      mutatePodspec: removeScriptPhasesAndResourceBundles,
+    },
+    'expo-updates': {
+      mutatePodspec: removeScriptPhasesAndResourceBundles,
+    },
+    'expo-screen-orientation': {
+      // Versioned expo-screen-orientation shouldn't include its own registry, it should use the unversioned one instead.
+      transforms: {
+        path: [],
+        content: [
+          {
+            paths: 'ScreenOrientationRegistry.swift',
+            find: /(.|\n)*/,
+            replaceWith: [
+              '// The original implementations of `ScreenOrientationRegistry` and `ScreenOrientationController`',
+              '// were removed from this file as part of the versioning process to always use their "unversioned" version.',
+              'import ExpoScreenOrientation',
+              '',
+              'typealias ScreenOrientationRegistry = ExpoScreenOrientation.ScreenOrientationRegistry',
+              'typealias ScreenOrientationController = ExpoScreenOrientation.ScreenOrientationController',
+              ''
+            ].join('\n'),
+          },
+        ]
+      },
+      mutatePodspec(podspec: Podspec) {
+        // Versioned screen orientation must depend on unversioned copy to use unversioned singleton object.
+        const unversionedName = podspec.name.replace(prefix, '');
+
+        if (!podspec.dependencies) {
+          podspec.dependencies = {};
+        }
+        podspec.dependencies[unversionedName] = [];
+      },
+    }
+  };
+  return config[moduleName] ?? {};
+}
+
+function removeScriptPhasesAndResourceBundles(podspec: Podspec): void {
+  // For expo-updates and expo-constants in Expo Go, we don't need app.config and app.manifest in versioned code.
+  delete podspec['script_phases'];
+  delete podspec['resource_bundles'];
 }
