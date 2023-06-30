@@ -411,6 +411,7 @@ const preview = [
       makePage('router/reference/troubleshooting.mdx'),
       makePage('router/reference/faq.mdx'),
     ]),
+    makeGroup('Migrate', [makePage('router/migrate/from-react-navigation.mdx')]),
   ]),
 ];
 
