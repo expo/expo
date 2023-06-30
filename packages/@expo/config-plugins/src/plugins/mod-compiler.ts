@@ -72,6 +72,7 @@ export async function compileModsAsync(
     platforms?: ModPlatform[];
     introspect?: boolean;
     assertMissingModProviders?: boolean;
+    ignoreExistingNativeFiles?: boolean;
   }
 ): Promise<ExportedConfig> {
   if (props.introspect === true) {
@@ -121,16 +122,19 @@ export async function evalModsAsync(
     projectRoot,
     introspect,
     platforms,
+    assertMissingModProviders,
+    ignoreExistingNativeFiles = false,
+  }: {
+    projectRoot: string;
+    introspect?: boolean;
+    platforms?: ModPlatform[];
     /**
      * Throw errors when mods are missing providers.
      * @default true
      */
-    assertMissingModProviders,
-  }: {
-    projectRoot: string;
-    introspect?: boolean;
     assertMissingModProviders?: boolean;
-    platforms?: ModPlatform[];
+    /** Ignore any existing native files, only use the generated prebuild results. */
+    ignoreExistingNativeFiles?: boolean;
   }
 ): Promise<ExportedConfig> {
   const modRawConfig = getRawClone(config);
@@ -157,6 +161,7 @@ export async function evalModsAsync(
           platform: platformName as ModPlatform,
           modName,
           introspect: !!introspect,
+          ignoreExistingNativeFiles,
         };
 
         if (!(mod as Mod).isProvider) {

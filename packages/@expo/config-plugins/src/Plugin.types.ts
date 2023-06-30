@@ -47,6 +47,13 @@ export interface ModProps<T = any> {
    */
   readonly projectName?: string;
 
+  /**
+   * Ignore any of the user's local native files and solely rely on the generated files.
+   * This makes prebuild data, like entitlements, more aligned to what users expects.
+   * When enabling this, users must be informed and have a way to disable this exclusion.
+   */
+  readonly ignoreExistingNativeFiles?: boolean;
+
   nextMod?: Mod<T>;
 }
 
