@@ -1,6 +1,6 @@
 import { Podspec } from '../../../CocoaPods';
 import { FileTransforms } from '../../../Transforms.types';
-import { VersioningModuleConfig } from '../../types';
+import { VersioningModuleConfig } from '../types';
 
 const objcFilesPattern = '*.{h,m,mm,cpp}';
 const swiftFilesPattern = '*.swift';
@@ -153,7 +153,7 @@ export function getCommonExpoModulesTransforms(prefix: string): FileTransforms {
   };
 }
 
-export function getVersioningModuleConfig(
+export function getVersioningExpoModuleConfig(
   prefix: string,
   moduleName: string
 ): VersioningModuleConfig {
@@ -186,12 +186,7 @@ export function getVersioningModuleConfig(
       },
       mutatePodspec(podspec: Podspec) {
         // Versioned screen orientation must depend on unversioned copy to use unversioned singleton object.
-        const unversionedName = podspec.name.replace(prefix, '');
-
-        if (!podspec.dependencies) {
-          podspec.dependencies = {};
-        }
-        podspec.dependencies[unversionedName] = [];
+        addDependency(podspec, podspec.name.replace(prefix, ''));
       },
     },
   };
@@ -202,4 +197,11 @@ function removeScriptPhasesAndResourceBundles(podspec: Podspec): void {
   // For expo-updates and expo-constants in Expo Go, we don't need app.config and app.manifest in versioned code.
   delete podspec['script_phases'];
   delete podspec['resource_bundles'];
+}
+
+function addDependency(podspec: Podspec, dependencyName: string) {
+  if (!podspec.dependencies) {
+    podspec.dependencies = {};
+  }
+  podspec.dependencies[dependencyName] = [];
 }

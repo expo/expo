@@ -9,11 +9,11 @@ import logger from '../../Logger';
 import { Package } from '../../Packages';
 import { FileTransforms, copyFileWithTransformsAsync } from '../../Transforms';
 import { arrayize, searchFilesAsync } from '../../Utils';
-import { VersioningModuleConfig } from '../types';
 import {
   getCommonExpoModulesTransforms,
-  getVersioningModuleConfig,
+  getVersioningExpoModuleConfig,
 } from './transforms/expoModulesTransforms';
+import { VersioningModuleConfig } from './types';
 import { getVersionPrefix, getVersionedDirectory } from './utils';
 
 // Label of the console's timer used during versioning
@@ -53,7 +53,7 @@ export async function versionExpoModulesAsync(
       await fs.remove(targetDirectory);
     }
 
-    const moduleConfig = getVersioningModuleConfig(prefix, pkg.packageName);
+    const moduleConfig = getVersioningExpoModuleConfig(prefix, pkg.packageName);
 
     // Create a podspec in JSON format so we don't have to keep `package.json`s
     const podspec = await generateVersionedPodspecAsync(
