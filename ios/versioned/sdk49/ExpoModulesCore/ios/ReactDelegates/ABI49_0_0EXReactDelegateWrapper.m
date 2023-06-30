@@ -7,13 +7,13 @@
 
 @interface ABI49_0_0EXReactDelegateWrapper()
 
-@property (nonatomic, weak) ExpoReactDelegate *expoReactDelegate;
+@property (nonatomic, weak) ABI49_0_0EXReactDelegate *expoReactDelegate;
 
 @end
 
 @implementation ABI49_0_0EXReactDelegateWrapper
 
-- (instancetype)initWithExpoReactDelegate:(ExpoReactDelegate *)expoReactDelegate
+- (instancetype)initWithExpoReactDelegate:(ABI49_0_0EXReactDelegate *)expoReactDelegate
 {
   if (self = [super init]) {
     _expoReactDelegate = expoReactDelegate;

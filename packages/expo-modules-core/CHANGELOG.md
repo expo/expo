@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Changed Objective-C names for `ExpoReactDelegate` and `ExpoReactDelegateHandler` to fix issues with versioning in Expo Go. ([#23229](https://github.com/expo/expo/pull/23229) by [@tsapeta](https://github.com/tsapeta))
+
 ## 1.5.3 — 2023-06-24
 
 ### 🎉 New features
