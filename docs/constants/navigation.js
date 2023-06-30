@@ -158,6 +158,7 @@ const general = [
     makePage('build/automating-submissions.mdx'),
     makePage('build/updates.mdx'),
     makePage('build/building-on-ci.mdx'),
+    makePage('build/building-from-github.mdx'),
     makeGroup(
       'App Signing',
       [
