@@ -5,7 +5,7 @@ import ABI49_0_0React
 /**
  The handler for `ExpoReactDelegate`. A module can implement a handler to process react instance creation.
  */
-@objc
+@objc(ABI49_0_0EXReactDelegateHandler)
 open class ExpoReactDelegateHandler: NSObject {
   public override required init() {}
 
