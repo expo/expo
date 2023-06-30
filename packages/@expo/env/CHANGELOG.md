@@ -7,7 +7,7 @@
 ### 🎉 New features
 
 - Add ability to fully disable dotenv loading with `EXPO_NO_DOTENV` environment variable. ([#23169](https://github.com/expo/expo/pull/23169) by [@EvanBacon](https://github.com/EvanBacon))
-- Log env info when loading variables from dotenv files.
+- Log env info when loading variables from dotenv files. ([#23215](https://github.com/expo/expo/pull/23215) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
