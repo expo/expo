@@ -18,7 +18,6 @@ on:
       - android/**
       - fastlane/**
       - Gemfile.lock
-      - .ruby-version
       - yarn.lock
   push:
     branches: [main, sdk-*]
@@ -28,7 +27,6 @@ on:
       - android/**
       - fastlane/**
       - Gemfile.lock
-      - .ruby-version
       - yarn.lock
 
 concurrency:
@@ -56,6 +54,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
+          ruby-version: 2.7.2
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches

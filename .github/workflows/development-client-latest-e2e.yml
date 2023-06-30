@@ -29,6 +29,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
+          ruby-version: 2.7.2
       - name: 💎 Install cocoapods
         run: sudo gem install cocoapods
       - name: 🔨 Use JDK 11

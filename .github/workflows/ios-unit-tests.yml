@@ -14,7 +14,6 @@ on:
       - secrets/**
       - fastlane/**
       - Gemfile.lock
-      - .ruby-version
       - '!packages/@expo/cli/**'
   push:
     branches: [main]
@@ -29,7 +28,6 @@ on:
       - secrets/**
       - fastlane/**
       - Gemfile.lock
-      - .ruby-version
       - '!packages/@expo/cli/**'
 
 concurrency:
@@ -57,6 +55,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
+          ruby-version: 2.7.2
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
