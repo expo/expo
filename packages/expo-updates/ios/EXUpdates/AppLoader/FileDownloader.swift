@@ -357,12 +357,11 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
     successBlock: @escaping RemoteUpdateDownloadSuccessBlock,
     errorBlock: @escaping RemoteUpdateDownloadErrorBlock
   ) {
-    let headerDictionary = httpResponse.allHeaderFields as! [String: Any]
     let responseHeaderData = ResponseHeaderData(
-      protocolVersionRaw: headerDictionary.optionalValue(forKey: "expo-protocol-version"),
-      serverDefinedHeadersRaw: headerDictionary.optionalValue(forKey: "expo-server-defined-headers"),
-      manifestFiltersRaw: headerDictionary.optionalValue(forKey: "expo-manifest-filters"),
-      manifestSignature: headerDictionary.optionalValue(forKey: "expo-manifest-signature")
+      protocolVersionRaw: httpResponse.value(forHTTPHeaderField: "expo-protocol-version"),
+      serverDefinedHeadersRaw: httpResponse.value(forHTTPHeaderField: "expo-server-defined-headers"),
+      manifestFiltersRaw: httpResponse.value(forHTTPHeaderField: "expo-manifest-filters"),
+      manifestSignature: httpResponse.value(forHTTPHeaderField: "expo-manifest-signature")
     )
 
     if httpResponse.statusCode == 204 || data == nil {
@@ -388,7 +387,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
       return
     }
 
-    let contentType = headerDictionary.stringValueForCaseInsensitiveKey("content-type") ?? ""
+    let contentType = httpResponse.value(forHTTPHeaderField: "content-type") ?? ""
 
     if contentType.lowercased().hasPrefix("multipart/") {
       guard let contentTypeParameters = EXUpdatesParameterParser().parseParameterString(
@@ -417,15 +416,15 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
       return
     } else {
       let responseHeaderData = ResponseHeaderData(
-        protocolVersionRaw: headerDictionary.optionalValue(forKey: "expo-protocol-version"),
-        serverDefinedHeadersRaw: headerDictionary.optionalValue(forKey: "expo-server-defined-headers"),
-        manifestFiltersRaw: headerDictionary.optionalValue(forKey: "expo-manifest-filters"),
-        manifestSignature: headerDictionary.optionalValue(forKey: "expo-manifest-signature")
+        protocolVersionRaw: httpResponse.value(forHTTPHeaderField: "expo-protocol-version"),
+        serverDefinedHeadersRaw: httpResponse.value(forHTTPHeaderField: "expo-server-defined-headers"),
+        manifestFiltersRaw: httpResponse.value(forHTTPHeaderField: "expo-manifest-filters"),
+        manifestSignature: httpResponse.value(forHTTPHeaderField: "expo-manifest-signature")
       )
 
       let manifestResponseInfo = ResponsePartInfo(
         responseHeaderData: responseHeaderData,
-        responsePartHeaderData: ResponsePartHeaderData(signature: headerDictionary.optionalValue(forKey: "expo-signature")),
+        responsePartHeaderData: ResponsePartHeaderData(signature: httpResponse.value(forHTTPHeaderField: "expo-signature")),
         body: data
       )
 
@@ -540,12 +539,11 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
       String(data: it, encoding: .utf8)
     }
 
-    let responseHeaders = httpResponse.allHeaderFields as! [String: Any]
     let responseHeaderData = ResponseHeaderData(
-      protocolVersionRaw: responseHeaders.optionalValue(forKey: "expo-protocol-version"),
-      serverDefinedHeadersRaw: responseHeaders.optionalValue(forKey: "expo-server-defined-headers"),
-      manifestFiltersRaw: responseHeaders.optionalValue(forKey: "expo-manifest-filters"),
-      manifestSignature: responseHeaders.optionalValue(forKey: "expo-manifest-signature")
+      protocolVersionRaw: httpResponse.value(forHTTPHeaderField: "expo-protocol-version"),
+      serverDefinedHeadersRaw: httpResponse.value(forHTTPHeaderField: "expo-server-defined-headers"),
+      manifestFiltersRaw: httpResponse.value(forHTTPHeaderField: "expo-manifest-filters"),
+      manifestSignature: httpResponse.value(forHTTPHeaderField: "expo-manifest-signature")
     )
 
     let manifestResponseInfo = manifestPartHeadersAndData.let { it in
