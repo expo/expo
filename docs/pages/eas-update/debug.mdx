@@ -9,6 +9,8 @@ import { Terminal } from '~/ui/components/Snippet';
 
 This guide shows how to verify our configuration so that we can find the source of problems like an app not showing a published update. It's important to tell the current state of our app at any given time, so EAS Update was built with this in mind. Once we know which updates are running on which builds, we can make changes so that our apps are in the state we expect.
 
+> If we are not using EAS Build, our Deployments page will be empty. Follow the guide on [debugging configuration without EAS Build](/eas-update/debug-advanced/#configuration-without-eas-build) instead.
+
 ## Go to the Deployments page
 
 The EAS website has a [Deployments page](https://expo.dev/accounts/[account]/projects/[project]/deployments) that shows the current state of our app. The term _deployment_ refers to a group of builds and their corresponding updates. If we've made builds and updates with EAS, we can see our project's status on the website in the Deployments tab.
