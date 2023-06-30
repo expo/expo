@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed JavaScript inspector broken when using Metro web with SSG. ([#23197](https://github.com/expo/expo/pull/23197) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.10.6 — 2023-06-30
