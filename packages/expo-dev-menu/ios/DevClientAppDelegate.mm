@@ -1,5 +1,4 @@
-#import "DevClientAppDelegate.h"
-#import "EXDevLauncherController.h"
+#import <EXDevMenu/DevClientAppDelegate.h>
 
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRuntimeExecutorFromBridge.h>

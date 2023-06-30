@@ -1,8 +1,8 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXDevLauncherRCTBridge.h"
-#import "EXDevLauncherController.h"
-#import "RCTCxxBridge+Private.h"
+#import <EXDevLauncher/EXDevLauncherRCTBridge.h>
+#import <EXDevLauncher/EXDevLauncherController.h>
+#import <EXDevLauncher/RCTCxxBridge+Private.h>
 
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTDevSettings.h>
