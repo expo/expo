@@ -6,7 +6,7 @@ exports[`renders correctly 1`] = `
   dir={null}
 >
   <div
-    className="css-text-1rynq56"
+    className="css-text-146c3p1"
     dir="auto"
   >
     BarCodeScanner Component not supported on the web

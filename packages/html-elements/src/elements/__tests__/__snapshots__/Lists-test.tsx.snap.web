@@ -7,7 +7,7 @@ exports[`renders UL nested in LI 1`] = `
   role="listitem"
 >
   <li
-    className="css-text-1rynq56"
+    className="css-text-146c3p1"
     dir="auto"
     role="listitem"
   >
@@ -19,7 +19,7 @@ exports[`renders UL nested in LI 1`] = `
     role="list"
   >
     <li
-      className="css-text-1rynq56"
+      className="css-text-146c3p1"
       dir="auto"
       role="listitem"
     >

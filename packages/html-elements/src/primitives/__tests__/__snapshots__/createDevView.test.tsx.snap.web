@@ -6,12 +6,12 @@ exports[`warns about unwrapped strings 1`] = `
   dir={null}
 >
   <div
-    className="css-text-1rynq56 r-bottom-1p0dtai r-left-1d2f490 r-position-u8s1d r-right-zchlnj r-top-ipm5af r-backgroundColor-1kfbv51 r-color-jwli3a"
+    className="css-text-146c3p1 r-bottom-1p0dtai r-left-1d2f490 r-position-u8s1d r-right-zchlnj r-top-ipm5af r-backgroundColor-1kfbv51 r-color-jwli3a"
     dir="auto"
   >
     Unwrapped text: "
     <span
-      className="css-textHasAncestor-1qaijid"
+      className="css-textHasAncestor-1jxf684"
       dir={null}
       style={
         {
