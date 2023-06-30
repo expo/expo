@@ -85,7 +85,7 @@
   "react": "18.2.0",
   "react-dom": "18.2.0",
   "react-native": "0.72.0",
-  "react-native-web": "~0.18.10",
+  "react-native-web": "~0.19.6",
   "react-native-gesture-handler": "~2.12.0",
   "react-native-get-random-values": "~1.8.0",
   "react-native-maps": "1.7.1",
