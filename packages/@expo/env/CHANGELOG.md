@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Log env info when loading variables from dotenv files. ([#23215](https://github.com/expo/expo/pull/23215) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
