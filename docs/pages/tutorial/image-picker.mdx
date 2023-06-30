@@ -12,7 +12,7 @@ import { BookOpen02Icon } from '@expo/styleguide-icons';
 React Native provides built-in components that are standard building blocks used by every application, such as `<View>`, `<Text>`, and `<Pressable>`.
 We want to build a feature that isn't possible with these core components and API: selecting an image from the device's media library. For that, we will need a library.
 
-To achieve this, we'll use an Expo SDK library called <A href="/versions/latest/sdk/imagepicker" openInNewTab>`expo-image-picker`</A>.
+To achieve this, we'll use an Expo SDK library called <A href="/versions/latest/sdk/imagepicker">`expo-image-picker`</A>.
 
 > `expo-image-picker` provides access to the system's UI to select images and videos from the phone's library or take a photo with the camera.
 
@@ -72,7 +72,7 @@ export default function App() {
 Let's learn what the above code does.
 
 - The `launchImageLibraryAsync()` receives an object in which different options are specified.
-  This object is an <A href="/versions/latest/sdk/imagepicker/#imagepickeroptions" openInNewTab>`ImagePickerOptions` object</A>.
+  This object is an <A href="/versions/latest/sdk/imagepicker/#imagepickeroptions">`ImagePickerOptions` object</A>.
   We can pass the object to specify different options when invoking the method.
 - When `allowsEditing` is set to `true`, the user can crop the image during the selection process on Android and iOS but not on the web.
 
