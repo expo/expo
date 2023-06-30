@@ -1,6 +1,9 @@
 import { DebuggerInfo } from 'metro-inspector-proxy';
 
 export interface InspectorHandler {
+  /** If this inspector handler should only be used when debuggers are used */
+  debuggerType?: 'vscode';
+
   /**
    * Intercept a message coming from the device, modify or respond to it through `this._sendMessageToDevice`.
    * Return `true` if the message was handled, this will stop the message propagation.

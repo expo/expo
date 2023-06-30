@@ -3,12 +3,14 @@ import fetch from 'node-fetch';
 import type WS from 'ws';
 
 import { MetroBundlerDevServer } from '../MetroBundlerDevServer';
-import { DebuggerScriptParsedHandler } from './handlers/DebuggerScriptParsed';
 import { DebuggerScriptSourceHandler } from './handlers/DebuggerScriptSource';
 import { NetworkResponseHandler } from './handlers/NetworkResponse';
 import { PageReloadHandler } from './handlers/PageReload';
 import { VscodeCompatHandler } from './handlers/VscodeCompat';
+import { VscodeDebuggerScriptParsedHandler } from './handlers/VscodeDebuggerScriptParsed';
 import { DeviceRequest, InspectorHandler, DebuggerRequest } from './handlers/types';
+
+const debug = require('debug')('expo:metro:inspector-proxy:device') as typeof console.log;
 
 export function createInspectorDeviceClass(
   metroBundler: MetroBundlerDevServer,
@@ -16,20 +18,29 @@ export function createInspectorDeviceClass(
 ) {
   return class ExpoInspectorDevice extends MetroDeviceClass implements InspectorHandler {
     /** All handlers that should be used to intercept or reply to CDP events */
-    public handlers: InspectorHandler[] = [
+    public allHandlers: InspectorHandler[] = [
+      // VS Code specific handlers
+      new VscodeDebuggerScriptParsedHandler(this),
+      new VscodeCompatHandler(),
+      // Generic handlers for all debuggers
       new NetworkResponseHandler(),
       new DebuggerScriptSourceHandler(this),
-      new DebuggerScriptParsedHandler(this),
       new PageReloadHandler(metroBundler),
-      new VscodeCompatHandler(),
     ];
 
+    /** All (active) handlers based on the connected debugger type */
+    public activeHandlers: InspectorHandler[] = this.allHandlers;
+
     onDeviceMessage(message: any, info: DebuggerInfo): boolean {
-      return this.handlers.some((handler) => handler.onDeviceMessage?.(message, info) ?? false);
+      return this.activeHandlers.some(
+        (handler) => handler.onDeviceMessage?.(message, info) ?? false
+      );
     }
 
     onDebuggerMessage(message: any, info: DebuggerInfo): boolean {
-      return this.handlers.some((handler) => handler.onDebuggerMessage?.(message, info) ?? false);
+      return this.activeHandlers.some(
+        (handler) => handler.onDebuggerMessage?.(message, info) ?? false
+      );
     }
 
     /**
@@ -73,6 +84,23 @@ export function createInspectorDeviceClass(
       }
 
       return super._interceptMessageFromDebugger(request, info, socket);
+    }
+
+    /** Hook into the incoming debugger connection, which could change the current active handlers */
+    handleDebuggerConnection(socket: WS, pageId: string, debuggerType?: string) {
+      if (debuggerType) {
+        this.activeHandlers = this.allHandlers.filter(
+          (handler) => !handler.debuggerType || handler.debuggerType === debuggerType
+        );
+        debug('Enabled handlers for debugger: %s', debuggerType);
+      } else {
+        this.activeHandlers = this.allHandlers.filter((handler) => !handler.debuggerType);
+        debug('Enabled generic handlers for debugger');
+      }
+
+      debug('Handlers enabled: %s', this.activeHandlers.map((h) => h.constructor.name).join(', '));
+
+      super.handleDebuggerConnection(socket, pageId);
     }
 
     /**
