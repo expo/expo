@@ -1,4 +1,5 @@
 import { createInspectorDeviceClass } from '../device';
+import { DebuggerScriptParsedHandler } from '../handlers/DebuggerScriptParsed';
 import { DebuggerScriptSourceHandler } from '../handlers/DebuggerScriptSource';
 import { NetworkResponseHandler } from '../handlers/NetworkResponse';
 import { PageReloadHandler } from '../handlers/PageReload';
@@ -14,6 +15,7 @@ describe('ExpoInspectorDevice', () => {
     }
 
     expect(findHandler(DebuggerScriptSourceHandler)).toBeInstanceOf(DebuggerScriptSourceHandler);
+    expect(findHandler(DebuggerScriptParsedHandler)).toBeInstanceOf(DebuggerScriptParsedHandler);
     expect(findHandler(NetworkResponseHandler)).toBeInstanceOf(NetworkResponseHandler);
     expect(findHandler(PageReloadHandler)).toBeInstanceOf(PageReloadHandler);
     expect(findHandler(VscodeCompatHandler)).toBeInstanceOf(VscodeCompatHandler);
