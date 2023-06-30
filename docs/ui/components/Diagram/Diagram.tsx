@@ -2,10 +2,11 @@ import { useTheme } from '@expo/styleguide';
 
 type Props = {
   source: string;
+  alt: string;
   darkSource?: string;
 };
 
-export const Diagram = ({ source, darkSource }: Props) => {
+export const Diagram = ({ source, darkSource, alt }: Props) => {
   const { themeName } = useTheme();
   const isDark = themeName === 'dark';
 
@@ -14,7 +15,7 @@ export const Diagram = ({ source, darkSource }: Props) => {
       <div className="border border-default rounded-md overflow-hidden my-6 max-w-[750px] m-auto">
         <picture>
           {isDark && darkSource && <source srcSet={darkSource} />}
-          <img src={source} />
+          <img src={source} alt={alt} />
         </picture>
       </div>
     );
@@ -32,7 +33,7 @@ export const Diagram = ({ source, darkSource }: Props) => {
           <source srcSet={darkSource.replace('.png', '.webp')} type="image/webp" />
         )}
         {darkSource && isDark && <source srcSet={darkSource} />}
-        <img src={source} />
+        <img src={source} alt={alt} />
       </picture>
     </div>
   );
