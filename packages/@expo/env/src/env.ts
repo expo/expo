@@ -26,15 +26,15 @@ export function createControlledEnvironment() {
   const IS_DEBUG = require('debug').enabled('expo:env');
 
   let userDefinedEnvironment: NodeJS.ProcessEnv | undefined = undefined;
-  let memoEnvironment: NodeJS.ProcessEnv | undefined = undefined;
+  let memo: { env: NodeJS.ProcessEnv; files: string[] } | undefined = undefined;
 
   function _getForce(
     projectRoot: string,
     options: LoadOptions = {}
-  ): Record<string, string | undefined> {
+  ): { env: Record<string, string | undefined>; files: string[] } {
     if (!isEnabled()) {
       debug(`Skipping .env files because EXPO_NO_DOTENV is defined`);
-      return {};
+      return { env: {}, files: [] };
     }
 
     if (!userDefinedEnvironment) {
@@ -98,20 +98,23 @@ export function createControlledEnvironment() {
       debug(`No environment variables loaded from .env files.`);
     }
 
-    return parsed;
+    return { env: parsed, files: loadedEnvFiles };
   }
 
   /** Get the environment variables without mutating the environment. This returns memoized values unless the `force` property is provided. */
-  function get(projectRoot: string, options: LoadOptions = {}): Record<string, string | undefined> {
+  function get(
+    projectRoot: string,
+    options: LoadOptions = {}
+  ): { env: Record<string, string | undefined>; files: string[] } {
     if (!isEnabled()) {
       debug(`Skipping .env files because EXPO_NO_DOTENV is defined`);
-      return {};
+      return { env: {}, files: [] };
     }
-    if (!options.force && memoEnvironment) {
-      return memoEnvironment;
+    if (!options.force && memo) {
+      return memo;
     }
-    memoEnvironment = _getForce(projectRoot, options);
-    return memoEnvironment;
+    memo = _getForce(projectRoot, options);
+    return memo;
   }
 
   /** Load environment variables from .env files and mutate the current `process.env` with the results. */
@@ -121,8 +124,19 @@ export function createControlledEnvironment() {
       return process.env;
     }
 
-    const env = get(projectRoot, options);
-    process.env = { ...process.env, ...env };
+    const envInfo = get(projectRoot, options);
+
+    if (!options.force) {
+      const keys = Object.keys(envInfo.env);
+      if (keys.length) {
+        console.log(
+          chalk.gray('env: load', envInfo.files.map((file) => path.basename(file)).join(' '))
+        );
+        console.log(chalk.gray('env: export', keys.join(' ')));
+      }
+    }
+
+    process.env = { ...process.env, ...envInfo.env };
     return process.env;
   }
 
