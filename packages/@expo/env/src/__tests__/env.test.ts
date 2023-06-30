@@ -90,7 +90,7 @@ describe('get', () => {
       env: {
         FOO: 'default',
       },
-      files: [],
+      files: ['/.env'],
     });
 
     fs.writeFileSync('/.env', 'FOO=changed');
@@ -99,13 +99,13 @@ describe('get', () => {
       env: {
         FOO: 'default',
       },
-      files: [],
+      files: ['/.env'],
     });
     expect(envRuntime.get('/', { force: true })).toEqual({
       env: {
         FOO: 'changed',
       },
-      files: [],
+      files: ['/.env'],
     });
   });
 });
@@ -126,7 +126,10 @@ describe('_getForce', () => {
     );
 
     expect(envRuntime._getForce('/')).toEqual({
-      FOO: 'bar',
+      env: {
+        FOO: 'bar',
+      },
+      files: ['/.env'],
     });
   });
 
@@ -147,7 +150,10 @@ describe('_getForce', () => {
     );
 
     expect(envRuntime._getForce('/')).toEqual({
-      FOO: 'dev-local',
+      env: {
+        FOO: 'dev-local',
+      },
+      files: ['/.env.development.local', '/.env.local', '/.env.development', '/.env'],
     });
   });
 
@@ -166,7 +172,10 @@ describe('_getForce', () => {
     );
 
     expect(envRuntime._getForce('/')).toEqual({
-      FOO: 'prod-local',
+      files: ['/.env.production.local', '/.env.local', '/.env.production', '/.env'],
+      env: {
+        FOO: 'prod-local',
+      },
     });
   });
 
@@ -182,7 +191,10 @@ describe('_getForce', () => {
     );
 
     expect(envRuntime._getForce('/')).toEqual({
-      FOO: 'default-local',
+      files: ['/.env.local', '/.env'],
+      env: {
+        FOO: 'default-local',
+      },
     });
   });
 
@@ -198,7 +210,7 @@ describe('_getForce', () => {
       '/'
     );
 
-    expect(envRuntime._getForce('/')).toEqual({});
+    expect(envRuntime._getForce('/')).toEqual({ env: {}, files: [] });
   });
 
   it(`does not return the env var if the initial the value of the environment variable`, () => {
@@ -212,12 +224,15 @@ describe('_getForce', () => {
       '/'
     );
 
-    expect(envRuntime._getForce('/')).toEqual({});
+    expect(envRuntime._getForce('/')).toEqual({ env: {}, files: ['/.env'] });
   });
 
   it(`Does not fail when no files are available`, () => {
     vol.fromJSON({}, '/');
-    expect(createControlledEnvironment()._getForce('/')).toEqual({});
+    expect(createControlledEnvironment()._getForce('/')).toEqual({
+      env: {},
+      files: [],
+    });
   });
 
   it(`Does not assert on invalid env files`, () => {
@@ -228,6 +243,6 @@ describe('_getForce', () => {
       '/'
     );
 
-    expect(createControlledEnvironment()._getForce('/')).toEqual({});
+    expect(createControlledEnvironment()._getForce('/')).toEqual({ env: {}, files: ['/.env'] });
   });
 });
