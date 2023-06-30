@@ -3,14 +3,16 @@
 //
 // Forks https://github.com/facebook/metro/blob/b80d9a0f638ee9fb82ff69cd3c8d9f4309ca1da2/packages/metro/src/index.flow.js#L57
 // and adds the ability to access the bundler instance.
+import assert from 'assert';
 import http from 'http';
 import https from 'https';
 import { RunServerOptions, Server } from 'metro';
 import { ConfigT } from 'metro-config';
-import { InspectorProxy } from 'metro-inspector-proxy';
+import type { InspectorProxy } from 'metro-inspector-proxy';
 import { parse } from 'url';
 
 import { env } from '../../../utils/env';
+import type { ConnectAppType } from '../middleware/server.types';
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { createInspectorProxy, ExpoInspectorProxy } from './inspector-proxy';
 import {
@@ -40,8 +42,6 @@ export const runServer = async (
 
   const createWebsocketServer = importMetroCreateWebsocketServerFromProject(projectRoot);
 
-  const { InspectorProxy } = importMetroInspectorProxyFromProject(projectRoot);
-
   const MetroHmrServer = importMetroHmrServerFromProject(projectRoot);
 
   // await earlyPortCheck(host, config.server.port);
@@ -55,10 +55,6 @@ export const runServer = async (
   //       "Metro's https development server.",
   //   );
   // }
-  // Lazy require
-  const connect = require('connect');
-
-  const serverApp = connect();
 
   const { middleware, end, metroServer } = await Metro.createConnectMiddleware(config, {
     hasReducedPerformance,
@@ -66,12 +62,14 @@ export const runServer = async (
     watch,
   });
 
-  serverApp.use(middleware);
+  assert(typeof (middleware as any).use === 'function');
+  const serverApp = middleware as ConnectAppType;
 
   let inspectorProxy: InspectorProxy | ExpoInspectorProxy | null = null;
   if (config.server.runInspectorProxy && !env.EXPO_NO_INSPECTOR_PROXY) {
     inspectorProxy = createInspectorProxy(metroBundler, config.projectRoot);
   } else if (config.server.runInspectorProxy) {
+    const { InspectorProxy } = importMetroInspectorProxyFromProject(projectRoot);
     inspectorProxy = new InspectorProxy(config.projectRoot);
   }
 
