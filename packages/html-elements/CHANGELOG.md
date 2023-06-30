@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update snapshots. ([#23238](https://github.com/expo/expo/pull/23238) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 0.5.0 — 2023-06-21
 
 _This version does not introduce any user-facing changes._
