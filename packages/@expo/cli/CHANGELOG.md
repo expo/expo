@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Update E2E tests to expect `.hbc` bundles instead of `.js` bundles. ([#23241](https://github.com/expo/expo/pull/23241) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 0.10.6 — 2023-06-30
 
 _This version does not introduce any user-facing changes._
