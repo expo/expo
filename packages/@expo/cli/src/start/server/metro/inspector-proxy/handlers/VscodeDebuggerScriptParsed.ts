@@ -15,7 +15,10 @@ const FILE_PREFIX = 'file://';
  *
  * @see https://github.com/facebook/metro/blob/f43caa371a813b257cb0b42028079645a1e85e0e/packages/metro-inspector-proxy/src/Device.js#L398C38-L454
  */
-export class DebuggerScriptParsedHandler implements InspectorHandler {
+export class VscodeDebuggerScriptParsedHandler implements InspectorHandler {
+  /** Only enable this handler for vscode debugging sessions */
+  debuggerType = 'vscode' as const;
+
   constructor(private readonly device: MetroDevice) {}
 
   onDeviceMessage(
