@@ -327,7 +327,7 @@ const defaultProviders = {
     async read(filePath, config) {
       let modResults;
       try {
-        if (_fs().default.existsSync(filePath)) {
+        if (!config.modRequest.ignoreExistingNativeFiles && _fs().default.existsSync(filePath)) {
           const contents = await readFile(filePath, 'utf8');
           (0, _assert().default)(contents, 'Entitlements plist is empty');
           modResults = _plist().default.parse(contents);

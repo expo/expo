@@ -160,11 +160,8 @@ async function evalModsAsync(config, {
   projectRoot,
   introspect,
   platforms,
-  /**
-   * Throw errors when mods are missing providers.
-   * @default true
-   */
-  assertMissingModProviders
+  assertMissingModProviders,
+  ignoreExistingNativeFiles = false
 }) {
   const modRawConfig = getRawClone(config);
   for (const [platformName, platform] of Object.entries((_config$mods = config.mods) !== null && _config$mods !== void 0 ? _config$mods : {})) {
@@ -188,7 +185,8 @@ async function evalModsAsync(config, {
           platformProjectRoot,
           platform: platformName,
           modName,
-          introspect: !!introspect
+          introspect: !!introspect,
+          ignoreExistingNativeFiles
         };
         if (!mod.isProvider) {
           // In strict mode, throw an error.
