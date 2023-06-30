@@ -3,7 +3,7 @@
 exports[`renders H1 1`] = `
 <h1
   aria-level={1}
-  className="css-text-1rynq56 r-fontSize-6e8ixz r-fontWeight-vw2c0b r-marginVertical-100r6m0"
+  className="css-text-146c3p1 r-fontSize-6e8ixz r-fontWeight-vw2c0b r-marginBlock-19oforl"
   dir="auto"
   role="heading"
 />
@@ -12,7 +12,7 @@ exports[`renders H1 1`] = `
 exports[`renders H2 1`] = `
 <h2
   aria-level={2}
-  className="css-text-1rynq56 r-fontSize-1lijs1h r-fontWeight-vw2c0b r-marginVertical-1fcj2ci"
+  className="css-text-146c3p1 r-fontSize-1lijs1h r-fontWeight-vw2c0b r-marginBlock-1u31v3z"
   dir="auto"
   role="heading"
 />
@@ -21,7 +21,7 @@ exports[`renders H2 1`] = `
 exports[`renders H3 1`] = `
 <h3
   aria-level={3}
-  className="css-text-1rynq56 r-fontSize-tg2c11 r-fontWeight-vw2c0b r-marginVertical-gdo61v"
+  className="css-text-146c3p1 r-fontSize-tg2c11 r-fontWeight-vw2c0b r-marginBlock-11nzuo4"
   dir="auto"
   role="heading"
 />
@@ -30,7 +30,7 @@ exports[`renders H3 1`] = `
 exports[`renders H4 1`] = `
 <h4
   aria-level={4}
-  className="css-text-1rynq56 r-fontSize-bzi31h r-fontWeight-vw2c0b r-marginVertical-1e3jtjs"
+  className="css-text-146c3p1 r-fontSize-bzi31h r-fontWeight-vw2c0b r-marginBlock-1hga0el"
   dir="auto"
   role="heading"
 />
@@ -39,7 +39,7 @@ exports[`renders H4 1`] = `
 exports[`renders H5 1`] = `
 <h5
   aria-level={5}
-  className="css-text-1rynq56 r-fontSize-n230yh r-fontWeight-vw2c0b r-marginVertical-10805p1"
+  className="css-text-146c3p1 r-fontSize-n230yh r-fontWeight-vw2c0b r-marginBlock-1946khe"
   dir="auto"
   role="heading"
 />
@@ -48,7 +48,7 @@ exports[`renders H5 1`] = `
 exports[`renders H6 1`] = `
 <h6
   aria-level={6}
-  className="css-text-1rynq56 r-fontSize-ydqdv4 r-fontWeight-vw2c0b r-marginVertical-1esx64j"
+  className="css-text-146c3p1 r-fontSize-ydqdv4 r-fontWeight-vw2c0b r-marginBlock-1jm7qrm"
   dir="auto"
   role="heading"
 />
