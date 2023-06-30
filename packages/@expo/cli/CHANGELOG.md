@@ -12,7 +12,7 @@
 ### 🐛 Bug fixes
 
 - Fixed JavaScript inspector broken when using Metro web with SSG. ([#23197](https://github.com/expo/expo/pull/23197) by [@kudo](https://github.com/kudo))
-- Fixed prebuild dependency versions warning to only show when versions do not intersect.
+- Fixed prebuild dependency versions warning to only show when versions do not intersect. ([#23232](https://github.com/expo/expo/pull/23232) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
