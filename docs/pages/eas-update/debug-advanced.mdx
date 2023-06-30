@@ -73,6 +73,103 @@ In each, we expect to see configuration for the EAS Update URL and the runtime v
 ...
 ```
 
+### Configuration without EAS Build
+
+If we aren't using EAS Build, this section will walk through debugging the state of EAS Update in our project. We'll need to look at multiple spots in the system. Below is a diagram of how EAS Update works and the spots that are useful to inspect when finding the root cause of an issue. In the sections following, we'll inspect and verify these spots and more.
+
+<ImageSpotlight alt="Map of debugging spots" src="/static/images/eas-update/debug-map.png" />
+
+#### Verify build configuration
+
+Follow the [Building Locally guide](/eas-update/build-locally) to configure our app's channel and runtime version. We'll also need to make sure our [general configuration](/eas-update/debug-advanced/#expo-updates-configuration) is correct.
+
+#### Verify the channel
+
+Builds have a property named `channel`, which EAS Update uses to link to a branch. A channel is often given to multiple platform-specific builds. For instance, we might have an Android build and an iOS build, both with a channel named `"production"`.
+
+Once a build has a channel name, we can make sure that EAS' servers know about it by checking the [Channels page](https://expo.dev/accounts/[account]/projects/[project]/channels).
+
+We'd expect the page to display the same channel name that our build has. If it's not there, we can create the channel on EAS' servers with:
+
+<Terminal
+  cmd={[
+    '# eas channel:create [channel-name]',
+    '',
+    '',
+    '# Example',
+    'eas channel:create production',
+  ]}
+/>
+
+#### Verify the channel/branch mapping
+
+There is a link that is defined by the developer between a channel and a branch. When a channel and branch are linked, an app with a channel will get the most recent compatible update on the linked branch.
+
+The [Channels page](https://expo.dev/accounts/[account]/projects/[project]/channels) will display the channel to branch mapping if it exists.
+
+<ImageSpotlight
+  alt="Linked branches on the Channels page"
+  src="/static/images/eas-update/channels-linked-branches.png"
+  style={{ maxWidth: 400 }}
+/>
+
+If the channel is not linked to the branch we expect, we can change the link with:
+
+<Terminal
+  cmd={[
+    '# eas channel:edit [channel-name] --branch [branch-name]',
+    '',
+    '',
+    '# Example',
+    'eas channel:edit production --branch release-1.0',
+  ]}
+/>
+
+#### Verify the update
+
+Every branch contains a list of updates. When a build makes a call for an update, we find the channel of the build, then the branch linked to that channel. Once the branch is found, EAS will return the most recent compatible update on that branch. A build and an update are compatible when they share the same runtime version and platform.
+
+To inspect which updates are on a branch, we can go to the [Branches page](https://expo.dev/accounts/[account]/projects/[project]/branches) and choose our branch of interest.
+
+The Branch Detail page will show us a list of updates and their runtime versions and platforms. From this list, we should be able to figure out which update should apply to a given build, by matching the build's runtime version and platform to update's runtime version and platform. The most recent update that is compatible will be available for a build to download and execute.
+
+<ImageSpotlight
+  alt="List of updates on the Branch Detail page"
+  src="/static/images/eas-update/branch-update-list.png"
+  style={{ maxWidth: 800 }}
+/>
+
+## Debugging EAS Update
+
+After verifying `expo-updates` and EAS Update configurations, we can move on to debugging how our project is interacting with updates.
+
+### In-app debugging
+
+The `expo-updates` library exports a variety of functions to interact with updates once the app is already running. In certain cases, making a call to fetch an update and seeing an error message can help us narrow down the root cause. We can make a simulator build of the project and manually check to see if updates are available or if there are errors when fetching updates. See the code example to [check for updates manually](/versions/latest/sdk/updates/#use-expo-updates-with-a-custom-server).
+
+### Viewing network requests
+
+Another way to identify the root cause of an issue is to look at the network requests that the app is making to EAS servers, then viewing the responses. We recommend using a program like [Proxyman](https://proxyman.io/) or [Charles Proxy](https://www.charlesproxy.com/) to watch network requests from our app.
+
+With either program, we'll need to follow their instructions for installing an SSL certificate, so that the program can decode HTTPS requests. Once that's set up in a simulator or on an actual device, we can open our app and watch requests.
+
+The requests we're interested in are from https://u.expo.dev and https://assets.eascdn.net. Responses from https://u.expo.dev will contain an update manifest, which specifies which assets the app will need to fetch to run the update. Responses from https://assets.eascdn.net will contain assets, like images, font files, etc that are required for the update to run.
+
+When inspecting the request to https://u.expo.dev, we can look for the following request headers:
+
+- `Expo-Runtime-Version`: this should make the runtime version we made our build and update with.
+- `expo-channel-name`: this should be the channel name specified in the **eas.json** build profile.
+- `Expo-Platform`: this should be either "android" or "ios".
+
+As for all requests, we expect to see either `200` response codes, or `304` if nothing has changed.
+
+Below is a screenshot showing the request of a successful update manifest request:
+
+<ImageSpotlight
+  alt="Successful manifest request"
+  src="/static/images/eas-update/network-request.png"
+/>
+
 ### Inspecting a build manually
 
 When building a project into an app, there can be multiple steps that alter the output of `npx expo prebuild`. After making a build, it is possible to open the build's contents and inspect native files to see its final configuration.
