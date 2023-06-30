@@ -275,7 +275,7 @@ export function createFileHash(contents: string): string {
 function versionRangesIntersect(rangeA: string | SemverRange, rangeB: string | SemverRange) {
   try {
     return semverIntersects(rangeA, rangeB);
-  } finally {
+  } catch {
     return false;
   }
 }
