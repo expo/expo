@@ -14,6 +14,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { Collapsible } from '~/ui/components/Collapsible';
 import APISection from '~/components/plugins/APISection';
 import { PlatformTags } from '~/ui/components/Tag';
+import { Tab, Tabs } from '~/ui/components/Tabs';
 
 `expo-notifications` provides an API to fetch push notification tokens and to present, schedule, receive and respond to notifications.
 
@@ -186,11 +187,72 @@ Notifications.scheduleNotificationAsync({
 });
 ```
 
-### Handle push notifications with React Navigation
+### Handle push notifications with navigation
 
-If you'd like to deep link to a specific screen in your app when you receive a push notification, you can configure React Navigation's [linking](https://reactnavigation.org/docs/navigation-container#linking) prop to do that:
+If you'd like to deep link to a specific screen in your app when you receive a push notification, you can configure either of Expo's navigation systems to do that.
 
-```tsx
+<Tabs>
+
+<Tab label="Expo Router">
+
+You can use Expo Router's [built-in deep linking](/routing/create-pages) to handle incoming URLs from push notifications. Simply configure the root layout to listen for incoming and initial notification events.
+
+```tsx app/_layout.tsx
+import React from 'react';
+import * as Notifications from 'expo-notifications';
+import { router } from 'expo-router';
+
+function useNotificationObserver() {
+  React.useEffect(() => {
+    let isMounted = true;
+
+    function redirect(notification: Notifications.Notification) {
+      const url = notification.request.content.data?.url;
+      if (url) {
+        /* @info Push the URL. You may want to verify the format before navigating. */
+        router.push(url);
+        /* @end */
+      }
+    }
+
+    /* @info Handle the initial push notification. */
+    Notifications.getLastNotificationResponseAsync() /* @end */
+      .then(response => {
+        if (!isMounted || !response?.notification) {
+          return;
+        }
+        redirect(response?.notification);
+      });
+
+    /* @info Listen for runtime notifications. */
+    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+      /* @end */
+      redirect(response.notification);
+    });
+
+    return () => {
+      isMounted = false;
+      subscription.remove();
+    };
+  }, []);
+}
+
+export default function Layout() {
+  /* @info Observe at the root. Ensure this layout never returns <b>null</b> or the navigation will go unhandled. */
+  useNotificationObserver();
+  /* @end */
+
+  return <Slot />;
+}
+```
+
+</Tab>
+
+<Tab label="React Navigation">
+
+React Navigation's manual [linking configuration](https://reactnavigation.org/docs/navigation-container#linking) can be configured to handle incoming redirects from push notifications:
+
+```tsx App.tsx
 import React from 'react';
 import { Linking } from 'react-native';
 import * as Notifications from 'expo-notifications';
@@ -248,6 +310,10 @@ export default function App() {
 ```
 
 See more details on [React Navigation documentation](https://reactnavigation.org/docs/deep-linking/#third-party-integrations).
+
+</Tab>
+
+</Tabs>
 
 ## Configuration
 
