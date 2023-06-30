@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Use node module resolution when invoking `@expo/cli` from `expo`.
+
 ### 💡 Others
 
 ## 49.0.0-beta.0 — 2023-06-28
