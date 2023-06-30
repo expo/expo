@@ -24,11 +24,11 @@ export const Diagram = ({ source, darkSource, alt }: Props) => {
   return (
     <div className="border border-default rounded-md overflow-hidden my-6 max-w-[750px] m-auto">
       <picture>
-        <source srcSet={source.replace('.png', '.avif')} type="image/avif" />
+        {!isDark && <source srcSet={source.replace('.png', '.avif')} type="image/avif" />}
         {darkSource && isDark && (
           <source srcSet={darkSource.replace('.png', '.avif')} type="image/avif" />
         )}
-        <source srcSet={source.replace('.png', '.webp')} type="image/webp" />
+        {!isDark && <source srcSet={source.replace('.png', '.webp')} type="image/webp" />}
         {darkSource && isDark && (
           <source srcSet={darkSource.replace('.png', '.webp')} type="image/webp" />
         )}
