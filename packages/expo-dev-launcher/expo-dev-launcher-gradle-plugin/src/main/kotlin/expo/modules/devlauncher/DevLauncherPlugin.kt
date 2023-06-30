@@ -23,7 +23,7 @@ abstract class DevLauncherPlugin : Plugin<Project> {
 
   override fun apply(project: Project) {
     val enableNetworkInspector = project.properties["EX_DEV_CLIENT_NETWORK_INSPECTOR"]?.toString()?.toBoolean()
-    if (enableNetworkInspector != null && enableNetworkInspector) {
+    if (enableNetworkInspector == null || enableNetworkInspector) {
       // When expo-network-addons is installed, we will let it do the bytecode manipulation
       val networkAddonsInstalled = project.findProject(":expo-network-addons") != null
       if (networkAddonsInstalled) {

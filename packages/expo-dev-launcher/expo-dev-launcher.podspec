@@ -37,7 +37,7 @@ Pod::Spec.new do |s|
     other_c_flags += " -DEX_DEV_LAUNCHER_URL=\"\\\"" + escaped_dev_launcher_url + "\\\"\""
   end
   other_swift_flags = "$(inherited)"
-  if ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] == '1'
+  unless ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] == 'false'
     other_swift_flags += ' -DEX_DEV_CLIENT_NETWORK_INSPECTOR'
   end
 

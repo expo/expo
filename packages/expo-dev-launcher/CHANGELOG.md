@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Enable network inspector by default even the `EX_DEV_CLIENT_NETWORK_INSPECTOR` property is not defined. ([#23185](https://github.com/expo/expo/pull/23185) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 2.4.4 — 2023-06-28
