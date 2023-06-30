@@ -116,7 +116,7 @@ Previously with direnv, you would need to use a [dynamic app config](/versions/l
 
 ## Security considerations
 
-Never store sensitive secrets in your environment variables. When an end-user runs your app, they have access to all of the code and environment variables in your app. Read more about [storing sensitive info](https://reactnative.dev/docs/security#storing-sensitive-info).
+Never store sensitive secrets in environment variables that are prefixed with `EXPO_PUBLIC_`. When an end-user runs your app, they have access to all of the code and embedded environment variables in your app. Read more about [storing sensitive info](https://reactnative.dev/docs/security#storing-sensitive-info).
 
 ## Environment variables in SDK 48 and lower
 
