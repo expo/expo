@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXDevLauncherLoadingView.h"
+#import <EXDevLauncher/EXDevLauncherLoadingView.h>
 
 #if __has_include(<React/RCTDevLoadingViewProtocol.h>)
 

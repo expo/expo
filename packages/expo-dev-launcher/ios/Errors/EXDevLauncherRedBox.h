@@ -3,7 +3,7 @@
 #import <React/RCTRedBox.h>
 #import <React/RCTLogBox.h>
 
-#import "EXDevLauncherRedBoxProtocol.h"
+#import <EXDevLauncher/EXDevLauncherRedBoxProtocol.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

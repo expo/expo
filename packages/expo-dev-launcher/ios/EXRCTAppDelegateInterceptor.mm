@@ -1,6 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import "EXRCTAppDelegateInterceptor.h"
+#import <EXDevLauncher/EXRCTAppDelegateInterceptor.h>
 
 #import <memory>
 #import <cxxreact/JSExecutor.h>

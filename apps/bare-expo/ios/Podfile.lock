@@ -1377,13 +1377,13 @@ SPEC CHECKSUMS:
   EXInAppPurchases: e55f38bce3cb6b70f57d361458c897b17196448d
   EXJSONUtils: 09273cf1b6a6bedc5bdae06121011123815c7f32
   EXLocation: 231f4a3683fabfed254c9498b226f7f40a40f9d8
-  EXManifests: 083496dbda4035c42608ae76970f463b4611b767
+  EXManifests: ff19883eb51c38b8fd2e80d8389fe931e993f3e6
   EXMediaLibrary: dd08edb824ee92519a989211720956cfd381f212
   EXNotifications: 09394cbd7165f9a4a00a53328aa09bf874bae717
   EXPermissions: 336b5b8409f4e1368a8b0636f04282e7f04ced3b
   Expo: 9e72fb8ba10f6ee5e95745f69a845b16bceeef00
   expo-dev-client: 95aec73a232c2bcc4dab2f06f5ba1ae65967fa4f
-  expo-dev-launcher: 6a5c2bc04d52a2b4208a1ca3540daedc88c73723
+  expo-dev-launcher: aea569ba12a2c2e687eceb01fb7d23c9747b174d
   expo-dev-menu: ff9a3b8043c61359a722abf4494a41de41cffdc7
   expo-dev-menu-interface: bda969497e73dadc2663c479e0fa726ca79a306e
   ExpoAppleAuthentication: 7bdf1a2962ebfe9b00eb4183a17b78d736e57185
@@ -1428,7 +1428,7 @@ SPEC CHECKSUMS:
   EXSplashScreen: 04ae8fa26b4954c6a49780c5653860a3613db4a4
   EXStructuredHeaders: 324cc3130571d2696357fafd8be7fd9a0b5fdf6e
   EXTaskManager: f1730c315eb6fe457a3a2ee4ed899a51d717f302
-  EXUpdatesInterface: 65a425322c67e3c96952b47ac110df3fef65c6b3
+  EXUpdatesInterface: bb7e6a992251f4b88a68adc10c3e7d3e42bfb566
   FBLazyVector: bb17efca94c43508cbe54fb0a35e36df30da5213
   FBReactNativeSpec: a3b5091f783afa7bd795ed63749b469556099181
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
@@ -1514,6 +1514,6 @@ SPEC CHECKSUMS:
   Yoga: 1d6727ed193122f6adaf435c3de1a768326ff83b
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 49c132781c105867a55ae7ef111bc2c6c2a9eddd
+PODFILE CHECKSUM: 928d55e6ab5b393766110ddf49df49b883eddd0b
 
 COCOAPODS: 1.12.1
