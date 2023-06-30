@@ -28,9 +28,8 @@ const checkCompleteUnavailableAction = assign({
     isRollback: () => false,
 });
 const checkErrorAction = assign({
-    // @ts-expect-error: assign is not inferring the context type correctly
     isChecking: () => false,
-    checkError: (event) => new Error(event.body?.message || 'checkError'),
+    checkError: (context, event) => new Error(event.body?.message || 'checkError'),
 });
 const downloadCompleteAction = assign({
     downloadedManifest: (context, event) => event.body?.manifest || context.downloadedManifest,
@@ -41,8 +40,7 @@ const downloadCompleteAction = assign({
     isUpdateAvailable: (context, event) => event.body?.manifest !== undefined || context.isUpdateAvailable,
 });
 const downloadErrorAction = assign({
-    // @ts-expect-error: assign is not inferring the context type correctly
-    downloadError: (event) => new Error(event.body?.message || 'downloadError'),
+    downloadError: (context, event) => new Error(event.body?.message || 'downloadError'),
     isDownloading: () => false,
 });
 const check = assign({

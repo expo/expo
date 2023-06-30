@@ -67,9 +67,9 @@ const checkCompleteUnavailableAction = assign({
 });
 
 const checkErrorAction = assign({
-  // @ts-expect-error: assign is not inferring the context type correctly
   isChecking: () => false,
-  checkError: (event: UpdatesStateMachineEvent) => new Error(event.body?.message || 'checkError'),
+  checkError: (context: UpdatesStateMachineContext, event: UpdatesStateMachineEvent) =>
+    new Error(event.body?.message || 'checkError'),
 });
 
 const downloadCompleteAction = assign({
@@ -86,8 +86,7 @@ const downloadCompleteAction = assign({
 });
 
 const downloadErrorAction = assign({
-  // @ts-expect-error: assign is not inferring the context type correctly
-  downloadError: (event: UpdatesStateMachineEvent) =>
+  downloadError: (context: UpdatesStateMachineContext, event: UpdatesStateMachineEvent) =>
     new Error(event.body?.message || 'downloadError'),
   isDownloading: () => false,
 });
