@@ -37,6 +37,7 @@ abstract_target 'Expo Go' do
       'expo-dev-launcher',
       'expo-dev-client',
       'expo-maps',
+      'expo-network-addons',
       'expo-insights',
       'expo-face-detector',
     ],
