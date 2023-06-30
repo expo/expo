@@ -31,7 +31,7 @@
   ],
   "dependencies": {
     "@expo/config": "~8.1.0",
-    "@expo/env": "~0.0.2",
+    "@expo/env": "0.0.4",
     "@expo/json-file": "~8.2.37",
     "chalk": "^4.1.0",
     "debug": "^4.3.2",
