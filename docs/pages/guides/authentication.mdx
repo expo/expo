@@ -23,6 +23,7 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
 
 <Grid>
   <GridItem title="IdentityServer 4" protocol={['OAuth 2', 'OpenID']} image={ASSETS.id4} />
+  <GridItem title="Keycloak" protocol={['OAuth 2', 'OpenID']} image={ASSETS.keycloak} />
   <GridItem title="Azure" protocol={['OAuth 2', 'OpenID']} image={ASSETS.azure} />
   <GridItem
     title="Apple"
@@ -126,6 +127,55 @@ export default function App() {
 
 </Box>
 {/* End IdentityServer 4 */}
+
+<Box
+  name="Keycloak"
+  image={ASSETS.keycloak}
+>
+
+| Website                  | Provider | PKCE     | Auto Discovery |
+| ------------------------ | -------- | -------- | -------------- |
+| - | OpenID   | Required | Available      |
+
+{/* prettier-ignore */}
+```tsx Keycloak Example
+import * as React from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
+import { Button, Text, View } from 'react-native';
+
+WebBrowser.maybeCompleteAuthSession();
+
+export default function App() {
+  /* @info If the provider supports auto discovery then you can pass an issuer to the `useAutoDiscovery` hook to fetch the discovery document. */
+  const discovery = useAutoDiscovery('https://YOUR_KEYCLOAK/realms/YOUR_REALM');
+  /* @end */
+  
+// Create and load an auth request
+  const [request, result, promptAsync] = useAuthRequest(
+    {
+      clientId: 'YOUR_CLIENT_NAME',
+      /* @info After a user finishes authenticating, the server will redirect them to this URI. Learn more about <a href="../../guides/linking/">linking here</a>. */
+      redirectUri: makeRedirectUri({
+        scheme: 'YOUR_SCHEME'
+      }),
+      /* @end */
+      scopes: ['openid', 'profile'],
+    },
+    discovery
+  );
+
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Button title="Login!" disabled={!request} onPress={() => promptAsync()} />
+      {result && <Text>{JSON.stringify(result, null, 2)}</Text>}
+    </View>
+  );
+}
+```
+
+</Box>
+{/* End Keycloak */}
 
 <Box
   name="Azure"
