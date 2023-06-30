@@ -1,4 +1,5 @@
-#!/usr/bin/env bash
+#!/usr/bin/env node
 
-# Forward all arguments to the local CLI (@expo/cli).
-npm exec --no-install -- expo-internal "$@"
+// Execute the CLI using node module resultion, instead of creating a new process.
+// This avoids resolving issues with pnpm and yarn 2+ package managers.
+require('@expo/cli');
