@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Support discriminated unions for JS API method result types. ([#23173](https://github.com/expo/expo/pull/23173) by [@wschurman](https://github.com/wschurman))
+- Fix expo-extra-params header. ([#23206](https://github.com/expo/expo/pull/23206) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 
