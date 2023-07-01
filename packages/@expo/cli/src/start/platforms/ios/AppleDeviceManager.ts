@@ -23,7 +23,7 @@ import * as SimControl from './simctl';
 
 const debug = require('debug')('expo:start:platforms:ios:AppleDeviceManager') as typeof console.log;
 
-const EXPO_GO_BUNDLE_IDENTIFIER = 'host.exp.Exponent';
+export const EXPO_GO_BUNDLE_IDENTIFIER = 'host.exp.Exponent';
 
 /**
  * Ensure a simulator is booted and the Simulator app is opened.

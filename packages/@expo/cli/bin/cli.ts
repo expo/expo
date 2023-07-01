@@ -26,6 +26,7 @@ const commands: { [command: string]: () => Promise<Command> } = {
   export: () => import('../src/export').then((i) => i.expoExport),
   'export:web': () => import('../src/export/web').then((i) => i.expoExportWeb),
   'export:embed': () => import('../src/export/embed').then((i) => i.expoExportEmbed),
+  push: () => import('../src/push').then((i) => i.expoPush),
 
   // Auxiliary commands
   install: () => import('../src/install').then((i) => i.expoInstall),

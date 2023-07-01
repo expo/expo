@@ -67,12 +67,14 @@ export async function getContainerPathAsync(
   device: Partial<DeviceContext>,
   {
     appId,
+    type = 'app'
   }: {
     appId: string;
+    type?: 'data' | "app" | 'group'
   }
 ): Promise<string | null> {
   try {
-    const { stdout } = await simctlAsync(['get_app_container', resolveId(device), appId]);
+    const { stdout } = await simctlAsync(['get_app_container', resolveId(device), appId, type]);
     return stdout.trim();
   } catch (error: any) {
     if (error.stderr?.match(/No such file or directory/)) {
@@ -129,6 +131,61 @@ export async function openUrlAsync(
     // Finally, try again...
     return await openUrlAsync(device, options);
   }
+}
+
+export async function pushAsync(
+  device: Partial<DeviceContext>,
+  options: { jsonFilePath: string; bundleIdentifier: string }
+): Promise<void> {
+  try {
+    // Skip logging since this is likely to fail.
+    await simctlAsync(['push', resolveId(device), options.bundleIdentifier, options.jsonFilePath]);
+  } catch (error: any) {
+    if (!error.stderr?.match(/Unable to lookup in current state: Shut/)) {
+      throw error;
+    }
+
+    // If the device was in a weird in-between state ("Shutting Down" or "Shutdown"), then attempt to reboot it and try again.
+    // This can happen when quitting the Simulator app, and immediately pressing `i` to reopen the project.
+
+    // First boot the simulator
+    await bootDeviceAsync({ udid: resolveId(device) });
+
+    // Finally, try again...
+    return await pushAsync(device, options);
+  }
+}
+
+export async function privacyAsync(
+  device: Partial<DeviceContext>,
+  options: { 
+    service: 'all'
+    | 'calendar'
+    | 'contacts-limited'
+    | 'contacts'
+    | 'location'
+    | 'location-always'
+    | 'photos-add'
+    | 'photos'
+    | 'media-library'
+    | 'microphone'
+    | 'motion'
+    | 'reminders'
+    | 'siri',
+    action:
+    'grant' 
+    | 'revoke' 
+    | 'reset';
+    bundleIdentifier?: string;
+  }
+): Promise<void> {
+
+  if (options.action !== 'reset' && !options.bundleIdentifier) {
+    throw new Error(`Must provide bundleIdentifier when action is "${options.action}"`);
+  }
+
+  // Skip logging since this is likely to fail.
+  await simctlAsync(['privacy', resolveId(device), options.action, options.service, options.bundleIdentifier]); 
 }
 
 /** Open a simulator using a bundle identifier. If no app with a matching bundle identifier is installed then an error will be thrown. */
