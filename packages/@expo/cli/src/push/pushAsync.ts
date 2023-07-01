@@ -37,17 +37,16 @@ export async function pushAsync(projectRoot: string, options: Options) {
   const device = await AppleDeviceManager.resolveAsync();
   device.activateWindowAsync();
 
-  const isAmbiguous = !options.go && !options.devClient;
   let applicationId: string = EXPO_GO_BUNDLE_IDENTIFIER;
   if (!options.go || options.devClient) {
     try {
       applicationId = await new AppleAppIdResolver(projectRoot).getAppIdAsync();
       if (!(await device.isAppInstalledAsync(applicationId))) {
         throw new CommandError(
-          `Cannot push notifications to ${applicationId} for device ${device.name} because the app is not installed. Run with --go to push to Expo Go.`
+          `Cannot push notification to ${applicationId} for device ${device.name} because the app is not installed. Run with --go to push to Expo Go.`
         );
       } else {
-        debug(`Pushing notifications to ${applicationId} for device ${device.name}`);
+        debug(`Pushing notification to ${applicationId} for device ${device.name}`);
       }
       options.devClient = true;
     } catch (error) {
@@ -57,7 +56,7 @@ export async function pushAsync(projectRoot: string, options: Options) {
   }
 
   Log.log(
-    chalk`Pushing notifications to ${device.device.name} for {cyan ${
+    chalk`Pushing notification to ${device.device.name} for {cyan ${
       options.go ? 'Expo Go' : 'development build'
     }} {gray (${applicationId})}`
   );
@@ -129,7 +128,7 @@ export async function pushAsync(projectRoot: string, options: Options) {
 
   await JsonFile.writeAsync(jsonFilePath, payload);
 
-  console.log('payload', payload);
+  debug('payload', payload);
   debug(`Pushing notification to ${device.device.udid} with payload ${jsonFilePath}`);
   await simctl.pushAsync(device.device, {
     bundleIdentifier: applicationId,
@@ -171,7 +170,7 @@ async function ensureAudioFileAsync(
 
     await fs.promises.mkdir(path.dirname(tempFile), { recursive: true });
     fs.writeFileSync(tempFile, buffer);
-    Log.log(`Downloaded sound file from ${soundRef}`);
+    debug(`Downloaded sound file from ${soundRef}`);
     return ensureAudioFileAsync(projectRoot, { device, soundRef: tempFile, applicationId });
   }
 
@@ -195,7 +194,7 @@ async function ensureAudioFileAsync(
     const tempFileName = 'expo-cli-temp' + path.extname(soundRef);
     const outputFile = path.join(soundsDir, tempFileName);
     fs.copyFileSync(soundRefResolved, outputFile);
-    Log.log(`Copied sound file ${soundRefResolved} to ${soundsDir}`);
+    debug(`Copied sound file ${soundRefResolved} to ${soundsDir}`);
     return tempFileName;
   }
   return null;
