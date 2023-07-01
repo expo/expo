@@ -16,12 +16,42 @@ const generateTabLabels = (children: React.ReactNode) => {
   );
 };
 
-export const Tabs = ({ children, tabs }: Props) => {
-  const tabTitles = tabs || generateTabLabels(children);
+const SharedTabsContext = React.createContext<{
+  index: number;
+  setIndex: (index: number) => void;
+} | null>(null);
+
+/**
+ * Wraps a group of tabs to share the same state. Useful for guides where one aspect of the guide is broken up into multiple tabs, e.g. Yarn vs NPM.
+ */
+export function TabsGroup({ children }: { children: React.ReactNode }) {
+  const [index, setIndex] = React.useState(0);
+  return (
+    <SharedTabsContext.Provider value={{ index, setIndex }}>{children}</SharedTabsContext.Provider>
+  );
+}
+
+export const Tabs = (props: Props) => {
+  const context = React.useContext(SharedTabsContext);
   const [tabIndex, setTabIndex] = React.useState(0);
 
+  if (context) {
+    return <InnerTabs {...props} {...context} />;
+  }
+
+  return <InnerTabs {...props} index={tabIndex} setIndex={setTabIndex} />;
+};
+
+const InnerTabs = ({
+  children,
+  tabs,
+  index: tabIndex,
+  setIndex,
+}: Props & { index: number; setIndex: (index: number) => void }) => {
+  const tabTitles = tabs || generateTabLabels(children);
+
   return (
-    <ReachTabs index={tabIndex} onChange={setTabIndex} css={tabsWrapperStyle}>
+    <ReachTabs index={tabIndex} onChange={setIndex} css={tabsWrapperStyle}>
       <TabList css={tabsListStyle}>
         {tabTitles.map((title, index) => (
           <TabButton key={index} selected={index === tabIndex}>
