@@ -1,5 +1,5 @@
+import { v4 as uuidv4 } from '@expo/uuid';
 import { Platform, UnavailabilityError } from 'expo-modules-core';
-import { v4 as uuidv4 } from 'uuid';
 import NotificationScheduler from './NotificationScheduler';
 /**
  * Schedules a notification to be triggered in the future.

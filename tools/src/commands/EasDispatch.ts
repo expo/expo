@@ -1,6 +1,7 @@
 import { Command } from '@expo/commander';
 import plist from '@expo/plist';
 import spawnAsync from '@expo/spawn-async';
+import { v4 as uuidv4 } from '@expo/uuid';
 import assert from 'assert';
 import aws from 'aws-sdk';
 import fs, { mkdirp } from 'fs-extra';
@@ -9,7 +10,6 @@ import inquirer from 'inquirer';
 import fetch from 'node-fetch';
 import os from 'os';
 import path from 'path';
-import { v4 as uuidv4 } from 'uuid';
 
 import { EXPO_DIR } from '../Constants';
 import Git from '../Git';

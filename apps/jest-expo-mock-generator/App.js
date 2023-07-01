@@ -1,10 +1,10 @@
 import mux from '@expo/mux';
+import { v4 as uuidV4 } from '@expo/uuid';
 import { setStringAsync } from 'expo-clipboard';
 import Constants from 'expo-constants';
 import getInstallationIdAsync from 'expo/build/environment/getInstallationIdAsync';
 import React from 'react';
 import { Button, NativeModules, StyleSheet, Text, View } from 'react-native';
-import { v4 as uuidV4 } from 'uuid';
 
 // A workaround for `TypeError: Cannot read property 'now' of undefined` error thrown from reanimated code.
 global.performance = {
