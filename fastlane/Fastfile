@@ -166,7 +166,7 @@ platform :ios do
     run_tests(
       workspace: workspace,
       scheme: generated_scheme,
-      devices: ["iPhone 13 Pro Max"],
+      devices: ["iPhone 14 Pro"],
       configuration: 'Debug',
       clean: false,
       skip_build: true,
