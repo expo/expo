@@ -5,13 +5,15 @@ description: Different ways to publish the Expo web app with third-party service
 
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import { Tab, Tabs } from '~/ui/components/Tabs';
+import { Tab, Tabs, TabsGroup } from '~/ui/components/Tabs';
 
 A web app created using Expo can be served locally for testing out the production behavior. Once the testing phase checks out, you can choose from a variety of third-party services to host it.
 
 ## Create a build
 
 Creating a build of the project is the first step to publishing a web app. Whether you want to serve it locally or host it on a third-party service, you'll need to export all JavaScript and assets of a project. This is known as a static bundle. It can be exported by running the following command:
+
+<TabsGroup>
 
 <Tabs>
 
@@ -105,7 +107,7 @@ Configure redirects for single-page applications.
 
 > If your app uses [static rendering](/router/reference/static-rendering), then you can skip this step.
 
-`expo.web.output: 'single'` generates a single-page application. It means there's only one **dist/index.html** file to which all requests must be redirected. This can be done in Netlify by creating a **./public/_redirects** file and redirecting all requests to **/index.html**.
+`expo.web.output: 'single'` generates a single-page application. It means there's only one **dist/index.html** file to which all requests must be redirected. This can be done in Netlify by creating a **./public/\_redirects** file and redirecting all requests to **/index.html**.
 
 ```sh public/_redirects
 /*    /index.html   200
@@ -117,7 +119,7 @@ If you modify this file, you must rebuild your project with `npx expo export -p 
 
 <Tab label="webpack">
 
-If your app implements any navigation, you'll need to configure Netlify to redirect requests to the single **web-build/index.html** file. This can be done in Netlify by creating a **./public/_redirects** file and redirecting all requests to **/index.html**.
+If your app implements any navigation, you'll need to configure Netlify to redirect requests to the single **web-build/index.html** file. This can be done in Netlify by creating a **./public/\_redirects** file and redirecting all requests to **/index.html**.
 
 Navigate inside the **web-build** directory and run the following command to create **\_redirects** file with follwing rule:
 
@@ -162,7 +164,6 @@ Netlify can also build and deploy when you push to git or open a new pull reques
 ### Vercel
 
 [Vercel](https://vercel.com/) has a single-command deployment flow.
-
 
 <Step label="1">
 
@@ -463,3 +464,5 @@ In case you want to change the header for hosting add the following config for `
 ```
 
 </Step>
+
+</TabsGroup>
