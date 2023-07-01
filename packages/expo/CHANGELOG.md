@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Use node module resolution when invoking `@expo/cli` from `expo`. ([#23220](https://github.com/expo/expo/pull/23220) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 49.0.0-beta.0 — 2023-06-28
