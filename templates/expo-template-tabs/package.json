@@ -16,11 +16,11 @@
   "dependencies": {
     "@expo/vector-icons": "^13.0.0",
     "@react-navigation/native": "^6.0.2",
-    "expo": "~49.0.0-alpha.8",
+    "expo": "~49.0.0-alpha.9",
     "expo-font": "~11.4.0",
-    "expo-linking": "~5.0.1",
+    "expo-linking": "~5.0.2",
     "expo-router": "^2.0.0-rc.4",
-    "expo-splash-screen": "~0.20.0",
+    "expo-splash-screen": "~0.20.1",
     "expo-status-bar": "~1.6.0",
     "expo-system-ui": "~2.4.0",
     "expo-web-browser": "~12.3.0",
@@ -29,7 +29,7 @@
     "react-native": "0.72.0",
     "react-native-safe-area-context": "4.6.3",
     "react-native-screens": "~3.22.0",
-    "react-native-web": "~0.18.10"
+    "react-native-web": "~0.19.6"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

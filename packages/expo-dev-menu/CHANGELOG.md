@@ -8,7 +8,21 @@
 
 ### 🐛 Bug fixes
 
+- Fixed the `Cannot read property 'addDevMenuCallbacks' of null` error when registering custom menu item on iOS. ([#23219](https://github.com/expo/expo/pull/23219) by [@kudo](https://github.com/kudo))
+- Fixed iOS build errors in `use_frameworks!` mode. ([#23218](https://github.com/expo/expo/pull/23218) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
+
+## 3.1.4 — 2023-06-28
+
+_This version does not introduce any user-facing changes._
+
+## 3.1.3 — 2023-06-27
+
+### 💡 Others
+
+- Upgrade `semver` lib. ([#23113](https://github.com/expo/expo/pull/23113) by [@felipemillhouse](https://github.com/felipemillhouse))
+- Remove unused fonts. ([#23107](https://github.com/expo/expo/pull/23107) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 3.1.2 — 2023-06-23
 

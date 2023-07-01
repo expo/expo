@@ -7,7 +7,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-This guide explains how to transition a React Native project that uses CodePush to use EAS Update. It assumes that you are using the default React Native project structure. For assistance with migrating brownfield native apps to EAS Update, [reach out to us directly](https://expo.dev/contact).
+This guide explains how to transition a React Native project that uses CodePush to use EAS Update which offers [many advantages](/eas-update/introduction/#pitch). It assumes that you're using the default React Native project structure. For assistance with migrating brownfield native apps to EAS Update, [reach out to us directly](https://expo.dev/contact).
 
 ## Prerequisites
 
@@ -93,7 +93,7 @@ You can check whether you are logged in by running `eas whoami`.
 <Step label="7">
 ## Configure project, deploy builds and publish updates
 
-We have finished all the steps tailored for a CodePush-enabled bare React Native project. To proceed with the configuration of your project, please begin with Step 4 in [the main guide](https://docs.expo.dev/eas-update/getting-started/#create-a-build-for-the-project) and follow it through to completion.
+We have finished all the steps tailored for a CodePush-enabled bare React Native project. To proceed with the configuration of your project, please begin with Step 4 in [the main guide](/eas-update/getting-started/#create-a-build-for-the-project) and follow it through to completion.
 
 > You may need to edit some of the code `eas update:configure` generates depending on how you build and run your project. See [Updating bare app](/bare/updating-your-app) for more details about the native changes.
 
@@ -115,6 +115,6 @@ Please follow the respective store guidelines for submitting a new build of your
 - [Submitting to Apple App Store](/submit/ios)
 - [Submitting to Google Play Store](/submit/android)
 
-After successfully submitting your app, users will be able to download and use the latest build with EAS Update integration.
+After successfully submitting your app, users will be able to download and use the latest build with EAS Update integration. If your app is not updating as expected, [validate your configuration](/eas-update/debug).
 
 </Step>

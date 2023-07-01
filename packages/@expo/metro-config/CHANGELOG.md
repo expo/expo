@@ -6,11 +6,17 @@
 
 ### 🎉 New features
 
+- Silence dotenv file watching warnings. ([#23169](https://github.com/expo/expo/pull/23169) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.10.3 — 2023-06-27
+
 ### 🐛 Bug fixes
 
 - Fix css modules syntax. ([#23086](https://github.com/expo/expo/pull/23086) by [@EvanBacon](https://github.com/EvanBacon))
-
-### 💡 Others
 
 ## 0.10.2 — 2023-06-24
 

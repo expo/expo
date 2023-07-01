@@ -8,7 +8,26 @@
 
 ### 🐛 Bug fixes
 
+- Support discriminated unions for JS API method result types. ([#23173](https://github.com/expo/expo/pull/23173) by [@wschurman](https://github.com/wschurman))
+- Fix expo-extra-params header. ([#23206](https://github.com/expo/expo/pull/23206) by [@wschurman](https://github.com/wschurman))
+- [iOS] Fix response header casing bug. ([#23234](https://github.com/expo/expo/pull/23234) by [@wschurman](https://github.com/wschurman))
+
 ### 💡 Others
+
+## 0.18.5 — 2023-06-28
+
+### 💡 Others
+
+- README.md changes. ([#23142](https://github.com/expo/expo/pull/23142) by [@douglowder](https://github.com/douglowder))
+
+## 0.18.4 — 2023-06-27
+
+### 🐛 Bug fixes
+
+- [iOS] Use weak delegate for state machine. ([#23060](https://github.com/expo/expo/pull/23060) by [@wschurman](https://github.com/wschurman))
+- [Android] Convert LoaderTask.RemoteCheckResult to sealed class. ([#23061](https://github.com/expo/expo/pull/23061) by [@wschurman](https://github.com/wschurman))
+
+- [iOS] Use swift enum for AppLoaderTask delegate. ([#23064](https://github.com/expo/expo/pull/23064) by [@wschurman](https://github.com/wschurman))
 
 ## 0.18.3 — 2023-06-24
 
@@ -16,6 +35,7 @@
 
 - [Android] fix instrumentation tests. ([#23037](https://github.com/expo/expo/pull/23037) by [@douglowder](https://github.com/douglowder))
 - [iOS] Fix crash when dev-client and updates used together. ([#23070](https://github.com/expo/expo/pull/23070) by [@douglowder](https://github.com/douglowder))
+- [Android] Use sealed class for UpdatesStateEvent. ([#23038](https://github.com/expo/expo/pull/23038) by [@wschurman](https://github.com/wschurman))
 
 ## 0.18.2 — 2023-06-23
 

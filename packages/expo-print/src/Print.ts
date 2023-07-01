@@ -12,6 +12,7 @@ import {
 
 export { FilePrintOptions, FilePrintResult, OrientationType, PrintOptions, Printer };
 
+let isPrinting = false;
 // @needsAudit @docsMissing
 /**
  * The orientation of the printed content.
@@ -45,7 +46,16 @@ export async function printAsync(options: PrintOptions): Promise<void> {
   if (options.markupFormatterIOS !== undefined) {
     console.warn('The markupFormatterIOS option is deprecated. Use useMarkupFormatter instead.');
   }
-  return await ExponentPrint.print(options);
+  if (isPrinting) {
+    throw new Error('Another print request is already in progress');
+  }
+
+  isPrinting = true;
+  try {
+    return await ExponentPrint.print(options);
+  } finally {
+    isPrinting = false;
+  }
 }
 
 // @needsAudit

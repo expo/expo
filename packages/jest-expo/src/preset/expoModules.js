@@ -282,6 +282,7 @@ module.exports = {
             key: 'isRootedExperimentalAsync',
           },
         ],
+        ExpoDevMenu: [],
         ExpoDocumentPicker: [
           { name: 'getDocumentAsync', argumentsCount: 1, key: 'getDocumentAsync' },
         ],

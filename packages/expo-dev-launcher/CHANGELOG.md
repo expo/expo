@@ -8,7 +8,28 @@
 
 ### 🐛 Bug fixes
 
+- Enable network inspector by default even the `EX_DEV_CLIENT_NETWORK_INSPECTOR` property is not defined. ([#23185](https://github.com/expo/expo/pull/23185) by [@kudo](https://github.com/kudo))
+- Fixed iOS build errors in `use_frameworks!` mode. ([#23218](https://github.com/expo/expo/pull/23218) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
+
+## 2.4.4 — 2023-06-28
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed network inspector losing events when the dev-server listening on port other than 8081. ([#23122](https://github.com/expo/expo/pull/23122) by [@kudo](https://github.com/kudo))
+- Fixed no updates showing in the Extensions tab. ([#23163](https://github.com/expo/expo/pull/23163) by [@kudo](https://github.com/kudo))
+
+## 2.4.3 — 2023-06-27
+
+### 🎉 New features
+
+- Add support for SSO users. ([#22873](https://github.com/expo/expo/pull/22873) by [@wschurman](https://github.com/wschurman))
+- Update user avatars to use the same logic as the website. ([#23114](https://github.com/expo/expo/pull/23114) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 💡 Others
+
+- Upgrade `semver` lib. ([#23113](https://github.com/expo/expo/pull/23113) by [@felipemillhouse](https://github.com/felipemillhouse))
 
 ## 2.4.2 — 2023-06-23
 

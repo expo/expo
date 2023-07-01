@@ -3,17 +3,15 @@
 #include <memory>
 #include <utility>
 
-#include <ReactCommon/TurboModuleUtils.h>
 #include <jsi/jsi.h>
 
-#include "SkBase64.h"
-
+#include "JsiPromises.h"
 #include "JsiSkData.h"
+#include "SkBase64.h"
 
 namespace RNSkia {
 
 namespace jsi = facebook::jsi;
-namespace react = facebook::react;
 
 class JsiSkDataFactory : public JsiSkHostObject {
 public:
@@ -21,11 +19,11 @@ public:
     auto jsiLocalUri = arguments[0].asString(runtime);
     auto localUri = jsiLocalUri.utf8(runtime);
     auto context = getContext();
-    return react::createPromiseAsJSIValue(
+    return RNJsi::JsiPromises::createPromiseAsJSIValue(
         runtime,
         [context = std::move(context), localUri = std::move(localUri)](
             jsi::Runtime &runtime,
-            std::shared_ptr<react::Promise> promise) -> void {
+            std::shared_ptr<RNJsi::JsiPromises::Promise> promise) -> void {
           // Create a stream operation - this will be run in a
           // separate thread
           context->performStreamOperation(

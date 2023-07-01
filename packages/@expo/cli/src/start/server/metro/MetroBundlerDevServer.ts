@@ -21,6 +21,7 @@ import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../Bun
 import { getStaticRenderFunctions } from '../getStaticRenderFunctions';
 import { ContextModuleSourceMapsMiddleware } from '../middleware/ContextModuleSourceMapsMiddleware';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
+import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
 import { createBundleUrlPath, resolveMainModuleName } from '../middleware/ManifestMiddleware';
@@ -307,6 +308,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // This MUST be after the manifest middleware so it doesn't have a chance to serve the template `public/index.html`.
       middleware.use(new ServeStaticMiddleware(this.projectRoot).getHandler());
 
+      // This should come after the static middleware so it doesn't serve the favicon from `public/favicon.ico`.
+      middleware.use(new FaviconMiddleware(this.projectRoot).getHandler());
+
       if (useWebSSG) {
         middleware.use(async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
           if (!req?.url) {
@@ -331,7 +335,18 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             return;
           } catch (error: any) {
             res.setHeader('Content-Type', 'text/html');
-            res.end(await this.renderStaticErrorAsync(error));
+            try {
+              res.end(await this.renderStaticErrorAsync(error));
+            } catch (staticError: any) {
+              // Fallback error for when Expo Router is misconfigured in the project.
+              res.end(
+                '<span><h3>Internal Error:</h3><b>Project is not setup correctly for static rendering (check terminal for more info):</b><br/>' +
+                  error.message +
+                  '<br/><br/>' +
+                  staticError.message +
+                  '</span>'
+              );
+            }
           }
         });
       }

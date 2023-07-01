@@ -173,6 +173,7 @@ class UpdatesModule(
               if (updateDirective != null) {
                 if (updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) {
                   updateInfo.putBoolean("isRollBackToEmbedded", true)
+                  updateInfo.putBoolean("isAvailable", false)
                   promise.resolve(updateInfo)
                   updatesServiceLocal.stateMachine?.processEvent(
                     UpdatesStateEvent.CheckCompleteWithRollback()
@@ -182,6 +183,7 @@ class UpdatesModule(
               }
 
               if (updateManifest == null) {
+                updateInfo.putBoolean("isRollBackToEmbedded", false)
                 updateInfo.putBoolean("isAvailable", false)
                 promise.resolve(updateInfo)
                 updatesServiceLocal.stateMachine?.processEvent(
@@ -194,6 +196,7 @@ class UpdatesModule(
               if (launchedUpdate == null) {
                 // this shouldn't ever happen, but if we don't have anything to compare
                 // the new manifest to, let the user know an update is available
+                updateInfo.putBoolean("isRollBackToEmbedded", false)
                 updateInfo.putBoolean("isAvailable", true)
                 updateInfo.putString("manifestString", updateManifest.manifest.toString())
                 promise.resolve(updateInfo)
@@ -211,6 +214,7 @@ class UpdatesModule(
                   updateResponse.responseHeaderData?.manifestFilters
                 )
               ) {
+                updateInfo.putBoolean("isRollBackToEmbedded", false)
                 updateInfo.putBoolean("isAvailable", true)
                 updateInfo.putString("manifestString", updateManifest.manifest.toString())
                 promise.resolve(updateInfo)
@@ -220,6 +224,7 @@ class UpdatesModule(
                   )
                 )
               } else {
+                updateInfo.putBoolean("isRollBackToEmbedded", false)
                 updateInfo.putBoolean("isAvailable", false)
                 promise.resolve(updateInfo)
                 updatesServiceLocal.stateMachine?.processEvent(
@@ -306,10 +311,14 @@ class UpdatesModule(
 
                 if (loaderResult.updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) {
                   updateInfo.putBoolean("isRollBackToEmbedded", true)
+                  updateInfo.putBoolean("isNew", false)
+
                   updatesServiceLocal.stateMachine?.processEvent(
                     UpdatesStateEvent.DownloadCompleteWithRollback()
                   )
                 } else {
+                  updateInfo.putBoolean("isRollBackToEmbedded", false)
+
                   if (loaderResult.updateEntity == null) {
                     updateInfo.putBoolean("isNew", false)
                     updatesServiceLocal.stateMachine?.processEvent(

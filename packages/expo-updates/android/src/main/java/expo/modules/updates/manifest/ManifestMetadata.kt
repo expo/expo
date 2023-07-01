@@ -74,7 +74,7 @@ object ManifestMetadata {
 
       // ensure that this can be serialized to a structured-header dictionary
       // this will throw for invalid values
-      Dictionary.valueOf(extraParamsToWrite.mapValues { elem -> StringItem.valueOf(elem.value) })
+      Dictionary.valueOf(extraParamsToWrite.mapValues { elem -> StringItem.valueOf(elem.value) }).serialize()
 
       JSONObject(extraParamsToWrite).toString()
     }

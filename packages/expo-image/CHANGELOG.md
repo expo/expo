@@ -6,7 +6,11 @@
 
 ### 🎉 New features
 
+- [Web] Add support for static image responsiveness using `srcset` attributes. ([#22088](https://github.com/expo/expo/pull/22088) by [@aleqsio](https://github.com/aleqsio))
+
 ### 🐛 Bug fixes
+
+- Fixed an issue where recyclingKey would reset the image source on mount. ([#23187](https://github.com/expo/expo/pull/23187) by [@hirbod](https://github.com/hirbod))
 
 ### 💡 Others
 

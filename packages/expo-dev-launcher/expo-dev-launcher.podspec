@@ -37,7 +37,7 @@ Pod::Spec.new do |s|
     other_c_flags += " -DEX_DEV_LAUNCHER_URL=\"\\\"" + escaped_dev_launcher_url + "\\\"\""
   end
   other_swift_flags = "$(inherited)"
-  if ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] == '1'
+  unless ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] == 'false'
     other_swift_flags += ' -DEX_DEV_CLIENT_NETWORK_INSPECTOR'
   end
 
@@ -50,18 +50,25 @@ Pod::Spec.new do |s|
     'OTHER_CFLAGS' => other_c_flags,
   }
 
+  header_search_paths = [
+    '"$(PODS_ROOT)/Headers/Private/React-Core"',
+    '"${PODS_ROOT}/Headers/Public/RNReanimated"',
+    '"$(PODS_CONFIGURATION_BUILD_DIR)/EXManifests/Swift Compatibility Header"',
+    '"$(PODS_CONFIGURATION_BUILD_DIR)/EXUpdatesInterface/Swift Compatibility Header"',
+  ]
+
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
     'OTHER_CFLAGS[config=Debug]' => other_c_flags,
     'OTHER_SWIFT_FLAGS[config=Debug]' => other_swift_flags,
-    "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/React-Core\" \"$(PODS_ROOT)/Headers/Public/RNReanimated\"",
+    'HEADER_SEARCH_PATHS' => header_search_paths.join(' '),
     'FRAMEWORK_SEARCH_PATHS' => '"${PODS_CONFIGURATION_BUILD_DIR}/RNReanimated"',
     "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
   }
 
   s.user_target_xcconfig = {
-    "HEADER_SEARCH_PATHS" => "\"${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-launcher/Swift Compatibility Header\"",
+    'HEADER_SEARCH_PATHS' => '"${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-launcher/Swift Compatibility Header"',
   }
 
   s.dependency "React-Core"

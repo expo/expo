@@ -70,7 +70,7 @@
     "react-string-replace": "^0.4.4",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
-    "semver": "^7.3.5",
+    "semver": "^7.5.3",
     "sha1": "^1.1.1",
     "url": "^0.11.0"
   },
@@ -84,7 +84,7 @@
     "@types/lodash": "^4.14.161",
     "@types/react": "~18.0.14",
     "@types/react-redux": "^7.1.16",
-    "@types/semver": "^7.3.6",
+    "@types/semver": "^7.5.0",
     "@types/sha1": "^1.1.2",
     "expo-module-scripts": "^3.0.0",
     "jest-expo": "~49.0.0-alpha.1",

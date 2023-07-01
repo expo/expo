@@ -6,7 +6,7 @@ description: Learn how to speed up development with async bundling in Expo Route
 import { Terminal } from '~/ui/components/Snippet';
 import Video from '~/components/plugins/Video';
 
-> This guide requires `expo@49.0.0-alpha.3` or higher and `metro@0.76.3` &mdash; everything listed here is still experimental. To use these features, you may need to [use Expo CLI on `main`](https://github.com/expo/expo/tree/main/packages/%40expo/cli#contributing).
+> **info** This feature is still experimental. Available from Expo SDK 49 and Expo Router v2.
 
 <Video file="expo-router/async-routes.mp4" loop={false} />
 
@@ -18,15 +18,13 @@ Apps using the Hermes Engine will not benefit as much from bundle splitting as t
 
 ## How it works
 
-All Routes are wrapped inside a suspense boundary and are loaded asynchronously. This means that the first time you navigate to a route, it will take a little longer to load. However, once it is loaded, it will be cached and subsequent visits will be instant. The [Suspense fallback](https://react.dev/reference/react/Suspense#displaying-a-fallback-while-content-is-loading) or loading state **cannot be customized** at this time. We plan to add support in the future via a **route+loading.js** file.
+All Routes are wrapped inside a suspense boundary and are loaded asynchronously. This means that the first time you navigate to a route, it will take a little longer to load. However, once it is loaded, it will be cached and subsequent visits will be instant.
+
+{/* The [Suspense fallback](https://react.dev/reference/react/Suspense#displaying-a-fallback-while-content-is-loading) or loading state **cannot be customized** at this time. We plan to add support in the future via a **route+loading.js** file. */}
 
 Loading errors are handled in the parent route, via the [`ErrorBoundary`](/router/routing/errors) export.
 
 Async routes cannot be statically filtered during development, so all files will be treated as routes even if they don't export a default component. After the component is bundled and loaded, then any invalid route will use a fallback warning screen. This behavior is development-only and will not be present in production.
-
-## Static rendering
-
-The current static rendering system (React) doesn't support React Suspense, so async routes will be disabled on web when rendering static pages. This will be improved in the future.
 
 ## Setup
 
@@ -73,5 +71,8 @@ Then, when you are about to start your project, you can use the `--clear` flag t
 
 <Terminal
   cmd={['$ npx expo start --clear', '', '# Or when exporting', '$ npx expo export --clear']}
-  cmdCopy="$ npx expo export package"
 />
+
+## Static rendering
+
+The current static rendering system doesn't support rendering React Suspense boundaries to static HTML, so async routes will be disabled on web when rendering static pages. This will be improved in the future.

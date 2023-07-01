@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 49.0.0 — 2023-06-28
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-alpha.5 — 2023-06-27
+
+### 💡 Others
+
+- upgrade `json5` lib. ([#23113](https://github.com/expo/expo/pull/23113) by [@felipemillhouse](https://github.com/felipemillhouse))
+
 ## 49.0.0-alpha.4 — 2023-06-24
 
 ### 🎉 New features
