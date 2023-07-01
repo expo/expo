@@ -86,6 +86,7 @@ describe('get', () => {
       },
       '/'
     );
+
     expect(envRuntime.get('/')).toEqual({
       env: {
         FOO: 'default',
@@ -109,6 +110,97 @@ describe('get', () => {
     });
   });
 });
+
+describe('load', () => {
+  const originalLog = console.log;
+  beforeEach(() => {
+    console.log = jest.fn();
+    resetEnv();
+  });
+  afterEach(() => {
+    console.log = originalLog;
+  });
+
+  it(`logs the loaded variables and files`, () => {
+    delete process.env.FOO;
+    const envRuntime = createControlledEnvironment();
+    vol.fromJSON(
+      {
+        '.env': 'FOO=default',
+      },
+      '/'
+    );
+
+    envRuntime.load('/');
+
+    expect(console.log).toHaveBeenCalledWith(expect.stringContaining('.env'));
+    expect(console.log).toHaveBeenCalledWith(expect.stringContaining('FOO'));
+    expect(console.log).toHaveBeenCalledTimes(2);
+  });
+
+  it(`logs the loaded variables and files`, () => {
+    delete process.env.FOO;
+    const envRuntime = createControlledEnvironment();
+    vol.fromJSON(
+      {
+        '.env': 'FOO=default',
+      },
+      '/'
+    );
+
+    envRuntime.load('/');
+
+    expect(console.log).toHaveBeenCalledWith(expect.stringContaining('.env'));
+    expect(console.log).toHaveBeenCalledWith(expect.stringContaining('FOO'));
+    expect(console.log).toHaveBeenCalledTimes(2);
+  });
+
+  it(`does not log on initial load if no env vars`, () => {
+    delete process.env.FOO;
+    const envRuntime = createControlledEnvironment();
+    vol.fromJSON(
+      {
+        '.env': '',
+      },
+      '/'
+    );
+
+    envRuntime.load('/');
+    expect(console.log).not.toHaveBeenCalled();
+  });
+
+  it(`does not log after initial load if nothing changes`, () => {
+    delete process.env.FOO;
+    const envRuntime = createControlledEnvironment();
+    vol.fromJSON(
+      {
+        '.env': 'FOO=default',
+      },
+      '/'
+    );
+
+    envRuntime.load('/');
+    envRuntime.load('/');
+  });
+
+  it(`logs after initial load if something changes`, () => {
+    delete process.env.FOO;
+    const envRuntime = createControlledEnvironment();
+    vol.fromJSON(
+      {
+        '.env': 'FOO=default',
+      },
+      '/'
+    );
+
+    envRuntime.load('/');
+    expect(console.log).toHaveBeenCalledTimes(2);
+
+    fs.writeFileSync('/.env', 'FOO=changed');
+    expect(console.log).toHaveBeenCalledTimes(4);
+  });
+});
+
 describe('_getForce', () => {
   beforeEach(() => {
     resetEnv();
@@ -213,7 +305,7 @@ describe('_getForce', () => {
     expect(envRuntime._getForce('/')).toEqual({ env: {}, files: [] });
   });
 
-  it(`does not return the env var if the initial the value of the environment variable`, () => {
+  it(`does not return the env var if process.env contained variable of the same name before loading`, () => {
     const envRuntime = createControlledEnvironment();
     process.env.FOO = 'not-bar';
 

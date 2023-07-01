@@ -3,13 +3,14 @@ type LoadOptions = {
     silent?: boolean;
     force?: boolean;
 };
+type EnvInfo = {
+    env: Record<string, string | undefined>;
+    files: string[];
+};
 export declare function isEnabled(): boolean;
 export declare function createControlledEnvironment(): {
     load: (projectRoot: string, options?: LoadOptions) => NodeJS.ProcessEnv;
-    get: (projectRoot: string, options?: LoadOptions) => {
-        env: Record<string, string | undefined>;
-        files: string[];
-    };
+    get: (projectRoot: string, options?: LoadOptions) => EnvInfo;
     _getForce: (projectRoot: string, options?: LoadOptions) => {
         env: Record<string, string | undefined>;
         files: string[];

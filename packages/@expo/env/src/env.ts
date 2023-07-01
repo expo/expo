@@ -16,6 +16,8 @@ type LoadOptions = {
   force?: boolean;
 };
 
+type EnvInfo = { env: Record<string, string | undefined>; files: string[] };
+
 const debug = require('debug')('expo:env') as typeof console.log;
 
 export function isEnabled(): boolean {
@@ -58,10 +60,13 @@ export function createControlledEnvironment() {
         return;
       }
       try {
+        const processEnv = { ...userDefinedEnvironment };
         const results = expand(
           dotenv.config({
             debug: IS_DEBUG,
             path: absoluteDotenvFile,
+            // @ts-expect-error: `processEnv` type is incorrect
+            processEnv,
             // We will handle overriding ourselves to allow for HMR.
             override: true,
           })
@@ -102,10 +107,7 @@ export function createControlledEnvironment() {
   }
 
   /** Get the environment variables without mutating the environment. This returns memoized values unless the `force` property is provided. */
-  function get(
-    projectRoot: string,
-    options: LoadOptions = {}
-  ): { env: Record<string, string | undefined>; files: string[] } {
+  function get(projectRoot: string, options: LoadOptions = {}): EnvInfo {
     if (!isEnabled()) {
       debug(`Skipping .env files because EXPO_NO_DOTENV is defined`);
       return { env: {}, files: [] };
@@ -113,6 +115,7 @@ export function createControlledEnvironment() {
     if (!options.force && memo) {
       return memo;
     }
+
     memo = _getForce(projectRoot, options);
     return memo;
   }
@@ -125,18 +128,9 @@ export function createControlledEnvironment() {
     }
 
     const envInfo = get(projectRoot, options);
+    logEnvLoading(envInfo);
 
-    if (!options.force) {
-      const keys = Object.keys(envInfo.env);
-      if (keys.length) {
-        console.log(
-          chalk.gray('env: load', envInfo.files.map((file) => path.basename(file)).join(' '))
-        );
-        console.log(chalk.gray('env: export', keys.join(' ')));
-      }
-    }
-
-    process.env = { ...process.env, ...envInfo.env };
+    process.env = { ...process.env, ...envInfo.env, __EXPO_ENV_LOADED: '1' };
     return process.env;
   }
 
@@ -145,6 +139,22 @@ export function createControlledEnvironment() {
     get,
     _getForce,
   };
+}
+
+function logEnvLoading(envInfo: EnvInfo) {
+  const keys = Object.keys(envInfo.env);
+  const envDidChange = keys.some((key) => process.env[key] !== envInfo.env[key]);
+
+  // Track in env rather than module local state, in case we end up with
+  // multiple copies of @expo/env in a project.
+  const isInitialLoad = !process.env.__EXPO_ENV_LOADED;
+
+  if (keys.length && (isInitialLoad || envDidChange)) {
+    console.log(
+      chalk.gray('env: load', envInfo.files.map((file) => path.basename(file)).join(' '))
+    );
+    console.log(chalk.gray('env: export', keys.join(' ')));
+  }
 }
 
 export function getFiles(
