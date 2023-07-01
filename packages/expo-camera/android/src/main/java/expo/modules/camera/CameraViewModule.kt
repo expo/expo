@@ -238,12 +238,12 @@ class CameraViewModule : Module() {
         view.cameraView.setUsingCamera2Api(useCamera2Api)
       }
 
-      Prop("barCodeScannerEnabled") { view: ExpoCameraView, barCodeScannerEnabled: Boolean ->
-        view.setShouldScanBarCodes(barCodeScannerEnabled)
+      Prop("barCodeScannerEnabled") { view: ExpoCameraView, barCodeScannerEnabled: Boolean? ->
+        view.setShouldScanBarCodes(barCodeScannerEnabled ?: false)
       }
 
-      Prop("faceDetectorEnabled") { view: ExpoCameraView, faceDetectorEnabled: Boolean ->
-        view.setShouldDetectFaces(faceDetectorEnabled)
+      Prop("faceDetectorEnabled") { view: ExpoCameraView, faceDetectorEnabled: Boolean? ->
+        view.setShouldDetectFaces(faceDetectorEnabled ?: false)
       }
 
       Prop("faceDetectorSettings") { view: ExpoCameraView, settings: Map<String, Any>? ->
