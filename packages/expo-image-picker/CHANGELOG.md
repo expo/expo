@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+- Fix manifest merger build fail on Android. ([#23191](https://github.com/expo/expo/pull/23191) by [@alexandrius](https://github.com/alexandrius))
 
 ### 💡 Others
 
