@@ -2,7 +2,9 @@ import { createInspectorDeviceClass } from '../device';
 import { DebuggerScriptSourceHandler } from '../handlers/DebuggerScriptSource';
 import { NetworkResponseHandler } from '../handlers/NetworkResponse';
 import { PageReloadHandler } from '../handlers/PageReload';
-import { VscodeCompatHandler } from '../handlers/VscodeCompat';
+import { VscodeDebuggerGetPossibleBreakpointsHandler } from '../handlers/VscodeDebuggerGetPossibleBreakpoints';
+import { VscodeDebuggerSetBreakpointByUrlHandler } from '../handlers/VscodeDebuggerSetBreakpointByUrl';
+import { VscodeRuntimeGetPropertiesHandler } from '../handlers/VscodeRuntimeGetProperties';
 import { InspectorHandler } from '../handlers/types';
 
 describe('ExpoInspectorDevice', () => {
@@ -13,10 +15,12 @@ describe('ExpoInspectorDevice', () => {
       return device.handlers.find((handler) => handler instanceof type);
     }
 
-    expect(findHandler(DebuggerScriptSourceHandler)).toBeInstanceOf(DebuggerScriptSourceHandler);
-    expect(findHandler(NetworkResponseHandler)).toBeInstanceOf(NetworkResponseHandler);
-    expect(findHandler(PageReloadHandler)).toBeInstanceOf(PageReloadHandler);
-    expect(findHandler(VscodeCompatHandler)).toBeInstanceOf(VscodeCompatHandler);
+    expect(findHandler(DebuggerScriptSourceHandler)).toBeTruthy();
+    expect(findHandler(NetworkResponseHandler)).toBeTruthy();
+    expect(findHandler(PageReloadHandler)).toBeTruthy();
+    expect(findHandler(VscodeDebuggerGetPossibleBreakpointsHandler)).toBeTruthy();
+    expect(findHandler(VscodeDebuggerSetBreakpointByUrlHandler)).toBeTruthy();
+    expect(findHandler(VscodeRuntimeGetPropertiesHandler)).toBeTruthy();
   });
 
   describe('device', () => {

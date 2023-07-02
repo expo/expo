@@ -6,7 +6,9 @@ import { MetroBundlerDevServer } from '../MetroBundlerDevServer';
 import { DebuggerScriptSourceHandler } from './handlers/DebuggerScriptSource';
 import { NetworkResponseHandler } from './handlers/NetworkResponse';
 import { PageReloadHandler } from './handlers/PageReload';
-import { VscodeCompatHandler } from './handlers/VscodeCompat';
+import { VscodeDebuggerGetPossibleBreakpointsHandler } from './handlers/VscodeDebuggerGetPossibleBreakpoints';
+import { VscodeDebuggerSetBreakpointByUrlHandler } from './handlers/VscodeDebuggerSetBreakpointByUrl';
+import { VscodeRuntimeGetPropertiesHandler } from './handlers/VscodeRuntimeGetProperties';
 import { DeviceRequest, InspectorHandler, DebuggerRequest } from './handlers/types';
 
 export function createInspectorDeviceClass(
@@ -16,10 +18,14 @@ export function createInspectorDeviceClass(
   return class ExpoInspectorDevice extends MetroDeviceClass implements InspectorHandler {
     /** All handlers that should be used to intercept or reply to CDP events */
     public handlers: InspectorHandler[] = [
+      // Generic handlers
       new NetworkResponseHandler(),
       new DebuggerScriptSourceHandler(this),
       new PageReloadHandler(metroBundler),
-      new VscodeCompatHandler(),
+      // Vscode-specific handlers
+      new VscodeDebuggerGetPossibleBreakpointsHandler(),
+      new VscodeDebuggerSetBreakpointByUrlHandler(),
+      new VscodeRuntimeGetPropertiesHandler(),
     ];
 
     onDeviceMessage(message: any, info: DebuggerInfo): boolean {
