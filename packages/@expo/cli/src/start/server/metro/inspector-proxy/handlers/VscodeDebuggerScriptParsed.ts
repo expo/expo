@@ -19,7 +19,9 @@ export class VscodeDebuggerScriptParsedHandler implements InspectorHandler {
   constructor(private readonly device: MetroDevice) {}
 
   onDeviceMessage(message: DeviceRequest<DebuggerScriptParsed>, debuggerInfo: ExpoDebuggerInfo) {
-    if (message.method !== 'Debugger.scriptParsed') return false;
+    if (debuggerInfo.debuggerType !== 'vscode' || message.method !== 'Debugger.scriptParsed') {
+      return false;
+    }
 
     // See: https://github.com/facebook/metro/blob/f43caa371a813b257cb0b42028079645a1e85e0e/packages/metro-inspector-proxy/src/Device.js#L401-L410
     if (message.params.sourceMapURL) {

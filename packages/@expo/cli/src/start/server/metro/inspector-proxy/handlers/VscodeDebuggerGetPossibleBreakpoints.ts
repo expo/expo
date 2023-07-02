@@ -10,9 +10,9 @@ import { CdpMessage, DebuggerRequest, DeviceResponse, InspectorHandler } from '.
 export class VscodeDebuggerGetPossibleBreakpointsHandler implements InspectorHandler {
   onDebuggerMessage(
     message: DebuggerRequest<DebuggerGetPossibleBreakpoints>,
-    { socket }: ExpoDebuggerInfo
+    { socket, debuggerType }: ExpoDebuggerInfo
   ): boolean {
-    if (message.method === 'Debugger.getPossibleBreakpoints') {
+    if (debuggerType === 'vscode' && message.method === 'Debugger.getPossibleBreakpoints') {
       const response: DeviceResponse<DebuggerGetPossibleBreakpoints> = {
         id: message.id,
         result: { locations: [] },

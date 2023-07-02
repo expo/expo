@@ -1,5 +1,6 @@
 import Protocol from 'devtools-protocol';
 
+import { ExpoDebuggerInfo } from '../device';
 import { CdpMessage, DebuggerRequest, DeviceResponse, InspectorHandler } from './types';
 
 /**
@@ -14,8 +15,11 @@ export class VscodeRuntimeGetPropertiesHandler implements InspectorHandler {
   /** Keep track of `Runtime.getProperties` responses to intercept, by request id */
   interceptGetProperties = new Set<number>();
 
-  onDebuggerMessage(message: DebuggerRequest<RuntimeGetProperties>): boolean {
-    if (message.method === 'Runtime.getProperties') {
+  onDebuggerMessage(
+    message: DebuggerRequest<RuntimeGetProperties>,
+    { debuggerType }: ExpoDebuggerInfo
+  ): boolean {
+    if (debuggerType === 'vscode' && message.method === 'Runtime.getProperties') {
       this.interceptGetProperties.add(message.id);
     }
 
@@ -23,8 +27,15 @@ export class VscodeRuntimeGetPropertiesHandler implements InspectorHandler {
     return false;
   }
 
-  onDeviceMessage(message: DeviceResponse<RuntimeGetProperties>) {
-    if ('id' in message && this.interceptGetProperties.has(message.id)) {
+  onDeviceMessage(
+    message: DeviceResponse<RuntimeGetProperties>,
+    { debuggerType }: ExpoDebuggerInfo
+  ) {
+    if (
+      debuggerType === 'vscode' &&
+      'id' in message &&
+      this.interceptGetProperties.has(message.id)
+    ) {
       this.interceptGetProperties.delete(message.id);
 
       for (const item of message.result.result ?? []) {
