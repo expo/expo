@@ -1,5 +1,4 @@
 import { createInspectorDeviceClass } from '../device';
-import { DebuggerScriptSourceHandler } from '../handlers/DebuggerScriptSource';
 import { NetworkResponseHandler } from '../handlers/NetworkResponse';
 import { PageReloadHandler } from '../handlers/PageReload';
 import { VscodeDebuggerGetPossibleBreakpointsHandler } from '../handlers/VscodeDebuggerGetPossibleBreakpoints';
@@ -16,7 +15,6 @@ describe('ExpoInspectorDevice', () => {
       return device.handlers.find((handler) => handler instanceof type);
     }
 
-    expect(findHandler(DebuggerScriptSourceHandler)).toBeTruthy();
     expect(findHandler(NetworkResponseHandler)).toBeTruthy();
     expect(findHandler(PageReloadHandler)).toBeTruthy();
     expect(findHandler(VscodeDebuggerGetPossibleBreakpointsHandler)).toBeTruthy();
