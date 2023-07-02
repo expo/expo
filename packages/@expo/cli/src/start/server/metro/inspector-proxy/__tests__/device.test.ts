@@ -3,6 +3,7 @@ import { DebuggerScriptSourceHandler } from '../handlers/DebuggerScriptSource';
 import { NetworkResponseHandler } from '../handlers/NetworkResponse';
 import { PageReloadHandler } from '../handlers/PageReload';
 import { VscodeDebuggerGetPossibleBreakpointsHandler } from '../handlers/VscodeDebuggerGetPossibleBreakpoints';
+import { VscodeDebuggerScriptParsedHandler } from '../handlers/VscodeDebuggerScriptParsed';
 import { VscodeDebuggerSetBreakpointByUrlHandler } from '../handlers/VscodeDebuggerSetBreakpointByUrl';
 import { VscodeRuntimeGetPropertiesHandler } from '../handlers/VscodeRuntimeGetProperties';
 import { InspectorHandler } from '../handlers/types';
@@ -19,6 +20,7 @@ describe('ExpoInspectorDevice', () => {
     expect(findHandler(NetworkResponseHandler)).toBeTruthy();
     expect(findHandler(PageReloadHandler)).toBeTruthy();
     expect(findHandler(VscodeDebuggerGetPossibleBreakpointsHandler)).toBeTruthy();
+    expect(findHandler(VscodeDebuggerScriptParsedHandler)).toBeTruthy();
     expect(findHandler(VscodeDebuggerSetBreakpointByUrlHandler)).toBeTruthy();
     expect(findHandler(VscodeRuntimeGetPropertiesHandler)).toBeTruthy();
   });

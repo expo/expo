@@ -7,6 +7,7 @@ import { DebuggerScriptSourceHandler } from './handlers/DebuggerScriptSource';
 import { NetworkResponseHandler } from './handlers/NetworkResponse';
 import { PageReloadHandler } from './handlers/PageReload';
 import { VscodeDebuggerGetPossibleBreakpointsHandler } from './handlers/VscodeDebuggerGetPossibleBreakpoints';
+import { VscodeDebuggerScriptParsedHandler } from './handlers/VscodeDebuggerScriptParsed';
 import { VscodeDebuggerSetBreakpointByUrlHandler } from './handlers/VscodeDebuggerSetBreakpointByUrl';
 import { VscodeRuntimeGetPropertiesHandler } from './handlers/VscodeRuntimeGetProperties';
 import { DeviceRequest, InspectorHandler, DebuggerRequest } from './handlers/types';
@@ -24,6 +25,7 @@ export function createInspectorDeviceClass(
       new PageReloadHandler(metroBundler),
       // Vscode-specific handlers
       new VscodeDebuggerGetPossibleBreakpointsHandler(),
+      new VscodeDebuggerScriptParsedHandler(this),
       new VscodeDebuggerSetBreakpointByUrlHandler(),
       new VscodeRuntimeGetPropertiesHandler(),
     ];
