@@ -1,4 +1,4 @@
-import uuidv5 from '@expo/uuid/v5';
+import { v5 as uuidv5 } from '@expo/uuid';
 import * as Application from 'expo-application';
 
 let installationId: string | null;
@@ -15,14 +15,12 @@ export default async function getInstallationIdAsync() {
   // It's unlikely identifierForVendor will be null (it returns null if the
   // device has been restarted but not yet unlocked), but let's handle this
   // case.
+
   if (identifierForVendor) {
-    installationId = uuidv5(`${bundleIdentifier}-${identifierForVendor}`, UUID_NAMESPACE) as string;
+    installationId = uuidv5(`${bundleIdentifier}-${identifierForVendor}`, UUID_NAMESPACE);
   } else {
     const installationTime = await Application.getInstallationTimeAsync();
-    installationId = uuidv5(
-      `${bundleIdentifier}-${installationTime.getTime()}`,
-      UUID_NAMESPACE
-    ) as string;
+    installationId = uuidv5(`${bundleIdentifier}-${installationTime.getTime()}`, UUID_NAMESPACE);
   }
 
   return installationId;

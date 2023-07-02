@@ -22,7 +22,7 @@ export default async function getInstallationIdAsync() {
   }
 
   // No persisted value, set the cached value...
-  installationId = uuidv4() as string;
+  installationId = uuidv4();
   // ...and try to persist it. Ignore the errors.
   try {
     localStorage.setItem(INSTALLATION_ID_KEY, installationId);
