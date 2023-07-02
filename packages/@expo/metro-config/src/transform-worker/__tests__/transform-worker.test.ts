@@ -93,7 +93,7 @@ describe('CSS Modules', () => {
           minify: true,
           platform: 'ios',
         })
-      ).toMatchInlineSnapshot(`"module.exports={};"`);
+      ).toMatchInlineSnapshot(`"module.exports={ unstable_styles: {} };"`);
     });
     it(`transforms for dev, not minified`, async () => {
       expect(
@@ -102,7 +102,7 @@ describe('CSS Modules', () => {
           minify: false,
           platform: 'ios',
         })
-      ).toMatchInlineSnapshot(`"module.exports={};"`);
+      ).toMatchInlineSnapshot(`"module.exports={ unstable_styles: {} };"`);
     });
 
     it(`transforms for prod, minified`, async () => {
@@ -112,7 +112,7 @@ describe('CSS Modules', () => {
           minify: true,
           platform: 'ios',
         })
-      ).toMatchInlineSnapshot(`"module.exports={};"`);
+      ).toMatchInlineSnapshot(`"module.exports={ unstable_styles: {} };"`);
     });
 
     it(`transforms for prod, not minified`, async () => {
@@ -122,7 +122,7 @@ describe('CSS Modules', () => {
           minify: false,
           platform: 'ios',
         })
-      ).toMatchInlineSnapshot(`"module.exports={};"`);
+      ).toMatchInlineSnapshot(`"module.exports={ unstable_styles: {} };"`);
     });
   });
   describe('web', () => {
