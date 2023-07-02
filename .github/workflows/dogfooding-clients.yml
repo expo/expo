@@ -23,7 +23,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-          ruby-version: 2.7.2
+          ruby-version: 3.2.2
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🔓 Decrypt secrets if possible

@@ -55,7 +55,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-          ruby-version: 2.7.2
+          ruby-version: 3.2.2
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
