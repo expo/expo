@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Add missing `unstable_styles` export on native for CSS Modules.
+
 ### 💡 Others
 
 ## 0.10.3 — 2023-06-27
