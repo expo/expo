@@ -17,6 +17,10 @@ export interface DefaultConfigOptions {
      * is subject to change, and native support for CSS Modules may be added in the future during a non-major SDK release.
      */
     isCSSEnabled?: boolean;
+    /**
+     * **Experimental:** Enable [SVG modules](https://github.com/EvanBacon/svg-modules) for Metro.
+     */
+    isSVGEnabled?: boolean;
 }
 export declare function getDefaultConfig(projectRoot: string, options?: DefaultConfigOptions): InputConfigT;
 export declare function loadAsync(projectRoot: string, { reporter, ...metroOptions }?: LoadOptions): Promise<MetroConfig>;

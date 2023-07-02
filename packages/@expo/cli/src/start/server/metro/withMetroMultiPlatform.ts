@@ -211,6 +211,12 @@ export function withExtendedResolver(
         };
       }
 
+      if (process.env._EXPO_METRO_SVG_MODULES) {
+        context = {
+          ...context,
+        };
+      }
+
       let mainFields: string[] = context.mainFields;
 
       if (isNode) {

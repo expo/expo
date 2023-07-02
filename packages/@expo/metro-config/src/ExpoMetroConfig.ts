@@ -38,6 +38,10 @@ export interface DefaultConfigOptions {
    * is subject to change, and native support for CSS Modules may be added in the future during a non-major SDK release.
    */
   isCSSEnabled?: boolean;
+  /**
+   * **Experimental:** Enable [SVG modules](https://github.com/EvanBacon/svg-modules) for Metro.
+   */
+  isSVGEnabled?: boolean;
 }
 
 function getProjectBabelConfigFile(projectRoot: string): string | undefined {
@@ -101,6 +105,11 @@ export function getDefaultConfig(
     // Enable SCSS by default so we can provide a better error message
     // when sass isn't installed.
     sourceExts.push('scss', 'sass', 'css');
+    process.env._EXPO_METRO_CSS_MODULES = '1';
+  }
+  if (options.isSVGEnabled) {
+    sourceExts.push('svg');
+    process.env._EXPO_METRO_SVG_MODULES = '1';
   }
 
   const envFiles = runtimeEnv.getFiles(process.env.NODE_ENV, { silent: true });
@@ -193,10 +202,7 @@ export function getDefaultConfig(
     symbolicator: {
       customizeFrame: getDefaultCustomizeFrame(),
     },
-    transformerPath: options.isCSSEnabled
-      ? // Custom worker that adds CSS support for Metro web.
-        require.resolve('./transform-worker/transform-worker')
-      : metroDefaultValues.transformerPath,
+    transformerPath: require.resolve('./transform-worker/transform-worker'),
 
     transformer: {
       // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
