@@ -1,6 +1,6 @@
 import Protocol from 'devtools-protocol';
-import { DebuggerInfo } from 'metro-inspector-proxy';
 
+import { ExpoDebuggerInfo } from '../device';
 import { CdpMessage, DebuggerRequest, DeviceResponse, InspectorHandler } from './types';
 
 /**
@@ -10,7 +10,7 @@ import { CdpMessage, DebuggerRequest, DeviceResponse, InspectorHandler } from '.
 export class VscodeDebuggerGetPossibleBreakpointsHandler implements InspectorHandler {
   onDebuggerMessage(
     message: DebuggerRequest<DebuggerGetPossibleBreakpoints>,
-    { socket }: DebuggerInfo
+    { socket }: ExpoDebuggerInfo
   ): boolean {
     if (message.method === 'Debugger.getPossibleBreakpoints') {
       const response: DeviceResponse<DebuggerGetPossibleBreakpoints> = {

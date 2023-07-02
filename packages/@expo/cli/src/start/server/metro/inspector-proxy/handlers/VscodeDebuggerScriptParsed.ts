@@ -1,6 +1,7 @@
 import Protocol from 'devtools-protocol';
-import { DebuggerInfo, Device as MetroDevice } from 'metro-inspector-proxy';
+import { Device as MetroDevice } from 'metro-inspector-proxy';
 
+import { ExpoDebuggerInfo } from '../device';
 import { CdpMessage, DeviceRequest, InspectorHandler } from './types';
 
 /** Android's stock emulator and other emulators such as genymotion use a standard localhost alias. */
@@ -17,7 +18,7 @@ const FILE_PREFIX = 'file://';
 export class VscodeDebuggerScriptParsedHandler implements InspectorHandler {
   constructor(private readonly device: MetroDevice) {}
 
-  onDeviceMessage(message: DeviceRequest<DebuggerScriptParsed>, debuggerInfo: DebuggerInfo) {
+  onDeviceMessage(message: DeviceRequest<DebuggerScriptParsed>, debuggerInfo: ExpoDebuggerInfo) {
     if (message.method !== 'Debugger.scriptParsed') return false;
 
     // See: https://github.com/facebook/metro/blob/f43caa371a813b257cb0b42028079645a1e85e0e/packages/metro-inspector-proxy/src/Device.js#L401-L410
