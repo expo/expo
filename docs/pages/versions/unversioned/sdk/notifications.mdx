@@ -198,7 +198,7 @@ If you'd like to deep link to a specific screen in your app when you receive a p
 You can use Expo Router's [built-in deep linking](/routing/create-pages) to handle incoming URLs from push notifications. Simply configure the root layout to listen for incoming and initial notification events.
 
 ```tsx app/_layout.tsx
-import React from 'react';
+import { useEffect } from 'react';
 import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
 
