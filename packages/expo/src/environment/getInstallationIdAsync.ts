@@ -4,8 +4,6 @@ import { uuidv5 } from 'expo-modules-core';
 let installationId: string | null;
 const UUID_NAMESPACE = '29cc8a0d-747c-5f85-9ff9-f2f16636d963';
 
-console.log(uuidv5);
-
 export default async function getInstallationIdAsync() {
   if (installationId) {
     return installationId;

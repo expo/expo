@@ -1,3 +1,6 @@
+/**
+ * DO NOT USE this function in security-sensitive contexts.
+ */
 declare const _default: {
     (value: string | number[], namespace: string | number[], buf?: number[] | undefined, offset?: number | undefined): string;
     name: string;

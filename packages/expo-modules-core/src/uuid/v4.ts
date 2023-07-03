@@ -2,6 +2,9 @@ import bytesToUuid from './lib/bytesToUuid';
 import rng from './lib/rng';
 import { OutputBuffer, V4Options } from './types/uuid.types';
 
+/**
+ * DO NOT USE this function in security-sensitive contexts.
+ */
 export function uuidv4(options?: V4Options): string;
 export function uuidv4<T extends OutputBuffer>(
   options: V4Options | null | undefined,
