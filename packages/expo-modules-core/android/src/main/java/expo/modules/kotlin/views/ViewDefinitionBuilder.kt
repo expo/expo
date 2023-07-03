@@ -334,7 +334,12 @@ class ViewDefinitionBuilder<T : View>(
         UnexpectedException(e)
       }
     )
-    return View(context)
+
+    return if (ViewGroup::class.java.isAssignableFrom(viewClass.java)) {
+      ErrorViewGroup(context)
+    } else {
+      View(context)
+    }
   }
 
   private fun getPrimaryConstructor(): KFunction<T>? {
