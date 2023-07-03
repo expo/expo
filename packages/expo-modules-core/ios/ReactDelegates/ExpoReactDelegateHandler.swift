@@ -5,7 +5,7 @@ import React
 /**
  The handler for `ExpoReactDelegate`. A module can implement a handler to process react instance creation.
  */
-@objc
+@objc(EXReactDelegateHandler)
 open class ExpoReactDelegateHandler: NSObject {
   public override required init() {}
 

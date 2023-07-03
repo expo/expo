@@ -13,6 +13,13 @@ In SDK 49 and higher, the Expo CLI can load environment variables from **.env** 
 
 EAS CLI uses a different mechanism for environment variables, except when it invokes Expo CLI for compiling and bundling. Learn more about [environment variables in EAS](https://docs.expo.dev/build-reference/variables/).
 
+If you are migrating an older project to SDK 49 or above, then you should ignore local env files by adding the following to your **.gitignore**:
+
+```sh .gitignore
+# local env files
+.env*.local
+```
+
 ### Disabling dotenv files
 
 Dotenv file loading can be fully disabled in Expo CLI by enabling the `EXPO_NO_DOTENV` environment variable, before invoking any Expo CLI command.
@@ -69,7 +76,7 @@ Ensure you don't have a custom Metro transformer that processes CSS files. If yo
 
 ### Global CSS
 
-> Warning: Global styles are web-only, usage will cause your application to diverge visually on native.
+> **warning** Global styles are web-only, usage will cause your application to diverge visually on native.
 
 You can import a CSS file from any component. The CSS will be applied to the entire page.
 
@@ -118,7 +125,7 @@ import 'emoji-mart/css/emoji-mart.css';
 
 ### CSS Modules
 
-> CSS Modules for native are under development and currently only work on web.
+> **warning** CSS Modules for native are under development and currently only work on web.
 
 CSS Modules are a way to scope CSS to a specific component. This is useful for avoiding naming collisions and for ensuring that styles are only applied to the intended component.
 

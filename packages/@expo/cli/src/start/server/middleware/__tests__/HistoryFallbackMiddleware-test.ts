@@ -1,65 +1,7 @@
-import { HistoryFallbackMiddleware, isInspectorProxyRequest } from '../HistoryFallbackMiddleware';
+import { HistoryFallbackMiddleware } from '../HistoryFallbackMiddleware';
 import { ServerRequest } from '../server.types';
 
 const asRequest = (req: Partial<ServerRequest>) => req as ServerRequest;
-
-describe(isInspectorProxyRequest, () => {
-  it(`return true for no UA + known inspector endpoint`, () => {
-    expect(
-      isInspectorProxyRequest(
-        asRequest({
-          url: '/inspector/debug',
-          headers: {},
-        })
-      )
-    ).toBe(true);
-  });
-  it(`return true for node-fetch user-agent + known inspector endpoint`, () => {
-    expect(
-      isInspectorProxyRequest(
-        asRequest({
-          url: '/json/list',
-          headers: {
-            'user-agent': 'node-fetch',
-          },
-        })
-      )
-    ).toBe(true);
-  });
-  it(`return false for browser user-agent + known inspector endpoint`, () => {
-    expect(
-      isInspectorProxyRequest(
-        asRequest({
-          url: '/json/list',
-          headers: {
-            'user-agent':
-              'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36',
-          },
-        })
-      )
-    ).toBe(false);
-  });
-});
-
-it(`skips requests to the Metro inspector proxy`, () => {
-  const indexMiddleware = jest.fn();
-  const middleware = new HistoryFallbackMiddleware(indexMiddleware).getHandler();
-
-  const next = jest.fn();
-  middleware(
-    asRequest({
-      url: '/json/list',
-      headers: {
-        'user-agent': 'node-fetch',
-      },
-    }),
-    {} as any,
-    next
-  );
-  // Redirects to middleware with URL intact.
-  expect(indexMiddleware).toBeCalledTimes(0);
-  expect(next).toBeCalledTimes(1);
-});
 
 it(`redirects to provided middleware on web with query parameter`, () => {
   const indexMiddleware = jest.fn();

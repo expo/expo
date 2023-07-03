@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 2.4.5 - 2023-06-30
+
+### 🐛 Bug fixes
+
+- Enable network inspector by default even the `EX_DEV_CLIENT_NETWORK_INSPECTOR` property is not defined. ([#23185](https://github.com/expo/expo/pull/23185) by [@kudo](https://github.com/kudo))
+- Fixed iOS build errors in `use_frameworks!` mode. ([#23218](https://github.com/expo/expo/pull/23218) by [@kudo](https://github.com/kudo))
+- Added support for React Native 0.72.1. ([#23262](https://github.com/expo/expo/pull/23262) by [@kudo](https://github.com/kudo))
+
 ## 2.4.4 — 2023-06-28
 
 ### 🐛 Bug fixes

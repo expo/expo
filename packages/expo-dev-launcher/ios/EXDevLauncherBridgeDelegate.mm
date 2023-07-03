@@ -1,5 +1,5 @@
-#import "EXDevLauncherBridgeDelegate.h"
-#import "EXDevLauncherController.h"
+#import <EXDevLauncher/EXDevLauncherBridgeDelegate.h>
+#import <EXDevLauncher/EXDevLauncherController.h>
 
 #import <React/RCTBundleURLProvider.h>
 #if __has_include(<React_RCTAppDelegate/RCTAppSetupUtils.h>)

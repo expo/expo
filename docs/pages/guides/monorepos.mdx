@@ -67,7 +67,6 @@ Metro doesn't come with monorepo support by default (yet). That's why we need to
 We can configure this by [creating a **metro.config.js**](/guides/customizing-metro/#customizing) with the following content:
 
 ```js metro.config.js
-// Learn more https://docs.expo.dev/guides/monorepos
 const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
 
@@ -102,7 +101,6 @@ When using monorepos, your app dependencies splits up into different directories
 As your monorepo increases in size, watching all files within the monorepo becomes slower. You can speed things up by only watching the packages your app uses. Typically, these are the ones that are installed with an asterisk (\*) in your **package.json**. For example:
 
 ```js
-// Learn more https://docs.expo.dev/guides/monorepos
 const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
 
