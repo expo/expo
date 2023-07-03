@@ -48,7 +48,6 @@ export const MOTION = 'motion';
 // Map corresponding permission to correct package
 const PERMISSION_MODULE_MAPPING = {
   [CAMERA]: 'expo-camera',
-  [CAMERA_ROLL]: 'expo-media-library',
   [MEDIA_LIBRARY]: 'expo-media-library',
   [MEDIA_LIBRARY_WRITE_ONLY]: 'expo-media-library',
   [AUDIO_RECORDING]: 'expo-av',

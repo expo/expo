@@ -303,6 +303,7 @@ describe('built-in plugins', () => {
     await compileModsAsync(config, { introspect: true, projectRoot: '/app' });
 
     expect(modRequest).toStrictEqual({
+      ignoreExistingNativeFiles: false,
       introspect: true,
       modName: 'gradleProperties',
       platform: 'android',

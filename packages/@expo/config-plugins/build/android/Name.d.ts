@@ -8,7 +8,7 @@ import { ConfigPlugin } from '../Plugin.types';
  * @param name
  */
 export declare function sanitizeNameForGradle(name: string): string;
-export declare const withName: ConfigPlugin<void>;
+export declare const withName: ConfigPlugin;
 export declare const withNameSettingsGradle: ConfigPlugin;
 export declare function getName(config: Pick<ExpoConfig, 'name'>): string | null;
 /**

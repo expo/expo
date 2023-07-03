@@ -8,7 +8,8 @@
     "types": ["jest", "jest-require"],
     "typeRoots": [
       "./ts-declarations",
-      "node_modules/@types"
+      "./node_modules/@types",
+      "../../node_modules/@types",
     ],
     "sourceMap": true,
     "declaration": true,

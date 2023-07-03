@@ -39,6 +39,6 @@
     "jest-expo": "~49.0.0-alpha.1",
     "jest-watch-typeahead": "2.2.1",
     "ts-jest": "~29.0.4",
-    "typescript": "^4.9.4"
+    "typescript": "^5.1.3"
   }
 }

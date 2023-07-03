@@ -13,4 +13,4 @@ if (__DEV__ && Platform.OS === 'android' && NativeErrorManager) {
 }
 
 // We have to export `CodedError` via global object to use in later in the C++ code.
-global.ExpoModulesCore_CodedError = CodedError;
+globalThis.ExpoModulesCore_CodedError = CodedError;
