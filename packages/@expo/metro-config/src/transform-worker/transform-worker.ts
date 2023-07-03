@@ -70,7 +70,7 @@ export async function transform(
 
   // If the platform is not web, then return an empty module.
   if (options.platform !== 'web') {
-    const code = matchCssModule(filename) ? 'module.exports={};' : '';
+    const code = matchCssModule(filename) ? 'module.exports={ unstable_styles: {} };' : '';
     return worker.transform(
       config,
       projectRoot,
