@@ -61,7 +61,7 @@ If you create an environment-specific file, like **.env.test**, you can load it 
 
 ## Environment variables in Expo Application Services
 ### EAS Build
-[EAS Build](/build/introduction/) lets you define environment variables within build profiles in **eas.json**, as well as secrets for sensitive data required when building your native app. EAS Build can use **.env** files for inlining variables into the JavaScript embedded in your native app if they are made available to EAS Build, but you will still want to use **eas.json** and EAS Secrets for other environment-specific concerns, such as creating a separate test app variant or uploading source maps to an error-reporting service. Check out the EAS Build documentation on [environment variables and build secrets](/build-reference/variables.mdx) for more information.
+[EAS Build](/build/introduction/) uses Metro Bundler to build the JavaScript bundle embedded within your app binary, so it will use **.env** files uploaded with your build job to inline `EXPO_PUBLIC_` variables into your code. EAS Build also lets you define environment variables within build profiles in **eas.json** and via EAS Secrets. Check out the EAS Build documentation on [environment variables and build secrets](/build-reference/variables.mdx) for more information.
 ### EAS Update
 [EAS Update](/eas-update/introduction) uses Metro Bundler in your local environment or CI to build your app bundle, so it will use available **.env** files to inline `EXPO_PUBLIC_` variables into your code. Check out the EAS Update documentation on [environment variables](/eas-update/environment-variables/) for more information.
 
