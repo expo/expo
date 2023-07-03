@@ -65,7 +65,7 @@ async function transform(config, projectRoot, filename, data, options) {
 
   // If the platform is not web, then return an empty module.
   if (options.platform !== 'web') {
-    const code = (0, _cssModules().matchCssModule)(filename) ? 'module.exports={};' : '';
+    const code = (0, _cssModules().matchCssModule)(filename) ? 'module.exports={ unstable_styles: {} };' : '';
     return _metroTransformWorker().default.transform(config, projectRoot, filename,
     // TODO: Native CSS Modules
     Buffer.from(code), options);
