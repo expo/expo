@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added a config plugin to automatically set NSFaceIDUsageDescription on iOS.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
