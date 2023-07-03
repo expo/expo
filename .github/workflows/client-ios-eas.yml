@@ -30,7 +30,6 @@ on:
       - secrets/**
       - fastlane/**
       - Gemfile.lock
-      - .ruby-version
       - yarn.lock
   push:
     branches: [main, sdk-*]
@@ -45,7 +44,6 @@ on:
       - secrets/**
       - fastlane/**
       - Gemfile.lock
-      - .ruby-version
       - yarn.lock
 
 concurrency:
