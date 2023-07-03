@@ -7,7 +7,6 @@ import android.content.Context
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import expo.modules.core.ViewManager
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
