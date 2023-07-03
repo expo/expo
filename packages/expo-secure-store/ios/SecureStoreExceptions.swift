@@ -8,7 +8,7 @@ internal class InvalidKeyException: Exception {
 
 internal class MissingPlistKeyException: Exception {
   override var reason: String {
-    "You must set `NSFaceIDUsageDescription` in your info.plist. This is not available in Expo go"
+    "You must set `NSFaceIDUsageDescription` in your Info.plist file to use the `requireAuthentication` option"
   }
 }
 
