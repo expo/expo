@@ -211,12 +211,6 @@ export function withExtendedResolver(
         };
       }
 
-      if (process.env._EXPO_METRO_SVG_MODULES) {
-        context = {
-          ...context,
-        };
-      }
-
       let mainFields: string[] = context.mainFields;
 
       if (isNode) {
@@ -228,6 +222,17 @@ export function withExtendedResolver(
       } else if (platform && platform in preferredMainFields) {
         mainFields = preferredMainFields[platform];
       }
+
+      if (process.env._EXPO_METRO_SVG_MODULES) {
+        const cleanAssets = [...immutableContext.assetExts].filter((ext) => ext !== 'svg');
+        const cleanSources = [...immutableContext.sourceExts].filter((ext) => ext !== 'svg');
+        // Swap asset and source resolution for SVG Modules
+        if (/\.module(\.(native|ios|android|web))?(\.svg)?$/.test(moduleName)) {
+          context.sourceExts = [...cleanSources, 'svg'];
+          context.assetExts = new Set(cleanAssets);
+        }
+      }
+
       function doResolve(moduleName: string): Resolution | null {
         return resolve(
           {

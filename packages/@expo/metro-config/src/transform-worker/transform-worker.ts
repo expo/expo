@@ -39,6 +39,17 @@ export async function transform(
   data: Buffer,
   options: JsTransformOptions
 ): Promise<TransformResponse> {
+  // SVG Modules must be first
+  if (process.env._EXPO_METRO_SVG_MODULES) {
+    if (matchSvgModule(filename)) {
+      return transformSvg(config, projectRoot, filename, data, {
+        ...options,
+        // SVG Modules are still processed as assets, but we need to transform them as modules.
+        type: 'module',
+      });
+    }
+  }
+
   if (options.type === 'asset') {
     return worker.transform(config, projectRoot, filename, data, options);
   }
@@ -46,11 +57,6 @@ export async function transform(
   if (process.env._EXPO_METRO_CSS_MODULES) {
     if (/\.(s?css|sass)$/.test(filename)) {
       return transformCss(config, projectRoot, filename, data, options);
-    }
-  }
-  if (process.env._EXPO_METRO_SVG_MODULES) {
-    if (matchSvgModule(filename)) {
-      return transformSvg(config, projectRoot, filename, data, options);
     }
   }
 

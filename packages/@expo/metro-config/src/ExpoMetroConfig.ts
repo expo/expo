@@ -108,7 +108,7 @@ export function getDefaultConfig(
     process.env._EXPO_METRO_CSS_MODULES = '1';
   }
   if (options.isSVGEnabled) {
-    sourceExts.push('svg');
+    // sourceExts.push('svg');
     process.env._EXPO_METRO_SVG_MODULES = '1';
   }
 
@@ -161,6 +161,7 @@ export function getDefaultConfig(
     resolver: {
       resolverMainFields,
       platforms: ['ios', 'android'],
+      // SVG Modules depends on the default value including `.svg` files.
       assetExts: metroDefaultValues.resolver.assetExts
         .concat(
           // Add default support for `expo-image` file types.

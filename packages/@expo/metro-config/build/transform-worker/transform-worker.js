@@ -35,17 +35,22 @@ const postcss_1 = require("./postcss");
 const sass_1 = require("./sass");
 const countLines = require('metro/src/lib/countLines');
 async function transform(config, projectRoot, filename, data, options) {
+    // SVG Modules must be first
+    if (process.env._EXPO_METRO_SVG_MODULES) {
+        if (matchSvgModule(filename)) {
+            return transformSvg(config, projectRoot, filename, data, {
+                ...options,
+                // SVG Modules are still processed as assets, but we need to transform them as modules.
+                type: 'module',
+            });
+        }
+    }
     if (options.type === 'asset') {
         return metro_transform_worker_1.default.transform(config, projectRoot, filename, data, options);
     }
     if (process.env._EXPO_METRO_CSS_MODULES) {
         if (/\.(s?css|sass)$/.test(filename)) {
             return transformCss(config, projectRoot, filename, data, options);
-        }
-    }
-    if (process.env._EXPO_METRO_SVG_MODULES) {
-        if (matchSvgModule(filename)) {
-            return transformSvg(config, projectRoot, filename, data, options);
         }
     }
     const environment = options.customTransformOptions?.environment;
