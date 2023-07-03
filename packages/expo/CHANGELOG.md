@@ -8,9 +8,25 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 49.0.0-beta.4 - 2023-07-02
+
+### 🐛 Bug fixes
+
 - Use node module resolution when invoking `@expo/cli` from `expo`. ([#23220](https://github.com/expo/expo/pull/23220) by [@byCedric](https://github.com/byCedric))
 
-### 💡 Others
+## 49.0.0-beta.3 - 2023-06-30
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-beta.2 - 2023-06-30
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-beta.1 - 2023-06-29
+
+_This version does not introduce any user-facing changes._
 
 ## 49.0.0-beta.0 — 2023-06-28
 
