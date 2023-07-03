@@ -24,7 +24,7 @@ ImageRequest ImageManager::requestImage(
     const ImageSource &imageSource,
     SurfaceId /*surfaceId*/) const {
   // Not implemented.
-  return {imageSource, nullptr};
+  return {imageSource, nullptr, {}};
 }
 
 } // namespace ABI49_0_0facebook::ABI49_0_0React

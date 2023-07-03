@@ -9,6 +9,7 @@
 
 #import <ABI49_0_0React/ABI49_0_0RCTAssert.h>
 #import <ABI49_0_0React/ABI49_0_0RCTConversions.h>
+#import <ABI49_0_0React/ABI49_0_0RCTLog.h>
 
 #import <ABI49_0_0butter/ABI49_0_0map.h>
 #import <ABI49_0_0butter/ABI49_0_0set.h>
@@ -105,16 +106,21 @@ static Class<ABI49_0_0RCTComponentViewProtocol> ABI49_0_0RCTComponentViewClassWi
     return YES;
   }
 
+  // Paper name: we prepare this variables to warn the user
+  // when the component is registered in both Fabric and in the
+  // interop layer, so they can remove that
+  NSString *componentNameString = ABI49_0_0RCTNSStringFromString(name);
+  BOOL isRegisteredInInteropLayer = [ABI49_0_0RCTLegacyViewManagerInteropComponentView isSupported:componentNameString];
+
   // Fallback 1: Call provider function for component view class.
   Class<ABI49_0_0RCTComponentViewProtocol> klass = ABI49_0_0RCTComponentViewClassWithName(name.c_str());
   if (klass) {
-    [self registerComponentViewClass:klass];
+    [self registerComponentViewClass:klass andWarnIfNeeded:isRegisteredInInteropLayer];
     return YES;
   }
 
   // Fallback 2: Try to use Paper Interop.
-  NSString *componentNameString = ABI49_0_0RCTNSStringFromString(name);
-  if ([ABI49_0_0RCTLegacyViewManagerInteropComponentView isSupported:componentNameString]) {
+  if (isRegisteredInInteropLayer) {
     ABI49_0_0RCTLogNewArchitectureValidation(
         ABI49_0_0RCTNotAllowedInBridgeless,
         self,
@@ -201,6 +207,19 @@ static Class<ABI49_0_0RCTComponentViewProtocol> ABI49_0_0RCTComponentViewClassWi
   std::shared_lock lock(_mutex);
 
   return _providerRegistry.createComponentDescriptorRegistry(parameters);
+}
+
+#pragma mark - Private
+
+- (void)registerComponentViewClass:(Class<ABI49_0_0RCTComponentViewProtocol>)componentViewClass
+                   andWarnIfNeeded:(BOOL)isRegisteredInInteropLayer
+{
+  [self registerComponentViewClass:componentViewClass];
+  if (isRegisteredInInteropLayer) {
+    ABI49_0_0RCTLogWarn(
+        @"Component with class %@ has been registered in both the New Architecture Renderer and in the Interop Layer.\nPlease remove it from the Interop Layer",
+        componentViewClass);
+  }
 }
 
 @end

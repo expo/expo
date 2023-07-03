@@ -109,6 +109,9 @@ using namespace ABI49_0_0facebook::ABI49_0_0React;
       // This will only become issue if we decouple life cycle of a
       // ShadowNode from ComponentView, which is not something we do now.
       imageRequest.cancel();
+      imageRequest.cancel();
+      imageRequest.cancel();
+      imageRequest.cancel();
     }
   }
 
