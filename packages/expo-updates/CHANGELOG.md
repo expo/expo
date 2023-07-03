@@ -8,11 +8,20 @@
 
 ### 🐛 Bug fixes
 
-- Support discriminated unions for JS API method result types. ([#23173](https://github.com/expo/expo/pull/23173) by [@wschurman](https://github.com/wschurman))
+### 💡 Others
+
+## 0.18.7 - 2023-06-30
+
+### 🐛 Bug fixes
+
 - Fix expo-extra-params header. ([#23206](https://github.com/expo/expo/pull/23206) by [@wschurman](https://github.com/wschurman))
 - [iOS] Fix response header casing bug. ([#23234](https://github.com/expo/expo/pull/23234) by [@wschurman](https://github.com/wschurman))
 
-### 💡 Others
+## 0.18.6 - 2023-06-29
+
+### 🐛 Bug fixes
+
+- Support discriminated unions for JS API method result types. ([#23173](https://github.com/expo/expo/pull/23173) by [@wschurman](https://github.com/wschurman))
 
 ## 0.18.5 — 2023-06-28
 
@@ -26,7 +35,6 @@
 
 - [iOS] Use weak delegate for state machine. ([#23060](https://github.com/expo/expo/pull/23060) by [@wschurman](https://github.com/wschurman))
 - [Android] Convert LoaderTask.RemoteCheckResult to sealed class. ([#23061](https://github.com/expo/expo/pull/23061) by [@wschurman](https://github.com/wschurman))
-
 - [iOS] Use swift enum for AppLoaderTask delegate. ([#23064](https://github.com/expo/expo/pull/23064) by [@wschurman](https://github.com/wschurman))
 
 ## 0.18.3 — 2023-06-24
