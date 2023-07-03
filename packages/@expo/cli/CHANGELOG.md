@@ -6,8 +6,11 @@
 
 ### 🎉 New features
 
-- Add error message for static rendering without Expo Router. ([#23170](https://github.com/expo/expo/pull/23170) by [@EvanBacon](https://github.com/EvanBacon))
-- Add support for `web.favicon` to Metro web. ([#23072](https://github.com/expo/expo/pull/23072) by [@EvanBacon](https://github.com/EvanBacon))
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.10.7 - 2023-06-30
 
 ### 🐛 Bug fixes
 
@@ -17,6 +20,17 @@
 ### 💡 Others
 
 - Update E2E tests to expect `.hbc` bundles instead of `.js` bundles. ([#23241](https://github.com/expo/expo/pull/23241) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.10.6 - 2023-06-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.10.5 - 2023-06-29
+
+### 🎉 New features
+
+- Add error message for static rendering without Expo Router. ([#23170](https://github.com/expo/expo/pull/23170) by [@EvanBacon](https://github.com/EvanBacon))
+- Add support for `web.favicon` to Metro web. ([#23072](https://github.com/expo/expo/pull/23072) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.10.4 — 2023-06-28
 
