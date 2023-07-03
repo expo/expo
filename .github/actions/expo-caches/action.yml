@@ -73,10 +73,6 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    - name: 🔍️ Get yarn cache directory path
-      id: yarn-cache-dir-path
-      run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
-      shell: bash
     - name: ♻️ Restore workspace node modules
       if: inputs.yarn-workspace == 'true'
       uses: actions/cache@v3
@@ -85,7 +81,6 @@ runs:
         # See "workspaces" → "packages" in the root package.json for the source of truth of
         # which node_modules are affected by the root yarn.lock
         path: |
-          ${{ steps.yarn-cache-dir-path.outputs.dir }}
           node_modules
           apps/*/node_modules
           apps/*/__generated__/AppEntry.js
