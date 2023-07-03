@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Added a check for the `NSFaceIDUsageDescription` key in the `set` function. ([#23275](https://github.com/expo/expo/pull/23275) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 12.3.0 — 2023-06-13
 
 ### 🐛 Bug fixes
