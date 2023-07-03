@@ -1,6 +1,6 @@
 import ExpoModulesCore
 
-public class ScreenOrientationModule: Module, OrientationListener, Hashable {
+public class ScreenOrientationModule: Module, ScreenOrientationController {
   static let didUpdateDimensionsEvent = "expoDidUpdateDimensions"
 
   let screenOrientationRegistry = ScreenOrientationRegistry.shared
@@ -22,7 +22,7 @@ public class ScreenOrientationModule: Module, OrientationListener, Hashable {
         throw UnsupportedOrientationLockException(orientationLock)
       }
 
-      screenOrientationRegistry.setMask(orientationMask, forModule: self)
+      screenOrientationRegistry.setMask(orientationMask, forController: self)
     }
 
     AsyncFunction("lockPlatformAsync") { (allowedOrientations: [ModuleOrientation]) in
@@ -43,7 +43,7 @@ public class ScreenOrientationModule: Module, OrientationListener, Hashable {
         throw UnsupportedOrientationLockException(nil)
       }
 
-      screenOrientationRegistry.setMask(allowedOrientationsMask, forModule: self)
+      screenOrientationRegistry.setMask(allowedOrientationsMask, forController: self)
     }
 
     AsyncFunction("getOrientationLockAsync") {
@@ -75,23 +75,18 @@ public class ScreenOrientationModule: Module, OrientationListener, Hashable {
       return ModuleOrientation.from(orientation: screenOrientationRegistry.currentScreenOrientation).rawValue
     }
 
-    OnStartObserving {
-      screenOrientationRegistry.registerModuleToReceiveNotification(self)
-    }
-
-    OnStopObserving {
-      screenOrientationRegistry.unregisterModuleFromReceivingNotification(self)
+    OnCreate {
+      screenOrientationRegistry.registerController(self)
     }
 
     OnDestroy {
-      screenOrientationRegistry.unregisterModuleFromReceivingNotification(self)
-      screenOrientationRegistry.moduleWillDeallocate(self)
+      screenOrientationRegistry.unregisterController(self)
     }
   }
 
-  // MARK: - ScreenOrientationListener
+  // MARK: - ScreenOrientationController
 
-  func screenOrientationDidChange(_ orientation: UIInterfaceOrientation) {
+  public func screenOrientationDidChange(_ orientation: UIInterfaceOrientation) {
     guard let currentTraitCollection = screenOrientationRegistry.currentTraitCollection else {
       return
     }
@@ -104,15 +99,5 @@ public class ScreenOrientationModule: Module, OrientationListener, Hashable {
         "horizontalSizeClass": currentTraitCollection.horizontalSizeClass
       ] as [String: Any]
     ])
-  }
-
-  // MARK: - Hashable
-
-  public func hash(into hasher: inout Hasher) {
-    hasher.combine(ObjectIdentifier(self))
-  }
-
-  public static func == (lhs: ScreenOrientationModule, rhs: ScreenOrientationModule) -> Bool {
-    return ObjectIdentifier(lhs) == ObjectIdentifier(rhs)
   }
 }
