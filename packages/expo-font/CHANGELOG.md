@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Gracefully catch exceptions during font loading on web with `fontfaceobserver`. ([#22954](https://github.com/expo/expo/pull/22954) by [@bradjones1](https://github.com/bradjones1))
+
 ### 💡 Others
 
 ## 11.4.0 — 2023-06-21

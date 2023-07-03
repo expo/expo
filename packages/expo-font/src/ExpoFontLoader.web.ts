@@ -89,7 +89,7 @@ export default {
       return;
     }
 
-    return new FontObserver(fontFamilyName, { display: resource.display }).load();
+    return new FontObserver(fontFamilyName, { display: resource.display }).load(null, 6000);
   },
 };
 
