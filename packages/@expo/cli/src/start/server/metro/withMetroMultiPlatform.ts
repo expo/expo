@@ -15,6 +15,7 @@ import { Log } from '../../../log';
 import { FileNotifier } from '../../../utils/FileNotifier';
 import { env } from '../../../utils/env';
 import { installExitHooks } from '../../../utils/exit';
+import { isInteractive } from '../../../utils/interactive';
 import { learnMore } from '../../../utils/link';
 import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/loadTsConfigPaths';
 import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
@@ -132,7 +133,7 @@ export function withExtendedResolver(
       })
     : null;
 
-  if (isTsconfigPathsEnabled && !env.CI) {
+  if (isTsconfigPathsEnabled && isInteractive()) {
     // TODO: We should track all the files that used imports and invalidate them
     // currently the user will need to save all the files that use imports to
     // use the new aliases.

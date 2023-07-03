@@ -1,5 +1,5 @@
+const { loadMetroConfigAsync } = require('@expo/cli/build/src/start/server/metro/instantiateMetro');
 const { resolveEntryPoint } = require('@expo/config/paths');
-const { loadAsync } = require('@expo/metro-config');
 const crypto = require('crypto');
 const fs = require('fs');
 const Server = require('metro/src/Server');
@@ -52,7 +52,13 @@ function getRelativeEntryPoint(projectRoot, platform) {
 
   let metroConfig;
   try {
-    metroConfig = await loadAsync(projectRoot);
+    // Load the metro config the same way it would be loaded in Expo CLI.
+    // This ensures dynamic features like tsconfig paths can be used.
+    metroConfig = (
+      await loadMetroConfigAsync(projectRoot, {
+        // No config options can be passed to this point.
+      })
+    ).config;
   } catch (e) {
     let message = `Error loading Metro config and Expo app config: ${e.message}\n\nMake sure your project is configured properly and your app.json / app.config.js is valid.`;
     if (process.env.EAS_BUILD) {
