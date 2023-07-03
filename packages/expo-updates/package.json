@@ -42,7 +42,6 @@
     "@expo/code-signing-certificates": "0.0.5",
     "@expo/config": "~8.1.0",
     "@expo/config-plugins": "~7.2.0",
-    "@expo/metro-config": "~0.10.0",
     "arg": "4.1.0",
     "expo-eas-client": "~0.6.0",
     "expo-manifests": "~0.7.0",
