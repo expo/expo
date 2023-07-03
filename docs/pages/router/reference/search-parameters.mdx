@@ -41,7 +41,7 @@ The example below demonstrates the difference between `useLocalSearchParams` and
 
 <Step label="2">
 
-    The initial route redirects to the dynamic **app/[user].js** route, with **user=evanbacon**:
+    The initial route redirects to the dynamic route **app/[user].js**, with **user=evanbacon**:
 
     ```js app/index.js
     import { Redirect } from 'expo-router';
@@ -55,7 +55,7 @@ The example below demonstrates the difference between `useLocalSearchParams` and
 
 <Step label="3">
 
-    The dynamic **app/[user]** screen prints out the global and local search param. It also enables pushing new instances of the same route:
+    The dynamic route **app/[user]** prints out the global and local search parameters. It also allows for pushing new instances of the same route with different search parameters:
 
     ```js app/[user].js
     import { Text, View } from 'react-native';
@@ -86,11 +86,11 @@ The example below demonstrates the difference between `useLocalSearchParams` and
 
 <Step label="4">
 
-When the app starts, the following log is shown:
+When the app starts, the following log is printed:
 
 <Terminal cmd={['Local: evanbacon Global: evanbacon']} />
 
-Pressing "Visit charlie" pushes a new instance of `/[user]` with **user=charlie**, and log the following:
+Pressing "Visit charlie" pushes a new instance of `/[user]` with **user=charlie**, and logs the following:
 
 <Terminal
   cmd={[
