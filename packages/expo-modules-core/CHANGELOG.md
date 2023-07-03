@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix the `View cannot be cast to ViewGroup` exception on Android.
+- Fix the `View cannot be cast to ViewGroup` exception on Android. ([#23264](https://github.com/expo/expo/pull/23264) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
