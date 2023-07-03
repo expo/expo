@@ -73,7 +73,6 @@
     "https-proxy-agent": "^5.0.1",
     "internal-ip": "4.3.0",
     "is-root": "^2.1.0",
-    "jest-runner-tsd": "^6.0.0",
     "js-yaml": "^3.13.1",
     "json-schema-deref-sync": "^0.13.0",
     "md5-file": "^3.2.3",
@@ -148,6 +147,7 @@
     "structured-headers": "^0.4.1",
     "taskr": "1.1.0",
     "tree-kill": "^1.2.2",
+    "jest-runner-tsd": "^6.0.0",
     "tsd": "^0.28.1"
   }
 }
