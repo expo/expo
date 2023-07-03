@@ -639,6 +639,7 @@ async function generateExpoKitPodspecAsync(
     '"$(PODS_ROOT)/RCT-Folly"',
     '"$(PODS_ROOT)/Headers/Private/${versionName}React-Core"',
     '"$(PODS_CONFIGURATION_BUILD_DIR)/${versionName}ExpoModulesCore/Swift Compatibility Header"',
+    '"$(PODS_CONFIGURATION_BUILD_DIR)/${versionName}EXManifests/Swift Compatibility Header"',
     '"$(PODS_CONFIGURATION_BUILD_DIR)/${versionName}EXUpdatesInterface/Swift Compatibility Header"',
     '"$(PODS_CONFIGURATION_BUILD_DIR)/${versionName}EXUpdates/Swift Compatibility Header"',
   ]
@@ -825,7 +826,6 @@ if pod_name.start_with?('${versionedPodNames.React}') || pod_name == '${versione
     config.build_settings['OTHER_CFLAGS'] = %w[
       ${configValues.join(`\n${indent}`)}
       -fmodule-map-file="\${PODS_ROOT}/Headers/Public/${versionName}React-Core/${versionName}React/${versionName}React-Core.modulemap"
-      -fmodule-map-file="\${PODS_ROOT}/Headers/Public/${versionName}ExpoModulesCore/${versionName}ExpoModulesCore.modulemap"
       -fmodule-map-file="\${PODS_ROOT}/Headers/Public/${versionName}ExpoModulesCore/${versionName}ExpoModulesCore.modulemap"
       -fmodule-map-file="\${PODS_ROOT}/Headers/Public/${versionName}EXUpdates/${versionName}EXUpdates.modulemap"
       -fmodule-map-file="\${PODS_ROOT}/Headers/Public/${versionName}EXUpdatesInterface/${versionName}EXUpdatesInterface.modulemap"
