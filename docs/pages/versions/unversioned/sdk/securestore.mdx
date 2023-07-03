@@ -14,6 +14,8 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 **Size limit for a value is 2048 bytes. An attempt to store larger values may fail. Currently, we print a warning when the limit is reached, however, in a future SDK version an error might be thrown.**
 
+**The `requireAuthentication` option is not supported in Expo Go when biometric authentication is available due to a missing NSFaceIDUsageDescription.**
+
 <PlatformsSection android emulator ios simulator />
 
 > This API is not compatible with devices running Android 5 or lower.
@@ -21,6 +23,40 @@ import { SnackInline } from '~/ui/components/Snippet';
 ## Installation
 
 <APIInstallSection />
+
+## Configuration in app.json/app.config.js
+
+You can configure `expo-secure-store` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
+
+<ConfigPluginExample>
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-secure-store",
+        {
+          "faceIDPermission": "Allow $(PRODUCT_NAME) to access your faceID biometric data."
+        }
+      ]
+    ]
+  }
+}
+```
+
+</ConfigPluginExample>
+
+<ConfigPluginProperties
+  properties={[
+    {
+      name: 'faceIDPermission',
+      platform: 'ios',
+      description: 'A string to set the [`NSFaceIDUsageDescription`](#ios) permission message.',
+      default: '"Allow $(PRODUCT_NAME) to access your faceID biometric data."',
+    },
+  ]}
+/>
 
 ## Platform value storage
 

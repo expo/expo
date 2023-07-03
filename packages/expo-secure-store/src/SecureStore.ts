@@ -74,6 +74,10 @@ export type SecureStoreOptions = {
    * - iOS: Equivalent to [`kSecAccessControlBiometryCurrentSet`](https://developer.apple.com/documentation/security/secaccesscontrolcreateflags/ksecaccesscontrolbiometrycurrentset/).
    * Complete functionality is unlocked only with a freshly generated key - this would not work in tandem with the `keychainService`
    * value used for the others non-authenticated operations.
+   *
+   * Warning: This option is not supported in Expo Go when biometric authentication is available due to a missing NSFaceIDUsageDescription.
+   * In release builds or when using continous native generation, make sure to use the `expo-secure-store` config plugin.
+   *
    */
   requireAuthentication?: boolean;
   /**
