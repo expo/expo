@@ -1,8 +1,9 @@
 import { PackageManagerOptions } from '../PackageManager';
 import { NpmPackageManager } from '../node/NpmPackageManager';
 import { PnpmPackageManager } from '../node/PnpmPackageManager';
+import { RushPackageManager } from '../node/RushPackageManager';
 import { YarnPackageManager } from '../node/YarnPackageManager';
-export type NodePackageManager = NpmPackageManager | PnpmPackageManager | YarnPackageManager;
+export type NodePackageManager = NpmPackageManager | PnpmPackageManager | YarnPackageManager | RushPackageManager;
 export type NodePackageManagerForProject = PackageManagerOptions & Partial<Record<NodePackageManager['name'], boolean>>;
 /** The order of the package managers to use when resolving automatically */
 export declare const RESOLUTION_ORDER: NodePackageManager['name'][];
@@ -12,7 +13,7 @@ export declare const RESOLUTION_ORDER: NodePackageManager['name'][];
  */
 export declare function findWorkspaceRoot(projectRoot: string, preferredManager?: NodePackageManager['name']): string | null;
 /**
- * Resolve the used node package manager for a project by checking the lockfile.
+ * Resolve the used node package manager for a project by checking for a hint file.
  * This also tries to resolve the workspace root, if its part of a monorepo.
  * Optionally, provide a preferred packager to only resolve that one specifically.
  */

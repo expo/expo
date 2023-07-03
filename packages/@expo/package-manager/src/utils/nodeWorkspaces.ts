@@ -1,3 +1,4 @@
+import { RushConfiguration } from '@rushstack/rush-sdk';
 import { sync as findUpSync } from 'find-up';
 import findYarnOrNpmWorkspaceRootUnsafe from 'find-yarn-workspace-root';
 import fs from 'fs';
@@ -9,6 +10,7 @@ export const NPM_LOCK_FILE = 'package-lock.json';
 export const YARN_LOCK_FILE = 'yarn.lock';
 export const PNPM_LOCK_FILE = 'pnpm-lock.yaml';
 export const PNPM_WORKSPACE_FILE = 'pnpm-workspace.yaml';
+export const RUSH_WORKSPACE_FILE = 'rush.json';
 
 /** Wraps `find-yarn-workspace-root` and guards against having an empty `package.json` file in an upper directory. */
 export function findYarnOrNpmWorkspaceRoot(projectRoot: string): string | null {
@@ -56,4 +58,11 @@ export function findPnpmWorkspaceRoot(projectRoot: string): string | null {
   }
 
   return null;
+}
+
+export function findRushWorkspaceRoot(projectRoot: string): string | null {
+  const rushJsonLocation = RushConfiguration.tryFindRushJsonLocation({
+    startingFolder: projectRoot,
+  });
+  return rushJsonLocation ? path.dirname(rushJsonLocation) : null;
 }

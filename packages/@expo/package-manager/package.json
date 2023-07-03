@@ -41,6 +41,7 @@
     "chalk": "^4.0.0",
     "find-up": "^5.0.0",
     "find-yarn-workspace-root": "~2.0.0",
+    "@rushstack/rush-sdk": "^5.100.1",
     "js-yaml": "^3.13.1",
     "micromatch": "^4.0.2",
     "npm-package-arg": "^7.0.0",

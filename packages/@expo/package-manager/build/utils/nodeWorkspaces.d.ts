@@ -2,6 +2,7 @@ export declare const NPM_LOCK_FILE = "package-lock.json";
 export declare const YARN_LOCK_FILE = "yarn.lock";
 export declare const PNPM_LOCK_FILE = "pnpm-lock.yaml";
 export declare const PNPM_WORKSPACE_FILE = "pnpm-workspace.yaml";
+export declare const RUSH_WORKSPACE_FILE = "rush.json";
 /** Wraps `find-yarn-workspace-root` and guards against having an empty `package.json` file in an upper directory. */
 export declare function findYarnOrNpmWorkspaceRoot(projectRoot: string): string | null;
 /**
@@ -10,3 +11,4 @@ export declare function findYarnOrNpmWorkspaceRoot(projectRoot: string): string 
  * @see https://github.com/pnpm/pnpm/blob/main/packages/find-workspace-dir/src/index.ts
  */
 export declare function findPnpmWorkspaceRoot(projectRoot: string): string | null;
+export declare function findRushWorkspaceRoot(projectRoot: string): string | null;
