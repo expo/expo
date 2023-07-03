@@ -3,13 +3,13 @@ import plist from '@expo/plist';
 import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
 import aws from 'aws-sdk';
-import { uuid as uuidv4 } from 'expo-modules-core';
 import fs, { mkdirp } from 'fs-extra';
 import glob from 'glob-promise';
 import inquirer from 'inquirer';
 import fetch from 'node-fetch';
 import os from 'os';
 import path from 'path';
+import { v4 as uuidv4 } from 'uuid';
 
 import { EXPO_DIR } from '../Constants';
 import Git from '../Git';
