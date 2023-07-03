@@ -6,6 +6,12 @@ internal class InvalidKeyException: Exception {
   }
 }
 
+internal class MissingPlistKeyException: Exception {
+  override var reason: String {
+    "You must set `NSFaceIDUsageDescription` in your info.plist. This is not available in Expo go"
+  }
+}
+
 internal class KeyChainException: GenericException<OSStatus> {
   override var reason: String {
     switch param {
