@@ -54,9 +54,11 @@ function getRelativeEntryPoint(projectRoot, platform) {
   try {
     // Load the metro config the same way it would be loaded in Expo CLI.
     // This ensures dynamic features like tsconfig paths can be used.
-    metroConfig = await loadMetroConfigAsync(projectRoot, {
-      // No config options can be passed to this point.
-    });
+    metroConfig = (
+      await loadMetroConfigAsync(projectRoot, {
+        // No config options can be passed to this point.
+      })
+    ).config;
   } catch (e) {
     let message = `Error loading Metro config and Expo app config: ${e.message}\n\nMake sure your project is configured properly and your app.json / app.config.js is valid.`;
     if (process.env.EAS_BUILD) {
