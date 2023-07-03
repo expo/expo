@@ -1,5 +1,4 @@
-import { v4 as uuidv4 } from '@expo/uuid';
-import { Platform } from 'expo-modules-core';
+import { Platform, uuid as uuidv4 } from 'expo-modules-core';
 import { ExecutionEnvironment, } from './Constants.types';
 const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
 const _sessionId = uuidv4();

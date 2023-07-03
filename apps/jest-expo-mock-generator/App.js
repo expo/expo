@@ -1,7 +1,7 @@
 import mux from '@expo/mux';
-import { v4 as uuidV4 } from '@expo/uuid';
 import { setStringAsync } from 'expo-clipboard';
 import Constants from 'expo-constants';
+import { uuid as uuidV4 } from 'expo-modules-core';
 import getInstallationIdAsync from 'expo/build/environment/getInstallationIdAsync';
 import React from 'react';
 import { Button, NativeModules, StyleSheet, Text, View } from 'react-native';

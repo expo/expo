@@ -1,6 +1,5 @@
-import { v4 as uuidv4 } from '@expo/uuid';
 import Constants from 'expo-constants';
-import { Platform } from 'expo-modules-core';
+import { Platform, uuid as uuidv4 } from 'expo-modules-core';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 import invariant from 'invariant';
 

@@ -1,7 +1,6 @@
-import { v5 as uuidv5 } from '@expo/uuid';
 import * as Application from 'expo-application';
+import { uuid } from 'expo-modules-core';
 let installationId;
-const UUID_NAMESPACE = '29cc8a0d-747c-5f85-9ff9-f2f16636d963'; // uuidv5(0, "expo")
 export default async function getInstallationIdAsync() {
     if (installationId) {
         return installationId;
@@ -12,11 +11,11 @@ export default async function getInstallationIdAsync() {
     // device has been restarted but not yet unlocked), but let's handle this
     // case.
     if (identifierForVendor) {
-        installationId = uuidv5(`${bundleIdentifier}-${identifierForVendor}`, UUID_NAMESPACE);
+        installationId = uuid(`${bundleIdentifier}-${identifierForVendor}`);
     }
     else {
         const installationTime = await Application.getInstallationTimeAsync();
-        installationId = uuidv5(`${bundleIdentifier}-${installationTime.getTime()}`, UUID_NAMESPACE);
+        installationId = uuid(`${bundleIdentifier}-${installationTime.getTime()}`);
     }
     return installationId;
 }

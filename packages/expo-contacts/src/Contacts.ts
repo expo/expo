@@ -1,5 +1,9 @@
-import { v4 as uuidv4 } from '@expo/uuid';
-import { PermissionResponse, PermissionStatus, UnavailabilityError } from 'expo-modules-core';
+import {
+  PermissionResponse,
+  PermissionStatus,
+  UnavailabilityError,
+  uuid as uuidv4,
+} from 'expo-modules-core';
 import { Platform, Share } from 'react-native';
 
 import ExpoContacts from './ExpoContacts';

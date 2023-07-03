@@ -1,9 +1,9 @@
 import { Command } from '@expo/commander';
 import plist from '@expo/plist';
 import spawnAsync from '@expo/spawn-async';
-import { v4 as uuidv4 } from '@expo/uuid';
 import assert from 'assert';
 import aws from 'aws-sdk';
+import { uuid as uuidv4 } from 'expo-modules-core';
 import fs, { mkdirp } from 'fs-extra';
 import glob from 'glob-promise';
 import inquirer from 'inquirer';
