@@ -228,7 +228,6 @@ function OverlayView({
   const onPress = () => {
     clearTimeout(timer.current);
     setOverlayActive(true);
-    // @ts-expect-error: TS resolves node types first
     timer.current = setTimeout(() => {
       setOverlayActive(() => false);
     }, 5000);

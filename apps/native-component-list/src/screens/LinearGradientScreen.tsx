@@ -35,7 +35,6 @@ export default class LinearGradientScreen extends React.Component<{}, State> {
   _interval?: number;
 
   componentDidMount() {
-    // @ts-expect-error: TS resolves node types first
     this._interval = setInterval(() => {
       this.setState((state) => ({
         count: state.count + 1,

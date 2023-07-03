@@ -1,6 +1,6 @@
 import { ExpoConfig } from '@expo/config-types';
 import { InfoPlist, InterfaceOrientation } from './IosConfig.types';
-export declare const withOrientation: import("..").ConfigPlugin<void>;
+export declare const withOrientation: import("..").ConfigPlugin;
 export declare function getOrientation(config: Pick<ExpoConfig, 'orientation'>): "default" | "portrait" | "landscape" | null;
 export declare const PORTRAIT_ORIENTATIONS: InterfaceOrientation[];
 export declare const LANDSCAPE_ORIENTATIONS: InterfaceOrientation[];
