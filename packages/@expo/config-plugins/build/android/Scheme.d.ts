@@ -8,7 +8,7 @@ export type IntentFilterProps = {
         host?: string;
     }[];
 };
-export declare const withScheme: import("..").ConfigPlugin<void>;
+export declare const withScheme: import("..").ConfigPlugin;
 export declare function getScheme(config: {
     scheme?: string | string[];
 }): string[];
