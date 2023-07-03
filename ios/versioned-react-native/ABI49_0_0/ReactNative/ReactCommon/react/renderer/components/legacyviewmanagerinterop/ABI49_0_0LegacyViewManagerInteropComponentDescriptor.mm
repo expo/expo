@@ -19,7 +19,7 @@
 namespace ABI49_0_0facebook {
 namespace ABI49_0_0React {
 
-static std::string moduleNameFromComponentName(const std::string &componentName)
+static std::string moduleNameFromComponentNameNoABI49_0_0RCTPrefix(const std::string &componentName)
 {
   // TODO: remove FB specific code (T56174424)
   if (componentName == "StickerInputView") {
@@ -46,12 +46,32 @@ static std::string moduleNameFromComponentName(const std::string &componentName)
     return componentName + "Manager";
   }
 
-  return "ABI49_0_0RCT" + componentName + "Manager";
+  return componentName + "Manager";
 }
 
 inline NSString *ABI49_0_0RCTNSStringFromString(const std::string &string)
 {
-  return [NSString stringWithCString:string.c_str() encoding:NSUTF8StringEncoding];
+  return [NSString stringWithUTF8String:string.c_str()];
+}
+
+static Class getViewManagerFromComponentName(const std::string &componentName)
+{
+  auto viewManagerName = moduleNameFromComponentNameNoABI49_0_0RCTPrefix(componentName);
+
+  // 1. Try to get the manager with the ABI49_0_0RCT prefix.
+  auto rctViewManagerName = "ABI49_0_0RCT" + viewManagerName;
+  Class viewManagerClass = NSClassFromString(ABI49_0_0RCTNSStringFromString(rctViewManagerName));
+  if (viewManagerClass) {
+    return viewManagerClass;
+  }
+
+  // 2. Try to get the manager without the prefix.
+  viewManagerClass = NSClassFromString(ABI49_0_0RCTNSStringFromString(viewManagerName));
+  if (viewManagerClass) {
+    return viewManagerClass;
+  }
+
+  return nil;
 }
 
 static std::shared_ptr<void> const constructCoordinator(
@@ -59,9 +79,8 @@ static std::shared_ptr<void> const constructCoordinator(
     ComponentDescriptor::Flavor const &flavor)
 {
   auto componentName = *std::static_pointer_cast<std::string const>(flavor);
-  auto moduleName = moduleNameFromComponentName(componentName);
-  Class module = NSClassFromString(ABI49_0_0RCTNSStringFromString(moduleName));
-  assert(module);
+  Class viewManagerClass = getViewManagerFromComponentName(componentName);
+  assert(viewManagerClass);
   auto optionalBridge = contextContainer->find<std::shared_ptr<void>>("Bridge");
   ABI49_0_0RCTBridge *bridge;
   if (optionalBridge) {
@@ -80,7 +99,7 @@ static std::shared_ptr<void> const constructCoordinator(
     bridgeModuleDecorator = unwrapManagedObject(optionalModuleDecorator.value());
   }
 
-  ABI49_0_0RCTComponentData *componentData = [[ABI49_0_0RCTComponentData alloc] initWithManagerClass:module
+  ABI49_0_0RCTComponentData *componentData = [[ABI49_0_0RCTComponentData alloc] initWithManagerClass:viewManagerClass
                                                                             bridge:bridge
                                                                    eventDispatcher:eventDispatcher];
   return wrapManagedObject([[ABI49_0_0RCTLegacyViewManagerInteropCoordinator alloc]

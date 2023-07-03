@@ -1,6 +1,6 @@
 {
   "name": "ABI49_0_0EXSplashScreen",
-  "version": "0.20.1",
+  "version": "0.20.2",
   "summary": "Provides a module to allow keeping the native Splash Screen visible until you choose to hide it.",
   "description": "Provides a module to allow keeping the native Splash Screen visible until you choose to hide it.",
   "license": "MIT",

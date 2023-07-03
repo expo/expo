@@ -33,41 +33,57 @@ internal class ImageLibraryContract(
     }.contentResolver
 
   override fun createIntent(context: Context, input: ImageLibraryContractOptions): Intent {
-    val request = PickVisualMediaRequest.Builder()
-      .setMediaType(
-        when (input.options.mediaTypes) {
-          MediaTypes.VIDEOS -> {
-            PickVisualMedia.VideoOnly
+    if (PickVisualMedia.isPhotoPickerAvailable(context)) {
+      val request = PickVisualMediaRequest.Builder()
+        .setMediaType(
+          when (input.options.mediaTypes) {
+            MediaTypes.VIDEOS -> {
+              PickVisualMedia.VideoOnly
+            }
+
+            MediaTypes.IMAGES -> {
+              PickVisualMedia.ImageOnly
+            }
+
+            else -> {
+              PickVisualMedia.ImageAndVideo
+            }
           }
-          MediaTypes.IMAGES -> {
-            PickVisualMedia.ImageOnly
-          }
-          else -> {
-            PickVisualMedia.ImageAndVideo
-          }
+        ).build()
+
+      if (input.options.allowsMultipleSelection) {
+        val selectionLimit = input.options.selectionLimit
+
+        if (selectionLimit == 1) {
+          // If multiple selection is allowed but the limit is 1, we should ignore
+          // the multiple selection flag and just treat it as a single selection.
+          return PickVisualMedia().createIntent(context, request)
         }
-      ).build()
 
-    if (input.options.allowsMultipleSelection) {
-      val selectionLimit = input.options.selectionLimit
+        if (selectionLimit > 1) {
+          return PickMultipleVisualMedia(selectionLimit).createIntent(context, request)
+        }
 
-      if (selectionLimit == 1) {
-        // If multiple selection is allowed but the limit is 1, we should ignore
-        // the multiple selection flag and just treat it as a single selection.
-        return PickVisualMedia().createIntent(context, request)
+        // If the selection limit is 0, it is the same as unlimited selection.
+        if (selectionLimit == UNLIMITED_SELECTION) {
+          return PickMultipleVisualMedia().createIntent(context, request)
+        }
       }
 
-      if (selectionLimit > 1) {
-        return PickMultipleVisualMedia(selectionLimit).createIntent(context, request)
-      }
-
-      // If the selection limit is 0, it is the same as unlimited selection.
-      if (selectionLimit == UNLIMITED_SELECTION) {
-        return PickMultipleVisualMedia().createIntent(context, request)
-      }
+      return PickVisualMedia().createIntent(context, request)
     }
 
-    return PickVisualMedia().createIntent(context, request)
+    return Intent(Intent.ACTION_GET_CONTENT)
+      .addCategory(Intent.CATEGORY_OPENABLE)
+      .setType(input.options.mediaTypes.toMimeType())
+      .apply {
+        if (input.options.allowsMultipleSelection) {
+          putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+        }
+        if (input.options.mediaTypes == MediaTypes.ALL) {
+          putExtra(Intent.EXTRA_MIME_TYPES, arrayOf(MediaTypes.IMAGES.toMimeType(), MediaTypes.VIDEOS.toMimeType()))
+        }
+      }
   }
 
   override fun parseResult(input: ImageLibraryContractOptions, resultCode: Int, intent: Intent?) =
