@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Add missing `unstable_styles` export on native for CSS Modules.
+- Add missing `unstable_styles` export on native for CSS Modules. ([#23260](https://github.com/expo/expo/pull/23260) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
