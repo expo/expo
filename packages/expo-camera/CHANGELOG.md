@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix crash when onBarCodeScanned or onFacesDetected callback is removed. ([#23223](https://github.com/expo/expo/pull/23223) by [@thespacemanatee](https://github.com/thespacemanatee))
+
 ### 💡 Others
 
 ## 13.4.1 — 2023-06-28
