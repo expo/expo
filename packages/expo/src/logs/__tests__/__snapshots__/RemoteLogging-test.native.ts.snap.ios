@@ -5,7 +5,7 @@ exports[`sends logs to the server 1`] = `
   "Accept": "application/json",
   "Connection": "keep-alive",
   "Content-Type": "application/json",
-  "Device-Id": "c0d50576-7ddc-4196-8b1d-01c2d1786631",
+  "Device-Id": "37dc8be5-9e14-5031-bcb8-c6fd04a55069",
   "Device-Name": "mock",
   "Expo-Platform": "ios",
   "Proxy-Connection": "keep-alive",

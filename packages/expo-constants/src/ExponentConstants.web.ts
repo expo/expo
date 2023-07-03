@@ -1,4 +1,4 @@
-import { Platform, uuid as uuidv4 } from 'expo-modules-core';
+import { Platform, uuidv4 } from 'expo-modules-core';
 
 import {
   ExecutionEnvironment,

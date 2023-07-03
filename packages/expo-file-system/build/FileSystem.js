@@ -1,4 +1,4 @@
-import { EventEmitter, UnavailabilityError, uuid as uuidv4 } from 'expo-modules-core';
+import { EventEmitter, UnavailabilityError, uuidv4 } from 'expo-modules-core';
 import { Platform } from 'react-native';
 import ExponentFileSystem from './ExponentFileSystem';
 import { FileSystemSessionType, FileSystemUploadType, } from './FileSystem.types';

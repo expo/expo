@@ -1,4 +1,4 @@
-import { CodedError, uuid as uuidv4 } from 'expo-modules-core';
+import { CodedError, uuidv4 } from 'expo-modules-core';
 
 import { ServerRegistrationModule } from './ServerRegistrationModule.types';
 

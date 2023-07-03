@@ -2,7 +2,7 @@ import {
   PermissionResponse,
   PermissionStatus,
   UnavailabilityError,
-  uuid as uuidv4,
+  uuidv4,
 } from 'expo-modules-core';
 import { Platform, Share } from 'react-native';
 

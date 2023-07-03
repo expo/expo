@@ -1,7 +1,10 @@
 import * as Application from 'expo-application';
-import { uuid } from 'expo-modules-core';
+import { uuidv5 } from 'expo-modules-core';
 
 let installationId: string | null;
+const UUID_NAMESPACE = '29cc8a0d-747c-5f85-9ff9-f2f16636d963';
+
+console.log(uuidv5);
 
 export default async function getInstallationIdAsync() {
   if (installationId) {
@@ -16,10 +19,10 @@ export default async function getInstallationIdAsync() {
   // case.
 
   if (identifierForVendor) {
-    installationId = uuid(`${bundleIdentifier}-${identifierForVendor}`);
+    installationId = uuidv5(`${bundleIdentifier}-${identifierForVendor}`, UUID_NAMESPACE);
   } else {
     const installationTime = await Application.getInstallationTimeAsync();
-    installationId = uuid(`${bundleIdentifier}-${installationTime.getTime()}`);
+    installationId = uuidv5(`${bundleIdentifier}-${installationTime.getTime()}`, UUID_NAMESPACE);
   }
 
   return installationId;

@@ -1,6 +1,6 @@
 import bytesToUuid from './lib/bytesToUuid';
 import rng from './lib/rng';
-export function uuid(options, buf, offset) {
+export function uuidv4(options, buf, offset) {
     const i = (buf && offset) || 0;
     let buffer = null;
     if (typeof options == 'string') {

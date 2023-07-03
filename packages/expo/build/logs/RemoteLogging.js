@@ -1,5 +1,5 @@
 import Constants from 'expo-constants';
-import { Platform, uuid as uuidv4 } from 'expo-modules-core';
+import { Platform, uuidv4 } from 'expo-modules-core';
 import { EventEmitter } from 'fbemitter';
 import invariant from 'invariant';
 import getInstallationIdAsync from '../environment/getInstallationIdAsync';
