@@ -76,7 +76,7 @@ export type SecureStoreOptions = {
    * value used for the others non-authenticated operations.
    *
    * Warning: This option is not supported in Expo Go when biometric authentication is available due to a missing NSFaceIDUsageDescription.
-   * In release builds or when using continous native generation, make sure to use the `expo-secure-store` config plugin.
+   * In release builds or when using continuous native generation, make sure to use the `expo-secure-store` config plugin.
    *
    */
   requireAuthentication?: boolean;
