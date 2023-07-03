@@ -41,7 +41,8 @@ When you run `npx expo start`, `process.env.EXPO_PUBLIC_API_URL` will be replace
 > **warning** Do not store sensitive info, such as private keys, in `EXPO_PUBLIC_` variables. These variables will be visible in plain-text in your compiled application.
 
 ### How variables are loaded
-Metro Bundler loads **.env** files according to the [standard .env file resolution](https://github.com/bkeepers/dotenv/blob/c6e583a/README.md#what-other-env-files-can-i-use) and then replaces all references in your code to `process.env.EXPO_PUBLIC_[VARNAME]` with the corresponding value set in the **.env** files. Code inside **node_modules** is not affected.
+
+Expo CLI loads **.env** files according to the [standard .env file resolution](https://github.com/bkeepers/dotenv/blob/c6e583a/README.md#what-other-env-files-can-i-use) and then replaces all references in your code to `process.env.EXPO_PUBLIC_[VARNAME]` with the corresponding value set in the **.env** files. Code inside **node_modules** is not affected for security purposes.
 
 Every variable must be referenced as a static property in order for it to be inlined. For example, the expression `process.env.EXPO_PUBLIC_KEY` will be rewritten, but `process.env['EXPO_PUBLIC_KEY']` will not.
 
