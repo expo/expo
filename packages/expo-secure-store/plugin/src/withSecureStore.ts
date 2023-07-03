@@ -2,7 +2,7 @@ import { ConfigPlugin, createRunOncePlugin, withInfoPlist } from '@expo/config-p
 
 const pkg = require('expo-secure-store/package.json');
 
-const FACEID_USAGE = 'Allow $(PRODUCT_NAME) to access your faceID biometric data.';
+const FACEID_USAGE = 'Allow $(PRODUCT_NAME) to access your Face ID biometric data.';
 
 const withSecureStore: ConfigPlugin<
   {
