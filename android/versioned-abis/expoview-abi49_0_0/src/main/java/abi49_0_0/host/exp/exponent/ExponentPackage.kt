@@ -37,8 +37,6 @@ import abi49_0_0.host.exp.exponent.modules.api.components.maps.MapsPackage
 import abi49_0_0.host.exp.exponent.modules.api.components.maskedview.RNCMaskedViewPackage
 import abi49_0_0.host.exp.exponent.modules.api.components.picker.RNCPickerPackage
 import abi49_0_0.host.exp.exponent.modules.api.components.reactnativestripesdk.StripeSdkPackage
-import abi49_0_0.host.exp.exponent.modules.api.components.sharedelement.RNSharedElementModule
-import abi49_0_0.host.exp.exponent.modules.api.components.sharedelement.RNSharedElementPackage
 import abi49_0_0.host.exp.exponent.modules.api.components.webview.RNCWebViewModule
 import abi49_0_0.host.exp.exponent.modules.api.components.webview.RNCWebViewPackage
 import abi49_0_0.host.exp.exponent.modules.api.netinfo.NetInfoModule
@@ -135,7 +133,6 @@ class ExponentPackage : ReactPackage {
         nativeModules.add(RNAWSCognitoModule(reactContext))
         nativeModules.add(RNCWebViewModule(reactContext))
         nativeModules.add(NetInfoModule(reactContext))
-        nativeModules.add(RNSharedElementModule(reactContext))
         nativeModules.addAll(SvgPackage().getNativeModuleIterator(reactContext).map { it.module })
         nativeModules.addAll(MapsPackage().createNativeModules(reactContext))
         nativeModules.addAll(RNDateTimePickerPackage().getNativeModuleIterator(reactContext).map { it.module })
@@ -178,7 +175,6 @@ class ExponentPackage : ReactPackage {
         RNScreensPackage(),
         RNCWebViewPackage(),
         SafeAreaContextPackage(),
-        RNSharedElementPackage(),
         RNDateTimePickerPackage(),
         RNCMaskedViewPackage(),
         RNCPickerPackage(),
