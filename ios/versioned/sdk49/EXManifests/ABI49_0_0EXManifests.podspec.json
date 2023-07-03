@@ -23,10 +23,8 @@
     "DEFINES_MODULE": "YES",
     "SWIFT_COMPILATION_MODE": "wholemodule"
   },
-  "script_phases": {
-    "name": "Copy Swift Header",
-    "script": "COMPATIBILITY_HEADER_PATH=\"${BUILT_PRODUCTS_DIR}/Swift Compatibility Header/${PRODUCT_MODULE_NAME}-Swift.h\"; ditto \"${COMPATIBILITY_HEADER_PATH}\" \"${PODS_ROOT}/Headers/Public/${PRODUCT_MODULE_NAME}/${PRODUCT_MODULE_NAME}-Swift.h\"",
-    "execution_position": "after_compile"
+  "user_target_xcconfig": {
+    "HEADER_SEARCH_PATHS": "\"${PODS_CONFIGURATION_BUILD_DIR}/EXManifests/Swift Compatibility Header\""
   },
   "source_files": "EXManifests/**/*.{h,m,swift}",
   "exclude_files": "Tests/",
