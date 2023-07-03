@@ -1,6 +1,6 @@
 {
   "name": "ABI49_0_0EXFileSystem",
-  "version": "15.4.0",
+  "version": "15.4.2",
   "summary": "Provides access to the local file system on the device.",
   "description": "Provides access to the local file system on the device.",
   "license": "MIT",
