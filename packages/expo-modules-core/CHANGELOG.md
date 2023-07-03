@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix the `View cannot be cast to ViewGroup` exception on Android.
+
 ### 💡 Others
 
 - Changed Objective-C names for `ExpoReactDelegate` and `ExpoReactDelegateHandler` to fix issues with versioning in Expo Go. ([#23229](https://github.com/expo/expo/pull/23229) by [@tsapeta](https://github.com/tsapeta))
