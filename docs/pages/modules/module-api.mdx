@@ -261,7 +261,10 @@ MyModule.foo = 'foobar';
 </APIBox>
 <APIBox header="View">
 
-Enables the module to be used as a native view. Definition components that are accepted as part of the view definition: [`Prop`](#prop), [`Events`](#events), [`GroupView`](#groupview).
+Enables the module to be used as a native view. Definition components that are accepted as part of the view definition: [`Prop`](#prop), [`Events`](#events), [`GroupView`](#groupview) and [`AsyncFunction`](#asyncfunction).
+
+[`AsyncFunction`](#asyncfunction) in the view definition is added to the React ref of the React component representing the native view.
+Such async functions automatically receive an instance of the native view as the first argument and run on the UI thread by default.
 
 #### Arguments
 
@@ -273,12 +276,20 @@ Enables the module to be used as a native view. Definition components that are a
 ```swift
 View(UITextView.self) {
   Prop("text") { ... }
+
+  AsyncFunction("focus") { (view: UITextView) in
+    view.becomeFirstResponder()
+  }
 }
 ```
 
 ```kotlin
 View(TextView::class) {
   Prop("text") { ... }
+
+  AsyncFunction("focus") { view: TextView ->
+    view.requestFocus()
+  }
 }
 ```
 
