@@ -13,7 +13,7 @@ beforeEach(() => {
 const doTransformForOutput = async (
   filename: string,
   src: string,
-  options: Partial<JsTransformOptions>
+  options: Partial<JsTransformOptions & { customTransformOptions?: any }>
 ): Promise<{ input: string; output: any }> => {
   jest.mocked(upstreamTransformer.transform).mockResolvedValueOnce({
     dependencies: [],
@@ -34,7 +34,7 @@ const doTransformForOutput = async (
 const doTransformForInput = async (
   filename: string,
   src: string,
-  options: Partial<JsTransformOptions>
+  options: Partial<JsTransformOptions & { customTransformOptions?: any }>
 ): Promise<string> => {
   await doTransform(filename, src, options);
   expect(upstreamTransformer.transform).toBeCalledTimes(1);
@@ -93,6 +93,51 @@ it(`transforms a global CSS file in dev for native`, async () => {
   ).toMatchInlineSnapshot(`""`);
 });
 
+describe('SVG Modules', () => {
+  describe('ios', () => {
+    it(`skips transform for normal svg`, async () => {
+      expect(
+        await doTransformForInput('acme.svg', '<svg><path /></svg>', {
+          dev: true,
+          minify: true,
+          platform: 'ios',
+          customTransformOptions: {
+            'svg-modules': true,
+          },
+        })
+      ).toMatchInlineSnapshot(`"<svg><path /></svg>"`);
+    });
+    it(`skips transform when svg modules is disabled`, async () => {
+      expect(
+        await doTransformForInput('acme.module.svg', '<svg><path /></svg>', {
+          dev: true,
+          minify: true,
+          platform: 'ios',
+          customTransformOptions: {
+            'svg-modules': false,
+          },
+        })
+      ).toMatchInlineSnapshot(`"<svg><path /></svg>"`);
+    });
+    it(`transforms for dev, minified`, async () => {
+      expect(
+        await doTransformForInput('acme.module.svg', '<svg><path /></svg>', {
+          dev: true,
+          minify: true,
+          platform: 'ios',
+          customTransformOptions: {
+            'svg-modules': true,
+          },
+        })
+      ).toMatchInlineSnapshot(`
+        "import * as React from "react";
+        import Svg from "react-native-svg";
+        const SvgComponent = props => <Svg {...props} />;
+        export default SvgComponent;"
+      `);
+    });
+  });
+});
 describe('CSS Modules', () => {
   describe('ios', () => {
     it(`transforms for dev, minified`, async () => {
