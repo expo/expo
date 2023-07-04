@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added a config plugin to automatically set NSFaceIDUsageDescription on iOS. ([#23268](https://github.com/expo/expo/pull/23268) by [@aleqsio](https://github.com/aleqsio))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
