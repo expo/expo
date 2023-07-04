@@ -171,6 +171,7 @@ export function withExtendedResolver(
         customResolverOptions?: Record<string, string>;
       };
 
+      const isSvgModulesEnabled = context.customResolverOptions?.['svg-modules'];
       const environment = context.customResolverOptions?.environment;
       const isNode = environment === 'node';
 
@@ -223,12 +224,15 @@ export function withExtendedResolver(
         mainFields = preferredMainFields[platform];
       }
 
-      if (process.env._EXPO_METRO_SVG_MODULES) {
-        const cleanAssets = [...immutableContext.assetExts].filter((ext) => ext !== 'svg');
-        const cleanSources = [...immutableContext.sourceExts].filter((ext) => ext !== 'svg');
+      if (isSvgModulesEnabled) {
         // Swap asset and source resolution for SVG Modules
         if (/\.module(\.(native|ios|android|web))?(\.svg)?$/.test(moduleName)) {
+          // TODO: Memoize
+          const cleanAssets = [...immutableContext.assetExts].filter((ext) => ext !== 'svg');
+          const cleanSources = [...immutableContext.sourceExts].filter((ext) => ext !== 'svg');
+          // Resolve the module as source and not an asset. This enables support for platform extensions.
           context.sourceExts = [...cleanSources, 'svg'];
+          // @ts-expect-error: Typed incorrectly
           context.assetExts = new Set(cleanAssets);
         }
       }
@@ -351,7 +355,7 @@ export async function withMetroMultiPlatformAsync(
 
   if (platformBundlers.web === 'metro') {
     await new WebSupportProjectPrerequisite(projectRoot).assertAsync();
-  } else if (!isTsconfigPathsEnabled) {
+  } else if (!isTsconfigPathsEnabled && !process.env._EXPO_METRO_SVG_MODULES) {
     // Bail out early for performance enhancements if no special features are enabled.
     return config;
   }

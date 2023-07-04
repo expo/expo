@@ -60,6 +60,9 @@ it(`performs a sanity check by transforming a JS file as expected`, async () => 
       dev: true,
       minify: false,
       platform: 'web',
+      customTransformOptions: {
+        'css-modules': true,
+      },
     })
   ).toMatchInlineSnapshot(`"export default {}"`);
 });
@@ -70,6 +73,9 @@ it(`transforms a global CSS file in dev for web`, async () => {
       dev: true,
       minify: false,
       platform: 'web',
+      customTransformOptions: {
+        'css-modules': true,
+      },
     })
   ).toMatchSnapshot();
 });
@@ -80,6 +86,9 @@ it(`transforms a global CSS file in dev for native`, async () => {
       dev: true,
       minify: false,
       platform: 'ios',
+      customTransformOptions: {
+        'css-modules': true,
+      },
     })
   ).toMatchInlineSnapshot(`""`);
 });
@@ -92,8 +101,11 @@ describe('CSS Modules', () => {
           dev: true,
           minify: true,
           platform: 'ios',
+          customTransformOptions: {
+            'css-modules': true,
+          },
         })
-      ).toMatchInlineSnapshot(`"module.exports={};"`);
+      ).toMatchInlineSnapshot(`"module.exports={ unstable_styles: {} };"`);
     });
     it(`transforms for dev, not minified`, async () => {
       expect(
@@ -101,8 +113,11 @@ describe('CSS Modules', () => {
           dev: true,
           minify: false,
           platform: 'ios',
+          customTransformOptions: {
+            'css-modules': true,
+          },
         })
-      ).toMatchInlineSnapshot(`"module.exports={};"`);
+      ).toMatchInlineSnapshot(`"module.exports={ unstable_styles: {} };"`);
     });
 
     it(`transforms for prod, minified`, async () => {
@@ -111,8 +126,11 @@ describe('CSS Modules', () => {
           dev: false,
           minify: true,
           platform: 'ios',
+          customTransformOptions: {
+            'css-modules': true,
+          },
         })
-      ).toMatchInlineSnapshot(`"module.exports={};"`);
+      ).toMatchInlineSnapshot(`"module.exports={ unstable_styles: {} };"`);
     });
 
     it(`transforms for prod, not minified`, async () => {
@@ -121,8 +139,11 @@ describe('CSS Modules', () => {
           dev: false,
           minify: false,
           platform: 'ios',
+          customTransformOptions: {
+            'css-modules': true,
+          },
         })
-      ).toMatchInlineSnapshot(`"module.exports={};"`);
+      ).toMatchInlineSnapshot(`"module.exports={ unstable_styles: {} };"`);
     });
   });
   describe('web', () => {
@@ -132,6 +153,9 @@ describe('CSS Modules', () => {
           dev: true,
           minify: true,
           platform: 'web',
+          customTransformOptions: {
+            'css-modules': true,
+          },
         })
       ).toMatchSnapshot();
     });
@@ -141,6 +165,9 @@ describe('CSS Modules', () => {
           dev: true,
           minify: false,
           platform: 'web',
+          customTransformOptions: {
+            'css-modules': true,
+          },
         })
       ).toMatchSnapshot();
     });
@@ -153,6 +180,9 @@ describe('CSS Modules', () => {
           dev: false,
           minify: true,
           platform: 'web',
+          customTransformOptions: {
+            'css-modules': true,
+          },
         }
       );
       expect(input).toMatchSnapshot();
@@ -188,6 +218,9 @@ describe('CSS Modules', () => {
           dev: false,
           minify: false,
           platform: 'web',
+          customTransformOptions: {
+            'css-modules': true,
+          },
         }
       );
       expect(input).toMatchSnapshot();
@@ -237,6 +270,7 @@ describe('Expo Router server files (+html, +api)', () => {
             minify: false,
             customTransformOptions: {
               environment: 'client',
+              'css-modules': true,
             },
             platform: 'web',
           })
@@ -254,6 +288,7 @@ describe('Expo Router server files (+html, +api)', () => {
             minify: false,
             customTransformOptions: {
               environment: 'client',
+              'css-modules': true,
             },
             platform,
           })
@@ -269,6 +304,7 @@ describe('Expo Router server files (+html, +api)', () => {
           minify: true,
           customTransformOptions: {
             environment: 'client',
+            'css-modules': true,
           },
           platform: 'web',
         })
@@ -294,6 +330,7 @@ describe('Expo Router server files (+html, +api)', () => {
           minify: false,
           customTransformOptions: {
             environment: 'node',
+            'css-modules': true,
           },
           platform: 'ios',
         })

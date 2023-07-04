@@ -11,12 +11,12 @@ import worker, {
   JsTransformOptions,
   TransformResponse,
 } from 'metro-transform-worker';
-import path from 'path';
 
 import { wrapDevelopmentCSS } from './css';
 import { matchCssModule, transformCssModuleWeb } from './css-modules';
 import { transformPostCssModule } from './postcss';
 import { compileSass, matchSass } from './sass';
+import { matchSvgModule, transformSvg } from './svg-modules';
 
 const countLines = require('metro/src/lib/countLines') as (string: string) => number;
 
@@ -40,7 +40,7 @@ export async function transform(
   options: JsTransformOptions
 ): Promise<TransformResponse> {
   // SVG Modules must be first
-  if (process.env._EXPO_METRO_SVG_MODULES) {
+  if (options.customTransformOptions?.['svg-modules']) {
     if (matchSvgModule(filename)) {
       return transformSvg(config, projectRoot, filename, data, {
         ...options,
@@ -54,7 +54,7 @@ export async function transform(
     return worker.transform(config, projectRoot, filename, data, options);
   }
 
-  if (process.env._EXPO_METRO_CSS_MODULES) {
+  if (options.customTransformOptions?.['css-modules']) {
     if (/\.(s?css|sass)$/.test(filename)) {
       return transformCss(config, projectRoot, filename, data, options);
     }
@@ -85,55 +85,6 @@ export async function transform(
   }
 
   return worker.transform(config, projectRoot, filename, data, options);
-}
-
-export async function transformSvg(
-  config: JsTransformerConfig,
-  projectRoot: string,
-  filename: string,
-  data: Buffer,
-  options: JsTransformOptions
-): Promise<TransformResponse> {
-  const { resolveConfig, transform } = require('@svgr/core') as typeof import('@svgr/core');
-  const isNotNative = !options.platform || options.platform === 'web';
-
-  const defaultSVGRConfig = {
-    native: !isNotNative,
-    plugins: ['@svgr/plugin-svgo', '@svgr/plugin-jsx'],
-    svgoConfig: {
-      // TODO: Maybe there's a better config for web?
-      plugins: [
-        {
-          name: 'preset-default',
-          params: {
-            overrides: {
-              inlineStyles: {
-                onlyMatchedOnce: false,
-              },
-              removeViewBox: false,
-              removeUnknownsAndDefaults: false,
-              convertColors: false,
-            },
-          },
-        },
-      ],
-    },
-  };
-
-  const svgUserConfig = await resolveConfig(path.dirname(filename));
-  const svgrConfig = svgUserConfig ? { ...defaultSVGRConfig, ...svgUserConfig } : defaultSVGRConfig;
-
-  return worker.transform(
-    config,
-    projectRoot,
-    filename,
-    Buffer.from(await transform(data.toString(), svgrConfig)),
-    options
-  );
-}
-
-export function matchSvgModule(filePath: string): boolean {
-  return !!/\.module(\.(native|ios|android|web))?\.svg$/.test(filePath);
 }
 
 export async function transformCss(

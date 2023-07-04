@@ -37,6 +37,7 @@ import { instantiateMetroAsync } from './instantiateMetro';
 import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import { observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
+import { boolish } from 'getenv';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 

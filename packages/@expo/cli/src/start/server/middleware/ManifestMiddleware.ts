@@ -15,6 +15,7 @@ import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAsset
 import { resolveAbsoluteEntryPoint } from './resolveEntryPoint';
 import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
 import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './server.types';
+import { boolish } from 'getenv';
 
 const debug = require('debug')('expo:start:server:middleware:manifest') as typeof console.log;
 
@@ -69,11 +70,15 @@ export function createBundleUrlPath({
   minify = mode === 'production',
   environment,
   serializerOutput,
+  cssModules = boolish('_EXPO_METRO_CSS_MODULES', false),
+  svgModules = boolish('_EXPO_METRO_SVG_MODULES', false),
 }: {
   platform: string;
   mainModuleName: string;
   mode: string;
   minify?: boolean;
+  cssModules?: boolean;
+  svgModules?: boolean;
   environment?: string;
   serializerOutput?: 'static';
 }): string {
@@ -87,6 +92,14 @@ export function createBundleUrlPath({
 
   if (minify) {
     queryParams.append('minify', String(minify));
+  }
+  if (cssModules) {
+    queryParams.append('resolver.css-modules', String(cssModules));
+    queryParams.append('transform.css-modules', String(cssModules));
+  }
+  if (svgModules) {
+    queryParams.append('resolver.svg-modules', String(svgModules));
+    queryParams.append('transform.svg-modules', String(svgModules));
   }
   if (environment) {
     queryParams.append('resolver.environment', environment);

@@ -10,6 +10,7 @@ import {
 } from '@expo/dev-server/build/metro/importMetroFromProject';
 import type { LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
+import { boolish } from 'getenv';
 import Metro from 'metro';
 import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
 
@@ -82,6 +83,11 @@ export async function bundleAsync(
   const buildAsync = async (bundle: BundleOptions): Promise<BundleOutput> => {
     const buildID = `bundle_${nextBuildID++}_${bundle.platform}`;
     const isHermes = isEnableHermesManaged(expoConfig, bundle.platform);
+
+    // Set inside of expo/metro-config
+    const cssModules = boolish('_EXPO_METRO_CSS_MODULES', false);
+    const svgModules = boolish('_EXPO_METRO_SVG_MODULES', false);
+
     const bundleOptions: MetroBundleOptions = {
       ...Server.DEFAULT_BUNDLE_OPTIONS,
       bundleType: 'bundle',
@@ -90,6 +96,14 @@ export async function bundleAsync(
       dev: bundle.dev ?? false,
       minify: !isHermes && (bundle.minify ?? !bundle.dev),
       inlineSourceMap: false,
+      customTransformOptions: {
+        'css-modules': cssModules,
+        'svg-modules': svgModules,
+      },
+      customResolverOptions: {
+        'css-modules': cssModules,
+        'svg-modules': svgModules,
+      },
       sourceMapUrl: bundle.sourceMapUrl,
       createModuleIdFactory: config.serializer.createModuleIdFactory,
       onProgress: (transformedFileCount: number, totalFileCount: number) => {
