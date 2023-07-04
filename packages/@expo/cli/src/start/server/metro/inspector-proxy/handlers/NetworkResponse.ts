@@ -1,6 +1,6 @@
 import type { Protocol } from 'devtools-protocol';
-import type { DebuggerInfo } from 'metro-inspector-proxy';
 
+import { ExpoDebuggerInfo } from '../device';
 import {
   CdpMessage,
   InspectorHandler,
@@ -26,7 +26,7 @@ export class NetworkResponseHandler implements InspectorHandler {
 
   onDebuggerMessage(
     message: DebuggerRequest<NetworkGetResponseBody>,
-    { socket }: Pick<DebuggerInfo, 'socket'>
+    { socket }: ExpoDebuggerInfo
   ) {
     if (
       message.method === 'Network.getResponseBody' &&

@@ -1,10 +1,11 @@
 import type { Protocol } from 'devtools-protocol';
 import fs from 'fs';
-import type { DebuggerInfo, Device as MetroDevice } from 'metro-inspector-proxy';
+import type { Device as MetroDevice } from 'metro-inspector-proxy';
 import fetch from 'node-fetch';
 import path from 'path';
 import type WS from 'ws';
 
+import { ExpoDebuggerInfo } from '../device';
 import { CdpMessage, DebuggerRequest, DebuggerResponse, InspectorHandler } from './types';
 
 // TODO(cedric): remove this custom handler when fully switching over to `metro@>=0.75.1`
@@ -13,7 +14,7 @@ export class DebuggerScriptSourceHandler implements InspectorHandler {
 
   onDebuggerMessage(
     message: DebuggerRequest<DebuggerGetScriptSource>,
-    { socket }: Pick<DebuggerInfo, 'socket'>
+    { socket }: ExpoDebuggerInfo
   ) {
     // See: https://github.com/facebook/metro/blob/65d801cb60c06c1b17f428ca79491db73c53ef87/packages/metro-inspector-proxy/src/Device.js#L488-L544
     if (message.method === 'Debugger.getScriptSource') {

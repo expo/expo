@@ -1,17 +1,17 @@
-import { DebuggerInfo } from 'metro-inspector-proxy';
+import { ExpoDebuggerInfo } from '../device';
 
 export interface InspectorHandler {
   /**
    * Intercept a message coming from the device, modify or respond to it through `this._sendMessageToDevice`.
    * Return `true` if the message was handled, this will stop the message propagation.
    */
-  onDeviceMessage?(message: DeviceRequest | DeviceResponse, info: DebuggerInfo): boolean;
+  onDeviceMessage?(message: DeviceRequest | DeviceResponse, info: ExpoDebuggerInfo): boolean;
 
   /**
    * Intercept a message coming from the debugger, modify or respond to it through `socket.send`.
    * Return `true` if the message was handled, this will stop the message propagation.
    */
-  onDebuggerMessage?(message: DebuggerRequest, info: DebuggerInfo): boolean;
+  onDebuggerMessage?(message: DebuggerRequest, info: ExpoDebuggerInfo): boolean;
 }
 
 /**

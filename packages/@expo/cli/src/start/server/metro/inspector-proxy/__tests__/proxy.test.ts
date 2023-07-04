@@ -150,6 +150,39 @@ it('accepts debugger connections when device is connected', async () => {
   }
 });
 
+it('accepts debugger connection with specific type when device is connected', async () => {
+  const { expoProxy } = createTestProxy();
+  const { server, deviceWebSocketUrl, debuggerWebSocketUrl } = await createTestServer();
+  useWebsockets(server, expoProxy.createWebSocketListeners(server));
+
+  let deviceWs: WS | null = null;
+  let debuggerWs: WS | null = null;
+
+  try {
+    deviceWs = new WS(deviceWebSocketUrl);
+    await new Promise((resolve) => deviceWs?.on('open', resolve));
+
+    const device = expoProxy.devices.values().next().value;
+    expect(device).toBeDefined();
+
+    const deviceDebugHandler = jest.spyOn(device, 'handleDebuggerConnectionWithType');
+
+    debuggerWs = new WS(`${debuggerWebSocketUrl}?device=${device._id}&page=1&type=vscode`);
+    await new Promise((resolve) => debuggerWs?.on('open', resolve));
+
+    expect(debuggerWs.readyState).toBe(debuggerWs.OPEN);
+    expect(deviceDebugHandler).toBeCalledWith(
+      expect.anything(), // socket instance
+      '1', // pageId
+      'vscode' // debugger type
+    );
+  } finally {
+    server.close();
+    deviceWs?.close();
+    debuggerWs?.close();
+  }
+});
+
 it('keeps debugger connection alive when device reconnects', async () => {
   const { expoProxy } = createTestProxy();
   const { server, deviceWebSocketUrl, debuggerWebSocketUrl } = await createTestServer();
@@ -211,6 +244,8 @@ function createTestProxy() {
     ) {}
 
     handleDebuggerConnection() {}
+
+    handleDebuggerConnectionWithType() {}
 
     handleDuplicateDeviceConnection() {
       this._deviceSocket.close();
