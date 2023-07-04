@@ -670,6 +670,50 @@ The implementation for three Either types is currently provided out of the box, 
 > Either types are available as of SDK 47.
 
 </APIBox>
+<APIBox header="JavaScript values">
+
+It's also possible to use a `JavaScriptValue` type which is a holder for any value that can be represented in JavaScript.
+This type is useful when you want to mutate the given argument or when you want to omit type validations and conversions.
+Note that using JavaScript-specific types is restricted to synchronous functions as all reads and writes in the JavaScript runtime must happen on the JavaScript thread.
+Any access to these values from different threads will result in a crash.
+
+In addition to the raw value, `JavaScriptObject` type can be used to allow only object types and `JavaScriptFunction<ReturnType>` for callbacks.
+
+<CodeBlocksTable>
+
+```swift
+Function("mutateMe") { (value: JavaScriptValue) in
+  if value.isObject() {
+    let jsObject = value.getObject()
+    jsObject.setProperty("expo", value: "modules")
+  }
+}
+
+// or
+
+Function("mutateMe") { (jsObject: JavaScriptObject) in
+  jsObject.setProperty("expo", value: "modules")
+}
+```
+
+```kotlin
+Function("mutateMe") { value: JavaScriptValue ->
+  if (value.isObject()) {
+    val jsObject = value.getObject()
+    jsObject.setProperty("expo", "modules")
+  }
+}
+
+// or
+
+Function("mutateMe") { jsObject: JavaScriptObject ->
+  jsObject.setProperty("expo", "modules")
+}
+```
+
+</CodeBlocksTable>
+
+</APIBox>
 
 ## Native Classes
 
