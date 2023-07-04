@@ -137,6 +137,12 @@ android {
         abortOnError false
     }
 
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+        }
+    }
+
     externalNativeBuild {
         cmake {
             path file('CMakeLists.txt')
@@ -232,6 +238,17 @@ dependencies {
     }
 }
 
+afterEvaluate { project ->
+    android.libraryVariants.all { variant ->
+        def name = variant.name.capitalize()
+        def javaCompileTask = variant.javaCompileProvider.get()
+
+        task "jar${name}"(type: Jar, dependsOn: javaCompileTask) {
+            from javaCompileTask.destinationDir
+        }
+    }
+}
+
 task extractAARHeaders {
     doLast {
         configurations.extractHeaders.files.each {
@@ -267,7 +284,6 @@ if (ENABLE_PREFAB) {
         into "${project.buildDir}/headers/rnskia/"
         includeEmptyDirs = false
         include "**/*.h"
-        duplicatesStrategy = 'include'
         eachFile {
             String path = it.path
 

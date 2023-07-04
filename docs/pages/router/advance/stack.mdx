@@ -7,7 +7,7 @@ import { FileTree } from '~/ui/components/FileTree';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { BookOpen02Icon } from '@expo/styleguide-icons';
 
-The `Stack` Layout in Expo Router wraps the [Native Stack Navigator](https://reactnavigation.org/docs/native-stack-navigator) from React Navigation. Do not confuse it with the legacy [JS Stack Navigator](https://reactnavigation.org/docs/stack-navigator).
+The `Stack` Layout in Expo Router wraps the [Native Stack Navigator](https://reactnavigation.org/docs/native-stack-navigator) from React Navigation, not to be confused with the legacy [JS Stack Navigator](https://reactnavigation.org/docs/stack-navigator).
 
 <FileTree files={['app/_layout.js', 'app/index.js', 'app/detail.js']} />
 
@@ -17,7 +17,7 @@ To create a `Stack` layout with two screens as shown in the file structure above
 import { Stack } from 'expo-router/stack';
 
 export default function Layout() {
-  return <Stack initialRouteName="index" />;
+  return <Stack />;
 }
 ```
 
@@ -31,7 +31,6 @@ import { Stack } from 'expo-router';
 export default function Layout() {
   return (
     <Stack
-      initialRouteName="home"
       screenOptions={{
         headerStyle: {
           backgroundColor: '#f4511e',
@@ -127,7 +126,6 @@ import { Stack } from 'expo-router';
 export default function Layout() {
   return (
     <Stack
-      initialRouteName="home"
       // https://reactnavigation.org/docs/headers#sharing-common-options-across-screens
       /* @info */
       screenOptions={{
@@ -199,5 +197,5 @@ export default function Home() {
   title="Tabs layout"
   Icon={BookOpen02Icon}
   description="Learn how to use Tabs layout in Expo Router."
-  href="/router/layouts/tabs/"
+  href="/router/advance/tabs"
 />

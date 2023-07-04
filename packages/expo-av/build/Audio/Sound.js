@@ -116,7 +116,7 @@ export class Sound {
         }
     }
     _updateAudioSampleReceivedCallback() {
-        if (global.__EXAV_setOnAudioSampleReceivedCallback == null) {
+        if (globalThis.__EXAV_setOnAudioSampleReceivedCallback == null) {
             if (Platform.OS === 'ios' || Platform.OS === 'android') {
                 console.warn('expo-av: Failed to set up Audio Sample Buffer callback. ' +
                     "Do you have 'Remote Debugging' enabled in your app's Developer Menu (https://docs.expo.dev/workflow/debugging)? " +
@@ -134,7 +134,7 @@ export class Sound {
             throw new Error(`Cannot set Audio Sample Buffer callback when Sound instance key is of type ${typeof this
                 ._key}! (expected: number)`);
         }
-        global.__EXAV_setOnAudioSampleReceivedCallback(this._key, this._onAudioSampleReceived);
+        globalThis.__EXAV_setOnAudioSampleReceivedCallback(this._key, this._onAudioSampleReceived);
     }
     _internalStatusUpdateCallback = ({ key, status, }) => {
         if (this._key === key) {

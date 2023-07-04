@@ -2,6 +2,7 @@
 
 import ABI49_0_0ExpoModulesCore
 
+@objc(ABI49_0_0EXScreenOrientationReactDelegateHandler)
 public class ScreenOrientationReactDelegateHandler: ExpoReactDelegateHandler {
   public override func createRootViewController(reactDelegate: ExpoReactDelegate) -> UIViewController? {
     return ScreenOrientationViewController(defaultScreenOrientationFromPlist: ())

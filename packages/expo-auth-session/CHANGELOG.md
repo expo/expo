@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 5.0.2 — 2023-06-28
+
+### 💡 Others
+
 - Remove references to `startAsync` from js doc. ([#23150](https://github.com/expo/expo/pull/23150) by [@alanhughes](https://github.com/alanjhughes))
 - Remove unnecessary test. ([#23154](https://github.com/expo/expo/pull/23154) by [@alanhughes](https://github.com/alanjhughes))
 

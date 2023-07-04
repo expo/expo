@@ -41,8 +41,7 @@ export function getRedirectUrl(path) {
  * Create a redirect url for the current platform and environment. You need to manually define the redirect that will be used in
  * a bare workflow React Native app, or an Expo standalone app, this is because it cannot be inferred automatically.
  * - **Web:** Generates a path based on the current `window.location`. For production web apps, you should hard code the URL as well.
- * - **Managed workflow:** Uses the `scheme` property of your `app.config.js` or `app.json`.
- *   - **Proxy:** Uses `auth.expo.io` as the base URL for the path. This only works in Expo Go and standalone environments.
+ * - **Managed workflow:** Uses the `scheme` property of your app config.
  * - **Bare workflow:** Will fallback to using the `native` option for bare workflow React Native apps.
  *
  * @param options Additional options for configuring the path.

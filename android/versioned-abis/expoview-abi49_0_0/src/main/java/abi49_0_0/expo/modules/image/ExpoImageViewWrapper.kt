@@ -151,7 +151,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
 
   var recyclingKey: String? = null
     set(value) {
-      clearViewBeforeChangingSource = value != null && value != field
+      clearViewBeforeChangingSource = field != null && value != null && value != field
       field = value
     }
 

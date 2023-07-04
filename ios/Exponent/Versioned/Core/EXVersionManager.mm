@@ -43,7 +43,14 @@
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <EXMediaLibrary/EXMediaLibraryImageLoader.h>
 #import <EXFileSystem/EXFileSystem.h>
+
+// When `use_frameworks!` is used, the generated Swift header is inside modules.
+// Otherwise, it's available only locally with double-quoted imports.
+#if __has_include(<EXManifests/EXManifests-Swift.h>)
 #import <EXManifests/EXManifests-Swift.h>
+#else
+#import "EXManifests-Swift.h"
+#endif
 
 #import <RNReanimated/REAModule.h>
 #import <RNReanimated/REAEventDispatcher.h>
