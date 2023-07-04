@@ -8,7 +8,7 @@ PODS:
     - ExpoModulesTestCore
   - EXApplication (5.3.0):
     - ExpoModulesCore
-  - EXAV (13.4.0):
+  - EXAV (13.4.1):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
   - EXBackgroundFetch (11.3.0):
@@ -20,7 +20,7 @@ PODS:
     - ZXingObjC/PDF417
   - EXCalendar (11.3.0):
     - ExpoModulesCore
-  - EXCamera (13.4.1):
+  - EXCamera (13.4.2):
     - ExpoModulesCore
   - EXConstants (14.4.2):
     - ExpoModulesCore
@@ -59,9 +59,9 @@ PODS:
     - React-Core
   - EXNotifications (0.20.1):
     - ExpoModulesCore
-  - EXPermissions (14.2.0):
+  - EXPermissions (14.2.1):
     - ExpoModulesCore
-  - Expo (49.0.0-beta.4):
+  - Expo (49.0.0-beta.5):
     - ExpoModulesCore
   - expo-dev-client (2.4.3):
     - EXManifests
@@ -69,9 +69,9 @@ PODS:
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (2.4.5):
+  - expo-dev-launcher (2.4.6):
     - EXManifests
-    - expo-dev-launcher/Main (= 2.4.5)
+    - expo-dev-launcher/Main (= 2.4.6)
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
@@ -79,7 +79,7 @@ PODS:
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-RCTAppDelegate
-  - expo-dev-launcher/Main (2.4.5):
+  - expo-dev-launcher/Main (2.4.6):
     - EXManifests
     - expo-dev-launcher/Unsafe
     - expo-dev-menu
@@ -89,7 +89,7 @@ PODS:
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-RCTAppDelegate
-  - expo-dev-launcher/Tests (2.4.5):
+  - expo-dev-launcher/Tests (2.4.6):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -103,7 +103,7 @@ PODS:
     - React-Core
     - React-CoreModules
     - React-RCTAppDelegate
-  - expo-dev-launcher/Unsafe (2.4.5):
+  - expo-dev-launcher/Unsafe (2.4.6):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -112,38 +112,38 @@ PODS:
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-RCTAppDelegate
-  - expo-dev-menu (3.1.5):
-    - expo-dev-menu/Main (= 3.1.5)
+  - expo-dev-menu (3.1.6):
+    - expo-dev-menu/Main (= 3.1.6)
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
   - expo-dev-menu-interface (1.3.0)
   - expo-dev-menu-interface/Tests (1.3.0):
     - Nimble
     - Quick
-  - expo-dev-menu/Main (3.1.5):
+  - expo-dev-menu/Main (3.1.6):
     - EXManifests
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
     - ExpoModulesCore
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
-  - expo-dev-menu/SafeAreaView (3.1.5):
+  - expo-dev-menu/SafeAreaView (3.1.6):
     - ExpoModulesCore
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
-  - expo-dev-menu/Tests (3.1.5):
+  - expo-dev-menu/Tests (3.1.6):
     - ExpoModulesTestCore
     - Nimble
     - Quick
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-CoreModules
-  - expo-dev-menu/UITests (3.1.5):
+  - expo-dev-menu/UITests (3.1.6):
     - RCT-Folly (= 2021.07.22.00)
     - React
     - React-Core
     - React-CoreModules
-  - expo-dev-menu/Vendored (3.1.5):
+  - expo-dev-menu/Vendored (3.1.6):
     - expo-dev-menu/SafeAreaView
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
@@ -162,13 +162,13 @@ PODS:
   - ExpoClipboard/Tests (4.3.0):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - ExpoCrypto (12.4.0):
+  - ExpoCrypto (12.4.1):
     - ExpoModulesCore
   - ExpoDevice (5.4.0):
     - ExpoModulesCore
   - ExpoDocumentPicker (11.5.2):
     - ExpoModulesCore
-  - ExpoGL (13.0.0):
+  - ExpoGL (13.0.1):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
   - ExpoHaptics (12.4.0):
@@ -182,7 +182,7 @@ PODS:
   - ExpoImageManipulator (11.3.0):
     - EXImageLoader
     - ExpoModulesCore
-  - ExpoImagePicker (14.3.0):
+  - ExpoImagePicker (14.3.1):
     - ExpoModulesCore
   - ExpoInsights (0.2.0):
     - EASClient
@@ -201,13 +201,13 @@ PODS:
     - ExpoModulesCore
     - GoogleMaps (= 7.3.0)
     - GooglePlaces (= 7.3.0)
-  - ExpoModulesCore (1.5.3):
+  - ExpoModulesCore (1.5.4):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-NativeModulesApple
     - React-RCTAppDelegate
     - ReactCommon/turbomodule/core
-  - ExpoModulesCore/Tests (1.5.3):
+  - ExpoModulesCore/Tests (1.5.4):
     - ExpoModulesTestCore
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
@@ -225,11 +225,11 @@ PODS:
     - ExpoModulesCore
   - ExpoRandom (13.2.0):
     - ExpoModulesCore
-  - ExpoScreenOrientation (6.0.1):
+  - ExpoScreenOrientation (6.0.2):
     - ExpoModulesCore
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
-  - ExpoSecureStore (12.3.0):
+  - ExpoSecureStore (12.3.1):
     - ExpoModulesCore
   - ExpoSharing (11.5.0):
     - ExpoModulesCore
@@ -1363,11 +1363,11 @@ SPEC CHECKSUMS:
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EASClient: 49f8ea858204eb4844d9fb386e5fb7920aee2e30
   EXApplication: 02655a251434d564bb0e73291f5a490c74b5b76f
-  EXAV: 4e66adbd7803d487044ee1f19bf87d4de9112e76
+  EXAV: f393dfc0b28214d62855a31e06eb21d426d6e2da
   EXBackgroundFetch: a4a45a5924d9ac6dd480d5d745aabe91bb17bb36
   EXBarCodeScanner: 44783bf0be375ab18a838dcfef29dd648397000a
   EXCalendar: 6756a5cf09a5ad90d3abf40e2bbdfb5993ae0911
-  EXCamera: 4a67c2ca093d319ac4a5f28058e5f81ad93627fa
+  EXCamera: 0fbfa338a3776af2722d626a3437abe33f708aad
   EXConstants: ce5bbea779da8031ac818c36bea41b10e14d04e1
   EXContacts: 9e8626eefc90c428af3d61a9e2869ac413d2569b
   EXFaceDetector: aaa275f19e8a00c78d48ad1c1a5e4f5d4616568f
@@ -1380,11 +1380,11 @@ SPEC CHECKSUMS:
   EXManifests: 8a4a480e3b58891d5657d3996a39229e5c96d912
   EXMediaLibrary: dd08edb824ee92519a989211720956cfd381f212
   EXNotifications: 09394cbd7165f9a4a00a53328aa09bf874bae717
-  EXPermissions: 336b5b8409f4e1368a8b0636f04282e7f04ced3b
-  Expo: b5379d701e3bb098ebfd0b2e22510acb2b8b1b81
+  EXPermissions: 4f80cf527001aa408a22eddf076e61465ea71d5a
+  Expo: 7a7c1c30048752bfa8e74732fc9471226598bbbd
   expo-dev-client: bb82f8a33c078c9f8a25a02640358fb5732fd42d
-  expo-dev-launcher: 19e46aca4b1122ed192059181962f4229e6fdabe
-  expo-dev-menu: 2376c777a0711f02f65fc053c8f8740cb456b511
+  expo-dev-launcher: ab8e0821145f05467c2c5c6a0669aff14edf01f4
+  expo-dev-menu: 98be5f9ddc3f5822740e2a83eb7354cbfb81ced4
   expo-dev-menu-interface: bda969497e73dadc2663c479e0fa726ca79a306e
   ExpoAppleAuthentication: 7bdf1a2962ebfe9b00eb4183a17b78d736e57185
   ExpoBattery: e9d7a71960cbc40733d956a29f8ba240173feb08
@@ -1392,14 +1392,14 @@ SPEC CHECKSUMS:
   ExpoBrightness: 60c23f8aaf7b7c691907549fdc125e22f30364fe
   ExpoCellular: 6817ef77e75c6d18f28388a909b96c0b3f3eb25a
   ExpoClipboard: ddd3ecf4af93c003667dab75a0f2ed3ae4f73d85
-  ExpoCrypto: de1a3e0b9e4b6bbd83319cf0e082cae4e874ef95
+  ExpoCrypto: a382ab9a2fa91f0b511ce1fe4d6baecee40a1615
   ExpoDevice: 1c1b0c9cad96c292c1de73948649cfd654b2b3c0
   ExpoDocumentPicker: 808d6daf4f7da566d589ab4cfb1394fd8f3991fb
-  ExpoGL: ed2c434f1f28722eab63bb89f84ae07afdde33c6
+  ExpoGL: 77f5c4f4c1efeebceabbbcb18540208c5ab67d12
   ExpoHaptics: 360af6898407ee4e8265d30a1a8fb16491a660eb
   ExpoImage: 71811c7cd8f08675a0efe91dd3ce59558b12e7c0
   ExpoImageManipulator: 851be0965dd9f78019771b140282f1816dcc25ea
-  ExpoImagePicker: bb2dded9c95c0520d343e3d0ce18fff92780c3bf
+  ExpoImagePicker: 530faafc88bffd0fb96c785327d91755edfdb220
   ExpoInsights: 690de6c211e0d40846f57d28160bb3a2f07ee582
   ExpoKeepAwake: be4cbd52d9b177cde0fd66daa1913afa3161fc1d
   ExpoLinearGradient: 5966dd5d49872cc9c104fedc8bbc298b6049b2e8
@@ -1407,13 +1407,13 @@ SPEC CHECKSUMS:
   ExpoLocalization: be37fdd0b5930c6a49cd307b4542f4b426d6134c
   ExpoMailComposer: feaebd62095efad901ede864b95406f02bf61681
   ExpoMaps: 6c13da830da56dea669ec89c708f2d248e66f7b5
-  ExpoModulesCore: c7fc9558697e1dc7efef2b4841096cd6ab2b760f
+  ExpoModulesCore: cfc52053496bae101b7ce6cd20a0ebaefbf977c0
   ExpoModulesTestCore: f116cd4cc4288e0e0005a1f910efc7cedf455659
   ExpoNetwork: 6ee4b3b6cfdba3bfb90b07f483d1111308a9c76a
   ExpoPrint: e1531d216196f51b431c7cc4d906e569f79f10e7
   ExpoRandom: 4f2bba684312acd6c0700528ae62f85265776c84
-  ExpoScreenOrientation: a96bb81eeb5c0f577d06c2f05637484e3b550ecc
-  ExpoSecureStore: 0eca38e7545759c121a731ccfd26c7286ce18653
+  ExpoScreenOrientation: e45ed74a38c49d9bface68d918be3ad7bc924e0e
+  ExpoSecureStore: 57db3b6da8b59046e2057e95bf7738a8027b47c3
   ExpoSharing: 825b2b3fc919a2656f75def0069f584bbd6e359a
   ExpoSMS: c8079b3018ae5206b3f1f6f445fd4eee2a19a335
   ExpoSpeech: 3c06cdcd31c07889a9f7085c2496ab97364427be

@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 49.0.0-beta.5 — 2023-07-04
+
+_This version does not introduce any user-facing changes._
+
 ## 49.0.0-beta.4 — 2023-07-02
 
 ### 🐛 Bug fixes

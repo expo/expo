@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 3.0.11 — 2023-07-04
+
+_This version does not introduce any user-facing changes._
+
 ## 3.0.10 — 2023-06-22
 
 _This version does not introduce any user-facing changes._
