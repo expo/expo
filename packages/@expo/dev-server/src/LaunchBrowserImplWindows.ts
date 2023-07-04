@@ -64,7 +64,7 @@ export default class LaunchBrowserImplWindows implements LaunchBrowserImpl, Laun
     args: string[]
   ): Promise<LaunchBrowserInstance> {
     const appId = this.MAP[browserType].appId;
-    await open.openApp(appId, { arguments: args });
+    await openWithSystemRootEnvironment(appId, { arguments: args });
     this._appId = appId;
     return this;
   }
@@ -106,5 +106,24 @@ export default class LaunchBrowserImplWindows implements LaunchBrowserImpl, Laun
       PSModulePath,
     };
     return this._powershellEnv;
+  }
+}
+
+/**
+ * Due to a bug in `open` on Windows PowerShell, we need to ensure `process.env.SYSTEMROOT` is set.
+ * This environment variable is set by Windows on `SystemRoot`, causing `open` to execute a command with an "unknown" drive letter.
+ *
+ * @see https://github.com/sindresorhus/open/issues/205
+ */
+async function openWithSystemRootEnvironment(
+  appId: string | Readonly<string[]>,
+  options?: open.OpenAppOptions
+): Promise<import('child_process').ChildProcess> {
+  const oldSystemRoot = process.env.SYSTEMROOT;
+  try {
+    process.env.SYSTEMROOT = process.env.SYSTEMROOT ?? process.env.SystemRoot;
+    return await open.openApp(appId, options);
+  } finally {
+    process.env.SYSTEMROOT = oldSystemRoot;
   }
 }

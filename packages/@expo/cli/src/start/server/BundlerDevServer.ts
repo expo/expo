@@ -1,6 +1,5 @@
 import { MessageSocket } from '@expo/dev-server';
 import assert from 'assert';
-import openBrowserAsync from 'better-opn';
 import resolveFrom from 'resolve-from';
 
 import * as Log from '../../log';
@@ -8,6 +7,7 @@ import { FileNotifier } from '../../utils/FileNotifier';
 import { resolveWithTimeout } from '../../utils/delay';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
+import { openBrowserAsync } from '../../utils/open';
 import {
   BaseOpenInCustomProps,
   BaseResolveDeviceProps,

@@ -1,10 +1,8 @@
-import openBrowserAsync from 'better-opn';
-
 import { isInteractive } from '../../utils/interactive';
+import { openBrowserAsync } from '../../utils/open';
 import { registerAsync } from '../registerAsync';
 
-jest.mock('better-opn', () => jest.fn());
-
+jest.mock('../../utils/open');
 jest.mock('../../utils/interactive', () => ({
   isInteractive: jest.fn(() => true),
 }));
