@@ -59,9 +59,9 @@
   "dependencies": {
     "@babel/runtime": "^7.20.0",
     "@expo/cli": "0.10.4",
-    "@expo/vector-icons": "^13.0.0",
-    "@expo/config-plugins": "7.2.2",
     "@expo/config": "8.1.1",
+    "@expo/config-plugins": "7.2.2",
+    "@expo/vector-icons": "^13.0.0",
     "babel-preset-expo": "~9.5.0",
     "expo-application": "~5.3.0",
     "expo-asset": "~8.10.1",
@@ -75,15 +75,13 @@
     "invariant": "^2.2.4",
     "md5-file": "^3.2.3",
     "node-fetch": "^2.6.7",
-    "pretty-format": "^26.5.2",
-    "uuid": "^3.4.0"
+    "pretty-format": "^26.5.2"
   },
   "devDependencies": {
     "@types/fbemitter": "^2.0.32",
     "@types/invariant": "^2.2.33",
     "@types/react": "~18.0.14",
     "@types/react-test-renderer": "^18.0.0",
-    "@types/uuid": "^3.4.7",
     "expo-module-scripts": "^3.0.10",
     "react": "18.2.0",
     "react-dom": "18.2.0",
