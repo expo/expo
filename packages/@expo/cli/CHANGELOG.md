@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed opening browser on Windows when debugging or opening Metro web.
+- Fixed opening browser on Windows when debugging or opening Metro web. ([#23287](https://github.com/expo/expo/pull/23287) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
