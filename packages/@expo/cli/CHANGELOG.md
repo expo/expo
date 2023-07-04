@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed opening browser on Windows when debugging or opening Metro web.
+
 ### 💡 Others
 
 ## 0.10.7 - 2023-06-30
