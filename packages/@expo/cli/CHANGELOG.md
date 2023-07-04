@@ -6,17 +6,32 @@
 
 ### 🎉 New features
 
-- Add error message for static rendering without Expo Router. ([#23170](https://github.com/expo/expo/pull/23170) by [@EvanBacon](https://github.com/EvanBacon))
-- Add support for `web.favicon` to Metro web. ([#23072](https://github.com/expo/expo/pull/23072) by [@EvanBacon](https://github.com/EvanBacon))
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.10.7 - 2023-06-30
 
 ### 🐛 Bug fixes
 
 - Fixed JavaScript inspector broken when using Metro web with SSG. ([#23197](https://github.com/expo/expo/pull/23197) by [@kudo](https://github.com/kudo))
 - Fixed prebuild dependency versions warning to only show when versions do not intersect. ([#23232](https://github.com/expo/expo/pull/23232) by [@byCedric](https://github.com/byCedric))
+- Disable tsconfig watching in non-interactive shells. ([#23276](https://github.com/expo/expo/pull/23276) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
 - Update E2E tests to expect `.hbc` bundles instead of `.js` bundles. ([#23241](https://github.com/expo/expo/pull/23241) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.10.6 - 2023-06-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.10.5 - 2023-06-29
+
+### 🎉 New features
+
+- Add error message for static rendering without Expo Router. ([#23170](https://github.com/expo/expo/pull/23170) by [@EvanBacon](https://github.com/EvanBacon))
+- Add support for `web.favicon` to Metro web. ([#23072](https://github.com/expo/expo/pull/23072) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.10.4 — 2023-06-28
 
@@ -96,6 +111,7 @@ _This version does not introduce any user-facing changes._
 - Add `lazy` query parameter for Metro requests and `EXPO_NO_METRO_LAZY` to disable the feature. ([#22724](https://github.com/expo/expo/pull/22724) by [@EvanBacon](https://github.com/EvanBacon))
 - Add support for the `src/app` directory in Expo Router. ([#22748](https://github.com/expo/expo/pull/22748) by [@EvanBacon](https://github.com/EvanBacon))
 - Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
+- Add generated types for Expo Router `useSegment` ([#22629](https://github.com/expo/expo/pull/22629) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🐛 Bug fixes
 

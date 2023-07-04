@@ -8,11 +8,21 @@
 
 ### 🐛 Bug fixes
 
-- Support discriminated unions for JS API method result types. ([#23173](https://github.com/expo/expo/pull/23173) by [@wschurman](https://github.com/wschurman))
+### 💡 Others
+
+## 0.18.7 - 2023-06-30
+
+### 🐛 Bug fixes
+
 - Fix expo-extra-params header. ([#23206](https://github.com/expo/expo/pull/23206) by [@wschurman](https://github.com/wschurman))
 - [iOS] Fix response header casing bug. ([#23234](https://github.com/expo/expo/pull/23234) by [@wschurman](https://github.com/wschurman))
+- Fix tsconfig paths and other SDK 49 Metro features. ([#23276](https://github.com/expo/expo/pull/23276) by [@EvanBacon](https://github.com/EvanBacon))
 
-### 💡 Others
+## 0.18.6 - 2023-06-29
+
+### 🐛 Bug fixes
+
+- Support discriminated unions for JS API method result types. ([#23173](https://github.com/expo/expo/pull/23173) by [@wschurman](https://github.com/wschurman))
 
 ## 0.18.5 — 2023-06-28
 
@@ -26,7 +36,6 @@
 
 - [iOS] Use weak delegate for state machine. ([#23060](https://github.com/expo/expo/pull/23060) by [@wschurman](https://github.com/wschurman))
 - [Android] Convert LoaderTask.RemoteCheckResult to sealed class. ([#23061](https://github.com/expo/expo/pull/23061) by [@wschurman](https://github.com/wschurman))
-
 - [iOS] Use swift enum for AppLoaderTask delegate. ([#23064](https://github.com/expo/expo/pull/23064) by [@wschurman](https://github.com/wschurman))
 
 ## 0.18.3 — 2023-06-24
@@ -62,7 +71,7 @@ _This version does not introduce any user-facing changes._
 - [Android] Load updates in background thread and prevent ANR from initial launch. ([#20273](https://github.com/expo/expo/pull/20273) by [@kudo](https://github.com/kudo))
 - Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
 - Added the Brotli compression support for EAS Update on Android. ([#22982](https://github.com/expo/expo/pull/22982) by [@kudo](https://github.com/kudo))
-- [Android][iOS] State machine implementation. ([#22845](https://github.com/expo/expo/pull/22845) by [@douglowder](https://github.com/douglowder))
+- [Android][ios] State machine implementation. ([#22845](https://github.com/expo/expo/pull/22845) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 

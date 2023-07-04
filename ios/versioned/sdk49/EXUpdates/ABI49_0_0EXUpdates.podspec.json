@@ -1,6 +1,6 @@
 {
   "name": "ABI49_0_0EXUpdates",
-  "version": "0.18.3",
+  "version": "0.18.5",
   "summary": "Fetches and manages remotely-hosted assets and updates to your app's JS bundle.",
   "description": "Fetches and manages remotely-hosted assets and updates to your app's JS bundle.",
   "license": "MIT",
@@ -37,6 +37,9 @@
     "SWIFT_COMPILATION_MODE": "wholemodule",
     "OTHER_CFLAGS[config=Debug]": "$(inherited)",
     "OTHER_SWIFT_FLAGS[config=Debug]": "$(inherited)"
+  },
+  "user_target_xcconfig": {
+    "HEADER_SEARCH_PATHS": "\"${PODS_CONFIGURATION_BUILD_DIR}/EXUpdates/Swift Compatibility Header\""
   },
   "source_files": "EXUpdates/**/*.{h,m,swift}",
   "exclude_files": "Tests/",
