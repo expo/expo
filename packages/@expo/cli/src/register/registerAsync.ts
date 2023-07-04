@@ -1,9 +1,8 @@
-import openBrowserAsync from 'better-opn';
-
 import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
 import { isInteractive } from '../utils/interactive';
 import { learnMore } from '../utils/link';
+import { openBrowserAsync } from '../utils/open';
 import { ora } from '../utils/ora';
 
 export async function registerAsync() {

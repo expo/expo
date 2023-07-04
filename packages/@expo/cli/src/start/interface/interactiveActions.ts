@@ -1,11 +1,11 @@
 import { openJsInspector, queryAllInspectorAppsAsync } from '@expo/dev-server';
 import assert from 'assert';
-import openBrowserAsync from 'better-opn';
 import chalk from 'chalk';
 
 import * as Log from '../../log';
 import { delayAsync } from '../../utils/delay';
 import { learnMore } from '../../utils/link';
+import { openBrowserAsync } from '../../utils/open';
 import { selectAsync } from '../../utils/prompts';
 import { DevServerManager } from '../server/DevServerManager';
 import {
