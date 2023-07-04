@@ -5,6 +5,7 @@ description: Learn how to create and use SVGs in an Expo project.
 
 import SnackEmbed from '~/components/plugins/SnackEmbed';
 import { Terminal } from '~/ui/components/Snippet';
+import { Collapsible } from '~/ui/components/Collapsible';
 
 SVGs (Scalable Vector Graphics) are a great way to present icons and other visual elements in a flexible, crisp, and performant way. Using SVGs on the web is straightforward since we can copy an SVG and place it inline in an HTML file. This works because browsers understand how to parse and present SVGs. Expo does not understand how to parse and present SVG out of the box on Android and iOS, so we'll need to use a React Native package and an SVG converter to do so.
 
@@ -16,15 +17,31 @@ Once we have a vector created inside a design program, like Figma, Illustrator, 
 
 ## Converting SVG files using a Babel transformer
 
-[React Native SVG transformer](https://github.com/kristerkari/react-native-svg-transformer) allows compile-time transformation to make SVG files compatible with React.
+In Expo SDK 50, you can use [SVG Modules](/versions/latest/sdk/svg#svg-modules/) to import SVG files directly into your project. This is the recommended way to use SVGs in Expo projects.
+
+```js
+/* @info SVG files with the <b>.module.svg</b> extension can be imported as React components */
+import Logo from './assets/logo.module.svg';
+/* @end */
+
+<Logo width={120} height={40} />;
+```
+
+<Collapsible summary={<>SDK 49 and lower</>}>
+
+For projects older than SDK 50, you can use [React Native SVG transformer](https://github.com/kristerkari/react-native-svg-transformer) which works similarly but disables the ability to use SVG files as assets too.
 
 Follow the installation steps to configure your Expo project to use this workflow. After your project is properly configured, you'll be able to use your local SVG files like this:
 
 ```javascript
+/* @info SVG filenames can be anything with <b>react-native-svg-transformer</b> because they can only be React components. */
 import Logo from './assets/logo.svg';
+/* @end */
 
 <Logo width={120} height={40} />;
 ```
+
+</Collapsible>
 
 ## Converting individual SVG files for React Native
 

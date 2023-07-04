@@ -189,6 +189,11 @@ function getDefaultConfig(projectRoot, options = {}) {
     // Enable SCSS by default so we can provide a better error message
     // when sass isn't installed.
     sourceExts.push('scss', 'sass', 'css');
+    process.env._EXPO_METRO_CSS_MODULES = '1';
+  }
+  if (options.isSVGEnabled) {
+    // sourceExts.push('svg');
+    process.env._EXPO_METRO_SVG_MODULES = '1';
   }
   const envFiles = runtimeEnv().getFiles(process.env.NODE_ENV, {
     silent: true
@@ -238,6 +243,7 @@ function getDefaultConfig(projectRoot, options = {}) {
     resolver: {
       resolverMainFields,
       platforms: ['ios', 'android'],
+      // SVG Modules depends on the default value including `.svg` files.
       assetExts: metroDefaultValues.resolver.assetExts.concat(
       // Add default support for `expo-image` file types.
       ['heic', 'avif']).filter(assetExt => !sourceExts.includes(assetExt)),
@@ -274,9 +280,7 @@ function getDefaultConfig(projectRoot, options = {}) {
     symbolicator: {
       customizeFrame: (0, _customizeFrame().getDefaultCustomizeFrame)()
     },
-    transformerPath: options.isCSSEnabled ?
-    // Custom worker that adds CSS support for Metro web.
-    require.resolve('./transform-worker/transform-worker') : metroDefaultValues.transformerPath,
+    transformerPath: require.resolve('./transform-worker/transform-worker'),
     transformer: {
       // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
       // @ts-expect-error: not on type.

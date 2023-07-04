@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import fs from 'fs';
+import { boolish } from 'getenv';
 import fetch from 'node-fetch';
 import path from 'path';
 import requireString from 'require-from-string';
@@ -47,6 +48,8 @@ const getRenderModuleId = (projectRoot: string): string => {
 type StaticRenderOptions = {
   // Ensure the style format is `css-xxxx` (prod) instead of `css-view-xxxx` (dev)
   dev?: boolean;
+  cssModules?: boolean;
+  svgModules?: boolean;
   minify?: boolean;
   platform?: string;
   environment?: 'node';
@@ -105,7 +108,14 @@ export async function createMetroEndpointAsync(
   projectRoot: string,
   devServerUrl: string,
   absoluteFilePath: string,
-  { dev = false, platform = 'web', minify = false, environment }: StaticRenderOptions = {}
+  {
+    dev = false,
+    platform = 'web',
+    minify = false,
+    environment,
+    cssModules = boolish('_EXPO_METRO_CSS_MODULES', false),
+    svgModules = boolish('_EXPO_METRO_SVG_MODULES', false),
+  }: StaticRenderOptions = {}
 ): Promise<string> {
   const root = getMetroServerRoot(projectRoot);
   const safeOtherFile = await ensureFileInRootDirectory(projectRoot, absoluteFilePath);
@@ -116,6 +126,12 @@ export async function createMetroEndpointAsync(
 
   if (environment) {
     url += `&resolver.environment=${environment}&transform.environment=${environment}`;
+  }
+  if (cssModules) {
+    url += `&resolver.css-modules=${cssModules}&transform.css-modules=${cssModules}`;
+  }
+  if (svgModules) {
+    url += `&resolver.svg-modules=${svgModules}&transform.svg-modules=${svgModules}`;
   }
   return url;
 }

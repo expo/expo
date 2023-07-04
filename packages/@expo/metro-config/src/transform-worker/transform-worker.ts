@@ -16,6 +16,7 @@ import { wrapDevelopmentCSS } from './css';
 import { matchCssModule, transformCssModuleWeb } from './css-modules';
 import { transformPostCssModule } from './postcss';
 import { compileSass, matchSass } from './sass';
+import { matchSvgModule, transformSvg } from './svg-modules';
 
 const countLines = require('metro/src/lib/countLines') as (string: string) => number;
 
@@ -38,36 +39,61 @@ export async function transform(
   data: Buffer,
   options: JsTransformOptions
 ): Promise<TransformResponse> {
-  const isCss = options.type !== 'asset' && /\.(s?css|sass)$/.test(filename);
-  // If the file is not CSS, then use the default behavior.
-  if (!isCss) {
-    const environment = options.customTransformOptions?.environment;
-
-    if (
-      environment === 'client' &&
-      // TODO: Ensure this works with windows.
-      // TODO: Add +api files.
-      filename.match(new RegExp(`^app/\\+html(\\.${options.platform})?\\.([tj]sx?|[cm]js)?$`))
-    ) {
-      // Remove the server-only +html file from the bundle when bundling for a client environment.
-      return worker.transform(
-        config,
-        projectRoot,
-        filename,
-        !options.minify
-          ? Buffer.from(
-              // Use a string so this notice is visible in the bundle if the user is
-              // looking for it.
-              '"> The server-only +html file was removed from the client JS bundle by Expo CLI."'
-            )
-          : Buffer.from(''),
-        options
-      );
+  // SVG Modules must be first
+  if (options.customTransformOptions?.['svg-modules']) {
+    if (matchSvgModule(filename)) {
+      return transformSvg(config, projectRoot, filename, data, {
+        ...options,
+        // SVG Modules are still processed as assets, but we need to transform them as modules.
+        type: 'module',
+      });
     }
+  }
 
+  if (options.type === 'asset') {
     return worker.transform(config, projectRoot, filename, data, options);
   }
 
+  if (options.customTransformOptions?.['css-modules']) {
+    if (/\.(s?css|sass)$/.test(filename)) {
+      return transformCss(config, projectRoot, filename, data, options);
+    }
+  }
+
+  const environment = options.customTransformOptions?.environment;
+
+  if (
+    environment === 'client' &&
+    // TODO: Ensure this works with windows.
+    // TODO: Add +api files.
+    filename.match(new RegExp(`^app/\\+html(\\.${options.platform})?\\.([tj]sx?|[cm]js)?$`))
+  ) {
+    // Remove the server-only +html file from the bundle when bundling for a client environment.
+    return worker.transform(
+      config,
+      projectRoot,
+      filename,
+      !options.minify
+        ? Buffer.from(
+            // Use a string so this notice is visible in the bundle if the user is
+            // looking for it.
+            '"> The server-only +html file was removed from the client JS bundle by Expo CLI."'
+          )
+        : Buffer.from(''),
+      options
+    );
+  }
+
+  return worker.transform(config, projectRoot, filename, data, options);
+}
+
+export async function transformCss(
+  config: JsTransformerConfig,
+  projectRoot: string,
+  filename: string,
+  data: Buffer,
+  options: JsTransformOptions
+): Promise<TransformResponse> {
   // If the platform is not web, then return an empty module.
   if (options.platform !== 'web') {
     const code = matchCssModule(filename) ? 'module.exports={ unstable_styles: {} };' : '';
