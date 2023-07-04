@@ -1,5 +1,5 @@
+import { uuidv4 } from 'expo-modules-core';
 import gql from 'graphql-tag';
-import { v4 as uuidv4 } from 'uuid';
 
 jest.mock('@react-native-async-storage/async-storage', () => ({
   setItem: jest.fn(() => new Promise((resolve) => resolve(null))),

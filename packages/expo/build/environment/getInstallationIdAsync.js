@@ -1,7 +1,7 @@
 import * as Application from 'expo-application';
-import uuidv5 from 'uuid/v5';
+import { uuidv5 } from 'expo-modules-core';
 let installationId;
-const UUID_NAMESPACE = '29cc8a0d-747c-5f85-9ff9-f2f16636d963'; // uuidv5(0, "expo")
+const UUID_NAMESPACE = '29cc8a0d-747c-5f85-9ff9-f2f16636d963';
 export default async function getInstallationIdAsync() {
     if (installationId) {
         return installationId;

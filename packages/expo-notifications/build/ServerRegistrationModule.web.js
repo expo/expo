@@ -1,5 +1,4 @@
-import { CodedError } from 'expo-modules-core';
-import { v4 as uuidv4 } from 'uuid';
+import { CodedError, uuidv4 } from 'expo-modules-core';
 const INSTALLATION_ID_KEY = 'EXPO_NOTIFICATIONS_INSTALLATION_ID';
 const REGISTRATION_INFO_KEY = 'EXPO_NOTIFICATIONS_REGISTRATION_INFO';
 // Lazy fallback installationId per session initializer
