@@ -119,21 +119,21 @@ const Home = () => {
               xl={6}
               lg={6}
               css={css({
-                backgroundColor: palette.purple3,
-                borderColor: palette.purple7,
+                backgroundColor: palette.orange3,
+                borderColor: palette.orange7,
               })}>
               <SnackImage />
-              <RawH3 css={css({ color: palette.purple11 })}>Try Expo in your browser</RawH3>
-              <P css={css({ color: palette.purple11, ...typography.fontSizes[14] })}>
+              <RawH3 css={css({ color: palette.orange11 })}>Try Expo in your browser</RawH3>
+              <P css={css({ color: palette.orange11, ...typography.fontSizes[14] })}>
                 Expo’s Snack lets you try Expo
                 <br />
                 with zero local setup.
               </P>
               <HomeButton
-                className="bg-palette-purple11 border-palette-purple11 text-palette-purple3 hocus:bg-palette-purple11 hocus:opacity-80"
+                className="bg-palette-orange11 border-palette-orange11 text-palette-orange3 hocus:bg-palette-orange11 hocus:opacity-80"
                 href="https://snack.expo.dev/"
                 target="_blank"
-                rightSlot={<ArrowUpRightIcon className="text-palette-purple3 icon-md" />}>
+                rightSlot={<ArrowUpRightIcon className="text-palette-orange3 icon-md" />}>
                 Create a Snack
               </HomeButton>
             </GridCell>
@@ -183,20 +183,20 @@ const Home = () => {
               xl={6}
               lg={6}
               css={css({
-                backgroundColor: palette.gray3,
-                borderColor: palette.gray8,
+                backgroundColor: palette.purple3,
+                borderColor: palette.purple7,
               })}>
-              <div className="absolute bottom-6 right-6 p-5 bg-palette-gray12 rounded-full">
+              <div className="absolute bottom-6 right-6 p-5 bg-palette-purple9 rounded-full">
                 <DiscordIcon className="icon-2xl text-palette-white" />
               </div>
-              <RawH3 css={css({ color: palette.gray12 })}>Chat with the community</RawH3>
-              <P css={{ color: palette.gray12, ...typography.fontSizes[14] }}>
+              <RawH3 css={css({ color: palette.purple11 })}>Chat with the community</RawH3>
+              <P css={{ color: palette.purple11, ...typography.fontSizes[14] }}>
                 Join over 15,000 other developers
                 <br />
                 on the Expo Community Discord.
               </P>
               <HomeButton
-                className="bg-palette-gray12 border-palette-gray11 text-palette-gray2 hocus:bg-palette-gray11 hocus:opacity-80"
+                className="bg-palette-purple11 border-palette-purple11 text-palette-purple2 hocus:bg-palette-purple11 hocus:opacity-80"
                 href="https://chat.expo.dev"
                 rightSlot={<ArrowUpRightIcon className="text-palette-gray2 icon-md" />}>
                 Go to Discord
