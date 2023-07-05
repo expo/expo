@@ -209,7 +209,7 @@ Environment variables are applied in the following order:
 2. Environment variables defined in EAS Secrets
 3. **.env** files committed to source control and are not in **.easignore**
 
-Variable sources applied last will overwrite the previously-loaded source for variables with the same name. So, a secret created on the Expo website or with `eas secret:create` will take precedence over an environment variable of the same name that is set through the `env` field in **eas.json**.
+Variable sources applied last will overwrite the previously loaded source for variables with the same name. So, a secret created on the Expo website or with `eas secret:create` will take precedence over an environment variable of the same name that is set through the `env` field in **eas.json**.
 
 For example, if you create a secret with the name `MY_TOKEN` and value `secret` and also set `"env": { "MY_TOKEN": "public" }` in your **eas.json**, then `process.env.MY_TOKEN` on EAS Build will evaluate to `secret`.
 
