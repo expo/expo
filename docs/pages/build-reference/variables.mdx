@@ -73,6 +73,7 @@ Set the variable in your build profile:
 Then reference that variable in your **app.config.js**, providing fallbacks for local development:
 ```js app.config.js
 module.exports = {
+  // use the variable if it's defined, otherwise use the fallback
   icon: process.env.APP_ICON || './assets/icon.png',
   name: process.env.APP_NAME || 'My App',
 };
