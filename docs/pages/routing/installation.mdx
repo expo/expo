@@ -132,6 +132,26 @@ Add a deep linking `scheme` and enable [Metro web](/guides/customizing-metro/#we
 
 </Step>
 
+<Step label="5">
+
+### Modify babel.config.js
+
+Add `expo-router/babel` plugin in the `plugins` array to your project's **babel.config.js**:
+
+```js babel.config.js
+module.exports = function (api) {
+  api.cache(true);
+  return {
+    presets: ['babel-preset-expo'],
+    /* @info Add it in the plugins list as the last plugin.*/
+    plugins: ['expo-router/babel'],
+    /* @end */
+  };
+};
+```
+
+</Step>
+
 ## For Expo SDK below 49
 
 Expo Router requires at least `metro@0.76.0`. If you are using Expo SDK version below 49, you will need to force upgrade your `metro` version by setting a Yarn resolution or npm override.

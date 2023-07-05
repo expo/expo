@@ -12,7 +12,14 @@ const PAGES_DIR = path.resolve(dirname, '../pages');
 // TODO(cedric): refactor docs to get rid of the directory lists
 
 /** Manual list of directories to categorize as "Home" */
-const homeDirectories = ['get-started', 'develop', 'config-plugins', 'debugging', 'deploy'];
+const homeDirectories = [
+  'get-started',
+  'develop',
+  'config-plugins',
+  'debugging',
+  'deploy',
+  'routing',
+];
 /** Manual list of directories to categorize as "Learn" */
 const learnDirectories = ['tutorial', 'ui-programming', 'additional-resources'];
 /** Manual list of directories to categorize as "Archive" */
@@ -20,7 +27,7 @@ const archiveDirectories = ['archive'];
 /** Manual list of directories to categorize as "Reference" */
 const referenceDirectories = ['versions', 'technical-specs', 'more'];
 /** Private preview section which isn't linked in the documentation */
-const previewDirectories = ['feature-preview', 'preview', 'router', 'routing'];
+const previewDirectories = ['feature-preview', 'preview'];
 
 /** All other unlisted directories */
 const generalDirectories = fs
@@ -62,6 +69,19 @@ const home = [
         makePage('develop/user-interface/animation.mdx'),
         makePage('develop/user-interface/store-data.mdx'),
         makePage('develop/user-interface/next-steps.mdx'),
+      ],
+      { expanded: false }
+    ),
+    makeGroup(
+      'Routing',
+      [
+        makePage('routing/introduction.mdx'),
+        makePage('routing/installation.mdx'),
+        makePage('routing/create-pages.mdx'),
+        makePage('routing/navigating-pages.mdx'),
+        makePage('routing/layouts.mdx'),
+        makePage('routing/appearance.mdx'),
+        makePage('routing/error-handling.mdx'),
       ],
       { expanded: false }
     ),
@@ -148,6 +168,31 @@ const general = [
       ],
       { expanded: false }
     ),
+  ]),
+  makeSection('Expo Router', [
+    makeGroup('Advanced', [
+      makePage('router/advanced/root-layout.mdx'),
+      makePage('router/advanced/stack.mdx'),
+      makePage('router/advanced/tabs.mdx'),
+      makePage('router/advanced/drawer.mdx'),
+      makePage('router/advanced/nesting-navigators.mdx'),
+      makePage('router/advanced/modals.mdx'),
+      makePage('router/advanced/platform-specific-modules.mdx'),
+      makePage('router/advanced/shared-routes.mdx'),
+      makePage('router/advanced/router-settings.mdx'),
+    ]),
+    makeGroup('Reference', [
+      makePage('router/reference/search-parameters.mdx'),
+      makePage('router/reference/static-rendering.mdx'),
+      makePage('router/reference/async-routes.mdx'),
+      makePage('router/reference/sitemap.mdx'),
+      makePage('router/reference/typed-routes.mdx'),
+      makePage('router/reference/authentication.mdx'),
+      makePage('router/reference/screen-tracking.mdx'),
+      makePage('router/reference/src-directory.mdx'),
+      makePage('router/reference/troubleshooting.mdx'),
+      makePage('router/reference/faq.mdx'),
+    ]),
   ]),
   makeSection('EAS', [makePage('eas/index.mdx')]),
   makeSection('EAS Build', [
@@ -378,41 +423,7 @@ const preview = [
       makePage('preview/custom-build-config.mdx'),
       makePage('preview/custom-build-config-schema.mdx'),
     ]),
-    makeGroup('Routing', [
-      makePage('routing/introduction.mdx'),
-      makePage('routing/installation.mdx'),
-      makePage('routing/create-pages.mdx'),
-      makePage('routing/navigating-pages.mdx'),
-      makePage('routing/layouts.mdx'),
-      makePage('routing/appearance.mdx'),
-      makePage('routing/error-handling.mdx'),
-    ]),
     { expanded: true },
-  ]),
-  makeSection('Expo Router', [
-    makeGroup('Advance layout patterns', [
-      makePage('router/advance/root-layout.mdx'),
-      makePage('router/advance/stack.mdx'),
-      makePage('router/advance/tabs.mdx'),
-      makePage('router/advance/nesting-navigators.mdx'),
-      makePage('router/advance/drawer.mdx'),
-      makePage('router/advance/modal.mdx'),
-      makePage('router/advance/platform-specific-modules.mdx'),
-      makePage('router/advance/shared-routes.mdx'),
-      makePage('router/advance/router-settings.mdx'),
-    ]),
-    makeGroup('Reference', [
-      makePage('router/reference/search-parameters.mdx'),
-      makePage('router/reference/static-rendering.mdx'),
-      makePage('router/reference/async-routes.mdx'),
-      makePage('router/reference/sitemap.mdx'),
-      makePage('router/reference/typed-routes.mdx'),
-      makePage('router/reference/authentication.mdx'),
-      makePage('router/reference/screen-tracking.mdx'),
-      makePage('router/reference/src-directory.mdx'),
-      makePage('router/reference/troubleshooting.mdx'),
-      makePage('router/reference/faq.mdx'),
-    ]),
   ]),
 ];
 
