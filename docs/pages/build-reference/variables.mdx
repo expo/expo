@@ -7,7 +7,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 
-The [Environment variables in Expo guide](/guides/environment-variables) describes how to use **.env** files to set and use environment variables within your JavaScript code. The Expo CLI will substitute properly-prefixed variables in your code (e.g.,`process.env.EXPO_PUBLIC_VARNAME`) with the corresponding environment variable values in **.env** files present on your development machine.
+The [Environment variables in Expo guide](/guides/environment-variables) describes how to use **.env** files to set environment variables that can be inlined in your JavaScript code. The Expo CLI will substitute properly prefixed variables in your code (e.g.,`process.env.EXPO_PUBLIC_VARNAME`) with the corresponding environment variable values in **.env** files present on your development machine.
 
 Because your EAS Build job runs on a remote server, these **.env** files might not be available. Additionally, you may want to use environment variables outside of your JavaScript code to customize your app binary at build time, such as setting a bundle identifier or a private key for a error reporting service. Therefore, EAS Build lets you set per-build-profile environment variables within **eas.json** as well as sensitive values that should not be committed to source control via EAS Secrets.
 
