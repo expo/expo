@@ -15,6 +15,9 @@ A React component that blurs everything underneath the view. On iOS, it renders 
 
 <PlatformsSection emulator android ios simulator web />
 
+> BlurView on Android is computationally expensive, so it is recommended not to render more than a few BlurView components at once.
+> On Android BlurView may render incorrectly during screen transitions made by `react-native-screens`.
+
 ## Installation
 
 <APIInstallSection />
