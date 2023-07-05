@@ -9,10 +9,10 @@ description: An introduction to EAS Insights which is a preview service for proj
 
 EAS Insights makes it easy to see the state of your app, providing information about usage across platforms, app store versions, and timeframes.
 
-### Integration with EAS Update
+## Integration with EAS Update
 
-For those already using [EAS Update](/eas-update/introduction.mdx), we're able to provide certain high-level usage insights without any additional client-side changes. This is possible because by aggregating data from client requests to check for an update into a limited Insights view that shows usage over time, as well as usage broken down by platform.
+If you're already using [EAS Update](/eas-update/introduction.mdx), we provide certain high-level usage insights without any additional client-side changes. This is possible because by aggregating data from client requests to check for an update into a limited Insights view that shows usage over time, as well as usage broken down by platform.
 
-### Using the `expo-insights` module
+## Using the `expo-insights` module
 
-Developers can add the `expo-insights` module to their project and gain more precise usage metrics (than what can be provided by just aggregating update requests), as well as additional breakdowns by app store version.  Currently, the module is limited to sending client events only pertaining to cold starts of the app, but in the future we will expand `expo-insights` to offer new types of events and payloads, to support more advanced functionality.
+Developers can add the `expo-insights` library to their projects and gain more precise usage metrics (than those provided by just aggregating update requests) and additional breakdowns by app store version.  Currently, the module is limited to sending client events only pertaining to cold starts of the app, but in the future we will expand `expo-insights` to offer new types of events and payloads, to support more advanced functionality.
