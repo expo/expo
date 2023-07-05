@@ -17,10 +17,8 @@ export const ThemeSelector = () => {
     setLoaded(true);
   }, []);
 
-  if (!isLoaded) return <div css={containerStyle} />;
-
   return (
-    <div css={containerStyle}>
+    <div className="relative">
       <select
         aria-label="Theme selector"
         title="Select theme"
@@ -36,19 +34,19 @@ export const ThemeSelector = () => {
         <option value="light">Light</option>
         <option value="dark">Dark</option>
       </select>
-      <div css={selectIconStyle}>
-        {themeName === 'auto' && <Contrast02SolidIcon className="icon-sm text-icon-default" />}
-        {themeName === 'dark' && <Moon01SolidIcon className="icon-sm text-icon-default" />}
-        {themeName === 'light' && <SunSolidIcon className="icon-sm text-icon-default" />}
-      </div>
+      {isLoaded && (
+        <>
+          {themeName === 'auto' && <Contrast02SolidIcon className={ICON_CLASSES} />}
+          {themeName === 'dark' && <Moon01SolidIcon className={ICON_CLASSES} />}
+          {themeName === 'light' && <SunSolidIcon className={ICON_CLASSES} />}
+        </>
+      )}
       <ChevronDownIcon className="icon-xs text-icon-secondary absolute right-2 top-3 pointer-events-none" />
     </div>
   );
 };
 
-const containerStyle = css`
-  position: relative;
-`;
+const ICON_CLASSES = 'icon-sm absolute left-2.5 top-2.5 text-icon-secondary pointer-events-none';
 
 const selectStyle = css`
   ${typography.fontSizes[14]}
@@ -71,6 +69,14 @@ const selectStyle = css`
   cursor: pointer;
   text-indent: -9999px;
 
+  :hover {
+    background-color: ${theme.background.element};
+  }
+
+  :focus-visible {
+    background-color: ${theme.background.element};
+  }
+
   @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
     width: auto;
     min-width: 100px;
@@ -79,11 +85,4 @@ const selectStyle = css`
     color: ${theme.text.secondary};
     text-indent: 0;
   }
-`;
-
-const selectIconStyle = css`
-  position: absolute;
-  left: 10px;
-  top: 10px;
-  pointer-events: none;
 `;

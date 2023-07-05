@@ -5,6 +5,7 @@
 #import "EXDisabledDevLoadingView.h"
 #import "EXDisabledDevMenu.h"
 #import "EXDisabledRedBox.h"
+#import "EXVersionedNetworkInterceptor.h"
 #import "EXVersionManager.h"
 #import "EXScopedBridgeModule.h"
 #import "EXStatusBarManager.h"
@@ -42,7 +43,14 @@
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <EXMediaLibrary/EXMediaLibraryImageLoader.h>
 #import <EXFileSystem/EXFileSystem.h>
+
+// When `use_frameworks!` is used, the generated Swift header is inside modules.
+// Otherwise, it's available only locally with double-quoted imports.
+#if __has_include(<EXManifests/EXManifests-Swift.h>)
 #import <EXManifests/EXManifests-Swift.h>
+#else
+#import "EXManifests-Swift.h"
+#endif
 
 #import <RNReanimated/REAModule.h>
 #import <RNReanimated/REAEventDispatcher.h>
@@ -96,6 +104,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 @property (nonatomic, strong) NSDictionary *params;
 @property (nonatomic, strong) EXManifestsManifest *manifest;
 @property (nonatomic, strong) RCTTurboModuleManager *turboModuleManager;
+@property (nonatomic, strong) EXVersionedNetworkInterceptor *networkInterceptor;
 
 @end
 
@@ -143,7 +152,13 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
     NSURL *bundleURL = [bridge bundleURL];
     NSString *packagerServerHostPort = [NSString stringWithFormat:@"%@:%@", bundleURL.host, bundleURL.port];
     [[RCTPackagerConnection sharedPackagerConnection] reconnect:packagerServerHostPort];
-    [RCTInspectorDevServerHelper connectWithBundleURL:bundleURL];
+    RCTInspectorPackagerConnection *inspectorPackagerConnection = [RCTInspectorDevServerHelper connectWithBundleURL:bundleURL];
+
+    NSDictionary<NSString *, id> *buildProps = [self.manifest getPluginPropertiesWithPackageName:@"expo-build-properties"];
+    NSNumber *enableNetworkInterceptor = [[buildProps objectForKey:@"ios"] objectForKey:@"unstable_networkInspector"];
+    if (enableNetworkInterceptor == nil || [enableNetworkInterceptor boolValue] != NO) {
+      self.networkInterceptor = [[EXVersionedNetworkInterceptor alloc] initWithRCTInspectorPackagerConnection:inspectorPackagerConnection];
+    }
   }
 
   // Manually send a "start loading" notif, since the real one happened uselessly inside the RCTBatchedBridge constructor
@@ -161,7 +176,9 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   }];
 }
 
-- (void)invalidate {}
+- (void)invalidate {
+  self.networkInterceptor = nil;
+}
 
 - (NSDictionary<NSString *, NSString *> *)devMenuItemsForBridge:(id)bridge
 {

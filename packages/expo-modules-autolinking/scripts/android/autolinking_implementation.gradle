@@ -56,6 +56,15 @@ class ExpoModule {
   }
 }
 
+// Object representing a maven repository.
+class MavenRepo {
+  String url
+
+  MavenRepo(Object data) {
+    this.url = data
+  }
+}
+
 class ExpoAutolinkingManager {
   private File projectDir
   private Map options
@@ -91,6 +100,11 @@ class ExpoAutolinkingManager {
   ExpoModule[] getModules() {
     Object json = resolve()
     return json.modules.collect { new ExpoModule(it) }
+  }
+
+  MavenRepo[] getExtraMavenRepos() {
+    Object json = resolve()
+    return json.extraDependencies.androidMavenRepos.collect { new MavenRepo(it) }
   }
 
   static void generatePackageList(Project project, Map options) {
@@ -186,6 +200,7 @@ if (rootProject instanceof ProjectDescriptor) {
   ext.useExpoModules = { Map options = [:] ->
     ExpoAutolinkingManager manager = new ExpoAutolinkingManager(rootProject.projectDir, options)
     ExpoModule[] modules = manager.getModules()
+    MavenRepo[] extraMavenRepos = manager.getExtraMavenRepos()
 
     for (module in modules) {
       for (moduleProject in module.projects) {
@@ -197,12 +212,27 @@ if (rootProject instanceof ProjectDescriptor) {
       }
     }
 
-    // Add plugin classpath to the root project
     gradle.beforeProject { project ->
-      if (project === project.rootProject) {
-        for (module in modules) {
-          for (modulePlugin in module.plugins) {
-            project.buildscript.dependencies.add('classpath', "${modulePlugin.group}:${modulePlugin.id}")
+      if (project !== project.rootProject) {
+        return
+      }
+      def rootProject = project
+
+      // Add plugin classpath to the root project
+      for (module in modules) {
+        for (modulePlugin in module.plugins) {
+          rootProject.buildscript.dependencies.add('classpath', "${modulePlugin.group}:${modulePlugin.id}")
+        }
+      }
+
+      // Add extra maven repositories to allprojects
+      for (mavenRepo in extraMavenRepos) {
+        println "Adding extra maven repository - '${mavenRepo.url}'"
+      }
+      rootProject.allprojects { eachProject ->
+        eachProject.repositories {
+          for (mavenRepo in extraMavenRepos) {
+            maven { url = mavenRepo.url }
           }
         }
       }

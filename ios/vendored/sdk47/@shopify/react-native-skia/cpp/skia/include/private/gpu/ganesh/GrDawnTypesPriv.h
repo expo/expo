@@ -20,7 +20,7 @@ struct GrDawnTextureSpec {
 GrDawnSurfaceInfo GrDawnTextureSpecToSurfaceInfo(const GrDawnTextureSpec& dawnSpec,
                                                  uint32_t sampleCount,
                                                  uint32_t levelCount,
-                                                 GrProtected isProtected);
+                                                 skgpu::Protected isProtected);
 
 #endif
 

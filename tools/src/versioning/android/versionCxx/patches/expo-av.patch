@@ -6,7 +6,7 @@ index f2c50906e3..396012ffee 100644
  def REACT_NATIVE_VERSION = System.getenv("REACT_NATIVE_OVERRIDE_VERSION") ?: reactProperties.getProperty("VERSION_NAME")
  def REACT_NATIVE_TARGET_VERSION = REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
 
-+REACT_NATIVE_DIR = "${rootDir}/versioned-react-native"
++REACT_NATIVE_DIR = "${rootDir}/versioned-react-native/packages/react-native"
 +REACT_NATIVE_BUILD_FROM_SOURCE = false
 +RN_SO_DIR = "${buildDir}/reactandroid-{VERSIONED_ABI_NAME}-*/jni"
 +

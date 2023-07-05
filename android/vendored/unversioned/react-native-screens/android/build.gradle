@@ -1,4 +1,10 @@
 buildscript {
+    ext {
+        rnsDefaultTargetSdkVersion = 31
+        rnsDefaultCompileSdkVersion = 31
+        rnsDefaultMinSdkVersion = 21
+        rnsDefaultKotlinVersion = '1.6.21'
+    }
     ext.safeExtGet = {prop, fallback ->
         rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
     }
@@ -8,7 +14,7 @@ buildscript {
     }
     dependencies {
         classpath('com.android.tools.build:gradle:4.2.2')
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.6.21')}"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', rnsDefaultKotlinVersion)}"
         classpath "com.diffplug.spotless:spotless-plugin-gradle:5.15.0"
     }
 }
@@ -38,7 +44,11 @@ def reactNativeArchitectures() {
 }
 
 android {
-    compileSdkVersion safeExtGet('compileSdkVersion', 28)
+    compileSdkVersion safeExtGet('compileSdkVersion', rnsDefaultCompileSdkVersion)
+    def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
+    if (agpVersion.tokenize('.')[0].toInteger() >= 7) {
+        namespace "com.swmansion.rnscreens"
+    }
 
     // Used to override the NDK path/version on internal CI or by allowing
     // users to customize the NDK path/version from their root project (e.g. for M1 support)
@@ -50,8 +60,8 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion safeExtGet('minSdkVersion', 21)
-        targetSdkVersion safeExtGet('targetSdkVersion', 22)
+        minSdkVersion safeExtGet('minSdkVersion', rnsDefaultMinSdkVersion)
+        targetSdkVersion safeExtGet('targetSdkVersion', rnsDefaultTargetSdkVersion)
         versionCode 1
         versionName "1.0"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
@@ -68,12 +78,13 @@ android {
     }
     packagingOptions {
         // For some reason gradle only complains about the duplicated version of libreact_render libraries
-        // while there are more libraries copied in intermediates folder of the lib build directory, we exlude
+        // while there are more libraries copied in intermediates folder of the lib build directory, we exclude
         // only the ones that make the build fail (ideally we should only include librnscreens_modules but we
-        // are only allowed to specify exlude patterns)
+        // are only allowed to specify exclude patterns)
         exclude "**/libreact_render*.so"
     }
     sourceSets.main {
+        ext.androidResDir = "src/main/res"
         java {
             if (isNewArchitectureEnabled()) {
                 srcDirs += [
@@ -86,6 +97,13 @@ android {
                 ]
             }
 
+        }
+        res {
+            if (safeExtGet('compileSdkVersion', rnsDefaultCompileSdkVersion) >= 33) {
+                srcDirs = ["${androidResDir}/base", "${androidResDir}/v33"]
+            } else {
+                srcDirs = ["${androidResDir}/base"]
+            }
         }
     }
 }

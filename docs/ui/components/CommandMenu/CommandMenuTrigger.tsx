@@ -35,7 +35,9 @@ export const CommandMenuTrigger = ({ setOpen }: Props) => {
   return (
     <Button theme="secondary" css={buttonStyle} onClick={() => setOpen(true)}>
       <SearchSmIcon />
-      <CALLOUT css={labelStyle}>Search</CALLOUT>
+      <CALLOUT css={labelStyle} crawlable={false}>
+        Search
+      </CALLOUT>
       {isMac !== null && (
         <div css={[keysWrapperStyle, hideOnMobileStyle]}>
           <KBD>{isMac ? '⌘' : 'Ctrl'}</KBD> <KBD>K</KBD>

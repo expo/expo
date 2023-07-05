@@ -11,6 +11,7 @@ const expoDependencyNames = [
   '@expo/config-plugins',
   '@expo/config-types',
   '@expo/dev-server',
+  '@expo/prebuild-config',
   '@expo/use-updates',
   'expo-application',
   'expo-constants',
@@ -384,6 +385,8 @@ async function configureUpdatesSigningAsync(projectRoot) {
     ],
     { cwd: projectRoot, stdio: 'inherit' }
   );
+  // Archive the keys so that they are not filtered out when uploading to EAS
+  await spawnAsync('tar', ['cf', 'keys.tar', 'keys'], { cwd: projectRoot, stdio: 'inherit' });
 }
 
 async function initAsync(
@@ -400,15 +403,41 @@ async function initAsync(
   const workingDir = path.dirname(projectRoot);
   const projectName = path.basename(projectRoot);
 
+  // pack typescript template
+  const localTSTemplatePath = path.join(repoRoot, 'templates', 'expo-template-blank-typescript');
+  await spawnAsync('npm', ['pack', '--pack-destination', repoRoot], {
+    cwd: localTSTemplatePath,
+    stdio: 'ignore',
+  });
+
+  const localTSTemplatePathName = glob.sync(
+    path.join(repoRoot, 'expo-template-blank-typescript-*.tgz')
+  )[0];
+
+  if (!localTSTemplatePathName) {
+    throw new Error(`Failed to locate packed template in ${repoRoot}`);
+  }
+
   // initialize project (do not do NPM install, we do that later)
   await spawnAsync(
     'yarn',
-    ['create', 'expo-app', projectName, '--yes', '--no-install', '--template', 'blank-typescript'],
+    [
+      'create',
+      'expo-app',
+      projectName,
+      '--yes',
+      '--no-install',
+      '--template',
+      localTSTemplatePathName,
+    ],
     {
       cwd: workingDir,
       stdio: 'inherit',
     }
   );
+
+  // We are done with template tarball
+  await fs.rm(localTSTemplatePathName);
 
   let cleanupLocalUpdatesModule;
   if (configureE2E) {

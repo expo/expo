@@ -61,11 +61,12 @@ const Main = () => {
         }}
       />
       <Tab.Screen
-        name="Extensions"
+        name="ExtensionsStack"
         component={ExtensionsStack}
         options={{
           headerShown: false,
           tabBarIcon: ({ focused }) => <ExtensionsFilledIcon focused={focused} />,
+          title: 'Extensions',
         }}
       />
       <Tab.Screen

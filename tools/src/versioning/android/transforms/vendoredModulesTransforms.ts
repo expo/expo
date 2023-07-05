@@ -7,7 +7,7 @@ export function vendoredModulesTransforms(prefix: string): Record<string, FileTr
       content: [
         {
           paths: 'build.gradle',
-          find: `def nodeModules = Paths.get(projectDir.getPath(), '../../../../../..', 'react-native-lab').toString()`,
+          find: `def nodeModules = Paths.get(projectDir.getPath(), '../../../../../..', 'react-native-lab/versioned-react-native/packages/react-native/packages').toString()`,
           replaceWith: `def nodeModules = Paths.get(projectDir.getPath(), '../../../../..').toString()`,
         },
         {
@@ -22,8 +22,14 @@ export function vendoredModulesTransforms(prefix: string): Record<string, FileTr
           // Even though it not always correct, e.g. when ReactAndroid upgrades to newer version, the versions are inconsistent.
           // Since skia current only uses the `REACT_NATIVE_VERSION` property,
           // after we prebuild the lib and cleanup CMakeLists.txt, these properties are actually not be used.
-          find: '$nodeModules/versioned-react-native/ReactAndroid/gradle.properties',
+          find: '$nodeModules/versioned-react-native/packages/react-native/ReactAndroid/gradle.properties',
           replaceWith: '$defaultDir/gradle.properties',
+        },
+        {
+          paths: 'build.gradle',
+          find: /(        prefab\s*\{)([\s\S]*?)(^        \}\s)/gm,
+          replaceWith: (_, p1, p2, p3) =>
+            [p1, p2.replace('rnskia', `rnskia_${prefix}`), p3].join(''),
         },
       ],
     },
@@ -36,7 +42,8 @@ export function vendoredModulesTransforms(prefix: string): Record<string, FileTr
             '$1\n' +
             "    compileOnly 'com.facebook.fresco:fresco:+'\n" +
             "    compileOnly 'com.facebook.fresco:imagepipeline-okhttp3:+'\n" +
-            "    compileOnly 'com.facebook.fresco:ui-common:+'",
+            "    compileOnly 'com.facebook.fresco:ui-common:+'\n" +
+            "    compileOnly 'javax.inject:javax.inject:+'",
         },
         {
           find: /\b(import (static )?)(com.horcrux.)/g,
@@ -57,8 +64,8 @@ export function vendoredModulesTransforms(prefix: string): Record<string, FileTr
       content: [
         {
           paths: 'build.gradle',
-          find: `def reactNativeRootDir = Paths.get(projectDir.getPath(), '../../../../../react-native-lab/react-native').toFile()`,
-          replaceWith: `def reactNativeRootDir = Paths.get(projectDir.getPath(), '../../../../versioned-react-native').toFile()`,
+          find: `def reactNativeRootDir = Paths.get(projectDir.getPath(), '../../../../../react-native-lab/versioned-react-native/packages/react-native/packages/react-native').toFile()`,
+          replaceWith: `def reactNativeRootDir = Paths.get(projectDir.getPath(), '../../../../versioned-react-native/packages/react-native').toFile()`,
         },
         {
           paths: 'build.gradle',
@@ -81,7 +88,8 @@ export function vendoredModulesTransforms(prefix: string): Record<string, FileTr
           // Even though it not always correct, e.g. when ReactAndroid upgrades to newer version, the versions are inconsistent.
           // Since reanimated doesn't use these properties for react-native 0.71, that should be safe.
           find: '$reactNativeRootDir/ReactAndroid/gradle.properties',
-          replaceWith: '$rootDir/../react-native-lab/react-native/ReactAndroid/gradle.properties',
+          replaceWith:
+            '$rootDir/../react-native-lab/react-native/packages/react-native/ReactAndroid/gradle.properties',
         },
         {
           paths: 'CMakeLists.txt',
@@ -89,7 +97,7 @@ export function vendoredModulesTransforms(prefix: string): Record<string, FileTr
           replaceWith: `$1_${prefix}`,
         },
         {
-          paths: 'NativeProxy.java',
+          paths: 'NativeProxyCommon.java',
           find: new RegExp(`\\b(?<!${prefix}\\.)(com.swmansion.gesturehandler.)`, 'g'),
           replaceWith: `${prefix}.$1`,
         },

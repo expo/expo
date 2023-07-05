@@ -1,6 +1,6 @@
 {
   "name": "react-native-segmented-control",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "summary": "React Native SegmentedControlIOS library",
   "license": "MIT",
   "authors": "M.Haris Baig",
@@ -10,7 +10,7 @@
   },
   "source": {
     "git": "https://github.com/react-native-segmented-control/segmented-control.git",
-    "tag": "2.4.0"
+    "tag": "2.4.1"
   },
   "source_files": "ios/**/*.{h,m}",
   "dependencies": {

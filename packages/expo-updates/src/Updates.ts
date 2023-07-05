@@ -1,5 +1,5 @@
 import {
-  RCTDeviceEventEmitter,
+  DeviceEventEmitter,
   CodedError,
   NativeModulesProxy,
   UnavailabilityError,
@@ -302,7 +302,7 @@ let _emitter: EventEmitter | null;
 function _getEmitter(): EventEmitter {
   if (!_emitter) {
     _emitter = new EventEmitter();
-    RCTDeviceEventEmitter.addListener('Expo.nativeUpdatesEvent', _emitEvent);
+    DeviceEventEmitter.addListener('Expo.nativeUpdatesEvent', _emitEvent);
   }
   return _emitter;
 }

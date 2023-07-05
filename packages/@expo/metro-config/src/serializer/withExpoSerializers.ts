@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
 import { MixedOutput } from 'metro';
 import { InputConfigT, SerializerConfigT } from 'metro-config';
 import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
@@ -65,7 +66,10 @@ function getDefaultSerializer(fallbackSerializer?: Serializer | null): Serialize
     if (!options.sourceUrl) {
       return jsCode;
     }
-    const url = new URL(options.sourceUrl, 'https://expo.dev');
+    const sourceUrl = isJscSafeUrl(options.sourceUrl)
+      ? toNormalUrl(options.sourceUrl)
+      : options.sourceUrl;
+    const url = new URL(sourceUrl, 'https://expo.dev');
     if (
       url.searchParams.get('platform') !== 'web' ||
       url.searchParams.get('serializer.output') !== 'static'

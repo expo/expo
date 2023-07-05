@@ -8,7 +8,7 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
 
-#include <SkRect.h>
+#include "SkRect.h"
 
 #pragma clang diagnostic pop
 
@@ -25,37 +25,41 @@ static PropId PropNameHeight = JsiPropId::get("height");
  */
 class RectProp : public DerivedProp<SkRect> {
 public:
-  explicit RectProp(PropId name) : DerivedProp() {
-    _prop = addProperty(std::make_shared<NodeProp>(name));
+  explicit RectProp(PropId name,
+                    const std::function<void(BaseNodeProp *)> &onChange)
+      : DerivedProp(onChange) {
+    _prop = defineProperty<NodeProp>(name);
+  }
+
+  static std::shared_ptr<SkRect> processRect(const JsiValue &value) {
+    if (value.getType() == PropType::HostObject) {
+      auto rectPtr =
+          std::dynamic_pointer_cast<JsiSkRect>(value.getAsHostObject());
+      if (rectPtr != nullptr) {
+        return std::make_shared<SkRect>(SkRect::MakeXYWH(
+            rectPtr->getObject()->x(), rectPtr->getObject()->y(),
+            rectPtr->getObject()->width(), rectPtr->getObject()->height()));
+      }
+    } else if (value.getType() == PropType::Object &&
+               value.hasValue(PropNameX) && value.hasValue(PropNameY) &&
+               value.hasValue(PropNameWidth) &&
+               value.hasValue(PropNameHeight)) {
+      // Save props for fast access
+      auto x = value.getValue(PropNameX);
+      auto y = value.getValue(PropNameY);
+      auto width = value.getValue(PropNameWidth);
+      auto height = value.getValue(PropNameHeight);
+      // Update cache from js object value
+      return std::make_shared<SkRect>(
+          SkRect::MakeXYWH(x.getAsNumber(), y.getAsNumber(),
+                           width.getAsNumber(), height.getAsNumber()));
+    }
+    return nullptr;
   }
 
   void updateDerivedValue() override {
     if (_prop->isSet()) {
-      // Check for JsiSkRect
-      if (_prop->value().getType() == PropType::HostObject) {
-        auto rectPtr = std::dynamic_pointer_cast<JsiSkRect>(
-            _prop->value().getAsHostObject());
-        if (rectPtr != nullptr) {
-          setDerivedValue(SkRect::MakeXYWH(
-              rectPtr->getObject()->x(), rectPtr->getObject()->y(),
-              rectPtr->getObject()->width(), rectPtr->getObject()->height()));
-        }
-      } else {
-        auto p = _prop->value();
-        if (p.hasValue(PropNameX) && p.hasValue(PropNameY) &&
-            p.hasValue(PropNameWidth) && p.hasValue(PropNameHeight)) {
-          // Save props for fast access
-          auto x = p.getValue(PropNameX);
-          auto y = p.getValue(PropNameY);
-          auto width = p.getValue(PropNameWidth);
-          auto height = p.getValue(PropNameHeight);
-
-          // Update cache from js object value
-          setDerivedValue(SkRect::MakeXYWH(x.getAsNumber(), y.getAsNumber(),
-                                           width.getAsNumber(),
-                                           height.getAsNumber()));
-        }
-      }
+      setDerivedValue(RectProp::processRect(_prop->value()));
     }
   }
 
@@ -68,11 +72,13 @@ private:
  */
 class RectPropFromProps : public DerivedProp<SkRect> {
 public:
-  RectPropFromProps() : DerivedProp<SkRect>() {
-    _x = addProperty(std::make_shared<NodeProp>(PropNameX));
-    _y = addProperty(std::make_shared<NodeProp>(PropNameY));
-    _width = addProperty(std::make_shared<NodeProp>(PropNameWidth));
-    _height = addProperty(std::make_shared<NodeProp>(PropNameHeight));
+  explicit RectPropFromProps(
+      const std::function<void(BaseNodeProp *)> &onChange)
+      : DerivedProp<SkRect>(onChange) {
+    _x = defineProperty<NodeProp>(PropNameX);
+    _y = defineProperty<NodeProp>(PropNameY);
+    _width = defineProperty<NodeProp>(PropNameWidth);
+    _height = defineProperty<NodeProp>(PropNameHeight);
   }
 
   void updateDerivedValue() override {
@@ -103,16 +109,18 @@ private:
  */
 class RectProps : public DerivedProp<SkRect> {
 public:
-  explicit RectProps(PropId name) : DerivedProp<SkRect>() {
-    _rectProp = addProperty(std::make_shared<RectProp>(name));
-    _rectPropFromProps = addProperty(std::make_shared<RectPropFromProps>());
+  explicit RectProps(PropId name,
+                     const std::function<void(BaseNodeProp *)> &onChange)
+      : DerivedProp<SkRect>(onChange) {
+    _rectProp = defineProperty<RectProp>(name);
+    _rectPropFromProps = defineProperty<RectPropFromProps>();
   }
 
   void updateDerivedValue() override {
     if (_rectProp->isSet()) {
-      setDerivedValue(_rectProp->getDerivedValue());
+      setDerivedValue(_rectProp->getUnsafeDerivedValue());
     } else if (_rectPropFromProps->isSet()) {
-      setDerivedValue(_rectPropFromProps->getDerivedValue());
+      setDerivedValue(_rectPropFromProps->getUnsafeDerivedValue());
     } else {
       setDerivedValue(nullptr);
     }

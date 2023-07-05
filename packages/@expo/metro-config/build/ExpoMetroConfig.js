@@ -190,7 +190,9 @@ function getDefaultConfig(projectRoot, options = {}) {
     // when sass isn't installed.
     sourceExts.push('scss', 'sass', 'css');
   }
-  const envFiles = runtimeEnv().getFiles(process.env.NODE_ENV);
+  const envFiles = runtimeEnv().getFiles(process.env.NODE_ENV, {
+    silent: true
+  });
   const babelConfigPath = getProjectBabelConfigFile(projectRoot);
   const isCustomBabelConfigDefined = !!babelConfigPath;
   const resolverMainFields = [];
@@ -248,7 +250,9 @@ function getDefaultConfig(projectRoot, options = {}) {
     },
     serializer: {
       getModulesRunBeforeMainModule: () => {
-        const preModules = [];
+        const preModules = [
+        // MUST be first
+        require.resolve(_path().default.join(reactNativePath, 'Libraries/Core/InitializeCore'))];
 
         // We need to shift this to be the first module so web Fast Refresh works as expected.
         // This will only be applied if the module is installed and imported somewhere in the bundle already.
@@ -256,7 +260,6 @@ function getDefaultConfig(projectRoot, options = {}) {
         if (metroRuntime) {
           preModules.push(metroRuntime);
         }
-        preModules.push(require.resolve(_path().default.join(reactNativePath, 'Libraries/Core/InitializeCore')));
         return preModules;
       },
       getPolyfills: () => require(_path().default.join(reactNativePath, 'rn-get-polyfills'))()

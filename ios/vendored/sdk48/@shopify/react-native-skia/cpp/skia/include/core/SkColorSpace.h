@@ -9,10 +9,13 @@
 #define SkColorSpace_DEFINED
 
 #include "include/core/SkRefCnt.h"
-#include "include/private/SkFixed.h"
-#include "include/private/SkOnce.h"
+#include "include/core/SkTypes.h"
+#include "include/private/base/SkFixed.h"
+#include "include/private/base/SkOnce.h"
 #include "modules/skcms/skcms.h"
-#include <memory>
+
+#include <cstddef>
+#include <cstdint>
 
 class SkData;
 
@@ -147,8 +150,7 @@ public:
     bool isNumericalTransferFn(skcms_TransferFunction* fn) const;
 
     /**
-     *  Returns true and sets |toXYZD50| if the color gamut can be described as a matrix.
-     *  Returns false otherwise.
+     *  Returns true and sets |toXYZD50|.
      */
     bool toXYZD50(skcms_Matrix3x3* toXYZD50) const;
 
@@ -160,23 +162,19 @@ public:
 
     /**
      *  Returns a color space with the same gamut as this one, but with a linear gamma.
-     *  For color spaces whose gamut can not be described in terms of XYZ D50, returns
-     *  linear sRGB.
      */
     sk_sp<SkColorSpace> makeLinearGamma() const;
 
     /**
-     *  Returns a color space with the same gamut as this one, with with the sRGB transfer
-     *  function. For color spaces whose gamut can not be described in terms of XYZ D50, returns
-     *  sRGB.
+     *  Returns a color space with the same gamut as this one, but with the sRGB transfer
+     *  function.
      */
     sk_sp<SkColorSpace> makeSRGBGamma() const;
 
     /**
      *  Returns a color space with the same transfer function as this one, but with the primary
-     *  colors rotated. For any XYZ space, this produces a new color space that maps RGB to GBR
-     *  (when applied to a source), and maps RGB to BRG (when applied to a destination). For other
-     *  types of color spaces, returns nullptr.
+     *  colors rotated. In other words, this produces a new color space that maps RGB to GBR
+     *  (when applied to a source), and maps RGB to BRG (when applied to a destination).
      *
      *  This is used for testing, to construct color spaces that have severe and testable behavior.
      */
@@ -190,15 +188,14 @@ public:
      *  in some cases: converting ICC fixed point to float, converting white point to D50,
      *  rounding decisions on transfer function and matrix.
      *
-     *  This does not consider a 2.2f exponential transfer function to be sRGB.  While these
+     *  This does not consider a 2.2f exponential transfer function to be sRGB. While these
      *  functions are similar (and it is sometimes useful to consider them together), this
      *  function checks for logical equality.
      */
     bool isSRGB() const;
 
     /**
-     *  Returns nullptr on failure.  Fails when we fallback to serializing ICC data and
-     *  the data is too large to serialize.
+     *  Returns a serialized representation of this color space.
      */
     sk_sp<SkData> serialize() const;
 
@@ -211,7 +208,7 @@ public:
     static sk_sp<SkColorSpace> Deserialize(const void* data, size_t length);
 
     /**
-     *  If both are null, we return true.  If one is null and the other is not, we return false.
+     *  If both are null, we return true. If one is null and the other is not, we return false.
      *  If both are non-null, we do a deeper compare.
      */
     static bool Equals(const SkColorSpace*, const SkColorSpace*);

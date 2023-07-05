@@ -24,7 +24,9 @@ class DevMenuDevOptionsDelegate {
     // No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.
     DevMenuManager.shared.hideMenu()
 
-    bridge?.requestReload()
+    DispatchQueue.main.async {
+      RCTTriggerReloadCommandListeners("Dev menu - reload")
+    }
   }
 
   internal func toggleElementInsector() {
@@ -53,7 +55,7 @@ class DevMenuDevOptionsDelegate {
     }
 
     DevMenuManager.shared.hideMenu()
-    
+
     DispatchQueue.main.async {
       devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely
       (DevMenuManager.shared.window?.rootViewController as? DevMenuViewController)?.updateProps() // We have to force props to reflect changes on the UI

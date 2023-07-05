@@ -13,9 +13,9 @@
 #include "include/core/SkTypeface.h"
 #include "include/core/SkTypes.h"
 #include "include/ports/SkRemotableFontMgr.h"
-#include "include/private/SkMutex.h"
-#include "include/private/SkOnce.h"
-#include "include/private/SkTArray.h"
+#include "include/private/base/SkMutex.h"
+#include "include/private/base/SkOnce.h"
+#include "include/private/base/SkTArray.h"
 
 class SkData;
 class SkFontStyle;
@@ -34,18 +34,18 @@ public:
 protected:
     int onCountFamilies() const override;
     void onGetFamilyName(int index, SkString* familyName) const override;
-    SkFontStyleSet* onCreateStyleSet(int index) const override;
+    sk_sp<SkFontStyleSet> onCreateStyleSet(int index) const override;
 
-    SkFontStyleSet* onMatchFamily(const char familyName[]) const override;
+    sk_sp<SkFontStyleSet> onMatchFamily(const char familyName[]) const override;
 
-    SkTypeface* onMatchFamilyStyle(const char familyName[],
-                                   const SkFontStyle& fontStyle) const override;
+    sk_sp<SkTypeface> onMatchFamilyStyle(const char familyName[],
+                                         const SkFontStyle& fontStyle) const override;
 
-    SkTypeface* onMatchFamilyStyleCharacter(const char familyName[],
-                                            const SkFontStyle&,
-                                            const char* bcp47[],
-                                            int bcp47Count,
-                                            SkUnichar character) const override;
+    sk_sp<SkTypeface> onMatchFamilyStyleCharacter(const char familyName[],
+                                                  const SkFontStyle&,
+                                                  const char* bcp47[],
+                                                  int bcp47Count,
+                                                  SkUnichar character) const override;
 
     sk_sp<SkTypeface> onMakeFromStreamIndex(std::unique_ptr<SkStreamAsset>, int ttcIndex) const override;
     sk_sp<SkTypeface> onMakeFromStreamArgs(std::unique_ptr<SkStreamAsset> stream,
@@ -55,7 +55,7 @@ protected:
     sk_sp<SkTypeface> onLegacyMakeTypeface(const char familyName[], SkFontStyle) const override;
 
 private:
-    SkTypeface* createTypefaceFromFontId(const SkFontIdentity& fontId) const;
+    sk_sp<SkTypeface> createTypefaceFromFontId(const SkFontIdentity& fontId) const;
 
     sk_sp<SkFontMgr> fImpl;
     sk_sp<SkRemotableFontMgr> fProxy;
@@ -93,7 +93,7 @@ private:
      *  typefaces with that data id. By storing the index next to the typeface,
      *  this data cache also acts as a typeface cache.
      */
-    mutable SkTArray<DataEntry> fDataCache;
+    mutable skia_private::TArray<DataEntry> fDataCache;
     mutable SkMutex fDataCacheMutex;
 
     friend class SkStyleSet_Indirect;

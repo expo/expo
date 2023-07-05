@@ -123,6 +123,7 @@ internal fun mapPaymentMethodType(type: PaymentMethod.Type?): String {
     PaymentMethod.Type.USBankAccount -> "USBankAccount"
     PaymentMethod.Type.PayPal -> "PayPal"
     PaymentMethod.Type.Affirm -> "Affirm"
+    PaymentMethod.Type.CashAppPay -> "CashApp"
     else -> "Unknown"
   }
 }
@@ -152,6 +153,7 @@ internal fun mapToPaymentMethodType(type: String?): PaymentMethod.Type? {
     "USBankAccount" -> PaymentMethod.Type.USBankAccount
     "PayPal" -> PaymentMethod.Type.PayPal
     "Affirm" -> PaymentMethod.Type.Affirm
+    "CashApp" -> PaymentMethod.Type.CashAppPay
     else -> null
   }
 }
@@ -312,7 +314,7 @@ internal fun mapFromCard(card: Card?): WritableMap? {
 internal fun mapFromToken(token: Token): WritableMap {
   val tokenMap: WritableMap = WritableNativeMap()
   tokenMap.putString("id", token.id)
-  tokenMap.putDouble("created", token.created.time.toDouble())
+  tokenMap.putString("created", token.created.time.toString())
   tokenMap.putString("type", mapTokenType(token.type))
   tokenMap.putBoolean("livemode", token.livemode)
   tokenMap.putMap("bankAccount", mapFromBankAccount(token.bankAccount))
@@ -344,6 +346,9 @@ internal fun mapFromPaymentMethod(paymentMethod: PaymentMethod): WritableMap {
     it.putString("fingerprint", paymentMethod.card?.fingerprint)
     it.putString("preferredNetwork", paymentMethod.card?.networks?.preferred)
     it.putArray("availableNetworks", paymentMethod.card?.networks?.available?.toList() as? ReadableArray)
+    it.putMap("threeDSecureUsage", WritableNativeMap().also { threeDSecureUsageMap ->
+      threeDSecureUsageMap.putBoolean("isSupported", paymentMethod.card?.threeDSecureUsage?.isSupported ?: false)
+    })
   })
   pm.putMap("SepaDebit", WritableNativeMap().also {
     it.putString("bankCode", paymentMethod.sepaDebit?.bankCode)

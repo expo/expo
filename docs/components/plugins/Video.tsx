@@ -40,7 +40,7 @@ const Video = ({ controls, spaceAfter, url, file, loop = true }: VideoProps) => 
               height={PLAYER_HEIGHT}
               style={playerStyle}
               muted
-              playing={isVisible}
+              playing={isVisible && !!file}
               controls={typeof controls === 'undefined' ? forceShowControls : controls}
               playsinline
               loop={loop}

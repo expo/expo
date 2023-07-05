@@ -16,6 +16,7 @@ export const SnippetAction = (props: SnippetActionProps) => {
       leftSlot={leftSlot}
       rightSlot={rightSlot}
       className={mergeClasses(
+        'focus-visible:-outline-offset-2',
         alwaysDark &&
           'dark-theme border-transparent bg-[transparent] hocus:shadow-xs hocus:border-palette-gray9 hocus:bg-palette-gray5',
         !alwaysDark &&

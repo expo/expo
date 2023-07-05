@@ -10,39 +10,39 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
 
-#include <SkMaskFilter.h>
+#include "SkBlurTypes.h"
+#include "SkMaskFilter.h"
 
 #pragma clang diagnostic pop
 
 namespace RNSkia {
 
-class JsiBlurMaskNode : public JsiBaseDomDeclarationNode,
+class JsiBlurMaskNode : public JsiDomDeclarationNode,
                         public JsiDomNodeCtor<JsiBlurMaskNode> {
 public:
   explicit JsiBlurMaskNode(std::shared_ptr<RNSkPlatformContext> context)
-      : JsiBaseDomDeclarationNode(context, "skBlurMaskFilter") {}
+      : JsiDomDeclarationNode(context, "skBlurMaskFilter",
+                              DeclarationType::MaskFilter) {}
 
-protected:
-  void decorate(DrawingContext *context) override {
-    if (context->isChanged() || getPropsContainer()->isChanged()) {
+  void decorate(DeclarationContext *context) override {
 
-      bool respectCTM =
-          _respectCTM->isSet() ? _respectCTM->value().getAsBool() : true;
-      SkBlurStyle style = SkBlurStyle::kNormal_SkBlurStyle;
-      if (_style->isSet()) {
-        style = getBlurStyleFromString(_style->value().getAsString());
-      }
-
-      auto filter = SkMaskFilter::MakeBlur(style, _blur->value().getAsNumber(),
-                                           respectCTM);
-
-      // Set the mask filter
-      context->getMutablePaint()->setMaskFilter(filter);
+    bool respectCTM =
+        _respectCTM->isSet() ? _respectCTM->value().getAsBool() : true;
+    SkBlurStyle style = SkBlurStyle::kNormal_SkBlurStyle;
+    if (_style->isSet()) {
+      style = getBlurStyleFromString(_style->value().getAsString());
     }
+
+    auto filter =
+        SkMaskFilter::MakeBlur(style, _blur->value().getAsNumber(), respectCTM);
+
+    // Set the mask filter
+    context->getMaskFilters()->push(filter);
   }
 
+protected:
   void defineProperties(NodePropsContainer *container) override {
-    JsiBaseDomDeclarationNode::defineProperties(container);
+    JsiDomDeclarationNode::defineProperties(container);
 
     _style = container->defineProperty<NodeProp>("style");
     _respectCTM = container->defineProperty<NodeProp>("respectCTM");

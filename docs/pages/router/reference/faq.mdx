@@ -15,32 +15,34 @@ export const unstable_settings = {
 
 ## Expo Router vs. Expo vs. React Native CLI
 
-Expo Router is akin to modern web frameworks like SvelteKit, Next.js or Remix, whereas default Expo/React Native projects are more closely related to default React projects built with Create React App.
+Historically, React Native has been non prescriptive about how apps should be built, this is similar to using React without a modern web framework. Expo Router is an opinionated framework for React Native, similar to how Remix and Next.js are opinionated frameworks for web-only React.
 
-After this framework has been proven at scale and we have had time to collect and implement community feedback then we will consider moving this framework into the `expo` default offering. If this happens then `expo-router` will become `expo/router` and the entire process will be even easier to use.
-
-We care deeply about performance and stability so this won't happen until we are confident that this framework is ready for the default offering.
+Expo Router is designed to bring the best architectural patterns to everyone, to ensure React Native is leveraged to its fullest. For example, Expo Router's [Async Routes](/router/static-rendering/async-routes) feature enables lazy bundling for everyone. Previously, lazy bundling was only used at Meta to build the Facebook app.
 
 ## Can I use Expo Router in my React Native app?
 
-Yes, all of Expo's tools and services can be used with any React Native project. The router must be used with `npx expo start` (Expo CLI) due to the advanced bundler functionality we implemented to make file-based routing possible. You can run `npx expo start --port 8081` to run the dev server on the default port for React Native CLI apps.
+Yes, Expo Router is the framework for universal React Native apps. Due to the deep connection between the router and the bundler, Expo Router is only available in Expo CLI projects, with Metro. Luckily, you can use Expo CLI in any React Native project too!
 
 ## What are the benefits of file-based routing?
 
-1. The file system is a well-known and well-understood concept. The simpler mental model makes it easier to onboard new team members and scale your application.
+1. The file system is a well-known and well-understood concept. The simpler mental model makes it easier to educate new team members and scale your application.
 2. The fastest way to onboard new users is by having them open a universal link that opens the app or website to the correct screen depending on if they have the app installed or not. This technique is so advanced that it's usually only available to large companies that can afford to make and maintain the parity between platforms. But with Expo's file-based routing, you can have this feature out of the box!
 3. Refactoring is easier to do because you can move files around without having to update any imports or routing components.
-4. When using React Navigation manually, you have to define the routes and the linking config, this can be error-prone and tedious. It's also extremely difficult to validate that all of your routes work. With a file-based router, you can automatically generate the routes and linking config and know that all of your routes **Just Work™**.
-5. **Expo CLI** can infer a lot of information about your application when it follows a known convention. For example, we could implement automatic bundle splitting per route, or automatically generate a sitemap for your website. This is not possible when your app only has a single entry point.
-6. Files can export settings per route, like rendering pattern, or which pages can be universally linked between web and mobile.
+4. Expo Router has the ability to statically type routes automatically. This ensures you can only link to valid routes and that you can't link to a route that doesn't exist. Typed Routes also improve refactoring as you'll get type errors if links are broken.
+5. Async Routes (bundle splitting) improve development speed, especially in larger projects. They also make upgrades easier as errors are isolated to a single route, meaning you can incrementally update or refactor your app page-by-page rather than all at once (traditional React Native).
+6. Deep links always work, for every page. This makes it possible to share links to any content in the app, which is great for promoting your app, collecting bug reports, E2E testing, automating screenshots, etc.
+7. Expo Head uses automatic links to enable deep-native integration. Features like Quick Notes, Handoff, Siri context, and universal links only require configuration setup, no code changes. This enables perfect vertical integration with the entire ecosystem of smart devices that a user has, leading to the types of user experiences that are only possible with universal apps (web ⇄ native).
+8. Expo Router has the ability to statically render each page automatically on web, enabling real SEO and full discoverability of your app's content. This is only possible because the file-based convention.
+9. **Expo CLI** can infer a lot of information about your application when it follows a known convention. For example, we could implement automatic bundle splitting per route, or automatically generate a sitemap for your website. This is not possible when your app only has a single entry point.
+10. Re-engagment features like notifications and homescreen widgets are easier to integrate as you can simply intercept the launch and deep link, with query parameters, to anywhere in the app.
+11. Like on the web, analytics and error reporting can easily be configured to automatically include the route name, which is useful for debugging and understanding user behavior.
 
 ## Why should I use Expo Router over React Navigation?
 
-> TL;DR: You use the `expo` router _with_ React Navigation, it's not a replacement.
-> Automation is not only easier but it's more reliable. Having to manually maintain the React Navigation components and the deep linking configuration is prone to errors. The Expo Router turns your file system into a single source of truth for navigation and deep linking.
+Expo Router and React Navigation are both libraries from the Expo team. We built Expo Router on top of React Navigation to enable the benefits of file-based routing. Expo Router is a superset of React Navigation, meaning you can use any React Navigation components and APIs with Expo Router.
 
-Expo's routing API is designed to be universal for iOS, Android, and the web but our priority is to solve native development. This means there may be aspects of a web-only framework that are more optimal for the web, and we recommend using the tools that best suit your needs.
+If file-based routing isn't right for your project, you can drop down to React Navigation and setup routes, types, and links manually.
 
 ## How do I server-render my Expo Router website?
 
-This functionality is not currently offered. Web support is secondary to our native offering and serves to help test and debug the native implementation. We recommend using SvelteKit, Next.js, or Remix for server-rendered websites that complement your native app.
+Basic static rendering (SSG) is supported in Expo Router v2. Server-side rendering currently requires custom infrastructure to setup.

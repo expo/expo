@@ -52,6 +52,7 @@ describe(validateDependenciesVersionsAsync, () => {
 
   beforeEach(() => {
     vol.reset();
+    delete process.env.EXPO_OFFLINE;
   });
 
   it('resolves to true when the installed packages match bundled native modules', async () => {
@@ -183,7 +184,8 @@ describe(validateDependenciesVersionsAsync, () => {
 
   it('skips validating dependencies when running in offline mode', async () => {
     jest.resetModules();
-    jest.mock('../../../../api/settings', () => ({ APISettings: { isOffline: true } }));
+
+    process.env.EXPO_OFFLINE = '1';
 
     const { validateDependenciesVersionsAsync } = require('../validateDependenciesVersions');
     const exp = { sdkVersion: '46.0.0' };

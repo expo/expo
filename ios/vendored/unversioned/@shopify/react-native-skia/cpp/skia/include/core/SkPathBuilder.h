@@ -8,11 +8,19 @@
 #ifndef SkPathBuilder_DEFINED
 #define SkPathBuilder_DEFINED
 
-#include "include/core/SkMatrix.h"
 #include "include/core/SkPath.h"
 #include "include/core/SkPathTypes.h"
+#include "include/core/SkPoint.h"
+#include "include/core/SkRect.h"
 #include "include/core/SkRefCnt.h"
-#include "include/private/SkTDArray.h"
+#include "include/core/SkScalar.h"
+#include "include/core/SkTypes.h"
+#include "include/private/SkPathRef.h"
+#include "include/private/base/SkTo.h"
+
+#include <initializer_list>
+
+class SkRRect;
 
 class SK_API SkPathBuilder {
 public:
@@ -220,9 +228,9 @@ public:
     }
 
 private:
-    SkTDArray<SkPoint>  fPts;
-    SkTDArray<uint8_t>  fVerbs;
-    SkTDArray<SkScalar> fConicWeights;
+    SkPathRef::PointsArray fPts;
+    SkPathRef::VerbsArray fVerbs;
+    SkPathRef::ConicWeightsArray fConicWeights;
 
     SkPathFillType      fFillType;
     bool                fIsVolatile;
