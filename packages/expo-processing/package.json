@@ -1,6 +1,6 @@
 {
   "name": "expo-processing",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "Utilities for using Processing.js on Expo",
   "main": "index.js",
   "keywords": [

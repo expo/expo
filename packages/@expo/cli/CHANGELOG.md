@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed opening browser on Windows when debugging or opening Metro web. ([#23287](https://github.com/expo/expo/pull/23287) by [@byCedric](https://github.com/byCedric))
-
 ### 💡 Others
+
+## 0.10.9 — 2023-07-05
+
+### 🐛 Bug fixes
+
+- Fixed opening browser on Windows when debugging or opening Metro web. ([#23287](https://github.com/expo/expo/pull/23287) by [@byCedric](https://github.com/byCedric))
 
 ## 0.10.8 — 2023-07-04
 

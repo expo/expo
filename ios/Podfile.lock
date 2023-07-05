@@ -2336,7 +2336,7 @@ PODS:
     - ExpoModulesCore
   - EXSensors (12.3.0):
     - ExpoModulesCore
-  - EXSplashScreen (0.20.3):
+  - EXSplashScreen (0.20.4):
     - ExpoModulesCore
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
@@ -4947,7 +4947,7 @@ SPEC CHECKSUMS:
   ExpoWebBrowser: 2c788f9c07718a780fe6d8bf2f6195c47609faaa
   EXScreenCapture: 81002ba5fb40a367fba9047d223068abb558594d
   EXSensors: d26e160b5c91ada2df4a638859ef0c5731bf6404
-  EXSplashScreen: ce0312ff1d08dc319a3ba991f705decb81574c73
+  EXSplashScreen: 89586b0961acd173b04713b7457949b063a659da
   EXStructuredHeaders: 324cc3130571d2696357fafd8be7fd9a0b5fdf6e
   EXTaskManager: f1730c315eb6fe457a3a2ee4ed899a51d717f302
   EXUpdates: 40a5a842e2b675659c7c41b9c5c263fd840a6421

@@ -63,7 +63,7 @@ PODS:
     - ExpoModulesCore
   - Expo (49.0.0-beta.5):
     - ExpoModulesCore
-  - expo-dev-client (2.4.3):
+  - expo-dev-client (2.4.4):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
@@ -253,7 +253,7 @@ PODS:
     - ExpoModulesCore
   - EXSensors (12.3.0):
     - ExpoModulesCore
-  - EXSplashScreen (0.20.3):
+  - EXSplashScreen (0.20.4):
     - ExpoModulesCore
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
@@ -1382,7 +1382,7 @@ SPEC CHECKSUMS:
   EXNotifications: 09394cbd7165f9a4a00a53328aa09bf874bae717
   EXPermissions: 4f80cf527001aa408a22eddf076e61465ea71d5a
   Expo: 7a7c1c30048752bfa8e74732fc9471226598bbbd
-  expo-dev-client: bb82f8a33c078c9f8a25a02640358fb5732fd42d
+  expo-dev-client: 4004b6402e1885f88047202a9a121aa1b4c6e498
   expo-dev-launcher: ab8e0821145f05467c2c5c6a0669aff14edf01f4
   expo-dev-menu: 98be5f9ddc3f5822740e2a83eb7354cbfb81ced4
   expo-dev-menu-interface: bda969497e73dadc2663c479e0fa726ca79a306e
@@ -1425,7 +1425,7 @@ SPEC CHECKSUMS:
   ExpoWebBrowser: 2c788f9c07718a780fe6d8bf2f6195c47609faaa
   EXScreenCapture: 81002ba5fb40a367fba9047d223068abb558594d
   EXSensors: d26e160b5c91ada2df4a638859ef0c5731bf6404
-  EXSplashScreen: ce0312ff1d08dc319a3ba991f705decb81574c73
+  EXSplashScreen: 89586b0961acd173b04713b7457949b063a659da
   EXStructuredHeaders: 324cc3130571d2696357fafd8be7fd9a0b5fdf6e
   EXTaskManager: f1730c315eb6fe457a3a2ee4ed899a51d717f302
   EXUpdatesInterface: 82ed48d417cdcd376c12ca1c2ce390d35500bed6
