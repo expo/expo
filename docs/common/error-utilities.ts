@@ -135,9 +135,6 @@ function endsInNull(path: string) {
 const RENAMED_PAGES: Record<string, string> = {
   // Redirects after creating /home route
   '/next-steps/additional-resources/': '/additional-resources/',
-  // TODO: (@aman) Uncomment the two lines below when we've removed third-party libraries from Reference
-  // '/versions/latest/sdk/safe-area-context/': '/develop/user-interface/safe-areas',
-  // '/versions/latest/sdk/async-storage/': '/develop/user-interface/store-data/#async-storage',
   '/get-started/create-a-new-app/': '/get-started/create-a-project',
   '/guides/config-plugins/': '/config-plugins/introduction/',
   '/workflow/debugging/': '/debugging/runtime-issues/',
@@ -167,6 +164,8 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Redirects after organizing docs in Guides
   '/bare/hello-world/': '/bare/overview/',
+  '/guides/errors/': '/debugging/runtime-issues/',
+  // TODO(aman): Change below links to /guides/overview/
   '/guides/using-graphql/': '/guides/',
   '/guides/using-styled-components/': '/guides/',
   '/guides/using-bugsnag/': '/guides/',
