@@ -3,7 +3,6 @@ import fetch from 'node-fetch';
 import type WS from 'ws';
 
 import { MetroBundlerDevServer } from '../MetroBundlerDevServer';
-import { DebuggerScriptSourceHandler } from './handlers/DebuggerScriptSource';
 import { NetworkResponseHandler } from './handlers/NetworkResponse';
 import { PageReloadHandler } from './handlers/PageReload';
 import { VscodeDebuggerGetPossibleBreakpointsHandler } from './handlers/VscodeDebuggerGetPossibleBreakpoints';
@@ -30,7 +29,6 @@ export function createInspectorDeviceClass(
     public handlers: InspectorHandler[] = [
       // Generic handlers
       new NetworkResponseHandler(),
-      new DebuggerScriptSourceHandler(this),
       new PageReloadHandler(metroBundler),
       // Vscode-specific handlers
       new VscodeDebuggerGetPossibleBreakpointsHandler(),
