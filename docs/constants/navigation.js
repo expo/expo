@@ -243,6 +243,7 @@ const general = [
     makePage('eas/metadata/schema.mdx'),
     makePage('eas/metadata/faq.mdx'),
   ]),
+  makeSection('EAS Insights', [makePage('eas-insights/introduction.mdx')]),
   makeSection(
     'Expo Modules API',
     [
