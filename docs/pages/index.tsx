@@ -21,8 +21,6 @@ import {
   APIListIcon,
   APIMapsIcon,
   APINotificationsIcon,
-  CodecademyImage,
-  CodecademyImageMasks,
   DevicesImage,
   DevicesImageMasks,
   OfficeHoursImage,
@@ -53,7 +51,6 @@ const Home = () => {
       <DocumentationPage tocVisible={false} hideFromSearch>
         <div className="h-0">
           <DevicesImageMasks />
-          <CodecademyImageMasks />
         </div>
         <H1 css={docsTitleStyle}>Create amazing apps that run everywhere</H1>
         <Description>
@@ -201,7 +198,7 @@ const Home = () => {
               <HomeButton
                 className="bg-palette-gray12 border-palette-gray11 text-palette-gray2 hocus:bg-palette-gray11 hocus:opacity-80"
                 href="https://chat.expo.dev"
-                rightSlot={<ArrowRightIcon className="text-palette-gray2 icon-md" />}>
+                rightSlot={<ArrowUpRightIcon className="text-palette-gray2 icon-md" />}>
                 Go to Discord
               </HomeButton>
             </GridCell>
