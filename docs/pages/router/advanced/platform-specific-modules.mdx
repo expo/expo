@@ -5,6 +5,8 @@ hideTOC: true
 ---
 
 import { FileTree } from '~/ui/components/FileTree';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { BookOpen02Icon } from '@expo/styleguide-icons';
 
 While building your app, you may want to show specific content based on the current platform. Platform-specific modules can make the experience more native to a given platform. The following sections describe the ways you can achieve this with Expo Router.
 
@@ -63,3 +65,12 @@ export { default } from '../components/about';
 ```
 
 > **info** **Best practice:** Always provide a file without a platform extension to ensure every platform has a default implementation.
+
+## Next steps
+
+<BoxLink
+  title="Shared routes"
+  Icon={BookOpen02Icon}
+  description="Learn how to define shared routes or use arrays to use the same route multiple times with different layouts using Expo Router."
+  href="/router/advanced/shared-routes/"
+/>
