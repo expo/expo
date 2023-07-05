@@ -206,7 +206,7 @@ Our [Environment variables in EAS Update guide](eas-update/environment-variables
 Environment variables are applied in the following order:
 1. **eas.json** build profile `env` field
 2. Environment variables defined in EAS Secrets
-3. **.env** files committed to source control/ not in **.easignore**
+3. **.env** files committed to source control and are not in **.easignore**
 
 Variable sources applied last will overwrite the previously-loaded source for variables with the same name. So, a secret created on the Expo website or with `eas secret:create` will take precedence over an environment variable of the same name that is set through the `env` field in **eas.json**.
 
