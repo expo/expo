@@ -26,5 +26,38 @@ Pod::Spec.new do |s|
     'DEFINES_MODULE' => 'YES',
   }
 
-  s.source_files = "**/*.{h,m,swift}"
+  s.source_files = '**/*.{h,m,mm,swift}'
+  s.exclude_files = ['svgnative']
+  s.default_subspec = "SVGNative"
+
+  s.subspec "SVGNative" do |ss|
+    ss.source_files = [
+      'svgnative/include/**/*.{h,hpp}',
+      'svgnative/src/**/*.{h,c,cc,cpp,hpp}',
+    ]
+    ss.public_header_files = 'svgnative/include/**/*.{h,hpp}'
+    ss.header_mappings_dir = 'svgnative/include'
+    ss.exclude_files = [
+      'svgnative/src/xml/ExpatXMLParser.cpp',
+      'svgnative/src/xml/RapidXMLParser.cpp',
+    ]
+
+    ss.pod_target_xcconfig = {
+      'HEADER_SEARCH_PATHS' => '$(inherited) "$(PODS_ROOT)/boost"',
+      'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
+    }
+
+    ss.compiler_flags = '-x objective-c++'
+
+    ss.user_target_xcconfig = {
+      'HEADER_SEARCH_PATHS' => '"$(PODS_ROOT)/boost"'
+    }
+    # ss.user_target_xcconfig = {
+    #   'HEADER_SEARCH_PATHS' => '$(inherited) ${PODS_ROOT}/boost' # Hack because public header include <boost/variant.hpp>
+    # }
+    ss.preserve_paths = ['svgnative']
+
+    ss.libraries = 'c++', 'xml2'
+    ss.dependency 'boost'
+  end
 end

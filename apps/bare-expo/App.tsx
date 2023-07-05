@@ -1,82 +1,71 @@
-import React from 'react';
+import { Image } from 'expo-image';
+import { useCallback, useState } from 'react';
+import { View, StyleSheet, Button } from 'react-native';
 
-import MainNavigator, { optionalRequire } from './MainNavigator';
-import { createProxy, startAsync, addListener } from './relapse/client';
-let Notifications;
-try {
-  Notifications = require('expo-notifications');
-} catch {
-  // do nothing
+export default function App() {
+  const [theme, setTheme] = useState('dark');
+  const onSwitchTheme = useCallback(() => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
+  }, [theme]);
+
+  const rnColors = {
+    light: {
+      atomColor: 'crimson',
+      orbitsColor: 'cadetblue',
+    },
+    dark: {
+      atomColor: 'goldenrod',
+      orbitsColor: 'limegreen',
+    },
+  };
+
+  return (
+    <View style={styles.container}>
+      {/* <Image
+        placeholder={require('../native-component-list/assets/images/expo.svg')}
+        placeholderContentFit="contain"
+        style={styles.image}
+        tintColor="red"
+      /> */}
+      <Image
+        source={require('../native-component-list/assets/images/expo.svg')}
+        contentFit="scale-down"
+        style={styles.image}
+      />
+      <Image
+        source={require('../native-component-list/assets/images/rn.svg')}
+        contentFit="scale-down"
+        style={styles.image}
+        transition={500}
+        svgColorMap={rnColors[theme]}
+      />
+      {/* <Image
+        source={require('../native-component-list/assets/images/user.png')}
+        style={styles.image}
+        tintColor="yellow"
+      /> */}
+      {/* <Image
+        source="https://d33wubrfki0l68.cloudfront.net/554c3b0e09cf167f0281fda839a5433f2040b349/ecfc9/img/header_logo.svg"
+        style={styles.image}
+        tintColor="cyan"
+      /> */}
+      <Button title="Switch theme" onPress={onSwitchTheme} />
+    </View>
+  );
 }
 
-const loadAssetsAsync =
-  optionalRequire(() => require('native-component-list/src/utilities/loadAssetsAsync')) ??
-  (async () => null);
-
-function useLoaded() {
-  const [isLoaded, setLoaded] = React.useState(false);
-  React.useEffect(() => {
-    let isMounted = true;
-    // @ts-ignore
-    loadAssetsAsync()
-      .then(() => {
-        if (isMounted) setLoaded(true);
-      })
-      .catch((e) => {
-        console.warn('Error loading assets: ' + e.message);
-        if (isMounted) setLoaded(true);
-      });
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-  return isLoaded;
-}
-
-export default function Main() {
-  // @ts-ignore
-  if (global.DETOX) {
-    React.useEffect(() => {
-      addListener((data) => {
-        if (data.globals) {
-          for (const moduleName of data.globals) {
-            // @ts-ignore
-            global[moduleName] = createProxy(moduleName);
-          }
-        }
-      });
-
-      let stop;
-      startAsync().then((_stop) => (stop = _stop));
-
-      return () => stop && stop();
-    }, []);
-  }
-
-  React.useEffect(() => {
-    try {
-      const subscription = Notifications.addNotificationResponseReceivedListener(
-        ({ notification, actionIdentifier }) => {
-          console.info(
-            `User interacted with a notification (action = ${actionIdentifier}): ${JSON.stringify(
-              notification,
-              null,
-              2
-            )}`
-          );
-        }
-      );
-      return () => subscription?.remove();
-    } catch (e) {
-      console.debug('Could not have added a listener for received notification responses.', e);
-    }
-  }, []);
-
-  const isLoaded = useLoaded();
-
-  if (!isLoaded) {
-    return null;
-  }
-
-  return <MainNavigator />;
-}
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    gap: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#1c1c1e',
+    padding: 8,
+  },
+  image: {
+    width: 100,
+    height: 100,
+    // backgroundColor: 'brown',
+  },
+});

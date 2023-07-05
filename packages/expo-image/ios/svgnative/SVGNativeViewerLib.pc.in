@@ -1,0 +1,14 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@
+includedir=@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_INCLUDEDIR@/@HEADER_SUBDIR@
+
+Name: SVGNativeViewerLib
+Description: Parser and renderer for SVG Native documents
+Version: @VERSION@
+Requires: @REQUIRES@ 
+Requires.private: @PRIVATE_REQUIRES@
+
+Cflags: -I${includedir}
+Libs: -L${libdir} -lSVGNativeViewerLib
+Libs.private: @PRIVATE_LIBS@

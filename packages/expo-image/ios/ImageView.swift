@@ -10,6 +10,7 @@ typealias SDWebImageContext = [SDWebImageContextOption: Any]
 public final class ImageView: ExpoView {
   static let contextSourceKey = SDWebImageContextOption(rawValue: "source")
   static let screenScaleKey = SDWebImageContextOption(rawValue: "screenScale")
+  static let svgColorMapKey = SDWebImageContextOption(rawValue: "svgColorMap")
 
   let sdImageView = SDAnimatedImageView(frame: .zero)
 
@@ -48,6 +49,8 @@ public final class ImageView: ExpoView {
       }
     }
   }
+
+  var svgColorMap: [String: UIColor]?
 
   // MARK: - Events
 
@@ -144,6 +147,10 @@ public final class ImageView: ExpoView {
     // Some loaders (e.g. blurhash) need access to the source and the screen scale.
     context[ImageView.contextSourceKey] = source
     context[ImageView.screenScaleKey] = screenScale
+
+    if let svgColorMap {
+      context[.imageDecodeOptions] = [ImageView.svgColorMapKey: svgColorMap]
+    }
 
     onLoadStart([:])
 

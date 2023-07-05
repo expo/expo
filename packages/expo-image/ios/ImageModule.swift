@@ -85,6 +85,15 @@ public final class ImageModule: Module {
         view.recyclingKey = key
       }
 
+      Prop("svgColorMap") { (view, colorMap: [String: String]?) in
+        guard let appContext = self.appContext else {
+          return
+        }
+        view.svgColorMap = try? colorMap?.mapValues { color in
+          try UIColor.convert(from: color, appContext: appContext)
+        }
+      }
+
       OnViewDidUpdateProps { view in
         view.reload()
       }
@@ -115,7 +124,8 @@ public final class ImageModule: Module {
       SDImageCodersManager.shared.addCoder(SDImageWebPCoder.shared)
     }
     SDImageCodersManager.shared.addCoder(SDImageAVIFCoder.shared)
-    SDImageCodersManager.shared.addCoder(SDImageSVGCoder.shared)
+//    SDImageCodersManager.shared.addCoder(SDImageSVGCoder.shared)
+    SDImageCodersManager.shared.addCoder(SDImageSVGNativeCoder.shared)
     SDImageCodersManager.shared.addCoder(SDImageHEICCoder.shared)
   }
 
