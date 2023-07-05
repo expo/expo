@@ -6,6 +6,7 @@ const ASSETS_PATH = '/static/images/sdk/auth-session/';
 
 export const ASSETS = {
   apple: ASSETS_PATH + 'apple.png',
+  asgardeo: ASSETS_PATH + 'asgardeo.png',
   azure: ASSETS_PATH + 'azure.png',
   beyondidentity: ASSETS_PATH + 'beyondidentity.png',
   cognito: ASSETS_PATH + 'cognito.png',
@@ -26,5 +27,4 @@ export const ASSETS = {
   twitch: ASSETS_PATH + 'twitch.png',
   twitter: ASSETS_PATH + 'twitter.png',
   uber: ASSETS_PATH + 'uber.png',
-  asgardeo: ASSETS_PATH + 'asgardeo.png',
 } as const;
