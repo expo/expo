@@ -349,6 +349,17 @@ const RENAMED_PAGES: Record<string, string> = {
   '/eas-update/how-eas-update-works/': '/eas-update/how-it-works/',
   '/eas-update/migrate-to-eas-update/': '/eas-update/migrate-from-classic-updates/',
 
+  // Expo Router Advanced guides
+  '/router/advance/root-layout': '/router/advanced/root-layout/',
+  '/router/advance/stack': '/router/advanced/stack/',
+  '/router/advance/tabs': '/router/advanced/tabs/',
+  '/router/advance/drawer': '/router/advanced/drawer/',
+  '/router/advance/nesting-navigators': '/router/advanced/nesting-navigators/',
+  '/router/advance/modals': '/router/advanced/modals/',
+  '/router/advance/platform-specific-modules': '/router/advanced/platform-specific-modules/',
+  '/router/advance/shared-routes': '/router/advanced/shared-routes/',
+  '/router/advance/router-settings': '/router/advanced/router-settings/',
+
   // Note (@aman): The following redirect is temporary until Guides section has an overview
   '/guides/': '/workflow/customizing/',
   '/archive/workflow/customizing/': '/workflow/customizing/',
