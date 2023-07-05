@@ -2,15 +2,11 @@ package expo.modules.securestore
 
 import expo.modules.kotlin.exception.CodedException
 
-
 internal class NullKeyException :
   CodedException("SecureStore keys must not be null")
 
 internal class WriteException(message: String?, cause: Throwable?) :
   CodedException(message ?: "An unexpected error occurred when writing to SecureStore", cause)
-
-internal class ReadException(cause: Throwable?) :
-  CodedException("An unexpected error occurred when reading from SecureStore", cause)
 
 internal class SecureStoreIOException(cause: Throwable?) :
   CodedException("There was an I/O error loading the keystore for SecureStore", cause)

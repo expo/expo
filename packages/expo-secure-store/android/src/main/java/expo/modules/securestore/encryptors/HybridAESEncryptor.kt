@@ -7,10 +7,7 @@ import android.security.KeyPairGeneratorSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
 import android.util.Log
-import expo.modules.kotlin.Promise
-import expo.modules.securestore.callbacks.AuthenticationCallback
-import expo.modules.securestore.callbacks.EncryptionCallback
-import expo.modules.securestore.callbacks.PostEncryptionCallback
+import expo.modules.securestore.AuthenticationHelper
 import expo.modules.securestore.SecureStoreModule
 import expo.modules.securestore.SecureStoreOptions
 import org.json.JSONException
@@ -51,17 +48,25 @@ import javax.security.auth.x500.X500Principal
  * When we drop support for Android API 22, we can remove the write paths but need to keep the
  * read paths for phones that still have hybrid-encrypted values on disk.
  */
-class HybridAESEncrypter(private var mContext: Context, private val mAESEncrypter: AESEncrypter) : KeyBasedEncrypter<KeyStore.PrivateKeyEntry> {
+class HybridAESEncryptor(private var mContext: Context, private val mAESEncryptor: AESEncryptor) : KeyBasedEncryptor<KeyStore.PrivateKeyEntry> {
   private val mSecureRandom: SecureRandom = SecureRandom()
+  override fun getExtendedKeyStoreAlias(options: SecureStoreOptions, requireAuthentication: Boolean): String {
+    val suffix = if (requireAuthentication) {
+      SecureStoreModule.AUTHENTICATED_KEYSTORE_SUFFIX
+    } else {
+      SecureStoreModule.UNAUTHENTICATED_KEYSTORE_SUFFIX
+    }
+    return "${getKeyStoreAlias(options)}:$suffix"
+  }
 
   override fun getKeyStoreAlias(options: SecureStoreOptions): String {
-    val baseAlias = if (Objects.isNull(options.keychainService)) DEFAULT_ALIAS else options.keychainService!!
+    val baseAlias = options.keychainService
     return "$RSA_CIPHER:$baseAlias"
   }
 
   @Throws(GeneralSecurityException::class)
   override fun initializeKeyStoreEntry(keyStore: KeyStore, options: SecureStoreOptions): KeyStore.PrivateKeyEntry {
-    val keystoreAlias = getKeyStoreAlias(options)
+    val keystoreAlias = getExtendedKeyStoreAlias(options, options.requireAuthentication)
     // See https://tools.ietf.org/html/rfc1779#section-2.3 for the DN grammar
     val escapedCommonName = '"'.toString() + keystoreAlias.replace("\\", "\\\\").replace("\"", "\\\"") + '"'
     val algorithmSpec: AlgorithmParameterSpec = KeyPairGeneratorSpec.Builder(mContext)
@@ -81,8 +86,7 @@ class HybridAESEncrypter(private var mContext: Context, private val mAESEncrypte
   }
 
   @Throws(GeneralSecurityException::class, JSONException::class)
-  override fun createEncryptedItem(promise: Promise, plaintextValue: String, keyStoreEntry: KeyStore.PrivateKeyEntry,
-                                   options: SecureStoreOptions, authenticationCallback: AuthenticationCallback, postEncryptionCallback: PostEncryptionCallback?) {
+  override suspend fun createEncryptedItem(plaintextValue: String, keyStoreEntry: KeyStore.PrivateKeyEntry, options: SecureStoreOptions, authenticationHelper: AuthenticationHelper): JSONObject {
 
     // Generate the IV and symmetric key with which we encrypt the value
     val ivBytes = ByteArray(GCM_IV_LENGTH_BYTES)
@@ -90,16 +94,17 @@ class HybridAESEncrypter(private var mContext: Context, private val mAESEncrypte
 
     // constant value will be copied
     @SuppressLint("InlinedApi") val keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES)
-    keyGenerator.init(AESEncrypter.AES_KEY_SIZE_BITS)
+    keyGenerator.init(AESEncryptor.AES_KEY_SIZE_BITS)
     val secretKey = keyGenerator.generateKey()
 
     // Encrypt the value with the symmetric key. We need to specify the GCM parameters since the
     // our secret key isn't tied to the keystore and the cipher can't use the secret key to
     // generate the parameters.
     val gcmSpec = GCMParameterSpec(GCM_AUTHENTICATION_TAG_LENGTH_BITS, ivBytes)
-    val aesCipher = Cipher.getInstance(AESEncrypter.AES_CIPHER)
+    val aesCipher = Cipher.getInstance(AESEncryptor.AES_CIPHER)
+
     aesCipher.init(Cipher.ENCRYPT_MODE, secretKey, gcmSpec)
-    val chosenSpec: GCMParameterSpec? = try {
+    val chosenSpec = try {
       aesCipher.parameters.getParameterSpec(GCMParameterSpec::class.java)
     } catch (e: InvalidParameterSpecException) {
       // BouncyCastle tried to instantiate GCMParameterSpec using invalid constructor
@@ -112,34 +117,31 @@ class HybridAESEncrypter(private var mContext: Context, private val mAESEncrypte
       gcmSpec
     }
 
-    val encryptionCallback = EncryptionCallback { _promise, cipher, _, _postEncryptionCallback ->
-      mAESEncrypter.createEncryptedItem(_promise, plaintextValue, cipher, gcmSpec, _postEncryptionCallback)
+    val authenticatedCipher = authenticationHelper.authenticateCipher(aesCipher, options.requireAuthentication, options.authenticationPrompt)
+
+    val aesResult = mAESEncryptor.createEncryptedItemWithCipher(plaintextValue, options, authenticatedCipher, chosenSpec)
+
+    // Ensure the IV in the encrypted item matches our generated IV
+    val ivString = aesResult.getString(AESEncryptor.IV_PROPERTY)
+    val expectedIVString = Base64.encodeToString(ivBytes, Base64.NO_WRAP)
+    if (ivString != expectedIVString) {
+      Log.e(SecureStoreModule.TAG, String.format("HybridAESEncrypter generated two different IVs: %s and %s", expectedIVString, ivString))
+      throw IllegalStateException("HybridAESEncrypter must store the same IV as the one used to parameterize the secret key")
     }
 
-    authenticationCallback.checkAuthentication(promise, aesCipher, chosenSpec!!, options, encryptionCallback) { _promise, result ->
-      val encryptedItem = result as JSONObject
+    // Encrypt the symmetric key with the asymmetric public key
+    val secretKeyBytes = secretKey.encoded
+    val cipher: Cipher = rSACipher
+    cipher.init(Cipher.ENCRYPT_MODE, keyStoreEntry.certificate)
+    val encryptedSecretKeyBytes = cipher.doFinal(secretKeyBytes)
+    val encryptedSecretKeyString = Base64.encodeToString(encryptedSecretKeyBytes, Base64.NO_WRAP)
+    aesResult.put(ENCRYPTED_SECRET_KEY_PROPERTY, encryptedSecretKeyString)
 
-      // Ensure the IV in the encrypted item matches our generated IV
-      val ivString = encryptedItem.getString(AESEncrypter.IV_PROPERTY)
-      val expectedIVString = Base64.encodeToString(ivBytes, Base64.NO_WRAP)
-      if (ivString != expectedIVString) {
-        Log.e(SecureStoreModule.TAG, String.format("HybridAESEncrypter generated two different IVs: %s and %s", expectedIVString, ivString))
-        throw IllegalStateException("HybridAESEncrypter must store the same IV as the one used to parameterize the secret key")
-      }
-
-      // Encrypt the symmetric key with the asymmetric public key
-      val secretKeyBytes = secretKey.encoded
-      val cipher: Cipher = rSACipher
-      cipher.init(Cipher.ENCRYPT_MODE, keyStoreEntry.certificate)
-      val encryptedSecretKeyBytes = cipher.doFinal(secretKeyBytes)
-      val encryptedSecretKeyString = Base64.encodeToString(encryptedSecretKeyBytes, Base64.NO_WRAP)
-      encryptedItem.put(ENCRYPTED_SECRET_KEY_PROPERTY, encryptedSecretKeyString)
-      postEncryptionCallback!!.run(_promise, encryptedItem)
-    }
+    return aesResult
   }
 
   @Throws(GeneralSecurityException::class, JSONException::class)
-  override fun decryptItem(promise: Promise, encryptedItem: JSONObject, keyStoreEntry: KeyStore.PrivateKeyEntry, options: SecureStoreOptions, callback: AuthenticationCallback) {
+  override suspend fun decryptItem(encryptedItem: JSONObject, keyStoreEntry: KeyStore.PrivateKeyEntry, options: SecureStoreOptions, authenticationHelper: AuthenticationHelper): String {
 
     // Decrypt the encrypted symmetric key
     val encryptedSecretKeyString = encryptedItem.getString(ENCRYPTED_SECRET_KEY_PROPERTY)
@@ -152,7 +154,7 @@ class HybridAESEncrypter(private var mContext: Context, private val mAESEncrypte
 
     // Decrypt the value with the symmetric key
     val secretKeyEntry = KeyStore.SecretKeyEntry(secretKey)
-    mAESEncrypter.decryptItem(promise, encryptedItem, secretKeyEntry, options, callback)
+    return mAESEncryptor.decryptItem(encryptedItem, secretKeyEntry, options, authenticationHelper)
   }
 
   @get:Throws(NoSuchAlgorithmException::class, NoSuchProviderException::class, NoSuchPaddingException::class)
@@ -161,7 +163,6 @@ class HybridAESEncrypter(private var mContext: Context, private val mAESEncrypte
 
   companion object {
     const val NAME = "hybrid"
-    private const val DEFAULT_ALIAS = "key_v1"
     private const val RSA_CIPHER = "RSA/None/PKCS1Padding"
 
     private const val RSA_CIPHER_LEGACY_PROVIDER = "AndroidOpenSSL"
