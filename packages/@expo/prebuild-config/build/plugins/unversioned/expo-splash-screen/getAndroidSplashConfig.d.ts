@@ -9,5 +9,5 @@ export interface AndroidSplashConfig {
     resizeMode: 'contain' | 'cover' | 'native';
     fadeDurationMs: number;
 }
-export declare function getAndroidSplashConfig(config: Pick<ExpoConfig, 'splash' | 'android'>): AndroidSplashConfig | null;
+export declare function getAndroidSplashConfig(config: Pick<ExpoConfig, 'splash' | 'android'>): AndroidSplashConfig;
 export declare function getAndroidDarkSplashConfig(config: Pick<ExpoConfig, 'splash' | 'android'>): AndroidSplashConfig | null;

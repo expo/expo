@@ -17,12 +17,13 @@ type SplashConfig =
   | null
   | void;
 
-const withSplashScreen: ConfigPlugin<SplashConfig> = (config, splash = undefined) => {
+const withSplashScreen: ConfigPlugin<SplashConfig> = (config, splash) => {
   // For simplicity, we'll version the unversioned code in expo-splash-screen.
   // This adds more JS to the package overall, but the trade-off is less copying between expo-cli/expo.
+  debug(`Regular config splash info provided: ${JSON.stringify(config, null, 2)}`);
   debug(`Custom splash info provided: ${JSON.stringify(splash, null, 2)}`);
-  config = withAndroidSplashScreen(config, splash?.android || undefined);
-  config = withIosSplashScreen(config, splash?.ios || undefined);
+  config = withAndroidSplashScreen(config, splash?.android);
+  config = withIosSplashScreen(config, splash?.ios);
   return config;
 };
 

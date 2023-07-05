@@ -31,11 +31,12 @@ static NSTimeInterval const FadeDurationMsMaxAllowedValue = 5.0;
     _appContentAppeared = NO;
     _splashScreenView = splashScreenView;
     NSTimeInterval fadeDurationMsValue = [[[NSBundle mainBundle] objectForInfoDictionaryKey:InfoPlistFadeDurationMsKey] doubleValue] / 1000.0;
-    if (fadeDurationMsValue >= FadeDurationMsMinAllowedValue &&
-        fadeDurationMsValue <= FadeDurationMsMaxAllowedValue) {
-      _fadeDurationMs = fadeDurationMsValue;
+    if( fadeDurationMsValue >= FadeDurationMsMaxAllowedValue) {
+      _fadeDurationMs = FadeDurationMsMaxAllowedValue;
+    } else if (fadeDurationMsValue <= FadeDurationMsMinAllowedValue) {
+      _fadeDurationMs = FadeDurationMsMinAllowedValue;
     } else {
-      _fadeDurationMs = 0.0;
+      _fadeDurationMs = fadeDurationMsValue;
     }
   }
   return self;

@@ -2,6 +2,7 @@ import { ConfigPlugin, InfoPlist, WarningAggregator, withInfoPlist } from '@expo
 import { ExpoConfig } from '@expo/config-types';
 import Debug from 'debug';
 
+import { computeFadeDurationMs, maxFadeDurationMs, minFadeDurationMs } from './fadeDurationUtils';
 import { IOSSplashConfig } from './getIosSplashConfig';
 
 const debug = Debug('expo:prebuild-config:expo-splash-screen:ios:infoPlist');
@@ -18,7 +19,14 @@ export function setSplashInfoPlist(
   infoPlist: InfoPlist,
   splash: IOSSplashConfig
 ): InfoPlist {
-  infoPlist['EXSplashScreenFadeDurationMs'] = splash.fadeDurationMs;
+  const duration = computeFadeDurationMs(splash.fadeDurationMs);
+  if (duration !== splash.fadeDurationMs) {
+    WarningAggregator.addWarningIOS(
+      'fadeDurationMs',
+      `The fade duration value must be between ${minFadeDurationMs} and ${maxFadeDurationMs}. Using ${duration}.`
+    );
+  }
+  infoPlist['EXSplashScreenFadeDurationMs'] = duration;
   const isDarkModeEnabled = !!(
     splash?.dark?.image ||
     splash?.dark?.tabletImage ||

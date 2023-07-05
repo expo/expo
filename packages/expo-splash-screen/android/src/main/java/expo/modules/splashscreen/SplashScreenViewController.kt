@@ -64,14 +64,11 @@ open class SplashScreenViewController(
       return failureCallback("Cannot hide native splash screen on activity that is already destroyed (application is already closed).")
     }
 
-    var fadeDurationMs = 0L
-    try {
-      fadeDurationMs = activity?.getString(R.string.expo_splash_screen_fade_duration_ms)?.toLong() ?: 0L
-      if (fadeDurationMs > MAXIMUM_FADE_DURATION_MS || fadeDurationMs < MINIMUM_FADE_DURATION_MS) {
-        fadeDurationMs = 0L
-      }
-    } catch (e: java.lang.NumberFormatException) {
-      // If fadeDurationMs string is not a number, use the default
+    var fadeDurationMs = activity.getString(R.string.expo_splash_screen_fade_duration_ms).toLongOrNull() ?: 0L
+    if (fadeDurationMs > MAXIMUM_FADE_DURATION_MS) {
+      fadeDurationMs = MAXIMUM_FADE_DURATION_MS
+    } else if(fadeDurationMs < MINIMUM_FADE_DURATION_MS) {
+        fadeDurationMs = MINIMUM_FADE_DURATION_MS
     }
 
     Handler(activity.mainLooper).post {

@@ -1,5 +1,7 @@
 import { ExpoConfig } from '@expo/config-types';
 
+import { defaultFadeDurationMs, computeFadeDurationMs } from './fadeDurationUtils';
+
 export interface AndroidSplashConfig {
   xxxhdpi: string | null;
   xxhdpi: string | null;
@@ -15,7 +17,7 @@ const defaultResizeMode = 'contain';
 
 export function getAndroidSplashConfig(
   config: Pick<ExpoConfig, 'splash' | 'android'>
-): AndroidSplashConfig | null {
+): AndroidSplashConfig {
   // Respect the splash screen object, don't mix and match across different splash screen objects
   // in case the user wants the top level splash to apply to every platform except android.
   if (config.android?.splash) {
@@ -28,7 +30,7 @@ export function getAndroidSplashConfig(
       mdpi: splash.mdpi ?? splash.image ?? null,
       backgroundColor: splash.backgroundColor ?? null,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
-      fadeDurationMs: splash['fadeDurationMs'] ?? 0,
+      fadeDurationMs: computeFadeDurationMs(splash?.fadeDurationMs),
     };
   }
 
@@ -42,7 +44,7 @@ export function getAndroidSplashConfig(
       mdpi: splash.image ?? null,
       backgroundColor: splash.backgroundColor ?? null,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
-      fadeDurationMs: splash['fadeDurationMs'] ?? 0,
+      fadeDurationMs: computeFadeDurationMs(splash?.fadeDurationMs),
     };
   }
 
@@ -54,7 +56,7 @@ export function getAndroidSplashConfig(
     mdpi: null,
     backgroundColor: null,
     resizeMode: defaultResizeMode,
-    fadeDurationMs: 0,
+    fadeDurationMs: defaultFadeDurationMs,
   };
 }
 
@@ -75,7 +77,7 @@ export function getAndroidDarkSplashConfig(
       backgroundColor: splash.backgroundColor ?? null,
       // Can't support dark resizeMode because the resize mode is hardcoded into the MainActivity.java
       resizeMode: lightTheme?.resizeMode ?? defaultResizeMode,
-      fadeDurationMs: splash['fadeDurationMs'] ?? 0,
+      fadeDurationMs: computeFadeDurationMs(splash?.fadeDurationMs),
     };
   }
 

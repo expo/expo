@@ -19,6 +19,13 @@ function _debug() {
   };
   return data;
 }
+function _fadeDurationUtils() {
+  const data = require("./fadeDurationUtils");
+  _fadeDurationUtils = function () {
+    return data;
+  };
+  return data;
+}
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 const debug = (0, _debug().default)('expo:prebuild-config:expo-splash-screen:ios:infoPlist');
 const withIosSplashInfoPlist = (config, splash) => {
@@ -30,7 +37,11 @@ const withIosSplashInfoPlist = (config, splash) => {
 exports.withIosSplashInfoPlist = withIosSplashInfoPlist;
 function setSplashInfoPlist(config, infoPlist, splash) {
   var _splash$dark, _splash$dark2, _splash$dark3, _splash$dark4;
-  infoPlist['EXSplashScreenFadeDurationMs'] = splash.fadeDurationMs;
+  const duration = (0, _fadeDurationUtils().computeFadeDurationMs)(splash.fadeDurationMs);
+  if (duration !== splash.fadeDurationMs) {
+    _configPlugins().WarningAggregator.addWarningIOS('fadeDurationMs', `The fade duration value must be between ${_fadeDurationUtils().minFadeDurationMs} and ${_fadeDurationUtils().maxFadeDurationMs}. Using ${duration}.`);
+  }
+  infoPlist['EXSplashScreenFadeDurationMs'] = duration;
   const isDarkModeEnabled = !!(splash !== null && splash !== void 0 && (_splash$dark = splash.dark) !== null && _splash$dark !== void 0 && _splash$dark.image || splash !== null && splash !== void 0 && (_splash$dark2 = splash.dark) !== null && _splash$dark2 !== void 0 && _splash$dark2.tabletImage || splash !== null && splash !== void 0 && (_splash$dark3 = splash.dark) !== null && _splash$dark3 !== void 0 && _splash$dark3.backgroundColor || splash !== null && splash !== void 0 && (_splash$dark4 = splash.dark) !== null && _splash$dark4 !== void 0 && _splash$dark4.tabletBackgroundColor);
   debug(`isDarkModeEnabled: `, isDarkModeEnabled);
   if (isDarkModeEnabled) {

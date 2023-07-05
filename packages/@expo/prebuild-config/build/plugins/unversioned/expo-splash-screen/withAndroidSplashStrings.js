@@ -12,6 +12,13 @@ function _configPlugins() {
   };
   return data;
 }
+function _fadeDurationUtils() {
+  const data = require("./fadeDurationUtils");
+  _fadeDurationUtils = function () {
+    return data;
+  };
+  return data;
+}
 function _getAndroidSplashConfig() {
   const data = require("./getAndroidSplashConfig");
   _getAndroidSplashConfig = function () {
@@ -27,11 +34,24 @@ const withAndroidSplashStrings = (config, splash) => {
   return (0, _configPlugins().withStringsXml)(config, config => {
     const splashConfig = (0, _getAndroidSplashConfig().getAndroidSplashConfig)(config);
     if (splashConfig) {
-      var _config$androidStatus;
-      const resizeMode = (splash === null || splash === void 0 ? void 0 : splash.resizeMode) || defaultResizeMode;
+      var _ref, _splash$resizeMode, _config$androidStatus;
+      const resizeMode = (_ref = (_splash$resizeMode = splash === null || splash === void 0 ? void 0 : splash.resizeMode) !== null && _splash$resizeMode !== void 0 ? _splash$resizeMode : splashConfig === null || splashConfig === void 0 ? void 0 : splashConfig.resizeMode) !== null && _ref !== void 0 ? _ref : defaultResizeMode;
       const statusBarTranslucent = !!((_config$androidStatus = config.androidStatusBar) !== null && _config$androidStatus !== void 0 && _config$androidStatus.translucent);
-      const fadeDurationMs = `${splash === null || splash === void 0 ? void 0 : splash.fadeDurationMs}`;
-      config.modResults = setSplashStrings(config.modResults, resizeMode, statusBarTranslucent, fadeDurationMs);
+      let duration;
+      if (splash !== null && splash !== void 0 && splash.fadeDurationMs) {
+        duration = (0, _fadeDurationUtils().computeFadeDurationMs)(splash === null || splash === void 0 ? void 0 : splash.fadeDurationMs);
+        if (duration !== (splash === null || splash === void 0 ? void 0 : splash.fadeDurationMs)) {
+          _configPlugins().WarningAggregator.addWarningAndroid('fadeDurationMs', `The fade duration value must be between ${_fadeDurationUtils().minFadeDurationMs} and ${_fadeDurationUtils().maxFadeDurationMs}. Using ${duration}.`);
+        }
+      } else if (splashConfig !== null && splashConfig !== void 0 && splashConfig.fadeDurationMs) {
+        duration = (0, _fadeDurationUtils().computeFadeDurationMs)(splashConfig === null || splashConfig === void 0 ? void 0 : splashConfig.fadeDurationMs);
+        if (duration !== (splashConfig === null || splashConfig === void 0 ? void 0 : splashConfig.fadeDurationMs)) {
+          _configPlugins().WarningAggregator.addWarningAndroid('fadeDurationMs', `The fade duration value must be between ${_fadeDurationUtils().minFadeDurationMs} and ${_fadeDurationUtils().maxFadeDurationMs}. Using ${duration}.`);
+        }
+      } else {
+        duration = _fadeDurationUtils().defaultFadeDurationMs;
+      }
+      config.modResults = setSplashStrings(config.modResults, resizeMode, statusBarTranslucent, `${duration}`);
     }
     return config;
   });

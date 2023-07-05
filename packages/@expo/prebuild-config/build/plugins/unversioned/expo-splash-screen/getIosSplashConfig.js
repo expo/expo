@@ -4,6 +4,13 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.getIosSplashConfig = getIosSplashConfig;
+function _fadeDurationUtils() {
+  const data = require("./fadeDurationUtils");
+  _fadeDurationUtils = function () {
+    return data;
+  };
+  return data;
+}
 const defaultResizeMode = 'contain';
 const defaultBackgroundColor = '#ffffff';
 // TODO: Maybe use an array on splash with theme value. Then remove the array in serialization for legacy and manifest.
@@ -12,14 +19,14 @@ function getIosSplashConfig(config) {
   // Respect the splash screen object, don't mix and match across different splash screen objects
   // in case the user wants the top level splash to apply to every platform except iOS.
   if ((_config$ios = config.ios) !== null && _config$ios !== void 0 && _config$ios.splash) {
-    var _config$ios2, _splash$image, _splash$resizeMode, _splash$backgroundCol, _splash$fadeDurationM, _splash$tabletImage, _splash$dark$image, _splash$dark, _splash$dark2, _splash$dark$tabletIm, _splash$dark3, _splash$dark4;
+    var _config$ios2, _splash$image, _splash$resizeMode, _splash$backgroundCol, _splash$tabletImage, _splash$dark$image, _splash$dark, _splash$dark2, _splash$dark$tabletIm, _splash$dark3, _splash$dark4;
     const splash = (_config$ios2 = config.ios) === null || _config$ios2 === void 0 ? void 0 : _config$ios2.splash;
     const image = (_splash$image = splash.image) !== null && _splash$image !== void 0 ? _splash$image : null;
     return {
       image,
       resizeMode: (_splash$resizeMode = splash.resizeMode) !== null && _splash$resizeMode !== void 0 ? _splash$resizeMode : defaultResizeMode,
       backgroundColor: (_splash$backgroundCol = splash.backgroundColor) !== null && _splash$backgroundCol !== void 0 ? _splash$backgroundCol : defaultBackgroundColor,
-      fadeDurationMs: (_splash$fadeDurationM = splash['fadeDurationMs']) !== null && _splash$fadeDurationM !== void 0 ? _splash$fadeDurationM : 0,
+      fadeDurationMs: (0, _fadeDurationUtils().computeFadeDurationMs)(splash === null || splash === void 0 ? void 0 : splash.fadeDurationMs),
       tabletImage: (_splash$tabletImage = splash.tabletImage) !== null && _splash$tabletImage !== void 0 ? _splash$tabletImage : null,
       tabletBackgroundColor: splash.tabletBackgroundColor,
       dark: {
@@ -31,14 +38,14 @@ function getIosSplashConfig(config) {
     };
   }
   if (config.splash) {
-    var _splash$image2, _splash$resizeMode2, _splash$backgroundCol2, _splash$fadeDurationM2;
+    var _splash$image2, _splash$resizeMode2, _splash$backgroundCol2;
     const splash = config.splash;
     const image = (_splash$image2 = splash.image) !== null && _splash$image2 !== void 0 ? _splash$image2 : null;
     return {
       image,
       resizeMode: (_splash$resizeMode2 = splash.resizeMode) !== null && _splash$resizeMode2 !== void 0 ? _splash$resizeMode2 : defaultResizeMode,
       backgroundColor: (_splash$backgroundCol2 = splash.backgroundColor) !== null && _splash$backgroundCol2 !== void 0 ? _splash$backgroundCol2 : defaultBackgroundColor,
-      fadeDurationMs: (_splash$fadeDurationM2 = splash['fadeDurationMs']) !== null && _splash$fadeDurationM2 !== void 0 ? _splash$fadeDurationM2 : 0,
+      fadeDurationMs: (0, _fadeDurationUtils().computeFadeDurationMs)(splash === null || splash === void 0 ? void 0 : splash.fadeDurationMs),
       tabletImage: null,
       tabletBackgroundColor: null,
       dark: {
@@ -52,7 +59,7 @@ function getIosSplashConfig(config) {
   return {
     backgroundColor: '#ffffff',
     resizeMode: 'contain',
-    fadeDurationMs: 0,
+    fadeDurationMs: _fadeDurationUtils().defaultFadeDurationMs,
     tabletImage: null,
     tabletBackgroundColor: null
   };

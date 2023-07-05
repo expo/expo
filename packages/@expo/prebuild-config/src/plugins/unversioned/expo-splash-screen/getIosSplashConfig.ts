@@ -1,5 +1,7 @@
 import { ExpoConfig } from '@expo/config-types';
 
+import { defaultFadeDurationMs, computeFadeDurationMs } from './fadeDurationUtils';
+
 type ExpoConfigIosSplash = NonNullable<NonNullable<ExpoConfig['ios']>['splash']>;
 
 const defaultResizeMode = 'contain';
@@ -33,7 +35,7 @@ export function getIosSplashConfig(config: ExpoConfig): IOSSplashConfig | null {
       image,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
       backgroundColor: splash.backgroundColor ?? defaultBackgroundColor,
-      fadeDurationMs: splash['fadeDurationMs'] ?? 0,
+      fadeDurationMs: computeFadeDurationMs(splash?.fadeDurationMs),
       tabletImage: splash.tabletImage ?? null,
       tabletBackgroundColor: splash.tabletBackgroundColor,
       dark: {
@@ -52,7 +54,7 @@ export function getIosSplashConfig(config: ExpoConfig): IOSSplashConfig | null {
       image,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
       backgroundColor: splash.backgroundColor ?? defaultBackgroundColor,
-      fadeDurationMs: splash['fadeDurationMs'] ?? 0,
+      fadeDurationMs: computeFadeDurationMs(splash?.fadeDurationMs),
       tabletImage: null,
       tabletBackgroundColor: null,
       dark: {
@@ -67,7 +69,7 @@ export function getIosSplashConfig(config: ExpoConfig): IOSSplashConfig | null {
   return {
     backgroundColor: '#ffffff',
     resizeMode: 'contain',
-    fadeDurationMs: 0,
+    fadeDurationMs: defaultFadeDurationMs,
     tabletImage: null,
     tabletBackgroundColor: null,
   };
