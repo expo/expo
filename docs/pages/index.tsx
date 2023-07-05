@@ -21,8 +21,6 @@ import {
   APIListIcon,
   APIMapsIcon,
   APINotificationsIcon,
-  CodecademyImage,
-  CodecademyImageMasks,
   DevicesImage,
   DevicesImageMasks,
   OfficeHoursImage,
@@ -53,7 +51,6 @@ const Home = () => {
       <DocumentationPage tocVisible={false} hideFromSearch>
         <div className="h-0">
           <DevicesImageMasks />
-          <CodecademyImageMasks />
         </div>
         <H1 css={docsTitleStyle}>Create amazing apps that run everywhere</H1>
         <Description>
@@ -144,43 +141,15 @@ const Home = () => {
               xl={6}
               lg={6}
               css={css({
-                backgroundColor: palette.orange4,
-                borderColor: palette.orange8,
-              })}>
-              <CodecademyImage />
-              <RawH3 css={css({ color: palette.orange11 })}>
-                Learn Expo on
-                <br />
-                Codecademy
-              </RawH3>
-              <HomeButton
-                className="bg-palette-orange11 border-palette-orange11 text-palette-orange4 hocus:bg-palette-orange11 hocus:opacity-80"
-                css={css({
-                  backgroundColor: palette.orange11,
-                  color: palette.orange4,
-                  '.dark-theme &': {
-                    backgroundColor: palette.orange11,
-                  },
-                })}
-                href="https://www.codecademy.com/learn/learn-react-native"
-                target="_blank"
-                rightSlot={<ArrowUpRightIcon className="text-palette-orange4 icon-md" />}>
-                Start Course
-              </HomeButton>
-            </GridCell>
-            <GridCell
-              xl={6}
-              lg={6}
-              css={css({
                 backgroundColor: palette.green3,
                 borderColor: palette.green7,
               })}>
               <WhyImage />
-              <RawH3 css={css({ color: palette.green11 })}>Why choose Expo?</RawH3>
+              <RawH3 css={css({ color: palette.green11 })}>Frequently Asked Questions</RawH3>
               <P css={{ color: palette.green11, ...typography.fontSizes[14] }}>
-                Learn the tradeoffs of
+                Answers to common questions about Expo,
                 <br />
-                using Expo.
+                EAS, and React Native.
               </P>
               <HomeButton
                 className="bg-palette-green11 border-palette-green11 text-palette-green2 hocus:bg-palette-green11 hocus:opacity-80"
@@ -208,6 +177,29 @@ const Home = () => {
                 href="https://us02web.zoom.us/meeting/register/tZcvceivqj0oHdGVOjEeKY0dRxCRPb0HzaAK"
                 rightSlot={<ArrowUpRightIcon className="text-palette-yellow2 icon-md" />}>
                 Register
+              </HomeButton>
+            </GridCell>
+            <GridCell
+              xl={6}
+              lg={6}
+              css={css({
+                backgroundColor: palette.gray3,
+                borderColor: palette.gray8,
+              })}>
+              <div className="absolute bottom-6 right-6 p-5 bg-palette-gray12 rounded-full">
+                <DiscordIcon className="icon-2xl text-palette-white" />
+              </div>
+              <RawH3 css={css({ color: palette.gray12 })}>Chat with the community</RawH3>
+              <P css={{ color: palette.gray12, ...typography.fontSizes[14] }}>
+                Join over 15,000 other developers
+                <br />
+                on the Expo Community Discord.
+              </P>
+              <HomeButton
+                className="bg-palette-gray12 border-palette-gray11 text-palette-gray2 hocus:bg-palette-gray11 hocus:opacity-80"
+                href="https://chat.expo.dev"
+                rightSlot={<ArrowUpRightIcon className="text-palette-gray2 icon-md" />}>
+                Go to Discord
               </HomeButton>
             </GridCell>
           </Row>
