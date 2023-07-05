@@ -5,6 +5,10 @@ hideTOC: true
 description: An introduction to EAS Insights which is a preview service for projects using the expo-insights library.
 ---
 
+import { Terminal } from '~/ui/components/Snippet';
+
+> **warning** EAS Insights is in preview and subject to breaking changes.
+
 **EAS Insights** is a service that will offer a view into a project's performance, usage, and reach. We are currently offering a preview of Insights that is available to all developers, and we will continue to roll out new features and functionality based on user feedback and suggestions.
 
 EAS Insights makes it easy to see the state of your app, providing information about usage across platforms, app store versions, and timeframes.
@@ -13,6 +17,16 @@ EAS Insights makes it easy to see the state of your app, providing information a
 
 If you're already using [EAS Update](/eas-update/introduction.mdx), we provide certain high-level usage insights without any additional client-side changes. This is possible because by aggregating data from client requests to check for an update into a limited Insights view that shows usage over time, as well as usage broken down by platform.
 
-## Using the `expo-insights` module
+## Use `expo-insights` library
 
-Developers can add the `expo-insights` library to their projects and gain more precise usage metrics (than those provided by just aggregating update requests) and additional breakdowns by app store version. Currently, the module is limited to sending client events only pertaining to cold starts of the app, but in the future we will expand `expo-insights` to offer new types of events and payloads, to support more advanced functionality.
+Developers can add the `expo-insights` library to their projects and gain more precise usage metrics (than those provided by just aggregating update requests) and additional breakdowns by app store version. Currently, the library is limited to sending client events only pertaining to cold starts of the app, but in the future we will expand `expo-insights` to offer new types of events and payloads, to support more advanced functionality.
+
+### Installation
+
+> Available for SDK 48 and higher.
+
+To install `expo-insights` in your project, run the following command:
+
+<Terminal cmd={['$ npx expo install expo-insights']} />
+
+After installing the library, [create a new build](/workflow/customizing/).
