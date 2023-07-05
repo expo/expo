@@ -397,6 +397,7 @@ const preview = [
       makePage('router/advance/nesting-navigators.mdx'),
       makePage('router/advance/drawer.mdx'),
       makePage('router/advance/modal.mdx'),
+      makePage('router/advance/platform-specific-modules.mdx'),
       makePage('router/advance/shared-routes.mdx'),
       makePage('router/advance/router-settings.mdx'),
     ]),
