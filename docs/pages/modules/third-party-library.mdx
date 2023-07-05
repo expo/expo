@@ -1,0 +1,335 @@
+---
+title: Use third-party native libraries in Expo
+description: Learn how to create a simple wrapper around two separate native libraries using Expo Modules.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+Expo modules make it possible to easily use native, external libraries built for Android and iOS in React Native projects.  
+This tutorial focuses on utilizing the Expo Modules API to create radial charts using two similar libraries accessible on both native platforms.
+
+- [MPAndroidChart by PhilJay](https://github.com/PhilJay/MPAndroidChart)
+- [Charts by Daniel Cohen Gindi](https://github.com/danielgindi/Charts)
+
+The iOS library is inspired by the Android library, so they both have a very similar API and functionality.
+This makes them a good example for this tutorial.
+
+<Step label="1">
+## Create a new module
+
+You can start by creating a new empty Expo module. We're creating a separate project for this tutorial. However, you can create a new module inside your existing project.
+
+### As a separate project
+
+Alternatively, if you want to create an empty Expo module to be published on npm and used in any Expo application, run:
+
+<Terminal cmd={['$ npx create-expo-module expo-radial-chart']} />
+
+> **Tip**: Since you aren't going to actually ship this library, you can hit <kbd>return</kbd> for all of the prompts to accept the default values.
+
+Next, you can open the newly created `expo-radial-chart` directory and start editing the native code.
+
+### Inside an existing application
+
+If you want to use our new module as a view inside the existing project, you can run this command inside your project directory:
+
+<Terminal cmd={['$ npx create-expo-module --local expo-radial-chart']} />
+
+Next, you can open the newly created `modules/expo-radial-chart` directory and start editing the native code.
+
+</Step>
+
+<Step label="2">
+
+## Run the example project
+
+Now let's run the example project to make sure everything is working. We'll need to start the TypeScript compiler to watch for changes and rebuild the module JavaScript, and separately in another terminal window we'll compile and run the example app.
+
+<Terminal
+  cmdCopy="npm run build"
+  cmd={[
+    '# Run this in the root of the project to start the TypeScript compiler',
+    '$ npm run build',
+  ]}
+/>
+
+<Terminal
+  cmdCopy="cd example && npx expo run:ios"
+  cmd={[
+    '$ cd example',
+    '# Run the example app on iOS',
+    '$ npx expo run:ios',
+    '# Run the example app on Android',
+    '$ npx expo run:android',
+  ]}
+/>
+
+</Step>
+
+<Step label="3">
+## Add native dependencies
+
+Now we can add the native dependencies to the module by editing the `android/build.gradle` and `ios/ExpoRadialChart.podspec` files.
+
+```diff android/build.grade
+dependencies {
+  implementation project(':expo-modules-core')
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
++ implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+}
+```
+
+```diff ios/ExpoRadialChart.podspec
+    s.static_framework = true
+
+    s.dependency 'ExpoModulesCore'
++   s.dependency 'Charts', '~> 4.1.0'
+
+    # Swift/Objective-C compatibility
+```
+
+</Step>
+
+<Step label="4">
+## Define an API
+
+To use our module in the application without mistakes we'll define the types for our props.
+Our module accepts a list of series, each with a color and a percentage value.
+
+```ts src/ExpoRadialChart.types.ts
+import { ViewStyle } from 'react-native/types';
+
+export type ChangeEventPayload = {
+  value: string;
+};
+
+type Series = {
+  color: string;
+  percentage: number;
+};
+
+export type ExpoRadialChartViewProps = {
+  style?: ViewStyle;
+  data: Series[];
+};
+```
+
+Since we won't implement the module on the web in this example, we also need to replace the `src/ExpoRadialChartView.web.tsx` file.
+
+```tsx src/ExpoRadialChartView.web.tsx
+import * as React from 'react';
+
+export default function ExpoRadialChartView() {
+  return <div>Not implemented</div>;
+}
+```
+
+</Step>
+
+<Step label="5">
+## Implement the module on Android
+
+We can now implement the native functionality by editing the placeholder files.
+
+We create a `PieChart` instance and set its layoutParams to match the parent view.
+Then we add it to the view hierarchy using the `addView` function.
+
+We define a `setChartData` function that accepts a list of `Series` objects.
+We iterate over the list and create a `PieEntry` for each series. We also store the colors in a separate list.
+Then we create a `PieDataSet`, use it to create a `PieData` object and set it as data on the `PieChart` instance.
+
+```kotlin android/src/main/java/expo/modules/radialchart/ExpoRadialChartView.kt
+package expo.modules.radialchart
+
+import android.content.Context
+import android.graphics.Color
+import androidx.annotation.ColorInt
+import com.github.mikephil.charting.charts.PieChart
+import com.github.mikephil.charting.data.PieData
+import com.github.mikephil.charting.data.PieDataSet
+import com.github.mikephil.charting.data.PieEntry
+import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.records.Field
+import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.views.ExpoView
+
+
+class Series : Record {
+  @Field
+  val color: String = "#ff0000"
+
+  @Field
+  val percentage: Float = 0.0f
+}
+
+class ExpoRadialChartView(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
+  internal val chartView = PieChart(context).also {
+    it.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+    addView(it)
+  }
+
+  fun setChartData(data: ArrayList<Series>) {
+    val entries: ArrayList<PieEntry> = ArrayList()
+    val colors: ArrayList<Int> = ArrayList()
+    for (series in data) {
+      entries.add(PieEntry(series.percentage))
+      colors.add(Color.parseColor(series.color))
+    }
+    val dataSet = PieDataSet(entries, "DataSet");
+    dataSet.colors = colors;
+    val pieData = PieData(dataSet);
+    chartView.data = pieData;
+    chartView.invalidate();
+
+  }
+}
+```
+
+We also need to use the [`Prop`](/modules/module-api/#prop) function to define the `data` prop and call the native `setChartData` function when the prop changes.
+
+```kotlin android/src/main/java/expo/modules/radialchart/ExpoRadialChartModule.kt
+package expo.modules.radialchart
+
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
+
+class ExpoRadialChartModule : Module() {
+  override fun definition() = ModuleDefinition {
+    Name("ExpoRadialChart")
+
+    View(ExpoRadialChartView::class) {
+      Prop("data") { view: ExpoRadialChartView, prop: ArrayList<Series> ->
+        view.setChartData(prop);
+      }
+    }
+  }
+}
+```
+
+</Step>
+
+<Step label="6">
+## Implement the module on iOS
+
+We create a new `PieChartView` instance and use the `addSubview` function to add it to the view hierarchy.
+
+We need to set the `clipsToBounds` property and override the `layoutSubviews` function to make sure the chart view is always the same size as the parent view.
+
+Finally, we create a `setChartData` function that accepts a list of series, creates a `PieChartDataSet` instance with the data and assigns it to the `data` property of the `PieChartView` instance.
+
+```swift ios/ExpoRadialChartView.swift
+import ExpoModulesCore
+import Charts
+
+struct Series: Record {
+  @Field
+  var color: UIColor = UIColor.black
+
+  @Field
+  var percentage: Double = 0
+}
+
+class ExpoRadialChartView: ExpoView {
+  let chartView = PieChartView()
+
+  required init(appContext: AppContext? = nil) {
+    super.init(appContext: appContext)
+    clipsToBounds = true
+    addSubview(chartView)
+  }
+
+  override func layoutSubviews() {
+    chartView.frame = bounds
+  }
+
+  func setChartData(data: [Series]) {
+    let set1 = PieChartDataSet(entries: data.map({ (series: Series) -> PieChartDataEntry in
+      return PieChartDataEntry(value: series.percentage)
+    }))
+    set1.colors = data.map({ (series: Series) -> UIColor in
+      return series.color
+    })
+    let chartData: PieChartData = [set1]
+    chartView.data = chartData
+  }
+}
+```
+
+We also need to use the [`Prop`](/modules/module-api/#prop) function to define the `data` prop and call the native `setChartData` function when the prop changes.
+
+```swift ios/ExpoRadialChartModule.swift
+import ExpoModulesCore
+
+public class ExpoRadialChartModule: Module {
+  public func definition() -> ModuleDefinition {
+    Name("ExpoRadialChart")
+
+    View(ExpoRadialChartView.self) {
+      Prop("data") { (view: ExpoRadialChartView, prop: [Series]) in
+        view.setChartData(data: prop)
+      }
+    }
+  }
+}
+```
+
+</Step>
+
+<Step label="7">
+
+## Write an example application to use our module
+
+Now we can update the app inside the `example` directory to to test our module. We'll use the `ExpoRadialChartView` component to render a pie chart with three slices.
+
+```tsx example/App.tsx
+import { ExpoRadialChartView } from 'expo-radial-chart';
+import { StyleSheet } from 'react-native';
+
+export default function App() {
+  return (
+    <ExpoRadialChartView
+      style={styles.container}
+      data={[
+        {
+          color: '#ff0000',
+          percentage: 0.5,
+        },
+        {
+          color: '#00ff00',
+          percentage: 0.2,
+        },
+        {
+          color: '#0000ff',
+          percentage: 0.3,
+        },
+      ]}
+    />
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
+```
+
+> **Tip**: If you created the module inside an existing application, make sure to import it directly from your `modules` directory. It's easiest to use a relative import. `import { ExpoRadialChartView } from '../modules/expo-radial-chart';`
+
+</Step>
+
+<Step label="8">
+## Rebuild and launch your application
+
+Rerun the build commands from step 2 and make sure your application builds successfully on both platforms.
+
+You should see a pie chart with three slices:
+
+![A PieChart module on iOS and Android](/static/images/modules/third-party-library/result.webp)
+
+Congratulations, you have created your first simple wrapper around two separate native libraries using Expo Modules! Learn more about the API in the [Expo Module API reference](/modules/module-api/).
+
+if you enjoyed this tutorial and haven't done the native module tutorial, go to the ["creating a native module" tutorial](/modules/native-module-tutorial/) next.
+
+</Step>
