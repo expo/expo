@@ -26,4 +26,5 @@ export const ASSETS = {
   twitch: ASSETS_PATH + 'twitch.png',
   twitter: ASSETS_PATH + 'twitter.png',
   uber: ASSETS_PATH + 'uber.png',
+  asgardeo: ASSETS_PATH + 'asgardeo.png',
 } as const;

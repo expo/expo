@@ -67,6 +67,7 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
   <GridItem title="Twitch" protocol={['OAuth 2']} image={ASSETS.twitch} />
   <GridItem title="Twitter" protocol={['OAuth 2']} image={ASSETS.twitter} />
   <GridItem title="Uber" protocol={['OAuth 2']} image={ASSETS.uber} />
+  <GridItem title="Asgardeo" protocol={['OAuth 2', 'OpenID']} image={ASSETS.asgardeo} />
 </Grid>
 
 <Box
@@ -2108,6 +2109,115 @@ export default function App() {
 </Tabs>
 </Box>
 {/* End Uber */}
+
+<Box
+  name="Asgardeo"
+  createUrl="https://wso2.com/asgardeo/docs/guides/#developer-guide"
+  image={ASSETS.asgardeo}
+>
+
+| Website                       | Provider | PKCE      | Auto Discovery |
+| ----------------------------- | -------- | --------- | -------------- |
+| [Get Your Config][c-asgardeo] | OpenID   | Supported | Available      |
+
+[c-asgardeo]: https://console.asgardeo.io/
+
+- Make sure to check `Public Client` in the console.
+- Check `Implicit` in the Allowed grant types section.
+
+<Tabs tabs={["Auth Code"]}>
+
+<Tab>
+
+{/* prettier-ignore */}
+```tsx
+import { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, Button, Alert } from 'react-native';
+import * as AuthSession from "expo-auth-session";
+import * as WebBrowser from "expo-web-browser";
+import jwtDecode from "jwt-decode";
+
+WebBrowser.maybeCompleteAuthSession();
+
+const useProxy = true;
+const redirectUri = AuthSession.makeRedirectUri({ useProxy });
+
+/* @info <strong>Client ID:</strong> This can be found on the protocol tab of Asgardeo Console */
+const CLIENT_ID = "YOUR_CLIENT_ID";
+/* @end */
+
+export default function App() {
+
+  /* @info <strong>Auto Discovery URL:</strong> This can be found on the info tab of Asgardeo Console. Copy the link under `Issuer` */
+  const discovery = AuthSession.useAutoDiscovery('https://api.asgardeo.io/t/<YOUR_ORG_NAME>/oauth2/token');
+  /* @end */
+  const [decodedToken, setDecodedToken] = useState({});
+
+  const [request, result, promptAsync] = AuthSession.useAuthRequest(
+        {
+            redirectUri,
+            clientId: CLIENT_ID,
+            responseType: "token",
+            scopes: ["openid", "profile", "email", "offline_access"]
+        },
+        discovery
+    );
+
+  useEffect(() => {
+    async function setResult() {
+      if (result) {
+        if (result.error) {
+          Alert.alert(
+            "Authentication error",
+            result.params.error_description || "something went wrong"
+          );
+          
+          return;
+        }
+
+        if (result.type === "success") {
+          const jwtToken = result.params.access_token;
+          const decoded = jwtDecode(jwtToken);
+          setDecodedToken(decoded);
+        }
+
+      }
+    }
+    setResult();
+  }, [result]);
+
+  return (
+    <View style={styles.container}>
+      <Button title="Login" disabled={!request} onPress={() => promptAsync({ useProxy })} />
+      {decodedToken && <Text>Welcome {decodedToken.given_name || ""}!</Text>}
+      {decodedToken && <Text>{decodedToken.email}</Text>}
+      <View style={styles.accessTokenBlock}>
+        decodedToken && <Text>Access Token: {result?.params.access_token}</Text>
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    accessTokenBlock: {
+        width: 300,
+        height: 500,
+        overflow: "scroll"
+    }
+});
+```
+
+</Tab>
+
+</Tabs>
+</Box>
+{/* End Asgardeo */}
 
 {/* End Guides */}
 
