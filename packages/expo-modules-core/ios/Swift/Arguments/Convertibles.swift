@@ -17,8 +17,10 @@ extension URL: Convertible {
       throw Conversions.ConvertingException<URL>(value)
     }
 
-    // Try to construct the URL object from the string as it came in.
-    if let url = URL(string: value) {
+    // URLComponents parses and constructs URLs according to RFC 3986.
+    // For some unusual urls URL(string:) will fail incorrectly
+    let components = URLComponents(string: value)
+    if let components, let url = components.url {
       // If it has no scheme, we assume it was the file path which needs to be recreated to be recognized as the file url.
       return url.scheme != nil ? url : URL(fileURLWithPath: value)
     }
