@@ -5,21 +5,19 @@ description: Learn how to trigger builds on EAS for your app using the Expo GitH
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
-This document outlines how to trigger builds on EAS for your app from a CI environment such as GitHub Actions, Travis CI, and more.
+You can trigger builds on EAS for your app from a CI environment such as GitHub Actions, Travis CI, and more.
 
-Before building with EAS on CI, we need to install and configure `eas-cli`. Then, we can trigger new builds with the `eas build` command.
+Before building with EAS on CI, you'll need to install and configure `eas-cli`. Then, you can trigger new builds with the `eas build` command.
 
 ## Prerequisites
 
-> While in preview, this feature is only available to EAS subscribers.
+> **warning** While in preview, this feature is only available to EAS subscribers.
 
 ### Run a successful build from your local machine
 
-To trigger EAS builds from a GitHub, we first need to configure our app for EAS Build and successfully run a build from our local machine for each platform that we'd like to support on GitHub.
+To trigger EAS builds from a GitHub repo, you'll need to configure your project for EAS Build and successfully run a build from your computer for each platform that you'd like to support on GitHub.
 
-If you have run `eas build -p [all|ios|android]` successfully before, then you can continue.
-
-If you haven't done this yet, please refer to the [Creating your first build](setup.mdx) guide and return here when you're ready.
+If you have run `eas build -p [all|ios|android]` successfully before, then you can continue. If you haven't done this yet, refer to the [Create your first build](setup.mdx) and return here when ready.
 
 ## Configure your app for GitHub
 
@@ -50,8 +48,7 @@ Link your GitHub account to your Expo account.
   src="/static/images/eas-build/build-from-github/link-github-account.png"
 />
 
-Then, you'll be able to link
-your repository to your Expo project.
+Then, you'll be able to link your repository to your Expo project.
 
 <ImageSpotlight
   alt="The repository selector on the Expo project GitHub settings page"
@@ -60,8 +57,8 @@ your repository to your Expo project.
 
 ### Configure your repository settings
 
-Before running a build, we need to know where to find the source code for your project. If your Expo
-project sourse code is in the root of your repository, then you don't need to do anything. If your
+Before you run a build, the Expo GitHub App needs to know where to find the source code for your project. If your Expo
+project source code is in the root of your repository, then you don't need to do anything. If your
 Expo project source code is in a subdirectory, then you'll need to configure "Base directory"
 settings for your repository on your project's [GitHub settings
 page](https://expo.dev/accounts/[account]/projects/[projectName]/github).
@@ -74,14 +71,14 @@ page](https://expo.dev/accounts/[account]/projects/[projectName]/github).
 ## Trigger a build from GitHub
 
 Once you've configured your app for GitHub, you can trigger a build from GitHub by using the UI on
-your project's builds list page or by labels on your GitHub PRs.
+your project's build list page or by labels on your GitHub PRs.
 
 ### Build using the Expo website
 
-Visit your project's [builds list
+Visit your project's [build list
 page](https://expo.dev/accounts/[account]/projects/[projectName]/builds) and click the "Build from
 GitHub" button. You'll be prompted to select a Git ref (branch/commit/tag), a platform to build
-for and the build profile to apply to it.
+for, and the build profile to apply to it.
 
 You can also specify a base directory for this specific build. That will not change the global
 settings for this project.
@@ -100,7 +97,7 @@ a build platform, it will default to `all`. If you don't speficy
 a build profile, it will default to `production`.
 
 For example, if
-you want to trigger a production build for Android, you would add the label `eas-build-android` to the PR.
+you want to trigger a production build for Android, add the label `eas-build-android` to the PR.
 
 <ImageSpotlight
   alt="A PR with the eas-build label and live status checks"
