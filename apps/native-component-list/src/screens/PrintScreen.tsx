@@ -103,10 +103,11 @@ export default class PrintScreen extends React.Component<{}, State> {
     const { selectedPrinter } = this.state;
 
     try {
-      const document = await DocumentPicker.getDocumentAsync({
+      const results = await DocumentPicker.getDocumentAsync({
         type: 'application/pdf',
       });
-      if (document.type !== 'success') {
+      const document = results.assets?.[0];
+      if (results.canceled || !document) {
         throw new Error('User did not select a document');
       }
       await Print.printAsync({

@@ -1,40 +1,6 @@
 import ExpoDocumentPicker from './ExpoDocumentPicker';
 import { DocumentPickerOptions, DocumentPickerResult } from './types';
 
-const DEPRECATED_RESULT_KEYS = [
-  'name',
-  'size',
-  'uri',
-  'mimeType',
-  'lastModified',
-  'file',
-  'output',
-];
-
-function mergeDeprecatedResult(result: DocumentPickerResult): DocumentPickerResult {
-  const firstAsset = result.assets?.[0];
-  const deprecatedResult = {
-    ...result,
-    get type() {
-      console.warn(
-        'Key "type" in the document picker result is deprecated and will be removed in SDK 49, use "canceled" instead'
-      );
-      return this.canceled ? 'cancel' : 'success';
-    },
-  };
-  for (const key of DEPRECATED_RESULT_KEYS) {
-    Object.defineProperty(deprecatedResult, key, {
-      get() {
-        console.warn(
-          `Key "${key}" in the document picker result is deprecated and will be removed in SDK 49, you can access selected assets through the "assets" array instead`
-        );
-        return firstAsset?.[key];
-      },
-    });
-  }
-  return deprecatedResult;
-}
-
 // @needsAudit
 /**
  * Display the system UI for choosing a document. By default, the chosen file is copied to [the app's internal cache directory](filesystem.md#filesystemcachedirectory).
@@ -55,12 +21,11 @@ export async function getDocumentAsync({
   if (typeof type === 'string') {
     type = [type] as string[];
   }
-  const result = await ExpoDocumentPicker.getDocumentAsync({
+  return await ExpoDocumentPicker.getDocumentAsync({
     type,
     copyToCacheDirectory,
     multiple,
   });
-  return mergeDeprecatedResult(result);
 }
 
 export * from './types';
