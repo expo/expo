@@ -145,7 +145,6 @@
     _hasCalledJSLoadedNotification = NO;
 
     _reactRootView = [[RCTRootView alloc] initWithBridge:mainBridge moduleName:@"HomeMenu" initialProperties:[self _getInitialPropsForVisibleApp]];
-    _reactRootView.frame = self.view.bounds;
 
     // By default react root view has white background,
     // however devmenu's bottom sheet looks better with partially visible experience.

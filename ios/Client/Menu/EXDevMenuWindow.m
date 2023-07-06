@@ -21,7 +21,6 @@
     // https://github.com/facebook/react-native/blob/0.64-stable/React/CoreModules/RCTLogBoxView.mm#L38
     self.windowLevel = UIWindowLevelStatusBar;
     self.backgroundColor = [UIColor clearColor];
-    self.bounds = [[UIScreen mainScreen] bounds];
     self.hidden = YES;
   }
   return self;
