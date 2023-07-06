@@ -206,7 +206,7 @@ export default function App() {
     }
 
     useEffect(() => {
-      async function setResult() {
+      (async function setResult() {
         if (result) {
           if (result.error) {
             Alert.alert(
@@ -219,20 +219,19 @@ export default function App() {
             getAccessToken();
           }
         }
-        }
-        setResult();
+      })();
     }, [result]);
 
 
     return (
-        <View style={styles.container}>
-            <Button title="Login" disabled={!request} onPress={() => promptAsync({ useProxy })} />
-            {decodedIdToken && <Text>Welcome {decodedIdToken.given_name || ""}!</Text>}
-            {decodedIdToken && <Text>{decodedIdToken.email}</Text>}
-            <View style={styles.accessTokenBlock}>
-                decodedToken && <Text>Access Token: {tokenResponse.access_token}</Text>
-            </View>
+      <View style={styles.container}>
+        <Button title="Login" disabled={!request} onPress={() => promptAsync({ useProxy })} />
+        {decodedIdToken && <Text>Welcome {decodedIdToken.given_name || ""}!</Text>}
+        {decodedIdToken && <Text>{decodedIdToken.email}</Text>}
+        <View style={styles.accessTokenBlock}>
+          decodedToken && <Text>Access Token: {tokenResponse.access_token}</Text>
         </View>
+      </View>
     );
 }
 
@@ -290,14 +289,13 @@ export default function App() {
     );
 
   useEffect(() => {
-    async function setResult() {
+    (async function setResult() {
       if (result) {
         if (result.error) {
           Alert.alert(
             "Authentication error",
             result.params.error_description || "something went wrong"
           );
-          
           return;
         }
 
@@ -306,10 +304,8 @@ export default function App() {
           const decoded = jwtDecode(jwtToken);
           setDecodedToken(decoded);
         }
-
       }
-    }
-    setResult();
+    })();
   }, [result]);
 
   return (
