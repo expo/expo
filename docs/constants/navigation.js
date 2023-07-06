@@ -130,16 +130,24 @@ const home = [
 ];
 
 const general = [
-  makeSection('General', [
-    makePage('workflow/customizing.mdx'),
+  makeSection('', [makePage('guides/overview.mdx')]),
+  makeSection('Development process', [
     makePage('workflow/configuration.mdx'),
     makePage('workflow/using-libraries.mdx'),
-    makePage('workflow/prebuild.mdx'),
     makePage('guides/permissions.mdx'),
     makePage('guides/environment-variables.mdx'),
     makePage('guides/linking.mdx'),
     makePage('guides/deep-linking.mdx'),
-    makePage('workflow/common-development-errors.mdx'),
+    makeGroup(
+      'Custom native code',
+      [
+        makePage('workflow/continuous-native-generation.mdx'),
+        makePage('workflow/customizing.mdx'),
+        makePage('workflow/prebuild.mdx'),
+        makePage('guides/adopting-prebuild.mdx'),
+      ],
+      { expanded: false }
+    ),
     makeGroup(
       'Web',
       [
@@ -153,12 +161,12 @@ const general = [
       { expanded: false }
     ),
     makeGroup(
-      'Development process',
+      'Reference',
       [
         makePage('guides/monorepos.mdx'),
         makePage('workflow/logging.mdx'),
-        makePage('workflow/continuous-native-generation.mdx'),
         makePage('workflow/development-mode.mdx'),
+        makePage('workflow/common-development-errors.mdx'),
         makePage('workflow/android-studio-emulator.mdx'),
         makePage('workflow/ios-simulator.mdx'),
       ],
@@ -285,9 +293,15 @@ const general = [
   makeSection('EAS Metadata', [
     makePage('eas/metadata/index.mdx'),
     makePage('eas/metadata/getting-started.mdx'),
-    makePage('eas/metadata/config.mdx'),
-    makePage('eas/metadata/schema.mdx'),
-    makePage('eas/metadata/faq.mdx'),
+    makeGroup(
+      'Reference',
+      [
+        makePage('eas/metadata/config.mdx'),
+        makePage('eas/metadata/schema.mdx'),
+        makePage('eas/metadata/faq.mdx'),
+      ],
+      { expanded: false }
+    ),
   ]),
   makeSection('EAS Insights', [makePage('eas-insights/introduction.mdx')]),
   makeSection('Push notifications', [
@@ -295,10 +309,16 @@ const general = [
     makePage('push-notifications/push-notifications-setup.mdx'),
     makePage('push-notifications/sending-notifications.mdx'),
     makePage('push-notifications/receiving-notifications.mdx'),
-    makePage('push-notifications/sending-notifications-custom.mdx'),
-    makePage('push-notifications/faq.mdx'),
+    makeGroup(
+      'Reference',
+      [
+        makePage('push-notifications/sending-notifications-custom.mdx'),
+        makePage('push-notifications/faq.mdx'),
+      ],
+      { expanded: false }
+    ),
   ]),
-  makeSection('Distributing your app', [
+  makeSection('Distribution', [
     makePage('distribution/introduction.mdx'),
     makePage('distribution/app-stores.mdx'),
     makePage('distribution/runtime-versions.mdx'),
@@ -313,11 +333,9 @@ const general = [
       makeSection('Assorted', [
         makePage('guides/routing-and-navigation.mdx'),
         makePage('guides/authentication.mdx'),
-        makePage('guides/delaying-code.mdx'),
         makePage('guides/troubleshooting-proxies.mdx'),
         makePage('guides/sharing-preview-releases.mdx'),
         makePage('guides/using-hermes.mdx'),
-        makePage('guides/adopting-prebuild.mdx'),
         makePage('guides/ios-developer-mode.mdx'),
         makePage('guides/icons.mdx'),
         makePage('guides/localization.mdx'),
