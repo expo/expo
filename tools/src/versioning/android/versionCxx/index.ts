@@ -81,8 +81,8 @@ function isVersionableCxxExpoModule(pkg: Package) {
   );
 }
 
-function transformPackageAsync(packageFiles: string[], abiName: string) {
-  return transformFilesAsync(packageFiles, baseTransforms(abiName));
+async function transformPackageAsync(packageFiles: string[], abiName: string) {
+  await transformFilesAsync(packageFiles, baseTransforms(abiName));
 }
 
 function revertTransformPackageAsync(packageFiles: string[]) {
