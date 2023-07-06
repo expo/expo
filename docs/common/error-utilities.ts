@@ -165,10 +165,10 @@ const RENAMED_PAGES: Record<string, string> = {
   // Redirects after organizing docs in Guides
   '/bare/hello-world/': '/bare/overview/',
   '/guides/errors/': '/debugging/runtime-issues/',
-  // TODO(aman): Change below links to /guides/overview/
-  '/guides/using-graphql/': '/guides/',
-  '/guides/using-styled-components/': '/guides/',
-  '/guides/using-bugsnag/': '/guides/',
+  '/guides/using-graphql/': '/guides/overview/',
+  '/guides/using-styled-components/': '/guides/overview/',
+  '/guides/using-bugsnag/': '/guides/overview/',
+  '/build/automating-submissions': '/build/automate-submissions/',
 
   // Old redirects
   '/introduction/project-lifecycle/': '/archive/managed-vs-bare/',
