@@ -139,7 +139,7 @@ export async function transformFilesAsync(
     transformedFile.transformsUsed.forEach((transform) => transformsUsed.add(transform));
 
     // Save transformed content
-    await fs.outputFile(file, transformedFile.result);
+    await fs.outputFile(file, transformedFile.content);
   }
   return transformsUsed;
 }
