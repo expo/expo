@@ -5,12 +5,12 @@ import Text from '../primitives/Text';
 function createHeadingComponent(level) {
     const nativeProps = Platform.select({
         web: {
-            accessibilityLevel: level,
+            'aria-level': level,
         },
         default: {},
     });
     return forwardRef((props, ref) => {
-        return (React.createElement(Text, { ...nativeProps, accessibilityRole: "header", ...props, style: [styles[`h${level}`], props.style], ref: ref }));
+        return (React.createElement(Text, { ...nativeProps, role: "header", ...props, style: [styles[`h${level}`], props.style], ref: ref }));
     });
 }
 export const H1 = createHeadingComponent(1);
