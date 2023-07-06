@@ -32,7 +32,7 @@ export default {
         if (input.files) {
           const results: Promise<DocumentPickerAsset>[] = [];
           for (let i = 0; i < input.files.length; i++) {
-            results.push(readFile(input.files[i]));
+            results.push(readFileAsync(input.files[i]));
           }
           try {
             const assets = await Promise.all(results);
@@ -53,7 +53,7 @@ export default {
   },
 };
 
-function readFile(targetFile: File): Promise<DocumentPickerAsset> {
+function readFileAsync(targetFile: File): Promise<DocumentPickerAsset> {
   return new Promise((resolve, reject) => {
     const mimeType = targetFile.type;
 

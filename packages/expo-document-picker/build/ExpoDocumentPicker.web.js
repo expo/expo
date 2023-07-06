@@ -22,7 +22,7 @@ export default {
                 if (input.files) {
                     const results = [];
                     for (let i = 0; i < input.files.length; i++) {
-                        results.push(readFile(input.files[i]));
+                        results.push(readFileAsync(input.files[i]));
                     }
                     try {
                         const assets = await Promise.all(results);
@@ -42,7 +42,7 @@ export default {
         });
     },
 };
-function readFile(targetFile) {
+function readFileAsync(targetFile) {
     return new Promise((resolve, reject) => {
         const mimeType = targetFile.type;
         const reader = new FileReader();
