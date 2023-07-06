@@ -355,7 +355,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/router/advance/tabs': '/router/advanced/tabs/',
   '/router/advance/drawer': '/router/advanced/drawer/',
   '/router/advance/nesting-navigators': '/router/advanced/nesting-navigators/',
-  '/router/advance/modals': '/router/advanced/modals/',
+  '/router/advance/modal': '/router/advanced/modals/',
   '/router/advance/platform-specific-modules': '/router/advanced/platform-specific-modules/',
   '/router/advance/shared-routes': '/router/advanced/shared-routes/',
   '/router/advance/router-settings': '/router/advanced/router-settings/',
