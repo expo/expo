@@ -400,11 +400,8 @@ class LoaderTask(
               return
             }
 
-            val launcher = DatabaseLauncher(configuration, directory, fileDownloader, selectionPolicy)
-            val launchableUpdate = launcher.getLaunchableUpdate(database, context)
             val manifestFilters = ManifestMetadata.getManifestFilters(database, configuration)
-
-            if (!selectionPolicy.shouldLoadRollBackToEmbeddedDirective(updateDirective, embeddedUpdate, launchableUpdate, manifestFilters)) {
+            if (!selectionPolicy.shouldLoadRollBackToEmbeddedDirective(updateDirective, embeddedUpdate, candidateLauncher?.launchedUpdate, manifestFilters)) {
               launchUpdate(null)
               return
             }
