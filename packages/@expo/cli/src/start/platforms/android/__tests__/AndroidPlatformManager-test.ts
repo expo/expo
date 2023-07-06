@@ -26,7 +26,7 @@ describe('openAsync', () => {
   });
 
   it(`opens a project in a custom development client using intent string`, async () => {
-    const manager = new AndroidPlatformManager('/', 19000, {
+    const manager = new AndroidPlatformManager('/', 8081, {
       getCustomRuntimeUrl: () => null,
       getDevServerUrl: () => null,
       getExpoGoUrl: () => null,
@@ -46,7 +46,7 @@ describe('openAsync', () => {
   });
 
   it(`allows overriding the intent string`, async () => {
-    const manager = new AndroidPlatformManager('/', 19000, {
+    const manager = new AndroidPlatformManager('/', 8081, {
       getCustomRuntimeUrl: () => null,
       getDevServerUrl: () => null,
       getExpoGoUrl: () => null,

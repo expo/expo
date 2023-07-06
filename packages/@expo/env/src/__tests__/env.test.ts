@@ -10,6 +10,7 @@ const originalEnv = process.env;
 
 function resetEnv() {
   process.env = originalEnv;
+  delete process.env.EXPO_NO_DOTENV;
 }
 
 beforeEach(() => {
@@ -20,8 +21,13 @@ afterAll(() => {
 });
 
 describe(getFiles, () => {
+  const originalError = console.error;
   beforeEach(() => {
+    console.error = jest.fn();
     resetEnv();
+  });
+  afterEach(() => {
+    console.error = originalError;
   });
 
   it(`gets development files`, () => {
@@ -44,12 +50,11 @@ describe(getFiles, () => {
     // important
     expect(getFiles('test')).toEqual(['.env.test.local', '.env.test', '.env']);
   });
-  const originalError = console.error;
-  beforeEach(() => {
-    console.error = jest.fn();
-  });
-  afterEach(() => {
-    console.error = originalError;
+  it(`gets no files when dotenv is disabled`, () => {
+    process.env.EXPO_NO_DOTENV = '1';
+    ['development', 'production', 'test'].forEach((mode) => {
+      expect(getFiles(mode)).toEqual([]);
+    });
   });
 
   it(`throws if NODE_ENV is not set`, () => {
@@ -82,16 +87,25 @@ describe('get', () => {
       '/'
     );
     expect(envRuntime.get('/')).toEqual({
-      FOO: 'default',
+      env: {
+        FOO: 'default',
+      },
+      files: ['/.env'],
     });
 
     fs.writeFileSync('/.env', 'FOO=changed');
 
     expect(envRuntime.get('/')).toEqual({
-      FOO: 'default',
+      env: {
+        FOO: 'default',
+      },
+      files: ['/.env'],
     });
     expect(envRuntime.get('/', { force: true })).toEqual({
-      FOO: 'changed',
+      env: {
+        FOO: 'changed',
+      },
+      files: ['/.env'],
     });
   });
 });
@@ -112,7 +126,10 @@ describe('_getForce', () => {
     );
 
     expect(envRuntime._getForce('/')).toEqual({
-      FOO: 'bar',
+      env: {
+        FOO: 'bar',
+      },
+      files: ['/.env'],
     });
   });
 
@@ -133,7 +150,10 @@ describe('_getForce', () => {
     );
 
     expect(envRuntime._getForce('/')).toEqual({
-      FOO: 'dev-local',
+      env: {
+        FOO: 'dev-local',
+      },
+      files: ['/.env.development.local', '/.env.local', '/.env.development', '/.env'],
     });
   });
 
@@ -152,7 +172,10 @@ describe('_getForce', () => {
     );
 
     expect(envRuntime._getForce('/')).toEqual({
-      FOO: 'prod-local',
+      files: ['/.env.production.local', '/.env.local', '/.env.production', '/.env'],
+      env: {
+        FOO: 'prod-local',
+      },
     });
   });
 
@@ -168,8 +191,26 @@ describe('_getForce', () => {
     );
 
     expect(envRuntime._getForce('/')).toEqual({
-      FOO: 'default-local',
+      files: ['/.env.local', '/.env'],
+      env: {
+        FOO: 'default-local',
+      },
     });
+  });
+
+  it(`skips modifying the environment with dotenv if disabled with EXPO_NO_DOTENV`, () => {
+    delete process.env.FOO;
+    process.env.EXPO_NO_DOTENV = '1';
+    const envRuntime = createControlledEnvironment();
+    vol.fromJSON(
+      {
+        '.env': 'FOO=default',
+        '.env.local': 'FOO=default-local',
+      },
+      '/'
+    );
+
+    expect(envRuntime._getForce('/')).toEqual({ env: {}, files: [] });
   });
 
   it(`does not return the env var if the initial the value of the environment variable`, () => {
@@ -183,12 +224,15 @@ describe('_getForce', () => {
       '/'
     );
 
-    expect(envRuntime._getForce('/')).toEqual({});
+    expect(envRuntime._getForce('/')).toEqual({ env: {}, files: ['/.env'] });
   });
 
   it(`Does not fail when no files are available`, () => {
     vol.fromJSON({}, '/');
-    expect(createControlledEnvironment()._getForce('/')).toEqual({});
+    expect(createControlledEnvironment()._getForce('/')).toEqual({
+      env: {},
+      files: [],
+    });
   });
 
   it(`Does not assert on invalid env files`, () => {
@@ -199,6 +243,6 @@ describe('_getForce', () => {
       '/'
     );
 
-    expect(createControlledEnvironment()._getForce('/')).toEqual({});
+    expect(createControlledEnvironment()._getForce('/')).toEqual({ env: {}, files: ['/.env'] });
   });
 });

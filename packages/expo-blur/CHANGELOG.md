@@ -8,10 +8,24 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 12.4.1 — 2023-06-23
+
+_This version does not introduce any user-facing changes._
+
+## 12.4.0 — 2023-06-21
+
+### 🛠 Breaking changes
+
+- Enable blurring by default when static rendering. ([#23000](https://github.com/expo/expo/pull/23000) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 12.3.2 — 2023-06-13
+
+### 🐛 Bug fixes
+
 - [iOS] Fixed Detox tests hanging when `BlurView` is present ([#22439](https://github.com/expo/expo/pull/22439) by [@behenate](https://github.com/behenate))
 - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 12.3.1 — 2023-05-08
 

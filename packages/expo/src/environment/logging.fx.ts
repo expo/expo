@@ -17,12 +17,12 @@ if (__DEV__) {
     if (devServerInfo.bundleLoadedFromServer) {
       // url: `http://localhost:8081/`
       const url = !devServerInfo.url.endsWith('/') ? `${devServerInfo.url}/` : devServerInfo.url;
-      // The standard Expo logUrl is `http://localhost:19000/logs`, this code assumes that the `logs` endpoint doesn't change.
+      // The standard Expo logUrl is `http://localhost:8081/logs`, this code assumes that the `logs` endpoint doesn't change.
 
       const logUrl = url + 'logs';
       Constants.__unsafeNoWarnManifest.logUrl = logUrl;
-      if (Constants.manifest) {
-        Constants.manifest.logUrl = logUrl;
+      if (Constants.expoGoConfig) {
+        Constants.expoGoConfig.logUrl = logUrl;
       }
     }
   } else if (
@@ -36,7 +36,7 @@ if (__DEV__) {
     if (devServerInfo.bundleLoadedFromServer) {
       // url: `http://localhost:8081/`
       const url = !devServerInfo.url.endsWith('/') ? `${devServerInfo.url}/` : devServerInfo.url;
-      // The standard Expo logUrl is `http://localhost:19000/logs`, this code assumes that the `logs` endpoint doesn't change.
+      // The standard Expo logUrl is `http://localhost:8081/logs`, this code assumes that the `logs` endpoint doesn't change.
 
       const logUrl = url + 'logs';
       if (Constants.__unsafeNoWarnManifest2.extra?.expoGo) {

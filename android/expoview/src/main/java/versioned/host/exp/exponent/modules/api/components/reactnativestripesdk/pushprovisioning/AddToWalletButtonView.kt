@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.RippleDrawable
 import android.view.MotionEvent
+import android.webkit.URLUtil
 import androidx.appcompat.widget.AppCompatImageView
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.DataSource
@@ -27,7 +28,7 @@ class AddToWalletButtonView(private val context: ThemedReactContext, private val
   private var token: ReadableMap? = null
 
   private var eventDispatcher: EventDispatcher? = context.getNativeModule(UIManagerModule::class.java)?.eventDispatcher
-  private var loadedSource: GlideUrl? = null
+  private var loadedSource: Any? = null
   private var heightOverride: Int = 0
   private var widthOverride: Int = 0
 
@@ -66,7 +67,7 @@ class AddToWalletButtonView(private val context: ThemedReactContext, private val
   }
 
   fun onAfterUpdateTransaction() {
-    val sourceToLoad = createUrlFromSourceMap(sourceMap)
+    val sourceToLoad = getUrlOrResourceId(sourceMap)
     if (sourceToLoad == null) {
       requestManager.clear(this)
       setImageDrawable(null)
@@ -99,9 +100,17 @@ class AddToWalletButtonView(private val context: ThemedReactContext, private val
     }
   }
 
-  private fun createUrlFromSourceMap(sourceMap: ReadableMap?): GlideUrl? {
-    val uriKey = sourceMap?.getString("uri")
-    return uriKey?.let { GlideUrl(uriKey) }
+  private fun getUrlOrResourceId(sourceMap: ReadableMap?): Any? {
+    sourceMap?.getString("uri")?.let {
+      return if (URLUtil.isValidUrl(it)) {
+        // Debug mode, Image.resolveAssetSource resolves to local http:// URL
+        GlideUrl(it)
+      } else {
+        // Release mode, Image.resolveAssetSource resolves to a drawable resource
+        context.resources.getIdentifier(it, "drawable", context.packageName)
+      }
+    }
+    return null
   }
 
   override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {

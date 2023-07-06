@@ -75,18 +75,6 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/ProgressViewIOSScreen'));
-    },
-    name: 'ProgressViewIOS',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/ProgressBarAndroidScreen'));
-    },
-    name: 'ProgressBarAndroid',
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/TouchableBounceScreen'));
     },
     name: 'TouchableBounce',
@@ -417,15 +405,15 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/SharedElementScreen'));
-    },
-    name: 'SharedElement',
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/FlashListScreen'));
     },
     name: 'FlashList',
+  },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/ClipboardPasteButtonScreen'));
+    },
+    name: 'ClipboardPasteButton',
   },
   ...ImageScreens,
 ];

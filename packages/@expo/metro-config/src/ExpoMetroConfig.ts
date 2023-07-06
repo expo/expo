@@ -5,7 +5,6 @@ import * as runtimeEnv from '@expo/env';
 import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
 import { Reporter } from 'metro';
-// @ts-expect-error: incorrectly typed
 import { stableHash } from 'metro-cache';
 import { ConfigT as MetroConfig, InputConfigT } from 'metro-config';
 import path from 'path';
@@ -104,7 +103,7 @@ export function getDefaultConfig(
     sourceExts.push('scss', 'sass', 'css');
   }
 
-  const envFiles = runtimeEnv.getFiles(process.env.NODE_ENV);
+  const envFiles = runtimeEnv.getFiles(process.env.NODE_ENV, { silent: true });
 
   const babelConfigPath = getProjectBabelConfigFile(projectRoot);
   const isCustomBabelConfigDefined = !!babelConfigPath;
@@ -168,7 +167,10 @@ export function getDefaultConfig(
     },
     serializer: {
       getModulesRunBeforeMainModule: () => {
-        const preModules: string[] = [];
+        const preModules: string[] = [
+          // MUST be first
+          require.resolve(path.join(reactNativePath, 'Libraries/Core/InitializeCore')),
+        ];
 
         // We need to shift this to be the first module so web Fast Refresh works as expected.
         // This will only be applied if the module is installed and imported somewhere in the bundle already.
@@ -177,9 +179,6 @@ export function getDefaultConfig(
           preModules.push(metroRuntime);
         }
 
-        preModules.push(
-          require.resolve(path.join(reactNativePath, 'Libraries/Core/InitializeCore'))
-        );
         return preModules;
       },
       getPolyfills: () => require(path.join(reactNativePath, 'rn-get-polyfills'))(),

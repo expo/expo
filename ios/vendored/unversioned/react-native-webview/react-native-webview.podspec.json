@@ -1,6 +1,6 @@
 {
   "name": "react-native-webview",
-  "version": "11.26.0",
+  "version": "13.2.2",
   "summary": "React Native WebView component for iOS, Android, macOS, and Windows",
   "license": "MIT",
   "authors": "Jamon Holmgren <jamon@infinite.red>",
@@ -11,9 +11,9 @@
   },
   "source": {
     "git": "https://github.com/react-native-webview/react-native-webview.git",
-    "tag": "v11.26.0"
+    "tag": "v13.2.2"
   },
-  "source_files": "apple/**/*.{h,m}",
+  "source_files": "apple/**/*.{h,m,mm,swift}",
   "dependencies": {
     "React-Core": []
   }

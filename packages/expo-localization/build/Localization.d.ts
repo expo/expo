@@ -108,6 +108,41 @@ export declare const getLocales: () => import("./Localization.types").Locale[];
  */
 export declare const getCalendars: () => import("./Localization.types").Calendar[];
 /**
+ * A hook providing a list of user's locales, returned as an array of objects of type `Locale`.
+ * Guaranteed to contain at least 1 element.
+ * These are returned in the order the user defines in their device settings.
+ * On the web currency and measurements systems are not provided, instead returned as null.
+ * If needed, you can infer them from the current region using a lookup table.
+ * If the OS settings change, the hook will rerender with a new list of locales.
+ * @example `[{
+    "languageTag": "pl-PL",
+    "languageCode": "pl",
+    "textDirection": "ltr",
+    "digitGroupingSeparator": " ",
+    "decimalSeparator": ",",
+    "measurementSystem": "metric",
+    "currencyCode": "PLN",
+    "currencySymbol": "zł",
+    "regionCode": "PL"
+  }]`
+ */
+export declare function useLocales(): import("./Localization.types").Locale[];
+/**
+ * A hook providing a list of user's preferred calendars, returned as an array of objects of type `Calendar`.
+ * Guaranteed to contain at least 1 element.
+ * For now always returns a single element, but it's likely to return a user preference list on some platforms in the future.
+ * If the OS settings change, the hook will rerender with a new list of calendars.
+ * @example `[
+    {
+      "calendar": "gregory",
+      "timeZone": "Europe/Warsaw",
+      "uses24hourClock": true,
+      "firstWeekday": 1
+    }
+  ]`
+ */
+export declare function useCalendars(): import("./Localization.types").Calendar[];
+/**
  * Get the latest native values from the device. Locale can be changed on some Android devices
  * without resetting the app.
  * > On iOS, changing the locale will cause the device to reset meaning the constants will always be

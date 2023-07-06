@@ -5,6 +5,7 @@ import chalk from 'chalk';
 import type { Server as ConnectServer } from 'connect';
 import http from 'http';
 import type Metro from 'metro';
+import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
 
 import {
   buildHermesBundleAsync,
@@ -111,6 +112,7 @@ export async function runMetroDevServerAsync(
 
   const server = await Metro.runServer(metroConfig, {
     hmrEnabled: true,
+    // @ts-expect-error: Inconsistent `websocketEndpoints` type between metro and @react-native-community/cli-server-api
     websocketEndpoints,
   });
 
@@ -161,7 +163,7 @@ export async function bundleAsync(
 
   const buildAsync = async (bundle: BundleOptions): Promise<BundleOutput> => {
     const isHermes = isEnableHermesManaged(expoConfig, bundle.platform);
-    const bundleOptions: Metro.BundleOptions = {
+    const bundleOptions: MetroBundleOptions = {
       ...Server.DEFAULT_BUNDLE_OPTIONS,
       bundleType: 'bundle',
       platform: bundle.platform,

@@ -2,6 +2,9 @@
 
 #include "JsiHostObject.h"
 
+#include "Declaration.h"
+#include "DeclarationContext.h"
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -10,49 +13,57 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
 
-#include <SkCanvas.h>
-#include <SkPaint.h>
+#include "SkCanvas.h"
+#include "SkPaint.h"
+#include "SkRefCnt.h"
 
 #pragma clang diagnostic pop
 
 namespace RNSkia {
 
-class DrawingContext : public std::enable_shared_from_this<DrawingContext> {
+class PaintProps;
+class JsiDomNode;
+
+class DomRenderContext {
+public:
+  float getScaledWidth() { return _scaledWidth; }
+  float getScaledHeight() { return _scaledHeight; }
+
+  void setScaledWidth(float v) { _scaledWidth = v; }
+  void setScaledHeight(float v) { _scaledHeight = v; }
+
+  void setRequestRedraw(std::function<void()> &&requestRedraw) {
+    _requestRedraw = std::move(requestRedraw);
+  }
+
+  const std::function<void()> &getRequestRedraw() { return _requestRedraw; }
+
+private:
+  float _scaledWidth = -1;
+  float _scaledHeight = -1;
+  std::function<void()> _requestRedraw;
+};
+
+class DrawingContext : public DomRenderContext,
+                       public std::enable_shared_from_this<DrawingContext> {
 public:
   /**
    Creates a root drawing context with paint and opacity
    */
+  DrawingContext();
+
+  /**
+   Creates a drawing context with the given paint as its starting paint object
+  */
   explicit DrawingContext(std::shared_ptr<SkPaint> paint);
 
   /**
-   Initilalizes a new draw context.
+   Factory for saving/restoring the context for a node
    */
-  DrawingContext(DrawingContext *parent, const char *source);
-
-  /**
-   Factory for creating a child context that inherits from this context
-   */
-  std::shared_ptr<DrawingContext> inheritContext(const char *source);
-
-  /**
-   Returns the debug description for the context
-   */
-  std::string getDebugDescription();
-
-  /**
-   Mark the drawing context and any child contexts as changed
-   */
-  void markAsChanged();
-
-  /**
-   Call to reset invalidate flag after render cycle
-   */
-  void resetChangedFlag();
-
-  /**
-   Dispose and remove the drawing context from its parent.
-   */
-  void dispose();
+  bool saveAndConcat(PaintProps *paintProps,
+                     const std::vector<std::shared_ptr<JsiDomNode>> &children,
+                     std::shared_ptr<SkPaint> paintCache);
+  void restore();
 
   /**
    Returns true if the current cache is changed
@@ -72,52 +83,22 @@ public:
   /**
    Gets the paint object
    */
-  std::shared_ptr<const SkPaint> getPaint();
+  std::shared_ptr<SkPaint> getPaint();
 
-  /**
-   To be able to mutate and change the paint in a context we need to mutate the
-   underlying paint object - otherwise we'll just use the parent paint object
-   (to avoid having to create multiple paint objects for nodes that does not
-   change the paint).
+  /*
+   Returns the root declaratiins object
    */
-  std::shared_ptr<SkPaint> getMutablePaint();
-
-  /**
-   Sets the paint in the current sub context
-   */
-  void setMutablePaint(std::shared_ptr<SkPaint> paint);
-
-  float getScaledWidth();
-
-  float getScaledHeight();
-
-  void setScaledWidth(float v);
-  void setScaledHeight(float v);
-
-  void setRequestRedraw(std::function<void()> &&requestRedraw);
-  const std::function<void()> &getRequestRedraw();
-
-  DrawingContext *getParent();
+  DeclarationContext *getDeclarationContext() {
+    return _declarationContext.get();
+  }
 
 private:
+  void save();
+
   explicit DrawingContext(const char *source);
-
-  void markChildrenAsChanged();
-
-  bool _isChanged = true;
-
-  std::shared_ptr<SkPaint> _paint;
-
   SkCanvas *_canvas = nullptr;
-  const char *_source;
-
-  DrawingContext *_parent = nullptr;
-  std::vector<std::shared_ptr<DrawingContext>> _children;
-
-  float _scaledWidth = -1;
-  float _scaledHeight = -1;
-
-  std::function<void()> _requestRedraw;
+  std::vector<std::shared_ptr<SkPaint>> _paints;
+  std::unique_ptr<DeclarationContext> _declarationContext;
 };
 
 } // namespace RNSkia

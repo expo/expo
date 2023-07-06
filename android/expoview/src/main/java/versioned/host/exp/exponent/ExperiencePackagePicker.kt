@@ -22,6 +22,7 @@ import expo.modules.documentpicker.DocumentPickerModule
 import expo.modules.easclient.EASClientModule
 import expo.modules.print.PrintModule
 import expo.modules.facedetector.FaceDetectorPackage
+import expo.modules.filesystem.FileSystemModule
 import expo.modules.filesystem.FileSystemPackage
 import expo.modules.font.FontLoaderPackage
 import expo.modules.gl.GLPackage
@@ -54,8 +55,9 @@ import expo.modules.sensors.SensorsPackage
 import expo.modules.sharing.SharingModule
 import expo.modules.sms.SMSModule
 import expo.modules.speech.SpeechPackage
+import expo.modules.splashscreen.SplashScreenModule
 import expo.modules.splashscreen.SplashScreenPackage
-import expo.modules.sqlite.SQLitePackage
+import expo.modules.sqlite.SQLiteModule
 import expo.modules.storereview.StoreReviewModule
 import expo.modules.systemui.SystemUIModule
 import expo.modules.systemui.SystemUIPackage
@@ -85,7 +87,6 @@ object ExperiencePackagePicker : ModulesProvider {
     NavigationBarPackage(),
     NotificationsPackage(),
     PermissionsPackage(),
-    SQLitePackage(),
     SecureStorePackage(),
     SensorsPackage(),
     SpeechPackage(),
@@ -120,6 +121,7 @@ object ExperiencePackagePicker : ModulesProvider {
     DeviceModule::class.java,
     DocumentPickerModule::class.java,
     EASClientModule::class.java,
+    FileSystemModule::class.java,
     PrintModule::class.java,
     GLViewModule::class.java,
     HapticsModule::class.java,
@@ -137,7 +139,9 @@ object ExperiencePackagePicker : ModulesProvider {
     ScreenOrientationModule::class.java,
     SMSModule::class.java,
     SharingModule::class.java,
+    SplashScreenModule::class.java,
     StoreReviewModule::class.java,
+    SQLiteModule::class.java,
     SystemUIModule::class.java,
     VideoThumbnailsModule::class.java,
     VideoViewModule::class.java,

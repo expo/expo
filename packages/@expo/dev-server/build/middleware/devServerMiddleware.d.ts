@@ -1,6 +1,7 @@
 /// <reference types="expo__bunyan" />
 /// <reference types="ws" />
 import Log from '@expo/bunyan';
+import { Server as ConnectServer } from 'connect';
 /**
  * Extends the default `createDevServerMiddleware` and adds some Expo CLI-specific dev middleware
  * with exception for the manifest middleware which is currently in `xdl`.
@@ -23,7 +24,7 @@ export declare function createDevServerMiddleware(projectRoot: string, { watchFo
     logger: Log;
 }): {
     logger: Log;
-    middleware: any;
+    middleware: ConnectServer;
     attachToServer: any;
     debuggerProxyEndpoint: {
         server: import("ws").Server<import("ws").WebSocket>;

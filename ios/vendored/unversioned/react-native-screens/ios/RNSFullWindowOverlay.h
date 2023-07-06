@@ -1,6 +1,6 @@
 #import <React/RCTViewManager.h>
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 #import <React/RCTViewComponentView.h>
 #else
 #import <React/RCTInvalidating.h>
@@ -16,15 +16,15 @@
 @end
 
 @interface RNSFullWindowOverlay :
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
     RCTViewComponentView
 #else
     RCTView <RCTInvalidating>
-#endif // RN_FABRIC_ENABLED
+#endif // RCT_NEW_ARCH_ENABLED
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 @property (nonatomic) facebook::react::LayoutMetrics oldLayoutMetrics;
 @property (nonatomic) facebook::react::LayoutMetrics newLayoutMetrics;
-#endif // RN_FABRIC_ENABLED
+#endif // RCT_NEW_ARCH_ENABLED
 
 @end

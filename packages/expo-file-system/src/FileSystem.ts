@@ -1,6 +1,5 @@
-import { EventEmitter, Subscription, UnavailabilityError } from 'expo-modules-core';
+import { EventEmitter, Subscription, UnavailabilityError, uuidv4 } from 'expo-modules-core';
 import { Platform } from 'react-native';
-import { v4 as uuidv4 } from 'uuid';
 
 import ExponentFileSystem from './ExponentFileSystem';
 import {
@@ -201,7 +200,7 @@ export async function readDirectoryAsync(fileUri: string): Promise<string[]> {
   if (!ExponentFileSystem.readDirectoryAsync) {
     throw new UnavailabilityError('expo-file-system', 'readDirectoryAsync');
   }
-  return await ExponentFileSystem.readDirectoryAsync(fileUri, {});
+  return await ExponentFileSystem.readDirectoryAsync(fileUri);
 }
 
 /**
@@ -697,7 +696,7 @@ export namespace StorageAccessFramework {
         'StorageAccessFramework.readDirectoryAsync'
       );
     }
-    return await ExponentFileSystem.readSAFDirectoryAsync(dirUri, {});
+    return await ExponentFileSystem.readSAFDirectoryAsync(dirUri);
   }
 
   /**

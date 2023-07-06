@@ -17,9 +17,5 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
 
   // Import the internal `buildBundleWithConfig()` function from `react-native` for the purpose
   // of exporting with `@expo/metro-config` and other defaults like a resolved project entry.
-  await buildBundleWithConfig(
-    options,
-    // @ts-expect-error: MetroConfig type mismatch.
-    config
-  );
+  await buildBundleWithConfig(options, config);
 }

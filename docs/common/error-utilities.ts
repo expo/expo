@@ -340,6 +340,26 @@ const RENAMED_PAGES: Record<string, string> = {
   '/distribution/app-icons/': '/develop/user-interface/app-icons/',
   '/guides/using-libraries/': '/workflow/using-libraries/',
   '/tutorial/': '/tutorial/introduction/',
+
+  // EAS Update
+  '/eas-update/developing-with-eas-update/': '/eas-update/develop-faster/',
+  '/eas-update/eas-update-with-local-build/': '/eas-update/build-locally/',
+  '/eas-update/eas-update-and-eas-cli/': '/eas-update/eas-cli/',
+  '/eas-update/debug-updates/': '/eas-update/debug/',
+  '/eas-update/how-eas-update-works/': '/eas-update/how-it-works/',
+  '/eas-update/migrate-to-eas-update/': '/eas-update/migrate-from-classic-updates/',
+
+  // Expo Router Advanced guides
+  '/router/advance/root-layout': '/router/advanced/root-layout/',
+  '/router/advance/stack': '/router/advanced/stack/',
+  '/router/advance/tabs': '/router/advanced/tabs/',
+  '/router/advance/drawer': '/router/advanced/drawer/',
+  '/router/advance/nesting-navigators': '/router/advanced/nesting-navigators/',
+  '/router/advance/modal': '/router/advanced/modals/',
+  '/router/advance/platform-specific-modules': '/router/advanced/platform-specific-modules/',
+  '/router/advance/shared-routes': '/router/advanced/shared-routes/',
+  '/router/advance/router-settings': '/router/advanced/router-settings/',
+
   // Note (@aman): The following redirect is temporary until Guides section has an overview
   '/guides/': '/workflow/customizing/',
   '/archive/workflow/customizing/': '/workflow/customizing/',

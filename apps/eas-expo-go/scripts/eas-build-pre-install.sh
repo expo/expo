@@ -11,7 +11,7 @@ if [ "$EAS_BUILD_PLATFORM" = "android" ]; then
   sdkmanager "cmake;3.22.1"
 fi
 
-if [ "$EAS_BUILD_PROFILE" = "release-client" ]; then
+if [ "$EAS_BUILD_PROFILE" = "release-client" ] || [ "$EAS_BUILD_PROFILE" = "publish-client" ]; then
   if [ "$EAS_BUILD_PLATFORM" = "android" ]; then
     sudo apt-get -y update
     sudo apt-get -y install git-crypt

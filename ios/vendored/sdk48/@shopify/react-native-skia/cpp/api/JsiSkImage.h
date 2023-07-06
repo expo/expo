@@ -14,7 +14,9 @@
 #include "SkBase64.h"
 #include "SkImage.h"
 #include "SkStream.h"
-#include <include/codec/SkCodec.h>
+#include "codec/SkEncodedImageFormat.h"
+#include "include/encode/SkJpegEncoder.h"
+#include "include/encode/SkPngEncoder.h"
 
 #pragma clang diagnostic pop
 
@@ -70,7 +72,15 @@ public:
     auto quality = count == 2 ? arguments[1].asNumber() : 100.0;
 
     // Get data
-    auto data = getObject()->encodeToData(format, quality);
+    sk_sp<SkData> data;
+    if (format == SkEncodedImageFormat::kJPEG) {
+      SkJpegEncoder::Options options;
+      options.fQuality = quality;
+      data = SkJpegEncoder::Encode(nullptr, getObject().get(), options);
+    } else {
+      SkPngEncoder::Options options;
+      data = SkPngEncoder::Encode(nullptr, getObject().get(), options);
+    }
     auto arrayCtor =
         runtime.global().getPropertyAsFunction(runtime, "Uint8Array");
     size_t size = data->size();
@@ -95,8 +105,19 @@ public:
                    : SkEncodedImageFormat::kPNG;
 
     auto quality = count == 2 ? arguments[1].asNumber() : 100.0;
-
-    auto data = getObject()->encodeToData(format, quality);
+    auto image = getObject();
+    if (image->isTextureBacked()) {
+      image = image->makeNonTextureImage();
+    }
+    sk_sp<SkData> data;
+    if (format == SkEncodedImageFormat::kJPEG) {
+      SkJpegEncoder::Options options;
+      options.fQuality = quality;
+      data = SkJpegEncoder::Encode(nullptr, image.get(), options);
+    } else {
+      SkPngEncoder::Options options;
+      data = SkPngEncoder::Encode(nullptr, image.get(), options);
+    }
     auto len = SkBase64::Encode(data->bytes(), data->size(), nullptr);
     auto buffer = std::string(len, 0);
     SkBase64::Encode(data->bytes(), data->size(),

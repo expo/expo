@@ -58,7 +58,7 @@ export async function getLocalPackagersAsync(): Promise<DevSession[]> {
             source: 'desktop',
           });
         }
-      } catch (e) {}
+      } catch {}
     })
   );
 

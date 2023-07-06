@@ -16,10 +16,10 @@ includeBuild('../react-native-lab/react-native/packages/react-native-gradle-plug
 
 include ':expoview'
 include ':tools'
-include ':ReactAndroid'
-project(':ReactAndroid').projectDir = new File(rootDir, '../react-native-lab/react-native/ReactAndroid')
-include ':ReactAndroid:hermes-engine'
-project(':ReactAndroid:hermes-engine').projectDir = new File(rootDir, '../react-native-lab/react-native/ReactAndroid/hermes-engine')
+include ':packages:react-native:ReactAndroid'
+project(':packages:react-native:ReactAndroid').projectDir = new File(rootDir, '../react-native-lab/react-native/packages/react-native/ReactAndroid')
+include ':packages:react-native:ReactAndroid:hermes-engine'
+project(':packages:react-native:ReactAndroid:hermes-engine').projectDir = new File(rootDir, '../react-native-lab/react-native/packages/react-native/ReactAndroid/hermes-engine')
 include ':expo-modules-test-core'
 project(':expo-modules-test-core').projectDir = new File(rootDir, '../packages/expo-modules-test-core/android')
 
@@ -29,6 +29,7 @@ project(":expo-random").projectDir = new File("../packages/expo-random/android")
 
 [
     // ADD_NEW_SUPPORTED_ABIS_HERE
+    "abi49_0_0",
     "abi48_0_0",
     "abi47_0_0",
 ].forEach({ abiVariant ->
@@ -46,10 +47,12 @@ useExpoModules([
         'expo-dev-menu',
         'expo-dev-launcher',
         'expo-dev-client',
-        'expo-maps'
+        'expo-maps',
+        'expo-network-addons',
     ]
 ])
 
 useVendoredModulesForSettingsGradle('unversioned')
+useVendoredModulesForSettingsGradle('sdk49')
 useVendoredModulesForSettingsGradle('sdk48')
 useVendoredModulesForSettingsGradle('sdk47')

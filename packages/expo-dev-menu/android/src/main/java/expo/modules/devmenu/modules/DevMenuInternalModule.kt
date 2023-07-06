@@ -50,6 +50,7 @@ class DevMenuInternalModule : Module() {
       val activity = instanceManager.currentReactContext?.currentActivity ?: return@AsyncFunction
 
       activity.runOnUiThread {
+        DevMenuManager.closeMenu()
         devSupportManager.devSupportEnabled = true
         devSupportManager.showDevOptionsDialog()
       }

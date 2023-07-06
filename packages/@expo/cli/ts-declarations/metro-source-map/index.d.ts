@@ -1,6 +1,4 @@
 declare module 'metro-source-map' {
-  //#region metro-source-map/src/source-map.js.flow
-
   type GeneratedCodeMapping = [number, number];
   type SourceMapping = [number, number, number, number];
   type SourceMappingWithName = [number, number, number, number, string];
@@ -82,5 +80,10 @@ declare module 'metro-source-map' {
    */
   export function generateFunctionMap(ast: Ast, context?: Context): FBSourceFunctionMap;
 
-  //#endregion
+  export * from 'metro-source-map/src/source-map';
+  import { MixedSourceMap } from 'metro-source-map/src/source-map';
+
+  // `composeSourceMaps` is not exported from metro.
+  // This ts-declarations is used and shared for `@expo/dev-server`.
+  export function composeSourceMaps(maps: Readonly<MixedSourceMap[]>): MixedSourceMap;
 }

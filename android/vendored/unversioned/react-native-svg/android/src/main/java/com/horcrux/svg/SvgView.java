@@ -19,6 +19,7 @@ import android.graphics.Typeface;
 import android.util.Base64;
 import android.view.View;
 import android.view.ViewParent;
+import android.view.accessibility.AccessibilityNodeInfo;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
@@ -70,6 +71,16 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
   public void setId(int id) {
     super.setId(id);
     SvgViewManager.setSvgView(id, this);
+  }
+
+  @Override
+  public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
+    super.onInitializeAccessibilityNodeInfo(info);
+
+    Rect r = new Rect();
+    boolean isVisible = this.getGlobalVisibleRect(r);
+    info.setVisibleToUser(isVisible);
+    info.setClassName(this.getClass().getCanonicalName());
   }
 
   @Override
@@ -186,7 +197,7 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
   }
 
   public void setTintColor(Integer tintColor) {
-    mTintColor = tintColor;
+    mTintColor = tintColor != null ? tintColor : 0;
     invalidate();
     clearChildCache();
   }

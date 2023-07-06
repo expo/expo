@@ -1,4 +1,4 @@
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 #import <React/RCTViewComponentView.h>
 #else
 #import <React/RCTViewManager.h>
@@ -9,8 +9,14 @@
 #import "RNSScreenStackHeaderSubview.h"
 #import "RNSSearchBar.h"
 
+@interface NSString (RNSStringUtil)
+
++ (BOOL)RNSisBlank:(NSString *)string;
+
+@end
+
 @interface RNSScreenStackHeaderConfig :
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
     RCTViewComponentView
 #else
     UIView
@@ -18,7 +24,7 @@
 
 @property (nonatomic, weak) RNSScreenView *screenView;
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 @property (nonatomic) BOOL show;
 #else
 @property (nonatomic) UIBlurEffectStyle blurEffect;
@@ -33,6 +39,7 @@
 @property (nonatomic, retain) NSString *backTitle;
 @property (nonatomic, retain) NSString *backTitleFontFamily;
 @property (nonatomic, retain) NSNumber *backTitleFontSize;
+@property (nonatomic, getter=isBackTitleVisible) BOOL backTitleVisible;
 @property (nonatomic, retain) UIColor *backgroundColor;
 @property (nonatomic, retain) UIColor *color;
 @property (nonatomic) BOOL largeTitle;

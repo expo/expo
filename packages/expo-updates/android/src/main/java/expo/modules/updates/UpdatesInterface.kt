@@ -6,6 +6,7 @@ import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.launcher.Launcher.LauncherCallback
 import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.selectionpolicy.SelectionPolicy
+import expo.modules.updates.statemachine.UpdatesStateMachine
 import java.io.File
 
 // this unused import must stay because of versioning
@@ -23,6 +24,7 @@ interface UpdatesInterface {
   val directory: File?
   val databaseHolder: DatabaseHolder
   val fileDownloader: FileDownloader
+  val stateMachine: UpdatesStateMachine?
 
   val isEmergencyLaunch: Boolean
   val isEmbeddedLaunch: Boolean

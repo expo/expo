@@ -17,7 +17,9 @@ module Expo
       @podfile = podfile
       @target_definition = target_definition
       @options = options
-      @packages = resolve()['modules'].map { |json_package| Package.new(json_package) }
+      resolve_result = resolve()
+      @packages = resolve_result['modules'].map { |json_package| Package.new(json_package) }
+      @extraPods = resolve_result['extraDependencies']['iosPods']
     end
 
     public def use_expo_modules!
@@ -80,6 +82,25 @@ module Expo
           }
         }
       end
+
+      @extraPods.each { |pod|
+        UI.info "Adding extra pod - #{pod['name']} (#{pod['version'] || '*'})"
+        requirements = Array.new
+        requirements << pod['version'] if pod['version']
+        options = Hash.new
+        options[:configurations] = pod['configurations'] if pod['configurations']
+        options[:modular_headers] = pod['modular_headers'] if pod['modular_headers']
+        options[:source] = pod['source'] if pod['source']
+        options[:path] = pod['path'] if pod['path']
+        options[:podspec] = pod['podspec'] if pod['podspec']
+        options[:testspecs] = pod['testspecs'] if pod['testspecs']
+        options[:git] = pod['git'] if pod['git']
+        options[:branch] = pod['branch'] if pod['branch']
+        options[:tag] = pod['tag'] if pod['tag']
+        options[:commit] = pod['commit'] if pod['commit']
+        requirements << options
+        @podfile.pod(pod['name'], *requirements)
+      }
       self
     end
 

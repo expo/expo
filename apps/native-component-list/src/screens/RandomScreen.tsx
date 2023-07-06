@@ -7,8 +7,8 @@ import MonoText from '../components/MonoText';
 import Colors from '../constants/Colors';
 
 // Placeholder polyfill
-if (!global.crypto) {
-  global.crypto = {
+if (!globalThis.crypto) {
+  globalThis.crypto = {
     // @ts-ignore
     getRandomValues: (array) => getRandomBytes(array.byteLength),
   };

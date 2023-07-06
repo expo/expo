@@ -1,20 +1,12 @@
 ---
-title: Adopting Prebuild
+title: Adopt Prebuild
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
 
-There are [many advantages](/workflow/prebuild#pitch) of using [Expo Prebuild][prebuild] to generate your native projects. This guide will show you how to adopt Expo Prebuild in a project that was bootstrapped with `npx react-native init`. The amount of time it will take to convert your project depends on the amount of custom native changes that you have made to your iOS and Android native projects — on a brand new project, this may take a minute or two, and on a large project it could be much longer.
+There are [many advantages](/workflow/prebuild#pitch) of using [Expo Prebuild][prebuild] to [continuously generate your native projects](/workflow/continuous-native-generation.mdx). This guide will show you how to adopt Expo Prebuild in a project that was bootstrapped with `npx react-native init`. The amount of time it will take to convert your project depends on the amount of custom native changes that you have made to your iOS and Android native projects — on a brand new project, this may take a minute or two, and on a large project it could be much longer.
 
-> Adopting prebuild will automatically add support for developing modules with the [Expo native module API][expo-modules-core] by linking `expo-modules-core` natively. You can also use any command from [Expo CLI][cli] in your project.
-
-## Bootstrap a new project
-
-{/* NOTE: Update the version when we bump support */}
-
-<Terminal cmd={['$ npx react-native init ProjectName --version 0.71.7']} />
-
-This will create a new React Native project.
+Adopting prebuild will automatically add support for developing modules with the [Expo native module API][expo-modules-core] by linking `expo-modules-core` natively. You can also use any command from [Expo CLI][cli] in your project.
 
 > **warning** [Not all versions of `react-native` are explicitly supported][version-support]. Make sure to use a version of `react-native` that has a corresponding Expo SDK version.
 
@@ -22,7 +14,7 @@ This will create a new React Native project.
 
 The `expo` package contains the [`npx expo prebuild`](/more/expo-cli/#prebuild) command and indicates which [prebuild template](/workflow/prebuild#templates) to use:
 
-<Terminal cmd={['$ yarn add expo']} />
+<Terminal cmd={['$ npm install expo']} />
 
 Ensure you install the version of `expo` that works for your currently installed version of `react-native`: [supported versions](version-support).
 
@@ -73,7 +65,9 @@ The following changes are optional but recommended.
 
 **.gitignore**
 
-You can add `.expo/` to your `.gitignore` to prevent generated values from Expo CLI from being committed. You can also add `ios/` and `android/` to the `.gitignore` if you want to ensure they aren't committed between prebuilds.
+You can add **.expo** to your **.gitignore** to prevent generated values from Expo CLI from being committed. These [values are unique to your project](/more/expo-cli/#expo-directory) on your local computer.
+
+You can also add **android** and **ios** to the **.gitignore** if you want to ensure they aren't committed between prebuilds.
 
 **app.json**
 

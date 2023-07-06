@@ -903,6 +903,16 @@ static void exec_ops(const Op* ops, const void** args,
                 a = cast<F>((rgba >> 30) & 0x3  ) * (1/   3.0f);
             } break;
 
+            case Op_load_101010x_XR:{
+                static constexpr float min = -0.752941f;
+                static constexpr float max = 1.25098f;
+                static constexpr float range = max - min;
+                U32 rgba = load<U32>(src + 4*i);
+                r = cast<F>((rgba >>  0) & 0x3ff) * (1/1023.0f) * range + min;
+                g = cast<F>((rgba >> 10) & 0x3ff) * (1/1023.0f) * range + min;
+                b = cast<F>((rgba >> 20) & 0x3ff) * (1/1023.0f) * range + min;
+            } break;
+
             case Op_load_161616LE:{
                 uintptr_t ptr = (uintptr_t)(src + 6*i);
                 assert( (ptr & 1) == 0 );                   // src must be 2-byte aligned for this
@@ -1313,6 +1323,15 @@ static void exec_ops(const Op* ops, const void** args,
                                | cast<U32>(to_fixed(a * 255)) << 24);
             } return;
 
+            case Op_store_101010x_XR: {
+                static constexpr float min = -0.752941f;
+                static constexpr float max = 1.25098f;
+                static constexpr float range = max - min;
+                store(dst + 4*i, cast<U32>(to_fixed(((r - min) / range) * 1023)) <<  0
+                               | cast<U32>(to_fixed(((g - min) / range) * 1023)) << 10
+                               | cast<U32>(to_fixed(((b - min) / range) * 1023)) << 20);
+                return;
+            }
             case Op_store_1010102: {
                 store(dst + 4*i, cast<U32>(to_fixed(r * 1023)) <<  0
                                | cast<U32>(to_fixed(g * 1023)) << 10

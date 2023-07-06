@@ -13,9 +13,11 @@ using NotifyNeedRenderCallback =
 
 class DrawingProp : public DerivedSkProp<SkPicture> {
 public:
-  DrawingProp(PropId name, NotifyNeedRenderCallback notifyPictureNeeded)
-      : _notifyPictureNeeded(notifyPictureNeeded), DerivedSkProp<SkPicture>() {
-    _drawingProp = addProperty(std::make_shared<NodeProp>(name));
+  DrawingProp(PropId name, NotifyNeedRenderCallback notifyPictureNeeded,
+              const std::function<void(BaseNodeProp *)> &onChange)
+      : _notifyPictureNeeded(notifyPictureNeeded), DerivedSkProp<SkPicture>(
+                                                       onChange) {
+    _drawingProp = defineProperty<NodeProp>(name);
   }
 
   void updateDerivedValue() override {

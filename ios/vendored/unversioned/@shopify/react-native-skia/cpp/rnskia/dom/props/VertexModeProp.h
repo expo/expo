@@ -8,7 +8,7 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
 
-#include <SkVertices.h>
+#include "SkVertices.h"
 
 #pragma clang diagnostic pop
 
@@ -16,8 +16,10 @@ namespace RNSkia {
 
 class VertexModeProp : public DerivedProp<SkVertices::VertexMode> {
 public:
-  explicit VertexModeProp(PropId name) : DerivedProp<SkVertices::VertexMode>() {
-    _vertexModeProp = addProperty(std::make_shared<NodeProp>(name));
+  explicit VertexModeProp(PropId name,
+                          const std::function<void(BaseNodeProp *)> &onChange)
+      : DerivedProp<SkVertices::VertexMode>(onChange) {
+    _vertexModeProp = defineProperty<NodeProp>(name);
   }
 
   void updateDerivedValue() override {

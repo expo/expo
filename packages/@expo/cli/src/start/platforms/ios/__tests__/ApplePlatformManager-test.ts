@@ -25,7 +25,7 @@ describe('openAsync', () => {
 
   it(`opens a project in a custom development client`, async () => {
     const getCustomRuntimeUrl = jest.fn(() => 'custom://path');
-    const manager = new ApplePlatformManager('/', 19000, {
+    const manager = new ApplePlatformManager('/', 8081, {
       getCustomRuntimeUrl,
       getDevServerUrl: jest.fn(),
       getExpoGoUrl: jest.fn(),
@@ -52,7 +52,7 @@ describe('openAsync', () => {
 
   it(`opens a project in a custom development client using app identifier`, async () => {
     const getCustomRuntimeUrl = jest.fn(() => null);
-    const manager = new ApplePlatformManager('/', 19000, {
+    const manager = new ApplePlatformManager('/', 8081, {
       getCustomRuntimeUrl,
       getDevServerUrl: jest.fn(),
       getExpoGoUrl: jest.fn(),

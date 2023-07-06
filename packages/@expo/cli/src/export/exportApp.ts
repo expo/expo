@@ -10,6 +10,7 @@ import { setNodeEnv } from '../utils/nodeEnv';
 import { createBundlesAsync } from './createBundles';
 import { exportAssetsAsync, exportCssAssetsAsync } from './exportAssets';
 import { unstable_exportStaticAsync } from './exportStaticAsync';
+import { getVirtualFaviconAssetsAsync } from './favicon';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
 import { printBundleSizes } from './printBundleSizes';
 import { Options } from './resolveOptions';
@@ -121,28 +122,25 @@ export async function exportAppAsync(
         outputDir,
         bundles,
       });
+      let html = await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
+        scripts: [`/bundles/${fileNames.web}`],
+        cssLinks,
+      });
+      // Add the favicon assets to the HTML.
+      const modifyHtml = await getVirtualFaviconAssetsAsync(projectRoot, outputDir);
+      if (modifyHtml) {
+        html = modifyHtml(html);
+      }
       // Generate SPA-styled HTML file.
       // If web exists, then write the template HTML file.
-      await fs.promises.writeFile(
-        path.join(staticFolder, 'index.html'),
-        await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
-          scripts: [`/bundles/${fileNames.web}`],
-          cssLinks,
-        })
-      );
+      await fs.promises.writeFile(path.join(staticFolder, 'index.html'), html);
     }
 
     // Save assets like a typical bundler, preserving the file paths on web.
     const saveAssets = importCliSaveAssetsFromProject(projectRoot);
     await Promise.all(
       Object.entries(bundles).map(([platform, bundle]) => {
-        return saveAssets(
-          // @ts-expect-error: tolerable type mismatches: unused `readonly` (common in Metro) and `undefined` instead of `null`.
-          bundle.assets,
-          platform,
-          staticFolder,
-          undefined
-        );
+        return saveAssets(bundle.assets, platform, staticFolder, undefined);
       })
     );
   }

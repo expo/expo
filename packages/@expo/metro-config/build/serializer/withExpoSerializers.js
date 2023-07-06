@@ -12,6 +12,13 @@ Object.defineProperty(exports, "SerialAsset", {
 exports.createSerializerFromSerialProcessors = createSerializerFromSerialProcessors;
 exports.withExpoSerializers = withExpoSerializers;
 exports.withSerializerPlugins = withSerializerPlugins;
+function _jscSafeUrl() {
+  const data = require("jsc-safe-url");
+  _jscSafeUrl = function () {
+    return data;
+  };
+  return data;
+}
 function _baseJSBundle() {
   const data = _interopRequireDefault(require("metro/src/DeltaBundler/Serializers/baseJSBundle"));
   _baseJSBundle = function () {
@@ -84,18 +91,19 @@ function withSerializerPlugins(config, processors) {
   };
 }
 function getDefaultSerializer(fallbackSerializer) {
-  const defaultSerializer = fallbackSerializer !== null && fallbackSerializer !== void 0 ? fallbackSerializer : (...params) => {
+  const defaultSerializer = fallbackSerializer !== null && fallbackSerializer !== void 0 ? fallbackSerializer : async (...params) => {
     const bundle = (0, _baseJSBundle().default)(...params);
     const outputCode = (0, _bundleToString().default)(bundle).code;
     return outputCode;
   };
-  return (...props) => {
+  return async (...props) => {
     const [,, graph, options] = props;
-    const jsCode = defaultSerializer(...props);
+    const jsCode = await defaultSerializer(...props);
     if (!options.sourceUrl) {
       return jsCode;
     }
-    const url = new URL(options.sourceUrl, 'https://expo.dev');
+    const sourceUrl = (0, _jscSafeUrl().isJscSafeUrl)(options.sourceUrl) ? (0, _jscSafeUrl().toNormalUrl)(options.sourceUrl) : options.sourceUrl;
+    const url = new URL(sourceUrl, 'https://expo.dev');
     if (url.searchParams.get('platform') !== 'web' || url.searchParams.get('serializer.output') !== 'static') {
       // Default behavior if `serializer.output=static` is not present in the URL.
       return jsCode;

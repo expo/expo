@@ -1,6 +1,6 @@
 {
   "name": "expo-yarn-workspaces",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "A private package for working with Yarn workspaces within the Expo repository",
   "author": "Expo",
   "license": "MIT",
@@ -20,7 +20,7 @@
     "test": "jest ."
   },
   "dependencies": {
-    "@expo/metro-config": "~0.8.0",
+    "@expo/metro-config": "~0.10.0",
     "@expo/webpack-config": "~0.17.4",
     "debug": "^4.3.2",
     "find-yarn-workspace-root": "^2.0.0",
