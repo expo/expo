@@ -263,7 +263,7 @@ class UpdatesModule(
           }
 
           is CheckForUpdateAsyncResult.UpdateAvailable -> {
-            putBoolean("isRollBackToEmbedded", true)
+            putBoolean("isRollBackToEmbedded", false)
             putBoolean("isAvailable", true)
             putString("manifestString", checkForUpdateAsyncResult.updateManifest.manifest.toString())
           }
@@ -295,10 +295,11 @@ class UpdatesModule(
       updatesServiceLocal.stateMachine?.processEvent(UpdatesStateEvent.Download())
       AsyncTask.execute {
         val databaseHolder = updatesServiceLocal.databaseHolder
+        val database = databaseHolder.database
         RemoteLoader(
           context,
           updatesServiceLocal.configuration,
-          databaseHolder.database,
+          database,
           updatesServiceLocal.fileDownloader,
           updatesServiceLocal.directory,
           updatesServiceLocal.launchedUpdate
@@ -348,7 +349,7 @@ class UpdatesModule(
                 RemoteLoader.processSuccessLoaderResult(
                   context,
                   updatesServiceLocal.configuration,
-                  databaseHolder.database,
+                  database,
                   updatesServiceLocal.selectionPolicy,
                   updatesServiceLocal.directory,
                   updatesServiceLocal.launchedUpdate,
