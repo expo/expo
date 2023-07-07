@@ -1,0 +1,89 @@
+import { css } from '@emotion/react';
+import { ExpoGoLogo, mergeClasses, shadows, theme, typography } from '@expo/styleguide';
+import { breakpoints, spacing } from '@expo/styleguide-base';
+import { ChevronDownIcon, Monitor01DuotoneIcon, Phone01DuotoneIcon } from '@expo/styleguide-icons';
+import { useEffect, useState } from 'react';
+
+type PopupActionProps<T extends string> = {
+  items: { name: string; id: T }[];
+  selected: string;
+  onSelect: (value: T) => void;
+};
+export function RuntimePopup<T extends string>({ items, selected, onSelect }: PopupActionProps<T>) {
+  // const [index, setIndex] = useState(items[0]);
+  const Icon = [ExpoGoLogo, Phone01DuotoneIcon, Monitor01DuotoneIcon][
+    items.findIndex(item => item.id === selected)
+  ];
+  const [isLoaded, setLoaded] = useState(false);
+
+  useEffect(function didMount() {
+    setLoaded(true);
+  }, []);
+
+  return (
+    <div className="relative">
+      <select
+        aria-label="Theme selector"
+        title="Select theme"
+        css={selectStyle}
+        className={mergeClasses(
+          'focus-visible:-outline-offset-2',
+          'border-0 rounded-none border-l border-l-default h-10 leading-10 px-10 hocus:bg-subtle hocus:shadow-none'
+        )}
+        value={selected}
+        onChange={e => {
+          onSelect(e.target.value as T);
+        }}>
+        {items.map((item, index) => (
+          <option value={item.id}>{item.name}</option>
+        ))}
+      </select>
+      {isLoaded && (
+        <div
+          style={{ lineHeight: 1.3 }}
+          className="absolute left-2.5 top-2.5 right-2.5 flex items-center justify-center gap-2 text-icon-secondary pointer-events-none select-none">
+          <Icon className={ICON_CLASSES} />
+          {items.find(({ id }) => id === selected)?.name}
+          <ChevronDownIcon className="icon-xs text-icon-secondary pointer-events-none" />
+        </div>
+      )}
+    </div>
+  );
+}
+
+const ICON_CLASSES = 'icon-sm text-icon-secondary pointer-events-none inline-block';
+
+const selectStyle = css`
+  ${typography.fontSizes[14]}
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: ${theme.text.default};
+  line-height: 1.3;
+
+  box-shadow: ${shadows.xs};
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: ${theme.background.default};
+  cursor: pointer;
+  text-indent: -9999px;
+
+  :hover {
+    background-color: ${theme.background.element};
+  }
+
+  :focus-visible {
+    background-color: ${theme.background.element};
+  }
+
+  @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
+    width: auto;
+    min-width: 100px;
+    padding: 0 ${spacing[2]}px;
+    padding-left: ${spacing[8]}px;
+    color: ${theme.text.secondary};
+    text-indent: 0;
+  }
+`;

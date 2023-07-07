@@ -3,13 +3,16 @@ title: Hooks API
 description: Learn how to interact with the in-app URL in Expo Router.
 ---
 
+import { FileTree } from '~/ui/components/FileTree';
+import { RouteUrl } from '~/ui/components/RouteUrl';
+
 In Expo Router, there's always a valid URL which represents the currently focused route. Use hooks to observe changes and interact with the URL.
 
 ## `usePathname`
 
 Returns the currently selected route location without search parameters. e.g. `/acme?foo=bar` -> `/acme`. Segments will be normalized: `/[id]?id=normal` -> `/normal`
 
-> `/profile/baconbrix?extra=info`
+<RouteUrl>/profile/baconbrix?extra=info</RouteUrl>
 
 ```js app/profile/[user].tsx
 import { Text } from 'react-native';
@@ -30,16 +33,11 @@ export default function Route() {
 
 Returns the URL search parameters for the contextually selected route. Refer to the [local vs global search params](/router/reference/search-parameters/#local-vs-global-search-parameters) guide for more info.
 
-```title=File System
-app/
-  _layout.js
-  [first]/home.tsx
-  [second]/shop.tsx
-```
+<FileTree files={['app/_layout.tsx', 'app/[first]/home.tsx', 'app/[second]/shop.tsx']} />
 
 When `/abc/home` pushes `/123/shop`, `useGlobalSearchParams` would return `{ first: undefined, second: '123' }` on `/app/[first]/home.tsx` because the global URL has changed. However, you may want the params to remain `{ first: 'abc' }` to reflect the context of the screen. In this case, you can use `useLocalSearchParams` to ensure the params `{ first: 'abc' }` are still returned in `/app/[first]/home.tsx`.
 
-> `/profile/baconbrix?extra=info`
+<RouteUrl>/profile/baconbrix?extra=info</RouteUrl>
 
 ```js app/profile/[user].tsx
 import { Text } from 'react-native';
@@ -61,7 +59,7 @@ Returns the URL search parameters for the globally selected route. e.g. `/acme?f
 
 Refer to the [local vs global search params](/router/reference/search-parameters/#local-vs-global-search-parameters) guide for more info.
 
-> `/profile/baconbrix?extra=info`
+<RouteUrl>/profile/baconbrix?extra=info</RouteUrl>
 
 ```js app/profile/[user].tsx
 import { Text } from 'react-native';
@@ -70,7 +68,7 @@ import { useGlobalSearchParams } from 'expo-router';
 /* @end */
 
 export default function Route() {
-  /* @info */
+  /* @info <b>user=baconbrix</b> & <b>extra=info</b> */
   const { user, extra } = useGlobalSearchParams();
   /* @end */
   return <Text>User: {user}</Text>;
