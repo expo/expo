@@ -96,6 +96,7 @@ _This version does not introduce any user-facing changes._
 ### 💡 Others
 
 - Fork `uuid@3.4.0` and move into `expo-modules-core`. Remove the original dependency. ([#23249](https://github.com/expo/expo/pull/23249) by [@alanhughes](https://github.com/alanjhughes))
+- Remove `expo-asset` from required dependencies. ([#23361](https://github.com/expo/expo/pull/23361) by [@tsapeta](https://github.com/tsapeta))
 
 ## 49.0.3 — 2023-07-12
 
