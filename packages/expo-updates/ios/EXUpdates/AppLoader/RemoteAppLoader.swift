@@ -1,6 +1,8 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 // swiftlint:disable closure_body_length
+// swiftlint:disable force_unwrapping
+// swiftlint:disable function_parameter_count
 
 import Foundation
 
