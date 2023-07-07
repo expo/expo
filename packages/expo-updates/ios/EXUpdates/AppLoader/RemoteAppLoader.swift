@@ -228,3 +228,6 @@ internal final class RemoteAppLoader: AppLoader {
     )
   }
 }
+
+// swiftlint:enable force_unwrapping
+// swiftlint:enable function_parameter_count
