@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Improved the OkHttp network inspector stability on Android. ([#23350](https://github.com/expo/expo/pull/23350) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 1.5.4 — 2023-07-04
