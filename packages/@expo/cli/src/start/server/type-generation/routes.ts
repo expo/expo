@@ -142,8 +142,10 @@ export function getTypedRoutesUtils(appRoot: string) {
 
   const filePathToRoute = (filePath: string) => {
     const normalizedAppRoot = appRoot.replaceAll(path.sep, '/').replaceAll(' ', '_');
+    // Normalize the path so it's easier to convert to URLs, as done in the walk function
+    const normalizedFilePath = filePath.replaceAll(path.sep, '/').replaceAll(' ', '_');
 
-    return filePath
+    return normalizedFilePath
       .replace(normalizedAppRoot, '')
       .replace(/index.[jt]sx?/, '')
       .replace(/\.[jt]sx?$/, '');
