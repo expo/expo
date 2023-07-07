@@ -8,11 +8,11 @@ import { RouteUrlGroup, RouteUrl } from '~/ui/components/RouteUrl';
 
 <RouteUrlGroup>
 
-In Expo Router, there's always a valid URL which represents the currently focused route. Use hooks to observe changes and interact with the URL.
+In Expo Router, there's always a valid URL that represents the currently focused route. Use hooks to observe changes and interact with the URL.
 
 ## `usePathname`
 
-Returns the currently selected route location without search parameters. e.g. `/acme?foo=bar` -> `/acme`. Segments will be normalized: `/[id]?id=normal` -> `/normal`
+Returns the currently selected route location without search parameters. For example, `/acme?foo=bar` -> `/acme`. Segments will be normalized: `/[id]?id=normal` -> `/normal`
 
 <RouteUrl>/profile/baconbrix?extra=info</RouteUrl>
 
@@ -33,11 +33,11 @@ export default function Route() {
 
 ## `useLocalSearchParams`
 
-Returns the URL search parameters for the contextually selected route. Refer to the [local vs global search params](/router/reference/search-parameters/#local-vs-global-search-parameters) guide for more info.
+Returns the URL search parameters for the contextually selected route. Refer to the [local vs. global search params](/router/reference/search-parameters/#local-vs-global-search-parameters) guide for more information.
 
 <FileTree files={['app/_layout.tsx', 'app/[first]/home.tsx', 'app/[second]/shop.tsx']} />
 
-When `/abc/home` pushes `/123/shop`, `useGlobalSearchParams` would return `{ first: undefined, second: '123' }` on `/app/[first]/home.tsx` because the global URL has changed. However, you may want the params to remain `{ first: 'abc' }` to reflect the context of the screen. In this case, you can use `useLocalSearchParams` to ensure the params `{ first: 'abc' }` are still returned in `/app/[first]/home.tsx`.
+When `/abc/home` pushes `/123/shop`, `useGlobalSearchParams` returns `{ first: undefined, second: '123' }` on **/app/[first]/home.tsx** because the global URL has changed. However, you may want the params to remain `{ first: 'abc' }` to reflect the context of the screen. In this case, you can use `useLocalSearchParams` to ensure the params `{ first: 'abc' }` are still returned in **/app/[first]/home.tsx**.
 
 <RouteUrl>/profile/baconbrix?extra=info</RouteUrl>
 
@@ -57,7 +57,7 @@ export default function Route() {
 
 ## `useGlobalSearchParams`
 
-Returns the URL search parameters for the globally selected route. e.g. `/acme?foo=bar` -> `{ foo: "bar" }`.
+Returns the URL search parameters for the globally selected route. For example, `/acme?foo=bar` -> `{ foo: "bar" }`.
 
 Refer to the [local vs global search params](/router/reference/search-parameters/#local-vs-global-search-parameters) guide for more info.
 
@@ -86,7 +86,7 @@ The `Href` type is a union of the following types:
 
 ## `useSegments`
 
-Returns a list of segments for the currently selected route. Segments are not normalized, so they will be the same as the file path. e.g. `/[id]?id=normal` -> `["[id]"]`
+Returns a list of segments for the currently selected route. Segments are not normalized so that they will be the same as the file path. For example, `/[id]?id=normal` -> `["[id]"]`.
 
 ```js app/profile/[user].tsx
 import { Text } from 'react-native';
