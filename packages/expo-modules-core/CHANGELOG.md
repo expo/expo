@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Improved the OkHttp network inspector stability on Android. ([#23350](https://github.com/expo/expo/pull/23350) by [@kudo](https://github.com/kudo))
+- [iOS] Fix conversion to `URL` type that failed despite receiving a string that contained a valid URL. ([#23331](https://github.com/expo/expo/pull/23331) by [@alanhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
