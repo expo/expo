@@ -26,10 +26,7 @@ export function RuntimePopup<T extends string>({ items, selected, onSelect }: Po
         aria-label="Theme selector"
         title="Select theme"
         css={selectStyle}
-        className={mergeClasses(
-          'focus-visible:-outline-offset-2',
-          'border-0 rounded-none border-l border-l-default h-10 leading-10 px-10 hocus:bg-subtle hocus:shadow-none'
-        )}
+        className="focus-visible:-outline-offset-2 border-0 rounded-none border-l border-l-default h-10 leading-10 px-10 hocus:bg-subtle hocus:shadow-none"
         value={selected}
         onChange={e => {
           onSelect(e.target.value as T);
@@ -41,9 +38,8 @@ export function RuntimePopup<T extends string>({ items, selected, onSelect }: Po
       {isLoaded && (
         <div
           style={{ lineHeight: 1.3 }}
-          className="absolute left-2.5 top-2.5 right-2.5 flex items-center justify-center gap-2 text-icon-secondary pointer-events-none select-none">
+          className="absolute inset-x-2.5 inset-y-0 flex items-center justify-between gap-2 text-icon-secondary pointer-events-none select-none">
           <Icon className={ICON_CLASSES} />
-          {items.find(({ id }) => id === selected)?.name}
           <ChevronDownIcon className="icon-xs text-icon-secondary pointer-events-none" />
         </div>
       )}
@@ -58,9 +54,11 @@ const selectStyle = css`
   display: flex;
   align-items: center;
   justify-content: center;
-
   color: ${theme.text.default};
   line-height: 1.3;
+  padding: 0 ${spacing[8]}px;
+  color: ${theme.text.secondary};
+  text-indent: 0;
 
   box-shadow: ${shadows.xs};
   -moz-appearance: none;
@@ -68,7 +66,6 @@ const selectStyle = css`
   appearance: none;
   background-color: ${theme.background.default};
   cursor: pointer;
-  text-indent: -9999px;
 
   :hover {
     background-color: ${theme.background.element};
@@ -79,11 +76,7 @@ const selectStyle = css`
   }
 
   @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
-    width: auto;
-    min-width: 100px;
-    padding: 0 ${spacing[2]}px;
-    padding-left: ${spacing[8]}px;
-    color: ${theme.text.secondary};
-    text-indent: 0;
+    padding: 0 0;
+    text-indent: -9999px;
   }
 `;
