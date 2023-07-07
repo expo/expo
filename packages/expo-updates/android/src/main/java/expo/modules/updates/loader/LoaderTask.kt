@@ -372,77 +372,17 @@ class LoaderTask(
           }
 
           override fun onSuccess(loaderResult: Loader.LoaderResult) {
-            val updateEntity = loaderResult.updateEntity
-            val updateDirective = loaderResult.updateDirective
-
-            if (updateDirective != null && updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) {
-              processRollBackToEmbeddedDirective(updateDirective)
-            } else {
-              launchUpdate(updateEntity)
+            RemoteLoader.processSuccessLoaderResult(
+              context,
+              configuration,
+              database,
+              selectionPolicy,
+              directory,
+              candidateLauncher?.launchedUpdate,
+              loaderResult
+            ) { availableUpdate, _ ->
+              launchUpdate(availableUpdate)
             }
-          }
-
-          /**
-           * If directive is to roll-back to the embedded update and there is an embedded update,
-           * we need to update embedded update in the DB with the newer commitTime from the directive
-           * so that the selection policy will choose it. That way future updates can continue to be applied
-           * over this roll back, but older ones won't.
-           */
-          private fun processRollBackToEmbeddedDirective(updateDirective: UpdateDirective.RollBackToEmbeddedUpdateDirective) {
-            if (!configuration.hasEmbeddedUpdate) {
-              launchUpdate(null)
-              return
-            }
-
-            val embeddedUpdate = EmbeddedManifest.get(context, configuration)!!.updateEntity
-            if (embeddedUpdate == null) {
-              launchUpdate(null)
-              return
-            }
-
-            val manifestFilters = ManifestMetadata.getManifestFilters(database, configuration)
-            if (!selectionPolicy.shouldLoadRollBackToEmbeddedDirective(updateDirective, embeddedUpdate, candidateLauncher?.launchedUpdate, manifestFilters)) {
-              launchUpdate(null)
-              return
-            }
-
-            // update the embedded update commit time in the in-memory embedded update since it is a singleton
-            embeddedUpdate.commitTime = updateDirective.commitTime
-
-            // update the embedded update commit time in the database (requires loading and then updating)
-            EmbeddedLoader(context, configuration, database, directory).start(object : LoaderCallback {
-              /**
-               * This should never happen since we check for the embedded update above
-               */
-              override fun onFailure(e: Exception) {
-                Log.e(
-                  TAG,
-                  "Embedded update erroneously null when applying roll back to embedded directive",
-                  e
-                )
-                launchUpdate(null)
-              }
-
-              override fun onSuccess(loaderResult: Loader.LoaderResult) {
-                val embeddedUpdateToLoad = loaderResult.updateEntity
-                database.updateDao().setUpdateCommitTime(embeddedUpdateToLoad!!, updateDirective.commitTime)
-                launchUpdate(null)
-              }
-
-              override fun onAssetLoaded(
-                asset: AssetEntity,
-                successfulAssetCount: Int,
-                failedAssetCount: Int,
-                totalAssetCount: Int
-              ) {
-              }
-
-              override fun onUpdateResponseLoaded(updateResponse: UpdateResponse): Loader.OnUpdateResponseLoadedResult {
-                return Loader.OnUpdateResponseLoadedResult(
-                  shouldDownloadManifestIfPresentInResponse = true
-                )
-              }
-            })
           }
 
           private fun launchUpdate(availableUpdate: UpdateEntity?) {
