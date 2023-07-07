@@ -449,71 +449,19 @@ public final class AppLoaderTask: NSObject {
     loaderTaskQueue.async {
       self.stopTimer()
 
-      let updateBeingLaunched = updateResponse?.manifestUpdateResponsePart?.updateManifest
-
-      // If directive is to roll-back to the embedded update and there is an embedded update,
-      // we need to update embedded update in the DB with the newer commitTime from the message so that
-      // the selection policy will choose it. That way future updates can continue to be applied
-      // over this roll back, but older ones won't.
-      // The embedded update is guaranteed to be in the DB from the earlier [EmbeddedAppLoader] call in this task.
-      if let rollBackDirective = updateResponse?.directiveUpdateResponsePart?.updateDirective as? RollBackToEmbeddedUpdateDirective {
-        self.processRollBackToEmbeddedDirective(rollBackDirective, manifestFilters: updateResponse?.responseHeaderData?.manifestFilters, error: error)
-      } else {
-        self.launchUpdate(updateBeingLaunched, error: error)
+      RemoteAppLoader.processSuccessLoaderResult(
+        config: self.config,
+        database: self.database,
+        selectionPolicy: self.selectionPolicy,
+        launchedUpdate: self.candidateLauncher?.launchedUpdate,
+        directory: self.directory,
+        loaderTaskQueue: self.loaderTaskQueue,
+        updateResponse: updateResponse,
+        priorError: error
+      ) { updateToLaunch, error, _ in
+        self.launchUpdate(updateToLaunch, error: error)
       }
     }
-  }
-
-  private func processRollBackToEmbeddedDirective(_ updateDirective: RollBackToEmbeddedUpdateDirective, manifestFilters: [String: Any]?, error: Error?) {
-    if !self.config.hasEmbeddedUpdate {
-      launchUpdate(nil, error: error)
-      return
-    }
-
-    guard let embeddedManifest = EmbeddedAppLoader.embeddedManifest(withConfig: self.config, database: self.database) else {
-      launchUpdate(nil, error: error)
-      return
-    }
-
-    if !self.selectionPolicy.shouldLoadRollBackToEmbeddedDirective(
-      updateDirective,
-      withEmbeddedUpdate: embeddedManifest,
-      launchedUpdate: self.candidateLauncher?.launchedUpdate,
-      filters: manifestFilters
-    ) {
-      launchUpdate(nil, error: error)
-      return
-    }
-
-    // update the embedded update commit time in the in-memory embedded update since it is a singleton
-    embeddedManifest.commitTime = updateDirective.commitTime
-
-    self.embeddedAppLoader = EmbeddedAppLoader(
-      config: self.config,
-      database: self.database,
-      directory: self.directory,
-      launchedUpdate: nil,
-      completionQueue: self.loaderTaskQueue
-    )
-    self.embeddedAppLoader!.loadUpdateResponseFromEmbeddedManifest(
-      withCallback: { _ in
-        return true
-      }, asset: { _, _, _, _ in
-      }, success: { updateResponse in
-        do {
-          let update = updateResponse?.manifestUpdateResponsePart?.updateManifest
-          // do this synchronously as it is needed to launch, and we're already on a background dispatch queue so no UI will be blocked
-          try self.database.databaseQueue.sync {
-            try self.database.setUpdateCommitTime(updateDirective.commitTime, onUpdate: update!)
-          }
-          self.launchUpdate(update, error: error)
-        } catch {
-          self.launchUpdate(nil, error: error)
-        }
-      }, error: { embeddedLoaderError in
-        self.launchUpdate(nil, error: embeddedLoaderError)
-      }
-    )
   }
 
   private func launchUpdate(_ updateBeingLaunched: Update?, error: Error?) {
