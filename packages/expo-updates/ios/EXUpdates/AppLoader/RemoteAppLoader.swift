@@ -1,7 +1,6 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 // swiftlint:disable closure_body_length
-// swiftlint:disable force_unwrapping
 // swiftlint:disable function_parameter_count
 
 import Foundation
@@ -216,7 +215,9 @@ internal final class RemoteAppLoader: AppLoader {
           let update = updateResponse?.manifestUpdateResponsePart?.updateManifest
           // do this synchronously as it is needed to launch, and we're already on a background dispatch queue so no UI will be blocked
           try database.databaseQueue.sync {
+            // swiftlint:disable force_unwrapping
             try database.setUpdateCommitTime(rollBackDirective.commitTime, onUpdate: update!)
+            // swiftlint:enable force_unwrapping
           }
           onComplete(update, priorError, true)
         } catch {
@@ -229,5 +230,4 @@ internal final class RemoteAppLoader: AppLoader {
   }
 }
 
-// swiftlint:enable force_unwrapping
 // swiftlint:enable function_parameter_count
