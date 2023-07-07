@@ -1,12 +1,20 @@
-// load expo-asset immediately to set a custom `source` transformer in React Native
-import 'expo-asset';
-
 import * as Font from 'expo-font';
 import { NativeModulesProxy, Platform } from 'expo-modules-core';
 import { StyleSheet } from 'react-native';
 
 import { isRunningInExpoGo } from './environment/ExpoGo';
 import { createErrorHandler } from './errors/ExpoErrorManager';
+
+function optionalRequire<T>(path: string): T | null {
+  try {
+    return require(path);
+  } catch {
+    return null;
+  }
+}
+
+// Load expo-asset immediately to set a custom `source` transformer in React Native
+optionalRequire('expo-asset');
 
 // If expo-font is installed and the style preprocessor is available, use it to parse fonts.
 if (StyleSheet.setStyleAttributePreprocessor) {
