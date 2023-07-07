@@ -27,7 +27,6 @@ import expo.modules.updates.manifest.UpdateManifest
 // these unused imports must stay because of versioning
 /* ktlint-disable no-unused-imports */
 import expo.modules.updates.UpdatesConfiguration
-import org.json.JSONObject
 /* ktlint-enable no-unused-imports */
 
 /**
