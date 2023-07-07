@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed JavaScript Inspector does not work on Windows. ([#23367](https://github.com/expo/expo/pull/23367) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.10.9 — 2023-07-05
