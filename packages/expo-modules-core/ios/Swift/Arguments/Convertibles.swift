@@ -17,6 +17,7 @@ extension URL: Convertible {
       throw Conversions.ConvertingException<URL>(value)
     }
 
+    // First we try to create a URL without extra encoding, as it came.
     if let url = convertToUrl(string: value) {
       return url
     }
