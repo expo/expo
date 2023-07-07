@@ -2,9 +2,12 @@
 
 package expo.modules.kotlin.devtools
 
+import android.util.Log
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
+
+private const val TAG = "ExpoNetworkInspector"
 
 // Currently keeps the delegate fixed for ExpoRequestCdpInterceptor and be thread-safe
 internal val delegate: ExpoNetworkInspectOkHttpInterceptorsDelegate = ExpoRequestCdpInterceptor
@@ -16,19 +19,22 @@ internal val delegate: ExpoNetworkInspectOkHttpInterceptorsDelegate = ExpoReques
 class ExpoNetworkInspectOkHttpNetworkInterceptor : Interceptor {
   override fun intercept(chain: Interceptor.Chain): Response {
     val request = chain.request()
-    val redirectResponse = request.tag(RedirectResponse::class.java)
-    val requestId = redirectResponse?.requestId ?: request.hashCode().toString()
-    delegate.willSendRequest(requestId, request, redirectResponse?.priorResponse)
-
     val response = chain.proceed(request)
+    try {
+      val redirectResponse = request.tag(RedirectResponse::class.java)
+      val requestId = redirectResponse?.requestId ?: request.hashCode().toString()
+      delegate.willSendRequest(requestId, request, redirectResponse?.priorResponse)
 
-    if (response.isRedirect) {
-      response.request.tag(RedirectResponse::class.java)?.let {
-        it.requestId = requestId
-        it.priorResponse = response
+      if (response.isRedirect) {
+        response.request.tag(RedirectResponse::class.java)?.let {
+          it.requestId = requestId
+          it.priorResponse = response
+        }
+      } else {
+        delegate.didReceiveResponse(requestId, request, response)
       }
-    } else {
-      delegate.didReceiveResponse(requestId, request, response)
+    } catch (e: Exception) {
+      Log.e(TAG, "Failed to send network request CDP event", e)
     }
     return response
   }
