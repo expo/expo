@@ -141,8 +141,10 @@ export function getTypedRoutesUtils(appRoot: string) {
   const dynamicRoutes = new Map<string, Set<string>>();
 
   const filePathToRoute = (filePath: string) => {
+    const normalizedAppRoot = appRoot.replaceAll(path.sep, '/').replaceAll(' ', '_');
+
     return filePath
-      .replace(appRoot, '')
+      .replace(normalizedAppRoot, '')
       .replace(/index.[jt]sx?/, '')
       .replace(/\.[jt]sx?$/, '');
   };
