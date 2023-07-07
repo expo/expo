@@ -77,17 +77,42 @@ public final class UpdatesUtils: NSObject {
         withDatabase: constants.database,
         extraHeaders: extraHeaders
       ) { updateResponse in
+        let launchedUpdate = constants.launchedUpdate
+        let manifestFilters = updateResponse.responseHeaderData?.manifestFilters
+
         if let updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective {
           switch updateDirective {
           case is NoUpdateAvailableUpdateDirective:
             block([:])
             sendStateEvent(UpdatesStateEventCheckComplete())
             return
-          case is RollBackToEmbeddedUpdateDirective:
-            let body = [
+          case let rollBackUpdateDirective as RollBackToEmbeddedUpdateDirective:
+            if !constants.config.hasEmbeddedUpdate {
+              block([:])
+              sendStateEvent(UpdatesStateEventCheckComplete())
+              return
+            }
+
+            guard let embeddedManifest = EmbeddedAppLoader.embeddedManifest(withConfig: constants.config, database: constants.database) else {
+              block([:])
+              sendStateEvent(UpdatesStateEventCheckComplete())
+              return
+            }
+
+            if !constants.selectionPolicy.shouldLoadRollBackToEmbeddedDirective(
+              rollBackUpdateDirective,
+              withEmbeddedUpdate: embeddedManifest,
+              launchedUpdate: launchedUpdate,
+              filters: manifestFilters
+            ) {
+              block([:])
+              sendStateEvent(UpdatesStateEventCheckComplete())
+              return
+            }
+
+            block([
               "isRollBackToEmbedded": true
-            ]
-            block(body)
+            ])
             sendStateEvent(UpdatesStateEventCheckCompleteWithRollback())
             return
           default:
@@ -103,17 +128,16 @@ public final class UpdatesUtils: NSObject {
 
         if constants.selectionPolicy.shouldLoadNewUpdate(
           update,
-          withLaunchedUpdate: constants.launchedUpdate,
-          filters: updateResponse.responseHeaderData?.manifestFilters
+          withLaunchedUpdate: launchedUpdate,
+          filters: manifestFilters
         ) {
-          let body = [
+          block([
             "manifest": update.manifest.rawManifestJSON()
-          ]
-          block(body)
+          ])
           sendStateEvent(UpdatesStateEventCheckCompleteWithUpdate(manifest: update.manifest.rawManifestJSON()))
         } else {
           block([:])
-            sendStateEvent(UpdatesStateEventCheckComplete())
+          sendStateEvent(UpdatesStateEventCheckComplete())
         }
       } errorBlock: { error in
         return handleCheckError(error, block: block)
@@ -178,33 +202,45 @@ public final class UpdatesUtils: NSObject {
           assetId: asset.contentHash
         )
       } success: { updateResponse in
-        if updateResponse?.directiveUpdateResponsePart?.updateDirective is RollBackToEmbeddedUpdateDirective {
-          let body = [
-            "isNew": false,
-            "isRollBackToEmbedded": true
-          ]
-          block(body)
-          sendStateEvent(UpdatesStateEventDownloadCompleteWithRollback())
-          return
-        } else {
-          if let update = updateResponse?.manifestUpdateResponsePart?.updateManifest {
-            AppController.sharedInstance.resetSelectionPolicyToDefault()
-            let body = [
-              "isNew": true,
-              "isRollBackToEmbedded": false,
-              "manifest": update.manifest.rawManifestJSON()
-            ] as [String: Any]
-            block(body)
-            sendStateEvent(UpdatesStateEventDownloadCompleteWithUpdate(manifest: update.manifest.rawManifestJSON()))
+        RemoteAppLoader.processSuccessLoaderResult(
+          config: constants.config,
+          database: constants.database,
+          selectionPolicy: constants.selectionPolicy,
+          launchedUpdate: constants.launchedUpdate,
+          directory: constants.directory,
+          loaderTaskQueue: DispatchQueue(label: "expo.loader.LoaderTaskQueue"),
+          updateResponse: updateResponse,
+          priorError: nil
+        ) { updateToLaunch, error, didRollBackToEmbedded in
+          if let error = error {
+            return handleFetchError(error, block: block)
+          }
+
+          if didRollBackToEmbedded {
+            block([
+              "isNew": false,
+              "isRollBackToEmbedded": true
+            ])
+            sendStateEvent(UpdatesStateEventDownloadCompleteWithRollback())
             return
           } else {
-            let body = [
-              "isNew": false,
-              "isRollBackToEmbedded": false
-            ]
-            block(body)
-            sendStateEvent(UpdatesStateEventDownloadComplete())
-            return
+            if let update = updateToLaunch {
+              AppController.sharedInstance.resetSelectionPolicyToDefault()
+              block([
+                "isNew": true,
+                "isRollBackToEmbedded": false,
+                "manifest": update.manifest.rawManifestJSON()
+              ] as [String: Any])
+              sendStateEvent(UpdatesStateEventDownloadCompleteWithUpdate(manifest: update.manifest.rawManifestJSON()))
+              return
+            } else {
+              block([
+                "isNew": false,
+                "isRollBackToEmbedded": false
+              ])
+              sendStateEvent(UpdatesStateEventDownloadComplete())
+              return
+            }
           }
         }
       } error: { error in
