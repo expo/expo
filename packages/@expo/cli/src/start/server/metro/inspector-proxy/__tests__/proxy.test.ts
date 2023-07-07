@@ -234,6 +234,46 @@ it('keeps debugger connection alive when device reconnects', async () => {
   }
 });
 
+describe('ExpoInspectorProxy.normalizeServerAddress', () => {
+  it('should return address in `{address}:{port}` format - IPv4', () => {
+    expect(
+      ExpoProxy.normalizeServerAddress({ address: '1.2.3.4', family: 'IPv4', port: 8081 })
+    ).toBe('1.2.3.4:8081');
+  });
+
+  it('should return address in `[{address}]:{port}` format - IPv6', () => {
+    expect(
+      ExpoProxy.normalizeServerAddress({
+        address: '2001:1:2:3:4:5:6:7',
+        family: 'IPv6',
+        port: 8082,
+      })
+    ).toBe('[2001:1:2:3:4:5:6:7]:8082');
+  });
+
+  it('should return default loopback `localhost:{port}` address when IPv4 server address is 0.0.0.0', () => {
+    expect(
+      ExpoProxy.normalizeServerAddress({ address: '0.0.0.0', family: 'IPv4', port: 8081 })
+    ).toBe('localhost:8081');
+  });
+
+  it('should return default loopback `[::1]:{port}` address when IPv6 server address is `::`', () => {
+    expect(ExpoProxy.normalizeServerAddress({ address: '::', family: 'IPv6', port: 8082 })).toBe(
+      '[::1]:8082'
+    );
+  });
+
+  it('should throw error when given an invalid address', () => {
+    expect(() => {
+      ExpoProxy.normalizeServerAddress(null);
+    }).toThrow();
+
+    expect(() => {
+      ExpoProxy.normalizeServerAddress('string is not a valid address');
+    }).toThrow();
+  });
+});
+
 function createTestProxy() {
   class ExpoDevice {
     constructor(
