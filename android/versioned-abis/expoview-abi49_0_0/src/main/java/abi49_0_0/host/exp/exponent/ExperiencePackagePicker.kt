@@ -7,6 +7,7 @@ import abi49_0_0.expo.modules.backgroundfetch.BackgroundFetchPackage
 import abi49_0_0.expo.modules.barcodescanner.BarCodeScannerModule
 import abi49_0_0.expo.modules.barcodescanner.BarCodeScannerPackage
 import abi49_0_0.expo.modules.battery.BatteryPackage
+import abi49_0_0.expo.modules.blur.BlurModule
 import abi49_0_0.expo.modules.brightness.BrightnessModule
 import abi49_0_0.expo.modules.calendar.CalendarPackage
 import abi49_0_0.expo.modules.camera.CameraViewModule
@@ -113,6 +114,7 @@ object ExperiencePackagePicker : ModulesProvider {
 
   override fun getModulesList(): List<Class<out Module>> = listOf(
     BarCodeScannerModule::class.java,
+    BlurModule::class.java,
     CameraViewModule::class.java,
     CellularModule::class.java,
     ClipboardModule::class.java,
