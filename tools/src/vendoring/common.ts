@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
 import logger from '../Logger';
-import { CopyFileOptions, copyFileWithTransformsAsync } from '../Transforms';
+import { CopyFileOptions, FileTransform, copyFileWithTransformsAsync } from '../Transforms';
 
 /**
  * Copies vendored files from source directory to target directory
@@ -11,11 +11,22 @@ export async function copyVendoredFilesAsync(
   files: Set<string>,
   options: Omit<CopyFileOptions, 'sourceFile'>
 ): Promise<void> {
+  const unusedTransforms = new Set<FileTransform>(options.transforms.content);
   for (const sourceFile of files) {
-    const { targetFile } = await copyFileWithTransformsAsync({ sourceFile, ...options });
+    const { targetFile, transformsUsed } = await copyFileWithTransformsAsync({
+      sourceFile,
+      ...options,
+    });
+    transformsUsed.forEach((transform) => unusedTransforms.delete(transform));
 
     if (sourceFile !== targetFile) {
       logger.log('📂 Renamed %s to %s', chalk.magenta(sourceFile), chalk.magenta(targetFile));
     }
+  }
+  for (const unusedTransform of unusedTransforms) {
+    logger.warn(
+      '⚠️ A transform was never applied to vendored code.\nThis can indicate outdated transforms or bugs in the vendored package.\nPath(s): %s',
+      chalk.magenta(String(unusedTransform.paths ?? ''))
+    );
   }
 }

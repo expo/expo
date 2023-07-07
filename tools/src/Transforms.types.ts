@@ -98,4 +98,8 @@ export type CopyFileResult = {
    * The final target path after transformations. Relative to provided `targetDirectory`.
    */
   targetFile: string;
+  /**
+   * A set of transforms that were used to transform the file.
+   */
+  transformsUsed: Set<FileTransform>;
 };
