@@ -58,3 +58,13 @@ internal func isFileUrlPath(_ path: String) -> Bool {
   }
   return URL(string: encodedPath)?.scheme == nil
 }
+
+internal func convertToUrl(string value: String) -> URL? {
+  // URLComponents parses and constructs URLs according to RFC 3986.
+  // For some unusual urls URL(string:) will fail incorrectly
+  guard let url = URLComponents(string: value)?.url ?? URL(string: value) else {
+    return nil
+  }
+  // If it has no scheme, we assume it was the file path which needs to be recreated to be recognized as the file url.
+  return url.scheme != nil ? url : URL(fileURLWithPath: value)
+}

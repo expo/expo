@@ -71,13 +71,6 @@ class ConvertiblesSpec: ExpoSpec {
         }
       }
 
-      it("throws when url contains percent alone") {
-        // The percent character alone must be percent-encoded to `%25` beforehand, otherwise it should throw an exception.
-        let urlString = "https://expo.dev/?param=%"
-
-        expect({ try URL.convert(from: urlString, appContext: appContext) }).to(throwError(errorType: UrlContainsInvalidCharactersException.self))
-      }
-
       it("converts from url containing the anchor") {
         // The hash is not allowed in the query (requires percent-encoding),
         // but we want it to be recognized as the beginning of the fragment,
