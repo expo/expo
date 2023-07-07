@@ -1,5 +1,5 @@
 import { Link04Icon } from '@expo/styleguide-icons';
-import React, { useState, PropsWithChildren } from 'react';
+import React, { PropsWithChildren } from 'react';
 
 import { SnippetHeader } from '../Snippet/SnippetHeader';
 import { RuntimePopup } from './RuntimePopup';

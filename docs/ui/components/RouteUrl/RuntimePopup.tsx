@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { ExpoGoLogo, mergeClasses, shadows, theme, typography } from '@expo/styleguide';
+import { ExpoGoLogo, shadows, theme, typography } from '@expo/styleguide';
 import { breakpoints, spacing } from '@expo/styleguide-base';
 import { ChevronDownIcon, Monitor01DuotoneIcon, Phone01DuotoneIcon } from '@expo/styleguide-icons';
 import { useEffect, useState } from 'react';
