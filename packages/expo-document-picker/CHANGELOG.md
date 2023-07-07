@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+- Remove deprecated fields and warning on `getDocumentAsync`. ([#23135](https://github.com/expo/expo/pull/23135) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 11.5.2 — 2023-06-28
+
+_This version does not introduce any user-facing changes._
+
 ## 11.5.1 — 2023-06-27
 
 _This version does not introduce any user-facing changes._

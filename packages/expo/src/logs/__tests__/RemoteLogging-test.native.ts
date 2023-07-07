@@ -1,11 +1,11 @@
 import LogSerialization from '../LogSerialization';
 import RemoteLogging, { __waitForEmptyLogQueueAsync } from '../RemoteLogging';
 
-jest.mock('uuid', () => {
-  const originalModule = jest.requireActual('uuid');
+jest.mock('expo-modules-core', () => {
+  const originalModule = jest.requireActual('expo-modules-core');
   return {
     ...originalModule,
-    v4: () => 'c0d50576-7ddc-4196-8b1d-01c2d1786631',
+    uuidv4: () => 'c0d50576-7ddc-4196-8b1d-01c2d1786631',
   };
 });
 

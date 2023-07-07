@@ -534,27 +534,31 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
 
 - (void)_addObserver:(NSObject *)object forKeyPath:(NSString *)path options:(NSKeyValueObservingOptions)options
 {
-  NSMutableSet<NSString *> *set = [_observers objectForKey:object];
-  if (set == nil) {
-    set = [NSMutableSet set];
-    [_observers setObject:set forKey:object];
-  }
-  if (![set containsObject:path]) {
-    [set addObject:path];
-    [object addObserver:self forKeyPath:path options:options context:nil];
+  @synchronized(_observers) {
+    NSMutableSet<NSString *> *set = [_observers objectForKey:object];
+    if (set == nil) {
+      set = [NSMutableSet set];
+      [_observers setObject:set forKey:object];
+    }
+    if (![set containsObject:path]) {
+      [set addObject:path];
+      [object addObserver:self forKeyPath:path options:options context:nil];
+    }
   }
 }
 
 - (void)_tryRemoveObserver:(NSObject *)object forKeyPath:(NSString *)path
 {
-  NSMutableSet<NSString *> *set = [_observers objectForKey:object];
-  if (set) {
-    if ([set containsObject:path]) {
-      [set removeObject:path];
-      if (!set.count) {
-        [_observers removeObjectForKey:object];
+  @synchronized(_observers) {
+    NSMutableSet<NSString *> *set = [_observers objectForKey:object];
+    if (set) {
+      if ([set containsObject:path]) {
+        [set removeObject:path];
+        if (!set.count) {
+          [_observers removeObjectForKey:object];
+        }
+        [object removeObserver:self forKeyPath:path];
       }
-      [object removeObserver:self forKeyPath:path];
     }
   }
 }

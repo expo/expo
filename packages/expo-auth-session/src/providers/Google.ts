@@ -36,6 +36,9 @@ export const discovery: DiscoveryDocument = {
 };
 
 // @needsAudit
+/**
+ * @deprecated See [Google authentication](/guides/google-authentication/).
+ */
 export interface GoogleAuthRequestConfig extends ProviderAuthRequestConfig {
   /**
    * If the user's email address is known ahead of time, it can be supplied to be the default option.

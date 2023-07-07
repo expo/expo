@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Refactor the singleton class to work properly in versioned code in Expo Go. ([#23228](https://github.com/expo/expo/pull/23228) by [@tsapeta](https://github.com/tsapeta))
+
 ## 6.0.1 — 2023-06-23
 
 ### 🐛 Bug fixes

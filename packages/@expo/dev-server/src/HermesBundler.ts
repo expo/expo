@@ -4,7 +4,6 @@ import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
 import process from 'process';
-import semver from 'semver';
 
 import {
   importHermesCommandFromProject,
@@ -14,28 +13,10 @@ import {
 export function isEnableHermesManaged(expoConfig: ExpoConfig, platform: Platform): boolean {
   switch (platform) {
     case 'android': {
-      if (!gteSdkVersion(expoConfig, '42.0.0')) {
-        // Hermes on Android is supported after SDK 42.
-        return false;
-      }
-      if (gteSdkVersion(expoConfig, '48.0.0')) {
-        // Hermes on Android is enabled by default after SDK 48.
-        return (expoConfig.android?.jsEngine ?? expoConfig.jsEngine) !== 'jsc';
-      }
-
-      return (expoConfig.android?.jsEngine ?? expoConfig.jsEngine) === 'hermes';
+      return (expoConfig.android?.jsEngine ?? expoConfig.jsEngine) !== 'jsc';
     }
     case 'ios': {
-      if (!gteSdkVersion(expoConfig, '43.0.0')) {
-        // Hermes on iOS is supported after SDK 43.
-        return false;
-      }
-      if (gteSdkVersion(expoConfig, '48.0.0')) {
-        // Hermes on iOS is enabled by default after SDK 48.
-        return (expoConfig.ios?.jsEngine ?? expoConfig.jsEngine) !== 'jsc';
-      }
-
-      return (expoConfig.ios?.jsEngine ?? expoConfig.jsEngine) === 'hermes';
+      return (expoConfig.ios?.jsEngine ?? expoConfig.jsEngine) !== 'jsc';
     }
     default:
       return false;
@@ -151,25 +132,11 @@ export async function maybeInconsistentEngineAndroidAsync(
 ): Promise<boolean> {
   // Trying best to check android native project if by chance to be consistent between app config
 
-  // Check android/app/build.gradle for "enableHermes: true", for SDK < 48
-  const appBuildGradlePath = path.join(projectRoot, 'android', 'app', 'build.gradle');
-  if (fs.existsSync(appBuildGradlePath)) {
-    const content = await fs.readFile(appBuildGradlePath, 'utf8');
-    const isPropsReference =
-      content.search(
-        /^\s*enableHermes:\s*\(findProperty\('expo.jsEngine'\) \?: "jsc"\) == "hermes",?\s+/m
-      ) >= 0;
-    const isHermesBare = content.search(/^\s*enableHermes:\s*true,?\s+/m) >= 0;
-    if (!isPropsReference && isHermesManaged !== isHermesBare) {
-      return true;
-    }
-  }
-
   // Check gradle.properties from prebuild template
   const gradlePropertiesPath = path.join(projectRoot, 'android', 'gradle.properties');
   if (fs.existsSync(gradlePropertiesPath)) {
     const props = parseGradleProperties(await fs.readFile(gradlePropertiesPath, 'utf8'));
-    const isHermesBare = props['expo.jsEngine'] === 'hermes' || props['hermesEnabled'] === 'true';
+    const isHermesBare = props['hermesEnabled'] === 'true';
     if (isHermesManaged !== isHermesBare) {
       return true;
     }
@@ -188,18 +155,10 @@ export async function maybeInconsistentEngineIosAsync(
   const podfilePath = path.join(projectRoot, 'ios', 'Podfile');
   if (fs.existsSync(podfilePath)) {
     const content = await fs.readFile(podfilePath, 'utf8');
-    const hermesPropReferences = [
-      // sdk 45
-      /^\s*:hermes_enabled\s*=>\s*flags\[:hermes_enabled\]\s*\|\|\s*podfile_properties\['expo.jsEngine'\]\s*==\s*'hermes',?/m,
-      // <= sdk 44
-      /^\s*:hermes_enabled\s*=>\s*podfile_properties\['expo.jsEngine'\] == 'hermes',?\s+/m,
-      // sdk 48
-      /^\s*:hermes_enabled\s*=>\s*podfile_properties\['expo.jsEngine'\]\s*==\s*nil\s*\|\|\s*podfile_properties\['expo.jsEngine'\]\s*==\s*'hermes',?/m,
-    ];
-    const isPropsReference = hermesPropReferences.reduce(
-      (prev, curr) => prev || content.search(curr) >= 0,
-      false
-    );
+    const isPropsReference =
+      content.search(
+        /^\s*:hermes_enabled\s*=>\s*podfile_properties\['expo.jsEngine'\]\s*==\s*nil\s*\|\|\s*podfile_properties\['expo.jsEngine'\]\s*==\s*'hermes',?/m
+      ) >= 0;
     const isHermesBare = content.search(/^\s*:hermes_enabled\s*=>\s*true,?\s+/m) >= 0;
     if (!isPropsReference && isHermesManaged !== isHermesBare) {
       return true;
@@ -241,23 +200,6 @@ async function readHermesHeaderAsync(file: string): Promise<Buffer> {
   await fs.read(fd, buffer, 0, 12, null);
   await fs.close(fd);
   return buffer;
-}
-
-// Cloned from xdl/src/Versions.ts, we cannot use that because of circular dependency
-function gteSdkVersion(expJson: Pick<ExpoConfig, 'sdkVersion'>, sdkVersion: string): boolean {
-  if (!expJson.sdkVersion) {
-    return false;
-  }
-
-  if (expJson.sdkVersion === 'UNVERSIONED') {
-    return true;
-  }
-
-  try {
-    return semver.gte(expJson.sdkVersion, sdkVersion);
-  } catch {
-    throw new Error(`${expJson.sdkVersion} is not a valid version. Must be in the form of x.y.z`);
-  }
 }
 
 async function parsePodfilePropertiesAsync(

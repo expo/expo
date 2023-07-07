@@ -10,6 +10,31 @@
 
 ### 💡 Others
 
+- Fork `uuid@3.4.0` and move into `expo-modules-core`. Remove the original dependency. ([#23249](https://github.com/expo/expo/pull/23249) by [@alanhughes](https://github.com/alanjhughes))
+
+## 49.0.0-beta.4 - 2023-07-02
+
+### 🐛 Bug fixes
+
+- Use node module resolution when invoking `@expo/cli` from `expo`. ([#23220](https://github.com/expo/expo/pull/23220) by [@byCedric](https://github.com/byCedric))
+- Added support for React Native 0.72.1. ([#23262](https://github.com/expo/expo/pull/23262) by [@kudo](https://github.com/kudo))
+
+## 49.0.0-beta.3 - 2023-06-30
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-beta.2 - 2023-06-30
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-beta.1 - 2023-06-29
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-beta.0 — 2023-06-28
+
+_This version does not introduce any user-facing changes._
+
 ## 49.0.0-alpha.10 — 2023-06-27
 
 _This version does not introduce any user-facing changes._

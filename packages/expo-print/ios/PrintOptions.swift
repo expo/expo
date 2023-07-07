@@ -1,5 +1,10 @@
 import ExpoModulesCore
 
+enum PrintOrientation: String {
+  case portrait
+  case landscape
+}
+
 internal struct PrintOptions: Record {
   @Field
   var html: String?
@@ -35,8 +40,6 @@ internal struct PrintOptions: Record {
   var markupFormatterIOS: String?
 
   let kLetterPaperSize = CGSize(width: 612, height: 792)
-  let kExpoPrintOrientationLandscape = "landscape"
-  let kExpoPrintOrientationPortrait = "portrait"
 
   func toPageSize() -> CGSize {
     // defaults to pixel size for A4 paper format with 72 PPI
@@ -81,6 +84,6 @@ internal struct PrintOptions: Record {
   }
 
   func toUIPrintInfoOrientation() -> UIPrintInfo.Orientation {
-    orientation == kExpoPrintOrientationLandscape ? UIPrintInfo.Orientation.landscape : UIPrintInfo.Orientation.portrait
+    orientation == PrintOrientation.landscape.rawValue ? UIPrintInfo.Orientation.landscape : UIPrintInfo.Orientation.portrait
   }
 }

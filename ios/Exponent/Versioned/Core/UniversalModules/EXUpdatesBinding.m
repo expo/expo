@@ -4,6 +4,16 @@
 
 #import "EXUpdatesBinding.h"
 
+#import <objc/runtime.h>
+
+#import "ExpoModulesCore-Swift.h"
+#if __has_include(<EXUpdatesInterface/EXUpdatesInterface-Swift.h>)
+#import <EXUpdatesInterface/EXUpdatesInterface-Swift.h>
+#else
+#import "EXUpdatesInterface-Swift.h"
+#endif
+#import "EXUpdates-Swift.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXUpdatesBinding ()
@@ -34,7 +44,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable EXUpdatesConfig *)config
 {
-  return [_updatesKernelService configForScopeKey:_scopeKey];
+  EXUpdatesConfig *config = [_updatesKernelService configForScopeKey:_scopeKey];
+  // Ensures the universal UpdatesConfig can cast to versioned UpdatesConfig without exception in Swift
+  object_setClass(config, [EXUpdatesConfig class]);
+  return config;
 }
 
 - (EXUpdatesDatabase *)database
@@ -59,7 +72,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable EXUpdatesUpdate *)launchedUpdate
 {
-  return [_updatesKernelService launchedUpdateForScopeKey:_scopeKey];
+  EXUpdatesUpdate *update = [_updatesKernelService launchedUpdateForScopeKey:_scopeKey];
+  // Ensures the universal UpdatesUpdate can cast to versioned UpdatesUpdate without exception in Swift
+  object_setClass(update, [EXUpdatesUpdate class]);
+  return update;
 }
 
 - (nullable NSDictionary *)assetFilesMap

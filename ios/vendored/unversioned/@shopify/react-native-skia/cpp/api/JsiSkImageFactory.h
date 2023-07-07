@@ -5,6 +5,7 @@
 
 #include <jsi/jsi.h>
 
+#include "JsiPromises.h"
 #include "JsiSkData.h"
 #include "JsiSkHostObjects.h"
 #include "JsiSkImage.h"
@@ -41,11 +42,11 @@ public:
   JSI_HOST_FUNCTION(MakeImageFromViewTag) {
     auto viewTag = arguments[0].asNumber();
     auto context = getContext();
-    return react::createPromiseAsJSIValue(
+    return RNJsi::JsiPromises::createPromiseAsJSIValue(
         runtime,
-        [context = std::move(context),
-         viewTag](jsi::Runtime &runtime,
-                  std::shared_ptr<react::Promise> promise) -> void {
+        [context = std::move(context), viewTag](
+            jsi::Runtime &runtime,
+            std::shared_ptr<RNJsi::JsiPromises::Promise> promise) -> void {
           // Create a stream operation - this will be run on the main thread
           context->makeViewScreenshot(
               viewTag, [&runtime, context = std::move(context),

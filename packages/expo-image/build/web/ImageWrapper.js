@@ -32,6 +32,15 @@ function getObjectPositionFromContentPositionObject(contentPosition) {
 function getFetchPriorityFromImagePriority(priority = 'normal') {
     return priority && ['low', 'high'].includes(priority) ? priority : 'auto';
 }
+function getImgPropsFromSource(source) {
+    if (source && 'srcset' in source) {
+        return {
+            srcSet: source.srcset,
+            sizes: source.sizes,
+        };
+    }
+    return {};
+}
 const ImageWrapper = React.forwardRef(({ source, events, contentPosition, hashPlaceholderContentPosition, priority, style, hashPlaceholderStyle, className, accessibilityLabel, ...props }, ref) => {
     useEffect(() => {
         events?.onMount?.forEach((e) => e?.());
@@ -43,11 +52,12 @@ const ImageWrapper = React.forwardRef(({ source, events, contentPosition, hashPl
     const thumbhash = source?.uri?.replace(/thumbhash:\//, '');
     const thumbhashUri = useMemo(() => (isThumbhash ? thumbHashStringToDataURL(thumbhash ?? '') : null), [thumbhash]);
     const blurhashUri = useBlurhash(isBlurhash ? source?.uri : null, source?.width, source?.height);
+    if (!source) {
+        return null;
+    }
     const objectPosition = getObjectPositionFromContentPositionObject(isHash ? hashPlaceholderContentPosition : contentPosition);
     const uri = isHash ? blurhashUri ?? thumbhashUri : source?.uri;
-    if (!uri)
-        return null;
-    return (React.createElement("img", { ref: ref, alt: accessibilityLabel, className: className, src: uri || undefined, key: source?.uri, ...props, style: {
+    return (React.createElement("img", { ref: ref, alt: accessibilityLabel, className: className, src: uri || undefined, ...getImgPropsFromSource(source), key: source?.uri, ...props, style: {
             width: '100%',
             height: '100%',
             position: 'absolute',

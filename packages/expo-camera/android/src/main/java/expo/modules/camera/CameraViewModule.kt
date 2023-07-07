@@ -83,7 +83,7 @@ class CameraViewModule : Module() {
     }.runOnQueue(Queues.MAIN)
 
     AsyncFunction("record") { options: RecordingOptions, viewTag: Int, promise: Promise ->
-      if (!permissionsManager.hasGrantedPermissions(Manifest.permission.RECORD_AUDIO)) {
+      if (!options.mute && !permissionsManager.hasGrantedPermissions(Manifest.permission.RECORD_AUDIO)) {
         throw Exceptions.MissingPermissions(Manifest.permission.RECORD_AUDIO)
       }
 
@@ -238,12 +238,12 @@ class CameraViewModule : Module() {
         view.cameraView.setUsingCamera2Api(useCamera2Api)
       }
 
-      Prop("barCodeScannerEnabled") { view: ExpoCameraView, barCodeScannerEnabled: Boolean ->
-        view.setShouldScanBarCodes(barCodeScannerEnabled)
+      Prop("barCodeScannerEnabled") { view: ExpoCameraView, barCodeScannerEnabled: Boolean? ->
+        view.setShouldScanBarCodes(barCodeScannerEnabled ?: false)
       }
 
-      Prop("faceDetectorEnabled") { view: ExpoCameraView, faceDetectorEnabled: Boolean ->
-        view.setShouldDetectFaces(faceDetectorEnabled)
+      Prop("faceDetectorEnabled") { view: ExpoCameraView, faceDetectorEnabled: Boolean? ->
+        view.setShouldDetectFaces(faceDetectorEnabled ?: false)
       }
 
       Prop("faceDetectorSettings") { view: ExpoCameraView, settings: Map<String, Any>? ->
