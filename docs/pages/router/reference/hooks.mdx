@@ -4,7 +4,9 @@ description: Learn how to interact with the in-app URL in Expo Router.
 ---
 
 import { FileTree } from '~/ui/components/FileTree';
-import { RouteUrl } from '~/ui/components/RouteUrl';
+import { RouteUrlGroup, RouteUrl } from '~/ui/components/RouteUrl';
+
+<RouteUrlGroup>
 
 In Expo Router, there's always a valid URL which represents the currently focused route. Use hooks to observe changes and interact with the URL.
 
@@ -162,3 +164,5 @@ export default function Route() {
   return </>
 }
 ```
+
+</RouteUrlGroup>
