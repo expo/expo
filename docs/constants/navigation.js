@@ -180,6 +180,7 @@ const general = [
       makePage('router/advanced/platform-specific-modules.mdx'),
       makePage('router/advanced/shared-routes.mdx'),
       makePage('router/advanced/router-settings.mdx'),
+      makePage('router/advanced/apple-handoff.mdx'),
     ]),
     makeGroup('Reference', [
       makePage('router/reference/search-parameters.mdx'),
