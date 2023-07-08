@@ -150,6 +150,39 @@ it('accepts debugger connections when device is connected', async () => {
   }
 });
 
+it('accepts debugger connection with specific type when device is connected', async () => {
+  const { expoProxy } = createTestProxy();
+  const { server, deviceWebSocketUrl, debuggerWebSocketUrl } = await createTestServer();
+  useWebsockets(server, expoProxy.createWebSocketListeners(server));
+
+  let deviceWs: WS | null = null;
+  let debuggerWs: WS | null = null;
+
+  try {
+    deviceWs = new WS(deviceWebSocketUrl);
+    await new Promise((resolve) => deviceWs?.on('open', resolve));
+
+    const device = expoProxy.devices.values().next().value;
+    expect(device).toBeDefined();
+
+    const deviceDebugHandler = jest.spyOn(device, 'handleDebuggerConnectionWithType');
+
+    debuggerWs = new WS(`${debuggerWebSocketUrl}?device=${device._id}&page=1&type=vscode`);
+    await new Promise((resolve) => debuggerWs?.on('open', resolve));
+
+    expect(debuggerWs.readyState).toBe(debuggerWs.OPEN);
+    expect(deviceDebugHandler).toBeCalledWith(
+      expect.anything(), // socket instance
+      '1', // pageId
+      'vscode' // debugger type
+    );
+  } finally {
+    server.close();
+    deviceWs?.close();
+    debuggerWs?.close();
+  }
+});
+
 it('keeps debugger connection alive when device reconnects', async () => {
   const { expoProxy } = createTestProxy();
   const { server, deviceWebSocketUrl, debuggerWebSocketUrl } = await createTestServer();
@@ -201,6 +234,46 @@ it('keeps debugger connection alive when device reconnects', async () => {
   }
 });
 
+describe('ExpoInspectorProxy.normalizeServerAddress', () => {
+  it('should return address in `{address}:{port}` format - IPv4', () => {
+    expect(
+      ExpoProxy.normalizeServerAddress({ address: '1.2.3.4', family: 'IPv4', port: 8081 })
+    ).toBe('1.2.3.4:8081');
+  });
+
+  it('should return address in `[{address}]:{port}` format - IPv6', () => {
+    expect(
+      ExpoProxy.normalizeServerAddress({
+        address: '2001:1:2:3:4:5:6:7',
+        family: 'IPv6',
+        port: 8082,
+      })
+    ).toBe('[2001:1:2:3:4:5:6:7]:8082');
+  });
+
+  it('should return default loopback `localhost:{port}` address when IPv4 server address is 0.0.0.0', () => {
+    expect(
+      ExpoProxy.normalizeServerAddress({ address: '0.0.0.0', family: 'IPv4', port: 8081 })
+    ).toBe('localhost:8081');
+  });
+
+  it('should return default loopback `[::1]:{port}` address when IPv6 server address is `::`', () => {
+    expect(ExpoProxy.normalizeServerAddress({ address: '::', family: 'IPv6', port: 8082 })).toBe(
+      '[::1]:8082'
+    );
+  });
+
+  it('should throw error when given an invalid address', () => {
+    expect(() => {
+      ExpoProxy.normalizeServerAddress(null);
+    }).toThrow();
+
+    expect(() => {
+      ExpoProxy.normalizeServerAddress('string is not a valid address');
+    }).toThrow();
+  });
+});
+
 function createTestProxy() {
   class ExpoDevice {
     constructor(
@@ -211,6 +284,8 @@ function createTestProxy() {
     ) {}
 
     handleDebuggerConnection() {}
+
+    handleDebuggerConnectionWithType() {}
 
     handleDuplicateDeviceConnection() {
       this._deviceSocket.close();

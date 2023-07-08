@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 1.5.2 — 2023-06-28
+
+_This version does not introduce any user-facing changes._
+
+## 1.5.1 — 2023-06-27
+
+### 🎉 New features
+
+- Add Building icon. ([#23114](https://github.com/expo/expo/pull/23114) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 1.5.0 — 2023-06-21
 
 ### 🐛 Bug fixes

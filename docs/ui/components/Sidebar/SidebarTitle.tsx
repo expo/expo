@@ -8,7 +8,9 @@ type SidebarTitleProps = PropsWithChildren;
 
 export const SidebarTitle = ({ children }: SidebarTitleProps) => (
   <div css={STYLES_TITLE}>
-    <CALLOUT weight="medium">{children}</CALLOUT>
+    <CALLOUT weight="medium" crawlable={false}>
+      {children}
+    </CALLOUT>
   </div>
 );
 

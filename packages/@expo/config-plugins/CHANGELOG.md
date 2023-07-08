@@ -10,6 +10,28 @@
 
 ### 💡 Others
 
+## 7.2.4 - 2023-06-30
+
+### 🎉 New features
+
+- Add existing native files ignore option for entitlements evaluation. ([#23165](https://github.com/expo/expo/pull/23165) by [@byCedric](https://github.com/byCedric))
+
+## 7.2.3 - 2023-06-29
+
+_This version does not introduce any user-facing changes._
+
+## 7.2.2 — 2023-06-27
+
+### 💡 Others
+
+- Upgrade `semver` lib. ([#23113](https://github.com/expo/expo/pull/23113) by [@felipemillhouse](https://github.com/felipemillhouse))
+
+## 7.2.1 — 2023-06-24
+
+### 🐛 Bug fixes
+
+- Removed the deprecated `withPackageManifest` plugin to fix build warning on Android. ([#23056](https://github.com/expo/expo/pull/23056) by [@kudo](https://github.com/kudo))
+
 ## 7.2.0 — 2023-06-21
 
 ### 💡 Others

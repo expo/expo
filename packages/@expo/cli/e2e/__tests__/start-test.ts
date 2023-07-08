@@ -59,35 +59,35 @@ it('runs `npx expo start --help`', async () => {
         $ npx expo start <dir>
 
       Options
-        <dir>                                  Directory of the Expo project. Default: Current working directory
-        -a, --android                          Open on a connected Android device
-        -i, --ios                              Open in an iOS simulator
-        -w, --web                              Open in a web browser
+        <dir>                           Directory of the Expo project. Default: Current working directory
+        -a, --android                   Open on a connected Android device
+        -i, --ios                       Open in an iOS simulator
+        -w, --web                       Open in a web browser
         
-        -d, --dev-client                       Launch in a custom native app
-        -g, --go                               Launch in Expo Go
+        -d, --dev-client                Launch in a custom native app
+        -g, --go                        Launch in Expo Go
         
-        -c, --clear                            Clear the bundler cache
-        --max-workers <number>                 Maximum number of tasks to allow Metro to spawn
-        --no-dev                               Bundle in production mode
-        --minify                               Minify JavaScript
+        -c, --clear                     Clear the bundler cache
+        --max-workers <number>          Maximum number of tasks to allow Metro to spawn
+        --no-dev                        Bundle in production mode
+        --minify                        Minify JavaScript
         
-        -m, --host <mode>                      Dev server hosting type. Default: lan
-                                               lan: Use the local network
-                                               tunnel: Use any network by tunnel through ngrok
-                                               localhost: Connect to the dev server over localhost
-        --tunnel                               Same as --host tunnel
-        --lan                                  Same as --host lan
-        --localhost                            Same as --host localhost
+        -m, --host <string>             Dev server hosting type. Default: lan
+                                        lan: Use the local network
+                                        tunnel: Use any network by tunnel through ngrok
+                                        localhost: Connect to the dev server over localhost
+        --tunnel                        Same as --host tunnel
+        --lan                           Same as --host lan
+        --localhost                     Same as --host localhost
         
-        --offline                              Skip network requests and use anonymous manifest signatures
-        --https                                Start the dev server with https protocol
-        --scheme <scheme>                      Custom URI protocol to use when launching an app
-        -p, --port <number>                    Port to start the dev server on (does not apply to web or tunnel). Default: 8081
+        --offline                       Skip network requests and use anonymous manifest signatures
+        --https                         Start the dev server with https protocol
+        --scheme <scheme>               Custom URI protocol to use when launching an app
+        -p, --port <number>             Port to start the dev server on (does not apply to web or tunnel). Default: 8081
         
-        --force-manifest-type <manifest-type>  Override auto detection of manifest type
-        --private-key-path <path>              Path to private key for code signing. Default: "private-key.pem" in the same directory as the certificate specified by the expo-updates configuration in app.json.
-        -h, --help                             Usage info
+        --force-manifest-type <string>  Override auto detection of manifest type. Options: expo-updates, classic
+        --private-key-path <path>       Path to private key for code signing. Default: "private-key.pem" in the same directory as the certificate specified by the expo-updates configuration in app.json.
+        -h, --help                      Usage info
     "
   `);
 });

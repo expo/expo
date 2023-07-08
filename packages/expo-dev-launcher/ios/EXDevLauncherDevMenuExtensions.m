@@ -1,4 +1,4 @@
-#import "EXDevLauncherController.h"
+#import <EXDevLauncher/EXDevLauncherController.h>
 
 @import EXDevMenuInterface;
 

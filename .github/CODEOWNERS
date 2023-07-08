@@ -89,6 +89,6 @@
 /packages/jest-expo-puppeteer                   @ide @EvanBacon
 /packages/jest-expo                             @brentvatne @EvanBacon
 /tools                                          @tsapeta
-/docs                                           @Simek @amandeepmittal @kbrandwijk
+/docs                                           @Simek @amandeepmittal
 /.github/workflows                              @tsapeta @brentvatne @kudo
 /.github/workflows/cli.yml                      @EvanBacon @bycedric

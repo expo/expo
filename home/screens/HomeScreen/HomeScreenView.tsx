@@ -197,6 +197,7 @@ export class HomeScreenView extends React.Component<Props, State> {
       // eslint-disable-next-line
       this.setState(({ projects }) => ({
         projects: projects.filter((p) => p.source === 'snack'),
+        data: undefined,
       }));
 
       this._stopPollingForProjects();

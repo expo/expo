@@ -1,6 +1,6 @@
 {
   "name": "@expo/config",
-  "version": "8.1.0",
+  "version": "8.1.1",
   "description": "A library for interacting with the app.json",
   "main": "build/index.js",
   "scripts": {
@@ -40,7 +40,7 @@
     "glob": "7.1.6",
     "require-from-string": "^2.0.2",
     "resolve-from": "^5.0.0",
-    "semver": "7.3.2",
+    "semver": "7.5.3",
     "slugify": "^1.3.4",
     "sucrase": "^3.20.0"
   },

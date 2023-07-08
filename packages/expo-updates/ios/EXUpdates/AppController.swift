@@ -32,7 +32,7 @@ public protocol AppControllerDelegate: AnyObject {
  */
 @objc(EXUpdatesAppController)
 @objcMembers
-public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelegate, UpdatesStateChangeDelegate {
+public class AppController: NSObject, AppLoaderTaskDelegate, AppLoaderTaskSwiftDelegate, ErrorRecoveryDelegate, UpdatesStateChangeDelegate {
   private static let ErrorDomain = "EXUpdatesAppController"
   private static let EXUpdatesEventName = "Expo.nativeUpdatesEvent"
   private static let EXUpdatesStateChangeEventName = "Expo.nativeUpdatesStateChangeEvent"
@@ -267,6 +267,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
       delegateQueue: controllerQueue
     )
     loaderTask!.delegate = self
+    loaderTask!.swiftDelegate = self
     loaderTask!.start()
   }
 
@@ -345,17 +346,18 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     return true
   }
 
-  public func didStartCheckingForRemoteUpdate() {
+  public func appLoaderTaskDidStartCheckingForRemoteUpdate(_: AppLoaderTask) {
     stateMachine?.processEvent(UpdatesStateEventCheck())
   }
 
-  public func didFinishCheckingForRemoteUpdate(_ body: [String: Any]) {
-    let manifest: [String: Any]? = body["manifest"] as? [String: Any]
-    let rollback: Bool = body["isRollBackToEmbedded"] as? Bool ?? false
-    var event: UpdatesStateEvent = UpdatesStateEventCheckComplete()
-    if manifest != nil {
+  public func appLoaderTask(_: AppLoaderTask, didFinishCheckingForRemoteUpdateWithRemoteCheckResult remoteCheckResult: RemoteCheckResult) {
+    let event: UpdatesStateEvent
+    switch remoteCheckResult {
+    case .noUpdateAvailable:
+      event = UpdatesStateEventCheckComplete()
+    case .updateAvailable(let manifest):
       event = UpdatesStateEventCheckCompleteWithUpdate(manifest: manifest)
-    } else if rollback {
+    case .rollBackToEmbedded:
       event = UpdatesStateEventCheckCompleteWithRollback()
     }
     stateMachine?.processEvent(event)
