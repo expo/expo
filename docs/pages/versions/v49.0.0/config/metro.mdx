@@ -39,7 +39,7 @@ Environment variables prefixed with `EXPO_PUBLIC_` will be exposed to the app at
 
 Environment variables will not be inlined in code inside of **node_modules**.
 
-For security purposes, client environment variables are inlined in the bundle, which means that `process.env` is not an iterable object, and you cannot dynamically access environment variables. Every variable must be referenced as a static property in order for it to be inlined. For example, the expression `process.env.EXPO_PUBLIC_KEY` will be rewritten and `process.env[‘EXPO_PUBLIC_KEY’]` will not.
+For security purposes, client environment variables are inlined in the bundle, which means that `process.env` is not an iterable object, and you cannot dynamically access environment variables. Every variable must be referenced as a static property for it to be inlined. For example, the expression `process.env.EXPO_PUBLIC_KEY` will be rewritten and `process.env['EXPO_PUBLIC_KEY']` will not.
 
 - Client environment variables should not contain secrets as they will be viewable in plain-text format in the production binary.
 - Use client environment variables for partially protected values, such as public API keys you don't want to commit to Git or hard-code in your app and that may change depending on the environment.
@@ -76,7 +76,7 @@ Ensure you don't have a custom Metro transformer that processes CSS files. If yo
 
 ### Global CSS
 
-> Warning: Global styles are web-only, usage will cause your application to diverge visually on native.
+> **warning** Global styles are web-only, usage will cause your application to diverge visually on native.
 
 You can import a CSS file from any component. The CSS will be applied to the entire page.
 
@@ -125,7 +125,7 @@ import 'emoji-mart/css/emoji-mart.css';
 
 ### CSS Modules
 
-> CSS Modules for native are under development and currently only work on web.
+> **warning** CSS Modules for native are under development and currently only work on web.
 
 CSS Modules are a way to scope CSS to a specific component. This is useful for avoiding naming collisions and for ensuring that styles are only applied to the intended component.
 

@@ -39,7 +39,7 @@ public final class SecureStoreModule: Module {
     }
 
     AsyncFunction("deleteValueWithKeyAsync") { (key: String, options: SecureStoreOptions) in
-      var searchDictionary = query(with: key, options: options)
+      let searchDictionary = query(with: key, options: options)
       SecItemDelete(searchDictionary as CFDictionary)
     }
   }
@@ -55,6 +55,9 @@ public final class SecureStoreModule: Module {
     if !options.requireAuthentication {
       query[kSecAttrAccessible as String] = accessibility
     } else {
+      guard let _ = Bundle.main.infoDictionary?["NSFaceIDUsageDescription"] as? String else {
+        throw MissingPlistKeyException()
+      }
       let accessOptions = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessibility, SecAccessControlCreateFlags.biometryCurrentSet, nil)
       query[kSecAttrAccessControl as String] = accessOptions
     }
@@ -119,7 +122,7 @@ public final class SecureStoreModule: Module {
 
   private func query(with key: String, options: SecureStoreOptions) -> [String: Any] {
     let service = options.keychainService ?? "app"
-    let encodedKey = key.data(using: .utf8)
+    let encodedKey = Data(key.utf8)
 
     return [
       kSecClass as String: kSecClassGenericPassword,

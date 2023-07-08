@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import { uuidv4 } from 'expo-modules-core';
 
 const INSTALLATION_ID_KEY = 'installationId';
 
@@ -22,7 +22,7 @@ export default async function getInstallationIdAsync() {
   }
 
   // No persisted value, set the cached value...
-  installationId = uuidv4();
+  installationId = uuidv4() as string;
   // ...and try to persist it. Ignore the errors.
   try {
     localStorage.setItem(INSTALLATION_ID_KEY, installationId);
