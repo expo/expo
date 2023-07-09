@@ -97,7 +97,6 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
           forKey: Self.REQUEST_ID,
           in: currentRequest
         ) as? String {
-
         let contentType = response.value(forHTTPHeaderField: "Content-Type")
         let isText = (contentType?.starts(with: "text/") ?? false) || contentType == "application/json"
         Self.delegate.didReceiveResponse(

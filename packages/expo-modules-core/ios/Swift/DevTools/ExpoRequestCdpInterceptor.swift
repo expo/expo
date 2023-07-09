@@ -37,7 +37,8 @@ public final class ExpoRequestCdpInterceptor: NSObject, ExpoRequestInterceptorPr
   func willSendRequest(requestId: String, task: URLSessionTask, request: URLRequest, redirectResponse: HTTPURLResponse?) {
     let now = Date().timeIntervalSince1970
 
-    let params = CdpNetwork.RequestWillBeSentParams(now: now, requestId: requestId, request: request, encodedDataLength: task.countOfBytesReceived, redirectResponse: redirectResponse)
+    let params = CdpNetwork.RequestWillBeSentParams(now: now, requestId: requestId, request: request,
+                                                    encodedDataLength: task.countOfBytesReceived, redirectResponse: redirectResponse)
     dispatchEvent(CdpNetwork.Event(method: "Network.requestWillBeSent", params: params))
 
     let params2 = CdpNetwork.RequestWillBeSentExtraInfoParams(now: now, requestId: requestId, request: request)
@@ -50,7 +51,8 @@ public final class ExpoRequestCdpInterceptor: NSObject, ExpoRequestInterceptorPr
     }
     let now = Date().timeIntervalSince1970
 
-    let params = CdpNetwork.ResponseReceivedParams(now: now, requestId: requestId, request: request, response: response, encodedDataLength: task.countOfBytesReceived)
+    let params = CdpNetwork.ResponseReceivedParams(now: now, requestId: requestId, request: request,
+                                                   response: response, encodedDataLength: task.countOfBytesReceived)
     dispatchEvent(CdpNetwork.Event(method: "Network.responseReceived", params: params))
 
     if !responseBodyExceedsLimit {
