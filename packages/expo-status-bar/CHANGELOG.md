@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added support for `animated` property in `setStatusBarStyle`. ([#23408](https://github.com/expo/expo/pull/23408) by [@haikov](https://github.com/haikov))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
