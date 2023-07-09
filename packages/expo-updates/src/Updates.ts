@@ -337,3 +337,23 @@ export function addListener(listener: (event: UpdateEvent) => void): EventSubscr
   const emitter = _getEmitter();
   return emitter.addListener('Expo.updatesEvent', listener);
 }
+
+/**
+ * @hidden
+ */
+export async function nativeStateMachineContext(): Promise<{ [key: string]: any }> {
+  // Return the current state machine context
+  if (!ExpoUpdates.nativeStateMachineContext) {
+    throw new UnavailabilityError('Updates', 'readLogEntriesAsync');
+  }
+  const nativeContext = await ExpoUpdates.nativeStateMachineContext();
+  if (nativeContext.latestManifestString) {
+    nativeContext.latestManifest = JSON.parse(nativeContext.latestManifestString);
+    delete nativeContext.latestManifestString;
+  }
+  if (nativeContext.downloadedManifestString) {
+    nativeContext.downloadedManifest = JSON.parse(nativeContext.downloadedManifestString);
+    delete nativeContext.downloadedManifestString;
+  }
+  return nativeContext;
+}

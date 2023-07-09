@@ -172,4 +172,10 @@ export declare function clearUpdateCacheExperimentalAsync(_sdkVersion?: string):
  * listener.
  */
 export declare function addListener(listener: (event: UpdateEvent) => void): EventSubscription;
+/**
+ * @hidden
+ */
+export declare function nativeStateMachineContext(): Promise<{
+    [key: string]: any;
+}>;
 //# sourceMappingURL=Updates.d.ts.map

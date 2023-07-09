@@ -253,6 +253,19 @@ public final class UpdatesUtils: NSObject {
 
   // MARK: - Internal methods
 
+  internal static func defaultNativeStateMachineContextJson() -> [String: Any?] {
+    return UpdatesStateContext().json
+  }
+
+  internal static func getNativeStateMachineContextJson() -> [String: Any?] {
+    do {
+      let constants = try startJSAPICall()
+      return constants.context?.json ?? defaultNativeStateMachineContextJson()
+    } catch {
+      return defaultNativeStateMachineContextJson()
+    }
+  }
+
   internal static func shouldCheckForUpdate(withConfig config: UpdatesConfig) -> Bool {
     func isConnectedToWifi() -> Bool {
       do {
@@ -388,7 +401,8 @@ public final class UpdatesUtils: NSObject {
     database: UpdatesDatabase,
     directory: URL,
     launchedUpdate: Update?,
-    embeddedUpdate: Update?
+    embeddedUpdate: Update?,
+    context: UpdatesStateContext?
   ) {
     let maybeConfig: UpdatesConfig? = AppController.sharedInstance.config
     let maybeSelectionPolicy: SelectionPolicy? = AppController.sharedInstance.selectionPolicy()
@@ -410,7 +424,8 @@ public final class UpdatesUtils: NSObject {
     guard let directory = AppController.sharedInstance.updatesDirectory else {
       throw UpdatesNotInitializedException()
     }
-    return (config, selectionPolicy, database, directory, launchedUpdate, embeddedUpdate)
+    let context = AppController.sharedInstance.stateMachine?.context
+    return (config, selectionPolicy, database, directory, launchedUpdate, embeddedUpdate, context)
   }
 }
 

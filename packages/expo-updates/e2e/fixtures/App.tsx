@@ -28,7 +28,6 @@ function TestValue(props: { testID: string; value: string }) {
           {props.value}
         </Text>
       </View>
-      <Text>---</Text>
     </View>
   );
 }
@@ -45,9 +44,9 @@ export default function App() {
   const [numAssetFiles, setNumAssetFiles] = React.useState(0);
   const [logs, setLogs] = React.useState<UpdatesLogEntry[]>([]);
   const [active, setActive] = React.useState(false);
-  const [runNow, setRunNow] = React.useState(false);
   const [lastUpdateEventType, setLastUpdateEventType] = React.useState('');
   const [extraParamsString, setExtraParamsString] = React.useState('');
+  const [nativeStateContextString, setNativeStateContextString] = React.useState('{}');
 
   const { currentlyRunning, availableUpdate, isUpdateAvailable, isUpdatePending } = useUpdates();
 
@@ -57,11 +56,18 @@ export default function App() {
     setLastUpdateEventType(event.type);
   });
 
-  React.useEffect(() => {
-    if (isUpdatePending && runNow) {
-      setTimeout(() => runUpdate(), 5000);
-    }
-  }, [isUpdatePending, runNow]);
+  const handleReadNativeStateContext = () => {
+    const handleAsync = async () => {
+      setActive(true);
+      const state = await Updates.nativeStateMachineContext();
+      setNativeStateContextString(JSON.stringify(state));
+      await delay(1000);
+      setActive(false);
+    };
+    handleAsync().catch((e) => {
+      console.warn(e);
+    });
+  };
 
   const handleSetExtraParams = () => {
     const handleAsync = async () => {
@@ -132,7 +138,6 @@ export default function App() {
   };
 
   const handleDownloadUpdate = () => {
-    setRunNow(true);
     downloadUpdate();
   };
 
@@ -169,23 +174,30 @@ export default function App() {
       />
 
       <Text>Log messages</Text>
-      <ScrollView style={styles.logEntriesContainer}>
+      <ScrollView contentContainerStyle={styles.logEntriesContainer}>
         <Text testID="logEntries" style={styles.logEntriesText}>
           {logsToString(logs)}
         </Text>
       </ScrollView>
 
       <Text>Updates expoConfig</Text>
-      <ScrollView style={styles.logEntriesContainer}>
-        <Text testID="updates.expoConfig" style={styles.logEntriesText}>
-          {JSON.stringify(Updates.manifest.extra?.expoConfig || {})}
+      <ScrollView contentContainerStyle={styles.logEntriesContainer}>
+        <Text testID="updates.expoClient" style={styles.logEntriesText}>
+          {JSON.stringify(Updates.manifest?.extra?.expoClient || {})}
         </Text>
       </ScrollView>
 
       <Text>Constants expoConfig</Text>
-      <ScrollView style={styles.logEntriesContainer}>
+      <ScrollView contentContainerStyle={styles.logEntriesContainer}>
         <Text testID="constants.expoConfig" style={styles.logEntriesText}>
           {JSON.stringify(Constants.expoConfig)}
+        </Text>
+      </ScrollView>
+
+      <Text>Native state context</Text>
+      <ScrollView contentContainerStyle={styles.logEntriesContainer}>
+        <Text testID="nativeStateContextString" style={styles.logEntriesText}>
+          {nativeStateContextString}
         </Text>
       </ScrollView>
 
@@ -201,6 +213,7 @@ export default function App() {
           <TestButton testID="checkForUpdate" onPress={checkForUpdate} />
           <TestButton testID="downloadUpdate" onPress={handleDownloadUpdate} />
           <TestButton testID="setExtraParams" onPress={handleSetExtraParams} />
+          <TestButton testID="readNativeStateContext" onPress={handleReadNativeStateContext} />
         </View>
       </View>
 
@@ -249,7 +262,7 @@ const styles = StyleSheet.create({
   logEntriesContainer: {
     margin: 10,
     height: 50,
-    paddingVertical: 10,
+    paddingVertical: 5,
     paddingHorizontal: 10,
     width: '90%',
     minWidth: '90%',

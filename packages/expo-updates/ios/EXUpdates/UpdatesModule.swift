@@ -196,6 +196,17 @@ public final class UpdatesModule: Module {
         }
       }
     }
+
+    // Getter used internally by @expo/use-updates useUpdates()
+    // to initialize its state
+    AsyncFunction("nativeStateMachineContext") { (promise: Promise) in
+      let maybeIsCheckForUpdateEnabled: Bool? = updatesService?.canCheckForUpdateAndFetchUpdate ?? true
+      guard maybeIsCheckForUpdateEnabled ?? false else {
+        promise.resolve(UpdatesUtils.defaultNativeStateMachineContextJson())
+        return
+      }
+      promise.resolve(UpdatesUtils.getNativeStateMachineContextJson())
+    }
   }
   // swiftlint:enable cyclomatic_complexity
 }

@@ -1,5 +1,6 @@
 package expo.modules.updates.statemachine
 
+import android.os.Bundle
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
 import org.json.JSONObject
@@ -76,5 +77,38 @@ data class UpdatesStateContext(
       val result = Arguments.createMap()
       result.putMap("context", contextMap)
       return result
+    }
+
+  /**
+   * Creates a Bundle to be returned to JS on a call to nativeStateMachineContext()
+   */
+  val bundle: Bundle
+    get() {
+      return Bundle().apply {
+        this.putBoolean("isUpdateAvailable", isUpdateAvailable)
+        this.putBoolean("isUpdatePending", isUpdatePending)
+        this.putBoolean("isRollback", isRollback)
+        this.putBoolean("isChecking", isChecking)
+        this.putBoolean("isDownloading", isDownloading)
+        this.putBoolean("isRestarting", isRestarting)
+        if (latestManifest != null) {
+          this.putString("latestManifestString", latestManifest.toString())
+        }
+        if (downloadedManifest != null) {
+          this.putString("downloadedManifestString", downloadedManifest.toString())
+        }
+        if (checkError != null) {
+          val errorMap = Bundle().apply {
+            this.putString("message", checkError.message)
+          }
+          this.putBundle("checkError", errorMap)
+        }
+        if (downloadError != null) {
+          val errorMap = Bundle().apply {
+            this.putString("message", downloadError.message)
+          }
+          this.putBundle("downloadError", errorMap)
+        }
+      }
     }
 }
