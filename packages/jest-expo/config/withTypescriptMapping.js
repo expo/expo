@@ -71,5 +71,6 @@ function withTypescriptMapping(jestConfig) {
 }
 
 module.exports = {
+  _jestMappingFromTypescriptPaths: jestMappingFromTypescriptPaths, // Exported for testing
   withTypescriptMapping,
 };
