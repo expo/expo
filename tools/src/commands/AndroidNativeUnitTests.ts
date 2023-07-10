@@ -106,7 +106,7 @@ export async function androidNativeUnitTests({
     // will have duplicated fbjni.so when building expo-eas-client.
     const isExpoModulesCore = (pkg: Packages.Package) => pkg.packageName === 'expo-modules-core';
     const isNotExpoModulesCore = (pkg: Packages.Package) => pkg.packageName !== 'expo-modules-core';
-    await runGradlew(androidPackages.filter(isExpoModulesCore), testCommand, ANDROID_DIR);
+    await runGradlew(androidPackages.filter(isExpoModulesCore), testCommand, BARE_EXPO_DIR);
 
     await runGradlew(
       androidPackagesTestedUsingExpoProject.filter(isNotExpoModulesCore),
