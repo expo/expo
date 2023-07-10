@@ -27,7 +27,7 @@ class RecordTypeConverter<T : Record>(
   val type: KType,
 ) : DynamicAwareTypeConverters<T>(type.isMarkedNullable) {
   private val objectConstructorFactory = ObjectConstructorFactory()
-  private val propertyDescriptors: Map<KProperty1<out Any, *>, PropertyDescriptor> =
+  private val propertyDescriptors: Map<KProperty1<out Any, *>, PropertyDescriptor> by lazy {
     (type.classifier as KClass<*>)
       .memberProperties
       .map { property ->
@@ -43,6 +43,7 @@ class RecordTypeConverter<T : Record>(
       }
       .filterNotNull()
       .toMap()
+  }
 
   override fun convertFromDynamic(value: Dynamic): T = exceptionDecorator({ cause -> RecordCastException(type, cause) }) {
     val jsMap = value.asMap()
