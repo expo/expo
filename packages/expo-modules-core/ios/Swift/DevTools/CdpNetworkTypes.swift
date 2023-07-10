@@ -62,7 +62,7 @@ struct CdpNetwork {
     let mimeType: String
     let encodedDataLength: Int64
 
-    init(_ response: HTTPURLResponse) {
+    init(_ response: HTTPURLResponse, encodedDataLength: Int64) {
       self.url = response.url?.absoluteString ?? ""
       self.status = response.statusCode
       self.statusText = ""
@@ -73,7 +73,7 @@ struct CdpNetwork {
       }
       self.headers = headers
       self.mimeType = response.value(forHTTPHeaderField: "Content-Type") ?? ""
-      self.encodedDataLength = response.expectedContentLength
+      self.encodedDataLength = encodedDataLength
     }
   }
 
@@ -94,13 +94,13 @@ struct CdpNetwork {
     var referrerPolicy = "no-referrer"
     let type: ResourceType
 
-    init(now: TimeInterval, requestId: RequestId, request: URLRequest, redirectResponse: HTTPURLResponse?) {
+    init(now: TimeInterval, requestId: RequestId, request: URLRequest, encodedDataLength: Int64, redirectResponse: HTTPURLResponse?) {
       self.requestId = requestId
       self.request = Request(request)
       self.timestamp = now
       self.wallTime = now
       if let redirectResponse = redirectResponse {
-        self.redirectResponse = Response(redirectResponse)
+        self.redirectResponse = Response(redirectResponse, encodedDataLength: encodedDataLength)
       } else {
         self.redirectResponse = nil
       }
@@ -129,10 +129,10 @@ struct CdpNetwork {
     let response: Response
     var hasExtraInfo = false
 
-    init(now: TimeInterval, requestId: RequestId, request: URLRequest, response: HTTPURLResponse) {
+    init(now: TimeInterval, requestId: RequestId, request: URLRequest, response: HTTPURLResponse, encodedDataLength: Int64) {
       self.requestId = requestId
       self.timestamp = now
-      self.response = Response(response)
+      self.response = Response(response, encodedDataLength: encodedDataLength)
       self.type = ResourceType.fromMimeType(self.response.mimeType)
     }
   }
@@ -142,10 +142,10 @@ struct CdpNetwork {
     let timestamp: MonotonicTime
     let encodedDataLength: Int64
 
-    init(now: TimeInterval, requestId: RequestId, request: URLRequest, response: HTTPURLResponse) {
+    init(now: TimeInterval, requestId: RequestId, encodedDataLength: Int64) {
       self.requestId = requestId
       self.timestamp = now
-      self.encodedDataLength = response.expectedContentLength
+      self.encodedDataLength = encodedDataLength
     }
   }
 
