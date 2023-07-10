@@ -144,7 +144,7 @@ export interface PluginConfigTypeIos {
    * Enable [`use_frameworks!`](https://guides.cocoapods.org/syntax/podfile.html#use_frameworks_bang)
    * in `Podfile` to use frameworks instead of static libraries for Pods.
    *
-   * > You cannot use `useFrameworks` and `flipper` at the same time , and
+   * > You cannot use `useFrameworks` and `flipper` at the same time, and
    * doing so will generate an error.
    */
   useFrameworks?: 'static' | 'dynamic';
