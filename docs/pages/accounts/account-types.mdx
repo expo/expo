@@ -1,5 +1,6 @@
 ---
-title: Account Types
+title: Account types
+description: Learn about the different types of Expo accounts and how to use them.
 ---
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
@@ -10,7 +11,7 @@ An Expo account is a container that holds Expo projects and allows for different
 
 When you [sign up for an account](https://expo.dev/signup) with Expo, a Personal Account is automatically created for you. This account is a good place to work on your personal projects.
 
-> **warning** You must not share authentication credentials for your Personal Account with anyone for any reason.
+> **warning** Do not share authentication credentials for your Personal Account with anyone for any reason.
 
 ## Organizations
 
@@ -28,7 +29,7 @@ It may be useful to create an Organization when:
 - Structuring projects for different contexts. For example, when working for different clients, a new organization may be created for each client.
 - Sharing an [EAS Subscription](/eas/).
 
-### Creating new Organizations
+### Create new Organizations
 
 If you are logged in to your Personal Account, you can create a new Organization from the dashboard:
 
@@ -51,7 +52,7 @@ If you are logged in to your Personal Account, you can create a new Organization
 
 After creating a new Organization, you are redirected to the new dashboard page for the organization. To associate a new project with the Organization, you have to add the [Owner key](/versions/latest/config/app/#owner) under the `"expo"` key to your project's **app.json**.
 
-### Converting Personal Accounts into Organizations
+### Convert Personal Accounts into Organizations
 
 You can convert your Personal Account into an Organization when you want to share access to projects with other members and assign each member a role-based privilege.
 
@@ -77,7 +78,7 @@ The example below is Step 3 in the conversion process on a Personal Account with
 
 After completing the conversion process, you will no longer be able to log in as your old user. To continue using Expo services, log into [expo.dev](https://expo.dev/) with the user you selected or created during the conversion process. Then, select the organization from the top left dropdown to access the organization.
 
-### Inviting members
+### Invite members
 
 Other Expo users can be invited to join your Organization. To invite a new member:
 
@@ -98,7 +99,7 @@ When inviting a new member, keep in mind:
 - Members with an Owner role can grant members and invitees any role.
 - Members with an Admin role can only give members and invitees up to and including Admin role (every role but Owner).
 
-### Renaming an Account
+### Rename an Account
 
 Accounts can be renamed a limited number of times. Only Owners can rename accounts. To rename an account, visit [the account settings](https://expo.dev/accounts/[account]/settings) and follow the steps under [Rename Account](https://expo.dev/accounts/[account]/settings#rename-account).
 
@@ -112,7 +113,7 @@ Accounts can be renamed a limited number of times. Only Owners can rename accoun
 
 After renaming an account, new publishes to projects within the account must be on Expo SDK 43 or above.
 
-### Transferring projects between Accounts
+### Transfer projects between Accounts
 
 Projects can be transferred a limited number of times. A user must be an Owner or Admin on both source and destination accounts to transfer projects between them. Visit [the project settings page](https://expo.dev/accounts/[account]/projects/[project]/settings) and follow the steps under Transfer project.
 
