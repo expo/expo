@@ -63,15 +63,15 @@ PODS:
     - ExpoModulesCore
   - Expo (49.0.2):
     - ExpoModulesCore
-  - expo-dev-client (2.4.4):
+  - expo-dev-client (2.4.5):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (2.4.6):
+  - expo-dev-launcher (2.4.7):
     - EXManifests
-    - expo-dev-launcher/Main (= 2.4.6)
+    - expo-dev-launcher/Main (= 2.4.7)
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
@@ -79,7 +79,7 @@ PODS:
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-RCTAppDelegate
-  - expo-dev-launcher/Main (2.4.6):
+  - expo-dev-launcher/Main (2.4.7):
     - EXManifests
     - expo-dev-launcher/Unsafe
     - expo-dev-menu
@@ -89,7 +89,7 @@ PODS:
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-RCTAppDelegate
-  - expo-dev-launcher/Tests (2.4.6):
+  - expo-dev-launcher/Tests (2.4.7):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -103,7 +103,7 @@ PODS:
     - React-Core
     - React-CoreModules
     - React-RCTAppDelegate
-  - expo-dev-launcher/Unsafe (2.4.6):
+  - expo-dev-launcher/Unsafe (2.4.7):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -1382,8 +1382,8 @@ SPEC CHECKSUMS:
   EXNotifications: 09394cbd7165f9a4a00a53328aa09bf874bae717
   EXPermissions: 4f80cf527001aa408a22eddf076e61465ea71d5a
   Expo: 5dfc753088c8787bfe4d8b18797c86c85a017dac
-  expo-dev-client: 4004b6402e1885f88047202a9a121aa1b4c6e498
-  expo-dev-launcher: ab8e0821145f05467c2c5c6a0669aff14edf01f4
+  expo-dev-client: 1ff849a195d4f9c1849df68a619a79c52b682c72
+  expo-dev-launcher: 04b28ebbc886421590599215795847e1481c0a4b
   expo-dev-menu: 1f5a061c7bb6ebfe3b99527e1a05ac545a9b78e3
   expo-dev-menu-interface: bda969497e73dadc2663c479e0fa726ca79a306e
   ExpoAppleAuthentication: 7bdf1a2962ebfe9b00eb4183a17b78d736e57185
