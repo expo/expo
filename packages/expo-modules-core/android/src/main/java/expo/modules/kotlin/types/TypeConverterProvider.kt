@@ -72,8 +72,8 @@ fun convert(value: Dynamic, type: KType): Any? {
 }
 
 object TypeConverterProviderImpl : TypeConverterProvider {
-  private val cachedConverters = createCashedConverters(false)
-  private val nullableCachedConverters = createCashedConverters(true)
+  private val cachedConverters = createCachedConverters(false)
+  private val nullableCachedConverters = createCachedConverters(true)
 
   private val cachedRecordConverters = mutableMapOf<KClass<*>, TypeConverter<*>>()
   private val cachedCustomConverters = mutableMapOf<KType, TypeConverter<*>>()
@@ -184,7 +184,7 @@ object TypeConverterProviderImpl : TypeConverterProvider {
     }
   }
 
-  private fun createCashedConverters(isOptional: Boolean): Map<KClass<*>, TypeConverter<*>> {
+  private fun createCachedConverters(isOptional: Boolean): Map<KClass<*>, TypeConverter<*>> {
     val intTypeConverter = createTrivialTypeConverter(
       isOptional, ExpectedType(CppType.INT)
     ) { it.asDouble().toInt() }

@@ -39,7 +39,7 @@ class LazyKType(
   }
 
   override fun toString(): String {
-    return "[LazyKType] $kType"
+    return kType.toString()
   }
 }
 
