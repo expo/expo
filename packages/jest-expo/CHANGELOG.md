@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Automatically generate `moduleNameMapping` from `tsconfig.json` when available.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
