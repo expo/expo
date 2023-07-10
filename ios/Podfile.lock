@@ -2218,8 +2218,8 @@ PODS:
   - EXImageLoader (4.3.0):
     - ExpoModulesCore
     - React-Core
-  - EXJSONUtils (0.7.0)
-  - EXJSONUtils/Tests (0.7.0)
+  - EXJSONUtils (0.7.1)
+  - EXJSONUtils/Tests (0.7.1)
   - EXLocation (16.0.0):
     - ExpoModulesCore
   - EXManifests (0.7.1):
@@ -2284,13 +2284,13 @@ PODS:
     - ExpoModulesCore
   - ExpoMailComposer (12.3.0):
     - ExpoModulesCore
-  - ExpoModulesCore (1.5.5):
+  - ExpoModulesCore (1.5.6):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-NativeModulesApple
     - React-RCTAppDelegate
     - ReactCommon/turbomodule/core
-  - ExpoModulesCore/Tests (1.5.5):
+  - ExpoModulesCore/Tests (1.5.6):
     - ExpoModulesTestCore
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
@@ -2345,7 +2345,7 @@ PODS:
   - EXTaskManager (11.3.0):
     - ExpoModulesCore
     - UMAppLoader
-  - EXUpdates (0.18.8):
+  - EXUpdates (0.18.9):
     - ASN1Decoder (~> 1.8)
     - EASClient
     - EXManifests
@@ -2355,7 +2355,7 @@ PODS:
     - RCT-Folly (= 2021.07.22.00)
     - ReachabilitySwift
     - React-Core
-  - EXUpdates/Tests (0.18.8):
+  - EXUpdates/Tests (0.18.9):
     - ASN1Decoder (~> 1.8)
     - EASClient
     - EXManifests
@@ -4903,7 +4903,7 @@ SPEC CHECKSUMS:
   EXFileSystem: d7f59869885cfeab3ac771e2a8d0f5ed98cd3fdb
   EXFont: 738c44c390953ebcbab075a4848bfbef025fd9ee
   EXImageLoader: 34b214f9387e98f3c73989f15d8d5b399c9ab3f7
-  EXJSONUtils: 09273cf1b6a6bedc5bdae06121011123815c7f32
+  EXJSONUtils: 6802be4282d42b97c51682468ddc1026a06f8276
   EXLocation: 231f4a3683fabfed254c9498b226f7f40a40f9d8
   EXManifests: 8a4a480e3b58891d5657d3996a39229e5c96d912
   EXMediaLibrary: dd08edb824ee92519a989211720956cfd381f212
@@ -4929,7 +4929,7 @@ SPEC CHECKSUMS:
   ExpoLocalAuthentication: bd9d9037a96a11ccc456e327ddb404df02da10ca
   ExpoLocalization: be37fdd0b5930c6a49cd307b4542f4b426d6134c
   ExpoMailComposer: feaebd62095efad901ede864b95406f02bf61681
-  ExpoModulesCore: 03470cdd4be37e3c55206dea899a40fb9a93a494
+  ExpoModulesCore: 26b909d549da585166bcfb16738428e79bbfc093
   ExpoModulesTestCore: f116cd4cc4288e0e0005a1f910efc7cedf455659
   ExpoNetwork: 6ee4b3b6cfdba3bfb90b07f483d1111308a9c76a
   ExpoPrint: e1531d216196f51b431c7cc4d906e569f79f10e7
@@ -4950,7 +4950,7 @@ SPEC CHECKSUMS:
   EXSplashScreen: 89586b0961acd173b04713b7457949b063a659da
   EXStructuredHeaders: 324cc3130571d2696357fafd8be7fd9a0b5fdf6e
   EXTaskManager: f1730c315eb6fe457a3a2ee4ed899a51d717f302
-  EXUpdates: 40a5a842e2b675659c7c41b9c5c263fd840a6421
+  EXUpdates: 49c9f17a93257f12c359ac05b1f312776e00171e
   EXUpdatesInterface: 82ed48d417cdcd376c12ca1c2ce390d35500bed6
   FBAEMKit: c7efe06720a8b15b1d25b68921ba46dee20996e0
   FBAudienceNetwork: e0fcc9091fced34910ed0b6da06f129db46ac9e6

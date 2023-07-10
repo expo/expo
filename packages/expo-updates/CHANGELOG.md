@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [ios] Allow nil scopeKey for bare/embedded updates. ([#23385](https://github.com/expo/expo/pull/23385) by [@wschurman](https://github.com/wschurman))
-
 ### 💡 Others
+
+## 0.18.9 — 2023-07-10
+
+### 🐛 Bug fixes
+
+- [ios] Allow nil scopeKey for bare/embedded updates. ([#23385](https://github.com/expo/expo/pull/23385) by [@wschurman](https://github.com/wschurman))
 
 ## 0.18.8 — 2023-07-04
 
