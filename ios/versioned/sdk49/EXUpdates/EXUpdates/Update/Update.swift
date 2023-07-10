@@ -81,7 +81,7 @@ public enum UpdateError: Int, Error {
 @objcMembers
 public class Update: NSObject {
   public let updateId: UUID
-  public let scopeKey: String
+  public let scopeKey: String?
   public var commitTime: Date
   public let runtimeVersion: String
   public let keep: Bool
@@ -103,7 +103,7 @@ public class Update: NSObject {
     config: UpdatesConfig,
     database: UpdatesDatabase?,
     updateId: UUID,
-    scopeKey: String,
+    scopeKey: String?,
     commitTime: Date,
     runtimeVersion: String,
     keep: Bool,
