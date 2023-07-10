@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [ios] Prefix category methods to reduce likelihood of conflicts. ([#23441](https://github.com/expo/expo/pull/23441) by [@wschurman](https://github.com/wschurman))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
