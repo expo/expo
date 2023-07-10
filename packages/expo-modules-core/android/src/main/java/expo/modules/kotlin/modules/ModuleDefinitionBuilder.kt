@@ -16,6 +16,7 @@ import expo.modules.kotlin.events.EventName
 import expo.modules.kotlin.events.OnActivityResultPayload
 import expo.modules.kotlin.objects.ObjectDefinitionBuilder
 import expo.modules.kotlin.sharedobjects.SharedObject
+import expo.modules.kotlin.types.LazyKType
 import expo.modules.kotlin.views.ViewDefinitionBuilder
 import expo.modules.kotlin.views.ViewManagerDefinition
 import kotlin.reflect.KClass
@@ -62,8 +63,7 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
    */
   inline fun <reified T : View> View(viewClass: KClass<T>, body: ViewDefinitionBuilder<T>.() -> Unit) {
     require(viewManagerDefinition == null) { "The module definition may have exported only one view manager." }
-
-    val viewDefinitionBuilder = ViewDefinitionBuilder(viewClass, typeOf<T>())
+    val viewDefinitionBuilder = ViewDefinitionBuilder(viewClass, LazyKType(classifier = T::class, kTypeProvider = { typeOf<T>() }))
     body.invoke(viewDefinitionBuilder)
     viewManagerDefinition = viewDefinitionBuilder.build()
   }
