@@ -151,9 +151,11 @@ public class AppLoader: NSObject {
       // but different scope keys, we should try to launch something rather than show a cryptic
       // error to the user.
       if let existingUpdate = existingUpdate,
-        existingUpdate.scopeKey != updateManifest.scopeKey {
+        let existingUpdateScopeKey = existingUpdate.scopeKey,
+        let updateManifestScopeKey = updateManifest.scopeKey,
+        existingUpdateScopeKey != updateManifestScopeKey {
         do {
-          try self.database.setScopeKey(updateManifest.scopeKey, onUpdate: existingUpdate)
+          try self.database.setScopeKey(updateManifestScopeKey, onUpdate: existingUpdate)
         } catch {
           self.finish(withError: error)
           return

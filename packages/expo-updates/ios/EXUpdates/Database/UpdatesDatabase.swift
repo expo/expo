@@ -99,7 +99,7 @@ public final class UpdatesDatabase: NSObject {
       sql: sql,
       withArgs: [
         update.updateId,
-        update.scopeKey,
+        update.scopeKey.require("Update must have scopeKey to be stored in database"),
         update.commitTime,
         update.runtimeVersion,
         update.manifest.rawManifestJSON(),

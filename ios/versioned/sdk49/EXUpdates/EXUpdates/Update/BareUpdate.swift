@@ -51,7 +51,7 @@ internal final class BareUpdate: Update {
       config: config,
       database: database,
       updateId: uuid,
-      scopeKey: config.scopeKey.require("Must supply scopeKey in configuration"),
+      scopeKey: config.scopeKey,
       commitTime: Date(timeIntervalSince1970: Double(commitTime) / 1000),
       runtimeVersion: UpdatesUtils.getRuntimeVersion(withConfig: config),
       keep: true,
