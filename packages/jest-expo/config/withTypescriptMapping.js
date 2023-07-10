@@ -53,16 +53,22 @@ function withTypescriptMapping(jestConfig) {
     const tsConfigPath = path.resolve('tsconfig.json');
     const tsconfig = readJsonFile(tsConfigPath, { json5: true });
 
-    jestConfig.moduleNameMapper = {
-      ...jestMappingFromTypescriptPaths(tsconfig.compilerOptions.paths || {}),
-      ...(jestConfig.moduleNameMapper || {}),
-    };
+    if (tsConfigPath.compilerOptions.paths) {
+      jestConfig.moduleNameMapper = {
+        ...jestMappingFromTypescriptPaths(tsconfig.compilerOptions.paths || {}),
+        ...(jestConfig.moduleNameMapper || {}),
+      };
+    }
   } catch (error) {
     // If the user is not using typescript, we can safely ignore this error
     if (error.code === 'MODULE_NOT_FOUND') return jestConfig;
     if (error.code === 'ENOENT') return jestConfig;
 
-    console.log(error);
+    console.warn('Failed to set custom typescript paths for jest.');
+    console.warn('You need to configure jest moduleNameMapper manually.');
+    console.warn(
+      'See: https://jestjs.io/docs/configuration#modulenamemapper-objectstring-string--arraystring'
+    );
 
     throw error;
   }
