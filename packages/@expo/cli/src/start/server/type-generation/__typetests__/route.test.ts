@@ -1,6 +1,12 @@
 import { expectType, expectError } from 'tsd-lite';
 
-import { useGlobalSearchParams, useSegments, useRouter, useSearchParams } from './fixtures/basic';
+import {
+  useGlobalSearchParams,
+  useSegments,
+  useRouter,
+  useSearchParams,
+  useLocalSearchParams,
+} from './fixtures/basic';
 
 // eslint-disable-next-line react-hooks/rules-of-hooks
 const router = useRouter();
@@ -141,6 +147,13 @@ describe('router.push()', () => {
 describe('useSearchParams', () => {
   expectType<Record<'color', string>>(useSearchParams<'/colors/[color]'>());
   expectType<Record<'color', string>>(useSearchParams<Record<'color', string>>());
+  expectError(useSearchParams<'/invalid'>());
+  expectError(useSearchParams<Record<'custom', string>>());
+});
+
+describe('useLocalSearchParams', () => {
+  expectType<Record<'color', string>>(useLocalSearchParams<'/colors/[color]'>());
+  expectType<Record<'color', string>>(useLocalSearchParams<Record<'color', string>>());
   expectError(useSearchParams<'/invalid'>());
   expectError(useSearchParams<Record<'custom', string>>());
 });
