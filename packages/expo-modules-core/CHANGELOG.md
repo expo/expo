@@ -12,6 +12,7 @@
 - [iOS] Fix conversion to `URL` type that failed despite receiving a string that contained a valid URL. ([#23331](https://github.com/expo/expo/pull/23331) by [@alanhughes](https://github.com/alanjhughes))
 - Improved the OkHttp network inspector stability on Android. ([#23350](https://github.com/expo/expo/pull/23350) by [@kudo](https://github.com/kudo))
 - Fixed the Network Inspector cannot preview response body for response without the `Content-Length` header. ([#23405](https://github.com/expo/expo/pull/23405) by [@kudo](https://github.com/kudo))
+- Fixed `SoLoader` does not work on Android. ([#23415](https://github.com/expo/expo/pull/23415) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
