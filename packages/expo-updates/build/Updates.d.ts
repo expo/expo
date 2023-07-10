@@ -1,5 +1,5 @@
 import { EventSubscription } from 'fbemitter';
-import { LocalAssets, Manifest, UpdateCheckResult, UpdateEvent, UpdateFetchResult, UpdatesCheckAutomaticallyValue, UpdatesLogEntry } from './Updates.types';
+import { LocalAssets, Manifest, UpdateCheckResult, UpdateEvent, UpdateFetchResult, UpdatesCheckAutomaticallyValue, UpdatesLogEntry, UpdatesNativeStateChangeEvent, UpdatesNativeStateMachineContext } from './Updates.types';
 export * from './Updates.types';
 /**
  * The UUID that uniquely identifies the currently running update if `expo-updates` is enabled. The
@@ -175,7 +175,9 @@ export declare function addListener(listener: (event: UpdateEvent) => void): Eve
 /**
  * @hidden
  */
-export declare function nativeStateMachineContext(): Promise<{
-    [key: string]: any;
-}>;
+export declare const addUpdatesStateChangeListener: (listener: (event: UpdatesNativeStateChangeEvent) => void) => EventSubscription;
+/**
+ * @hidden
+ */
+export declare function nativeStateMachineContext(): Promise<UpdatesNativeStateMachineContext>;
 //# sourceMappingURL=Updates.d.ts.map

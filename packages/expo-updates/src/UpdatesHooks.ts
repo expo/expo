@@ -1,7 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import * as Updates from './Updates';
-import { UpdateEvent } from './Updates.types';
+import { UpdateEvent, UpdatesNativeStateMachineContext } from './Updates.types';
 
 /**
  * React hook to create an [`UpdateEvent`](#updateevent) listener subscription on mount, using
@@ -43,4 +43,36 @@ export const useUpdateEvents = (listener: (event: UpdateEvent) => void) => {
     }
     return undefined;
   }, []);
+};
+
+/**
+ * @hidden
+ */
+export const useUpdatesState: () => UpdatesNativeStateMachineContext = () => {
+  // Hook to return the Updates state machine context maintained
+  // in native code.
+  // Eventually, this will be used to construct the information returned by `useUpdates()`.
+  // Used internally by this module and not exported publicly.
+  const [localState, setLocalState] = useState<UpdatesNativeStateMachineContext>({
+    isUpdateAvailable: false,
+    isUpdatePending: false,
+    isRollback: false,
+    isChecking: false,
+    isDownloading: false,
+    isRestarting: false,
+    checkError: undefined,
+    downloadError: undefined,
+    latestManifest: undefined,
+    downloadedManifest: undefined,
+  });
+  useEffect(() => {
+    Updates.nativeStateMachineContext().then((context) => {
+      setLocalState(context);
+    });
+    const subscription = Updates.addUpdatesStateChangeListener((event) => {
+      setLocalState(() => event.context);
+    });
+    return () => subscription.remove();
+  }, []);
+  return localState;
 };

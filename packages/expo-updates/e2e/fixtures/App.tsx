@@ -1,11 +1,5 @@
 import { Inter_900Black } from '@expo-google-fonts/inter';
-import {
-  useUpdates,
-  checkForUpdate,
-  downloadUpdate,
-  runUpdate,
-  useUpdatesState,
-} from '@expo/use-updates';
+import { useUpdates, checkForUpdate, downloadUpdate } from '@expo/use-updates';
 import Constants from 'expo-constants';
 import { NativeModulesProxy } from 'expo-modules-core';
 import { StatusBar } from 'expo-status-bar';
@@ -50,7 +44,7 @@ export default function App() {
 
   const { currentlyRunning, availableUpdate, isUpdateAvailable, isUpdatePending } = useUpdates();
 
-  const state = useUpdatesState();
+  const state = Updates.useUpdatesState();
 
   Updates.useUpdateEvents((event) => {
     setLastUpdateEventType(event.type);

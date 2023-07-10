@@ -241,6 +241,7 @@ function _getEmitter() {
     if (!_emitter) {
         _emitter = new EventEmitter();
         DeviceEventEmitter.addListener('Expo.nativeUpdatesEvent', _emitEvent);
+        DeviceEventEmitter.addListener('Expo.nativeUpdatesStateChangeEvent', _emitNativeStateChangeEvent);
     }
     return _emitter;
 }
@@ -258,6 +259,25 @@ function _emitEvent(params) {
     }
     _emitter.emit('Expo.updatesEvent', newParams);
 }
+// Handle native state change events
+function _emitNativeStateChangeEvent(params) {
+    let newParams = { ...params };
+    if (typeof params === 'string') {
+        newParams = JSON.parse(params);
+    }
+    if (newParams.context.latestManifestString) {
+        newParams.context.latestManifest = JSON.parse(newParams.context.latestManifestString);
+        delete newParams.context.latestManifestString;
+    }
+    if (newParams.context.downloadedManifestString) {
+        newParams.context.downloadedManifest = JSON.parse(newParams.context.downloadedManifestString);
+        delete newParams.context.downloadedManifestString;
+    }
+    if (!_emitter) {
+        throw new Error(`EventEmitter must be initialized to use from its listener`);
+    }
+    _emitter?.emit('Expo.updatesStateChangeEvent', newParams);
+}
 /**
  * Adds a callback to be invoked when updates-related events occur (such as upon the initial app
  * load) due to auto-update settings chosen at build-time. See also the
@@ -272,6 +292,14 @@ export function addListener(listener) {
     const emitter = _getEmitter();
     return emitter.addListener('Expo.updatesEvent', listener);
 }
+/**
+ * @hidden
+ */
+export const addUpdatesStateChangeListener = (listener) => {
+    // Add listener for state change events
+    const emitter = _getEmitter();
+    return emitter.addListener('Expo.updatesStateChangeEvent', listener);
+};
 /**
  * @hidden
  */
