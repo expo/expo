@@ -166,7 +166,7 @@ PODS:
     - ExpoModulesCore
   - ExpoDevice (5.4.0):
     - ExpoModulesCore
-  - ExpoDocumentPicker (11.5.2):
+  - ExpoDocumentPicker (11.5.3):
     - ExpoModulesCore
   - ExpoGL (13.0.1):
     - ExpoModulesCore
@@ -1394,7 +1394,7 @@ SPEC CHECKSUMS:
   ExpoClipboard: ddd3ecf4af93c003667dab75a0f2ed3ae4f73d85
   ExpoCrypto: a382ab9a2fa91f0b511ce1fe4d6baecee40a1615
   ExpoDevice: 1c1b0c9cad96c292c1de73948649cfd654b2b3c0
-  ExpoDocumentPicker: 808d6daf4f7da566d589ab4cfb1394fd8f3991fb
+  ExpoDocumentPicker: b7d4d03e65c0e333cf72e2e96d216d7813f903c3
   ExpoGL: 77f5c4f4c1efeebceabbbcb18540208c5ab67d12
   ExpoHaptics: 360af6898407ee4e8265d30a1a8fb16491a660eb
   ExpoImage: 71811c7cd8f08675a0efe91dd3ce59558b12e7c0
