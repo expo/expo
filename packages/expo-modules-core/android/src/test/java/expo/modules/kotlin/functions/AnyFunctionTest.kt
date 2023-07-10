@@ -13,11 +13,9 @@ import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.ArgumentCastException
 import expo.modules.kotlin.exception.InvalidArgsNumberException
 import expo.modules.kotlin.types.AnyType
-import expo.modules.kotlin.types.LazyKType
 import expo.modules.kotlin.types.toAnyType
 import io.mockk.mockk
 import org.junit.Test
-import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
 class AnyFunctionTest {
@@ -73,7 +71,7 @@ class AnyFunctionTest {
 
   @Test
   fun `call should throw if cannot convert args`() {
-    val method = MockedAnyFunction(arrayOf({typeOf<Int>()}.toAnyType<Int>()))
+    val method = MockedAnyFunction(arrayOf({ typeOf<Int>() }.toAnyType<Int>()))
     val promise = PromiseMock()
 
     assertThrows<ArgumentCastException>(
