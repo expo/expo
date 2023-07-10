@@ -21,9 +21,10 @@ const excludedInTests = [
 ];
 
 const packagesNeedToBeTestedUsingBareExpo = [
-  'expo-dev-menu',
   'expo-dev-launcher',
   'expo-dev-menu-interface',
+  'expo-dev-menu',
+  'expo-modules-core',
 ];
 
 type TestType = 'local' | 'instrumented';
