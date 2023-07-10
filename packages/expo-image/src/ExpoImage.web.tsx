@@ -148,8 +148,8 @@ export default function ExpoImage({
   return (
     <View
       ref={containerRef}
-      className="expo-image-container"
-      style={[{ overflow: 'hidden' }, style]}>
+      dataSet={{ expoimage: '123' }}
+      style={[{ overflow: 'hidden', backgroundColor: 'red' }, style]}>
       <AnimationManager transition={transition} recyclingKey={recyclingKey} initial={initialNode}>
         {currentNode}
       </AnimationManager>
