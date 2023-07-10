@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed the Network Inspector cannot preview response body for response without the `Content-Length` header. ([#23405](https://github.com/expo/expo/pull/23405) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 1.5.5 — 2023-07-07
