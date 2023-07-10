@@ -119,7 +119,7 @@ export function getTemplateString(
  *
  * These are extracted for easier testing
  */
-export function getTypedRoutesUtils(appRoot: string) {
+export function getTypedRoutesUtils(appRoot: string, filePathSeperator = path.sep) {
   /*
    * staticRoutes are a map where the key if the route without groups and the value
    *   is another set of all group versions of the route. e.g,
@@ -140,12 +140,14 @@ export function getTypedRoutesUtils(appRoot: string) {
    */
   const dynamicRoutes = new Map<string, Set<string>>();
 
-  const filePathToRoute = (filePath: string) => {
-    const normalizedAppRoot = appRoot.replaceAll(path.sep, '/').replaceAll(' ', '_');
-    // Normalize the path so it's easier to convert to URLs, as done in the walk function
-    const normalizedFilePath = filePath.replaceAll(path.sep, '/').replaceAll(' ', '_');
+  function normalizedFilePath(filePath: string) {
+    return filePath.replaceAll(filePathSeperator, '/').replaceAll(' ', '_');
+  }
 
-    return normalizedFilePath
+  const normalizedAppRoot = normalizedFilePath(appRoot);
+
+  const filePathToRoute = (filePath: string) => {
+    return normalizedFilePath(filePath)
       .replace(normalizedAppRoot, '')
       .replace(/index.[jt]sx?/, '')
       .replace(/\.[jt]sx?$/, '');
