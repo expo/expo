@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { theme, typography } from '@expo/styleguide';
+import { Button, theme, typography } from '@expo/styleguide';
 import { spacing, breakpoints, borderRadius } from '@expo/styleguide-base';
 import {
   ArrowUpRightIcon,
@@ -11,11 +11,19 @@ import {
   TwitterIcon,
 } from '@expo/styleguide-icons';
 import type { PropsWithChildren } from 'react';
-import { Container, Row, ScreenClassProvider } from 'react-grid-system';
+import { Row, ScreenClassProvider } from 'react-grid-system';
 
 import DocumentationPage from '~/components/DocumentationPage';
+import TALKS from '~/public/static/talks';
 import { AppJSBanner } from '~/ui/components/AppJSBanner';
-import { APIGridCell, CommunityGridCell, GridCell, HomeButton } from '~/ui/components/Home';
+import {
+  CellContainer,
+  APIGridCell,
+  CommunityGridCell,
+  GridCell,
+  HomeButton,
+  TalkGridCell,
+} from '~/ui/components/Home';
 import {
   APICameraIcon,
   APIListIcon,
@@ -30,13 +38,6 @@ import {
 } from '~/ui/components/Home/resources';
 import { Terminal } from '~/ui/components/Snippet';
 import { H1, RawH2, RawH3, P } from '~/ui/components/Text';
-
-export const CellContainer = ({ children }: PropsWithChildren<object>) => (
-  // https://github.com/sealninja/react-grid-system/issues/175
-  <Container fluid style={{ paddingLeft: -15, paddingRight: -15, marginBottom: spacing[6] }}>
-    {children}
-  </Container>
-);
 
 const Description = ({ children }: PropsWithChildren<object>) => (
   <P css={css({ marginTop: spacing[1], marginBottom: spacing[3], color: theme.text.secondary })}>
@@ -224,6 +225,28 @@ const Home = () => {
             <APIGridCell title="View all APIs" link="/versions/latest/" icon={<APIListIcon />} />
           </Row>
         </CellContainer>
+        <div className="flex items-center gap-2">
+          <div>
+            <RawH3>Watch our latest talks</RawH3>
+            <Description>
+              Explore our team's presentations. Stay informed and gain expertise.
+            </Description>
+          </div>
+          <Button
+            theme="secondary"
+            className="ml-auto"
+            rightSlot={<ArrowRightIcon />}
+            href="/additional-resources/#talks">
+            See more talks
+          </Button>
+        </div>
+        <CellContainer>
+          <Row>
+            {TALKS.filter(talk => talk.home).map(talk => (
+              <TalkGridCell {...talk} />
+            ))}
+          </Row>
+        </CellContainer>
         <RawH3>Join the community</RawH3>
         <JoinTheCommunity />
       </DocumentationPage>
@@ -281,11 +304,11 @@ export function JoinTheCommunity() {
 }
 
 const docsTitleStyle = css({
-  marginTop: 0,
+  marginTop: spacing[2],
   marginBottom: spacing[2],
   paddingBottom: 0,
   borderBottomWidth: 0,
-  fontWeight: '900',
+  fontWeight: '800',
 });
 
 const baseGradientStyle = css({
