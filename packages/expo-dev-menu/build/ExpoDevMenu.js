@@ -1,3 +1,11 @@
 import { requireNativeModule } from 'expo-modules-core';
-export default requireNativeModule('ExpoDevMenu');
+let ExpoDevMenu;
+// Use try-catch to prevent crashes in release builds
+try {
+    ExpoDevMenu = requireNativeModule('ExpoDevMenu');
+}
+catch {
+    ExpoDevMenu = null;
+}
+export default ExpoDevMenu;
 //# sourceMappingURL=ExpoDevMenu.js.map
