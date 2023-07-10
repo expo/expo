@@ -183,10 +183,10 @@ Install the [Vercel CLI](https://vercel.com/docs/cli).
       ```json public/vercel.json
       {
         "version": 2,
-        "routes": [
+        "rewrites": [
           {
-            "src": "/(.*)",
-            "dest": "/"
+            "source": "/(.*)",
+            "destination": "/"
           }
         ]
       }
@@ -232,10 +232,10 @@ Install the [Vercel CLI](https://vercel.com/docs/cli).
   Deploy the website.
   <Tabs>
     <Tab label="Expo Router">
-      <Terminal cmd={['$ vercel deploy dist --prebuilt']} />
+      <Terminal cmd={['$ vercel deploy dist']} />
     </Tab>
     <Tab label="webpack">
-      <Terminal cmd={['$ vercel deploy web-build --prebuilt']} />
+      <Terminal cmd={['$ vercel deploy web-build']} />
     </Tab>
   </Tabs>
 
