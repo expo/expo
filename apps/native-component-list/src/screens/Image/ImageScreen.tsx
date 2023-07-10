@@ -84,6 +84,13 @@ export const ImageScreens = [
     },
   },
   {
+    name: 'Tinting',
+    route: 'image/tinting',
+    getComponent() {
+      return optionalRequire(() => require('./ImageTintingScreen'));
+    },
+  },
+  {
     name: 'Hash Placeholders',
     route: 'image/hash-placeholders',
     getComponent() {

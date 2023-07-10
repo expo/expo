@@ -37,7 +37,7 @@ public final class ImageView: ExpoView {
 
   var blurRadius: CGFloat = 0.0
 
-  var imageTintColor: UIColor = .clear
+  var imageTintColor: UIColor?
 
   var cachePolicy: ImageCachePolicy = .disk
 
@@ -127,6 +127,18 @@ public final class ImageView: ExpoView {
     // otherwise they would be saved in cache with scale = 1.0 which may result in
     // incorrectly rendered images for resize modes that don't scale (`center` and `repeat`).
     context[.imageScaleFactor] = source.scale
+
+    // It seems that `UIImageView` can't tint some vector graphics. If the `tintColor` prop is specified,
+    // we tell the SVG coder to decode to a bitmap instead. This will become useless when we switch to SVGNative coder.
+    if imageTintColor != nil {
+      context[.imageDecodeOptions] = [
+        SDImageCoderOption.webImageContext: [
+          "svgPrefersBitmap": true,
+          "svgImageSize": sdImageView.bounds.size,
+          "svgImagePreserveAspectRatio": true
+        ]
+      ]
+    }
 
     if source.isCachingAllowed {
       let sdCacheType = cachePolicy.toSdCacheType().rawValue
@@ -297,15 +309,14 @@ public final class ImageView: ExpoView {
     guard isViewEmpty || !hasAnySource, let placeholder = placeholderImage else {
       return
     }
-    setImage(placeholder, contentFit: placeholderContentFit)
+    setImage(placeholder, contentFit: placeholderContentFit, isPlaceholder: true)
   }
 
   // MARK: - Processing
 
   private func createTransformPipeline() -> SDImagePipelineTransformer {
     let transformers: [SDImageTransformer] = [
-      SDImageBlurTransformer(radius: blurRadius),
-      SDImageTintTransformer(color: imageTintColor)
+      SDImageBlurTransformer(radius: blurRadius)
     ]
     return SDImagePipelineTransformer(transformers: transformers)
   }
@@ -338,17 +349,24 @@ public final class ImageView: ExpoView {
 
       UIView.transition(with: sdImageView, duration: seconds, options: options) { [weak self] in
         if let self = self {
-          self.setImage(image, contentFit: self.contentFit)
+          self.setImage(image, contentFit: self.contentFit, isPlaceholder: false)
         }
       }
     } else {
-      setImage(image, contentFit: contentFit)
+      setImage(image, contentFit: contentFit, isPlaceholder: false)
     }
   }
 
-  private func setImage(_ image: UIImage?, contentFit: ContentFit) {
+  private func setImage(_ image: UIImage?, contentFit: ContentFit, isPlaceholder: Bool) {
     sdImageView.contentMode = contentFit.toContentMode()
-    sdImageView.image = image
+
+    if let imageTintColor, !isPlaceholder {
+      sdImageView.tintColor = imageTintColor
+      sdImageView.image = image?.withRenderingMode(.alwaysTemplate)
+    } else {
+      sdImageView.tintColor = nil
+      sdImageView.image = image
+    }
 
     if enableLiveTextInteraction {
       analyzeImage()
