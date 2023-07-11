@@ -69,8 +69,6 @@ function withTypescriptMapping(jestConfig) {
     console.warn(
       'See: https://jestjs.io/docs/configuration#modulenamemapper-objectstring-string--arraystring'
     );
-
-    throw error;
   }
 
   return jestConfig;
