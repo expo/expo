@@ -172,7 +172,20 @@ Install the [Vercel CLI](https://vercel.com/docs/cli).
 <Terminal cmd={['$ npm install -g vercel@latest']} />
 
 </Step>
+
 <Step label="2">
+  Compile the Expo website.
+  <Tabs>
+    <Tab label="Expo Router">
+      <Terminal cmd={['# Compiles to ./dist', '$ npx expo export -p web']} />
+    </Tab>
+    <Tab label="webpack">
+      <Terminal cmd={['# Compiles to ./web-build', '$ npx expo export:web']} />
+    </Tab>
+  </Tabs>
+</Step>
+
+<Step label="3">
   Configure redirects for single-page applications.
   <Tabs>
     <Tab label="Expo Router">
@@ -194,37 +207,27 @@ Install the [Vercel CLI](https://vercel.com/docs/cli).
       If you modify this file, you will need to rebuild your project with `npx expo export -p web` to have it safely copied into the **dist** directory.
     </Tab>
     <Tab label="webpack">
-      If your app implements any navigation, you must configure Vercel to redirect requests to the single **web-build/index.html** file. This can be done in Vercel by creating a **`./public/vercel.json` file and redirecting all requests to `/index.html`.**
+      If your app implements any navigation, you must configure Vercel to redirect requests to the single **web-build/index.html** file.
 
-      Navigate inside the **web-build** directory and run the following command to create **\_redirects** file with rule:
+      Create a **web** directory at the root of your project. Inside this directory, create a **vercel.json** file with the following rule:
 
       ```json web/vercel.json
       {
         "version": 2,
-        "routes": [
+        "rewrites": [
           {
-            "src": "/(.*)",
-            "dest": "/"
+            "source": "/(.*)",
+            "destination": "/"
           }
         ]
       }
       ```
-      If you modify this file, you will need to rebuild your project with `npx expo export:web` to have it safely copied into the **web-build** directory.
 
+      Now, rebuild your project by running `npx expo export:web` command to copy the contents of the **web** directory into the **web-build** directory.
+
+      > Anytime you modify this file, rebuild your project with `npx expo export:web`. This safely copies the changes into the **web-build** directory.
     </Tab>
 
-  </Tabs>
-</Step>
-
-<Step label="3">
-  Compile the Expo website.
-  <Tabs>
-    <Tab label="Expo Router">
-      <Terminal cmd={['# Compiles to ./dist', '$ npx expo export -p web']} />
-    </Tab>
-    <Tab label="webpack">
-      <Terminal cmd={['# Compiles to ./web-build', '$ npx expo export:web']} />
-    </Tab>
   </Tabs>
 </Step>
 
