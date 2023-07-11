@@ -1,7 +1,8 @@
 import React, { CSSProperties, SyntheticEvent } from 'react';
 import { ImageContentPositionObject, ImageSource } from '../Image.types';
+import { SrcSetSource } from './useSourceSelection';
 declare const ImageWrapper: React.ForwardRefExoticComponent<{
-    source?: ImageSource | null | undefined;
+    source?: ImageSource | SrcSetSource | null | undefined;
     events?: {
         onLoad?: (((event: SyntheticEvent<HTMLImageElement, Event>) => void) | null | undefined)[] | undefined;
         onError?: ((({ source }: {
@@ -14,6 +15,7 @@ declare const ImageWrapper: React.ForwardRefExoticComponent<{
     hashPlaceholderContentPosition?: ImageContentPositionObject | undefined;
     priority?: string | null | undefined;
     style: CSSProperties;
+    tintColor?: string | null | undefined;
     hashPlaceholderStyle?: React.CSSProperties | undefined;
     className?: string | undefined;
     accessibilityLabel?: string | undefined;

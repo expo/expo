@@ -2,6 +2,8 @@ import { UnavailabilityError } from 'expo-modules-core';
 
 import ExpoFaceDetector from './ExpoFaceDetector';
 
+declare const global: any;
+
 // @docsMissing
 export type Point = { x: number; y: number };
 
@@ -192,7 +194,6 @@ export type DetectionResult = {
   // @docsMissing
   image: Image;
 };
-
 // @needsAudit
 /**
  * Detect faces on a picture.
@@ -204,7 +205,17 @@ export async function detectFacesAsync(
   uri: string,
   options: DetectionOptions = {}
 ): Promise<DetectionResult> {
-  if (!ExpoFaceDetector.detectFaces) {
+  if (!ExpoFaceDetector || !ExpoFaceDetector.detectFaces) {
+    if (global.expo?.modules?.ExponentConstants?.appOwnership === 'expo') {
+      console.warn(
+        [
+          "ExpoFaceDetector has been removed from Expo Go. To use this functionality, you'll have to create a development build or prebuild using npx expo run:android|ios commands.",
+          'Learn more: https://expo.fyi/face-detector-removed',
+          'Learn more about development builds: https://docs.expo.dev/develop/development-builds/create-a-build/',
+          'Learn more about prebuild: https://docs.expo.dev/workflow/prebuild/',
+        ].join('\n\n')
+      );
+    }
     throw new UnavailabilityError('expo-face-detector', 'detectFaces');
   }
   return await ExpoFaceDetector.detectFaces({ ...options, uri });

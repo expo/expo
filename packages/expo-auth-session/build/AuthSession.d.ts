@@ -5,16 +5,7 @@ import { AuthSessionOptions, AuthSessionRedirectUriOptions, AuthSessionResult } 
 import { DiscoveryDocument, fetchDiscoveryAsync, Issuer, IssuerOrDiscovery, ProviderMetadata, resolveDiscoveryAsync } from './Discovery';
 import { generateHexStringAsync } from './PKCE';
 /**
- * Initiate a proxied authentication session with the given options. Only one `AuthSession` can be active at any given time in your application.
- * If you attempt to open a second session while one is still in progress, the second session will return a value to indicate that `AuthSession` is locked.
- *
- * @param options An object of type `AuthSessionOptions`.
- * @return Returns a Promise that resolves to an `AuthSessionResult` object.
- */
-export declare function startAsync(options: AuthSessionOptions): Promise<AuthSessionResult>;
-/**
- * Cancels an active `AuthSession` if there is one. No return value, but if there is an active `AuthSession`
- * then the Promise returned by the `AuthSession.startAsync()` that initiated it resolves to `{ type: 'dismiss' }`.
+ * Cancels an active `AuthSession` if there is one.
  */
 export declare function dismiss(): void;
 export declare const getDefaultReturnUrl: (urlPath?: string | undefined, options?: Omit<Linking.CreateURLOptions, "queryParams"> | undefined) => string;
@@ -40,8 +31,7 @@ export declare function getRedirectUrl(path?: string): string;
  * Create a redirect url for the current platform and environment. You need to manually define the redirect that will be used in
  * a bare workflow React Native app, or an Expo standalone app, this is because it cannot be inferred automatically.
  * - **Web:** Generates a path based on the current `window.location`. For production web apps, you should hard code the URL as well.
- * - **Managed workflow:** Uses the `scheme` property of your `app.config.js` or `app.json`.
- *   - **Proxy:** Uses `auth.expo.io` as the base URL for the path. This only works in Expo Go and standalone environments.
+ * - **Managed workflow:** Uses the `scheme` property of your app config.
  * - **Bare workflow:** Will fallback to using the `native` option for bare workflow React Native apps.
  *
  * @param options Additional options for configuring the path.
@@ -54,7 +44,7 @@ export declare function getRedirectUrl(path?: string): string;
  *   path: 'redirect'
  * });
  * // Development Build: my-scheme://redirect
- * // Expo Go: exp://127.0.0.1:19000/--/redirect
+ * // Expo Go: exp://127.0.0.1:8081/--/redirect
  * // Web dev: https://localhost:19006/redirect
  * // Web prod: https://yourwebsite.com/redirect
  *
@@ -64,12 +54,12 @@ export declare function getRedirectUrl(path?: string): string;
  *   isTripleSlashed: true,
  * });
  * // Development Build: scheme2:///
- * // Expo Go: exp://localhost:19000
+ * // Expo Go: exp://localhost:8081
  * // Web dev: https://localhost:19006
  * // Web prod: https://yourwebsite.com
  * ```
  */
-export declare function makeRedirectUri({ native, scheme, isTripleSlashed, queryParams, path, preferLocalhost, useProxy, projectNameForProxy, }?: AuthSessionRedirectUriOptions): string;
+export declare function makeRedirectUri({ native, scheme, isTripleSlashed, queryParams, path, preferLocalhost, }?: AuthSessionRedirectUriOptions): string;
 /**
  * Build an `AuthRequest` and load it before returning.
  *

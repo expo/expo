@@ -34,11 +34,12 @@ buildscript {
 
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 33)
+  namespace "expo.modules.devclient"
   defaultConfig {
     minSdkVersion safeExtGet('minSdkVersion', 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 1
-    versionName "2.3.0"
+    versionName "2.4.2"
 
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }

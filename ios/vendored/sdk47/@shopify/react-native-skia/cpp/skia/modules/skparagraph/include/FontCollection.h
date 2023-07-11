@@ -7,10 +7,10 @@
 #include <set>
 #include "include/core/SkFontMgr.h"
 #include "include/core/SkRefCnt.h"
-#include "include/private/SkTHash.h"
 #include "modules/skparagraph/include/FontArguments.h"
 #include "modules/skparagraph/include/ParagraphCache.h"
 #include "modules/skparagraph/include/TextStyle.h"
+#include "src/core/SkTHash.h"
 
 namespace skia {
 namespace textlayout {
@@ -69,7 +69,7 @@ private:
     };
 
     bool fEnableFontFallback;
-    SkTHashMap<FamilyKey, std::vector<sk_sp<SkTypeface>>, FamilyKey::Hasher> fTypefaces;
+    skia_private::THashMap<FamilyKey, std::vector<sk_sp<SkTypeface>>, FamilyKey::Hasher> fTypefaces;
     sk_sp<SkFontMgr> fDefaultFontManager;
     sk_sp<SkFontMgr> fAssetFontManager;
     sk_sp<SkFontMgr> fDynamicFontManager;

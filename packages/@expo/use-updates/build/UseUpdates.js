@@ -1,7 +1,7 @@
 import * as Updates from 'expo-updates';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { UseUpdatesEventType } from './UseUpdates.types';
-import { emitEvent, useUpdateEvents } from './UseUpdatesEmitter';
+import { emitEvent, useUpdateEvents, addUpdatesStateChangeListener } from './UseUpdatesEmitter';
 import { currentlyRunning, availableUpdateFromEvent } from './UseUpdatesUtils';
 /**
  * Calls [`Updates.checkForUpdateAsync()`](https://docs.expo.dev/versions/latest/sdk/updates/#updatescheckforupdateasync)
@@ -199,5 +199,34 @@ export const useUpdates = () => {
         currentlyRunning,
         ...updatesState,
     };
+};
+/**
+ * Experimental hook to return the Updates state machine context maintained
+ * in native code.
+ *
+ * Eventually, this will be used to construct the information returned by `useUpdates()`.
+ *
+ * @returns A map of the state machine context.
+ */
+export const useUpdatesState = () => {
+    const [localState, setLocalState] = useState({
+        isUpdateAvailable: false,
+        isUpdatePending: false,
+        isRollback: false,
+        isChecking: false,
+        isDownloading: false,
+        isRestarting: false,
+        checkError: null,
+        downloadError: null,
+        latestManifest: null,
+        downloadedManifest: null,
+    });
+    useEffect(() => {
+        const subscription = addUpdatesStateChangeListener((event) => {
+            setLocalState(() => event.context);
+        });
+        return () => subscription.remove();
+    }, []);
+    return localState;
 };
 //# sourceMappingURL=UseUpdates.js.map

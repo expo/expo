@@ -5,10 +5,8 @@ import crypto from 'crypto';
 import FormData from 'form-data';
 import { serializeDictionary, Dictionary } from 'structured-headers';
 
-import { APISettings } from '../../../api/settings';
 import UserSettings from '../../../api/user/UserSettings';
 import { ANONYMOUS_USERNAME } from '../../../api/user/user';
-import * as Log from '../../../log';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import {
   CodeSigningInfo,
@@ -41,9 +39,9 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
 
     if (!platform) {
       debug(
-        `No "expo-platform" header or "platform" query parameter specified. Falling back to "none".`
+        `No "expo-platform" header or "platform" query parameter specified. Falling back to "ios".`
       );
-      platform = 'none';
+      platform = 'ios';
     }
 
     assertRuntimePlatform(platform);
@@ -267,11 +265,11 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
       return scopeKeyFromCodeSigningInfo;
     }
 
-    Log.warn(
-      APISettings.isOffline
-        ? 'Using anonymous scope key in manifest for offline mode.'
-        : 'Using anonymous scope key in manifest.'
-    );
+    // Log.warn(
+    //   env.EXPO_OFFLINE
+    //     ? 'Using anonymous scope key in manifest for offline mode.'
+    //     : 'Using anonymous scope key in manifest.'
+    // );
     return await getAnonymousScopeKeyAsync(slug);
   }
 }

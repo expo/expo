@@ -12,7 +12,14 @@ const PAGES_DIR = path.resolve(dirname, '../pages');
 // TODO(cedric): refactor docs to get rid of the directory lists
 
 /** Manual list of directories to categorize as "Home" */
-const homeDirectories = ['get-started', 'develop', 'config-plugins', 'debugging', 'deploy'];
+const homeDirectories = [
+  'get-started',
+  'develop',
+  'config-plugins',
+  'debugging',
+  'deploy',
+  'routing',
+];
 /** Manual list of directories to categorize as "Learn" */
 const learnDirectories = ['tutorial', 'ui-programming', 'additional-resources'];
 /** Manual list of directories to categorize as "Archive" */
@@ -21,6 +28,7 @@ const archiveDirectories = ['archive'];
 const referenceDirectories = ['versions', 'technical-specs', 'more'];
 /** Private preview section which isn't linked in the documentation */
 const previewDirectories = ['feature-preview', 'preview'];
+
 /** All other unlisted directories */
 const generalDirectories = fs
   .readdirSync(PAGES_DIR, { withFileTypes: true })
@@ -61,6 +69,19 @@ const home = [
         makePage('develop/user-interface/animation.mdx'),
         makePage('develop/user-interface/store-data.mdx'),
         makePage('develop/user-interface/next-steps.mdx'),
+      ],
+      { expanded: false }
+    ),
+    makeGroup(
+      'Routing',
+      [
+        makePage('routing/introduction.mdx'),
+        makePage('routing/installation.mdx'),
+        makePage('routing/create-pages.mdx'),
+        makePage('routing/navigating-pages.mdx'),
+        makePage('routing/layouts.mdx'),
+        makePage('routing/appearance.mdx'),
+        makePage('routing/error-handling.mdx'),
       ],
       { expanded: false }
     ),
@@ -140,12 +161,38 @@ const general = [
       [
         makePage('guides/monorepos.mdx'),
         makePage('workflow/logging.mdx'),
+        makePage('workflow/continuous-native-generation.mdx'),
         makePage('workflow/development-mode.mdx'),
         makePage('workflow/android-studio-emulator.mdx'),
         makePage('workflow/ios-simulator.mdx'),
       ],
       { expanded: false }
     ),
+  ]),
+  makeSection('Expo Router', [
+    makeGroup('Advanced', [
+      makePage('router/advanced/root-layout.mdx'),
+      makePage('router/advanced/stack.mdx'),
+      makePage('router/advanced/tabs.mdx'),
+      makePage('router/advanced/drawer.mdx'),
+      makePage('router/advanced/nesting-navigators.mdx'),
+      makePage('router/advanced/modals.mdx'),
+      makePage('router/advanced/platform-specific-modules.mdx'),
+      makePage('router/advanced/shared-routes.mdx'),
+      makePage('router/advanced/router-settings.mdx'),
+    ]),
+    makeGroup('Reference', [
+      makePage('router/reference/search-parameters.mdx'),
+      makePage('router/reference/static-rendering.mdx'),
+      makePage('router/reference/async-routes.mdx'),
+      makePage('router/reference/sitemap.mdx'),
+      makePage('router/reference/typed-routes.mdx'),
+      makePage('router/reference/authentication.mdx'),
+      makePage('router/reference/screen-tracking.mdx'),
+      makePage('router/reference/src-directory.mdx'),
+      makePage('router/reference/troubleshooting.mdx'),
+      makePage('router/reference/faq.mdx'),
+    ]),
   ]),
   makeSection('EAS', [makePage('eas/index.mdx')]),
   makeSection('EAS Build', [
@@ -156,6 +203,7 @@ const general = [
     makePage('build/automating-submissions.mdx'),
     makePage('build/updates.mdx'),
     makePage('build/building-on-ci.mdx'),
+    makePage('build/building-from-github.mdx'),
     makeGroup(
       'App Signing',
       [
@@ -208,20 +256,28 @@ const general = [
     makePage('eas-update/introduction.mdx'),
     makePage('eas-update/getting-started.mdx'),
     makePage('eas-update/github-actions.mdx'),
-    makePage('eas-update/developing-with-eas-update.mdx'),
-    makePage('eas-update/how-eas-update-works.mdx'),
-    makePage('eas-update/deployment-patterns.mdx'),
-    makePage('eas-update/debug-updates.mdx'),
-    makePage('eas-update/eas-update-with-local-build.mdx'),
-    makePage('eas-update/eas-update-and-eas-cli.mdx'),
-    makePage('eas-update/optimize-assets.mdx'),
-    makePage('eas-update/runtime-versions.mdx'),
-    makePage('eas-update/environment-variables.mdx'),
-    makePage('eas-update/expo-dev-client.mdx'),
-    makePage('eas-update/code-signing.mdx'),
-    makeGroup('More', [
-      makePage('eas-update/migrate-to-eas-update.mdx'),
+    makePage('eas-update/eas-cli.mdx'),
+    makePage('eas-update/develop-faster.mdx'),
+    makeGroup('Concepts', [
+      makePage('eas-update/how-it-works.mdx'),
+      makePage('eas-update/runtime-versions.mdx'),
+      makePage('eas-update/deployment-patterns.mdx'),
+    ]),
+    makeGroup('Troubleshoot', [
+      makePage('eas-update/debug.mdx'),
+      makePage('eas-update/debug-advanced.mdx'),
+      makePage('eas-update/expo-dev-client.mdx'),
+      makePage('eas-update/build-locally.mdx'),
+    ]),
+    makeGroup('Advanced', [
+      makePage('eas-update/optimize-assets.mdx'),
+      makePage('eas-update/environment-variables.mdx'),
+      makePage('eas-update/code-signing.mdx'),
       makePage('eas-update/rollouts.mdx'),
+    ]),
+    makeGroup('Reference', [
+      makePage('eas-update/migrate-from-classic-updates.mdx'),
+      makePage('eas-update/codepush.mdx'),
       makePage('eas-update/faq.mdx'),
       makePage('eas-update/known-issues.mdx'),
     ]),
@@ -233,6 +289,7 @@ const general = [
     makePage('eas/metadata/schema.mdx'),
     makePage('eas/metadata/faq.mdx'),
   ]),
+  makeSection('EAS Insights', [makePage('eas-insights/introduction.mdx')]),
   makeSection(
     'Expo Modules API',
     [
@@ -372,7 +429,6 @@ const preview = [
 ];
 
 const archive = [
-  makeSection('Archive', [makePage('archive/index.mdx')]),
   makeSection('Classic Builds', [
     makePage('archive/classic-updates/building-standalone-apps.mdx'),
     makePage('archive/classic-updates/turtle-cli.mdx'),

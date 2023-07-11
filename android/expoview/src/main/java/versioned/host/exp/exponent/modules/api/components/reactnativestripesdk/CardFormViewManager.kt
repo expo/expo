@@ -56,6 +56,11 @@ class CardFormViewManager : SimpleViewManager<CardFormView>() {
     view.setDefaultValues(defaults)
   }
 
+  @ReactProp(name = "disabled")
+  fun setDisabled(view: CardFormView, isDisabled: Boolean) {
+    view.setDisabled(isDisabled)
+  }
+
   override fun createViewInstance(reactContext: ThemedReactContext): CardFormView {
     val stripeSdkModule: StripeSdkModule? = reactContext.getNativeModule(StripeSdkModule::class.java)
     val view = CardFormView(reactContext)

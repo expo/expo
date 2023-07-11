@@ -16,7 +16,10 @@ import expo.modules.kotlin.objects.ObjectDefinitionData
  */
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
-class JavaScriptModuleObject(val name: String) : Destructible {
+class JavaScriptModuleObject(
+  jniDeallocator: JNIDeallocator,
+  val name: String
+) : Destructible {
   // Has to be called "mHybridData" - fbjni uses it via reflection
   @DoNotStrip
   private val mHybridData = initHybrid()
@@ -24,7 +27,7 @@ class JavaScriptModuleObject(val name: String) : Destructible {
   private external fun initHybrid(): HybridData
 
   init {
-    JNIDeallocator.addReference(this)
+    jniDeallocator.addReference(this)
   }
 
   fun initUsingObjectDefinition(appContext: AppContext, definition: ObjectDefinitionData) = apply {

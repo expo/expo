@@ -88,39 +88,39 @@ public abstract class NativeProxyCommon {
   }
 
   @DoNotStrip
-  private void requestRender(AnimationFrameCallback callback) {
+  public void requestRender(AnimationFrameCallback callback) {
     mNodesManager.postOnAnimation(callback);
   }
 
   @DoNotStrip
-  private void updateProps(int viewTag, Map<String, Object> props) {
+  public void updateProps(int viewTag, Map<String, Object> props) {
     mNodesManager.updateProps(viewTag, props);
   }
 
   @DoNotStrip
-  private void synchronouslyUpdateUIProps(int viewTag, ReadableMap uiProps) {
+  public void synchronouslyUpdateUIProps(int viewTag, ReadableMap uiProps) {
     mNodesManager.synchronouslyUpdateUIProps(viewTag, uiProps);
   }
 
   @DoNotStrip
-  private String obtainProp(int viewTag, String propName) {
+  public String obtainProp(int viewTag, String propName) {
     return mNodesManager.obtainProp(viewTag, propName);
   }
 
   @DoNotStrip
-  private void scrollTo(int viewTag, double x, double y, boolean animated) {
+  public void scrollTo(int viewTag, double x, double y, boolean animated) {
     mNodesManager.scrollTo(viewTag, x, y, animated);
   }
 
   @DoNotStrip
-  private void setGestureState(int handlerTag, int newState) {
+  public void setGestureState(int handlerTag, int newState) {
     if (gestureHandlerStateManager != null) {
       gestureHandlerStateManager.setGestureHandlerState(handlerTag, newState);
     }
   }
 
   @DoNotStrip
-  private long getCurrentTime() {
+  public long getCurrentTime() {
     if (slowAnimationsEnabled) {
       final long ANIMATIONS_DRAG_FACTOR = 10;
       return this.firstUptime
@@ -131,12 +131,12 @@ public abstract class NativeProxyCommon {
   }
 
   @DoNotStrip
-  private float[] measure(int viewTag) {
+  public float[] measure(int viewTag) {
     return mNodesManager.measure(viewTag);
   }
 
   @DoNotStrip
-  private void configureProps(ReadableNativeArray uiProps, ReadableNativeArray nativeProps) {
+  public void configureProps(ReadableNativeArray uiProps, ReadableNativeArray nativeProps) {
     Set<String> uiPropsSet = convertProps(uiProps);
     Set<String> nativePropsSet = convertProps(nativeProps);
     mNodesManager.configureProps(uiPropsSet, nativePropsSet);
@@ -152,31 +152,31 @@ public abstract class NativeProxyCommon {
   }
 
   @DoNotStrip
-  private void registerEventHandler(EventHandler handler) {
+  public void registerEventHandler(EventHandler handler) {
     handler.mCustomEventNamesResolver = mNodesManager.getEventNameResolver();
     mNodesManager.registerEventHandler(handler);
   }
 
   @DoNotStrip
-  private int registerSensor(int sensorType, int interval, SensorSetter setter) {
+  public int registerSensor(int sensorType, int interval, SensorSetter setter) {
     return reanimatedSensorContainer.registerSensor(
         ReanimatedSensorType.getInstanceById(sensorType), interval, setter);
   }
 
   @DoNotStrip
-  private void unregisterSensor(int sensorId) {
+  public void unregisterSensor(int sensorId) {
     reanimatedSensorContainer.unregisterSensor(sensorId);
   }
 
   @DoNotStrip
-  private int subscribeForKeyboardEvents(
+  public int subscribeForKeyboardEvents(
       KeyboardEventDataUpdater keyboardEventDataUpdater, boolean isStatusBarTranslucent) {
     return reanimatedKeyboardEventListener.subscribeForKeyboardEvents(
         keyboardEventDataUpdater, isStatusBarTranslucent);
   }
 
   @DoNotStrip
-  private void unsubscribeFromKeyboardEvents(int listenerId) {
+  public void unsubscribeFromKeyboardEvents(int listenerId) {
     reanimatedKeyboardEventListener.unsubscribeFromKeyboardEvents(listenerId);
   }
 
@@ -202,5 +202,12 @@ public abstract class NativeProxyCommon {
             .getAnimationsManager();
 
     animationsManager.setNativeMethods(NativeProxy.createNativeMethodsHolder(layoutAnimations));
+  }
+
+  @DoNotStrip
+  void maybeFlushUIUpdatesQueue() {
+    if (!mNodesManager.isAnimationRunning()) {
+      mNodesManager.performOperations();
+    }
   }
 }

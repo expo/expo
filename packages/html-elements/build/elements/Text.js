@@ -52,6 +52,7 @@ export const EM = I;
 export const Span = Text;
 const styles = StyleSheet.create({
     p: {
+        // @ts-ignore
         marginVertical: em(1),
     },
     b: {
@@ -65,13 +66,16 @@ const styles = StyleSheet.create({
         fontWeight: '500',
     },
     pre: {
+        // @ts-ignore
         marginVertical: em(1),
     },
     blockQuote: {
+        // @ts-ignore
         marginVertical: em(1),
     },
     br: {
         width: 0,
+        // @ts-ignore
         height: em(0.5),
     },
     s: {

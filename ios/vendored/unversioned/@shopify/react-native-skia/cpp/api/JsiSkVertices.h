@@ -25,12 +25,7 @@ public:
       : JsiSkWrappingSkPtrHostObject<SkVertices>(std::move(context),
                                                  std::move(vertices)) {}
 
-  // TODO: declare in JsiSkWrappingSkPtrHostObject via extra template parameter?
-  JSI_PROPERTY_GET(__typename__) {
-    return jsi::String::createFromUtf8(runtime, "Vertices");
-  }
-
-  JSI_EXPORT_PROPERTY_GETTERS(JSI_EXPORT_PROP_GET(JsiSkVertices, __typename__))
+  EXPORT_JSI_API_TYPENAME(JsiSkVertices, "Vertices")
 
   JSI_HOST_FUNCTION(bounds) {
     const auto &result = getObject()->bounds();
@@ -43,17 +38,8 @@ public:
   }
 
   JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkVertices, bounds),
-                       JSI_EXPORT_FUNC(JsiSkVertices, uniqueID), )
-
-  /**
-    Returns the underlying object from a host object of this type
-   */
-  static sk_sp<SkVertices> fromValue(jsi::Runtime &runtime,
-                                     const jsi::Value &obj) {
-    return obj.asObject(runtime)
-        .asHostObject<JsiSkVertices>(runtime)
-        ->getObject();
-  }
+                       JSI_EXPORT_FUNC(JsiSkVertices, uniqueID),
+                       JSI_EXPORT_FUNC(JsiSkVertices, dispose))
 
   /**
    * Creates the function for construction a new instance of the SkVertices

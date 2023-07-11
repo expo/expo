@@ -6,7 +6,13 @@ import * as React from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import url from 'url';
 
+import { createApolloClient } from '../../api/ApolloClient';
 import Config from '../../api/Config';
+import {
+  Home_ViewerPrimaryAccountNameDocument,
+  Home_ViewerPrimaryAccountNameQuery,
+  Home_ViewerPrimaryAccountNameQueryVariables,
+} from '../../graphql/types';
 import { useDispatch, useSelector } from '../../redux/Hooks';
 import SessionActions from '../../redux/SessionActions';
 import { useAccountName } from '../../utils/AccountNameContext';
@@ -98,20 +104,36 @@ export function LoggedOutAccountView({ refetch }: Props) {
 
       if (result.type === 'success') {
         const resultURL = url.parse(result.url, true);
-        const sessionSecret = resultURL.query['session_secret'] as string;
-        // usernameOrEmail is always the username https://github.com/expo/universe/blob/d3332f3b48964853191c5035fceae37aeebb1e64/server/website/scenes/_app/helpers.tsx#L119
-        const usernameOrEmail = resultURL.query['username_or_email'] as string;
-
-        if (!sessionSecret) {
+        const encodedSessionSecret = resultURL.query['session_secret'] as string;
+        if (!encodedSessionSecret) {
           throw new Error('session_secret is missing in auth redirect query');
+        }
+
+        const sessionSecret = decodeURIComponent(encodedSessionSecret);
+
+        const viewerPrimaryAccountNameResult = await createApolloClient().query<
+          Home_ViewerPrimaryAccountNameQuery,
+          Home_ViewerPrimaryAccountNameQueryVariables
+        >({
+          query: Home_ViewerPrimaryAccountNameDocument,
+          context: {
+            headers: { 'expo-session': sessionSecret },
+          },
+        });
+
+        const primaryAccountName =
+          viewerPrimaryAccountNameResult.data.meUserActor?.primaryAccount.name;
+        if (!primaryAccountName) {
+          throw new Error('Logged in user must have a primary account');
         }
 
         dispatch(
           SessionActions.setSession({
-            sessionSecret: decodeURIComponent(sessionSecret),
+            sessionSecret,
           })
         );
-        setAccountName(usernameOrEmail);
+
+        setAccountName(primaryAccountName);
         setIsFinishedAuthenticating(true);
       }
     } catch (e) {

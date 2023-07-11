@@ -10,7 +10,7 @@ buildscript {
     dbFlowVersion = '4.2.4'
     buildToolsVersion = '33.0.0'
     kotlinVersion = '1.8.10'
-    gradlePluginVersion = '7.4.1'
+    gradlePluginVersion = '7.4.2'
     gradleDownloadTaskVersion = '5.0.1'
     repositoryUrl = "file:${System.env.HOME}/.m2/repository/"
 
@@ -24,7 +24,7 @@ buildscript {
   dependencies {
     classpath "com.android.tools.build:gradle:${gradlePluginVersion}"
     classpath 'com.google.gms:google-services:4.3.5'
-    classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.4'
+    classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.6'
     classpath "de.undercouch:gradle-download-task:$gradleDownloadTaskVersion"
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
 
@@ -42,7 +42,7 @@ plugins {
 // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
 def reactProperties = new Properties()
-file("${project(':ReactAndroid').projectDir}/gradle.properties").withInputStream { reactProperties.load(it) }
+file("${project(':packages:react-native:ReactAndroid').projectDir}/gradle.properties").withInputStream { reactProperties.load(it) }
 
 allprojects {
   repositories {
@@ -52,13 +52,13 @@ allprojects {
     }
     // For old expoviews to work
     maven {
+      url "$rootDir/versioned-abis/expoview-abi49_0_0/maven"
+    }
+    maven {
       url "$rootDir/versioned-abis/expoview-abi48_0_0/maven"
     }
     maven {
       url "$rootDir/versioned-abis/expoview-abi47_0_0/maven"
-    }
-    maven {
-      url "$rootDir/versioned-abis/expoview-abi46_0_0/maven"
     }
     maven {
       url "$rootDir/versioned-abis/maven"
@@ -94,13 +94,13 @@ allprojects {
     // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
     resolutionStrategy.dependencySubstitution {
       substitute(module("com.facebook.react:react-native"))
-        .using(project(":ReactAndroid"))
+        .using(project(":packages:react-native:ReactAndroid"))
         .because("Building React Native from source")
       substitute(module("com.facebook.react:react-native:+"))
-        .using(project(":ReactAndroid"))
+        .using(project(":packages:react-native:ReactAndroid"))
         .because("Building React Native from source")
       substitute(module("com.facebook.react:react-android"))
-        .using(project(":ReactAndroid"))
+        .using(project(":packages:react-native:ReactAndroid"))
         .because("Building React Native from source")
     }
     // WHEN_DISTRIBUTING_REMOVE_TO_HERE

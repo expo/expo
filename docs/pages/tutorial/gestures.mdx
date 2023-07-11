@@ -149,7 +149,7 @@ Create the following function in the `<EmojiSticker>` component:
 ```jsx EmojiSticker.js
 const onDoubleTap = useAnimatedGestureHandler({
   onActive: () => {
-    if (scaleImage.value) {
+    if (scaleImage.value !== imageSize * 2) {
       scaleImage.value = scaleImage.value * 2;
     }
   },

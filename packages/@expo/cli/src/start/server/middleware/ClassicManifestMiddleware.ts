@@ -2,12 +2,13 @@ import { ExpoAppManifest, ExpoConfig } from '@expo/config';
 import chalk from 'chalk';
 import os from 'os';
 
-import { APISettings } from '../../../api/settings';
+import { disableNetwork } from '../../../api/settings';
 import { signClassicExpoGoManifestAsync } from '../../../api/signManifest';
 import UserSettings from '../../../api/user/UserSettings';
 import { ANONYMOUS_USERNAME, getUserAsync } from '../../../api/user/user';
 import * as Log from '../../../log';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
+import { env } from '../../../utils/env';
 import { memoize } from '../../../utils/fn';
 import { learnMore } from '../../../utils/link';
 import { stripPort } from '../../../utils/url';
@@ -111,12 +112,12 @@ export class ClassicManifestMiddleware extends ManifestMiddleware<ClassicManifes
     acceptSignature,
   }: SignManifestProps): Promise<string> {
     const currentSession = await getUserAsync();
-    if (!currentSession || APISettings.isOffline) {
+    if (!currentSession || env.EXPO_OFFLINE) {
       manifest.id = `@${ANONYMOUS_USERNAME}/${manifest.slug}-${hostId}`;
     }
     if (!acceptSignature) {
       return JSON.stringify(manifest);
-    } else if (!currentSession || APISettings.isOffline) {
+    } else if (!currentSession || env.EXPO_OFFLINE) {
       return getUnsignedManifestString(manifest);
     } else {
       return this.getSignedManifestStringAsync(manifest);
@@ -132,7 +133,7 @@ export class ClassicManifestMiddleware extends ManifestMiddleware<ClassicManifes
     } catch (error: any) {
       debug(`Error getting manifest:`, error);
       if (error.code === 'UNAUTHORIZED' && props.manifest.owner) {
-        // Don't have permissions for siging, warn and enable offline mode.
+        // Don't have permissions for signing, warn and enable offline mode.
         this.addSigningDisabledWarning(
           `This project belongs to ${chalk.bold(
             `@${props.manifest.owner}`
@@ -140,16 +141,18 @@ export class ClassicManifestMiddleware extends ManifestMiddleware<ClassicManifes
             `Please request access from an admin of @${props.manifest.owner} or change the "owner" field to an account you belong to.\n` +
             learnMore('https://docs.expo.dev/versions/latest/config/app/#owner')
         );
-        APISettings.isOffline = true;
+
+        disableNetwork();
         return await this._getManifestStringAsync(props);
-      } else if (error.code === 'ENOTFOUND') {
+      } else if (error.code === 'ENOTFOUND' || error.code === 'OFFLINE') {
         // Got a DNS error, i.e. can't access exp.host, warn and enable offline mode.
         this.addSigningDisabledWarning(
           `Could not reach Expo servers, please check if you can access ${
             error.hostname || 'exp.host'
           }.`
         );
-        APISettings.isOffline = true;
+
+        disableNetwork();
         return await this._getManifestStringAsync(props);
       } else {
         throw error;

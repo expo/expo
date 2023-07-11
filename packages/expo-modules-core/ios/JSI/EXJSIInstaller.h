@@ -4,7 +4,7 @@
 
 // Swift classes need forward-declaration in the headers.
 @class EXAppContext;
-@class EXJavaScriptRuntime;
+@class EXRuntime;
 
 @interface EXJavaScriptRuntimeManager : NSObject
 
@@ -12,7 +12,7 @@
  Gets the JS runtime from the given bridge. May return `nil` when
  the runtime is not available yet or the remote debugging is enabled.
  */
-+ (nullable EXJavaScriptRuntime *)runtimeFromBridge:(nonnull RCTBridge *)bridge NS_SWIFT_NAME(runtime(fromBridge:));
++ (nullable EXRuntime *)runtimeFromBridge:(nonnull RCTBridge *)bridge NS_SWIFT_NAME(runtime(fromBridge:));
 
 /**
  Installs ExpoModules host object in the runtime of the given app context.

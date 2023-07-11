@@ -148,9 +148,9 @@ function ToastItem(props: StackItem<ToastStackItem>) {
           transform: [{ translateY }],
         },
       ]}>
-      <Button.ScaleOnPressContainer onPress={pop}>
+      <Button.FadeOnPressContainer onPress={pop}>
         <Element {...props} />
-      </Button.ScaleOnPressContainer>
+      </Button.FadeOnPressContainer>
     </Animated.View>
   );
 }

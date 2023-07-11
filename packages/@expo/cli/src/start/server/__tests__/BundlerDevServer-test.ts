@@ -1,10 +1,11 @@
-import openBrowserAsync from 'better-opn';
 import { vol } from 'memfs';
 
+import { openBrowserAsync } from '../../../utils/open';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import { UrlCreator } from '../UrlCreator';
 import { getPlatformBundlers } from '../platformBundlers';
 
+jest.mock('../../../utils/open');
 jest.mock(`../../../log`);
 jest.mock('../AsyncNgrok');
 jest.mock('../DevelopmentSession');

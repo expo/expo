@@ -55,5 +55,6 @@ typedef void (^REAPerformOperations)();
                        trySynchronously:(BOOL)trySync;
 - (NSString *)obtainProp:(nonnull NSNumber *)viewTag propName:(nonnull NSString *)propName;
 #endif
+- (void)maybeFlushUIUpdatesQueue;
 
 @end

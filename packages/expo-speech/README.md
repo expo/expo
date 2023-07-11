@@ -1,4 +1,11 @@
-# expo-speech
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/speech/">
+    <img
+      src="../../.github/resources/expo-speech.svg"
+      alt="expo-speech"
+      height="64" />
+  </a>
+</p>
 
 Provides text-to-speech functionality.
 

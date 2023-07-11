@@ -48,6 +48,10 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
     return 'webpack';
   }
 
+  public async startTypeScriptServices(): Promise<void> {
+    //  noop -- this feature is Metro-only.
+  }
+
   // A custom message websocket broadcaster used to send messages to a React Native runtime.
   private customMessageSocketBroadcaster:
     | undefined

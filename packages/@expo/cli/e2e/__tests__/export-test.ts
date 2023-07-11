@@ -65,6 +65,7 @@ it('runs `npx expo export --help`', async () => {
         --dump-assetmap            Dump the asset map for further processing
         --dump-sourcemap           Dump the source map for debugging the JS bundle
         -p, --platform <platform>  Options: android, ios, web, all. Default: all
+        --no-minify                Prevent minifying source
         -c, --clear                Clear the bundler cache
         -h, --help                 Usage info
     "
@@ -72,7 +73,7 @@ it('runs `npx expo export --help`', async () => {
 });
 
 describe('server', () => {
-  beforeEach(() => ensurePortFreeAsync(19000));
+  beforeEach(() => ensurePortFreeAsync(8081));
   it(
     'runs `npx expo export`',
     async () => {
@@ -115,7 +116,7 @@ describe('server', () => {
                 path: 'assets/3858f62230ac3c915f300c664312c63f',
               },
             ],
-            bundle: expect.stringMatching(/bundles\/android-.*\.js/),
+            bundle: expect.stringMatching(/bundles\/android-.*\.hbc/),
           },
           ios: {
             assets: [
@@ -132,7 +133,7 @@ describe('server', () => {
                 path: 'assets/2f334f6c7ca5b2a504bdf8acdee104f3',
               },
             ],
-            bundle: expect.stringMatching(/bundles\/ios-.*\.js/),
+            bundle: expect.stringMatching(/bundles\/ios-.*\.hbc/),
           },
           web: {
             assets: [
@@ -209,9 +210,9 @@ describe('server', () => {
         'assets/assets/icon@2x.png',
 
         'assets/fb960eb5e4eb49ec8786c7f6c4a57ce2',
-        expect.stringMatching(/bundles\/android-[\w\d]+\.js/),
+        expect.stringMatching(/bundles\/android-[\w\d]+\.hbc/),
         expect.stringMatching(/bundles\/android-[\w\d]+\.map/),
-        expect.stringMatching(/bundles\/ios-[\w\d]+\.js/),
+        expect.stringMatching(/bundles\/ios-[\w\d]+\.hbc/),
         expect.stringMatching(/bundles\/ios-[\w\d]+\.map/),
         expect.stringMatching(/bundles\/web-[\w\d]+\.js/),
         expect.stringMatching(/bundles\/web-[\w\d]+\.map/),

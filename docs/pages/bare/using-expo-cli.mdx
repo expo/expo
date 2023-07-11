@@ -1,5 +1,5 @@
 ---
-title: Using Expo CLI
+title: Use Expo CLI
 description: Learn how and why you can use Expo CLI instead of @react-native-community/cli in any React Native project.
 ---
 
@@ -49,7 +49,7 @@ and `npx react-native run-ios`. You can pass in the `--device` flag to select a 
 ## Starting the bundler
 
 `npx expo run:[android|ios]` will start the bundler/development server. You can skip that by passing in `--no-bundler` flag.
-Start the development server independently with `npx expo start --dev-client`.
+Start the development server independently with `npx expo start` command. For SDK 48 and lower, use the `--dev-client` flag with the command.
 
 ## Common questions
 
@@ -93,7 +93,11 @@ With the `expo` package installed and configured in your project, you can start 
 />
 <BoxLink
   title="Adopting Prebuild"
-  description={<>Automate your native directories using the <DEMI>app.json</DEMI>.</>}
+  description={
+    <>
+      Automate your native directories using the <DEMI>app.json</DEMI>.
+    </>
+  }
   href="/guides/adopting-prebuild"
 />
 <BoxLink

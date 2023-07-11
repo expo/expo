@@ -9,9 +9,9 @@ import { parsePropertiesFile, PropertiesItem } from '../Properties';
 
 jest.mock('../../plugins/android-plugins');
 
-describe(withJsEngineGradleProps, () => {
-  const JS_ENGINE_PROP_KEY = 'expo.jsEngine';
+const HERMES_PROP_KEY = 'hermesEnabled';
 
+describe(withJsEngineGradleProps, () => {
   it('set the property from shared `jsEngine` config', async () => {
     const { modResults } = await compileMockModWithResultsAsync(
       { jsEngine: 'hermes' },
@@ -23,8 +23,8 @@ describe(withJsEngineGradleProps, () => {
     );
     expect(modResults).toContainEqual({
       type: 'property',
-      key: JS_ENGINE_PROP_KEY,
-      value: 'hermes',
+      key: HERMES_PROP_KEY,
+      value: 'true',
     });
   });
 
@@ -39,8 +39,8 @@ describe(withJsEngineGradleProps, () => {
     );
     expect(modResults).toContainEqual({
       type: 'property',
-      key: JS_ENGINE_PROP_KEY,
-      value: 'jsc',
+      key: HERMES_PROP_KEY,
+      value: 'false',
     });
   });
 
@@ -48,7 +48,7 @@ describe(withJsEngineGradleProps, () => {
     const originalGradleProperties = parsePropertiesFile(`
 android.useAndroidX=true
 android.enableJetifier=true
-expo.jsEngine=jsc
+hermesEnabled=false
 `);
 
     const { modResults } = await compileMockModWithResultsAsync(
@@ -61,8 +61,8 @@ expo.jsEngine=jsc
     );
     expect(modResults).toContainEqual({
       type: 'property',
-      key: JS_ENGINE_PROP_KEY,
-      value: 'hermes',
+      key: HERMES_PROP_KEY,
+      value: 'true',
     });
   });
 });
@@ -72,8 +72,9 @@ describe(updateAndroidBuildPropertiesFromConfig, () => {
     const gradleProperties = [];
     const configToPropertyRules = [
       {
-        propName: 'expo.jsEngine',
-        propValueGetter: (config) => config.android?.jsEngine ?? config.jsEngine ?? 'NOTFOUND',
+        propName: HERMES_PROP_KEY,
+        propValueGetter: (config) =>
+          ((config.android?.jsEngine ?? config.jsEngine ?? 'hermes') === 'hermes').toString(),
       },
     ];
 
@@ -85,8 +86,8 @@ describe(updateAndroidBuildPropertiesFromConfig, () => {
       )
     ).toContainEqual({
       type: 'property',
-      key: 'expo.jsEngine',
-      value: 'jsc',
+      key: HERMES_PROP_KEY,
+      value: 'false',
     });
 
     expect(
@@ -97,16 +98,16 @@ describe(updateAndroidBuildPropertiesFromConfig, () => {
       )
     ).toContainEqual({
       type: 'property',
-      key: 'expo.jsEngine',
-      value: 'jsc',
+      key: HERMES_PROP_KEY,
+      value: 'false',
     });
 
     expect(
       updateAndroidBuildPropertiesFromConfig({}, gradleProperties, configToPropertyRules)
     ).toContainEqual({
       type: 'property',
-      key: 'expo.jsEngine',
-      value: 'NOTFOUND',
+      key: HERMES_PROP_KEY,
+      value: 'true',
     });
   });
 });

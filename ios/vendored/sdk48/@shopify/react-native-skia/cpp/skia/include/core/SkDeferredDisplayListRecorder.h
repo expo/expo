@@ -50,13 +50,14 @@ public:
 
     sk_sp<SkDeferredDisplayList> detach();
 
-#if SK_SUPPORT_GPU
-    using PromiseImageTextureContext     = SkImage::PromiseImageTextureContext;
-    using PromiseImageTextureFulfillProc = SkImage::PromiseImageTextureFulfillProc;
-    using PromiseImageTextureReleaseProc = SkImage::PromiseImageTextureReleaseProc;
+#if defined(SK_GANESH)
+    using PromiseImageTextureContext = void*;
+    using PromiseImageTextureFulfillProc =
+            sk_sp<SkPromiseImageTexture> (*)(PromiseImageTextureContext);
+    using PromiseImageTextureReleaseProc = void (*)(PromiseImageTextureContext);
 
 #ifndef SK_MAKE_PROMISE_TEXTURE_DISABLE_LEGACY_API
-    /** Deprecated: Use SkImage::MakePromiseTexture instead. */
+    /** Deprecated: Use SkImages::PromiseTextureFrom instead. */
     sk_sp<SkImage> makePromiseTexture(const GrBackendFormat& backendFormat,
                                       int width,
                                       int height,
@@ -69,14 +70,14 @@ public:
                                       PromiseImageTextureReleaseProc textureReleaseProc,
                                       PromiseImageTextureContext textureContext);
 
-    /** Deprecated: Use SkImage::MakePromiseYUVATexture instead. */
+    /** Deprecated: Use SkImages::PromiseTextureFromYUVA instead. */
     sk_sp<SkImage> makeYUVAPromiseTexture(const GrYUVABackendTextureInfo& yuvaBackendTextureInfo,
                                           sk_sp<SkColorSpace> imageColorSpace,
                                           PromiseImageTextureFulfillProc textureFulfillProc,
                                           PromiseImageTextureReleaseProc textureReleaseProc,
                                           PromiseImageTextureContext textureContexts[]);
 #endif // SK_MAKE_PROMISE_TEXTURE_DISABLE_LEGACY_API
-#endif // SK_SUPPORT_GPU
+#endif // defined(SK_GANESH)
 
 private:
     SkDeferredDisplayListRecorder(const SkDeferredDisplayListRecorder&) = delete;
@@ -86,7 +87,7 @@ private:
 
     const SkSurfaceCharacterization             fCharacterization;
 
-#if SK_SUPPORT_GPU
+#if defined(SK_GANESH)
     sk_sp<GrRecordingContext>                   fContext;
     sk_sp<GrRenderTargetProxy>                  fTargetProxy;
     sk_sp<SkDeferredDisplayList::LazyProxyData> fLazyProxyData;

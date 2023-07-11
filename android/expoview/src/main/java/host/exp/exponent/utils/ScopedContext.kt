@@ -13,6 +13,7 @@ import android.database.DatabaseErrorHandler
 import host.exp.exponent.Constants
 import org.apache.commons.io.FileUtils
 import java.io.File
+import java.io.IOException
 import java.io.UnsupportedEncodingException
 import java.lang.Exception
 import kotlin.jvm.Throws
@@ -133,6 +134,15 @@ class ScopedContext @Throws(UnsupportedEncodingException::class) constructor(con
     }.toTypedArray()
   }
 
+  private fun ensureDirExists(file: File) {
+    if (!file.exists()) {
+      val success = file.mkdirs()
+      if (!success) {
+        throw IOException("Unable to create scoped directory at path ${file.path}")
+      }
+    }
+  }
+
   val context: Context = baseContext
 
   companion object {
@@ -157,6 +167,10 @@ class ScopedContext @Throws(UnsupportedEncodingException::class) constructor(con
       filesDir = baseContext.filesDir
       cacheDir = baseContext.cacheDir
       noBackupDir = baseContext.noBackupFilesDir
+    }
+
+    listOf(filesDir, cacheDir, noBackupDir).forEach {
+      ensureDirExists(it)
     }
   }
 }

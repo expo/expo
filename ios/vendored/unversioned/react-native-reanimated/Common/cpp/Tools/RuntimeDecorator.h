@@ -52,7 +52,8 @@ class RuntimeDecorator {
       const TimeProviderFunction getCurrentTime,
       const SetGestureStateFunction setGestureState,
       const ProgressLayoutAnimationFunction progressLayoutAnimationFunction,
-      const EndLayoutAnimationFunction endLayoutAnimationFunction);
+      const EndLayoutAnimationFunction endLayoutAnimationFunction,
+      const MaybeFlushUIUpdatesQueueFunction maybeFlushUIUpdatesQueueFunction);
 
   /**
    Returns true if the given Runtime is the Reanimated UI-Thread Runtime.

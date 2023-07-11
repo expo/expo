@@ -15,6 +15,7 @@ import { Log } from '../log';
 import { DevServerManager } from '../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
 import { logMetroErrorAsync } from '../start/server/metro/metroErrorInterface';
+import { getVirtualFaviconAssetsAsync } from './favicon';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
 
@@ -81,16 +82,19 @@ export async function getFilesToExportFromServerAsync(
 export async function exportFromServerAsync(
   projectRoot: string,
   devServerManager: DevServerManager,
-  { outputDir }: Options
+  { outputDir, minify }: Options
 ): Promise<void> {
+  const injectFaviconTag = await getVirtualFaviconAssetsAsync(projectRoot, outputDir);
+
   const devServer = devServerManager.getDefaultDevServer();
   assert(devServer instanceof MetroBundlerDevServer);
 
   const [manifest, resources, renderAsync] = await Promise.all([
     devServer.getRoutesAsync(),
-    devServer.getStaticResourcesAsync({ mode: 'production' }),
+    devServer.getStaticResourcesAsync({ mode: 'production', minify }),
     devServer.getStaticRenderFunctionAsync({
       mode: 'production',
+      minify,
     }),
   ]);
 
@@ -100,11 +104,17 @@ export async function exportFromServerAsync(
     manifest,
     async renderAsync(pathname: string) {
       const template = await renderAsync(pathname);
-      return devServer.composeResourcesWithHtml({
+      let html = await devServer.composeResourcesWithHtml({
         mode: 'production',
         resources,
         template,
       });
+
+      if (injectFaviconTag) {
+        html = injectFaviconTag(html);
+      }
+
+      return html;
     },
   });
 

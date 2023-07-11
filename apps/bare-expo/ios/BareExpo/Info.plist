@@ -113,5 +113,7 @@
 	<string>1696089354000816</string>
 	<key>FacebookDisplayName</key>
 	<string>Expo APIs</string>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 </dict>
 </plist>

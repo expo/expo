@@ -1,6 +1,6 @@
 {
   "name": "@expo/config-plugins",
-  "version": "7.0.0",
+  "version": "7.2.2",
   "description": "A library for Expo config plugins",
   "main": "build/index.js",
   "scripts": {
@@ -43,15 +43,15 @@
     "getenv": "^1.0.0",
     "glob": "7.1.6",
     "resolve-from": "^5.0.0",
-    "semver": "^7.3.5",
+    "semver": "^7.5.3",
     "slash": "^3.0.0",
     "xcode": "^3.0.1",
-    "xml2js": "0.4.23"
+    "xml2js": "0.6.0"
   },
   "devDependencies": {
     "@types/debug": "^4.1.5",
     "@types/find-up": "^4.0.0",
-    "@types/xml2js": "^0.4.5"
+    "@types/xml2js": "~0.4.11"
   },
   "publishConfig": {
     "access": "public"

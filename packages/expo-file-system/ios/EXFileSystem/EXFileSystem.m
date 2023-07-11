@@ -501,7 +501,6 @@ EX_EXPORT_METHOD_AS(makeDirectoryAsync,
 
 EX_EXPORT_METHOD_AS(readDirectoryAsync,
                     readDirectoryAsyncWithURI:(NSString *)uriString
-                    withOptions:(NSDictionary *)options
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
@@ -766,7 +765,7 @@ EX_EXPORT_METHOD_AS(networkTaskCancelAsync,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  NSURLSessionDownloadTask *task = [_taskHandlersManager taskForId:uuid];
+  NSURLSessionTask *task = [_taskHandlersManager taskForId:uuid];
   if (task) {
     [task cancel];
   }

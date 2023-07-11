@@ -2,8 +2,8 @@ import { ExpoConfig } from '@expo/config-types';
 import { XcodeProject } from 'xcode';
 import { ConfigPlugin } from '../Plugin.types';
 import { InfoPlist } from './IosConfig.types';
-export declare const withDisplayName: ConfigPlugin<void>;
-export declare const withName: ConfigPlugin<void>;
+export declare const withDisplayName: ConfigPlugin;
+export declare const withName: ConfigPlugin;
 /** Set the PRODUCT_NAME variable in the xcproj file based on the app.json name property. */
 export declare const withProductName: ConfigPlugin;
 export declare function getName(config: Pick<ExpoConfig, 'name'>): string | null;

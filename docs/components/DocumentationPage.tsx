@@ -124,11 +124,10 @@ export default function DocumentationPage(props: Props) {
             content={RoutesUtils.isReferencePath(pathname) ? version : 'none'}
           />
         )}
-        {version === 'unversioned' ? (
-          (RoutesUtils.isPreviewPath(pathname) || RoutesUtils.isArchivePath(pathname)) && (
-            <meta name="robots" content="noindex" />
-          )
-        ) : (
+        {(version === 'unversioned' ||
+          RoutesUtils.isPreviewPath(pathname) ||
+          RoutesUtils.isArchivePath(pathname)) && <meta name="robots" content="noindex" />}
+        {version !== 'latest' && version !== 'unversioned' && (
           <link rel="canonical" href={getCanonicalUrl(pathname)} />
         )}
       </Head>

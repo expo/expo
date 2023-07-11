@@ -201,7 +201,7 @@ export class Sound implements Playback {
   }
 
   private _updateAudioSampleReceivedCallback() {
-    if (global.__EXAV_setOnAudioSampleReceivedCallback == null) {
+    if (globalThis.__EXAV_setOnAudioSampleReceivedCallback == null) {
       if (Platform.OS === 'ios' || Platform.OS === 'android') {
         console.warn(
           'expo-av: Failed to set up Audio Sample Buffer callback. ' +
@@ -225,7 +225,7 @@ export class Sound implements Playback {
       );
     }
 
-    global.__EXAV_setOnAudioSampleReceivedCallback(this._key, this._onAudioSampleReceived);
+    globalThis.__EXAV_setOnAudioSampleReceivedCallback(this._key, this._onAudioSampleReceived);
   }
 
   _internalStatusUpdateCallback = ({

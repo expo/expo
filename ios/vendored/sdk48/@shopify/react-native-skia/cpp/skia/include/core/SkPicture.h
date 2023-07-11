@@ -243,8 +243,9 @@ private:
 
     void serialize(SkWStream*, const SkSerialProcs*, class SkRefCntSet* typefaces,
         bool textBlobsOnly=false) const;
-    static sk_sp<SkPicture> MakeFromStream(SkStream*, const SkDeserialProcs*,
-                                           class SkTypefacePlayback*);
+    static sk_sp<SkPicture> MakeFromStreamPriv(SkStream*, const SkDeserialProcs*,
+                                               class SkTypefacePlayback*,
+                                               int recursionLimit);
     friend class SkPictureData;
 
     /** Return true if the SkStream/Buffer represents a serialized picture, and

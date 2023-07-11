@@ -8,6 +8,10 @@ type MergeResults = {
   didClear: boolean;
   didMerge: boolean;
 };
+
+const generatedHeaderPrefix = `# @generated expo-cli`;
+export const generatedFooterComment = `# @end expo-cli`;
+
 /**
  * Merge two gitignore files together and add a generated header.
  *
@@ -41,9 +45,6 @@ export function mergeGitIgnorePaths(
 
   return merged;
 }
-
-const generatedHeaderPrefix = `# @generated expo-cli`;
-export const generatedFooterComment = `# @end expo-cli`;
 
 /**
  * Get line indexes for the generated section of a gitignore.

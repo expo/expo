@@ -1,4 +1,3 @@
-import { CreateURLOptions } from 'expo-linking';
 import { WebBrowserOpenOptions, WebBrowserWindowFeatures } from 'expo-web-browser';
 export declare enum CodeChallengeMethod {
     /**
@@ -71,22 +70,6 @@ export type AuthRequestPromptOptions = Omit<WebBrowserOpenOptions, 'windowFeatur
      * URL to open when prompting the user. This usually should be defined internally and left `undefined` in most cases.
      */
     url?: string;
-    /**
-     * Should the authentication request use the Expo proxy service `auth.expo.io`.
-     * @default false
-     * @deprecated This option will be removed in a future release, for more information check [the migration guide](https://expo.fyi/auth-proxy-migration).
-     */
-    useProxy?: boolean;
-    /**
-     * Project name to use for the `auth.expo.io` proxy when `useProxy` is `true`.
-     */
-    projectNameForProxy?: string;
-    /**
-     * URL options to be used when creating the redirect URL for the auth proxy.
-     */
-    proxyOptions?: Omit<CreateURLOptions, 'queryParams'> & {
-        path?: string;
-    };
     /**
      * Features to use with `window.open()`.
      * @platform web

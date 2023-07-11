@@ -59,7 +59,7 @@ describe('selectAssetSource', () => {
               developer: {
                 tool: 'expo-cli',
               },
-              debuggerHost: '127.0.0.1:19000',
+              debuggerHost: '127.0.0.1:8081',
             },
           },
         },
@@ -69,7 +69,7 @@ describe('selectAssetSource', () => {
       const source = AssetSources.selectAssetSource(mockFontMetadata);
 
       expect(source.uri).toBe(
-        `http://127.0.0.1:19000/assets/test.ttf?platform=${Platform.OS}&hash=cafecafecafecafecafecafecafecafe`
+        `http://127.0.0.1:8081/assets/test.ttf?platform=${Platform.OS}&hash=cafecafecafecafecafecafecafecafe`
       );
       expect(source.hash).toBe('cafecafecafecafecafecafecafecafe');
     });

@@ -50,6 +50,8 @@ class GestureHandlerOrchestrator(
     return true
   }
 
+  fun getHandlersForView(view: View) = handlerRegistry.getHandlersForView(view)
+
   private fun scheduleFinishedHandlersCleanup() {
     if (isHandlingTouch || handlingChangeSemaphore != 0) {
       finishedHandlersCleanupScheduled = true

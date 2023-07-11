@@ -304,9 +304,6 @@ public:
         GrGLFunction<GrGLVertexAttribPointerFn> fVertexAttribPointer;
         GrGLFunction<GrGLViewportFn> fViewport;
 
-        /* NV_framebuffer_mixed_samples */
-        GrGLFunction<GrGLCoverageModulationFn> fCoverageModulation;
-
         /* ARB_sync */
         GrGLFunction<GrGLFenceSyncFn> fFenceSync;
         GrGLFunction<GrGLIsSyncFn> fIsSync;

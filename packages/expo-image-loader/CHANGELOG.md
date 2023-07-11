@@ -8,9 +8,17 @@
 
 ### 🐛 Bug fixes
 
-- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 4.3.0 — 2023-06-13
+
+- Removed `com.facebook.fresco:fresco` dependency ([#22542](https://github.com/expo/expo/pull/22542) by [@josephyanks](https://github.com/josephyanks))
+### 📚 3rd party library updates
+- Updated `com.github.bumptech.glide:glide` to `4.13.2` and added customizable `glideVersion` variable on ext. ([#22542](https://github.com/expo/expo/pull/22542) by [@josephyanks](https://github.com/josephyanks))
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ## 4.2.0 — 2023-05-08
 

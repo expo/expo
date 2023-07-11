@@ -9,6 +9,7 @@ import expo.modules.structuredheaders.Dictionary
 import expo.modules.updates.launcher.NoDatabaseLauncher
 import expo.modules.updates.selectionpolicy.SelectionPolicies
 import okhttp3.*
+import okhttp3.brotli.BrotliInterceptor
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -36,7 +37,13 @@ import java.security.cert.CertificateException
  * and assets, using an instance of [OkHttpClient].
  */
 open class FileDownloader(context: Context, private val client: OkHttpClient) {
-  constructor(context: Context) : this(context, OkHttpClient.Builder().cache(getCache(context)).build())
+  constructor(context: Context) : this(
+    context,
+    OkHttpClient.Builder()
+      .cache(getCache(context))
+      .addInterceptor(BrotliInterceptor)
+      .build()
+  )
   private val logger = UpdatesLogger(context)
 
   interface FileDownloadCallback {
@@ -827,7 +834,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
         ManifestMetadata.getServerDefinedHeaders(database, configuration) ?: JSONObject()
 
       ManifestMetadata.getExtraParams(database, configuration)?.let {
-        extraHeaders.put("Expo-Extra-Params", Dictionary.valueOf(it.mapValues { elem -> StringItem.valueOf(elem.value) }))
+        extraHeaders.put("Expo-Extra-Params", Dictionary.valueOf(it.mapValues { elem -> StringItem.valueOf(elem.value) }).serialize())
       }
 
       launchedUpdate?.let {

@@ -6,6 +6,7 @@
  */
 import { Graph, MixedOutput, Module } from 'metro';
 import { ConfigT, InputConfigT, SerializerConfigT } from 'metro-config';
+import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
 import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
 import bundleToString from 'metro/src/lib/bundleToString';
 import path from 'path';
@@ -15,7 +16,7 @@ import { environmentVariableSerializerPlugin } from './environmentVariableSerial
 import { fileNameFromContents, getCssSerialAssets } from './getCssDeps';
 import { SerialAsset } from './serializerAssets';
 
-export type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
+export type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
 
 export type SerializerParameters = Parameters<Serializer>;
 
@@ -44,34 +45,32 @@ export function withSerializerPlugins(
     ...config,
     serializer: {
       ...config.serializer,
-      customSerializer: createSerializerFromSerialProcessors(
-        config,
-        processors,
-        originalSerializer
-      ),
+      customSerializer: createSerializerFromSerialProcessors(processors, originalSerializer),
     },
   };
 }
 
-function getDefaultSerializer(
-  serializerConfig: SerializerConfigT,
-  fallbackSerializer?: Serializer
-): Serializer {
+function getDefaultSerializer(fallbackSerializer?: Serializer | null): Serializer {
   const defaultSerializer =
     fallbackSerializer ??
-    ((...params: SerializerParameters) => {
+    (async (...params: SerializerParameters) => {
       const bundle = baseJSBundle(...params);
       const outputCode = bundleToString(bundle).code;
       return outputCode;
     });
-
-  return (...props: SerializerParameters): string | any => {
+  return async (
+    ...props: SerializerParameters
+  ): Promise<string | { code: string; map: string }> => {
     const [entryFile, preModules, graph, options] = props;
+    // const jsCode = await defaultSerializer(...props);
 
     if (!options.sourceUrl) {
       return defaultSerializer(...props);
     }
-    const url = new URL(options.sourceUrl, 'https://expo.dev');
+    const sourceUrl = isJscSafeUrl(options.sourceUrl)
+      ? toNormalUrl(options.sourceUrl)
+      : options.sourceUrl;
+    const url = new URL(sourceUrl, 'https://expo.dev');
     if (
       url.searchParams.get('platform') !== 'web' ||
       url.searchParams.get('serializer.output') !== 'static'
@@ -80,7 +79,7 @@ function getDefaultSerializer(
       return defaultSerializer(...props);
     }
 
-    const cssDeps = getCssSerialAssets(graph.dependencies, {
+    const cssDeps = getCssSerialAssets<MixedOutput>(graph.dependencies, {
       projectRoot: options.projectRoot,
       processModuleFilter: options.processModuleFilter,
     });
@@ -253,11 +252,10 @@ const buildDependenciesForEachSplitPoint = (
 };
 
 export function createSerializerFromSerialProcessors(
-  config: ConfigT,
   processors: (SerializerPlugin | undefined)[],
-  originalSerializer?: Serializer
+  originalSerializer?: Serializer | null
 ): Serializer {
-  const finalSerializer = getDefaultSerializer(config?.serializer, originalSerializer);
+  const finalSerializer = getDefaultSerializer(originalSerializer);
   return (...props: SerializerParameters): ReturnType<Serializer> => {
     for (const processor of processors) {
       if (processor) {

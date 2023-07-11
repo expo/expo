@@ -7,72 +7,109 @@
 
 namespace RNSkia {
 
-// TODO: implement feature: A paint node has its own paint not inherited,
-//       and when found the drawing node should render an extra time for
-//       each paint node in its children.
-
-class JsiPaintNode : public JsiBaseDomDeclarationNode,
+class JsiPaintNode : public JsiDomDeclarationNode,
                      public JsiDomNodeCtor<JsiPaintNode> {
 public:
   explicit JsiPaintNode(std::shared_ptr<RNSkPlatformContext> context)
-      : JsiBaseDomDeclarationNode(context, "skPaint") {}
+      : JsiDomDeclarationNode(context, "skPaint", DeclarationType::Paint) {}
 
-  /**
-   Returns a pointer to the local paint context in the paint node. This is a
-   special case for declaration nodes since the Paint node has a bit different
-   semantic than other declaration nodes.
-   */
-  DrawingContext *getDrawingContext() { return _localContext.get(); }
+  void decorate(DeclarationContext *context) override {
+    auto paint = std::make_shared<SkPaint>();
+    paint->setAntiAlias(true);
 
-  /**
-   We need to override the decorate node call to avoid letting children
-   decorate before we have created our child context.
-   */
-  void decorateContext(DrawingContext *context) override {
-    // A paint node should have its own local paint
-    if (_localContext == nullptr) {
-      _localContext = context->inheritContext("PaintNode");
+    if (_paintProps->getOpacity()->isSet()) {
+      paint->setAlphaf(paint->getAlphaf() *
+                       _paintProps->getOpacity()->value().getAsNumber());
     }
 
-    // ...and it should be a totally new paint, not inheriting from parent
-    // paint.
-    if (_localContext->isChanged()) {
-      auto paint = std::make_shared<SkPaint>();
-      paint->setAntiAlias(true);
-      _localContext->setMutablePaint(paint);
+    if (_paintProps->getColor()->isSet()) {
+      auto currentOpacity = paint->getAlphaf();
+      paint->setShader(nullptr);
+      paint->setColor(*_paintProps->getColor()->getDerivedValue());
+      paint->setAlphaf(paint->getAlphaf() * currentOpacity);
     }
 
-    // Let's decorate paint props
-    _paintProps->decorate(_localContext.get());
+    if (_paintProps->getStrokeWidth()->isSet()) {
+      paint->setStrokeWidth(
+          _paintProps->getStrokeWidth()->value().getAsNumber());
+    }
 
-    // Materialize children who will now only change the paint node's paint
-    for (auto &child : getChildren()) {
-      auto decl = std::dynamic_pointer_cast<JsiBaseDomDeclarationNode>(child);
-      if (decl != nullptr) {
-        decl->decorateContext(_localContext.get());
+    if (_paintProps->getBlendMode()->isSet()) {
+      paint->setBlendMode(*_paintProps->getBlendMode()->getDerivedValue());
+    }
+
+    if (_paintProps->getStyle()->isSet()) {
+      auto styleValue = _paintProps->getStyle()->value().getAsString();
+      if (styleValue == "stroke") {
+        paint->setStyle(SkPaint::Style::kStroke_Style);
+      } else if (styleValue == "fill") {
+        paint->setStyle(SkPaint::Style::kFill_Style);
+      } else {
+        throw std::runtime_error(
+            styleValue + " is not a valud value for the style property.");
       }
     }
-  }
 
-  std::shared_ptr<const SkPaint> getPaint() {
-    return _localContext->getPaint();
+    if (_paintProps->getStrokeJoin()->isSet()) {
+      paint->setStrokeJoin(*_paintProps->getStrokeJoin()->getDerivedValue());
+    }
+
+    if (_paintProps->getStrokeCap()->isSet()) {
+      paint->setStrokeCap(*_paintProps->getStrokeCap()->getDerivedValue());
+    }
+
+    if (_paintProps->getStrokeMiter()->isSet()) {
+      paint->setStrokeMiter(
+          _paintProps->getStrokeMiter()->value().getAsNumber());
+    }
+
+    if (_paintProps->getAntiAlias()->isSet()) {
+      paint->setAntiAlias(_paintProps->getAntiAlias()->value().getAsBool());
+    }
+
+    context->save();
+    decorateChildren(context);
+
+    auto imageFilter = context->getImageFilters()->popAsOne();
+    auto colorFilter = context->getColorFilters()->popAsOne();
+    auto shader = context->getShaders()->pop();
+    auto maskFilter = context->getMaskFilters()->pop();
+    auto pathEffect = context->getPathEffects()->popAsOne();
+
+    context->restore();
+
+    if (imageFilter) {
+      paint->setImageFilter(imageFilter);
+    }
+
+    if (colorFilter) {
+      paint->setColorFilter(colorFilter);
+    }
+
+    if (shader) {
+      paint->setShader(shader);
+    }
+
+    if (maskFilter) {
+      paint->setMaskFilter(maskFilter);
+    }
+
+    if (pathEffect) {
+      paint->setPathEffect(pathEffect);
+    }
+
+    context->getPaints()->push(paint);
   }
 
 protected:
-  void decorate(DrawingContext *context) override {}
-
   void defineProperties(NodePropsContainer *container) override {
-    JsiBaseDomDeclarationNode::defineProperties(container);
+    JsiDomDeclarationNode::defineProperties(container);
 
     _paintProps = container->defineProperty<PaintProps>();
-    _opacityProp = container->defineProperty<NodeProp>("opacity");
   }
 
 private:
-  NodeProp *_opacityProp;
   PaintProps *_paintProps;
-
-  std::shared_ptr<DrawingContext> _localContext;
 };
 
 } // namespace RNSkia

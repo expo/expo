@@ -10,11 +10,6 @@ import expo.modules.core.interfaces.DoNotStrip
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
 open class JavaScriptObject @DoNotStrip internal constructor(@DoNotStrip private val mHybridData: HybridData) : Destructible {
-  init {
-    @Suppress("LeakingThis")
-    JNIDeallocator.addReference(this)
-  }
-
   /**
    * The property descriptor options for the property being defined or modified.
    */

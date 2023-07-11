@@ -91,7 +91,8 @@ void RuntimeDecorator::decorateUIRuntime(
     const TimeProviderFunction getCurrentTime,
     const SetGestureStateFunction setGestureState,
     const ProgressLayoutAnimationFunction progressLayoutAnimationFunction,
-    const EndLayoutAnimationFunction endLayoutAnimationFunction) {
+    const EndLayoutAnimationFunction endLayoutAnimationFunction,
+    const MaybeFlushUIUpdatesQueueFunction maybeFlushUIUpdatesQueueFunction) {
   RuntimeDecorator::decorateRuntime(rt, "UI");
   rt.global().setProperty(rt, "_UI", jsi::Value(true));
 
@@ -146,6 +147,8 @@ void RuntimeDecorator::decorateUIRuntime(
       rt, "_notifyAboutEnd", endLayoutAnimationFunction);
 
   jsi_utils::installJsiFunction(rt, "_setGestureState", setGestureState);
+  jsi_utils::installJsiFunction(
+      rt, "_maybeFlushUIUpdatesQueue", maybeFlushUIUpdatesQueueFunction);
 }
 
 } // namespace reanimated

@@ -460,7 +460,7 @@ export default function App() {
 - The `redirectUri` requires 2 slashes (`://`).
 - Scopes must be joined with ':' so just create one long string.
 - Setup redirect URIs: Your Project > Permitted Redirect URIs: (be sure to save after making changes).
-  - _Expo Go_: `exp://localhost:19000/--/`
+  - _Expo Go_: `exp://localhost:8081/--/`. For SDK 48 and lower, the port number is `19000`.
   - _Web dev_: `https://localhost:19006`
     - Run `expo start --web --https` to run with **https**, auth won't work otherwise.
     - Adding a slash to the end of the URL doesn't matter.
@@ -785,7 +785,7 @@ export default function App() {
 [c-fitbit]: https://dev.fitbit.com/apps/new
 
 - Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
-  - Expo Go: `exp://localhost:19000/--/*`
+  - Expo Go: `exp://localhost:8081/--/*`. For SDK 48 and lower, the port number is `19000`.
   - Expo Go + Proxy: `https://auth.expo.io/@you/your-app`
   - Standalone or Bare: `com.your.app://*`
   - Web: `https://yourwebsite.com/*`
@@ -935,7 +935,7 @@ export default function App() {
 [c-github]: https://github.com/settings/developers
 
 - Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
-  - Expo Go: `exp://localhost:19000/--/*`
+  - Expo Go: `exp://localhost:8081/--/*`. For SDK 48 and lower, the port number is `19000`.
   - Expo Go + Proxy: `https://auth.expo.io/@you/your-app`
   - Standalone or Bare: `com.your.app://*`
   - Web: `https://yourwebsite.com/*`
@@ -1248,7 +1248,7 @@ export default function App() {
 [c-reddit]: https://www.reddit.com/prefs/apps
 
 - Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
-  - Expo Go: `exp://localhost:19000/--/*`
+  - Expo Go: `exp://localhost:8081/--/*`. For SDK 48 and lower, the port number is `19000`.
   - Expo Go + Proxy: `https://auth.expo.io/@you/your-app`
   - Standalone or Bare: `com.your.app://*`
   - Web: `https://yourwebsite.com/*`
@@ -1483,7 +1483,7 @@ export default function App() {
 [c-spotify]: https://developer.spotify.com/dashboard/applications
 
 - Setup your redirect URIs: Your project > Edit Settings > Redirect URIs (be sure to save after making changes).
-  - _Expo Go_: `exp://localhost:19000/--/`
+  - _Expo Go_: `exp://localhost:8081/--/`. For SDK 48 and lower, the port number is `19000`.
   - _Web dev_: `https://localhost:19006`
     - Important: Ensure there's no slash at the end of the URL unless manually changed in the app code with `makeRedirectUri({ path: '/' })`.
     - Run `expo start --web --https` to run with **https**, auth won't work otherwise.
@@ -1893,7 +1893,7 @@ export default function App() {
 
 #### Expo Go
 
-You must use the proxy service in the Expo Go app because `exp://localhost:19000` cannot be added to your Twitter app as a redirect.
+You must use the proxy service in the Expo Go app because `exp://localhost:8081` cannot be added to your Twitter app as a redirect.
 
 <Tabs tabs={["Auth Code"]}>
 

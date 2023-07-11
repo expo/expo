@@ -34,5 +34,5 @@ void REAMessageThread::quitSynchronous()
   rctThreadPublic->m_shutdown = true;
 }
 
-}
-}
+} // namespace react
+} // namespace facebook

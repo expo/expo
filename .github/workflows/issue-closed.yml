@@ -6,7 +6,7 @@ on:
 
 jobs:
   run-on-issue-accepted:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     if: contains(github.event.issue.labels.*.name, 'Issue accepted')
     steps:
       - name: 👀 Checkout

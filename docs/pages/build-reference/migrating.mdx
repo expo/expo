@@ -1,5 +1,5 @@
 ---
-title: Migrating from "expo build"
+title: Migrate from "expo build"
 description: A reference for migrating from "expo build" (classic builds) to EAS Build.
 ---
 
@@ -7,7 +7,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 This page covers practical differences you should know when migrating your Expo [managed app](/archive/managed-vs-bare/#managed-workflow) from `expo build` (also known as **classic builds**) to EAS Build. If this is your first time using EAS Build, you can use this page as a companion to [Creating your first build](/build/setup).
 
-One of the goals of EAS Build is to make it as easy as possible to migrate from `expo build`. For example, your app signing credentials will be automatically re-used, and the Expo SDK and your [Expo config](/workflow/configuration) (**app.json**) configuration will all work the same as before. However, some differences between the two build processes require additional configuration or small code changes.
+One of the goals of EAS Build is to make it as easy as possible to migrate from `expo build`. For example, your app signing credentials will be automatically re-used, and the Expo SDK and your [app config](/workflow/configuration) (**app.json**) configuration will all work the same as before. However, some differences between the two build processes require additional configuration or small code changes.
 
 ## SDK 41 and above projects are supported
 
@@ -69,7 +69,7 @@ Only the second purpose applies to the EAS Build system. All assets referenced i
 
 If you are using `Constants.manifest` to access fields, you should switch to `Constants.expoConfig` to access them from the [`expo-constants`](/versions/latest/sdk/constants) library.
 
-## Expo config
+## App config (**app.json/app.config.js**)
 
 ### `userInterfaceStyle` depends on `expo-system-ui` being installed
 
@@ -107,7 +107,7 @@ Run the following command to install the `expo-system-ui` library:
 
 ## Updates
 
-If you are migrating from `expo build` and using `expo publish` to update your app, you are using [Classic Updates](/archive/classic-updates/introduction/). Once you migrate to EAS Build, you can also take advantage of our new-and-improved updates service, [EAS Update](/eas-update/introduction/). For in-depth information on how to migrate your project to EAS Update, see [Migrating from Classic updates to EAS Update](/eas-update/migrate-to-eas-update).
+If you are migrating from `expo build` and using `expo publish` to update your app, you are using [Classic Updates](/archive/classic-updates/introduction/). Once you migrate to EAS Build, you can also take advantage of our new-and-improved updates service, [EAS Update](/eas-update/introduction/). For in-depth information on how to migrate your project to EAS Update, see [Migrating from Classic updates to EAS Update](/eas-update/migrate-from-classic-updates).
 
 ### No more automatic publishing before building
 

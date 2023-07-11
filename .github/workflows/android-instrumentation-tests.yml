@@ -34,8 +34,8 @@ concurrency:
 
 jobs:
   test:
-    runs-on: macos-12
-    timeout-minutes: 120
+    runs-on: macos-13
+    timeout-minutes: 150
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
       GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=1024m

@@ -51,5 +51,7 @@
 	<false/>
   <key>UIStatusBarStyle</key>
   <string>UIStatusBarStyleDefault</string>
+  <key>CADisableMinimumFrameDurationOnPhone</key>
+  <true/>
 </dict>
 </plist>
