@@ -2,8 +2,6 @@ const style = `
 [data-expoimage] .cross-dissolve {
   transition-property: opacity;
   animation-fill-mode: forwards;
-  -webkit-transform: translate3d(0,0,0);
-    transform: translate3d(0,0,0);
 }
 [data-expoimage] .cross-dissolve-start:not(.transitioning) {
   opacity: 0;
@@ -134,6 +132,5 @@ export default function loadStyle() {
     styleTag.innerHTML = style;
     styleTag.id = 'expo-image-styles';
     document.head.appendChild(styleTag);
-  } else {
   }
 }
