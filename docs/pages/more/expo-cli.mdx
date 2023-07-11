@@ -62,7 +62,7 @@ Start a development server to work on your project by running:
 
 > You can also run `npx expo` as an alias to `npx expo start`.
 
-This command starts a server on `http://localhost:19000` that a client can use to interact with the bundler. The default bundler is [Metro](https://facebook.github.io/metro/).
+This command starts a server on `http://localhost:8081` (for SDK 48 and lower, the port number is `19000`) that a client can use to interact with the bundler. The default bundler is [Metro](https://facebook.github.io/metro/).
 
 The UI that shows up in the process is referred to as the **Terminal UI**. It contains a QR code (for the dev server URL) and a list of keyboard shortcuts you can press:
 
@@ -84,9 +84,14 @@ The UI that shows up in the process is referred to as the **Terminal UI**. It co
 
 ### Launch target
 
-The `npx expo start` command will automatically launch the app in Expo Go unless `expo-dev-client` in installed in the project, in which case it will open in the custom app. You can force the launch target by passing the `--dev-client` and `--go` flags. For example, running `npx expo start --go` will always launch the app in Expo Go, and `npx expo start --dev-client` will always attempt to launch the app in a development build.
+The `npx expo start` command automatically launches the app in a development build if `expo-dev-client` is installed in the project. Otherwise, it launches the app in Expo Go.
 
-You can switch the launch target during runtime by pressing <kbd>S</kbd> in the **Terminal UI**. The run commands will also default to using `--dev-client` after compiling the development build.
+Alternatively, you can force the launch target by passing the following flags to the command:
+
+- `--dev-client`: Always launch the app in a development build.
+- `--go`: Always launch the app in Expo Go.
+
+You can also switch the launch target during runtime by pressing <kbd>S</kbd> in the **Terminal UI**. The `run` commands also use `--dev-client` after compiling the development build, by default.
 
 ### Server URL
 
@@ -94,12 +99,12 @@ By default, the project is served over a LAN connection. You can change this beh
 
 Other available options are:
 
-- `--port`: Port to start the dev server on (does not apply to webpack or [tunnel URLs](#tunneling)). Default: **19000**.
+- `--port`: Port to start the dev server on (does not apply to webpack or [tunnel URLs](#tunneling)). Default: **8081**. For SDK 48 and lower, defaults to `19000`.
 - `--https`: Start the dev server using a secure origin. This is currently only supported on web.
 
 You can force the URL to be any value with the `EXPO_PACKAGER_PROXY_URL` environment variable. For example:
 
-<Terminal cmd={['export EXPO_PACKAGER_PROXY_URL=http://expo.dev', '$ npx expo start']} />
+<Terminal cmd={['$ export EXPO_PACKAGER_PROXY_URL=http://expo.dev', '$ npx expo start']} />
 
 Will open apps to: `exp://expo.dev:80` (the `:80` is a temporary workaround for Android WebSockets).
 
@@ -134,6 +139,15 @@ You can develop without a network connection by using the `--offline` flag:
 Offline will prevent the CLI from making network requests. If you don't use the flag and your computer has no internet connection, then offline support will automatically be enabled, it will just take a bit longer to verify the reachability.
 
 Expo CLI makes network requests to sign manifests with your user credentials to ensure sensitive information is sandboxed in reusable runtimes like Expo Go.
+
+### .expo directory
+
+When you start the development server in a project for the first time, a **.expo** directory is created at the root of that project. It contains two files:
+
+- **devices.json**: Contains information about devices that have opened this project recently.
+- **settings.json**: Contains information about server configuration that is used to serve the project's manifest.
+
+Both of these files have information that is specific to your local computer. This is the reason why **.expo** directory is included in the **.gitignore** file, by default, when a new project is created. It is not meant to be shared with other developers.
 
 ## Building
 
@@ -400,7 +414,8 @@ From here, you can choose to generate basic project files like:
 | `EXPO_TUNNEL_SUBDOMAIN`             | **boolean** | <StatusTag status="experimental" /><br/>Disable using `exp.direct` as the hostname for `--tunnel` connections. This enables **https://** forwarding which can be used to test universal links on iOS. This may cause unexpected issues with `expo-linking` and Expo Go. Select the exact subdomain to use by passing a `string` value that is not one of: `true`, `false`, `1`, `0`. |
 | `EXPO_METRO_NO_MAIN_FIELD_OVERRIDE` | **boolean** | Force Expo CLI to use the [`resolver.resolverMainFields`](https://facebook.github.io/metro/docs/configuration/#resolvermainfields) from the project's **metro.config.js** for all platforms. By default, Expo CLI will use `['browser', 'module', 'main']`, which is the default for webpack, for the web and the user-defined main fields for other platforms.                      |
 | `EXPO_NO_INSPECTOR_PROXY`           | **boolean** | <StatusTag note="SDK 49+" /><br/>Disable the customized inspector proxy with improved support for the Chrome DevTools protocol.<br/>This includes support for the network inspector.                                                                                                                                                                                                 |
-| `EXPO_NO_CLIENT_ENV_VARS`           | **boolean** | <StatusTag status="experimental" note="SDK 49+" /><br/>Prevent inlining `EXPO_PUBLIC_` environment variables in client bundles.                                                                                                                                                                                                                                                      |
+| `EXPO_NO_CLIENT_ENV_VARS`           | **boolean** | <StatusTag note="SDK 49+" /><br/>Prevent inlining `EXPO_PUBLIC_` environment variables in client bundles.                                                                                                                                                                                                                                                                            |
+| `EXPO_NO_DOTENV`                    | **boolean** | <StatusTag note="SDK 49+" /><br/>Prevent all `.env` file loading across Expo CLI.                                                                                                                                                                                                                                                                                                    |
 | `EXPO_NO_METRO_LAZY`                | **boolean** | Prevent adding the `lazy=true` query parameter to Metro URLs (`metro@0.76.3` and greater). This disables `import()` support.                                                                                                                                                                                                                                                         |
 | `EXPO_USE_TYPED_ROUTES`             | **boolean** | Use `expo.experiments.typedRoutes` to enable statically typed routes in Expo Router.                                                                                                                                                                                                                                                                                                 |
 

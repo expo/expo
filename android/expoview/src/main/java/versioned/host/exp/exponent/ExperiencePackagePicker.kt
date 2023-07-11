@@ -7,6 +7,7 @@ import expo.modules.backgroundfetch.BackgroundFetchPackage
 import expo.modules.barcodescanner.BarCodeScannerModule
 import expo.modules.barcodescanner.BarCodeScannerPackage
 import expo.modules.battery.BatteryPackage
+import expo.modules.blur.BlurModule
 import expo.modules.brightness.BrightnessModule
 import expo.modules.calendar.CalendarPackage
 import expo.modules.camera.CameraViewModule
@@ -57,7 +58,7 @@ import expo.modules.sms.SMSModule
 import expo.modules.speech.SpeechPackage
 import expo.modules.splashscreen.SplashScreenModule
 import expo.modules.splashscreen.SplashScreenPackage
-import expo.modules.sqlite.SQLitePackage
+import expo.modules.sqlite.SQLiteModule
 import expo.modules.storereview.StoreReviewModule
 import expo.modules.systemui.SystemUIModule
 import expo.modules.systemui.SystemUIPackage
@@ -87,7 +88,6 @@ object ExperiencePackagePicker : ModulesProvider {
     NavigationBarPackage(),
     NotificationsPackage(),
     PermissionsPackage(),
-    SQLitePackage(),
     SecureStorePackage(),
     SensorsPackage(),
     SpeechPackage(),
@@ -114,6 +114,7 @@ object ExperiencePackagePicker : ModulesProvider {
 
   override fun getModulesList(): List<Class<out Module>> = listOf(
     BarCodeScannerModule::class.java,
+    BlurModule::class.java,
     CameraViewModule::class.java,
     CellularModule::class.java,
     ClipboardModule::class.java,
@@ -142,6 +143,7 @@ object ExperiencePackagePicker : ModulesProvider {
     SharingModule::class.java,
     SplashScreenModule::class.java,
     StoreReviewModule::class.java,
+    SQLiteModule::class.java,
     SystemUIModule::class.java,
     VideoThumbnailsModule::class.java,
     VideoViewModule::class.java,

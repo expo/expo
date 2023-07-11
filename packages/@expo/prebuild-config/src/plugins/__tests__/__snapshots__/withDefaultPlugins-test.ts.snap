@@ -803,12 +803,12 @@ exports[`built-in plugins introspects mods 1`] = `
           },
           {
             "type": "comment",
-            "value": "Remove this workaround when upgrading to react-native@0.72.1",
+            "value": "Enable network inspector",
           },
           {
-            "key": "kotlin.jvm.target.validation.mode",
+            "key": "EX_DEV_CLIENT_NETWORK_INSPECTOR",
             "type": "property",
-            "value": "warning",
+            "value": "true",
           },
           {
             "type": "empty",
@@ -1299,6 +1299,7 @@ exports[`built-in plugins introspects mods 1`] = `
           },
         },
         "podfileProperties": {
+          "EX_DEV_CLIENT_NETWORK_INSPECTOR": "true",
           "expo.jsEngine": "hermes",
         },
         "splashScreenStoryboard": {

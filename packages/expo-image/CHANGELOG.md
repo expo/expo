@@ -6,9 +6,19 @@
 
 ### 🎉 New features
 
+- [Web] Add support for static image responsiveness using `srcset` attributes. ([#22088](https://github.com/expo/expo/pull/22088) by [@aleqsio](https://github.com/aleqsio))
+
 ### 🐛 Bug fixes
 
+- [iOS] Fixed `tintColor` prop not working for SVGs. ([#23418](https://github.com/expo/expo/pull/23418) by [@tsapeta](https://github.com/tsapeta))
+
 ### 💡 Others
+
+## 1.3.1 - 2023-06-29
+
+### 🐛 Bug fixes
+
+- Fixed an issue where recyclingKey would reset the image source on mount. ([#23187](https://github.com/expo/expo/pull/23187) by [@hirbod](https://github.com/hirbod))
 
 ## 1.3.0 — 2023-06-13
 

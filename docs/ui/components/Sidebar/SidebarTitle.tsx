@@ -9,6 +9,6 @@ type SidebarTitleProps = {
 export const SidebarTitle = ({ children, Icon }: SidebarTitleProps) => (
   <div className="flex gap-2 items-center relative ml-3 -mr-4 pb-1 select-none">
     {Icon && <Icon className="icon-sm" />}
-    <LABEL weight="medium">{children}</LABEL>
+    <LABEL weight="medium" crawlable={false}>{children}</LABEL>
   </div>
 );

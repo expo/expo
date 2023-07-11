@@ -207,6 +207,9 @@ dependencies {
 
   // Versioned react native
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
+  // BEGIN_SDK_49
+  versionedApi 'host.exp:reactandroid-abi49_0_0:1.0.0'
+  // END_SDK_49
   // BEGIN_SDK_48
   versionedApi 'host.exp:reactandroid-abi48_0_0:1.0.0'
   // END_SDK_48
@@ -343,6 +346,22 @@ dependencies {
 
   // react-native-maps
   implementation "androidx.work:work-runtime:2.7.1"
+}
+
+project.afterEvaluate {
+  // Workaround for AGP 7 local lint aar task with errors from a library project owning other aars.
+  // In our case, it's the expoview (library project) owning hermes aar
+  // ```
+  // Error while evaluating property 'hasLocalAarDeps' of task ':expoview:bundleVersionedReleaseLocalLintAar'
+  //   > Direct local .aar file dependencies are not supported when building an AAR.
+  //     The resulting AAR would be broken because the classes and Android resources from any local .aar file dependencies would not be packaged in the resulting AAR.
+  //     Previous versions of the Android Gradle Plugin produce broken AARs in this case too (despite not throwing this error).
+  //     The following direct local .aar file dependencies of the :expoview project caused this error:
+  //     /home/runner/work/expo/expo/node_modules/hermes-engine/android/hermes-release.aar
+  // ```
+  // For the workaround, we just pretend we don't have local aar dependencies.
+  tasks.findByName("bundleVersionedReleaseLocalLintAar")?.localAarDeps?.setFrom([])
+  tasks.findByName("bundleUnversionedReleaseLocalLintAar")?.localAarDeps?.setFrom([])
 }
 
 useVendoredModulesForExpoView('unversioned')

@@ -1,6 +1,6 @@
 {
   "name": "expo-updates",
-  "version": "0.18.3",
+  "version": "0.18.5",
   "description": "Fetches and manages remotely-hosted assets and updates to your app's JS bundle.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -42,7 +42,6 @@
     "@expo/code-signing-certificates": "0.0.5",
     "@expo/config": "~8.1.0",
     "@expo/config-plugins": "~7.2.0",
-    "@expo/metro-config": "~0.10.0",
     "arg": "4.1.0",
     "expo-eas-client": "~0.6.0",
     "expo-manifests": "~0.7.0",

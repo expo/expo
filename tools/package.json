@@ -68,11 +68,12 @@
     "pretty-bytes": "^5.6.0",
     "qrcode-terminal": "^0.12.0",
     "recursive-omit-by": "^2.0.0",
-    "semver": "^7.5.2",
+    "semver": "^7.5.3",
     "sharp": "^0.30.5",
     "strip-ansi": "^6.0.0",
     "terminal-link": "^2.1.1",
     "typedoc": "^0.23.24",
+    "uuid": "^9.0.0",
     "xcode": "^3.0.1"
   },
   "devDependencies": {
@@ -90,12 +91,13 @@
     "@types/klaw-sync": "^6.0.1",
     "@types/node": "^16.18.11",
     "@types/node-fetch": "^2.6.2",
-    "@types/semver": "^7.3.12",
+    "@types/semver": "^7.5.0",
+    "@types/uuid": "^9.0.2",
     "eslint": "^8.29.0",
     "eslint-config-universe": "^11.1.1",
     "eslint-plugin-lodash": "^7.4.0",
     "prettier": "^2.8.1",
     "taskr": "1.1.0",
-    "typescript": "^4.9.4"
+    "typescript": "^5.1.3"
   }
 }

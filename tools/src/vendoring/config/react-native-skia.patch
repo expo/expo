@@ -1,6 +1,6 @@
 --- android/CMakeLists.txt
 +++ android/CMakeLists.txt
-@@ -47,20 +47,20 @@
+@@ -47,21 +47,21 @@ add_library(
          "${PROJECT_SOURCE_DIR}/cpp/rnskia-android/RNSkOpenGLCanvasProvider.cpp"
          "${PROJECT_SOURCE_DIR}/cpp/rnskia-android/SkiaOpenGLRenderer.cpp"
  
@@ -8,10 +8,12 @@
 -        "${PROJECT_SOURCE_DIR}/cpp/jsi/JsiValue.cpp"
 -        "${PROJECT_SOURCE_DIR}/cpp/jsi/RuntimeLifecycleMonitor.cpp"
 -        "${PROJECT_SOURCE_DIR}/cpp/jsi/RuntimeAwareCache.cpp"        
+-        "${PROJECT_SOURCE_DIR}/cpp/jsi/JsiPromises.cpp"
 +        "${PROJECT_SOURCE_DIR}/../cpp/jsi/JsiHostObject.cpp"
 +        "${PROJECT_SOURCE_DIR}/../cpp/jsi/JsiValue.cpp"
 +        "${PROJECT_SOURCE_DIR}/../cpp/jsi/RuntimeLifecycleMonitor.cpp"
 +        "${PROJECT_SOURCE_DIR}/../cpp/jsi/RuntimeAwareCache.cpp"        
++        "${PROJECT_SOURCE_DIR}/../cpp/jsi/JsiPromises.cpp"
  
 -        "${PROJECT_SOURCE_DIR}/cpp/rnskia/RNSkManager.cpp"
 -        "${PROJECT_SOURCE_DIR}/cpp/rnskia/RNSkJsView.cpp"
@@ -32,7 +34,7 @@
  
  )
  
-@@ -74,33 +74,33 @@
+@@ -75,33 +75,33 @@ target_include_directories(
          "${NODE_MODULES_DIR}/react-native/ReactCommon/react/nativemodule/core"
          "${NODE_MODULES_DIR}/react-native/ReactAndroid/src/main/java/com/facebook/react/turbomodule/core/jni"
  
@@ -51,9 +53,7 @@
          #cpp/skia/modules/skparagraph/include/
 -        cpp/skia/include/
 -        cpp/skia
-+        ${PROJECT_SOURCE_DIR}/../cpp/skia/include/
-+        ${PROJECT_SOURCE_DIR}/../cpp/skia
- 
+-
 -        cpp/api
 -        cpp/jsi
 -        cpp/jni/include
@@ -65,6 +65,9 @@
 -        cpp/rnskia/dom/nodes
 -        cpp/rnskia/dom/props
 -        cpp/utils
++        ${PROJECT_SOURCE_DIR}/../cpp/skia/include/
++        ${PROJECT_SOURCE_DIR}/../cpp/skia
++
 +        ${PROJECT_SOURCE_DIR}/../cpp/api
 +        ${PROJECT_SOURCE_DIR}/../cpp/jsi
 +        ${PROJECT_SOURCE_DIR}/cpp/jni/include
@@ -88,7 +91,7 @@
  set_property(TARGET skia PROPERTY IMPORTED_LOCATION "${SKIA_LIBS_PATH}/libskia.a")
 --- android/build.gradle
 +++ android/build.gradle
-@@ -48,7 +48,7 @@
+@@ -48,7 +48,7 @@ static def findNodeModules(baseDir) {
    throw new GradleException("React-Native-Skia: Failed to find node_modules/ path!")
  }
  
@@ -97,7 +100,7 @@
  logger.warn("react-native-skia: node_modules/ found at: ${nodeModules}")
  
  def sourceBuild = false
-@@ -56,9 +56,9 @@
+@@ -56,9 +56,9 @@ def defaultDir
  
  if (rootProject.ext.has('reactNativeAndroidRoot')) {
    defaultDir = rootProject.ext.get('reactNativeAndroidRoot')
@@ -109,31 +112,3 @@
  } else {
    defaultDir = file("$nodeModules/react-native")
  }
-@@ -222,27 +222,6 @@
-     }
- }
- 
--afterEvaluate { project ->
--    task androidSourcesJar(type: Jar) {
--        classifier = 'sources'
--        from android.sourceSets.main.java.srcDirs
--        include '**/*.java'
--    }
--
--    android.libraryVariants.all { variant ->
--        def name = variant.name.capitalize()
--        def javaCompileTask = variant.javaCompileProvider.get()
--
--        task "jar${name}"(type: Jar, dependsOn: javaCompileTask) {
--            from javaCompileTask.destinationDir
--        }
--    }
--
--    artifacts {
--        archives androidSourcesJar
--    }
--}
--
- task extractAARHeaders {
-     doLast {
-         configurations.extractHeaders.files.each {

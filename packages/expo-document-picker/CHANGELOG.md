@@ -10,10 +10,21 @@
 
 ### 💡 Others
 
+- Remove deprecated fields and warning on `getDocumentAsync`. ([#23135](https://github.com/expo/expo/pull/23135) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 11.5.2 — 2023-06-28
+
+_This version does not introduce any user-facing changes._
+
+## 11.5.1 — 2023-06-27
+
+_This version does not introduce any user-facing changes._
+
 ## 11.5.0 — 2023-06-21
 
 ### 🐛 Bug fixes
 
+- Fix `copyToCacheDirectory` on iOS. ([#23102](https://github.com/expo/expo/pull/23102) by [@aleqsio](https://github.com/aleqsio))
 - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ## 11.4.0 — 2023-05-08

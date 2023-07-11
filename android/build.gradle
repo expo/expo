@@ -24,7 +24,7 @@ buildscript {
   dependencies {
     classpath "com.android.tools.build:gradle:${gradlePluginVersion}"
     classpath 'com.google.gms:google-services:4.3.5'
-    classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.4'
+    classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.6'
     classpath "de.undercouch:gradle-download-task:$gradleDownloadTaskVersion"
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
 
@@ -51,6 +51,9 @@ allprojects {
       url "$rootDir/maven"
     }
     // For old expoviews to work
+    maven {
+      url "$rootDir/versioned-abis/expoview-abi49_0_0/maven"
+    }
     maven {
       url "$rootDir/versioned-abis/expoview-abi48_0_0/maven"
     }
