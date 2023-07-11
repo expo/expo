@@ -15,6 +15,8 @@
 
 ### 💡 Others
 
+- [Web] Refactor expo-image web for smaller file sizes.
+
 ## 1.3.1 - 2023-06-29
 
 ### 🐛 Bug fixes
