@@ -8,9 +8,17 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 3.1.7 - 2023-07-10
+
+### 🐛 Bug fixes
+
 - Fixed release build runtime crashes when there is `import 'expo-dev-client'` in JavaScript entry file. ([#23413](https://github.com/expo/expo/pull/23413) by [@kudo](https://github.com/kudo))
 
-### 💡 Others
+## 3.1.6 - 2023-07-04
+
+_This version does not introduce any user-facing changes._
 
 ## 3.1.5 - 2023-06-30
 
