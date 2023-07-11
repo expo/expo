@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix rollback embedded update logic. ([#23244](https://github.com/expo/expo/pull/23244) by [@wschurman](https://github.com/wschurman))
+- Correctly handle roll backs in JS module methods. ([#23356](https://github.com/expo/expo/pull/23356), [#23377](https://github.com/expo/expo/pull/23377) by [@wschurman](https://github.com/wschurman))
+- [ios] Allow nil scopeKey for bare/embedded updates. ([#23385](https://github.com/expo/expo/pull/23385) by [@wschurman](https://github.com/wschurman))
+
 ### 💡 Others
 
 ## 0.18.7 - 2023-06-30
