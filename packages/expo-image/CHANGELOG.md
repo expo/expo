@@ -15,7 +15,7 @@
 
 ### 💡 Others
 
-- [Web] Refactor expo-image web for smaller file sizes.
+- [Web] Refactor expo-image web for smaller file sizes. ([#23465](https://github.com/expo/expo/pull/23465) by [@aleqsio](https://github.com/aleqsio))
 
 ## 1.3.1 - 2023-06-29
 
