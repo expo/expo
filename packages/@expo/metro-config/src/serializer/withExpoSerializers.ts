@@ -5,8 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
-import { Graph, MixedOutput, Module } from 'metro';
+import { Graph, MixedOutput, Module, ReadOnlyGraph } from 'metro';
 import { ConfigT, InputConfigT } from 'metro-config';
+// import { baseJSBundle } from './fork/baseJSBundle';
 import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
 import bundleToString from 'metro/src/lib/bundleToString';
 import path from 'path';
@@ -45,12 +46,19 @@ export function withSerializerPlugins(
     ...config,
     serializer: {
       ...config.serializer,
-      customSerializer: createSerializerFromSerialProcessors(processors, originalSerializer),
+      customSerializer: createSerializerFromSerialProcessors(
+        config.serializer ?? {},
+        processors,
+        originalSerializer
+      ),
     },
   };
 }
 
-function getDefaultSerializer(fallbackSerializer?: Serializer | null): Serializer {
+function getDefaultSerializer(
+  serializerConfig: ConfigT['serializer'],
+  fallbackSerializer?: Serializer | null
+): Serializer {
   const defaultSerializer =
     fallbackSerializer ??
     (async (...params: SerializerParameters) => {
@@ -93,8 +101,10 @@ function getDefaultSerializer(fallbackSerializer?: Serializer | null): Serialize
       Boolean
     );
 
+    console.log('splitty', entryFile, splitGraph.length);
+
     // moduleId: url
-    const dll: Record<number, string> = {};
+    let dll: Record<number, string> = {};
 
     splitGraph.forEach(async (graph, index) => {
       if (!graph) return;
@@ -114,6 +124,9 @@ function getDefaultSerializer(fallbackSerializer?: Serializer | null): Serialize
         ),
         sourceMapUrl: `${fileName}.js.map`,
       });
+      console.log('_expoSplitBundlePaths', jsSplitBundle._expoSplitBundlePaths);
+
+      // dll = { ...dll, ...jsSplitBundle._expoSplitBundlePaths };
 
       const jsCode = bundleToString(jsSplitBundle).code;
 
@@ -167,7 +180,7 @@ function getDefaultSerializer(fallbackSerializer?: Serializer | null): Serialize
 
 const generateDependencyGraphForEachSplitPoint = (
   entryFiles: Set<string>,
-  graph: Graph<MixedOutput>,
+  graph: ReadOnlyGraph<MixedOutput>,
   multiBundles: Map<string, Set<string>> = new Map(),
   used: Set<string> = new Set()
 ) => {
@@ -188,7 +201,11 @@ const generateDependencyGraphForEachSplitPoint = (
   return buildDependenciesForEachSplitPoint(multiBundles, graph);
 };
 
-const getTransitiveDependencies = (path: string, graph: Graph<MixedOutput>, used: Set<string>) => {
+const getTransitiveDependencies = (
+  path: string,
+  graph: ReadOnlyGraph<MixedOutput>,
+  used: Set<string>
+) => {
   const result = collectDependenciesForSplitGraph(path, graph, new Set(), new Set(), used);
   result.deps.delete(path);
   return result;
@@ -196,7 +213,7 @@ const getTransitiveDependencies = (path: string, graph: Graph<MixedOutput>, used
 
 const collectDependenciesForSplitGraph = (
   path: string,
-  graph: Graph<MixedOutput>,
+  graph: ReadOnlyGraph<MixedOutput>,
   deps: Set<string>,
   entries: Set<string>,
   used: Set<string>
@@ -226,7 +243,7 @@ const collectDependenciesForSplitGraph = (
 
 const buildDependenciesForEachSplitPoint = (
   multiBundles: Map<string, Set<string>>,
-  graph: Graph<MixedOutput>
+  graph: ReadOnlyGraph<MixedOutput>
 ) => {
   return [...multiBundles.entries()].map((bundle) => {
     const deps = [...bundle[1].values()].map((dep) => [dep, graph.dependencies.get(dep)!]) as [
@@ -252,10 +269,11 @@ const buildDependenciesForEachSplitPoint = (
 };
 
 export function createSerializerFromSerialProcessors(
+  config: ConfigT['serializer'],
   processors: (SerializerPlugin | undefined)[],
   originalSerializer?: Serializer | null
 ): Serializer {
-  const finalSerializer = getDefaultSerializer(originalSerializer);
+  const finalSerializer = getDefaultSerializer(config, originalSerializer);
   return (...props: SerializerParameters): ReturnType<Serializer> => {
     for (const processor of processors) {
       if (processor) {
@@ -268,3 +286,5 @@ export function createSerializerFromSerialProcessors(
 }
 
 export { SerialAsset };
+
+// __d((function(g,r,i,a,m,e,d){}),435,{"0":2,"1":18,"2":184,"3":103,"4":436,"5":438,"6":439,"paths":{"438":"/etc/external.bundle?platform=web"}});
