@@ -1,6 +1,8 @@
 import ExpoModulesCore
 
-let defaultScreenOrientationMask = "EXDefaultScreenOrientationMask"
+let defaultScreenOrientationMaskKey = "EXDefaultScreenOrientationMask"
+let supportedOrientationsKey = "UISupportedInterfaceOrientations"
+let ipadSupportedOrientationsKey = "UISupportedInterfaceOrientations~ipad"
 
 class ScreenOrientationViewController: UIViewController {
   let screenOrientationRegistry = ScreenOrientationRegistry.shared
@@ -12,8 +14,18 @@ class ScreenOrientationViewController: UIViewController {
   }
 
   convenience init(defaultScreenOrientationFromPlist: Void) {
-    guard let orientationString = Bundle.main.object(forInfoDictionaryKey: defaultScreenOrientationMask) as? String else {
-      self.init(defaultOrientationMask: .portrait)
+    let allPossibleOrientations: UIInterfaceOrientationMask = doesDeviceHaveNotch ? .allButUpsideDown : .all
+    let ipadSupportedOrientationStrings = Bundle.main.object(forInfoDictionaryKey: ipadSupportedOrientationsKey) as? [String] ?? []
+    let supportedOrientationStrings = (isPad() && !ipadSupportedOrientationStrings.isEmpty) ?
+      ipadSupportedOrientationStrings : Bundle.main.object(forInfoDictionaryKey: supportedOrientationsKey) as? [String] ?? []
+    var supportedInterfaceOrientations: UIInterfaceOrientationMask = ScreenOrientationViewController.getSupportedInterfaceOrientations()
+
+    supportedInterfaceOrientations = supportedInterfaceOrientations.isEmpty ? allPossibleOrientations : supportedInterfaceOrientations
+
+    guard let orientationString = Bundle.main.object(forInfoDictionaryKey: defaultScreenOrientationMaskKey) as? String else {
+      // If user hasn't defined a default interface orientation using the config plugin use the allowed values from Info.plist as the
+      // default orientation. Values in Info.plist are set with the "orientation" key in Info.plist
+      self.init(defaultOrientationMask: supportedInterfaceOrientations)
       return
     }
 
@@ -27,6 +39,10 @@ class ScreenOrientationViewController: UIViewController {
       log.warn("Orientation lock string '\(orientationString)' provided in Info.plist is not supported by the device. Application will default to portrait orientation lock.")
       self.init(defaultOrientationMask: .portrait)
       return
+    }
+
+    if mask != mask.intersection(supportedInterfaceOrientations) {
+      log.warn("Info.plist: Orientations allowed in `\(supportedOrientationsKey)` are in conflict with the values allowed in `\(defaultScreenOrientationMaskKey)`. Values from `\(defaultScreenOrientationMaskKey)` will be used. When setting the initial orientation using the config plugin delete the `\"orientation\"` key from `app.json`")
     }
 
     self.init(defaultOrientationMask: mask)
@@ -60,5 +76,23 @@ class ScreenOrientationViewController: UIViewController {
       return false
     }
     return screenWindowTraitsClass.shouldAskScreensForScreenOrientation?(in: self) ?? false
+  }
+
+  private static func getSupportedInterfaceOrientations() -> UIInterfaceOrientationMask {
+    var orientationMask: UIInterfaceOrientationMask = []
+
+    guard let orientationStrings = Bundle.main.object(forInfoDictionaryKey: "UISupportedInterfaceOrientations") as? [String] else {
+      return orientationMask
+    }
+
+    for orientationString in orientationStrings {
+      guard let orientation = UIInterfaceOrientationMask.Element(fromOrientationString: orientationString) else {
+        log.warn("Info.plist: \(orientationString) is not a valid value for the \(supportedOrientationsKey) key")
+        continue
+      }
+      orientationMask.insert(orientation)
+    }
+
+    return orientationMask
   }
 }
