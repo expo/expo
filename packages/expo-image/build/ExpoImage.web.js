@@ -2,7 +2,7 @@ import React from 'react';
 import { View } from 'react-native-web';
 import AnimationManager from './web/AnimationManager';
 import ImageWrapper from './web/ImageWrapper';
-import loadStyle from './web/style';
+import loadStyle from './web/imageStyles';
 import useSourceSelection from './web/useSourceSelection';
 loadStyle();
 export const ExpoImageModule = {

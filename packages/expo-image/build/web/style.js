@@ -133,5 +133,7 @@ export default function loadStyle() {
         styleTag.id = 'expo-image-styles';
         document.head.appendChild(styleTag);
     }
+    else {
+    }
 }
 //# sourceMappingURL=style.js.map
