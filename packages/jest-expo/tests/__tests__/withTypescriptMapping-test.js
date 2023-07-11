@@ -3,7 +3,7 @@ import path from 'path';
 import {
   withTypescriptMapping,
   _jestMappingFromTypescriptPaths,
-} from '../../config/withTypescriptMapping';
+} from '../../src/preset/withTypescriptMapping';
 
 it('generates correct jest module name mapping from typescript paths', () => {
   expect(
