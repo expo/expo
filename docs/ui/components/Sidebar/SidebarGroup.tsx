@@ -13,6 +13,7 @@ import { SidebarNodeProps } from './Sidebar';
 import { SidebarTitle, SidebarLink, SidebarSection } from './index';
 
 import { NavigationRoute } from '~/types/common';
+import { HandWaveIcon } from '~/ui/components/CustomIcons/HandWaveIcon';
 
 export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
   const title = route.sidebarTitle ?? route.name;
@@ -73,6 +74,8 @@ function getIconElement(iconName?: string) {
       return CpuChip01Icon;
     case 'Push notifications':
       return Bell03Icon;
+    case 'Get started':
+      return HandWaveIcon;
     default:
       return undefined;
   }
