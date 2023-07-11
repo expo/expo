@@ -70,18 +70,39 @@ describe(`${CAPTURE_GROUP_REGEX}`, () => {
 });
 
 describe(getTypedRoutesUtils, () => {
-  const { staticRoutes, dynamicRoutes, filePathToRoute, addFilePath } = getTypedRoutesUtils('/app');
+  const { staticRoutes, dynamicRoutes, filePathToRoute, addFilePath } =
+    getTypedRoutesUtils('/user/project/app');
 
   describe(filePathToRoute, () => {
-    const filepaths = [
-      ['/app/file.tsx', '/file'],
-      ['/app/file2.jsx', '/file2'],
-      ['/app/folder/index.tsx', '/folder/'],
-      ['/app/folder/(group)/[param].tsx', '/folder/(group)/[param]'],
-    ];
+    describe('unix paths', () => {
+      const filepaths = [
+        ['/user/project/app/file.tsx', '/file'],
+        ['/user/project/app/file2.jsx', '/file2'],
+        ['/user/project/app/folder/index.tsx', '/folder/'],
+        ['/user/project/app/folder/(group)/[param].tsx', '/folder/(group)/[param]'],
+      ];
 
-    it.each(filepaths)('normalizes a filepath: %s', (filepath, route) => {
-      expect(filePathToRoute(filepath)).toEqual(route);
+      it.each(filepaths)('normalizes a filepath: %s', (filepath, route) => {
+        expect(filePathToRoute(filepath)).toEqual(route);
+      });
+    });
+
+    describe('windows paths', () => {
+      const windowsUtils = getTypedRoutesUtils('C:\\user\\project with space\\app', '\\');
+
+      const filepaths = [
+        ['C:\\user\\project with space\\app\\file.tsx', '/file'],
+        ['C:\\user\\project with space\\app\\file2.jsx', '/file2'],
+        ['C:\\user\\project with space\\app\\folder\\index.tsx', '/folder/'],
+        [
+          'C:\\user\\project with space\\app\\folder\\(group)\\[param].tsx',
+          '/folder/(group)/[param]',
+        ],
+      ];
+
+      it.each(filepaths)('normalizes a windows filepath: %s', (filepath, route) => {
+        expect(windowsUtils.filePathToRoute(filepath)).toEqual(route);
+      });
     });
   });
 
@@ -99,11 +120,11 @@ describe(getTypedRoutesUtils, () => {
     });
 
     const filepaths = [
-      ['/app/file.tsx', true, { static: ['/file'] }],
-      ['/app/(group)/page.tsx', true, { static: ['/(group)/page', '/page'] }],
-      ['/app/folder/[slug].tsx', true, { dynamic: ['/folder/${SingleRoutePart<T>}'] }],
+      ['/user/project/app/file.tsx', true, { static: ['/file'] }],
+      ['/user/project/app/(group)/page.tsx', true, { static: ['/(group)/page', '/page'] }],
+      ['/user/project/app/folder/[slug].tsx', true, { dynamic: ['/folder/${SingleRoutePart<T>}'] }],
       [
-        '/app/(a,b,c)/(d,e)/page.tsx',
+        '/user/project/app/(a,b,c)/(d,e)/page.tsx',
         true,
         {
           static: [
@@ -124,7 +145,6 @@ describe(getTypedRoutesUtils, () => {
 
     it.each(filepaths)('normalizes a filepath: %s', (filepath, expectedResult, expectedRoutes) => {
       const result = addFilePath(filepath);
-
       expect(result).toEqual(expectedResult);
 
       if ('static' in expectedRoutes) {
