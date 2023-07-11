@@ -6,7 +6,7 @@ export function getExpoApiBaseUrl(): string {
   if (env.EXPO_STAGING) {
     return `https://staging-api.expo.dev`;
   } else if (env.EXPO_LOCAL) {
-    return `http://127.0.0.1:3000`;
+    return `http://api.expo.test`;
   } else {
     return `https://api.expo.dev`;
   }
