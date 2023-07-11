@@ -6,8 +6,8 @@ import {
   Rocket01Icon,
   TerminalBrowserIcon,
   EasSubmitIcon,
-  Bell03Icon,
-} from '@expo/styleguide-icons';
+  Bell03Icon, PlanEnterpriseIcon, PaletteIcon
+} from "@expo/styleguide-icons";
 
 import { SidebarNodeProps } from './Sidebar';
 import { SidebarTitle, SidebarLink, SidebarSection } from './index';
@@ -74,6 +74,10 @@ function getIconElement(iconName?: string) {
       return CpuChip01Icon;
     case 'Push notifications':
       return Bell03Icon;
+    case 'UI programming':
+      return PaletteIcon;
+    case 'EAS':
+      return PlanEnterpriseIcon;
     case 'Get started':
       return HandWaveIcon;
     default:
