@@ -51,11 +51,11 @@ function withTypescriptMapping(jestConfig) {
     // The path to tsconfig.json is resolved relative to cwd
     // See: _createTypeScriptConfiguration() in `createJestPreset`
     const tsConfigPath = path.resolve('tsconfig.json');
-    const tsconfig = readJsonFile(tsConfigPath, { json5: true });
+    const tsConfig = readJsonFile(tsConfigPath, { json5: true });
 
-    if (tsConfigPath.compilerOptions.paths) {
+    if (tsConfig?.compilerOptions?.paths) {
       jestConfig.moduleNameMapper = {
-        ...jestMappingFromTypescriptPaths(tsconfig.compilerOptions.paths || {}),
+        ...jestMappingFromTypescriptPaths(tsConfig.compilerOptions.paths || {}),
         ...(jestConfig.moduleNameMapper || {}),
       };
     }
