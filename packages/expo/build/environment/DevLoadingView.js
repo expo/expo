@@ -55,7 +55,7 @@ export default function DevLoadingView() {
     if (!isDevLoading && !isAnimating) {
         return null;
     }
-    return (React.createElement(Animated.View, { style: [styles.animatedContainer, { transform: [{ translateY }] }], pointerEvents: "none" },
+    return (React.createElement(Animated.View, { style: [styles.animatedContainer, { transform: [{ translateY }] }] },
         React.createElement(View, { style: styles.banner },
             React.createElement(View, { style: styles.contentContainer },
                 React.createElement(View, { style: { flexDirection: 'row' } },
@@ -70,6 +70,7 @@ const styles = StyleSheet.create({
             web: 'fixed',
             default: 'absolute',
         }),
+        pointerEvents: 'none',
         bottom: 0,
         left: 0,
         right: 0,
