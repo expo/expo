@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Reverted [#23405](https://github.com/expo/expo/pull/23405) that introduced regressions and crashes in the dev client. (by [@tsapeta](https://github.com/tsapeta))
+
 ### 💡 Others
 
 - Fork `uuid@3.4.0` and move into `expo-modules-core`. Remove the original dependency. ([#23249](https://github.com/expo/expo/pull/23249) by [@alanhughes](https://github.com/alanjhughes))
