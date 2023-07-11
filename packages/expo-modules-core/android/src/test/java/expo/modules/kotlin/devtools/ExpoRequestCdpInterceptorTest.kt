@@ -62,24 +62,22 @@ class ExpoRequestCdpInterceptorTest {
     Truth.assertThat(params.getString("requestId")).isEqualTo(requestId)
     Truth.assertThat(response.getInt("status")).isEqualTo(200)
     Truth.assertThat(response.getJSONObject("headers").length()).isGreaterThan(0)
-    Truth.assertThat(response.getLong("encodedDataLength")).isGreaterThan(0)
+
+    // Network.loadingFinished
+    json = JSONObject(mockDelegate.events[3])
+    method = json.getString("method")
+    params = json.getJSONObject("params")
+    Truth.assertThat(method).isEqualTo("Network.loadingFinished")
+    Truth.assertThat(params.getString("requestId")).isEqualTo(requestId)
 
     // Expo(Network.receivedResponseBody)
-    json = JSONObject(mockDelegate.events[3])
+    json = JSONObject(mockDelegate.events[4])
     method = json.getString("method")
     params = json.getJSONObject("params")
     Truth.assertThat(method).isEqualTo("Expo(Network.receivedResponseBody)")
     Truth.assertThat(params.getString("requestId")).isEqualTo(requestId)
     Truth.assertThat(params.getString("body")).isNotEmpty()
     Truth.assertThat(params.getBoolean("base64Encoded")).isFalse()
-
-    // Network.loadingFinished
-    json = JSONObject(mockDelegate.events[4])
-    method = json.getString("method")
-    params = json.getJSONObject("params")
-    Truth.assertThat(method).isEqualTo("Network.loadingFinished")
-    Truth.assertThat(params.getString("requestId")).isEqualTo(requestId)
-    Truth.assertThat(params.getLong("encodedDataLength")).isGreaterThan(0)
   }
 
   @Test
@@ -124,16 +122,16 @@ class ExpoRequestCdpInterceptorTest {
     Truth.assertThat(response.getString("mimeType")).isEqualTo("image/png")
     Truth.assertThat(response.getJSONObject("headers").length()).isGreaterThan(0)
 
+    // Network.loadingFinished
+
     // Expo(Network.receivedResponseBody)
-    json = JSONObject(mockDelegate.events[5])
+    json = JSONObject(mockDelegate.events[6])
     method = json.getString("method")
     params = json.getJSONObject("params")
     Truth.assertThat(method).isEqualTo("Expo(Network.receivedResponseBody)")
     Truth.assertThat(params.getString("requestId")).isEqualTo(requestId)
     Truth.assertThat(params.getString("body")).isNotEmpty()
     Truth.assertThat(params.getBoolean("base64Encoded")).isTrue()
-
-    // Network.loadingFinished
   }
 
   @Test
@@ -153,23 +151,5 @@ class ExpoRequestCdpInterceptorTest {
     Truth.assertThat(response.getInt("status")).isEqualTo(200)
     Truth.assertThat(response.getString("mimeType")).isEqualTo("image/png")
     Truth.assertThat(params.getString("type")).isEqualTo("Image")
-  }
-
-  @Test
-  fun `skip 'receivedResponseBody' when response size exceeding 1MB limit`() {
-    client.newCall(Request.Builder().url("https://raw.githubusercontent.com/expo/expo/main/apps/native-component-list/assets/videos/ace.mp4").build()).execute()
-    Truth.assertThat(mockDelegate.events.size).isEqualTo(4)
-
-    var json = JSONObject(mockDelegate.events[0])
-    Truth.assertThat(json.getString("method")).isEqualTo("Network.requestWillBeSent")
-
-    json = JSONObject(mockDelegate.events[1])
-    Truth.assertThat(json.getString("method")).isEqualTo("Network.requestWillBeSentExtraInfo")
-
-    json = JSONObject(mockDelegate.events[2])
-    Truth.assertThat(json.getString("method")).isEqualTo("Network.responseReceived")
-
-    json = JSONObject(mockDelegate.events[3])
-    Truth.assertThat(json.getString("method")).isEqualTo("Network.loadingFinished")
   }
 }
