@@ -128,12 +128,9 @@ const style = `
 `;
 export default function loadStyle() {
   if (typeof document !== 'undefined') {
-    console.log('injecting styles');
     const styleTag = document.createElement('style');
     styleTag.innerHTML = style;
     styleTag.id = 'expo-image-styles';
     document.head.appendChild(styleTag);
-  } else {
-    console.log('document is undefined');
   }
 }
