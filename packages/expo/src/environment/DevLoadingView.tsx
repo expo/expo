@@ -70,9 +70,7 @@ export default function DevLoadingView() {
   }
 
   return (
-    <Animated.View
-      style={[styles.animatedContainer, { transform: [{ translateY }] }]}
-      pointerEvents="none">
+    <Animated.View style={[styles.animatedContainer, { transform: [{ translateY }] }]}>
       <View style={styles.banner}>
         <View style={styles.contentContainer}>
           <View style={{ flexDirection: 'row' }}>
@@ -97,6 +95,7 @@ const styles = StyleSheet.create({
       web: 'fixed',
       default: 'absolute',
     }),
+    pointerEvents: 'none',
     bottom: 0,
     left: 0,
     right: 0,
