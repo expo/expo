@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Reverted [#23405](https://github.com/expo/expo/pull/23405) that introduced regressions and crashes in the dev client. (by [@tsapeta](https://github.com/tsapeta))
+
 ### 💡 Others
 
 ## 1.5.6 — 2023-07-10
