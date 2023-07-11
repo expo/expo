@@ -1,0 +1,61 @@
+---
+title: Static Assets
+description: Learn how to serve static assets with the public directory in your Expo Router project.
+---
+
+import { FileTree } from '~/ui/components/FileTree';
+
+import { Terminal } from '~/ui/components/Snippet';
+
+> The public directory is _currently_ web-only.
+
+Expo CLI serves static assets from the root **public** directory. You can use this directory to serve images, fonts, and other static assets.
+
+<FileTree
+  files={[
+    'app/index.js',
+    'public/favicon.ico',
+    'public/.well-known/apple-app-site-association',
+    'public/banner.jpg',
+    'package.json',
+  ]}
+/>
+
+These files can be accessed from the dev server by matching the file name. For example, the **banner.jpg** file can be accessed at **http://localhost:8081/favicon.ico** during **npx expo start**.
+
+```js app/index.js
+import { Image } from 'expo-image';
+
+export default function Page() {
+  return (
+    <Image
+      source={{
+        /* @info The <b>/</b> prefix is only available on web. */
+        uri: '/banner.jpg',
+        /* @end */
+      }}
+    />
+  );
+}
+```
+
+When exporting your project, the files from the **public** directory will be copied to the **dist** directory.
+
+<Terminal cmd={['$ npx expo export -p web']} />
+
+This would result in the following files being copied to the **dist** directory.
+
+<FileTree
+  files={[
+    'dist/index.html',
+    'dist/favicon.ico',
+    'dist/.well-known/apple-app-site-association',
+    'dist/banner.jpg',
+    'dist/_expo/static/js/web/entry-xxxx.js',
+  ]}
+/>
+
+**Notes**:
+
+- Avoid having conflicts between the **public** directory and the routes in the **app** directory.
+- The **public** directory can technically be used in native, however the website must be deployed to a server for the assets to be accessible. These assets will load remotely and not be bundled with the app.
