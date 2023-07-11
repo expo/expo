@@ -7,11 +7,15 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
-- Fix manifest merger build fail on Android. ([#23191](https://github.com/expo/expo/pull/23191) by [@alexandrius](https://github.com/alexandrius))
-
-- [Android] Fix backported photo picker crashing with null intent. ([#23224](https://github.com/expo/expo/pull/23224) by [@thespacemanatee](https://github.com/thespacemanatee))
 
 ### 💡 Others
+
+## 14.3.1 - 2023-07-04
+
+### 🐛 Bug fixes
+
+- Fix manifest merger build fail on Android. ([#23191](https://github.com/expo/expo/pull/23191) by [@alexandrius](https://github.com/alexandrius))
+- [Android] Fix backported photo picker crashing with null intent. ([#23224](https://github.com/expo/expo/pull/23224) by [@thespacemanatee](https://github.com/thespacemanatee))
 
 ## 14.3.0 — 2023-06-13
 

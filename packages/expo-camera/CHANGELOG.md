@@ -8,10 +8,15 @@
 
 ### 🐛 Bug fixes
 
-- Fix crash when onBarCodeScanned or onFacesDetected callback is removed. ([#23223](https://github.com/expo/expo/pull/23223) by [@thespacemanatee](https://github.com/thespacemanatee))
 - Fixed issue with checking camera/microphone permissions in Firefox. ([#22855](https://github.com/expo/expo/pull/22855) by [@loganrosen](https://github.com/loganrosen))
 
 ### 💡 Others
+
+## 13.4.2 - 2023-07-04
+
+### 🐛 Bug fixes
+
+- Fix crash when onBarCodeScanned or onFacesDetected callback is removed. ([#23223](https://github.com/expo/expo/pull/23223) by [@thespacemanatee](https://github.com/thespacemanatee))
 
 ## 13.4.1 — 2023-06-28
 
