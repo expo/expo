@@ -27,12 +27,24 @@ The easiest way to get started is to initialize your new project using a TypeScr
 
 <Terminal cmd={['$ npx create-expo-app -t expo-template-blank-typescript']} />
 
+For npm, add the following `script` to the **package.json**:
+
+{/* prettier-ignore */}
+```json package.json
+{
+  "scripts": {
+    "tsc": "tsc"
+    /* @hide ... */ /* @end */
+  }
+}
+```
+
 Then, to type-check the project, run the following command:
 
 <Tabs>
-<Tab label="npx">
+<Tab label="npm">
 
-<Terminal cmd={['$ npx tsc']} />
+<Terminal cmd={['$ npm tsc']} />
 
 </Tab>
 
@@ -51,7 +63,19 @@ Rename files to convert them to TypeScript. For example, rename **App.js** to **
 
 <Terminal cmd={['$ mv App.js App.tsx']} />
 
-You can now run `npx tsc` or `yarn tsc` to type-check the project.
+For npm, add the following `script` to the **package.json**:
+
+{/* prettier-ignore */}
+```json package.json
+{
+  "scripts": {
+    "tsc": "tsc"
+    /* @hide ... */ /* @end */
+  }
+}
+```
+
+You can now run `npm tsc` or `yarn tsc` to type-check the project.
 
 > **For SDK 48 and higher**, running `npx expo start` prompts you to install the required dependencies, such as `typescript` and `@types/react`. **For SDK 47 and below**, the command also prompts you to install `@types/react-native` as an additional dependency.
 
@@ -144,7 +168,7 @@ import Button from 'src/components/Button';
 // Imports `<project root>/src/components/Button`
 ```
 
-You can modify the base directory in the tsconfig.json (or jsconfig.json) using the [baseUrl](https://www.typescriptlang.org/docs/handbook/module-resolution.html#base-url) option"
+You can modify the base directory in the tsconfig.json (or jsconfig.json) using the [baseUrl](https://www.typescriptlang.org/docs/handbook/module-resolution.html#base-url) option:
 
 ```json tsconfig.json
 {
