@@ -4,9 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { Graph, MixedOutput, Module } from 'metro';
-import { ConfigT, InputConfigT, SerializerConfigT } from 'metro-config';
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
+import { Graph, MixedOutput, Module } from 'metro';
+import { ConfigT, InputConfigT } from 'metro-config';
 import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
 import bundleToString from 'metro/src/lib/bundleToString';
 import path from 'path';
@@ -16,7 +16,7 @@ import { environmentVariableSerializerPlugin } from './environmentVariableSerial
 import { fileNameFromContents, getCssSerialAssets } from './getCssDeps';
 import { SerialAsset } from './serializerAssets';
 
-export type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
+export type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 
 export type SerializerParameters = Parameters<Serializer>;
 
