@@ -8,7 +8,19 @@ import {
 } from '../../../utils/codesigning';
 import { getExpoApiBaseUrl } from '../../endpoint';
 import UserSettings from '../UserSettings';
-import { Actor, getActorDisplayName, getUserAsync, loginAsync, logoutAsync } from '../user';
+import { getSessionUsingBrowserAuthFlowAsync } from '../expoSsoLauncher';
+import {
+  Actor,
+  getActorDisplayName,
+  getUserAsync,
+  loginAsync,
+  logoutAsync,
+  ssoLoginAsync,
+} from '../user';
+
+jest.mock('../expoSsoLauncher', () => ({
+  getSessionUsingBrowserAuthFlowAsync: jest.fn(),
+}));
 
 jest.mock('../../../log');
 jest.unmock('../UserSettings');
@@ -17,7 +29,7 @@ jest.mock('../../graphql/client', () => ({
     query: () => {
       return {
         toPromise: () =>
-          Promise.resolve({ data: { viewer: { id: 'USER_ID', username: 'USERNAME' } } }),
+          Promise.resolve({ data: { meUserActor: { id: 'USER_ID', username: 'USERNAME' } } }),
       };
     },
   },
@@ -34,6 +46,14 @@ beforeEach(() => {
 
 const userStub: Actor = {
   __typename: 'User',
+  id: 'userId',
+  username: 'username',
+  accounts: [],
+  isExpoAdmin: false,
+};
+
+const ssoUserStub: Actor = {
+  __typename: 'SSOUser',
   id: 'userId',
   username: 'username',
   accounts: [],
@@ -115,6 +135,26 @@ describe(loginAsync, () => {
   });
 });
 
+describe(ssoLoginAsync, () => {
+  it('saves user data to ~/.expo/state.json', async () => {
+    jest.mocked(getSessionUsingBrowserAuthFlowAsync).mockResolvedValue('SESSION_SECRET');
+
+    await ssoLoginAsync();
+
+    expect(await fs.promises.readFile(getUserStatePath(), 'utf8')).toMatchInlineSnapshot(`
+      "{
+        "auth": {
+          "sessionSecret": "SESSION_SECRET",
+          "userId": "USER_ID",
+          "username": "USERNAME",
+          "currentConnection": "Browser-Flow-Authentication"
+        }
+      }
+      "
+    `);
+  });
+});
+
 describe(logoutAsync, () => {
   resetEnv();
   it('removes the session secret', async () => {
@@ -146,6 +186,10 @@ describe(getActorDisplayName, () => {
 
   it('returns username for user actors', () => {
     expect(getActorDisplayName(userStub)).toBe(userStub.username);
+  });
+
+  it('returns username for SSO user actors', () => {
+    expect(getActorDisplayName(userStub)).toBe(ssoUserStub.username);
   });
 
   it('returns firstName with robot prefix for robot actors', () => {
