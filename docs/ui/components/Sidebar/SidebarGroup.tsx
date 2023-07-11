@@ -6,8 +6,10 @@ import {
   Rocket01Icon,
   TerminalBrowserIcon,
   EasSubmitIcon,
-  Bell03Icon, PlanEnterpriseIcon, PaletteIcon
-} from "@expo/styleguide-icons";
+  Bell03Icon,
+  PlanEnterpriseIcon,
+  PaletteIcon,
+} from '@expo/styleguide-icons';
 
 import { SidebarNodeProps } from './Sidebar';
 import { SidebarTitle, SidebarLink, SidebarSection } from './index';
