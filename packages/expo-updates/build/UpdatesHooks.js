@@ -60,11 +60,11 @@ export const useUpdatesState = () => {
         downloadedManifest: undefined,
     });
     useEffect(() => {
-        Updates.nativeStateMachineContext().then((context) => {
+        Updates.getNativeStateMachineContextAsync().then((context) => {
             setLocalState(context);
         });
         const subscription = Updates.addUpdatesStateChangeListener((event) => {
-            setLocalState(() => event.context);
+            setLocalState(event.context);
         });
         return () => subscription.remove();
     }, []);

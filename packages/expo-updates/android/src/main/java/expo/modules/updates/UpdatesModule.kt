@@ -19,6 +19,7 @@ import expo.modules.updates.logging.UpdatesLogEntry
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.ManifestMetadata
+import expo.modules.updates.statemachine.UpdatesStateContext
 import expo.modules.updates.statemachine.UpdatesStateEvent
 import java.util.Date
 import expo.modules.updates.manifest.EmbeddedManifest
@@ -27,7 +28,6 @@ import expo.modules.updates.manifest.UpdateManifest
 // these unused imports must stay because of versioning
 /* ktlint-disable no-unused-imports */
 import expo.modules.updates.UpdatesConfiguration
-import expo.modules.updates.statemachine.UpdatesStateContext
 
 /* ktlint-enable no-unused-imports */
 
@@ -140,7 +140,7 @@ class UpdatesModule(
 
   // Used internally by @expo/use-updates useUpdates() to get its initial state
   @ExpoMethod
-  fun nativeStateMachineContext(promise: Promise) {
+  fun getNativeStateMachineContextAsync(promise: Promise) {
     try {
       val updatesServiceLocal = updatesService
       if (!updatesServiceLocal!!.configuration.isEnabled) {

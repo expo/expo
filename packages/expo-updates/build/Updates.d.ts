@@ -179,5 +179,5 @@ export declare const addUpdatesStateChangeListener: (listener: (event: UpdatesNa
 /**
  * @hidden
  */
-export declare function nativeStateMachineContext(): Promise<UpdatesNativeStateMachineContext>;
+export declare function getNativeStateMachineContextAsync(): Promise<UpdatesNativeStateMachineContext>;
 //# sourceMappingURL=Updates.d.ts.map

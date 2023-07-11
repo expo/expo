@@ -51,31 +51,8 @@ data class UpdatesStateContext(
    */
   val writableMap: WritableMap
     get() {
-      val contextMap = Arguments.createMap()
-      contextMap.putBoolean("isUpdateAvailable", isUpdateAvailable)
-      contextMap.putBoolean("isUpdatePending", isUpdatePending)
-      contextMap.putBoolean("isRollback", isRollback)
-      contextMap.putBoolean("isChecking", isChecking)
-      contextMap.putBoolean("isDownloading", isDownloading)
-      contextMap.putBoolean("isRestarting", isRestarting)
-      if (latestManifest != null) {
-        contextMap.putString("latestManifestString", latestManifest.toString())
-      }
-      if (downloadedManifest != null) {
-        contextMap.putString("downloadedManifestString", downloadedManifest.toString())
-      }
-      if (checkError != null) {
-        val errorMap = Arguments.createMap()
-        errorMap.putString("message", checkError.message)
-        contextMap.putMap("checkError", errorMap)
-      }
-      if (downloadError != null) {
-        val errorMap = Arguments.createMap()
-        errorMap.putString("message", downloadError.message)
-        contextMap.putMap("downloadError", errorMap)
-      }
       val result = Arguments.createMap()
-      result.putMap("context", contextMap)
+      result.putMap("context", Arguments.fromBundle(bundle))
       return result
     }
 
@@ -85,29 +62,29 @@ data class UpdatesStateContext(
   val bundle: Bundle
     get() {
       return Bundle().apply {
-        this.putBoolean("isUpdateAvailable", isUpdateAvailable)
-        this.putBoolean("isUpdatePending", isUpdatePending)
-        this.putBoolean("isRollback", isRollback)
-        this.putBoolean("isChecking", isChecking)
-        this.putBoolean("isDownloading", isDownloading)
-        this.putBoolean("isRestarting", isRestarting)
+        putBoolean("isUpdateAvailable", isUpdateAvailable)
+        putBoolean("isUpdatePending", isUpdatePending)
+        putBoolean("isRollback", isRollback)
+        putBoolean("isChecking", isChecking)
+        putBoolean("isDownloading", isDownloading)
+        putBoolean("isRestarting", isRestarting)
         if (latestManifest != null) {
-          this.putString("latestManifestString", latestManifest.toString())
+          putString("latestManifestString", latestManifest.toString())
         }
         if (downloadedManifest != null) {
-          this.putString("downloadedManifestString", downloadedManifest.toString())
+          putString("downloadedManifestString", downloadedManifest.toString())
         }
         if (checkError != null) {
           val errorMap = Bundle().apply {
-            this.putString("message", checkError.message)
+            putString("message", checkError.message)
           }
           this.putBundle("checkError", errorMap)
         }
         if (downloadError != null) {
           val errorMap = Bundle().apply {
-            this.putString("message", downloadError.message)
+            putString("message", downloadError.message)
           }
-          this.putBundle("downloadError", errorMap)
+          putBundle("downloadError", errorMap)
         }
       }
     }

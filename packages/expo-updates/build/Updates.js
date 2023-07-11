@@ -303,12 +303,12 @@ export const addUpdatesStateChangeListener = (listener) => {
 /**
  * @hidden
  */
-export async function nativeStateMachineContext() {
+export async function getNativeStateMachineContextAsync() {
     // Return the current state machine context
-    if (!ExpoUpdates.nativeStateMachineContext) {
-        throw new UnavailabilityError('Updates', 'readLogEntriesAsync');
+    if (!ExpoUpdates.getNativeStateMachineContextAsync) {
+        throw new UnavailabilityError('Updates', 'getNativeStateMachineContextAsync');
     }
-    const nativeContext = await ExpoUpdates.nativeStateMachineContext();
+    const nativeContext = await ExpoUpdates.getNativeStateMachineContextAsync();
     if (nativeContext.latestManifestString) {
         nativeContext.latestManifest = JSON.parse(nativeContext.latestManifestString);
         delete nativeContext.latestManifestString;

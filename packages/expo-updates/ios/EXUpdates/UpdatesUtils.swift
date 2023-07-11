@@ -257,12 +257,13 @@ public final class UpdatesUtils: NSObject {
     return UpdatesStateContext().json
   }
 
-  internal static func getNativeStateMachineContextJson() -> [String: Any?] {
+  internal static func getNativeStateMachineContextJson(_ block: @escaping ([String: Any?]) -> Void) {
     do {
       let constants = try startJSAPICall()
-      return constants.context?.json ?? defaultNativeStateMachineContextJson()
+      let result = constants.context?.json ?? defaultNativeStateMachineContextJson()
+      block(result)
     } catch {
-      return defaultNativeStateMachineContextJson()
+      handleCheckError(error, block: block)
     }
   }
 
