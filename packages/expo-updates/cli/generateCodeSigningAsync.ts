@@ -6,9 +6,9 @@ import {
 } from '@expo/code-signing-certificates';
 import assert from 'assert';
 import { promises as fs } from 'fs';
-import { ensureDir } from 'fs-extra';
 import path from 'path';
 
+import { ensureDirAsync } from './utils/dir';
 import { log } from './utils/log';
 
 type Options = {
@@ -26,7 +26,7 @@ export async function generateCodeSigningAsync(
 
   const certificateOutputDir = path.resolve(projectRoot, certificateOutput);
   const keyOutputDir = path.resolve(projectRoot, keyOutput);
-  await Promise.all([ensureDir(certificateOutputDir), ensureDir(keyOutputDir)]);
+  await Promise.all([ensureDirAsync(certificateOutputDir), ensureDirAsync(keyOutputDir)]);
 
   const [certificateOutputDirContents, keyOutputDirContents] = await Promise.all([
     fs.readdir(certificateOutputDir),
