@@ -9,7 +9,6 @@
 ### 🐛 Bug fixes
 
 - Reverted [#23405](https://github.com/expo/expo/pull/23405) that introduced regressions and crashes in the dev client. (by [@tsapeta](https://github.com/tsapeta))
-- Relands [#23405](https://github.com/expo/expo/pull/23405) and fixes the expo-dev-client regression crashes. ([#23491](https://github.com/expo/expo/pull/23491) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
