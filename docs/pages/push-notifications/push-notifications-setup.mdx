@@ -258,11 +258,9 @@ For Expo to send push notifications from our servers and use your credentials, y
 
 4. In your [Expo account's](https://expo.dev/) dashboard, select your project, and click on **Credentials** in the navigation menu. Then, click on your **Application Identifier** that follows the pattern:`com.company.app`.
 
-   > For Legacy Application Identifiers, run `expo push:android:upload --api-key your-token-here`, replacing `your-token-here` with the string you just copied. We'll store your token securely on our servers, where it will only be accessed when you send a push notification.
-
 5. Under **Service Credentials** > **FCM Server Key**, click **Add a FCM Server Key** > **Google Cloud Messaging Token** and add the **Server key** from **step 3**.
 
-   > **warning** Having Service Credentials in both Legacy and non-legacy Application Identifiers can prevent push notifications from working on Android devices. If you have a Legacy Application Identifier, you should remove all of its Service Credentials.
+> Expo Notifications only supports the **Cloud Messaging API (Legacy)** key at this time. This key is deprecated by Firebase. However, it will continue to work until June 30, 2024. We will provide information on migrating to the new v1 key in the future.
 
 ### iOS
 
