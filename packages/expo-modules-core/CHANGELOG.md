@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed regressions and crashes in the dev client introduced by [#23405](https://github.com/expo/expo/pull/23405). ([#23491](https://github.com/expo/expo/pull/23491) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 1.5.7 — 2023-07-12
+
+### 🐛 Bug fixes
+
+- Fixed regressions and crashes in the dev client introduced by [#23405](https://github.com/expo/expo/pull/23405). ([#23491](https://github.com/expo/expo/pull/23491) by [@kudo](https://github.com/kudo))
 
 ## 1.5.6 — 2023-07-10
 

@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 49.0.3 — 2023-07-12
+
+### 🐛 Bug fixes
+
 - Added support for React Native 0.72.3 ([#23502](https://github.com/expo/expo/pull/23502) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others

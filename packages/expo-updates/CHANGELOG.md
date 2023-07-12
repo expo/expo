@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.18.10 — 2023-07-12
+
+### 🐛 Bug fixes
+
 - [CLI] Add missing chalk dependency for the `expo-updates` cli. ([#23429](https://github.com/expo/expo/pull/23429) by [@byCedric](https://github.com/byCedric))
 - [CLI] Drop `fs-extra` in favor of `fs`. ([#23431](https://github.com/expo/expo/pull/23431) by [@byCedric](https://github.com/byCedric))
-
-### 💡 Others
 
 ## 0.18.9 — 2023-07-10
 
