@@ -89,7 +89,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     resources: SerialAsset[];
     template: string;
     devBundleUrl?: string;
-  }) {
+  }): Promise<string> {
+    if (!resources) {
+      return '';
+    }
     const isDev = mode === 'development';
     return htmlFromSerialAssets(resources, {
       dev: isDev,
@@ -141,8 +144,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const txt = await results.text();
 
+    let data: any;
     try {
-      return JSON.parse(txt);
+      data = JSON.parse(txt);
     } catch (error: any) {
       Log.error(
         'Failed to generate resources with Metro, the Metro config may not be using the correct serializer. Ensure the metro.config.js is extending the expo/metro-config and is not overriding the serializer.'
@@ -150,6 +154,36 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       debug(txt);
       throw error;
     }
+
+    // NOTE: This could potentially need more validation in the future.
+    if (Array.isArray(data)) {
+      return data;
+    }
+
+    if (data != null && (data.errors || data.type?.match(/.*Error$/))) {
+      // {
+      //   type: 'InternalError',
+      //   errors: [],
+      //   message: 'Metro has encountered an error: While trying to resolve module `stylis` from file `/Users/evanbacon/Documents/GitHub/lab/emotion-error-test/node_modules/@emotion/cache/dist/emotion-cache.browser.esm.js`, the package `/Users/evanbacon/Documents/GitHub/lab/emotion-error-test/node_modules/stylis/package.json` was successfully found. However, this package itself specifies a `main` module field that could not be resolved (`/Users/evanbacon/Documents/GitHub/lab/emotion-error-test/node_modules/stylis/dist/stylis.mjs`. Indeed, none of these files exist:\n' +
+      //     '\n' +
+      //     '  * /Users/evanbacon/Documents/GitHub/lab/emotion-error-test/node_modules/stylis/dist/stylis.mjs(.web.ts|.ts|.web.tsx|.tsx|.web.js|.js|.web.jsx|.jsx|.web.json|.json|.web.cjs|.cjs|.web.scss|.scss|.web.sass|.sass|.web.css|.css)\n' +
+      //     '  * /Users/evanbacon/Documents/GitHub/lab/emotion-error-test/node_modules/stylis/dist/stylis.mjs/index(.web.ts|.ts|.web.tsx|.tsx|.web.js|.js|.web.jsx|.jsx|.web.json|.json|.web.cjs|.cjs|.web.scss|.scss|.web.sass|.sass|.web.css|.css): /Users/evanbacon/Documents/GitHub/lab/emotion-error-test/node_modules/metro/src/node-haste/DependencyGraph.js (289:17)\n' +
+      //     '\n' +
+      //     '\x1B[0m \x1B[90m 287 |\x1B[39m         }\x1B[0m\n' +
+      //     '\x1B[0m \x1B[90m 288 |\x1B[39m         \x1B[36mif\x1B[39m (error \x1B[36minstanceof\x1B[39m \x1B[33mInvalidPackageError\x1B[39m) {\x1B[0m\n' +
+      //     '\x1B[0m\x1B[31m\x1B[1m>\x1B[22m\x1B[39m\x1B[90m 289 |\x1B[39m           \x1B[36mthrow\x1B[39m \x1B[36mnew\x1B[39m \x1B[33mPackageResolutionError\x1B[39m({\x1B[0m\n' +
+      //     '\x1B[0m \x1B[90m     |\x1B[39m                 \x1B[31m\x1B[1m^\x1B[22m\x1B[39m\x1B[0m\n' +
+      //     '\x1B[0m \x1B[90m 290 |\x1B[39m             packageError\x1B[33m:\x1B[39m error\x1B[33m,\x1B[39m\x1B[0m\n' +
+      //     '\x1B[0m \x1B[90m 291 |\x1B[39m             originModulePath\x1B[33m:\x1B[39m \x1B[36mfrom\x1B[39m\x1B[33m,\x1B[39m\x1B[0m\n' +
+      //     '\x1B[0m \x1B[90m 292 |\x1B[39m             targetModuleName\x1B[33m:\x1B[39m to\x1B[33m,\x1B[39m\x1B[0m'
+      // }
+      // The Metro logger already showed this error.
+      throw new Error(data.message);
+    }
+
+    throw new Error(
+      'Invalid resources returned from the Metro serializer. Expected array, found: ' + data
+    );
   }
 
   private async renderStaticErrorAsync(error: Error) {
