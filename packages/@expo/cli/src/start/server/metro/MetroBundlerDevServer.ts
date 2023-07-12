@@ -131,7 +131,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       minify,
       environment: 'client',
       serializerOutput: 'static',
-      mainModuleName: resolveMainModuleName(this.projectRoot, getConfig(this.projectRoot), 'web'),
+      mainModuleName: resolveMainModuleName(this.projectRoot, {
+        pkg: getConfig(this.projectRoot).pkg,
+        platform: 'web',
+      }),
     });
 
     const bundleUrl = new URL(devBundleUrlPathname, this.getDevServerUrl()!);
@@ -173,7 +176,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       platform: 'web',
       mode,
       environment: 'client',
-      mainModuleName: resolveMainModuleName(this.projectRoot, getConfig(this.projectRoot), 'web'),
+      mainModuleName: resolveMainModuleName(this.projectRoot, {
+        pkg: getConfig(this.projectRoot).pkg,
+        platform: 'web',
+      }),
     });
 
     const bundleStaticHtml = async (): Promise<string> => {

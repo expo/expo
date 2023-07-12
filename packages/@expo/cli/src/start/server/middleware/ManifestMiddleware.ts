@@ -63,10 +63,9 @@ export function getMetroServerRoot(projectRoot: string) {
 /** Get the main entry module ID (file) relative to the project root. */
 export function resolveMainModuleName(
   projectRoot: string,
-  projectConfig: ProjectConfig,
-  platform: string
+  props: { platform: string; pkg?: PackageJSONConfig }
 ): string {
-  const entryPoint = getEntryWithServerRoot(projectRoot, projectConfig, platform);
+  const entryPoint = getEntryWithServerRoot(projectRoot, props);
 
   debug(`Resolved entry point: ${entryPoint} (project root: ${projectRoot})`);
 
