@@ -5,6 +5,10 @@ import { env } from '../env';
 import { DebugTool, getMetroDebugProperties } from './getMetroDebugProperties';
 import { logEventAsync } from './rudderstackClient';
 
+type Request = Parameters<Middleware>[0];
+type Response = Parameters<Middleware>[1];
+type Next = Parameters<Middleware>[2];
+
 /**
  * Create a Metro middleware that reports when a debugger request was found.
  * This will only be reported once, if the app uses Hermes and telemetry is not enabled.
@@ -17,12 +21,16 @@ export function createDebuggerTelemetryMiddleware(
 
   // This only works for Hermes apps, disable when telemetry is turned off
   if (env.EXPO_NO_TELEMETRY || exp.jsEngine !== 'hermes') {
-    return (req, res, next) => next(undefined);
+    return (req: Request, res: Response, next: Next) => {
+      if (typeof next === 'function') {
+        next(undefined);
+      }
+    };
   }
 
-  return (req, res, next) => {
+  return (req: Request, res: Response, next: Next) => {
     // Only report once
-    if (hasReported) {
+    if (hasReported && typeof next === 'function') {
       return next(undefined);
     }
 
@@ -32,7 +40,9 @@ export function createDebuggerTelemetryMiddleware(
       logEventAsync('metro debug', getMetroDebugProperties(projectRoot, exp, debugTool));
     }
 
-    return next(undefined);
+    if (typeof next === 'function') {
+      return next(undefined);
+    }
   };
 }
 
