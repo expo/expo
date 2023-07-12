@@ -76,20 +76,7 @@ def reactNativeArchitectures() {
 }
 
 // HERMES
-def prebuiltHermesDir = findProperty("expo.prebuiltHermesDir") ?: file("${rootDir}/prebuiltHermes")
-def prebuiltHermesVersion = file("${prebuiltHermesDir}/.hermesversion").exists() ? file("${prebuiltHermesDir}/.hermesversion").text : null
-def currentHermesVersion = file("${REACT_NATIVE_DIR}/sdks/.hermesversion").exists() ? file("${REACT_NATIVE_DIR}/sdks/.hermesversion").text : null
-def hasHermesProject = findProject(":packages:react-native:ReactAndroid:hermes-engine") != null
-def prebuiltHermesCacheHit = hasHermesProject && currentHermesVersion == prebuiltHermesVersion
-
-// By default we are going to download and unzip hermes inside the /sdks/hermes folder
-// but you can provide an override for where the hermes source code is located.
-def hermesDir = System.getenv("REACT_NATIVE_OVERRIDE_HERMES_DIR") ?: file("${REACT_NATIVE_DIR}/sdks/hermes")
-
 def USE_HERMES = true
-def NEED_DOWNLOAD_HERMES = false
-def HERMES_HEADER_DIR = null
-def HERMES_AAR = null
 if (findProject(":app")) {
   def appProject = project(":app")
   USE_HERMES = appProject?.hermesEnabled?.toBoolean() || appProject?.ext?.react?.enableHermes?.toBoolean()
@@ -97,25 +84,6 @@ if (findProject(":app")) {
 
 // Currently the needs for hermes/jsc are only for androidTest, so we turn on this flag only when `isExpoModulesCoreTests` is true
 USE_HERMES = USE_HERMES && isExpoModulesCoreTests
-
-if (USE_HERMES) {
-  if (prebuiltHermesCacheHit) {
-    HERMES_HEADER_DIR = file("${thirdPartyNdkDir}/hermes/prefab/modules/libhermes/include")
-    HERMES_AAR = file("${prebuiltHermesDir}/hermes-engine-debug.aar")
-  } else if (hasHermesProject) {
-    HERMES_HEADER_DIR = file("${thirdPartyNdkDir}/hermes/prefab/modules/libhermes/include")
-    HERMES_AAR = file("${REACT_NATIVE_DIR}/ReactAndroid/hermes-engine/build/outputs/aar/hermes-engine-debug.aar")
-  } else {
-    def prebuiltAAR = fileTree(REACT_NATIVE_DIR).matching { include "**/hermes-engine/**/hermes-engine-*-debug.aar" }
-    if (prebuiltAAR.any()) {
-      HERMES_AAR = prebuiltAAR.singleFile
-    } else {
-      HERMES_AAR = file("${hermesEngineDir}/android/hermes-debug.aar")
-    }
-    HERMES_HEADER_DIR = file("${hermesDir}")
-    NEED_DOWNLOAD_HERMES = true
-  }
-}
 // END HERMES
 
 def isNewArchitectureEnabled = findProperty("newArchEnabled") == "true"
@@ -174,7 +142,6 @@ android {
           "-DREACT_NATIVE_TARGET_VERSION=${REACT_NATIVE_TARGET_VERSION}",
           "-DBOOST_VERSION=${BOOST_VERSION}",
           "-DUSE_HERMES=${USE_HERMES}",
-          "-DHERMES_HEADER_DIR=${HERMES_HEADER_DIR}",
           "-DIS_NEW_ARCHITECTURE_ENABLED=${isNewArchitectureEnabled}",
           "-DPROJECT_BUILD_DIR=$buildDir",
           "-DREACT_ANDROID_DIR=${REACT_NATIVE_DIR}/ReactAndroid",
@@ -299,11 +266,12 @@ dependencies {
   androidTestImplementation "com.google.truth:truth:1.1.2"
   androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
 
-  if (USE_HERMES) {
-    def hermesProject = findProject(":packages:react-native:ReactAndroid:hermes-engine")
-    compileOnly (hermesProject ?: files(HERMES_AAR))
-  } else {
-    compileOnly "org.webkit:android-jsc:+"
+  if (isExpoModulesCoreTests) {
+    if (USE_HERMES) {
+      compileOnly "com.facebook.react:hermes-android"
+    } else {
+      compileOnly "org.webkit:android-jsc:+"
+    }
   }
 }
 
@@ -320,48 +288,6 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
 def createNativeDepsDirectories = project.tasks.findByName('createNativeDepsDirectories') ?: project.tasks.register('createNativeDepsDirectories') {
   downloadsDir.mkdirs()
   thirdPartyNdkDir.mkdirs()
-}
-
-// TODO: Remove all these hermes code when we update our repo to react-native 0.71 by using prefab
-task downloadHermes(type: Download) {
-  def hermesVersion = currentHermesVersion ?: "main"
-  src("https://github.com/facebook/hermes/tarball/${hermesVersion}")
-  onlyIfNewer(true)
-  overwrite(false)
-  dest(new File(downloadsDir, "hermes-${hermesVersion}.tar.gz"))
-}
-
-task unzipHermes(dependsOn: downloadHermes, type: Copy) {
-  from(tarTree(downloadHermes.dest)) {
-    eachFile { file ->
-      // We flatten the unzip as the tarball contains a `facebook-hermes-<SHA>`
-      // folder at the top level.
-      if (file.relativePath.segments.size() > 1) {
-        file.relativePath = new org.gradle.api.file.RelativePath(!file.isDirectory(), file.relativePath.segments.drop(1))
-      }
-    }
-  }
-  into(hermesDir)
-}
-
-task prepareHermes() {
-  if (!USE_HERMES) {
-    return
-  }
-  dependsOn(createNativeDepsDirectories)
-  if (NEED_DOWNLOAD_HERMES) {
-    dependsOn(unzipHermes)
-  }
-
-  doLast {
-    def files = zipTree(HERMES_AAR).matching({ it.include "**/*.so", "prefab/modules/libhermes/include/**/*" })
-
-    copy {
-      from files
-      from "$REACT_NATIVE_DIR/ReactAndroid/src/main/jni/first-party/hermes/Android.mk"
-      into "$thirdPartyNdkDir/hermes"
-    }
-  }
 }
 
 def downloadBoost = tasks.create('downloadBoost', Download) {
@@ -405,12 +331,6 @@ void nativeBuildDependsOn(project, dependsOnTask, buildTypesIncludes) {
 afterEvaluate {
   if (REACT_NATIVE_TARGET_VERSION < 71) {
     nativeBuildDependsOn(project, prepareBoost, null)
-  }
-  if (USE_HERMES) {
-    nativeBuildDependsOn(project, prepareHermes, null)
-    if (hasHermesProject && !prebuiltHermesCacheHit) {
-      prepareHermes.dependsOn(":packages:react-native:ReactAndroid:hermes-engine:assembleDebug")
-    }
   }
 }
 
