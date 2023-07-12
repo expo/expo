@@ -8,7 +8,7 @@ class ScreenOrientationViewController: UIViewController {
   let screenOrientationRegistry = ScreenOrientationRegistry.shared
   private var defaultOrientationMask: UIInterfaceOrientationMask
 
-  init(defaultOrientationMask: UIInterfaceOrientationMask = .portrait) {
+  init(defaultOrientationMask: UIInterfaceOrientationMask = doesDeviceHaveNotch ? .allButUpsideDown : .all) {
     self.defaultOrientationMask = defaultOrientationMask
     super.init(nibName: nil, bundle: nil)
   }
@@ -24,13 +24,13 @@ class ScreenOrientationViewController: UIViewController {
     }
 
     guard let mask = plistStringToInterfaceOrientationMask(orientationString) else {
-      log.warn("Orientation lock string '\(orientationString)' provided in Info.plist does not correspond to a valid orientation mask. Application will default to portrait orientation lock.")
+      log.warn("Orientation lock string '\(orientationString)' provided in Info.plist does not correspond to a valid orientation mask. Application will default to orientation mask set in \(supportedOrientationsKey).")
       self.init(defaultOrientationMask: supportedInterfaceOrientations)
       return
     }
 
     guard mask.isSupportedByDevice() else {
-      log.warn("Orientation lock string '\(orientationString)' provided in Info.plist is not supported by the device. Application will default to portrait orientation lock.")
+      log.warn("Orientation lock string '\(orientationString)' provided in Info.plist is not supported by the device. Application will default to orientation lock set in \(supportedOrientationsKey).")
       self.init(defaultOrientationMask: supportedInterfaceOrientations)
       return
     }
