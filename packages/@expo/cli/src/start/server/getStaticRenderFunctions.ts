@@ -50,6 +50,7 @@ type StaticRenderOptions = {
   minify?: boolean;
   platform?: string;
   environment?: 'node';
+  lazy?: boolean;
 };
 
 const moveStaticRenderFunction = memoize(async (projectRoot: string, requiredModuleId: string) => {
@@ -105,14 +106,20 @@ export async function createMetroEndpointAsync(
   projectRoot: string,
   devServerUrl: string,
   absoluteFilePath: string,
-  { dev = false, platform = 'web', minify = false, environment }: StaticRenderOptions = {}
+  {
+    dev = false,
+    platform = 'web',
+    minify = false,
+    environment,
+    lazy = true,
+  }: StaticRenderOptions = {}
 ): Promise<string> {
   const root = getMetroServerRoot(projectRoot);
   const safeOtherFile = await ensureFileInRootDirectory(projectRoot, absoluteFilePath);
   const serverPath = path.relative(root, safeOtherFile).replace(/\.[jt]sx?$/, '.bundle');
   debug('fetching from Metro:', root, serverPath);
 
-  let url = `${devServerUrl}/${serverPath}?platform=${platform}&dev=${dev}&minify=${minify}&lazy=true`;
+  let url = `${devServerUrl}/${serverPath}?platform=${platform}&dev=${dev}&minify=${minify}&lazy=${false}`;
 
   if (environment) {
     url += `&resolver.environment=${environment}&transform.environment=${environment}`;
@@ -188,25 +195,30 @@ export async function getStaticRenderFunctions(
     options
   );
 
-  const contents = evalMetro(scriptContents);
+  try {
+    const contents = evalMetro(scriptContents);
 
-  // wrap each function with a try/catch that uses Metro's error formatter
-  return Object.keys(contents).reduce((acc, key) => {
-    const fn = contents[key];
-    if (typeof fn !== 'function') {
-      return { ...acc, [key]: fn };
-    }
-
-    acc[key] = async function (...props: any[]) {
-      try {
-        return await fn.apply(this, props);
-      } catch (error: any) {
-        await logMetroError(projectRoot, { error });
-        throw new SilentError(error);
+    // wrap each function with a try/catch that uses Metro's error formatter
+    return Object.keys(contents).reduce((acc, key) => {
+      const fn = contents[key];
+      if (typeof fn !== 'function') {
+        return { ...acc, [key]: fn };
       }
-    };
-    return acc;
-  }, {} as any);
+
+      acc[key] = async function (...props: any[]) {
+        try {
+          return await fn.apply(this, props);
+        } catch (error: any) {
+          await logMetroError(projectRoot, { error });
+          throw new SilentError(error);
+        }
+      };
+      return acc;
+    }, {} as any);
+  } catch (error) {
+    await logMetroError(projectRoot, { error });
+    throw error;
+  }
 }
 
 function evalMetro(src: string) {

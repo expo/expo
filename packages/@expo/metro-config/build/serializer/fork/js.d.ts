@@ -5,7 +5,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import type { Dependency, MixedOutput, Module } from 'metro';
+import type { MixedOutput, Module } from 'metro';
 import type { JsOutput } from 'metro-transform-worker';
 export type Options = {
     createModuleId: (module: string) => number | string;
@@ -23,7 +23,7 @@ export declare function getModuleParams(module: Module, options: Options): {
     params: any[];
     paths: Record<string, string>;
 };
-export declare function getExportPathForDependency(dependency: Dependency, options: Options): string;
+export declare function getExportPathForDependency(dependencyPath: string, options: Pick<Options, 'sourceUrl' | 'serverRoot'>): string;
 export declare function getJsOutput(module: {
     output: readonly MixedOutput[];
     path?: string;

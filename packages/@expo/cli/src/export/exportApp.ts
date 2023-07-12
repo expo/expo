@@ -63,6 +63,13 @@ export async function exportAppAsync(
   const assetsPath = path.join(staticFolder, 'assets');
   const bundlesPath = path.join(staticFolder, 'bundles');
 
+  // await unstable_exportStaticAsync(projectRoot, {
+  //   outputDir: outputPath,
+  //   minify,
+  // });
+
+  // process.exit(0);
+
   await Promise.all([assetsPath, bundlesPath].map(ensureDirectoryAsync));
 
   await copyPublicFolderAsync(publicPath, staticFolder);
@@ -113,7 +120,6 @@ export async function exportAppAsync(
     if (useWebSSG) {
       await unstable_exportStaticAsync(projectRoot, {
         outputDir: outputPath,
-        // TODO: Expose
         minify,
       });
       Log.log('Finished saving static files');

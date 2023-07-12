@@ -7,8 +7,8 @@
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
 import { Graph, MixedOutput, Module, ReadOnlyGraph } from 'metro';
 import { ConfigT, InputConfigT } from 'metro-config';
-// import { baseJSBundle } from './fork/baseJSBundle';
-import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
+import { baseJSBundle } from './fork/baseJSBundle';
+// import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
 import bundleToString from 'metro/src/lib/bundleToString';
 import path from 'path';
 
@@ -16,6 +16,7 @@ import { env } from '../env';
 import { environmentVariableSerializerPlugin } from './environmentVariableSerializerPlugin';
 import { fileNameFromContents, getCssSerialAssets } from './getCssDeps';
 import { SerialAsset } from './serializerAssets';
+import { getExportPathForDependency } from './fork/js';
 
 export type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 
@@ -101,18 +102,19 @@ function getDefaultSerializer(
       Boolean
     );
 
-    console.log('splitty', entryFile, splitGraph.length);
+    // console.log('splitty', entryFile, splitGraph.length);
 
     // moduleId: url
-    let dll: Record<number, string> = {};
+    // let dll: Record<number, string> = {};
 
     splitGraph.forEach(async (graph, index) => {
       if (!graph) return;
 
       const entryFile = graph.entryPoints[0];
 
-      const modulePath = graph.dependencies.get(entryFile)!.path;
-      const moduleId = options.createModuleId(modulePath);
+      const entryDependency = graph.dependencies.get(entryFile)!;
+      // const modulePath = entryDependency.path;
+      // const moduleId = options.createModuleId(modulePath);
 
       const prependInner = index === 0 ? preModules : [];
 
@@ -124,7 +126,12 @@ function getDefaultSerializer(
         ),
         sourceMapUrl: `${fileName}.js.map`,
       });
-      console.log('_expoSplitBundlePaths', jsSplitBundle._expoSplitBundlePaths);
+      // console.log(
+      //   '_expoSplitBundlePaths',
+      //   graph.entryPoints,
+      //   graph,
+      //   jsSplitBundle._expoSplitBundlePaths
+      // );
 
       // dll = { ...dll, ...jsSplitBundle._expoSplitBundlePaths };
 
@@ -147,15 +154,17 @@ function getDefaultSerializer(
 
       // await writeFile(outputOpts.sourceMapOutput, sourceMap, null);
 
+      console.log('entry >', entryDependency, entryDependency.dependencies);
       const relativeEntry = path.relative(options.projectRoot, entryFile);
       const outputFile = options.dev
         ? entryFile
-        : `_expo/static/js/web/${fileNameFromContents({
-            filepath: relativeEntry,
-            src: jsCode,
-          })}.js`;
+        : getExportPathForDependency(entryFile, { sourceUrl, serverRoot: options.serverRoot });
+      //  `_expo/static/js/web/${fileNameFromContents({
+      //     filepath: relativeEntry,
+      //     src: jsCode,
+      //   })}.js`;
 
-      dll[moduleId] = '/' + outputFile;
+      // dll[moduleId] = '/' + outputFile;
 
       jsAssets.push({
         filename: outputFile,
@@ -166,13 +175,13 @@ function getDefaultSerializer(
       });
     });
 
-    jsAssets.push({
-      filename: '_expo/static/json/web/dll.json',
-      originFilename: 'dll.json',
-      type: 'json',
-      metadata: {},
-      source: JSON.stringify(dll),
-    });
+    // jsAssets.push({
+    //   filename: '_expo/static/json/web/dll.json',
+    //   originFilename: 'dll.json',
+    //   type: 'json',
+    //   metadata: {},
+    //   source: JSON.stringify(dll),
+    // });
 
     return JSON.stringify([...jsAssets, ...cssDeps]);
   };

@@ -74,9 +74,17 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const { getManifest } = await getStaticRenderFunctions(this.projectRoot, url, {
       // Ensure the API Routes are included
       environment: 'node',
+      lazy: false,
     });
 
-    return getManifest({ fetchData: true });
+    try {
+      return await getManifest({ fetchData: true });
+    } catch (error: any) {
+      Log.error(
+        'Failed to generate routes with Metro, the Metro config may not be using the correct serializer. Ensure the metro.config.js is extending the expo/metro-config and is not overriding the serializer.'
+      );
+      throw error;
+    }
   }
 
   async composeResourcesWithHtml({
@@ -112,6 +120,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       dev: mode !== 'production',
       // Ensure the API Routes are included
       environment: 'node',
+      lazy: false,
     });
     return async (path: string) => {
       return await getStaticContent(new URL(path, url));
@@ -128,6 +137,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const devBundleUrlPathname = createBundleUrlPath({
       platform: 'web',
       mode,
+      lazy: false,
       minify,
       environment: 'client',
       serializerOutput: 'static',
@@ -172,6 +182,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const devBundleUrlPathname = createBundleUrlPath({
       platform: 'web',
       mode,
+      lazy: false,
       environment: 'client',
       mainModuleName: resolveMainModuleName(this.projectRoot, getConfig(this.projectRoot), 'web'),
     });
@@ -183,6 +194,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         {
           // minify: mode === 'production',
           minify: false,
+          lazy: false,
           dev: mode !== 'production',
           // Ensure the API Routes are included
           environment: 'node',
@@ -482,6 +494,8 @@ function htmlFromSerialAssets(
   const scripts = bundleUrl
     ? `<script src="${bundleUrl}" defer></script>`
     : jsAssets
+        // TODO: Load correct scripts for a route
+        .slice(0, 1)
         .map(({ filename }) => {
           return `<script src="/${filename}" defer></script>`;
         })

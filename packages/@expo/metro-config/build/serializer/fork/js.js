@@ -15,6 +15,7 @@ const invariant_1 = __importDefault(require("invariant"));
 const jsc_safe_url_1 = __importDefault(require("jsc-safe-url"));
 const metro_transform_plugins_1 = require("metro-transform-plugins");
 const path_1 = __importDefault(require("path"));
+const getCssDeps_1 = require("../getCssDeps");
 function wrapModule(module, options) {
     const output = getJsOutput(module);
     if (output.type.startsWith('js/script')) {
@@ -31,7 +32,12 @@ function getModuleParams(module, options) {
     let hasPaths = false;
     const dependencyMapArray = Array.from(module.dependencies.values()).map((dependency) => {
         const id = options.createModuleId(dependency.absolutePath);
-        if (options.includeAsyncPaths && dependency.data.data.asyncType != null) {
+        if (
+        // NOTE(EvanBacon): Disabled this to ensure that paths are provided even when the entire bundle
+        // is created. This is required for production bundle splitting.
+        // options.includeAsyncPaths &&
+        options.sourceUrl &&
+            dependency.data.data.asyncType != null) {
             hasPaths = true;
             (0, invariant_1.default)(options.sourceUrl != null, 'sourceUrl is required when includeAsyncPaths is true');
             // TODO: Only include path if the target is not in the bundle
@@ -53,7 +59,7 @@ function getModuleParams(module, options) {
             else {
                 // NOTE(EvanBacon): Custom block for bundle splitting in production according to how `expo export` works
                 // TODO: Add content hash
-                paths[id] = getExportPathForDependency(dependency, options);
+                paths[id] = '/' + getExportPathForDependency(dependency.absolutePath, options);
             }
         }
         return id;
@@ -76,16 +82,22 @@ function getModuleParams(module, options) {
     return { params, paths };
 }
 exports.getModuleParams = getModuleParams;
-function getExportPathForDependency(dependency, options) {
-    // TODO: Add content hash
+function getExportPathForDependency(dependencyPath, options) {
+    //   console.log('getExportPathForDependency', dependency.data.data.locs, options);
     const { searchParams } = new URL(jsc_safe_url_1.default.toNormalUrl(options.sourceUrl));
-    const bundlePath = path_1.default.relative(options.serverRoot, dependency.absolutePath);
-    return ('/' +
-        path_1.default.join(path_1.default.dirname(bundlePath), 
-        // Strip the file extension
-        path_1.default.basename(bundlePath, path_1.default.extname(bundlePath))) +
-        '.' +
-        searchParams.get('platform') +
+    const bundlePath = path_1.default.relative(options.serverRoot, dependencyPath);
+    const relativePathname = path_1.default.join(path_1.default.dirname(bundlePath), 
+    // Strip the file extension
+    path_1.default.basename(bundlePath, path_1.default.extname(bundlePath)));
+    const name = (0, getCssDeps_1.fileNameFromContents)({
+        filepath: relativePathname,
+        // TODO: Add content hash
+        src: relativePathname,
+    });
+    return (`_expo/static/js/${searchParams.get('platform')}/` +
+        // make filename safe
+        // dependency.data.data.key.replace(/[^a-z0-9]/gi, '_') +
+        name +
         '.js');
 }
 exports.getExportPathForDependency = getExportPathForDependency;

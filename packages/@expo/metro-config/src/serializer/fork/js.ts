@@ -13,6 +13,7 @@ import invariant from 'invariant';
 import jscSafeUrl from 'jsc-safe-url';
 import { addParamsToDefineCall } from 'metro-transform-plugins';
 import path from 'path';
+import { fileNameFromContents } from '../getCssDeps';
 
 export type Options = {
   createModuleId: (module: string) => number | string;
@@ -50,7 +51,13 @@ export function getModuleParams(
   let hasPaths = false;
   const dependencyMapArray = Array.from(module.dependencies.values()).map((dependency) => {
     const id = options.createModuleId(dependency.absolutePath);
-    if (options.includeAsyncPaths && dependency.data.data.asyncType != null) {
+    if (
+      // NOTE(EvanBacon): Disabled this to ensure that paths are provided even when the entire bundle
+      // is created. This is required for production bundle splitting.
+      // options.includeAsyncPaths &&
+      options.sourceUrl &&
+      dependency.data.data.asyncType != null
+    ) {
       hasPaths = true;
       invariant(options.sourceUrl != null, 'sourceUrl is required when includeAsyncPaths is true');
 
@@ -77,7 +84,7 @@ export function getModuleParams(
       } else {
         // NOTE(EvanBacon): Custom block for bundle splitting in production according to how `expo export` works
         // TODO: Add content hash
-        paths[id] = getExportPathForDependency(dependency, options);
+        paths[id] = '/' + getExportPathForDependency(dependency.absolutePath, options);
       }
     }
     return id;
@@ -103,19 +110,28 @@ export function getModuleParams(
   return { params, paths };
 }
 
-export function getExportPathForDependency(dependency: Dependency, options: Options): string {
-  // TODO: Add content hash
+export function getExportPathForDependency(
+  dependencyPath: string,
+  options: Pick<Options, 'sourceUrl' | 'serverRoot'>
+): string {
+  //   console.log('getExportPathForDependency', dependency.data.data.locs, options);
   const { searchParams } = new URL(jscSafeUrl.toNormalUrl(options.sourceUrl!));
-  const bundlePath = path.relative(options.serverRoot, dependency.absolutePath);
+  const bundlePath = path.relative(options.serverRoot, dependencyPath);
+  const relativePathname = path.join(
+    path.dirname(bundlePath),
+    // Strip the file extension
+    path.basename(bundlePath, path.extname(bundlePath))
+  );
+  const name = fileNameFromContents({
+    filepath: relativePathname,
+    // TODO: Add content hash
+    src: relativePathname,
+  });
   return (
-    '/' +
-    path.join(
-      path.dirname(bundlePath),
-      // Strip the file extension
-      path.basename(bundlePath, path.extname(bundlePath))
-    ) +
-    '.' +
-    searchParams.get('platform') +
+    `_expo/static/js/${searchParams.get('platform')}/` +
+    // make filename safe
+    // dependency.data.data.key.replace(/[^a-z0-9]/gi, '_') +
+    name +
     '.js'
   );
 }

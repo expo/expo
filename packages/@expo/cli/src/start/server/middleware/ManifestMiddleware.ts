@@ -66,6 +66,8 @@ export function createBundleUrlPath({
   platform,
   mainModuleName,
   mode,
+  lazy = false,
+  // lazy = !env.EXPO_NO_METRO_LAZY,
   minify = mode === 'production',
   environment,
   serializerOutput,
@@ -74,6 +76,7 @@ export function createBundleUrlPath({
   mainModuleName: string;
   mode: string;
   minify?: boolean;
+  lazy?: boolean;
   environment?: string;
   serializerOutput?: 'static';
 }): string {
@@ -82,7 +85,7 @@ export function createBundleUrlPath({
     dev: String(mode !== 'production'),
     // TODO: Is this still needed?
     hot: String(false),
-    lazy: String(!env.EXPO_NO_METRO_LAZY),
+    lazy: String(false),
   });
 
   if (minify) {
@@ -236,6 +239,7 @@ export abstract class ManifestMiddleware<
       mode: this.options.mode ?? 'development',
       minify: this.options.minify,
       platform,
+      lazy: false,
       mainModuleName,
     });
 
