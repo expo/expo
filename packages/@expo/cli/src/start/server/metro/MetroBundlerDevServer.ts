@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { getConfig } from '@expo/config';
+import { getConfig, getPackageJson } from '@expo/config';
 import { prependMiddleware } from '@expo/dev-server';
 import * as runtimeEnv from '@expo/env';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
@@ -125,6 +125,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     mode: string;
     minify?: boolean;
   }): Promise<SerialAsset[]> {
+    const pkg = getPackageJson(this.projectRoot);
     const devBundleUrlPathname = createBundleUrlPath({
       platform: 'web',
       mode,
@@ -132,7 +133,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       environment: 'client',
       serializerOutput: 'static',
       mainModuleName: resolveMainModuleName(this.projectRoot, {
-        pkg: getConfig(this.projectRoot).pkg,
+        pkg,
         platform: 'web',
       }),
     });
@@ -172,12 +173,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       minify?: boolean;
     }
   ) {
+    const pkg = getPackageJson(this.projectRoot);
     const devBundleUrlPathname = createBundleUrlPath({
       platform: 'web',
       mode,
       environment: 'client',
       mainModuleName: resolveMainModuleName(this.projectRoot, {
-        pkg: getConfig(this.projectRoot).pkg,
+        pkg,
         platform: 'web',
       }),
     });
