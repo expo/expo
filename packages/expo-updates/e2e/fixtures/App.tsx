@@ -53,7 +53,7 @@ export default function App() {
   const handleReadNativeStateContext = () => {
     const handleAsync = async () => {
       setActive(true);
-      const state = await Updates.nativeStateMachineContext();
+      const state = await Updates.getNativeStateMachineContextAsync();
       setNativeStateContextString(JSON.stringify(state));
       await delay(1000);
       setActive(false);
