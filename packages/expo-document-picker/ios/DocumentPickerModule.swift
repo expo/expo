@@ -160,17 +160,17 @@ public class DocumentPickerModule: Module, PickingResultHandler {
   private func toUTType(mimeType: String) -> UTType? {
     switch mimeType {
       case "*/*":
-        return UTType.item
+      return UTType.item
       case "image/*":
-        return UTType.image
+      return UTType.image
       case "video/*":
-        return UTType.video
+      return UTType.video
       case "audio/*":
-        return UTType.audio
+      return UTType.audio
       case "text/*":
-        return UTType.text
+      return UTType.text
       default:
-        return UTType(mimeType: mimeType)
+      return UTType(mimeType: mimeType)
     }
   }
 
@@ -179,25 +179,25 @@ public class DocumentPickerModule: Module, PickingResultHandler {
 
     switch mimeType {
       case "*/*":
-        uti = kUTTypeItem
+      uti = kUTTypeItem
       case "image/*":
-        uti = kUTTypeImage
+      uti = kUTTypeImage
       case "video/*":
-        uti = kUTTypeVideo
+      uti = kUTTypeVideo
       case "audio/*":
-        uti = kUTTypeAudio
+      uti = kUTTypeAudio
       case "text/*":
-        uti = kUTTypeText
+      uti = kUTTypeText
       default:
-        if let ref = UTTypeCreatePreferredIdentifierForTag(
-          kUTTagClassMIMEType,
-          mimeType as CFString,
-          nil
-        )?.takeRetainedValue() {
-          uti = ref
-        } else {
-          uti = kUTTypeItem
-        }
+      if let ref = UTTypeCreatePreferredIdentifierForTag(
+        kUTTagClassMIMEType,
+        mimeType as CFString,
+        nil
+      )?.takeRetainedValue() {
+        uti = ref
+      } else {
+        uti = kUTTypeItem
+      }
     }
     return uti as String
   }
