@@ -205,10 +205,10 @@ data class LoadingFinishedParams(
   val timestamp: MonotonicTime,
   val encodedDataLength: Long,
 ) : JsonSerializable {
-  constructor(now: BigDecimal, requestId: RequestId, request: okhttp3.Request, repsonse: okhttp3.Response) : this(
+  constructor(now: BigDecimal, requestId: RequestId, request: okhttp3.Request, response: okhttp3.Response) : this(
     requestId = requestId,
     timestamp = now,
-    encodedDataLength = repsonse.body?.contentLength() ?: 0,
+    encodedDataLength = response.body?.contentLength() ?: 0,
   )
 
   override fun toJSONObject(): JSONObject {
@@ -230,8 +230,6 @@ data class ExpoReceivedResponseBodyParams(
     body = "",
     base64Encoded = false,
   ) {
-    val contentLength = response.body?.contentLength() ?: 0
-    check(contentLength >= 0 && contentLength <= ExpoNetworkInspectOkHttpNetworkInterceptor.MAX_BODY_SIZE)
     val rawBody = response.peekBody(ExpoNetworkInspectOkHttpNetworkInterceptor.MAX_BODY_SIZE)
     val contentType = rawBody.contentType()
     val isText = contentType?.type == "text" || (contentType?.type == "application" && contentType.subtype == "json")
