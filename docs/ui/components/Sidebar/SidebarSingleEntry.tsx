@@ -25,7 +25,7 @@ export const SidebarSingleEntry = ({
     <A
       href={href}
       className={mergeClasses(
-        'flex items-center gap-3 text-secondary rounded-md text-xs min-h-[32px] px-2 py-1 !leading-[100%] !opacity-100',
+        'flex items-center gap-3 text-secondary rounded-md text-sm min-h-[32px] px-2 py-1 !leading-[100%] !opacity-100',
         'hocus:bg-element',
         'focus-visible:relative focus-visible:z-10',
         secondary && 'text-xs',
