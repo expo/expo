@@ -13,6 +13,8 @@
 
 ### 🐛 Bug fixes
 
+- Added improved error message for static metro when a package is missing. ([#23499](https://github.com/expo/expo/pull/23499) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 0.10.10 — 2023-07-07
