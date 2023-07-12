@@ -16,8 +16,7 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
   )
   private var dataTask_: URLSessionDataTask?
   private let responseBody = NSMutableData()
-  private var responseIsText = false
-  private var responseContentLength: Int64 = 0
+  private var responseBodyExceedsLimit = false
 
   static let MAX_BODY_SIZE = 1_048_576
 
@@ -55,12 +54,14 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
       forKey: Self.REQUEST_ID,
       in: mutableRequest
     )
+    let dataTask = urlSession.dataTask(with: mutableRequest as URLRequest)
     Self.delegate.willSendRequest(
       requestId: requestId,
+      task: dataTask,
       request: mutableRequest as URLRequest,
       redirectResponse: nil
     )
-    dataTask_ = urlSession.dataTask(with: mutableRequest as URLRequest)
+    dataTask_ = dataTask
   }
 
   public override class func canonicalRequest(for request: URLRequest) -> URLRequest {
@@ -81,6 +82,27 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
     client?.urlProtocol(self, didLoad: data)
     if responseBody.length + data.count <= Self.MAX_BODY_SIZE {
       responseBody.append(data)
+    } else {
+      responseBodyExceedsLimit = true
+    }
+  }
+
+  public func urlSession(_: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+    if let error = error {
+      client?.urlProtocol(self, didFailWithError: error)
+    } else {
+      if let currentRequest = task.currentRequest,
+        let response = task.response as? HTTPURLResponse,
+        let requestId = URLProtocol.property(
+          forKey: Self.REQUEST_ID,
+          in: currentRequest
+        ) as? String {
+        let contentType = response.value(forHTTPHeaderField: "Content-Type")
+        let isText = (contentType?.starts(with: "text/") ?? false) || contentType == "application/json"
+        Self.delegate.didReceiveResponse(
+          requestId: requestId, task: task, responseBody: responseBody as Data, isText: isText, responseBodyExceedsLimit: responseBodyExceedsLimit)
+      }
+      client?.urlProtocolDidFinishLoading(self)
     }
   }
 
@@ -90,46 +112,13 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
     didReceive response: URLResponse,
     completionHandler: @escaping (URLSession.ResponseDisposition) -> Void
   ) {
-    if let resp = response as? HTTPURLResponse,
-      let currentRequest = dataTask.currentRequest,
-      let requestId = URLProtocol.property(
-        forKey: Self.REQUEST_ID,
-        in: currentRequest
-      ) as? String {
-      Self.delegate.didReceiveResponse(
-        requestId: requestId,
-        request: currentRequest,
-        response: resp
-      )
-
-      let contentType = resp.value(forHTTPHeaderField: "Content-Type")
-      responseIsText = (contentType?.starts(with: "text/") ?? false) || contentType == "application/json"
-      responseContentLength = resp.expectedContentLength
-    }
     completionHandler(.allow)
     client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .allowed)
   }
 
-  public func urlSession(_: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-    if let error = error {
-      client?.urlProtocol(self, didFailWithError: error)
-    } else {
-      if responseContentLength > 0 && responseContentLength <= Self.MAX_BODY_SIZE,
-        let currentRequest = task.currentRequest,
-        let requestId = URLProtocol.property(
-          forKey: Self.REQUEST_ID,
-          in: currentRequest
-        ) as? String {
-        Self.delegate.didReceiveResponseBody(
-          requestId: requestId, responseBody: responseBody as Data, isText: responseIsText)
-      }
-      client?.urlProtocolDidFinishLoading(self)
-    }
-  }
-
   public func urlSession(
     _: URLSession,
-    task _: URLSessionTask,
+    task: URLSessionTask,
     willPerformHTTPRedirection response: HTTPURLResponse,
     newRequest request: URLRequest,
     completionHandler: @escaping (URLRequest?) -> Void
@@ -137,6 +126,7 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
     if let requestId = URLProtocol.property(forKey: Self.REQUEST_ID, in: request) as? String {
       Self.delegate.willSendRequest(
         requestId: requestId,
+        task: task,
         request: request,
         redirectResponse: response
       )
@@ -173,11 +163,8 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
 @objc(EXRequestInterceptorProtocolDelegate)
 protocol ExpoRequestInterceptorProtocolDelegate {
   @objc
-  func willSendRequest(requestId: String, request: URLRequest, redirectResponse: HTTPURLResponse?)
+  func willSendRequest(requestId: String, task: URLSessionTask, request: URLRequest, redirectResponse: HTTPURLResponse?)
 
   @objc
-  func didReceiveResponse(requestId: String, request: URLRequest, response: HTTPURLResponse)
-
-  @objc
-  func didReceiveResponseBody(requestId: String, responseBody: Data, isText: Bool)
+  func didReceiveResponse(requestId: String, task: URLSessionTask, responseBody: Data, isText: Bool, responseBodyExceedsLimit: Bool)
 }
