@@ -1,3 +1,4 @@
+import { RouterLogo } from '@expo/styleguide';
 import {
   Cube01Icon,
   CpuChip01Icon,
@@ -9,6 +10,7 @@ import {
   Bell03Icon,
   PlanEnterpriseIcon,
   PaletteIcon,
+  DataIcon,
 } from '@expo/styleguide-icons';
 
 import { SidebarNodeProps } from './Sidebar';
@@ -72,8 +74,12 @@ function getIconElement(iconName?: string) {
       return LayersTwo02Icon;
     case 'EAS Metadata':
       return EasMetadataIcon;
+    case 'EAS Insights':
+      return DataIcon;
     case 'Expo Modules API':
       return CpuChip01Icon;
+    case 'Expo Router':
+      return RouterLogo;
     case 'Push notifications':
       return Bell03Icon;
     case 'UI programming':
