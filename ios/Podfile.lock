@@ -1425,7 +1425,7 @@ PODS:
     - ABI49_0_0ExpoModulesCore
   - ABI49_0_0EXPermissions (14.2.0):
     - ABI49_0_0ExpoModulesCore
-  - ABI49_0_0Expo (49.0.0-beta.0):
+  - ABI49_0_0Expo (49.0.2):
     - ABI49_0_0ExpoModulesCore
   - ABI49_0_0ExpoAppleAuthentication (6.1.0):
     - ABI49_0_0ExpoModulesCore
@@ -1450,7 +1450,7 @@ PODS:
     - ABI49_0_0ReactCommon/turbomodule/core
   - ABI49_0_0ExpoHaptics (12.4.0):
     - ABI49_0_0ExpoModulesCore
-  - ABI49_0_0ExpoImage (1.3.0):
+  - ABI49_0_0ExpoImage (1.3.1):
     - ABI49_0_0ExpoModulesCore
     - SDWebImage (~> 5.15.8)
     - SDWebImageAVIFCoder (~> 0.10.0)
@@ -1615,7 +1615,7 @@ PODS:
     - ABI49_0_0ExpoModulesCore
   - ABI49_0_0ExpoRandom (13.2.0):
     - ABI49_0_0ExpoModulesCore
-  - ABI49_0_0ExpoScreenOrientation (6.0.1):
+  - ABI49_0_0ExpoScreenOrientation (6.0.2):
     - ABI49_0_0ExpoModulesCore
     - ABI49_0_0React-Core
     - ExpoScreenOrientation
@@ -4786,7 +4786,7 @@ SPEC CHECKSUMS:
   ABI49_0_0EXMediaLibrary: 0e0e244712394523c90e1bda78127d8c76814434
   ABI49_0_0EXNotifications: b8a6fdc20a5c93452177fb980d07d8c1ca73138c
   ABI49_0_0EXPermissions: f43bc5235e58a3bc698d3fadd6aa1ecb27020b05
-  ABI49_0_0Expo: 23b845aa7d73f621b1bb0663516ce4fc5369953f
+  ABI49_0_0Expo: 9195368a81edd1b7b79132afd3b1c5a2d4037a64
   ABI49_0_0ExpoAppleAuthentication: af85867e111a296a561ddf9d3f659728ee8675d0
   ABI49_0_0ExpoBattery: 9417f9897691a8af49a93047d99b27c2c6c13528
   ABI49_0_0ExpoBlur: 9293857092c742630ef6dadbbd6378c0965cb317
@@ -4798,7 +4798,7 @@ SPEC CHECKSUMS:
   ABI49_0_0ExpoDocumentPicker: ea14fb7c5aa40c4506f0405593da807adcc01635
   ABI49_0_0ExpoGL: b028bbfbd54e10efc9e768891bb0d23f400f366a
   ABI49_0_0ExpoHaptics: 83ad7550f581abf75c5df4d7ff9c6a9731eb25cf
-  ABI49_0_0ExpoImage: e38dda9f50fdf16c43508e9204cf50862cc5f071
+  ABI49_0_0ExpoImage: a080ad9d08cf2fa6aa0b13f99b9eba8464a8c3f5
   ABI49_0_0ExpoImageManipulator: 62a8f6a9004f916d4973c084ef84fc306472a3e5
   ABI49_0_0ExpoImagePicker: 8355e9cf4fdc820f8cfa26add2a423dbd49d70cc
   ABI49_0_0ExpoInsights: d4433e3114fc7fd01edbc82aa8cb72c0e346f40d
@@ -4814,7 +4814,7 @@ SPEC CHECKSUMS:
   ABI49_0_0ExpoNetwork: 028f02f5d15379f89e529b37982559e445f86ab9
   ABI49_0_0ExpoPrint: ae4bf76583805fa1c6c5b4e8d8781586482c6f5d
   ABI49_0_0ExpoRandom: 83829ccecffd4afbdd4f711e053639e2109df0b6
-  ABI49_0_0ExpoScreenOrientation: 708f0a5e64698ac2775e227ca0b14418a37fda30
+  ABI49_0_0ExpoScreenOrientation: df402a4e35820e9ed47e5d18155c0cca71b513f2
   ABI49_0_0ExpoSecureStore: 05b26374e173878efda9267822d64825c80f652e
   ABI49_0_0ExpoSharing: e915ee89f06fe8f6985bf35a5a854c44612f34d5
   ABI49_0_0ExpoSMS: 78e004b964755de5f25d07c5ad1aa09d968723ad
