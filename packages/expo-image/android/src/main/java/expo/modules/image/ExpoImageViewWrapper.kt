@@ -32,7 +32,6 @@ import expo.modules.image.records.ImageLoadEvent
 import expo.modules.image.records.ImageProgressEvent
 import expo.modules.image.records.ImageTransition
 import expo.modules.image.records.SourceMap
-import expo.modules.image.svg.SVGSoftwareLayerSetter
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
@@ -643,7 +642,6 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       return cachedRequestManager
     }
 
-    private fun createNewRequestManager(activity: Activity): RequestManager =
-      Glide.with(activity).addDefaultRequestListener(SVGSoftwareLayerSetter())
+    private fun createNewRequestManager(activity: Activity): RequestManager = Glide.with(activity)
   }
 }
