@@ -193,7 +193,7 @@ const general = [
       makePage('router/reference/troubleshooting.mdx'),
       makePage('router/reference/faq.mdx'),
     ]),
-    makeGroup('Migrate', [makePage('router/migrate/from-react-navigation.mdx')]),
+    makeGroup('Migration', [makePage('router/migrate/from-react-navigation.mdx')]),
   ]),
   makeSection('EAS', [makePage('eas/index.mdx')]),
   makeSection('EAS Build', [

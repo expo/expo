@@ -1,6 +1,6 @@
 ---
 title: Migrate from React Navigation
-sidebar_title: from React Navigation
+sidebar_title: React Navigation
 description: Learn how to migrate a project using React Navigation to Expo Router.
 ---
 
@@ -281,11 +281,11 @@ Use `useRootNavigationState()`.
 
 #### `getCurrentRoute`
 
-Unlike React Navigation, Expo Router can reliably represent any route with a string. Use the [`usePathname()`](/router/reference/screen-tracking/) or [`useSegments()`](/router/reference/typed-routes/#relative-paths) hooks to identify the current route.
+Unlike React Navigation, Expo Router can reliably represent any route with a string. Use the [`usePathname()`](/router/reference/hooks/#usepathname) or [`useSegments()`](/router/reference/hooks/#usesegments) hooks to identify the current route.
 
 #### `getCurrentOptions`
 
-Use the [`useLocalSearchParams()`](/router/reference/search-parameters/) hook to get the current route's query parameters.
+Use the [`useLocalSearchParams()`](/router/reference/hooks/#uselocalsearchparams) hook to get the current route's query parameters.
 
 #### `addListener`
 
@@ -293,11 +293,11 @@ The following events can be migrated:
 
 #### `state`
 
-Use the [`usePathname()`](/router/reference/screen-tracking/) or [`useSegments()`](/router/reference/typed-routes/#relative-paths) hooks to identify the current route. Use in conjunction with `useEffect(() => {}, [...])` to observe changes.
+Use the [`usePathname()`](/router/reference/hooks/#usepathname) or [`useSegments()`](/router/reference/hooks/#usesegments) hooks to identify the current route. Use in conjunction with `useEffect(() => {}, [...])` to observe changes.
 
 #### `options`
 
-Use the [`useLocalSearchParams()`](/router/reference/search-parameters/) hook to get the current route's query parameters. Use in conjunction with `useEffect(() => {}, [...])` to observe changes.
+Use the [`useLocalSearchParams()`](/router/reference/hooks/#uselocalsearchparams) hook to get the current route's query parameters. Use in conjunction with `useEffect(() => {}, [...])` to observe changes.
 
 ### props
 
@@ -311,9 +311,9 @@ Avoid using this pattern in favor of deep linking (e.g. user opens your app to `
 
 #### `onStateChange`
 
-Use the [`usePathname()`](/router/reference/screen-tracking/), [`useSegments()`](/docs/features/linking#usesegments), and [`useGlobalSearchParams()`](/router/reference/typed-routes/#relative-paths) hooks to identify the current route state. Use in conjunction with `useEffect(() => {}, [...])` to observe changes.
+Use the [`usePathname()`](/router/reference/hooks/#usepathname), [`useSegments()`](/router/reference/hooks/#usesegments), and [`useGlobalSearchParams()`](/router/reference/hooks/#useglobalsearchparams) hooks to identify the current route state. Use in conjunction with `useEffect(() => {}, [...])` to observe changes.
 
-- If you're attempting to track screen changes, follow the [Screen Tracking guide](/docs/migration/react-navigation/screen-tracking).
+- If you're attempting to track screen changes, follow the [Screen Tracking guide](/router/reference/screen-tracking/).
 - React Navigation recommends avoiding [`onStateChange`](https://reactnavigation.org/docs/navigation-container/#onstatechange).
 
 #### `onReady`
