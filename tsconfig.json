@@ -3,11 +3,7 @@
     "jsx": "react",
     "baseUrl": ".",
     "paths": {
-      "*": [
-        "ts-declarations/*",
-        "node_modules/*"
-      ]
+      "*": ["ts-declarations/*", "node_modules/*"]
     }
-  },
-  "extends": "expo/tsconfig.base"
+  }
 }
