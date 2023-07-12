@@ -176,40 +176,46 @@ Install the [Vercel CLI](https://vercel.com/docs/cli).
   Configure redirects for single-page applications.
   <Tabs>
     <Tab label="Expo Router">
-      > If your app uses [static rendering](/router/reference/static-rendering), then you can skip this step.
 
-      `expo.web.output: 'single'` generates a single-page application. It means there's only one **dist/index.html** file to which all requests must be redirected. This can be done in Vercel by creating a **./public/vercel.json** file and redirecting all requests to **/index.html**.
+      Create a **vercel.json** file at the root of your app and add the following configuration:
 
-      ```json public/vercel.json
+      ```json vercel.json
       {
-        "version": 2,
+        "buildCommand": "expo export -p web",
+        "outputDirectory": "dist",
+        "devCommand": "expo",
+        "cleanUrls": true,
+        "framework": null,
         "rewrites": [
           {
-            "source": "/(.*)",
+            "source": "/:path*",
             "destination": "/"
           }
         ]
       }
       ```
-      If you modify this file, you will need to rebuild your project with `npx expo export -p web` to have it safely copied into the **dist** directory.
+
+      If your app uses [static rendering](/router/reference/static-rendering), then you may want to add additional [dynamic route configuration](/router/reference/static-rendering#dynamic-routes).
+
     </Tab>
     <Tab label="webpack">
-      If your app implements any navigation, you must configure Vercel to redirect requests to the single **web-build/index.html** file. This can be done in Vercel by creating a **`./public/vercel.json` file and redirecting all requests to `/index.html`.**
+      Create a **vercel.json** file at the root of your app and add the following:
 
-      Navigate inside the **web-build** directory and run the following command to create **\_redirects** file with rule:
-
-      ```json web/vercel.json
+      ```json vercel.json
       {
-        "version": 2,
-        "routes": [
+        "buildCommand": "expo export:web",
+        "outputDirectory": "web-build",
+        "devCommand": "expo",
+        "cleanUrls": true,
+        "framework": null,
+        "rewrites": [
           {
-            "src": "/(.*)",
-            "dest": "/"
+            "source": "/:path*",
+            "destination": "/"
           }
         ]
       }
       ```
-      If you modify this file, you will need to rebuild your project with `npx expo export:web` to have it safely copied into the **web-build** directory.
 
     </Tab>
 
@@ -217,27 +223,9 @@ Install the [Vercel CLI](https://vercel.com/docs/cli).
 </Step>
 
 <Step label="3">
-  Compile the Expo website.
-  <Tabs>
-    <Tab label="Expo Router">
-      <Terminal cmd={['# Compiles to ./dist', '$ npx expo export -p web']} />
-    </Tab>
-    <Tab label="webpack">
-      <Terminal cmd={['# Compiles to ./web-build', '$ npx expo export:web']} />
-    </Tab>
-  </Tabs>
-</Step>
-
-<Step label="4">
   Deploy the website.
-  <Tabs>
-    <Tab label="Expo Router">
-      <Terminal cmd={['$ vercel deploy dist']} />
-    </Tab>
-    <Tab label="webpack">
-      <Terminal cmd={['$ vercel deploy web-build']} />
-    </Tab>
-  </Tabs>
+  
+  <Terminal cmd={['$ vercel']} />
 
 You'll now see a URL that you can use to view your project online. Paste that URL into your browser when the build is complete, and you'll see your deployed app.
 
