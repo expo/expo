@@ -22,7 +22,7 @@ All Routes are wrapped inside a suspense boundary and are loaded asynchronously.
 
 {/* The [Suspense fallback](https://react.dev/reference/react/Suspense#displaying-a-fallback-while-content-is-loading) or loading state **cannot be customized** at this time. We plan to add support in the future via a **route+loading.js** file. */}
 
-Loading errors are handled in the parent route, via the [`ErrorBoundary`](/router/routing/errors) export.
+Loading errors are handled in the parent route, via the [`ErrorBoundary`](/routing/error-handling/#errorboundary) export.
 
 Async routes cannot be statically filtered during development, so all files will be treated as routes even if they don't export a default component. After the component is bundled and loaded, then any invalid route will use a fallback warning screen. This behavior is development-only and will not be present in production.
 
