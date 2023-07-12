@@ -22,7 +22,7 @@
       },
       "ios": {
         "cache": {
-          "key": "sdk49-0.72.2",
+          "key": "sdk49-0.72.3",
           "customPaths": ["../../ios/Pods"]
         },
         "resourceClass": "m-medium",
