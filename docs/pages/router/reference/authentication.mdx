@@ -12,7 +12,7 @@ Consider the following project:
 
 <FileTree files={['app/_layout.js', 'app/index.js', 'app/(auth)/sign-in.js']} />
 
-First, we'll setup a [React Context provider](https://reactjs.org/docs/context.html) that we can use to protect routes. This provider will use a mock implementation, you can replace it with your own [authentication provider](/guides/authentication/).
+First, we'll setup a [React Context provider](https://react.dev/reference/react/createContext) that we can use to protect routes. This provider will use a mock implementation, you can replace it with your own [authentication provider](/guides/authentication/).
 
 ```js context/auth.js
 import { router, useSegments } from 'expo-router';
