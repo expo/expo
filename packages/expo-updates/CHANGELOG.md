@@ -15,6 +15,8 @@
 
 ### 💡 Others
 
+- Native getter for state machine context. ([#23428](https://github.com/expo/expo/pull/23428) by [@douglowder](https://github.com/douglowder))
+
 ## 0.18.9 - 2023-07-10
 
 ### 🐛 Bug fixes

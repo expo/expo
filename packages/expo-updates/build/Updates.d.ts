@@ -1,5 +1,5 @@
 import { EventSubscription } from 'fbemitter';
-import { LocalAssets, Manifest, UpdateCheckResult, UpdateEvent, UpdateFetchResult, UpdatesCheckAutomaticallyValue, UpdatesLogEntry } from './Updates.types';
+import { LocalAssets, Manifest, UpdateCheckResult, UpdateEvent, UpdateFetchResult, UpdatesCheckAutomaticallyValue, UpdatesLogEntry, UpdatesNativeStateChangeEvent, UpdatesNativeStateMachineContext } from './Updates.types';
 export * from './Updates.types';
 /**
  * The UUID that uniquely identifies the currently running update if `expo-updates` is enabled. The
@@ -172,4 +172,12 @@ export declare function clearUpdateCacheExperimentalAsync(_sdkVersion?: string):
  * listener.
  */
 export declare function addListener(listener: (event: UpdateEvent) => void): EventSubscription;
+/**
+ * @hidden
+ */
+export declare const addUpdatesStateChangeListener: (listener: (event: UpdatesNativeStateChangeEvent) => void) => EventSubscription;
+/**
+ * @hidden
+ */
+export declare function getNativeStateMachineContextAsync(): Promise<UpdatesNativeStateMachineContext>;
 //# sourceMappingURL=Updates.d.ts.map
