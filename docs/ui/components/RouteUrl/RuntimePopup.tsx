@@ -10,7 +10,6 @@ type PopupActionProps<T extends string> = {
   onSelect: (value: T) => void;
 };
 export function RuntimePopup<T extends string>({ items, selected, onSelect }: PopupActionProps<T>) {
-  // const [index, setIndex] = useState(items[0]);
   const Icon = [ExpoGoLogo, Phone01DuotoneIcon, Monitor01DuotoneIcon][
     items.findIndex(item => item.id === selected)
   ];
@@ -23,8 +22,8 @@ export function RuntimePopup<T extends string>({ items, selected, onSelect }: Po
   return (
     <div className="relative">
       <select
-        aria-label="Theme selector"
-        title="Select theme"
+        aria-label="Runtime URL format selector"
+        title="Select runtime URL format"
         css={selectStyle}
         className="focus-visible:-outline-offset-2 border-0 rounded-none border-l border-l-default h-10 leading-10 px-10 hocus:bg-subtle hocus:shadow-none"
         value={selected}
@@ -32,7 +31,9 @@ export function RuntimePopup<T extends string>({ items, selected, onSelect }: Po
           onSelect(e.target.value as T);
         }}>
         {items.map((item, index) => (
-          <option key={String(index)} value={item.id}>{item.name}</option>
+          <option key={String(index)} value={item.id}>
+            {item.name}
+          </option>
         ))}
       </select>
       {isLoaded && (
