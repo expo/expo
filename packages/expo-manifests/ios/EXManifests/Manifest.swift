@@ -150,6 +150,10 @@ public class Manifest: NSObject {
     return expoClientConfigRootObject()?.optionalValue(forKey: "revisionId")
   }
 
+  public func getMetadata() -> [String: Any]? {
+    return rawManifestJSONInternal.optionalValue(forKey: "metadata")
+  }
+
   public func slug() -> String? {
     return expoClientConfigRootObject()?.optionalValue(forKey: "slug")
   }
