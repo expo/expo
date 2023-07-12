@@ -147,26 +147,3 @@ const styles = StyleSheet.create({
 - Rebuild the app binary. An easy way to test if the configuration was successful is to do a [simulator build](/develop/development-builds/create-a-build/#create-a-development-build-for-emulatorsimulator).
 
 </Step>
-
-## Configuration for web
-
-> **warning** Web support is experimental. We do not recommend using this library on the web yet.
-
-To use this on the web, add the following script to your **web/index.html**. This script may already be present. If this is the case, replace the `API_KEY` with your Google Maps API key, which you can obtain here: [Google Maps: Get API key](https://developers.google.com/maps/documentation/javascript/get-api-key).
-
-```html web/index.html
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <!-- At the end of the <head/> element... -->
-    <script
-      async
-      defer
-      src="https://maps.googleapis.com/maps/api/js?key=API_KEY"
-      type="text/javascript"></script>
-
-    <!-- Use your web API Key in place of API_KEY: https://developers.google.com/maps/documentation/javascript/get-api-key -->
-  </head>
-  <body />
-</html>
-```

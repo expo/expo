@@ -81,7 +81,7 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
                 ...style,
             }, className: className, priority: priority, contentPosition: selectedSource ? contentPosition : { top: '50%', left: '50%' }, hashPlaceholderContentPosition: contentPosition, hashPlaceholderStyle: blurhashStyle, accessibilityLabel: props.accessibilityLabel })),
     ];
-    return (React.createElement(View, { ref: containerRef, className: "expo-image-container", style: [{ overflow: 'hidden' }, style] },
+    return (React.createElement(View, { ref: containerRef, dataSet: { expoimage: true }, style: [{ overflow: 'hidden' }, style] },
         React.createElement(AnimationManager, { transition: transition, recyclingKey: recyclingKey, initial: initialNode }, currentNode)));
 }
 //# sourceMappingURL=ExpoImage.web.js.map

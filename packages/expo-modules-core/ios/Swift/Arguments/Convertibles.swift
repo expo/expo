@@ -17,10 +17,9 @@ extension URL: Convertible {
       throw Conversions.ConvertingException<URL>(value)
     }
 
-    // Try to construct the URL object from the string as it came in.
-    if let url = URL(string: value) {
-      // If it has no scheme, we assume it was the file path which needs to be recreated to be recognized as the file url.
-      return url.scheme != nil ? url : URL(fileURLWithPath: value)
+    // First we try to create a URL without extra encoding, as it came.
+    if let url = convertToUrl(string: value) {
+      return url
     }
 
     // File path doesn't need to be percent-encoded.
@@ -29,8 +28,8 @@ extension URL: Convertible {
     }
 
     // If we get here, the string is not the file url and may require percent-encoding characters that are not URL-safe according to RFC 3986.
-    if let encodedValue = percentEncodeUrlString(value), let url = URL(string: encodedValue) {
-      return url.scheme != nil ? url : URL(fileURLWithPath: value)
+    if let encodedValue = percentEncodeUrlString(value), let url = convertToUrl(string: encodedValue) {
+      return url
     }
 
     // If it still fails to create the URL object, the string possibly contains characters that must be explicitly percent-encoded beforehand.
