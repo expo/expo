@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `type` on `DocumentPickerOptions` on iOS. ([#23497](https://github.com/expo/expo/pull/23497) by [@aleqsio](https://github.com/aleqsio))
+
 ### 💡 Others
 
 ## 11.5.3 - 2023-07-10
