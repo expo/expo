@@ -2,6 +2,7 @@ package expo.modules.image.svg
 
 import android.graphics.Picture
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.PictureDrawable
 import com.bumptech.glide.load.Options
 import com.bumptech.glide.load.engine.Resource
 import com.bumptech.glide.load.resource.SimpleResource
@@ -17,7 +18,7 @@ import com.caverock.androidsvg.SVG
 class SVGDrawableTranscoder : ResourceTranscoder<SVG?, Drawable> {
   override fun transcode(toTranscode: Resource<SVG?>, options: Options): Resource<Drawable> {
     val picture = toTranscode.get().renderToPicture()
-    val drawable: Drawable = SVGDrawable(picture)
+    val drawable: Drawable = PictureDrawable(picture)
     return SimpleResource(drawable)
   }
 }
