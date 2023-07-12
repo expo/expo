@@ -76,6 +76,7 @@ The `router` object is immutable and contains the following functions:
 - **push**: `(href: Href) => void` Navigate to a route. You can provide a full path like **/profile/settings** or a relative path like **../settings**. Navigate to dynamic routes by passing an object like `{ pathname: 'profile', params: { id: '123' } }`.
 - **replace**: `(href: Href) => void` Same API as push but replaces the current route in the history instead of pushing a new one. This is useful for redirects.
 - **back**: `() => void` Navigate back to previous route.
+- **canGoBack**: `() => boolean` Returns `true` if a valid history stack exists and the `back()` function can pop back.
 - **setParams**: `(params: Record<string, string>) => void` Update the query params for the currently selected route.
 
 ## Linking to dynamic routes
@@ -141,6 +142,10 @@ Expo Router can automatically generate static TypeScript types for all routes in
 Expo Router supports the standard `<a>` element when running on web, however this will perform a full-page server-navigation. This is slower and doesn't take full advantage of React. Instead, the Expo Router `<Link>` component will perform client-side navigation, this will preserve the state of the website and navigate faster.
 
 Client-side navigation works with both single-page apps, and [static rendering](/router/reference/static-rendering).
+
+## Usage in simulators
+
+See the [testing URLs](/guides/linking#testing-urls) guide to learn how you can emulate deep links in simulators and emulators.
 
 ## Next steps
 

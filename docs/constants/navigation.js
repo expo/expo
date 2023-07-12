@@ -183,7 +183,9 @@ const general = [
       makePage('router/advanced/apple-handoff.mdx'),
     ]),
     makeGroup('Reference', [
+      makePage('router/reference/hooks.mdx'),
       makePage('router/reference/search-parameters.mdx'),
+      makePage('router/reference/redirects.mdx'),
       makePage('router/reference/static-rendering.mdx'),
       makePage('router/reference/async-routes.mdx'),
       makePage('router/reference/sitemap.mdx'),
