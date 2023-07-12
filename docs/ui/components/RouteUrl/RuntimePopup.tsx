@@ -32,7 +32,7 @@ export function RuntimePopup<T extends string>({ items, selected, onSelect }: Po
           onSelect(e.target.value as T);
         }}>
         {items.map((item, index) => (
-          <option value={item.id}>{item.name}</option>
+          <option key={String(index)} value={item.id}>{item.name}</option>
         ))}
       </select>
       {isLoaded && (
@@ -57,7 +57,7 @@ const selectStyle = css`
   color: ${theme.text.default};
   line-height: 1.3;
   padding: 0 ${spacing[8]}px;
-  color: ${theme.text.secondary};
+  color: ${theme.text.default};
   text-indent: 0;
 
   box-shadow: ${shadows.xs};
