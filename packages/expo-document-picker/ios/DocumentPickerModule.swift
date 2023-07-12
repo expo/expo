@@ -159,17 +159,17 @@ public class DocumentPickerModule: Module, PickingResultHandler {
   @available(iOS 14.0, *)
   private func toUTType(mimeType: String) -> UTType? {
     switch mimeType {
-      case "*/*":
+    case "*/*":
       return UTType.item
-      case "image/*":
+    case "image/*":
       return UTType.image
-      case "video/*":
+    case "video/*":
       return UTType.video
-      case "audio/*":
+    case "audio/*":
       return UTType.audio
-      case "text/*":
+    case "text/*":
       return UTType.text
-      default:
+    default:
       return UTType(mimeType: mimeType)
     }
   }
@@ -178,17 +178,17 @@ public class DocumentPickerModule: Module, PickingResultHandler {
     var uti: CFString
 
     switch mimeType {
-      case "*/*":
+    case "*/*":
       uti = kUTTypeItem
-      case "image/*":
+    case "image/*":
       uti = kUTTypeImage
-      case "video/*":
+    case "video/*":
       uti = kUTTypeVideo
-      case "audio/*":
+    case "audio/*":
       uti = kUTTypeAudio
-      case "text/*":
+    case "text/*":
       uti = kUTTypeText
-      default:
+    default:
       if let ref = UTTypeCreatePreferredIdentifierForTag(
         kUTTagClassMIMEType,
         mimeType as CFString,
