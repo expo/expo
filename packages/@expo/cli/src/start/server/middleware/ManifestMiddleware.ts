@@ -66,7 +66,7 @@ export function createBundleUrlPath({
   platform,
   mainModuleName,
   mode,
-  lazy = false,
+  lazy = true,
   // lazy = !env.EXPO_NO_METRO_LAZY,
   minify = mode === 'production',
   environment,
@@ -85,7 +85,7 @@ export function createBundleUrlPath({
     dev: String(mode !== 'production'),
     // TODO: Is this still needed?
     hot: String(false),
-    lazy: String(false),
+    lazy: String(lazy),
   });
 
   if (minify) {

@@ -137,7 +137,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const devBundleUrlPathname = createBundleUrlPath({
       platform: 'web',
       mode,
-      lazy: false,
+      lazy: true,
       minify,
       environment: 'client',
       serializerOutput: 'static',
@@ -182,7 +182,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const devBundleUrlPathname = createBundleUrlPath({
       platform: 'web',
       mode,
-      lazy: false,
+      lazy: true,
       environment: 'client',
       mainModuleName: resolveMainModuleName(this.projectRoot, getConfig(this.projectRoot), 'web'),
     });
