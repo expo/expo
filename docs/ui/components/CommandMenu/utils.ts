@@ -70,22 +70,27 @@ export const getHighlightHTML = (
   },
 });
 
-const trimContent = (content: string) => {
+const trimContent = (content: string, length = 36) => {
   if (!content || !content.length) return '';
 
-  const trimStart = Math.max(content.indexOf('<mark>') - 36, 0);
-  const trimEnd = Math.min(content.indexOf('</mark>') + 36 + 6, content.length);
+  const trimStart = Math.max(content.indexOf('<mark>') - length, 0);
+  const trimEnd = Math.min(content.indexOf('</mark>') + length + 6, content.length);
 
   return `${trimStart !== 0 ? '…' : ''}${content.substring(trimStart, trimEnd).trim()}${
     trimEnd !== content.length ? '…' : ''
   }`;
 };
 
-export const getContentHighlightHTML = (item: AlgoliaItemType) => ({
-  dangerouslySetInnerHTML: {
-    __html: trimContent(item._highlightResult.content?.value || ''),
-  },
-});
+export const getContentHighlightHTML = (item: AlgoliaItemType, skipDescription = false) =>
+  skipDescription
+    ? {}
+    : {
+        dangerouslySetInnerHTML: {
+          __html: item._highlightResult.content?.value
+            ? trimContent(item._highlightResult.content?.value)
+            : trimContent(item._highlightResult.hierarchy.lvl1?.value || '', 82),
+        },
+      };
 
 // note(simek): this code make sure that browser popup blocker
 // do not prevent opening links via key press (when it fires windows.open)
@@ -97,6 +102,12 @@ export const openLink = (url: string, isExternal: boolean = false) => {
   }
   link.href = url;
   link.click();
+};
+
+const ReferencePathChunks = ['/versions/', '/more/'] as const;
+
+export const isReferencePath = (url: string) => {
+  return ReferencePathChunks.some(pathChunk => url.includes(pathChunk));
 };
 
 const EASPathChunks = [
@@ -111,12 +122,27 @@ const EASPathChunks = [
 ] as const;
 
 export const isEASPath = (url: string) => {
-  for (const pathChunk of EASPathChunks) {
-    if (url.includes(pathChunk)) {
-      return true;
-    }
-  }
-  return false;
+  return EASPathChunks.some(pathChunk => url.includes(pathChunk));
+};
+
+const HomePathChunks = [
+  '/get-started/',
+  '/develop/',
+  '/deploy/',
+  '/faq/',
+  '/core-concepts/',
+  '/debugging/',
+  '/config-plugins/',
+] as const;
+
+export const isHomePath = (url: string) => {
+  return HomePathChunks.some(pathChunk => url.includes(pathChunk));
+};
+
+const LearnPathChunks = ['/tutorial', '/ui-programming/', '/additional-resources/'] as const;
+
+export const isLearnPath = (url: string) => {
+  return LearnPathChunks.some(pathChunk => url.includes(pathChunk));
 };
 
 export const isAppleDevice = () => {

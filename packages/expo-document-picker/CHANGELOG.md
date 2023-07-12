@@ -6,12 +6,43 @@
 
 ### 🎉 New features
 
-- Migrated to Expo Modules API. ([#20336](https://github.com/expo/expo/pull/20336) by [@alanhughes](https://github.com/alanjhughes))
-- Added support for picking multiple documents. ([#20365](https://github.com/expo/expo/pull/20365) by [@alanhughes](https://github.com/alanjhughes))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 11.5.3 - 2023-07-10
+
+### 💡 Others
+
+- Remove deprecated fields and warning on `getDocumentAsync`. ([#23135](https://github.com/expo/expo/pull/23135) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 11.5.2 — 2023-06-28
+
+_This version does not introduce any user-facing changes._
+
+## 11.5.1 — 2023-06-27
+
+_This version does not introduce any user-facing changes._
+
+## 11.5.0 — 2023-06-21
+
+### 🐛 Bug fixes
+
+- Fix `copyToCacheDirectory` on iOS. ([#23102](https://github.com/expo/expo/pull/23102) by [@aleqsio](https://github.com/aleqsio))
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
+## 11.4.0 — 2023-05-08
+
+### 🐛 Bug fixes
+
+- Export all types from the module. ([#22172](https://github.com/expo/expo/pull/22172) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 11.3.0 — 2023-04-14
+
+### 🎉 New features
+
+- Migrated to Expo Modules API. ([#20336](https://github.com/expo/expo/pull/20336) by [@alanhughes](https://github.com/alanjhughes))
+- Added support for picking multiple documents. ([#20365](https://github.com/expo/expo/pull/20365) by [@alanhughes](https://github.com/alanjhughes))
 
 ## 11.2.2 - 2023-03-28
 

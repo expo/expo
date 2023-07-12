@@ -5,6 +5,7 @@ package expo.modules.kotlin.jni
 import com.google.common.truth.Truth
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.sharedobjects.SharedObjectId
+import expo.modules.kotlin.sharedobjects.SharedObjectRegistry
 import expo.modules.kotlin.sharedobjects.sharedObjectIdPropertyName
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Test
@@ -164,5 +165,46 @@ class JavaScriptClassTest {
       waitForAsyncFunction(it, "(new expo.modules.TestModule.MySharedObject()).receiveThis()")
       Truth.assertThat(wasCalled).isTrue()
     }
+  }
+
+  @Test
+  fun object_native_allocator_should_be_called_on_context_destroy() {
+    class MySharedObject : SharedObject()
+
+    var registry: SharedObjectRegistry? = null
+    var id: SharedObjectId? = null
+    withJSIInterop(
+      inlineModule {
+        Name("TestModule")
+        Class(MySharedObject::class) {
+          Constructor {
+            return@Constructor MySharedObject()
+          }
+        }
+      }
+    ) {
+      val jsObject = evaluateScript("new expo.modules.TestModule.MySharedObject()").getObject()
+      id = SharedObjectId(jsObject.getProperty(sharedObjectIdPropertyName).getInt())
+      registry = appContextHolder.get()?.sharedObjectRegistry
+
+      Truth.assertThat(jsObject.hasProperty("__expo_shared_object_deallocator__")).isTrue()
+    }
+
+    Truth.assertThat(registry!!.pairs[id!!]).isNull()
+  }
+
+  @Test
+  fun object_constructor_should_be_able_to_receive_js_object() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      Class("MyClass") {
+        Constructor { self: JavaScriptObject ->
+          self.setProperty("foo", "bar")
+        }
+      }
+    }
+  ) {
+    val result = evaluateScript("new expo.modules.TestModule.MyClass().foo").getString()
+    Truth.assertThat(result).isEqualTo("bar")
   }
 }

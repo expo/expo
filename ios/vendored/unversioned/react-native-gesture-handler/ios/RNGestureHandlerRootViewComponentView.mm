@@ -1,4 +1,4 @@
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 
 #import <React/RCTFabricComponentsPlugins.h>
 
@@ -18,4 +18,4 @@ Class<RCTComponentViewProtocol> RNGestureHandlerRootViewCls(void)
   return nil;
 }
 
-#endif // RN_FABRIC_ENABLED
+#endif // RCT_NEW_ARCH_ENABLED

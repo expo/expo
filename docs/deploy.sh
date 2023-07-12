@@ -85,8 +85,8 @@ redirects[versions/latest/sdk/introduction/index.html]=versions/latest/sdk/overv
 # project-lifecycle is now covered by managed-vs-bare
 redirects[versions/latest/introduction/project-lifecycle/]=versions/latest/introduction/managed-vs-bare/
 # exp-cli is now expo-cli
-redirects[versions/latest/guides/exp-cli.html]=versions/latest/workflow/expo-cli/
-redirects[versions/latest/guides/exp-cli]=versions/latest/workflow/expo-cli/
+# redirects[versions/latest/guides/exp-cli.html]=versions/latest/workflow/expo-cli/
+# redirects[versions/latest/guides/exp-cli]=versions/latest/workflow/expo-cli/
 # Migrated FAQ pages
 redirects[faq/image-background]=ui-programming/image-background/
 redirects[faq/react-native-styling-buttons]=ui-programming/react-native-styling-buttons/
@@ -164,6 +164,14 @@ redirects[tutorial/text]=tutorial/introduction/
 
 # Push notifications
 redirects[push-notifications/using-fcm/]=push-notifications/push-notifications-setup/
+
+# EAS Update
+redirects[eas-update/developing-with-eas-update/]=eas-update/develop-faster/
+redirects[eas-update/eas-update-with-local-build/]=eas-update/build-locally/
+redirects[eas-update/eas-update-and-eas-cli/]=eas-update/eas-cli/
+redirects[eas-update/debug-updates/]=eas-update/debug/
+redirects[eas-update/how-eas-update-works/]=eas-update/how-it-works/
+redirects[eas-update/migrate-to-eas-update/]=eas-update/migrate-from-classic-updates/
 
 # Removed API reference docs
 redirects[versions/latest/sdk/facebook]=guides/authentication/

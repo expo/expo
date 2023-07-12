@@ -13,6 +13,13 @@ jest.mock('../createBundles', () => ({
           [platform]: {
             code: `var foo = true;`,
             map: `${platform}_map`,
+            css: [
+              {
+                originFilename: 'styles.css',
+                filename: `_expo/static/css/bc6aa0a69dcebf8e8cac1faa76705756.css`,
+                source: '\ndiv {\n    background: cyan;\n}\n\n',
+              },
+            ],
             assets: [
               {
                 __packager_asset: true,
@@ -57,6 +64,7 @@ describe(exportAppAsync, () => {
     });
 
     expect(vol.toJSON()).toStrictEqual({
+      // '/dist/_expo/static/css/bc6aa0a69dcebf8e8cac1faa76705756.css': expect.stringMatching(/cyan/),
       '/dist/debug.html': expect.stringMatching(/<script/),
       '/dist/assetmap.json': expect.any(String),
       '/dist/assets/4e3f888fc8475f69fd5fa32f1ad5216a': 'icon',

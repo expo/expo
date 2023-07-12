@@ -10,6 +10,27 @@
 
 ### 💡 Others
 
+## 3.3.0 — 2023-06-22
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- [iOS] Fix compile issue with native tests on Xcode 14. ([#22845](https://github.com/expo/expo/pull/22845) by [@douglowder](https://github.com/douglowder))
+
+## 3.2.0 — 2023-06-21
+
+### 📚 3rd party library updates
+
+- Updated `junit` to `4.13.2`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
+## 3.1.2 — 2023-05-08
+
+_This version does not introduce any user-facing changes._
+
 ## 3.1.1 — 2023-02-09
 
 _This version does not introduce any user-facing changes._

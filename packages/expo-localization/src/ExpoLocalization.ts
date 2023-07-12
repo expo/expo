@@ -1,5 +1,5 @@
 /* eslint-env browser */
-import { Platform } from 'expo-modules-core';
+import { Platform, Subscription } from 'expo-modules-core';
 import * as rtlDetect from 'rtl-detect';
 
 import { Localization, Calendar, Locale, CalendarIdentifier } from './Localization.types';
@@ -18,6 +18,25 @@ type ExtendedLocale = Intl.Locale &
     timeZone: string;
     calendars: string[];
   }>;
+
+const WEB_LANGUAGE_CHANGE_EVENT = 'languagechange';
+
+export function addLocaleListener(listener: (event) => void): Subscription {
+  addEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener);
+  return {
+    remove: () => removeEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener),
+  };
+}
+
+export function addCalendarListener(listener: (event) => void): Subscription {
+  addEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener);
+  return {
+    remove: () => removeEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener),
+  };
+}
+export function removeSubscription(subscription: Subscription) {
+  subscription.remove();
+}
 
 export default {
   get currency(): string | null {
@@ -118,14 +137,9 @@ export default {
     });
   },
   getCalendars(): Calendar[] {
-    // Prefer locales with region codes as they contain more info about calendar.
-    // They seem to always exist in the list for each locale without region
-    const locales = [...getNavigatorLocales()].sort((a, b) =>
-      a.includes('-') === b.includes('-') ? 0 : a.includes('-') ? -1 : 1
-    );
-    const locale = (locales[0] && typeof Intl !== 'undefined'
-      ? new Intl.Locale(locales[0])
-      : null) as unknown as null | ExtendedLocale;
+    const locale = ((typeof Intl !== 'undefined'
+      ? Intl.DateTimeFormat().resolvedOptions()
+      : null) ?? null) as unknown as null | ExtendedLocale;
     return [
       {
         calendar: ((locale?.calendar || locale?.calendars?.[0]) as CalendarIdentifier) || null,
@@ -135,6 +149,7 @@ export default {
       },
     ];
   },
+
   async getLocalizationAsync(): Promise<Omit<Localization, 'getCalendars' | 'getLocales'>> {
     const {
       currency,

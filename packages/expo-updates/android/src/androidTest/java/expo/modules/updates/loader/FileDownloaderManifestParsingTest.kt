@@ -28,6 +28,7 @@ class FileDownloaderManifestParsingTest {
     val response = mockk<Response>().apply {
       every { header("content-type") } returns contentType
       every { headers } returns mapOf("content-type" to contentType).toHeaders()
+      every { code } returns 200
       every { body } returns ResponseBody.create(
         "application/json; charset=utf-8".toMediaTypeOrNull(),
         CertificateFixtures.testClassicManifestBody
@@ -96,6 +97,7 @@ class FileDownloaderManifestParsingTest {
     val response = mockk<Response>().apply {
       every { header("content-type") } returns contentType
       every { headers } returns mapOf("content-type" to contentType).toHeaders()
+      every { code } returns 200
       every { body } returns ResponseBody.create(MultipartBody.MIXED, contentBuffer.readByteArray())
     }
 
@@ -153,6 +155,7 @@ class FileDownloaderManifestParsingTest {
     val response = mockk<Response>().apply {
       every { header("content-type") } returns contentType
       every { headers } returns mapOf("content-type" to contentType).toHeaders()
+      every { code } returns 200
       every { body } returns ResponseBody.create(MultipartBody.MIXED, contentBuffer.readByteArray())
     }
 
@@ -209,6 +212,7 @@ class FileDownloaderManifestParsingTest {
     val response = mockk<Response>().apply {
       every { header("content-type") } returns contentType
       every { headers } returns mapOf("content-type" to contentType).toHeaders()
+      every { code } returns 200
       every { body } returns ResponseBody.create(MultipartBody.MIXED, contentBuffer.readByteArray())
     }
 
@@ -259,6 +263,7 @@ class FileDownloaderManifestParsingTest {
     val response = mockk<Response>().apply {
       every { header("content-type") } returns contentType
       every { headers } returns mapOf("content-type" to contentType).toHeaders()
+      every { code } returns 200
       every { body } returns ResponseBody.create(MultipartBody.MIXED, contentBuffer.readByteArray())
     }
 
@@ -293,6 +298,164 @@ class FileDownloaderManifestParsingTest {
   }
 
   @Test
+  fun testManifestParsing_MultipartBodyEmpty() {
+    val context = InstrumentationRegistry.getInstrumentation().targetContext
+    val boundary = "blah"
+    val contentType = "multipart/mixed; boundary=$boundary"
+
+    val response = mockk<Response>().apply {
+      every { header("content-type") } returns contentType
+      every { headers } returns mapOf("content-type" to contentType).toHeaders()
+      every { code } returns 200
+      every { body } returns ResponseBody.create(MultipartBody.MIXED, "")
+    }
+
+    val configuration = UpdatesConfiguration(
+      null,
+      mapOf(
+        UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test"),
+      )
+    )
+
+    var errorOccurred = false
+    var resultUpdateResponse: UpdateResponse? = null
+
+    FileDownloader(context).parseRemoteUpdateResponse(
+      response, configuration,
+      object : FileDownloader.RemoteUpdateDownloadCallback {
+        override fun onFailure(message: String, e: Exception) {
+          errorOccurred = true
+        }
+
+        override fun onSuccess(updateResponse: UpdateResponse) {
+          resultUpdateResponse = updateResponse
+        }
+      }
+    )
+
+    Assert.assertFalse(errorOccurred)
+
+    Assert.assertNotNull(resultUpdateResponse)
+    Assert.assertNull(resultUpdateResponse!!.manifestUpdateResponsePart)
+    Assert.assertNull(resultUpdateResponse!!.directiveUpdateResponsePart)
+  }
+
+  @Test
+  fun testManifestParsing_NullBodyResponseProtocol1() {
+    val context = InstrumentationRegistry.getInstrumentation().targetContext
+    val response = mockk<Response>().apply {
+      every { headers } returns mapOf("expo-protocol-version" to "1").toHeaders()
+      every { code } returns 200
+      every { body } returns null
+    }
+
+    val configuration = UpdatesConfiguration(
+      null,
+      mapOf(
+        UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test"),
+      )
+    )
+
+    var errorOccurred = false
+    var resultUpdateResponse: UpdateResponse? = null
+
+    FileDownloader(context).parseRemoteUpdateResponse(
+      response, configuration,
+      object : FileDownloader.RemoteUpdateDownloadCallback {
+        override fun onFailure(message: String, e: Exception) {
+          errorOccurred = true
+        }
+
+        override fun onSuccess(updateResponse: UpdateResponse) {
+          resultUpdateResponse = updateResponse
+        }
+      }
+    )
+
+    Assert.assertFalse(errorOccurred)
+
+    Assert.assertNotNull(resultUpdateResponse)
+    Assert.assertNull(resultUpdateResponse!!.manifestUpdateResponsePart)
+    Assert.assertNull(resultUpdateResponse!!.directiveUpdateResponsePart)
+  }
+
+  @Test
+  fun testManifestParsing_204ResponseProtocol1() {
+    val context = InstrumentationRegistry.getInstrumentation().targetContext
+    val response = mockk<Response>().apply {
+      every { headers } returns mapOf("expo-protocol-version" to "1").toHeaders()
+      every { code } returns 204
+      every { body } returns null
+    }
+
+    val configuration = UpdatesConfiguration(
+      null,
+      mapOf(
+        UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test"),
+      )
+    )
+
+    var errorOccurred = false
+    var resultUpdateResponse: UpdateResponse? = null
+
+    FileDownloader(context).parseRemoteUpdateResponse(
+      response, configuration,
+      object : FileDownloader.RemoteUpdateDownloadCallback {
+        override fun onFailure(message: String, e: Exception) {
+          errorOccurred = true
+        }
+
+        override fun onSuccess(updateResponse: UpdateResponse) {
+          resultUpdateResponse = updateResponse
+        }
+      }
+    )
+
+    Assert.assertFalse(errorOccurred)
+
+    Assert.assertNotNull(resultUpdateResponse)
+    Assert.assertNull(resultUpdateResponse!!.manifestUpdateResponsePart)
+    Assert.assertNull(resultUpdateResponse!!.directiveUpdateResponsePart)
+  }
+
+  @Test
+  fun testManifestParsing_204ResponseNoProtocol() {
+    val context = InstrumentationRegistry.getInstrumentation().targetContext
+    val response = mockk<Response>().apply {
+      every { header("content-type") } returns null
+      every { headers } returns mapOf<String, String>().toHeaders()
+      every { code } returns 204
+      every { body } returns null
+    }
+
+    val configuration = UpdatesConfiguration(
+      null,
+      mapOf(
+        UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test"),
+      )
+    )
+
+    var errorOccurred: Exception? = null
+    var resultUpdateManifest: UpdateManifest? = null
+
+    FileDownloader(context).parseRemoteUpdateResponse(
+      response, configuration,
+      object : FileDownloader.RemoteUpdateDownloadCallback {
+        override fun onFailure(message: String, e: Exception) {
+          errorOccurred = e
+        }
+
+        override fun onSuccess(updateResponse: UpdateResponse) {
+          resultUpdateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
+        }
+      }
+    )
+
+    Assert.assertEquals("Missing body in remote update", errorOccurred!!.message)
+    Assert.assertNull(resultUpdateManifest)
+  }
+
+  @Test
   fun testManifestParsing_JSONBodySigned() {
     val contentType = "application/json"
     val headersMap = mapOf(
@@ -309,6 +472,7 @@ class FileDownloaderManifestParsingTest {
         every { header(it.key) } returns it.value
       }
       every { headers } returns headersMap.toHeaders()
+      every { code } returns 200
       every { body } returns ResponseBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), CertificateFixtures.testNewManifestBody)
     }
 
@@ -393,6 +557,7 @@ class FileDownloaderManifestParsingTest {
         every { header(it.key) } returns it.value
       }
       every { headers } returns headersMap.toHeaders()
+      every { code } returns 200
       every { body } returns ResponseBody.create(MultipartBody.MIXED, contentBuffer.readByteArray())
     }
 
@@ -447,6 +612,7 @@ class FileDownloaderManifestParsingTest {
         every { header(it.key) } returns it.value
       }
       every { headers } returns headersMap.toHeaders()
+      every { code } returns 200
       every { body } returns ResponseBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), CertificateFixtures.testNewManifestBody)
     }
 
@@ -538,6 +704,7 @@ class FileDownloaderManifestParsingTest {
         every { header(it.key) } returns it.value
       }
       every { headers } returns headersMap.toHeaders()
+      every { code } returns 200
       every { body } returns ResponseBody.create(MultipartBody.MIXED, contentBuffer.readByteArray())
     }
 
@@ -626,6 +793,7 @@ class FileDownloaderManifestParsingTest {
         every { header(it.key) } returns it.value
       }
       every { headers } returns headersMap.toHeaders()
+      every { code } returns 200
       every { body } returns ResponseBody.create(MultipartBody.MIXED, contentBuffer.readByteArray())
     }
 
@@ -706,6 +874,7 @@ class FileDownloaderManifestParsingTest {
         every { header(it.key) } returns it.value
       }
       every { headers } returns headersMap.toHeaders()
+      every { code } returns 200
       every { body } returns ResponseBody.create(MultipartBody.MIXED, contentBuffer.readByteArray())
     }
 
@@ -757,6 +926,7 @@ class FileDownloaderManifestParsingTest {
         every { header(it.key) } returns it.value
       }
       every { headers } returns headersMap.toHeaders()
+      every { code } returns 200
       every { body } returns ResponseBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), CertificateFixtures.testNewManifestBody)
     }
 

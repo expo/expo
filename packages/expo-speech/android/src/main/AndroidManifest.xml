@@ -1,6 +1,4 @@
-<manifest package="expo.modules.speech"
-  xmlns:android="http://schemas.android.com/apk/res/android">
-
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
   <queries>
     <intent>
       <!-- Required for text-to-speech if targeting API 30 -->

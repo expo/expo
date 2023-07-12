@@ -2,7 +2,12 @@
 
 #include <memory>
 #include <string>
+
+#ifdef __APPLE__
+#include "RNReanimated/Scheduler.h"
+#else
 #include "Scheduler.h"
+#endif
 
 namespace reanimated {
 

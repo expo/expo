@@ -8,6 +8,8 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { A } from '~/ui/components/Text';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { BookOpen02Icon } from '@expo/styleguide-icons';
 
 Before considering the app fully launchable, we have to configure the status bar, add a splash screen, and add an app icon. In this chapter, we will learn how to do all of that.
 
@@ -15,7 +17,7 @@ Before considering the app fully launchable, we have to configure the status bar
 
 ## Configure the status bar
 
-The <A href="/versions/latest/sdk/status-bar/" openInNewTab>`expo-status-bar`</A> library comes pre-installed in every project created using `create-expo-app`.
+The <A href="/versions/latest/sdk/status-bar/">`expo-status-bar`</A> library comes pre-installed in every project created using `create-expo-app`.
 This library provides a `<StatusBar>` component that allows configuring the app's status bar to change the text color, background color, make it translucent, and so on.
 
 The `<StatusBar>` component is already imported in the **App.js**:
@@ -52,7 +54,7 @@ To make the status bar light, change the `style` value to `light`.
 
 A splash screen is a screen that is visible before the contents of the app has had a chance to load. It hides once the app is ready for use and the content is ready to be displayed.
 
-The splash screen is configured by defining a path to the `"splash.image"` property in the <A href="/workflow/configuration/" openInNewTab>**app.json** file</A>.
+The splash screen is configured by defining a path to the `"splash.image"` property in the <A href="/workflow/configuration/">**app.json** file</A>.
 It has a current value of `"./assets/splash.png"` path. This is already done by default when a new Expo project is created.
 
 We already have **splash.png** in the **assets** directory. It looks as shown below:
@@ -145,4 +147,9 @@ You can see the icon in various places in Expo Go. Here is an example of the app
 
 Well done! We built an app that runs on Android, iOS, and the web from the same codebase.
 
-The next section of the tutorial will guide you toward resources to learn more about concepts we've covered here and others we have mentioned briefly. [Continue to find out how you can learn more](/tutorial/follow-up).
+<BoxLink
+  title="Learn more"
+  Icon={BookOpen02Icon}
+  description="The next section of the tutorial will guide you toward resources to learn more about concepts we've covered here and others we have mentioned briefly."
+  href="/tutorial/follow-up"
+/>

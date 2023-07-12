@@ -39,18 +39,14 @@ buildscript {
             ? rootProject.ext['kotlinVersion']
             : rootProject.hasProperty('AsyncStorage_kotlinVersion')
             ? rootProject.properties['AsyncStorage_kotlinVersion']
-            : '1.6.10'
+            : '1.8.10'
 
     repositories {
         mavenCentral()
         google()
     }
     dependencies {
-        def projectExampleDir = Paths.get(project.projectDir.getParent(), "example", "android").toString()
-        def rootProjectDir = rootProject.projectDir.getPath()
-        if (projectExampleDir == rootProjectDir) {
-            classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$asyncStorageKtVersion"
-        }
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$asyncStorageKtVersion"
     }
 }
 
@@ -78,10 +74,10 @@ if (useNextStorage) {
 }
 
 android {
-    compileSdkVersion safeExtGet('compileSdkVersion', 31)
+    compileSdkVersion safeExtGet('compileSdkVersion', 32)
     defaultConfig {
-        minSdkVersion safeExtGet('minSdkVersion', 21)
-        targetSdkVersion safeExtGet('targetSdkVersion', 31)
+        minSdkVersion safeExtGet('minSdkVersion', 23)
+        targetSdkVersion safeExtGet('targetSdkVersion', 32)
         buildConfigField "Long", "AsyncStorage_db_size", "${dbSizeInMB}L"
         buildConfigField "boolean", "AsyncStorage_useDedicatedExecutor", "${useDedicatedExecutor}"
         buildConfigField "boolean", "AsyncStorage_useNextStorage", "${useNextStorage}"
@@ -112,9 +108,9 @@ repositories {
 dependencies {
 
     if (useNextStorage) {
-        def room_version = getVersionOrDefault('AsyncStorage_next_roomVersion', '2.4.2')
-        def coroutines_version = "1.6.0"
-        def coroutinesTest_version = "1.6.0"
+        def room_version = getVersionOrDefault('AsyncStorage_next_roomVersion', '2.4.3')
+        def coroutines_version = "1.6.4"
+        def coroutinesTest_version = "1.6.4"
         // if we don't provide explicit dependency on reflection, kotlin plugin
         // would add one automatically, probably a version that is not compatible with
         // used kotlin

@@ -32,7 +32,7 @@ class SplashScreenReactActivityLifecycleListener(activityContext: Context) : Rea
 
   private fun getResizeMode(context: Context): SplashScreenImageResizeMode =
     SplashScreenImageResizeMode.fromString(
-      context.getString(R.string.expo_splash_screen_resize_mode).toLowerCase()
+      context.getString(R.string.expo_splash_screen_resize_mode).lowercase()
     )
       ?: SplashScreenImageResizeMode.CONTAIN
 

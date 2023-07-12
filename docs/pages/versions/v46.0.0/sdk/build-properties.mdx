@@ -1,5 +1,6 @@
 ---
 title: BuildProperties
+description: A config plugin that allows customizing native build properties during prebuild.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-46/packages/expo-build-properties'
 packageName: 'expo-build-properties'
 ---
@@ -9,7 +10,7 @@ import { ConfigPluginExample } from '~/components/plugins/ConfigSection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-**`expo-build-properties`** is a [config plugin](../../../guides/config-plugins.mdx) for [managed apps](../../../introduction/managed-vs-bare.mdx) to override the default native build properties. During `expo prebuild`, the config plugin will populate build properties from given [config](#configuration-in-appjson--appconfigjs) to `android/gradle.properties` and `ios/Podfile.properties.json`.
+**`expo-build-properties`** is a [config plugin](/config-plugins/introduction/) for [managed apps](/archive/managed-vs-bare/) to override the default native build properties. During `expo prebuild`, the config plugin will populate build properties from given [config](#configuration-in-appjson--appconfigjs) to `android/gradle.properties` and `ios/Podfile.properties.json`.
 
 <PlatformsSection ios simulator android emulator />
 

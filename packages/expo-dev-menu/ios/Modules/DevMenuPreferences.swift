@@ -1,4 +1,5 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
+import ExpoModulesCore
 
 let motionGestureEnabledKey = "EXDevMenuMotionGestureEnabled"
 let touchGestureEnabledKey = "EXDevMenuTouchGestureEnabled"
@@ -6,8 +7,19 @@ let keyCommandsEnabledKey = "EXDevMenuKeyCommandsEnabled"
 let showsAtLaunchKey = "EXDevMenuShowsAtLaunch"
 let isOnboardingFinishedKey = "EXDevMenuIsOnboardingFinished"
 
-@objc(DevMenuPreferences)
-public class DevMenuPreferences: NSObject, RCTBridgeModule {
+public class DevMenuPreferences: Module {
+  public func definition() -> ModuleDefinition {
+    Name("DevMenuPreferences")
+
+    AsyncFunction("getPreferencesAsync") {
+      return DevMenuPreferences.serialize()
+    }
+
+    AsyncFunction("setPreferencesAsync") { (settings: [String: Any]) in
+      DevMenuPreferences.setSettings(settings)
+    }
+  }
+
   /**
    Initializes dev menu preferences by registering user defaults
    and applying some preferences to static classes like interceptors.
@@ -108,7 +120,7 @@ public class DevMenuPreferences: NSObject, RCTBridgeModule {
       "isOnboardingFinished": DevMenuPreferences.isOnboardingFinished
     ]
   }
-  
+
   static func setSettings(_ settings: [String: Any]) {
     if let motionGestureEnabled = settings["motionGestureEnabled"] as? Bool {
       DevMenuPreferences.motionGestureEnabled = motionGestureEnabled
@@ -123,30 +135,7 @@ public class DevMenuPreferences: NSObject, RCTBridgeModule {
       DevMenuPreferences.showsAtLaunch = showsAtLaunch
     }
   }
-  
-  // MARK - RCTBridgeModule
-  
-  public static func moduleName() -> String! {
-    return "DevMenuPreferences"
-  }
-  
-  public static func requiresMainQueueSetup() -> Bool {
-    return true
-  }
-
-  @objc
-  func getPreferencesAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    resolve(DevMenuPreferences.serialize())
-  }
-
-  @objc
-  func setPreferencesAsync(_ settings: [String: Any], resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    DevMenuPreferences.setSettings(settings)
-    resolve(nil)
-  }
 }
-
-
 
 private func boolForKey(_ key: String) -> Bool {
   return UserDefaults.standard.bool(forKey: key)

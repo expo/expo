@@ -11,7 +11,7 @@
 
 #include <cstring>
 #include "include/gpu/gl/GrGLTypes.h"
-#include "include/private/SkTLogic.h"
+#include "include/private/base/SkTLogic.h"
 
 
 extern "C" {

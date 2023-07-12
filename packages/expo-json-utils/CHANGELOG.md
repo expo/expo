@@ -10,6 +10,26 @@
 
 ### 💡 Others
 
+## 0.7.1 - 2023-07-10
+
+### 🛠 Breaking changes
+
+- [ios] Prefix category methods to reduce likelihood of conflicts. ([#23441](https://github.com/expo/expo/pull/23441) by [@wschurman](https://github.com/wschurman))
+
+## 0.7.0 — 2023-06-21
+
+### 📚 3rd party library updates
+
+- Updated `junit` to `4.13.2`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
+## 0.6.0 — 2023-05-08
+
+### 💡 Others
+
 - Convert EXManifests iOS implementation to Swift. ([#21298](https://github.com/expo/expo/pull/21298) by [@wschurman](https://github.com/wschurman))
 
 ## 0.5.1 — 2023-02-09

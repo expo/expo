@@ -17,6 +17,7 @@ import { getPlatformBundlers } from '../platformBundlers';
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { importExpoMetroConfig } from './resolveFromProject';
+import { getRouterDirectory } from './router';
 import { runServer } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 
@@ -50,9 +51,15 @@ export async function loadMetroConfigAsync(
   const ExpoMetroConfig = importExpoMetroConfig(projectRoot);
   let config = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
 
-  const bundlerPlatforms = getPlatformBundlers(exp);
+  const platformBundlers = getPlatformBundlers(exp);
 
-  config = await withMetroMultiPlatformAsync(projectRoot, config, bundlerPlatforms);
+  config = await withMetroMultiPlatformAsync(projectRoot, {
+    routerDirectory: exp.extra?.router?.unstable_src ?? getRouterDirectory(projectRoot),
+    config,
+    platformBundlers,
+    isTsconfigPathsEnabled: !!exp.experiments?.tsconfigPaths,
+    webOutput: exp.web?.output ?? 'single',
+  });
 
   logEventAsync('metro config', getMetroProperties(projectRoot, exp, config));
 
@@ -106,6 +113,7 @@ export async function instantiateMetroAsync(
 
   const { server, metro } = await runServer(metroBundler, metroConfig, {
     hmrEnabled: true,
+    // @ts-expect-error: Inconsistent `websocketEndpoints` type between metro and @react-native-community/cli-server-api
     websocketEndpoints,
     watch: isWatchEnabled(),
   });

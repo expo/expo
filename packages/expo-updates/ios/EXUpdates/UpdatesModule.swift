@@ -1,7 +1,7 @@
 // Copyright 2019 650 Industries. All rights reserved.
 
 // swiftlint:disable closure_body_length
-// swiftlint:disable function_body_length
+// swiftlint:disable superfluous_else
 
 import ExpoModulesCore
 
@@ -16,13 +16,14 @@ import ExpoModulesCore
  */
 public final class UpdatesModule: Module {
   private let updatesService: EXUpdatesModuleInterface?
-  private let methodQueue = DispatchQueue(label: "expo.modules.EXUpdatesQueue")
+  private let methodQueue = UpdatesUtils.methodQueue
 
   public required init(appContext: AppContext) {
     updatesService = appContext.legacyModule(implementing: EXUpdatesModuleInterface.self)
     super.init(appContext: appContext)
   }
 
+  // swiftlint:disable cyclomatic_complexity
   public func definition() -> ModuleDefinition {
     Name("ExpoUpdates")
 
@@ -30,6 +31,7 @@ public final class UpdatesModule: Module {
       let releaseChannel = updatesService?.config?.releaseChannel
       let channel = updatesService?.config?.requestHeaders["expo-channel-name"] ?? ""
       let runtimeVersion = updatesService?.config?.runtimeVersion ?? ""
+      let checkAutomatically = updatesService?.config?.checkOnLaunch.asString ?? CheckAutomaticallyConfig.Always.asString
       let isMissingRuntimeVersion = updatesService?.config?.isMissingRuntimeVersion()
 
       guard let updatesService = updatesService,
@@ -41,6 +43,7 @@ public final class UpdatesModule: Module {
           "isMissingRuntimeVersion": isMissingRuntimeVersion,
           "releaseChannel": releaseChannel,
           "runtimeVersion": runtimeVersion,
+          "checkAutomatically": checkAutomatically,
           "channel": channel
         ]
       }
@@ -57,6 +60,7 @@ public final class UpdatesModule: Module {
         "isMissingRuntimeVersion": isMissingRuntimeVersion,
         "releaseChannel": releaseChannel,
         "runtimeVersion": runtimeVersion,
+        "checkAutomatically": checkAutomatically,
         "channel": channel,
         "commitTime": commitTime,
         "nativeDebug": UpdatesUtils.isNativeDebuggingEnabled()
@@ -80,53 +84,77 @@ public final class UpdatesModule: Module {
     }
 
     AsyncFunction("checkForUpdateAsync") { (promise: Promise) in
-      guard let updatesService = updatesService,
-        let config = updatesService.config,
-        let selectionPolicy = updatesService.selectionPolicy,
-        config.isEnabled else {
-        throw UpdatesDisabledException()
+      let maybeIsCheckForUpdateEnabled: Bool? = updatesService?.canCheckForUpdateAndFetchUpdate ?? true
+      guard maybeIsCheckForUpdateEnabled ?? false else {
+        promise.reject("ERR_UPDATES_CHECK", "checkForUpdateAsync() is not enabled")
+        return
       }
-      guard updatesService.isStarted else {
-        throw UpdatesNotInitializedException()
-      }
-
-      var extraHeaders: [String: Any] = [:]
-      updatesService.database.databaseQueue.sync {
-        extraHeaders = FileDownloader.extraHeaders(
-          withDatabase: updatesService.database,
-          config: config,
-          launchedUpdate: updatesService.launchedUpdate,
-          embeddedUpdate: updatesService.embeddedUpdate
-        )
-      }
-
-      let fileDownloader = FileDownloader(config: config)
-      fileDownloader.downloadRemoteUpdate(
-        // swiftlint:disable:next force_unwrapping
-        fromURL: config.updateUrl!,
-        withDatabase: updatesService.database,
-        extraHeaders: extraHeaders
-      ) { updateResponse in
-        guard let update = updateResponse.manifestUpdateResponsePart?.updateManifest else {
+      UpdatesUtils.checkForUpdate { result in
+        if result["message"] != nil {
+          guard let message = result["message"] as? String else {
+            promise.reject("ERR_UPDATES_CHECK", "")
+            return
+          }
+          promise.reject("ERR_UPDATES_CHECK", message)
+          return
+        }
+        if result["manifest"] != nil {
           promise.resolve([
-            "isAvailable": false
+            "isAvailable": true,
+            "manifest": result["manifest"],
+            "isRollBackToEmbedded": false
           ])
           return
         }
-
-        let launchedUpdate = updatesService.launchedUpdate
-        if selectionPolicy.shouldLoadNewUpdate(update, withLaunchedUpdate: launchedUpdate, filters: updateResponse.responseHeaderData?.manifestFilters) {
+        if result["isRollBackToEmbedded"] != nil {
           promise.resolve([
-            "isAvailable": true,
-            "manifest": update.manifest.rawManifestJSON()
+            "isAvailable": false,
+            "isRollBackToEmbedded": result["isRollBackToEmbedded"]
           ])
-        } else {
-          promise.resolve([
-            "isAvailable": false
-          ])
+          return
         }
-      } errorBlock: { error in
-        promise.reject("ERR_UPDATES_CHECK", error.localizedDescription)
+        promise.resolve(["isAvailable": false, "isRollBackToEmbedded": false])
+      }
+    }
+
+    AsyncFunction("getExtraParamsAsync") { (promise: Promise) in
+      guard let updatesService = updatesService,
+        let config = updatesService.config,
+        config.isEnabled else {
+        throw UpdatesDisabledException()
+      }
+
+      guard let scopeKey = config.scopeKey else {
+        throw Exception(name: "ERR_UPDATES_SCOPE_KEY", description: "Muse have scopeKey in config")
+      }
+
+      updatesService.database.databaseQueue.async {
+        do {
+          promise.resolve(try updatesService.database.extraParams(withScopeKey: scopeKey))
+        } catch {
+          promise.reject(error)
+        }
+      }
+    }
+
+    AsyncFunction("setExtraParamAsync") { (key: String, value: String?, promise: Promise) in
+      guard let updatesService = updatesService,
+        let config = updatesService.config,
+        config.isEnabled else {
+        throw UpdatesDisabledException()
+      }
+
+      guard let scopeKey = config.scopeKey else {
+        throw Exception(name: "ERR_UPDATES_SCOPE_KEY", description: "Muse have scopeKey in config")
+      }
+
+      updatesService.database.databaseQueue.async {
+        do {
+          try updatesService.database.setExtraParam(key: key, value: value, withScopeKey: scopeKey)
+          promise.resolve(nil)
+        } catch {
+          promise.reject(error)
+        }
       }
     }
 
@@ -150,71 +178,49 @@ public final class UpdatesModule: Module {
     }
 
     AsyncFunction("fetchUpdateAsync") { (promise: Promise) in
-      guard let updatesService = updatesService,
-        let config = updatesService.config,
-        let selectionPolicy = updatesService.selectionPolicy,
-        config.isEnabled else {
-        throw UpdatesDisabledException()
+      let maybeIsCheckForUpdateEnabled: Bool? = updatesService?.canCheckForUpdateAndFetchUpdate ?? true
+      guard maybeIsCheckForUpdateEnabled ?? false else {
+        promise.reject("ERR_UPDATES_FETCH", "fetchUpdateAsync() is not enabled")
+        return
       }
-      guard updatesService.isStarted else {
-        throw UpdatesNotInitializedException()
-      }
-
-      let remoteAppLoader = RemoteAppLoader(
-        config: config,
-        database: updatesService.database,
-        directory: updatesService.directory,
-        launchedUpdate: updatesService.launchedUpdate,
-        completionQueue: methodQueue
-      )
-      remoteAppLoader.loadUpdate(
-        // swiftlint:disable:next force_unwrapping
-        fromURL: config.updateUrl!
-      ) { updateResponse in
-        if let updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective {
-          switch updateDirective {
-          case is NoUpdateAvailableUpdateDirective:
-            return false
-          case is RollBackToEmbeddedUpdateDirective:
-            return true
-          default:
-            NSException(name: .internalInconsistencyException, reason: "Unhandled update directive type").raise()
-            return false
+      UpdatesUtils.fetchUpdate { result in
+        if result["message"] != nil {
+          guard let message = result["message"] as? String else {
+            promise.reject("ERR_UPDATES_FETCH", "")
+            return
           }
-        }
-
-        guard let update = updateResponse.manifestUpdateResponsePart?.updateManifest else {
-          return false
-        }
-
-        return selectionPolicy.shouldLoadNewUpdate(
-          update,
-          withLaunchedUpdate: updatesService.launchedUpdate,
-          filters: updateResponse.responseHeaderData?.manifestFilters
-        )
-      } asset: { _, _, _, _ in
-        // do nothing for now
-      } success: { updateResponse in
-        if updateResponse?.directiveUpdateResponsePart?.updateDirective is RollBackToEmbeddedUpdateDirective {
-          promise.resolve([
-            "isRollBackToEmbedded": true
-          ])
+          promise.reject("ERR_UPDATES_FETCH", message)
+          return
         } else {
-          if let update = updateResponse?.manifestUpdateResponsePart?.updateManifest {
-            updatesService.resetSelectionPolicy()
-            promise.resolve([
-              "isNew": true,
-              "manifest": update.manifest.rawManifestJSON()
-            ])
-          } else {
-            promise.resolve([
-              "isNew": false
-            ])
-          }
+          promise.resolve(result)
         }
-      } error: { error in
-        promise.reject("ERR_UPDATES_FETCH", "Failed to download new update: \(error.localizedDescription)")
+      }
+    }
+
+    // Getter used internally by @expo/use-updates useUpdates()
+    // to initialize its state
+    AsyncFunction("getNativeStateMachineContextAsync") { (promise: Promise) in
+      let maybeIsCheckForUpdateEnabled: Bool? = updatesService?.canCheckForUpdateAndFetchUpdate ?? true
+      guard maybeIsCheckForUpdateEnabled ?? false else {
+        promise.resolve(UpdatesUtils.defaultNativeStateMachineContextJson())
+        return
+      }
+      UpdatesUtils.getNativeStateMachineContextJson { result in
+        if result["message"] != nil {
+          guard let message = result["message"] as? String else {
+            promise.reject("ERR_UPDATES_CHECK", "")
+            return
+          }
+          promise.reject("ERR_UPDATES_CHECK", message)
+          return
+        } else {
+          promise.resolve(result)
+        }
       }
     }
   }
+  // swiftlint:enable cyclomatic_complexity
 }
+
+// swiftlint:enable closure_body_length
+// swiftlint:enable superfluous_else

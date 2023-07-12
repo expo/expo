@@ -203,6 +203,127 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
         expect(resultUpdateResponse?.manifestUpdateResponsePart).to(beNil())
         expect(resultUpdateResponse?.directiveUpdateResponsePart).to(beNil())
       }
+
+      it("multipart body empty") {
+        let config = UpdatesConfig.config(fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
+        ])
+        let downloader = FileDownloader(config: config)
+
+        let boundary = "blah"
+        let contentType = "multipart/mixed; boundary=\(boundary)"
+        let response = HTTPURLResponse(
+          url: URL(string: "https://exp.host/@test/test")!,
+          statusCode: 200,
+          httpVersion: "HTTP/1.1",
+          headerFields: ["content-type": contentType]
+        )!
+
+        let bodyData = Data()
+
+        var resultUpdateResponse: UpdateResponse? = nil
+        var errorOccurred: (any Error)? = nil
+        downloader.parseManifestResponse(response, withData: bodyData, database: database) { updateResponse in
+          resultUpdateResponse = updateResponse
+        } errorBlock: { error in
+          errorOccurred = error
+        }
+
+        expect(errorOccurred).to(beNil())
+        expect(resultUpdateResponse).notTo(beNil())
+
+        expect(resultUpdateResponse?.manifestUpdateResponsePart).to(beNil())
+        expect(resultUpdateResponse?.directiveUpdateResponsePart).to(beNil())
+      }
+
+      it("nil body protocol 1") {
+        let config = UpdatesConfig.config(fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
+        ])
+        let downloader = FileDownloader(config: config)
+
+        let boundary = "blah"
+        let contentType = "multipart/mixed; boundary=\(boundary)"
+        let response = HTTPURLResponse(
+          url: URL(string: "https://exp.host/@test/test")!,
+          statusCode: 200,
+          httpVersion: "HTTP/1.1",
+          headerFields: ["expo-protocol-version": "1"]
+        )!
+
+        let bodyData: Data? = nil
+
+        var resultUpdateResponse: UpdateResponse? = nil
+        var errorOccurred: (any Error)? = nil
+        downloader.parseManifestResponse(response, withData: bodyData, database: database) { updateResponse in
+          resultUpdateResponse = updateResponse
+        } errorBlock: { error in
+          errorOccurred = error
+        }
+
+        expect(errorOccurred).to(beNil())
+        expect(resultUpdateResponse).notTo(beNil())
+
+        expect(resultUpdateResponse?.manifestUpdateResponsePart).to(beNil())
+        expect(resultUpdateResponse?.directiveUpdateResponsePart).to(beNil())
+      }
+
+      it("204 response protocol 1") {
+        let config = UpdatesConfig.config(fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
+        ])
+        let downloader = FileDownloader(config: config)
+
+        let response = HTTPURLResponse(
+          url: URL(string: "https://exp.host/@test/test")!,
+          statusCode: 204,
+          httpVersion: "HTTP/1.1",
+          headerFields: ["expo-protocol-version": "1"]
+        )!
+
+        let bodyData: Data? = nil
+
+        var resultUpdateResponse: UpdateResponse? = nil
+        var errorOccurred: (any Error)? = nil
+        downloader.parseManifestResponse(response, withData: bodyData, database: database) { updateResponse in
+          resultUpdateResponse = updateResponse
+        } errorBlock: { error in
+          errorOccurred = error
+        }
+
+        expect(errorOccurred).to(beNil())
+        expect(resultUpdateResponse).notTo(beNil())
+
+        expect(resultUpdateResponse?.manifestUpdateResponsePart).to(beNil())
+        expect(resultUpdateResponse?.directiveUpdateResponsePart).to(beNil())
+      }
+
+      it("204 response no protocol") {
+        let config = UpdatesConfig.config(fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
+        ])
+        let downloader = FileDownloader(config: config)
+
+        let response = HTTPURLResponse(
+          url: URL(string: "https://exp.host/@test/test")!,
+          statusCode: 204,
+          httpVersion: "HTTP/1.1",
+          headerFields: [:]
+        )!
+
+        let bodyData: Data? = nil
+
+        var resultUpdateResponse: UpdateResponse? = nil
+        var errorOccurred: (any Error)? = nil
+        downloader.parseManifestResponse(response, withData: bodyData, database: database) { updateResponse in
+          resultUpdateResponse = updateResponse
+        } errorBlock: { error in
+          errorOccurred = error
+        }
+
+        expect(errorOccurred?.localizedDescription) == "Missing body in remote update"
+        expect(resultUpdateResponse).to(beNil())
+      }
       
       it("json body signed") {
         let config = UpdatesConfig.config(fromDictionary: [

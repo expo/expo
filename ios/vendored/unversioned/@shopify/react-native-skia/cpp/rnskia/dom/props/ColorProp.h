@@ -16,8 +16,10 @@ static PropId PropName3 = JsiPropId::get("3");
 
 class ColorProp : public DerivedProp<SkColor> {
 public:
-  explicit ColorProp(PropId name) : DerivedProp<SkColor>() {
-    _colorProp = addProperty(std::make_shared<NodeProp>(name));
+  explicit ColorProp(PropId name,
+                     const std::function<void(BaseNodeProp *)> &onChange)
+      : DerivedProp<SkColor>(onChange) {
+    _colorProp = defineProperty<NodeProp>(name);
   }
 
   void updateDerivedValue() override {
@@ -40,6 +42,13 @@ public:
       return SkColorSetARGB(a.getAsNumber() * 255.0f, r.getAsNumber() * 255.0f,
                             g.getAsNumber() * 255.0f, b.getAsNumber() * 255.0f);
 
+    } else if (color.getType() == PropType::Array) {
+      auto r = color.getAsArray().at(0);
+      auto g = color.getAsArray().at(1);
+      auto b = color.getAsArray().at(2);
+      auto a = color.getAsArray().at(3);
+      return SkColorSetARGB(a.getAsNumber() * 255.0f, r.getAsNumber() * 255.0f,
+                            g.getAsNumber() * 255.0f, b.getAsNumber() * 255.0f);
     } else if (color.getType() == PropType::Number) {
       return static_cast<SkColor>(color.getAsNumber());
     } else {
@@ -59,8 +68,10 @@ private:
 
 class ColorsProp : public DerivedProp<std::vector<SkColor>> {
 public:
-  explicit ColorsProp(PropId name) : DerivedProp<std::vector<SkColor>>() {
-    _colorsProp = addProperty(std::make_shared<NodeProp>(name));
+  explicit ColorsProp(PropId name,
+                      const std::function<void(BaseNodeProp *)> &onChange)
+      : DerivedProp<std::vector<SkColor>>(onChange) {
+    _colorsProp = defineProperty<NodeProp>(name);
   }
 
   void updateDerivedValue() override {

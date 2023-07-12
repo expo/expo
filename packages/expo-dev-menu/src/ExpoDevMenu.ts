@@ -1,5 +1,11 @@
-import { NativeModules } from 'react-native';
+import { requireNativeModule } from 'expo-modules-core';
 
-import { ExpoDevMenu } from './ExpoDevMenu.types';
+let ExpoDevMenu;
+// Use try-catch to prevent crashes in release builds
+try {
+  ExpoDevMenu = requireNativeModule('ExpoDevMenu');
+} catch {
+  ExpoDevMenu = null;
+}
 
-export default NativeModules.ExpoDevMenu as ExpoDevMenu;
+export default ExpoDevMenu;

@@ -70,11 +70,38 @@ class UpdatesDatabaseSpec : ExpoSpec {
         }
       }
     }
+
+    describe("setExtraClientParams") {
+      it("functions") {
+        db.databaseQueue.sync {
+          let beforeSave = try! db.extraParams(withScopeKey: "test")
+          expect(beforeSave).to(beNil())
+
+          try! db.setExtraParam(key: "wat", value: "hello", withScopeKey: "test")
+
+          let afterSave = try! db.extraParams(withScopeKey: "test")
+          expect(NSDictionary(dictionary: afterSave!).isEqual(to: ["wat": "hello"])) == true
+
+          try! db.setExtraParam(key: "wat", value: nil, withScopeKey: "test")
+
+          let afterRemove = try! db.extraParams(withScopeKey: "test")
+          expect(NSDictionary(dictionary: afterRemove!).isEqual(to: [:])) == true
+        }
+      }
+
+      it("validates") {
+        db.databaseQueue.sync {
+          expect {
+            try db.setExtraParam(key: "Hello", value: "World", withScopeKey: "test")
+          }.to(throwError(SerializerError.invalidCharacterInKey(key: "Hello", character: "H")))
+        }
+      }
+    }
     
     describe("setMetadata") {
       it("overwrites all fields") {
         let responseHeaderData1 = ResponseHeaderData(
-          protocolVersion: nil,
+          protocolVersionRaw: nil,
           serverDefinedHeadersRaw: nil,
           manifestFiltersRaw: "branch-name=\"rollout-1\",test=\"value\"",
           manifestSignature: nil
@@ -85,7 +112,7 @@ class UpdatesDatabaseSpec : ExpoSpec {
         }
         
         let responseHeaderData2 = ResponseHeaderData(
-          protocolVersion: nil,
+          protocolVersionRaw: nil,
           serverDefinedHeadersRaw: nil,
           manifestFiltersRaw: "branch-name=\"rollout-2\"",
           manifestSignature: nil
@@ -104,7 +131,7 @@ class UpdatesDatabaseSpec : ExpoSpec {
       
       it("overwrites with empty") {
         let responseHeaderData1 = ResponseHeaderData(
-          protocolVersion: nil,
+          protocolVersionRaw: nil,
           serverDefinedHeadersRaw: nil,
           manifestFiltersRaw: "branch-name=\"rollout-1\"",
           manifestSignature: nil
@@ -115,7 +142,7 @@ class UpdatesDatabaseSpec : ExpoSpec {
         }
         
         let responseHeaderData2 = ResponseHeaderData(
-          protocolVersion: nil,
+          protocolVersionRaw: nil,
           serverDefinedHeadersRaw: nil,
           manifestFiltersRaw: "",
           manifestSignature: nil
@@ -134,7 +161,7 @@ class UpdatesDatabaseSpec : ExpoSpec {
       
       it("does not overwrite with nil") {
         let responseHeaderData1 = ResponseHeaderData(
-          protocolVersion: nil,
+          protocolVersionRaw: nil,
           serverDefinedHeadersRaw: nil,
           manifestFiltersRaw: "branch-name=\"rollout-1\"",
           manifestSignature: nil
@@ -145,7 +172,7 @@ class UpdatesDatabaseSpec : ExpoSpec {
         }
         
         let responseHeaderData2 = ResponseHeaderData(
-          protocolVersion: nil,
+          protocolVersionRaw: nil,
           serverDefinedHeadersRaw: nil,
           manifestFiltersRaw: nil,
           manifestSignature: nil

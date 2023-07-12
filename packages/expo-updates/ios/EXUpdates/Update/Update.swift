@@ -81,8 +81,8 @@ public enum UpdateError: Int, Error {
 @objcMembers
 public class Update: NSObject {
   public let updateId: UUID
-  public let scopeKey: String
-  public let commitTime: Date
+  public let scopeKey: String?
+  public var commitTime: Date
   public let runtimeVersion: String
   public let keep: Bool
   public let isDevelopmentMode: Bool
@@ -103,7 +103,7 @@ public class Update: NSObject {
     config: UpdatesConfig,
     database: UpdatesDatabase?,
     updateId: UUID,
-    scopeKey: String,
+    scopeKey: String?,
     commitTime: Date,
     runtimeVersion: String,
     keep: Bool,
@@ -143,7 +143,7 @@ public class Update: NSObject {
         config: config,
         database: database
       )
-    case "0", "1":
+    case 0, 1:
       return NewUpdate.update(
         withNewManifest: NewManifest(rawManifestJSON: withManifest),
         extensions: extensions,

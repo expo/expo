@@ -80,6 +80,8 @@ typedef NS_ENUM(NSInteger, EXCameraVideoCodec) {
 @property (nonatomic, assign) NSInteger whiteBalance;
 @property (assign, nonatomic) AVCaptureSessionPreset pictureSize;
 @property (nonatomic, assign) AVCaptureVideoStabilizationMode videoStabilizationMode;
+@property (nonatomic, assign) BOOL responsiveOrientationWhenOrientationLocked;
+
 
 @property (nonatomic, assign) BOOL isScanningBarCodes;
 @property (nonatomic, assign) BOOL isDetectingFaces;
@@ -93,6 +95,7 @@ typedef NS_ENUM(NSInteger, EXCameraVideoCodec) {
 - (void)updateZoom;
 - (void)updateWhiteBalance;
 - (void)updatePictureSize;
+- (void)updateResponsiveOrientationWhenOrientationLocked;
 - (void)updateFaceDetectorSettings:(NSDictionary *)settings;
 - (void)setBarCodeScannerSettings:(NSDictionary *)settings;
 - (void)takePicture:(NSDictionary *)options resolve:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)reject;
@@ -102,6 +105,7 @@ typedef NS_ENUM(NSInteger, EXCameraVideoCodec) {
 - (void)pausePreview;
 - (void)onReady:(NSDictionary *)event;
 - (void)onMountingError:(NSDictionary *)event;
+- (void)onResponsiveOrientationChanged:(NSDictionary *)event;
 - (void)onPictureSaved:(NSDictionary *)event;
 
 @end

@@ -12,61 +12,50 @@ static jsi::Value SPEC_PREFIX(installCoreFunctions)(
     const jsi::Value *args,
     size_t count) {
   static_cast<NativeReanimatedModuleSpec *>(&turboModule)
-      ->installCoreFunctions(rt, std::move(args[0]));
+      ->installCoreFunctions(rt, std::move(args[0]), std::move(args[1]));
   return jsi::Value::undefined();
 }
 
 // SharedValue
 
-static jsi::Value SPEC_PREFIX(makeShareable)(
+static jsi::Value SPEC_PREFIX(makeShareableClone)(
     jsi::Runtime &rt,
     TurboModule &turboModule,
     const jsi::Value *args,
     size_t count) {
   return static_cast<NativeReanimatedModuleSpec *>(&turboModule)
-      ->makeShareable(rt, std::move(args[0]));
+      ->makeShareableClone(rt, std::move(args[0]), std::move(args[1]));
 }
 
-static jsi::Value SPEC_PREFIX(makeMutable)(
+// Sync methods
+
+static jsi::Value SPEC_PREFIX(makeSynchronizedDataHolder)(
     jsi::Runtime &rt,
     TurboModule &turboModule,
     const jsi::Value *args,
     size_t count) {
   return static_cast<NativeReanimatedModuleSpec *>(&turboModule)
-      ->makeMutable(rt, std::move(args[0]));
+      ->makeSynchronizedDataHolder(rt, std::move(args[0]));
 }
 
-static jsi::Value SPEC_PREFIX(makeRemote)(
+static jsi::Value SPEC_PREFIX(getDataSynchronously)(
     jsi::Runtime &rt,
     TurboModule &turboModule,
     const jsi::Value *args,
     size_t count) {
   return static_cast<NativeReanimatedModuleSpec *>(&turboModule)
-      ->makeRemote(rt, std::move(args[0]));
+      ->getDataSynchronously(rt, std::move(args[0]));
 }
 
-static jsi::Value SPEC_PREFIX(startMapper)(
-    jsi::Runtime &rt,
-    TurboModule &turboModule,
-    const jsi::Value *args,
-    size_t count) {
-  return static_cast<NativeReanimatedModuleSpec *>(&turboModule)
-      ->startMapper(
-          rt,
-          std::move(args[0]),
-          std::move(args[1]),
-          std::move(args[2]),
-          std::move(args[3]),
-          std::move(args[4]));
-}
+// scheduler
 
-static jsi::Value SPEC_PREFIX(stopMapper)(
+static jsi::Value SPEC_PREFIX(scheduleOnUI)(
     jsi::Runtime &rt,
     TurboModule &turboModule,
     const jsi::Value *args,
     size_t count) {
   static_cast<NativeReanimatedModuleSpec *>(&turboModule)
-      ->stopMapper(rt, std::move(args[0]));
+      ->scheduleOnUI(rt, std::move(args[0]));
   return jsi::Value::undefined();
 }
 
@@ -117,7 +106,11 @@ static jsi::Value SPEC_PREFIX(registerSensor)(
     size_t count) {
   return static_cast<NativeReanimatedModuleSpec *>(&turboModule)
       ->registerSensor(
-          rt, std::move(args[0]), std::move(args[1]), std::move(args[2]));
+          rt,
+          std::move(args[0]),
+          std::move(args[1]),
+          std::move(args[2]),
+          std::move(args[3]));
 }
 
 static jsi::Value SPEC_PREFIX(unregisterSensor)(
@@ -146,7 +139,7 @@ static jsi::Value SPEC_PREFIX(subscribeForKeyboardEvents)(
     const jsi::Value *args,
     size_t count) {
   return static_cast<NativeReanimatedModuleSpec *>(&turboModule)
-      ->subscribeForKeyboardEvents(rt, std::move(args[0]));
+      ->subscribeForKeyboardEvents(rt, std::move(args[0]), std::move(args[1]));
 }
 
 static jsi::Value SPEC_PREFIX(unsubscribeFromKeyboardEvents)(
@@ -159,18 +152,35 @@ static jsi::Value SPEC_PREFIX(unsubscribeFromKeyboardEvents)(
   return jsi::Value::undefined();
 }
 
+static jsi::Value SPEC_PREFIX(configureLayoutAnimation)(
+    jsi::Runtime &rt,
+    TurboModule &turboModule,
+    const jsi::Value *args,
+    size_t count) {
+  return static_cast<NativeReanimatedModuleSpec *>(&turboModule)
+      ->configureLayoutAnimation(
+          rt,
+          std::move(args[0]),
+          std::move(args[1]),
+          std::move(args[2]),
+          std::move(args[3]));
+}
+
 NativeReanimatedModuleSpec::NativeReanimatedModuleSpec(
     std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule("NativeReanimated", jsInvoker) {
   methodMap_["installCoreFunctions"] =
-      MethodMetadata{1, SPEC_PREFIX(installCoreFunctions)};
+      MethodMetadata{2, SPEC_PREFIX(installCoreFunctions)};
 
-  methodMap_["makeShareable"] = MethodMetadata{1, SPEC_PREFIX(makeShareable)};
-  methodMap_["makeMutable"] = MethodMetadata{1, SPEC_PREFIX(makeMutable)};
-  methodMap_["makeRemote"] = MethodMetadata{1, SPEC_PREFIX(makeRemote)};
+  methodMap_["makeShareableClone"] =
+      MethodMetadata{2, SPEC_PREFIX(makeShareableClone)};
 
-  methodMap_["startMapper"] = MethodMetadata{5, SPEC_PREFIX(startMapper)};
-  methodMap_["stopMapper"] = MethodMetadata{1, SPEC_PREFIX(stopMapper)};
+  methodMap_["makeSynchronizedDataHolder"] =
+      MethodMetadata{1, SPEC_PREFIX(makeSynchronizedDataHolder)};
+  methodMap_["getDataSynchronously"] =
+      MethodMetadata{1, SPEC_PREFIX(getDataSynchronously)};
+
+  methodMap_["scheduleOnUI"] = MethodMetadata{1, SPEC_PREFIX(scheduleOnUI)};
 
   methodMap_["registerEventHandler"] =
       MethodMetadata{2, SPEC_PREFIX(registerEventHandler)};
@@ -180,13 +190,16 @@ NativeReanimatedModuleSpec::NativeReanimatedModuleSpec(
   methodMap_["getViewProp"] = MethodMetadata{3, SPEC_PREFIX(getViewProp)};
   methodMap_["enableLayoutAnimations"] =
       MethodMetadata{2, SPEC_PREFIX(enableLayoutAnimations)};
-  methodMap_["registerSensor"] = MethodMetadata{3, SPEC_PREFIX(registerSensor)};
+  methodMap_["registerSensor"] = MethodMetadata{4, SPEC_PREFIX(registerSensor)};
   methodMap_["unregisterSensor"] =
       MethodMetadata{1, SPEC_PREFIX(unregisterSensor)};
   methodMap_["configureProps"] = MethodMetadata{2, SPEC_PREFIX(configureProps)};
   methodMap_["subscribeForKeyboardEvents"] =
-      MethodMetadata{1, SPEC_PREFIX(subscribeForKeyboardEvents)};
+      MethodMetadata{2, SPEC_PREFIX(subscribeForKeyboardEvents)};
   methodMap_["unsubscribeFromKeyboardEvents"] =
       MethodMetadata{1, SPEC_PREFIX(unsubscribeFromKeyboardEvents)};
+
+  methodMap_["configureLayoutAnimation"] =
+      MethodMetadata{4, SPEC_PREFIX(configureLayoutAnimation)};
 }
 } // namespace reanimated

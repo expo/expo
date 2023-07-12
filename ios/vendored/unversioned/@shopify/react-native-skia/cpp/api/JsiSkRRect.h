@@ -34,9 +34,14 @@ public:
         std::make_shared<JsiSkRect>(getContext(), getObject()->getBounds()));
   }
 
+  JSI_API_TYPENAME("RRect");
+
   JSI_EXPORT_PROPERTY_GETTERS(JSI_EXPORT_PROP_GET(JsiSkRRect, rx),
                               JSI_EXPORT_PROP_GET(JsiSkRRect, ry),
-                              JSI_EXPORT_PROP_GET(JsiSkRRect, rect))
+                              JSI_EXPORT_PROP_GET(JsiSkRRect, rect),
+                              JSI_EXPORT_PROP_GET(JsiSkRRect, __typename__))
+
+  JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkRRect, dispose))
 
   JsiSkRRect(std::shared_ptr<RNSkPlatformContext> context, const SkRRect &rect)
       : JsiSkWrappingSharedPtrHostObject<SkRRect>(

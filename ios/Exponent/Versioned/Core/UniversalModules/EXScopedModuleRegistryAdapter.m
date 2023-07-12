@@ -10,7 +10,6 @@
 #import "EXScopedFilePermissionModule.h"
 #import "EXScopedFontLoader.h"
 #import "EXScopedSecureStore.h"
-#import "EXScopedAmplitude.h"
 #import "EXScopedPermissions.h"
 #import "EXScopedSegment.h"
 #import "EXScopedLocalAuthentication.h"
@@ -104,11 +103,6 @@
 #if __has_include(<EXSecureStore/EXSecureStore.h>)
   EXScopedSecureStore *secureStoreModule = [[EXScopedSecureStore alloc] initWithScopeKey:scopeKey andConstantsBinding:constantsBinding];
   [moduleRegistry registerExportedModule:secureStoreModule];
-#endif
-
-#if __has_include(<EXAmplitude/EXAmplitude.h>)
-  EXScopedAmplitude *amplitudeModule = [[EXScopedAmplitude alloc] initWithScopeKey:scopeKey];
-  [moduleRegistry registerExportedModule:amplitudeModule];
 #endif
 
 #if __has_include(<ExpoModulesCore/EXPermissionsService.h>)

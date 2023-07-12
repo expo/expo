@@ -1,5 +1,5 @@
 import {
-  RCTDeviceEventEmitter,
+  DeviceEventEmitter,
   CodedError,
   NativeModulesProxy,
   UnavailabilityError,
@@ -13,7 +13,10 @@ import {
   UpdateCheckResult,
   UpdateEvent,
   UpdateFetchResult,
+  UpdatesCheckAutomaticallyValue,
   UpdatesLogEntry,
+  UpdatesNativeStateChangeEvent,
+  UpdatesNativeStateMachineContext,
 } from './Updates.types';
 
 export * from './Updates.types';
@@ -44,6 +47,19 @@ export const channel: string | null = ExpoUpdates.channel ?? null;
  * The runtime version of the current build.
  */
 export const runtimeVersion: string | null = ExpoUpdates.runtimeVersion ?? null;
+
+const _checkAutomaticallyMapNativeToJS = {
+  ALWAYS: 'ON_LOAD',
+  ERROR_RECOVERY_ONLY: 'ON_ERROR_RECOVERY',
+  NEVER: 'NEVER',
+  WIFI_ONLY: 'WIFI_ONLY',
+};
+
+/**
+ * Determines if and when expo-updates checks for and downloads updates automatically on startup.
+ */
+export const checkAutomatically: UpdatesCheckAutomaticallyValue | null =
+  _checkAutomaticallyMapNativeToJS[ExpoUpdates.checkAutomatically] ?? null;
 
 // @docsMissing
 /**
@@ -76,8 +92,9 @@ export const isUsingEmbeddedAssets: boolean = ExpoUpdates.isUsingEmbeddedAssets 
 
 /**
  * If `expo-updates` is enabled, this is the
- * [manifest](/workflow/expo-go#manifest) object for the update that's currently
- * running.
+ * [manifest](/versions/latest/sdk/constants/#manifest) (or
+ * [classic manifest](/versions/latest/sdk/constants/#appmanifest))
+ * object for the update that's currently running.
  *
  * In development mode, or any other environment in which `expo-updates` is disabled, this object is
  * empty.
@@ -177,6 +194,39 @@ export async function checkForUpdateAsync(): Promise<UpdateCheckResult> {
 }
 
 /**
+ * Retrieves the current extra params.
+ */
+export async function getExtraParamsAsync(): Promise<{ [key: string]: string }> {
+  if (!ExpoUpdates.getExtraParamsAsync) {
+    throw new UnavailabilityError('Updates', 'getExtraParamsAsync');
+  }
+
+  return await ExpoUpdates.getExtraParamsAsync();
+}
+
+/**
+ * Sets an extra param if value is non-null, otherwise unsets the param.
+ * Extra params are sent in a header of update requests.
+ * The update server may use these params when evaluating logic to determine which update to serve.
+ * EAS Update merges these params into the fields used to evaluate channel–branch mapping logic.
+ *
+ * @example An app may want to add a feature where users can opt-in to beta updates. In this instance,
+ * extra params could be set to `{userType: 'beta'}`, and then the server can use this information
+ * when deciding which update to serve. If using EAS Update, the channel-branch mapping can be set to
+ * discriminate branches based on the `userType`.
+ */
+export async function setExtraParamAsync(
+  key: string,
+  value: string | null | undefined
+): Promise<void> {
+  if (!ExpoUpdates.setExtraParamAsync) {
+    throw new UnavailabilityError('Updates', 'setExtraParamAsync');
+  }
+
+  return await ExpoUpdates.setExtraParamAsync(key, value ?? null);
+}
+
+/**
  * Retrieves the most recent expo-updates log entries.
  *
  * @param maxAge Sets the max age of retrieved log entries in milliseconds. Default to 3600000 ms (1 hour).
@@ -254,13 +304,17 @@ let _emitter: EventEmitter | null;
 function _getEmitter(): EventEmitter {
   if (!_emitter) {
     _emitter = new EventEmitter();
-    RCTDeviceEventEmitter.addListener('Expo.nativeUpdatesEvent', _emitEvent);
+    DeviceEventEmitter.addListener('Expo.nativeUpdatesEvent', _emitEvent);
+    DeviceEventEmitter.addListener(
+      'Expo.nativeUpdatesStateChangeEvent',
+      _emitNativeStateChangeEvent
+    );
   }
   return _emitter;
 }
 
 function _emitEvent(params): void {
-  let newParams = params;
+  let newParams = { ...params };
   if (typeof params === 'string') {
     newParams = JSON.parse(params);
   }
@@ -273,6 +327,26 @@ function _emitEvent(params): void {
     throw new Error(`EventEmitter must be initialized to use from its listener`);
   }
   _emitter.emit('Expo.updatesEvent', newParams);
+}
+
+// Handle native state change events
+function _emitNativeStateChangeEvent(params: any) {
+  let newParams = { ...params };
+  if (typeof params === 'string') {
+    newParams = JSON.parse(params);
+  }
+  if (newParams.context.latestManifestString) {
+    newParams.context.latestManifest = JSON.parse(newParams.context.latestManifestString);
+    delete newParams.context.latestManifestString;
+  }
+  if (newParams.context.downloadedManifestString) {
+    newParams.context.downloadedManifest = JSON.parse(newParams.context.downloadedManifestString);
+    delete newParams.context.downloadedManifestString;
+  }
+  if (!_emitter) {
+    throw new Error(`EventEmitter must be initialized to use from its listener`);
+  }
+  _emitter?.emit('Expo.updatesStateChangeEvent', newParams);
 }
 
 /**
@@ -288,4 +362,35 @@ function _emitEvent(params): void {
 export function addListener(listener: (event: UpdateEvent) => void): EventSubscription {
   const emitter = _getEmitter();
   return emitter.addListener('Expo.updatesEvent', listener);
+}
+
+/**
+ * @hidden
+ */
+export const addUpdatesStateChangeListener = (
+  listener: (event: UpdatesNativeStateChangeEvent) => void
+) => {
+  // Add listener for state change events
+  const emitter = _getEmitter();
+  return emitter.addListener('Expo.updatesStateChangeEvent', listener);
+};
+
+/**
+ * @hidden
+ */
+export async function getNativeStateMachineContextAsync(): Promise<UpdatesNativeStateMachineContext> {
+  // Return the current state machine context
+  if (!ExpoUpdates.getNativeStateMachineContextAsync) {
+    throw new UnavailabilityError('Updates', 'getNativeStateMachineContextAsync');
+  }
+  const nativeContext = await ExpoUpdates.getNativeStateMachineContextAsync();
+  if (nativeContext.latestManifestString) {
+    nativeContext.latestManifest = JSON.parse(nativeContext.latestManifestString);
+    delete nativeContext.latestManifestString;
+  }
+  if (nativeContext.downloadedManifestString) {
+    nativeContext.downloadedManifest = JSON.parse(nativeContext.downloadedManifestString);
+    delete nativeContext.downloadedManifestString;
+  }
+  return nativeContext;
 }

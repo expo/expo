@@ -3,7 +3,6 @@ package host.exp.exponent.analytics
 
 import android.util.Log
 import host.exp.exponent.Constants
-import org.json.JSONObject
 
 // EXpo Log
 object EXL {
@@ -32,17 +31,5 @@ object EXL {
 
   @JvmStatic fun e(tag: String?, msg: String?) {
     Log.e(tag, msg ?: "")
-
-    try {
-      val stackTrace = Log.getStackTraceString(Throwable())
-      val eventProperties = JSONObject().apply {
-        put("TAG", tag)
-        put("MESSAGE", msg)
-        put("STACK_TRACE", stackTrace)
-      }
-      Analytics.logEvent(Analytics.AnalyticsEvent.LOG_ERROR, eventProperties)
-    } catch (e: Throwable) {
-      Log.e(TAG, e.toString())
-    }
   }
 }

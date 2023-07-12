@@ -1,5 +1,6 @@
 import assert from 'assert';
 import fs from 'fs-extra';
+import minimatch from 'minimatch';
 import path from 'path';
 
 import { Podspec } from '../../CocoaPods';
@@ -97,11 +98,14 @@ const config: VendoringTargetConfig = {
           return podspecPath;
         },
         async mutatePodspec(podspec: Podspec) {
-          const rnForkPath = path.join(REACT_NATIVE_SUBMODULE_DIR, '..');
-          const relativeForkPath = path.relative(path.join(EXPO_DIR, 'ios'), rnForkPath);
+          const reactCommonDir = path.relative(
+            EXPO_DIR,
+            path.join(REACT_NATIVE_SUBMODULE_DIR, 'packages', 'react-native', 'ReactCommon')
+          );
+          // `reanimated_utils.rb` generates wrong and confusing paths to ReactCommon headers, so we need to fix them.
           podspec.xcconfig['HEADER_SEARCH_PATHS'] = podspec.xcconfig[
             'HEADER_SEARCH_PATHS'
-          ]?.replace(rnForkPath, '${PODS_ROOT}/../' + relativeForkPath);
+          ]?.replace(/"\$\(PODS_ROOT\)\/\.\.\/.+?"/g, `"\${PODS_ROOT}/../../${reactCommonDir}"`);
         },
         transforms: {
           content: [
@@ -133,7 +137,20 @@ const config: VendoringTargetConfig = {
           'android/rnVersionPatch/**',
         ],
         async postCopyFilesHookAsync(sourceDirectory: string, targetDirectory: string) {
-          await fs.copy(path.join(sourceDirectory, 'Common'), path.join(targetDirectory, 'Common'));
+          const excludedBlobs = ['**/*.md'];
+
+          await fs.copy(
+            path.join(sourceDirectory, 'Common'),
+            path.join(targetDirectory, 'Common'),
+            {
+              filter: (src) => {
+                const isExcluded = excludedBlobs.some((blob) => minimatch(src, blob));
+                return !isExcluded;
+              },
+              overwrite: true,
+              errorOnExist: false,
+            }
+          );
           const reanimatedVersion = require(path.join(sourceDirectory, 'package.json')).version;
           await transformFileAsync(path.join(targetDirectory, 'android', 'build.gradle'), [
             // set reanimated version
@@ -159,7 +176,7 @@ const config: VendoringTargetConfig = {
               // react-native root dir is in react-native-lab/react-native
               paths: 'build.gradle',
               find: /\b(def reactNativeRootDir)\s*=.+$/gm,
-              replaceWith: `$1 = Paths.get(projectDir.getPath(), '../../../../../react-native-lab/react-native').toFile()`,
+              replaceWith: `$1 = Paths.get(projectDir.getPath(), '../../../../../react-native-lab/react-native/packages/react-native').toFile()`,
             },
             {
               // no-op for extracting tasks
@@ -168,10 +185,10 @@ const config: VendoringTargetConfig = {
               replaceWith: `$1\n    return`,
             },
             {
-              // remove jsc extraction
+              // project `:ReactAndroid` to `:packages:react-native:ReactAndroid`
               paths: 'build.gradle',
-              find: /def jscAAR = .*\n.*extractSO.*jscAAR.*$/gm,
-              replaceWith: '',
+              find: /(:ReactAndroid)/g,
+              replaceWith: ':packages:react-native:$1',
             },
             {
               // compileOnly hermes-engine
@@ -179,25 +196,6 @@ const config: VendoringTargetConfig = {
               find: /implementation "com\.facebook\.react:hermes-android:?"\s*\/\/ version substituted by RNGP/g,
               replaceWith:
                 'compileOnly "com.facebook.react:hermes-android:${REACT_NATIVE_VERSION}"',
-            },
-            {
-              // find rn libs in ReactAndroid build output
-              paths: 'CMakeLists.txt',
-              find: 'set (RN_SO_DIR ${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/first-party/react/jni)',
-              replaceWith:
-                'set (RN_SO_DIR "${REACT_NATIVE_DIR}/ReactAndroid/build/intermediates/library_*/*/jni")',
-            },
-            {
-              // find hermes from prefab
-              paths: 'CMakeLists.txt',
-              find: /(string\(APPEND CMAKE_CXX_FLAGS " -DJS_RUNTIME_HERMES=1"\))/g,
-              replaceWith: `find_package(hermes-engine REQUIRED CONFIG)\n    $1`,
-            },
-            {
-              // find hermes from prefab
-              paths: 'CMakeLists.txt',
-              find: /"\$\{BUILD_DIR\}\/.+\/libhermes\.so"/g,
-              replaceWith: `hermes-engine::libhermes`,
             },
             {
               // expose `ReanimatedUIManagerFactory.create` publicly
@@ -292,33 +290,36 @@ const config: VendoringTargetConfig = {
 `,
             },
             {
-              paths: 'RNCWebView.h',
-              find: /@interface RNCWebView : RCTView/,
+              paths: 'RNCWebViewImpl.h',
+              find: /@interface RNCWebViewImpl : RCTView/,
               replaceWith: '$&\n@property (nonatomic, strong) NSString *scopeKey;',
             },
             {
-              paths: 'RNCWebView.m',
+              paths: 'RNCWebViewImpl.m',
               find: /(\[\[RNCWKProcessPoolManager sharedManager\] sharedProcessPool)]/,
               replaceWith: '$1ForScopeKey:self.scopeKey]',
             },
             {
-              paths: 'RNCWebViewManager.m',
+              paths: 'RNCWebViewManager.mm',
               find: /@implementation RNCWebViewManager\s*{/,
-              replaceWith: '$&\n  NSString *_scopeKey;',
+              replaceWith: '$&\n    NSString *_scopeKey;',
             },
             {
-              paths: 'RNCWebViewManager.m',
-              find: '*webView = [RNCWebView new];',
-              replaceWith: '*webView = [RNCWebView new];\n  webView.scopeKey = _scopeKey;',
+              paths: 'RNCWebViewManager.mm',
+              find: 'return [[RNCWebViewImpl alloc] init];',
+              replaceWith:
+                'RNCWebViewImpl *webview = [[RNCWebViewImpl alloc] init];\n  webview.scopeKey = _scopeKey;\n  return webview;',
             },
             {
-              paths: 'RNCWebViewManager.m',
-              find: /RCT_EXPORT_MODULE\(\)/,
-              replaceWith: `- (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
-                                        scopeKey:(NSString *)scopeKey
-                                    easProjectId:(NSString *)easProjectId
-                           kernelServiceDelegate:(id)kernelServiceInstance
-                                          params:(NSDictionary *)params
+              paths: 'RNCWebViewManager.mm',
+              find: /RCT_EXPORT_MODULE\(RNCWebView\)/,
+              replaceWith: `RCT_EXPORT_MODULE(RNCWebView)
+
+- (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
+                          scopeKey:(NSString *)scopeKey
+                      easProjectId:(NSString *)easProjectId
+              kernelServiceDelegate:(id)kernelServiceInstance
+                            params:(NSDictionary *)params
 {
   if (self = [super init]) {
     _scopeKey = scopeKey;
@@ -377,9 +378,6 @@ const config: VendoringTargetConfig = {
         excludeFiles: ['android/gradle{/**,**}', 'android/settings.gradle'],
       },
     },
-    'react-native-shared-element': {
-      source: 'https://github.com/IjzerenHein/react-native-shared-element',
-    },
     '@react-native-segmented-control/segmented-control': {
       source: 'https://github.com/react-native-segmented-control/segmented-control',
       ios: {},
@@ -433,7 +431,7 @@ const config: VendoringTargetConfig = {
             podspec.pod_target_xcconfig = {};
           }
           podspec.pod_target_xcconfig['HEADER_SEARCH_PATHS'] =
-            '"$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging" "$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers"';
+            '"$(PODS_TARGET_SRCROOT)/cpp/"/** "$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging" "$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers"';
         },
       },
       android: {

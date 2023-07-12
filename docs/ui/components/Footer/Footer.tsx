@@ -1,4 +1,4 @@
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/compat/router';
 
 import { ForumsLink, EditPageLink, IssuesLink } from './Links';
 
@@ -15,18 +15,18 @@ type Props = {
 };
 
 export const Footer = ({ title, sourceCodeUrl, packageName }: Props) => {
-  const { pathname } = useRouter();
-  const isAPIPage = pathname.includes('/sdk/');
+  const router = useRouter();
+  const isAPIPage = router?.pathname.includes('/sdk/') ?? false;
   const isExpoPackage = packageName && packageName.startsWith('expo-');
 
   return (
-    <footer className="flex flex-row border-t border-solid border-default mt-10 pt-10 max-medium:flex-col">
+    <footer className="flex flex-row border-t border-solid border-default mt-10 pt-10 max-md-gutters:flex-col">
       <UL className="flex-1 !mt-0 !ml-0 mb-5 !list-none">
         <ForumsLink isAPIPage={isAPIPage} title={title} />
         {isAPIPage && (
           <IssuesLink title={title} repositoryUrl={isExpoPackage ? undefined : sourceCodeUrl} />
         )}
-        <EditPageLink pathname={pathname} />
+        {router?.pathname && <EditPageLink pathname={router.pathname} />}
       </UL>
       <PageVote />
       {!NEWSLETTER_DISABLED && <NewsletterSignUp />}

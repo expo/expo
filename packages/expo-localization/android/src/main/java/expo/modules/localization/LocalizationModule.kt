@@ -10,6 +10,7 @@ import android.text.TextUtils
 import android.text.TextUtils.getLayoutDirectionFromLocale
 import android.text.format.DateFormat
 import android.util.LayoutDirection
+import android.util.Log
 import android.view.View
 import androidx.core.os.LocaleListCompat
 import androidx.core.os.bundleOf
@@ -24,7 +25,12 @@ import java.util.*
 private const val SHARED_PREFS_NAME = "com.facebook.react.modules.i18nmanager.I18nUtil"
 private const val KEY_FOR_PREFS_ALLOWRTL = "RCTI18nUtil_allowRTL"
 
+private const val LOCALE_SETTINGS_CHANGED = "onLocaleSettingsChanged"
+private const val CALENDAR_SETTINGS_CHANGED = "onCalendarSettingsChanged"
+
 class LocalizationModule : Module() {
+  private var observer: () -> Unit = {}
+
   override fun definition() = ModuleDefinition {
     Name("ExpoLocalization")
 
@@ -44,10 +50,21 @@ class LocalizationModule : Module() {
       return@Function getCalendars()
     }
 
+    Events(LOCALE_SETTINGS_CHANGED, CALENDAR_SETTINGS_CHANGED)
+
     OnCreate {
       appContext?.reactContext?.let {
         setRTLFromStringResources(it)
       }
+      observer = {
+        this@LocalizationModule.sendEvent(LOCALE_SETTINGS_CHANGED)
+        this@LocalizationModule.sendEvent(CALENDAR_SETTINGS_CHANGED)
+      }
+      Notifier.registerObserver(observer)
+    }
+
+    OnDestroy {
+      Notifier.deregisterObserver(observer)
     }
   }
 
@@ -131,26 +148,32 @@ class LocalizationModule : Module() {
     val locales = mutableListOf<Map<String, Any?>>()
     val localeList: LocaleListCompat = LocaleListCompat.getDefault()
     for (i in 0 until localeList.size()) {
-      val locale: Locale = localeList.get(i) ?: continue
-      val decimalFormat = DecimalFormatSymbols.getInstance(locale)
-      locales.add(
-        mapOf(
-          "languageTag" to locale.toLanguageTag(),
-          "regionCode" to getRegionCode(locale),
-          "textDirection" to if (getLayoutDirectionFromLocale(locale) == LayoutDirection.RTL) "rtl" else "ltr",
-          "languageCode" to locale.language,
+      try {
+        val locale: Locale = localeList.get(i) ?: continue
+        val decimalFormat = DecimalFormatSymbols.getInstance(locale)
+        locales.add(
+          mapOf(
+            "languageTag" to locale.toLanguageTag(),
+            "regionCode" to getRegionCode(locale),
+            "textDirection" to if (getLayoutDirectionFromLocale(locale) == LayoutDirection.RTL) "rtl" else "ltr",
+            "languageCode" to locale.language,
 
-          // the following two properties should be deprecated once Intl makes it way to RN, instead use toLocaleString
-          "decimalSeparator" to decimalFormat.decimalSeparator.toString(),
-          "digitGroupingSeparator" to decimalFormat.groupingSeparator.toString(),
+            // the following two properties should be deprecated once Intl makes it way to RN, instead use toLocaleString
+            "decimalSeparator" to decimalFormat.decimalSeparator.toString(),
+            "digitGroupingSeparator" to decimalFormat.groupingSeparator.toString(),
 
-          "measurementSystem" to getMeasurementSystem(locale),
-          "currencyCode" to decimalFormat.currency.currencyCode,
+            "measurementSystem" to getMeasurementSystem(locale),
+            "currencyCode" to decimalFormat.currency.currencyCode,
 
-          // currency symbol can be localized to display locale (1st on the list) or to the locale for the currency (as done here).
-          "currencySymbol" to Currency.getInstance(locale).getSymbol(locale),
+            // currency symbol can be localized to display locale (1st on the list) or to the locale for the currency (as done here).
+            "currencySymbol" to Currency.getInstance(locale).getSymbol(locale),
+          )
         )
-      )
+      } catch (e: Exception) {
+        // warn about the problematic locale
+        // we don't append the problematic locale to the list
+        Log.w("expo-localization", "Failed to get locale for index $i", e)
+      }
     }
     return locales
   }

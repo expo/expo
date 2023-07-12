@@ -12,7 +12,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.PixelUtil;
 import com.swmansion.reanimated.BuildConfig;
-import com.swmansion.reanimated.NativeProxy.KeyboardEventDataUpdater;
+import com.swmansion.reanimated.nativeProxy.KeyboardEventDataUpdater;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +40,7 @@ public class ReanimatedKeyboardEventListener {
   private int nextListenerId = 0;
   private KeyboardState state;
   private final HashMap<Integer, KeyboardEventDataUpdater> listeners = new HashMap<>();
+  private boolean isStatusBarTranslucent = false;
 
   public ReanimatedKeyboardEventListener(WeakReference<ReactApplicationContext> reactContext) {
     this.reactContext = reactContext;
@@ -68,7 +69,11 @@ public class ReanimatedKeyboardEventListener {
           FrameLayout.LayoutParams params =
               new FrameLayout.LayoutParams(
                   FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
-          params.setMargins(0, paddingTop, 0, paddingBottom);
+          if (isStatusBarTranslucent) {
+            params.setMargins(0, 0, 0, 0);
+          } else {
+            params.setMargins(0, paddingTop, 0, paddingBottom);
+          }
           content.setLayoutParams(params);
           return insets;
         });
@@ -127,9 +132,11 @@ public class ReanimatedKeyboardEventListener {
     ViewCompat.setWindowInsetsAnimationCallback(rootView, new WindowInsetsCallback());
   }
 
-  public int subscribeForKeyboardEvents(KeyboardEventDataUpdater updater) {
+  public int subscribeForKeyboardEvents(
+      KeyboardEventDataUpdater updater, boolean isStatusBarTranslucent) {
     int listenerId = nextListenerId++;
     if (listeners.isEmpty()) {
+      this.isStatusBarTranslucent = isStatusBarTranslucent;
       setUpCallbacks();
     }
     listeners.put(listenerId, updater);
@@ -138,7 +145,7 @@ public class ReanimatedKeyboardEventListener {
 
   private void bringBackWindowInsets() {
     WindowCompat.setDecorFitsSystemWindows(
-        reactContext.get().getCurrentActivity().getWindow(), true);
+        reactContext.get().getCurrentActivity().getWindow(), !isStatusBarTranslucent);
     ViewCompat.setOnApplyWindowInsetsListener(getRootView(), null);
     ViewCompat.setWindowInsetsAnimationCallback(getRootView(), null);
     View content =

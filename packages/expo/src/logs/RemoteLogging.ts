@@ -1,8 +1,7 @@
 import Constants from 'expo-constants';
-import { Platform } from 'expo-modules-core';
+import { Platform, uuidv4 } from 'expo-modules-core';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 import invariant from 'invariant';
-import { v4 as uuidv4 } from 'uuid';
 
 import getInstallationIdAsync from '../environment/getInstallationIdAsync';
 import LogSerialization from './LogSerialization';
@@ -84,7 +83,7 @@ async function _sendRemoteLogsAsync(): Promise<void> {
   // for another policy (ex: throttling) this is where to to implement it.
   const batch = _logQueue.splice(0);
 
-  const logUrl = Constants.manifest?.logUrl ?? Constants.manifest2?.extra?.expoGo?.logUrl;
+  const logUrl = Constants.expoGoConfig?.logUrl;
   if (typeof logUrl !== 'string') {
     throw new Error('The Expo project manifest must specify `logUrl`');
   }

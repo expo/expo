@@ -57,3 +57,17 @@ class GlideBlurhashModel(
     return result
   }
 }
+
+class GlideThumbhashModel(
+  var uri: Uri
+) : GlideModel() {
+  override val glideData: GlideThumbhashModel = this
+
+  override fun equals(other: Any?): Boolean {
+    return (this === other) || other is GlideThumbhashModel && uri == other.uri
+  }
+
+  override fun hashCode(): Int {
+    return uri.hashCode()
+  }
+}

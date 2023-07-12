@@ -12,7 +12,7 @@ if ENV["REACT_NATIVE_OVERRIDE_VERSION"]
   reactNativeVersion = ENV["REACT_NATIVE_OVERRIDE_VERSION"]
 end
 
-REACT_NATIVE_MINOR_VERSION = reactNativeVersion.split('.')[1].to_i
+reactNativeMinorVersion = reactNativeVersion.split('.')[1].to_i
 
 fabric_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
 fabric_compiler_flags = '-DRN_FABRIC_ENABLED -DRCT_NEW_ARCH_ENABLED'
@@ -59,15 +59,30 @@ Pod::Spec.new do |s|
     "FRAMEWORK_SEARCH_PATHS" => "\"${PODS_CONFIGURATION_BUILD_DIR}/React-hermes\"",
     'OTHER_SWIFT_FLAGS' => "$(inherited) #{fabric_enabled ? fabric_compiler_flags : ''}"
   }
+  user_header_search_paths = [
+    '"${PODS_CONFIGURATION_BUILD_DIR}/ExpoModulesCore/Swift Compatibility Header"',
+    '"$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging"',
+    '"$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers"',
+  ]
+  if fabric_enabled && ENV['USE_FRAMEWORKS']
+    user_header_search_paths << "\"$(PODS_ROOT)/DoubleConversion\""
+    user_header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\""
+    user_header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\""
+    user_header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\""
+    user_header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\""
+    user_header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\""
+    user_header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\""
+  end
   s.user_target_xcconfig = {
-    "HEADER_SEARCH_PATHS" => "\"${PODS_CONFIGURATION_BUILD_DIR}/ExpoModulesCore/Swift Compatibility Header\" \"$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers\"",
+    "HEADER_SEARCH_PATHS" => user_header_search_paths,
   }
 
-  compiler_flags = folly_compiler_flags + ' ' + "-DREACT_NATIVE_MINOR_VERSION=#{REACT_NATIVE_MINOR_VERSION}"
+  compiler_flags = folly_compiler_flags + ' ' + "-DREACT_NATIVE_MINOR_VERSION=#{reactNativeMinorVersion}"
 
   s.dependency 'React-Core'
   s.dependency 'ReactCommon/turbomodule/core'
-  s.dependency 'React-RCTAppDelegate' if REACT_NATIVE_MINOR_VERSION >= 71
+  s.dependency 'React-RCTAppDelegate' if reactNativeMinorVersion >= 71
+  s.dependency 'React-NativeModulesApple' if reactNativeMinorVersion >= 72
 
   if fabric_enabled
     compiler_flags << ' ' << fabric_compiler_flags
@@ -75,6 +90,13 @@ Pod::Spec.new do |s|
     s.dependency 'React-RCTFabric'
     s.dependency 'RCT-Folly', folly_version
   end
+
+  unless defined?(install_modules_dependencies)
+    # `install_modules_dependencies` is defined from react_native_pods.rb.
+    # when running with `pod ipc spec`, this method is not defined and we have to require manually.
+    require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
+  end
+  install_modules_dependencies(s)
 
   if !$ExpoUseSources&.include?(package['name']) && ENV['EXPO_USE_SOURCE'].to_i == 0 && File.exist?("ios/#{s.name}.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
     s.source_files = 'ios/**/*.h', 'common/cpp/**/*.h'

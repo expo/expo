@@ -1,4 +1,6 @@
 import { Inter_900Black } from '@expo-google-fonts/inter';
+import { useUpdates, checkForUpdate, downloadUpdate } from '@expo/use-updates';
+import Constants from 'expo-constants';
 import { NativeModulesProxy } from 'expo-modules-core';
 import { StatusBar } from 'expo-status-bar';
 import * as Updates from 'expo-updates';
@@ -7,12 +9,75 @@ import React from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 require('./test.png');
+// eslint-disable-next-line no-unused-expressions
 Inter_900Black;
+
+function TestValue(props: { testID: string; value: string }) {
+  return (
+    <View>
+      <View style={{ flexDirection: 'row' }}>
+        <Text style={styles.labelText}>{props.testID}</Text>
+        <Text style={styles.labelText}>&nbsp;</Text>
+        <Text style={styles.labelText} testID={props.testID}>
+          {props.value}
+        </Text>
+      </View>
+    </View>
+  );
+}
+
+function TestButton(props: { testID: string; onPress: () => void }) {
+  return (
+    <Pressable testID={props.testID} style={styles.button} onPress={props.onPress}>
+      <Text style={styles.buttonText}>{props.testID}</Text>
+    </Pressable>
+  );
+}
 
 export default function App() {
   const [numAssetFiles, setNumAssetFiles] = React.useState(0);
   const [logs, setLogs] = React.useState<UpdatesLogEntry[]>([]);
   const [active, setActive] = React.useState(false);
+  const [lastUpdateEventType, setLastUpdateEventType] = React.useState('');
+  const [extraParamsString, setExtraParamsString] = React.useState('');
+  const [nativeStateContextString, setNativeStateContextString] = React.useState('{}');
+
+  const { currentlyRunning, availableUpdate, isUpdateAvailable, isUpdatePending } = useUpdates();
+
+  const state = Updates.useUpdatesState();
+
+  Updates.useUpdateEvents((event) => {
+    setLastUpdateEventType(event.type);
+  });
+
+  const handleReadNativeStateContext = () => {
+    const handleAsync = async () => {
+      setActive(true);
+      const state = await Updates.getNativeStateMachineContextAsync();
+      setNativeStateContextString(JSON.stringify(state));
+      await delay(1000);
+      setActive(false);
+    };
+    handleAsync().catch((e) => {
+      console.warn(e);
+    });
+  };
+
+  const handleSetExtraParams = () => {
+    const handleAsync = async () => {
+      setActive(true);
+      await Updates.setExtraParamAsync('testsetnull', 'testvalue');
+      await Updates.setExtraParamAsync('testsetnull', null);
+      await Updates.setExtraParamAsync('testparam', 'testvalue');
+      const params = await Updates.getExtraParamsAsync();
+      setExtraParamsString(JSON.stringify(params, null, 2));
+      await delay(1000);
+      setActive(false);
+    };
+    handleAsync().catch((e) => {
+      console.warn(e);
+    });
+  };
 
   const handleReadAssetFiles = () => {
     const handleAsync = async () => {
@@ -54,6 +119,22 @@ export default function App() {
     });
   };
 
+  const handleClearLogEntries = () => {
+    const handleAsync = async () => {
+      setActive(true);
+      await Updates.clearLogEntriesAsync();
+      await delay(1000);
+      setActive(false);
+    };
+    handleAsync().catch((e) => {
+      console.warn(e);
+    });
+  };
+
+  const handleDownloadUpdate = () => {
+    downloadUpdate();
+  };
+
   const logsToString = (logs: UpdatesLogEntry[]) =>
     JSON.stringify(
       logs.map((log) => {
@@ -65,40 +146,70 @@ export default function App() {
       })
     );
 
-  const runTypeMessage = Updates.isEmbeddedLaunch
-    ? 'This app is running from built-in code'
-    : 'This app is running an update';
-
   return (
     <View style={styles.container}>
-      <Text>Update string</Text>
-      <Text testID="updateString">/notify/test</Text>
-      <Text>---</Text>
-      <Text>Update ID</Text>
-      <Text testID="updateID">{Updates.updateId}</Text>
-      <Text>---</Text>
-      <Text testID="runTypeMessage">{runTypeMessage}</Text>
-      <Text>---</Text>
-      <Text>Number of asset files in DB</Text>
-      <Text testID="numAssetFiles">{numAssetFiles}</Text>
-      <Text>---</Text>
+      <TestValue testID="lastUpdateEventType" value={`${lastUpdateEventType}`} />
+      <TestValue testID="updateString" value="test" />
+      <TestValue testID="updateID" value={`${Updates.updateId}`} />
+      <TestValue testID="numAssetFiles" value={`${numAssetFiles}`} />
+      <TestValue testID="runtimeVersion" value={`${currentlyRunning.runtimeVersion}`} />
+      <TestValue testID="checkAutomatically" value={`${Updates.checkAutomatically}`} />
+      <TestValue testID="isEmbeddedLaunch" value={`${currentlyRunning.isEmbeddedLaunch}`} />
+      <TestValue testID="availableUpdateID" value={`${availableUpdate?.updateId}`} />
+      <TestValue testID="extraParamsString" value={`${extraParamsString}`} />
+
+      <TestValue testID="state.isUpdateAvailable" value={`${state.isUpdateAvailable}`} />
+      <TestValue testID="state.isUpdatePending" value={`${state.isUpdatePending}`} />
+      <TestValue testID="state.isRollback" value={`${state.isRollback}`} />
+      <TestValue testID="state.latestManifest.id" value={`${state.latestManifest?.id || ''}`} />
+      <TestValue
+        testID="state.downloadedManifest.id"
+        value={`${state.downloadedManifest?.id || ''}`}
+      />
+
       <Text>Log messages</Text>
-      <ScrollView style={styles.logEntriesContainer}>
+      <ScrollView contentContainerStyle={styles.logEntriesContainer}>
         <Text testID="logEntries" style={styles.logEntriesText}>
           {logsToString(logs)}
         </Text>
       </ScrollView>
 
+      <Text>Updates expoConfig</Text>
+      <ScrollView contentContainerStyle={styles.logEntriesContainer}>
+        <Text testID="updates.expoClient" style={styles.logEntriesText}>
+          {JSON.stringify(Updates.manifest?.extra?.expoClient || {})}
+        </Text>
+      </ScrollView>
+
+      <Text>Constants expoConfig</Text>
+      <ScrollView contentContainerStyle={styles.logEntriesContainer}>
+        <Text testID="constants.expoConfig" style={styles.logEntriesText}>
+          {JSON.stringify(Constants.expoConfig)}
+        </Text>
+      </ScrollView>
+
+      <Text>Native state context</Text>
+      <ScrollView contentContainerStyle={styles.logEntriesContainer}>
+        <Text testID="nativeStateContextString" style={styles.logEntriesText}>
+          {nativeStateContextString}
+        </Text>
+      </ScrollView>
+
       {active ? <ActivityIndicator testID="activity" size="small" color="#0000ff" /> : null}
-      <Pressable testID="readAssetFiles" style={styles.button} onPress={handleReadAssetFiles}>
-        <Text style={styles.buttonText}>Read number of asset files</Text>
-      </Pressable>
-      <Pressable testID="clearAssetFiles" style={styles.button} onPress={handleClearAssetFiles}>
-        <Text style={styles.buttonText}>Clear asset files</Text>
-      </Pressable>
-      <Pressable testID="readLogEntries" style={styles.button} onPress={handleReadLogEntries}>
-        <Text style={styles.buttonText}>Read logs</Text>
-      </Pressable>
+      <View style={{ flexDirection: 'row' }}>
+        <View>
+          <TestButton testID="readAssetFiles" onPress={handleReadAssetFiles} />
+          <TestButton testID="clearAssetFiles" onPress={handleClearAssetFiles} />
+          <TestButton testID="readLogEntries" onPress={handleReadLogEntries} />
+          <TestButton testID="clearLogEntries" onPress={handleClearLogEntries} />
+        </View>
+        <View>
+          <TestButton testID="checkForUpdate" onPress={checkForUpdate} />
+          <TestButton testID="downloadUpdate" onPress={handleDownloadUpdate} />
+          <TestButton testID="setExtraParams" onPress={handleSetExtraParams} />
+          <TestButton testID="readNativeStateContext" onPress={handleReadNativeStateContext} />
+        </View>
+      </View>
 
       <StatusBar style="auto" />
     </View>
@@ -128,21 +239,25 @@ const styles = StyleSheet.create({
   button: {
     alignItems: 'center',
     justifyContent: 'center',
-    margin: 10,
-    paddingVertical: 12,
-    paddingHorizontal: 32,
+    margin: 5,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
     borderRadius: 4,
     elevation: 3,
     backgroundColor: '#4630EB',
   },
   buttonText: {
     color: 'white',
+    fontSize: 6,
+  },
+  labelText: {
+    fontSize: 6,
   },
   logEntriesContainer: {
     margin: 10,
-    height: 200,
-    paddingVertical: 12,
-    paddingHorizontal: 32,
+    height: 50,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
     width: '90%',
     minWidth: '90%',
     borderColor: '#4630EB',
@@ -150,6 +265,6 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   logEntriesText: {
-    fontSize: 8,
+    fontSize: 6,
   },
 });

@@ -51,7 +51,7 @@ export function App(props: LauncherAppProps) {
 
 const Main = () => {
   return (
-    <Tab.Navigator screenOptions={{ tabBarHideOnKeyboard: true }} detachInactiveScreens={false}>
+    <Tab.Navigator detachInactiveScreens={false}>
       <Tab.Screen
         name="Home"
         component={HomeScreen}
@@ -61,11 +61,12 @@ const Main = () => {
         }}
       />
       <Tab.Screen
-        name="Extensions"
+        name="ExtensionsStack"
         component={ExtensionsStack}
         options={{
           headerShown: false,
           tabBarIcon: ({ focused }) => <ExtensionsFilledIcon focused={focused} />,
+          title: 'Extensions',
         }}
       />
       <Tab.Screen

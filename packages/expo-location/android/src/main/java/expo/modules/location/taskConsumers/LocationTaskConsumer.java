@@ -181,7 +181,7 @@ public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerIn
       return;
     }
 
-    mLocationRequest = LocationHelpers.prepareLocationRequest(mTask.getOptions());
+    mLocationRequest = LocationHelpers.prepareLocationRequest(mTask.getOptions()).build();
     mPendingIntent = preparePendingIntent();
 
     try {

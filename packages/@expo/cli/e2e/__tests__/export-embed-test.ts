@@ -1,5 +1,4 @@
 /* eslint-env jest */
-import JsonFile from '@expo/json-file';
 import execa from 'execa';
 import fs from 'fs-extra';
 import klawSync from 'klaw-sync';
@@ -14,13 +13,13 @@ beforeAll(async () => {
   await fs.mkdir(projectRoot, { recursive: true });
   process.env.FORCE_COLOR = '0';
   process.env.CI = '1';
-  process.env.EXPO_USE_PATH_ALIASES = '1';
+  process.env._EXPO_E2E_USE_PATH_ALIASES = '1';
 });
 
 afterAll(() => {
   process.env.FORCE_COLOR = originalForceColor;
   process.env.CI = originalCI;
-  delete process.env.EXPO_USE_PATH_ALIASES;
+  delete process.env._EXPO_E2E_USE_PATH_ALIASES;
 });
 
 it('loads expected modules by default', async () => {
@@ -28,8 +27,8 @@ it('loads expected modules by default', async () => {
     `require('../../build/src/export/embed').expoExportEmbed`
   );
   expect(modules).toStrictEqual([
+    '../node_modules/ansi-styles/index.js',
     '../node_modules/arg/index.js',
-    '../node_modules/chalk/node_modules/ansi-styles/index.js',
     '../node_modules/chalk/source/index.js',
     '../node_modules/chalk/source/util.js',
     '../node_modules/has-flag/index.js',

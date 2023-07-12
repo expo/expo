@@ -49,12 +49,14 @@ const IGNORES_PATHS = [
 // Url to the documentation on Expo Modules
 const DOCS_URL = 'https://docs.expo.dev/modules';
 
+const FYI_LOCAL_DIR = 'https://expo.fyi/expo-module-local-autolinking.md';
+
 async function getCorrectLocalDirectory(targetOrSlug: string) {
   const packageJsonPath = await findUp('package.json', { cwd: CWD });
   if (!packageJsonPath) {
     console.log(
       chalk.red.bold(
-        '⚠️ This command should  be run inside your Expo project when run with the --local flag.'
+        '⚠️ This command should be run inside your Expo project when run with the --local flag.'
       )
     );
     console.log(
@@ -74,6 +76,17 @@ async function getCorrectLocalDirectory(targetOrSlug: string) {
  * @param command An object from `commander`.
  */
 async function main(target: string | undefined, options: CommandOptions) {
+  if (options.local) {
+    console.log();
+    console.log(
+      `${chalk.gray('The local module will be created in the ')}${chalk.gray.bold.italic(
+        'modules'
+      )} ${chalk.gray('directory in the root of your project. Learn more: ')}${chalk.gray.bold(
+        FYI_LOCAL_DIR
+      )}`
+    );
+    console.log();
+  }
   const slug = await askForPackageSlugAsync(target, options.local);
   const targetDir = options.local
     ? await getCorrectLocalDirectory(target || slug)
@@ -153,10 +166,11 @@ async function main(target: string | undefined, options: CommandOptions) {
   }
 
   console.log();
-  console.log('✅ Successfully created Expo module');
   if (options.local) {
+    console.log(`✅ Successfully created Expo module in ${chalk.bold.italic(`modules/${slug}`)}`);
     printFurtherLocalInstructions(slug, data.project.moduleName);
   } else {
+    console.log('✅ Successfully created Expo module');
     printFurtherInstructions(targetDir, packageManager, options.example);
   }
 }
@@ -399,15 +413,16 @@ function printFurtherInstructions(
     commands.forEach((command) => console.log(chalk.gray('>'), chalk.bold(command)));
     console.log();
   }
-  console.log(`Visit ${chalk.blue.bold(DOCS_URL)} for the documentation on Expo Modules APIs`);
+  console.log(`Learn more on Expo Modules APIs: ${chalk.blue.bold(DOCS_URL)}`);
 }
 
 function printFurtherLocalInstructions(slug: string, name: string) {
-  console.log(`You can now import this module inside your application:`);
   console.log();
-  console.log(chalk.blue(`import { hello } from '${slug}';`));
+  console.log(`You can now import this module inside your application.`);
+  console.log(`For example, you can add this line to your App.js or App.tsx file:`);
+  console.log(`${chalk.gray.italic(`import { hello } from './modules/${slug}';`)}`);
   console.log();
-  console.log(`Visit ${chalk.blue.bold(DOCS_URL)} for the documentation on Expo Modules APIs`);
+  console.log(`Learn more on Expo Modules APIs: ${chalk.blue.bold(DOCS_URL)}`);
   console.log(
     chalk.yellow(
       `Remember you need to rebuild your development client or reinstall pods to see the changes.`

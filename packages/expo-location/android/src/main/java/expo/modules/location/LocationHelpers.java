@@ -119,16 +119,15 @@ public class LocationHelpers {
     return heading;
   }
 
-  public static LocationRequest prepareLocationRequest(Map<String, Object> options) {
+  public static LocationRequest.Builder prepareLocationRequest(Map<String, Object> options) {
     LocationParams locationParams = LocationHelpers.mapOptionsToLocationParams(options);
     int accuracy = LocationHelpers.getAccuracyFromOptions(options);
 
-    return new LocationRequest()
-        .setFastestInterval(locationParams.getInterval())
-        .setInterval(locationParams.getInterval())
-        .setMaxWaitTime(locationParams.getInterval())
-        .setSmallestDisplacement(locationParams.getDistance())
-        .setPriority(mapAccuracyToPriority(accuracy));
+    return new LocationRequest.Builder(locationParams.getInterval())
+      .setMinUpdateIntervalMillis(locationParams.getInterval())
+      .setMaxUpdateDelayMillis(locationParams.getInterval())
+      .setMinUpdateDistanceMeters(locationParams.getDistance())
+      .setPriority(mapAccuracyToPriority(accuracy));
   }
 
   public static LocationParams mapOptionsToLocationParams(Map<String, Object> options) {
@@ -147,14 +146,14 @@ public class LocationHelpers {
     return locationParamsBuilder.build();
   }
 
-  static void requestSingleLocation(final LocationModule locationModule, final LocationRequest locationRequest, final Promise promise) {
+  static void requestSingleLocation(final LocationModule locationModule, final LocationRequest.Builder locationRequest, final Promise promise) {
     // we want just one update
-    locationRequest.setNumUpdates(1);
+    locationRequest.setMaxUpdates(1);
 
-    locationModule.requestLocationUpdates(locationRequest, null, new LocationRequestCallbacks() {
+    locationModule.requestLocationUpdates(locationRequest.build(), null, new LocationRequestCallbacks() {
       @Override
       public void onLocationChanged(Location location) {
-        promise.resolve(LocationHelpers.locationToBundle(location, Bundle.class));
+          promise.resolve(LocationHelpers.locationToBundle(location, Bundle.class));
       }
 
       @Override

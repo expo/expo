@@ -10,8 +10,6 @@ on:
         options:
           - versioned-client
           - unversioned-client
-          - versioned-client-signed
-          - versioned-client-signed-apk
           - versioned-client-add-sdk
   schedule:
     # 5:20 AM UTC time on every Monday, Wednesday and Friday
@@ -25,14 +23,13 @@ on:
       - .github/workflows/client-android-eas.yml
       - apps/eas-expo-go/**
 
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     if: ${{ github.actor != 'dependabot[bot]' }}
     steps:
       - name: 👀 Checkout

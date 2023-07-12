@@ -13,7 +13,6 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import host.exp.exponent.Constants
 import host.exp.exponent.LauncherActivity
-import host.exp.exponent.analytics.Analytics
 import host.exp.exponent.kernel.ExponentError
 import host.exp.exponent.kernel.Kernel
 import host.exp.expoview.databinding.ErrorActivityNewBinding
@@ -50,7 +49,6 @@ class ErrorActivity() : FragmentActivity() {
   override fun onResume() {
     super.onResume()
     visibleActivity = this
-    Analytics.logEventWithManifestUrl(Analytics.AnalyticsEvent.ERROR_APPEARED, manifestUrl)
   }
 
   override fun onPause() {

@@ -15,6 +15,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 namespace RNSkia {
 
@@ -22,17 +23,19 @@ class JsiDomRenderNode : public JsiDomNode {
 public:
   JsiDomRenderNode(std::shared_ptr<RNSkPlatformContext> context,
                    const char *type)
-      : JsiDomNode(context, type) {}
+      : JsiDomNode(context, type, NodeClass::RenderNode) {}
 
   void render(DrawingContext *context) {
 #if SKIA_DOM_DEBUG
     printDebugInfo("Begin Render");
 #endif
 
-    // Ensure we have a local drawing context inheriting from the parent context
-    if (_localContext == nullptr) {
-      _localContext = context->inheritContext(getType());
-    }
+    auto parentPaint = context->getPaint();
+    auto cache =
+        _paintCache.parent == parentPaint ? _paintCache.child : nullptr;
+
+    auto shouldRestore =
+        context->saveAndConcat(_paintProps, getChildren(), cache);
 
     auto shouldTransform = _matrixProp->isSet() || _transformProp->isSet();
     auto shouldSave =
@@ -43,37 +46,36 @@ public:
       // Save canvas state
       if (_layerProp->isSet()) {
         if (_layerProp->isBool()) {
-#if SKIA_DOM_DEBUG
+#if SKIA_DOM_DEBUG_VERBOSE
           printDebugInfo("canvas->saveLayer()");
 #endif
-          _localContext->getCanvas()->saveLayer(
+          context->getCanvas()->saveLayer(
               SkCanvas::SaveLayerRec(nullptr, nullptr, nullptr, 0));
         } else {
-#if SKIA_DOM_DEBUG
+#if SKIA_DOM_DEBUG_VERBOSE
           printDebugInfo("canvas->saveLayer(paint)");
 #endif
-          _localContext->getCanvas()->saveLayer(SkCanvas::SaveLayerRec(
+          context->getCanvas()->saveLayer(SkCanvas::SaveLayerRec(
               nullptr, _layerProp->getDerivedValue().get(), nullptr, 0));
         }
       } else {
-#if SKIA_DOM_DEBUG
+#if SKIA_DOM_DEBUG_VERBOSE
         printDebugInfo("canvas->save()");
 #endif
-        _localContext->getCanvas()->save();
+        context->getCanvas()->save();
       }
 
       if (_originProp->isSet()) {
-#if SKIA_DOM_DEBUG
+#if SKIA_DOM_DEBUG_VERBOSE
         printDebugInfo("canvas->translate(origin)");
 #endif
         // Handle origin
-        _localContext->getCanvas()->translate(
-            _originProp->getDerivedValue()->x(),
-            _originProp->getDerivedValue()->y());
+        context->getCanvas()->translate(_originProp->getDerivedValue()->x(),
+                                        _originProp->getDerivedValue()->y());
       }
 
       if (shouldTransform) {
-#if SKIA_DOM_DEBUG
+#if SKIA_DOM_DEBUG_VERBOSE
         printDebugInfo(
             "canvas->concat(" +
             std::string(_matrixProp->isSet() ? "matrix" : "transform") +
@@ -83,43 +85,40 @@ public:
                                            : _transformProp->getDerivedValue();
 
         // Concat canvas' matrix with our matrix
-        _localContext->getCanvas()->concat(*matrix);
+        context->getCanvas()->concat(*matrix);
       }
 
       // Clipping
       if (_clipProp->isSet()) {
         auto invert = _invertClip->isSet() && _invertClip->value().getAsBool();
-        clip(context, _localContext->getCanvas(), invert);
+        clip(context, context->getCanvas(), invert);
       }
 
       if (_originProp->isSet()) {
-#if SKIA_DOM_DEBUG
+#if SKIA_DOM_DEBUG_VERBOSE
         printDebugInfo("canvas->translate(-origin)");
 #endif
         // Handle origin
-        _localContext->getCanvas()->translate(
-            -_originProp->getDerivedValue()->x(),
-            -_originProp->getDerivedValue()->y());
+        context->getCanvas()->translate(-_originProp->getDerivedValue()->x(),
+                                        -_originProp->getDerivedValue()->y());
       }
     }
 
-    // Let any local paint props decorate the context
-    _paintProps->decorate(_localContext.get());
-
-    // Now let's make sure the local context is resolved correctly - ie. that
-    // all children of type declaration (except paint) is given the opportunity
-    // to decorate the context.
-    materializeDeclarations();
-
     // Render the node
-    renderNode(_localContext.get());
+    renderNode(context);
 
     // Restore if needed
     if (shouldSave) {
-#if SKIA_DOM_DEBUG
+#if SKIA_DOM_DEBUG_VERBOSE
       printDebugInfo("canvas->restore()");
 #endif
-      _localContext->getCanvas()->restore();
+      context->getCanvas()->restore();
+    }
+
+    if (shouldRestore) {
+      _paintCache.parent = parentPaint;
+      _paintCache.child = context->getPaint();
+      context->restore();
     }
 
 #if SKIA_DOM_DEBUG
@@ -131,26 +130,14 @@ public:
    Override reset (last thing that happens in the render cycle) to also reset
    the changed flag on the local drawing context if necessary.
    */
-  void resetPendingChanges() override {
-    JsiDomNode::resetPendingChanges();
-    _localContext->resetChangedFlag();
-  }
+  void resetPendingChanges() override { JsiDomNode::resetPendingChanges(); }
 
   /**
-   Signal from the JS side that the node is removed from the dom.
+   Overridden dispose to release resources
    */
-  void dispose() override {
-    JsiDomNode::dispose();
-
-    // Clear local drawing context
-    if (_localContext != nullptr) {
-      _localContext->dispose();
-      _localContext = nullptr;
-    }
-  }
-
-  JsiDomNodeClass getNodeClass() override {
-    return JsiDomNodeClass::RenderNode;
+  void dispose(bool immediate) override {
+    JsiDomNode::dispose(immediate);
+    _paintCache.clear();
   }
 
 protected:
@@ -158,9 +145,15 @@ protected:
    Invalidates and marks then context as changed.
    */
   void invalidateContext() override {
-    if (_localContext != nullptr) {
-      _localContext->markAsChanged();
-    }
+    enqueAsynOperation([weakSelf = weak_from_this()]() {
+      auto self = weakSelf.lock();
+      if (self) {
+        std::static_pointer_cast<JsiDomRenderNode>(self)->_paintCache.parent =
+            nullptr;
+        std::static_pointer_cast<JsiDomRenderNode>(self)->_paintCache.child =
+            nullptr;
+      }
+    });
   }
 
   /**
@@ -183,6 +176,43 @@ protected:
     _clipProp = container->defineProperty<ClipProp>("clip");
     _invertClip = container->defineProperty<NodeProp>("invertClip");
     _layerProp = container->defineProperty<LayerProp>("layer");
+  }
+
+  /**
+   Validates that only declaration nodes can be children
+   */
+  void addChild(std::shared_ptr<JsiDomNode> child) override {
+    JsiDomNode::addChild(child);
+    _paintCache.parent = nullptr;
+    _paintCache.child = nullptr;
+  }
+
+  /**
+   Validates that only declaration nodes can be children
+   */
+  void insertChildBefore(std::shared_ptr<JsiDomNode> child,
+                         std::shared_ptr<JsiDomNode> before) override {
+    JsiDomNode::insertChildBefore(child, before);
+    _paintCache.parent = nullptr;
+    _paintCache.child = nullptr;
+  }
+
+  /**
+   A property changed
+   */
+  void onPropertyChanged(BaseNodeProp *prop) override {
+    static std::vector<const char *> paintProps = {
+        JsiPropId::get("color"),      JsiPropId::get("strokeWidth"),
+        JsiPropId::get("blendMode"),  JsiPropId::get("strokeCap"),
+        JsiPropId::get("strokeJoin"), JsiPropId::get("strokeMiter"),
+        JsiPropId::get("style"),      JsiPropId::get("antiAlias"),
+        JsiPropId::get("opacity")};
+
+    // We'll invalidate paint if a prop change happened in a paint property
+    if (std::find(paintProps.begin(), paintProps.end(), prop->getName()) !=
+        paintProps.end()) {
+      invalidateContext();
+    }
   }
 
 private:
@@ -209,18 +239,16 @@ private:
     }
   }
 
-  /**
-   Loops through all declaration nodes and gives each one of them the
-   opportunity to decorate the context
-   */
-  void materializeDeclarations() {
-    for (auto &child : getChildren()) {
-      if (child->getNodeClass() == JsiDomNodeClass::DeclarationNode) {
-        std::static_pointer_cast<JsiBaseDomDeclarationNode>(child)
-            ->decorateContext(_localContext.get());
-      }
+  struct PaintCache {
+    void clear() {
+      parent = nullptr;
+      child = nullptr;
     }
-  }
+    std::shared_ptr<SkPaint> parent;
+    std::shared_ptr<SkPaint> child;
+  };
+
+  PaintCache _paintCache;
 
   PointProp *_originProp;
   MatrixProp *_matrixProp;
@@ -229,8 +257,6 @@ private:
   ClipProp *_clipProp;
   LayerProp *_layerProp;
   PaintProps *_paintProps;
-
-  std::shared_ptr<DrawingContext> _localContext;
 };
 
 } // namespace RNSkia

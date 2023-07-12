@@ -8,9 +8,8 @@ import TitleSwitch from '../components/TitledSwitch';
 export default function DocumentPickerScreen() {
   const [copyToCache, setCopyToCache] = React.useState(false);
   const [multiple, setMultiple] = React.useState(false);
-  const [pickerResult, setPickerResult] = React.useState<DocumentPicker.DocumentResult | null>(
-    null
-  );
+  const [pickerResult, setPickerResult] =
+    React.useState<DocumentPicker.DocumentPickerResult | null>(null);
 
   const openPicker = async () => {
     const time = Date.now();
@@ -50,7 +49,7 @@ export default function DocumentPickerScreen() {
       />
       <FlatList
         data={pickerResult?.assets}
-        keyExtractor={(item) => item.uri}
+        keyExtractor={(item, index) => `${index}-${item.uri}`}
         renderItem={({ item: document }) => {
           return (
             <View>

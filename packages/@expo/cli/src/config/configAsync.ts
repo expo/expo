@@ -33,6 +33,7 @@ export function logConfig(config: ExpoConfig | ProjectConfig) {
 
 export async function configAsync(projectRoot: string, options: Options) {
   setNodeEnv('development');
+  require('@expo/env').load(projectRoot);
 
   if (options.type) {
     assert.match(options.type, /^(public|prebuild|introspect)$/);

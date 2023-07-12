@@ -1,9 +1,13 @@
 import { css } from '@emotion/react';
 import { theme, DocsLogo } from '@expo/styleguide';
 import { spacing } from '@expo/styleguide-base';
-import { ArrowLeftIcon, BookOpen02Icon, PlanEnterpriseIcon } from '@expo/styleguide-icons';
-
-import { PreviewIcon, PreviewInactiveIcon } from './icons/Preview';
+import {
+  ArrowLeftIcon,
+  GraduationHat02DuotoneIcon,
+  Stars02DuotoneIcon,
+  Home02DuotoneIcon,
+  BookOpen02DuotoneIcon,
+} from '@expo/styleguide-icons';
 
 import { shouldShowFeaturePreviewLink } from '~/constants/FeatureFlags.cjs';
 import { Search } from '~/ui/components/Search';
@@ -31,31 +35,33 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
       <Search />
       <SidebarSingleEntry
         href="/"
+        title="Home"
+        Icon={Home02DuotoneIcon}
+        isActive={sidebarActiveGroup === 'home'}
+      />
+      <SidebarSingleEntry
+        href="/workflow/customizing"
         title="Guides"
-        Icon={BookOpen02Icon}
+        Icon={BookOpen02DuotoneIcon}
         isActive={sidebarActiveGroup === 'general'}
       />
       <SidebarSingleEntry
-        href="/eas"
-        title="Expo Application Services"
-        Icon={PlanEnterpriseIcon}
-        isActive={sidebarActiveGroup === 'eas'}
-      />
-      <SidebarSingleEntry
         href="/versions/latest"
-        title="API Reference"
+        title="Reference"
         Icon={DocsLogo}
         isActive={sidebarActiveGroup === 'reference'}
+      />
+      <SidebarSingleEntry
+        href="/tutorial/introduction/"
+        title="Learn"
+        Icon={GraduationHat02DuotoneIcon}
+        isActive={sidebarActiveGroup === 'learn'}
       />
       {shouldShowFeaturePreviewLink() && (
         <SidebarSingleEntry
           href="/feature-preview"
           title="Feature Preview"
-          Icon={
-            sidebarActiveGroup === 'featurePreview' || sidebarActiveGroup === 'preview'
-              ? PreviewIcon
-              : PreviewInactiveIcon
-          }
+          Icon={Stars02DuotoneIcon}
           isActive={sidebarActiveGroup === 'featurePreview' || sidebarActiveGroup === 'preview'}
         />
       )}

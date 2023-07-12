@@ -8,21 +8,25 @@
 #import <React/RCTConstants.h>
 #import <React/RCTKeyCommands.h>
 
-#import "EXDevLauncherController.h"
-#import "EXDevLauncherRCTBridge.h"
-#import "EXDevLauncherManifestParser.h"
-#import "EXDevLauncherLoadingView.h"
-#import "EXDevLauncherRCTDevSettings.h"
-#import "EXDevLauncherInternal.h"
-#import "EXDevLauncherUpdatesHelper.h"
-#import "EXDevLauncherAuth.h"
-#import "RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h"
+#import <EXDevLauncher/EXDevLauncherController.h>
+#import <EXDevLauncher/EXDevLauncherRCTBridge.h>
+#import <EXDevLauncher/EXDevLauncherManifestParser.h>
+#import <EXDevLauncher/EXDevLauncherLoadingView.h>
+#import <EXDevLauncher/EXDevLauncherRCTDevSettings.h>
+#import <EXDevLauncher/EXDevLauncherUpdatesHelper.h>
+#import <EXDevLauncher/RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h>
+
+#import <EXDevLauncher/EXDevLauncherBridgeDelegate.h>
 
 #if __has_include(<EXDevLauncher/EXDevLauncher-Swift.h>)
 // For cocoapods framework, the generated swift header will be inside EXDevLauncher module
 #import <EXDevLauncher/EXDevLauncher-Swift.h>
 #else
 #import <EXDevLauncher-Swift.h>
+#endif
+
+#ifdef RCT_NEW_ARCH_ENABLED
+#import <React/RCTSurfaceView.h>
 #endif
 
 @import EXManifests;
@@ -45,13 +49,14 @@
 @property (nonatomic, strong) NSDictionary *launchOptions;
 @property (nonatomic, strong) NSURL *sourceUrl;
 @property (nonatomic, assign) BOOL shouldPreferUpdatesInterfaceSourceUrl;
-@property (nonatomic, strong) EXDevLauncherRecentlyOpenedAppsRegistry *recentlyOpenedAppsRegistry;
 @property (nonatomic, strong) EXManifestsManifest *manifest;
 @property (nonatomic, strong) NSURL *manifestURL;
 @property (nonatomic, strong) NSURL *possibleManifestURL;
 @property (nonatomic, strong) EXDevLauncherErrorManager *errorManager;
 @property (nonatomic, strong) EXDevLauncherInstallationIDHelper *installationIDHelper;
+@property (nonatomic, strong) EXDevLauncherNetworkInterceptor *networkInterceptor;
 @property (nonatomic, assign) BOOL isStarted;
+@property (nonatomic, strong) EXDevLauncherBridgeDelegate *bridgeDelegate;
 
 @end
 
@@ -76,8 +81,9 @@
     self.pendingDeepLinkRegistry = [EXDevLauncherPendingDeepLinkRegistry new];
     self.errorManager = [[EXDevLauncherErrorManager alloc] initWithController:self];
     self.installationIDHelper = [EXDevLauncherInstallationIDHelper new];
+    self.networkInterceptor = [EXDevLauncherNetworkInterceptor new];
     self.shouldPreferUpdatesInterfaceSourceUrl = NO;
-    [EXDevLauncherNetworkLogger.shared enable];
+    self.bridgeDelegate = [EXDevLauncherBridgeDelegate new];
   }
   return self;
 }
@@ -85,15 +91,13 @@
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
 {
 
-  NSMutableArray *modules = [[DevMenuVendoredModulesUtils vendoredModules:bridge] mutableCopy];
+  NSMutableArray<id<RCTBridgeModule>> *modules = [NSMutableArray new];
 
   [modules addObject:[RCTDevMenu new]];
 #ifndef EX_DEV_LAUNCHER_URL
   [modules addObject:[EXDevLauncherRCTDevSettings new]];
 #endif
   [modules addObject:[EXDevLauncherLoadingView new]];
-  [modules addObject:[EXDevLauncherInternal new]];
-  [modules addObject:[EXDevLauncherAuth new]];
 
   return modules;
 }
@@ -177,10 +181,6 @@
   return [[NSBundle bundleWithURL:bundleURL] URLForResource:@"main" withExtension:@"jsbundle"];
 }
 
-- (NSDictionary *)recentlyOpenedApps
-{
-  return [_recentlyOpenedAppsRegistry recentlyOpenedApps];
-}
 
 - (void)clearRecentlyOpenedApps
 {
@@ -189,14 +189,28 @@
 
 - (NSDictionary<UIApplicationLaunchOptionsKey, NSObject*> *)getLaunchOptions;
 {
+  NSMutableDictionary *launchOptions = [self.launchOptions mutableCopy];
   NSURL *deepLink = [self.pendingDeepLinkRegistry consumePendingDeepLink];
-  if (!deepLink) {
-    return nil;
+
+  if (deepLink) {
+    // Passes pending deep link to initialURL if any
+    launchOptions[UIApplicationLaunchOptionsURLKey] = deepLink;
+  } else if (launchOptions[UIApplicationLaunchOptionsURLKey] && [EXDevLauncherURLHelper isDevLauncherURL:launchOptions[UIApplicationLaunchOptionsURLKey]]) {
+    // Strips initialURL if it is from myapp://expo-development-client/?url=...
+    // That would make dev-launcher acts like a normal app.
+    launchOptions[UIApplicationLaunchOptionsURLKey] = nil;
   }
 
-  return @{
-    UIApplicationLaunchOptionsURLKey: deepLink
-  };
+  if ([launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey][UIApplicationLaunchOptionsUserActivityTypeKey] isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+    // Strips universal launch link if it is from https://expo-development-client/?url=...
+    // That would make dev-launcher acts like a normal app, though this case should rarely happen.
+    NSUserActivity *userActivity = launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey][@"UIApplicationLaunchOptionsUserActivityKey"];
+    if (userActivity.webpageURL && [EXDevLauncherURLHelper isDevLauncherURL:userActivity.webpageURL]) {
+      userActivity.webpageURL = nil;
+    }
+  }
+
+  return launchOptions;
 }
 
 - (EXManifestsManifest *)appManifest
@@ -274,12 +288,8 @@
   }
 
   [self _removeInitModuleObserver];
-
-  _launcherBridge = [[EXDevLauncherRCTBridge alloc] initWithDelegate:self launchOptions:_launchOptions];
-
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:_launcherBridge
-                                                   moduleName:@"main"
-                                            initialProperties:@{}];
+  UIView *rootView = [_bridgeDelegate createRootViewWithModuleName:@"main" launchOptions:_launchOptions application:UIApplication.sharedApplication];
+  _launcherBridge = _bridgeDelegate.bridge;
 
   [self _ensureUserInterfaceStyleIsInSyncWithTraitEnv:rootView];
 
@@ -572,12 +582,18 @@
   [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTContentDidAppearNotification object:nil];
 
   dispatch_async(dispatch_get_main_queue(), ^{
+    #ifdef RCT_NEW_ARCH_ENABLED
+      #define EXPECTED_ROOT_VIEW RCTSurfaceView
+    #else
+      #define EXPECTED_ROOT_VIEW RCTRootContentView
+    #endif
     NSArray<UIView *> *views = [[[self->_window rootViewController] view] subviews];
     for (UIView *view in views) {
-      if (![view isKindOfClass:[RCTRootContentView class]]) {
+      if (![view isKindOfClass:[EXPECTED_ROOT_VIEW class]]) {
         [view removeFromSuperview];
       }
     }
+    #undef EXPECTED_ROOT_VIEW
   });
 }
 

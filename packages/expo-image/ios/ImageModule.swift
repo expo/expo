@@ -54,7 +54,7 @@ public final class ImageModule: Module {
       }
 
       Prop("tintColor") { (view, tintColor: UIColor?) in
-        view.imageTintColor = tintColor ?? .clear
+        view.imageTintColor = tintColor
       }
 
       Prop("priority") { (view, priority: ImagePriority?) in
@@ -121,6 +121,7 @@ public final class ImageModule: Module {
 
   static func registerLoaders() {
     SDImageLoadersManager.shared.addLoader(BlurhashLoader())
+    SDImageLoadersManager.shared.addLoader(ThumbhashLoader())
     SDImageLoadersManager.shared.addLoader(PhotoLibraryAssetLoader())
   }
 }

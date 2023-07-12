@@ -155,4 +155,35 @@ export var UIImagePickerPresentationStyle;
      */
     UIImagePickerPresentationStyle["AUTOMATIC"] = "automatic";
 })(UIImagePickerPresentationStyle || (UIImagePickerPresentationStyle = {}));
+/**
+ * Picker preferred asset representation mode. Its values are directly mapped to the [`PHPickerConfigurationAssetRepresentationMode`](https://developer.apple.com/documentation/photokit/phpickerconfigurationassetrepresentationmode).
+ *
+ * @platform ios
+ */
+export var UIImagePickerPreferredAssetRepresentationMode;
+(function (UIImagePickerPreferredAssetRepresentationMode) {
+    /**
+     * A mode that indicates that the system chooses the appropriate asset representation.
+     */
+    UIImagePickerPreferredAssetRepresentationMode["Automatic"] = "automatic";
+    /**
+     * A mode that uses the most compatible asset representation.
+     */
+    UIImagePickerPreferredAssetRepresentationMode["Compatible"] = "compatible";
+    /**
+     * A mode that uses the current representation to avoid transcoding, if possible.
+     */
+    UIImagePickerPreferredAssetRepresentationMode["Current"] = "current";
+})(UIImagePickerPreferredAssetRepresentationMode || (UIImagePickerPreferredAssetRepresentationMode = {}));
+export var CameraType;
+(function (CameraType) {
+    /**
+     * Back/rear camera.
+     */
+    CameraType["back"] = "back";
+    /**
+     * Front camera
+     */
+    CameraType["front"] = "front";
+})(CameraType || (CameraType = {}));
 //# sourceMappingURL=ImagePicker.types.js.map

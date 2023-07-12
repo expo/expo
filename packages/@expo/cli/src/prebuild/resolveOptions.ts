@@ -61,12 +61,9 @@ export function resolvePlatformOption(
     case 'android':
       return ['android'];
     case 'all':
-      if (loose || process.platform !== 'win32') {
-        return ['android', 'ios'];
-      }
-      return ['android'];
+      return loose || process.platform !== 'win32' ? ['android', 'ios'] : ['android'];
     default:
-      throw new CommandError(`Unsupported platform "${platform}". Options are: ios, android, all`);
+      return [platform as ModPlatform];
   }
 }
 

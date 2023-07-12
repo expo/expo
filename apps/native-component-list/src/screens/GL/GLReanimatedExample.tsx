@@ -93,7 +93,7 @@ interface ExpoGlHandlers<RenderContext> {
 }
 
 function useWorkletAwareGlContext<T>(
-  { onInit, onRender, shouldRunOnUI = !!(global as any)._WORKLET_RUNTIME }: ExpoGlHandlers<T>,
+  { onInit, onRender, shouldRunOnUI = !!(globalThis as any)._WORKLET_RUNTIME }: ExpoGlHandlers<T>,
   dependencies: unknown[] = []
 ) {
   const [gl, setGl] = useState<ExpoWebGLRenderingContext>();
@@ -146,7 +146,7 @@ export default function GLReanimated() {
     y: useSharedValue(0),
   };
 
-  const [assets] = useAssets([require('../../../assets/images/exponent-icon.png')]);
+  const [assets] = useAssets([require('../../../assets/images/expo-icon.png')]);
 
   const gestureHandler = useAnimatedGestureHandler<
     PanGestureHandlerGestureEvent,
@@ -204,7 +204,7 @@ export default function GLReanimated() {
         </Animated.View>
       </PanGestureHandler>
       <Text style={styles.text}>
-        {(global as any)._WORKLET_RUNTIME
+        {(globalThis as any)._WORKLET_RUNTIME
           ? 'Running on UI thread inside reanimated worklet'
           : 'Running on main JS thread, unsupported version of reanimated'}
       </Text>

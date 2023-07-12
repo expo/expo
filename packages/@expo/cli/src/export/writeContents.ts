@@ -11,11 +11,20 @@ const debug = require('debug')('expo:export:write') as typeof console.log;
 
 /**
  * @param props.platform native platform for the bundle
+ * @param props.format extension to use for the name
  * @param props.hash crypto hash for the bundle contents
  * @returns filename for the JS bundle.
  */
-function createBundleFileName({ platform, hash }: { platform: string; hash: string }): string {
-  return `${platform}-${hash}.js`;
+function createBundleFileName({
+  platform,
+  format,
+  hash,
+}: {
+  platform: string;
+  format: 'javascript' | 'bytecode';
+  hash: string;
+}): string {
+  return `${platform}-${hash}.${format === 'javascript' ? 'js' : 'hbc'}`;
 }
 
 /**
@@ -42,7 +51,11 @@ export async function writeBundlesAsync({
   ][]) {
     const bundle = bundleOutput.hermesBytecodeBundle ?? bundleOutput.code;
     const hash = createBundleHash(bundle);
-    const fileName = createBundleFileName({ platform, hash });
+    const fileName = createBundleFileName({
+      platform,
+      format: bundleOutput.hermesBytecodeBundle ? 'bytecode' : 'javascript',
+      hash,
+    });
 
     hashes[platform] = hash;
     fileNames[platform] = fileName;
@@ -88,7 +101,13 @@ export async function writeSourceMapsAsync({
         const mapName = `${platform}-${hash}.map`;
         await fs.writeFile(path.join(outputDir, mapName), sourceMap);
 
-        const jsBundleFileName = fileNames?.[platform] ?? createBundleFileName({ platform, hash });
+        const jsBundleFileName =
+          fileNames?.[platform] ??
+          createBundleFileName({
+            platform,
+            format: bundle.hermesBytecodeBundle ? 'bytecode' : 'javascript',
+            hash,
+          });
         const jsPath = path.join(outputDir, jsBundleFileName);
 
         // Add correct mapping to sourcemap paths

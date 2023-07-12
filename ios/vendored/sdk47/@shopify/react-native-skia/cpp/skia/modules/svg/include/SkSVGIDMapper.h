@@ -9,11 +9,11 @@
 #define SkSVGIDMapper_DEFINED
 
 #include "include/core/SkRefCnt.h"
-#include "include/private/SkTHash.h"
+#include "src/core/SkTHash.h"
 
 class SkString;
 class SkSVGNode;
 
-using SkSVGIDMapper = SkTHashMap<SkString, sk_sp<SkSVGNode>>;
+using SkSVGIDMapper = skia_private::THashMap<SkString, sk_sp<SkSVGNode>>;
 
 #endif // SkSVGIDMapper_DEFINED

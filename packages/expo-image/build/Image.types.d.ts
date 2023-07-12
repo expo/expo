@@ -1,4 +1,4 @@
-import { ImageStyle as RNImageStyle, ViewProps } from 'react-native';
+import { ImageStyle as RNImageStyle, ViewProps, StyleProp, ViewStyle } from 'react-native';
 export type ImageSource = {
     /**
      * A string representing the resource identifier for the image,
@@ -29,10 +29,23 @@ export type ImageSource = {
      */
     blurhash?: string;
     /**
+     * The thumbhash string to use to generate the image placeholder. You can read more about thumbhash
+     * on the [`thumbhash website`](https://evanw.github.io/thumbhash/). Ignored when `uri` is provided.
+     */
+    thumbhash?: string;
+    /**
      * The cache key used to query and store this specific image.
      * If not provided, the `uri` is used also as the cache key.
      */
     cacheKey?: string;
+    /**
+     * The max width of the viewport for which this source should be selected.
+     * Has no effect if `source` prop is not an array or has only 1 element.
+     * Has no effect if `responsivePolicy` is not set to `static`.
+     * Ignored if `blurhash` or `thumbhash` is provided (image hashes are never selected if passed in an array).
+     * @platform web
+     */
+    webMaxViewportWidth?: number;
 };
 /**
  * @hidden
@@ -49,7 +62,7 @@ export type ImageContentFit = 'cover' | 'contain' | 'fill' | 'none' | 'scale-dow
  */
 export interface ImageProps extends ViewProps {
     /** @hidden */
-    style?: RNImageStyle | RNImageStyle[];
+    style?: StyleProp<RNImageStyle>;
     /**
      * The image source, either a remote URL, a local file resource or a number that is the result of the `require()` function.
      * When provided as an array of sources, the source that fits best into the container size and is closest to the screen scale
@@ -108,8 +121,6 @@ export interface ImageProps extends ViewProps {
      * The color is applied to every non-transparent pixel, causing the image’s shape to adopt that color.
      * This effect is not applied to placeholders.
      * @default null
-     * @platform android
-     * @platform ios
      */
     tintColor?: string | null;
     /**
@@ -135,12 +146,21 @@ export interface ImageProps extends ViewProps {
      */
     cachePolicy?: 'none' | 'disk' | 'memory' | 'memory-disk' | /** @hidden */ null;
     /**
-     * Determines whether to choose image source based on container size only on mount or on every resize.
-     * Use `initial` to improve performance.
-     * @default "live"
+     * Controls the selection of the image source based on the container or viewport size on the web.
+     *
+     * If set to `'static'`, the browser selects the correct source based on user's viewport width. Works with static rendering.
+     * Make sure to set the `'webMaxViewportWidth'` property on each source for best results.
+     * For example, if an image occupies 1/3 of the screen width, set the `'webMaxViewportWidth'` to 3x the image width.
+     * The source with the largest `'webMaxViewportWidth'` is used even for larger viewports.
+     *
+     * If set to `'initial'`, the component will select the correct source during mount based on container size. Does not work with static rendering.
+     *
+     * If set to `'live'`, the component will select the correct source on every resize based on container size. Does not work with static rendering.
+     *
+     * @default 'static'
      * @platform web
      */
-    responsivePolicy?: 'live' | 'initial';
+    responsivePolicy?: 'live' | 'initial' | 'static';
     /**
      * Changing this prop resets the image view content to blank or a placeholder before loading and rendering the final image.
      * This is especially useful for any kinds of recycling views like [FlashList](https://github.com/shopify/flash-list)
@@ -212,9 +232,6 @@ export interface ImageProps extends ViewProps {
     /**
      * The text that's read by the screen reader when the user interacts with the image. Sets the the `alt` tag on web which is used for web crawlers and link traversal.
      * @default undefined
-     * @platform android
-     * @platform ios
-     * @platform web
      */
     accessibilityLabel?: string;
     /**
@@ -222,9 +239,6 @@ export interface ImageProps extends ViewProps {
      *
      * @alias accessibilityLabel
      * @default undefined
-     * @platform android
-     * @platform ios
-     * @platform web
      */
     alt?: string;
     /**
@@ -302,6 +316,14 @@ export type ImageContentPosition =
     bottom?: ImageContentPositionValue;
     left?: ImageContentPositionValue;
 } | ImageContentPositionString;
+export interface ImageBackgroundProps extends Omit<ImageProps, 'style'> {
+    /** The style of the image container */
+    style?: StyleProp<ViewStyle> | undefined;
+    /** Style object for the image */
+    imageStyle?: StyleProp<RNImageStyle> | undefined;
+    /** @hidden */
+    children?: React.ReactNode | undefined;
+}
 /**
  * @hidden It's described as part of {@link ImageContentPosition}.
  */

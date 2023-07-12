@@ -4,6 +4,22 @@ import * as rtlDetect from 'rtl-detect';
 const getNavigatorLocales = () => {
     return Platform.isDOMAvailable ? navigator.languages || [navigator.language] : [];
 };
+const WEB_LANGUAGE_CHANGE_EVENT = 'languagechange';
+export function addLocaleListener(listener) {
+    addEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener);
+    return {
+        remove: () => removeEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener),
+    };
+}
+export function addCalendarListener(listener) {
+    addEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener);
+    return {
+        remove: () => removeEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener),
+    };
+}
+export function removeSubscription(subscription) {
+    subscription.remove();
+}
 export default {
     get currency() {
         // TODO: Add support
@@ -97,12 +113,9 @@ export default {
         });
     },
     getCalendars() {
-        // Prefer locales with region codes as they contain more info about calendar.
-        // They seem to always exist in the list for each locale without region
-        const locales = [...getNavigatorLocales()].sort((a, b) => a.includes('-') === b.includes('-') ? 0 : a.includes('-') ? -1 : 1);
-        const locale = (locales[0] && typeof Intl !== 'undefined'
-            ? new Intl.Locale(locales[0])
-            : null);
+        const locale = ((typeof Intl !== 'undefined'
+            ? Intl.DateTimeFormat().resolvedOptions()
+            : null) ?? null);
         return [
             {
                 calendar: (locale?.calendar || locale?.calendars?.[0]) || null,

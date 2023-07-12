@@ -139,7 +139,8 @@ public final class EmbeddedAppLoader: AppLoader {
         let mainBundleFilename = asset.mainBundleFilename.require("embedded asset mainBundleFilename must be nonnull")
         let bundlePath = UpdatesUtils.path(forBundledAsset: asset).require(
           String(
-            format: "Could not find the expected embedded asset in NSBundle %@.%@. Check that expo-updates is installed correctly.",
+            format: "Could not find the expected embedded asset in NSBundle %@.%@. " +
+              "Check that expo-updates is installed correctly, and verify that assets are present in the ipa file.",
             mainBundleFilename,
             asset.type ?? ""
           )

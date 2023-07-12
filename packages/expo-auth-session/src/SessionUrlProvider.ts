@@ -51,7 +51,7 @@ export class SessionUrlProvider {
     const legacyExpoProjectFullName =
       options.projectNameForProxy ||
       Constants.expoConfig?.originalFullName ||
-      Constants.manifest?.id;
+      Constants.__unsafeNoWarnManifest?.originalFullName;
 
     if (!legacyExpoProjectFullName) {
       let nextSteps = '';
@@ -67,7 +67,7 @@ export class SessionUrlProvider {
 
       if (Constants.manifest2) {
         nextSteps =
-          ' Prefer AuthRequest (with the useProxy option set to false) in combination with an Expo Development Client build of your application.' +
+          ' Prefer AuthRequest in combination with an Expo Development Client build of your application.' +
           ' To continue using the AuthSession proxy, specify the project full name (@owner/slug) using the projectNameForProxy option.';
       }
 
@@ -85,8 +85,7 @@ export class SessionUrlProvider {
   }
 
   private static getHostAddressQueryParams(): ParsedQs | undefined {
-    let hostUri: string | undefined =
-      Constants.manifest?.hostUri ?? Constants.manifest2?.extra?.expoClient?.hostUri;
+    let hostUri: string | undefined = Constants.expoConfig?.hostUri;
     if (
       !hostUri &&
       (ExecutionEnvironment.StoreClient === Constants.executionEnvironment ||

@@ -2,6 +2,7 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import { ANDROID_DIR } from '../Constants';
+import logger from '../Logger';
 import { androidAppVersionAsync } from '../ProjectVersions';
 import { spawnAsync } from '../Utils';
 import { ClientBuilder, ClientBuildFlavor, Platform, S3Client } from './types';
@@ -34,6 +35,13 @@ export default class AndroidClientBuilder implements ClientBuilder {
     await spawnAsync('fastlane', ['android', 'build', 'build_type:Release', `flavor:${flavor}`], {
       stdio: 'inherit',
     });
+
+    if (flavor === ClientBuildFlavor.VERSIONED) {
+      logger.info('Uploading Crashlytics symbols');
+      await spawnAsync('fastlane', ['android', 'upload_crashlytics_symbols', `flavor:${flavor}`], {
+        stdio: 'inherit',
+      });
+    }
   }
 
   async uploadBuildAsync(s3Client: S3Client, appVersion: string) {

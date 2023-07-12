@@ -21,13 +21,6 @@ public class ExpoFabricView: ExpoFabricViewObjC {
     return appContext?.moduleRegistry.get(moduleHolderForName: moduleName)
   }
 
-  /**
-   The view manager of the associated legacy module.
-   Not available if the module is registered in the new module registry.
-   */
-  lazy var legacyViewManager = appContext?.legacyModuleRegistry?.getAllViewManagers()
-                                 .filter { $0.viewName() == moduleName }
-                                 .first
 
   /**
    A dictionary of prop objects that contain prop setters.
@@ -52,7 +45,7 @@ public class ExpoFabricView: ExpoFabricViewObjC {
   // MARK: - ExpoFabricViewInterface
 
   public override func updateProps(_ props: [String: Any]) {
-    guard let view = contentView, let propsDict = viewManagerPropDict else {
+    guard let view = contentView, let context = appContext, let propsDict = viewManagerPropDict else {
       return
     }
     for (key, prop) in propsDict {
@@ -61,7 +54,7 @@ public class ExpoFabricView: ExpoFabricViewObjC {
       // TODO: @tsapeta: Figure out better way to rethrow errors from here.
       // Adding `throws` keyword to the function results in different
       // method signature in Objective-C. Maybe just call `RCTLogError`?
-      try? prop.set(value: Conversions.fromNSObject(newValue), onView: view)
+      try? prop.set(value: Conversions.fromNSObject(newValue), onView: view, appContext: context)
     }
   }
 
@@ -73,6 +66,13 @@ public class ExpoFabricView: ExpoFabricViewObjC {
       return
     }
     viewManager.callLifecycleMethods(withType: .didUpdateProps, forView: view)
+  }
+
+  /**
+   Returns a bool value whether the view supports prop with the given name.
+   */
+  public override func supportsProp(withName name: String) -> Bool {
+    return viewManagerPropDict?.index(forKey: name) != nil
   }
 
   /**
@@ -110,7 +110,7 @@ public class ExpoFabricView: ExpoFabricViewObjC {
     guard let appContext = appContext else {
       fatalError(Exceptions.AppContextLost().reason)
     }
-    guard let view = moduleHolder?.definition.viewManager?.createView(appContext: appContext) ?? legacyViewManager?.view() else {
+    guard let view = moduleHolder?.definition.viewManager?.createView(appContext: appContext) else {
       fatalError("Cannot create a view from module '\(moduleName)'")
     }
     // Setting the content view automatically adds the view as a subview.

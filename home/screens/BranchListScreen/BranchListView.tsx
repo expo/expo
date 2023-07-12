@@ -10,7 +10,6 @@ type BranchManifest = {
   name: string;
   id: string;
   latestUpdate: BranchesForProjectQuery['app']['byId']['updateBranches'][0]['updates'][0];
-  sdkVersion: number | null;
 };
 
 type Props = {

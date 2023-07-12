@@ -11,7 +11,9 @@ import {
 import type { LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import Metro from 'metro';
+import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
 
+import { CSSAsset, getCssModulesFromBundler } from '../start/server/metro/getCssModulesFromBundler';
 import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
 
 export type MetroDevServerOptions = LoadOptions & {
@@ -33,6 +35,7 @@ export type BundleOutput = {
   map?: string;
   hermesBytecodeBundle?: Uint8Array;
   hermesSourcemap?: string;
+  css: CSSAsset[];
   assets: readonly BundleAssetWithFileHashes[];
 };
 
@@ -79,7 +82,7 @@ export async function bundleAsync(
   const buildAsync = async (bundle: BundleOptions): Promise<BundleOutput> => {
     const buildID = `bundle_${nextBuildID++}_${bundle.platform}`;
     const isHermes = isEnableHermesManaged(expoConfig, bundle.platform);
-    const bundleOptions: Metro.BundleOptions = {
+    const bundleOptions: MetroBundleOptions = {
       ...Server.DEFAULT_BUNDLE_OPTIONS,
       bundleType: 'bundle',
       platform: bundle.platform,
@@ -107,19 +110,20 @@ export async function bundleAsync(
     reporter.update({
       buildID,
       type: 'bundle_build_started',
-      // @ts-expect-error: TODO
       bundleDetails,
     });
     try {
       const { code, map } = await metroServer.build(bundleOptions);
-      const assets = (await metroServer.getAssets(
-        bundleOptions
-      )) as readonly BundleAssetWithFileHashes[];
+      const [assets, css] = await Promise.all([
+        metroServer.getAssets(bundleOptions),
+        getCssModulesFromBundler(config, metroServer.getBundler(), bundleOptions),
+      ]);
+
       reporter.update({
         buildID,
         type: 'bundle_build_done',
       });
-      return { code, map, assets };
+      return { code, map, assets: assets as readonly BundleAssetWithFileHashes[], css };
     } catch (error) {
       reporter.update({
         buildID,

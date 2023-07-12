@@ -148,10 +148,6 @@ export type UploadProgressData = {
      */
     totalBytesSent: number;
     /**
-     * @deprecated Use `totalBytesSent` instead.
-     */
-    totalByteSent: number;
-    /**
      * The total bytes expected to be sent by the upload operation.
      */
     totalBytesExpectedToSend: number;

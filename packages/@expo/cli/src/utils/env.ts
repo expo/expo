@@ -15,6 +15,11 @@ class Env {
     return boolish('EXPO_DEBUG', false);
   }
 
+  /** Disable all network requests */
+  get EXPO_OFFLINE() {
+    return boolish('EXPO_OFFLINE', false);
+  }
+
   /** Enable the beta version of Expo (TODO: Should this just be in the beta version of expo releases?) */
   get EXPO_BETA() {
     return boolish('EXPO_BETA', false);
@@ -137,21 +142,19 @@ class Env {
     return process.env.HTTP_PROXY || process.env.http_proxy || '';
   }
 
-  /**
-   * **Experimental:** Use static generation for Metro web projects. This only works with Expo Router.
-   */
-  get EXPO_USE_STATIC(): boolean {
-    return boolish('EXPO_USE_STATIC', false);
+  /** Use the network inspector by overriding the metro inspector proxy with a custom version */
+  get EXPO_NO_INSPECTOR_PROXY(): boolean {
+    return boolish('EXPO_NO_INSPECTOR_PROXY', false);
   }
 
-  /** **Experimental:** Prevent Metro from using the `compilerOptions.paths` feature from `tsconfig.json` (or `jsconfig.json`) to enable import aliases. */
-  get EXPO_USE_PATH_ALIASES(): boolean {
-    return boolish('EXPO_USE_PATH_ALIASES', false);
+  /** Disable lazy bundling in Metro bundler. */
+  get EXPO_NO_METRO_LAZY() {
+    return boolish('EXPO_NO_METRO_LAZY', false);
   }
 
-  /** **Experimental:** Use the network inspector by overriding the metro inspector proxy with a custom version */
-  get EXPO_USE_CUSTOM_INSPECTOR_PROXY(): boolean {
-    return boolish('EXPO_USE_CUSTOM_INSPECTOR_PROXY', false);
+  /** The start value for the port that the local server used for SSO login listens on. */
+  get EXPO_SSO_LOCAL_SERVER_PORT() {
+    return int('EXPO_SSO_LOCAL_SERVER_PORT', 19200);
   }
 }
 

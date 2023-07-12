@@ -4,6 +4,91 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+- Move `pointerEvents` to `styles.pointerEvents`. ([#23446](https://github.com/expo/expo/pull/23446) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Fork `uuid@3.4.0` and move into `expo-modules-core`. Remove the original dependency. ([#23249](https://github.com/expo/expo/pull/23249) by [@alanhughes](https://github.com/alanjhughes))
+
+## 49.0.0-beta.4 - 2023-07-02
+
+### 🐛 Bug fixes
+
+- Use node module resolution when invoking `@expo/cli` from `expo`. ([#23220](https://github.com/expo/expo/pull/23220) by [@byCedric](https://github.com/byCedric))
+- Added support for React Native 0.72.1. ([#23262](https://github.com/expo/expo/pull/23262) by [@kudo](https://github.com/kudo))
+
+## 49.0.0-beta.3 - 2023-06-30
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-beta.2 - 2023-06-30
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-beta.1 - 2023-06-29
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-beta.0 — 2023-06-28
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-alpha.10 — 2023-06-27
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-alpha.9 — 2023-06-24
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-alpha.8 — 2023-06-24
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-alpha.7 — 2023-06-23
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-alpha.6 — 2023-06-22
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-alpha.5 — 2023-06-21
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-alpha.4 — 2023-06-13
+
+### 📚 3rd party library updates
+
+- Updated `junit` to `4.13.2`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+
+### 🎉 New features
+
+- Added `ReactActivityHandler.getDelayLoadAppHandler` interface on Android. ([#20273](https://github.com/expo/expo/pull/20273) by [@kudo](https://github.com/kudo))
+- Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- Fixed build error when using Expo CLI on bare React Native projects without installing Expo Modules. ([#22649](https://github.com/expo/expo/pull/22649) by [@kudo](https://github.com/kudo))
+
+## 49.0.0-alpha.3 — 2023-05-09
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-alpha.2 — 2023-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-alpha.1 — 2023-05-08
+
+### 🛠 Breaking changes
+
 - drop `EXPO_USE_LOCAL_CLI` in favor of using `expo` for the local CLI and `expo-cli` for the global CLI. ([#21388](https://github.com/expo/expo/pull/21388) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
@@ -12,9 +97,37 @@
 - Added internal `export:embed` command for use in Xcode and Android Studio builds. ([#21396](https://github.com/expo/expo/pull/21396) by [@EvanBacon](https://github.com/EvanBacon))
 - Export TypeScript types for `expo/metro-config`. ([#21898](https://github.com/expo/expo/pull/21898) by [@EvanBacon](https://github.com/EvanBacon))
 
-### 🐛 Bug fixes
-
 ### 💡 Others
+
+- Warn on use of Constants.manifest. ([#22247](https://github.com/expo/expo/pull/22247) by [@wschurman](https://github.com/wschurman))
+
+## 48.0.15 — 2023-04-26
+
+_This version does not introduce any user-facing changes._
+
+## 48.0.14 — 2023-04-26
+
+### 📚 3rd party library updates
+
+- Update `react-native` to 0.71.7. ([#22253](https://github.com/expo/expo/pull/22253) by [@kudo](https://github.com/kudo))
+
+## 48.0.13 — 2023-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 48.0.12 — 2023-04-20
+
+_This version does not introduce any user-facing changes._
+
+## 48.0.11 — 2023-04-13
+
+_This version does not introduce any user-facing changes._
+
+## 48.0.10 - 2023-04-03
+
+### 📚 3rd party library updates
+
+- Update `react-native` to 0.71.6. ([#21909](https://github.com/expo/expo/pull/21909) by [@kudo](https://github.com/kudo))
 
 ## 48.0.8 - 2023-03-20
 

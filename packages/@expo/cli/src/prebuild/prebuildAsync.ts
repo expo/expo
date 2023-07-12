@@ -59,6 +59,7 @@ export async function prebuildAsync(
   }
 ): Promise<PrebuildResults | null> {
   setNodeEnv('development');
+  require('@expo/env').load(projectRoot);
 
   if (options.clean) {
     const { maybeBailOnGitStatusAsync } = await import('../utils/git');
@@ -100,8 +101,10 @@ export async function prebuildAsync(
     }
 
     await installAsync([], {
-      ...options.packageManager,
-      silent: !env.EXPO_DEBUG,
+      npm: !!options.packageManager?.npm,
+      yarn: !!options.packageManager?.yarn,
+      pnpm: !!options.packageManager?.pnpm,
+      silent: !(env.EXPO_DEBUG || env.CI),
     });
   }
 

@@ -1,10 +1,10 @@
 import { NextWebVitalsMetric } from 'next/app';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/compat/router';
 import Script from 'next/script';
 import React, { PropsWithChildren, useEffect } from 'react';
 
 /** The global analytics measurement ID */
-const MEASUREMENT_ID = 'UA-107832480-3';
+const MEASUREMENT_ID = 'G-YKNPYCMLWY';
 
 type AnalyticsProps = PropsWithChildren<object>;
 
@@ -13,12 +13,12 @@ type AnalyticsProps = PropsWithChildren<object>;
  * @see https://nextjs.org/docs/basic-features/script#lazyonload
  */
 export function AnalyticsProvider(props: AnalyticsProps) {
-  const { events } = useRouter();
+  const router = useRouter();
 
   useEffect(function didMount() {
-    events.on('routeChangeComplete', reportPageView);
+    router?.events.on('routeChangeComplete', reportPageView);
     return function didUnmount() {
-      events.off('routeChangeComplete', reportPageView);
+      router?.events.off('routeChangeComplete', reportPageView);
     };
   }, []);
 

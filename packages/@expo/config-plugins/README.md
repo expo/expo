@@ -15,9 +15,9 @@
 
 <!-- Body -->
 
-Most basic functionality can be controlled by using the the [static Expo config](https://docs.expo.dev/versions/latest/config/app/), but some features require manipulation of the native project files. To support complex behavior we've created config plugins, and mods (short for modifiers).
+Most basic functionality can be controlled by using the [static Expo config](https://docs.expo.dev/versions/latest/config/app/), but some features require manipulation of the native project files. To support complex behavior we've created config plugins, and mods (short for modifiers).
 
-For more info, please refer to the official docs: [Config Plugins](https://docs.expo.dev/guides/config-plugins/).
+For more info, please refer to the official Expo docs: [Config Plugins](https://docs.expo.dev/home/config-plugins/introduction/).
 
 ## Environment Variables
 

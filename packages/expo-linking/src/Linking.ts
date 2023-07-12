@@ -22,10 +22,8 @@ function validateURL(url: string): void {
 }
 
 function getHostUri(): string | null {
-  if (Constants.manifest?.hostUri) {
-    return Constants.manifest.hostUri;
-  } else if (Constants.manifest2?.extra?.expoClient?.hostUri) {
-    return Constants.manifest2.extra.expoClient.hostUri;
+  if (Constants.expoConfig?.hostUri) {
+    return Constants.expoConfig.hostUri;
   } else if (!hasCustomScheme()) {
     // we're probably not using up-to-date xdl, so just fake it for now
     // we have to remove the /--/ on the end since this will be inserted again later
@@ -40,8 +38,7 @@ function isExpoHosted(): boolean {
   return !!(
     hostUri &&
     (/^(.*\.)?(expo\.io|exp\.host|exp\.direct|expo\.test|expo\.dev)(:.*)?(\/.*)?$/.test(hostUri) ||
-      Constants.manifest?.developer ||
-      Constants.manifest2?.extra?.expoGo?.developer)
+      Constants.expoGoConfig?.developer)
   );
 }
 
@@ -91,7 +88,7 @@ function ensureLeadingSlash(input: string, shouldAppend: boolean): string {
  * - Standalone, Custom: `yourscheme:///path`
  * - Web (dev): `https://localhost:19006/path`
  * - Web (prod): `https://myapp.com/path`
- * - Expo Client (dev): `exp://128.0.0.1:19000/--/path`
+ * - Expo Client (dev): `exp://128.0.0.1:8081/--/path`
  * - Expo Client (prod): `exp://exp.host/@yourname/your-app/--/path`
  *
  * @param path addition path components to append to the base URL.
@@ -121,7 +118,7 @@ export function makeUrl(path: string = '', queryParams?: QueryParams, scheme?: s
  * - Standalone, Custom: `yourscheme://path`
  * - Web (dev): `https://localhost:19006/path`
  * - Web (prod): `https://myapp.com/path`
- * - Expo Client (dev): `exp://128.0.0.1:19000/--/path`
+ * - Expo Client (dev): `exp://128.0.0.1:8081/--/path`
  * - Expo Client (prod): `exp://exp.host/@yourname/your-app/--/path`
  *
  * @param path Addition path components to append to the base URL.

@@ -1,8 +1,11 @@
 #pragma once
 
 #include <jsi/jsi.h>
+#include <memory>
 #include <string>
 #include <utility>
+
+#include "Shareables.h"
 
 using namespace facebook;
 
@@ -14,17 +17,22 @@ class WorkletEventHandler {
   friend EventHandlerRegistry;
 
  private:
-  unsigned long id;
+  std::shared_ptr<JSRuntimeHelper> _runtimeHelper;
+  uint64_t id;
   std::string eventName;
-  jsi::Function handler;
+  jsi::Value _handlerFunction;
 
  public:
   WorkletEventHandler(
-      unsigned long id,
+      const std::shared_ptr<JSRuntimeHelper> &runtimeHelper,
+      uint64_t id,
       std::string eventName,
-      jsi::Function &&handler)
-      : id(id), eventName(eventName), handler(std::move(handler)) {}
-  void process(jsi::Runtime &rt, const jsi::Value &eventValue);
+      jsi::Value &&handlerFunction)
+      : _runtimeHelper(runtimeHelper),
+        id(id),
+        eventName(eventName),
+        _handlerFunction(std::move(handlerFunction)) {}
+  void process(double eventTimestamp, const jsi::Value &eventValue);
 };
 
 } // namespace reanimated

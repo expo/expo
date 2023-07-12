@@ -10,6 +10,26 @@
 
 ### 💡 Others
 
+## 0.10.1 - 2023-06-30
+
+### 🐛 Bug fixes
+
+- Fixed iOS build errors in `use_frameworks!` mode. ([#23218](https://github.com/expo/expo/pull/23218) by [@kudo](https://github.com/kudo))
+
+## 0.10.0 — 2023-06-21
+
+### 🎉 New features
+
+- Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
+## 0.9.2 — 2023-05-08
+
+### 💡 Others
+
 - iOS: convert to swift. ([#21646](https://github.com/expo/expo/pull/21646) by [@wschurman](https://github.com/wschurman))
 
 ## 0.9.1 — 2023-02-09

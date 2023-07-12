@@ -52,7 +52,8 @@ const STYLES_PERMALINK_ICON = css`
   padding: 0 0.2em;
   visibility: hidden;
 
-  a:hover & {
+  a:hover &,
+  a:focus-visible & {
     visibility: visible;
   }
 

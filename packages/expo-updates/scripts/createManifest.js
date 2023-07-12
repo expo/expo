@@ -1,11 +1,21 @@
+const { loadMetroConfigAsync } = require('@expo/cli/build/src/start/server/metro/instantiateMetro');
 const { resolveEntryPoint } = require('@expo/config/paths');
-const { loadAsync } = require('@expo/metro-config');
 const crypto = require('crypto');
 const fs = require('fs');
 const Server = require('metro/src/Server');
 const path = require('path');
 
 const filterPlatformAssetScales = require('./filterPlatformAssetScales');
+
+function findUpProjectRoot(cwd) {
+  if (['.', path.sep].includes(cwd)) return null;
+
+  if (fs.existsSync(path.join(cwd, 'package.json'))) {
+    return cwd;
+  } else {
+    return findUpProjectRoot(path.dirname(cwd));
+  }
+}
 
 /** Resolve the relative entry file using Expo's resolution method. */
 function getRelativeEntryPoint(projectRoot, platform) {
@@ -18,7 +28,7 @@ function getRelativeEntryPoint(projectRoot, platform) {
 
 (async function () {
   const platform = process.argv[2];
-  const possibleProjectRoot = process.argv[3];
+  const possibleProjectRoot = findUpProjectRoot(process.argv[3]);
   const destinationDir = process.argv[4];
   const entryFile =
     process.argv[5] ||
@@ -42,7 +52,13 @@ function getRelativeEntryPoint(projectRoot, platform) {
 
   let metroConfig;
   try {
-    metroConfig = await loadAsync(projectRoot);
+    // Load the metro config the same way it would be loaded in Expo CLI.
+    // This ensures dynamic features like tsconfig paths can be used.
+    metroConfig = (
+      await loadMetroConfigAsync(projectRoot, {
+        // No config options can be passed to this point.
+      })
+    ).config;
   } catch (e) {
     let message = `Error loading Metro config and Expo app config: ${e.message}\n\nMake sure your project is configured properly and your app.json / app.config.js is valid.`;
     if (process.env.EAS_BUILD) {

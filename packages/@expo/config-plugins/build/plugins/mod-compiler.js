@@ -149,8 +149,7 @@ const orders = {
   // dangerous runs first
   'dangerous',
   // run the XcodeProject mod second because many plugins attempt to read from it.
-  'xcodeproj'],
-  android: ['dangerous']
+  'xcodeproj']
 };
 /**
  * A generic plugin compiler.
@@ -161,11 +160,8 @@ async function evalModsAsync(config, {
   projectRoot,
   introspect,
   platforms,
-  /**
-   * Throw errors when mods are missing providers.
-   * @default true
-   */
-  assertMissingModProviders
+  assertMissingModProviders,
+  ignoreExistingNativeFiles = false
 }) {
   const modRawConfig = getRawClone(config);
   for (const [platformName, platform] of Object.entries((_config$mods = config.mods) !== null && _config$mods !== void 0 ? _config$mods : {})) {
@@ -176,8 +172,9 @@ async function evalModsAsync(config, {
     }
     let entries = Object.entries(platform);
     if (entries.length) {
+      var _orders$platformName;
       // Move dangerous item to the first position if it exists, this ensures that all dangerous code runs first.
-      entries = sortMods(entries, orders[platformName]);
+      entries = sortMods(entries, (_orders$platformName = orders[platformName]) !== null && _orders$platformName !== void 0 ? _orders$platformName : ['dangerous']);
       debug(`run in order: ${entries.map(([name]) => name).join(', ')}`);
       const platformProjectRoot = _path().default.join(projectRoot, platformName);
       const projectName = platformName === 'ios' ? (0, _Xcodeproj().getHackyProjectName)(projectRoot, config) : undefined;
@@ -188,7 +185,8 @@ async function evalModsAsync(config, {
           platformProjectRoot,
           platform: platformName,
           modName,
-          introspect: !!introspect
+          introspect: !!introspect,
+          ignoreExistingNativeFiles
         };
         if (!mod.isProvider) {
           // In strict mode, throw an error.

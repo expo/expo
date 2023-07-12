@@ -160,16 +160,18 @@ class FileDownloaderTest {
   fun testGetExtraHeaders() {
     mockkObject(ManifestMetadata)
     every { ManifestMetadata.getServerDefinedHeaders(any(), any()) } returns null
+    every { ManifestMetadata.getExtraParams(any(), any()) } returns mapOf("hello" to "world", "what" to "123")
 
     val launchedUpdateUUIDString = "7c1d2bd0-f88b-454d-998c-7fa92a924dbf"
     val launchedUpdate = UpdateEntity(UUID.fromString(launchedUpdateUUIDString), Date(), "1.0", "test")
     val embeddedUpdateUUIDString = "9433b1ed-4006-46b8-8aa7-fdc7eeb203fd"
     val embeddedUpdate = UpdateEntity(UUID.fromString(embeddedUpdateUUIDString), Date(), "1.0", "test")
 
-    val extraHeaders = FileDownloader.getExtraHeaders(mockk(), mockk(), launchedUpdate, embeddedUpdate)
+    val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(mockk(), mockk(), launchedUpdate, embeddedUpdate)
 
     Assert.assertEquals(launchedUpdateUUIDString, extraHeaders.get("Expo-Current-Update-ID"))
     Assert.assertEquals(embeddedUpdateUUIDString, extraHeaders.get("Expo-Embedded-Update-ID"))
+    Assert.assertEquals("hello=\"world\", what=\"123\"", extraHeaders.get("Expo-Extra-Params"))
 
     // cleanup
     unmockkObject(ManifestMetadata)
@@ -180,9 +182,10 @@ class FileDownloaderTest {
     mockkObject(ManifestMetadata)
     every { ManifestMetadata.getServerDefinedHeaders(any(), any()) } returns null
 
-    val extraHeaders = FileDownloader.getExtraHeaders(mockk(), mockk(), null, null)
+    val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(mockk(), mockk(), null, null)
     Assert.assertFalse(extraHeaders.has("Expo-Current-Update-ID"))
     Assert.assertFalse(extraHeaders.has("Expo-Embedded-Update-ID"))
+    Assert.assertFalse(extraHeaders.has("Expo-Extra-Params"))
 
     // cleanup
     unmockkObject(ManifestMetadata)

@@ -148,9 +148,15 @@ export default function AnimationManager({
       }
       const existingNodeIndex = n.findIndex((node) => node.animationKey === newNode.animationKey);
       if (existingNodeIndex >= 0) {
-        const copy = [...n];
-        copy.splice(existingNodeIndex, 1, newNode);
-        return copy;
+        if (animation) {
+          return n.map((n2) =>
+            n2.animationKey === newNode.animationKey
+              ? { ...newNode, status: 'in' }
+              : { ...n2, status: 'out' }
+          );
+        } else {
+          return [{ ...newNode, status: 'in' }];
+        }
       }
       return [...n, newNode];
     });

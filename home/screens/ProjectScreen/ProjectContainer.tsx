@@ -1,4 +1,3 @@
-import { getRuntimeVersionForSDKVersion } from '@expo/sdk-runtime-versions';
 import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
 import { Platform } from 'react-native';
@@ -16,9 +15,7 @@ export function ProjectContainer(
     variables: {
       appId: props.appId,
       platform: Platform.OS === 'ios' ? AppPlatform.Ios : AppPlatform.Android,
-      runtimeVersions: Kernel.sdkVersions
-        .split(',')
-        .map((kernelSDKVersion) => getRuntimeVersionForSDKVersion(kernelSDKVersion)),
+      sdkVersions: Kernel.sdkVersions.split(','),
     },
   });
   return <ProjectView {...props} {...query} />;

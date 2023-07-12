@@ -1,17 +1,36 @@
 #import "RNCSafeAreaViewEdges.h"
 #import <React/RCTConvert.h>
+#import "RNCSafeAreaViewEdgeMode.h"
 
-@implementation RCTConvert (RNCSafeAreaView)
+RNCSafeAreaViewEdges RNCSafeAreaViewEdgesMake(
+    RNCSafeAreaViewEdgeMode top,
+    RNCSafeAreaViewEdgeMode right,
+    RNCSafeAreaViewEdgeMode bottom,
+    RNCSafeAreaViewEdgeMode left)
+{
+  RNCSafeAreaViewEdges edges;
+  edges.top = top;
+  edges.left = left;
+  edges.bottom = bottom;
+  edges.right = right;
+  return edges;
+}
 
-RCT_MULTI_ENUM_CONVERTER(
+RNCSafeAreaViewEdges RNCSafeAreaViewEdgesMakeString(NSString *top, NSString *right, NSString *bottom, NSString *left)
+{
+  RNCSafeAreaViewEdges edges;
+  edges.top = [RCTConvert RNCSafeAreaViewEdgeMode:top];
+  edges.right = [RCTConvert RNCSafeAreaViewEdgeMode:right];
+  edges.bottom = [RCTConvert RNCSafeAreaViewEdgeMode:bottom];
+  edges.left = [RCTConvert RNCSafeAreaViewEdgeMode:left];
+  return edges;
+}
+
+@implementation RCTConvert (RNCSafeAreaViewEdges)
+
+RCT_CUSTOM_CONVERTER(
     RNCSafeAreaViewEdges,
-    (@{
-      @"top" : @(RNCSafeAreaViewEdgesTop),
-      @"right" : @(RNCSafeAreaViewEdgesRight),
-      @"bottom" : @(RNCSafeAreaViewEdgesBottom),
-      @"left" : @(RNCSafeAreaViewEdgesLeft),
-    }),
-    RNCSafeAreaViewEdgesAll,
-    integerValue);
+    RNCSafeAreaViewEdges,
+    RNCSafeAreaViewEdgesMakeString(json[@"top"], json[@"right"], json[@"bottom"], json[@"left"]))
 
 @end

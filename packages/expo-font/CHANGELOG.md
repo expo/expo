@@ -8,9 +8,25 @@
 
 ### 🐛 Bug fixes
 
-- Fix require cycle on web. ([#21593](https://github.com/expo/expo/pull/21593) by [@EvanBacon](https://github.com/EvanBacon))
+- Gracefully catch exceptions during font loading on web with `fontfaceobserver`. ([#22954](https://github.com/expo/expo/pull/22954) by [@bradjones1](https://github.com/bradjones1))
 
 ### 💡 Others
+
+## 11.4.0 — 2023-06-21
+
+_This version does not introduce any user-facing changes._
+
+## 11.3.0 — 2023-06-13
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
+## 11.2.0 — 2023-05-08
+
+### 🐛 Bug fixes
+
+- Fix require cycle on web. ([#21593](https://github.com/expo/expo/pull/21593) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 11.1.1 — 2023-02-09
 

@@ -23,4 +23,4 @@ data class DocumentPickerResult(
 data class DocumentPickerCancelled(
   @Field
   val type: String
-)
+) : Record

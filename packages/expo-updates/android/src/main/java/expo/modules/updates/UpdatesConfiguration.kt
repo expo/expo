@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
+import expo.modules.core.errors.InvalidArgumentException
 import expo.modules.updates.codesigning.CodeSigningConfiguration
 
 /**
@@ -36,7 +37,21 @@ data class UpdatesConfiguration(
   val enableExpoUpdatesProtocolV0CompatibilityMode: Boolean, // used only in Expo Go to prevent loading rollbacks and other directives, which don't make much sense in the context of Expo Go
 ) {
   enum class CheckAutomaticallyConfiguration {
-    NEVER, ERROR_RECOVERY_ONLY, WIFI_ONLY, ALWAYS
+    NEVER {
+      override fun toJSString() = "NEVER"
+    },
+    ERROR_RECOVERY_ONLY {
+      override fun toJSString() = "ERROR_RECOVERY_ONLY"
+    },
+    WIFI_ONLY {
+      override fun toJSString() = "WIFI_ONLY"
+    },
+    ALWAYS {
+      override fun toJSString() = "ALWAYS"
+    };
+    open fun toJSString(): String {
+      throw InvalidArgumentException("Unsupported CheckAutomaticallyConfiguration value")
+    }
   }
 
   constructor(context: Context?, overrideMap: Map<String, Any>?) : this(

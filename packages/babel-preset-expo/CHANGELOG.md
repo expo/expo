@@ -10,6 +10,32 @@
 
 ### 💡 Others
 
+## 9.5.0 — 2023-06-21
+
+### 🎉 New features
+
+- Add `@babel/plugin-proposal-export-namespace-from`. ([#22899](https://github.com/expo/expo/pull/22899) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Bump `babel-plugin-module-resolver` dev dependency. ([#22871](https://github.com/expo/expo/pull/22871) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 9.4.1 — 2023-06-13
+
+### 📚 3rd party library updates
+
+- Update `metro-react-native-babel-preset` to 0.76.5. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
+
+## 9.4.0 — 2023-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 9.3.2 - 2023-04-03
+
+### 📚 3rd party library updates
+
+- Update `metro-react-native-babel-preset` to 0.73.9. ([#21909](https://github.com/expo/expo/pull/21909) by [@kudo](https://github.com/kudo))
+
 ## 9.3.0 — 2023-02-03
 
 ### 🐛 Bug fixes

@@ -15,15 +15,14 @@ import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.launcher.NoDatabaseLauncher
 import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.loader.LoaderTask
-import expo.modules.updates.loader.LoaderTask.BackgroundUpdateStatus
 import expo.modules.updates.loader.LoaderTask.LoaderTaskCallback
+import expo.modules.updates.loader.LoaderTask.RemoteUpdateStatus
 import expo.modules.updates.manifest.UpdateManifest
 import expo.modules.manifests.core.Manifest
 import expo.modules.updates.codesigning.CODE_SIGNING_METADATA_ALGORITHM_KEY
 import expo.modules.updates.codesigning.CODE_SIGNING_METADATA_KEY_ID_KEY
 import expo.modules.updates.codesigning.CodeSigningAlgorithm
 import expo.modules.updates.manifest.EmbeddedManifest
-import expo.modules.updates.selectionpolicy.LauncherSelectionPolicyFilterAware
 import expo.modules.updates.selectionpolicy.LoaderSelectionPolicyFilterAware
 import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClient
 import expo.modules.updates.selectionpolicy.SelectionPolicy
@@ -175,7 +174,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
       }
     }
     val selectionPolicy = SelectionPolicy(
-      LauncherSelectionPolicyFilterAware(sdkVersionsList),
+      ExpoGoLauncherSelectionPolicyFilterAware(sdkVersionsList),
       LoaderSelectionPolicyFilterAware(),
       ReaperSelectionPolicyDevelopmentClient()
     )
@@ -254,7 +253,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
         override fun onRemoteUpdateManifestResponseManifestLoaded(updateManifest: UpdateManifest) {
           // expo-cli does not always respect our SDK version headers and respond with a compatible update or an error
           // so we need to check the compatibility here
-          val sdkVersion = updateManifest.manifest.getSDKVersion()
+          val sdkVersion = updateManifest.manifest.getExpoGoSDKVersion()
           if (!isValidSdkVersion(sdkVersion)) {
             callback.onError(formatExceptionForIncompatibleSdk(sdkVersion))
             didAbort = true
@@ -285,8 +284,8 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
           }
         }
 
-        override fun onBackgroundUpdateFinished(
-          status: BackgroundUpdateStatus,
+        override fun onRemoteUpdateFinished(
+          status: RemoteUpdateStatus,
           update: UpdateEntity?,
           exception: Exception?
         ) {
@@ -296,21 +295,21 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
           try {
             val jsonParams = JSONObject()
             when (status) {
-              BackgroundUpdateStatus.ERROR -> {
+              RemoteUpdateStatus.ERROR -> {
                 if (exception == null) {
                   throw AssertionError("Background update with error status must have a nonnull exception object")
                 }
                 jsonParams.put("type", UPDATE_ERROR_EVENT)
                 jsonParams.put("message", exception.message)
               }
-              BackgroundUpdateStatus.UPDATE_AVAILABLE -> {
+              RemoteUpdateStatus.UPDATE_AVAILABLE -> {
                 if (update == null) {
                   throw AssertionError("Background update with error status must have a nonnull update object")
                 }
                 jsonParams.put("type", UPDATE_AVAILABLE_EVENT)
                 jsonParams.put("manifestString", update.manifest.toString())
               }
-              BackgroundUpdateStatus.NO_UPDATE_AVAILABLE -> {
+              RemoteUpdateStatus.NO_UPDATE_AVAILABLE -> {
                 jsonParams.put("type", UPDATE_NO_UPDATE_AVAILABLE_EVENT)
               }
             }

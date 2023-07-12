@@ -1,7 +1,6 @@
 package abi48_0_0.expo.modules.kotlin.functions
 
 import abi48_0_0.com.facebook.react.bridge.ReadableArray
-import abi48_0_0.com.facebook.react.bridge.ReadableType
 import abi48_0_0.expo.modules.kotlin.AppContext
 import abi48_0_0.expo.modules.kotlin.exception.ArgumentCastException
 import abi48_0_0.expo.modules.kotlin.exception.CodedException
@@ -54,7 +53,7 @@ abstract class AnyFunction(
       val desiredType = desiredArgsTypes[index]
       argIterator.next().recycle {
         exceptionDecorator({ cause ->
-          ArgumentCastException(desiredType.kType, index, type, cause)
+          ArgumentCastException(desiredType.kType, index, type.toString(), cause)
         }) {
           finalArgs[index] = desiredType.convert(this)
         }
@@ -81,7 +80,7 @@ abstract class AnyFunction(
       val element = argIterator.next()
       val desiredType = desiredArgsTypes[index]
       exceptionDecorator({ cause ->
-        ArgumentCastException(desiredType.kType, index, ReadableType.String, cause)
+        ArgumentCastException(desiredType.kType, index, element?.javaClass.toString(), cause)
       }) {
         finalArgs[index] = desiredType.convert(element)
       }

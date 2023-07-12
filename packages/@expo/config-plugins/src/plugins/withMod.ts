@@ -9,7 +9,8 @@ import { PluginError } from '../utils/errors';
 const EXPO_DEBUG = boolish('EXPO_DEBUG', false);
 
 export type BaseModOptions = {
-  platform: ModPlatform;
+  /** Officially supports `'ios' | 'android'` (`ModPlatform`). Arbitrary strings are supported for adding out-of-tree platforms. */
+  platform: ModPlatform & string;
   mod: string;
   isProvider?: boolean;
   skipEmptyMod?: boolean;

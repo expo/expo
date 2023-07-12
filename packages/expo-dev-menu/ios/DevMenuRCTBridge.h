@@ -2,6 +2,8 @@
 
 #import <React/RCTBridge+Private.h>
 
+#import <EXDevMenu/DevClientAppDelegate.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface DevMenuRCTCxxBridge : RCTCxxBridge
@@ -13,6 +15,10 @@ NS_ASSUME_NONNULL_BEGIN
 @interface DevMenuRCTBridge : RCTBridge
 
 - (Class)bridgeClass;
+
+@end
+
+@interface DevMenuRCTAppDelegate : DevClientAppDelegate
 
 @end
 

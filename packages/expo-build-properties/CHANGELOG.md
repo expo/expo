@@ -10,6 +10,49 @@
 
 ### 💡 Others
 
+## 0.8.3 — 2023-06-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.8.2 — 2023-06-27
+
+### 💡 Others
+
+- Upgrade `semver` lib. ([#23113](https://github.com/expo/expo/pull/23113) by [@felipemillhouse](https://github.com/felipemillhouse))
+
+## 0.8.1 — 2023-06-23
+
+_This version does not introduce any user-facing changes._
+
+## 0.8.0 — 2023-06-21
+
+### 🛠 Breaking changes
+
+- Replaced `unstable_networkInspector` as `networkInspector` and enabled the feature by default. ([#22994](https://github.com/expo/expo/pull/22994) by [@kudo](https://github.com/kudo))
+
+### 🎉 New features
+
+- Added `android.extraMavenRepos` and `ios.extraPods` support. ([#22785](https://github.com/expo/expo/pull/22785) by [@kudo](https://github.com/kudo))
+- Added `android.usesCleartextTraffic` support. ([#23043](https://github.com/expo/expo/pull/23043) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.7.0 — 2023-05-08
+
+### 🐛 Bug fixes
+
+- Fixed false alarm error throwing when `ios.flipper=false` and `useFrameworks`. ([#22296](https://github.com/expo/expo/pull/22296) by [@kudo](https://github.com/kudo))
+
+## 0.6.0 - 2023-04-14
+
+### 🎉 New features
+
+- Added experimental `unstable_networkInspector` properties. ([#22129](https://github.com/expo/expo/pull/22129) by [@kudo](https://github.com/kudo))
+
+## 0.5.2 — 2023-04-03
+
+### 🎉 New features
+
+- Added `enableShrinkResourcesInReleaseBuilds` property to enable Android `shrinkResources` build feature. ([#21911](https://github.com/expo/expo/pull/21911) by [@kudo](https://github.com/kudo))
+
 ## 0.5.1 — 2023-02-09
 
 ### 🎉 New features

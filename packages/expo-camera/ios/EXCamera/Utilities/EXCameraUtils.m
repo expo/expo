@@ -8,6 +8,8 @@
 
 #import <EXCamera/EXCameraUtils.h>
 
+#import <CoreMotion/CoreMotion.h>
+
 @implementation EXCameraUtils
 
 # pragma mark - Camera utilities
@@ -15,6 +17,24 @@
 + (AVCaptureDevice *)deviceWithMediaType:(AVMediaType)mediaType preferringPosition:(AVCaptureDevicePosition)position
 {
   return [AVCaptureDevice defaultDeviceWithDeviceType:AVCaptureDeviceTypeBuiltInWideAngleCamera mediaType:mediaType position:position];
+}
+
++ (UIDeviceOrientation)deviceOrientationForAccelerometerData:(CMAccelerometerData*)accelerometerData defaultOrientation:(UIDeviceOrientation)orientation
+{
+  if (accelerometerData.acceleration.x >= 0.75) {
+    return UIDeviceOrientationLandscapeRight;
+  } 
+  if(accelerometerData.acceleration.x <= -0.75) {
+    return UIDeviceOrientationLandscapeLeft;
+  }
+  if(accelerometerData.acceleration.y <= -0.75) {
+    return UIDeviceOrientationPortrait;
+  }
+  if(accelerometerData.acceleration.y >= 0.75) {
+    return UIDeviceOrientationPortraitUpsideDown;
+  }
+
+  return orientation;
 }
 
 # pragma mark - Enum conversion

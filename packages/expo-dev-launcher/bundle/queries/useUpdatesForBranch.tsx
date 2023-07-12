@@ -42,7 +42,7 @@ const query = gql`
   }
 `;
 
-function getUpdatesForBranchAsync(
+async function getUpdatesForBranchAsync(
   appId: string,
   branchName: string,
   page: number,
@@ -57,21 +57,19 @@ function getUpdatesForBranchAsync(
     platform: Platform.OS.toUpperCase(),
   };
 
-  return apiClient.request(query, variables).then((response) => {
-    const updateBranch = response.app.byId.updateBranchByName;
-
-    const updates: Update[] = updateBranch.updates.map((update) => {
-      return {
-        ...update,
-        createdAt: format(new Date(update.createdAt), 'MMMM d, yyyy, h:mma'),
-      };
-    });
-
+  const response = await apiClient.request(query, variables);
+  const updateBranch = response.app.byId.updateBranchByName;
+  const updates: Update[] = updateBranch.updates.map((update) => {
     return {
-      updates,
-      page,
+      ...update,
+      createdAt: format(new Date(update.createdAt), 'MMMM d, yyyy, h:mma'),
     };
   });
+
+  return {
+    updates,
+    page,
+  };
 }
 
 export function useUpdatesForBranch(branchName: string) {

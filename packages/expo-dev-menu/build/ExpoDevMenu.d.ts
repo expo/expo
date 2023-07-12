@@ -1,4 +1,3 @@
-import { ExpoDevMenu } from './ExpoDevMenu.types';
-declare const _default: ExpoDevMenu;
-export default _default;
+declare let ExpoDevMenu: any;
+export default ExpoDevMenu;
 //# sourceMappingURL=ExpoDevMenu.d.ts.map

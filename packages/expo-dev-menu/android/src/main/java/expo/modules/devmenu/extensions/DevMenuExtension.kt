@@ -4,7 +4,6 @@ import android.util.Log
 import android.view.KeyEvent
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.devsupport.DevInternalSettings
 import expo.interfaces.devmenu.DevMenuExtensionInterface
 import expo.interfaces.devmenu.DevMenuExtensionSettingsInterface
 import expo.interfaces.devmenu.items.DevMenuDataSourceInterface
@@ -80,7 +79,7 @@ class DevMenuExtension(reactContext: ReactApplicationContext) :
       importance = DevMenuItemImportance.LOW.value
     }
 
-    if (devSettings is DevInternalSettings) {
+    devDelegate.devInternalSettings?.let { devInternalSettings ->
       action("js-inspector", devDelegate::openJSInspector) {
         label = { "Open JavaScript debugger" }
         glyphName = { "language-javascript" }
@@ -88,11 +87,11 @@ class DevMenuExtension(reactContext: ReactApplicationContext) :
       }
 
       val fastRefreshAction = {
-        devSettings.isHotModuleReplacementEnabled = !devSettings.isHotModuleReplacementEnabled
+        devInternalSettings.isHotModuleReplacementEnabled = !devInternalSettings.isHotModuleReplacementEnabled
       }
 
       action("fast-refresh", fastRefreshAction) {
-        isEnabled = { devSettings.isHotModuleReplacementEnabled }
+        isEnabled = { devInternalSettings.isHotModuleReplacementEnabled }
         label = { if (isEnabled()) "Disable Fast Refresh" else "Enable Fast Refresh" }
         glyphName = { "run-fast" }
         importance = DevMenuItemImportance.LOW.value

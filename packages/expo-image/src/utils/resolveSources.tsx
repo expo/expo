@@ -1,25 +1,36 @@
 import { ImageNativeProps, ImageProps, ImageSource } from '../Image.types';
 import resolveAssetSource from './resolveAssetSource';
-import resolveBlurhashString from './resolveBlurhashString';
+import { resolveBlurhashString, resolveThumbhashString } from './resolveHashString';
 
 export function isBlurhashString(str: string): boolean {
   return /^(blurhash:\/)?[\w#$%*+,\-.:;=?@[\]^_{}|~]+(\/[\d.]+)*$/.test(str);
+}
+
+// Base64 strings will be recognized as blurhash by default (to keep compatibility),
+// interpret as thumbhash only if correct uri scheme is provided
+export function isThumbhashString(str: string): boolean {
+  return str.startsWith('thumbhash:/');
 }
 
 function resolveSource(source?: ImageSource | string | number | null): ImageSource | null {
   if (typeof source === 'string') {
     if (isBlurhashString(source)) {
       return resolveBlurhashString(source);
+    } else if (isThumbhashString(source)) {
+      return resolveThumbhashString(source);
     }
     return { uri: source };
   }
   if (typeof source === 'number') {
     return resolveAssetSource(source);
   }
-  if (typeof source === 'object' && source?.blurhash) {
-    const { blurhash, ...restSource } = source;
+  if (typeof source === 'object' && (source?.blurhash || source?.thumbhash)) {
+    const { blurhash, thumbhash, ...restSource } = source;
+    const resolved = thumbhash
+      ? resolveThumbhashString(thumbhash)
+      : resolveBlurhashString(blurhash as string);
     return {
-      ...resolveBlurhashString(blurhash),
+      ...resolved,
       ...restSource,
     };
   }

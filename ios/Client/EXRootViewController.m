@@ -113,7 +113,6 @@ NS_ASSUME_NONNULL_BEGIN
   [[EXDevMenuManager sharedInstance] close];
 
   EXKernelAppRecord *visibleApp = [EXKernel sharedInstance].visibleApp;
-  [[EXKernel sharedInstance] logAnalyticsEvent:@"RELOAD_EXPERIENCE" forAppRecord:visibleApp];
   NSURL *urlToRefresh = visibleApp.appLoader.manifestUrl;
 
   // Unregister visible app record so all modules get destroyed.

@@ -18,7 +18,7 @@ type AuthDiscoveryDocument = Pick<DiscoveryDocument, 'authorizationEndpoint'>;
  * const request = new AuthRequest({ ... });
  *
  * // Prompt for an auth code
- * const result = await request.promptAsync(discovery, { useProxy: true });
+ * const result = await request.promptAsync(discovery);
  *
  * // Get the URL to invoke
  * const url = await request.makeAuthUrlAsync(discovery);
@@ -55,7 +55,7 @@ export declare class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
      * @param discovery
      * @param promptOptions
      */
-    promptAsync(discovery: AuthDiscoveryDocument, { url, proxyOptions, ...options }?: AuthRequestPromptOptions): Promise<AuthSessionResult>;
+    promptAsync(discovery: AuthDiscoveryDocument, { url, ...options }?: AuthRequestPromptOptions): Promise<AuthSessionResult>;
     parseReturnUrl(url: string): AuthSessionResult;
     /**
      * Create the URL for authorization.

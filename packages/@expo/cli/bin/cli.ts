@@ -29,6 +29,7 @@ const commands: { [command: string]: () => Promise<Command> } = {
 
   // Auxiliary commands
   install: () => import('../src/install').then((i) => i.expoInstall),
+  add: () => import('../src/install').then((i) => i.expoInstall),
   customize: () => import('../src/customize').then((i) => i.expoCustomize),
 
   // Auth
@@ -78,6 +79,7 @@ if (!isSubcommand && args['--help']) {
     register,
     start,
     install,
+    add,
     export: _export,
     config,
     customize,
@@ -124,7 +126,7 @@ if (!isSubcommand) {
     'build:android': 'eas build -p android',
     'client:install:ios': 'npx expo start --ios',
     'client:install:android': 'npx expo start --android',
-    doctor: 'expo-cli doctor',
+    doctor: 'npx expo-doctor',
     upgrade: 'expo-cli upgrade',
     'customize:web': 'npx expo customize',
 

@@ -27,34 +27,34 @@ internal func toNSError(_ error: Error) -> NSError {
   return error as NSError
 }
 
+// MARK: - URLs
+
 /**
- Makes sure the url string is percent encoded. If the given string is already encoded, it's decoded first.
- Note that it encodes only characters that are not allowed in the url query and '#' that indicates the fragment part.
+ A string with non-alphanumeric url-safe characters according to RFC 3986.
+ These characters might have to be explicitly percent-encoded when used in URL components other than intended.
+ */
+internal let urlAllowedCharacters = "-._~:/?#[]@!$&'()*+,;="
+
+/**
+ A `CharacterSet` instance containing all alphanumerics and characters allowed in at least one part of a URL.
+ */
+internal let urlAllowedCharactersSet = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: urlAllowedCharacters))
+
+/**
+ Returns the given string with percent-encoded characters that are not allowed in any of the URL components as defined by RFC 3986.
+ This is useful for auto-encoding unicode characters.
  */
 internal func percentEncodeUrlString(_ url: String) -> String? {
-  // URL contains '#' so it has a fragment part.
-  // We know that because that is the only allowed use case of the undecoded '#' symbol inside of the URL.
-  if url.contains("#") {
-    let urlParts = url.split(separator: "#")
-
-    // Encodes the url without the fragment part. It'll leave the fragment part untounched.
-    guard let parsed = percentEncodeUrlStringWithoutFragment(String(urlParts[0])) else {
-      return nil
-    }
-
-    // Concatenate encoded path with fragment.
-    return parsed + "#" + urlParts[1]
-  }
-
-  return percentEncodeUrlStringWithoutFragment(url)
+  let encodedString = url.addingPercentEncoding(withAllowedCharacters: urlAllowedCharactersSet)
+  return encodedString?.replacingOccurrences(of: "%25", with: "%")
 }
 
-private func percentEncodeUrlStringWithoutFragment(_ url: String) -> String? {
-  // The value may come unencoded or already encoded, so first we try to decode it.
-  // `removingPercentEncoding` returns nil when the string contains an invalid percent-encoded sequence,
-  // but that usually means the value came unencoded, so it falls back to the given string.
-  let decodedString = url.removingPercentEncoding ?? url
-
-  // Do the percent encoding, but note that it may still return nil when it's not possible to encode for some reason.
-  return decodedString.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)
+/**
+ Checks whether the given string is a file URL path (URL string without the scheme).
+ */
+internal func isFileUrlPath(_ path: String) -> Bool {
+  guard let encodedPath = path.addingPercentEncoding(withAllowedCharacters: urlAllowedCharactersSet) else {
+    return false
+  }
+  return URL(string: encodedPath)?.scheme == nil
 }

@@ -11,7 +11,7 @@ export { ExpoInspectorProxy } from './proxy';
 const debug = require('debug')('expo:metro:inspector-proxy') as typeof console.log;
 
 export function createInspectorProxy(metroBundler: MetroBundlerDevServer, projectRoot: string) {
-  debug('Experimental inspector proxy enabled');
+  debug('Expo inspector proxy enabled');
 
   // Import the installed `metro-inspector-proxy` from the project
   // We use these base classes to extend functionality

@@ -1,6 +1,7 @@
 package expo.modules.updates.selectionpolicy
 
 import expo.modules.updates.db.entity.UpdateEntity
+import expo.modules.updates.loader.UpdateDirective
 import org.json.JSONObject
 
 /**
@@ -61,5 +62,20 @@ class SelectionPolicy(
     filters: JSONObject?
   ): Boolean {
     return loaderSelectionPolicy.shouldLoadNewUpdate(newUpdate, launchedUpdate, filters)
+  }
+
+  /**
+   * Given a roll back to embedded directive, the embedded update before the directive is applied,
+   * and the currently running update, decide whether the directive should be applied to the embedded
+   * update and saved in the database (i.e. decide whether the combination of the directive's commitTime
+   * and the embedded update is "newer" than the currently running update, according to this class's ordering).
+   */
+  fun shouldLoadRollBackToEmbeddedDirective(
+    directive: UpdateDirective.RollBackToEmbeddedUpdateDirective,
+    embeddedUpdate: UpdateEntity,
+    launchedUpdate: UpdateEntity?,
+    filters: JSONObject?
+  ): Boolean {
+    return loaderSelectionPolicy.shouldLoadRollBackToEmbeddedDirective(directive, embeddedUpdate, launchedUpdate, filters)
   }
 }

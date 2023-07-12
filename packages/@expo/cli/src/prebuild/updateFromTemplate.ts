@@ -9,7 +9,7 @@ import { profile } from '../utils/profile';
 import { copyTemplateFilesAsync, createCopyFilesSuccessMessage } from './copyTemplateFiles';
 import { cloneTemplateAsync } from './resolveTemplate';
 import { DependenciesModificationResults, updatePackageJSONAsync } from './updatePackageJson';
-import { writeMetroConfig } from './writeMetroConfig';
+import { validateTemplatePlatforms } from './validateTemplatePlatforms';
 
 /**
  * Creates local native files from an input template file path.
@@ -57,11 +57,8 @@ export async function updateFromTemplateAsync(
     template,
     templateDirectory,
     exp,
-    pkg,
     platforms,
   });
-
-  profile(writeMetroConfig)(projectRoot, { pkg, templateDirectory });
 
   const depsResults = await profile(updatePackageJSONAsync)(projectRoot, {
     templateDirectory,
@@ -90,14 +87,12 @@ async function cloneTemplateAndCopyToProjectAsync({
   templateDirectory,
   template,
   exp,
-  pkg,
-  platforms,
+  platforms: unknownPlatforms,
 }: {
   projectRoot: string;
   templateDirectory: string;
   template?: string;
   exp: Pick<ExpoConfig, 'name' | 'sdkVersion'>;
-  pkg: PackageJSONConfig;
   platforms: ModPlatform[];
 }): Promise<string[]> {
   const ora = logNewSection(
@@ -107,8 +102,12 @@ async function cloneTemplateAndCopyToProjectAsync({
   try {
     await cloneTemplateAsync({ templateDirectory, template, exp, ora });
 
+    const platforms = await validateTemplatePlatforms({
+      templateDirectory,
+      platforms: unknownPlatforms,
+    });
+
     const results = await copyTemplateFilesAsync(projectRoot, {
-      pkg,
       templateDirectory,
       platforms,
     });

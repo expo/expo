@@ -17,7 +17,7 @@ data class ResponseHeaderData(
   /**
    * expo-protocol-version header. Indicates which version of the expo-updates protocol the response is.
    */
-  val protocolVersion: String? = null,
+  private val protocolVersionRaw: String? = null,
   /**
    * expo-server-defined-headers header.  It defines headers that this library must store until overwritten by a newer dictionary.
    * They must be included in every subsequent update request.
@@ -35,6 +35,8 @@ data class ResponseHeaderData(
    */
   val manifestSignature: String? = null,
 ) {
+  val protocolVersion = protocolVersionRaw?.let { Integer.valueOf(it) }
+
   val serverDefinedHeaders: JSONObject? by lazy {
     serverDefinedHeadersRaw?.let { headerDictionaryToJSONObject(it) }
   }

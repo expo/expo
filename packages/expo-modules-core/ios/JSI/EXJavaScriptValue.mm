@@ -3,6 +3,7 @@
 #import <ExpoModulesCore/EXJSIConversions.h>
 #import <ExpoModulesCore/EXJavaScriptValue.h>
 #import <ExpoModulesCore/EXJavaScriptRuntime.h>
+#import <ExpoModulesCore/EXRawJavaScriptFunction.h>
 #import <ExpoModulesCore/EXJavaScriptTypedArray.h>
 #import <ExpoModulesCore/TypedArray.h>
 
@@ -140,6 +141,13 @@
   jsi::Runtime *runtime = [_runtime get];
   std::shared_ptr<jsi::Object> objectPtr = std::make_shared<jsi::Object>(_value->asObject(*runtime));
   return [[EXJavaScriptObject alloc] initWith:objectPtr runtime:_runtime];
+}
+
+- (nonnull EXRawJavaScriptFunction *)getFunction
+{
+  jsi::Runtime *runtime = [_runtime get];
+  std::shared_ptr<jsi::Function> functionPtr = std::make_shared<jsi::Function>(_value->asObject(*runtime).asFunction(*runtime));
+  return [[EXRawJavaScriptFunction alloc] initWith:functionPtr runtime:_runtime];
 }
 
 - (nullable EXJavaScriptTypedArray *)getTypedArray

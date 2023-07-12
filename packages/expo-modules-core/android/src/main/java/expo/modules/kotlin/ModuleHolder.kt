@@ -1,5 +1,6 @@
 package expo.modules.kotlin
 
+import android.view.View
 import com.facebook.react.bridge.ReadableArray
 import expo.modules.kotlin.events.BasicEventListener
 import expo.modules.kotlin.events.EventListenerWithPayload
@@ -11,6 +12,7 @@ import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.jni.JavaScriptModuleObject
 import expo.modules.kotlin.modules.Module
 import kotlinx.coroutines.launch
+import kotlin.reflect.KClass
 
 class ModuleHolder(val module: Module) {
   val definition = module.definition()
@@ -22,13 +24,16 @@ class ModuleHolder(val module: Module) {
    */
   val jsObject by lazy {
     val appContext = module.appContext
+    val jniDeallocator = appContext.jniDeallocator
 
-    JavaScriptModuleObject(name).apply {
+    JavaScriptModuleObject(jniDeallocator, name).apply {
       initUsingObjectDefinition(appContext, definition.objectDefinition)
 
       val viewFunctions = definition.viewManagerDefinition?.asyncFunctions
       if (viewFunctions?.isNotEmpty() == true) {
-        val viewPrototype = JavaScriptModuleObject("${name}_${definition.viewManagerDefinition?.viewType?.name}")
+        val viewPrototype = JavaScriptModuleObject(jniDeallocator, "${name}_${definition.viewManagerDefinition?.viewType?.name}")
+        appContext.jniDeallocator.addReference(viewPrototype)
+
         viewFunctions.forEach { function ->
           function.attachToJSObject(appContext, viewPrototype)
         }
@@ -37,8 +42,9 @@ class ModuleHolder(val module: Module) {
       }
 
       definition.classData.forEach { clazz ->
-        val clazzModuleObject = JavaScriptModuleObject(clazz.name)
+        val clazzModuleObject = JavaScriptModuleObject(jniDeallocator, clazz.name)
           .initUsingObjectDefinition(module.appContext, clazz.objectDefinition)
+        appContext.jniDeallocator.addReference(clazzModuleObject)
 
         val constructor = clazz.constructor
         registerClass(
@@ -99,5 +105,9 @@ class ModuleHolder(val module: Module) {
         it.invoke(module.appContext.appContextActivityResultCaller)
       }
     }
+  }
+
+  fun viewClass(): KClass<out View>? {
+    return definition.viewManagerDefinition?.viewType?.kotlin
   }
 }

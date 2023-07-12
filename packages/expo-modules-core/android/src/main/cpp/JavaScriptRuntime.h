@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "JNIDeallocator.h"
+
 #include <jsi/jsi.h>
 #include <fbjni/fbjni.h>
 #include <ReactCommon/CallInvoker.h>
@@ -14,6 +16,8 @@ namespace expo {
 class JavaScriptValue;
 
 class JavaScriptObject;
+
+class JSIInteropModuleRegistry;
 
 /**
  * Dummy CallInvoker that invokes everything immediately.
@@ -42,9 +46,12 @@ public:
    * Initializes a runtime that is independent from React Native and its runtime initialization.
    * This flow is mostly intended for tests. The JS call invoker is set to `SyncCallInvoker`.
    */
-  JavaScriptRuntime();
+  JavaScriptRuntime(
+    JSIInteropModuleRegistry *jsiInteropModuleRegistry
+  );
 
   JavaScriptRuntime(
+    JSIInteropModuleRegistry *jsiInteropModuleRegistry,
     jsi::Runtime *runtime,
     std::shared_ptr<react::CallInvoker> jsInvoker,
     std::shared_ptr<react::CallInvoker> nativeInvoker
@@ -60,19 +67,19 @@ public:
    * @throws if the input format is unknown, or evaluation causes an error,
    * a jni::JniException<JavaScriptEvaluateException> will be thrown.
    */
-  jni::local_ref<jni::HybridClass<JavaScriptValue>::javaobject> evaluateScript(
+  jni::local_ref<jni::HybridClass<JavaScriptValue, Destructible>::javaobject> evaluateScript(
     const std::string &script
   );
 
   /**
    * Returns the runtime global object for use in Kotlin.
    */
-  jni::local_ref<jni::HybridClass<JavaScriptObject>::javaobject> global();
+  jni::local_ref<jni::HybridClass<JavaScriptObject, Destructible>::javaobject> global();
 
   /**
    * Creates a new object for use in Kotlin.
    */
-  jni::local_ref<jni::HybridClass<JavaScriptObject>::javaobject> createObject();
+  jni::local_ref<jni::HybridClass<JavaScriptObject, Destructible>::javaobject> createObject();
 
   /**
    * Drains the JavaScript VM internal Microtask (a.k.a. event loop) queue.
@@ -83,9 +90,12 @@ public:
   std::shared_ptr<react::CallInvoker> nativeInvoker;
 
   std::shared_ptr<jsi::Object> getMainObject();
+
+  JSIInteropModuleRegistry *getModuleRegistry();
 private:
   std::shared_ptr<jsi::Runtime> runtime;
   std::shared_ptr<jsi::Object> mainObject;
+  JSIInteropModuleRegistry *jsiInteropModuleRegistry;
 
   void installMainObject();
 };

@@ -50,13 +50,13 @@ class NavigationBarReactActivityLifecycleListener(activityContext: Context) : Re
     return parsed
   }
 
-  private fun getVisibility(context: Context): String = context.getString(R.string.expo_navigation_bar_visibility).toLowerCase()
+  private fun getVisibility(context: Context): String = context.getString(R.string.expo_navigation_bar_visibility).lowercase()
 
-  private fun getPosition(context: Context): String = context.getString(R.string.expo_navigation_bar_position).toLowerCase()
+  private fun getPosition(context: Context): String = context.getString(R.string.expo_navigation_bar_position).lowercase()
 
-  private fun getBehavior(context: Context): String = context.getString(R.string.expo_navigation_bar_behavior).toLowerCase()
+  private fun getBehavior(context: Context): String = context.getString(R.string.expo_navigation_bar_behavior).lowercase()
 
-  private fun getLegacyVisible(context: Context): String = context.getString(R.string.expo_navigation_bar_legacy_visible).toLowerCase()
+  private fun getLegacyVisible(context: Context): String = context.getString(R.string.expo_navigation_bar_legacy_visible).lowercase()
 
   companion object {
     private const val ERROR_TAG = "ERR_NAVIGATION_BAR"

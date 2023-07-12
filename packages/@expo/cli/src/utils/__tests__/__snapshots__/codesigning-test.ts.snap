@@ -101,6 +101,7 @@ CFDVAoGBAK/aVHnMZlPwWZoso9svdrW/lXwhjlbYPfBwmUZsS05J+KRFxjeb/oQm
 +1wKbo03etnYOXvfqVGwZ/VE3Jh2X6fSF5Pl6RR+HF7oNCrWgNHz
 -----END RSA PRIVATE KEY-----
 ",
+  "scopeKey": "scope-key",
 }
 `;
 
@@ -153,6 +154,7 @@ exports[`getCodeSigningInfoAsync non expo-root certificate keyid requested norma
   N7YauagBhyuypcq7SV3bKsdxlCzKi0cMNEonuRJb1Ejo3iU+4F7rzqsltGTjLtpB
   pgp5HP8sALzFZlWWif6W1TjzNJ87MIphr/VPcitRc9n4hWcbmxDvZA==
   -----END RSA PRIVATE KEY-----",
+  "scopeKey": null,
 }
 `;
 

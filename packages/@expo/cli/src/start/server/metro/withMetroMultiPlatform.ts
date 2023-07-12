@@ -15,6 +15,7 @@ import { Log } from '../../../log';
 import { FileNotifier } from '../../../utils/FileNotifier';
 import { env } from '../../../utils/env';
 import { installExitHooks } from '../../../utils/exit';
+import { isInteractive } from '../../../utils/interactive';
 import { learnMore } from '../../../utils/link';
 import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/loadTsConfigPaths';
 import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
@@ -32,6 +33,8 @@ import { importMetroResolverFromProject } from './resolveFromProject';
 import { getAppRouterRelativeEntryPath } from './router';
 import { withMetroResolvers } from './withMetroResolvers';
 
+type Mutable<T> = { -readonly [K in keyof T]: T[K] };
+
 const debug = require('debug')('expo:start:server:metro:multi-platform') as typeof console.log;
 
 function withWebPolyfills(config: ConfigT, projectRoot: string): ConfigT {
@@ -39,7 +42,7 @@ function withWebPolyfills(config: ConfigT, projectRoot: string): ConfigT {
     ? config.serializer.getPolyfills.bind(config.serializer)
     : () => [];
 
-  const getPolyfills = (ctx: { platform: string | null | undefined }): readonly string[] => {
+  const getPolyfills = (ctx: { platform: string | null }): readonly string[] => {
     if (ctx.platform === 'web') {
       return [
         // NOTE: We might need this for all platforms
@@ -75,9 +78,17 @@ function normalizeSlashes(p: string) {
  */
 export function withExtendedResolver(
   config: ConfigT,
-  projectRoot: string,
-  tsconfig: TsConfigPaths | null,
-  platforms: string[]
+  {
+    projectRoot,
+    tsconfig,
+    platforms,
+    isTsconfigPathsEnabled,
+  }: {
+    projectRoot: string;
+    tsconfig: TsConfigPaths | null;
+    platforms: string[];
+    isTsconfigPathsEnabled?: boolean;
+  }
 ) {
   // Get the `transformer.assetRegistryPath`
   // this needs to be unified since you can't dynamically
@@ -115,15 +126,14 @@ export function withExtendedResolver(
     web: ['browser', 'module', 'main'],
   };
 
-  let tsConfigResolve =
-    tsconfig?.paths && env.EXPO_USE_PATH_ALIASES
-      ? resolveWithTsConfigPaths.bind(resolveWithTsConfigPaths, {
-          paths: tsconfig.paths ?? {},
-          baseUrl: tsconfig.baseUrl,
-        })
-      : null;
+  let tsConfigResolve = tsconfig?.paths
+    ? resolveWithTsConfigPaths.bind(resolveWithTsConfigPaths, {
+        paths: tsconfig.paths ?? {},
+        baseUrl: tsconfig.baseUrl,
+      })
+    : null;
 
-  if (env.EXPO_USE_PATH_ALIASES && !env.CI) {
+  if (isTsconfigPathsEnabled && isInteractive()) {
     // TODO: We should track all the files that used imports and invalidate them
     // currently the user will need to save all the files that use imports to
     // use the new aliases.
@@ -157,7 +167,7 @@ export function withExtendedResolver(
     (immutableContext: ResolutionContext, moduleName: string, platform: string | null) => {
       let context = {
         ...immutableContext,
-      } as ResolutionContext & {
+      } as Mutable<ResolutionContext> & {
         mainFields: string[];
         customResolverOptions?: Record<string, string>;
       };
@@ -191,7 +201,7 @@ export function withExtendedResolver(
         };
       }
 
-      if (tsconfig?.baseUrl && env.EXPO_USE_PATH_ALIASES) {
+      if (tsconfig?.baseUrl && isTsconfigPathsEnabled) {
         context = {
           ...context,
           nodeModulesPaths: [
@@ -208,12 +218,11 @@ export function withExtendedResolver(
         // Node.js runtimes should only be importing main at the moment.
         // This is a temporary fix until we can support the package.json exports.
         mainFields = ['main'];
-      } else if (!env.EXPO_METRO_NO_MAIN_FIELD_OVERRIDE) {
+      } else if (env.EXPO_METRO_NO_MAIN_FIELD_OVERRIDE) {
         mainFields = context.mainFields;
       } else if (platform && platform in preferredMainFields) {
         mainFields = preferredMainFields[platform];
       }
-
       function doResolve(moduleName: string): Resolution | null {
         return resolve(
           {
@@ -221,11 +230,12 @@ export function withExtendedResolver(
             preferNativePlatform: platform !== 'web',
             resolveRequest: undefined,
 
-            // @ts-expect-error
             mainFields,
+
             // Passing `mainFields` directly won't be considered (in certain version of Metro)
             // we need to extend the `getPackageMainPath` directly to
             // use platform specific `mainFields`.
+            // @ts-ignore
             getPackageMainPath(packageJsonPath) {
               // @ts-expect-error: mainFields is not on type
               const package_ = context.moduleCache.getPackage(packageJsonPath);
@@ -297,28 +307,48 @@ export function shouldAliasAssetRegistryForWeb(
 /** Add support for `react-native-web` and the Web platform. */
 export async function withMetroMultiPlatformAsync(
   projectRoot: string,
-  config: ConfigT,
-  platformBundlers: PlatformBundlers
+  {
+    config,
+    platformBundlers,
+    isTsconfigPathsEnabled,
+    webOutput,
+    routerDirectory,
+  }: {
+    config: ConfigT;
+    isTsconfigPathsEnabled: boolean;
+    platformBundlers: PlatformBundlers;
+    webOutput?: 'single' | 'static';
+    routerDirectory: string;
+  }
 ) {
-  // Auto pick App entry: this is injected with Babel.
-  process.env.EXPO_ROUTER_APP_ROOT = getAppRouterRelativeEntryPath(projectRoot);
-  process.env.EXPO_PROJECT_ROOT = process.env.EXPO_PROJECT_ROOT ?? projectRoot;
+  // Auto pick app entry for router.
+  process.env.EXPO_ROUTER_APP_ROOT = getAppRouterRelativeEntryPath(projectRoot, routerDirectory);
 
-  if (env.EXPO_USE_STATIC) {
+  // Required for @expo/metro-runtime to format paths in the web LogBox.
+  process.env.EXPO_PUBLIC_PROJECT_ROOT = process.env.EXPO_PUBLIC_PROJECT_ROOT ?? projectRoot;
+
+  if (webOutput === 'static') {
     // Enable static rendering in runtime space.
     process.env.EXPO_PUBLIC_USE_STATIC = '1';
   }
 
+  // Ensure the cache is invalidated if these values change.
+  // @ts-expect-error
+  config.transformer._expoRouterRootDirectory = process.env.EXPO_ROUTER_APP_ROOT;
+  // @ts-expect-error
+  config.transformer._expoRouterWebRendering = webOutput;
+  // TODO: import mode
+
   if (platformBundlers.web === 'metro') {
     await new WebSupportProjectPrerequisite(projectRoot).assertAsync();
-  } else if (!env.EXPO_USE_PATH_ALIASES) {
+  } else if (!isTsconfigPathsEnabled) {
     // Bail out early for performance enhancements if no special features are enabled.
     return config;
   }
 
   let tsconfig: null | TsConfigPaths = null;
 
-  if (env.EXPO_USE_PATH_ALIASES) {
+  if (isTsconfigPathsEnabled) {
     Log.warn(
       chalk.yellow`Experimental path aliases feature is enabled. ` +
         learnMore('https://docs.expo.dev/guides/typescript/#path-aliases')
@@ -328,14 +358,27 @@ export async function withMetroMultiPlatformAsync(
 
   await setupNodeExternals(projectRoot);
 
-  return withMetroMultiPlatform(projectRoot, config, platformBundlers, tsconfig);
+  return withMetroMultiPlatform(projectRoot, {
+    config,
+    platformBundlers,
+    tsconfig,
+    isTsconfigPathsEnabled,
+  });
 }
 
 function withMetroMultiPlatform(
   projectRoot: string,
-  config: ConfigT,
-  platformBundlers: PlatformBundlers,
-  jsconfig: TsConfigPaths | null
+  {
+    config,
+    platformBundlers,
+    isTsconfigPathsEnabled,
+    tsconfig,
+  }: {
+    config: ConfigT;
+    isTsconfigPathsEnabled: boolean;
+    platformBundlers: PlatformBundlers;
+    tsconfig: TsConfigPaths | null;
+  }
 ) {
   let expoConfigPlatforms = Object.entries(platformBundlers)
     .filter(([, bundler]) => bundler === 'metro')
@@ -352,5 +395,10 @@ function withMetroMultiPlatform(
     config = withWebPolyfills(config, projectRoot);
   }
 
-  return withExtendedResolver(config, projectRoot, jsconfig, expoConfigPlatforms);
+  return withExtendedResolver(config, {
+    projectRoot,
+    tsconfig,
+    isTsconfigPathsEnabled,
+    platforms: expoConfigPlatforms,
+  });
 }

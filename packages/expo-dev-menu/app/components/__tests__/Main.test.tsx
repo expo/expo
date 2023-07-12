@@ -49,7 +49,7 @@ describe('<Main />', () => {
       appVersion: '123',
       appIcon: 'hello',
       hostUrl: '321',
-      sdkVersion: '500',
+      sdkVersion: '500.0.0',
       runtimeVersion: '10',
     };
 
@@ -77,13 +77,33 @@ describe('<Main />', () => {
     await act(async () => fireEvent.press(getByText(/toggle element inspector/i)));
     expect(toggleElementInspectorAsync).toHaveBeenCalledTimes(1);
 
-    expect(toggleDebugRemoteJSAsync).toHaveBeenCalledTimes(0);
-    await act(async () => fireEvent.press(getByTestId('remote-js-debugger')));
-    expect(toggleDebugRemoteJSAsync).toHaveBeenCalledTimes(1);
-
     expect(toggleFastRefreshAsync).toHaveBeenCalledTimes(0);
     await act(async () => fireEvent.press(getByTestId('fast-refresh')));
     expect(toggleFastRefreshAsync).toHaveBeenCalledTimes(1);
+  });
+
+  describe('Remote JS Debugger', () => {
+    it('should be available for SDK < 49', async () => {
+      const { getByText, getByTestId } = render(<Main />, {
+        initialAppProviderProps: {
+          appInfo: {
+            sdkVersion: '48.0.0',
+          },
+        },
+      });
+      await waitFor(() => getByText(/go home/i));
+
+      expect(toggleDebugRemoteJSAsync).toHaveBeenCalledTimes(0);
+      await act(async () => fireEvent.press(getByTestId('remote-js-debugger')));
+      expect(toggleDebugRemoteJSAsync).toHaveBeenCalledTimes(1);
+    });
+
+    it('should be disabled for SDK 49+', async () => {
+      const { getByText, getByTestId } = render(<Main />);
+      await waitFor(() => getByText(/go home/i));
+
+      expect(getByTestId('remote-js-debugger')).toBeDisabled();
+    });
   });
 
   test('copy text functions', async () => {
@@ -92,7 +112,7 @@ describe('<Main />', () => {
       appVersion: '123',
       appIcon: 'hello',
       hostUrl: '321',
-      sdkVersion: '500',
+      sdkVersion: '500.0.0',
       runtimeVersion: '10',
     };
 

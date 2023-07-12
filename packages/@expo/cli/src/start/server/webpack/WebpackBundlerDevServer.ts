@@ -48,6 +48,10 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
     return 'webpack';
   }
 
+  public async startTypeScriptServices(): Promise<void> {
+    //  noop -- this feature is Metro-only.
+  }
+
   // A custom message websocket broadcaster used to send messages to a React Native runtime.
   private customMessageSocketBroadcaster:
     | undefined
@@ -347,6 +351,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       https: options.https,
     };
     setNodeEnv(env.mode ?? 'development');
+    require('@expo/env').load(env.projectRoot);
     // Check if the project has a webpack.config.js in the root.
     const projectWebpackConfig = this.getProjectConfigFilePath();
     let config: WebpackConfiguration;

@@ -49,7 +49,11 @@ export const createPermalinkedComponent = (
   };
 };
 
-export function createTextComponent(Element: TextElement, textStyle?: SerializedStyles) {
+export function createTextComponent(
+  Element: TextElement,
+  textStyle?: SerializedStyles,
+  skipBaseStyle: boolean = false
+) {
   function TextComponent(props: TextComponentProps) {
     const {
       testID,
@@ -66,7 +70,7 @@ export function createTextComponent(Element: TextElement, textStyle?: Serialized
       <TextElementTag
         className={className}
         css={[
-          baseTextStyle,
+          !skipBaseStyle && baseTextStyle,
           textStyle,
           textWeight && { fontWeight: typography.utility.weight[textWeight].fontWeight },
           textTheme && { color: theme.text[textTheme] },
@@ -138,7 +142,7 @@ export const kbdStyle = css({
 });
 
 const { h1, h2, h3, h4, h5 } = typography.headers.default;
-const codeInHeaderStyle = { '& code': { fontSize: 'inherit' } };
+const codeInHeaderStyle = { '& code': { fontSize: '95%' } };
 
 const h1Style = {
   ...h1,
@@ -153,6 +157,7 @@ const h2Style = {
   fontWeight: 600,
   marginTop: spacing[8],
   marginBottom: spacing[3.5],
+  '& a:focus-visible': { outlineOffset: spacing[1] },
   ...codeInHeaderStyle,
 };
 
@@ -161,6 +166,7 @@ const h3Style = {
   fontWeight: 600,
   marginTop: spacing[6],
   marginBottom: spacing[2.5],
+  '& a:focus-visible': { outlineOffset: spacing[1] },
   ...codeInHeaderStyle,
 };
 
@@ -199,7 +205,8 @@ export const H5 = createPermalinkedComponent(RawH5, { baseNestingLevel: 5 });
 export const P = createTextComponent(TextElement.P, css(paragraphStyle as CSSObject));
 export const CODE = createTextComponent(
   TextElement.CODE,
-  css([typography.utility.inlineCode, codeStyle])
+  css([typography.utility.inlineCode, codeStyle]),
+  true
 );
 export const LI = createTextComponent(TextElement.LI, css(typography.body.li));
 export const LABEL = createTextComponent(TextElement.SPAN, css(typography.body.label));

@@ -8,8 +8,9 @@ import { copyAsync, ensureDirectoryAsync } from '../utils/dir';
 import { env } from '../utils/env';
 import { setNodeEnv } from '../utils/nodeEnv';
 import { createBundlesAsync } from './createBundles';
-import { exportAssetsAsync } from './exportAssets';
+import { exportAssetsAsync, exportCssAssetsAsync } from './exportAssets';
 import { unstable_exportStaticAsync } from './exportStaticAsync';
+import { getVirtualFaviconAssetsAsync } from './favicon';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
 import { printBundleSizes } from './printBundleSizes';
 import { Options } from './resolveOptions';
@@ -42,11 +43,18 @@ export async function exportAppAsync(
     dev,
     dumpAssetmap,
     dumpSourcemap,
-  }: Pick<Options, 'dumpAssetmap' | 'dumpSourcemap' | 'dev' | 'clear' | 'outputDir' | 'platforms'>
+    minify,
+  }: Pick<
+    Options,
+    'dumpAssetmap' | 'dumpSourcemap' | 'dev' | 'clear' | 'outputDir' | 'platforms' | 'minify'
+  >
 ): Promise<void> {
   setNodeEnv(dev ? 'development' : 'production');
+  require('@expo/env').load(projectRoot);
 
   const exp = await getPublicExpoManifestAsync(projectRoot);
+
+  const useWebSSG = exp.web?.output === 'static';
 
   const publicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);
 
@@ -65,67 +73,74 @@ export async function exportAppAsync(
     { resetCache: !!clear },
     {
       platforms,
+      minify,
+      // TODO: Breaks asset exports
+      // platforms: useWebSSG ? platforms.filter((platform) => platform !== 'web') : platforms,
       dev,
       // TODO: Disable source map generation if we aren't outputting them.
     }
   );
 
-  // Log bundle size info to the user
-  printBundleSizes(
-    Object.fromEntries(
-      Object.entries(bundles).map(([key, value]) => {
-        if (!dumpSourcemap) {
-          return [
-            key,
-            {
-              ...value,
-              // Remove source maps from the bundles if they aren't going to be written.
-              map: undefined,
-            },
-          ];
-        }
+  const bundleEntries = Object.entries(bundles);
+  if (bundleEntries.length) {
+    // Log bundle size info to the user
+    printBundleSizes(
+      Object.fromEntries(
+        bundleEntries.map(([key, value]) => {
+          if (!dumpSourcemap) {
+            return [
+              key,
+              {
+                ...value,
+                // Remove source maps from the bundles if they aren't going to be written.
+                map: undefined,
+              },
+            ];
+          }
 
-        return [key, value];
-      })
-    )
-  );
+          return [key, value];
+        })
+      )
+    );
+  }
 
   // Write the JS bundles to disk, and get the bundle file names (this could change with async chunk loading support).
   const { hashes, fileNames } = await writeBundlesAsync({ bundles, outputDir: bundlesPath });
 
   Log.log('Finished saving JS Bundles');
 
-  if (fileNames.web) {
-    if (env.EXPO_USE_STATIC) {
+  if (platforms.includes('web')) {
+    if (useWebSSG) {
       await unstable_exportStaticAsync(projectRoot, {
         outputDir: outputPath,
-        scripts: [`/bundles/${fileNames.web}`],
         // TODO: Expose
-        minify: true,
+        minify,
       });
       Log.log('Finished saving static files');
     } else {
+      const cssLinks = await exportCssAssetsAsync({
+        outputDir,
+        bundles,
+      });
+      let html = await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
+        scripts: [`/bundles/${fileNames.web}`],
+        cssLinks,
+      });
+      // Add the favicon assets to the HTML.
+      const modifyHtml = await getVirtualFaviconAssetsAsync(projectRoot, outputDir);
+      if (modifyHtml) {
+        html = modifyHtml(html);
+      }
       // Generate SPA-styled HTML file.
       // If web exists, then write the template HTML file.
-      await fs.promises.writeFile(
-        path.join(staticFolder, 'index.html'),
-        await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
-          scripts: [`/bundles/${fileNames.web}`],
-        })
-      );
+      await fs.promises.writeFile(path.join(staticFolder, 'index.html'), html);
     }
 
     // Save assets like a typical bundler, preserving the file paths on web.
     const saveAssets = importCliSaveAssetsFromProject(projectRoot);
     await Promise.all(
       Object.entries(bundles).map(([platform, bundle]) => {
-        return saveAssets(
-          // @ts-expect-error: tolerable type mismatches: unused `readonly` (common in Metro) and `undefined` instead of `null`.
-          bundle.assets,
-          platform,
-          staticFolder,
-          undefined
-        );
+        return saveAssets(bundle.assets, platform, staticFolder, undefined);
       })
     );
   }

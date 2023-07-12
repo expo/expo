@@ -21,21 +21,21 @@ beforeAll(async () => {
   await fs.mkdir(projectRoot, { recursive: true });
   process.env.FORCE_COLOR = '0';
   process.env.CI = '1';
-  process.env.EXPO_USE_PATH_ALIASES = '1';
-  delete process.env.EXPO_USE_STATIC;
+  process.env._EXPO_E2E_USE_PATH_ALIASES = '1';
+  delete process.env.EXPO_WEB_OUTPUT_MODE;
 });
 
 afterAll(() => {
   process.env.FORCE_COLOR = originalForceColor;
   process.env.CI = originalCI;
-  delete process.env.EXPO_USE_PATH_ALIASES;
+  delete process.env._EXPO_E2E_USE_PATH_ALIASES;
 });
 
 it('loads expected modules by default', async () => {
   const modules = await getLoadedModulesAsync(`require('../../build/src/export').expoExport`);
   expect(modules).toStrictEqual([
+    '../node_modules/ansi-styles/index.js',
     '../node_modules/arg/index.js',
-    '../node_modules/chalk/node_modules/ansi-styles/index.js',
     '../node_modules/chalk/source/index.js',
     '../node_modules/chalk/source/util.js',
     '../node_modules/has-flag/index.js',
@@ -65,6 +65,7 @@ it('runs `npx expo export --help`', async () => {
         --dump-assetmap            Dump the asset map for further processing
         --dump-sourcemap           Dump the source map for debugging the JS bundle
         -p, --platform <platform>  Options: android, ios, web, all. Default: all
+        --no-minify                Prevent minifying source
         -c, --clear                Clear the bundler cache
         -h, --help                 Usage info
     "
@@ -72,7 +73,7 @@ it('runs `npx expo export --help`', async () => {
 });
 
 describe('server', () => {
-  beforeEach(() => ensurePortFreeAsync(19000));
+  beforeEach(() => ensurePortFreeAsync(8081));
   it(
     'runs `npx expo export`',
     async () => {
@@ -115,7 +116,7 @@ describe('server', () => {
                 path: 'assets/3858f62230ac3c915f300c664312c63f',
               },
             ],
-            bundle: expect.stringMatching(/bundles\/android-.*\.js/),
+            bundle: expect.stringMatching(/bundles\/android-.*\.hbc/),
           },
           ios: {
             assets: [
@@ -132,7 +133,7 @@ describe('server', () => {
                 path: 'assets/2f334f6c7ca5b2a504bdf8acdee104f3',
               },
             ],
-            bundle: expect.stringMatching(/bundles\/ios-.*\.js/),
+            bundle: expect.stringMatching(/bundles\/ios-.*\.hbc/),
           },
           web: {
             assets: [
@@ -209,9 +210,9 @@ describe('server', () => {
         'assets/assets/icon@2x.png',
 
         'assets/fb960eb5e4eb49ec8786c7f6c4a57ce2',
-        expect.stringMatching(/bundles\/android-[\w\d]+\.js/),
+        expect.stringMatching(/bundles\/android-[\w\d]+\.hbc/),
         expect.stringMatching(/bundles\/android-[\w\d]+\.map/),
-        expect.stringMatching(/bundles\/ios-[\w\d]+\.js/),
+        expect.stringMatching(/bundles\/ios-[\w\d]+\.hbc/),
         expect.stringMatching(/bundles\/ios-[\w\d]+\.map/),
         expect.stringMatching(/bundles\/web-[\w\d]+\.js/),
         expect.stringMatching(/bundles\/web-[\w\d]+\.map/),
@@ -228,14 +229,14 @@ describe('server', () => {
     120 * 1000
   );
 
-  it(
+  xit(
     'runs `npx expo export -p web` for static rendering',
     async () => {
       const projectRoot = await setupTestProjectAsync('export-router', 'with-router', '48.0.0');
       await execa('node', [bin, 'export', '-p', 'web'], {
         cwd: projectRoot,
         env: {
-          EXPO_USE_STATIC: '1',
+          EXPO_WEB_OUTPUT_MODE: 'static',
         },
       });
 

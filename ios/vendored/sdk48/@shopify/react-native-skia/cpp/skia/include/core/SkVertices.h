@@ -12,6 +12,8 @@
 #include "include/core/SkRect.h"
 #include "include/core/SkRefCnt.h"
 
+#include <memory>
+
 class SkData;
 struct SkPoint;
 class SkVerticesPriv;

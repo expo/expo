@@ -7,6 +7,8 @@ import { SnackInline, Terminal } from '~/ui/components/Snippet';
 import { A } from '~/ui/components/Text';
 import Video from '~/components/plugins/Video';
 import { Step } from '~/ui/components/Step';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { BookOpen02Icon } from '@expo/styleguide-icons';
 
 In this chapter, we will create the first screen of the StickerSmash app.
 
@@ -392,13 +394,13 @@ The second button with the label "Use this photo" resembles the actual button fr
 ## Enhance the reusable button component
 
 The "Choose a photo" button requires different styling than the "Use this photo" button, so we will add a new button theme prop that will allow us to apply a `primary` theme.
-This button also has an icon before the label. We will use an icon from the <A href="/guides/icons/#expovector-icons" openInNewTab>`@expo/vector-icons`</A> library that includes icons from popular icon sets.
+This button also has an icon before the label. We will use an icon from the <A href="/guides/icons/#expovector-icons">`@expo/vector-icons`</A> library that includes icons from popular icon sets.
 
 Stop the development server by pressing <kbd>Ctrl</kbd> + <kbd>c</kbd> in the terminal. Then, install the `@expo/vector-icons` library:
 
 <Terminal cmd={['$ npx expo install @expo/vector-icons']} />
 
-The <A href="/workflow/expo-cli/#install" openInNewTab>`npx expo install`</A> command will install the library and add it to the project's dependencies in **package.json**.
+The <A href="/more/expo-cli/#installation">`npx expo install`</A> command will install the library and add it to the project's dependencies in **package.json**.
 
 After installing the library, restart the development server by running the `npx expo start` command.
 
@@ -489,6 +491,13 @@ Let's take a look at our app on iOS, Android and the web:
 
 </Step>
 
-## Next steps
+## Next step
 
-We implemented the initial design. In the next chapter, we'll add the functionality to [pick an image from the device's media library](/tutorial/image-picker).
+We implemented the initial design.
+
+<BoxLink
+  title="Use an image picker"
+  Icon={BookOpen02Icon}
+  description="In the next chapter, we'll add the functionality to pick an image from the device's media library."
+  href="/tutorial/image-picker"
+/>

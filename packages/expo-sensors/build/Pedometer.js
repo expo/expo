@@ -23,6 +23,7 @@ export function watchStepCount(callback) {
  * As [Apple documentation states](https://developer.apple.com/documentation/coremotion/cmpedometer/1613946-querypedometerdatafromdate?language=objc):
  * > Only the past seven days worth of data is stored and available for you to retrieve. Specifying
  * > a start date that is more than seven days in the past returns only the available data.
+ * @platform ios
  */
 export async function getStepCountAsync(start, end) {
     if (!ExponentPedometer.getStepCountAsync) {

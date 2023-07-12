@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXManifestResource.h"
-#import "EXAnalytics.h"
 #import "EXApiUtil.h"
 #import "EXEnvironment.h"
 #import "EXFileDownloader.h"
@@ -58,7 +57,7 @@ NSString * const EXRuntimeErrorDomain = @"incompatible-runtime";
     for (id providedManifestJSON in jsonManifestObjArray) {
       if ([providedManifestJSON isKindOfClass:[NSDictionary class]]) {
         EXManifestsManifest *providedManifest = [EXManifestsManifestFactory manifestForManifestJSON:providedManifestJSON];
-        NSString *sdkVersion = providedManifest.sdkVersion;
+        NSString *sdkVersion = providedManifest.expoGoSDKVersion;
         if (sdkVersion && [[EXVersions sharedInstance] supportsVersion:sdkVersion]) {
           return providedManifestJSON;
         }
@@ -310,34 +309,13 @@ NSString * const EXRuntimeErrorDomain = @"incompatible-runtime";
   !((NSString *)manifestObj[@"signature"]) && shouldBypassVerification;
 }
 
-- (NSError *)_validateResponseData:(NSData *)data response:(NSURLResponse *)response
-{
-  if (response && [response isKindOfClass:[NSHTTPURLResponse class]]) {
-    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-    NSDictionary *headers = httpResponse.allHeaderFields;
-    
-    // pass the Exponent-Server header to Amplitude if it exists.
-    // this is generated only from XDE and exp while serving local bundles.
-    NSString *serverHeaderJson = headers[@"Exponent-Server"];
-    if (serverHeaderJson) {
-      NSError *jsonError;
-      NSDictionary *serverHeader = [NSJSONSerialization JSONObjectWithData:[serverHeaderJson dataUsingEncoding:NSUTF8StringEncoding] options:0 error:&jsonError];
-      if (serverHeader && !jsonError) {
-        [[EXAnalytics sharedInstance] logEvent:@"LOAD_DEVELOPER_MANIFEST" manifestUrl:response.URL eventProperties:serverHeader];
-      }
-    }
-  }
-  // indicate that the response is valid
-  return nil;
-}
-
 - (NSError *)verifyManifestSdkVersion:(EXManifestsManifest *)maybeManifest
 {
   NSString *errorCode;
   NSDictionary *metadata;
-  if (maybeManifest && maybeManifest.sdkVersion) {
-    if (![maybeManifest.sdkVersion isEqualToString:@"UNVERSIONED"]) {
-      NSInteger manifestSdkVersion = [maybeManifest.sdkVersion integerValue];
+  if (maybeManifest && maybeManifest.expoGoSDKVersion) {
+    if (![maybeManifest.expoGoSDKVersion isEqualToString:@"UNVERSIONED"]) {
+      NSInteger manifestSdkVersion = [maybeManifest.expoGoSDKVersion integerValue];
       if (manifestSdkVersion) {
         NSInteger oldestSdkVersion = [[self _earliestSdkVersionSupported] integerValue];
         NSInteger newestSdkVersion = [[self _latestSdkVersionSupported] integerValue];
@@ -345,7 +323,7 @@ NSString * const EXRuntimeErrorDomain = @"incompatible-runtime";
           errorCode = @"EXPERIENCE_SDK_VERSION_OUTDATED";
           // since we are spoofing this error, we put the SDK version of the project as the
           // "available" SDK version -- it's the only one available from the server
-          metadata = @{@"availableSDKVersions": @[maybeManifest.sdkVersion]};
+          metadata = @{@"availableSDKVersions": @[maybeManifest.expoGoSDKVersion]};
         }
         if (manifestSdkVersion > newestSdkVersion) {
           errorCode = @"EXPERIENCE_SDK_VERSION_TOO_NEW";

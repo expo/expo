@@ -21,14 +21,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-6n7j50"
         >
           <code
-            class="css-ter5io-PropertyName"
+            class="css-2z1nlz-PropertyName"
             data-text="true"
           >
             name
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -63,7 +63,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     >
       Type: 
       <code
-        class="css-4xa05b-TextComponent"
+        class="css-iwb7ur-TextComponent"
         data-text="true"
       >
         string
@@ -76,7 +76,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       Name of your app.
     </p>
     <details
-      class="css-extjfn-Collapsible"
+      class="css-u1z7e0-Collapsible"
     >
       <summary
         class="css-1iomq2j-Collapsible"
@@ -141,14 +141,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-6n7j50"
         >
           <code
-            class="css-ter5io-PropertyName"
+            class="css-2z1nlz-PropertyName"
             data-text="true"
           >
             androidNavigationBar
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -183,7 +183,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     >
       Type: 
       <code
-        class="css-4xa05b-TextComponent"
+        class="css-iwb7ur-TextComponent"
         data-text="true"
       >
         object
@@ -196,7 +196,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       Configuration for the bottom navigation bar on Android.
     </p>
     <details
-      class="css-extjfn-Collapsible"
+      class="css-u1z7e0-Collapsible"
     >
       <summary
         class="css-1iomq2j-Collapsible"
@@ -241,7 +241,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </div>
     </details>
     <details
-      class="css-extjfn-Collapsible"
+      class="css-u1z7e0-Collapsible"
     >
       <summary
         class="css-1iomq2j-Collapsible"
@@ -305,14 +305,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-6n7j50"
             >
               <code
-                class="css-ter5io-PropertyName"
+                class="css-2z1nlz-PropertyName"
                 data-text="true"
               >
                 visible
               </code>
             </span>
             <span
-              class="css-1n7zw4g"
+              class="css-13330di"
             >
               <svg
                 aria-label="permalink"
@@ -347,7 +347,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         >
           Type: 
           <code
-            class="css-4xa05b-TextComponent"
+            class="css-iwb7ur-TextComponent"
             data-text="true"
           >
             enum
@@ -369,7 +369,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           Determines how and when the navigation bar is shown.
         </p>
         <details
-          class="css-extjfn-Collapsible"
+          class="css-u1z7e0-Collapsible"
         >
           <summary
             class="css-1iomq2j-Collapsible"
@@ -433,14 +433,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   class="css-6n7j50"
                 >
                   <code
-                    class="css-ter5io-PropertyName"
+                    class="css-2z1nlz-PropertyName"
                     data-text="true"
                   >
                     always
                   </code>
                 </span>
                 <span
-                  class="css-1n7zw4g"
+                  class="css-13330di"
                 >
                   <svg
                     aria-label="permalink"
@@ -475,7 +475,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             >
               Type: 
               <code
-                class="css-4xa05b-TextComponent"
+                class="css-iwb7ur-TextComponent"
                 data-text="true"
               >
                 boolean
@@ -519,14 +519,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-6n7j50"
             >
               <code
-                class="css-ter5io-PropertyName"
+                class="css-2z1nlz-PropertyName"
                 data-text="true"
               >
                 backgroundColor
               </code>
             </span>
             <span
-              class="css-1n7zw4g"
+              class="css-13330di"
             >
               <svg
                 aria-label="permalink"
@@ -561,7 +561,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         >
           Type: 
           <code
-            class="css-4xa05b-TextComponent"
+            class="css-iwb7ur-TextComponent"
             data-text="true"
           >
             string
@@ -590,7 +590,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         >
           6 character long hex color string, eg: 
           <code
-            class="css-23wgco-TextComponent"
+            class="css-1a6y07t-TextComponent"
             data-text="true"
           >
             '#000000'
@@ -619,14 +619,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-6n7j50"
         >
           <code
-            class="css-ter5io-PropertyName"
+            class="css-2z1nlz-PropertyName"
             data-text="true"
           >
             intentFilters
           </code>
         </span>
         <span
-          class="css-1n7zw4g"
+          class="css-13330di"
         >
           <svg
             aria-label="permalink"
@@ -661,7 +661,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     >
       Type: 
       <code
-        class="css-4xa05b-TextComponent"
+        class="css-iwb7ur-TextComponent"
         data-text="true"
       >
         array
@@ -674,7 +674,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       Configuration for setting an array of custom intent filters in Android manifest.
     </p>
     <details
-      class="css-extjfn-Collapsible"
+      class="css-u1z7e0-Collapsible"
     >
       <summary
         class="css-1iomq2j-Collapsible"
@@ -780,14 +780,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-6n7j50"
             >
               <code
-                class="css-ter5io-PropertyName"
+                class="css-2z1nlz-PropertyName"
                 data-text="true"
               >
                 autoVerify
               </code>
             </span>
             <span
-              class="css-1n7zw4g"
+              class="css-13330di"
             >
               <svg
                 aria-label="permalink"
@@ -822,7 +822,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         >
           Type: 
           <code
-            class="css-4xa05b-TextComponent"
+            class="css-iwb7ur-TextComponent"
             data-text="true"
           >
             boolean
@@ -864,14 +864,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-6n7j50"
             >
               <code
-                class="css-ter5io-PropertyName"
+                class="css-2z1nlz-PropertyName"
                 data-text="true"
               >
                 data
               </code>
             </span>
             <span
-              class="css-1n7zw4g"
+              class="css-13330di"
             >
               <svg
                 aria-label="permalink"
@@ -906,7 +906,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         >
           Type: 
           <code
-            class="css-4xa05b-TextComponent"
+            class="css-iwb7ur-TextComponent"
             data-text="true"
           >
             array || object
@@ -941,14 +941,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   class="css-6n7j50"
                 >
                   <code
-                    class="css-ter5io-PropertyName"
+                    class="css-2z1nlz-PropertyName"
                     data-text="true"
                   >
                     host
                   </code>
                 </span>
                 <span
-                  class="css-1n7zw4g"
+                  class="css-13330di"
                 >
                   <svg
                     aria-label="permalink"
@@ -983,7 +983,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             >
               Type: 
               <code
-                class="css-4xa05b-TextComponent"
+                class="css-iwb7ur-TextComponent"
                 data-text="true"
               >
                 string

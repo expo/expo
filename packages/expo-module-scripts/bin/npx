@@ -4,7 +4,7 @@
 # Yarn and npm.
 
 # shellcheck disable=SC2154
-if [[ ! "$npm_config_user_agent" =~ yarn ]]; then
+if [[ ! "$npm_config_user_agent" =~ yarn ]] && [ -x "$(command -v yarn)" ]; then
   yarn exec -- npx "$@"
 else
   npx "$@"

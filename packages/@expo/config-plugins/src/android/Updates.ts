@@ -43,6 +43,9 @@ export enum Config {
   CODE_SIGNING_METADATA = 'expo.modules.updates.CODE_SIGNING_METADATA',
 }
 
+// when making changes to this config plugin, ensure the same changes are also made in eas-cli and build-tools
+// Also ensure the docs are up-to-date: https://docs.expo.dev/bare/installing-updates/
+
 export const withUpdates: ConfigPlugin<{ expoUsername: string | null }> = (
   config,
   { expoUsername }
@@ -99,7 +102,7 @@ export function setUpdatesConfig(
   addMetaDataItemToMainApplication(
     mainApplication,
     Config.ENABLED,
-    String(getUpdatesEnabled(config))
+    String(getUpdatesEnabled(config, username))
   );
   addMetaDataItemToMainApplication(
     mainApplication,
@@ -265,7 +268,7 @@ export function isMainApplicationMetaDataSynced(
   return (
     getUpdateUrl(config, username) ===
       getMainApplicationMetaDataValue(androidManifest, Config.UPDATE_URL) &&
-    String(getUpdatesEnabled(config)) ===
+    String(getUpdatesEnabled(config, username)) ===
       getMainApplicationMetaDataValue(androidManifest, Config.ENABLED) &&
     String(getUpdatesTimeout(config)) ===
       getMainApplicationMetaDataValue(androidManifest, Config.LAUNCH_WAIT_MS) &&

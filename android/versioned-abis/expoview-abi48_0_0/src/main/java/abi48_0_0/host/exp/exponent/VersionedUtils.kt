@@ -144,6 +144,18 @@ object VersionedUtils {
     }
   }
 
+  private fun reconnectReactDevTools() {
+    val currentActivity = Exponent.instance.currentActivity as? ReactNativeActivity ?: return run {
+      FLog.e(
+        ReactConstants.TAG,
+        "Unable to get the current activity."
+      )
+    }
+    // Emit the `RCTDevMenuShown` for the app to reconnect react-devtools
+    // https://github.com/facebook/react-native/blob/22ba1e45c52edcc345552339c238c1f5ef6dfc65/Libraries/Core/setUpReactDevTools.js#L80
+    currentActivity.emitRCTNativeAppEvent("RCTDevMenuShown", null)
+  }
+
   private fun createPackagerCommandHelpers(): Map<String, RequestHandler> {
     // Attach listeners to the bundler's dev server web socket connection.
     // This enables tools to automatically reload the client remotely (i.e. in expo-cli).
@@ -163,6 +175,7 @@ object VersionedUtils {
             }
             "toggleElementInspector" -> toggleElementInspector()
             "togglePerformanceMonitor" -> togglePerformanceMonitor()
+            "reconnectReactDevTools" -> reconnectReactDevTools()
           }
         }
       }

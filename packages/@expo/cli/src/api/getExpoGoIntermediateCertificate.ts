@@ -1,9 +1,7 @@
 import { CommandError } from '../utils/errors';
 import { fetchAsync } from './rest/client';
-import { ensureLoggedInAsync } from './user/actions';
 
 export async function getExpoGoIntermediateCertificateAsync(easProjectId: string): Promise<string> {
-  await ensureLoggedInAsync();
   const response = await fetchAsync(
     `projects/${encodeURIComponent(
       easProjectId

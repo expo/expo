@@ -316,7 +316,7 @@ async function generateMonochromeImageAsync(projectRoot, {
     dpiFolder,
     scale
   }) => {
-    const monochromeIcon = generateIconAsync(projectRoot, {
+    const monochromeIcon = await generateIconAsync(projectRoot, {
       cacheType: imageCacheFolder,
       src: icon,
       scale,

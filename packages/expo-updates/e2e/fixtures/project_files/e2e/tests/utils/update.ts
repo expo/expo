@@ -94,8 +94,10 @@ function getUpdateManifestForBundleFilename(
   hash: string,
   key: string,
   bundleFilename: string,
-  assets: any[]
+  assets: any[],
+  projectRoot: string
 ) {
+  const appJson = require(`${projectRoot}/app.json`);
   return {
     id: crypto.randomUUID(),
     createdAt: date.toISOString(),
@@ -108,7 +110,9 @@ function getUpdateManifestForBundleFilename(
     },
     assets,
     metadata: {},
-    extra: {},
+    extra: {
+      expoConfig: appJson.expo,
+    },
   };
 }
 
@@ -124,12 +128,22 @@ function getRollbackDirective(date: Date) {
   };
 }
 
+/**
+ * Common method used to create "no update available" directives
+ */
+function getNoUpdateAvailableDirective() {
+  return {
+    type: 'noUpdateAvailable',
+  };
+}
+
 export default {
   copyBundleToStaticFolder,
   copyAssetToStaticFolder,
   findAssets,
   getUpdateManifestForBundleFilename,
   getRollbackDirective,
+  getNoUpdateAvailableDirective,
   serverHost,
   serverPort,
 };

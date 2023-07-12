@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 6.2.0 — 2023-06-23
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
 ## 6.1.1 — 2023-02-09
 
 _This version does not introduce any user-facing changes._

@@ -142,7 +142,10 @@ class FileDownloaderSpec : ExpoSpec {
         )
         
         db.databaseQueue.sync {
-          let extraHeaders = FileDownloader.extraHeaders(
+          try! db.setExtraParam(key: "hello", value: "world", withScopeKey: config.scopeKey!)
+          try! db.setExtraParam(key: "what", value: "123", withScopeKey: config.scopeKey!)
+
+          let extraHeaders = FileDownloader.extraHeadersForRemoteUpdateRequest(
             withDatabase: db,
             config: config,
             launchedUpdate: launchedUpdate,
@@ -150,6 +153,8 @@ class FileDownloaderSpec : ExpoSpec {
           )
           expect(extraHeaders["Expo-Current-Update-ID"] as? String) == launchedUpdateUUIDString
           expect(extraHeaders["Expo-Embedded-Update-ID"] as? String) == embeddedUpdateUUIDString
+          expect(extraHeaders["Expo-Extra-Params"] as? String).to(contain("what=\"123\""))
+          expect(extraHeaders["Expo-Extra-Params"] as? String).to(contain("hello=\"world\""))
         }
       }
       
@@ -159,7 +164,7 @@ class FileDownloaderSpec : ExpoSpec {
         ])
         
         db.databaseQueue.sync {
-          let extraHeaders = FileDownloader.extraHeaders(
+          let extraHeaders = FileDownloader.extraHeadersForRemoteUpdateRequest(
             withDatabase: db,
             config: config,
             launchedUpdate: nil,
@@ -167,6 +172,7 @@ class FileDownloaderSpec : ExpoSpec {
           )
           expect(extraHeaders["Expo-Current-Update-ID"]).to(beNil())
           expect(extraHeaders["Expo-Embedded-Update-ID"]).to(beNil())
+          expect(extraHeaders["Expo-Extra-Params"]).to(beNil())
         }
       }
     }

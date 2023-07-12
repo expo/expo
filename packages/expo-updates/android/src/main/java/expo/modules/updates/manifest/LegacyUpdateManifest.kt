@@ -105,8 +105,8 @@ class LegacyUpdateManifest private constructor(
         commitTime = Date()
       } else {
         id = UUID.fromString(manifest.getReleaseId())
-        val commitTimeString = manifest.getCommitTime()
         commitTime = try {
+          val commitTimeString = manifest.getCommitTime() ?: throw JSONException("missing commitTime")
           UpdatesUtils.parseDateString(commitTimeString)
         } catch (e: ParseException) {
           Log.e(TAG, "Could not parse commitTime", e)
@@ -114,7 +114,7 @@ class LegacyUpdateManifest private constructor(
         }
       }
 
-      val runtimeVersion = manifest.getRuntimeVersion() ?: manifest.getSDKVersion() ?: throw Exception("sdkVersion should not be null")
+      val runtimeVersion = manifest.getRuntimeVersion() ?: manifest.getExpoGoSDKVersion() ?: throw Exception("sdkVersion should not be null")
       val bundleUrl = Uri.parse(manifest.getBundleURL())
       val bundledAssets = manifest.getBundledAssets()
       return LegacyUpdateManifest(

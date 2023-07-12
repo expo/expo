@@ -46,4 +46,27 @@ export var UpdatesLogEntryLevel;
     UpdatesLogEntryLevel["ERROR"] = "error";
     UpdatesLogEntryLevel["FATAL"] = "fatal";
 })(UpdatesLogEntryLevel || (UpdatesLogEntryLevel = {}));
+/**
+ * The possible settings that determine if expo-updates will check for updates on app startup.
+ * By default, Expo will check for updates every time the app is loaded. Set this to `ON_ERROR_RECOVERY` to disable automatic checking unless recovering from an error. Set this to `NEVER` to completely disable automatic checking. Must be one of `ON_LOAD` (default value), `ON_ERROR_RECOVERY`, `WIFI_ONLY`, or `NEVER`
+ */
+export var UpdatesCheckAutomaticallyValue;
+(function (UpdatesCheckAutomaticallyValue) {
+    /**
+     * Checks for updates whenever the app is loaded. This is the default setting.
+     */
+    UpdatesCheckAutomaticallyValue["ON_LOAD"] = "ON_LOAD";
+    /**
+     * Only checks for updates when the app starts up after an error recovery.
+     */
+    UpdatesCheckAutomaticallyValue["ON_ERROR_RECOVERY"] = "ON_ERROR_RECOVERY";
+    /**
+     * Only checks for updates when the app starts and has a WiFi connection.
+     */
+    UpdatesCheckAutomaticallyValue["WIFI_ONLY"] = "WIFI_ONLY";
+    /**
+     * Automatic update checks are off, and update checks must be done through the JS API.
+     */
+    UpdatesCheckAutomaticallyValue["NEVER"] = "NEVER";
+})(UpdatesCheckAutomaticallyValue || (UpdatesCheckAutomaticallyValue = {}));
 //# sourceMappingURL=Updates.types.js.map

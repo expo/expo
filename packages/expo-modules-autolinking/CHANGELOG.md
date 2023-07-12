@@ -6,12 +6,34 @@
 
 ### 🎉 New features
 
-- Generating `ExpoModulesProvider.swift` in the build phase script instead of only `pod install`. ([#21108](https://github.com/expo/expo/pull/21108) by [@tsapeta](https://github.com/tsapeta))
-- Added Gradle plugin autolinking support for Android. ([#21377](https://github.com/expo/expo/pull/21377) by [@kudo](https://github.com/kudo))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 1.5.0 — 2023-06-21
+
+### 🎉 New features
+
+- Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
+- Added extra CocoaPods dependencies and Maven repositories from `expo-build-properties`. ([#22785](https://github.com/expo/expo/pull/22785) by [@kudo](https://github.com/kudo))
+
+## 1.4.0 — 2023-06-13
+
+### 🎉 New features
+
+- Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
+
+## 1.3.0 — 2023-05-08
+
+### 🎉 New features
+
+- Generating `ExpoModulesProvider.swift` in the build phase script instead of only `pod install`. ([#21108](https://github.com/expo/expo/pull/21108) by [@tsapeta](https://github.com/tsapeta))
+
+## 1.2.0 - 2023-04-13
+
+### 🎉 New features
+
+- Added Gradle plugin autolinking support for Android. ([#21377](https://github.com/expo/expo/pull/21377) by [@kudo](https://github.com/kudo))
 
 ## 1.1.2 — 2023-02-14
 

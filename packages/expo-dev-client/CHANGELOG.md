@@ -10,6 +10,28 @@
 
 ### 💡 Others
 
+## 2.4.2 — 2023-06-28
+
+_This version does not introduce any user-facing changes._
+
+## 2.4.1 — 2023-06-23
+
+_This version does not introduce any user-facing changes._
+
+## 2.4.0 — 2023-06-21
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Bump `babel-plugin-module-resolver` dev dependency. ([#22871](https://github.com/expo/expo/pull/22871) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 2.3.0 — 2023-05-08
+
+### 💡 Others
+
 - Update e2e tests to use custom entry file system. ([#21643](https://github.com/expo/expo/pull/21643) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 2.1.4 — 2023-02-28

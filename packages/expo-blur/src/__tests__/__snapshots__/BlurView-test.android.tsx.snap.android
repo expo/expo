@@ -14,12 +14,7 @@ exports[`renders a native blur view 1`] = `
 >
   <ViewManagerAdapter_ExpoBlurView
     blurReductionFactor={4}
-    proxiedProperties={
-      {
-        "intensity": 0.65,
-        "tint": "light",
-      }
-    }
+    intensity={0.65}
     style={
       {
         "bottom": 0,
@@ -29,6 +24,7 @@ exports[`renders a native blur view 1`] = `
         "top": 0,
       }
     }
+    tint="light"
   />
 </View>
 `;

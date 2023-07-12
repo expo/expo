@@ -47,7 +47,7 @@ export function EmptyBranchesMessage({
           <Spacer.Vertical size="large" />
 
           <View align="centered">
-            <Button.ScaleOnPressContainer
+            <Button.FadeOnPressContainer
               bg="tertiary"
               onPress={() =>
                 Linking.openURL(
@@ -59,7 +59,7 @@ export function EmptyBranchesMessage({
                   See Development Builds
                 </Button.Text>
               </View>
-            </Button.ScaleOnPressContainer>
+            </Button.FadeOnPressContainer>
           </View>
         </View>
       </View>
@@ -79,7 +79,7 @@ export function EmptyBranchesMessage({
           </Text>
 
           <View py="medium" align="centered">
-            <Button.ScaleOnPressContainer
+            <Button.FadeOnPressContainer
               bg="tertiary"
               onPress={() =>
                 Linking.openURL(`https://docs.expo.dev/eas-update/how-eas-update-works/`)
@@ -89,7 +89,7 @@ export function EmptyBranchesMessage({
                   Publish an update
                 </Button.Text>
               </View>
-            </Button.ScaleOnPressContainer>
+            </Button.FadeOnPressContainer>
           </View>
         </View>
       </View>

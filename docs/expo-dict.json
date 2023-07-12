@@ -1,7 +1,7 @@
 {
   "amazon appstore": "Amazon Appstore",
   "android emulator": "Android Emulator",
-  "app store": "App Store",
+  "apple app store": "Apple App Store",
   "apple developer": "Apple Developer",
   "eas": "EAS",
   "eas build": "EAS Build",
@@ -13,7 +13,7 @@
   "javascript core": "JavaScriptCore",
   "mac os": "macOS",
   "objective c": "Objective-C",
-  "play store": "Play Store",
+  "google play store": "Google Play Store",
   "react navigation": "React Navigation",
   "turtle cli": "Turtle CLI",
   "unix": "Unix"

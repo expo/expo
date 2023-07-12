@@ -52,10 +52,10 @@ export function assertMissingRuntimePlatform(platform?: any): asserts platform {
 /** Assert if the runtime platform is not correct. */
 export function assertRuntimePlatform(platform: string): asserts platform is RuntimePlatform {
   const stringifiedPlatform = String(platform);
-  if (!['android', 'ios', 'none'].includes(stringifiedPlatform)) {
+  if (!['android', 'ios', 'web'].includes(stringifiedPlatform)) {
     throw new CommandError(
       'PLATFORM_HEADER',
-      `platform must be "android", "ios", or "none". Received: "${platform}"`
+      `platform must be "android", "ios", or "web". Received: "${platform}"`
     );
   }
 }

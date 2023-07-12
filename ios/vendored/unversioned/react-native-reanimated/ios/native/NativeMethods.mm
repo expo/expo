@@ -51,4 +51,4 @@ void setGestureState(id<RNGestureHandlerStateManager> gestureHandlerStateManager
   }
 }
 
-}
+} // namespace reanimated

@@ -52,7 +52,7 @@ async function readJsconfigAsync(projectRoot: string): Promise<null | ConfigRead
 }
 
 // TODO: Refactor for speed
-async function readTsconfigAsync(projectRoot: string): Promise<null | ConfigReadResults> {
+export async function readTsconfigAsync(projectRoot: string): Promise<null | ConfigReadResults> {
   const configPath = path.join(projectRoot, 'tsconfig.json');
   if (await fileExistsAsync(configPath)) {
     // We need to fully evaluate the tsconfig to get the baseUrl and paths in case they were applied in `extends`.

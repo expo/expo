@@ -10,6 +10,7 @@ import com.bumptech.glide.signature.ApplicationVersionSignature
 import expo.modules.image.GlideBlurhashModel
 import expo.modules.image.GlideModel
 import expo.modules.image.GlideRawModel
+import expo.modules.image.GlideThumbhashModel
 import expo.modules.image.GlideUriModel
 import expo.modules.image.GlideUrlModel
 import expo.modules.image.ResourceIdHelper
@@ -39,6 +40,8 @@ data class SourceMap(
 
   fun isBlurhash() = parsedUri?.scheme?.startsWith("blurhash") ?: false
 
+  fun isThumbhash() = parsedUri?.scheme?.startsWith("thumbhash") ?: false
+
   internal fun createGlideModel(context: Context): GlideModel? {
     if (uri.isNullOrBlank()) {
       return null
@@ -57,6 +60,12 @@ data class SourceMap(
         parsedUri!!,
         width,
         height
+      )
+    }
+
+    if (isThumbhash()) {
+      return GlideThumbhashModel(
+        parsedUri!!
       )
     }
 
