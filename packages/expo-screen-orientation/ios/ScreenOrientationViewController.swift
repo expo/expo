@@ -14,30 +14,24 @@ class ScreenOrientationViewController: UIViewController {
   }
 
   convenience init(defaultScreenOrientationFromPlist: Void) {
-    let allPossibleOrientations: UIInterfaceOrientationMask = doesDeviceHaveNotch ? .allButUpsideDown : .all
-    let ipadSupportedOrientationStrings = Bundle.main.object(forInfoDictionaryKey: ipadSupportedOrientationsKey) as? [String] ?? []
-    let supportedOrientationStrings = (isPad() && !ipadSupportedOrientationStrings.isEmpty) ?
-      ipadSupportedOrientationStrings : Bundle.main.object(forInfoDictionaryKey: supportedOrientationsKey) as? [String] ?? []
-    var supportedInterfaceOrientations: UIInterfaceOrientationMask = ScreenOrientationViewController.getSupportedInterfaceOrientations()
-
-    supportedInterfaceOrientations = supportedInterfaceOrientations.isEmpty ? allPossibleOrientations : supportedInterfaceOrientations
+    let supportedInterfaceOrientations = ScreenOrientationViewController.getSupportedInterfaceOrientations()
 
     guard let orientationString = Bundle.main.object(forInfoDictionaryKey: defaultScreenOrientationMaskKey) as? String else {
       // If user hasn't defined a default interface orientation using the config plugin use the allowed values from Info.plist as the
-      // default orientation. Values in Info.plist are set with the "orientation" key in Info.plist
+      // default orientation. Values in Info.plist are set with the "orientation" key in app.json
       self.init(defaultOrientationMask: supportedInterfaceOrientations)
       return
     }
 
     guard let mask = plistStringToInterfaceOrientationMask(orientationString) else {
       log.warn("Orientation lock string '\(orientationString)' provided in Info.plist does not correspond to a valid orientation mask. Application will default to portrait orientation lock.")
-      self.init(defaultOrientationMask: .portrait)
+      self.init(defaultOrientationMask: supportedInterfaceOrientations)
       return
     }
 
     guard mask.isSupportedByDevice() else {
       log.warn("Orientation lock string '\(orientationString)' provided in Info.plist is not supported by the device. Application will default to portrait orientation lock.")
-      self.init(defaultOrientationMask: .portrait)
+      self.init(defaultOrientationMask: supportedInterfaceOrientations)
       return
     }
 
@@ -78,21 +72,26 @@ class ScreenOrientationViewController: UIViewController {
     return screenWindowTraitsClass.shouldAskScreensForScreenOrientation?(in: self) ?? false
   }
 
+  /**
+   * Parses the lists under the key 'UISupportedInterfaceOrientations' in Info.plist into a UIInterfaceOrientation mask. Also checks for ipad specific settings.
+   * If no orientation is found all possible orientations will be returned.
+   */
   private static func getSupportedInterfaceOrientations() -> UIInterfaceOrientationMask {
+    let allPossibleOrientations: UIInterfaceOrientationMask = doesDeviceHaveNotch ? .allButUpsideDown : .all
+    let ipadSupportedOrientationStrings = Bundle.main.object(forInfoDictionaryKey: ipadSupportedOrientationsKey) as? [String] ?? []
+    let commonSupportedOrientationStrings = Bundle.main.object(forInfoDictionaryKey: supportedOrientationsKey) as? [String] ?? []
+    let supportedOrientationStrings = (isPad() && !ipadSupportedOrientationStrings.isEmpty) ?
+      ipadSupportedOrientationStrings : commonSupportedOrientationStrings
     var orientationMask: UIInterfaceOrientationMask = []
 
-    guard let orientationStrings = Bundle.main.object(forInfoDictionaryKey: "UISupportedInterfaceOrientations") as? [String] else {
-      return orientationMask
-    }
-
-    for orientationString in orientationStrings {
-      guard let orientation = UIInterfaceOrientationMask.Element(fromOrientationString: orientationString) else {
+    for orientationString in supportedOrientationStrings {
+      guard let orientation = orientationStringToInterfaceOrientationMask(orientationString) else {
         log.warn("Info.plist: \(orientationString) is not a valid value for the \(supportedOrientationsKey) key")
         continue
       }
       orientationMask.insert(orientation)
     }
 
-    return orientationMask
+    return orientationMask.isEmpty ? allPossibleOrientations : orientationMask
   }
 }
