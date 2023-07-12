@@ -1008,11 +1008,13 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
   ) {
     let task = session.dataTask(with: request) { data, response, error in
       guard let response = response else {
-        // error is non-nil when data and response are both nil
-        // swiftlint:disable:next force_unwrapping
-        let error = error!
-        self.logger.error(message: error.localizedDescription, code: .unknown)
-        errorBlock(error)
+        let fallbackMessage = "downloadData: both response and error are empty"
+        self.logger.error(message: error?.localizedDescription ?? fallbackMessage, code: .unknown)
+        errorBlock(error ?? NSError(
+          domain: ErrorDomain,
+          code: FileDownloaderErrorCode.InvalidResponseError.rawValue,
+          userInfo: [NSLocalizedDescriptionKey: fallbackMessage]
+        ))
         return
       }
 
