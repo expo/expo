@@ -114,7 +114,7 @@ export function Main({ registeredCallbacks = [], isDevice }: MainProps) {
             <Spacer.Horizontal />
 
             <View width="large" style={{ alignSelf: 'flex-start' }}>
-              <Button.FadeOnPressContainer onPress={hideMenu} bg="ghost" rounded="full">
+              <Button.FadeOnPressContainer onPress={hideMenu} bg="ghost" rounded="full" testID="fade-on-press-container">
                 <View padding="micro">
                   <XIcon />
                 </View>
