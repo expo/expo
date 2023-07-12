@@ -40,6 +40,8 @@ import { observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
+export let globalMetroInstanceHack: import('metro').Server | null = null;
+
 /** Default port to use for apps running in Expo Go. */
 const EXPO_GO_METRO_PORT = 8081;
 
@@ -365,11 +367,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       return originalClose((err?: Error) => {
         this.instance = null;
         this.metro = null;
+        globalMetroInstanceHack = null;
         callback?.(err);
       });
     };
 
     this.metro = metro;
+    globalMetroInstanceHack = metro;
+
     return {
       server,
       location: {

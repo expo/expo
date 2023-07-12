@@ -32,6 +32,7 @@ import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroE
 import { importMetroResolverFromProject } from './resolveFromProject';
 import { getAppRouterRelativeEntryPath } from './router';
 import { withMetroResolvers } from './withMetroResolvers';
+import { globalMetroInstanceHack } from './MetroBundlerDevServer';
 
 type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 
@@ -164,7 +165,11 @@ export function withExtendedResolver(
 
   return withMetroResolvers(config, projectRoot, [
     // Add a resolver to alias the web asset resolver.
-    (immutableContext: ResolutionContext, moduleName: string, platform: string | null) => {
+    function customResolve(
+      immutableContext: ResolutionContext,
+      moduleName: string,
+      platform: string | null
+    ) {
       let context = {
         ...immutableContext,
       } as Mutable<ResolutionContext> & {
@@ -274,7 +279,105 @@ export function withExtendedResolver(
         );
       }
 
-      result ??= doResolve(moduleName);
+      try {
+        result ??= doResolve(moduleName);
+      } catch (error) {
+        if (globalMetroInstanceHack) {
+          const canonicalize = require('metro-core/src/canonicalize');
+
+          // Compound key for the resolver cache
+          const resolverOptionsKey =
+            JSON.stringify(context.customResolverOptions ?? {}, canonicalize) ?? '';
+
+          const mapByResolverOptions = globalMetroInstanceHack?.getBundler().getBundler()
+            ._depGraph._resolutionCache;
+          const mapByOrigin = mapByResolverOptions.get(resolverOptionsKey) as Map<
+            string,
+            Map<string, Map<string, { type: string; filePath: string }>>
+          >;
+
+          // collect all references inversely using some expensive lookup
+
+          const getReferences = (origin: string) => {
+            const matcher = new RegExp(
+              escapePath(origin) +
+                // Optional `(/index.[tj]sx?)?` at the end
+                '(?:/index\\.[tj]sx?)?$',
+              'i'
+            );
+            const inverseOrigin: { origin: string; previous: string }[] = [];
+            if (platform) {
+              for (const [originKey, mapByTarget] of mapByOrigin) {
+                for (const [targetKey, resolutionWithPlatforms] of mapByTarget) {
+                  const resolution = resolutionWithPlatforms.get(platform);
+                  if (resolution?.type === 'sourceFile' && resolution.filePath.match(matcher)) {
+                    // console.log('foo', mapByTarget, targetKey, resolutionWithPlatforms, originKey);
+                    inverseOrigin.push({ origin: resolution.filePath, previous: originKey });
+                  }
+                }
+              }
+            }
+            return inverseOrigin;
+          };
+          const escapePath = (p: string) => {
+            // Escape characters with special meaning either inside or outside character sets.
+            // Use a simple backslash escape when it’s always valid, and a \unnnn escape when the simpler form would be disallowed by Unicode patterns’ stricter grammar.
+            return p.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&').replace(/-/g, '\\x2d');
+          };
+
+          const pad = (num: number) => {
+            return new Array(num).fill(' ').join('');
+          };
+
+          const root = config.server.unstable_serverRoot ?? config.projectRoot ?? projectRoot;
+
+          const recurseBackWithLimit = (origin: string, limit: number, count: number = 0) => {
+            if (count >= limit) {
+              return;
+            }
+
+            // console.log('why ->', origin);
+            const inverse = getReferences(origin);
+            for (const match of inverse) {
+              console.log(pad(count) + '└ ' + path.relative(root, match.origin));
+
+              // Found entry point
+              if (origin === match.previous) {
+                continue;
+              }
+              // console.log(pad(count) + chalk.green(path.relative(root, match.origin)));
+              // console.log(pad(count) + chalk.gray(match.previous));
+              // console.log('imported by ->', match);
+              recurseBackWithLimit(match.previous, limit, count + 1);
+            }
+          };
+
+          console.log('\n\nImport stack:');
+
+          // console.log('c', context, root);
+          // console.log(getReferences('/Users/evanbacon/Documents/GitHub/expo-router/apps/sandbox'));
+          recurseBackWithLimit(context.originModulePath, 5);
+          // console.log('inverseOrigin', getReferences(context.originModulePath));
+
+          // const to = moduleName
+
+          // const isSensitiveToOriginFolder =
+          //     // Resolution is always relative to the origin folder unless we assume a flat node_modules
+          //     // !assumeFlatNodeModules ||
+          //     // Path requests are resolved relative to the origin folder
+          //     to.includes('/') ||
+          //     to === '.' ||
+          //     to === '..' ||
+          //     // Preserve standard assumptions under node_modules
+          //     from.includes(path.sep + 'node_modules' + path.sep);
+
+          // const mapByTarget = getOrCreateMap(mapByOrigin, originKey);
+          // const mapByPlatform = getOrCreateMap(mapByTarget, targetKey);
+          // let resolution: ?BundlerResolution = mapByPlatform.get(platformKey);
+        }
+
+        throw error;
+      }
 
       if (result) {
         // Replace the web resolver with the original one.
