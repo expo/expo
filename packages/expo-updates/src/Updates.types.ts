@@ -268,3 +268,29 @@ export enum UpdatesCheckAutomaticallyValue {
  * @hidden
  */
 export type LocalAssets = Record<string, string>;
+
+/**
+ * @hidden
+ */
+export type UpdatesNativeStateMachineContext = {
+  // The native state machine context, either read directly from a native module method,
+  // or received in a state change event. Used internally by this module and not exported publicly.
+  isUpdateAvailable: boolean;
+  isUpdatePending: boolean;
+  isChecking: boolean;
+  isDownloading: boolean;
+  isRollback: boolean;
+  isRestarting: boolean;
+  latestManifest?: Manifest;
+  downloadedManifest?: Manifest;
+  checkError?: Error;
+  downloadError?: Error;
+};
+
+/**
+ * @hidden
+ */
+export type UpdatesNativeStateChangeEvent = {
+  // Change event emitted by native
+  context: UpdatesNativeStateMachineContext;
+};
