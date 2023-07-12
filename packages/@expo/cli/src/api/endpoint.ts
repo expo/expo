@@ -1,5 +1,4 @@
 import { env } from '../utils/env';
-import { getFreePortAsync } from '../utils/port';
 
 /** Get the URL for the expo.dev API. */
 export function getExpoApiBaseUrl(): string {
@@ -21,9 +20,4 @@ export function getExpoWebsiteBaseUrl(): string {
   } else {
     return `https://expo.dev`;
   }
-}
-
-export async function getSsoLocalServerPortAsync(): Promise<number> {
-  const startPort = env.EXPO_SSO_LOCAL_SERVER_PORT;
-  return await getFreePortAsync(startPort);
 }
