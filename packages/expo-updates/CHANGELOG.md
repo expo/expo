@@ -10,9 +10,27 @@
 
 - [Android] Fix rollback embedded update logic. ([#23244](https://github.com/expo/expo/pull/23244) by [@wschurman](https://github.com/wschurman))
 - Correctly handle roll backs in JS module methods. ([#23356](https://github.com/expo/expo/pull/23356), [#23377](https://github.com/expo/expo/pull/23377) by [@wschurman](https://github.com/wschurman))
-- [ios] Allow nil scopeKey for bare/embedded updates. ([#23385](https://github.com/expo/expo/pull/23385) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
+
+- Native getter for state machine context. ([#23428](https://github.com/expo/expo/pull/23428) by [@douglowder](https://github.com/douglowder))
+
+## 0.18.10 - 2023-07-12
+
+### 🐛 Bug fixes
+
+- [CLI] Add missing chalk dependency for the `expo-updates` cli. ([#23429](https://github.com/expo/expo/pull/23429) by [@byCedric](https://github.com/byCedric))
+- [CLI] Drop `fs-extra` in favor of `fs`. ([#23431](https://github.com/expo/expo/pull/23431) by [@byCedric](https://github.com/byCedric))
+
+## 0.18.9 - 2023-07-10
+
+### 🐛 Bug fixes
+
+- [ios] Allow nil scopeKey for bare/embedded updates. ([#23385](https://github.com/expo/expo/pull/23385) by [@wschurman](https://github.com/wschurman))
+
+## 0.18.8 - 2023-07-04
+
+_This version does not introduce any user-facing changes._
 
 ## 0.18.7 - 2023-06-30
 

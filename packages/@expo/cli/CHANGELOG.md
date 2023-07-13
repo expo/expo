@@ -6,13 +6,30 @@
 
 ### 🎉 New features
 
+- Add support for SSO users. ([#22945](https://github.com/expo/expo/pull/22945) by [@lzkb](https://github.com/lzkb))
+
+### 🐛 Bug fixes
+
+- Fixed route types generation on Windows not working. ([#23386](https://github.com/expo/expo/pull/23386) by [@gsporto](https://github.com/gsporto) and [@marklawlor](https://github.com/marklawlor))
+- Added improved error message for static metro when a package is missing. ([#23499](https://github.com/expo/expo/pull/23499) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+## 0.10.10 - 2023-07-07
+
+### 🐛 Bug fixes
+
+- Fixed JavaScript Inspector does not work on Windows. ([#23367](https://github.com/expo/expo/pull/23367) by [@kudo](https://github.com/kudo))
+
+## 0.10.9 - 2023-07-05
+
 ### 🐛 Bug fixes
 
 - Fixed opening browser on Windows when debugging or opening Metro web. ([#23287](https://github.com/expo/expo/pull/23287) by [@byCedric](https://github.com/byCedric))
-- Fixed JavaScript Inspector does not work on Windows. ([#23367](https://github.com/expo/expo/pull/23367) by [@kudo](https://github.com/kudo))
-- Fixed route types generation on Windows not working. ([#23386](https://github.com/expo/expo/pull/23386) by [@gsporto](https://github.com/gsporto) and [@marklawlor](https://github.com/marklawlor))
 
-### 💡 Others
+## 0.10.8 - 2023-07-04
+
+_This version does not introduce any user-facing changes._
 
 ## 0.10.7 - 2023-06-30
 

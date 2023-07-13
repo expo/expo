@@ -180,9 +180,12 @@ const general = [
       makePage('router/advanced/platform-specific-modules.mdx'),
       makePage('router/advanced/shared-routes.mdx'),
       makePage('router/advanced/router-settings.mdx'),
+      makePage('router/advanced/apple-handoff.mdx'),
     ]),
     makeGroup('Reference', [
+      makePage('router/reference/hooks.mdx'),
       makePage('router/reference/search-parameters.mdx'),
+      makePage('router/reference/redirects.mdx'),
       makePage('router/reference/static-rendering.mdx'),
       makePage('router/reference/async-routes.mdx'),
       makePage('router/reference/sitemap.mdx'),
@@ -193,6 +196,7 @@ const general = [
       makePage('router/reference/troubleshooting.mdx'),
       makePage('router/reference/faq.mdx'),
     ]),
+    makeGroup('Migration', [makePage('router/migrate/from-react-navigation.mdx')]),
   ]),
   makeSection('EAS', [makePage('eas/index.mdx')]),
   makeSection('EAS Build', [

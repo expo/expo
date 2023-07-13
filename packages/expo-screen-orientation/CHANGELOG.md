@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 6.0.3 - 2023-07-12
+
+### 🐛 Bug fixes
+
+- [iOS] When config plugin is not configured the initial orientation is now based on values in `Info.plist` instead of being set to portrait. ([#23456](https://github.com/expo/expo/pull/23456) by [@behenate](https://github.com/behenate))
+
+## 6.0.2 - 2023-07-04
+
+### 💡 Others
+
 - [iOS] Refactor the singleton class to work properly in versioned code in Expo Go. ([#23228](https://github.com/expo/expo/pull/23228) by [@tsapeta](https://github.com/tsapeta))
 
 ## 6.0.1 — 2023-06-23

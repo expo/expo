@@ -108,6 +108,16 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
 
   public func urlSession(
     _: URLSession,
+    dataTask: URLSessionDataTask,
+    didReceive response: URLResponse,
+    completionHandler: @escaping (URLSession.ResponseDisposition) -> Void
+  ) {
+    completionHandler(.allow)
+    client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .allowed)
+  }
+
+  public func urlSession(
+    _: URLSession,
     task: URLSessionTask,
     willPerformHTTPRedirection response: HTTPURLResponse,
     newRequest request: URLRequest,
