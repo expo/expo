@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Add support for `.mjs` extensions in Expo Metro.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Add support for `.mjs` extensions in Expo Metro.
+
 ### 🎉 New features
 
 - Add support for SSO users. ([#22945](https://github.com/expo/expo/pull/22945) by [@lzkb](https://github.com/lzkb))
