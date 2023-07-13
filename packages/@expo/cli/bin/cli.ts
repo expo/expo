@@ -91,6 +91,9 @@ if (!isSubcommand && args['--help']) {
     // workaround until we can use `expo export` for all production bundling.
     // https://github.com/expo/expo/pull/21396/files#r1121025873
     'export:embed': exportEmbed_unused,
+    // Other ignored commands, these are intentially not listed in the `--help` output
+    run: _run,
+    // All other commands
     ...others
   } = commands;
 
