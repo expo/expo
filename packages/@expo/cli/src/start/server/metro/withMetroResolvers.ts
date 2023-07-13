@@ -59,6 +59,7 @@ export function withMetroResolvers(
     platform: string | null
   ) {
     if (!globalMetroInstanceHack) {
+      debug('Cannot mutate resolution error');
       return error;
     }
     const canonicalize = require('metro-core/src/canonicalize');
@@ -71,7 +72,7 @@ export function withMetroResolvers(
       ._depGraph._resolutionCache;
     const mapByOrigin = mapByResolverOptions.get(resolverOptionsKey) as Map<
       string,
-      Map<string, Map<string, { type: string; filePath: string }>>
+      Map<string, Map<string, { type: string; filePath: string } | string>>
     >;
 
     // collect all references inversely using some expensive lookup
@@ -80,7 +81,7 @@ export function withMetroResolvers(
       const matcher = new RegExp(
         escapePath(origin) +
           // Optional `(/index.[tj]sx?)?` at the end
-          '(?:/index\\.[tj]sx?)?$',
+          '(?:/index\\.[tjm]sx?)?$',
         'i'
       );
       const inverseOrigin: { origin: string; previous: string }[] = [];
@@ -88,9 +89,19 @@ export function withMetroResolvers(
         for (const [originKey, mapByTarget] of mapByOrigin) {
           for (const [targetKey, resolutionWithPlatforms] of mapByTarget) {
             const resolution = resolutionWithPlatforms.get(platform);
-            if (resolution?.type === 'sourceFile' && resolution.filePath.match(matcher)) {
-              // console.log('foo', mapByTarget, targetKey, resolutionWithPlatforms, originKey);
-              inverseOrigin.push({ origin: resolution.filePath, previous: originKey });
+            if (!resolution) {
+              continue;
+            }
+            console.log('res', resolution);
+            if (typeof resolution === 'string') {
+              if (resolution.match(matcher)) {
+                inverseOrigin.push({ origin: resolution, previous: originKey });
+              }
+            } else {
+              if (resolution?.type === 'sourceFile' && resolution.filePath.match(matcher)) {
+                // console.log('foo', mapByTarget, targetKey, resolutionWithPlatforms, originKey);
+                inverseOrigin.push({ origin: resolution.filePath, previous: originKey });
+              }
             }
           }
         }
@@ -145,7 +156,7 @@ export function withMetroResolvers(
     );
 
     if (inverseTree.previous.length > 0) {
-      console.log(JSON.stringify(inverseTree, null, 2));
+      debug('Found inverse graph:', JSON.stringify(inverseTree, null, 2));
       let extraMessage = 'Inverse dependency graph:';
       // console.log('\n\nImport stack:');
       // console.log('\n\nInverse tree:');
@@ -159,8 +170,10 @@ export function withMetroResolvers(
       printRecursive(inverseTree);
 
       error._expoImportStack = chalk.gray(extraMessage);
+      console.log(mapByOrigin, JSON.stringify(inverseTree, null, 2));
+      process.exit(0);
     } else {
-      // console.log('\n\nNo inverse tree could be created.');
+      debug('Found no inverse tree for:', context.originModulePath);
     }
 
     return error;
