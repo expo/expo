@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `the bind value at index 1 is null` exception thrown by `ExpoMediaLibrary.migrateAlbumIfNeededAsync` on Android.
+
 ### 💡 Others
 
 ## 15.4.0 — 2023-06-21
