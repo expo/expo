@@ -9,7 +9,9 @@ export function getColorTintStyle(tintColor?: string | null) {
 }
 
 export default function ColorTintFilter({ tintColor }: { tintColor?: string | null }) {
-  if (!tintColor) return null;
+  if (!tintColor) {
+    return null;
+  }
   return (
     <svg style={styles.svg}>
       <defs>

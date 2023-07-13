@@ -13,7 +13,7 @@
 
 ### 💡 Others
 
-- [Web] Refactor expo-image web. ([#23465](https://github.com/expo/expo/pull/23465) by [@aleqsio](https://github.com/aleqsio))
+- [Web] Refactored and split some functions for better readability. ([#23465](https://github.com/expo/expo/pull/23465) by [@aleqsio](https://github.com/aleqsio))
 
 ## 1.3.2 - 2023-07-12
 
