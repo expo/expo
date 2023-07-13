@@ -294,7 +294,8 @@ declare module "expo-router" {
    ****************/
 
   type SearchOrHash = \`?\${string}\` | \`#\${string}\`;
-  type UnknownSearchParams = Record<string, string | number | (string | number)[]>
+  type UnknownInputParams = Record<string, string | number | (string | number)[]>;
+  type UnknownOutputParams = Record<string, string | string[]>;
 
   /**
    * Return only the RoutePart of a string. If the string has multiple parts return never
@@ -367,25 +368,34 @@ declare module "expo-router" {
     : [Path];
 
   /**
-   * Returns a Record of the routes parameters as strings and CatchAll parameters as string[]
+   * Returns a Record of the routes parameters as strings and CatchAll parameters
+   *
+   * There are two versions, input and output, as you can input 'string | number' but
+   *  the output will always be 'string'
    *
    * /[id]/[...rest] -> { id: string, rest: string[] }
    * /no-params      -> {}
    */
-  type RouteParams<Path> = {
+  type InputRouteParams<Path> = {
+    [Key in ParameterNames<Path> as Key extends \`...\${infer Name}\`
+      ? Name
+      : Key]: Key extends \`...\${string}\` ? (string | number)[] : string | number;
+  } & UnknownInputParams;
+
+  type OutputRouteParams<Path> = {
     [Key in ParameterNames<Path> as Key extends \`...\${infer Name}\`
       ? Name
       : Key]: Key extends \`...\${string}\` ? string[] : string;
-  } & UnknownSearchParams;
+  } & UnknownOutputParams;
 
   /**
-   * Returns the search parameters for a route
+   * Returns the search parameters for a route.
    */
   export type SearchParams<T extends AllRoutes> = T extends DynamicRouteTemplate
-    ? RouteParams<T>
+    ? OutputRouteParams<T>
     : T extends StaticRoutes
     ? never
-    : UnknownSearchParams
+    : UnknownOutputParams;
 
   /**
    * Route is mostly used as part of Href to ensure that a valid route is provided
@@ -426,9 +436,9 @@ declare module "expo-router" {
     R extends Record<'pathname', string>,
     P = R['pathname']
   > = P extends DynamicRouteTemplate
-    ? { pathname: P; params: RouteParams<P> }
+    ? { pathname: P; params: InputRouteParams<P> }
     : P extends Route<P>
-    ? { pathname: Route<P> | DynamicRouteTemplate; params?: never | RouteParams<never> }
+    ? { pathname: Route<P> | DynamicRouteTemplate; params?: never | InputRouteParams<never> }
     : never;
 
   /***********************
@@ -443,7 +453,7 @@ declare module "expo-router" {
     /** Go back in the history. */
     back: () => void;
     /** Update the current route query params. */
-    setParams: <T = ''>(params?: T extends '' ? Record<string, string> : RouteParams<T>) => void;
+    setParams: <T = ''>(params?: T extends '' ? Record<string, string> : InputRouteParams<T>) => void;
   };
 
   /************
@@ -467,15 +477,15 @@ declare module "expo-router" {
   export function useRouter(): Router;
 
   export function useLocalSearchParams<
-    T extends AllRoutes | UnknownSearchParams = UnknownSearchParams
+    T extends AllRoutes | UnknownOutputParams = UnknownOutputParams
   >(): T extends AllRoutes ? SearchParams<T> : T;
 
   export function useSearchParams<
-    T extends AllRoutes | UnknownSearchParams = UnknownSearchParams
+    T extends AllRoutes | UnknownOutputParams = UnknownOutputParams
   >(): T extends AllRoutes ? SearchParams<T> : T;
 
   export function useGlobalSearchParams<
-    T extends AllRoutes | UnknownSearchParams = UnknownSearchParams
+    T extends AllRoutes | UnknownOutputParams = UnknownOutputParams
   >(): T extends AllRoutes ? SearchParams<T> : T;
 
   export function useSegments<

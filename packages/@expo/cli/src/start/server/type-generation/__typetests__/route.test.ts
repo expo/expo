@@ -109,6 +109,15 @@ describe('router.push()', () => {
       );
     });
 
+    it('allows numeric inputs', () => {
+      expectType<void>(
+        router.push({
+          pathname: '/mix/[fruit]/[color]/[...animals]',
+          params: { color: 1, fruit: 'apple', animals: [2, 'cat'] },
+        })
+      );
+    });
+
     it('requires an array for catch all routes', () => {
       expectError(
         router.push({
@@ -140,9 +149,9 @@ describe('router.push()', () => {
 
 describe('useSearchParams', () => {
   expectType<Record<'color', string>>(useSearchParams<Record<'color', string>>());
-  expectType<
-    Record<'color', string | number> & Record<string, string | number | (string | number)[]>
-  >(useSearchParams<'/colors/[color]'>());
+  expectType<Record<'color', string> & Record<string, string | string[]>>(
+    useSearchParams<'/colors/[color]'>()
+  );
 
   expectError(useSearchParams<'/invalid'>());
   expectError(useSearchParams<Record<'custom', Function>>());
@@ -150,9 +159,9 @@ describe('useSearchParams', () => {
 
 describe('useLocalSearchParams', () => {
   expectType<Record<'color', string>>(useLocalSearchParams<Record<'color', string>>());
-  expectType<
-    Record<'color', string | number> & Record<string, string | number | (string | number)[]>
-  >(useLocalSearchParams<'/colors/[color]'>());
+  expectType<Record<'color', string> & Record<string, string | string[]>>(
+    useLocalSearchParams<'/colors/[color]'>()
+  );
 
   expectError(useSearchParams<'/invalid'>());
   expectError(useSearchParams<Record<'custom', Function>>());
@@ -160,9 +169,9 @@ describe('useLocalSearchParams', () => {
 
 describe('useGlobalSearchParams', () => {
   expectType<Record<'color', string>>(useGlobalSearchParams<Record<'color', string>>());
-  expectType<
-    Record<'color', string | number> & Record<string, string | number | (string | number)[]>
-  >(useGlobalSearchParams<'/colors/[color]'>());
+  expectType<Record<'color', string> & Record<string, string | string[]>>(
+    useGlobalSearchParams<'/colors/[color]'>()
+  );
 
   expectError(useGlobalSearchParams<'/invalid'>());
   expectError(useGlobalSearchParams<Record<'custom', Function>>());
