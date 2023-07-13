@@ -52,7 +52,7 @@
   "expo-linking": "~5.0.2",
   "expo-local-authentication": "~13.4.1",
   "expo-localization": "~14.3.0",
-  "expo-location": "~16.0.0",
+  "expo-location": "~16.1.0",
   "expo-mail-composer": "~12.3.0",
   "expo-media-library": "~15.4.0",
   "expo-module-template": "~10.9.5",
