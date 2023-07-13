@@ -1,123 +1,26 @@
 import { getBareExtensions } from '@expo/config/paths';
+import { vol } from 'memfs';
 import { ConfigT } from 'metro-config';
-import FailedToResolveNameError from 'metro-resolver/src/errors/FailedToResolveNameError';
-import FailedToResolvePathError from 'metro-resolver/src/errors/FailedToResolvePathError';
-import { vol, fs } from 'memfs';
-import path from 'path';
-const ModuleCache = jest.requireActual('metro/src/node-haste/ModuleCache');
+import { CustomResolutionContext } from 'metro-resolver/src';
+
+import { importMetroResolverFromProject } from '../resolveFromProject';
 import {
   getNodejsExtensions,
   shouldAliasAssetRegistryForWeb,
   withExtendedResolver,
 } from '../withMetroMultiPlatform';
-import { CustomResolutionContext, ResolutionContext } from 'metro-resolver/src';
 
 const asMetroConfig = (config: Partial<ConfigT> = {}): ConfigT => config as any;
-import { importMetroResolverFromProject } from '../resolveFromProject';
 
 jest.mock('../resolveFromProject', () => {
   const resolve = jest.fn(() => ({ type: 'empty' }));
   return {
-    importFromProject: jest.fn(),
     importMetroResolverFromProject: jest.fn(() => ({ resolve })),
   };
-  // importMetroResolverFromProject: jest.fn(() => jest.requireActual('metro-resolver')),
 });
 
-function getDefaultRequestContext({
-  unstable_enableSymlinks = false,
-  assetResolutions = [],
-}: {
-  unstable_enableSymlinks?: boolean;
-  assetResolutions?: string[];
-} = {}): CustomResolutionContext {
-  // function _getClosestPackage(filePath: string): string | null {
-  //   const parsedPath = path.parse(filePath);
-  //   const root = parsedPath.root;
-  //   let dir = path.join(parsedPath.dir, parsedPath.base);
-
-  //   do {
-  //     // If we've hit a node_modules directory, the closest package was not
-  //     // found (`filePath` was likely nonexistent).
-  //     if (path.basename(dir) === 'node_modules') {
-  //       return null;
-  //     }
-  //     const candidate = path.join(dir, 'package.json');
-  //     if (fs.existsSync(candidate)) {
-  //       return candidate;
-  //     }
-  //     dir = path.dirname(dir);
-  //   } while (dir !== '.' && dir !== root);
-  //   return null;
-  // }
-
+function getDefaultRequestContext(): CustomResolutionContext {
   return {
-    // redirectModulePath: jest.requireActual('metro-resolver/src/PackageResolve').redirectModulePath,
-    // dirExists: (filePath: string) => {
-    //   try {
-    //     return fs.lstatSync(filePath).isDirectory();
-    //   } catch (e) {}
-    //   return false;
-    // },
-    // disableHierarchicalLookup: true,
-    // doesFileExist: (filepath) => fs.existsSync(filepath),
-    // emptyModulePath: '/node_modules/metro-runtime/src/modules/empty-module.js',
-
-    // getHasteModulePath: [Function: getHasteModulePath],
-    // getHastePackagePath: [Function: getHastePackagePath],
-    // isAssetFile: (filePath, assetExts) => {
-    //   const baseName = path.basename(filePath);
-
-    //   for (let i = baseName.length - 1; i >= 0; i--) {
-    //     if (baseName[i] === '.') {
-    //       const ext = baseName.slice(i + 1);
-
-    //       if (assetExts.has(ext)) {
-    //         return true;
-    //       }
-    //     }
-    //   }
-    //   return false;
-    // },
-
-    // moduleCache: new ModuleCache({
-    //   getClosestPackage: (filePath) => _getClosestPackage(filePath),
-    // }),
-
-    // resolveAsset: (dirPath: string, assetName: string, extension: string) => {
-    //   const basePath = dirPath + path.sep + assetName;
-    //   let assets = [
-    //     basePath + extension,
-    //     ...assetResolutions.map((resolution) => basePath + '@' + resolution + 'x' + extension),
-    //   ];
-
-    //   if (unstable_enableSymlinks) {
-    //     // @ts-expect-error
-    //     assets = assets.map((candidate) => fs.realpathSync(candidate)).filter(Boolean);
-    //   } else {
-    //     assets = assets.filter((candidate) => fs.existsSync(candidate));
-    //   }
-
-    //   return assets.length ? assets : null;
-    // },
-
-    // resolveHasteModule: (name: string) => {
-    //   const candidate = '/haste/' + name + '.js';
-    //   if (fs.existsSync(candidate)) {
-    //     return candidate;
-    //   }
-
-    //   return undefined;
-    // },
-    // resolveHastePackage: (name: string) => {
-    //   const candidate = '/haste/' + name + '/package.json';
-    //   if (fs.existsSync(candidate)) {
-    //     return candidate;
-    //   }
-    //   return undefined;
-    // },
-    // getPackageMainPath: [Function: _getPackageMainPath],
-    // allowHaste: true,
     extraNodeModules: {},
     mainFields: ['react-native', 'browser', 'main'],
     nodeModulesPaths: ['/node_modules'],
