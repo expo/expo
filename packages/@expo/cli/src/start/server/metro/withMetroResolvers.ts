@@ -70,15 +70,6 @@ export function withMetroResolvers(
       return error;
     }
 
-    // const
-    // _graph
-
-    // console.log(globalMetroInstanceHack?.getBundler().getDeltaBundler());
-    // console.log(globalMetroInstanceHack?.getBundler());
-    // console.log(depGraph);
-
-    // const mapByResolverOptions = globalMetroInstanceHack?.getBundler().getBundler()
-    //   ._depGraph._resolutionCache;
     const mapByOrigin = depGraph.get(optionsKeyForContext(context));
     const mapByPlatform = mapByOrigin?.get(platform);
 
@@ -88,49 +79,28 @@ export function withMetroResolvers(
 
     // collect all references inversely using some expensive lookup
 
+    // console.log(mapByPlatform);
     const getReferences = (origin: string) => {
-      const matcher = new RegExp(
-        escapePath(origin) +
-          // Optional `(/index.[tj]sx?)?` at the end
-          '(?:/index\\.[tjm]sx?)?$',
-        'i'
-      );
-      const inverseOrigin: { origin: string; previous: string }[] = [];
+      const inverseOrigin: { origin: string; previous: string; request: string }[] = [];
 
       if (!mapByPlatform) {
         return inverseOrigin;
       }
 
       for (const [originKey, mapByTarget] of mapByPlatform) {
-        // for (const [targetKey, resolutionWithPlatforms] of mapByTarget) {
-        // const resolution = mapByTarget.get(platform);
-        // if (!resolution) {
-        //   continue;
-        // }
-        // console.log('res', resolution);
-        // if (typeof resolution === 'string') {
-        if (
-          mapByTarget.has(origin)
-          // resolution === origin
-          // .match(matcher)
-        ) {
-          inverseOrigin.push({ origin: origin, previous: originKey });
+        // search comparing origin to path
+
+        const found = [...mapByTarget.values()].find((resolution) => resolution.path === origin);
+        if (found) {
+          inverseOrigin.push({
+            origin,
+            previous: originKey,
+            request: found.request,
+          });
         }
-        //   } else {
-        //     if (resolution?.type === 'sourceFile' && resolution.filePath.match(matcher)) {
-        //       // console.log('foo', mapByTarget, targetKey, resolutionWithPlatforms, originKey);
-        //       inverseOrigin.push({ origin: resolution.filePath, previous: originKey });
-        //     }
-        //   // }
-        // }
       }
 
       return inverseOrigin;
-    };
-    const escapePath = (p: string) => {
-      // Escape characters with special meaning either inside or outside character sets.
-      // Use a simple backslash escape when it’s always valid, and a \unnnn escape when the simpler form would be disallowed by Unicode patterns’ stricter grammar.
-      return p.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&').replace(/-/g, '\\x2d');
     };
 
     const pad = (num: number) => {
@@ -141,11 +111,17 @@ export function withMetroResolvers(
 
     type InverseDepResult = {
       origin: string;
+      request: string;
       previous: InverseDepResult[];
     };
-    const recurseBackWithLimit = (origin: string, limit: number, count: number = 0) => {
+    const recurseBackWithLimit = (
+      req: { origin: string; request: string },
+      limit: number,
+      count: number = 0
+    ) => {
       const results: InverseDepResult = {
-        origin,
+        origin: req.origin,
+        request: req.request,
         previous: [],
       };
 
@@ -153,42 +129,91 @@ export function withMetroResolvers(
         return results;
       }
 
-      const inverse = getReferences(origin);
+      const inverse = getReferences(req.origin);
       for (const match of inverse) {
         // console.log(pad(count) + '└ ' + path.relative(root, match.origin));
 
         // Use more qualified name if possible
-        results.origin = match.origin;
+        // results.origin = match.origin;
         // Found entry point
-        if (origin === match.previous) {
+        if (req.origin === match.previous) {
           continue;
         }
-        results.previous.push(recurseBackWithLimit(match.previous, limit, count + 1));
+        results.previous.push(
+          recurseBackWithLimit({ origin: match.previous, request: match.request }, limit, count + 1)
+        );
       }
       return results;
     };
 
     const inverseTree = recurseBackWithLimit(
-      context.originModulePath,
+      { origin: context.originModulePath, request: moduleName },
       // TODO: Do we need to expose this?
       35
     );
 
+    let hasReactNative = false;
     if (inverseTree.previous.length > 0) {
       debug('Found inverse graph:', JSON.stringify(inverseTree, null, 2));
-      let extraMessage = 'Inverse dependency graph:';
+      let extraMessage = chalk.bold('Import stack:');
       // console.log('\n\nImport stack:');
       // console.log('\n\nInverse tree:');
       const printRecursive = (tree: InverseDepResult, depth: number = 0) => {
-        extraMessage += '\n' + pad(depth) + '└ ' + path.relative(root, tree.origin);
+        let filename = path.relative(root, tree.origin);
+        if (filename.match(/\?ctx=[\w\d]+$/)) {
+          filename = filename.replace(/\?ctx=[\w\d]+$/, chalk.dim(' (require.context)'));
+        } else {
+          let formattedRequest = chalk.green(`"${tree.request}"`);
+
+          if (
+            // If bundling for web and the import is pulling internals from outside of react-native
+            // then mark it as an invalid import.
+            platform === 'web' &&
+            !/^(node_modules\/)?react-native\//.test(filename) &&
+            tree.request.match(/^react-native\/.*/)
+          ) {
+            formattedRequest =
+              formattedRequest +
+              chalk`\n          {yellow Importing react-native internals is not supported on web.}`;
+          }
+
+          filename = filename + chalk`\n{gray  |} {cyan import} ${formattedRequest}\n`;
+        }
+        let line = '\n' + pad(depth) + chalk.gray(' ') + filename;
+        if (filename.match(/node_modules/)) {
+          line = chalk.gray(
+            // Bold the node module name
+            line.replace(/node_modules\/([^/]+)/, (_match, p1) => {
+              if (p1 === 'react-native') {
+                hasReactNative = true;
+                // if (platform === 'web') {
+                //   // Highlight the invalid react-native import on web platforms.
+                //   return chalk.bold.red(p1);
+                // }
+              }
+              return 'node_modules/' + chalk.bold(p1);
+            })
+          );
+        }
+        extraMessage += line;
         // console.log(pad(depth) + '└ ' + path.relative(root, tree.origin));
         for (const child of tree.previous) {
-          printRecursive(child, depth + 1);
+          printRecursive(
+            child,
+            // Only add depth if there are multiple children
+            tree.previous.length > 1 ? depth + 1 : depth
+          );
         }
       };
       printRecursive(inverseTree);
 
-      error._expoImportStack = chalk.gray(extraMessage);
+      // if (platform === 'web' && hasReactNative) {
+      //   extraMessage += chalk.yellow(
+      //     '\n\n⚠️  Avoid importing react-native internals when bundling for web. Use react-native-web instead.'
+      //   );
+      // }
+
+      error._expoImportStack = extraMessage;
       // console.log(mapByOrigin, JSON.stringify(inverseTree, null, 2));
       // process.exit(0);
     } else {
@@ -207,9 +232,13 @@ export function withMetroResolvers(
       Map<
         // origin module name
         string,
-        // required module name
-        Set<string>
-        // { origin: string; res: ReturnType<ExpoCustomMetroResolver> } | string
+        Set<{
+          // required module name
+          path: string;
+          // This isn't entirely accurate since a module can be imported multiple times in a file,
+          // and use different names. But it's good enough for now.
+          request: string;
+        }>
       >
     >
   > = new Map();
@@ -232,18 +261,7 @@ export function withMetroResolvers(
           const setForModule = mapByPlatform!.get(context.originModulePath)!;
 
           const qualifiedModuleName = res.type === 'sourceFile' ? res.filePath : moduleName;
-          setForModule.add(qualifiedModuleName);
-
-          // if (!mapByTarget.has(context.originModulePath)) {
-          //   mapByTarget.set(context.originModulePath, new Map());
-          // // }
-          // const mapByModule = mapByTarget.get(context.originModulePath) ?? [];
-
-          // const mapByPlatform = mapByTarget.get(context.originModulePath) ?? [];
-
-          // if (!mapByPlatform.has(platform)) {
-          //   mapByPlatform.set(platform, qualifiedModuleName);
-          // }
+          setForModule.add({ path: qualifiedModuleName, request: moduleName });
         };
 
         const universalContext = {

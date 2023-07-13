@@ -110,13 +110,15 @@ export function withExtendedResolver(
   const aliases: { [key: string]: Record<string, string> } = {
     web: {
       'react-native': 'react-native-web',
+      'react-native/index': 'react-native-web',
     },
   };
 
   if (isWebEnabled) {
+    const rnw = path.resolve(require.resolve('react-native-web/package.json'), '..');
     // Allow `react-native-web` to be optional when web is not enabled but path aliases is.
     extraNodeModules['web'] = {
-      'react-native': path.resolve(require.resolve('react-native-web/package.json'), '..'),
+      'react-native': rnw,
     };
   }
 

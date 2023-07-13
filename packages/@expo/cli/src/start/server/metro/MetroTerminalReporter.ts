@@ -104,15 +104,16 @@ export class MetroTerminalReporter extends TerminalReporter {
   }
 
   _logBundlingError(error: SnippetError): void {
-    if (error.cause?._expoImportStack) {
-      error.snippet ??= '';
-
-      error.message += `\n\n${error.cause._expoImportStack}`;
-    }
-
     const moduleResolutionError = formatUsingNodeStandardLibraryError(this.projectRoot, error);
     if (moduleResolutionError) {
-      return this.terminal.log(maybeAppendCodeFrame(moduleResolutionError, error.message));
+      let message = maybeAppendCodeFrame(moduleResolutionError, error.message);
+      if (error.cause?._expoImportStack) {
+        message += `\n\n${error.cause?._expoImportStack}`;
+      }
+      return this.terminal.log(message);
+    }
+    if (error.cause?._expoImportStack) {
+      error.message += `\n\n${error.cause._expoImportStack}`;
     }
     return super._logBundlingError(error);
   }
@@ -162,8 +163,8 @@ export function formatUsingNodeStandardLibraryError(
       ].join('\n');
     }
   }
-  return null;
-  // return `Unable to resolve "${targetModuleName}" from "${relativePath}"`;
+  // return null;
+  return `Unable to resolve "${targetModuleName}" from "${relativePath}"`;
 }
 
 export function isNodeStdLibraryModule(moduleName: string): boolean {
