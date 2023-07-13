@@ -11,9 +11,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixed `tintColor` prop not working for SVGs. ([#23418](https://github.com/expo/expo/pull/23418) by [@tsapeta](https://github.com/tsapeta))
-
 ### 💡 Others
+
+## 1.3.2 - 2023-07-12
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed `tintColor` prop not working for SVGs. ([#23418](https://github.com/expo/expo/pull/23418) by [@tsapeta](https://github.com/tsapeta))
 
 ## 1.3.1 - 2023-06-29
 
