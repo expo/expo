@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Expose getMetadata method to match android. ([#23445](https://github.com/expo/expo/pull/23445) by [@wschurman](https://github.com/wschurman))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

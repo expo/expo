@@ -86,7 +86,12 @@ class RNObject {
   }
 
   fun call(name: String, vararg args: Any?): Any? {
-    return callWithReceiver(instance, name, *args)
+    return callWithReceiver(instance, false, name, *args)
+  }
+
+  /** Similar to [call] but without capturing reflection [InvocationTargetException] */
+  fun callWithThrowable(name: String, vararg args: Any?): Any? {
+    return callWithReceiver(instance, true, name, *args)
   }
 
   fun callRecursive(name: String, vararg args: Any?): RNObject? {
@@ -95,7 +100,7 @@ class RNObject {
   }
 
   fun callStatic(name: String, vararg args: Any?): Any? {
-    return callWithReceiver(null, name, *args)
+    return callWithReceiver(null, false, name, *args)
   }
 
   fun callStaticRecursive(name: String, vararg args: Any?): RNObject? {
@@ -111,7 +116,7 @@ class RNObject {
     setFieldWithReceiver(null, name, value)
   }
 
-  private fun callWithReceiver(receiver: Any?, name: String, vararg args: Any?): Any? {
+  private fun callWithReceiver(receiver: Any?, rethrow: Boolean, name: String, vararg args: Any?): Any? {
     try {
       return getMethodWithArgumentClassTypes(clazz, name, *objectsToJavaClassTypes(*args)).invoke(receiver, *args)
     } catch (e: IllegalAccessException) {
@@ -120,6 +125,11 @@ class RNObject {
     } catch (e: InvocationTargetException) {
       EXL.e(TAG, e)
       e.printStackTrace()
+      if (rethrow) {
+        e.cause?.let {
+          throw it
+        }
+      }
     } catch (e: NoSuchMethodException) {
       EXL.e(TAG, e)
       e.printStackTrace()

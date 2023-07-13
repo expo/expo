@@ -151,6 +151,11 @@ class Env {
   get EXPO_NO_METRO_LAZY() {
     return boolish('EXPO_NO_METRO_LAZY', false);
   }
+
+  /** The start value for the port that the local server used for SSO login listens on. */
+  get EXPO_SSO_LOCAL_SERVER_PORT() {
+    return int('EXPO_SSO_LOCAL_SERVER_PORT', 19200);
+  }
 }
 
 export const env = new Env();
