@@ -8,7 +8,7 @@ import { learnMore } from '../../utils/link';
 import promptAsync, { Question } from '../../utils/prompts';
 import { ApiV2Error } from '../rest/client';
 import { retryUsernamePasswordAuthWithOTPAsync } from './otp';
-import { Actor, getUserAsync, loginAsync } from './user';
+import { Actor, getUserAsync, loginAsync, ssoLoginAsync } from './user';
 
 /** Show login prompt while prompting for missing credentials. */
 export async function showLoginPromptAsync({
@@ -20,17 +20,28 @@ export async function showLoginPromptAsync({
   username?: string;
   password?: string;
   otp?: string;
+  sso?: boolean | undefined;
 } = {}): Promise<void> {
   if (env.EXPO_OFFLINE) {
     throw new CommandError('OFFLINE', 'Cannot authenticate in offline-mode');
   }
   const hasCredentials = options.username && options.password;
+  const sso = options.sso;
 
   if (printNewLine) {
     Log.log();
   }
 
-  Log.log(hasCredentials ? 'Logging in to EAS' : 'Log in to EAS');
+  if (sso) {
+    await ssoLoginAsync();
+    return;
+  }
+
+  Log.log(
+    hasCredentials
+      ? `Logging in to EAS with email or username (exit and run 'eas login' for other options)`
+      : `Log in to EAS with email or username (exit and run 'eas login' for other options)`
+  );
 
   let username = options.username;
   let password = options.password;

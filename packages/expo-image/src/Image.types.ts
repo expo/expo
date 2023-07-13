@@ -136,8 +136,6 @@ export interface ImageProps extends ViewProps {
    * The color is applied to every non-transparent pixel, causing the image’s shape to adopt that color.
    * This effect is not applied to placeholders.
    * @default null
-   * @platform android
-   * @platform ios
    */
   tintColor?: string | null;
 

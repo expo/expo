@@ -43,6 +43,7 @@
     "@expo/config": "~8.1.0",
     "@expo/config-plugins": "~7.2.0",
     "arg": "4.1.0",
+    "chalk": "^4.1.2",
     "expo-eas-client": "~0.6.0",
     "expo-manifests": "~0.7.0",
     "expo-structured-headers": "~3.3.0",
@@ -57,7 +58,6 @@
     "expo-module-scripts": "^3.0.0",
     "express": "^4.17.2",
     "form-data": "^4.0.0",
-    "fs-extra": "^9.1.0",
     "memfs": "^3.2.0",
     "xstate": "^4.37.2"
   },
