@@ -4,7 +4,7 @@ import { ImageNativeProps, ImageSource } from '../Image.types';
 import { useBlurhash } from '../utils/blurhash/useBlurhash';
 import { isBlurhashString, isThumbhashString } from '../utils/resolveSources';
 import { thumbHashStringToDataURL } from '../utils/thumbhash/thumbhash';
-import ColorTintFilter, { getColorTintStyle } from './ColorTintFilter';
+import ColorTintFilter, { getTintColorStyle } from './ColorTintFilter';
 import { ImageWrapperProps } from './ImageWrapper.types';
 import { getImageWrapperEventHandler } from './getImageWrapperEventHandler';
 import { absoluteFilledPosition, getObjectPositionFromContentPositionObject } from './positioning';
@@ -79,7 +79,7 @@ const ImageWrapper = React.forwardRef(
           style={{
             objectPosition,
             ...absoluteFilledPosition,
-            ...getColorTintStyle(tintColor),
+            ...getTintColorStyle(tintColor),
             ...(isHash ? hashPlaceholderStyle : {}),
             ...style,
           }}

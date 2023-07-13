@@ -2,7 +2,7 @@ import React, { useEffect, useMemo } from 'react';
 import { useBlurhash } from '../utils/blurhash/useBlurhash';
 import { isBlurhashString, isThumbhashString } from '../utils/resolveSources';
 import { thumbHashStringToDataURL } from '../utils/thumbhash/thumbhash';
-import ColorTintFilter, { getColorTintStyle } from './ColorTintFilter';
+import ColorTintFilter, { getTintColorStyle } from './ColorTintFilter';
 import { getImageWrapperEventHandler } from './getImageWrapperEventHandler';
 import { absoluteFilledPosition, getObjectPositionFromContentPositionObject } from './positioning';
 function getFetchPriorityFromImagePriority(priority = 'normal') {
@@ -38,7 +38,7 @@ const ImageWrapper = React.forwardRef(({ source, events, contentPosition, hashPl
         React.createElement("img", { ref: ref, alt: accessibilityLabel, className: className, src: uri || undefined, key: source?.uri, style: {
                 objectPosition,
                 ...absoluteFilledPosition,
-                ...getColorTintStyle(tintColor),
+                ...getTintColorStyle(tintColor),
                 ...(isHash ? hashPlaceholderStyle : {}),
                 ...style,
             }, 

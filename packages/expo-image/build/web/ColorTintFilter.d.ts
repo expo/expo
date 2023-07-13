@@ -1,4 +1,4 @@
-export declare function getColorTintStyle(tintColor?: string | null): {
+export declare function getTintColorStyle(tintColor?: string | null): {
     filter?: undefined;
 } | {
     filter: string;
