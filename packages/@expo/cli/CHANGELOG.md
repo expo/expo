@@ -10,7 +10,7 @@
 
 - Fixed opening browser on Windows when debugging or opening Metro web. ([#23287](https://github.com/expo/expo/pull/23287) by [@byCedric](https://github.com/byCedric))
 - Fixed JavaScript Inspector does not work on Windows. ([#23367](https://github.com/expo/expo/pull/23367) by [@kudo](https://github.com/kudo))
-- Fixed useLocalSearchParams type generation. ([#23422](https://github.com/expo/expo/pull/23422) by [@marklawlor](https://github.com/marklawlor))
+- Rework Expo Router types for HrefObject and SearchParams hooks. ([#23507](https://github.com/expo/expo/pull/23507) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
