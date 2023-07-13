@@ -204,6 +204,7 @@ export function withExtendedResolver(
         if (nodejsSourceExtensions === null) {
           nodejsSourceExtensions = getNodejsExtensions(context.sourceExts);
         }
+        context.sourceExts = nodejsSourceExtensions;
       }
 
       // Conditionally remap `react-native` to `react-native-web` on web in
