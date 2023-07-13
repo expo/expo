@@ -196,13 +196,7 @@ function getDefaultConfig(projectRoot, options = {}) {
   const babelConfigPath = getProjectBabelConfigFile(projectRoot);
   const isCustomBabelConfigDefined = !!babelConfigPath;
   const resolverMainFields = [];
-
-  // Disable `react-native` in exotic mode, since library authors
-  // use it to ship raw application code to the project.
-  if (!isExotic) {
-    resolverMainFields.push('react-native');
-  }
-  resolverMainFields.push('browser', 'main');
+  resolverMainFields.push('react-native', 'browser', 'main');
   const pkg = (0, _config().getPackageJson)(projectRoot);
   const watchFolders = (0, _getWatchFolders().getWatchFolders)(projectRoot);
   // TODO: nodeModulesPaths does not work with the new Node.js package.json exports API, this causes packages like uuid to fail. Disabling for now.
@@ -237,7 +231,7 @@ function getDefaultConfig(projectRoot, options = {}) {
     watchFolders,
     resolver: {
       // unstable_conditionsByPlatform: { web: ['browser'] },
-      // unstable_conditionNames: ['require', 'import', 'node'],
+      unstable_conditionNames: ['require', 'import', 'react-native'],
       resolverMainFields,
       platforms: ['ios', 'android'],
       assetExts: metroDefaultValues.resolver.assetExts.concat(
