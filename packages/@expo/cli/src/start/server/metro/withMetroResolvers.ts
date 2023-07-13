@@ -30,6 +30,13 @@ export function getDefaultMetroResolver(projectRoot: string): MetroResolver {
   };
 }
 
+function optionsKeyForContext(context: ResolutionContext) {
+  const canonicalize = require('metro-core/src/canonicalize');
+
+  // Compound key for the resolver cache
+  return JSON.stringify(context.customResolverOptions ?? {}, canonicalize) ?? '';
+}
+
 /**
  * Extend the Metro config `resolver.resolveRequest` method with additional resolvers that can
  * exit early by returning a `Resolution` or skip to the next resolver by returning `null`.
@@ -58,22 +65,26 @@ export function withMetroResolvers(
     moduleName: string,
     platform: string | null
   ) {
-    if (!globalMetroInstanceHack) {
+    if (!globalMetroInstanceHack || !platform) {
       debug('Cannot mutate resolution error');
       return error;
     }
-    const canonicalize = require('metro-core/src/canonicalize');
 
-    // Compound key for the resolver cache
-    const resolverOptionsKey =
-      JSON.stringify(context.customResolverOptions ?? {}, canonicalize) ?? '';
+    // const
+    // _graph
 
-    const mapByResolverOptions = globalMetroInstanceHack?.getBundler().getBundler()
-      ._depGraph._resolutionCache;
-    const mapByOrigin = mapByResolverOptions.get(resolverOptionsKey) as Map<
-      string,
-      Map<string, Map<string, { type: string; filePath: string } | string>>
-    >;
+    // console.log(globalMetroInstanceHack?.getBundler().getDeltaBundler());
+    // console.log(globalMetroInstanceHack?.getBundler());
+    // console.log(depGraph);
+
+    // const mapByResolverOptions = globalMetroInstanceHack?.getBundler().getBundler()
+    //   ._depGraph._resolutionCache;
+    const mapByOrigin = depGraph.get(optionsKeyForContext(context));
+    const mapByPlatform = mapByOrigin?.get(platform);
+
+    if (!mapByPlatform) {
+      return error;
+    }
 
     // collect all references inversely using some expensive lookup
 
@@ -85,27 +96,35 @@ export function withMetroResolvers(
         'i'
       );
       const inverseOrigin: { origin: string; previous: string }[] = [];
-      if (platform) {
-        for (const [originKey, mapByTarget] of mapByOrigin) {
-          for (const [targetKey, resolutionWithPlatforms] of mapByTarget) {
-            const resolution = resolutionWithPlatforms.get(platform);
-            if (!resolution) {
-              continue;
-            }
-            console.log('res', resolution);
-            if (typeof resolution === 'string') {
-              if (resolution.match(matcher)) {
-                inverseOrigin.push({ origin: resolution, previous: originKey });
-              }
-            } else {
-              if (resolution?.type === 'sourceFile' && resolution.filePath.match(matcher)) {
-                // console.log('foo', mapByTarget, targetKey, resolutionWithPlatforms, originKey);
-                inverseOrigin.push({ origin: resolution.filePath, previous: originKey });
-              }
-            }
-          }
-        }
+
+      if (!mapByPlatform) {
+        return inverseOrigin;
       }
+
+      for (const [originKey, mapByTarget] of mapByPlatform) {
+        // for (const [targetKey, resolutionWithPlatforms] of mapByTarget) {
+        // const resolution = mapByTarget.get(platform);
+        // if (!resolution) {
+        //   continue;
+        // }
+        // console.log('res', resolution);
+        // if (typeof resolution === 'string') {
+        if (
+          mapByTarget.has(origin)
+          // resolution === origin
+          // .match(matcher)
+        ) {
+          inverseOrigin.push({ origin: origin, previous: originKey });
+        }
+        //   } else {
+        //     if (resolution?.type === 'sourceFile' && resolution.filePath.match(matcher)) {
+        //       // console.log('foo', mapByTarget, targetKey, resolutionWithPlatforms, originKey);
+        //       inverseOrigin.push({ origin: resolution.filePath, previous: originKey });
+        //     }
+        //   // }
+        // }
+      }
+
       return inverseOrigin;
     };
     const escapePath = (p: string) => {
@@ -152,7 +171,7 @@ export function withMetroResolvers(
     const inverseTree = recurseBackWithLimit(
       context.originModulePath,
       // TODO: Do we need to expose this?
-      25
+      35
     );
 
     if (inverseTree.previous.length > 0) {
@@ -170,8 +189,8 @@ export function withMetroResolvers(
       printRecursive(inverseTree);
 
       error._expoImportStack = chalk.gray(extraMessage);
-      console.log(mapByOrigin, JSON.stringify(inverseTree, null, 2));
-      process.exit(0);
+      // console.log(mapByOrigin, JSON.stringify(inverseTree, null, 2));
+      // process.exit(0);
     } else {
       debug('Found no inverse tree for:', context.originModulePath);
     }
@@ -179,11 +198,54 @@ export function withMetroResolvers(
     return error;
   }
 
+  const depGraph: Map<
+    // custom options
+    string,
+    Map<
+      // platform
+      string,
+      Map<
+        // origin module name
+        string,
+        // required module name
+        Set<string>
+        // { origin: string; res: ReturnType<ExpoCustomMetroResolver> } | string
+      >
+    >
+  > = new Map();
+
   return {
     ...config,
     resolver: {
       ...config.resolver,
       resolveRequest(context, moduleName, platform) {
+        const storeResult = (res: NonNullable<ReturnType<ExpoCustomMetroResolver>>) => {
+          if (!platform) return;
+
+          const key = optionsKeyForContext(context);
+          if (!depGraph.has(key)) depGraph.set(key, new Map());
+          const mapByTarget = depGraph.get(key);
+          if (!mapByTarget!.has(platform)) mapByTarget!.set(platform, new Map());
+          const mapByPlatform = mapByTarget!.get(platform);
+          if (!mapByPlatform!.has(context.originModulePath))
+            mapByPlatform!.set(context.originModulePath, new Set());
+          const setForModule = mapByPlatform!.get(context.originModulePath)!;
+
+          const qualifiedModuleName = res.type === 'sourceFile' ? res.filePath : moduleName;
+          setForModule.add(qualifiedModuleName);
+
+          // if (!mapByTarget.has(context.originModulePath)) {
+          //   mapByTarget.set(context.originModulePath, new Map());
+          // // }
+          // const mapByModule = mapByTarget.get(context.originModulePath) ?? [];
+
+          // const mapByPlatform = mapByTarget.get(context.originModulePath) ?? [];
+
+          // if (!mapByPlatform.has(platform)) {
+          //   mapByPlatform.set(platform, qualifiedModuleName);
+          // }
+        };
+
         const universalContext = {
           ...context,
           preferNativePlatform: platform !== 'web',
@@ -194,6 +256,7 @@ export function withMetroResolvers(
             try {
               const resolution = resolver(universalContext, moduleName, platform);
               if (resolution) {
+                storeResult(resolution);
                 return resolution;
               }
             } catch (error: any) {
@@ -215,7 +278,9 @@ export function withMetroResolvers(
             }
           }
           // If we haven't returned by now, use the original resolver or upstream resolver.
-          return originalResolveRequest(universalContext, moduleName, platform);
+          const res = originalResolveRequest(universalContext, moduleName, platform);
+          storeResult(res);
+          return res;
         } catch (error: any) {
           throw mutateResolutionError(error, universalContext, moduleName, platform);
         }
