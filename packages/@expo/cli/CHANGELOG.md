@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Add support for SSO users. ([#22945](https://github.com/expo/expo/pull/22945) by [@lzkb](https://github.com/lzkb))
+- Use node server default port selection for SSO login server. ([#23505](https://github.com/expo/expo/pull/23505) by [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 

@@ -6,7 +6,7 @@ import * as Log from '../../log';
 import * as Analytics from '../../utils/analytics/rudderstackClient';
 import { getDevelopmentCodeSigningDirectory } from '../../utils/codesigning';
 import { env } from '../../utils/env';
-import { getExpoWebsiteBaseUrl, getSsoLocalServerPortAsync } from '../endpoint';
+import { getExpoWebsiteBaseUrl } from '../endpoint';
 import { graphqlClient } from '../graphql/client';
 import { UserQuery } from '../graphql/queries/UserQuery';
 import { fetchAsync } from '../rest/client';
@@ -77,11 +77,9 @@ export async function loginAsync(json: {
 }
 
 export async function ssoLoginAsync(): Promise<void> {
-  const config = {
+  const sessionSecret = await getSessionUsingBrowserAuthFlowAsync({
     expoWebsiteUrl: getExpoWebsiteBaseUrl(),
-    serverPort: await getSsoLocalServerPortAsync(),
-  };
-  const sessionSecret = await getSessionUsingBrowserAuthFlowAsync(config);
+  });
   const userData = await fetchUserAsync({ sessionSecret });
 
   await UserSettings.setSessionAsync({

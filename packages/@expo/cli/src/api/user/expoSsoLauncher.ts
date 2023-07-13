@@ -1,3 +1,4 @@
+import assert from 'assert';
 import openBrowserAsync from 'better-opn';
 import http from 'http';
 import { Socket } from 'node:net';
@@ -5,20 +6,18 @@ import querystring from 'querystring';
 
 import * as Log from '../../log';
 
-export async function getSessionUsingBrowserAuthFlowAsync(options: {
+export async function getSessionUsingBrowserAuthFlowAsync({
+  expoWebsiteUrl,
+}: {
   expoWebsiteUrl: string;
-  serverPort: number;
 }): Promise<string> {
-  const { expoWebsiteUrl, serverPort } = options;
-
   const scheme = 'http';
   const hostname = 'localhost';
   const path = '/auth/callback';
-  const redirectUri = `${scheme}://${hostname}:${serverPort}${path}`;
 
-  const buildExpoSsoLoginUrl = (): string => {
+  const buildExpoSsoLoginUrl = (port: number): string => {
     const data = {
-      app_redirect_uri: redirectUri,
+      app_redirect_uri: `${scheme}://${hostname}:${port}${path}`,
     };
     const params = querystring.stringify(data);
     return `${expoWebsiteUrl}/sso-login?${params}`;
@@ -32,7 +31,7 @@ export async function getSessionUsingBrowserAuthFlowAsync(options: {
       const server = http.createServer(
         (request: http.IncomingMessage, response: http.ServerResponse) => {
           try {
-            if (!(request.method === 'GET' && request.url?.includes('/auth/callback'))) {
+            if (!(request.method === 'GET' && request.url?.includes(path))) {
               throw new Error('Unexpected SSO login response.');
             }
             const url = new URL(request.url, `http:${request.headers.host}`);
@@ -57,8 +56,17 @@ export async function getSessionUsingBrowserAuthFlowAsync(options: {
         }
       );
 
-      server.listen(serverPort, hostname, () => {
+      server.listen(0, hostname, () => {
         Log.log('Waiting for browser login...');
+
+        const address = server.address();
+        assert(
+          address !== null && typeof address === 'object',
+          'Server address and port should be set after listening has begun'
+        );
+        const port = address.port;
+        const authorizeUrl = buildExpoSsoLoginUrl(port);
+        openBrowserAsync(authorizeUrl);
       });
 
       server.on('connection', (connection) => {
@@ -68,9 +76,6 @@ export async function getSessionUsingBrowserAuthFlowAsync(options: {
           connections.delete(connection);
         });
       });
-
-      const authorizeUrl = buildExpoSsoLoginUrl();
-      openBrowserAsync(authorizeUrl);
     });
   };
 
