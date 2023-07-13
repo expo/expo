@@ -46,7 +46,7 @@ export const expoRun: Command = async (argv) => {
     );
   }
 
-  const platform = await selectAsync('Platform to run your app on', [
+  const platform = await selectAsync('Select the platform to run', [
     { title: 'Android', value: 'android' },
     { title: 'iOS', value: 'ios' },
   ]);
