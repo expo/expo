@@ -23,6 +23,7 @@ export class MetroTerminalReporter extends TerminalReporter {
   _getElapsedTime(startTime: number): number {
     return Date.now() - startTime;
   }
+
   /**
    * Extends the bundle progress to include the current platform that we're bundling.
    *
@@ -103,6 +104,12 @@ export class MetroTerminalReporter extends TerminalReporter {
   }
 
   _logBundlingError(error: SnippetError): void {
+    if (error.cause?._expoImportStack) {
+      error.snippet ??= '';
+
+      error.message += `\n\n${error.cause._expoImportStack}`;
+    }
+
     const moduleResolutionError = formatUsingNodeStandardLibraryError(this.projectRoot, error);
     if (moduleResolutionError) {
       return this.terminal.log(maybeAppendCodeFrame(moduleResolutionError, error.message));
@@ -155,7 +162,8 @@ export function formatUsingNodeStandardLibraryError(
       ].join('\n');
     }
   }
-  return `Unable to resolve "${targetModuleName}" from "${relativePath}"`;
+  return null;
+  // return `Unable to resolve "${targetModuleName}" from "${relativePath}"`;
 }
 
 export function isNodeStdLibraryModule(moduleName: string): boolean {
