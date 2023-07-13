@@ -135,9 +135,6 @@ function endsInNull(path: string) {
 const RENAMED_PAGES: Record<string, string> = {
   // Redirects after creating /home route
   '/next-steps/additional-resources/': '/additional-resources/',
-  // TODO: (@aman) Uncomment the two lines below when we've removed third-party libraries from Reference
-  // '/versions/latest/sdk/safe-area-context/': '/develop/user-interface/safe-areas',
-  // '/versions/latest/sdk/async-storage/': '/develop/user-interface/store-data/#async-storage',
   '/get-started/create-a-new-app/': '/get-started/create-a-project',
   '/guides/config-plugins/': '/config-plugins/introduction/',
   '/workflow/debugging/': '/debugging/runtime-issues/',
@@ -164,6 +161,14 @@ const RENAMED_PAGES: Record<string, string> = {
   '/workflow/glossary-of-terms/': '/more/glossary-of-terms/',
   '/development/installation/': '/develop/development-builds/installation/',
   '/get-started/errors/': '/debugging/errors-and-warnings/',
+
+  // Redirects after organizing docs in Guides
+  '/bare/hello-world/': '/bare/overview/',
+  '/guides/errors/': '/debugging/runtime-issues/',
+  '/guides/using-graphql/': '/guides/overview/',
+  '/guides/using-styled-components/': '/guides/overview/',
+  '/guides/using-bugsnag/': '/guides/overview/',
+  '/build/automating-submissions/': '/build/automate-submissions/',
 
   // Old redirects
   '/introduction/project-lifecycle/': '/archive/managed-vs-bare/',
@@ -284,12 +289,12 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Redirect bare guides to unified workflow guides
   '/bare/using-libraries/': '/workflow/using-libraries/',
-  '/bare/exploring-bare-workflow/': '/bare/hello-world/',
+  '/bare/exploring-bare-workflow/': '/bare/overview/',
   '/bare/existing-apps/': '/bare/installing-expo-modules/',
   '/bare/installing-unimodules/': '/bare/installing-expo-modules/',
   '/bare/using-web/': '/workflow/web/',
   '/guides/running-in-the-browser/': '/workflow/web/',
-  '/bare/unimodules-full-list/': '/bare/hello-world/',
+  '/bare/unimodules-full-list/': '/bare/overview/',
 
   // Consolidate distribution
   '/distribution/security/': '/app-signing/security/',
