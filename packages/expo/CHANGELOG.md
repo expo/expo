@@ -12,11 +12,11 @@
 
 ## 49.0.3 — 2023-07-12
 
-### 🐛 Bug fixes
+### 🎉 New features
 
 - Added support for React Native 0.72.3 ([#23502](https://github.com/expo/expo/pull/23502) by [@tsapeta](https://github.com/tsapeta))
 
-### 💡 Others
+## 49.0.1 — 2023-07-10
 
 _This version does not introduce any user-facing changes._
 
@@ -24,30 +24,34 @@ _This version does not introduce any user-facing changes._
 
 _This version does not introduce any user-facing changes._
 
-## 49.0.0 — 2023-07-05
+## 49.0.1 - 2023-07-07
 
 _This version does not introduce any user-facing changes._
 
-## 49.0.0-beta.5 — 2023-07-04
+## 49.0.0 - 2023-07-05
 
 _This version does not introduce any user-facing changes._
 
-## 49.0.0-beta.4 — 2023-07-02
+## 49.0.0-beta.5 - 2023-07-04
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-beta.4 - 2023-07-02
 
 ### 🐛 Bug fixes
 
 - Use node module resolution when invoking `@expo/cli` from `expo`. ([#23220](https://github.com/expo/expo/pull/23220) by [@byCedric](https://github.com/byCedric))
 - Added support for React Native 0.72.1. ([#23262](https://github.com/expo/expo/pull/23262) by [@kudo](https://github.com/kudo))
 
-## 49.0.0-beta.3 — 2023-06-30
+## 49.0.0-beta.3 - 2023-06-30
 
 _This version does not introduce any user-facing changes._
 
-## 49.0.0-beta.2 — 2023-06-30
+## 49.0.0-beta.2 - 2023-06-30
 
 _This version does not introduce any user-facing changes._
 
-## 49.0.0-beta.1 — 2023-06-29
+## 49.0.0-beta.1 - 2023-06-29
 
 _This version does not introduce any user-facing changes._
 

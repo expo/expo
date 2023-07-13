@@ -16,7 +16,7 @@
 
 - Fixed regressions and crashes in the dev client introduced by [#23405](https://github.com/expo/expo/pull/23405). ([#23491](https://github.com/expo/expo/pull/23491) by [@kudo](https://github.com/kudo))
 
-## 1.5.6 — 2023-07-10
+## 1.5.6 - 2023-07-10
 
 ### 🐛 Bug fixes
 
@@ -24,14 +24,14 @@
 - Fixed `SoLoader` does not work on Android. ([#23415](https://github.com/expo/expo/pull/23415) by [@kudo](https://github.com/kudo))
 - Fixed slower boot time on Android. ([#23345](https://github.com/expo/expo/pull/23345) by [@lukmccall](https://github.com/lukmccall))
 
-## 1.5.5 — 2023-07-07
+## 1.5.5 - 2023-07-07
 
 ### 🐛 Bug fixes
 
 - Improved the OkHttp network inspector stability on Android. ([#23350](https://github.com/expo/expo/pull/23350) by [@kudo](https://github.com/kudo))
-- [iOS] Fix conversion to `URL` type that failed despite receiving a string that contained a valid URL. ([#23331](https://github.com/expo/expo/pull/23331) by [@alanhughes](https://github.com/alanjhughes))
+- [iOS] Fix conversion to `URL` type that failed despite receiving a string that contained a valid URL. ([#23331](https://github.com/expo/expo/pull/23331) by [@alanhughes](https://github.com/alanjhughes)) ([#23331](https://github.com/expo/expo/pull/23331) by [@alanjhughes](https://github.com/alanjhughes))
 
-## 1.5.4 — 2023-07-04
+## 1.5.4 - 2023-07-04
 
 ### 🐛 Bug fixes
 
