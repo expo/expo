@@ -2,7 +2,9 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 
 export function getTintColorStyle(tintColor?: string | null) {
-  if (!tintColor) return {};
+  if (!tintColor) {
+    return {};
+  }
   return {
     filter: `url(#expo-image-tint-${tintColor})`,
   };
