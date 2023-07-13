@@ -82,7 +82,7 @@ android {
 dependencies {
   implementation project(':expo-modules-core')
 
-  api 'com.google.android.gms:play-services-location:21.0.1'
+  api 'com.google.android.gms:play-services-location:20.0.0'
 
   api('io.nlopez.smartlocation:library:3.3.3') {
     transitive = false
