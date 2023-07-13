@@ -15,7 +15,7 @@ Consider the following project:
 First, we'll setup a [React Context provider](https://react.dev/reference/react/createContext) that we can use to protect routes. This provider will use a mock implementation, you can replace it with your own [authentication provider](/guides/authentication/).
 
 ```js context/auth.js
-import { router, useSegments } from 'expo-router';
+import { useRouter, useSegments } from 'expo-router';
 import React from 'react';
 
 const AuthContext = React.createContext(null);
@@ -28,6 +28,7 @@ export function useAuth() {
 // This hook will protect the route access based on user authentication.
 function useProtectedRoute(user) {
   const segments = useSegments();
+  const router = useRouter();
 
   React.useEffect(() => {
     const inAuthGroup = segments[0] === '(auth)';
