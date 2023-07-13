@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `albumNeedsMigrationAsync` crashing if called with invalid `albumId` on Android.
+
 ### 💡 Others
 
 ## 15.4.0 — 2023-06-21
