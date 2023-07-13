@@ -6,7 +6,32 @@ apply plugin: 'maven-publish'
 group = 'host.exp.exponent'
 version = '0.18.5'
 
-def ex_updates_native_debug = System.getenv("EX_UPDATES_NATIVE_DEBUG") == "1" ? "true" : "false"
+// Utility method to derive boolean values from the environment or from Java properties,
+// and return them as strings to be used in BuildConfig fields
+def getBoolStringFromPropOrEnv(String name, Boolean defaultValue) {
+  def env_value = System.getenv(name)
+  def prop_value = findProperty(name)
+  def value = defaultValue.toString()
+  // If present, property value in gradle.properties overrides default
+  if (prop_value != null) {
+    value = boolish(prop_value).toString()
+    println("expo-updates: Value of ${name} was overridden by property, new value = ${value}")
+  }
+  // If present, env value overrides default and gradle.properties
+  if (env_value != null) {
+    value = boolish(env_value).toString()
+    println("expo-updates: Value of ${name} was overridden by environment, new value = ${value}")
+  }
+  return value
+}
+
+// If true, app will use bundled manifest and updates will be enabled, even for
+// debug builds. (default false)
+def exUpdatesNativeDebug = getBoolStringFromPropOrEnv("EX_UPDATES_NATIVE_DEBUG", false)
+
+// If true, code will run that delays app loading until updates is initialized, to prevent ANR issues.
+// (default true)
+def exUpdatesAndroidDelayLoadApp = getBoolStringFromPropOrEnv("EX_UPDATES_ANDROID_DELAY_LOAD_APP", true)
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -74,8 +99,8 @@ android {
     consumerProguardFiles("proguard-rules.pro")
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-    buildConfigField("boolean", "EX_UPDATES_NATIVE_DEBUG", ex_updates_native_debug)
-    buildConfigField("boolean", "EX_UPDATES_ANDROID_DELAY_LOAD_APP", boolish(findProperty("EX_UPDATES_ANDROID_DELAY_LOAD_APP") ?: true).toString())
+    buildConfigField("boolean", "EX_UPDATES_NATIVE_DEBUG", exUpdatesNativeDebug)
+    buildConfigField("boolean", "EX_UPDATES_ANDROID_DELAY_LOAD_APP", exUpdatesAndroidDelayLoadApp)
 
     // uncomment below to export the database schema when making changes
     /* javaCompileOptions {
