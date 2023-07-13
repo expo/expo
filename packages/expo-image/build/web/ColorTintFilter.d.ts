@@ -3,7 +3,9 @@ export declare function getTintColorStyle(tintColor?: string | null): {
 } | {
     filter: string;
 };
-export default function ColorTintFilter({ tintColor }: {
+type TintColorFilterProps = {
     tintColor?: string | null;
-}): JSX.Element | null;
+};
+export default function TintColorFilter({ tintColor }: TintColorFilterProps): JSX.Element | null;
+export {};
 //# sourceMappingURL=ColorTintFilter.d.ts.map

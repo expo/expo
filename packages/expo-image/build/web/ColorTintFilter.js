@@ -7,7 +7,7 @@ export function getTintColorStyle(tintColor) {
         filter: `url(#expo-image-tint-${tintColor})`,
     };
 }
-export default function ColorTintFilter({ tintColor }) {
+export default function TintColorFilter({ tintColor }) {
     if (!tintColor) {
         return null;
     }
