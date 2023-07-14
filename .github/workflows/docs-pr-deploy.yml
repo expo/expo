@@ -1,5 +1,5 @@
 
-name: Docs Website Preview
+name: docs-pr-deploy
 
 defaults:
   run:
@@ -11,7 +11,8 @@ on:
   push:
     paths:
       - 'docs/**'
-      - '.github/workflows/docs-preview.yml'
+      - '.github/workflows/docs-pr-deploy.yml'
+      - '.github/workflows/docs-pr-destroy.yml'
   pull_request:
     paths:
       - 'docs/**'
