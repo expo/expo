@@ -6,33 +6,8 @@ exports[`lints: fixtures/typescript-analysis-00.ts 1`] = `
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": [
-    {
-      "column": 10,
-      "endColumn": 46,
-      "endLine": 11,
-      "line": 11,
-      "message": "Prefer using an optional chain expression instead, as it's more concise and easier to read.",
-      "messageId": "preferOptionalChain",
-      "nodeType": "LogicalExpression",
-      "ruleId": "@typescript-eslint/prefer-optional-chain",
-      "severity": 1,
-      "suggestions": [
-        {
-          "desc": "Change to an optional chain.",
-          "fix": {
-            "range": [
-              138,
-              174,
-            ],
-            "text": "foo?.a?.b?.c",
-          },
-          "messageId": "optionalChainSuggest",
-        },
-      ],
-    },
-  ],
-  "source": "type T = {
+  "messages": [],
+  "output": "type T = {
   a?: {
     b?: {
       c: string;
@@ -41,12 +16,26 @@ exports[`lints: fixtures/typescript-analysis-00.ts 1`] = `
   };
 };
 
+type T2 = {
+  a?: {
+    b: {
+      c: string;
+      method?: () => void;
+    };
+  };
+};
+
 export function myFunc(foo: T | null) {
-  return foo && foo.a && foo.a.b && foo.a.b.c;
-}",
+  return foo?.a?.b?.c;
+}
+
+export function myFunc2(foo: T2 | null) {
+  return foo?.a?.b.method && foo.a.b.method();
+}
+",
   "suppressedMessages": [],
   "usedDeprecatedRules": [],
-  "warningCount": 1,
+  "warningCount": 0,
 }
 `;
 
