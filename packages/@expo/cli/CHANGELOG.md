@@ -14,6 +14,7 @@
 ### 🐛 Bug fixes
 
 - Added improved error message for static metro when a package is missing. ([#23499](https://github.com/expo/expo/pull/23499) by [@EvanBacon](https://github.com/EvanBacon))
+- Set `preferNativePlatform` to `false` for all web requests. ([#23527](https://github.com/expo/expo/pull/23527) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
