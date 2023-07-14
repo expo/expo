@@ -14,7 +14,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  destroy-docs-preview:
+  docs-pr-destroy:
     if: (github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'preview')) ||
         (github.event.action == 'unlabeled' && github.event.label.name == 'preview')
     runs-on: ubuntu-20.04
