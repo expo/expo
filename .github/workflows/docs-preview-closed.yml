@@ -1,11 +1,6 @@
 
 name: Docs Website Preview Closed
 
-defaults:
-  run:
-    shell: bash
-    working-directory: docs
-
 on:
   pull_request:
     paths:
