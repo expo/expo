@@ -55,10 +55,10 @@ jobs:
           aws s3api put-public-access-block --bucket docs.expo.dev-pr-${{ github.event.pull_request.number }} --public-access-block-configuration "BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false"
 
           # Set bucket policy to public
-          aws s3api put-bucket-policy --bucket docs.expo.dev-pr-jon-3 --policy "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"\",\"Effect\":\"Allow\",\"Principal\":\"*\",\"Action\":\"s3:GetObject\",\"Resource\":\"arn:aws:s3:::docs.expo.dev-pr-${{ github.event.pull_request.number }}/*\"}]}"
+          aws s3api put-bucket-policy --bucket docs.expo.dev-pr-${{ github.event.pull_request.number }} --policy "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"\",\"Effect\":\"Allow\",\"Principal\":\"*\",\"Action\":\"s3:GetObject\",\"Resource\":\"arn:aws:s3:::docs.expo.dev-pr-${{ github.event.pull_request.number }}/*\"}]}"
 
           # Set up static website hosting
-          aws s3 website s3://docs.expo.dev-pr-jon-3/ --index-document index.html
+          aws s3 website s3://docs.expo.dev-pr-${{ github.event.pull_request.number }}/ --index-document index.html
       - name: 🧶 Yarn install
         if: steps.expo-caches.outputs.yarn-docs-hit != 'true'
         run: yarn install --frozen-lockfile
