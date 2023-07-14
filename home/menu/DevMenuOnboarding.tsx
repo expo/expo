@@ -1,4 +1,4 @@
-import { View, Text, Button, Spacer, padding, scale } from 'expo-dev-client-components';
+import { View, Text, Button, Spacer, scale } from 'expo-dev-client-components';
 import { isDevice } from 'expo-device';
 import React from 'react';
 import { Platform } from 'react-native';
