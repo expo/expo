@@ -75,7 +75,8 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: 'us-east-1'
-        run: aws s3 sync "./out" "s3://docs.expo.dev-pr-${{ github.event.pull_request.number }}" --only-show-errors
+          AWS_BUCKET: docs.expo.dev-pr-${{ github.event.pull_request.number }}
+        run: ./deploy.sh
       - name: 🔍 Find old comment if it exists
         uses: peter-evans/find-comment@v2
         id: old_comment
