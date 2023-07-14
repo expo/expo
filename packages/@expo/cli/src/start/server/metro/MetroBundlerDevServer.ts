@@ -13,6 +13,10 @@ import chalk from 'chalk';
 import fetch from 'node-fetch';
 import path from 'path';
 
+import { instantiateMetroAsync } from './instantiateMetro';
+import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
+import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
+import { observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
@@ -37,10 +41,6 @@ import {
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
-import { instantiateMetroAsync } from './instantiateMetro';
-import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
-import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
-import { observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
@@ -372,7 +372,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
             res.setHeader('Content-Type', 'text/html');
             res.end(content);
-            return;
           } catch (error: any) {
             res.setHeader('Content-Type', 'text/html');
             try {

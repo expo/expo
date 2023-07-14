@@ -1,14 +1,14 @@
 import chalk from 'chalk';
 import path from 'path';
 
+import * as XcodeBuild from './XcodeBuild';
+import { BuildProps } from './XcodeBuild.types';
+import { getAppDeltaDirectory, installOnDeviceAsync } from './appleDevice/installOnDeviceAsync';
 import { AppleDeviceManager } from '../../start/platforms/ios/AppleDeviceManager';
 import { SimulatorLogStreamer } from '../../start/platforms/ios/simctlLogging';
 import { DevServerManager } from '../../start/server/DevServerManager';
 import { parsePlistAsync } from '../../utils/plist';
 import { profile } from '../../utils/profile';
-import * as XcodeBuild from './XcodeBuild';
-import { BuildProps } from './XcodeBuild.types';
-import { getAppDeltaDirectory, installOnDeviceAsync } from './appleDevice/installOnDeviceAsync';
 
 /** Install and launch the app binary on a device. */
 export async function launchAppAsync(

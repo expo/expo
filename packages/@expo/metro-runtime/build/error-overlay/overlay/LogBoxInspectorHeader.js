@@ -80,7 +80,7 @@ const backgroundForLevel = (level) => ({
         default: 'transparent',
         pressed: LogBoxStyle.getFatalDarkColor(),
     },
-}[level]);
+})[level];
 function LogBoxInspectorHeaderButton(props) {
     return (react_1.default.createElement(LogBoxButton_1.LogBoxButton, { backgroundColor: backgroundForLevel(props.level), onPress: props.disabled ? undefined : props.onPress, style: headerStyles.button }, props.disabled ? null : (react_1.default.createElement(react_native_1.Image, { source: props.image, tintColor: LogBoxStyle.getTextColor(), style: headerStyles.buttonImage }))));
 }

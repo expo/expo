@@ -12,12 +12,12 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { Pressable } from './Pressable';
 import { RouteNode } from '../Route';
 import { useExpoRouter } from '../global-state/router-store';
 import { router } from '../imperative-api';
 import { Link } from '../link/Link';
 import { matchDeepDynamicRouteName } from '../matchers';
-import { Pressable } from './Pressable';
 
 const INDENT = 24;
 

@@ -2,10 +2,10 @@ import chalk from 'chalk';
 import { Terminal } from 'metro-core';
 import path from 'path';
 
-import { learnMore } from '../../../utils/link';
 import { logWarning, TerminalReporter } from './TerminalReporter';
 import { BuildPhase, BundleDetails, BundleProgress, SnippetError } from './TerminalReporter.types';
 import { NODE_STDLIB_MODULES } from './externals';
+import { learnMore } from '../../../utils/link';
 
 const MAX_PROGRESS_BAR_CHAR_WIDTH = 16;
 const DARK_BLOCK_CHAR = '\u2593';
@@ -15,7 +15,10 @@ const LIGHT_BLOCK_CHAR = '\u2591';
  * Also removes the giant Metro logo from the output.
  */
 export class MetroTerminalReporter extends TerminalReporter {
-  constructor(public projectRoot: string, terminal: Terminal) {
+  constructor(
+    public projectRoot: string,
+    terminal: Terminal
+  ) {
     super(terminal);
   }
 

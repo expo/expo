@@ -15,16 +15,16 @@ exports.isPermissionAlreadyRequested = isPermissionAlreadyRequested;
 exports.removePermissions = removePermissions;
 exports.setAndroidPermissions = setAndroidPermissions;
 exports.withPermissions = exports.withInternalBlockedPermissions = exports.withBlockedPermissions = void 0;
-function _androidPlugins() {
-  const data = require("../plugins/android-plugins");
-  _androidPlugins = function () {
+function _Manifest() {
+  const data = require("./Manifest");
+  _Manifest = function () {
     return data;
   };
   return data;
 }
-function _Manifest() {
-  const data = require("./Manifest");
-  _Manifest = function () {
+function _androidPlugins() {
+  const data = require("../plugins/android-plugins");
+  _androidPlugins = function () {
     return data;
   };
   return data;

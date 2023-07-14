@@ -249,7 +249,7 @@ describe('_getManifestResponseAsync', () => {
 
 describe(`_getManifestStringAsync`, () => {
   it(`uses anon ID for offline mode`, async () => {
-    asMock(getUserAsync).mockImplementationOnce(async () => ({} as any));
+    asMock(getUserAsync).mockImplementationOnce(async () => ({}) as any);
     const middleware = new ClassicManifestMiddleware('/', {} as any);
 
     process.env.EXPO_OFFLINE = '1';
@@ -295,7 +295,7 @@ describe(`_getManifestStringAsync`, () => {
   });
 
   it(`memoizes signature signing`, async () => {
-    asMock(getUserAsync).mockImplementation(async () => ({} as any));
+    asMock(getUserAsync).mockImplementation(async () => ({}) as any);
     const middleware = new ClassicManifestMiddleware('/', {} as any);
 
     const invokeAsync = async (owner = 'bacon') => {

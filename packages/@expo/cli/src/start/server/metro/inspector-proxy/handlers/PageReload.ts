@@ -1,8 +1,8 @@
 import type { Protocol } from 'devtools-protocol';
 
+import { CdpMessage, DebuggerRequest, InspectorHandler } from './types';
 import { MetroBundlerDevServer } from '../../MetroBundlerDevServer';
 import { ExpoDebuggerInfo } from '../device';
-import { CdpMessage, DebuggerRequest, InspectorHandler } from './types';
 
 export class PageReloadHandler implements InspectorHandler {
   constructor(private readonly metroBundler: MetroBundlerDevServer) {}
