@@ -53,7 +53,7 @@ const Home = () => {
         <div className="h-0">
           <DevicesImageMasks />
         </div>
-        <H1 css={docsTitleStyle}>Create amazing apps that run everywhere</H1>
+        <H1 css={docsTitleStyle}>Create amazing apps that run everywhere test!</H1>
         <Description>
           Build one JavaScript/TypeScript project that runs natively on all your users' devices.
         </Description>
