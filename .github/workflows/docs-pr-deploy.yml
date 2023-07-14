@@ -17,6 +17,8 @@ on:
     paths:
       - 'docs/**'
       - '.github/workflows/docs.yml'
+      - '.github/workflows/docs-pr-deploy.yml'
+      - '.github/workflows/docs-pr-destroy.yml'
     types:
       - labeled
       - synchronize
