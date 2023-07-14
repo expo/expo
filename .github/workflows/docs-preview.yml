@@ -26,7 +26,7 @@ concurrency:
 
 jobs:
   docs-preview:
-    if: contains(github.event.pull_request.labels.*.name, 'docs:preview')
+    if: contains(github.event.pull_request.labels.*.name, 'preview')
     runs-on: ubuntu-20.04
     steps:
       - name: 👀 Checkout
@@ -48,8 +48,17 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: 'us-east-1'
         run: |
-          aws s3api create-bucket --acl public-read --bucket docs.expo.dev-pr-${{ github.event.pull_request.number }}
-          aws s3 website s3://docs.expo.dev-pr-${{ github.event.pull_request.number }}/ --index-document index.html
+          # Create bucket
+          aws s3api create-bucket --bucket docs.expo.dev-pr-${{ github.event.pull_request.number }}
+
+          # Set "block public access" to off
+          aws s3api put-public-access-block --bucket docs.expo.dev-pr-${{ github.event.pull_request.number }} --public-access-block-configuration "BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false"
+
+          # Set bucket policy to public
+          aws s3api put-bucket-policy --bucket docs.expo.dev-pr-jon-3 --policy "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"\",\"Effect\":\"Allow\",\"Principal\":\"*\",\"Action\":\"s3:GetObject\",\"Resource\":\"arn:aws:s3:::docs.expo.dev-pr-${{ github.event.pull_request.number }}/*\"}]}"
+
+          # Set up static website hosting
+          aws s3 website s3://docs.expo.dev-pr-jon-3/ --index-document index.html
       - name: 🧶 Yarn install
         if: steps.expo-caches.outputs.yarn-docs-hit != 'true'
         run: yarn install --frozen-lockfile
@@ -60,7 +69,7 @@ jobs:
         run: yarn export
         timeout-minutes: 20
         env:
-          AWS_BUCKET: 'docs.expo.dev-preview/pr-${{ github.event.pull_request.number }}'
+          AWS_BUCKET: 'docs.expo.dev-pr-${{ github.event.pull_request.number }}'
       - name: 🚀 Deploy Docs website
         run: ./deploy.sh
         env:
@@ -74,7 +83,7 @@ jobs:
         with:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: 'expo-bot'
-          body-includes: The documentation preview URL
+          body-includes: Docs preview created
       - name: 💬 Add comment with preview URL
         if: steps.old_comment.outputs.comment-id == ''
         uses: actions/github-script@v6
@@ -85,7 +94,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'Docs preview created! View it [here](https://s3.us-east-2.amazonaws.com/docs.expo.dev-pr-${{ github.event.pull_request.number }}).'
+              body: 'Docs preview created! View it [here](http://docs.expo.dev-pr-${{ github.event.pull_request.number }}.s3-website-us-east-1.amazonaws.com/).'
             });
       - name: 💬 Update comment with preview URL
         if: steps.old_comment.outputs.comment-id != ''
@@ -98,5 +107,5 @@ jobs:
               comment_id: '${{ steps.old_comment.outputs.comment-id }}',
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'Docs preview created! View it [here](https://s3.us-east-2.amazonaws.com/docs.expo.dev-pr-${{ github.event.pull_request.number }}).'
+              body: 'Docs preview created! View it [here](http://docs.expo.dev-pr-${{ github.event.pull_request.number }}.s3-website-us-east-1.amazonaws.com/).'
             });
