@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- New useUpdates() JS API. ([#23532](https://github.com/expo/expo/pull/23532) by [@douglowder](https://github.com/douglowder))
+
 ### 🐛 Bug fixes
 
 - [Android] Fix rollback embedded update logic. ([#23244](https://github.com/expo/expo/pull/23244) by [@wschurman](https://github.com/wschurman))
