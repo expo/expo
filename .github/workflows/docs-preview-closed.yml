@@ -11,8 +11,7 @@ on:
     paths:
       - 'docs/**'
       - '.github/workflows/docs-preview.yml'
-    types:
-      - closed
+    types: [closed, unlabeled]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -20,7 +19,8 @@ concurrency:
 
 jobs:
   if_merged:
-    if: github.event.pull_request.merged && contains(github.event.pull_request.labels.*.name, 'preview')
+    if: (github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'preview')) ||
+        (github.event.action == 'unlabeled' && github.event.label.name == 'preview')
     runs-on: ubuntu-20.04
     steps:
       - name: 🪣 Delete docs preview bucket
