@@ -2,8 +2,8 @@
 import * as Speech from 'expo-speech';
 import { Platform } from 'react-native';
 
-import ExponentTest from '../ExponentTest';
 import { waitFor } from './helpers';
+import ExponentTest from '../ExponentTest';
 
 export const name = 'Speech';
 
