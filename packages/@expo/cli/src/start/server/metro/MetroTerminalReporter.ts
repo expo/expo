@@ -23,7 +23,6 @@ export class MetroTerminalReporter extends TerminalReporter {
   _getElapsedTime(startTime: number): number {
     return Date.now() - startTime;
   }
-
   /**
    * Extends the bundle progress to include the current platform that we're bundling.
    *
