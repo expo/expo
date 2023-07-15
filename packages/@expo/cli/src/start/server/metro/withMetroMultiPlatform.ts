@@ -114,10 +114,9 @@ export function withExtendedResolver(
   };
 
   if (isWebEnabled) {
-    const rnw = path.resolve(require.resolve('react-native-web/package.json'), '..');
     // Allow `react-native-web` to be optional when web is not enabled but path aliases is.
     extraNodeModules['web'] = {
-      'react-native': rnw,
+      'react-native': path.resolve(require.resolve('react-native-web/package.json'), '..'),
     };
   }
 
