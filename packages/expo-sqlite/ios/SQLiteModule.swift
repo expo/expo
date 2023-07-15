@@ -1,12 +1,12 @@
 import ExpoModulesCore
-import SQLite3
+import sqlite3
 
 public final class SQLiteModule: Module {
   private var cachedDatabases = [String: OpaquePointer]()
 
   public func definition() -> ModuleDefinition {
     Name("ExpoSQLite")
-
+    
     AsyncFunction("exec") { (dbName: String, queries: [[Any]], readOnly: Bool) -> [Any?] in
       guard let db = openDatabase(dbName: dbName) else {
         throw DatabaseException()
@@ -57,6 +57,7 @@ public final class SQLiteModule: Module {
 
     OnDestroy {
       cachedDatabases.values.forEach {
+        executeSql(sql: "SELECT crsql_finalize()", with: [], for: $0, readOnly: false)
         sqlite3_close($0)
       }
     }
@@ -87,10 +88,20 @@ public final class SQLiteModule: Module {
 
     if db == nil {
       cachedDatabases.removeValue(forKey: dbName)
+   
       if sqlite3_open(path.absoluteString, &db) != SQLITE_OK {
         return nil
       }
-
+      
+      if sqlite3_enable_load_extension(db, 1) != SQLITE_OK {
+        return nil
+      }
+    
+      let loadedExtension = loadExtension(db)
+      if loadedExtension != SQLITE_OK {
+        print("Failed to load extension")
+       }
+      
       cachedDatabases[dbName] = db
     }
     return db
@@ -211,5 +222,17 @@ public final class SQLiteModule: Module {
     let code = sqlite3_errcode(db)
     let message = NSString(utf8String: sqlite3_errmsg(db)) ?? ""
     return NSString(format: "Error code %i: %@", code, message) as String
+  }
+  
+  func loadExtension(_ db: OpaquePointer?) -> Int32 {
+    let bundle = Bundle(for: Self.self)
+    guard let resourceUrl = bundle.url(forResource: "ExpoSQLite", withExtension: "bundle") else {
+      fatalError("Failed to load resource")
+    }
+    let resourceBundle = Bundle(url: resourceUrl)
+    let dylib = resourceBundle?.path(forResource: "crsqlite", ofType: "dylib")
+  
+  
+    return sqlite3_load_extension(db, dylib, "sqlite3_crsqlite_init", nil)
   }
 }
