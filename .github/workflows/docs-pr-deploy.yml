@@ -86,7 +86,7 @@ jobs:
         with:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: 'expo-bot'
-          body-includes: Docs preview created
+          body-includes: 📘 Your docs
       - name: 💬 Add comment with preview URL
         if: steps.old_comment.outputs.comment-id == ''
         uses: actions/github-script@v6
@@ -97,7 +97,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'Docs preview created! View it [here](http://docs.expo.dev-pr-${{ github.event.pull_request.number }}.s3-website-us-east-1.amazonaws.com/).'
+              body: '📘 Your docs [preview website](http://docs.expo.dev-pr-${{ github.event.pull_request.number }}.s3-website-us-east-1.amazonaws.com/) is ready!'
             });
       - name: 💬 Update comment with preview URL
         if: steps.old_comment.outputs.comment-id != ''
@@ -110,5 +110,5 @@ jobs:
               comment_id: '${{ steps.old_comment.outputs.comment-id }}',
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'Docs preview created! View it [here](http://docs.expo.dev-pr-${{ github.event.pull_request.number }}.s3-website-us-east-1.amazonaws.com/).'
+              body: '📘 Your docs [preview website](http://docs.expo.dev-pr-${{ github.event.pull_request.number }}.s3-website-us-east-1.amazonaws.com/) is ready!'
             });
