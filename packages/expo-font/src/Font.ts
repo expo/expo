@@ -70,8 +70,6 @@ export function isLoading(fontFamily: string): boolean {
   return fontFamily in loadPromises;
 }
 
-export function registerStaticFont(fontFamily: string, source?: FontSource | null) {}
-
 // @needsAudit
 /**
  * Highly efficient method for loading fonts from static or remote resources which can then be used
@@ -235,6 +233,23 @@ async function unloadFontInNamespaceAsync(
   }
 
   await ExpoFontLoader.unloadAsync(nativeFontName, options);
+}
+
+export function registerStaticFont(fontFamily: string, source?: FontSource | null) {
+  if (!source) {
+    throw new CodedError(
+      `ERR_FONT_SOURCE`,
+      `Cannot load null or undefined font source: { "${fontFamily}": ${source} }. Expected asset of type \`FontSource\` for fontFamily of name: "${fontFamily}"`
+    );
+  }
+  const asset = getAssetForSource(source);
+
+  loadSingleFontAsync(fontFamily, asset);
+}
+
+// Web-only
+export function _getStaticResources() {
+  return ExpoFontLoader.getHeadElements();
 }
 
 export { FontDisplay, FontSource, FontResource, UnloadFontOptions };

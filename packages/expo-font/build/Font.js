@@ -1,4 +1,4 @@
-import { CodedError, UnavailabilityError } from 'expo-modules-core';
+import { CodedError, Platform, UnavailabilityError } from 'expo-modules-core';
 import ExpoFontLoader from './ExpoFontLoader';
 import { FontDisplay } from './Font.types';
 import { getAssetForSource, loadSingleFontAsync, fontFamilyNeedsScoping, getNativeFontName, } from './FontLoader';
@@ -66,17 +66,29 @@ export function isLoading(fontFamily) {
  * @return Returns a promise that fulfils when the font has loaded. Often you may want to wrap the
  * method in a `try/catch/finally` to ensure the app continues if the font fails to load.
  */
-export async function loadAsync(fontFamilyOrFontMap, source) {
+export function loadAsync(fontFamilyOrFontMap, source) {
+    // NOTE(EvanBacon): Static render pass on web must be synchronous to collect all fonts.
+    // Because of this, `loadAsync` doesn't use the `async` keyword and deviates from the
+    // standard Expo SDK style guide.
     if (typeof fontFamilyOrFontMap === 'object') {
         if (source) {
             throw new CodedError(`ERR_FONT_API`, `No fontFamily can be used for the provided source: ${source}. The second argument of \`loadAsync()\` can only be used with a \`string\` value as the first argument.`);
         }
         const fontMap = fontFamilyOrFontMap;
         const names = Object.keys(fontMap);
-        await Promise.all(names.map((name) => loadFontInNamespaceAsync(name, fontMap[name])));
-        return;
+        if (Platform.OS === 'web' && typeof window !== 'undefined') {
+            names.map((name) => registerStaticFont(name, fontMap[name]));
+            return Promise.resolve();
+        }
+        return (async () => {
+            Promise.all(names.map((name) => loadFontInNamespaceAsync(name, fontMap[name])));
+        })();
     }
-    return await loadFontInNamespaceAsync(fontFamilyOrFontMap, source);
+    if (Platform.OS === 'web' && typeof window !== 'undefined') {
+        registerStaticFont(fontFamilyOrFontMap, source);
+        return Promise.resolve();
+    }
+    return loadFontInNamespaceAsync(fontFamilyOrFontMap, source);
 }
 async function loadFontInNamespaceAsync(fontFamily, source) {
     if (!source) {
@@ -160,6 +172,17 @@ async function unloadFontInNamespaceAsync(fontFamily, options) {
         throw new CodedError(`ERR_FONT_FAMILY`, `Cannot unload an empty name`);
     }
     await ExpoFontLoader.unloadAsync(nativeFontName, options);
+}
+export function registerStaticFont(fontFamily, source) {
+    if (!source) {
+        throw new CodedError(`ERR_FONT_SOURCE`, `Cannot load null or undefined font source: { "${fontFamily}": ${source} }. Expected asset of type \`FontSource\` for fontFamily of name: "${fontFamily}"`);
+    }
+    const asset = getAssetForSource(source);
+    loadSingleFontAsync(fontFamily, asset);
+}
+// Web-only
+export function _getStaticResources() {
+    return ExpoFontLoader.getHeadElements();
 }
 export { FontDisplay };
 //# sourceMappingURL=Font.js.map
