@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add inverse dependency stack to Metro resolution errors.
+
 ### 🐛 Bug fixes
 
 - Move `pointerEvents` to `styles.pointerEvents`. ([#23446](https://github.com/expo/expo/pull/23446) by [@EvanBacon](https://github.com/EvanBacon))
