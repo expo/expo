@@ -234,7 +234,7 @@ export interface ExpoConfig {
   /**
    * Config plugins for adding extra functionality to your project. [Learn more](https://docs.expo.dev/guides/config-plugins/).
    */
-  plugins?: (string | [] | [string] | [string, any])[];
+  plugins?: (string | [string, any])[];
   splash?: Splash;
   /**
    * Specifies the JavaScript engine for apps. Supported only on EAS Build. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
