@@ -48,6 +48,35 @@ function getFontFaceRulesMatchingResource(
 
 const serverContext: Set<{ css: string; resourceId: string }> = new Set();
 
+function getHeadElements(): {
+  $$type: string;
+  rel?: string;
+  href?: string;
+  as?: string;
+  crossorigin?: string;
+  children?: string;
+  id?: string;
+  type?: string;
+}[] {
+  const css = [...serverContext.entries()].map(([{ css }]) => css).join('\n');
+  const links = [...serverContext.entries()].map(([{ resourceId }]) => resourceId);
+  return [
+    {
+      $$type: 'style',
+      children: css,
+      id: ID,
+      type: 'text/css',
+    },
+    ...links.map((resourceId) => ({
+      $$type: 'link',
+      rel: 'preload',
+      href: resourceId, // '/_expo/static/fonts/name-xxx.ttf',
+      as: 'font',
+      crossorigin: '',
+    })),
+  ];
+}
+
 export default {
   get name(): string {
     return 'ExpoFontLoader';
@@ -71,33 +100,19 @@ export default {
     }
   },
 
-  getHeadElements(): {
-    $$type: string;
-    rel?: string;
-    href?: string;
-    as?: string;
-    crossorigin?: string;
-    children?: string;
-    id?: string;
-    type?: string;
-  }[] {
-    const css = [...serverContext.entries()].map(([{ css }]) => css).join('\n');
-    const links = [...serverContext.entries()].map(([{ resourceId }]) => resourceId);
-    return [
-      {
-        $$type: 'style',
-        children: css,
-        id: ID,
-        type: 'text/css',
-      },
-      ...links.map((resourceId) => ({
-        $$type: 'link',
-        rel: 'preload',
-        href: resourceId, // '/_expo/static/fonts/name-xxx.ttf',
-        as: 'font',
-        crossorigin: '',
-      })),
-    ];
+  getHeadElements(): string[] {
+    const elements = getHeadElements();
+
+    return elements.map((element) => {
+      switch (element.$$type) {
+        case 'style':
+          return `<style id="${element.id}" type="${element.type}">${element.children}</style>`;
+        case 'link':
+          return `<link rel="${element.rel}" href="${element.href}" as="${element.as}" crossorigin="${element.crossorigin}" />`;
+        default:
+          return '';
+      }
+    });
   },
 
   // NOTE(EvanBacon): No async keyword! This cannot return a promise in Node environments.

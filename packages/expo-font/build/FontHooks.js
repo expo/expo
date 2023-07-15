@@ -21,6 +21,10 @@ import { loadAsync } from './Font';
 export function useFonts(map) {
     const [loaded, setLoaded] = useState(false);
     const [error, setError] = useState(null);
+    // Load synchronously in Node.js environments
+    if (typeof window === 'undefined') {
+        loadAsync(map);
+    }
     useEffect(() => {
         loadAsync(map)
             .then(() => setLoaded(true))

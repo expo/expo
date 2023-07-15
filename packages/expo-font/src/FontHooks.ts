@@ -25,6 +25,11 @@ export function useFonts(map: string | Record<string, FontSource>): [boolean, Er
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
+  // Load synchronously in Node.js environments
+  if (typeof window === 'undefined') {
+    loadAsync(map);
+  }
+
   useEffect(() => {
     loadAsync(map)
       .then(() => setLoaded(true))

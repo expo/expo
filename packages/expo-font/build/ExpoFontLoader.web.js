@@ -32,6 +32,25 @@ function getFontFaceRulesMatchingResource(fontFamilyName, options) {
     });
 }
 const serverContext = new Set();
+function getHeadElements() {
+    const css = [...serverContext.entries()].map(([{ css }]) => css).join('\n');
+    const links = [...serverContext.entries()].map(([{ resourceId }]) => resourceId);
+    return [
+        {
+            $$type: 'style',
+            children: css,
+            id: ID,
+            type: 'text/css',
+        },
+        ...links.map((resourceId) => ({
+            $$type: 'link',
+            rel: 'preload',
+            href: resourceId,
+            as: 'font',
+            crossorigin: '',
+        })),
+    ];
+}
 export default {
     get name() {
         return 'ExpoFontLoader';
@@ -54,23 +73,17 @@ export default {
         }
     },
     getHeadElements() {
-        const css = [...serverContext.entries()].map(([{ css }]) => css).join('\n');
-        const links = [...serverContext.entries()].map(([{ resourceId }]) => resourceId);
-        return [
-            {
-                $$type: 'style',
-                children: css,
-                id: ID,
-                type: 'text/css',
-            },
-            ...links.map((resourceId) => ({
-                $$type: 'link',
-                rel: 'preload',
-                href: resourceId,
-                as: 'font',
-                crossorigin: '',
-            })),
-        ];
+        const elements = getHeadElements();
+        return elements.map((element) => {
+            switch (element.$$type) {
+                case 'style':
+                    return `<style id="${element.id}" type="${element.type}">${element.children}</style>`;
+                case 'link':
+                    return `<link rel="${element.rel}" href="${element.href}" as="${element.as}" crossorigin="${element.crossorigin}" />`;
+                default:
+                    return '';
+            }
+        });
     },
     // NOTE(EvanBacon): No async keyword! This cannot return a promise in Node environments.
     loadAsync(fontFamilyName, resource) {

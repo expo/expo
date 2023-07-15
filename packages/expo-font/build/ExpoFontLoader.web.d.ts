@@ -4,16 +4,7 @@ declare const _default: {
     readonly name: string;
     unloadAllAsync(): Promise<void>;
     unloadAsync(fontFamilyName: string, options?: UnloadFontOptions): Promise<void>;
-    getHeadElements(): {
-        $$type: string;
-        rel?: string;
-        href?: string;
-        as?: string;
-        crossorigin?: string;
-        children?: string;
-        id?: string;
-        type?: string;
-    }[];
+    getHeadElements(): string[];
     loadAsync(fontFamilyName: string, resource: FontResource): Promise<void>;
 };
 export default _default;
