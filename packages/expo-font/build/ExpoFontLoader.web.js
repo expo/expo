@@ -85,6 +85,12 @@ export default {
             }
         });
     },
+    isLoaded(fontFamilyName, resource = {}) {
+        if (typeof window === 'undefined') {
+            return true;
+        }
+        return getFontFaceRulesMatchingResource(fontFamilyName, resource)?.length > 0;
+    },
     // NOTE(EvanBacon): No async keyword! This cannot return a promise in Node environments.
     loadAsync(fontFamilyName, resource) {
         if (!Platform.isDOMAvailable) {
@@ -99,8 +105,12 @@ export default {
         if (!canInjectStyle) {
             throw new CodedError('ERR_WEB_ENVIRONMENT', `The browser's \`document.head\` element doesn't support injecting fonts.`);
         }
-        const style = _createWebStyle(fontFamilyName, resource);
+        const style = getStyleElement();
         document.head.appendChild(style);
+        const res = getFontFaceRulesMatchingResource(fontFamilyName, resource);
+        if (!res.length) {
+            _createWebStyle(fontFamilyName, resource);
+        }
         if (!isFontLoadingListenerSupported()) {
             return Promise.resolve();
         }
@@ -108,22 +118,18 @@ export default {
     },
 };
 const ID = 'expo-generated-fonts';
-function getStyleElement() {
-    const element = document.getElementById(ID);
+function getStyleElement(id = ID) {
+    const element = document.getElementById(id);
     if (element && element instanceof HTMLStyleElement) {
         return element;
     }
     const styleElement = document.createElement('style');
-    styleElement.id = ID;
+    styleElement.id = id;
     styleElement.type = 'text/css';
     return styleElement;
 }
 export function _createWebFontTemplate(fontFamily, resource) {
-    return `@font-face {
-    font-family: ${fontFamily};
-    src: url(${resource.uri});
-    font-display: ${resource.display || FontDisplay.AUTO};
-  }`;
+    return `@font-face{font-family:${fontFamily};src:url(${resource.uri});font-display:${resource.display || FontDisplay.AUTO}}`;
 }
 function _createWebStyle(fontFamily, resource) {
     const fontStyle = _createWebFontTemplate(fontFamily, resource);

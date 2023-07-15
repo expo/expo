@@ -56,6 +56,9 @@ export function processFontFamily(fontFamily: string | null): string | null {
  * @return Returns `true` if the font has fully loaded.
  */
 export function isLoaded(fontFamily: string): boolean {
+  if (Platform.OS === 'web') {
+    return fontFamily in loaded || ExpoFontLoader.isLoaded(fontFamily);
+  }
   return fontFamily in loaded;
 }
 

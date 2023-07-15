@@ -1,5 +1,27 @@
 import { useEffect, useState } from 'react';
-import { loadAsync } from './Font';
+import { loadAsync, isLoaded } from './Font';
+function isMapLoaded(map) {
+    if (typeof map === 'string') {
+        return isLoaded(map);
+    }
+    else {
+        return Object.keys(map).every((fontFamily) => isLoaded(fontFamily));
+    }
+}
+function useRuntimeFonts(map) {
+    const [loaded, setLoaded] = useState(isMapLoaded(map));
+    const [error, setError] = useState(null);
+    useEffect(() => {
+        loadAsync(map)
+            .then(() => setLoaded(true))
+            .catch(setError);
+    }, []);
+    return [loaded, error];
+}
+function useStaticFonts(map) {
+    loadAsync(map);
+    return [true, null];
+}
 // @needsAudit
 /**
  * ```ts
@@ -18,18 +40,5 @@ import { loadAsync } from './Font';
  * loading.
  * - __error__ (`Error | null`) - An error encountered when loading the fonts.
  */
-export function useFonts(map) {
-    const [loaded, setLoaded] = useState(false);
-    const [error, setError] = useState(null);
-    // Load synchronously in Node.js environments
-    if (typeof window === 'undefined') {
-        loadAsync(map);
-    }
-    useEffect(() => {
-        loadAsync(map)
-            .then(() => setLoaded(true))
-            .catch(setError);
-    }, []);
-    return [loaded, error];
-}
+export const useFonts = typeof window === 'undefined' ? useStaticFonts : useRuntimeFonts;
 //# sourceMappingURL=FontHooks.js.map

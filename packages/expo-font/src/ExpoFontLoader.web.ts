@@ -115,6 +115,13 @@ export default {
     });
   },
 
+  isLoaded(fontFamilyName: string, resource: UnloadFontOptions = {}): boolean {
+    if (typeof window === 'undefined') {
+      return true;
+    }
+    return getFontFaceRulesMatchingResource(fontFamilyName, resource)?.length > 0;
+  },
+
   // NOTE(EvanBacon): No async keyword! This cannot return a promise in Node environments.
   loadAsync(fontFamilyName: string, resource: FontResource): Promise<void> {
     if (!Platform.isDOMAvailable) {
@@ -134,8 +141,13 @@ export default {
       );
     }
 
-    const style = _createWebStyle(fontFamilyName, resource);
+    const style = getStyleElement();
     document.head!.appendChild(style);
+
+    const res = getFontFaceRulesMatchingResource(fontFamilyName, resource);
+    if (!res.length) {
+      _createWebStyle(fontFamilyName, resource);
+    }
 
     if (!isFontLoadingListenerSupported()) {
       return Promise.resolve();
@@ -147,23 +159,21 @@ export default {
 
 const ID = 'expo-generated-fonts';
 
-function getStyleElement(): HTMLStyleElement {
-  const element = document.getElementById(ID);
+function getStyleElement(id: string = ID): HTMLStyleElement {
+  const element = document.getElementById(id);
   if (element && element instanceof HTMLStyleElement) {
     return element;
   }
   const styleElement = document.createElement('style');
-  styleElement.id = ID;
+  styleElement.id = id;
   styleElement.type = 'text/css';
   return styleElement;
 }
 
 export function _createWebFontTemplate(fontFamily: string, resource: FontResource): string {
-  return `@font-face {
-    font-family: ${fontFamily};
-    src: url(${resource.uri});
-    font-display: ${resource.display || FontDisplay.AUTO};
-  }`;
+  return `@font-face{font-family:${fontFamily};src:url(${resource.uri});font-display:${
+    resource.display || FontDisplay.AUTO
+  }}`;
 }
 
 function _createWebStyle(fontFamily: string, resource: FontResource): HTMLStyleElement {
