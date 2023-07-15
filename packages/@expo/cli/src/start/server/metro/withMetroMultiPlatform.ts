@@ -165,11 +165,7 @@ export function withExtendedResolver(
 
   return withMetroResolvers(config, projectRoot, [
     // Add a resolver to alias the web asset resolver.
-    function customResolve(
-      immutableContext: ResolutionContext,
-      moduleName: string,
-      platform: string | null
-    ) {
+    (immutableContext: ResolutionContext, moduleName: string, platform: string | null) => {
       let context = {
         ...immutableContext,
       } as Mutable<ResolutionContext> & {
