@@ -404,7 +404,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
 
     this.metro = metro;
-
     return {
       server,
       location: {
