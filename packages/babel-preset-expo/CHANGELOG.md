@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+Update `metro-react-native-babel-preset` to `0.76.7` to match the version shipped with `react-native`. ([#23517](https://github.com/expo/expo/pull/23517)) by [@SimenB](https://github.com/SimenB)
+
 ### 💡 Others
 
 ## 9.5.0 — 2023-06-21

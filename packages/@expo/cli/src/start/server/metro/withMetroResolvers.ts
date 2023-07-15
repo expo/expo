@@ -256,6 +256,12 @@ export function withMetroResolvers(
                 return resolution;
               }
             } catch (error: any) {
+              // If no user-defined resolver, use Expo's default behavior.
+              // This prevents extraneous resolution attempts on failure.
+              if (!config.resolver.resolveRequest) {
+                throw error;
+              }
+
               // If the error is directly related to a resolver not being able to resolve a module, then
               // we can ignore the error and try the next resolver. Otherwise, we should throw the error.
               const isResolutionError =
