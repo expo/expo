@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add inverse dependency stack to Metro resolution errors.
+- Add inverse dependency stack to Metro resolution errors. ([#23551](https://github.com/expo/expo/pull/23551) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
