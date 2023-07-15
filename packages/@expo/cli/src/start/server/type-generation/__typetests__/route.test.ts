@@ -1,6 +1,12 @@
 import { expectType, expectError } from 'tsd-lite';
 
-import { useGlobalSearchParams, useSegments, useRouter, useSearchParams } from './fixtures/basic';
+import {
+  useGlobalSearchParams,
+  useSegments,
+  useRouter,
+  useSearchParams,
+  useLocalSearchParams,
+} from './fixtures/basic';
 
 // eslint-disable-next-line react-hooks/rules-of-hooks
 const router = useRouter();
@@ -49,12 +55,6 @@ describe('router.push()', () => {
 
     it('can accept any external url', () => {
       expectType<void>(router.push('http://expo.dev'));
-    });
-
-    it('throws if using inline search params', () => {
-      // While this is allowed in Expo Router, the Typed Routes version throws as we cannot type it
-      expectError(router.push('/colors?color=blue'));
-      expectError(router.push('/animals/bear?color=blue'));
     });
   });
 
@@ -109,6 +109,15 @@ describe('router.push()', () => {
       );
     });
 
+    it('allows numeric inputs', () => {
+      expectType<void>(
+        router.push({
+          pathname: '/mix/[fruit]/[color]/[...animals]',
+          params: { color: 1, fruit: 'apple', animals: [2, 'cat'] },
+        })
+      );
+    });
+
     it('requires an array for catch all routes', () => {
       expectError(
         router.push({
@@ -122,7 +131,7 @@ describe('router.push()', () => {
       expectType<void>(
         router.push({
           pathname: '/mix/[fruit]/[color]/[...animals]',
-          params: { color: 'red', fruit: 'apple', animals: ['cat', 'dog'] },
+          params: { color: 'red', fruit: 'apple', animals: [] },
         })
       );
     });
@@ -139,17 +148,33 @@ describe('router.push()', () => {
 });
 
 describe('useSearchParams', () => {
-  expectType<Record<'color', string>>(useSearchParams<'/colors/[color]'>());
   expectType<Record<'color', string>>(useSearchParams<Record<'color', string>>());
+  expectType<Record<'color', string> & Record<string, string | string[]>>(
+    useSearchParams<'/colors/[color]'>()
+  );
+
   expectError(useSearchParams<'/invalid'>());
-  expectError(useSearchParams<Record<'custom', string>>());
+  expectError(useSearchParams<Record<'custom', Function>>());
+});
+
+describe('useLocalSearchParams', () => {
+  expectType<Record<'color', string>>(useLocalSearchParams<Record<'color', string>>());
+  expectType<Record<'color', string> & Record<string, string | string[]>>(
+    useLocalSearchParams<'/colors/[color]'>()
+  );
+
+  expectError(useSearchParams<'/invalid'>());
+  expectError(useSearchParams<Record<'custom', Function>>());
 });
 
 describe('useGlobalSearchParams', () => {
-  expectType<Record<'color', string>>(useGlobalSearchParams<'/colors/[color]'>());
   expectType<Record<'color', string>>(useGlobalSearchParams<Record<'color', string>>());
+  expectType<Record<'color', string> & Record<string, string | string[]>>(
+    useGlobalSearchParams<'/colors/[color]'>()
+  );
+
   expectError(useGlobalSearchParams<'/invalid'>());
-  expectError(useGlobalSearchParams<Record<'custom', string>>());
+  expectError(useGlobalSearchParams<Record<'custom', Function>>());
 });
 
 describe('useSegments', () => {
