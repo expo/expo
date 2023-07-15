@@ -163,7 +163,6 @@ export function formatUsingNodeStandardLibraryError(
       ].join('\n');
     }
   }
-  // return null;
   return `Unable to resolve "${targetModuleName}" from "${relativePath}"`;
 }
 

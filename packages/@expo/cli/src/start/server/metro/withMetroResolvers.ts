@@ -9,7 +9,6 @@ import { ConfigT as MetroConfig } from 'metro-config';
 import { ResolutionContext } from 'metro-resolver';
 import path from 'path';
 
-import { globalMetroInstanceHack } from './MetroBundlerDevServer';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
 import { importMetroResolverFromProject } from './resolveFromProject';
 
@@ -65,7 +64,7 @@ export function withMetroResolvers(
     moduleName: string,
     platform: string | null
   ) {
-    if (!globalMetroInstanceHack || !platform) {
+    if (!platform) {
       debug('Cannot mutate resolution error');
       return error;
     }
@@ -79,7 +78,6 @@ export function withMetroResolvers(
 
     // collect all references inversely using some expensive lookup
 
-    // console.log(mapByPlatform);
     const getReferences = (origin: string) => {
       const inverseOrigin: { origin: string; previous: string; request: string }[] = [];
 
@@ -131,8 +129,6 @@ export function withMetroResolvers(
 
       const inverse = getReferences(req.origin);
       for (const match of inverse) {
-        // console.log(pad(count) + '└ ' + path.relative(root, match.origin));
-
         // Use more qualified name if possible
         // results.origin = match.origin;
         // Found entry point
@@ -152,12 +148,9 @@ export function withMetroResolvers(
       35
     );
 
-    let hasReactNative = false;
     if (inverseTree.previous.length > 0) {
       debug('Found inverse graph:', JSON.stringify(inverseTree, null, 2));
       let extraMessage = chalk.bold('Import stack:');
-      // console.log('\n\nImport stack:');
-      // console.log('\n\nInverse tree:');
       const printRecursive = (tree: InverseDepResult, depth: number = 0) => {
         let filename = path.relative(root, tree.origin);
         if (filename.match(/\?ctx=[\w\d]+$/)) {
@@ -184,19 +177,11 @@ export function withMetroResolvers(
           line = chalk.gray(
             // Bold the node module name
             line.replace(/node_modules\/([^/]+)/, (_match, p1) => {
-              if (p1 === 'react-native') {
-                hasReactNative = true;
-                // if (platform === 'web') {
-                //   // Highlight the invalid react-native import on web platforms.
-                //   return chalk.bold.red(p1);
-                // }
-              }
               return 'node_modules/' + chalk.bold(p1);
             })
           );
         }
         extraMessage += line;
-        // console.log(pad(depth) + '└ ' + path.relative(root, tree.origin));
         for (const child of tree.previous) {
           printRecursive(
             child,
@@ -207,15 +192,8 @@ export function withMetroResolvers(
       };
       printRecursive(inverseTree);
 
-      // if (platform === 'web' && hasReactNative) {
-      //   extraMessage += chalk.yellow(
-      //     '\n\n⚠️  Avoid importing react-native internals when bundling for web. Use react-native-web instead.'
-      //   );
-      // }
-
+      // @ts-expect-error
       error._expoImportStack = extraMessage;
-      // console.log(mapByOrigin, JSON.stringify(inverseTree, null, 2));
-      // process.exit(0);
     } else {
       debug('Found no inverse tree for:', context.originModulePath);
     }
@@ -278,11 +256,6 @@ export function withMetroResolvers(
                 return resolution;
               }
             } catch (error: any) {
-              // // If no user-defined resolver, use Expo's default behavior.
-              // if (!config.resolver.resolveRequest) {
-              //   throw error;
-              // }
-
               // If the error is directly related to a resolver not being able to resolve a module, then
               // we can ignore the error and try the next resolver. Otherwise, we should throw the error.
               const isResolutionError =

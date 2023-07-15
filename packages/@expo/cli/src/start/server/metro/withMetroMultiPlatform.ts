@@ -32,7 +32,6 @@ import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroE
 import { importMetroResolverFromProject } from './resolveFromProject';
 import { getAppRouterRelativeEntryPath } from './router';
 import { withMetroResolvers } from './withMetroResolvers';
-import { globalMetroInstanceHack } from './MetroBundlerDevServer';
 
 type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 
