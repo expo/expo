@@ -15,7 +15,7 @@ There are three major elements that you can use to customize the appearance of y
 
 ## Fonts
 
-Expo Router extends the `expo-splash-screen` API to prevent white flash,
+Expo Router extends the `expo-splash-screen` API to prevent white flash, use it in conjunction with `expo-font` to keep the splash screen visible while fonts are loading:
 
 ```js app/_layout.js
 import { Text, View } from 'react-native';
@@ -34,8 +34,9 @@ SplashScreen.preventAutoHideAsync();
 /* @end */
 
 export default function Layout() {
-  // Load the font `Inter_500Medium`
+  /* @info Load the font <b>Inter_500Medium</b> */
   const [fontsLoaded] = useFonts({
+    /* @end */
     Inter_500Medium,
   });
 
@@ -56,6 +57,8 @@ export default function Layout() {
   return <Slot />;
 }
 ```
+
+Expo Router's [static rendering](/router/reference/static-rendering) provides [automatic static optimization](/router/reference/static-rendering#fonts) for font loading on web. This enables best-practices for working with fonts in the browser.
 
 ## Images
 
