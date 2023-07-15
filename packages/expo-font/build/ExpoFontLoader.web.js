@@ -118,13 +118,13 @@ export default {
     },
 };
 const ID = 'expo-generated-fonts';
-function getStyleElement(id = ID) {
-    const element = document.getElementById(id);
+function getStyleElement() {
+    const element = document.getElementById(ID);
     if (element && element instanceof HTMLStyleElement) {
         return element;
     }
     const styleElement = document.createElement('style');
-    styleElement.id = id;
+    styleElement.id = ID;
     styleElement.type = 'text/css';
     return styleElement;
 }

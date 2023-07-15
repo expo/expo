@@ -250,7 +250,9 @@ export function registerStaticFont(fontFamily: string, source?: FontSource | nul
   loadSingleFontAsync(fontFamily, asset);
 }
 
-// Web-only
+/**
+ * @private
+ */
 export function _getStaticResources() {
   return ExpoFontLoader.getHeadElements();
 }

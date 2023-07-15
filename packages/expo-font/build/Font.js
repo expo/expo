@@ -183,7 +183,9 @@ export function registerStaticFont(fontFamily, source) {
     const asset = getAssetForSource(source);
     loadSingleFontAsync(fontFamily, asset);
 }
-// Web-only
+/**
+ * @private
+ */
 export function _getStaticResources() {
     return ExpoFontLoader.getHeadElements();
 }

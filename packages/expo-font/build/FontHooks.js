@@ -9,7 +9,10 @@ function isMapLoaded(map) {
     }
 }
 function useRuntimeFonts(map) {
-    const [loaded, setLoaded] = useState(isMapLoaded(map));
+    const [loaded, setLoaded] = useState(
+    // For web rehydration, we need to check if the fonts are already loaded during the static render.
+    // Native will also benefit from this optimization.
+    isMapLoaded(map));
     const [error, setError] = useState(null);
     useEffect(() => {
         loadAsync(map)

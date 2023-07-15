@@ -70,7 +70,7 @@ function getHeadElements(): {
     ...links.map((resourceId) => ({
       $$type: 'link',
       rel: 'preload',
-      href: resourceId, // '/_expo/static/fonts/name-xxx.ttf',
+      href: resourceId,
       as: 'font',
       crossorigin: '',
     })),
@@ -159,13 +159,13 @@ export default {
 
 const ID = 'expo-generated-fonts';
 
-function getStyleElement(id: string = ID): HTMLStyleElement {
-  const element = document.getElementById(id);
+function getStyleElement(): HTMLStyleElement {
+  const element = document.getElementById(ID);
   if (element && element instanceof HTMLStyleElement) {
     return element;
   }
   const styleElement = document.createElement('style');
-  styleElement.id = id;
+  styleElement.id = ID;
   styleElement.type = 'text/css';
   return styleElement;
 }

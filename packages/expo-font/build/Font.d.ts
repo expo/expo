@@ -49,6 +49,9 @@ export declare function unloadAllAsync(): Promise<void>;
  */
 export declare function unloadAsync(fontFamilyOrFontMap: string | Record<string, UnloadFontOptions>, options?: UnloadFontOptions): Promise<void>;
 export declare function registerStaticFont(fontFamily: string, source?: FontSource | null): void;
+/**
+ * @private
+ */
 export declare function _getStaticResources(): any;
 export { FontDisplay, FontSource, FontResource, UnloadFontOptions };
 //# sourceMappingURL=Font.d.ts.map
