@@ -1,4 +1,5 @@
 import * as Updates from './Updates';
+import { UpdateInfoType } from './UseUpdates.types';
 // The currently running info, constructed from Updates constants
 export const currentlyRunning = {
     updateId: Updates.updateId ?? undefined,
@@ -13,12 +14,15 @@ export const currentlyRunning = {
 export const updateFromManifest = (manifest) => {
     return manifest
         ? {
+            type: UpdateInfoType.NEW,
             updateId: manifest?.id ?? undefined,
             createdAt: manifest && 'createdAt' in manifest && manifest.createdAt
                 ? new Date(manifest.createdAt)
                 : manifest && 'publishedTime' in manifest && manifest.publishedTime
                     ? new Date(manifest.publishedTime)
-                    : undefined,
+                    : // We should never reach this if the manifest is valid and has a commit time,
+                        // but leave this in so that createdAt is always defined
+                        new Date(0),
             manifest: manifest ?? undefined,
         }
         : undefined;

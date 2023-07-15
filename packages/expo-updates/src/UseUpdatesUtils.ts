@@ -1,6 +1,6 @@
 import * as Updates from './Updates';
 import type { Manifest, UpdatesNativeStateMachineContext } from './Updates.types';
-import type { CurrentlyRunningInfo, UpdateInfo } from './UseUpdates.types';
+import { UpdateInfoType, type CurrentlyRunningInfo, type UpdateInfo } from './UseUpdates.types';
 
 // The currently running info, constructed from Updates constants
 export const currentlyRunning: CurrentlyRunningInfo = {
@@ -31,13 +31,16 @@ export type UseUpdatesStateType = {
 export const updateFromManifest = (manifest?: Manifest) => {
   return manifest
     ? {
+        type: UpdateInfoType.NEW,
         updateId: manifest?.id ?? undefined,
         createdAt:
           manifest && 'createdAt' in manifest && manifest.createdAt
             ? new Date(manifest.createdAt)
             : manifest && 'publishedTime' in manifest && manifest.publishedTime
             ? new Date(manifest.publishedTime)
-            : undefined,
+            : // We should never reach this if the manifest is valid and has a commit time,
+              // but leave this in so that createdAt is always defined
+              new Date(0),
         manifest: manifest ?? undefined,
       }
     : undefined;

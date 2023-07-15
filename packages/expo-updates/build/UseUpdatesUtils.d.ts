@@ -1,5 +1,5 @@
 import type { Manifest, UpdatesNativeStateMachineContext } from './Updates.types';
-import type { CurrentlyRunningInfo, UpdateInfo } from './UseUpdates.types';
+import { UpdateInfoType, type CurrentlyRunningInfo, type UpdateInfo } from './UseUpdates.types';
 export declare const currentlyRunning: CurrentlyRunningInfo;
 export type UseUpdatesStateType = {
     availableUpdate?: UpdateInfo;
@@ -13,18 +13,21 @@ export type UseUpdatesStateType = {
     lastCheckForUpdateTimeSinceRestart?: Date;
 };
 export declare const updateFromManifest: (manifest?: Manifest) => {
+    type: UpdateInfoType;
     updateId: string | undefined;
-    createdAt: Date | undefined;
+    createdAt: Date;
     manifest: import("expo-constants/build/Constants.types").AppManifest | import("expo-constants/build/Constants.types").Manifest;
 } | undefined;
 export declare const availableUpdateFromContext: (context: UpdatesNativeStateMachineContext) => {
+    type: UpdateInfoType;
     updateId: string | undefined;
-    createdAt: Date | undefined;
+    createdAt: Date;
     manifest: import("expo-constants/build/Constants.types").AppManifest | import("expo-constants/build/Constants.types").Manifest;
 } | undefined;
 export declare const downloadedUpdateFromContext: (context: UpdatesNativeStateMachineContext) => {
+    type: UpdateInfoType;
     updateId: string | undefined;
-    createdAt: Date | undefined;
+    createdAt: Date;
     manifest: import("expo-constants/build/Constants.types").AppManifest | import("expo-constants/build/Constants.types").Manifest;
 } | undefined;
 export declare const defaultUseUpdatesState: UseUpdatesStateType;
@@ -44,13 +47,15 @@ export declare const reduceUpdatesStateFromContext: (updatesState: UseUpdatesSta
     isChecking: false;
     isDownloading: boolean;
     availableUpdate: {
+        type: UpdateInfoType;
         updateId: string | undefined;
-        createdAt: Date | undefined;
+        createdAt: Date;
         manifest: import("expo-constants/build/Constants.types").AppManifest | import("expo-constants/build/Constants.types").Manifest;
     } | undefined;
     downloadedUpdate: {
+        type: UpdateInfoType;
         updateId: string | undefined;
-        createdAt: Date | undefined;
+        createdAt: Date;
         manifest: import("expo-constants/build/Constants.types").AppManifest | import("expo-constants/build/Constants.types").Manifest;
     } | undefined;
     checkError: Error | undefined;
