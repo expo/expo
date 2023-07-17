@@ -58,7 +58,7 @@ class AppContext(
   private val reactLifecycleDelegate = ReactLifecycleDelegate(this)
 
   // We postpone creating the `JSIInteropModuleRegistry` to not load so files in unit tests.
-  private lateinit var jsiInterop: JSIInteropModuleRegistry
+  internal lateinit var jsiInterop: JSIInteropModuleRegistry
 
   internal val sharedObjectRegistry = SharedObjectRegistry()
 

@@ -14,6 +14,7 @@ import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.exception.FunctionCallException
 import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.exception.exceptionDecorator
+import expo.modules.kotlin.exception.toCodedException
 import expo.modules.kotlin.jni.JavaScriptModuleObject
 import expo.modules.kotlin.types.AnyType
 import kotlinx.coroutines.launch
@@ -57,23 +58,35 @@ abstract class AsyncFunction(
   internal abstract fun callUserImplementation(args: Array<Any?>, promise: Promise, appContext: AppContext)
 
   override fun attachToJSObject(appContext: AppContext, jsObject: JavaScriptModuleObject) {
+    val appContextHolder = appContext.jsiInterop.appContextHolder
+    val moduleName = jsObject.name
     jsObject.registerAsyncFunction(
       name,
       takesOwner,
       argsCount,
       desiredArgsTypes.map { it.getCppRequiredTypes() }.toTypedArray()
-    ) { args, bridgePromise ->
+    ) { args, promiseImpl ->
+      if (BuildConfig.DEBUG) {
+        promiseImpl.decorateWithDebugInformation(
+          appContextHolder,
+          moduleName,
+          name
+        )
+      }
+
       val functionBody = {
         try {
           exceptionDecorator({
-            FunctionCallException(name, jsObject.name, it)
+            FunctionCallException(name, moduleName, it)
           }) {
-            callUserImplementation(args, bridgePromise, appContext)
+            callUserImplementation(args, promiseImpl, appContext)
           }
-        } catch (e: CodedException) {
-          bridgePromise.reject(e)
         } catch (e: Throwable) {
-          bridgePromise.reject(UnexpectedException(e))
+          // The promise was resolved, so we should rethrow the error.
+          if (promiseImpl.wasSettled) {
+            throw e
+          }
+          promiseImpl.reject(e.toCodedException())
         }
       }
 
