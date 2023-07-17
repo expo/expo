@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Move `pointerEvents` to `styles.pointerEvents`. ([#23446](https://github.com/expo/expo/pull/23446) by [@EvanBacon](https://github.com/EvanBacon))
+- Export `@expo/metro-config` from controlling `@expo/cli` instead of using implicit dependency. ([#23580](https://github.com/expo/expo/pull/23580) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
