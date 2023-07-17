@@ -423,19 +423,7 @@ A config plugin in a node module (without an **app.plugin.js**) will use the `ma
 
 This is different to how Node modules work because **app.plugin.js** won't be resolved by default in a directory. You'll have to manually specify `./my-config-plugin/app.plugin.js` to use it, otherwise **index.js** in the directory will be used.
 
-<FileTree
-  files={[
-    'app.config.js',
-    ['my-config-plugin/index.js', 'Node module or monorepo package'],
-    ['node_modules/expo-splash-screen/package.json', <code>"main": "./build/index.js"</code>],
-    [
-      'node_modules/expo-splash-screen/build/index.js',
-      <>
-        <YesIcon /> Node resolves a folder's <code>index.js</code> file as the main file
-      </>,
-    ],
-  ]}
-/>
+<FileTree files={['app.config.js', ['my-config-plugin/index.js', 'Config Plugin']]} />
 
 ### Module internals
 
