@@ -86,7 +86,7 @@ function getIconElement(iconName?: string) {
       return PaletteIcon;
     case 'EAS':
       return PlanEnterpriseIcon;
-    case 'Get started':
+    case 'Get ready to rumble!!':
       return HandWaveIcon;
     default:
       return undefined;
