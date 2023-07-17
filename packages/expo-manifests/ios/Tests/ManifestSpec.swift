@@ -12,7 +12,7 @@ final class ManifestSpec: ExpoSpec {
         var manifest = ManifestFactory.manifest(forManifestJSON: manifestJson)
         expect(manifest.getPluginProperties(packageName: "test")).to(beNil())
 
-        manifestJson = ["plugins": [] as [[String: Any]]]
+        manifestJson = ["plugins": [] as [Any]]
         manifest = ManifestFactory.manifest(forManifestJSON: manifestJson)
         expect(manifest.getPluginProperties(packageName: "test")).to(beNil())
 
