@@ -347,11 +347,19 @@ The strings passed to the `plugins` array can be resolved in a few different way
 
 You can quickly create a plugin in your project and use it in your config.
 
-- <YesIcon /> `'./my-config-plugin'`
+<FileTree
+  files={[
+    ['app.config.js', <code>import "./my-config-plugin"</code>],
+    [
+      'my-config-plugin.js',
+      <>
+        <YesIcon /> Imported from config
+      </>,
+    ],
+  ]}
+/>
 
-- <NoIcon /> `'./my-config-plugin.js'`
-
-<FileTree files={['app.config.js', 'my-config-plugin.js']} />
+In this example, the config plugin file contains a bare minimum function:
 
 ```js my-config-plugin.js
 module.exports = config => config;
@@ -362,14 +370,10 @@ module.exports = config => config;
 Sometimes you want your package to export React components and also support a plugin. To do this, multiple entry points need to be used because the transpilation (Babel preset) may be different.
 If an **app.plugin.js** file is present in the root of a Node module's folder, it'll be used instead of the package's `main` file.
 
-- <YesIcon /> `'expo-splash-screen'`
-
-- <NoIcon /> `'expo-splash-screen/app.plugin.js'`
-
 <FileTree
   files={[
-    'app.config.js',
-    ['node_modules/expo-splash-screen', 'Node module or monorepo package'],
+    ['app.config.js', <code>import "expo-splash-screen"</code>],
+    ['node_modules/expo-splash-screen', 'Node module'],
 
     'node_modules/expo-splash-screen/package.json',
 
@@ -397,14 +401,11 @@ module.exports = config => config;
 
 A config plugin in a node module (without an **app.plugin.js**) will use the `main` file defined in the **package.json**.
 
-- <YesIcon /> `'expo-splash-screen'`
-
-- <NoIcon /> `'expo-splash-screen/build/index'`
-
 <FileTree
   files={[
-    'app.config.js',
-    ['node_modules/expo-splash-screen', 'Node module or monorepo package'],
+    ['app.config.js', <code>import "expo-splash-screen"</code>],
+
+    ['node_modules/expo-splash-screen', 'Node module'],
     ['node_modules/expo-splash-screen/package.json', <code>"main": "./build/index.js"</code>],
     [
       'node_modules/expo-splash-screen/build/index.js',
@@ -412,39 +413,47 @@ A config plugin in a node module (without an **app.plugin.js**) will use the `ma
         <YesIcon /> Node resolve to this file
       </>,
     ],
-  ]}
+
+]}
 />
 
 ### Project folder
 
-- <YesIcon /> `'./my-config-plugin'`
+This is different to how Config Plugins in Node modules work because **app.plugin.js** won't be resolved by default in a directory. You'll have to manually specify `./my-config-plugin/app.plugin.js` to use it, otherwise **index.js** in the directory will be used.
 
-- <NoIcon /> `'./my-config-plugin.js'`
-
-This is different to how Node modules work because **app.plugin.js** won't be resolved by default in a directory. You'll have to manually specify `./my-config-plugin/app.plugin.js` to use it, otherwise **index.js** in the directory will be used.
-
-<FileTree files={['app.config.js', ['my-config-plugin/index.js', 'Config Plugin']]} />
+<FileTree
+  files={[
+    ['app.config.js', <code>import "./my-config-plugin"</code>],
+    [
+      'my-config-plugin/index.js',
+      <>
+        <YesIcon /> Config Plugin
+      </>,
+    ],
+    [
+      'my-config-plugin/app.plugin.js',
+      <>
+        <NoIcon /> Skipped outside of a node module
+      </>,
+    ],
+  ]}
+/>
 
 ### Module internals
 
 > **error** Avoid importing module internals.
 
-If a file inside a Node module is specified, then the module's root **app.plugin.js** resolution will be skipped. This is referred to as "reaching inside a package" and is considered **bad form**.
+If a file inside a Node module is directly imported, then the module's root **app.plugin.js** resolution will be skipped. This is referred to as "reaching inside a package" and is considered **bad form**.
 We support this to make testing, and plugin authoring easier, but we don't expect library authors to expose their plugins like this as a public API.
-
-- <NoIcon /> `'expo-splash-screen/build/index.js'`
-
-- <NoIcon /> `'expo-splash-screen/build'`
 
 <FileTree
   files={[
-    'app.config.js',
-    ['my-config-plugin/index.js', 'Node module or monorepo package'],
+    ['app.config.js', <code>import "expo-splash-screen/build/index.js"</code>],
     ['node_modules/expo-splash-screen/package.json', <code>"main": "./build/index.js"</code>],
     [
       'node_modules/expo-splash-screen/app.plugin.js',
       <>
-        <NoIcon /> Ignored because the reference reaches into the package internals
+        <NoIcon /> Ignored due to direct import
       </>,
     ],
     [
@@ -458,7 +467,7 @@ We support this to make testing, and plugin authoring easier, but we don't expec
 
 ### Raw functions
 
-You can also just pass in a config plugin.
+Expo config objects also support passing functions as-is to the `plugins` array. This is useful for testing, or if you want to use a plugin without creating a file.
 
 ```js app.config.js
 const withCustom = (config, props) => config;
@@ -490,7 +499,7 @@ Here is what the serialized config would look like:
 
 ## Why app.plugin.js for plugins
 
-Config resolution searches for a **app.plugin.js** first when a Node module name is provided.
+Config resolution searches for a file named **app.plugin.js** first when a Node module ID is provided as a plugin.
 This is because Node environments are often different to iOS, Android, or web JS environments and therefore require different transpilation presets (ex: `module.exports` instead of `import/export`).
 
 Because of this reasoning, the root of a Node module is searched instead of right next to the **index.js**.
