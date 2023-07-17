@@ -216,10 +216,5 @@ describe('useUpdates()', () => {
       expect(result?.createdAt).toEqual(mockDate);
       expect(result?.manifest).toEqual(manifest);
     });
-
-    it('updateFromManifest() with undefined manifest', () => {
-      const result = updateFromManifest(undefined);
-      expect(result).toBeUndefined();
-    });
   });
 });

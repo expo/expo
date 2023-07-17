@@ -12,25 +12,19 @@ export const currentlyRunning = {
 };
 // Constructs an UpdateInfo from a manifest
 export const updateFromManifest = (manifest) => {
-    return manifest
-        ? {
-            type: UpdateInfoType.NEW,
-            updateId: manifest?.id ?? undefined,
-            createdAt: manifest && 'createdAt' in manifest && manifest.createdAt
-                ? new Date(manifest.createdAt)
-                : manifest && 'publishedTime' in manifest && manifest.publishedTime
-                    ? new Date(manifest.publishedTime)
-                    : // We should never reach this if the manifest is valid and has a commit time,
-                        // but leave this in so that createdAt is always defined
-                        new Date(0),
-            manifest: manifest ?? undefined,
-        }
-        : undefined;
+    return {
+        type: UpdateInfoType.NEW,
+        updateId: manifest.id ?? '',
+        createdAt: manifest && 'createdAt' in manifest && manifest.createdAt
+            ? new Date(manifest.createdAt)
+            : manifest && 'publishedTime' in manifest && manifest.publishedTime
+                ? new Date(manifest.publishedTime)
+                : // We should never reach this if the manifest is valid and has a commit time,
+                    // but leave this in so that createdAt is always defined
+                    new Date(0),
+        manifest,
+    };
 };
-// Constructs the availableUpdate from the native state change event context
-export const availableUpdateFromContext = (context) => updateFromManifest(context?.latestManifest);
-// Constructs the downloadedUpdate from the native state change event context
-export const downloadedUpdateFromContext = (context) => updateFromManifest(context?.downloadedManifest);
 // Default useUpdates() state
 export const defaultUseUpdatesState = {
     isChecking: false,
@@ -40,15 +34,12 @@ export const defaultUseUpdatesState = {
 };
 // Transform the useUpdates() state based on native state machine context
 export const reduceUpdatesStateFromContext = (updatesState, context) => {
-    if (context.isChecking) {
-        return {
-            ...updatesState,
-            isChecking: true,
-            lastCheckForUpdateTimeSinceRestart: new Date(),
-        };
-    }
-    const availableUpdate = availableUpdateFromContext(context);
-    const downloadedUpdate = downloadedUpdateFromContext(context);
+    const availableUpdate = context?.latestManifest
+        ? updateFromManifest(context?.latestManifest)
+        : undefined;
+    const downloadedUpdate = context?.downloadedManifest
+        ? updateFromManifest(context?.downloadedManifest)
+        : undefined;
     return {
         ...updatesState,
         isUpdateAvailable: context.isUpdateAvailable,
@@ -59,6 +50,9 @@ export const reduceUpdatesStateFromContext = (updatesState, context) => {
         downloadedUpdate,
         checkError: context.checkError,
         downloadError: context.downloadError,
+        lastCheckForUpdateTimeSinceRestart: context.isChecking
+            ? new Date()
+            : updatesState.lastCheckForUpdateTimeSinceRestart,
     };
 };
 //# sourceMappingURL=UseUpdatesUtils.js.map

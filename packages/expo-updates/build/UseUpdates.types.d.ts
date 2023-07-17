@@ -54,29 +54,31 @@ export type CurrentlyRunningInfo = {
 };
 /**
  * The different possible types of updates.
- * Currently, the only supported type is `UpdateInfoType.NEW`.
+ * Currently, the only supported type is `UpdateInfoType.NEW`, indicating a new update that can be downloaded and launched
+ * on the device.
+ * In future, other types of updates may be added to this list.
  */
 export declare enum UpdateInfoType {
     /**
-     * This is the type for new updates found on or downloaded from the update server.
+     * This is the type for new updates found on or downloaded from the update server, that are launchable on the device.
      */
     NEW = "new"
 }
 /**
- * Structure representing an available or downloaded update.
+ * Structure representing an update. Currently, this is limited to updates of type `UpdateInfoType.NEW`.
  */
 export type UpdateInfo = {
     /**
      * The type of update.
      */
-    type: UpdateInfoType;
+    type: UpdateInfoType.NEW;
     /**
      * For updates of type `UpdateInfoType.NEW`, this is
      * a string that uniquely identifies the update. For the manifests used in the current Expo Updates protocol (including
      * EAS Update), this represents the update's UUID in its canonical string form (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`)
      * and will always use lowercase letters.
      */
-    updateId?: string;
+    updateId: string;
     /**
      * For all types of updates, this is
      * a `Date` object representing the creation time or commit time of the update.
@@ -86,7 +88,7 @@ export type UpdateInfo = {
      * For updates of type `UpdateInfoType.NEW`, this is
      * the [manifest](https://docs.expo.dev/versions/latest/sdk/constants/#manifest) for the update.
      */
-    manifest?: Manifest;
+    manifest: Manifest;
 };
 /**
  * The structures and methods returned by `useUpdates()`.
