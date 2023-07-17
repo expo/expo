@@ -1,4 +1,4 @@
-import { UpdateEvent, UpdatesNativeStateMachineContext } from './Updates.types';
+import { UpdateEvent } from './Updates.types';
 /**
  * React hook to create an [`UpdateEvent`](#updateevent) listener subscription on mount, using
  * [`addListener`](#updatesaddlistenerlistener). It calls `remove()` on the subscription during unmount.
@@ -24,8 +24,4 @@ import { UpdateEvent, UpdatesNativeStateMachineContext } from './Updates.types';
  * ```
  */
 export declare const useUpdateEvents: (listener: (event: UpdateEvent) => void) => void;
-/**
- * @hidden
- */
-export declare const useUpdatesState: () => UpdatesNativeStateMachineContext;
 //# sourceMappingURL=UpdatesHooks.d.ts.map
