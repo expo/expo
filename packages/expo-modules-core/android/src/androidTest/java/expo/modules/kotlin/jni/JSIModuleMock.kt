@@ -72,6 +72,8 @@ internal inline fun withJSIInterop(
     installJSIForTests(jniDeallocator)
   }
 
+  every { appContextMock.jsiInterop } answers { jsiIterop }
+
   block(jsiIterop, methodQueue)
 
   jniDeallocator.deallocate()
