@@ -275,7 +275,6 @@ PLATFORMS
 
 DEPENDENCIES
   cocoapods (~> 1.12.1)
-  ethon (>= 0.13.0)
   fastlane (~> 2.205.2)
   xcpretty (~> 0.3.0)
 
