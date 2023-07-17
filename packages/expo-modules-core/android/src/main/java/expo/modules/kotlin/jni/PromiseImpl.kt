@@ -3,9 +3,14 @@ package expo.modules.kotlin.jni
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeArray
 import com.facebook.react.bridge.WritableNativeMap
+import expo.modules.BuildConfig
 import expo.modules.core.interfaces.DoNotStrip
+import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.Promise
+import expo.modules.kotlin.exception.PromiseWasAlreadyResolved
+import expo.modules.kotlin.logger
 import expo.modules.kotlin.types.JSTypeConverter
+import java.lang.ref.WeakReference
 
 private const val ERROR_STACK_FRAME_LIMIT = 50
 
@@ -28,7 +33,10 @@ class PromiseImpl @DoNotStrip internal constructor(
   @DoNotStrip internal val resolveBlock: JavaCallback,
   @DoNotStrip internal val rejectBlock: JavaCallback
 ) : Promise {
-  private var wasResolve = false
+  internal var wasResolve = false
+    private set
+  private var appContextHolder: WeakReference<AppContext>? = null
+  private var fullFunctionName: String? = null
 
   override fun resolve(value: Any?) = checkIfWasResolved {
     resolveBlock(
@@ -89,10 +97,29 @@ class PromiseImpl @DoNotStrip internal constructor(
 
   private inline fun checkIfWasResolved(body: () -> Unit) {
     if (wasResolve) {
-      return
+      val exception = PromiseWasAlreadyResolved(fullFunctionName ?: "unknown")
+      val errorManager = appContextHolder?.get()?.errorManager
+      // We want to report that a promise was resolved twice in the development build.
+      // However, in production, the app should crash.
+      if (BuildConfig.DEBUG && errorManager != null) {
+        errorManager.reportExceptionToLogBox(exception)
+        logger.error("Trying to resolve promise that was already resolved", exception)
+        return
+      }
+
+      throw exception
     }
 
     body()
     wasResolve = true
+  }
+
+  fun decorateWithDebugInformation(
+    appContextHolder: WeakReference<AppContext>,
+    moduleName: String,
+    functionName: String
+  ) {
+    this.appContextHolder = appContextHolder
+    fullFunctionName = "$moduleName.$functionName"
   }
 }
