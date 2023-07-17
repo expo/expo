@@ -1,3 +1,7 @@
+import { androidResources, androidResourceClasses } from '~/ui/components/utils/infrastructure';
+
+const androidResourcesList = androidResources.map(({symbol, description}) => `- \`${symbol}\`: ${description}`);
+
 export default [
   {
     name: 'withoutCredentials',
@@ -15,9 +19,14 @@ export default [
   },
   {
     name: 'resourceClass',
-    enum: ['default', 'medium', 'large'],
+    enum: ['default', ...androidResourceClasses],
     description: [
-      'The Android-specific resource class that will be used to run this build. [Learn more](../../build-reference/infrastructure#android-build-server-configurations)',
+      'The Android-specific resource class that will be used to run this build.',
+      '',
+      'Android builders run on virtual machines in an isolated environment. Every build gets its own dedicated VM instance.',
+      '',
+      'Build resources:',
+      ...androidResourcesList,
       '- `default` maps to `medium`',
       '',
       'This can change over time. To ensure you stay on the same configuration even when we change our defaults, use the specific resource class name.',
