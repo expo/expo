@@ -262,8 +262,12 @@ class MediaLibraryModule : Module() {
       throwUnlessPermissionsGranted(isWrite = false) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
           moduleCoroutineScope.launch {
-            CheckIfAlbumShouldBeMigrated(context, albumId, promise)
-              .execute()
+            try {
+              CheckIfAlbumShouldBeMigrated(context, albumId, promise)
+                .execute()
+            } catch (e: CodedException) {
+              promise.reject(e)
+            }
           }
         }
         promise.resolve(false)
