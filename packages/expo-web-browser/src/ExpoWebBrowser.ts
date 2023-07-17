@@ -1,2 +1,2 @@
-import { NativeModulesProxy } from 'expo-modules-core';
-export default NativeModulesProxy.ExpoWebBrowser || ({} as any);
+import { requireNativeModule } from 'expo-modules-core';
+export default requireNativeModule('ExpoWebBrowser');
