@@ -1,5 +1,4 @@
 import { Inter_900Black } from '@expo-google-fonts/inter';
-import { useUpdates, checkForUpdate, downloadUpdate } from '@expo/use-updates';
 import Constants from 'expo-constants';
 import { NativeModulesProxy } from 'expo-modules-core';
 import { StatusBar } from 'expo-status-bar';
@@ -41,14 +40,30 @@ export default function App() {
   const [lastUpdateEventType, setLastUpdateEventType] = React.useState('');
   const [extraParamsString, setExtraParamsString] = React.useState('');
   const [nativeStateContextString, setNativeStateContextString] = React.useState('{}');
+  const [isRollback, setIsRollback] = React.useState(false);
 
-  const { currentlyRunning, availableUpdate, isUpdateAvailable, isUpdatePending } = useUpdates();
-
-  const state = Updates.useUpdatesState();
+  const {
+    currentlyRunning,
+    availableUpdate,
+    downloadedUpdate,
+    isUpdateAvailable,
+    isUpdatePending,
+  } = Updates.useUpdates();
 
   Updates.useUpdateEvents((event) => {
     setLastUpdateEventType(event.type);
   });
+
+  // Get rollback state with this, until useUpdates() supports rollbacks
+  React.useEffect(() => {
+    const handleAsync = async () => {
+      const state = await Updates.getNativeStateMachineContextAsync();
+      setIsRollback(state.isRollback);
+    };
+    if (isUpdateAvailable) {
+      handleAsync();
+    }
+  }, [isUpdateAvailable]);
 
   const handleReadNativeStateContext = () => {
     const handleAsync = async () => {
@@ -131,8 +146,12 @@ export default function App() {
     });
   };
 
+  const handleCheckForUpdate = () => {
+    Updates.checkForUpdateAsync();
+  };
+
   const handleDownloadUpdate = () => {
-    downloadUpdate();
+    Updates.fetchUpdateAsync();
   };
 
   const logsToString = (logs: UpdatesLogEntry[]) =>
@@ -158,13 +177,19 @@ export default function App() {
       <TestValue testID="availableUpdateID" value={`${availableUpdate?.updateId}`} />
       <TestValue testID="extraParamsString" value={`${extraParamsString}`} />
 
-      <TestValue testID="state.isUpdateAvailable" value={`${state.isUpdateAvailable}`} />
-      <TestValue testID="state.isUpdatePending" value={`${state.isUpdatePending}`} />
-      <TestValue testID="state.isRollback" value={`${state.isRollback}`} />
-      <TestValue testID="state.latestManifest.id" value={`${state.latestManifest?.id || ''}`} />
+      <TestValue testID="state.isUpdateAvailable" value={`${isUpdateAvailable}`} />
+      <TestValue testID="state.isUpdatePending" value={`${isUpdatePending}`} />
+      <TestValue testID="state.isRollback" value={`${isRollback}`} />
+      {/*
+      <TestValue testID="state.isRollback" value={`${availableUpdate?.isRollback ?? false}`} />
+        */}
+      <TestValue
+        testID="state.latestManifest.id"
+        value={`${availableUpdate?.manifest?.id || ''}`}
+      />
       <TestValue
         testID="state.downloadedManifest.id"
-        value={`${state.downloadedManifest?.id || ''}`}
+        value={`${downloadedUpdate?.manifest?.id || ''}`}
       />
 
       <Text>Log messages</Text>
@@ -204,7 +229,7 @@ export default function App() {
           <TestButton testID="clearLogEntries" onPress={handleClearLogEntries} />
         </View>
         <View>
-          <TestButton testID="checkForUpdate" onPress={checkForUpdate} />
+          <TestButton testID="checkForUpdate" onPress={handleCheckForUpdate} />
           <TestButton testID="downloadUpdate" onPress={handleDownloadUpdate} />
           <TestButton testID="setExtraParams" onPress={handleSetExtraParams} />
           <TestButton testID="readNativeStateContext" onPress={handleReadNativeStateContext} />

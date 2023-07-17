@@ -1,6 +1,4 @@
-import { EventSubscription } from 'fbemitter';
-import { LocalAssets, Manifest, UpdateCheckResult, UpdateEvent, UpdateFetchResult, UpdatesCheckAutomaticallyValue, UpdatesLogEntry, UpdatesNativeStateChangeEvent, UpdatesNativeStateMachineContext } from './Updates.types';
-export * from './Updates.types';
+import { LocalAssets, Manifest, UpdateCheckResult, UpdateFetchResult, UpdatesCheckAutomaticallyValue, UpdatesLogEntry, UpdatesNativeStateMachineContext } from './Updates.types';
 /**
  * The UUID that uniquely identifies the currently running update if `expo-updates` is enabled. The
  * UUID is represented in its canonical string form (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`) and
@@ -161,21 +159,6 @@ export declare function fetchUpdateAsync(): Promise<UpdateFetchResult>;
  * @hidden
  */
 export declare function clearUpdateCacheExperimentalAsync(_sdkVersion?: string): void;
-/**
- * Adds a callback to be invoked when updates-related events occur (such as upon the initial app
- * load) due to auto-update settings chosen at build-time. See also the
- * [`useUpdateEvents`](#useupdateeventslistener) React hook.
- *
- * @param listener A function that will be invoked with an [`UpdateEvent`](#updateevent) instance
- * and should not return any value.
- * @return An `EventSubscription` object on which you can call `remove()` to unsubscribe the
- * listener.
- */
-export declare function addListener(listener: (event: UpdateEvent) => void): EventSubscription;
-/**
- * @hidden
- */
-export declare const addUpdatesStateChangeListener: (listener: (event: UpdatesNativeStateChangeEvent) => void) => EventSubscription;
 /**
  * @hidden
  */
