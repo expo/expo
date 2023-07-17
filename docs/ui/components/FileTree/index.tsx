@@ -62,10 +62,10 @@ function generateStructure(files: (string | [string, string])[]): FileObject[] {
 }
 
 function renderStructure(structure: FileObject[], level = 0): ReactNode {
-  return structure.map(({ name, note, files }) => {
+  return structure.map(({ name, note, files }, index) => {
     const FileIcon = getIconForFile(name);
     return files.length ? (
-      <div className="mt-1 pt-1 pl-2 rounded-sm flex flex-col">
+      <div key={name + '_' + index} className="mt-1 pt-1 pl-2 rounded-sm flex flex-col">
         <div className="flex items-center">
           {' '.repeat(level)}
           <FolderIcon className="text-icon-tertiary mr-2 opacity-60" />
