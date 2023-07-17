@@ -17,7 +17,7 @@ Along with all the benefits of React Navigation, Expo Router enables automatic d
 
 ## Anti-pitch
 
-If your app uses a custom `getPathFromState` or `getStateFromPath` component, it may not be a good fit for Expo Router. If you're using these functions to support parallel routes then you should be fine as Expo Router has built-in support for this.
+If your app uses a custom `getPathFromState` or `getStateFromPath` component, it may not be a good fit for Expo Router. If you're using these functions to support [shared routes](/router/advanced/shared-routes) then you should be fine as Expo Router has built-in support for this.
 
 ## Recommendations
 
@@ -108,7 +108,7 @@ function App() {
       /* @info Delete the linking configuration, this is managed by Expo Router. */
       linking={
         {
-          /* @hidden ... */ /* @end */
+          // ...
         }
       }
       /* @end */
@@ -118,8 +118,7 @@ function App() {
         <Stack.Screen name="Settings" component={Settings} />
         /* @end */
         <Stack.Screen name="Profile" component={Profile} />
-        /* @info A screen that exports a navigator should be converted to a directory with a layout
-        route. */
+        /* @info A screen that exports a navigator should be converted to a directory with a layout route. */
         <Stack.Screen
           /* @end */
           name="Home"
@@ -399,6 +398,7 @@ All of the `children` of a `<Navigator />` component will be rendered as-is.
 
 Custom layouts have an internal context that is ignored when using the `<Slot />` component without a `<Navigator />` component wrapping it.
 
+{/* prettier-ignore */}
 ```js
 import { View } from 'react-native';
 import { TabRouter } from '@react-navigation/native';
@@ -407,8 +407,9 @@ import { Navigator, usePathname, Slot, Link } from 'expo-router';
 
 export default function App() {
   return (
-    // highlight-next-line
+    /* @info */
     <Navigator router={TabRouter}>
+      /* @end */
       <Header />
       <Slot />
     </Navigator>
@@ -425,9 +426,9 @@ function Header() {
       <Link href="/">Home</Link>
       <Link
         href="/profile"
-        // Use `pathname` to determine if the link is active.
-        // highlight-next-line
+        /* @info Use <code>pathname</code> to determine if the link is active. */
         style={[pathname === '/profile' && { color: 'blue' }]}>
+        /* @end */ 
         Profile
       </Link>
       <Link href="/settings">Settings</Link>
