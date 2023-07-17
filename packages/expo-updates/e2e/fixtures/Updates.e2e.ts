@@ -756,16 +756,7 @@ describe('JS API tests', () => {
       await device.terminateApp();
       await device.launchApp();
       await waitForAppToBecomeVisible();
-      {
-        const logEntries: any[] = await readLogEntriesAsync();
-        console.warn(
-          'Total number of log entries = ' +
-            logEntries.length +
-            '\n' +
-            JSON.stringify(logEntries, null, 2)
-        );
-        await clearLogEntriesAsync();
-      }
+      await readLogEntriesAsync();
 
       lastUpdateEventType2 = await testElementValueAsync('lastUpdateEventType');
       console.warn(`lastUpdateEventType2 = ${lastUpdateEventType2}`);
