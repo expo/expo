@@ -3,7 +3,6 @@ import { Command } from 'cmdk';
 
 import type { ExpoItemType } from '../types';
 import { addHighlight, openLink } from '../utils';
-import { itemStyle } from './styles';
 
 import { CALLOUT } from '~/ui/components/Text';
 
@@ -22,7 +21,7 @@ export const ExpoItem = ({ item, onSelect, query }: Props) => {
         openLink(item.url);
         onSelect && onSelect();
       }}>
-      <div css={itemStyle}>
+      <div className="inline-flex gap-3 items-center">
         <Icon className="text-icon-secondary" />
         <CALLOUT
           weight="medium"

@@ -212,6 +212,7 @@ export const LI = createTextComponent(TextElement.LI, css(typography.body.li));
 export const LABEL = createTextComponent(TextElement.SPAN, css(typography.body.label));
 export const HEADLINE = createTextComponent(TextElement.P, css(typography.body.headline));
 export const FOOTNOTE = createTextComponent(TextElement.P, css(typography.body.footnote));
+export const CAPTION = createTextComponent(TextElement.P, css(typography.body.caption));
 export const CALLOUT = createTextComponent(TextElement.P, css(typography.body.callout));
 export const BOLD = createTextComponent(TextElement.STRONG, css({ fontWeight: 600 }));
 export const DEMI = createTextComponent(TextElement.SPAN, css({ fontWeight: 500 }));

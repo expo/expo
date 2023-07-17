@@ -4,9 +4,8 @@ import type { AlgoliaItemType } from '../types';
 import { getContentHighlightHTML, getHighlightHTML, openLink } from '../utils';
 import { FootnoteSection } from './FootnoteSection';
 import { ExternalLinkIcon, ReactIcon } from './icons';
-import { itemStyle, contentStyle, footnoteStyle, itemIconWrapperStyle } from './styles';
 
-import { CALLOUT, FOOTNOTE } from '~/ui/components/Text';
+import { CALLOUT, CAPTION, FOOTNOTE } from '~/ui/components/Text';
 
 type Props = {
   item: AlgoliaItemType;
@@ -22,51 +21,49 @@ export const RNDocsItem = ({ item, onSelect }: Props) => {
         openLink(item.url, true);
         onSelect && onSelect();
       }}>
-      <div css={itemStyle}>
-        <div css={itemIconWrapperStyle}>
-          <ReactIcon />
-        </div>
+      <div className="inline-flex gap-3 items-center">
+        <ReactIcon className="shrink-0" />
         <div>
           {lvl4 && (
             <>
               <CALLOUT weight="medium" {...getHighlightHTML(item, 'lvl4')} />
-              <FOOTNOTE css={footnoteStyle}>
+              <CAPTION theme="quaternary">
                 <span {...getHighlightHTML(item, 'lvl0')} />
                 <FootnoteSection item={item} levelKey="lvl1" />
                 <FootnoteSection item={item} levelKey="lvl2" />
                 <FootnoteSection item={item} levelKey="lvl3" />
-              </FOOTNOTE>
+              </CAPTION>
             </>
           )}
           {!lvl4 && lvl3 && (
             <>
               <CALLOUT weight="medium" {...getHighlightHTML(item, 'lvl3')} />
-              <FOOTNOTE css={footnoteStyle}>
+              <CAPTION theme="quaternary">
                 <span {...getHighlightHTML(item, 'lvl0')} />
                 <FootnoteSection item={item} levelKey="lvl1" />
                 <FootnoteSection item={item} levelKey="lvl2" />
-              </FOOTNOTE>
+              </CAPTION>
             </>
           )}
           {!lvl3 && lvl2 && (
             <>
               <CALLOUT weight="medium" {...getHighlightHTML(item, 'lvl2')} />
-              <FOOTNOTE css={footnoteStyle}>
+              <CAPTION theme="quaternary">
                 <span {...getHighlightHTML(item, 'lvl0')} />
                 <FootnoteSection item={item} levelKey="lvl1" />
-              </FOOTNOTE>
+              </CAPTION>
             </>
           )}
           {!lvl3 && !lvl2 && lvl1 && (
             <>
               <CALLOUT weight="medium" {...getHighlightHTML(item, 'lvl1')} />
-              <FOOTNOTE css={footnoteStyle} {...getHighlightHTML(item, 'lvl0')} />
+              <CAPTION theme="quaternary" {...getHighlightHTML(item, 'lvl0')} />
             </>
           )}
           {!lvl3 && !lvl2 && !lvl1 && lvl0 && (
             <CALLOUT weight="medium" {...getHighlightHTML(item, 'lvl0')} />
           )}
-          <FOOTNOTE theme="secondary" {...getContentHighlightHTML(item, true)} css={contentStyle} />
+          <FOOTNOTE theme="secondary" {...getContentHighlightHTML(item, true)} />
         </div>
         <ExternalLinkIcon />
       </div>

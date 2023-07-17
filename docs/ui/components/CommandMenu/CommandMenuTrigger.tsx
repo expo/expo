@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 import { Button, shadows, theme } from '@expo/styleguide';
-import { breakpoints, spacing } from '@expo/styleguide-base';
+import { spacing } from '@expo/styleguide-base';
 import { SearchSmIcon } from '@expo/styleguide-icons';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 
@@ -35,11 +35,11 @@ export const CommandMenuTrigger = ({ setOpen }: Props) => {
   return (
     <Button theme="secondary" css={buttonStyle} onClick={() => setOpen(true)}>
       <SearchSmIcon />
-      <CALLOUT css={labelStyle} crawlable={false}>
+      <CALLOUT theme="secondary" crawlable={false}>
         Search
       </CALLOUT>
       {isMac !== null && (
-        <div css={[keysWrapperStyle, hideOnMobileStyle]}>
+        <div className="ml-auto max-lg-gutters:hidden">
           <KBD>{isMac ? '⌘' : 'Ctrl'}</KBD> <KBD>K</KBD>
         </div>
       )}
@@ -69,19 +69,5 @@ const buttonStyle = css({
   kbd: {
     height: 20,
     lineHeight: '19px',
-  },
-});
-
-const labelStyle = css({
-  color: theme.icon.secondary,
-});
-
-const keysWrapperStyle = css({
-  marginLeft: 'auto',
-});
-
-const hideOnMobileStyle = css({
-  [`@media screen and (max-width: ${breakpoints.medium}px)`]: {
-    display: 'none',
   },
 });
