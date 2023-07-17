@@ -1,3 +1,3 @@
-import { NativeModulesProxy } from 'expo-modules-core';
-export default NativeModulesProxy.ExpoNavigationBar ?? {};
+import { requireNativeModule } from 'expo-modules-core';
+export default requireNativeModule('ExpoNavigationBar');
 //# sourceMappingURL=ExpoNavigationBar.js.map
