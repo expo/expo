@@ -14,6 +14,7 @@
 ### 💡 Others
 
 - Native getter for state machine context. ([#23428](https://github.com/expo/expo/pull/23428) by [@douglowder](https://github.com/douglowder))
+- [Android] EX_UPDATES_ANDROID_DELAY_LOAD_APP settable by env. ([#23479](https://github.com/expo/expo/pull/23479) by [@douglowder](https://github.com/douglowder))
 
 ## 0.18.10 - 2023-07-12
 
