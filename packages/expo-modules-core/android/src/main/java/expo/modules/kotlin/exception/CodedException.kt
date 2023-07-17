@@ -10,6 +10,7 @@ import kotlin.reflect.KType
 @Suppress("NOTHING_TO_INLINE")
 inline fun Throwable.toCodedException() = when (this) {
   is CodedException -> this
+  is expo.modules.core.errors.CodedException -> CodedException(this.code, this.message, this.cause)
   else -> UnexpectedException(this)
 }
 
@@ -243,3 +244,7 @@ class JavaScriptEvaluateException(
 internal class UnsupportedClass(
   clazz: KClass<*>,
 ) : CodedException(message = "Unsupported type: '$clazz'")
+
+internal class PromiseAlreadySettledException(functionName: String) : CodedException(
+  message = "Promised pass to '$functionName' was already settled. It will lead to a crash in the production environment!"
+)
