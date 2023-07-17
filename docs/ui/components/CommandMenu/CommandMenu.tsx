@@ -72,7 +72,10 @@ export const CommandMenu = ({ version, open, setOpen }: Props) => {
     expoDocsItems.length + rnDocsItems.length + directoryItems.length + expoItems.length;
 
   const expoDocsGroupedItems = groupBy(
-    expoDocsItems.map((e: AlgoliaItemType) => ({ ...e, baseUrl: e.url.replace(/#.+/, '') })),
+    expoDocsItems.map((expoDocsItem: AlgoliaItemType) => ({
+      ...expoDocsItem,
+      baseUrl: expoDocsItem.url.replace(/#.+/, ''),
+    })),
     'baseUrl'
   );
 
