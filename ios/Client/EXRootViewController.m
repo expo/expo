@@ -15,6 +15,8 @@
 #import "EXRootViewController.h"
 #import "EXDevMenuManager.h"
 
+@import ExpoScreenOrientation;
+
 NSString * const kEXHomeDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey";
 NSString * const kEXHomeIsNuxFinishedDefaultsKey = @"EXHomeIsNuxFinishedDefaultsKey";
 
@@ -23,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXRootViewController () <EXAppBrowserController>
 
 @property (nonatomic, assign) BOOL isAnimatingAppTransition;
+@property (nonatomic, weak) UIViewController *transitioningToViewController;
 
 @end
 
@@ -56,6 +59,12 @@ NS_ASSUME_NONNULL_BEGIN
       .visibleApp
       .viewController
       .supportedInterfaceOrientations;
+
+  // During app transition we want to return the orientation of the screen that will be shown. This makes sure
+  // that the rotation animation starts as the new view controller is being shown.
+  if (_isAnimatingAppTransition && _transitioningToViewController != nil) {
+    return [_transitioningToViewController supportedInterfaceOrientations];
+  }
   return visibleAppSupportedInterfaceOrientations;
 }
 
@@ -163,8 +172,9 @@ NS_ASSUME_NONNULL_BEGIN
   }
   
   EXAppViewController *viewControllerToShow = appRecord.viewController;
+  _transitioningToViewController = viewControllerToShow;
   
-  // Tried to foregroung the very same view controller
+  // Tried to foreground the very same view controller
   if (viewControllerToShow == self.contentViewController) {
     return;
   }
@@ -176,6 +186,15 @@ NS_ASSUME_NONNULL_BEGIN
   if (viewControllerToShow) {
     [self.view addSubview:viewControllerToShow.view];
     [self addChildViewController:viewControllerToShow];
+  }
+
+  // We need to explicitly request an update of the interface orientations during the transition
+  if (@available(iOS 16, *)) {
+    [self setNeedsUpdateOfSupportedInterfaceOrientations];
+  } else {
+    // On iOS < 16 we need to try to rotate to the desired orientation
+    UIInterfaceOrientationMask orientationMask = [self supportedInterfaceOrientations];
+    [ScreenOrientationRegistry.shared enforceDesiredDeviceOrientationWithOrientationMask:orientationMask];
   }
 
   EX_WEAKIFY(self)
@@ -197,6 +216,7 @@ NS_ASSUME_NONNULL_BEGIN
     
     [self.view setNeedsLayout];
     self.isAnimatingAppTransition = NO;
+    self.transitioningToViewController = nil;
     if (self.delegate) {
       [self.delegate viewController:self didNavigateAppToVisible:appRecord];
     }
