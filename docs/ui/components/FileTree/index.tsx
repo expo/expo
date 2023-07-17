@@ -14,7 +14,7 @@ type FileObject = {
 export function FileTree({ files = [], ...rest }: FileTreeProps) {
   return (
     <div
-      className="text-xs border border-default rounded-md bg-default mb-4 p-2 pr-4 pb-4"
+      className="text-xs border border-default rounded-md bg-default mb-4 p-2 pr-4 pb-4 whitespace-nowrap overflow-x-auto"
       {...rest}>
       {renderStructure(generateStructure(files))}
     </div>
@@ -68,7 +68,7 @@ function renderStructure(structure: FileObject[], level = 0): ReactNode {
       <div key={name + '_' + index} className="mt-1 pt-1 pl-2 rounded-sm flex flex-col">
         <div className="flex items-center">
           {' '.repeat(level)}
-          <FolderIcon className="text-icon-tertiary mr-2 opacity-60" />
+          <FolderIcon className="text-icon-tertiary mr-2 opacity-60 min-w-[20px]" />
           <TextWithNote name={name} note={note} className="text-secondary" />
         </div>
         {renderStructure(files, level + 1)}
@@ -76,7 +76,7 @@ function renderStructure(structure: FileObject[], level = 0): ReactNode {
     ) : (
       <div className="mt-1 pt-1 pl-2 rounded-sm flex items-center">
         {' '.repeat(Math.max(level - 1, 0))}
-        <FileIcon className="text-icon-tertiary mr-2" />
+        <FileIcon className="text-icon-tertiary mr-2 min-w-[20px]" />
         <TextWithNote name={name} note={note} className="text-default" />
       </div>
     );
@@ -100,7 +100,7 @@ function TextWithNote({
       {note && (
         <>
           {/* divider pushing  */}
-          <span className="flex-1 border-b border-default opacity-60 mx-3" />
+          <span className="flex-1 border-b border-default opacity-60 mx-2 md:mx-3 min-w-[2rem]" />
           {/* Optional note */}
           <code className="text-default">{note}</code>
         </>
