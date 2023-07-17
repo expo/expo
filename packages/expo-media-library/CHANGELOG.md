@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix `albumNeedsMigrationAsync` crashing if called with invalid `albumId` on Android.
+- Fix `albumNeedsMigrationAsync` crashing if called with invalid `albumId` on Android. ([#23516](https://github.com/expo/expo/pull/23516) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
