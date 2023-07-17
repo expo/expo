@@ -218,10 +218,18 @@ class MediaLibraryModule : Module() {
         return@AsyncFunction
       }
 
+      val assetsIds = getAssetsInAlbums(context, albumId)
+        .filter { it.isNotEmpty() }
+        .toTypedArray()
+      // The album is empty, nothing to migrate
+      if (assetsIds.isEmpty()) {
+        return@AsyncFunction
+      }
+
       val assets = MediaLibraryUtils.getAssetsById(
         context,
         null,
-        *getAssetsInAlbums(context, albumId).toTypedArray()
+        *assetsIds
       )
 
       val albumsMap = assets
