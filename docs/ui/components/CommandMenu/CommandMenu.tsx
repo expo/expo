@@ -1,5 +1,7 @@
 import { SearchSmIcon, XIcon } from '@expo/styleguide-icons';
 import { Command } from 'cmdk';
+// eslint-disable-next-line lodash/import-scope
+import { groupBy } from 'lodash';
 import { useEffect, useState } from 'react';
 import type { Dispatch, SetStateAction } from 'react';
 
@@ -69,6 +71,11 @@ export const CommandMenu = ({ version, open, setOpen }: Props) => {
   const totalCount =
     expoDocsItems.length + rnDocsItems.length + directoryItems.length + expoItems.length;
 
+  const expoDocsGroupedItems = groupBy(
+    expoDocsItems.map((e: AlgoliaItemType) => ({ ...e, baseUrl: e.url.replace(/#.+/, '') })),
+    'baseUrl'
+  );
+
   return (
     <Command.Dialog open={open} onOpenChange={setOpen} label="Search Menu" shouldFilter={false}>
       <SearchSmIcon className="text-icon-secondary" css={searchIconStyle} />
@@ -82,13 +89,19 @@ export const CommandMenu = ({ version, open, setOpen }: Props) => {
           <>
             {expoDocsItems.length > 0 && (
               <Command.Group heading="Expo documentation">
-                {expoDocsItems.map(item => (
-                  <ExpoDocsItem
-                    item={item}
-                    onSelect={dismiss}
-                    key={`hit-expo-docs-${item.objectID}`}
-                  />
-                ))}
+                {Object.values(expoDocsGroupedItems).map(values =>
+                  values
+                    .sort((a, b) => a.url.localeCompare(a.baseUrl) - b.url.localeCompare(b.baseUrl))
+                    .slice(0, 6)
+                    .map((item, index) => (
+                      <ExpoDocsItem
+                        isNested={index !== 0}
+                        item={item}
+                        onSelect={dismiss}
+                        key={`hit-expo-docs-${item.objectID}`}
+                      />
+                    ))
+                )}
               </Command.Group>
             )}
             {expoItems.length > 0 && (
