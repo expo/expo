@@ -4,9 +4,8 @@ import { Command } from 'cmdk';
 import type { RNDirectoryItemType } from '../types';
 import { addHighlight, openLink } from '../utils';
 import { ExternalLinkIcon } from './icons';
-import { footnoteStyle, itemStyle } from './styles';
 
-import { CALLOUT, FOOTNOTE } from '~/ui/components/Text';
+import { CALLOUT, CAPTION } from '~/ui/components/Text';
 
 type Props = {
   item: RNDirectoryItemType;
@@ -24,17 +23,17 @@ export const RNDirectoryItem = ({ item, onSelect, query }: Props) => {
         openLink(item.githubUrl, true);
         onSelect && onSelect();
       }}>
-      <div css={itemStyle}>
+      <div className="inline-flex gap-3 items-center">
         <GithubIcon className="text-icon-secondary" />
         <div>
           <CALLOUT
             weight="medium"
             dangerouslySetInnerHTML={{ __html: addHighlight(item.npmPkg, query) }}
           />
-          <FOOTNOTE css={footnoteStyle}>
+          <CAPTION theme="quaternary">
             {numberFormat.format(item.github.stats.stars)} stars ·{' '}
             {numberFormat.format(item.npm.downloads)} downloads
-          </FOOTNOTE>
+          </CAPTION>
         </div>
         <ExternalLinkIcon />
       </div>

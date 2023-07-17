@@ -3,11 +3,11 @@ import { ArrowUpRightIcon, ChevronRightIcon } from '@expo/styleguide-icons';
 import { HTMLAttributes } from 'react';
 
 export const FootnoteArrowIcon = () => (
-  <ChevronRightIcon className="icon-xs text-icon-secondary inline-block relative mx-1 top-[-1px]" />
+  <ChevronRightIcon className="icon-xs text-icon-quaternary inline-block relative mx-1 -top-px" />
 );
 
 export const ExternalLinkIcon = () => (
-  <ArrowUpRightIcon className="text-icon-secondary self-center ml-auto shrink-0" />
+  <ArrowUpRightIcon className="text-icon-tertiary self-center ml-auto shrink-0" />
 );
 
 export const ReactIcon = ({ className }: HTMLAttributes<SVGSVGElement>) => (
