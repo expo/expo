@@ -38,7 +38,7 @@ exports.withIosSplashInfoPlist = withIosSplashInfoPlist;
 function setSplashInfoPlist(config, infoPlist, splash) {
   var _splash$dark, _splash$dark2, _splash$dark3, _splash$dark4;
   const duration = (0, _fadeDurationUtils().computeFadeDurationMs)(splash.fadeDurationMs);
-  if (duration !== splash.fadeDurationMs) {
+  if (splash.fadeDurationMs !== undefined && duration !== splash.fadeDurationMs) {
     _configPlugins().WarningAggregator.addWarningIOS('fadeDurationMs', `The fade duration value must be between ${_fadeDurationUtils().minFadeDurationMs} and ${_fadeDurationUtils().maxFadeDurationMs}. Using ${duration}.`);
   }
   infoPlist['EXSplashScreenFadeDurationMs'] = duration;

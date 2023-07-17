@@ -20,7 +20,7 @@ export function setSplashInfoPlist(
   splash: IOSSplashConfig
 ): InfoPlist {
   const duration = computeFadeDurationMs(splash.fadeDurationMs);
-  if (duration !== splash.fadeDurationMs) {
+  if (splash.fadeDurationMs !== undefined && duration !== splash.fadeDurationMs) {
     WarningAggregator.addWarningIOS(
       'fadeDurationMs',
       `The fade duration value must be between ${minFadeDurationMs} and ${maxFadeDurationMs}. Using ${duration}.`
