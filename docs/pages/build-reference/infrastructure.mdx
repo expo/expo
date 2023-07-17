@@ -6,6 +6,8 @@ description: Learn about the current build server infrastructure when using EAS.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import al from '@mdx-js/react';
+import { HardwareList, BuildResourceList } from '~/ui/components/utils/infrastructure';
 
 > This document was last updated on **May 5, 2023**.
 
@@ -31,9 +33,10 @@ When selecting an image for the build you can use the full name provided below o
 
 Android builders run on virtual machines in an isolated environment. Every build gets its own dedicated VM instance.
 
-- Build resources:
-  - [`medium`](eas-json/#resourceclass-1): 4 CPU, 16 GB RAM ([`n2-standard-4`](https://cloud.google.com/compute/docs/general-purpose-machines#n2_machines) Google Cloud machine type)
-  - [`large`](eas-json/#resourceclass-1): 8 CPU, 32 GB RAM ([`n2-standard-8`](https://cloud.google.com/compute/docs/general-purpose-machines#n2_machines) Google Cloud machine type)
+- Hardware:
+
+  <HardwareList platform="android" />
+
 - [npm cache deployed with Kubernetes](caching/#javascript-dependencies)
 - [Maven cache deployed with Kubernetes](caching/#android-dependencies)
 - Global Gradle configuration in **~/.gradle/gradle.properties**:
@@ -148,17 +151,17 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 ## iOS build server configurations
 
-iOS builder VMs run on Mac Mini 8.1 hosts in an isolated environment. Every build gets its own fresh macOS VM:
+iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build gets its own fresh macOS VM.
+[Learn more about it here](eas-json/#resourceclass-2)
 
 - Hardware:
-  - Intel: Intel(R) Core(TM) i7-8700B CPU (6 cores/12 threads), 64 GB RAM
-  - M1: 3.2GHz 8-Core M1 (4 performance and 4 efficiency cores), 16 GB RAM
-  - M2: 3.4GHz 12-Core M2 (8 performance and 4 efficiency cores), 24 GB RAM
-  - M2 Pro: 3.4GHz 10-Core M2 Pro (6 performance and 4 efficiency cores), 32 GB RAM
+
+  <HardwareList platform="ios" />
+
 - Build resources:
-  - [`intel-medium`](eas-json/#resourceclass-2): 3 cores, 12 GB RAM, 2 builder VMs per host
-  - [`m-medium`](eas-json/#resourceclass-2): 2 cores, 8 GB RAM, 2 builder VMs per host
-  - [`large`](eas-json/#resourceclass-2): 4 cores, 12 GB RAM, 2 builder VMs per host (for builds running on M2 Pro hosts) or 4 cores, 22 GB RAM, 1 builder VM per host (for builds running on M2 hosts)
+
+  <BuildResourceList platform="ios" />
+
 - [npm cache](caching/#javascript-dependencies)
 - [CocoaPods cache](caching/#ios-dependencies)
 - [`cocoapods-nexus-plugin`](https://github.com/expo/eas-build/tree/main/packages/cocoapods-nexus-plugin)
