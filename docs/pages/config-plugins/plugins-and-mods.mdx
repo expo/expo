@@ -27,29 +27,39 @@ Say you wanted to create a plugin that added custom values to **Info.plist** in 
 
 ```js my-plugin.js
 const withMySDK = (config, { apiKey }) => {
-  // Ensure the objects exist
+  /* @info Ensure the objects exist */
   if (!config.ios) {
+    /* @end */
     config.ios = {};
   }
   if (!config.ios.infoPlist) {
     config.ios.infoPlist = {};
   }
 
-  // Append the apiKey
+  /* @info Append the API Key */
   config.ios.infoPlist['MY_CUSTOM_NATIVE_IOS_API_KEY'] = apiKey;
+  /* @end */
 
   return config;
 };
 
-// 💡 Usage:
+module.exports.withMySDK = withMySDK;
+```
 
-/// Create a config
+To use the plugin, import it and wrap the config:
+
+```js app.config.js
+const { withMySDK } = require('./my-plugin');
+
+/* @info Create a config */
 const config = {
+  /* @end */
   name: 'my app',
 };
 
-/// Use the plugin
-export default withMySDK(config, { apiKey: 'X-XXX-XXX' });
+/* @info Apply the plugin */
+module.exports = withMySDK(config, { apiKey: 'X-XXX-XXX' });
+/* @end */
 ```
 
 ## Import a plugin
@@ -68,7 +78,7 @@ Consider the following example that changes the config name:
 <FileTree
   files={[
     ['app.config.js', 'Expo config'],
-    ['ios-index.json', 'Custom Config Plugin file'],
+    ['my-plugin.js', 'Custom Config Plugin file'],
   ]}
 />
 
@@ -92,7 +102,7 @@ It evaluates to the following JSON config:
 
 ```json Evaluated config JSON
 {
-  "name": "custom-my-app",
+  "name": /* @info */ "custom-my-app" /* @end */,
   "plugins": [["./my-plugin", "custom"]]
 }
 ```
@@ -264,18 +274,22 @@ A mod plugin gets passed a `config` object with additional properties `modResult
 
 Say you wanted to write a mod to update the Xcode Project's "product name":
 
-```js my-config-plugin.js
+```ts my-config-plugin.ts
 import { ConfigPlugin, withXcodeProject } from 'expo/config-plugins';
 
 const withCustomProductName: ConfigPlugin = (config, customName) => {
-  return withXcodeProject(config, async config => {
-    // config = { modResults, modRequest, ...expoConfig }
+  return withXcodeProject(
+    config,
+    async (
+      /* @info <b>{ modResults, modRequest }</b> */ config
+      /* @end */
+    ) => {
+      const xcodeProject = config.modResults;
+      xcodeProject.productName = customName;
 
-    const xcodeProject = config.modResults;
-    xcodeProject.productName = customName;
-
-    return config;
-  });
+      return config;
+    }
+  );
 };
 
 // 💡 Usage:
@@ -310,8 +324,9 @@ export const withIcons = config => {
   return withDangerousMod(config, [
     'ios',
     async config => {
-      // No modifications are made to the config
+      /* @info No modifications are made to the config */
       await setIconsAsync(config, config.modRequest.projectRoot);
+      /* @end */
       return config;
     },
   ]);
@@ -424,6 +439,8 @@ This is different to how Node modules work because **app.plugin.js** won't be re
 
 ### Module internals
 
+> **error** Avoid importing module internals.
+
 If a file inside a Node module is specified, then the module's root **app.plugin.js** resolution will be skipped. This is referred to as "reaching inside a package" and is considered **bad form**.
 We support this to make testing, and plugin authoring easier, but we don't expect library authors to expose their plugins like this as a public API.
 
@@ -466,8 +483,9 @@ const config = {
         /* props */
       },
     ],
-    // Without props
+    /* @info Without props */
     withCustom,
+    /* @end */
   ],
 };
 ```
