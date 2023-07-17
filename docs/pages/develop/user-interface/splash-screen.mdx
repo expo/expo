@@ -72,7 +72,7 @@ To resolve it, set the `splash.backgroundColor` to be the same as our splash ima
 
 <ImageSpotlight
   alt="Splash screen with background color"
-  src="/static/images/backgroundColor-noodles.png"
+  src="/static/images/splash-screen/backgroundColor-noodles.png"
 />
 
 ### `splash.resizeMode`
@@ -81,7 +81,7 @@ Any splash image you provide gets resized to maintain its aspect ratio and fit t
 
 You can use two strategies for resizing: `contain` (default) and `cover`. In both cases, the splash image is within the splash screen. These work similar to the [`resizeMode`](https://reactnative.dev/docs/image/#resizemode) in React Native `<Image>`, as demonstrated below:
 
-<ImageSpotlight alt="Splash screen resize mode" src="/static/images/resizeMode.png" />
+<ImageSpotlight alt="Splash screen resize mode" src="/static/images/splash-screen/resizeMode.png" />
 
 Applying this to an example and remove the `backgroundColor`:
 
@@ -100,7 +100,7 @@ Here is the result:
 
 <ImageSpotlight
   alt="Splash screen resize mode with logo"
-  src="/static/images/resizeMode-noodles.png"
+  src="/static/images/splash-screen/resizeMode-noodles.png"
 />
 
 In the above example, the image is stretched to fill the entire width while maintaining the aspect ratio. This is why the logo on the splash image ends up being larger than when `resizeMode` is set to `contain`.
