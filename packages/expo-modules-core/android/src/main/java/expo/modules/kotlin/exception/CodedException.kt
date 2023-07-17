@@ -245,6 +245,6 @@ internal class UnsupportedClass(
   clazz: KClass<*>,
 ) : CodedException(message = "Unsupported type: '$clazz'")
 
-internal class PromiseWasAlreadyResolved(functionName: String) : CodedException(
-  message = "Promised pass to '$functionName' was already resolved. It will lead to a crash in the production environment!"
+internal class PromiseAlreadySettledException(functionName: String) : CodedException(
+  message = "Promised pass to '$functionName' was already settled. It will lead to a crash in the production environment!"
 )

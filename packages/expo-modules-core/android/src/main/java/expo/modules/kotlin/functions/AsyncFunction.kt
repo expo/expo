@@ -83,7 +83,7 @@ abstract class AsyncFunction(
           }
         } catch (e: Throwable) {
           // The promise was resolved, so we should rethrow the error.
-          if (promiseImpl.wasResolve) {
+          if (promiseImpl.wasSettled) {
             throw e
           }
           promiseImpl.reject(e.toCodedException())

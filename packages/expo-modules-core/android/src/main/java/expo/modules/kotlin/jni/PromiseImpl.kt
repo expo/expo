@@ -7,7 +7,7 @@ import expo.modules.BuildConfig
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.Promise
-import expo.modules.kotlin.exception.PromiseWasAlreadyResolved
+import expo.modules.kotlin.exception.PromiseAlreadySettledException
 import expo.modules.kotlin.logger
 import expo.modules.kotlin.types.JSTypeConverter
 import java.lang.ref.WeakReference
@@ -33,19 +33,19 @@ class PromiseImpl @DoNotStrip internal constructor(
   @DoNotStrip internal val resolveBlock: JavaCallback,
   @DoNotStrip internal val rejectBlock: JavaCallback
 ) : Promise {
-  internal var wasResolve = false
+  internal var wasSettled = false
     private set
   private var appContextHolder: WeakReference<AppContext>? = null
   private var fullFunctionName: String? = null
 
-  override fun resolve(value: Any?) = checkIfWasResolved {
+  override fun resolve(value: Any?) = checkIfWasSettled {
     resolveBlock(
       JSTypeConverter.convertToJSValue(value)
     )
   }
 
   // Copy of the reject method from [com.facebook.react.bridge.PromiseImpl]
-  override fun reject(code: String, message: String?, cause: Throwable?) = checkIfWasResolved {
+  override fun reject(code: String, message: String?, cause: Throwable?) = checkIfWasSettled {
     val errorInfo = WritableNativeMap()
 
     errorInfo.putString(ERROR_MAP_KEY_CODE, code)
@@ -95,15 +95,15 @@ class PromiseImpl @DoNotStrip internal constructor(
     rejectBlock.invoke(errorInfo)
   }
 
-  private inline fun checkIfWasResolved(body: () -> Unit) {
-    if (wasResolve) {
-      val exception = PromiseWasAlreadyResolved(fullFunctionName ?: "unknown")
+  private inline fun checkIfWasSettled(body: () -> Unit) {
+    if (wasSettled) {
+      val exception = PromiseAlreadySettledException(fullFunctionName ?: "unknown")
       val errorManager = appContextHolder?.get()?.errorManager
-      // We want to report that a promise was resolved twice in the development build.
+      // We want to report that a promise was settled twice in the development build.
       // However, in production, the app should crash.
       if (BuildConfig.DEBUG && errorManager != null) {
         errorManager.reportExceptionToLogBox(exception)
-        logger.error("Trying to resolve promise that was already resolved", exception)
+        logger.error("Trying to resolve promise that was already settled", exception)
         return
       }
 
@@ -111,7 +111,7 @@ class PromiseImpl @DoNotStrip internal constructor(
     }
 
     body()
-    wasResolve = true
+    wasSettled = true
   }
 
   fun decorateWithDebugInformation(

@@ -80,7 +80,7 @@ class SuspendFunctionComponent(
             }
           }
         } catch (e: Throwable) {
-          if (promiseImpl.wasResolve) {
+          if (promiseImpl.wasSettled) {
             throw e
           }
           promiseImpl.reject(e.toCodedException())
