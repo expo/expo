@@ -24,9 +24,9 @@ import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import {
+  getExpoRouteManifestBuilderAsync,
   getStaticRenderFunctions,
   requireFileContentsWithMetro,
-  requireWithMetro,
 } from '../getStaticRenderFunctions';
 import { ContextModuleSourceMapsMiddleware } from '../middleware/ContextModuleSourceMapsMiddleware';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
@@ -43,10 +43,11 @@ import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
 import { instantiateMetroAsync } from './instantiateMetro';
-import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
+import { getErrorOverlayHtmlAsync, logMetroErrorAsync } from './metroErrorInterface';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import { observeApiRouteChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 import { env } from '../../../utils/env';
+import { SilentError } from '../../../utils/errors';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
@@ -60,34 +61,6 @@ const resolveAsync = promisify(resolve) as any as (
   id: string,
   opts: resolve.AsyncOpts
 ) => Promise<string | null>;
-
-async function getExpoRouteManifestBuilderAsync(
-  projectRoot: string,
-  {
-    devServerUrl,
-    minify,
-    dev,
-  }: {
-    devServerUrl: string;
-    minify: boolean;
-    dev: boolean;
-  }
-) {
-  const matchNodePath = path.join(
-    resolveFrom(projectRoot, 'expo-router/package.json'),
-    '../routes-manifest.ts'
-  );
-  const { createRoutesManifest } = await requireWithMetro<{
-    createRoutesManifest: () => Promise<any>;
-  }>(projectRoot, devServerUrl, matchNodePath, {
-    minify,
-    dev,
-
-    // Ensure the API Routes are included
-    environment: 'node',
-  });
-  return createRoutesManifest;
-}
 
 const manifestOperation = new Map<string, Promise<any>>();
 
@@ -127,8 +100,22 @@ async function fetchManifest(
       minify: options.mode === 'production',
       dev: options.mode !== 'production',
     });
-    // Get the serialized manifest
-    const results = await getManifest();
+
+    if (!getManifest) {
+      return null;
+    }
+
+    let results: any;
+    try {
+      // Get the serialized manifest
+      results = await getManifest();
+    } catch (error) {
+      if (!(error instanceof SilentError)) {
+        // This can throw if there are any top-level errors in any files when bundling.
+        debug('Error while bundling manifest:', error);
+      }
+      return null;
+    }
 
     if (!results) {
       return null;
@@ -161,7 +148,7 @@ async function fetchManifest(
   return manifest;
 }
 
-const pendingRouteOperations = new Map<string, Promise<string>>();
+const pendingRouteOperations = new Map<string, Promise<string | null>>();
 
 async function rebundleApiRoute(
   projectRoot: string,
@@ -171,11 +158,12 @@ async function rebundleApiRoute(
   pendingRouteOperations.delete(filepath);
   return bundleApiRoute(projectRoot, filepath, options);
 }
+
 async function bundleApiRoute(
   projectRoot: string,
   filepath: string,
   options: { mode?: string; port?: number }
-) {
+): Promise<string | null | undefined> {
   if (pendingRouteOperations.has(filepath)) {
     return pendingRouteOperations.get(filepath);
   }
@@ -194,11 +182,18 @@ async function bundleApiRoute(
       });
 
       return middleware;
+    } catch (error: any) {
+      if (error instanceof Error) {
+        await logMetroErrorAsync({ error, projectRoot });
+      }
+      // TODO: improve error handling, maybe have this be a mock function which returns the static error html
+      return null;
     } finally {
       // pendingRouteOperations.delete(filepath);
     }
   }
   const route = bundleAsync();
+
   pendingRouteOperations.set(filepath, route);
   return route;
 }
@@ -349,10 +344,23 @@ function createRouteHandlerMiddleware(
 
     const middlewareContents = await bundleApiRoute(projectRoot, resolvedFunctionPath!, options);
     if (!middlewareContents) {
+      // TODO: Error handling
       return next();
     }
 
-    const middleware = requireString(middlewareContents);
+    let middleware: any;
+    try {
+      debug(`Bundling middleware at: ${resolvedFunctionPath}`);
+      middleware = requireString(middlewareContents);
+    } catch (error) {
+      if (error instanceof Error) {
+        await logMetroErrorAsync({ projectRoot, error });
+      } else {
+        Log.error('Failed to load middleware: ' + error);
+      }
+      res.statusCode = 500;
+      return res.end('Failed to load middleware: ' + resolvedFunctionPath);
+    }
 
     debug(`Supported methods (API route exports):`, Object.keys(middleware), ' -> ', req.method);
 

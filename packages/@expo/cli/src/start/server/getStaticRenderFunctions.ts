@@ -15,7 +15,7 @@ import { delayAsync } from '../../utils/delay';
 import { SilentError } from '../../utils/errors';
 import { memoize } from '../../utils/fn';
 import { profile } from '../../utils/profile';
-import { logMetroError } from './metro/metroErrorInterface';
+import { logMetroError, logMetroErrorAsync } from './metro/metroErrorInterface';
 import { getMetroServerRoot } from './middleware/ManifestMiddleware';
 
 const debug = require('debug')('expo:start:server:node-renderer') as typeof console.log;
@@ -162,7 +162,8 @@ export async function requireFileContentsWithMetro(
 
   return bun;
 }
-export async function requireWithMetro<T>(
+
+export async function requireWithMetro<T extends Record<string, (...args: any[]) => Promise<any>>>(
   projectRoot: string,
   devServerUrl: string,
   absoluteFilePath: string,
@@ -174,7 +175,7 @@ export async function requireWithMetro<T>(
     absoluteFilePath,
     options
   );
-  return evalMetro(content);
+  return evalMetroAndWrapFunctions<T>(projectRoot, content);
 }
 
 export async function getStaticRenderFunctions(
@@ -188,7 +189,14 @@ export async function getStaticRenderFunctions(
     options
   );
 
-  const contents = evalMetro(scriptContents);
+  return evalMetroAndWrapFunctions(projectRoot, scriptContents);
+}
+
+export function evalMetroAndWrapFunctions<T = Record<string, (...args: any[]) => Promise<any>>>(
+  projectRoot: string,
+  script: string
+): Promise<T> {
+  const contents = evalMetro(script);
 
   // wrap each function with a try/catch that uses Metro's error formatter
   return Object.keys(contents).reduce((acc, key) => {
@@ -211,4 +219,39 @@ export async function getStaticRenderFunctions(
 
 function evalMetro(src: string) {
   return profile(requireString, 'eval-metro-bundle')(src);
+}
+
+export async function getExpoRouteManifestBuilderAsync(
+  projectRoot: string,
+  {
+    devServerUrl,
+    minify,
+    dev,
+  }: {
+    devServerUrl: string;
+    minify: boolean;
+    dev: boolean;
+  }
+) {
+  const matchNodePath = path.join(
+    resolveFrom(projectRoot, 'expo-router/package.json'),
+    '../routes-manifest.ts'
+  );
+
+  try {
+    const { createRoutesManifest } = await requireWithMetro<{
+      createRoutesManifest: () => Promise<any>;
+    }>(projectRoot, devServerUrl, matchNodePath, {
+      minify,
+      dev,
+      // Ensure the API Routes are included
+      environment: 'node',
+    });
+    return createRoutesManifest;
+  } catch (error) {
+    if (!(error instanceof SilentError)) {
+      throw error;
+    }
+    return null;
+  }
 }
