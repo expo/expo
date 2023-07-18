@@ -54,6 +54,7 @@ it('loads for typescript project', () => {
     process.chdir(tsFixturePath);
     expect(withTypescriptMapping({ rootDir: '/app' })).toMatchObject({
       rootDir: '/app',
+      modulePaths: ['./src'],
       moduleNameMapper: {
         '^@/(.*)$': '<rootDir>/./$1',
       },
