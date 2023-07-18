@@ -27,18 +27,19 @@ export const expoRun: Command = async (argv) => {
   if (args['--help']) {
     Log.exit(
       chalk`
-  {bold Description}
+  {bold Info}
     Run the native app locally
 
   {bold Usage}
-    $ npx expo run:android <dir>
-    $ npx expo run:ios <dir>
+    {dim $} npx expo run:android <dir>
+    {dim $} npx expo run:ios <dir>
 
   {bold Options}
-    $ npx expo run:android --help    Output Android usage information
-    $ npx expo run:ios --help        Output iOS usage information
     -p, --platform <android|ios>     Run the native app on this platform
     -h, --help                       Output usage information
+
+    {dim $} npx expo run:android --help    Output Android usage information
+    {dim $} npx expo run:ios --help        Output iOS usage information
 `,
       0
     );
