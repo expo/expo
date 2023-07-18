@@ -290,11 +290,25 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
 
   // MARK: - Managing Interface Geometry
 
+  /**
+   * The application will use the values from infoPlist as the orientation unless a view controller requested a different orientation
+   */
   public func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+    var hasSetMask = false
+    let isIPad = UIDevice.current.userInterfaceIdiom == .pad
+    let defaultMask = allowedOrientations(for: "")
+    let iPadMask = isIPad ? allowedOrientations(for: "~pad") : defaultMask
+    let infoPlistOrientations = iPadMask.isEmpty ? defaultMask : iPadMask
+
     // We want to create an intersection of all orientations set by subscribers.
-    return subscribers.reduce(.all) { result, subscriber in
-      return subscriber.application?(application, supportedInterfaceOrientationsFor: window).intersection(result) ?? result
+    let subscribersMask: UIInterfaceOrientationMask = subscribers.reduce(.all) { result, subscriber in
+      guard let requestedOrientation = subscriber.application?(application, supportedInterfaceOrientationsFor: window) else {
+        return result
+      }
+      hasSetMask = true
+      return requestedOrientation.intersection(result)
     }
+    return hasSetMask ? subscribersMask : infoPlistOrientations
   }
 
   // MARK: - Statics
@@ -328,5 +342,28 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
       .forEach { handlerTuple in
         reactDelegateHandlers.append(handlerTuple.handler.init())
       }
+  }
+
+  private func allowedOrientations(for deviceType: String) -> UIInterfaceOrientationMask {
+    var mask: UIInterfaceOrientationMask = []
+    guard let orientations = Bundle.main.infoDictionary?["UISupportedInterfaceOrientations\(deviceType)"] as? [String] else {
+      return mask
+    }
+
+    for orientation in orientations {
+      switch orientation {
+      case "UIInterfaceOrientationPortrait":
+        mask.insert(.portrait)
+      case "UIInterfaceOrientationLandscapeLeft":
+        mask.insert(.landscapeLeft)
+      case "UIInterfaceOrientationLandscapeRight":
+        mask.insert(.landscapeRight)
+      case "UIInterfaceOrientationPortraitUpsideDown":
+        mask.insert(.portraitUpsideDown)
+      default:
+        break
+      }
+    }
+    return mask
   }
 }
