@@ -1342,7 +1342,7 @@ SPEC CHECKSUMS:
   ExpoSharing: 825b2b3fc919a2656f75def0069f584bbd6e359a
   ExpoSMS: c8079b3018ae5206b3f1f6f445fd4eee2a19a335
   ExpoSpeech: 3c06cdcd31c07889a9f7085c2496ab97364427be
-  ExpoSQLite: dd2ed8d6fbd31cf0fd8c53e36c0dc6a6f9f1281a
+  ExpoSQLite: 8aa7b5afa48760b688aeeff48024cee13a7e5f3a
   ExpoStoreReview: f154c9fdf3dbd877ca0115757f0b2b6f43dd9db4
   ExpoSystemUI: fa4854e3226e87f86d3383570264c6e4e90bc782
   ExpoTrackingTransparency: 28cb4ba43e61231c4173507ba05b3ce8c777f173
