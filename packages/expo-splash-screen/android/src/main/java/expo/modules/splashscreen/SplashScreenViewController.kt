@@ -67,8 +67,8 @@ open class SplashScreenViewController(
     var fadeDurationMs = activity.getString(R.string.expo_splash_screen_fade_duration_ms).toLongOrNull() ?: 0L
     if (fadeDurationMs > MAXIMUM_FADE_DURATION_MS) {
       fadeDurationMs = MAXIMUM_FADE_DURATION_MS
-    } else if(fadeDurationMs < MINIMUM_FADE_DURATION_MS) {
-        fadeDurationMs = MINIMUM_FADE_DURATION_MS
+    } else if (fadeDurationMs < MINIMUM_FADE_DURATION_MS) {
+      fadeDurationMs = MINIMUM_FADE_DURATION_MS
     }
 
     Handler(activity.mainLooper).post {
