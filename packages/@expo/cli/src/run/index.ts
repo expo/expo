@@ -13,6 +13,7 @@ export const expoRun: Command = async (argv) => {
     {
       // Types
       '--help': Boolean,
+      '--platform': String,
       // Aliases
       '-h': '--help',
       // All other flags are handled by `expoRunAndroid` or `expoRunIos`
@@ -34,23 +35,21 @@ export const expoRun: Command = async (argv) => {
     $ npx expo run:ios <dir>
 
   {bold Options}
-    --no-build-cache                 Clear the native build cache
-    --no-install                     Skip installing dependencies
-    --no-bundler                     Skip starting the bundler
-    --configuration <configuration>  {underline iOS} Xcode configuration to use. Debug or Release. {dim Default: Debug}
-    --variant <name>                 {underline Android} build variant to use. {dim Default: debug}
-    -d, --device [device]            Device name to run the app on
-    -p, --port <port>                Port to start the dev server on. {dim Default: 8081}
+    $ npx expo run:android --help    Output Android usage information
+    $ npx expo run:ios --help        Output iOS usage information
+    -p, --platform <android|ios>     Run the native app on this platform
     -h, --help                       Output usage information
 `,
       0
     );
   }
 
-  const platform = await selectAsync('Select the platform to run', [
-    { title: 'Android', value: 'android' },
-    { title: 'iOS', value: 'ios' },
-  ]);
+  const platform =
+    args['--platform'] ??
+    (await selectAsync('Select the platform to run', [
+      { title: 'Android', value: 'android' },
+      { title: 'iOS', value: 'ios' },
+    ]));
 
   logPlatformRunCommand(platform, argv);
 
