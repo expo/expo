@@ -1,6 +1,7 @@
 import ExpoModulesCore
 import sqlite3
 
+
 public final class SQLiteModule: Module {
   private var cachedDatabases = [String: OpaquePointer]()
 
@@ -100,7 +101,9 @@ public final class SQLiteModule: Module {
       let loadedExtension = loadExtension(db)
       if loadedExtension != SQLITE_OK {
         print("Failed to load extension")
-       }
+      } else {
+        print("Extension loaded")
+      }
       
       cachedDatabases[dbName] = db
     }
@@ -225,14 +228,8 @@ public final class SQLiteModule: Module {
   }
   
   func loadExtension(_ db: OpaquePointer?) -> Int32 {
-    let bundle = Bundle(for: Self.self)
-    guard let resourceUrl = bundle.url(forResource: "ExpoSQLite", withExtension: "bundle") else {
-      fatalError("Failed to load resource")
-    }
-    let resourceBundle = Bundle(url: resourceUrl)
-    let dylib = resourceBundle?.path(forResource: "crsqlite", ofType: "dylib")
-  
-  
-    return sqlite3_load_extension(db, dylib, "sqlite3_crsqlite_init", nil)
+    var pzErrMsg: UnsafeMutablePointer<Int8>? = nil
+
+    return sqlite3_load_extension(db, "CRSQLite", "sqlite3_crsqlite_init", &pzErrMsg)
   }
 }

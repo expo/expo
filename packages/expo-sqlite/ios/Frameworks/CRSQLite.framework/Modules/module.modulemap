@@ -1,0 +1,6 @@
+framework module CRSQLite {
+  umbrella header "CRSQLite.h"
+
+  export *
+  module * { export * }
+}
