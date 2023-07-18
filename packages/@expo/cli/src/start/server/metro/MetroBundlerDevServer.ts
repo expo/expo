@@ -77,23 +77,32 @@ type ExpoRouterServerManifestV1Route<TType> = {
   regex: RegExp;
   src: string;
 };
+
 type ExpoRouterServerManifestV1 = {
   staticHtmlPaths: string[];
   staticHtml: ExpoRouterServerManifestV1Route<'static'>[];
   functions: ExpoRouterServerManifestV1Route<'dynamic'>[];
 };
 
+type LoadManifestResult = {
+  error?: Error;
+  manifest?: ExpoRouterServerManifestV1 | null;
+};
+
 async function fetchManifest(
   projectRoot: string,
   options: { mode?: string; port?: number }
-): Promise<null | ExpoRouterServerManifestV1> {
+): Promise<LoadManifestResult> {
   if (manifestOperation.has('manifest')) {
-    return manifestOperation.get('manifest');
+    const manifest = await manifestOperation.get('manifest');
+    if (!manifest.error) {
+      return manifest;
+    }
   }
 
   const devServerUrl = `http://localhost:${options.port}`;
 
-  async function bundleAsync(): Promise<null | ExpoRouterServerManifestV1> {
+  async function bundleAsync(): Promise<LoadManifestResult> {
     // TODO: Update eagerly when files change
     const getManifest = await getExpoRouteManifestBuilderAsync(projectRoot, {
       devServerUrl,
@@ -102,7 +111,7 @@ async function fetchManifest(
     });
 
     if (!getManifest) {
-      return null;
+      return { manifest: null };
     }
 
     let results: any;
@@ -114,11 +123,11 @@ async function fetchManifest(
         // This can throw if there are any top-level errors in any files when bundling.
         debug('Error while bundling manifest:', error);
       }
-      return null;
+      return { error };
     }
 
     if (!results) {
-      return null;
+      return { manifest: null };
     }
 
     if (!results.staticHtml || !results.functions) {
@@ -138,7 +147,7 @@ async function fetchManifest(
       };
     });
     console.log('manifest', results);
-    return results;
+    return { manifest: results };
   }
 
   const manifest = bundleAsync();
@@ -246,9 +255,9 @@ function createRouteHandlerMiddleware(
     if (!req?.url || !req.method) {
       return next();
     }
-    const manifest = await fetchManifest(projectRoot, options);
-    // NOTE: no app dir
+    const { manifest } = await fetchManifest(projectRoot, options);
     if (!manifest) {
+      // NOTE: no app dir
       // TODO: Redirect to 404 page
       return next();
     }
@@ -359,7 +368,7 @@ function createRouteHandlerMiddleware(
         Log.error('Failed to load middleware: ' + error);
       }
       res.statusCode = 500;
-      return res.end('Failed to load middleware: ' + resolvedFunctionPath);
+      return res.end('Failed to load middleware: ' + resolvedFunctionPath + '\n\n' + error.message);
     }
 
     debug(`Supported methods (API route exports):`, Object.keys(middleware), ' -> ', req.method);
@@ -443,7 +452,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       dev: mode !== 'production',
     });
 
-    const manifest = await getManifest();
+    const manifest = await getManifest?.();
 
     for (const file of files) {
       console.log('file', devServerUrl, file);

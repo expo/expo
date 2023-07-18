@@ -37,7 +37,11 @@ const INTERNAL_CALLSITES_REGEX = new RegExp(['/Libraries/Renderer/implementation
 // Block native code invocations
 `\\[native code\\]`,
 // Hide react-dom (web)
-'node_modules/react-dom/.+\\.js$', '@expo/metro-runtime/build/.+\\.js$'].join('|'));
+'node_modules/react-dom/.+\\.js$',
+// Hide metro runtime code
+'node_modules/metro-runtime/.+\\.js$', '@expo/metro-runtime/build/.+\\.js$',
+// Hide node.js evaluation code
+'node_modules/require-from-string/.+\\.js$'].join('|'));
 exports.INTERNAL_CALLSITES_REGEX = INTERNAL_CALLSITES_REGEX;
 function isUrl(value) {
   try {
