@@ -1,0 +1,205 @@
+/**
+ * Copyright © 2022 650 Industries.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+import path from 'path';
+import requireString from 'require-from-string';
+import resolve from 'resolve';
+import resolveFrom from 'resolve-from';
+import { promisify } from 'util';
+
+import { Log } from '../../../log';
+import { getStaticRenderFunctions } from '../getStaticRenderFunctions';
+import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
+import {
+  ExpoRouterServerManifestV1Route,
+  fetchManifest,
+  refetchManifest,
+} from './fetchRouterManifest';
+import { bundleApiRoute, eagerBundleApiRoutes } from './fetchServerRoutes';
+import { getErrorOverlayHtmlAsync, logMetroErrorAsync } from './metroErrorInterface';
+
+const debug = require('debug')('expo:start:server:metro') as typeof console.log;
+
+const resolveAsync = promisify(resolve) as any as (
+  id: string,
+  opts: resolve.AsyncOpts
+) => Promise<string | null>;
+
+export function createRouteHandlerMiddleware(
+  projectRoot: string,
+  options: { mode?: string; port?: number; getWebBundleUrl: () => string }
+) {
+  // Install Node.js browser polyfills and source map support
+  require(resolveFrom(projectRoot, '@expo/server/install'));
+
+  const { convertRequest, respond } = require(resolveFrom(
+    projectRoot,
+    '@expo/server/build/vendor/http'
+  ));
+
+  // don't await
+  eagerBundleApiRoutes(projectRoot, options);
+  refetchManifest(projectRoot, options);
+
+  const devServerUrl = `http://localhost:${options.port}`;
+
+  const appDir = path.join(
+    projectRoot,
+    // TODO: Support other directories via app.json
+    'app'
+  );
+
+  return async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
+    if (!req?.url || !req.method) {
+      return next();
+    }
+    const { manifest } = await fetchManifest(projectRoot, options);
+    if (!manifest) {
+      // NOTE: no app dir
+      // TODO: Redirect to 404 page
+      return next();
+    }
+
+    const location = new URL(req.url, 'https://example.dev');
+
+    // 1. Get pathname, e.g. `/thing`
+    const pathname = location.pathname?.replace(/\/$/, '');
+    const sanitizedPathname = pathname.replace(/^\/+/, '').replace(/\/+$/, '') + '/';
+
+    let functionRoute: ExpoRouterServerManifestV1Route<'dynamic'> | null = null;
+
+    const staticManifest = manifest?.staticHtml;
+    const dynamicManifest = manifest?.functions;
+
+    for (const route of dynamicManifest) {
+      if (route.regex.test(sanitizedPathname)) {
+        functionRoute = route;
+        break;
+      }
+    }
+
+    if (req.method === 'GET' || req.method === 'HEAD') {
+      for (const route of staticManifest) {
+        if (route.regex.test(sanitizedPathname)) {
+          if (
+            // Skip the 404 page if there's a function
+            route.generated &&
+            route.file.match(/^\.\/\[\.\.\.404]\.[jt]sx?$/)
+          ) {
+            if (functionRoute) {
+              continue;
+            }
+          }
+
+          try {
+            const { getStaticContent } = await getStaticRenderFunctions(projectRoot, devServerUrl, {
+              minify: options.mode === 'production',
+              dev: options.mode !== 'production',
+              // Ensure the API Routes are included
+              environment: 'node',
+            });
+
+            let content = await getStaticContent(location);
+
+            //TODO: Not this -- disable injection some other way
+            if (options.mode !== 'production') {
+              // Add scripts for rehydration
+              // TODO: bundle split
+              content = content.replace(
+                '</body>',
+                [`<script src="${options.getWebBundleUrl()}" defer></script>`].join('\n') +
+                  '</body>'
+              );
+            }
+
+            res.setHeader('Content-Type', 'text/html');
+            res.end(content);
+            return;
+          } catch (error: any) {
+            res.setHeader('Content-Type', 'text/html');
+            try {
+              res.end(
+                await getErrorOverlayHtmlAsync({
+                  error,
+                  projectRoot: projectRoot,
+                })
+              );
+            } catch (staticError: any) {
+              // Fallback error for when Expo Router is misconfigured in the project.
+              res.end(
+                '<span><h3>Internal Error:</h3><b>Project is not setup correctly for static rendering (check terminal for more info):</b><br/>' +
+                  error.message +
+                  '<br/><br/>' +
+                  staticError.message +
+                  '</span>'
+              );
+            }
+          }
+          return;
+        }
+      }
+    }
+
+    if (!functionRoute) {
+      return next();
+    }
+    const resolvedFunctionPath = await resolveAsync(functionRoute.file, {
+      extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      basedir: appDir,
+    });
+
+    const middlewareContents = await bundleApiRoute(projectRoot, resolvedFunctionPath!, options);
+    if (!middlewareContents) {
+      // TODO: Error handling
+      return next();
+    }
+
+    let middleware: any;
+    try {
+      debug(`Bundling middleware at: ${resolvedFunctionPath}`);
+      middleware = requireString(middlewareContents);
+    } catch (error) {
+      if (error instanceof Error) {
+        await logMetroErrorAsync({ projectRoot, error });
+      } else {
+        Log.error('Failed to load middleware: ' + error);
+      }
+      res.statusCode = 500;
+      return res.end('Failed to load middleware: ' + resolvedFunctionPath + '\n\n' + error.message);
+    }
+
+    debug(`Supported methods (API route exports):`, Object.keys(middleware), ' -> ', req.method);
+
+    // Interop default
+    const func = middleware[req.method];
+
+    if (!func) {
+      res.statusCode = 405;
+      return res.end('Method not allowed');
+    }
+
+    const expoRequest = convertRequest(req, res, functionRoute);
+
+    try {
+      // 4. Execute.
+      const response = await func?.(expoRequest);
+
+      // 5. Respond
+      if (response) {
+        await respond(res, response);
+      } else {
+        // TODO: Not sure what to do here yet
+        res.statusCode = 500;
+        res.end();
+      }
+    } catch (error) {
+      // TODO: Symbolicate error stack
+      console.error(error);
+      res.statusCode = 500;
+      res.end();
+    }
+  };
+}
