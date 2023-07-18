@@ -12,6 +12,7 @@
 
 - [Android] Fix rollback embedded update logic. ([#23244](https://github.com/expo/expo/pull/23244) by [@wschurman](https://github.com/wschurman))
 - Correctly handle roll backs in JS module methods. ([#23356](https://github.com/expo/expo/pull/23356), [#23377](https://github.com/expo/expo/pull/23377) by [@wschurman](https://github.com/wschurman))
+- [iOS] Fix unmatched selection policy. ([#23535](https://github.com/expo/expo/pull/23535) by [@chochihim](https://github.com/chochihim))
 
 ### 💡 Others
 
