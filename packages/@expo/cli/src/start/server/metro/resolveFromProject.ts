@@ -44,9 +44,10 @@ export function importMetroHmrServerFromProject(
 }
 
 export function importExpoMetroConfig(projectRoot: string) {
-  return importFromProjectOrFallback<typeof import('@expo/metro-config')>(
+  // `@expo/metro-config` version is controlled by `@expo/cli` to avoid conflicting `@expo/metro-config` versions in project dependencies
+  return importFromProjectOrFallback<typeof import('@expo/cli/metro-config')>(
     projectRoot,
-    '@expo/metro-config'
+    '@expo/cli/metro-config'
   );
 }
 
