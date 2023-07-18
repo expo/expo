@@ -1,0 +1,117 @@
+---
+title: Server Routes
+description: Learn how to create universal serverless functions with Expo Router.
+---
+
+import { FileTree } from '~/ui/components/FileTree';
+import { Step } from '~/ui/components/Step';
+import { Terminal } from '~/ui/components/Snippet';
+
+Expo Router supports enables you to write universal backend server code directly in your app.
+
+```json app.json
+{
+  "expo": {
+    "web": {
+      "bundler": "metro",
+      /* @info Output a dynamic server. */
+      "output": "server"
+      /* @end */
+    }
+  }
+}
+```
+
+Server features require a custom Node.js server to work. Most hosting providers support Node.js, including [Netlify](https://netlify.com), [Vercel](https://vercel.com), and [Heroku](https://heroku.com).
+
+## Usage
+
+> While in beta, server code may leak into the client bundle. This won't happen in the stable release.
+
+Server Routes are functions that are executed when a route is matched. They can be used to securely handle sensitive data, such as API keys, or to implement custom server logic. Server Routes should be executed in a [WinterCG](https://wintercg.org/) environment.
+
+Server Routes are defined by creating files in the `app` directory with the `+api.js` extension. For example, the following route handler will be executed when the route `/hello` is matched.
+
+<FileTree files={['app/index.js', ['app/hello+api.ts', 'Server Route']]} />
+
+<Step label="1">
+
+Create a server route in the `app` directory.
+
+```js app/hello+api.ts
+import { Request, Response } from 'expo-router/server';
+
+export function GET(request: Request) {
+  return Response.json({ hello: 'world' });
+}
+```
+
+You can export any of the following functions `GET, POST, PUT, PATCH, DELETE, HEAD, and OPTIONS` from a server route. The function will be executed when the corresponding HTTP method is matched.
+
+</Step>
+
+<Step label="2">
+
+Start the development server.
+
+<Terminal cmd={['$ npx expo start']} />
+
+</Step>
+
+<Step label="3">
+
+To access the data, you can make a network request to the route. For example, the following code will make a request to the route handler above.
+
+```js
+async function fetchHello() {
+  const response = await fetch('/hello');
+  const data = await response.json();
+  console.log(data);
+}
+```
+
+This won't work by default on native as `/api/hello` does not provide an origin URL. Follow the setup guide in [`window.location`](/docs/lab/runtime-location) to polyfill the `window.location` API.
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-router",
+        {
+          "origin": "https://example.com"
+        }
+      ]
+    ]
+  }
+}
+```
+
+</Step>
+
+<Step label="4">
+
+    Deploy the website to a [hosting provider](/distribution/publishing-websites) in order to access the routes in production on both web and native.
+
+</Step>
+
+## Capabilities
+
+API Routes are bundled with Metro, meaning they have access to all of the same bundling features as your client code.
+
+- [TypeScript](/guides/typescript) –– types and [`tsconfig.json` paths](/guides/typescript#path-aliases).
+- [Environment variables](/guides/environment-variables) –– server routes have access to all environment variables, not just the ones prefixed with `EXPO_PUBLIC_`.
+- Node.js standard library –– ensure that you are using the correct version of Node.js locally for your server environment.
+- `babel.config.js` and `metro.config.js` support –– settings work across both client and server code.
+
+{/* TODO: SSR, redirects, middleware, etc. */}
+
+## Security
+
+> While in beta, server code may leak into the client bundle. This won't happen in the stable release.
+
+Route handlers are executed in a sandboxed environment that is isolated from the client code. This means that you can safely store sensitive data in the route handlers without exposing it to the client.
+
+- If your client code imports code with a secret, it will still be included in the client bundle. This also applies to ALL files in the `app` directory that are not a route handler (suffixed with `+api.js`).
+- If your secret is in a `<...>+api.js` (Route Handler) file, it will not be included in the client bundle. This applies to all files that are imported in the route handler.
+- The secret stripping takes place in `expo/metro-config` and requires this be used in your `metro.config.js`!
