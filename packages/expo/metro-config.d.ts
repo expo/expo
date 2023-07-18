@@ -1,1 +1,1 @@
-export * from '@expo/metro-config';
+export * from '@expo/cli/metro-config';
