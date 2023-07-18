@@ -26,6 +26,7 @@ import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../Bun
 import {
   getStaticRenderFunctions,
   requireFileContentsWithMetro,
+  requireWithMetro,
 } from '../getStaticRenderFunctions';
 import { ContextModuleSourceMapsMiddleware } from '../middleware/ContextModuleSourceMapsMiddleware';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';

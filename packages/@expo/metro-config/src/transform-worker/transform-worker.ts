@@ -65,6 +65,16 @@ export async function transform(
       );
     }
 
+    if (
+      environment !== 'node' &&
+      !filename.match(/\/node_modules\//) &&
+      filename.match(/\+api(\.(native|ios|android|web))?\.[tj]sx$/)
+    ) {
+      // Clear the contents of +api files when bundling for the client.
+      // This ensures that the client doesn't accidentally use the server-only +api files.
+      return worker.transform(config, projectRoot, filename, Buffer.from(''), options);
+    }
+
     return worker.transform(config, projectRoot, filename, data, options);
   }
 
