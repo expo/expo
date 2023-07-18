@@ -52,17 +52,22 @@ export const expoRun: Command = async (argv) => {
         { title: 'iOS', value: 'ios' },
       ]));
 
-    logPlatformRunCommand(platform, argv);
+    // Filter `--platform=android|ios` or `--platform android|ios` from the args for `run:android|ios`
+    const argsWithoutPlatform = Object.values(args._).filter(
+      (flag) => !flag.startsWith('--platform') || ['android', 'ios'].includes(flag)
+    );
+
+    logPlatformRunCommand(platform, argsWithoutPlatform);
 
     switch (platform) {
       case 'android': {
         const { expoRunAndroid } = await import('./android');
-        return expoRunAndroid(argv);
+        return expoRunAndroid(argsWithoutPlatform);
       }
 
       case 'ios': {
         const { expoRunIos } = await import('./ios');
-        return expoRunIos(argv);
+        return expoRunIos(argsWithoutPlatform);
       }
 
       default:
