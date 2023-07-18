@@ -106,7 +106,7 @@ This project can be deployed to almost every hosting service. Note that this is 
 
 The `static` output will generate HTML files for each route. This means dynamic routes (**app/[id].tsx**) will not work out of the box. You can generate known routes ahead of time using the `generateStaticParams` function.
 
-```js app/blog/[id].tsx
+```tsx app/blog/[id].tsx
 import { Text } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 
@@ -134,7 +134,7 @@ This will output a file for each post in the **dist** directory. For example, if
 
 A server-only function evaluated at build-time in a Node.js environment by Expo CLI. This means it has access to `__dirname`, `process.cwd()`, `process.env`, and more. It also has access to every environment variable that's available in the process, not just the values prefixed with **EXPO*PUBLIC***. **generateStaticParams** is not run in a browser environment, so it cannot access browser APIs like **localStorage** or **document**, nor can it access native Expo APIs such as **expo-camera** or **expo-location**.
 
-```js app/[id].tsx
+```tsx app/[id].tsx
 export async function generateStaticParams(): Promise<Record<string, string>[]> {
   /* @info Prints the current working directory */
   console.log(process.cwd());
@@ -146,7 +146,7 @@ export async function generateStaticParams(): Promise<Record<string, string>[]> 
 
 **generateStaticParams** cascades from nested parents down to children. The cascading parameters are passed to every dynamic child route that exports **generateStaticParams**.
 
-```js app/[id]/_layout.tsx
+```tsx app/[id]/_layout.tsx
 export async function generateStaticParams(): Promise<Record<string, string>[]> {
   /* @info Any dynamic children that export <b>generateStaticParams</b> will be invoked once for every entry in the array. */
   return [{ id: 'one' }, { id: 'two' }];
@@ -156,7 +156,7 @@ export async function generateStaticParams(): Promise<Record<string, string>[]> 
 
 Now the dynamic child routes will be invoked twice, once with `{ id: 'one' }` and once with `{ id: 'two' }`. All variations must be accounted for.
 
-```js app/[id]/[comment].tsx
+```tsx app/[id]/[comment].tsx
 export async function generateStaticParams(params: {
   id: 'one' | 'two',
 }): Promise<Record<string, string>[]> {
@@ -180,14 +180,15 @@ You can customize the root HTML file by creating an **app/+html.tsx** file in yo
 
 > **Note**: Global context providers should go in the [Root Layout](/router/advanced/root-layout) component, not the Root HTML component.
 
-```js app/+html.tsx
+```tsx app/+html.tsx
 import { ScrollViewStyleReset } from 'expo-router/html';
+import type { PropsWithChildren } from "react";
 
 // This file is web-only and used to configure the root HTML for every
 // web page during static rendering.
 // The contents of this function only run in Node.js environments and
 // do not have access to the DOM or browser APIs.
-export default function Root({ children }: { children: React.ReactNode }) {
+export default function Root({ children }: PropsWithChildren) {
   return (
     <html lang="en">
       <head>
@@ -233,7 +234,7 @@ The exports from `expo-router/html` are related to the Root HTML component.
 
 You can add meta tags to your pages with the `<Head />` module from `expo-router`:
 
-```js app/about.tsx
+```tsx app/about.tsx
 import Head from 'expo-router/head';
 import { Text } from 'react-native';
 
@@ -275,7 +276,7 @@ These files will be copied to the **dist** folder during static rendering:
 
 > **info** **Web only**: Static assets can be accessed in runtime code using relative paths. For example, the **logo.png** can be accessed at `/logo.png`:
 
-```js app/index.tsx
+```tsx app/index.tsx
 import { Image } from 'react-native';
 
 export default function Page() {
