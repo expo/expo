@@ -54,17 +54,18 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
+  // During app transition we want to return the orientation of the screen that will be shown. This makes sure
+  // that the rotation animation starts as the new view controller is being shown.
+  if (_isAnimatingAppTransition && _transitioningToViewController != nil) {
+    return [_transitioningToViewController supportedInterfaceOrientations];
+  }
+
   const UIInterfaceOrientationMask visibleAppSupportedInterfaceOrientations =
     [EXKernel sharedInstance]
       .visibleApp
       .viewController
       .supportedInterfaceOrientations;
 
-  // During app transition we want to return the orientation of the screen that will be shown. This makes sure
-  // that the rotation animation starts as the new view controller is being shown.
-  if (_isAnimatingAppTransition && _transitioningToViewController != nil) {
-    return [_transitioningToViewController supportedInterfaceOrientations];
-  }
   return visibleAppSupportedInterfaceOrientations;
 }
 
@@ -160,6 +161,9 @@ NS_ASSUME_NONNULL_BEGIN
       && appRecord != [EXKernel sharedInstance].appRegistry.homeAppRecord) {
     [[EXDevMenuManager sharedInstance] open];
   }
+
+  // Re-apply the default orientation after the app has been loaded (eq. after a reload)
+  [self _applySupportedInterfaceOrientations];
 }
 
 #pragma mark - internal
@@ -188,14 +192,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self addChildViewController:viewControllerToShow];
   }
 
-  // We need to explicitly request an update of the interface orientations during the transition
-  if (@available(iOS 16, *)) {
-    [self setNeedsUpdateOfSupportedInterfaceOrientations];
-  } else {
-    // On iOS < 16 we need to try to rotate to the desired orientation
-    UIInterfaceOrientationMask orientationMask = [self supportedInterfaceOrientations];
-    [ScreenOrientationRegistry.shared enforceDesiredDeviceOrientationWithOrientationMask:orientationMask];
-  }
+  // Try transitioning to the interface orientation of the app before it is shown for smoother transitions
+  [self _applySupportedInterfaceOrientations];
 
   EX_WEAKIFY(self)
   void (^finalizeTransition)(void) = ^{
@@ -220,6 +218,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.delegate) {
       [self.delegate viewController:self didNavigateAppToVisible:appRecord];
     }
+    [self _applySupportedInterfaceOrientations];
   };
 
   BOOL animated = (viewControllerToHide && viewControllerToShow);
@@ -262,6 +261,18 @@ NS_ASSUME_NONNULL_BEGIN
   if (disableNuxDefaultsValue) {
     [self setIsNuxFinished:YES];
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:kEXHomeDisableNuxDefaultsKey];
+  }
+}
+
+- (void)_applySupportedInterfaceOrientations
+{
+  if (@available(iOS 16, *)) {
+    [self setNeedsUpdateOfSupportedInterfaceOrientations];
+  } else {
+    // On iOS < 16 we need to try to rotate to the desired orientation, which also
+    // makes the view controller to update the supported orientations
+    UIInterfaceOrientationMask orientationMask = [self supportedInterfaceOrientations];
+    [ScreenOrientationRegistry.shared enforceDesiredDeviceOrientationWithOrientationMask:orientationMask];
   }
 }
 
