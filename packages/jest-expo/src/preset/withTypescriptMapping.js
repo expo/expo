@@ -68,8 +68,10 @@ function mutateJestMappingFromConfig(jestConfig, configFile) {
     return true;
   } catch (error) {
     // If the user is not using typescript, we can safely ignore this error
-    if (error.code === 'MODULE_NOT_FOUND') return undefined;
-    if (error.code === 'ENOENT') return undefined;
+    if (error.code === 'MODULE_NOT_FOUND' || error.code === 'ENOENT') {
+      return undefined;
+    }
+
     // Other errors are unexpected, but should not block the jest configuration
     return false;
   }
@@ -78,7 +80,9 @@ function mutateJestMappingFromConfig(jestConfig, configFile) {
 /** Try to add the `moduleNameMapper` configuration from the typescript `paths` configuration. */
 function withTypescriptMapping(jestConfig) {
   const fromTsConfig = mutateJestMappingFromConfig(jestConfig, 'tsconfig.json');
-  const fromJsConfig = !fromTsConfig && mutateJestMappingFromConfig(jestConfig, 'jsconfig.json');
+  const fromJsConfig = !fromTsConfig
+    ? mutateJestMappingFromConfig(jestConfig, 'jsconfig.json')
+    : undefined;
 
   if (fromTsConfig === false || fromJsConfig === false) {
     console.warn('Failed to set custom typescript paths for jest.');
