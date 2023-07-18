@@ -52,6 +52,12 @@ function tryGenerateMappingFromConfig(jestConfig, configFile) {
     const configPath = path.resolve(configFile);
     const config = readJsonFile(configPath, { json5: true });
 
+    if (config?.compilerOptions?.baseUrl) {
+      jestConfig.modulePaths = (jestConfig.modulePaths ?? [])
+        .concat(config.compilerOptions.baseUrl)
+        .filter((entry, index, array) => array.indexOf(entry) === index);
+    }
+
     if (config?.compilerOptions?.paths) {
       jestConfig.moduleNameMapper = {
         ...jestMappingFromTypescriptPaths(config.compilerOptions.paths || {}),
