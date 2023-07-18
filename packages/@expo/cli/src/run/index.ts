@@ -6,6 +6,7 @@ import { Log } from '../log';
 import { assertWithOptionsArgs } from '../utils/args';
 import { CommandError } from '../utils/errors';
 import { selectAsync } from '../utils/prompts';
+import { logPlatformRunCommand } from './hints';
 
 export const expoRun: Command = async (argv) => {
   const args = assertWithOptionsArgs(
@@ -50,6 +51,8 @@ export const expoRun: Command = async (argv) => {
     { title: 'Android', value: 'android' },
     { title: 'iOS', value: 'ios' },
   ]);
+
+  logPlatformRunCommand(platform, argv);
 
   switch (platform) {
     case 'android': {
