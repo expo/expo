@@ -5,9 +5,10 @@ const path = require('path');
  * Convert typescript paths to jest module mapping.
  *
  * @param {Record<string, string[]>} paths
+ * @param {string} [prefix="<rootDir>"]
  * @return {Record<string, string>}
  */
-function jestMappingFromTypescriptPaths(paths) {
+function jestMappingFromTypescriptPaths(paths, prefix = '<rootDir>') {
   const mapping = {};
 
   for (const path in paths) {
@@ -17,7 +18,9 @@ function jestMappingFromTypescriptPaths(paths) {
     }
 
     const jestRegex = convertTypescriptMatchToJestRegex(path);
-    const jestTarget = paths[path].map((target) => convertTypescriptTargetToJestTarget(target));
+    const jestTarget = paths[path].map((target) =>
+      convertTypescriptTargetToJestTarget(target, prefix)
+    );
 
     mapping[jestRegex] = jestTarget.length === 1 ? jestTarget[0] : jestTarget;
   }
@@ -38,9 +41,9 @@ function convertTypescriptMatchToJestRegex(match) {
 }
 
 /** Convert a typescript match rule value to jest regex target */
-function convertTypescriptTargetToJestTarget(target) {
+function convertTypescriptTargetToJestTarget(target, prefix = '<rootDir>') {
   const segments = target.split('/').map((segment) => (segment.trim() === '*' ? '$1' : segment));
-  return ['<rootDir>', ...segments].join('/');
+  return [prefix, ...segments].join('/');
 }
 
 function mutateJestMappingFromConfig(jestConfig, configFile) {
@@ -51,16 +54,15 @@ function mutateJestMappingFromConfig(jestConfig, configFile) {
     // See: _createTypeScriptConfiguration() in `createJestPreset`
     const configPath = path.resolve(configFile);
     const config = readJsonFile(configPath, { json5: true });
+    let pathPrefix = '<rootDir>';
 
     if (config?.compilerOptions?.baseUrl) {
-      jestConfig.modulePaths = (jestConfig.modulePaths ?? [])
-        .concat(config.compilerOptions.baseUrl)
-        .filter((entry, index, array) => array.indexOf(entry) === index);
+      pathPrefix = path.join(pathPrefix, config.compilerOptions.baseUrl);
     }
 
     if (config?.compilerOptions?.paths) {
       jestConfig.moduleNameMapper = {
-        ...jestMappingFromTypescriptPaths(config.compilerOptions.paths || {}),
+        ...jestMappingFromTypescriptPaths(config.compilerOptions.paths || {}, pathPrefix),
         ...(jestConfig.moduleNameMapper || {}),
       };
     }

@@ -1,5 +1,5 @@
 {
-  "name": "jest-expo-fixture-javascript",
+  "name": "jest-expo-fixture-tsconfig",
   "version": "0.0.0",
   "jest": {
     "preset": "jest-expo"

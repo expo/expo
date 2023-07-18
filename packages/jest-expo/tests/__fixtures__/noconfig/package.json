@@ -1,5 +1,5 @@
 {
-  "name": "jest-expo-fixture-typescript",
+  "name": "jest-expo-fixture-no-config",
   "version": "0.0.0",
   "jest": {
     "preset": "jest-expo"
