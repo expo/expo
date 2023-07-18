@@ -12,13 +12,21 @@ import assert from 'assert';
 import chalk from 'chalk';
 import fetch from 'node-fetch';
 import path from 'path';
+import { sync as globSync } from 'glob';
+import requireString from 'require-from-string';
+import resolve from 'resolve';
+import resolveFrom from 'resolve-from';
+import { promisify } from 'util';
 
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
-import { getStaticRenderFunctions } from '../getStaticRenderFunctions';
+import {
+  getStaticRenderFunctions,
+  requireFileContentsWithMetro,
+} from '../getStaticRenderFunctions';
 import { ContextModuleSourceMapsMiddleware } from '../middleware/ContextModuleSourceMapsMiddleware';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
 import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
@@ -36,7 +44,8 @@ import { startTypescriptTypeGenerationAsync } from '../type-generation/startType
 import { instantiateMetroAsync } from './instantiateMetro';
 import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
-import { observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
+import { observeApiRouteChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
+import { env } from '../../../utils/env';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
@@ -45,6 +54,337 @@ const EXPO_GO_METRO_PORT = 8081;
 
 /** Default port to use for apps that run in standard React Native projects or Expo Dev Clients. */
 const DEV_CLIENT_METRO_PORT = 8081;
+
+const resolveAsync = promisify(resolve) as any as (
+  id: string,
+  opts: resolve.AsyncOpts
+) => Promise<string | null>;
+
+async function getExpoRouteManifestBuilderAsync(
+  projectRoot: string,
+  {
+    devServerUrl,
+    minify,
+    dev,
+  }: {
+    devServerUrl: string;
+    minify: boolean;
+    dev: boolean;
+  }
+) {
+  const matchNodePath = path.join(
+    resolveFrom(projectRoot, 'expo-router/package.json'),
+    '../routes-manifest.ts'
+  );
+  const { createRoutesManifest } = await requireWithMetro<{
+    createRoutesManifest: () => Promise<any>;
+  }>(projectRoot, devServerUrl, matchNodePath, {
+    minify,
+    dev,
+
+    // Ensure the API Routes are included
+    environment: 'node',
+  });
+  return createRoutesManifest;
+}
+
+const manifestOperation = new Map<string, Promise<any>>();
+
+async function refetchManifest(projectRoot: string, options: { mode?: string; port?: number }) {
+  manifestOperation.delete('manifest');
+  return fetchManifest(projectRoot, options);
+}
+
+type ExpoRouterServerManifestV1Route<TType> = {
+  dynamic: any;
+  generated: boolean;
+  type: TType;
+  file: string;
+  regex: RegExp;
+  src: string;
+};
+type ExpoRouterServerManifestV1 = {
+  staticHtmlPaths: string[];
+  staticHtml: ExpoRouterServerManifestV1Route<'static'>[];
+  functions: ExpoRouterServerManifestV1Route<'dynamic'>[];
+};
+
+async function fetchManifest(
+  projectRoot: string,
+  options: { mode?: string; port?: number }
+): Promise<null | ExpoRouterServerManifestV1> {
+  if (manifestOperation.has('manifest')) {
+    return manifestOperation.get('manifest');
+  }
+
+  const devServerUrl = `http://localhost:${options.port}`;
+
+  async function bundleAsync(): Promise<null | ExpoRouterServerManifestV1> {
+    // TODO: Update eagerly when files change
+    const getManifest = await getExpoRouteManifestBuilderAsync(projectRoot, {
+      devServerUrl,
+      minify: options.mode === 'production',
+      dev: options.mode !== 'production',
+    });
+    // Get the serialized manifest
+    const results = await getManifest();
+
+    if (!results) {
+      return null;
+    }
+
+    if (!results.staticHtml || !results.functions) {
+      throw new Error('Routes manifest is malformed: ' + JSON.stringify(results, null, 2));
+    }
+
+    results.staticHtml = results.staticHtml?.map((value: any) => {
+      return {
+        ...value,
+        regex: new RegExp(value.regex),
+      };
+    });
+    results.functions = results.functions?.map((value: any) => {
+      return {
+        ...value,
+        regex: new RegExp(value.regex),
+      };
+    });
+    console.log('manifest', results);
+    return results;
+  }
+
+  const manifest = bundleAsync();
+  if (manifest) {
+    manifestOperation.set('manifest', manifest);
+  }
+  return manifest;
+}
+
+const pendingRouteOperations = new Map<string, Promise<string>>();
+
+async function rebundleApiRoute(
+  projectRoot: string,
+  filepath: string,
+  options: { mode?: string; port?: number }
+) {
+  pendingRouteOperations.delete(filepath);
+  return bundleApiRoute(projectRoot, filepath, options);
+}
+async function bundleApiRoute(
+  projectRoot: string,
+  filepath: string,
+  options: { mode?: string; port?: number }
+) {
+  if (pendingRouteOperations.has(filepath)) {
+    return pendingRouteOperations.get(filepath);
+  }
+
+  const devServerUrl = `http://localhost:${options.port}`;
+
+  async function bundleAsync() {
+    try {
+      debug('Check API route:', path.join(projectRoot, 'app'), filepath);
+
+      const middleware = await requireFileContentsWithMetro(projectRoot, devServerUrl, filepath, {
+        minify: options.mode === 'production',
+        dev: options.mode !== 'production',
+        // Ensure Node.js
+        environment: 'node',
+      });
+
+      return middleware;
+    } finally {
+      // pendingRouteOperations.delete(filepath);
+    }
+  }
+  const route = bundleAsync();
+  pendingRouteOperations.set(filepath, route);
+  return route;
+}
+
+async function eagerBundleApiRoutes(
+  projectRoot: string,
+  options: { mode?: string; port?: number }
+) {
+  const appDir = path.join(
+    projectRoot,
+    // TODO: Support other directories via app.json
+    'app'
+  );
+
+  const routes = globSync('**/*+api.@(ts|tsx|js|jsx)', {
+    cwd: appDir,
+    absolute: true,
+  });
+
+  const promises = routes.map(async (filepath) => bundleApiRoute(projectRoot, filepath, options));
+
+  await Promise.all(promises);
+}
+
+function createRouteHandlerMiddleware(
+  projectRoot: string,
+  options: { mode?: string; port?: number; getWebBundleUrl: () => string }
+) {
+  // Install Node.js browser polyfills and source map support
+  require(resolveFrom(projectRoot, '@expo/server/install'));
+
+  const { convertRequest, respond } = require(resolveFrom(
+    projectRoot,
+    '@expo/server/build/vendor/http'
+  ));
+
+  // don't await
+  eagerBundleApiRoutes(projectRoot, options);
+  refetchManifest(projectRoot, options);
+
+  const devServerUrl = `http://localhost:${options.port}`;
+
+  const appDir = path.join(
+    projectRoot,
+    // TODO: Support other directories via app.json
+    'app'
+  );
+
+  return async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
+    if (!req?.url || !req.method) {
+      return next();
+    }
+    const manifest = await fetchManifest(projectRoot, options);
+    // NOTE: no app dir
+    if (!manifest) {
+      // TODO: Redirect to 404 page
+      return next();
+    }
+
+    const location = new URL(req.url, 'https://example.dev');
+
+    // 1. Get pathname, e.g. `/thing`
+    const pathname = location.pathname?.replace(/\/$/, '');
+    const sanitizedPathname = pathname.replace(/^\/+/, '').replace(/\/+$/, '') + '/';
+
+    let functionRoute: ExpoRouterServerManifestV1Route<'dynamic'> | null = null;
+
+    const staticManifest = manifest?.staticHtml;
+    const dynamicManifest = manifest?.functions;
+
+    for (const route of dynamicManifest) {
+      if (route.regex.test(sanitizedPathname)) {
+        functionRoute = route;
+        break;
+      }
+    }
+
+    if (req.method === 'GET' || req.method === 'HEAD') {
+      for (const route of staticManifest) {
+        if (route.regex.test(sanitizedPathname)) {
+          if (
+            // Skip the 404 page if there's a function
+            route.generated &&
+            route.file.match(/^\.\/\[\.\.\.404]\.[jt]sx?$/)
+          ) {
+            if (functionRoute) {
+              continue;
+            }
+          }
+
+          console.log('Using:', route.src, sanitizedPathname, route.regex);
+          try {
+            const { getStaticContent } = await getStaticRenderFunctions(projectRoot, devServerUrl, {
+              minify: options.mode === 'production',
+              dev: options.mode !== 'production',
+              // Ensure the API Routes are included
+              environment: 'node',
+            });
+
+            let content = await getStaticContent(location);
+
+            //TODO: Not this -- disable injection some other way
+            if (options.mode !== 'production') {
+              // Add scripts for rehydration
+              // TODO: bundle split
+              content = content.replace(
+                '</body>',
+                [`<script src="${options.getWebBundleUrl()}" defer></script>`].join('\n') +
+                  '</body>'
+              );
+            }
+
+            res.setHeader('Content-Type', 'text/html');
+            res.end(content);
+            return;
+          } catch (error: any) {
+            res.setHeader('Content-Type', 'text/html');
+            try {
+              res.end(
+                await getErrorOverlayHtmlAsync({
+                  error,
+                  projectRoot: projectRoot,
+                })
+              );
+            } catch (staticError: any) {
+              // Fallback error for when Expo Router is misconfigured in the project.
+              res.end(
+                '<span><h3>Internal Error:</h3><b>Project is not setup correctly for static rendering (check terminal for more info):</b><br/>' +
+                  error.message +
+                  '<br/><br/>' +
+                  staticError.message +
+                  '</span>'
+              );
+            }
+          }
+          return;
+        }
+      }
+    }
+
+    if (!functionRoute) {
+      return next();
+    }
+    const resolvedFunctionPath = await resolveAsync(functionRoute.file, {
+      extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      basedir: appDir,
+    });
+
+    const middlewareContents = await bundleApiRoute(projectRoot, resolvedFunctionPath!, options);
+    if (!middlewareContents) {
+      return next();
+    }
+
+    const middleware = requireString(middlewareContents);
+
+    debug(`Supported methods (API route exports):`, Object.keys(middleware), ' -> ', req.method);
+
+    // Interop default
+    const func = middleware[req.method];
+
+    if (!func) {
+      res.statusCode = 405;
+      return res.end('Method not allowed');
+    }
+
+    const expoRequest = convertRequest(req, res, functionRoute);
+
+    try {
+      // 4. Execute.
+      const response = await func?.(expoRequest);
+
+      // 5. Respond
+      if (response) {
+        await respond(res, response);
+      } else {
+        // TODO: Not sure what to do here yet
+        res.statusCode = 500;
+        res.end();
+      }
+    } catch (error) {
+      // TODO: Symbolicate error stack
+      console.error(error);
+      res.statusCode = 500;
+      res.end();
+    }
+  };
+}
 
 export class MetroBundlerDevServer extends BundlerDevServer {
   private metro: import('metro').Server | null = null;
@@ -65,6 +405,48 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           await getFreePortAsync(EXPO_GO_METRO_PORT));
 
     return port;
+  }
+
+  async getFunctionsAsync({ mode }: { mode: 'development' | 'production' }) {
+    const devServerUrl = `http://localhost:${this.getInstance()?.location.port}`;
+
+    const appDir = path.join(
+      this.projectRoot,
+      // TODO: Support other directories via app.json
+      'app'
+    );
+
+    function getRouteFiles() {
+      // TODO: Cache this
+      return globSync('**/*+api.@(ts|tsx|js|jsx)', {
+        cwd: appDir,
+        absolute: true,
+      });
+    }
+
+    const files = getRouteFiles();
+
+    const output: Record<string, string> = {};
+
+    const getManifest = await getExpoRouteManifestBuilderAsync(this.projectRoot, {
+      devServerUrl,
+      minify: mode === 'production',
+      dev: mode !== 'production',
+    });
+
+    const manifest = await getManifest();
+
+    for (const file of files) {
+      console.log('file', devServerUrl, file);
+      const middleware = await requireFileContentsWithMetro(this.projectRoot, devServerUrl, file, {
+        minify: mode === 'production',
+        dev: mode !== 'production',
+        environment: 'node',
+      });
+      output[path.relative(appDir, file)] = middleware;
+    }
+
+    return [manifest, output];
   }
 
   /** Get routes from Expo Router. */
@@ -341,6 +723,47 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
       // This MUST be after the manifest middleware so it doesn't have a chance to serve the template `public/index.html`.
       middleware.use(new ServeStaticMiddleware(this.projectRoot).getHandler());
+
+      if (env.EXPO_USE_ROUTE_HANDLERS) {
+        // Middleware for hosting middleware
+        middleware.use(
+          createRouteHandlerMiddleware(this.projectRoot, {
+            ...options,
+            getWebBundleUrl: manifestMiddleware.getWebBundleUrl.bind(manifestMiddleware),
+          })
+        );
+
+        observeApiRouteChanges(
+          this.projectRoot,
+          {
+            metro,
+            server,
+          },
+          async (filepath, op) => {
+            const isApiRoute = filepath.match(/\+api\.[tj]sx?$/);
+            if (op === 'delete') {
+              // update manifest
+              console.log('update manifest');
+              await refetchManifest(this.projectRoot, options);
+            } else if (op === 'add' || (op === 'change' && !isApiRoute)) {
+              console.log('invalidate manifest');
+              // The manifest won't be fresh instantly so we should just clear it to ensure the next request will get the latest.
+              manifestOperation.delete('manifest');
+            }
+
+            if (isApiRoute) {
+              console.log(`[expo-cli] ${op} ${filepath}`);
+              if (op === 'change' || op === 'add') {
+                rebundleApiRoute(this.projectRoot, filepath, options);
+              }
+
+              if (op === 'delete') {
+                // TODO: Cancel the bundling of the deleted route.
+              }
+            }
+          }
+        );
+      }
 
       // This should come after the static middleware so it doesn't serve the favicon from `public/favicon.ico`.
       middleware.use(new FaviconMiddleware(this.projectRoot).getHandler());
