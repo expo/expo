@@ -14,7 +14,7 @@ export const globalExtras = css`
   }
 
   *:focus-visible {
-    outline: 3px ridge ${theme.button.tertiary.icon};
+    outline: 3px solid ${theme.button.tertiary.icon};
     outline-offset: 1px;
     border-radius: 3px;
   }
