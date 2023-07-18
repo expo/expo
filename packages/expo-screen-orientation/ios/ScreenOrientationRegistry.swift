@@ -79,7 +79,8 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   /**
    Rotates the view to currentScreenOrientation or default orientation from the orientationMask.
    */
-  func enforceDesiredDeviceOrientation(withOrientationMask orientationMask: UIInterfaceOrientationMask) {
+  @objc
+  public func enforceDesiredDeviceOrientation(withOrientationMask orientationMask: UIInterfaceOrientationMask) {
     var newOrientation = orientationMask.defaultOrientation()
 
     if orientationMask.contains(currentScreenOrientation) {
