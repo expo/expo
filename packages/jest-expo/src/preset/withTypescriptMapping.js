@@ -43,27 +43,38 @@ function convertTypescriptTargetToJestTarget(target) {
   return ['<rootDir>', ...segments].join('/');
 }
 
-/** Try to add the `moduleNameMapper` configuration from the typescript `paths` configuration. */
-function withTypescriptMapping(jestConfig) {
+function tryGenerateMappingFromConfig(jestConfig, configFile) {
   const readJsonFile = JsonFile.default?.read || JsonFile.read;
 
   try {
-    // The path to tsconfig.json is resolved relative to cwd
+    // The path to jsconfig.json or tsconfig.json is resolved relative to cwd
     // See: _createTypeScriptConfiguration() in `createJestPreset`
-    const tsConfigPath = path.resolve('tsconfig.json');
-    const tsConfig = readJsonFile(tsConfigPath, { json5: true });
+    const configPath = path.resolve(configFile);
+    const config = readJsonFile(configPath, { json5: true });
 
-    if (tsConfig?.compilerOptions?.paths) {
+    if (config?.compilerOptions?.paths) {
       jestConfig.moduleNameMapper = {
-        ...jestMappingFromTypescriptPaths(tsConfig.compilerOptions.paths || {}),
+        ...jestMappingFromTypescriptPaths(config.compilerOptions.paths || {}),
         ...(jestConfig.moduleNameMapper || {}),
       };
     }
+
+    return true;
   } catch (error) {
     // If the user is not using typescript, we can safely ignore this error
     if (error.code === 'MODULE_NOT_FOUND') return jestConfig;
     if (error.code === 'ENOENT') return jestConfig;
+    // Other errors are unexpected, but should not block the jest configuration
+    return false;
+  }
+}
 
+/** Try to add the `moduleNameMapper` configuration from the typescript `paths` configuration. */
+function withTypescriptMapping(jestConfig) {
+  const fromTsConfig = tryGenerateMappingFromConfig(jestConfig, 'tsconfig.json');
+  const fromJsConfig = !fromTsConfig && tryGenerateMappingFromConfig(jestConfig, 'jsconfig.json');
+
+  if (fromTsConfig === false || fromJsConfig === false) {
     console.warn('Failed to set custom typescript paths for jest.');
     console.warn('You need to configure jest moduleNameMapper manually.');
     console.warn(
