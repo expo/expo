@@ -105,7 +105,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const manifest = await getManifest?.();
 
     for (const file of files) {
-      console.log('file', devServerUrl, file);
       const middleware = await requireFileContentsWithMetro(this.projectRoot, devServerUrl, file, {
         minify: mode === 'production',
         dev: mode !== 'production',
