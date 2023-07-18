@@ -75,4 +75,8 @@ export const globalExtras = css`
   .strike {
     text-decoration: line-through;
   }
+
+  code {
+    font-variant-ligatures: none;
+  }
 `;
