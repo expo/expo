@@ -9,7 +9,8 @@
   "files": [
     "static",
     "build",
-    "metro-config.js"
+    "metro-config.js",
+    "metro-config.d.ts"
   ],
   "scripts": {
     "build": "taskr",
