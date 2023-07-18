@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix allowed orientations set in `Info.plist` being ignored when no delegates requested a different orientation.
+- [iOS] Fix allowed orientations set in `Info.plist` being ignored when no delegates requested a different orientation. ([#23593](https://github.com/expo/expo/pull/23593) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 
