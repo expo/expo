@@ -98,6 +98,8 @@ export async function exportFromServerAsync(
     }),
   ]);
 
+  await exportRouteHandlersAsync(outputDir, devServer);
+
   debug('Routes:\n', inspect(manifest, { colors: true, depth: null }));
 
   const files = await getFilesToExportFromServerAsync(projectRoot, {
@@ -216,4 +218,30 @@ export function getPathVariations(routePath: string): string[] {
   generateVariations(segments, 0);
 
   return Array.from(variations);
+}
+
+async function exportRouteHandlersAsync(outputDir: string, server: MetroBundlerDevServer) {
+  const funcDir = path.join(outputDir, '_expo/functions');
+  fs.mkdirSync(path.join(funcDir), { recursive: true });
+
+  const [routesManifest, middleware] = await server.getFunctionsAsync({ mode: 'production' });
+
+  await fs.promises.writeFile(
+    path.join(outputDir, '_expo/routes.json'),
+    JSON.stringify(routesManifest, null, 2),
+    'utf-8'
+  );
+
+  const files = Object.entries(middleware) as [string, string][];
+  Log.log(chalk.bold`Exporting ${files.length} Route Handlers:`);
+
+  await Promise.all(
+    files.map(async ([file, contents]) => {
+      const length = Buffer.byteLength(contents, 'utf8');
+      Log.log(file, chalk.gray`(${prettyBytes(length)})`);
+      const outputPath = path.join(funcDir, file);
+      await fs.promises.mkdir(path.dirname(outputPath), { recursive: true });
+      await fs.promises.writeFile(outputPath, contents);
+    })
+  );
 }
