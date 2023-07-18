@@ -124,7 +124,7 @@ export function createRouteHandlerMiddleware(
               res.end(
                 await getErrorOverlayHtmlAsync({
                   error,
-                  projectRoot: projectRoot,
+                  projectRoot,
                 })
               );
             } catch (staticError: any) {

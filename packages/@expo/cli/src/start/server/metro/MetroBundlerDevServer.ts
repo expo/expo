@@ -45,6 +45,7 @@ import { instantiateMetroAsync } from './instantiateMetro';
 import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import { observeApiRouteChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
+import { rebundleApiRoute } from './fetchServerRoutes';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
