@@ -291,7 +291,8 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
   // MARK: - Managing Interface Geometry
 
   /**
-   * The application will use the values from infoPlist as the orientation unless a view controller requested a different orientation
+   * Sets allowed orientations for the application. It will use the values from `Info.plist`
+   * as the orientation mask unless a subscriber requested a different orientation.
    */
   public func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
     var hasSetMask = false
