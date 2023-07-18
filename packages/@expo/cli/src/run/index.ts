@@ -4,7 +4,7 @@ import chalk from 'chalk';
 import { Command } from '../../bin/cli';
 import { Log } from '../log';
 import { assertWithOptionsArgs } from '../utils/args';
-import { CommandError } from '../utils/errors';
+import { CommandError, logCmdError } from '../utils/errors';
 import { selectAsync } from '../utils/prompts';
 import { logPlatformRunCommand } from './hints';
 
@@ -44,27 +44,31 @@ export const expoRun: Command = async (argv) => {
     );
   }
 
-  const platform =
-    args['--platform'] ??
-    (await selectAsync('Select the platform to run', [
-      { title: 'Android', value: 'android' },
-      { title: 'iOS', value: 'ios' },
-    ]));
+  try {
+    const platform =
+      args['--platform'] ??
+      (await selectAsync('Select the platform to run', [
+        { title: 'Android', value: 'android' },
+        { title: 'iOS', value: 'ios' },
+      ]));
 
-  logPlatformRunCommand(platform, argv);
+    logPlatformRunCommand(platform, argv);
 
-  switch (platform) {
-    case 'android': {
-      const { expoRunAndroid } = await import('./android');
-      return expoRunAndroid(argv);
+    switch (platform) {
+      case 'android': {
+        const { expoRunAndroid } = await import('./android');
+        return expoRunAndroid(argv);
+      }
+
+      case 'ios': {
+        const { expoRunIos } = await import('./ios');
+        return expoRunIos(argv);
+      }
+
+      default:
+        throw new CommandError('UNSUPPORTED_PLATFORM', `Unsupported platform: ${platform}`);
     }
-
-    case 'ios': {
-      const { expoRunIos } = await import('./ios');
-      return expoRunIos(argv);
-    }
-
-    default:
-      throw new CommandError('UNSUPPORTED_PLATFORM', `Unsupported platform: ${platform}`);
+  } catch (error: any) {
+    logCmdError(error);
   }
 };
