@@ -167,6 +167,10 @@ public class AppController: NSObject, AppLoaderTaskDelegate, AppLoaderTaskSwiftD
       .raise()
     }
 
+    defaultSelectionPolicy = SelectionPolicyFactory.filterAwarePolicy(
+      withRuntimeVersion: UpdatesUtils.getRuntimeVersion(withConfig: config)
+    )
+
     resetSelectionPolicyToDefault()
   }
 
