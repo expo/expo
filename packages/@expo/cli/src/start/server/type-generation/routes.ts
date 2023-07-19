@@ -489,7 +489,9 @@ declare module "expo-router" {
   export const Link: LinkComponent;
   
   /** Redirects to the href as soon as the component is mounted. */
-  export const Redirect: <T>(props: React.PropsWithChildren<href: Href<T>>): JSX.Element;
+  export const Redirect: <T>(
+    props: React.PropsWithChildren<{ href: Href<T> }>
+  ) => JSX.Element;
 
   /************
    * Hooks *
