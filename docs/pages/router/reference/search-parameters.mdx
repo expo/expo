@@ -8,7 +8,6 @@ sidebar_title: Search Parameters
 import { FileTree } from '~/ui/components/FileTree';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import { Tabs, Tab } from '~/ui/components/Tabs';
 
 Search parameters (also known as query params) are serializable fields that can be added to a URL. They are commonly used to pass data between pages. Expo Router provides hooks for accessing and modifying these parameters.
 
@@ -29,7 +28,7 @@ The example below demonstrates the difference between `useLocalSearchParams` and
 
     The Root Layout is a stack navigator:
 
-    ```js app/_layout.js
+    ```jsx app/_layout.js
     import { Stack } from 'expo-router';
 
     export default function Layout() {
@@ -43,7 +42,7 @@ The example below demonstrates the difference between `useLocalSearchParams` and
 
     The initial route redirects to the dynamic route **app/[user].js**, with **user=evanbacon**:
 
-    ```js app/index.js
+    ```jsx app/index.js
     import { Redirect } from 'expo-router';
 
     export default function Route() {
@@ -57,7 +56,7 @@ The example below demonstrates the difference between `useLocalSearchParams` and
 
     The dynamic route **app/[user]** prints out the global and local search parameters. It also allows for pushing new instances of the same route with different search parameters:
 
-    ```js app/[user].js
+    ```jsx app/[user].js
     import { Text, View } from 'react-native';
     import { useLocalSearchParams, useGlobalSearchParams, Link } from 'expo-router';
 

@@ -25,7 +25,7 @@ export default function Layout() {
 
 Use the `screenOptions` prop to configure the header bar.
 
-```js app/_layout.js
+```jsx app/_layout.js
 import { Stack } from 'expo-router';
 
 export default function Layout() {
@@ -47,7 +47,7 @@ export default function Layout() {
 
 You can use a layout's Screen component to configure the header bar dynamically from within the route. This is good for interactions that change the UI.
 
-```js app/home.js
+```jsx app/home.js
 import { Link, Stack } from 'expo-router';
 import { Image, Text, View } from 'react-native';
 
@@ -86,7 +86,7 @@ export default function Home() {
 
 You can use the imperative API `router.setParams()` function to configure the route dynamically.
 
-```js app/details.js
+```jsx app/details.js
 import { View, Text } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 
@@ -120,7 +120,7 @@ With the following file structure:
 
 You can use the `<Stack.Screen name={routeName} />` component in the layout component route to statically configure screen options. This is useful for tab bars or drawers which need to have an icon defined ahead of time.
 
-```js app/_layout.js
+```jsx app/_layout.js
 import { Stack } from 'expo-router';
 
 export default function Layout() {
@@ -149,9 +149,8 @@ export default function Layout() {
 
 Use the `<Stack.Screen />` component in the child route to dynamically configure options.
 
-```js app/home.js
-import { useLayoutEffect } from 'react';
-import { View, Button, Text, Image } from 'react-native';
+```jsx app/home.js
+import { Button, Text, Image } from 'react-native';
 /* @info */
 import { Stack } from 'expo-router';
 /* @end */
