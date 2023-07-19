@@ -89,7 +89,7 @@ Layout the structure of your app by creating files according to the [creating pa
 Replace navigators with directories, for example:
 
 {/* prettier-ignore */}
-```js React Navigation
+```jsx React Navigation
 function HomeTabs() {
   return (
     <Tab.Navigator>
@@ -150,7 +150,7 @@ function App() {
   ]}
 />
 
-```js app/_layout.js
+```jsx app/_layout.js
 import { Stack } from 'expo-router';
 
 export default function RootLayout() {
@@ -256,7 +256,7 @@ The `NavigationContainer` ref should not be accessed directly. Use the following
 
 Navigate to the initial route of the application. For example, if your app starts at `/` (recommended), then you can replace the current route with `/` using this method.
 
-```js
+```jsx
 import { useRouter } from 'expo-router';
 
 function Example() {
@@ -338,7 +338,7 @@ The [`fallback`](https://reactnavigation.org/docs/navigation-container/#fallback
 
 In React Navigation, you set the theme for the entire app using the [`<NavigationContainer />`](https://reactnavigation.org/docs/navigation-container/#theme) component. Expo Router manages the root container for you, so instead you should set the theme using the `ThemeProvider` directly.
 
-```js app/_layout.tsx
+```jsx app/_layout.tsx
 import { ThemeProvider, DarkTheme, DefaultTheme, useTheme } from '@react-navigation/native';
 import { Slot } from 'expo-router';
 
@@ -399,7 +399,7 @@ All of the `children` of a `<Navigator />` component will be rendered as-is.
 Custom layouts have an internal context that is ignored when using the `<Slot />` component without a `<Navigator />` component wrapping it.
 
 {/* prettier-ignore */}
-```js
+```jsx
 import { View } from 'react-native';
 import { TabRouter } from '@react-navigation/native';
 
@@ -418,7 +418,6 @@ export default function App() {
 
 function Header() {
   const { navigation, state, descriptors, router } = Navigator.useContext();
-
   const pathname = usePathname();
 
   return (
@@ -428,7 +427,7 @@ function Header() {
         href="/profile"
         /* @info Use <code>pathname</code> to determine if the link is active. */
         style={[pathname === '/profile' && { color: 'blue' }]}>
-        /* @end */ 
+        /* @end */
         Profile
       </Link>
       <Link href="/settings">Settings</Link>

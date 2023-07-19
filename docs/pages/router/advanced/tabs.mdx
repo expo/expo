@@ -14,7 +14,7 @@ Expo Router adds `href` screen option which can only be used with screen options
 
 Sometimes you want a route to exist but not show up in the tab bar, you can pass `href: null` to disable the button:
 
-```js app/_layout.js
+```jsx app/_layout.js
 import { Tabs } from 'expo-router/tabs';
 export default function AppLayout() {
   return (
@@ -36,8 +36,7 @@ export default function AppLayout() {
 
 You may want to use a dynamic route in your tab bar (for example, a profile tab). For this case, you'll want the button to always link to a specific `href`.
 
-```js app/_layout.js
-import { Link } from 'expo-router';
+```jsx app/_layout.js
 import { Tabs } from 'expo-router/tabs';
 export default function AppLayout() {
   return (

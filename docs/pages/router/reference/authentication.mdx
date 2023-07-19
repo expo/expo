@@ -14,7 +14,7 @@ Consider the following project:
 
 First, we'll setup a [React Context provider](https://react.dev/reference/react/createContext) that we can use to protect routes. This provider will use a mock implementation, you can replace it with your own [authentication provider](/guides/authentication/).
 
-```js context/auth.js
+```jsx context/auth.js
 import { router, useSegments } from 'expo-router';
 import React from 'react';
 
@@ -66,7 +66,7 @@ export function Provider(props) {
 
 Now we can use this context to control the access to the routes, we'll do this by using a Layout Route that wraps all the screens which require authentication.
 
-```js app/_layout.js
+```jsx app/_layout.js
 import { Slot } from 'expo-router';
 import { Provider } from '../context/auth';
 
@@ -82,7 +82,7 @@ export default function Root() {
 
 Now we can create our `(auth)` group which is unprotected, this screen can toggle the authentication using `signIn()`.
 
-```js app/(auth)/sign-in.js
+```jsx app/(auth)/sign-in.js
 import { Text, View } from 'react-native';
 import { useAuth } from '../../context/auth';
 
@@ -98,7 +98,7 @@ export default function SignIn() {
 
 And finally we'll implement an authenticated screen which can sign out.
 
-```js app/index.js
+```jsx app/index.js
 import { Text, View } from 'react-native';
 
 import { useAuth } from '../context/auth';

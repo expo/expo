@@ -36,7 +36,7 @@ Instead of defining the same route multiple times with different layouts, use th
 
 To distinguish between the two routes use a layout's `segment` prop:
 
-```js app/(home,search)/_layout.js
+```jsx app/(home,search)/_layout.js
 export default function DynamicLayout({ segment }) {
   if (segment === '(search)') {
     return <SearchStack />;

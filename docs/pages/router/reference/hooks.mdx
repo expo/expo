@@ -16,7 +16,7 @@ Returns the currently selected route location without search parameters. For exa
 
 <RouteUrl>/profile/baconbrix?extra=info</RouteUrl>
 
-```js app/profile/[user].tsx
+```jsx app/profile/[user].tsx
 import { Text } from 'react-native';
 /* @info */
 import { usePathname } from 'expo-router';
@@ -41,7 +41,7 @@ When `/abc/home` pushes `/123/shop`, `useGlobalSearchParams` returns `{ first: u
 
 <RouteUrl>/profile/baconbrix?extra=info</RouteUrl>
 
-```js app/profile/[user].tsx
+```jsx app/profile/[user].tsx
 import { Text } from 'react-native';
 /* @info */
 import { useLocalSearchParams } from 'expo-router';
@@ -63,7 +63,7 @@ Refer to the [local vs global search params](/router/reference/search-parameters
 
 <RouteUrl>/profile/baconbrix?extra=info</RouteUrl>
 
-```js app/profile/[user].tsx
+```jsx app/profile/[user].tsx
 import { Text } from 'react-native';
 /* @info */
 import { useGlobalSearchParams } from 'expo-router';
@@ -88,7 +88,7 @@ The `Href` type is a union of the following types:
 
 Returns a list of segments for the currently selected route. Segments are not normalized so that they will be the same as the file path. For example, `/[id]?id=normal` -> `["[id]"]`.
 
-```js app/profile/[user].tsx
+```jsx app/profile/[user].tsx
 import { Text } from 'react-native';
 /* @info */
 import { useSegments } from 'expo-router';
@@ -104,7 +104,7 @@ export default function Route() {
 
 This function can be typed using an abstract of string arrays:
 
-```js app/profile/[user].tsx
+```jsx app/profile/[user].tsx
 import { useSegments } from 'expo-router';
 
 export default function Route() {
@@ -120,7 +120,7 @@ export default function Route() {
 
 Access the underlying React Navigation [`navigation` prop](https://reactnavigation.org/docs/navigation-prop) to imperatively access layout-specific functionality like `navigation.openDrawer()` in a Drawer layout. [Learn more](https://reactnavigation.org/docs/navigation-prop/#navigator-dependent-functions).
 
-```js
+```jsx
 /* @info */
 import { useNavigation } from 'expo-router';
 /* @end */
@@ -148,13 +148,12 @@ export default function Route() {
 
 Given a function, the `useFocusEffect` hook will invoke the function whenever the route is "focused".
 
-```js
+```jsx
 /* @info */
 import { useFocusEffect } from 'expo-router';
 /* @end */
 
 export default function Route() {
-
   useFocusEffect(() => {
     /* @info Invoked whenever the route is focused */
     console.log('Hello')
