@@ -270,12 +270,19 @@ internal sealed class PluginType {
     private fun fromRawValue(value: Any): PluginType? {
       return when (value) {
         is JSONArray -> {
-          if (value.length() != 2) {
+          if (value.length() == 0) {
             throw IllegalArgumentException("Value for (key = plugins) has incorrect type")
           }
           val name = value.get(0) as? String ?: return null
-          val props = value.get(1) as? JSONObject ?: return null
-          WithProps(name to props.toMap())
+          when (value.length()) {
+            2 -> {
+              val props = value.get(1) as? JSONObject ?: return null
+              WithProps(name to props.toMap())
+            }
+            else -> {
+              WithoutProps(name)
+            }
+          }
         }
         is String -> {
           WithoutProps(value)
