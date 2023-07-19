@@ -308,6 +308,7 @@ const general = [
     makeGroup('Reference', [
       makePage('eas-update/migrate-from-classic-updates.mdx'),
       makePage('eas-update/codepush.mdx'),
+      makePage('eas-update/updating-your-app.mdx'),
       makePage('eas-update/faq.mdx'),
       makePage('eas-update/known-issues.mdx'),
     ]),
@@ -385,7 +386,6 @@ const general = [
         makePage('bare/using-expo-cli.mdx'),
         makePage('bare/installing-updates.mdx'),
         makePage('bare/using-expo-client.mdx'),
-        makePage('bare/updating-your-app.mdx'),
         makePage('bare/install-dev-builds-in-bare.mdx'),
         makePage('bare/error-recovery.mdx'),
       ]),
