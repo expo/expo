@@ -155,7 +155,9 @@ describe(getTypedRoutesUtils, () => {
         for (const staticRoute of expectedRoutes.static) {
           expect(actualRoutes).toContain(staticRoute);
         }
-      } else {
+      }
+
+      if ('dynamic' in expectedRoutes) {
         const actualRoutes = dynamicRoutes.get(filePathToRoute(filepath));
 
         expect(actualRoutes?.size).toEqual(expectedRoutes.dynamic.length);
