@@ -2220,7 +2220,7 @@ PODS:
     - React-Core
   - EXJSONUtils (0.7.1)
   - EXJSONUtils/Tests (0.7.1)
-  - EXLocation (16.0.0):
+  - EXLocation (16.1.0):
     - ExpoModulesCore
   - EXManifests (0.7.1):
     - ExpoModulesCore
@@ -4905,7 +4905,7 @@ SPEC CHECKSUMS:
   EXFont: 738c44c390953ebcbab075a4848bfbef025fd9ee
   EXImageLoader: 34b214f9387e98f3c73989f15d8d5b399c9ab3f7
   EXJSONUtils: 6802be4282d42b97c51682468ddc1026a06f8276
-  EXLocation: 231f4a3683fabfed254c9498b226f7f40a40f9d8
+  EXLocation: a425ace19c0445e7ea9702982fc6b9a402791510
   EXManifests: 8a4a480e3b58891d5657d3996a39229e5c96d912
   EXMediaLibrary: dd08edb824ee92519a989211720956cfd381f212
   EXNotifications: 09394cbd7165f9a4a00a53328aa09bf874bae717
