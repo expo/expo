@@ -15,9 +15,15 @@ jest.mock('@expo/config', () => ({
 }));
 
 describe(resolveOptionsAsync, () => {
-  it(`asserts invalid platform`, async () => {
+  it(`asserts unknown platform`, async () => {
     await expect(resolveOptionsAsync('/', { '--platform': ['foobar'] })).rejects.toThrow(
       /^Unsupported platform "foobar"\./
+    );
+  });
+
+  it(`asserts not-configured platform`, async () => {
+    await expect(resolveOptionsAsync('/', { '--platform': ['web'] })).rejects.toThrow(
+      /^Platform "web" is not configured to use the Metro bundler in the project Expo config\./
     );
   });
 
