@@ -248,7 +248,7 @@ We also provide a [step-by-step guide to try out EAS Update quickly](/eas-update
 
 - Set the debug environment variable: `export EX_UPDATES_NATIVE_DEBUG=1`
 - Reinstall pods with `npx pod-install`. The `expo-updates` podspec now detects this environment variable, and makes changes so that the debug code that would normally load from the Metro packager is bypassed, and the app is built with the EXUpdates bundle and other dependencies needed to load updates from EAS.
-- [Ensure the desired channel is set in our **Expo.plist**](/bare/updating-your-app/#configuring-the-channel-manually)
+- [Ensure the desired channel is set in our **Expo.plist**](/eas-update/updating-your-app/#configuring-the-channel-manually)
 - Modify the application Xcode project file to force bundling of the application JavaScript for both release and debug builds:
 
 ```
@@ -260,7 +260,7 @@ sed -i '' 's/SKIP_BUNDLING/FORCE_BUNDLING/g;' ios/&lt;project name&gt;.xcodeproj
 #### Android local builds
 
 - Set the debug environment variable: `export EX_UPDATES_NATIVE_DEBUG=1`
-- [Ensure the desired channel is set in your **AndroidManifest.xml**](/bare/updating-your-app/#configuring-the-channel-manually)
+- [Ensure the desired channel is set in your **AndroidManifest.xml**](/eas-update/updating-your-app/#configuring-the-channel-manually)
 - Execute a [debug build](/debugging/runtime-issues/#native-debugging) of the app with Android Studio or from the command line.
 
 #### EAS Build

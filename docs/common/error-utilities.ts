@@ -281,7 +281,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/offline-support/': '/archive/classic-updates/offline-support/',
   '/guides/preloading-and-caching-assets/':
     '/archive/classic-updates/preloading-and-caching-assets/',
-  '/eas-update/bare-react-native/': '/bare/updating-your-app/',
+  '/eas-update/bare-react-native/': '/eas-update/updating-your-app/',
   '/worfkflow/publishing/': '/archive/classic-updates/publishing/',
   '/classic/building-standalone-apps/': '/archive/classic-updates/building-standalone-apps/',
   '/classic/turtle-cli/': '/archive/classic-updates/turtle-cli/',
@@ -295,6 +295,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/bare/using-web/': '/workflow/web/',
   '/guides/running-in-the-browser/': '/workflow/web/',
   '/bare/unimodules-full-list/': '/bare/overview/',
+  '/bare/updating-your-app/': '/eas-update/updating-your-app/',
 
   // Consolidate distribution
   '/distribution/security/': '/app-signing/security/',
