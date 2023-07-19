@@ -74,20 +74,30 @@ internal class ImageLibraryContract(
   }
 
   override fun parseResult(input: ImageLibraryContractOptions, resultCode: Int, intent: Intent?) =
-    if (resultCode == Activity.RESULT_CANCELED || intent == null) {
+    if (resultCode == Activity.RESULT_CANCELED) {
       ImagePickerContractResult.Cancelled()
-    } else if (input.options.allowsMultipleSelection) {
-      val uris = intent.getAllDataUris()
-      ImagePickerContractResult.Success(
-        uris.map { uri ->
-          uri.toMediaType(contentResolver) to uri
-        }
-      )
     } else {
-      intent.data?.let { uri ->
-        val type = uri.toMediaType(contentResolver)
-        ImagePickerContractResult.Success(listOf(type to uri))
-      } ?: ImagePickerContractResult.Cancelled()
+      intent?.takeIf { resultCode == Activity.RESULT_OK }?.getAllDataUris()?.let { uris ->
+        if (input.options.allowsMultipleSelection) {
+          ImagePickerContractResult.Success(
+            uris.map { uri ->
+              uri.toMediaType(contentResolver) to uri
+            }
+          )
+        } else {
+          if (intent.data != null) {
+            intent.data?.let {
+              val type = it.toMediaType(contentResolver)
+              ImagePickerContractResult.Success(listOf(type to it))
+            }
+          } else {
+            uris.firstOrNull()?.let { uri ->
+              val type = uri.toMediaType(contentResolver)
+              ImagePickerContractResult.Success(listOf(type to uri))
+            } ?: ImagePickerContractResult.Error()
+          }
+        }
+      } ?: ImagePickerContractResult.Error()
     }
 }
 
