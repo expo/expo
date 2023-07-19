@@ -78,9 +78,11 @@ internal class ImageLibraryContract(
       ImagePickerContractResult.Cancelled()
     } else if (input.options.allowsMultipleSelection) {
       val uris = intent.getAllDataUris()
-      ImagePickerContractResult.Success(uris.map { uri ->
-        uri.toMediaType(contentResolver) to uri
-      })
+      ImagePickerContractResult.Success(
+        uris.map { uri ->
+          uri.toMediaType(contentResolver) to uri
+        }
+      )
     } else {
       intent.data?.let { uri ->
         val type = uri.toMediaType(contentResolver)
