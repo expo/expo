@@ -243,7 +243,7 @@ const Home = () => {
         <CellContainer>
           <Row>
             {TALKS.filter(talk => talk.home).map(talk => (
-              <TalkGridCell {...talk} />
+              <TalkGridCell key={talk.videoId} {...talk} />
             ))}
           </Row>
         </CellContainer>
