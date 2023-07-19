@@ -1,7 +1,6 @@
 ---
 title: Static Rendering
 description: Learn how to render routes to static HTML and CSS files with Expo Router.
-hideFromSearch: true
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
@@ -158,7 +157,7 @@ Now the dynamic child routes will be invoked twice, once with `{ id: 'one' }` an
 
 ```tsx app/[id]/[comment].tsx
 export async function generateStaticParams(params: {
-  id: 'one' | 'two',
+  id: 'one' | 'two';
 }): Promise<Record<string, string>[]> {
   const comments = await getComments(params.id);
   return comments.map(comment => ({
@@ -182,7 +181,7 @@ You can customize the root HTML file by creating an **app/+html.tsx** file in yo
 
 ```tsx app/+html.tsx
 import { ScrollViewStyleReset } from 'expo-router/html';
-import type { PropsWithChildren } from "react";
+import type { PropsWithChildren } from 'react';
 
 // This file is web-only and used to configure the root HTML for every
 // web page during static rendering.

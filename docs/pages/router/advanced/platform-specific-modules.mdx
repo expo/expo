@@ -1,7 +1,6 @@
 ---
 title: Platform-specific Modules
 description: Learn how to switch modules based on the platform in Expo Router.
-hideTOC: true
 ---
 
 import { FileTree } from '~/ui/components/FileTree';
@@ -10,7 +9,7 @@ import { BookOpen02Icon } from '@expo/styleguide-icons';
 
 While building your app, you may want to show specific content based on the current platform. Platform-specific modules can make the experience more native to a given platform. The following sections describe the ways you can achieve this with Expo Router.
 
-### Platform module
+## Platform module
 
 You can use the [`Platform`](https://reactnative.dev/docs/platform-specific-code#platform-module) module from React Native to detect the current platform and render the appropriate content based on the result. For example, you can render a `Tabs` layout on native and a custom layout on the web.
 
@@ -41,7 +40,7 @@ export default function Layout() {
 }
 ```
 
-### Platform specific extensions
+## Platform specific extensions
 
 Metro bundler's platform-specific extensions (for example, **.ios.js** or **.native.ts**) are not supported in the **app** directory. This ensures that routes are universal across platforms for deep linking. However, you can create platform-specific files outside the **app** directory and use them from within the **app** directory.
 
