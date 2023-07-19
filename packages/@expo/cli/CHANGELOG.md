@@ -9,6 +9,7 @@
 - Add support for SSO users. ([#22945](https://github.com/expo/expo/pull/22945) by [@lzkb](https://github.com/lzkb))
 - Use node server default port selection for SSO login server. ([#23505](https://github.com/expo/expo/pull/23505) by [@wschurman](https://github.com/wschurman))
 - Add styling to SSO auth redirect completion page. ([#23477](https://github.com/expo/expo/pull/23477) by [@wschurman](https://github.com/wschurman))
+- Allow multiple `--platform` flags in `expo export`. ([#23621](https://github.com/expo/expo/pull/23621) by [@byCedric](https://github.com/byCedric))
 
 ### 🐛 Bug fixes
 

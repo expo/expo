@@ -15,17 +15,47 @@ jest.mock('@expo/config', () => ({
 }));
 
 describe(resolveOptionsAsync, () => {
-  it(`asserts invalid platform`, async () => {
-    await expect(resolveOptionsAsync('/', { '--platform': 'foobar' })).rejects.toThrow(
+  it(`asserts unknown platform`, async () => {
+    await expect(resolveOptionsAsync('/', { '--platform': ['foobar'] })).rejects.toThrow(
       /^Unsupported platform "foobar"\./
     );
+  });
+
+  it(`asserts not-configured platform`, async () => {
+    await expect(resolveOptionsAsync('/', { '--platform': ['web'] })).rejects.toThrow(
+      /^Platform "web" is not configured to use the Metro bundler in the project Expo config\./
+    );
+  });
+
+  it(`allows multiple platform flags`, async () => {
+    await expect(
+      resolveOptionsAsync('/', { '--platform': ['android', 'ios'] })
+    ).resolves.toMatchObject({
+      platforms: ['android', 'ios'],
+    });
+  });
+
+  it(`filters duplicated platform flags`, async () => {
+    await expect(
+      resolveOptionsAsync('/', { '--platform': ['android', 'android', 'ios', 'ios'] })
+    ).resolves.toMatchObject({
+      platforms: ['android', 'ios'],
+    });
+  });
+
+  it(`filters duplicated platform flags including all`, async () => {
+    await expect(
+      resolveOptionsAsync('/', { '--platform': ['android', 'all'] })
+    ).resolves.toMatchObject({
+      platforms: ['android', 'ios'],
+    });
   });
 
   it(`parses qualified options`, async () => {
     await expect(
       resolveOptionsAsync('/', {
         '--output-dir': 'foobar',
-        '--platform': 'android',
+        '--platform': ['android'],
         '--clear': true,
         '--dev': true,
         '--dump-assetmap': true,
