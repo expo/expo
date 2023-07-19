@@ -70,26 +70,8 @@ describe(`${CAPTURE_GROUP_REGEX}`, () => {
 });
 
 describe(getTypedRoutesUtils, () => {
-  const { staticRoutes, dynamicRoutes, filePathToRoute, addFilePath, isRouteFile } =
+  const { staticRoutes, dynamicRoutes, filePathToRoute, addFilePath } =
     getTypedRoutesUtils('/user/project/app');
-
-  describe(isRouteFile, () => {
-    const filepaths = [
-      ['/user/project/app/file.tsx', true],
-      ['/user/project/app/folder/index.tsx', true],
-      ['/user/project/other/file.tsx', false],
-      ['/user/project/other/app/file.tsx', false],
-      ['/user/project/other/app/_layout.tsx', false],
-      ['/user/project/app/_layout.tsx', false],
-      ['/user/project/app/+html.tsx', false],
-      ['/user/project/app/folder/+html.tsx', false],
-      ['/user/project/app/folder/_layout.tsx', false],
-    ] as const;
-
-    it.each(filepaths)('is within the app root: %s', (filepath, expected) => {
-      expect(isRouteFile(filepath)).toEqual(expected);
-    });
-  });
 
   describe(filePathToRoute, () => {
     describe('unix paths', () => {
@@ -173,9 +155,7 @@ describe(getTypedRoutesUtils, () => {
         for (const staticRoute of expectedRoutes.static) {
           expect(actualRoutes).toContain(staticRoute);
         }
-      }
-
-      if ('dynamic' in expectedRoutes) {
+      } else {
         const actualRoutes = dynamicRoutes.get(filePathToRoute(filepath));
 
         expect(actualRoutes?.size).toEqual(expectedRoutes.dynamic.length);
