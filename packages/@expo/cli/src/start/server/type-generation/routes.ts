@@ -486,6 +486,7 @@ declare module "expo-router" {
     T extends AllRoutes | UnknownOutputParams = UnknownOutputParams
   >(): T extends AllRoutes ? SearchParams<T> : T;
 
+  /** @deprecated renamed to \`useGlobalSearchParams\` */
   export function useSearchParams<
     T extends AllRoutes | UnknownOutputParams = UnknownOutputParams
   >(): T extends AllRoutes ? SearchParams<T> : T;
