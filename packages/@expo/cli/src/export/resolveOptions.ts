@@ -44,7 +44,7 @@ export function resolvePlatformOption(
   const assertPlatformIsKnown = (platform: string): Platform => {
     if (!knownPlatforms.includes(platform as Platform)) {
       throw new CommandError(
-        `Unsupported platform "${platform}". Options are: ${knownPlatforms.join(',')}`
+        `Unsupported platform "${platform}". Options are: ${knownPlatforms.join(',')},all`
       );
     }
 
