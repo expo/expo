@@ -35,7 +35,7 @@ export async function setupTypedRoutes({
 }: SetupTypedRoutesOptions) {
   const appRoot = path.join(projectRoot, routerDirectory);
 
-  const { filePathToRoute, staticRoutes, dynamicRoutes, addFilePath } =
+  const { filePathToRoute, staticRoutes, dynamicRoutes, addFilePath, isRouteFile } =
     getTypedRoutesUtils(appRoot);
 
   if (metro) {
@@ -46,7 +46,12 @@ export async function setupTypedRoutes({
       metro,
       eventTypes: ['add', 'delete', 'change'],
       async callback({ filePath, type }) {
+        if (!isRouteFile(filePath)) {
+          return;
+        }
+
         let shouldRegenerate = false;
+
         if (type === 'delete') {
           const route = filePathToRoute(filePath);
           staticRoutes.delete(route);
@@ -153,11 +158,18 @@ export function getTypedRoutesUtils(appRoot: string, filePathSeperator = path.se
       .replace(/\.[jt]sx?$/, '');
   };
 
-  const addFilePath = (filePath: string): boolean => {
-    if (filePath.match(/_layout\.[tj]sx?$/)) {
+  const isRouteFile = (filePath: string) => {
+    // Layout and filenames starting with `+` are not routes
+    if (filePath.match(/_layout\.[tj]sx?$/) || filePath.match(/\/\+/)) {
       return false;
     }
 
+    // Route files must be nested with in the appRoot
+    const relative = path.relative(appRoot, filePath);
+    return relative && !relative.startsWith('..') && !path.isAbsolute(relative);
+  };
+
+  const addFilePath = (filePath: string): boolean => {
     const route = filePathToRoute(filePath);
 
     // We have already processed this file
@@ -220,6 +232,7 @@ export function getTypedRoutesUtils(appRoot: string, filePathSeperator = path.se
     dynamicRoutes,
     filePathToRoute,
     addFilePath,
+    isRouteFile,
   };
 }
 
