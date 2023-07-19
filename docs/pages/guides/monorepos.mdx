@@ -197,6 +197,12 @@ import App from './App';
 registerRootComponent(App);
 ```
 
+If you are using expo-router, we have to change our default entrypoint to `index.js`. Then you need to create a `index.js` file within the root of the project that contains the content below.
+
+```js index.js
+import "expo-router/entry";
+```
+
 > This new entrypoint already exists for bare projects. You only need to add this if you have a managed project.
 
 ### Create a package
