@@ -477,7 +477,19 @@ declare module "expo-router" {
     resolveHref: <T>(href: Href<T>) => string;
   }
 
+  /**
+   * Component to render link to another route using a path.
+   * Uses an anchor tag on the web.
+   *
+   * @param props.href Absolute path to route (e.g. \`/feeds/hot\`).
+   * @param props.replace Should replace the current route without adding to the history.
+   * @param props.asChild Forward props to child component. Useful for custom buttons.
+   * @param props.children Child elements to render the content.
+   */
   export const Link: LinkComponent;
+  
+  /** Redirects to the href as soon as the component is mounted. */
+  export const Redirect: <T>(props: React.PropsWithChildren<href: Href<T>>): JSX.Element;
 
   /************
    * Hooks *
