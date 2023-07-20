@@ -12,8 +12,8 @@ import { setupTypedRoutes } from './routes';
 import { forceRemovalTSConfig, forceUpdateTSConfig } from './tsconfig';
 
 export interface TypeScriptTypeGenerationOptions {
-  server: ServerLike;
-  metro: Server | null;
+  server?: ServerLike;
+  metro?: Server | null;
   projectRoot: string;
 }
 

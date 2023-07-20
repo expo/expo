@@ -469,7 +469,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
   public async startTypeScriptServices() {
     startTypescriptTypeGenerationAsync({
-      server: this.instance!.server,
+      server: this.instance?.server,
       metro: this.metro,
       projectRoot: this.projectRoot,
     });
