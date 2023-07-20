@@ -1,6 +1,5 @@
 import ExpoModulesCore
-import sqlite3
-
+import CRSQLite.SQLite
 
 public final class SQLiteModule: Module {
   private var cachedDatabases = [String: OpaquePointer]()
@@ -90,9 +89,9 @@ public final class SQLiteModule: Module {
         return nil
       }
       
-      if sqlite3_enable_load_extension(db, 1) != SQLITE_OK {
-        return nil
-      }
+//      if sqlite3_enable_load_extension(db, 1) != SQLITE_OK {
+//        return nil
+//      }
     
       let loadedExtension = loadExtension(db)
       if loadedExtension != SQLITE_OK {
@@ -225,7 +224,9 @@ public final class SQLiteModule: Module {
   
   func loadExtension(_ db: OpaquePointer?) -> Int32 {
     var pzErrMsg: UnsafeMutablePointer<Int8>? = nil
+  
 
-    return sqlite3_load_extension(db, "CRSQLite", "sqlite3_crsqlite_init", &pzErrMsg)
+//    return sqlite3_load_extension(db, "crsqlite", "sqlite3_crsqlite_init", &pzErrMsg)
+    return 1
   }
 }
