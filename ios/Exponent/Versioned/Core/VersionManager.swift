@@ -61,7 +61,7 @@ final class VersionManager: EXVersionManagerObjC {
     self.legacyModuleRegistry = legacyModuleRegistry
     self.legacyModulesProxy = legacyModulesProxy
 
-    var modules: [Any] = [
+    let modules: [Any] = [
       EXAppState(),
       EXDisabledDevLoadingView(),
       EXStatusBarManager(),
@@ -70,7 +70,7 @@ final class VersionManager: EXVersionManagerObjC {
       legacyModulesProxy,
 
       // Adding the way to access the module registry from RCTBridgeModules.
-      EXModuleRegistryHolderReactModule(moduleRegistry: legacyModuleRegistry) as Any,
+      EXModuleRegistryHolderReactModule(moduleRegistry: legacyModuleRegistry),
 
       // When ExpoBridgeModule is initialized by RN, it automatically creates the app context.
       // In Expo Go, it has to use already created app context.
