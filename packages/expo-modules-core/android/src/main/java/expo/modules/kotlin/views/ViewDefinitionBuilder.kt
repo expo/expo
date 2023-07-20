@@ -336,9 +336,9 @@ class ViewDefinitionBuilder<T : View>(
     )
 
     return if (ViewGroup::class.java.isAssignableFrom(viewClass.java)) {
-      ErrorViewGroup(context)
+      ErrorGroupView(context)
     } else {
-      View(context)
+      ErrorView(context)
     }
   }
 
