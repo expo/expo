@@ -82,5 +82,4 @@
   return new facebook::react::JSCExecutorFactory(RCTJSIExecutorRuntimeInstaller(executor));
 }
 
-
 @end
