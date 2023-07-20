@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed the `ErrorViewGroup` cannot be cast to module view class exception on Android.
+- Fixed the `ErrorViewGroup` cannot be cast to module view class exception on Android. ([#23651](https://github.com/expo/expo/pull/23651) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
