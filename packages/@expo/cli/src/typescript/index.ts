@@ -1,12 +1,8 @@
 #!/usr/bin/env node
 import { getConfig } from '@expo/config';
-import chalk from 'chalk';
 
 import { Command } from '../../bin/cli';
 import { Log } from '../log';
-import { TypeScriptProjectPrerequisite } from '../start/doctor/typescript/TypeScriptProjectPrerequisite';
-import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
-import { getPlatformBundlers } from '../start/server/platformBundlers';
 import { assertArgs, printHelp, getProjectRoot } from '../utils/args';
 
 export const expoTypescript: Command = async (argv) => {
@@ -29,21 +25,24 @@ export const expoTypescript: Command = async (argv) => {
   }
 
   const projectRoot = getProjectRoot(args);
-  const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
+
+  const { TypeScriptProjectPrerequisite } = await import(
+    '../start/doctor/typescript/TypeScriptProjectPrerequisite'
+  );
+  const { MetroBundlerDevServer } = await import('../start/server/metro/MetroBundlerDevServer');
+  const { getPlatformBundlers } = await import('../start/server/platformBundlers');
 
   try {
-    const req = new TypeScriptProjectPrerequisite(projectRoot);
-    await req.bootstrapAsync();
+    await new TypeScriptProjectPrerequisite(projectRoot).bootstrapAsync();
   } catch (error: any) {
     // Ensure the process doesn't fail if the TypeScript check fails.
     // This could happen during the install.
     Log.log();
-    Log.error(
-      chalk.red`Failed to automatically setup TypeScript for your project. Try restarting the dev server to fix.`
-    );
     Log.exception(error);
+    return;
   }
 
+  const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
   await new MetroBundlerDevServer(
     getProjectRoot(args),
     getPlatformBundlers(exp),
