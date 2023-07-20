@@ -46,13 +46,6 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
 
     super.init()
 
-    NotificationCenter.default.addObserver(
-      self,
-      selector: #selector(self.handleDeviceOrientationChange(notification:)),
-      name: UIDevice.orientationDidChangeNotification,
-      object: UIDevice.current
-    )
-
     // This is most likely already executed on the main thread, but we need to be sure
     RCTExecuteOnMainQueue {
       UIDevice.current.beginGeneratingDeviceOrientationNotifications()
@@ -143,25 +136,6 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   }
 
   // MARK: - Events
-
-  /**
-   Called when the OS sends an OrientationDidChange notification.
-   */
-  @objc
-  func handleDeviceOrientationChange(notification: Notification) {
-    let newScreenOrientation = UIDevice.current.orientation.toInterfaceOrientation()
-
-    interfaceOrientationDidChange(newScreenOrientation)
-  }
-
-  /**
-   Called when the device is physically rotated. Checks if screen orientation should be changed after user rotated the device.
-   */
-  func interfaceOrientationDidChange(_ newScreenOrientation: UIInterfaceOrientation) {
-    if currentScreenOrientation == newScreenOrientation || newScreenOrientation == .unknown {
-      return
-    }
-  }
 
   /**
    Called by ScreenOrientationViewController when the dimensions of the view change.
