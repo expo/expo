@@ -18,7 +18,7 @@ class ScreenOrientationViewController: UIViewController {
 
     // For iPads traitCollectionDidChange will not be called (it's always in the same size class). It is necessary
     // to init it in here, so it's possible to return it in the didUpdateDimensionsEvent of the module
-    if (self.screenOrientationRegistry.currentTraitCollection == nil) {
+    if self.screenOrientationRegistry.currentTraitCollection == nil {
       self.screenOrientationRegistry.traitCollectionDidChange(to: self.traitCollection)
     }
   }
@@ -70,11 +70,11 @@ class ScreenOrientationViewController: UIViewController {
     screenOrientationRegistry.traitCollectionDidChange(to: traitCollection)
   }
 
-  public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+  override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
     super.viewWillTransition(to: size, with: coordinator)
 
     // Update after the transition ends, this ensures that the trait collection passed to didUpdateDimensionsEvent is already updated
-    coordinator.animate(alongsideTransition: { [weak self] (context) in
+    coordinator.animate(alongsideTransition: { [weak self] _ in
       guard let self = self, let windowInterfaceOrientation = self.windowInterfaceOrientation else {
         return
       }
