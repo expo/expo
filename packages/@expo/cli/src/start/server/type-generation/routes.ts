@@ -292,6 +292,7 @@ const routerDotTSTemplate = unsafeTemplate`/* eslint-disable @typescript-eslint/
 /* eslint-disable import/export */
 /* eslint-disable @typescript-eslint/ban-types */
 declare module "expo-router" {
+  import type { Router as OriginalRouter } from "expo-router/src/types";
   import type { LinkProps as OriginalLinkProps } from 'expo-router/build/link/Link';
   export * from 'expo-router/build';
 
@@ -464,16 +465,17 @@ declare module "expo-router" {
    * Expo Router Exports *
    ***********************/
 
-  export type Router = {
+  export type Router = Omit<OriginalRouter, "push" | "replace" | "setParams"> & {
     /** Navigate to the provided href. */
     push: <T>(href: Href<T>) => void;
     /** Navigate to route without appending to the history. */
     replace: <T>(href: Href<T>) => void;
-    /** Go back in the history. */
-    back: () => void;
     /** Update the current route query params. */
     setParams: <T = ''>(params?: T extends '' ? Record<string, string> : InputRouteParams<T>) => void;
   };
+
+  /** The imperative router. */
+  export const router: Router;
 
   /************
    * <Link /> *
@@ -488,7 +490,21 @@ declare module "expo-router" {
     resolveHref: <T>(href: Href<T>) => string;
   }
 
+  /**
+   * Component to render link to another route using a path.
+   * Uses an anchor tag on the web.
+   *
+   * @param props.href Absolute path to route (e.g. \`/feeds/hot\`).
+   * @param props.replace Should replace the current route without adding to the history.
+   * @param props.asChild Forward props to child component. Useful for custom buttons.
+   * @param props.children Child elements to render the content.
+   */
   export const Link: LinkComponent;
+  
+  /** Redirects to the href as soon as the component is mounted. */
+  export const Redirect: <T>(
+    props: React.PropsWithChildren<{ href: Href<T> }>
+  ) => JSX.Element;
 
   /************
    * Hooks *
@@ -499,6 +515,7 @@ declare module "expo-router" {
     T extends AllRoutes | UnknownOutputParams = UnknownOutputParams
   >(): T extends AllRoutes ? SearchParams<T> : T;
 
+  /** @deprecated renamed to \`useGlobalSearchParams\` */
   export function useSearchParams<
     T extends AllRoutes | UnknownOutputParams = UnknownOutputParams
   >(): T extends AllRoutes ? SearchParams<T> : T;

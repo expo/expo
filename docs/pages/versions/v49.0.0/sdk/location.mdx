@@ -15,6 +15,7 @@ import {
   ConfigPluginExample,
   ConfigPluginProperties,
 } from '~/components/plugins/ConfigSection';
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
 `expo-location` allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.
 
@@ -110,7 +111,7 @@ To use Geofencing methods, the following requirements apply:
 
 ## Usage
 
-If you're using the iOS or Android Emulators, ensure that [Location is enabled](#enabling-emulator-location).
+If you're using the Android Emulator or iOS Simulator, ensure that [Location is enabled](#enable-emulator-location).
 
 <SnackInline label='Location' dependencies={['expo-location', 'expo-constants']}>
 
@@ -179,21 +180,31 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-## Enabling Emulator Location
+## Enable Emulator Location
 
 ### iOS Simulator
 
-With Simulator open, go to Debug > Location and choose any option besides "None" (obviously).
+With Simulator open, go to **Features** > **Location** and choose any option besides **None**.
 
-![iOS Simulator location](/static/images/ios-simulator-location.png)
+<ImageSpotlight
+  alt="Location settings in iOS simulator."
+  src="/static/images/sdk/location/ios-simulator-location.png"
+  style={{ maxWidth: 480 }}
+/>
 
 ### Android Emulator
 
-Open Android Studio, and launch your AVD in the emulator. Then, on the options bar for your device, click the icon for "More" and navigate to the "Location" tab.
+Open Android Studio, and launch the Android Emulator. Inside it, go to **Settings** > **Location** and enable **Use location**.
 
-![Android Simulator location](/static/images/android-emulator-location.png)
+<ImageSpotlight
+  alt="Location settings in Android Emulator for versions 12 and higher"
+  src="/static/images/sdk/location/enable-android-emulator-location.png"
+  style={{ maxWidth: 360 }}
+/>
 
-If you don't receive the locations in the emulator, you may have to turn off "Improve Location Accuracy" in Settings - Location in the emulator. This will turn off Wi-Fi location and only use GPS. Then you can manipulate the location with GPS data through the emulator.
+If you don't receive the locations in the emulator, you may have to turn off the **Improve Location Accuracy** setting. This will turn off Wi-Fi location and only use GPS. Then you can manipulate the location with GPS data through the emulator.
+
+For Android 12 and higher, go to **Settings** > **Location** > **Location Services** > **Google Location Accuracy**, and turn off **Improve Location Accuracy**. For Android 11 and lower, go to **Settings** > **Location** > **Advanced** > **Google Location Accuracy**, and turn off **Google Location Accuracy**.
 
 ## API
 

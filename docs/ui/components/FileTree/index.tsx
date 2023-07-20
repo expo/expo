@@ -74,7 +74,7 @@ function renderStructure(structure: FileObject[], level = 0): ReactNode {
         {renderStructure(files, level + 1)}
       </div>
     ) : (
-      <div className="mt-1 pt-1 pl-2 rounded-sm flex items-center">
+      <div key={name + '_' + index} className="mt-1 pt-1 pl-2 rounded-sm flex items-center">
         {' '.repeat(Math.max(level, 0))}
         <FileIcon className="text-icon-tertiary mr-2 min-w-[20px]" />
         <TextWithNote name={name} note={note} className="text-default" />
