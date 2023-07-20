@@ -295,8 +295,7 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
    * a different orientation.
    */
   public func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
-    let deviceInterfaceIdiom = UIDevice.current.userInterfaceIdiom
-    let deviceOrientationMask = allowedOrientations(for: deviceInterfaceIdiom)
+    let deviceOrientationMask = allowedOrientations(for: UIDevice.current.userInterfaceIdiom)
     let universalOrientationMask = allowedOrientations(for: .unspecified)
     let infoPlistOrientations = deviceOrientationMask.isEmpty ? universalOrientationMask : deviceOrientationMask
 
