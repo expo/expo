@@ -47,12 +47,16 @@ describe(`${SLUG}`, () => {
 describe(`${ARRAY_GROUP_REGEX}`, () => {
   it('can match slug params', () => {
     // Matches is a RegexMatchArray[]
-    const matches = [...'/(a,b,c)/test/(d,e)/(f)'.matchAll(ARRAY_GROUP_REGEX)];
+    const matches = [
+      ...'/(a,b,c)/test/(d,e)/(  my group, my other group )(f)'.matchAll(ARRAY_GROUP_REGEX),
+    ];
 
     // Need to convert RegexMatchArray to an array to easily compare
-    expect(matches).toHaveLength(2);
+    expect(matches).toHaveLength(3);
     expect([...matches[0]]).toStrictEqual(['(a,b,c)']);
     expect([...matches[1]]).toStrictEqual(['(d,e)']);
+    expect([...matches[1]]).toStrictEqual(['(  my group, my other group )']);
+    // (f) is ignored as it is not an array group
   });
 });
 
