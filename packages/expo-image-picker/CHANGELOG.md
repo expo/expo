@@ -10,7 +10,9 @@
 
 ### 💡 Others
 
-## 14.3.1 — 2023-07-04
+- On Android, restore behavior from [#22658](https://github.com/expo/expo/pull/22658). ([#23617](https://github.com/expo/expo/pull/23617) by [@alanhughes](https://github.com/alanjhughes))
+
+## 14.3.1 - 2023-07-04
 
 ### 🐛 Bug fixes
 

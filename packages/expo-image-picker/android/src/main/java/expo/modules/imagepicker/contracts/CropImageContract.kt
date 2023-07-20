@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import androidx.core.net.toFile
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
@@ -54,7 +55,11 @@ internal class CropImageContract(
   }
 
   override fun parseResult(input: CropImageContractOptions, resultCode: Int, intent: Intent?): ImagePickerContractResult {
-    val result = intent?.getParcelableExtra<CropImage.ActivityResult?>(CropImage.CROP_IMAGE_EXTRA_RESULT)
+    val result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      intent?.getParcelableExtra(CropImage.CROP_IMAGE_EXTRA_RESULT, CropImage.ActivityResult::class.java)
+    } else {
+      intent?.getParcelableExtra(CropImage.CROP_IMAGE_EXTRA_RESULT)
+    }
     if (resultCode == Activity.RESULT_CANCELED || result == null) {
       return ImagePickerContractResult.Cancelled()
     }
