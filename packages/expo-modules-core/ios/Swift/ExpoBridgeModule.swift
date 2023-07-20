@@ -19,8 +19,12 @@ public final class ExpoBridgeModule: NSObject, RCTBridgeModule {
    In this scenario, we create an `AppContext` that manages the
    architecture of Expo modules and the app itself.
    */
-  override init() {
-    appContext = AppContext()
+  override convenience init() {
+    self.init(appContext: AppContext())
+  }
+
+  public init(appContext: AppContext) {
+    self.appContext = appContext
     super.init()
   }
 

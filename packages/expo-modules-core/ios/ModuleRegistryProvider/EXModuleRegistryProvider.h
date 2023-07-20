@@ -2,9 +2,10 @@
 
 #import <Foundation/Foundation.h>
 #import <ExpoModulesCore/EXModuleRegistry.h>
-#import <ExpoModulesCore/EXSingletonModule.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+@class EXSingletonModule;
 
 NS_SWIFT_NAME(ModuleRegistryProvider)
 @interface EXModuleRegistryProvider : NSObject

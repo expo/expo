@@ -11,7 +11,7 @@
 #import "ExpoKit.h"
 #import "EXReactAppExceptionHandler.h"
 #import "EXReactAppManager+Private.h"
-#import "EXVersionManager.h"
+#import "EXVersionManagerObjC.h"
 #import "EXVersions.h"
 
 #import <EXConstants/EXConstantsService.h>

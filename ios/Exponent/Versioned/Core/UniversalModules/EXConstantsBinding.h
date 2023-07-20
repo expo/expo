@@ -3,6 +3,7 @@
 
 #if __has_include(<EXConstants/EXConstantsService.h>)
 #import <EXConstants/EXConstantsService.h>
+#import <ExpoModulesCore/EXInternalModule.h>
 #import <ExpoModulesCore/EXConstantsInterface.h>
 
 NS_ASSUME_NONNULL_BEGIN
