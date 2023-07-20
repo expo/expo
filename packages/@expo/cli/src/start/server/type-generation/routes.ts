@@ -35,7 +35,7 @@ export async function setupTypedRoutes({
 }: SetupTypedRoutesOptions) {
   const appRoot = path.join(projectRoot, routerDirectory);
 
-  const { filePathToRoute, staticRoutes, dynamicRoutes, addFilePath } =
+  const { filePathToRoute, staticRoutes, dynamicRoutes, addFilePath, isRouteFile } =
     getTypedRoutesUtils(appRoot);
 
   if (metro) {
@@ -46,7 +46,12 @@ export async function setupTypedRoutes({
       metro,
       eventTypes: ['add', 'delete', 'change'],
       async callback({ filePath, type }) {
+        if (!isRouteFile(filePath)) {
+          return;
+        }
+
         let shouldRegenerate = false;
+
         if (type === 'delete') {
           const route = filePathToRoute(filePath);
           staticRoutes.delete(route);
@@ -153,11 +158,18 @@ export function getTypedRoutesUtils(appRoot: string, filePathSeperator = path.se
       .replace(/\.[jt]sx?$/, '');
   };
 
-  const addFilePath = (filePath: string): boolean => {
-    if (filePath.match(/_layout\.[tj]sx?$/)) {
+  const isRouteFile = (filePath: string) => {
+    // Layout and filenames starting with `+` are not routes
+    if (filePath.match(/_layout\.[tj]sx?$/) || filePath.match(/\/\+/)) {
       return false;
     }
 
+    // Route files must be nested with in the appRoot
+    const relative = path.relative(appRoot, filePath);
+    return relative && !relative.startsWith('..') && !path.isAbsolute(relative);
+  };
+
+  const addFilePath = (filePath: string): boolean => {
     const route = filePathToRoute(filePath);
 
     // We have already processed this file
@@ -220,6 +232,7 @@ export function getTypedRoutesUtils(appRoot: string, filePathSeperator = path.se
     dynamicRoutes,
     filePathToRoute,
     addFilePath,
+    isRouteFile,
   };
 }
 
@@ -279,8 +292,8 @@ const routerDotTSTemplate = unsafeTemplate`/* eslint-disable @typescript-eslint/
 /* eslint-disable import/export */
 /* eslint-disable @typescript-eslint/ban-types */
 declare module "expo-router" {
-  import type { Router as OriginalRouter } from "expo-router/src/types";
   import type { LinkProps as OriginalLinkProps } from 'expo-router/build/link/Link';
+  import type { Router as OriginalRouter } from 'expo-router/src/types';
   export * from 'expo-router/build';
 
   // prettier-ignore
@@ -452,7 +465,7 @@ declare module "expo-router" {
    * Expo Router Exports *
    ***********************/
 
-  export type Router = Omit<OriginalRouter, "push" | "replace" | "setParams"> & {
+  export type Router = Omit<OriginalRouter, 'push' | 'replace' | 'setParams'> & {
     /** Navigate to the provided href. */
     push: <T>(href: Href<T>) => void;
     /** Navigate to route without appending to the history. */
