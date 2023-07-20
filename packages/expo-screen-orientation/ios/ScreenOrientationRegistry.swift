@@ -17,6 +17,7 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   public var currentScreenOrientation: UIInterfaceOrientation
   var orientationControllers: [ScreenOrientationController] = []
   var controllerInterfaceMasks: [ObjectIdentifier: UIInterfaceOrientationMask] = [:]
+  @objc
   public weak var currentTraitCollection: UITraitCollection?
   var lastOrientationMask: UIInterfaceOrientationMask
   var rootViewController: UIViewController? {
@@ -160,22 +161,6 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
     if currentScreenOrientation == newScreenOrientation || newScreenOrientation == .unknown {
       return
     }
-
-    if currentOrientationMask.contains(newScreenOrientation) {
-      // when changing orientation without changing dimensions traitCollectionDidChange isn't triggered so the event has to be called manually
-      if (newScreenOrientation.isPortrait && currentScreenOrientation.isPortrait)
-        || (newScreenOrientation.isLandscape && currentScreenOrientation.isLandscape) {
-        screenOrientationDidChange(newScreenOrientation)
-        return
-      }
-
-      // on iPads, traitCollectionDidChange isn't triggered at all, so we have to call screenOrientationDidChange manually
-      if isPad()
-        && (newScreenOrientation.isPortrait && currentScreenOrientation.isLandscape
-        || newScreenOrientation.isLandscape && currentScreenOrientation.isPortrait) {
-        screenOrientationDidChange(newScreenOrientation)
-      }
-    }
   }
 
   /**
@@ -183,16 +168,14 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
    Also used for Expo Go in EXAppViewController.
    */
   @objc
-  public func traitCollectionDidChange(to traitCollection: UITraitCollection) {
-    currentTraitCollection = traitCollection
-
+  public func viewDidTransition(toOrientation orientation: UIInterfaceOrientation) {
     let currentDeviceOrientation = UIDevice.current.orientation.toInterfaceOrientation()
     let currentOrientationMask = self.rootViewController?.supportedInterfaceOrientations ?? []
 
     var newScreenOrientation = UIInterfaceOrientation.unknown
 
     // We need to deduce what is the new screen orientaiton based on currentOrientationMask and new dimensions of the view
-    if traitCollection.isPortrait() {
+    if orientation.isPortrait {
       // From trait collection, we know that screen is in portrait or upside down orientation.
       let portraitMask = currentOrientationMask.intersection([.portrait, .portraitUpsideDown])
 
@@ -209,7 +192,7 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
         // from device orientation.
         newScreenOrientation = currentDeviceOrientation
       }
-    } else if traitCollection.isLandscape() {
+    } else if orientation.isLandscape {
       // From trait collection, we know that screen is in landscape left or right orientation.
       let landscapeMask = currentOrientationMask.intersection(.landscape)
 
@@ -231,6 +214,11 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
       }
     }
     screenOrientationDidChange(newScreenOrientation)
+  }
+
+  @objc
+  public func traitCollectionDidChange(to traitCollection: UITraitCollection) {
+    currentTraitCollection = traitCollection
   }
 
   /**
