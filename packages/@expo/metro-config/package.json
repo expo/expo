@@ -46,6 +46,7 @@
     "sucrase": "^3.20.0"
   },
   "peerDependencies": {
+    "@babel/core": "*",
     "metro-react-native-babel-preset": "*"
   },
   "devDependencies": {

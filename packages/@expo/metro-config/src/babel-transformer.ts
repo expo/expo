@@ -9,13 +9,15 @@
 // and adds support for web and Node.js environments.
 
 import { parseSync, PluginItem, transformFromAstSync } from '@babel/core';
+// @ts-expect-error
 import inlineRequiresPlugin from 'babel-preset-fbjs/plugins/inline-requires';
-import crypto from 'crypto';
-import fs from 'fs';
-import { BabelTransformer, BabelTransformerArgs } from 'metro-babel-transformer';
+import type { BabelTransformer, BabelTransformerArgs } from 'metro-babel-transformer';
+// @ts-expect-error
 import makeHMRConfig from 'metro-react-native-babel-preset/src/configs/hmr';
-import nullthrows from 'nullthrows';
-import path from 'path';
+import assert from 'node:assert';
+import crypto from 'node:crypto';
+import fs from 'node:fs';
+import path from 'node:path';
 import resolveFrom from 'resolve-from';
 
 const cacheKeyParts = [
@@ -228,7 +230,8 @@ const transform: BabelTransformer['transform'] = ({
       return { ast: null };
     }
 
-    return { ast: nullthrows(result.ast), metadata: result.metadata };
+    assert(result.ast);
+    return { ast: result.ast, metadata: result.metadata };
   } finally {
     if (OLD_BABEL_ENV) {
       process.env.BABEL_ENV = OLD_BABEL_ENV;
