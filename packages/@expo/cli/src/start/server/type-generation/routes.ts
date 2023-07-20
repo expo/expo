@@ -292,8 +292,8 @@ const routerDotTSTemplate = unsafeTemplate`/* eslint-disable @typescript-eslint/
 /* eslint-disable import/export */
 /* eslint-disable @typescript-eslint/ban-types */
 declare module "expo-router" {
-  import type { Router as OriginalRouter } from "expo-router/src/types";
   import type { LinkProps as OriginalLinkProps } from 'expo-router/build/link/Link';
+  import type { Router as OriginalRouter } from 'expo-router/src/types';
   export * from 'expo-router/build';
 
   // prettier-ignore
@@ -465,7 +465,7 @@ declare module "expo-router" {
    * Expo Router Exports *
    ***********************/
 
-  export type Router = Omit<OriginalRouter, "push" | "replace" | "setParams"> & {
+  export type Router = Omit<OriginalRouter, 'push' | 'replace' | 'setParams'> & {
     /** Navigate to the provided href. */
     push: <T>(href: Href<T>) => void;
     /** Navigate to route without appending to the history. */
