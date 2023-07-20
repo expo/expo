@@ -51,7 +51,7 @@ internal protocol UpdatesStateEvent {
   var manifest: [String: Any]? { get }
   var message: String? { get }
   var isRollback: Bool { get }
-  var error: Error? { get }
+  var error: [String: String]? { get }
 }
 
 internal struct UpdatesStateEventCheck: UpdatesStateEvent {
@@ -59,7 +59,7 @@ internal struct UpdatesStateEventCheck: UpdatesStateEvent {
   let manifest: [String: Any]? = nil
   let message: String? = nil
   let isRollback: Bool = false
-  let error: Error? = nil
+  let error: [String: String]? = nil
 }
 
 internal struct UpdatesStateEventDownload: UpdatesStateEvent {
@@ -67,7 +67,7 @@ internal struct UpdatesStateEventDownload: UpdatesStateEvent {
   let manifest: [String: Any]? = nil
   let message: String? = nil
   let isRollback: Bool = false
-  let error: Error? = nil
+  let error: [String: String]? = nil
 }
 
 internal struct UpdatesStateEventRestart: UpdatesStateEvent {
@@ -75,7 +75,7 @@ internal struct UpdatesStateEventRestart: UpdatesStateEvent {
   let manifest: [String: Any]? = nil
   let message: String? = nil
   let isRollback: Bool = false
-  let error: Error? = nil
+  let error: [String: String]? = nil
 }
 
 internal struct UpdatesStateEventCheckError: UpdatesStateEvent {
@@ -83,8 +83,8 @@ internal struct UpdatesStateEventCheckError: UpdatesStateEvent {
   let manifest: [String: Any]? = nil
   let message: String?
   let isRollback: Bool = false
-  var error: Error? {
-    return (message != nil) ? UpdatesStateException(message ?? "") : nil
+  var error: [String: String]? {
+    return (message != nil) ? ["message": message ?? ""] : nil
   }
 }
 
@@ -93,8 +93,8 @@ internal struct UpdatesStateEventDownloadError: UpdatesStateEvent {
   let manifest: [String: Any]? = nil
   let message: String?
   let isRollback: Bool = false
-  var error: Error? {
-    return (message != nil) ? UpdatesStateException(message ?? "") : nil
+  var error: [String: String]? {
+    return (message != nil) ? ["message": message ?? ""] : nil
   }
 }
 
@@ -103,7 +103,7 @@ internal struct UpdatesStateEventCheckCompleteWithUpdate: UpdatesStateEvent {
   let manifest: [String: Any]?
   let message: String? = nil
   let isRollback: Bool = false
-  let error: Error? = nil
+  let error: [String: String]? = nil
 }
 
 internal struct UpdatesStateEventCheckCompleteWithRollback: UpdatesStateEvent {
@@ -111,7 +111,7 @@ internal struct UpdatesStateEventCheckCompleteWithRollback: UpdatesStateEvent {
   let manifest: [String: Any]? = nil
   let message: String? = nil
   let isRollback: Bool = true
-  let error: Error? = nil
+  let error: [String: String]? = nil
 }
 
 internal struct UpdatesStateEventCheckComplete: UpdatesStateEvent {
@@ -119,7 +119,7 @@ internal struct UpdatesStateEventCheckComplete: UpdatesStateEvent {
   let manifest: [String: Any]? = nil
   let message: String? = nil
   let isRollback: Bool = false
-  let error: Error? = nil
+  let error: [String: String]? = nil
 }
 
 internal struct UpdatesStateEventDownloadCompleteWithUpdate: UpdatesStateEvent {
@@ -127,7 +127,7 @@ internal struct UpdatesStateEventDownloadCompleteWithUpdate: UpdatesStateEvent {
   let manifest: [String: Any]?
   let message: String? = nil
   let isRollback: Bool = false
-  let error: Error? = nil
+  let error: [String: String]? = nil
 }
 
 internal struct UpdatesStateEventDownloadCompleteWithRollback: UpdatesStateEvent {
@@ -135,7 +135,7 @@ internal struct UpdatesStateEventDownloadCompleteWithRollback: UpdatesStateEvent
   let manifest: [String: Any]? = nil
   let message: String? = nil
   let isRollback: Bool = true
-  let error: Error? = nil
+  let error: [String: String]? = nil
 }
 
 internal struct UpdatesStateEventDownloadComplete: UpdatesStateEvent {
@@ -143,7 +143,7 @@ internal struct UpdatesStateEventDownloadComplete: UpdatesStateEvent {
   let manifest: [String: Any]? = nil
   let message: String? = nil
   let isRollback: Bool = false
-  let error: Error? = nil
+  let error: [String: String]? = nil
 }
 
 /**
@@ -158,8 +158,8 @@ internal struct UpdatesStateContext {
   let isRestarting: Bool
   let latestManifest: [String: Any]?
   let downloadedManifest: [String: Any]?
-  let checkError: Error?
-  let downloadError: Error?
+  let checkError: [String: String]?
+  let downloadError: [String: String]?
 
   var json: [String: Any?] {
     return [
@@ -208,8 +208,8 @@ extension UpdatesStateContext {
     var isRestarting: Bool = false
     var latestManifest: [String: Any]?
     var downloadedManifest: [String: Any]?
-    var checkError: Error?
-    var downloadError: Error?
+    var checkError: [String: String]?
+    var downloadError: [String: String]?
 
     fileprivate init(original: UpdatesStateContext) {
       self.isUpdateAvailable = original.isUpdateAvailable
