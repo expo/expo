@@ -83,6 +83,12 @@ public final class AppContext: NSObject {
     listenToClientAppNotifications()
   }
 
+  public convenience init(legacyModulesProxy: Any, legacyModuleRegistry: Any) {
+    self.init()
+    self.legacyModulesProxy = legacyModulesProxy as? LegacyNativeModulesProxy
+    self.legacyModuleRegistry = legacyModuleRegistry as? EXModuleRegistry
+  }
+
   @discardableResult
   public func useModulesProvider(_ providerName: String) -> Self {
     return useModulesProvider(Self.modulesProvider(withName: providerName))

@@ -13,7 +13,7 @@ NS_SWIFT_NAME(ModuleRegistryAdapter)
 
 @property (nonnull, nonatomic, readonly) EXModuleRegistryProvider *moduleRegistryProvider;
 
-- (instancetype)initWithModuleRegistryProvider:(nonnull EXModuleRegistryProvider *)moduleRegistryProvider
+- (nonnull instancetype)initWithModuleRegistryProvider:(nonnull EXModuleRegistryProvider *)moduleRegistryProvider
 __deprecated_msg("Expo modules are now automatically registered. You can remove this method call.");
 
 - (nonnull NSArray<id<RCTBridgeModule>> *)extraModulesForModuleRegistry:(nonnull EXModuleRegistry *)moduleRegistry;

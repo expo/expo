@@ -4,13 +4,13 @@
 
 @interface EXModuleRegistryHolderReactModule ()
 
-@property (nonatomic, weak) EXModuleRegistry *exModuleRegistry;
+@property (nonatomic, nullable, weak) EXModuleRegistry *exModuleRegistry;
 
 @end
 
 @implementation EXModuleRegistryHolderReactModule
 
-- (instancetype)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (nonnull instancetype)initWithModuleRegistry:(nonnull EXModuleRegistry *)moduleRegistry
 {
   if (self = [super init]) {
     _exModuleRegistry = moduleRegistry;
@@ -18,12 +18,12 @@
   return self;
 }
 
-- (EXModuleRegistry *)exModuleRegistry
+- (nullable EXModuleRegistry *)exModuleRegistry
 {
   return _exModuleRegistry;
 }
 
-+ (NSString *)moduleName {
++ (nullable NSString *)moduleName {
   return nil;
 }
 

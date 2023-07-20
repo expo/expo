@@ -6,7 +6,7 @@
 
 @interface EXModuleRegistryHolderReactModule : NSObject <RCTBridgeModule>
 
-- (instancetype)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry;
-- (EXModuleRegistry *)exModuleRegistry;
+- (nonnull instancetype)initWithModuleRegistry:(nonnull EXModuleRegistry *)moduleRegistry;
+- (nullable EXModuleRegistry *)exModuleRegistry;
 
 @end
