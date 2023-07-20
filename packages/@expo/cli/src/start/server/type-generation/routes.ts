@@ -19,7 +19,7 @@ export const ARRAY_GROUP_REGEX = /\(\w+?,.*?\)/g;
 export const CAPTURE_GROUP_REGEX = /[\\(,](\w+?)(?=[,\\)])/g;
 
 export interface SetupTypedRoutesOptions {
-  server: ServerLike;
+  server?: ServerLike;
   metro?: Server | null;
   typesDirectory: string;
   projectRoot: string;
@@ -38,7 +38,7 @@ export async function setupTypedRoutes({
   const { filePathToRoute, staticRoutes, dynamicRoutes, addFilePath } =
     getTypedRoutesUtils(appRoot);
 
-  if (metro) {
+  if (metro && server) {
     // Setup out watcher first
     metroWatchTypeScriptFiles({
       projectRoot: appRoot,
