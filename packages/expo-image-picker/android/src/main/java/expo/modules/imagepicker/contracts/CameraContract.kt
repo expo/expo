@@ -23,7 +23,7 @@ import java.io.Serializable
 internal class CameraContract(
   private val appContextProvider: AppContextProvider,
 ) : AppContextActivityResultContract<CameraContractOptions, ImagePickerContractResult> {
-  val contentResolver: ContentResolver
+  private val contentResolver: ContentResolver
     get() = requireNotNull(appContextProvider.appContext.reactContext) {
       "React Application Context is null"
     }.contentResolver
