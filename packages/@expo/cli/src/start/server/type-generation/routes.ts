@@ -3,6 +3,7 @@ import { debounce } from 'lodash';
 import { Server } from 'metro';
 import path from 'path';
 
+import { directoryExistsAsync } from '../../../utils/dir';
 import { unsafeTemplate } from '../../../utils/template';
 import { ServerLike } from '../BundlerDevServer';
 import { metroWatchTypeScriptFiles } from '../metro/metroWatchTypeScriptFiles';
@@ -41,7 +42,7 @@ export async function setupTypedRoutes({
   if (metro) {
     // Setup out watcher first
     metroWatchTypeScriptFiles({
-      projectRoot: appRoot,
+      projectRoot,
       server,
       metro,
       eventTypes: ['add', 'delete', 'change'],
@@ -73,9 +74,11 @@ export async function setupTypedRoutes({
     });
   }
 
-  // Do we need to walk the entire tree on startup?
-  // Idea: Store the list of files in the last write, then simply check Git for what files have changed
-  await walk(appRoot, addFilePath);
+  if (await directoryExistsAsync(appRoot)) {
+    // Do we need to walk the entire tree on startup?
+    // Idea: Store the list of files in the last write, then simply check Git for what files have changed
+    await walk(appRoot, addFilePath);
+  }
 
   regenerateRouterDotTS(
     typesDirectory,
@@ -154,7 +157,7 @@ export function getTypedRoutesUtils(appRoot: string, filePathSeperator = path.se
   const filePathToRoute = (filePath: string) => {
     return normalizedFilePath(filePath)
       .replace(normalizedAppRoot, '')
-      .replace(/index.[jt]sx?/, '')
+      .replace(/index\.[jt]sx?/, '')
       .replace(/\.[jt]sx?$/, '');
   };
 
