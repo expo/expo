@@ -21,6 +21,7 @@
 - Set `preferNativePlatform` to `false` for all web requests. ([#23527](https://github.com/expo/expo/pull/23527) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix Expo Router generating types for invalid route files. ([#23421](https://github.com/expo/expo/pull/23421) by [@marklawlor](https://github.com/marklawlor))
 - Add missing `router` type, and `canGoBack` when typed routes are enabled. Preserve deprecation comment for `useSearchParams` hook. ([#23636](https://github.com/expo/expo/pull/23636) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix running typed routes without an app directory. ([#23661](https://github.com/expo/expo/pull/23661) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
