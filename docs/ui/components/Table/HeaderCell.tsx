@@ -23,4 +23,8 @@ const tableHeadersCellStyle = css({
   '&:last-child': {
     borderRight: 0,
   },
+
+  '@media (max-width: 600px)': {
+    padding: spacing[1],
+  },
 });
