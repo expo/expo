@@ -20,7 +20,7 @@ afterAll(() => {
   delete process.env._EXPO_E2E_USE_TYPED_ROUTES;
 });
 
-it.only('loads expected modules by default', async () => {
+it('loads expected modules by default', async () => {
   const modules = await getLoadedModulesAsync(
     `require('../../build/src/typescript/index').expoTypescript`
   );
@@ -31,10 +31,15 @@ it.only('loads expected modules by default', async () => {
     '../node_modules/chalk/source/util.js',
     '../node_modules/has-flag/index.js',
     '../node_modules/supports-color/index.js',
-    '@expo/cli/build/src/export/web/index.js',
     '@expo/cli/build/src/log.js',
+    '@expo/cli/build/src/typescript/index.js',
     '@expo/cli/build/src/utils/args.js',
-    '@expo/cli/build/src/utils/errors.js',
+    '@expo/config-types/build/ExpoConfig.js',
+    '@expo/config/build/Config.js',
+    '@expo/config/build/Config.types.js',
+    '@expo/config/build/Errors.js',
+    '@expo/config/build/getExpoSDKVersion.js',
+    '@expo/config/build/index.js',
   ]);
 });
 
