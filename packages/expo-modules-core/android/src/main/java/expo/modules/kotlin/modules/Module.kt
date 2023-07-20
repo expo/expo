@@ -3,6 +3,7 @@ package expo.modules.kotlin.modules
 import android.os.Bundle
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.providers.AppContextProvider
+import expo.modules.kotlin.tracing.trace
 import kotlinx.coroutines.CoroutineScope
 
 abstract class Module : AppContextProvider {
@@ -35,6 +36,6 @@ abstract class Module : AppContextProvider {
 }
 
 @Suppress("FunctionName")
-inline fun Module.ModuleDefinition(block: ModuleDefinitionBuilder.() -> Unit): ModuleDefinitionData {
-  return ModuleDefinitionBuilder(this).also(block).buildModule()
+inline fun Module.ModuleDefinition(crossinline block: ModuleDefinitionBuilder.() -> Unit): ModuleDefinitionData {
+  return trace("${this.javaClass}.ModuleDefinition") { ModuleDefinitionBuilder(this).also(block).buildModule() }
 }
