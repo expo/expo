@@ -27,75 +27,77 @@ import java.io.Serializable
 internal class ImageLibraryContract(
   private val appContextProvider: AppContextProvider,
 ) : AppContextActivityResultContract<ImageLibraryContractOptions, ImagePickerContractResult> {
-  val contentResolver: ContentResolver
+  private val contentResolver: ContentResolver
     get() = requireNotNull(appContextProvider.appContext.reactContext) {
       "React Application Context is null"
     }.contentResolver
 
   override fun createIntent(context: Context, input: ImageLibraryContractOptions): Intent {
-    if (PickVisualMedia.isPhotoPickerAvailable(context)) {
-      val request = PickVisualMediaRequest.Builder()
-        .setMediaType(
-          when (input.options.mediaTypes) {
-            MediaTypes.VIDEOS -> {
-              PickVisualMedia.VideoOnly
-            }
-
-            MediaTypes.IMAGES -> {
-              PickVisualMedia.ImageOnly
-            }
-
-            else -> {
-              PickVisualMedia.ImageAndVideo
-            }
+    val request = PickVisualMediaRequest.Builder()
+      .setMediaType(
+        when (input.options.mediaTypes) {
+          MediaTypes.VIDEOS -> {
+            PickVisualMedia.VideoOnly
           }
-        ).build()
 
-      if (input.options.allowsMultipleSelection) {
-        val selectionLimit = input.options.selectionLimit
+          MediaTypes.IMAGES -> {
+            PickVisualMedia.ImageOnly
+          }
 
-        if (selectionLimit == 1) {
-          // If multiple selection is allowed but the limit is 1, we should ignore
-          // the multiple selection flag and just treat it as a single selection.
-          return PickVisualMedia().createIntent(context, request)
+          else -> {
+            PickVisualMedia.ImageAndVideo
+          }
         }
+      )
+      .build()
 
-        if (selectionLimit > 1) {
-          return PickMultipleVisualMedia(selectionLimit).createIntent(context, request)
-        }
+    if (input.options.allowsMultipleSelection) {
+      val selectionLimit = input.options.selectionLimit
 
-        // If the selection limit is 0, it is the same as unlimited selection.
-        if (selectionLimit == UNLIMITED_SELECTION) {
-          return PickMultipleVisualMedia().createIntent(context, request)
-        }
+      if (selectionLimit == 1) {
+        // If multiple selection is allowed but the limit is 1, we should ignore
+        // the multiple selection flag and just treat it as a single selection.
+        return PickVisualMedia().createIntent(context, request)
       }
 
-      return PickVisualMedia().createIntent(context, request)
+      if (selectionLimit > 1) {
+        return PickMultipleVisualMedia(selectionLimit).createIntent(context, request)
+      }
+
+      // If the selection limit is 0, it is the same as unlimited selection.
+      if (selectionLimit == UNLIMITED_SELECTION) {
+        return PickMultipleVisualMedia().createIntent(context, request)
+      }
     }
 
-    return Intent(Intent.ACTION_GET_CONTENT)
-      .addCategory(Intent.CATEGORY_OPENABLE)
-      .setType(input.options.mediaTypes.toMimeType())
-      .apply {
-        if (input.options.allowsMultipleSelection) {
-          putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-        }
-        if (input.options.mediaTypes == MediaTypes.ALL) {
-          putExtra(Intent.EXTRA_MIME_TYPES, arrayOf(MediaTypes.IMAGES.toMimeType(), MediaTypes.VIDEOS.toMimeType()))
-        }
-      }
+    return PickVisualMedia().createIntent(context, request)
   }
 
   override fun parseResult(input: ImageLibraryContractOptions, resultCode: Int, intent: Intent?) =
     if (resultCode == Activity.RESULT_CANCELED) {
       ImagePickerContractResult.Cancelled()
-    } else if (input.options.allowsMultipleSelection) {
-      val uris = requireNotNull(intent).getAllDataUris()
-      ImagePickerContractResult.Success(uris.map { uri -> uri.toMediaType(contentResolver) to uri })
     } else {
-      val uri = requireNotNull(requireNotNull(intent).data)
-      val type = uri.toMediaType(contentResolver)
-      ImagePickerContractResult.Success(listOf(type to uri))
+      intent?.takeIf { resultCode == Activity.RESULT_OK }?.getAllDataUris()?.let { uris ->
+        if (input.options.allowsMultipleSelection) {
+          ImagePickerContractResult.Success(
+            uris.map { uri ->
+              uri.toMediaType(contentResolver) to uri
+            }
+          )
+        } else {
+          if (intent.data != null) {
+            intent.data?.let {
+              val type = it.toMediaType(contentResolver)
+              ImagePickerContractResult.Success(listOf(type to it))
+            }
+          } else {
+            uris.firstOrNull()?.let { uri ->
+              val type = uri.toMediaType(contentResolver)
+              ImagePickerContractResult.Success(listOf(type to uri))
+            } ?: ImagePickerContractResult.Error()
+          }
+        }
+      } ?: ImagePickerContractResult.Error()
     }
 }
 

@@ -10,6 +10,9 @@ internal class FailedToDeduceTypeException :
 internal class FailedToCreateFileException(path: String, cause: Throwable? = null) :
   CodedException("Failed to create the file '$path'", cause)
 
+internal class FailedToPickMediaException :
+  CodedException("Failed to parse PhotoPicker result")
+
 internal class FailedToExtractVideoMetadataException(file: File? = null, cause: Throwable? = null) :
   CodedException("Failed to extract metadata from video file '${file?.toUri()?.toString() ?: ""}'", cause)
 
