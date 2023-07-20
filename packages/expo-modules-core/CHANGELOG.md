@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed the `ErrorViewGroup` cannot be cast to module view class exception on Android. ([#23651](https://github.com/expo/expo/pull/23651) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 - Fork `uuid@3.4.0` and move into `expo-modules-core`. Remove the original dependency. ([#23249](https://github.com/expo/expo/pull/23249) by [@alanhughes](https://github.com/alanjhughes))
