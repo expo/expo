@@ -15,7 +15,7 @@ export declare const bundledAssets: string | null, bundleDirectory: string | nul
 /**
  * Get metadata information about a file, directory or external content/asset.
  * @param fileUri URI to the file or directory. See [supported URI schemes](#supported-uri-schemes).
- * @param options A map of options represented by [`GetInfoAsyncOptions`](#getinfoasyncoptions) type.
+ * @param options A map of options represented by [`InfoOptions`](#infooptions) type.
  * @return A Promise that resolves to a `FileInfo` object. If no item exists at this URI,
  * the returned Promise resolves to `FileInfo` object in form of `{ exists: false, isDirectory: false }`.
  */
