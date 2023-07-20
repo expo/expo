@@ -9,6 +9,8 @@ import { FileTree } from '~/ui/components/FileTree';
 
 > Available from Expo SDK 49 and Expo Router v2. Expo Router supports standard TypeScript out of the box. See the [TypeScript](/guides/typescript/) guide for more information on how to set it up.
 
+Expo Router supports generating TypeScript types automatically with Expo CLI. This enables `<Link>`, and the [hooks API](/router/reference/hooks) to be statically typed. This feature is currently in beta and is not enabled by default.
+
 While the feature is in beta, you can enable it by setting `experiments.typedRoutes` to `true` in your **app.json**:
 
 ```json app.json
@@ -88,6 +90,47 @@ export function Button() {
 ```
 
 Now, you can leverage `<Button />` from both **app/(feed)/feed.js** and **app/(search)/search.js** to push `./profile` while preserving the current tab.
+
+## Imperative navigation
+
+You can use the typed `router` object to navigate imperatively:
+
+```tsx
+import { router } from 'expo-router';
+
+router.push('/about');
+```
+
+Or with the typed `useRouter()` hook:
+
+```tsx
+import { useRouter } from 'expo-router';
+
+function Page() {
+  const router = useRouter();
+
+  router.push('/about');
+
+  // ...
+}
+```
+
+## Query parameters
+
+Most query parameters will not be represented in the file system and therefore cannot be typed automatically. You can type query parameters manually by passing a generic to the `useLocalSearchParams` and `useGlobalSearchParams` hooks. For example:
+
+```tsx app/search.tsx
+import { Text } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+
+export default function Page() {
+  /* @info Manually typed additional query parameters */
+  const { query } = useLocalSearchParams<{ query?: string }>();
+  /* @end */
+
+  return <Text>Search: {query ?? 'unset'}</Text>;
+}
+```
 
 ## Changes made to the environment
 
