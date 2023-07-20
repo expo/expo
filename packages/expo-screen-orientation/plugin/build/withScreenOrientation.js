@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setInitialOrientation = exports.getInitialOrientation = exports.INITIAL_ORIENTATION_KEY = void 0;
+exports.setInitialOrientation = exports.INITIAL_ORIENTATION_KEY = void 0;
 const assert_1 = __importDefault(require("assert"));
 const config_plugins_1 = require("expo/config-plugins");
 const pkg = require('expo-screen-orientation/package.json');
@@ -19,7 +19,7 @@ const OrientationLock = {
     LANDSCAPE_LEFT: 'UIInterfaceOrientationMaskLandscapeLeft',
     LANDSCAPE_RIGHT: 'UIInterfaceOrientationMaskLandscapeRight',
 };
-const withScreenOrientationViewController = (config, { initialOrientation = 'DEFAULT' } = {}) => {
+const withScreenOrientationViewController = (config, { initialOrientation } = {}) => {
     config = (0, config_plugins_1.withInfoPlist)(config, (config) => {
         const extendedConfig = {
             ...config,
@@ -30,19 +30,14 @@ const withScreenOrientationViewController = (config, { initialOrientation = 'DEF
     });
     return config;
 };
-function getInitialOrientation(config) {
-    return config.initialOrientation ?? 'DEFAULT';
-}
-exports.getInitialOrientation = getInitialOrientation;
 function setInitialOrientation(config, infoPlist) {
-    const initialOrientation = getInitialOrientation(config);
-    (0, assert_1.default)(initialOrientation in OrientationLock, `Invalid initial orientation "${initialOrientation}" expected one of: ${Object.keys(OrientationLock).join(', ')}`);
-    if (initialOrientation === 'DEFAULT') {
+    const initialOrientation = config.initialOrientation;
+    if (!initialOrientation) {
         delete infoPlist[exports.INITIAL_ORIENTATION_KEY];
+        return infoPlist;
     }
-    else {
-        infoPlist[exports.INITIAL_ORIENTATION_KEY] = OrientationLock[initialOrientation];
-    }
+    (0, assert_1.default)(initialOrientation in OrientationLock, `Invalid initial orientation "${initialOrientation}" expected one of: ${Object.keys(OrientationLock).join(', ')}`);
+    infoPlist[exports.INITIAL_ORIENTATION_KEY] = OrientationLock[initialOrientation];
     return infoPlist;
 }
 exports.setInitialOrientation = setInitialOrientation;
