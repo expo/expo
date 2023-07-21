@@ -15,7 +15,7 @@ export const CATCH_ALL = /\[\.\.\..+?\]/g;
 // /[param1] - Match [param1]
 export const SLUG = /\[.+?\]/g;
 // /(group1,group2,group3)/test - match (group1,group2,group3)
-export const ARRAY_GROUP_REGEX = /\(\s*\w+?\s*,.*?\)/g;
+export const ARRAY_GROUP_REGEX = /\(\s*\w[\w\s]*?,.*?\)/g;
 // /(group1,group2,group3)/test - captures ["group1", "group2", "group3"]
 export const CAPTURE_GROUP_REGEX = /[\\(,]\s*(\w[\w\s]*?)\s*(?=[,\\)])/g;
 
