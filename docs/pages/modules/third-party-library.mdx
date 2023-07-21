@@ -3,8 +3,11 @@ title: Use third-party native libraries in Expo
 description: Learn how to create a simple wrapper around two separate native libraries using Expo Modules.
 ---
 
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { BookOpen02Icon, Grid01Icon } from '@expo/styleguide-icons';
 
 Expo modules make it possible to easily use native, external libraries built for Android and iOS in React Native projects.  
 This tutorial focuses on utilizing the Expo Modules API to create radial charts using two similar libraries accessible on both native platforms.
@@ -322,14 +325,36 @@ const styles = StyleSheet.create({
 <Step label="8">
 ## Rebuild and launch your application
 
-Rerun the build commands from step 2 and make sure your application builds successfully on both platforms.
+To make sure your app builds successfully on both platforms, rerun the build commands from step 2. After the app is successfully built on any of the platform you'll see a pie chart with three slices:
 
-You should see a pie chart with three slices:
-
-![A PieChart module on iOS and Android](/static/images/modules/third-party-library/result.webp)
-
-Congratulations, you have created your first simple wrapper around two separate native libraries using Expo Modules! Learn more about the API in the [Expo Module API reference](/modules/module-api/).
-
-if you enjoyed this tutorial and haven't done the native module tutorial, go to the ["creating a native module" tutorial](/modules/native-module-tutorial/) next.
+<ImageSpotlight
+  src="/static/images/modules/third-party-library/result.webp"
+  alt="A PieChart module on iOS and Android"
+/>
 
 </Step>
+
+## Next steps
+
+Congratulations! You've created your first simple wrapper around two separate third-party native libraries using Expo Modules!
+
+{/* Congratulations, you have created your first simple wrapper around two separate native libraries using Expo Modules! Learn more about the API in the [Expo Module API reference](/modules/module-api/). */}
+
+{/* if you enjoyed this tutorial and haven't done the native module tutorial, go to the ["creating a native module" tutorial](/modules/native-module-tutorial/) next. */}
+
+<BoxLink
+  href="/modules/native-module-tutorial/"
+  title="Creating a native module"
+  icon="arrow-right"
+  iconType="feather"
+  iconSize={16}
+  iconColor="#000"
+/>
+<BoxLink
+  href="/modules/module-api/"
+  title="Expo Module API reference"
+  icon="arrow-right"
+  iconType="feather"
+  iconSize={16}
+  iconColor="#000"
+/>
