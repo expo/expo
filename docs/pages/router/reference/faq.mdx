@@ -46,3 +46,17 @@ If file-based routing isn't right for your project, you can drop down to React N
 ## How do I server-render my Expo Router website?
 
 Basic static rendering (SSG) is supported in Expo Router v2. Server-side rendering currently requires custom infrastructure to setup.
+
+## Can I use React Navigation?
+
+Yes! [React Navigation](https://github.com/react-navigation/react-navigation) is one of the most popular navigation libraries in the React Native ecosystem. It is maintained by the Expo team and supports Android, iOS, and the web.
+
+React Navigation includes support for common navigation patterns, and it's fully customizable so you can achieve any navigation pattern, even if it's not built into the library.
+
+See the [Getting started](https://reactnavigation.org/docs/getting-started/) guide in React Navigation documentation for more information on how to get started.
+
+## Can I use React Native Navigation by Wix?
+
+This library is not available in the Expo Go app and is not yet compatible with `expo-dev-client`.
+
+We recommend [`createNativeStackNavigator`](https://reactnavigation.org/docs/native-stack-navigator) from React Navigation to use Android and iOS native navigation APIs.

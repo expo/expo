@@ -354,7 +354,6 @@ const general = [
       makePage('workflow/upgrading-expo-sdk-walkthrough.mdx'),
       makePage('eas/webhooks.mdx'),
       makeSection('Assorted', [
-        makePage('guides/routing-and-navigation.mdx'),
         makePage('guides/authentication.mdx'),
         makePage('guides/troubleshooting-proxies.mdx'),
         makePage('guides/sharing-preview-releases.mdx'),
