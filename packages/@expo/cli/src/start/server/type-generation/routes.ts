@@ -93,13 +93,14 @@ export async function setupTypedRoutes({
  * Should be debounced as its very common for developers to make changes to multiple files at once (eg Save All)
  */
 const regenerateRouterDotTS = debounce(
-  (
+  async (
     typesDir: string,
     staticRoutes: Set<string>,
     dynamicRoutes: Set<string>,
     dynamicRouteTemplates: Set<string>
   ) => {
-    fs.writeFile(
+    await fs.mkdir(typesDir, { recursive: true });
+    await fs.writeFile(
       path.resolve(typesDir, './router.d.ts'),
       getTemplateString(staticRoutes, dynamicRoutes, dynamicRouteTemplates)
     );
