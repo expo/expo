@@ -151,12 +151,6 @@ class Env {
   get EXPO_NO_METRO_LAZY() {
     return boolish('EXPO_NO_METRO_LAZY', false);
   }
-  /**
-   * **Experimental:** Enable universal Routes Handlers (serverless functions) in Expo Router projects.
-   */
-  get EXPO_USE_ROUTE_HANDLERS(): boolean {
-    return boolish('EXPO_USE_ROUTE_HANDLERS', true);
-  }
 }
 
 export const env = new Env();

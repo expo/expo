@@ -392,7 +392,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // This MUST be after the manifest middleware so it doesn't have a chance to serve the template `public/index.html`.
       middleware.use(new ServeStaticMiddleware(this.projectRoot).getHandler());
 
-      if (env.EXPO_USE_ROUTE_HANDLERS) {
+      if (exp.web?.output === 'dynamic') {
         // Middleware for hosting middleware
         middleware.use(
           createRouteHandlerMiddleware(this.projectRoot, {
