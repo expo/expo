@@ -20,6 +20,7 @@ export type UseUpdatesStateType = {
   downloadedUpdate?: UpdateInfo;
   checkError?: Error;
   downloadError?: Error;
+  initializationError?: Error;
   isUpdateAvailable: boolean;
   isUpdatePending: boolean;
   isChecking: boolean;

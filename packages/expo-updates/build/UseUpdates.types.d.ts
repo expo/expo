@@ -136,6 +136,10 @@ export type UseUpdatesReturnType = {
      */
     downloadError?: Error;
     /**
+     * If an error occurs during initialization of `useUpdates()`, the error description will appear here.
+     */
+    initializationError?: Error;
+    /**
      * A `Date` object representing the last time this client checked for an available update,
      * or `undefined` if no check has yet occurred since the app started. Does not persist across
      * app reloads or restarts.
