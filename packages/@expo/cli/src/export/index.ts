@@ -16,7 +16,7 @@ export const expoExport: Command = async (argv) => {
       '--dump-sourcemap': Boolean,
       '--max-workers': Number,
       '--output-dir': String,
-      '--platform': String,
+      '--platform': [String],
       '--no-minify': Boolean,
 
       // Hack: This is added because EAS CLI always includes the flag.

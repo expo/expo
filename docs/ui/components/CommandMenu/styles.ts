@@ -98,13 +98,18 @@ export const commandMenuStyles = css`
     }
 
     & + [cmdk-item] {
-      margin-top: 4px;
+      margin-top: ${spacing[1]}px;
+    }
+
+    &[data-nested] + [cmdk-item] {
+      margin-top: ${spacing[2]}px;
     }
 
     mark {
       color: ${theme.palette.blue12};
       background: ${theme.palette.blue4};
       border-radius: 2px;
+      opacity: 0.85;
     }
   }
 
@@ -151,10 +156,12 @@ export const commandMenuStyles = css`
   }
 
   html.dark-theme {
-    [cmdk-item] mark {
-      background: ${theme.palette.blue5};
+    [cmdk-item] {
+      mark {
+        background: ${theme.palette.blue6};
+      }
 
-      &[aria-selected='true'] {
+      &[data-selected='true'] mark {
         background: ${theme.palette.blue7};
       }
     }

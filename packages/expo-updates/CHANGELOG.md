@@ -6,15 +6,20 @@
 
 ### 🎉 New features
 
+- New useUpdates() JS API. ([#23532](https://github.com/expo/expo/pull/23532) by [@douglowder](https://github.com/douglowder))
+
 ### 🐛 Bug fixes
 
 - [Android] Fix rollback embedded update logic. ([#23244](https://github.com/expo/expo/pull/23244) by [@wschurman](https://github.com/wschurman))
 - Correctly handle roll backs in JS module methods. ([#23356](https://github.com/expo/expo/pull/23356), [#23377](https://github.com/expo/expo/pull/23377) by [@wschurman](https://github.com/wschurman))
+- [iOS] Fix unmatched selection policy. ([#23535](https://github.com/expo/expo/pull/23535) by [@chochihim](https://github.com/chochihim))
+- Handle initialization errors in useUpdates(). ([#23640](https://github.com/expo/expo/pull/23640) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others
 
 - Native getter for state machine context. ([#23428](https://github.com/expo/expo/pull/23428) by [@douglowder](https://github.com/douglowder))
 - [Android] EX_UPDATES_ANDROID_DELAY_LOAD_APP settable by env. ([#23479](https://github.com/expo/expo/pull/23479) by [@douglowder](https://github.com/douglowder))
+- [iOS] Fix template for EX_UPDATES_NATIVE_DEBUG. ([#23602](https://github.com/expo/expo/pull/23602) by [@douglowder](https://github.com/douglowder))
 
 ## 0.18.10 - 2023-07-12
 

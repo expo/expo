@@ -3,6 +3,7 @@ import { debounce } from 'lodash';
 import { Server } from 'metro';
 import path from 'path';
 
+import { directoryExistsAsync } from '../../../utils/dir';
 import { unsafeTemplate } from '../../../utils/template';
 import { ServerLike } from '../BundlerDevServer';
 import { metroWatchTypeScriptFiles } from '../metro/metroWatchTypeScriptFiles';
@@ -14,9 +15,9 @@ export const CATCH_ALL = /\[\.\.\..+?\]/g;
 // /[param1] - Match [param1]
 export const SLUG = /\[.+?\]/g;
 // /(group1,group2,group3)/test - match (group1,group2,group3)
-export const ARRAY_GROUP_REGEX = /\(\w+?,.*?\)/g;
+export const ARRAY_GROUP_REGEX = /\(\s*\w[\w\s]*?,.*?\)/g;
 // /(group1,group2,group3)/test - captures ["group1", "group2", "group3"]
-export const CAPTURE_GROUP_REGEX = /[\\(,](\w+?)(?=[,\\)])/g;
+export const CAPTURE_GROUP_REGEX = /[\\(,]\s*(\w[\w\s]*?)\s*(?=[,\\)])/g;
 
 export interface SetupTypedRoutesOptions {
   server: ServerLike;
@@ -33,20 +34,25 @@ export async function setupTypedRoutes({
   projectRoot,
   routerDirectory,
 }: SetupTypedRoutesOptions) {
-  const appRoot = path.join(projectRoot, routerDirectory);
+  const absoluteRouterDirectory = path.join(projectRoot, routerDirectory);
 
-  const { filePathToRoute, staticRoutes, dynamicRoutes, addFilePath } =
-    getTypedRoutesUtils(appRoot);
+  const { filePathToRoute, staticRoutes, dynamicRoutes, addFilePath, isRouteFile } =
+    getTypedRoutesUtils(absoluteRouterDirectory);
 
   if (metro) {
     // Setup out watcher first
     metroWatchTypeScriptFiles({
-      projectRoot: appRoot,
+      projectRoot,
       server,
       metro,
       eventTypes: ['add', 'delete', 'change'],
       async callback({ filePath, type }) {
+        if (!isRouteFile(filePath)) {
+          return;
+        }
+
         let shouldRegenerate = false;
+
         if (type === 'delete') {
           const route = filePathToRoute(filePath);
           staticRoutes.delete(route);
@@ -68,9 +74,11 @@ export async function setupTypedRoutes({
     });
   }
 
-  // Do we need to walk the entire tree on startup?
-  // Idea: Store the list of files in the last write, then simply check Git for what files have changed
-  await walk(appRoot, addFilePath);
+  if (await directoryExistsAsync(absoluteRouterDirectory)) {
+    // Do we need to walk the entire tree on startup?
+    // Idea: Store the list of files in the last write, then simply check Git for what files have changed
+    await walk(absoluteRouterDirectory, addFilePath);
+  }
 
   regenerateRouterDotTS(
     typesDirectory,
@@ -85,13 +93,14 @@ export async function setupTypedRoutes({
  * Should be debounced as its very common for developers to make changes to multiple files at once (eg Save All)
  */
 const regenerateRouterDotTS = debounce(
-  (
+  async (
     typesDir: string,
     staticRoutes: Set<string>,
     dynamicRoutes: Set<string>,
     dynamicRouteTemplates: Set<string>
   ) => {
-    fs.writeFile(
+    await fs.mkdir(typesDir, { recursive: true });
+    await fs.writeFile(
       path.resolve(typesDir, './router.d.ts'),
       getTemplateString(staticRoutes, dynamicRoutes, dynamicRouteTemplates)
     );
@@ -141,7 +150,7 @@ export function getTypedRoutesUtils(appRoot: string, filePathSeperator = path.se
   const dynamicRoutes = new Map<string, Set<string>>();
 
   function normalizedFilePath(filePath: string) {
-    return filePath.replaceAll(filePathSeperator, '/').replaceAll(' ', '_');
+    return filePath.replaceAll(filePathSeperator, '/');
   }
 
   const normalizedAppRoot = normalizedFilePath(appRoot);
@@ -149,15 +158,22 @@ export function getTypedRoutesUtils(appRoot: string, filePathSeperator = path.se
   const filePathToRoute = (filePath: string) => {
     return normalizedFilePath(filePath)
       .replace(normalizedAppRoot, '')
-      .replace(/index.[jt]sx?/, '')
+      .replace(/index\.[jt]sx?/, '')
       .replace(/\.[jt]sx?$/, '');
   };
 
-  const addFilePath = (filePath: string): boolean => {
-    if (filePath.match(/_layout\.[tj]sx?$/)) {
+  const isRouteFile = (filePath: string) => {
+    // Layout and filenames starting with `+` are not routes
+    if (filePath.match(/_layout\.[tj]sx?$/) || filePath.match(/\/\+/)) {
       return false;
     }
 
+    // Route files must be nested with in the appRoot
+    const relative = path.relative(appRoot, filePath);
+    return relative && !relative.startsWith('..') && !path.isAbsolute(relative);
+  };
+
+  const addFilePath = (filePath: string): boolean => {
     const route = filePathToRoute(filePath);
 
     // We have already processed this file
@@ -220,6 +236,7 @@ export function getTypedRoutesUtils(appRoot: string, filePathSeperator = path.se
     dynamicRoutes,
     filePathToRoute,
     addFilePath,
+    isRouteFile,
   };
 }
 
@@ -238,7 +255,7 @@ async function walk(directory: string, callback: (filePath: string) => void) {
       await walk(p, callback);
     } else {
       // Normalise the paths so they are easier to convert to URLs
-      const normalizedPath = p.replaceAll(path.sep, '/').replaceAll(' ', '_');
+      const normalizedPath = p.replaceAll(path.sep, '/');
       callback(normalizedPath);
     }
   }
@@ -264,7 +281,7 @@ export function extrapolateGroupRoutes(
   const groupsMatch = match[0];
 
   for (const group of groupsMatch.matchAll(CAPTURE_GROUP_REGEX)) {
-    extrapolateGroupRoutes(route.replace(groupsMatch, `(${group[1]})`), routes);
+    extrapolateGroupRoutes(route.replace(groupsMatch, `(${group[1].trim()})`), routes);
   }
 
   return routes;
@@ -280,6 +297,7 @@ const routerDotTSTemplate = unsafeTemplate`/* eslint-disable @typescript-eslint/
 /* eslint-disable @typescript-eslint/ban-types */
 declare module "expo-router" {
   import type { LinkProps as OriginalLinkProps } from 'expo-router/build/link/Link';
+  import type { Router as OriginalRouter } from 'expo-router/src/types';
   export * from 'expo-router/build';
 
   // prettier-ignore
@@ -451,16 +469,17 @@ declare module "expo-router" {
    * Expo Router Exports *
    ***********************/
 
-  export type Router = {
+  export type Router = Omit<OriginalRouter, 'push' | 'replace' | 'setParams'> & {
     /** Navigate to the provided href. */
     push: <T>(href: Href<T>) => void;
     /** Navigate to route without appending to the history. */
     replace: <T>(href: Href<T>) => void;
-    /** Go back in the history. */
-    back: () => void;
     /** Update the current route query params. */
     setParams: <T = ''>(params?: T extends '' ? Record<string, string> : InputRouteParams<T>) => void;
   };
+
+  /** The imperative router. */
+  export const router: Router;
 
   /************
    * <Link /> *
@@ -475,7 +494,21 @@ declare module "expo-router" {
     resolveHref: <T>(href: Href<T>) => string;
   }
 
+  /**
+   * Component to render link to another route using a path.
+   * Uses an anchor tag on the web.
+   *
+   * @param props.href Absolute path to route (e.g. \`/feeds/hot\`).
+   * @param props.replace Should replace the current route without adding to the history.
+   * @param props.asChild Forward props to child component. Useful for custom buttons.
+   * @param props.children Child elements to render the content.
+   */
   export const Link: LinkComponent;
+  
+  /** Redirects to the href as soon as the component is mounted. */
+  export const Redirect: <T>(
+    props: React.PropsWithChildren<{ href: Href<T> }>
+  ) => JSX.Element;
 
   /************
    * Hooks *
@@ -486,6 +519,7 @@ declare module "expo-router" {
     T extends AllRoutes | UnknownOutputParams = UnknownOutputParams
   >(): T extends AllRoutes ? SearchParams<T> : T;
 
+  /** @deprecated renamed to \`useGlobalSearchParams\` */
   export function useSearchParams<
     T extends AllRoutes | UnknownOutputParams = UnknownOutputParams
   >(): T extends AllRoutes ? SearchParams<T> : T;
