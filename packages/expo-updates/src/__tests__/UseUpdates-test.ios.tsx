@@ -2,6 +2,7 @@ import { act, render, screen } from '@testing-library/react-native';
 import '@testing-library/jest-native/extend-expect';
 import React from 'react';
 
+import ExpoUpdates from '../ExpoUpdates';
 import type { Manifest, UpdatesNativeStateChangeEvent } from '../Updates.types';
 import { emitStateChangeEvent } from '../UpdatesEmitter';
 import { updateFromManifest } from '../UseUpdatesUtils';
@@ -194,6 +195,13 @@ describe('useUpdates()', () => {
       expect(isUpdateAvailableView).toHaveTextContent('false');
       const isUpdatePendingView = await screen.findByTestId('isUpdatePending');
       expect(isUpdatePendingView).toHaveTextContent('false');
+    });
+
+    it('Handles error in initial read of native context', async () => {
+      ExpoUpdates.getNativeStateMachineContextAsync.mockRejectedValueOnce(new Error('In dev mode'));
+      render(<UseUpdatesTestApp />);
+      const errorView = await screen.findByTestId('initializationError');
+      expect(errorView).toHaveTextContent('In dev mode');
     });
   });
 
