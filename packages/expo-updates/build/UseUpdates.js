@@ -61,7 +61,7 @@ export const useUpdates = () => {
         })
             .catch((error) => {
             // Native call can fail (e.g. if in development mode), so catch the promise rejection and surface the error
-            setUpdatesState((updatesState) => ({ ...updatesState, checkError: error }));
+            setUpdatesState((updatesState) => ({ ...updatesState, initializationError: error }));
         });
         const subscription = addUpdatesStateChangeListener((event) => {
             setUpdatesState((updatesState) => reduceUpdatesStateFromContext(updatesState, event.context));

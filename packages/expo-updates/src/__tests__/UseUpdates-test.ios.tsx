@@ -200,7 +200,7 @@ describe('useUpdates()', () => {
     it('Handles error in initial read of native context', async () => {
       ExpoUpdates.getNativeStateMachineContextAsync.mockRejectedValueOnce(new Error('In dev mode'));
       render(<UseUpdatesTestApp />);
-      const errorView = await screen.findByTestId('checkError');
+      const errorView = await screen.findByTestId('initializationError');
       expect(errorView).toHaveTextContent('In dev mode');
     });
   });
