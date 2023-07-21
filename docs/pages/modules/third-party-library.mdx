@@ -23,23 +23,23 @@ This makes them a good example for this tutorial.
 
 You can start by creating a new empty Expo module. We're creating a separate project for this tutorial. However, you can create a new module inside your existing project.
 
-### As a separate project
+### Start with a new project
 
-Alternatively, if you want to create an empty Expo module to be published on npm and used in any Expo application, run:
+To create an empty Expo module that can be published on npm and utilized in any Expo application, run the following command:
 
 <Terminal cmd={['$ npx create-expo-module expo-radial-chart']} />
 
-> **Tip**: Since you aren't going to actually ship this library, you can hit <kbd>return</kbd> for all of the prompts to accept the default values.
+> **Tip**: If you aren't going to ship this library, press <kbd>return</kbd> for all of the prompts to accept the default values in the terminal window.
 
-Next, you can open the newly created `expo-radial-chart` directory and start editing the native code.
+Now, open the newly created `expo-radial-chart` directory to start editing the native code.
 
 ### Inside an existing application
 
-If you want to use our new module as a view inside the existing project, you can run this command inside your project directory:
+Alternatively, you can use the new module as a view inside the existing project. Run the following command in your project's directory:
 
 <Terminal cmd={['$ npx create-expo-module --local expo-radial-chart']} />
 
-Next, you can open the newly created `modules/expo-radial-chart` directory and start editing the native code.
+Now, open the newly created `modules/expo-radial-chart` directory to start editing the native code.
 
 </Step>
 
@@ -47,7 +47,7 @@ Next, you can open the newly created `modules/expo-radial-chart` directory and s
 
 ## Run the example project
 
-Now let's run the example project to make sure everything is working. We'll need to start the TypeScript compiler to watch for changes and rebuild the module JavaScript, and separately in another terminal window we'll compile and run the example app.
+To verify that everything is functioning correctly, let's run the example project. In the terminal window, start the TypeScript compiler to watch for changes and rebuild the module JavaScript.
 
 <Terminal
   cmdCopy="npm run build"
@@ -56,6 +56,8 @@ Now let's run the example project to make sure everything is working. We'll need
     '$ npm run build',
   ]}
 />
+
+In another terminal window, compile and run the example app:
 
 <Terminal
   cmdCopy="cd example && npx expo run:ios"
@@ -73,7 +75,7 @@ Now let's run the example project to make sure everything is working. We'll need
 <Step label="3">
 ## Add native dependencies
 
-Now we can add the native dependencies to the module by editing the `android/build.gradle` and `ios/ExpoRadialChart.podspec` files.
+Now, add the native dependencies to the module by editing the **android/build.gradle** and **ios/ExpoRadialChart.podspec** files:
 
 ```diff android/build.grade
 dependencies {
@@ -97,8 +99,7 @@ dependencies {
 <Step label="4">
 ## Define an API
 
-To use our module in the application without mistakes we'll define the types for our props.
-Our module accepts a list of series, each with a color and a percentage value.
+To use the module in the app without mistakes, define the types for the props. This module accepts a list of series &mdash; each with a color and a percentage value.
 
 ```ts src/ExpoRadialChart.types.ts
 import { ViewStyle } from 'react-native/types';
@@ -133,14 +134,10 @@ export default function ExpoRadialChartView() {
 <Step label="5">
 ## Implement the module on Android
 
-We can now implement the native functionality by editing the placeholder files.
+Now you can implement the native functionality by editing the placeholder files with the following changes:
 
-We create a `PieChart` instance and set its layoutParams to match the parent view.
-Then we add it to the view hierarchy using the `addView` function.
-
-We define a `setChartData` function that accepts a list of `Series` objects.
-We iterate over the list and create a `PieEntry` for each series. We also store the colors in a separate list.
-Then we create a `PieDataSet`, use it to create a `PieData` object and set it as data on the `PieChart` instance.
+- Create a `PieChart` instance and set its `layoutParams` to match the parent view. Then, add it to the view hierarchy using the `addView` function.
+- Define a `setChartData` function that accepts a list of `Series` objects. You can iterate over the list, create a `PieEntry` for each series and store the colors in a separate list. Then, create a `PieDataSet`, use it to create a `PieData` object, and set it as data on the `PieChart` instance.
 
 ```kotlin android/src/main/java/expo/modules/radialchart/ExpoRadialChartView.kt
 package expo.modules.radialchart
@@ -189,7 +186,7 @@ class ExpoRadialChartView(context: Context, appContext: AppContext) : ExpoView(c
 }
 ```
 
-We also need to use the [`Prop`](/modules/module-api/#prop) function to define the `data` prop and call the native `setChartData` function when the prop changes.
+You also need to use the [`Prop`](/modules/module-api/#prop) function to define the `data` prop and call the native `setChartData` function when the prop changes:
 
 ```kotlin android/src/main/java/expo/modules/radialchart/ExpoRadialChartModule.kt
 package expo.modules.radialchart
@@ -215,11 +212,11 @@ class ExpoRadialChartModule : Module() {
 <Step label="6">
 ## Implement the module on iOS
 
-We create a new `PieChartView` instance and use the `addSubview` function to add it to the view hierarchy.
+Now you can implement the native functionality by editing the placeholder files with the following changes:
 
-We need to set the `clipsToBounds` property and override the `layoutSubviews` function to make sure the chart view is always the same size as the parent view.
-
-Finally, we create a `setChartData` function that accepts a list of series, creates a `PieChartDataSet` instance with the data and assigns it to the `data` property of the `PieChartView` instance.
+- Create a new `PieChartView` instance and use the `addSubview` function to add it to the view hierarchy.
+- Set the `clipsToBounds` property and override the `layoutSubviews` function to make sure the chart view is always the same size as the parent view.
+- Finally, create a `setChartData` function that accepts a list of series, creates a `PieChartDataSet` instance with the data, and assigns it to the `data` property of the `PieChartView` instance.
 
 ```swift ios/ExpoRadialChartView.swift
 import ExpoModulesCore
@@ -259,7 +256,7 @@ class ExpoRadialChartView: ExpoView {
 }
 ```
 
-We also need to use the [`Prop`](/modules/module-api/#prop) function to define the `data` prop and call the native `setChartData` function when the prop changes.
+You also need to use the [`Prop`](/modules/module-api/#prop) function to define the `data` prop and call the native `setChartData` function when the prop changes:
 
 ```swift ios/ExpoRadialChartModule.swift
 import ExpoModulesCore
@@ -281,9 +278,9 @@ public class ExpoRadialChartModule: Module {
 
 <Step label="7">
 
-## Write an example application to use our module
+## Write an example app to use the module
 
-Now we can update the app inside the `example` directory to to test our module. We'll use the `ExpoRadialChartView` component to render a pie chart with three slices.
+You can update the app inside the **example** directory to test the module. Use the `ExpoRadialChartView` component to render a pie chart with three slices:
 
 ```tsx example/App.tsx
 import { ExpoRadialChartView } from 'expo-radial-chart';
@@ -318,7 +315,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-> **Tip**: If you created the module inside an existing application, make sure to import it directly from your `modules` directory. It's easiest to use a relative import. `import { ExpoRadialChartView } from '../modules/expo-radial-chart';`
+> **Tip**: If you created the module inside an existing application, make sure to import it directly from your **modules** directory by using a relative import: `import { ExpoRadialChartView } from '../modules/expo-radial-chart';`
 
 </Step>
 
