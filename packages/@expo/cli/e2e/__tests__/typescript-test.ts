@@ -33,7 +33,9 @@ it('loads expected modules by default', async () => {
     '../node_modules/supports-color/index.js',
     '@expo/cli/build/src/log.js',
     '@expo/cli/build/src/typescript/index.js',
+    '@expo/cli/build/src/typescript/typescriptAsync.js',
     '@expo/cli/build/src/utils/args.js',
+    '@expo/cli/build/src/utils/errors.js',
     '@expo/config-types/build/ExpoConfig.js',
     '@expo/config/build/Config.js',
     '@expo/config/build/Config.types.js',
@@ -48,7 +50,7 @@ it('runs `npx expo typescript --help`', async () => {
   expect(results.stdout).toMatchInlineSnapshot(`
     "
       Info
-        Automatically setup Typescript and generate types for Expo packages
+        Setup Typescript and generate types for Expo packages
 
       Usage
         $ npx expo typescript
