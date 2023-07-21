@@ -169,6 +169,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/using-styled-components/': '/guides/overview/',
   '/guides/using-bugsnag/': '/guides/overview/',
   '/build/automating-submissions/': '/build/automate-submissions/',
+  '/guides/routing-and-navigation/': '/routing/introduction/',
 
   // Old redirects
   '/introduction/project-lifecycle/': '/archive/managed-vs-bare/',
