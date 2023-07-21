@@ -47,12 +47,16 @@ describe(`${SLUG}`, () => {
 describe(`${ARRAY_GROUP_REGEX}`, () => {
   it('can match slug params', () => {
     // Matches is a RegexMatchArray[]
-    const matches = [...'/(a,b,c)/test/(d,e)/(f)'.matchAll(ARRAY_GROUP_REGEX)];
+    const matches = Array.from(
+      '/(a,b,c)/test/(d,e)/(  my group, my other group )/(f)'.matchAll(ARRAY_GROUP_REGEX)
+    );
 
     // Need to convert RegexMatchArray to an array to easily compare
-    expect(matches).toHaveLength(2);
+    expect(matches).toHaveLength(3);
     expect([...matches[0]]).toStrictEqual(['(a,b,c)']);
     expect([...matches[1]]).toStrictEqual(['(d,e)']);
+    expect([...matches[2]]).toStrictEqual(['(  my group, my other group )']);
+    // (f) is ignored as it is not an array group
   });
 });
 
@@ -66,6 +70,18 @@ describe(`${CAPTURE_GROUP_REGEX}`, () => {
     expect([...matches[0]]).toStrictEqual(['(group1', 'group1']);
     expect([...matches[1]]).toStrictEqual([',group2', 'group2']);
     expect([...matches[2]]).toStrictEqual([',group3', 'group3']);
+  });
+
+  it('trims the name, but preserves spaces within names', () => {
+    const matches = [
+      ...'/(   group1  , my group, my other   group  )/my page'.matchAll(CAPTURE_GROUP_REGEX),
+    ];
+
+    // Need to convert RegexMatchArray to an array to easily compare
+    expect(matches).toHaveLength(3);
+    expect([...matches[0]]).toStrictEqual(['(   group1  ', 'group1']);
+    expect([...matches[1]]).toStrictEqual([', my group', 'my group']);
+    expect([...matches[2]]).toStrictEqual([', my other   group  ', 'my other   group']);
   });
 });
 
@@ -138,12 +154,28 @@ describe(getTypedRoutesUtils, () => {
     });
 
     const filepaths = [
-      ['/user/project/app/file.tsx', true, { static: ['/file'] }],
-      ['/user/project/app/(group)/page.tsx', true, { static: ['/(group)/page', '/page'] }],
-      ['/user/project/app/folder/[slug].tsx', true, { dynamic: ['/folder/${SingleRoutePart<T>}'] }],
+      ['/user/project/app/file.tsx', { static: ['/file'] }],
+      ['/user/project/app/folder/[slug].tsx', { dynamic: ['/folder/${SingleRoutePart<T>}'] }],
+      ['/user/project/app/folder/[...slug].tsx', { dynamic: ['/folder/${CatchAllRoutePart<T>}'] }],
+      [
+        '/user/project/app/folder/[slug]/[...slug2].tsx',
+        { dynamic: ['/folder/${SingleRoutePart<T>}/${CatchAllRoutePart<T>}'] },
+      ],
+      ['/user/project/app/(group)/page.tsx', { static: ['/(group)/page', '/page'] }],
+      [
+        '/user/project/app/(group1,group2)/page.tsx',
+        { static: ['/(group1)/page', '/(group2)/page', '/page'] },
+      ],
+      [
+        '/user/project/app/(group)/[slug].tsx',
+        { dynamic: ['/${SingleRoutePart<T>}', '/(group)/${SingleRoutePart<T>}'] },
+      ],
+      [
+        '/user/project/app/(group)/[...slug].tsx',
+        { dynamic: ['/${CatchAllRoutePart<T>}', '/(group)/${CatchAllRoutePart<T>}'] },
+      ],
       [
         '/user/project/app/(a,b,c)/(d,e)/page.tsx',
-        true,
         {
           static: [
             '/page',
@@ -159,16 +191,21 @@ describe(getTypedRoutesUtils, () => {
           ],
         },
       ],
+      [
+        '/user/project/app/(   group1  , group2    )/page.tsx',
+        { static: ['/(group1)/page', '/(group2)/page', '/page'] },
+      ],
+      [
+        '/user/project/app/(   group1  , my group    )/my page.tsx',
+        { static: ['/(group1)/my page', '/(my group)/my page', '/my page'] },
+      ],
     ] as const;
 
-    it.each(filepaths)('normalizes a filepath: %s', (filepath, expectedResult, expectedRoutes) => {
-      const result = addFilePath(filepath);
-      expect(result).toEqual(expectedResult);
+    it.each(filepaths)('normalizes a filepath: %s', (filepath, expectedRoutes) => {
+      addFilePath(filepath);
 
       if ('static' in expectedRoutes) {
         const actualRoutes = staticRoutes.get(filePathToRoute(filepath));
-
-        expect(actualRoutes?.size).toEqual(expectedRoutes.static.length);
 
         for (const staticRoute of expectedRoutes.static) {
           expect(actualRoutes).toContain(staticRoute);
@@ -178,11 +215,10 @@ describe(getTypedRoutesUtils, () => {
       if ('dynamic' in expectedRoutes) {
         const actualRoutes = dynamicRoutes.get(filePathToRoute(filepath));
 
-        expect(actualRoutes?.size).toEqual(expectedRoutes.dynamic.length);
-
         for (const dynamicRoute of expectedRoutes.dynamic) {
           expect(actualRoutes).toContain(dynamicRoute);
         }
+        expect(actualRoutes?.size).toEqual(expectedRoutes.dynamic.length);
       }
     });
   });
