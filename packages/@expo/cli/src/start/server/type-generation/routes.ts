@@ -15,9 +15,9 @@ export const CATCH_ALL = /\[\.\.\..+?\]/g;
 // /[param1] - Match [param1]
 export const SLUG = /\[.+?\]/g;
 // /(group1,group2,group3)/test - match (group1,group2,group3)
-export const ARRAY_GROUP_REGEX = /\(\w+?,.*?\)/g;
+export const ARRAY_GROUP_REGEX = /\(\s*\w[\w\s]*?,.*?\)/g;
 // /(group1,group2,group3)/test - captures ["group1", "group2", "group3"]
-export const CAPTURE_GROUP_REGEX = /[\\(,](\w+?)(?=[,\\)])/g;
+export const CAPTURE_GROUP_REGEX = /[\\(,]\s*(\w[\w\s]*?)\s*(?=[,\\)])/g;
 
 export interface SetupTypedRoutesOptions {
   server: ServerLike;
@@ -34,10 +34,10 @@ export async function setupTypedRoutes({
   projectRoot,
   routerDirectory,
 }: SetupTypedRoutesOptions) {
-  const appRoot = path.join(projectRoot, routerDirectory);
+  const absoluteRouterDirectory = path.join(projectRoot, routerDirectory);
 
   const { filePathToRoute, staticRoutes, dynamicRoutes, addFilePath, isRouteFile } =
-    getTypedRoutesUtils(appRoot);
+    getTypedRoutesUtils(absoluteRouterDirectory);
 
   if (metro) {
     // Setup out watcher first
@@ -74,10 +74,10 @@ export async function setupTypedRoutes({
     });
   }
 
-  if (await directoryExistsAsync(appRoot)) {
+  if (await directoryExistsAsync(absoluteRouterDirectory)) {
     // Do we need to walk the entire tree on startup?
     // Idea: Store the list of files in the last write, then simply check Git for what files have changed
-    await walk(appRoot, addFilePath);
+    await walk(absoluteRouterDirectory, addFilePath);
   }
 
   regenerateRouterDotTS(
@@ -150,7 +150,7 @@ export function getTypedRoutesUtils(appRoot: string, filePathSeperator = path.se
   const dynamicRoutes = new Map<string, Set<string>>();
 
   function normalizedFilePath(filePath: string) {
-    return filePath.replaceAll(filePathSeperator, '/').replaceAll(' ', '_');
+    return filePath.replaceAll(filePathSeperator, '/');
   }
 
   const normalizedAppRoot = normalizedFilePath(appRoot);
@@ -255,7 +255,7 @@ async function walk(directory: string, callback: (filePath: string) => void) {
       await walk(p, callback);
     } else {
       // Normalise the paths so they are easier to convert to URLs
-      const normalizedPath = p.replaceAll(path.sep, '/').replaceAll(' ', '_');
+      const normalizedPath = p.replaceAll(path.sep, '/');
       callback(normalizedPath);
     }
   }
@@ -281,7 +281,7 @@ export function extrapolateGroupRoutes(
   const groupsMatch = match[0];
 
   for (const group of groupsMatch.matchAll(CAPTURE_GROUP_REGEX)) {
-    extrapolateGroupRoutes(route.replace(groupsMatch, `(${group[1]})`), routes);
+    extrapolateGroupRoutes(route.replace(groupsMatch, `(${group[1].trim()})`), routes);
   }
 
   return routes;
