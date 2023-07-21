@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.10.11 — 2023-07-21
+
+### 🎉 New features
+
 - Add support for SSO users. ([#22945](https://github.com/expo/expo/pull/22945) by [@lzkb](https://github.com/lzkb))
 - Use node server default port selection for SSO login server. ([#23505](https://github.com/expo/expo/pull/23505) by [@wschurman](https://github.com/wschurman))
 - Add styling to SSO auth redirect completion page. ([#23477](https://github.com/expo/expo/pull/23477) by [@wschurman](https://github.com/wschurman))
@@ -21,8 +29,6 @@
 - Fix running typed routes without an app directory. ([#23661](https://github.com/expo/expo/pull/23661) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix Expo Router type generation for filenames with spaces. ([#23662](https://github.com/expo/expo/pull/23662) by [@marklawlor](https://github.com/marklawlor))
 - Fix ensure `.expo/types` folder exists during type generation. ([#23664](https://github.com/expo/expo/pull/23664) by [@marklawlor](https://github.com/marklawlor))
-
-### 💡 Others
 
 ## 0.10.10 — 2023-07-07
 

@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 49.0.4 — 2023-07-21
+
+_This version does not introduce any user-facing changes._
+
 ## 49.0.3 — 2023-07-12
 
 ### 🎉 New features
