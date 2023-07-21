@@ -13,6 +13,25 @@ static dispatch_once_t initializeCurrentFontProcessorsOnce;
 
 static NSPointerArray *currentFontProcessors;
 
+@implementation UIFont (EXFontManager)
+
++ (nullable UIFont *)EXfontWithName:(NSString *)name size:(CGFloat)fontSize
+{
+  UIFont *font;
+  for (id<EXFontProcessorInterface> fontProcessor in currentFontProcessors) {
+    NSNumber *size = [NSNumber numberWithFloat:fontSize];
+    font = [fontProcessor updateFont:nil withFamily:name size:size weight:nil style:nil variant:nil scaleMultiplier:1];
+    if (font) {
+      return font;
+    }
+  }
+//  EXFont* font = EXFontManager.registry2[name];
+  return [self EXfontWithName:name size:fontSize];
+//
+}
+
+@end
+
 @implementation RCTFont (EXReactFontManager)
 
 + (UIFont *)EXUpdateFont:(UIFont *)uiFont
@@ -80,18 +99,38 @@ EX_REGISTER_MODULE();
   return @[@protocol(EXFontManagerInterface)];
 }
 
-+ (void)initialize
+// A utility function used for swizzling RCTFont in old architecture
++ (void)registerFontsForRCTFont
 {
-  dispatch_once(&initializeCurrentFontProcessorsOnce, ^{
-    currentFontProcessors = [NSPointerArray weakObjectsPointerArray];
-  });
-
   Class rtcClass = [RCTFont class];
   SEL rtcUpdate = @selector(updateFont:withFamily:size:weight:style:variant:scaleMultiplier:);
   SEL exUpdate = @selector(EXUpdateFont:withFamily:size:weight:style:variant:scaleMultiplier:);
   
   method_exchangeImplementations(class_getClassMethod(rtcClass, rtcUpdate),
                                  class_getClassMethod(rtcClass, exUpdate));
+}
+
+// A utility function used for swizzling UIFont for new architecture
++ (void)registerFontsForUIFont
+{
+  Class uiFont = [UIFont class];
+  SEL uiUpdate = @selector(fontWithName:size:);
+  SEL exUpdate = @selector(EXfontWithName:size:);
+
+  Method originalMethod = class_getClassMethod(uiFont, uiUpdate);
+  Method swizzledMethod = class_getClassMethod(uiFont, exUpdate);
+
+  method_exchangeImplementations(originalMethod, swizzledMethod);
+}
+
++ (void)initialize
+{
+  dispatch_once(&initializeCurrentFontProcessorsOnce, ^{
+    currentFontProcessors = [NSPointerArray weakObjectsPointerArray];
+  });
+
+  [self registerFontsForRCTFont];
+  [self registerFontsForUIFont];
 }
 
 # pragma mark - EXFontManager
