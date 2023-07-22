@@ -533,8 +533,6 @@ describe('JS API tests', () => {
       projectRoot
     );
 
-    console.warn(`signed manifest = ${JSON.stringify(manifest, null, 2)}`);
-
     // Launch app
     await device.installApp();
     await device.launchApp({
@@ -746,9 +744,14 @@ describe('JS API tests', () => {
     // Server is not running, so error received
     console.warn(`lastUpdateEventType = ${lastUpdateEventType}`);
 
+    // Error should be surfaced in checkError
+    const checkErrorMessage = await testElementValueAsync('state.checkError');
+    console.warn(`checkErrorMessage = ${checkErrorMessage}`);
+
     // Start server with no update available directive,
     // then restart app, we should get "No update available" event
     let lastUpdateEventType2 = '';
+    let checkErrorMessage2 = '';
     if (protocolVersion === 1) {
       Server.start(Update.serverPort, protocolVersion);
       const directive = Update.getNoUpdateAvailableDirective();
@@ -759,7 +762,9 @@ describe('JS API tests', () => {
       await readLogEntriesAsync();
 
       lastUpdateEventType2 = await testElementValueAsync('lastUpdateEventType');
+      checkErrorMessage2 = await testElementValueAsync('state.checkError');
       console.warn(`lastUpdateEventType2 = ${lastUpdateEventType2}`);
+      console.warn(`checkErrorMessage2 = ${checkErrorMessage2}`);
       Server.stop();
     }
 
@@ -772,7 +777,9 @@ describe('JS API tests', () => {
     await waitForAppToBecomeVisible();
 
     const lastUpdateEventType3 = await testElementValueAsync('lastUpdateEventType');
+    const checkErrorMessage3 = await testElementValueAsync('state.checkError');
     console.warn(`lastUpdateEventType3 = ${lastUpdateEventType3}`);
+    console.warn(`checkErrorMessage3 = ${checkErrorMessage3}`);
 
     // Test passes if all the event types seen are the expected ones
     // This test not working on Android in 0.72 in the CI environment, so disable it for now.
@@ -780,6 +787,9 @@ describe('JS API tests', () => {
       jestExpect(lastUpdateEventType).toEqual('error');
       jestExpect(lastUpdateEventType2).toEqual('noUpdateAvailable');
       jestExpect(lastUpdateEventType3).toEqual('updateAvailable');
+      jestExpect(checkErrorMessage).toEqual('Could not connect to the server.');
+      jestExpect(checkErrorMessage2).toEqual('');
+      jestExpect(checkErrorMessage3).toEqual('');
     }
   });
 });

@@ -363,6 +363,8 @@ public class AppController: NSObject, AppLoaderTaskDelegate, AppLoaderTaskSwiftD
       event = UpdatesStateEventCheckCompleteWithUpdate(manifest: manifest)
     case .rollBackToEmbedded:
       event = UpdatesStateEventCheckCompleteWithRollback()
+    case .error(let error):
+      event = UpdatesStateEventCheckError(message: error.localizedDescription)
     }
     stateMachine?.processEvent(event)
   }
@@ -445,12 +447,9 @@ public class AppController: NSObject, AppLoaderTaskDelegate, AppLoaderTaskSwiftD
       )
       // Since errors can happen through a number of paths, we do these checks
       // to make sure the state machine is valid
-      if stateMachine?.state == .idle {
-        stateMachine?.processEvent(UpdatesStateEventDownload())
-        stateMachine?.processEvent(UpdatesStateEventDownloadError(message: error.localizedDescription))
-      } else if stateMachine?.state == .checking {
+      if stateMachine?.state == .checking {
         stateMachine?.processEvent(UpdatesStateEventCheckError(message: error.localizedDescription))
-      } else {
+      } else if stateMachine?.state == .downloading {
         // .downloading
         stateMachine?.processEvent(UpdatesStateEventDownloadError(message: error.localizedDescription))
       }
@@ -575,10 +574,14 @@ public class AppController: NSObject, AppLoaderTaskDelegate, AppLoaderTaskSwiftD
     mutableBody["type"] = eventType
 
     guard let bridge = bridge else {
-      eventsToSendToJS.append(mutableBody)
+      eventsToSendToJS.append([
+        "eventName": eventName,
+        "mutableBody": mutableBody
+      ])
       logger.warn(message: "EXUpdates: Could not emit event: name = \(eventName), type = \(eventType). Event will be emitted when the bridge is available", code: .jsRuntimeError)
       return
     }
+    logger.debug(message: "sendEventToBridge: \(eventName), \(mutableBody)")
     bridge.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [eventName, mutableBody])
   }
 
@@ -586,8 +589,13 @@ public class AppController: NSObject, AppLoaderTaskDelegate, AppLoaderTaskSwiftD
     guard let bridge = bridge else {
       return
     }
-    eventsToSendToJS.forEach { mutableBody in
-      bridge.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [AppController.EXUpdatesEventName, mutableBody])
+    eventsToSendToJS.forEach { event in
+      guard let eventName = event["eventName"] as? String,
+        let mutableBody = event["mutableBody"] as? [String: Any?] else {
+        return
+      }
+      logger.debug(message: "sendEventToBridge: \(eventName), \(mutableBody)")
+      bridge.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [eventName, mutableBody])
     }
     eventsToSendToJS = []
   }
