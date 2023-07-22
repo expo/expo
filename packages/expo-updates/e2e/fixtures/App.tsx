@@ -48,6 +48,7 @@ export default function App() {
     downloadedUpdate,
     isUpdateAvailable,
     isUpdatePending,
+    checkError,
   } = Updates.useUpdates();
 
   Updates.useUpdateEvents((event) => {
@@ -180,6 +181,7 @@ export default function App() {
       <TestValue testID="state.isUpdateAvailable" value={`${isUpdateAvailable}`} />
       <TestValue testID="state.isUpdatePending" value={`${isUpdatePending}`} />
       <TestValue testID="state.isRollback" value={`${isRollback}`} />
+      <TestValue testID="state.checkError" value={`${checkError?.message ?? ''}`} />
       {/*
       <TestValue testID="state.isRollback" value={`${availableUpdate?.isRollback ?? false}`} />
         */}

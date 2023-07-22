@@ -14,6 +14,7 @@
 - Correctly handle roll backs in JS module methods. ([#23356](https://github.com/expo/expo/pull/23356), [#23377](https://github.com/expo/expo/pull/23377) by [@wschurman](https://github.com/wschurman))
 - [iOS] Fix unmatched selection policy. ([#23535](https://github.com/expo/expo/pull/23535) by [@chochihim](https://github.com/chochihim))
 - Handle initialization errors in useUpdates(). ([#23640](https://github.com/expo/expo/pull/23640) by [@douglowder](https://github.com/douglowder))
+- [iOS] Fix error handling on iOS during startup check for updates. ([#23663](https://github.com/expo/expo/pull/23663) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others
 
