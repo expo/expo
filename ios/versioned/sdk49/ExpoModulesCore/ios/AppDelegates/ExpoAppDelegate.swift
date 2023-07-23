@@ -290,11 +290,27 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
 
   // MARK: - Managing Interface Geometry
 
+  /**
+   * Sets allowed orientations for the application. It will use the values from `Info.plist`as the orientation mask unless a subscriber requested
+   * a different orientation.
+   */
   public func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
-    // We want to create an intersection of all orientations set by subscribers.
-    return subscribers.reduce(.all) { result, subscriber in
-      return subscriber.application?(application, supportedInterfaceOrientationsFor: window).intersection(result) ?? result
+    let deviceOrientationMask = allowedOrientations(for: UIDevice.current.userInterfaceIdiom)
+    let universalOrientationMask = allowedOrientations(for: .unspecified)
+    let infoPlistOrientations = deviceOrientationMask.isEmpty ? universalOrientationMask : deviceOrientationMask
+
+    let parsedSubscribers = subscribers.filter {
+      $0.responds(to: #selector(application(_:supportedInterfaceOrientationsFor:)))
     }
+
+    // We want to create an intersection of all orientations set by subscribers.
+    let subscribersMask: UIInterfaceOrientationMask = parsedSubscribers.reduce(.all) { result, subscriber in
+      guard let requestedOrientation = subscriber.application?(application, supportedInterfaceOrientationsFor: window) else {
+        return result
+      }
+      return requestedOrientation.intersection(result)
+    }
+    return parsedSubscribers.isEmpty ? infoPlistOrientations : subscribersMask
   }
 
   // MARK: - Statics
@@ -329,4 +345,29 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
         reactDelegateHandlers.append(handlerTuple.handler.init())
       }
   }
+}
+
+private func allowedOrientations(for userInterfaceIdiom: UIUserInterfaceIdiom) -> UIInterfaceOrientationMask {
+  // For now only iPad-specific orientations are supported
+  let deviceString = userInterfaceIdiom == .pad ? "~pad" : ""
+  var mask: UIInterfaceOrientationMask = []
+  guard let orientations = Bundle.main.infoDictionary?["UISupportedInterfaceOrientations\(deviceString)"] as? [String] else {
+    return mask
+  }
+
+  for orientation in orientations {
+    switch orientation {
+    case "UIInterfaceOrientationPortrait":
+      mask.insert(.portrait)
+    case "UIInterfaceOrientationLandscapeLeft":
+      mask.insert(.landscapeLeft)
+    case "UIInterfaceOrientationLandscapeRight":
+      mask.insert(.landscapeRight)
+    case "UIInterfaceOrientationPortraitUpsideDown":
+      mask.insert(.portraitUpsideDown)
+    default:
+      break
+    }
+  }
+  return mask
 }

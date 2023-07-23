@@ -42,7 +42,7 @@ Pod::Spec.new do |s|
 
   if ENV['USE_FRAMEWORKS']
     s.module_name            = "ABI49_0_0React_utils"
-    s.header_mappings_dir  = "../.."
+    s.header_mappings_dir  = File.absolute_path("../..")
   end
 
   s.dependency "RCT-Folly", folly_version

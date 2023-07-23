@@ -1,6 +1,6 @@
 {
   "name": "ABI49_0_0EXUpdatesInterface",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "summary": "Native interface for modules that optionally depend on expo-updates, e.g. expo-dev-launcher.",
   "description": "Native interface for modules that optionally depend on expo-updates, e.g. expo-dev-launcher.",
   "license": "MIT",

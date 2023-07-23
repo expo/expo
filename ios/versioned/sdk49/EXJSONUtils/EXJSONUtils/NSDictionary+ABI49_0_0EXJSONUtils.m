@@ -19,35 +19,35 @@
 
 @implementation NSDictionary (ABI49_0_0EXJSONUtils)
 
-- (NSString *)stringForKey:(id)key {
+- (NSString *)expo_stringForKey:(id)key {
   return ABI49_0_0EXGetNonNullManifestValue(NSString, key);
 }
 
-- (nullable NSString *)nullableStringForKey:(id)key {
+- (nullable NSString *)expo_nullableStringForKey:(id)key {
   return ABI49_0_0EXGetNullableManifestValue(NSString, key);
 }
 
-- (NSNumber *)numberForKey:(id)key {
+- (NSNumber *)expo_numberForKey:(id)key {
   return ABI49_0_0EXGetNonNullManifestValue(NSNumber, key);
 }
 
-- (nullable NSNumber *)nullableNumberForKey:(id)key {
+- (nullable NSNumber *)expo_nullableNumberForKey:(id)key {
   return ABI49_0_0EXGetNullableManifestValue(NSNumber, key);
 }
 
-- (NSArray *)arrayForKey:(id)key {
+- (NSArray *)expo_arrayForKey:(id)key {
   return ABI49_0_0EXGetNonNullManifestValue(NSArray, key);
 }
 
-- (nullable NSArray *)nullableArrayForKey:(id)key {
+- (nullable NSArray *)expo_nullableArrayForKey:(id)key {
   return ABI49_0_0EXGetNullableManifestValue(NSArray, key);
 }
 
-- (NSDictionary *)dictionaryForKey:(id)key {
+- (NSDictionary *)expo_dictionaryForKey:(id)key {
   return ABI49_0_0EXGetNonNullManifestValue(NSDictionary, key);
 }
 
-- (nullable NSDictionary *)nullableDictionaryForKey:(id)key {
+- (nullable NSDictionary *)expo_nullableDictionaryForKey:(id)key {
   return ABI49_0_0EXGetNullableManifestValue(NSDictionary, key);
 }
 

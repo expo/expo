@@ -1,6 +1,6 @@
 {
   "name": "ABI49_0_0ExpoSecureStore",
-  "version": "12.3.0",
+  "version": "12.3.1",
   "summary": "Provides a way to encrypt and securely store key–value pairs locally on the device.",
   "description": "Provides a way to encrypt and securely store key–value pairs locally on the device.",
   "license": "MIT",
