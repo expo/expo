@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add asset file transform for web. ([#19474](https://github.com/expo/expo/pull/19474) by [@tran2](https://github.com/tran2))
+
 ### 💡 Others
 
 ## 49.0.0 — 2023-06-28
