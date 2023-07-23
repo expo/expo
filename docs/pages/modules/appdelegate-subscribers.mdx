@@ -1,5 +1,5 @@
 ---
-title: iOS AppDelegate Subscribers
+title: iOS AppDelegate subscribers
 description: Learn how to subscribe to iOS system events relevant to an app, such as inbound links and notifications using Expo modules API.
 ---
 
@@ -11,7 +11,7 @@ The React Native module API does not provide any mechanism to hook into these me
 
 `ExpoAppDelegate` implements most functions from [`UIApplicationDelegate`](https://developer.apple.com/documentation/uikit/uiapplicationdelegate) protocol and forwards their calls to all the subscribers.
 
-## Get Started
+## Get started
 
 First, you need to have created an Expo module or integrated the Expo modules API in library using the React Native module API. [Learn more](./overview.mdx#setup)
 
@@ -21,7 +21,7 @@ Now you can subscribe to events by adding delegate functions to your subscriber 
 
 > Objective-C classes are not supported.
 
-## Result Values
+## Result values
 
 Delegate functions that need to return a value have some additional logic to reconcile responses from multiple subscribers and try to satisfy all of them. There are two good examples of such edge cases:
 
