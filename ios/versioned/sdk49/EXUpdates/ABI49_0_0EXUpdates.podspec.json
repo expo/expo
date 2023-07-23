@@ -1,6 +1,6 @@
 {
   "name": "ABI49_0_0EXUpdates",
-  "version": "0.18.5",
+  "version": "0.18.10",
   "summary": "Fetches and manages remotely-hosted assets and updates to your app's JS bundle.",
   "description": "Fetches and manages remotely-hosted assets and updates to your app's JS bundle.",
   "license": "MIT",

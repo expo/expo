@@ -30,7 +30,7 @@ Pod::Spec.new do |s|
                             "CLANG_CXX_LANGUAGE_STANDARD" => "c++17" }
 
   if ENV['USE_FRAMEWORKS']
-    s.header_mappings_dir     = './'
+    s.header_mappings_dir     = File.absolute_path('./')
     s.module_name             = 'ABI49_0_0React_Fabric'
   end
 

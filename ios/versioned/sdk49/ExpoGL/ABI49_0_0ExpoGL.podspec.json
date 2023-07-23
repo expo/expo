@@ -1,6 +1,6 @@
 {
   "name": "ABI49_0_0ExpoGL",
-  "version": "13.0.0",
+  "version": "13.0.1",
   "summary": "Provides GLView that acts as OpenGL ES render target and gives GL context object implementing WebGL 2.0 specification.",
   "description": "Provides GLView that acts as OpenGL ES render target and gives GL context object implementing WebGL 2.0 specification.",
   "license": "MIT",

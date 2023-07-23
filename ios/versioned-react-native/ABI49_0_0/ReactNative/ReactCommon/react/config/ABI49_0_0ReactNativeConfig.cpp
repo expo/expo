@@ -24,9 +24,6 @@ bool EmptyABI49_0_0ReactNativeConfig::getBool(const std::string &param) const {
   if (param == "ABI49_0_0React_fabric:enabled_layout_animations_ios") {
     return true;
   }
-  if (param == "ABI49_0_0React_fabric:enable_nstextstorage_caching") {
-    return true;
-  }
   return false;
 }
 

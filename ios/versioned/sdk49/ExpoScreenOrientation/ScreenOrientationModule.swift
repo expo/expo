@@ -4,7 +4,7 @@ public class ScreenOrientationModule: Module, ScreenOrientationController {
   static let didUpdateDimensionsEvent = "expoDidUpdateDimensions"
 
   let screenOrientationRegistry = ScreenOrientationRegistry.shared
-  var eventEmitter: ABI49_0_0EXEventEmitterService?
+  var shouldEmitEvents = false
 
   public func definition() -> ModuleDefinition {
     Name("ExpoScreenOrientation")
@@ -82,12 +82,20 @@ public class ScreenOrientationModule: Module, ScreenOrientationController {
     OnDestroy {
       screenOrientationRegistry.unregisterController(self)
     }
+
+    OnStartObserving {
+      shouldEmitEvents = true
+    }
+
+    OnStopObserving {
+      shouldEmitEvents = false
+    }
   }
 
   // MARK: - ScreenOrientationController
 
   public func screenOrientationDidChange(_ orientation: UIInterfaceOrientation) {
-    guard let currentTraitCollection = screenOrientationRegistry.currentTraitCollection else {
+    guard let currentTraitCollection = screenOrientationRegistry.currentTraitCollection, shouldEmitEvents else {
       return
     }
 
