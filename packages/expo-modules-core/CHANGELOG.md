@@ -8,11 +8,15 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 1.5.8 — 2023-07-23
+
+### 🐛 Bug fixes
+
 - Fork `uuid@3.4.0` and move into `expo-modules-core`. Remove the original dependency. ([#23249](https://github.com/expo/expo/pull/23249) by [@alanhughes](https://github.com/alanjhughes))
 - Fixed the `ErrorViewGroup` cannot be cast to module view class exception on Android. ([#23651](https://github.com/expo/expo/pull/23651) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Fix allowed orientations set in `Info.plist` being ignored when no delegates requested a different orientation. ([#23593](https://github.com/expo/expo/pull/23593) by [@behenate](https://github.com/behenate))
-
-### 💡 Others
 
 ## 1.5.7 — 2023-07-12
 
