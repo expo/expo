@@ -233,6 +233,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSQLite (11.4.0):
     - ExpoModulesCore
+    - sqlite3
   - ExpoStoreReview (6.4.0):
     - ExpoModulesCore
   - ExpoSystemUI (2.4.0):
@@ -796,6 +797,9 @@ PODS:
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.15)
   - SocketRocket (0.6.1)
+  - sqlite3 (3.42.0):
+    - sqlite3/common (= 3.42.0)
+  - sqlite3/common (3.42.0)
   - UMAppLoader (4.2.0)
   - Yoga (1.14.0)
   - ZXingObjC/Core (3.6.5)
@@ -960,6 +964,7 @@ SPEC REPOS:
     - SDWebImageSVGCoder
     - SDWebImageWebPCoder
     - SocketRocket
+    - sqlite3
     - ZXingObjC
 
 EXTERNAL SOURCES:
@@ -1417,6 +1422,7 @@ SPEC CHECKSUMS:
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: 295a6573c512f54ad2dd58098e64e17dcf008499
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
+  sqlite3: f163dbbb7aa3339ad8fc622782c2d9d7b72f7e9c
   UMAppLoader: e83f024f75f07802fce99739f04b4537d188caaf
   Yoga: 8796b55dba14d7004f980b54bcc9833ee45b28ce
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
