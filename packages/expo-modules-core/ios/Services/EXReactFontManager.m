@@ -25,9 +25,9 @@ static NSPointerArray *currentFontProcessors;
       return font;
     }
   }
-//  EXFont* font = EXFontManager.registry2[name];
+  //  EXFont* font = EXFontManager.registry2[name];
   return [self EXfontWithName:name size:fontSize];
-//
+  //
 }
 
 @end
@@ -49,7 +49,7 @@ static NSPointerArray *currentFontProcessors;
       return font;
     }
   }
-
+  
   return [self EXUpdateFont:uiFont withFamily:family size:size weight:weight style:style variant:variant scaleMultiplier:scaleMultiplier];
 }
 
@@ -102,25 +102,13 @@ EX_REGISTER_MODULE();
 // A utility function used for swizzling RCTFont in old architecture
 + (void)registerFontsForRCTFont
 {
-  Class rtcClass = [RCTFont class];
-  SEL rtcUpdate = @selector(updateFont:withFamily:size:weight:style:variant:scaleMultiplier:);
-  SEL exUpdate = @selector(EXUpdateFont:withFamily:size:weight:style:variant:scaleMultiplier:);
   
-  method_exchangeImplementations(class_getClassMethod(rtcClass, rtcUpdate),
-                                 class_getClassMethod(rtcClass, exUpdate));
 }
 
 // A utility function used for swizzling UIFont for new architecture
 + (void)registerFontsForUIFont
 {
-  Class uiFont = [UIFont class];
-  SEL uiUpdate = @selector(fontWithName:size:);
-  SEL exUpdate = @selector(EXfontWithName:size:);
-
-  Method originalMethod = class_getClassMethod(uiFont, uiUpdate);
-  Method swizzledMethod = class_getClassMethod(uiFont, exUpdate);
-
-  method_exchangeImplementations(originalMethod, swizzledMethod);
+  
 }
 
 + (void)initialize
@@ -128,9 +116,22 @@ EX_REGISTER_MODULE();
   dispatch_once(&initializeCurrentFontProcessorsOnce, ^{
     currentFontProcessors = [NSPointerArray weakObjectsPointerArray];
   });
-
-  [self registerFontsForRCTFont];
-  [self registerFontsForUIFont];
+  
+  #ifdef RN_FABRIC_ENABLED
+    Class uiFont = [UIFont class];
+    SEL uiUpdate = @selector(fontWithName:size:);
+    SEL exUpdate = @selector(EXfontWithName:size:);
+    
+    method_exchangeImplementations(class_getClassMethod(uiFont, uiUpdate),
+                                   class_getClassMethod(uiFont, exUpdate));
+  #else
+    Class rtcClass = [RCTFont class];
+    SEL rtcUpdate = @selector(updateFont:withFamily:size:weight:style:variant:scaleMultiplier:);
+    SEL exUpdate = @selector(EXUpdateFont:withFamily:size:weight:style:variant:scaleMultiplier:);
+    
+    method_exchangeImplementations(class_getClassMethod(rtcClass, rtcUpdate),
+                                   class_getClassMethod(rtcClass, exUpdate));
+  #endif
 }
 
 # pragma mark - EXFontManager
