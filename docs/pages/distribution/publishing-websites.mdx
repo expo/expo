@@ -83,6 +83,8 @@ Open [`http://localhost:5000`](http://localhost:5000) to see your project in act
 
 ## Hosting on third-party services
 
+When deploying from a remote git repository remember to remove the dist directory from the .gitignore file and commit and push the changes. This directory should be selected for the web deployment.
+
 ### Netlify
 
 [Netlify](https://www.netlify.com/) is a mostly-unopinionated platform for deploying web apps. This has the highest compatibility with Expo web apps as it makes few assumptions about the framework.
@@ -237,7 +239,7 @@ The [AWS Amplify Console](https://console.amplify.aws) provides a Git-based work
 
 <Step label="1">
 
-Add the [**amplify-explicit.yml**](https://github.com/expo/amplify-demo/blob/master/amplify-explicit.yml) file to the root of your repo.
+Add the [**amplify-explicit.yml**](https://github.com/expo/amplify-demo/blob/master/amplify-explicit.yml) file to the root of your repo. Ensure you have removed the generated dist directory from the .gitignore file and commit the changes.
 
 </Step>
 
@@ -249,19 +251,19 @@ Push your local Expo project to a GitHub repository. If you haven't pushed to Gi
 
 <Step label="3">
 
-Login to the [Amplify Console](https://console.aws.amazon.com/amplify/home) and choose **Get started** under **Deploy**. Grant Amplify permission to read from your GitHub account or the organization that owns your repo.
+Login to the [Amplify Console](https://console.aws.amazon.com/amplify/home) and select an existing app or create a new app. Grant Amplify permission to read from your GitHub account or the organization that owns your repo.
 
 </Step>
 
 <Step label="4">
 
-The Amplify Console will detect that the **amplify.yml** file is in your repo. Choose **Next**.
+Add your repo, select the branch and select "Connecting a monorepo?" to enter the path to the dist directory of your app. Choose **Next**. The Amplify Console will detect that the **amplify.yml** file is in your repo. Select "Allow AWS Amplify to automatically deploy all files hosted in your project root directory". Choose **Next**.
 
 </Step>
 
 <Step label="5">
 
-Review your settings and choose **Save and deploy**. Your app will now be deployed to a `https://branchname.xxxxxx.amplifyapp.com` URL.
+Review your settings and choose **Save and deploy**. Your app will now be deployed to a `https://branchname.xxxxxx.amplifyapp.com` URL. You can now visit your web app, deploy another branch, and/or add a unified backend environment for use across your Expo Mobile and Web Apps. Follow the steps in the "Learn how to get the most out of Amplify Hosting" drop-down to "Add a custom domain with a free SSL certificate" and more.
 
 </Step>
 
