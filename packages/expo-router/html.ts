@@ -1,1 +1,1 @@
-export { ScrollViewStyleReset } from "./src/static/html";
+export { ScrollViewStyleReset } from './src/static/html';

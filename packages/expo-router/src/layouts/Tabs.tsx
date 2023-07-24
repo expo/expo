@@ -1,14 +1,13 @@
-import { Pressable } from "@bacons/react-views";
 import {
   BottomTabNavigationOptions,
   createBottomTabNavigator,
-} from "@react-navigation/bottom-tabs";
-import React from "react";
-import { Platform } from "react-native";
+} from '@react-navigation/bottom-tabs';
+import React from 'react';
+import { Pressable, Platform } from 'react-native';
 
-import { Link } from "../link/Link";
-import { Href } from "../link/href";
-import { withLayoutContext } from "./withLayoutContext";
+import { Link } from '../link/Link';
+import { Href } from '../link/href';
+import { withLayoutContext } from './withLayoutContext';
 
 // This is the only way to access the navigator.
 const BottomTabNavigator = createBottomTabNavigator().Navigator;
@@ -19,13 +18,10 @@ export const Tabs = withLayoutContext<
 >(BottomTabNavigator, (screens) => {
   // Support the `href` shortcut prop.
   return screens.map((screen) => {
-    if (
-      typeof screen.options !== "function" &&
-      screen.options?.href !== undefined
-    ) {
+    if (typeof screen.options !== 'function' && screen.options?.href !== undefined) {
       const { href, ...options } = screen.options;
       if (options.tabBarButton) {
-        throw new Error("Cannot use `href` and `tabBarButton` together.");
+        throw new Error('Cannot use `href` and `tabBarButton` together.');
       }
       return {
         ...screen,
@@ -36,17 +32,13 @@ export const Tabs = withLayoutContext<
               return null;
             }
             const children =
-              Platform.OS === "web" ? (
-                props.children
-              ) : (
-                <Pressable>{props.children}</Pressable>
-              );
+              Platform.OS === 'web' ? props.children : <Pressable>{props.children}</Pressable>;
             return (
               <Link
                 {...props}
-                style={[{ display: "flex" }, props.style]}
+                style={[{ display: 'flex' }, props.style]}
                 href={href}
-                asChild={Platform.OS !== "web"}
+                asChild={Platform.OS !== 'web'}
                 children={children}
               />
             );

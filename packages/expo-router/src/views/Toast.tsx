@@ -1,13 +1,12 @@
-import { Image, StyleSheet, Text, View } from "@bacons/react-views";
-import { BottomTabBarHeightContext } from "@react-navigation/bottom-tabs";
-import React from "react";
-import { ActivityIndicator, Animated, Platform } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
+import React from 'react';
+import { ActivityIndicator, Animated, Image, Platform, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export const CODE_FONT = Platform.select({
-  default: "Courier",
-  ios: "Courier New",
-  android: "monospace",
+  default: 'Courier',
+  ios: 'Courier New',
+  android: 'monospace',
 });
 
 function useFadeIn() {
@@ -45,24 +44,17 @@ export function Toast({
 }) {
   const filenamePretty = React.useMemo(() => {
     if (!filename) return undefined;
-    return "app" + filename.replace(/^\./, "");
+    return 'app' + filename.replace(/^\./, '');
   }, [filename]);
   const value = useFadeIn();
   return (
     <View style={styles.container}>
       <Animated.View style={[styles.toast, { opacity: value }]}>
         {!warning && <ActivityIndicator color="white" />}
-        {warning && (
-          <Image
-            source={require("expo-router/assets/error.png")}
-            style={styles.icon}
-          />
-        )}
+        {warning && <Image source={require('expo-router/assets/error.png')} style={styles.icon} />}
         <View style={{ marginLeft: 8 }}>
           <Text style={styles.text}>{children}</Text>
-          {filenamePretty && (
-            <Text style={styles.filename}>{filenamePretty}</Text>
-          )}
+          {filenamePretty && <Text style={styles.filename}>{filenamePretty}</Text>}
         </View>
       </Animated.View>
     </View>
@@ -71,31 +63,31 @@ export function Toast({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
     flex: 1,
   },
-  icon: { width: 20, height: 20, resizeMode: "contain" },
+  icon: { width: 20, height: 20, resizeMode: 'contain' },
   toast: {
-    alignItems: "center",
+    alignItems: 'center',
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.2)",
-    flexDirection: "row",
+    borderColor: 'rgba(255,255,255,0.2)',
+    flexDirection: 'row',
     position: Platform.select({
-      web: "fixed",
-      default: "absolute",
+      web: 'fixed',
+      default: 'absolute',
     }),
     bottom: 8,
     left: 8,
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 4,
-    backgroundColor: "black",
+    backgroundColor: 'black',
   },
-  text: { color: "white", fontSize: 16 },
+  text: { color: 'white', fontSize: 16 },
   filename: {
     fontFamily: CODE_FONT,
     opacity: 0.8,
-    color: "white",
+    color: 'white',
     fontSize: 12,
   },
   code: { fontFamily: CODE_FONT },

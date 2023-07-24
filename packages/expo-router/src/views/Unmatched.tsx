@@ -1,13 +1,12 @@
-import { StyleSheet, Text, View } from "@bacons/react-views";
-import { createURL } from "expo-linking";
-import React from "react";
+import { StyleSheet, Text, View } from '@bacons/react-views';
+import { createURL } from 'expo-linking';
+import React from 'react';
 
-import { usePathname, useRouter } from "../hooks";
-import { Link } from "../link/Link";
-import { useNavigation } from "../useNavigation";
+import { usePathname, useRouter } from '../hooks';
+import { Link } from '../link/Link';
+import { useNavigation } from '../useNavigation';
 
-const useLayoutEffect =
-  typeof window !== "undefined" ? React.useLayoutEffect : function () {};
+const useLayoutEffect = typeof window !== 'undefined' ? React.useLayoutEffect : function () {};
 
 function NoSSR({ children }: { children: React.ReactNode }) {
   const [render, setRender] = React.useState(false);
@@ -31,7 +30,7 @@ export function Unmatched() {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: "Not Found",
+      title: 'Not Found',
     });
   }, [navigation]);
 
@@ -41,17 +40,16 @@ export function Unmatched() {
         Unmatched Route
       </Text>
       <Text role="heading" aria-level={2} style={styles.subtitle}>
-        Page could not be found.{" "}
+        Page could not be found.{' '}
         <Text
           onPress={() => {
             if (router.canGoBack()) {
               router.back();
             } else {
-              router.replace("/");
+              router.replace('/');
             }
           }}
-          style={styles.link}
-        >
+          style={styles.link}>
           Go back.
         </Text>
       </Text>
@@ -72,26 +70,26 @@ export function Unmatched() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "black",
+    backgroundColor: 'black',
     padding: 24,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   title: {
-    color: "white",
+    color: 'white',
     fontSize: 36,
     paddingBottom: 12,
     marginBottom: 12,
-    borderBottomColor: "#323232",
+    borderBottomColor: '#323232',
     borderBottomWidth: 1,
-    textAlign: "center",
-    fontWeight: "bold",
+    textAlign: 'center',
+    fontWeight: 'bold',
   },
   subtitle: {
-    color: "white",
+    color: 'white',
     fontSize: 18,
     marginBottom: 12,
-    textAlign: "center",
+    textAlign: 'center',
   },
-  link: { color: "rgba(255,255,255,0.4)", textAlign: "center" },
+  link: { color: 'rgba(255,255,255,0.4)', textAlign: 'center' },
 });
