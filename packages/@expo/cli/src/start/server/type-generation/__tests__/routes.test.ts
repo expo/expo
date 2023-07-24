@@ -199,9 +199,17 @@ describe(getTypedRoutesUtils, () => {
         '/user/project/app/(   group1  , my group    )/my page.tsx',
         { static: ['/(group1)/my page', '/(my group)/my page', '/my page'] },
       ],
+      ['/user/project/app/folder/_layout.tsx', { static: [], dynamicRoutes: [] }],
+      ['/user/project/app/_layout.tsx', { static: [], dynamicRoutes: [] }],
+      ['/user/project/app/folder/+html.tsx', { static: [], dynamicRoutes: [] }],
+      ['/user/project/app/+html.tsx', { static: [], dynamicRoutes: [] }],
+      ['/user/project/app/folder/_layout.js', { static: [], dynamicRoutes: [] }],
+      ['/user/project/app/_layout.js', { static: [], dynamicRoutes: [] }],
+      ['/user/project/app/folder/+html.js', { static: [], dynamicRoutes: [] }],
+      ['/user/project/app/+html.js', { static: [], dynamicRoutes: [] }],
     ] as const;
 
-    it.each(filepaths)('normalizes a filepath: %s', (filepath, expectedRoutes) => {
+    it.each(filepaths)('normalizes the filepath: %s', (filepath, expectedRoutes) => {
       addFilePath(filepath);
 
       if ('static' in expectedRoutes) {
@@ -210,6 +218,8 @@ describe(getTypedRoutesUtils, () => {
         for (const staticRoute of expectedRoutes.static) {
           expect(actualRoutes).toContain(staticRoute);
         }
+      } else {
+        expect(staticRoutes.get(filePathToRoute(filepath))).toBeUndefined();
       }
 
       if ('dynamic' in expectedRoutes) {
@@ -219,6 +229,8 @@ describe(getTypedRoutesUtils, () => {
           expect(actualRoutes).toContain(dynamicRoute);
         }
         expect(actualRoutes?.size).toEqual(expectedRoutes.dynamic.length);
+      } else {
+        expect(dynamicRoutes.get(filePathToRoute(filepath))).toBeUndefined();
       }
     });
   });
