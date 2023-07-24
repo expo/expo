@@ -15,6 +15,11 @@ export default [
     description: ['The status of a release. [Learn more](https://developers.google.com/android-publisher/api-ref/rest/v3/edits.tracks).'],
   },
   {
+    name: 'rollout',
+    type: 'number',
+    description: ['The initial fraction of users who are eligible to receive the release. Should be a value from 0 (no users) to 1 (all users). Works only with `inProgress` release status. [Learn more](https://developers.google.com/android-publisher/api-ref/rest/v3/edits.tracks)'],
+  },
+  {
     name: 'changesNotSentForReview',
     type: 'boolean',
     description: ['Indicates that the changes sent with this submission will not be reviewed until they are explicitly sent for review from the Google Play Console UI. Defaults to false.'],
