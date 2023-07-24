@@ -11,6 +11,7 @@ import abi49_0_0.expo.modules.kotlin.exception.MethodNotFoundException
 import abi49_0_0.expo.modules.kotlin.exception.exceptionDecorator
 import abi49_0_0.expo.modules.kotlin.jni.JavaScriptModuleObject
 import abi49_0_0.expo.modules.kotlin.modules.Module
+import abi49_0_0.expo.modules.kotlin.tracing.trace
 import kotlinx.coroutines.launch
 import kotlin.reflect.KClass
 
@@ -23,38 +24,40 @@ class ModuleHolder(val module: Module) {
    * Cached instance of HybridObject used by CPP to interact with underlying [expo.modules.kotlin.modules.Module] object.
    */
   val jsObject by lazy {
-    val appContext = module.appContext
-    val jniDeallocator = appContext.jniDeallocator
+    trace("$name.jsObject") {
+      val appContext = module.appContext
+      val jniDeallocator = appContext.jniDeallocator
 
-    JavaScriptModuleObject(jniDeallocator, name).apply {
-      initUsingObjectDefinition(appContext, definition.objectDefinition)
+      JavaScriptModuleObject(jniDeallocator, name).apply {
+        initUsingObjectDefinition(appContext, definition.objectDefinition)
 
-      val viewFunctions = definition.viewManagerDefinition?.asyncFunctions
-      if (viewFunctions?.isNotEmpty() == true) {
-        val viewPrototype = JavaScriptModuleObject(jniDeallocator, "${name}_${definition.viewManagerDefinition?.viewType?.name}")
-        appContext.jniDeallocator.addReference(viewPrototype)
+        val viewFunctions = definition.viewManagerDefinition?.asyncFunctions
+        if (viewFunctions?.isNotEmpty() == true) {
+          val viewPrototype = JavaScriptModuleObject(jniDeallocator, "${name}_${definition.viewManagerDefinition?.viewType?.name}")
+          appContext.jniDeallocator.addReference(viewPrototype)
 
-        viewFunctions.forEach { function ->
-          function.attachToJSObject(appContext, viewPrototype)
+          viewFunctions.forEach { function ->
+            function.attachToJSObject(appContext, viewPrototype)
+          }
+
+          registerViewPrototype(viewPrototype)
         }
 
-        registerViewPrototype(viewPrototype)
-      }
+        definition.classData.forEach { clazz ->
+          val clazzModuleObject = JavaScriptModuleObject(jniDeallocator, clazz.name)
+            .initUsingObjectDefinition(module.appContext, clazz.objectDefinition)
+          appContext.jniDeallocator.addReference(clazzModuleObject)
 
-      definition.classData.forEach { clazz ->
-        val clazzModuleObject = JavaScriptModuleObject(jniDeallocator, clazz.name)
-          .initUsingObjectDefinition(module.appContext, clazz.objectDefinition)
-        appContext.jniDeallocator.addReference(clazzModuleObject)
-
-        val constructor = clazz.constructor
-        registerClass(
-          clazz.name,
-          clazzModuleObject,
-          constructor.takesOwner,
-          constructor.argsCount,
-          constructor.getCppRequiredTypes().toTypedArray(),
-          constructor.getJNIFunctionBody(clazz.name, appContext)
-        )
+          val constructor = clazz.constructor
+          registerClass(
+            clazz.name,
+            clazzModuleObject,
+            constructor.takesOwner,
+            constructor.argsCount,
+            constructor.getCppRequiredTypes().toTypedArray(),
+            constructor.getJNIFunctionBody(clazz.name, appContext)
+          )
+        }
       }
     }
   }

@@ -218,10 +218,18 @@ class MediaLibraryModule : Module() {
         return@AsyncFunction
       }
 
+      val assetsIds = getAssetsInAlbums(context, albumId)
+        .filter { it.isNotEmpty() }
+        .toTypedArray()
+      // The album is empty, nothing to migrate
+      if (assetsIds.isEmpty()) {
+        return@AsyncFunction
+      }
+
       val assets = MediaLibraryUtils.getAssetsById(
         context,
         null,
-        *getAssetsInAlbums(context, albumId).toTypedArray()
+        *assetsIds
       )
 
       val albumsMap = assets
@@ -254,8 +262,12 @@ class MediaLibraryModule : Module() {
       throwUnlessPermissionsGranted(isWrite = false) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
           moduleCoroutineScope.launch {
-            CheckIfAlbumShouldBeMigrated(context, albumId, promise)
-              .execute()
+            try {
+              CheckIfAlbumShouldBeMigrated(context, albumId, promise)
+                .execute()
+            } catch (e: CodedException) {
+              promise.reject(e)
+            }
           }
         }
         promise.resolve(false)

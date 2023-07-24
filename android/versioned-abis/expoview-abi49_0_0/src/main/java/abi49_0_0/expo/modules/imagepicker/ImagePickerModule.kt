@@ -166,6 +166,7 @@ class ImagePickerModule : Module() {
     when (val pickingResult = pickerLauncher()) {
       is ImagePickerContractResult.Success -> pickingResult
       is ImagePickerContractResult.Cancelled -> throw OperationCanceledException()
+      is ImagePickerContractResult.Error -> throw FailedToPickMediaException()
     }
   }
 
