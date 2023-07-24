@@ -123,7 +123,10 @@ export function reactNativeTransforms(
         replaceWith: '$1',
       },
       {
-        paths: './ReactCommon/hermes/executor/CMakeLists.txt',
+        paths: [
+          './ReactCommon/hermes/executor/CMakeLists.txt',
+          './ReactCommon/hermes/inspector/CMakeLists.txt',
+        ],
         find: /if\(\${CMAKE_BUILD_TYPE} MATCHES Debug\)(\n\s*target_compile_options)/g,
         replaceWith: 'if(true)$1',
       },
