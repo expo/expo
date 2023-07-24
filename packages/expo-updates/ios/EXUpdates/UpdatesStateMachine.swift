@@ -147,6 +147,11 @@ internal struct UpdatesStateEventDownloadComplete: UpdatesStateEvent {
 }
 
 /**
+ Date formatter for the last check times sent in JS events
+ */
+let iso8601DateFormatter = ISO8601DateFormatter()
+
+/**
  The state machine context, with information that will be readable from JS.
  */
 internal struct UpdatesStateContext {
@@ -162,11 +167,16 @@ internal struct UpdatesStateContext {
   let downloadError: [String: String]?
   let lastCheckForUpdateTime: Date?
 
-  var json: [String: Any?] {
-    var dateString = self.lastCheckForUpdateTime?.description
-    if #available(iOS 15.0, *) {
-      dateString = self.lastCheckForUpdateTime?.ISO8601Format()
+  private var dateString: String? {
+    switch lastCheckForUpdateTime {
+    case nil:
+      return nil
+    default:
+      return iso8601DateFormatter.string(from: lastCheckForUpdateTime ?? Date())
     }
+  }
+
+  var json: [String: Any?] {
     return [
       "isUpdateAvailable": self.isUpdateAvailable,
       "isUpdatePending": self.isUpdatePending,

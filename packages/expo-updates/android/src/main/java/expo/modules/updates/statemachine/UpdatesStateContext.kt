@@ -4,7 +4,9 @@ import android.os.Bundle
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
 import org.json.JSONObject
+import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 /**
 The state machine context, with information intended to be consumed by application JS code.
@@ -46,7 +48,7 @@ data class UpdatesStateContext(
         map["downloadError"] = downloadError.json
       }
       if (lastCheckForUpdateTime != null) {
-        map["lastCheckForUpdateTimeString"] = lastCheckForUpdateTime.toString()
+        map["lastCheckForUpdateTime"] = lastCheckForUpdateTime
       }
       return map
     }
@@ -92,8 +94,17 @@ data class UpdatesStateContext(
           putBundle("downloadError", errorMap)
         }
         if (lastCheckForUpdateTime != null) {
-          putString("lastCheckForUpdateTimeString", lastCheckForUpdateTime.toString())
+          putString("lastCheckForUpdateTimeString", DATE_FORMATTER.format(lastCheckForUpdateTime))
         }
       }
     }
+
+  companion object {
+    val DATE_FORMATTER: SimpleDateFormat
+      get() {
+        val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
+        formatter.timeZone = java.util.TimeZone.getTimeZone("GMT")
+        return formatter
+      }
+  }
 }
