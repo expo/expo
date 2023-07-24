@@ -1,0 +1,1 @@
+{"version":3,"file":"useNavigation.d.ts","sourceRoot":"","sources":["../src/useNavigation.ts"],"names":[],"mappings":"AAAA,OAAO,EAEL,cAAc,EACf,MAAM,0BAA0B,CAAC;AAMlC;;;;GAIG;AACH,wBAAgB,aAAa,CAC3B,CAAC,GAAG,cAAc,CAAC,eAAe,CAAC,aAAa,CAAC,EACjD,MAAM,CAAC,EAAE,MAAM,GAAG,CAAC,CAgCpB;AAED,wBAAgB,eAAe,CAC7B,UAAU,EAAE,MAAM,EAClB,QAAQ,CAAC,EAAE,MAAM,GAAG,IAAI,GACvB,MAAM,GAAG,IAAI,CASf"}

@@ -1,0 +1,32 @@
+{
+  "name": "expo-head",
+  "version": "0.0.11",
+  "description": "static page definitions for universal SEO",
+  "main": "build/index",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "repository": "https://github.com/expo/router",
+  "bugs": {
+    "url": "https://github.com/expo/router/issues"
+  },
+  "author": "evanbacon <bacon@expo.io> (https://github.com/EvanBacon)",
+  "license": "MIT",
+  "homepage": "https://github.com/expo/router#readme",
+  "dependencies": {
+    "react-helmet-async": "^1.3.0"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "expo-constants": "*",
+    "react": "*",
+    "react-native": "*"
+  }
+}

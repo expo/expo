@@ -1,0 +1,1 @@
+{"version":3,"file":"getDevServer.native.js","sourceRoot":"","sources":["../src/getDevServer.native.ts"],"names":[],"mappings":";AAAA,MAAM,CAAC,OAAO,GAAG,OAAO,CAAC,mDAAmD,CAAC,CAAC","sourcesContent":["module.exports = require(\"react-native/Libraries/Core/Devtools/getDevServer\");\n"]}

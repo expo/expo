@@ -1,0 +1,1 @@
+{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../../../src/error-overlay/modules/parseErrorStack/index.ts"],"names":[],"mappings":"AAAA,OAAO,EAAS,UAAU,EAAE,MAAM,mBAAmB,CAAC;AAEtD,iBAAS,eAAe,CACtB,KAAK,CAAC,EAAE,MAAM,GACb,CAAC,UAAU,GAAG;IAAE,QAAQ,CAAC,EAAE,OAAO,CAAA;CAAE,CAAC,EAAE,CAqBzC;AAED,eAAe,eAAe,CAAC"}

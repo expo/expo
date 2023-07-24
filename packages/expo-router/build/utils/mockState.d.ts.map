@@ -1,0 +1,1 @@
+{"version":3,"file":"mockState.d.ts","sourceRoot":"","sources":["../../src/utils/mockState.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,cAAc,EAAE,MAAM,UAAU,CAAC;AAE1C,wBAAgB,uBAAuB,CACrC,GAAG,GAAE,MAAM,CAAC,MAAM,EAAE,MAAM,CAAC,MAAM,EAAE,GAAG,CAAC,CAAM,kBAS9C;AAED,wBAAgB,YAAY,CAAC,GAAG,GAAE,CAAC,MAAM,GAAG,CAAC,MAAM,EAAE,MAAM,CAAC,CAAC,EAAO;;;EAcnE"}

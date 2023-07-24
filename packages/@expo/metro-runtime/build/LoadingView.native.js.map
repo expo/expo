@@ -1,0 +1,1 @@
+{"version":3,"file":"LoadingView.native.js","sourceRoot":"","sources":["../src/LoadingView.native.ts"],"names":[],"mappings":";AAAA,MAAM,CAAC,OAAO,GAAG,OAAO,CAAC,8CAA8C,CAAC,CAAC","sourcesContent":["module.exports = require(\"react-native/Libraries/Utilities/LoadingView\");\n"]}
