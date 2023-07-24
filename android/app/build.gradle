@@ -41,7 +41,7 @@ android {
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
     versionCode 212
-    versionName '2.29.4'
+    versionName '2.29.5'
     // END VERSIONS
 
     multiDexEnabled true
