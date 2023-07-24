@@ -33,7 +33,7 @@ To create an empty Expo module that can be published on npm and utilized in any 
 
 Now, open the newly created `expo-radial-chart` directory to start editing the native code.
 
-### Inside an existing application
+### Start with an existing project
 
 Alternatively, you can use the new module as a view inside the existing project. Run the following command in your project's directory:
 
@@ -119,7 +119,7 @@ export type ExpoRadialChartViewProps = {
 };
 ```
 
-Since we won't implement the module on the web in this example, we also need to replace the `src/ExpoRadialChartView.web.tsx` file.
+Since we won't implement the module on the web in this example, let's replace the **src/ExpoRadialChartView.web.tsx** file:
 
 ```tsx src/ExpoRadialChartView.web.tsx
 import * as React from 'react';
@@ -334,10 +334,6 @@ To make sure your app builds successfully on both platforms, rerun the build com
 ## Next steps
 
 Congratulations! You've created your first simple wrapper around two separate third-party native libraries using Expo Modules!
-
-{/* Congratulations, you have created your first simple wrapper around two separate native libraries using Expo Modules! Learn more about the API in the [Expo Module API reference](/modules/module-api/). */}
-
-{/* if you enjoyed this tutorial and haven't done the native module tutorial, go to the ["creating a native module" tutorial](/modules/native-module-tutorial/) next. */}
 
 <BoxLink
   href="/modules/native-module-tutorial/"
