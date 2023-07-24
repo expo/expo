@@ -1,17 +1,17 @@
 // Fork of:
 // https://github.com/expo/expo/blob/main/packages/expo/src/launch/registerRootComponent.tsx
 // Originally made in Expo SDK 47 to add support for React 18 and Metro web.
-import "expo/build/Expo.fx";
+import 'expo/build/Expo.fx';
 
 // NOTE(EvanBacon): Add Metro web support to the global runtime.
-import "@expo/metro-runtime";
+import '@expo/metro-runtime';
 
 // @ts-ignore: build order issue
-import { withErrorOverlay } from "@expo/metro-runtime/error-overlay";
-import * as React from "react";
-import { AppRegistry, Platform } from "react-native";
+import { withErrorOverlay } from '@expo/metro-runtime/error-overlay';
+import * as React from 'react';
+import { AppRegistry, Platform } from 'react-native';
 
-import { createRoot, hydrateRoot } from "./createRoot";
+import { createRoot, hydrateRoot } from './createRoot';
 
 type InitialProps = {
   exp: {
@@ -25,31 +25,31 @@ type InitialProps = {
 };
 
 // Web root tag is preserved for re-use between refreshes.
-let rootTag: import("react-dom/client").Root | null = null;
+let rootTag: import('react-dom/client').Root | null = null;
 
 export default function registerRootComponent<P extends InitialProps>(
   component: React.ComponentType<P>
 ): void {
   let qualifiedComponent = component;
 
-  if (process.env.NODE_ENV !== "production") {
+  if (process.env.NODE_ENV !== 'production') {
     const { withDevTools } =
-      require("expo/build/launch/withDevTools") as typeof import("expo/build/launch/withDevTools");
+      require('expo/build/launch/withDevTools') as typeof import('expo/build/launch/withDevTools');
     // Add error support to the root component.
     qualifiedComponent = withErrorOverlay(withDevTools(component));
   }
 
-  if (Platform.OS !== "web") {
-    AppRegistry.registerComponent("main", () => qualifiedComponent);
+  if (Platform.OS !== 'web') {
+    AppRegistry.registerComponent('main', () => qualifiedComponent);
   } else if (
     // Skip querying the DOM if we're in a Node.js environment.
-    typeof document !== "undefined"
+    typeof document !== 'undefined'
   ) {
-    let tag = document.getElementById("root");
+    let tag = document.getElementById('root');
 
     if (!tag) {
-      tag = document.getElementById("main");
-      if (process.env.NODE_ENV !== "production") {
+      tag = document.getElementById('main');
+      if (process.env.NODE_ENV !== 'production') {
         // This block will be removed in production
         if (tag) {
           console.warn(

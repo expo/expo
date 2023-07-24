@@ -9,10 +9,10 @@ export interface HrefObject {
 
 /** Resolve an href object into a fully qualified, relative href. */
 export const resolveHref = (href: Href): string => {
-  if (typeof href === "string") {
-    return resolveHref({ pathname: href ?? "" });
+  if (typeof href === 'string') {
+    return resolveHref({ pathname: href ?? '' });
   }
-  const path = href.pathname ?? "";
+  const path = href.pathname ?? '';
   if (!href?.params) {
     return path;
   }
@@ -20,14 +20,14 @@ export const resolveHref = (href: Href): string => {
     ...href.params,
   });
   const paramsString = createQueryParams(params);
-  return pathname + (paramsString ? `?${paramsString}` : "");
+  return pathname + (paramsString ? `?${paramsString}` : '');
 };
 
 function createQualifiedPathname(
   pathname: string,
   params: Record<string, any>
-): Omit<Required<HrefObject>, "query"> {
-  for (const [key, value = ""] of Object.entries(params)) {
+): Omit<Required<HrefObject>, 'query'> {
+  for (const [key, value = ''] of Object.entries(params)) {
     const dynamicKey = `[${key}]`;
     const deepDynamicKey = `[...${key}]`;
     if (pathname.includes(dynamicKey)) {
@@ -45,7 +45,7 @@ function createQualifiedPathname(
 
 function encodeParam(param: any): string {
   if (Array.isArray(param)) {
-    return param.map((p) => encodeParam(p)).join("/");
+    return param.map((p) => encodeParam(p)).join('/');
   }
 
   return encodeURIComponent(param.toString());
@@ -57,6 +57,6 @@ function createQueryParams(params: Record<string, any>): string {
       // Allow nullish params
       .filter(([, value]) => value != null)
       .map(([key, value]) => `${key}=${encodeURIComponent(value.toString())}`)
-      .join("&")
+      .join('&')
   );
 }

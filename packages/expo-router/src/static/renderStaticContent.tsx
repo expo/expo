@@ -5,16 +5,16 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { ServerContainer, ServerContainerRef } from "@react-navigation/native";
-import App, { getManifest } from "expo-router/_entry";
-import Head from "expo-router/head";
-import React from "react";
-import ReactDOMServer from "react-dom/server";
-import { AppRegistry } from "react-native-web";
+import { ServerContainer, ServerContainerRef } from '@react-navigation/native';
+import App, { getManifest } from 'expo-router/_entry';
+import Head from 'expo-router/head';
+import React from 'react';
+import ReactDOMServer from 'react-dom/server';
+import { AppRegistry } from 'react-native-web';
 
-import { getRootComponent } from "./getRootComponent";
+import { getRootComponent } from './getRootComponent';
 
-AppRegistry.registerComponent("App", () => App);
+AppRegistry.registerComponent('App', () => App);
 
 function resetReactNavigationContexts() {
   // https://github.com/expo/router/discussions/588
@@ -22,7 +22,7 @@ function resetReactNavigationContexts() {
 
   // React Navigation is storing providers in a global, this is fine for the first static render
   // but subsequent static renders of Stack or Tabs will cause React to throw a warning. To prevent this warning, we'll reset the globals before rendering.
-  const contexts = "__react_navigation__elements_contexts";
+  const contexts = '__react_navigation__elements_contexts';
   // @ts-expect-error: global
   global[contexts] = new Map<string, React.Context<any>>();
 }
@@ -37,7 +37,7 @@ export function getStaticContent(location: URL): string {
     // matches what's used in the client -- this results in two extra Views and
     // the seemingly unused `RootTagContext.Provider` from being added.
     getStyleElement,
-  } = AppRegistry.getApplication("App");
+  } = AppRegistry.getApplication('App');
 
   const Root = getRootComponent();
 
@@ -53,9 +53,9 @@ export function getStaticContent(location: URL): string {
           wrapper={({ children }) => {
             return React.createElement(Root, {
               children: React.createElement(
-                "div",
+                'div',
                 {
-                  id: "root",
+                  id: 'root',
                 },
                 children
               ),
@@ -71,30 +71,23 @@ export function getStaticContent(location: URL): string {
 
   let output = mixHeadComponentsWithStaticResults(headContext.helmet, html);
 
-  output = output.replace("</head>", `${css}</head>`);
+  output = output.replace('</head>', `${css}</head>`);
 
-  return "<!DOCTYPE html>" + output;
+  return '<!DOCTYPE html>' + output;
 }
 
 function mixHeadComponentsWithStaticResults(helmet: any, html: string) {
   // Head components
-  for (const key of [
-    "title",
-    "priority",
-    "meta",
-    "link",
-    "script",
-    "style",
-  ].reverse()) {
+  for (const key of ['title', 'priority', 'meta', 'link', 'script', 'style'].reverse()) {
     const result = helmet?.[key]?.toString();
     if (result) {
-      html = html.replace("<head>", `<head>${result}`);
+      html = html.replace('<head>', `<head>${result}`);
     }
   }
 
   // attributes
-  html = html.replace("<html ", `<html ${helmet?.htmlAttributes.toString()} `);
-  html = html.replace("<body ", `<body ${helmet?.bodyAttributes.toString()} `);
+  html = html.replace('<html ', `<html ${helmet?.htmlAttributes.toString()} `);
+  html = html.replace('<body ', `<body ${helmet?.bodyAttributes.toString()} `);
 
   return html;
 }

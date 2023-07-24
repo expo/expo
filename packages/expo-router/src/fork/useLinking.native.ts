@@ -7,12 +7,12 @@ import {
   getStateFromPath as getStateFromPathDefault,
   NavigationContainerRef,
   ParamListBase,
-} from "@react-navigation/core";
-import type { LinkingOptions } from "@react-navigation/native";
-import * as React from "react";
-import { Linking, Platform } from "react-native";
+} from '@react-navigation/core';
+import type { LinkingOptions } from '@react-navigation/native';
+import * as React from 'react';
+import { Linking, Platform } from 'react-native';
 
-import { extractExpoPathFromURL } from "./extractPathFromURL";
+import { extractExpoPathFromURL } from './extractPathFromURL';
 
 type ResultState = ReturnType<typeof getStateFromPathDefault>;
 
@@ -39,7 +39,7 @@ export default function useLinking(
     subscribe = (listener) => {
       const callback = ({ url }: { url: string }) => listener(url);
 
-      const subscription = Linking.addEventListener("url", callback) as
+      const subscription = Linking.addEventListener('url', callback) as
         | { remove(): void }
         | undefined;
 
@@ -55,7 +55,7 @@ export default function useLinking(
 
   React.useEffect(
     () => {
-      if (process.env.NODE_ENV === "production") {
+      if (process.env.NODE_ENV === 'production') {
         return undefined;
       }
 
@@ -69,14 +69,14 @@ export default function useLinking(
       ) {
         console.error(
           [
-            "Looks like you have configured linking in multiple places. This is likely an error since deep links should only be handled in one place to avoid conflicts. Make sure that:",
+            'Looks like you have configured linking in multiple places. This is likely an error since deep links should only be handled in one place to avoid conflicts. Make sure that:',
             "- You don't have multiple NavigationContainers in the app each with 'linking' enabled",
-            "- Only a single instance of the root component is rendered",
-            Platform.OS === "android"
+            '- Only a single instance of the root component is rendered',
+            Platform.OS === 'android'
               ? "- You have set 'android:launchMode=singleTask' in the '<activity />' section of the 'AndroidManifest.xml' file to avoid launching multiple instances"
-              : "",
+              : '',
           ]
-            .join("\n")
+            .join('\n')
             .trim()
         );
       }
@@ -122,28 +122,23 @@ export default function useLinking(
     getActionFromStateRef.current = getActionFromState;
   });
 
-  const getStateFromURL = React.useCallback(
-    (url: string | null | undefined) => {
-      if (!url || (filterRef.current && !filterRef.current(url))) {
-        return undefined;
-      }
+  const getStateFromURL = React.useCallback((url: string | null | undefined) => {
+    if (!url || (filterRef.current && !filterRef.current(url))) {
+      return undefined;
+    }
 
-      // NOTE(EvanBacon): This is the important part.
-      const path = extractExpoPathFromURL(url);
+    // NOTE(EvanBacon): This is the important part.
+    const path = extractExpoPathFromURL(url);
 
-      return path !== undefined
-        ? getStateFromPathRef.current(path, configRef.current)
-        : undefined;
-    },
-    []
-  );
+    return path !== undefined ? getStateFromPathRef.current(path, configRef.current) : undefined;
+  }, []);
 
   const getInitialState = React.useCallback(() => {
     // let state: ResultState | undefined;
     // if (enabledRef.current) {
     const url = getInitialURLRef.current();
 
-    if (url != null && typeof url !== "string") {
+    if (url != null && typeof url !== 'string') {
       return url.then((url) => {
         const state = getStateFromURL(url);
 
@@ -198,9 +193,7 @@ export default function useLinking(
             // This could happen in case of malformed links, navigation object not being initialized etc.
             console.warn(
               `An error occurred when trying to handle the link '${url}': ${
-                typeof e === "object" && e != null && "message" in e
-                  ? e.message
-                  : e
+                typeof e === 'object' && e != null && 'message' in e ? e.message : e
               }`
             );
           }

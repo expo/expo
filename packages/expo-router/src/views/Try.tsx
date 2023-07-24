@@ -1,6 +1,6 @@
-import React from "react";
+import React from 'react';
 
-import { SplashScreen } from "./Splash";
+import { SplashScreen } from './Splash';
 
 /** Props passed to a page's `ErrorBoundary` export. */
 export type ErrorBoundaryProps = {

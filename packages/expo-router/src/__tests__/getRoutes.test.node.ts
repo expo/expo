@@ -1,4 +1,4 @@
-import { RouteNode } from "../Route";
+import { RouteNode } from '../Route';
 import {
   assertDuplicateRoutes,
   FileNode,
@@ -6,15 +6,13 @@ import {
   getRecursiveTree,
   getRoutes,
   getUserDefinedDeepDynamicRoute,
-} from "../getRoutes";
-import { RequireContext } from "../types";
+} from '../getRoutes';
+import { RequireContext } from '../types';
 
-function createMockContextModule(
-  map: Record<string, Record<string, any>> = {}
-) {
+function createMockContextModule(map: Record<string, Record<string, any>> = {}) {
   const contextModule = jest.fn((key) => map[key]);
 
-  Object.defineProperty(contextModule, "keys", {
+  Object.defineProperty(contextModule, 'keys', {
     value: () => Object.keys(map),
   });
 
@@ -30,20 +28,20 @@ function dropFunctions({ loadRoute, ...node }: RouteNode) {
 
 const ROUTE_404 = {
   children: [],
-  contextKey: "./[...404].tsx",
-  dynamic: [{ deep: true, name: "404" }],
+  contextKey: './[...404].tsx',
+  dynamic: [{ deep: true, name: '404' }],
   generated: true,
   internal: true,
-  route: "[...404]",
+  route: '[...404]',
 };
 
 const ROUTE_DIRECTORY = {
   children: [],
-  contextKey: "./_sitemap.tsx",
+  contextKey: './_sitemap.tsx',
   dynamic: null,
   generated: true,
   internal: true,
-  route: "_sitemap",
+  route: '_sitemap',
 };
 
 const asFileNode = (route: Partial<FileNode>): FileNode => ({
@@ -54,8 +52,8 @@ const asFileNode = (route: Partial<FileNode>): FileNode => ({
       },
     };
   },
-  normalizedName: "INVALID_TEST_VALUE",
-  contextKey: "INVALID_TEST_VALUE",
+  normalizedName: 'INVALID_TEST_VALUE',
+  contextKey: 'INVALID_TEST_VALUE',
   ...route,
 });
 
@@ -69,8 +67,8 @@ const asRouteNode = (route: Partial<RouteNode>) => ({
   },
   children: [],
   dynamic: null,
-  route: "INVALID_TEST_VALUE",
-  contextKey: "INVALID_TEST_VALUE",
+  route: 'INVALID_TEST_VALUE',
+  contextKey: 'INVALID_TEST_VALUE',
   ...route,
 });
 
@@ -82,21 +80,17 @@ describe(assertDuplicateRoutes, () => {
   });
   it(`throws if there are duplicate routes`, () => {
     expect(() =>
-      assertDuplicateRoutes(["a.js", "a.tsx", "b.js"])
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"Multiple files match the route name "a"."`
-    );
+      assertDuplicateRoutes(['a.js', 'a.tsx', 'b.js'])
+    ).toThrowErrorMatchingInlineSnapshot(`"Multiple files match the route name "a"."`);
   });
 
   it(`doesn't throw if there are no duplicate routes`, () => {
-    expect(() =>
-      assertDuplicateRoutes(["a", "b", "/c/d/e.js", "f/g.tsx"])
-    ).not.toThrow();
+    expect(() => assertDuplicateRoutes(['a', 'b', '/c/d/e.js', 'f/g.tsx'])).not.toThrow();
   });
 
   it(`doesn't throw if running in production`, () => {
-    process.env.NODE_ENV = "production";
-    expect(() => assertDuplicateRoutes(["a", "a.js"])).not.toThrow();
+    process.env.NODE_ENV = 'production';
+    expect(() => assertDuplicateRoutes(['a', 'a.js'])).not.toThrow();
   });
 });
 
@@ -111,51 +105,51 @@ describe(getRecursiveTree, () => {
   }
 
   it(`should assert using deprecated layout route format`, () => {
-    expect(() => getTreeForKeys(["(app)", "(app)/index"])).toThrowError(
+    expect(() => getTreeForKeys(['(app)', '(app)/index'])).toThrowError(
       /Using deprecated Layout Route format/
     );
   });
 
   it(`should return a layout route`, () => {
-    expect(getTreeForKeys(["(app)/_layout", "(app)/index"])).toEqual([
+    expect(getTreeForKeys(['(app)/_layout', '(app)/index'])).toEqual([
       {
         children: [
           {
             children: [],
-            name: "index",
+            name: 'index',
             node: expect.objectContaining({
-              normalizedName: "(app)/index",
+              normalizedName: '(app)/index',
             }),
-            parents: ["", "(app)"],
+            parents: ['', '(app)'],
           },
         ],
-        name: "(app)",
+        name: '(app)',
         node: expect.objectContaining({
-          normalizedName: "(app)/_layout",
+          normalizedName: '(app)/_layout',
         }),
-        parents: [""],
+        parents: [''],
       },
     ]);
   });
 
   it(`should return a layout route using alternative format`, () => {
-    expect(getTreeForKeys(["(app)/_layout", "(app)/index"])).toEqual([
+    expect(getTreeForKeys(['(app)/_layout', '(app)/index'])).toEqual([
       {
         children: [
           {
             children: [],
-            name: "index",
+            name: 'index',
             node: expect.objectContaining({
-              normalizedName: "(app)/index",
+              normalizedName: '(app)/index',
             }),
-            parents: ["", "(app)"],
+            parents: ['', '(app)'],
           },
         ],
-        name: "(app)",
+        name: '(app)',
         node: expect.objectContaining({
-          normalizedName: "(app)/_layout",
+          normalizedName: '(app)/_layout',
         }),
-        parents: [""],
+        parents: [''],
       },
     ]);
   });
@@ -164,14 +158,14 @@ describe(getRecursiveTree, () => {
 describe(getUserDefinedDeepDynamicRoute, () => {
   it(`should match top-level deep dynamic with nested index`, () => {
     [
-      "./[...else].tsx",
-      "./(group)/[...else].tsx",
-      "./(group)/[...else]/(group).tsx",
-      "./(group)/[...else]/(group)/index.tsx",
-      "./[...else]/index.tsx",
-      "./[...else]/(group)/index.tsx",
-      "./(group1)/[...else]/(group2)/index.tsx",
-      "./(group1)/[...else]/(group2)/(group3)/index.tsx",
+      './[...else].tsx',
+      './(group)/[...else].tsx',
+      './(group)/[...else]/(group).tsx',
+      './(group)/[...else]/(group)/index.tsx',
+      './[...else]/index.tsx',
+      './[...else]/(group)/index.tsx',
+      './(group1)/[...else]/(group2)/index.tsx',
+      './(group1)/[...else]/(group2)/(group3)/index.tsx',
     ].forEach((name) => {
       expect(
         getUserDefinedDeepDynamicRoute(
@@ -193,7 +187,7 @@ describe(getUserDefinedDeepDynamicRoute, () => {
     const routes = asRouteNode({
       children: [
         asRouteNode({
-          route: "[...404]",
+          route: '[...404]',
         }),
       ],
     });
@@ -201,12 +195,12 @@ describe(getUserDefinedDeepDynamicRoute, () => {
   });
   it(`does not return a nested deep dynamic route `, () => {
     const deep = asRouteNode({
-      route: "[...404]",
+      route: '[...404]',
     });
     const routes = asRouteNode({
       children: [
         asRouteNode({
-          route: "home",
+          route: 'home',
           children: [deep],
         }),
       ],
@@ -215,15 +209,15 @@ describe(getUserDefinedDeepDynamicRoute, () => {
   });
   it(`should return a top-level deep dynamic route when nested in a group`, () => {
     const deep = asRouteNode({
-      route: "[...404]",
+      route: '[...404]',
     });
     const routes = asRouteNode({
       children: [
         asRouteNode({
-          route: "(group)",
+          route: '(group)',
           children: [
             asRouteNode({
-              route: "(another)",
+              route: '(another)',
               children: [deep],
             }),
           ],
@@ -239,7 +233,7 @@ describe(getUserDefinedDeepDynamicRoute, () => {
           children: [
             // [404].js
             asRouteNode({
-              route: "[404]",
+              route: '[404]',
             }),
           ],
         })
@@ -252,11 +246,11 @@ describe(getUserDefinedDeepDynamicRoute, () => {
           children: [
             // home/
             asRouteNode({
-              route: "home",
+              route: 'home',
               children: [
                 // [404].js
                 asRouteNode({
-                  route: "[404]",
+                  route: '[404]',
                 }),
               ],
             }),
@@ -274,9 +268,9 @@ describe(getExactRoutes, () => {
       dropFunctions(
         getExactRoutes(
           createMockContextModule({
-            "./+html.js": { default() {} },
-            "./other/+html.js": { default() {} },
-            "./_layout.tsx": { default() {} },
+            './+html.js': { default() {} },
+            './other/+html.js': { default() {} },
+            './_layout.tsx': { default() {} },
           })
         )!
       )
@@ -284,14 +278,14 @@ describe(getExactRoutes, () => {
       children: [
         {
           children: [],
-          contextKey: "./other/+html.js",
+          contextKey: './other/+html.js',
           dynamic: null,
-          route: "other/+html",
+          route: 'other/+html',
         },
       ],
-      contextKey: "./_layout.tsx",
+      contextKey: './_layout.tsx',
       dynamic: null,
-      route: "",
+      route: '',
     });
   });
 });
@@ -303,7 +297,7 @@ describe(getRoutes, () => {
       dropFunctions(
         getRoutes(
           createMockContextModule({
-            "./_layout.tsx": { default() {} },
+            './_layout.tsx': { default() {} },
           })
         )!
       )
@@ -311,16 +305,16 @@ describe(getRoutes, () => {
       children: [
         {
           children: [],
-          contextKey: "./[...404].tsx",
-          dynamic: [{ deep: true, name: "404" }],
+          contextKey: './[...404].tsx',
+          dynamic: [{ deep: true, name: '404' }],
           generated: true,
           internal: true,
-          route: "[...404]",
+          route: '[...404]',
         },
       ],
-      contextKey: "./_layout.tsx",
+      contextKey: './_layout.tsx',
       dynamic: null,
-      route: "",
+      route: '',
     });
   });
 
@@ -329,7 +323,7 @@ describe(getRoutes, () => {
       dropFunctions(
         getRoutes(
           createMockContextModule({
-            "./some/nested/value.tsx": { default() {} },
+            './some/nested/value.tsx': { default() {} },
           })
         )!
       )
@@ -337,17 +331,17 @@ describe(getRoutes, () => {
       children: [
         {
           children: [],
-          contextKey: "./some/nested/value.tsx",
+          contextKey: './some/nested/value.tsx',
           dynamic: null,
-          route: "some/nested/value",
+          route: 'some/nested/value',
         },
         ROUTE_DIRECTORY,
         ROUTE_404,
       ],
-      contextKey: "./_layout.tsx",
+      contextKey: './_layout.tsx',
       dynamic: null,
       generated: true,
-      route: "",
+      route: '',
     });
   });
 
@@ -356,8 +350,8 @@ describe(getRoutes, () => {
       dropFunctions(
         getRoutes(
           createMockContextModule({
-            "./[dynamic].tsx": { default() {} },
-            "./[...deep].tsx": { default() {} },
+            './[dynamic].tsx': { default() {} },
+            './[...deep].tsx': { default() {} },
           })
         )!
       )
@@ -367,27 +361,27 @@ describe(getRoutes, () => {
         children: [
           {
             children: [],
-            contextKey: "./[dynamic].tsx",
+            contextKey: './[dynamic].tsx',
             dynamic: [
               {
                 deep: false,
-                name: "dynamic",
+                name: 'dynamic',
               },
             ],
 
-            route: "[dynamic]",
+            route: '[dynamic]',
           },
           {
             children: [],
-            contextKey: "./[...deep].tsx",
+            contextKey: './[...deep].tsx',
             dynamic: [
               {
                 deep: true,
-                name: "deep",
+                name: 'deep',
               },
             ],
 
-            route: "[...deep]",
+            route: '[...deep]',
           },
           ROUTE_DIRECTORY,
           // No 404 route because we have a dynamic route
@@ -401,18 +395,18 @@ describe(getRoutes, () => {
       dropFunctions(
         getRoutes(
           createMockContextModule({
-            "./(stack)/_layout.tsx": { default() {} },
-            "./(stack)/home.tsx": { default() {} },
-            "./(stack)/settings.tsx": { default() {} },
-            "./(stack)/user/(default)/_layout.tsx": { default() {} },
-            "./(stack)/user/(default)/posts.tsx": { default() {} },
-            "./(stack)/user/profile.tsx": { default() {} },
-            "./(stack)/user/[profile].tsx": { default() {} },
-            "./(stack)/user/settings/_layout.tsx": { default() {} },
-            "./(stack)/user/settings/info.tsx": { default() {} },
-            "./(stack)/user/settings/[...other].tsx": { default() {} },
-            "./another.tsx": { default() {} },
-            "./some/nested/value.tsx": { default() {} },
+            './(stack)/_layout.tsx': { default() {} },
+            './(stack)/home.tsx': { default() {} },
+            './(stack)/settings.tsx': { default() {} },
+            './(stack)/user/(default)/_layout.tsx': { default() {} },
+            './(stack)/user/(default)/posts.tsx': { default() {} },
+            './(stack)/user/profile.tsx': { default() {} },
+            './(stack)/user/[profile].tsx': { default() {} },
+            './(stack)/user/settings/_layout.tsx': { default() {} },
+            './(stack)/user/settings/info.tsx': { default() {} },
+            './(stack)/user/settings/[...other].tsx': { default() {} },
+            './another.tsx': { default() {} },
+            './some/nested/value.tsx': { default() {} },
           })
         )!
       )
@@ -422,89 +416,89 @@ describe(getRoutes, () => {
           children: [
             {
               children: [],
-              contextKey: "./(stack)/home.tsx",
+              contextKey: './(stack)/home.tsx',
               dynamic: null,
-              route: "home",
+              route: 'home',
             },
             {
               children: [],
-              contextKey: "./(stack)/settings.tsx",
+              contextKey: './(stack)/settings.tsx',
               dynamic: null,
-              route: "settings",
+              route: 'settings',
             },
             {
               children: [
                 {
                   children: [],
-                  contextKey: "./(stack)/user/(default)/posts.tsx",
+                  contextKey: './(stack)/user/(default)/posts.tsx',
                   dynamic: null,
-                  route: "posts",
+                  route: 'posts',
                 },
               ],
-              contextKey: "./(stack)/user/(default)/_layout.tsx",
+              contextKey: './(stack)/user/(default)/_layout.tsx',
               dynamic: null,
-              route: "user/(default)",
+              route: 'user/(default)',
             },
             {
               children: [],
-              contextKey: "./(stack)/user/profile.tsx",
+              contextKey: './(stack)/user/profile.tsx',
               dynamic: null,
-              route: "user/profile",
+              route: 'user/profile',
             },
             {
               children: [],
-              contextKey: "./(stack)/user/[profile].tsx",
+              contextKey: './(stack)/user/[profile].tsx',
               dynamic: [
                 {
                   deep: false,
-                  name: "profile",
+                  name: 'profile',
                 },
               ],
-              route: "user/[profile]",
+              route: 'user/[profile]',
             },
             {
               children: [
                 {
                   children: [],
-                  contextKey: "./(stack)/user/settings/info.tsx",
+                  contextKey: './(stack)/user/settings/info.tsx',
                   dynamic: null,
-                  route: "info",
+                  route: 'info',
                 },
                 {
                   children: [],
-                  contextKey: "./(stack)/user/settings/[...other].tsx",
-                  dynamic: [{ deep: true, name: "other" }],
-                  route: "[...other]",
+                  contextKey: './(stack)/user/settings/[...other].tsx',
+                  dynamic: [{ deep: true, name: 'other' }],
+                  route: '[...other]',
                 },
               ],
-              contextKey: "./(stack)/user/settings/_layout.tsx",
+              contextKey: './(stack)/user/settings/_layout.tsx',
               dynamic: null,
-              route: "user/settings",
+              route: 'user/settings',
             },
           ],
-          contextKey: "./(stack)/_layout.tsx",
+          contextKey: './(stack)/_layout.tsx',
           dynamic: null,
-          route: "(stack)",
+          route: '(stack)',
         },
         {
           children: [],
-          contextKey: "./another.tsx",
+          contextKey: './another.tsx',
           dynamic: null,
-          route: "another",
+          route: 'another',
         },
         {
           children: [],
-          contextKey: "./some/nested/value.tsx",
+          contextKey: './some/nested/value.tsx',
           dynamic: null,
-          route: "some/nested/value",
+          route: 'some/nested/value',
         },
         ROUTE_DIRECTORY,
         ROUTE_404,
       ],
-      contextKey: "./_layout.tsx",
+      contextKey: './_layout.tsx',
       dynamic: null,
       generated: true,
-      route: "",
+      route: '',
     });
   });
   it(`should convert an empty context module to routes`, () => {

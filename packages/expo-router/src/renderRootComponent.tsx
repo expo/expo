@@ -1,11 +1,11 @@
-import React from "react";
-import { Platform, View } from "react-native";
+import React from 'react';
+import { Platform, View } from 'react-native';
 
-import registerRootComponent from "./fork/expo/registerRootComponent";
-import { SplashScreen, _internal_preventAutoHideAsync } from "./views/Splash";
+import registerRootComponent from './fork/expo/registerRootComponent';
+import { SplashScreen, _internal_preventAutoHideAsync } from './views/Splash';
 
 function isBaseObject(obj: any) {
-  if (Object.prototype.toString.call(obj) !== "[object Object]") {
+  if (Object.prototype.toString.call(obj) !== '[object Object]') {
     return false;
   }
   const proto = Object.getPrototypeOf(obj);
@@ -18,9 +18,9 @@ function isBaseObject(obj: any) {
 function isErrorShaped(error: any): error is Error {
   return (
     error &&
-    typeof error === "object" &&
-    typeof error.name === "string" &&
-    typeof error.message === "string"
+    typeof error === 'object' &&
+    typeof error.name === 'string' &&
+    typeof error.message === 'string'
   );
 }
 
@@ -33,9 +33,9 @@ function convertError(error: any) {
     return error;
   }
 
-  if (process.env.NODE_ENV === "development") {
+  if (process.env.NODE_ENV === 'development') {
     if (error == null) {
-      return new Error("A null/undefined error was thrown.");
+      return new Error('A null/undefined error was thrown.');
     }
   }
 
@@ -70,11 +70,9 @@ export function renderRootComponent(Component: React.ComponentType<any>) {
     registerRootComponent(() => <View />);
 
     // Console is pretty useless on native, on web you get interactive stack traces.
-    if (Platform.OS === "web") {
+    if (Platform.OS === 'web') {
       console.error(error);
-      console.error(
-        `A runtime error has occurred while rendering the root component.`
-      );
+      console.error(`A runtime error has occurred while rendering the root component.`);
     }
 
     // Give React a tick to render before throwing.

@@ -1,1 +1,1 @@
-export default "sync" as "sync" | "lazy";
+export default 'sync' as 'sync' | 'lazy';

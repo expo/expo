@@ -1,17 +1,12 @@
-import { renderHook as tlRenderHook } from "@testing-library/react-native";
-import React from "react";
-import { expectType } from "tsd";
+import { renderHook as tlRenderHook } from '@testing-library/react-native';
+import React from 'react';
+import { expectType } from 'tsd';
 
-import { ExpoRoot, router } from "../exports";
-import {
-  useGlobalSearchParams,
-  useLocalSearchParams,
-  usePathname,
-  useSegments,
-} from "../hooks";
-import Stack from "../layouts/Stack";
-import { act, renderRouter } from "../testing-library";
-import { inMemoryContext } from "../testing-library/context-stubs";
+import { ExpoRoot, router } from '../exports';
+import { useGlobalSearchParams, useLocalSearchParams, usePathname, useSegments } from '../hooks';
+import Stack from '../layouts/Stack';
+import { act, renderRouter } from '../testing-library';
+import { inMemoryContext } from '../testing-library/context-stubs';
 
 /*
  * Creates an Expo Router context around the hook, where every router renders the hook
@@ -19,8 +14,8 @@ import { inMemoryContext } from "../testing-library/context-stubs";
  */
 function renderHook<T>(
   renderCallback: () => T,
-  routes: string[] = ["index"],
-  { initialUrl = "/" }: { initialUrl?: string } = {}
+  routes: string[] = ['index'],
+  { initialUrl = '/' }: { initialUrl?: string } = {}
 ) {
   return tlRenderHook(renderCallback, {
     wrapper: function Wrapper({ children }) {
@@ -32,7 +27,7 @@ function renderHook<T>(
       return (
         <ExpoRoot
           context={inMemoryContext(context)}
-          location={new URL(initialUrl, "test://test")}
+          location={new URL(initialUrl, 'test://test')}
         />
       );
     },
@@ -54,39 +49,33 @@ describe(useSegments, () => {
     expectType<string[]>(segments);
   });
   it(`allows abstract types`, () => {
-    const segments = renderHookOnce(() => useSegments<["alpha"]>());
-    expectType<"alpha">(segments[0]);
+    const segments = renderHookOnce(() => useSegments<['alpha']>());
+    expectType<'alpha'>(segments[0]);
   });
   it(`allows abstract union types`, () => {
-    const segments = renderHookOnce(() =>
-      useSegments<["a"] | ["b"] | ["b", "c"]>()
-    );
-    expectType<"a" | "b">(segments[0]);
-    if (segments[0] === "b") expectType<"c" | undefined>(segments[1]);
+    const segments = renderHookOnce(() => useSegments<['a'] | ['b'] | ['b', 'c']>());
+    expectType<'a' | 'b'>(segments[0]);
+    if (segments[0] === 'b') expectType<'c' | undefined>(segments[1]);
   });
 });
 
 describe(useGlobalSearchParams, () => {
   it(`return styles of deeply nested routes`, () => {
-    const { result } = renderHook(
-      () => useGlobalSearchParams(),
-      ["[fruit]/[shape]/[...veg?]"],
-      {
-        initialUrl: "/apple/square",
-      }
-    );
-
-    expect(result.current).toEqual({
-      fruit: "apple",
-      shape: "square",
+    const { result } = renderHook(() => useGlobalSearchParams(), ['[fruit]/[shape]/[...veg?]'], {
+      initialUrl: '/apple/square',
     });
 
-    act(() => router.push("/banana/circle/carrot"));
+    expect(result.current).toEqual({
+      fruit: 'apple',
+      shape: 'square',
+    });
+
+    act(() => router.push('/banana/circle/carrot'));
 
     expect(result.current).toEqual({
-      fruit: "banana",
-      shape: "circle",
-      veg: "carrot",
+      fruit: 'banana',
+      shape: 'circle',
+      veg: 'carrot',
     });
   });
 
@@ -106,7 +95,7 @@ describe(useGlobalSearchParams, () => {
 
     renderRouter(
       {
-        "[fruit]/[shape]/[...veg?]": function Test() {
+        '[fruit]/[shape]/[...veg?]': function Test() {
           allHookValues.push({
             url: usePathname(),
             globalParams: useGlobalSearchParams(),
@@ -116,37 +105,37 @@ describe(useGlobalSearchParams, () => {
         },
       },
       {
-        initialUrl: "/apple/square",
+        initialUrl: '/apple/square',
       }
     );
 
-    act(() => router.push("/banana/circle/carrot"));
+    act(() => router.push('/banana/circle/carrot'));
 
     expect(allHookValues).toEqual([
       // The initial render
       {
-        url: "/apple/square",
+        url: '/apple/square',
         globalParams: {
-          fruit: "apple",
-          shape: "square",
+          fruit: 'apple',
+          shape: 'square',
         },
         params: {
-          fruit: "apple",
-          shape: "square",
+          fruit: 'apple',
+          shape: 'square',
         },
       },
       // The new screen
       {
-        url: "/banana/circle/carrot",
+        url: '/banana/circle/carrot',
         globalParams: {
-          fruit: "banana",
-          shape: "circle",
-          veg: "carrot",
+          fruit: 'banana',
+          shape: 'circle',
+          veg: 'carrot',
         },
         params: {
-          fruit: "banana",
-          shape: "circle",
-          veg: ["carrot"],
+          fruit: 'banana',
+          shape: 'circle',
+          veg: ['carrot'],
         },
       },
     ]);
@@ -165,7 +154,7 @@ describe(useGlobalSearchParams, () => {
     renderRouter(
       {
         _layout: () => <Stack />,
-        "[fruit]/[shape]/[...veg?]": function Test() {
+        '[fruit]/[shape]/[...veg?]': function Test() {
           allHookValues.push({
             url: usePathname(),
             globalParams: useGlobalSearchParams(),
@@ -175,50 +164,50 @@ describe(useGlobalSearchParams, () => {
         },
       },
       {
-        initialUrl: "/apple/square",
+        initialUrl: '/apple/square',
       }
     );
 
-    act(() => router.push("/banana/circle/carrot"));
+    act(() => router.push('/banana/circle/carrot'));
 
     expect(allHookValues).toEqual([
       // The initial render
       {
-        url: "/apple/square",
+        url: '/apple/square',
         globalParams: {
-          fruit: "apple",
-          shape: "square",
+          fruit: 'apple',
+          shape: 'square',
         },
         params: {
-          fruit: "apple",
-          shape: "square",
+          fruit: 'apple',
+          shape: 'square',
         },
       },
       // The new screen
       {
-        url: "/banana/circle/carrot",
+        url: '/banana/circle/carrot',
         globalParams: {
-          fruit: "banana",
-          shape: "circle",
-          veg: "carrot",
+          fruit: 'banana',
+          shape: 'circle',
+          veg: 'carrot',
         },
         params: {
-          fruit: "banana",
-          shape: "circle",
-          veg: ["carrot"],
+          fruit: 'banana',
+          shape: 'circle',
+          veg: ['carrot'],
         },
       },
       // The is the first page rerendering due to being in a <Stack />
       {
-        url: "/banana/circle/carrot",
+        url: '/banana/circle/carrot',
         globalParams: {
-          fruit: "banana",
-          shape: "circle",
-          veg: "carrot",
+          fruit: 'banana',
+          shape: 'circle',
+          veg: 'carrot',
         },
         params: {
-          fruit: "apple",
-          shape: "square",
+          fruit: 'apple',
+          shape: 'square',
         },
       },
     ]);
@@ -227,25 +216,21 @@ describe(useGlobalSearchParams, () => {
 
 describe(useLocalSearchParams, () => {
   it(`return styles of deeply nested routes`, () => {
-    const { result } = renderHook(
-      () => useGlobalSearchParams(),
-      ["[fruit]/[shape]/[...veg?]"],
-      {
-        initialUrl: "/apple/square",
-      }
-    );
-
-    expect(result.current).toEqual({
-      fruit: "apple",
-      shape: "square",
+    const { result } = renderHook(() => useGlobalSearchParams(), ['[fruit]/[shape]/[...veg?]'], {
+      initialUrl: '/apple/square',
     });
 
-    act(() => router.push("/banana/circle/carrot"));
+    expect(result.current).toEqual({
+      fruit: 'apple',
+      shape: 'square',
+    });
+
+    act(() => router.push('/banana/circle/carrot'));
 
     expect(result.current).toEqual({
-      fruit: "banana",
-      shape: "circle",
-      veg: "carrot",
+      fruit: 'banana',
+      shape: 'circle',
+      veg: 'carrot',
     });
   });
 
@@ -263,28 +248,24 @@ describe(useLocalSearchParams, () => {
 
 describe(usePathname, () => {
   it(`return pathname of deeply nested routes`, () => {
-    const { result } = renderHook(
-      () => usePathname(),
-      ["[fruit]/[shape]/[...veg?]"],
-      {
-        initialUrl: "/apple/square",
-      }
-    );
+    const { result } = renderHook(() => usePathname(), ['[fruit]/[shape]/[...veg?]'], {
+      initialUrl: '/apple/square',
+    });
 
-    expect(result.current).toEqual("/apple/square");
+    expect(result.current).toEqual('/apple/square');
 
-    act(() => router.push("/banana/circle/carrot"));
-    expect(result.current).toEqual("/banana/circle/carrot");
+    act(() => router.push('/banana/circle/carrot'));
+    expect(result.current).toEqual('/banana/circle/carrot');
 
-    act(() => router.push("/banana/circle/carrot/beetroot"));
-    expect(result.current).toEqual("/banana/circle/carrot/beetroot");
+    act(() => router.push('/banana/circle/carrot/beetroot'));
+    expect(result.current).toEqual('/banana/circle/carrot/beetroot');
 
-    act(() => router.push("/banana/circle/carrot/beetroot/beans"));
-    expect(result.current).toEqual("/banana/circle/carrot/beetroot/beans");
+    act(() => router.push('/banana/circle/carrot/beetroot/beans'));
+    expect(result.current).toEqual('/banana/circle/carrot/beetroot/beans');
 
-    act(() => router.push("/banana/circle/carrot/beetroot?foo=bar"));
-    expect(result.current).toEqual("/banana/circle/carrot/beetroot");
+    act(() => router.push('/banana/circle/carrot/beetroot?foo=bar'));
+    expect(result.current).toEqual('/banana/circle/carrot/beetroot');
   });
 });
 
-describe("hooks rendering", () => {});
+describe('hooks rendering', () => {});

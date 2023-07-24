@@ -1,5 +1,5 @@
-import { store } from "./global-state/router-store";
-import { Router } from "./types";
+import { store } from './global-state/router-store';
+import { Router } from './types';
 
 export const router: Router = {
   push: (href) => store.push(href),

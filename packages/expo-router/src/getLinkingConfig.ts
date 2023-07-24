@@ -1,14 +1,14 @@
-import { getActionFromState, LinkingOptions } from "@react-navigation/native";
+import { getActionFromState, LinkingOptions } from '@react-navigation/native';
 
-import { RouteNode } from "./Route";
-import { State } from "./fork/getPathFromState";
-import { getReactNavigationConfig, Screen } from "./getReactNavigationConfig";
+import { RouteNode } from './Route';
+import { State } from './fork/getPathFromState';
+import { getReactNavigationConfig, Screen } from './getReactNavigationConfig';
 import {
   addEventListener,
   getInitialURL,
   getPathFromState,
   getStateFromPath,
-} from "./link/linking";
+} from './link/linking';
 
 export function getNavigationConfig(routes: RouteNode): {
   initialRouteName?: string;
@@ -34,16 +34,13 @@ export function getLinkingConfig(routes: RouteNode): ExpoLinkingOptions {
     getInitialURL,
     subscribe: addEventListener,
     getStateFromPath: getStateFromPathMemoized,
-    getPathFromState(
-      state: State,
-      options: Parameters<typeof getPathFromState>[1]
-    ) {
+    getPathFromState(state: State, options: Parameters<typeof getPathFromState>[1]) {
       return (
         getPathFromState(state, {
           screens: [],
           ...this.config,
           ...options,
-        }) ?? "/"
+        }) ?? '/'
       );
     },
     // Add all functions to ensure the types never need to fallback.
@@ -55,10 +52,7 @@ export function getLinkingConfig(routes: RouteNode): ExpoLinkingOptions {
 export const stateCache = new Map<string, any>();
 
 /** We can reduce work by memoizing the state by the pathname. This only works because the options (linking config) theoretically never change.  */
-function getStateFromPathMemoized(
-  path: string,
-  options: Parameters<typeof getStateFromPath>[1]
-) {
+function getStateFromPathMemoized(path: string, options: Parameters<typeof getStateFromPath>[1]) {
   const cached = stateCache.get(path);
   if (cached) {
     return cached;

@@ -1,17 +1,9 @@
-import {
-  NavigationRouteContext,
-  ParamListBase,
-  RouteProp,
-} from "@react-navigation/native";
-import React from "react";
+import { NavigationRouteContext, ParamListBase, RouteProp } from '@react-navigation/native';
+import React from 'react';
 
-import {
-  store,
-  useStoreRootState,
-  useStoreRouteInfo,
-} from "./global-state/router-store";
-import { Router } from "./types";
-import { useDeprecated } from "./useDeprecated";
+import { store, useStoreRootState, useStoreRouteInfo } from './global-state/router-store';
+import { Router } from './types';
+import { useDeprecated } from './useDeprecated';
 
 type SearchParams = Record<string, string | string[]>;
 
@@ -29,7 +21,7 @@ export function useRootNavigation() {
 
 // Wraps useLinkTo to provide an API which is similar to the Link component.
 export function useLink() {
-  useDeprecated("`useLink()` is deprecated in favor of `useRouter()`");
+  useDeprecated('`useLink()` is deprecated in favor of `useRouter()`');
   return useRouter();
 }
 
@@ -74,9 +66,7 @@ export function useUnstableGlobalHref(): string {
  * const [first, second] = useSegments<['settings'] | ['[user]'] | ['[user]', 'followers']>()
  * ```
  */
-export function useSegments<
-  TSegments extends string[] = string[]
->(): TSegments {
+export function useSegments<TSegments extends string[] = string[]>(): TSegments {
   return useStoreRouteInfo().segments as TSegments;
 }
 
@@ -101,9 +91,7 @@ export function useGlobalSearchParams<
 }
 
 /** @deprecated renamed to `useGlobalSearchParams` */
-export function useSearchParams<
-  TParams extends SearchParams = SearchParams
->(): Partial<TParams> {
+export function useSearchParams<TParams extends SearchParams = SearchParams>(): Partial<TParams> {
   return useGlobalSearchParams<TParams>();
 }
 
@@ -119,9 +107,7 @@ export function useLocalSearchParams<
   return (useOptionalLocalRoute()?.params ?? ({} as any)) as Partial<TParams>;
 }
 
-function useOptionalLocalRoute<T extends RouteProp<ParamListBase>>():
-  | T
-  | undefined {
+function useOptionalLocalRoute<T extends RouteProp<ParamListBase>>(): T | undefined {
   const route = React.useContext(NavigationRouteContext);
   return route as T | undefined;
 }

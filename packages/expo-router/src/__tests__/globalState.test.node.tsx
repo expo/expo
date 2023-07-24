@@ -1,7 +1,7 @@
-import { createNavigationContainerRef } from "@react-navigation/native";
+import { createNavigationContainerRef } from '@react-navigation/native';
 
-import { RouterStore, store } from "../global-state/router-store";
-import { inMemoryContext } from "../testing-library/context-stubs";
+import { RouterStore, store } from '../global-state/router-store';
+import { inMemoryContext } from '../testing-library/context-stubs';
 
 describe(RouterStore, () => {
   it(`creates mock context with empty routes`, () => {
@@ -13,8 +13,8 @@ describe(RouterStore, () => {
       initialState: undefined,
       linking: undefined,
       routeInfo: {
-        unstable_globalHref: "",
-        pathname: "",
+        unstable_globalHref: '',
+        pathname: '',
         params: {},
         segments: [],
       },
@@ -33,52 +33,52 @@ describe(RouterStore, () => {
         children: [
           expect.objectContaining({
             children: [],
-            contextKey: "./index.js",
+            contextKey: './index.js',
             dynamic: null,
-            route: "index",
+            route: 'index',
           }),
           expect.objectContaining({
             children: [],
-            contextKey: "./_sitemap.tsx",
+            contextKey: './_sitemap.tsx',
             dynamic: null,
             generated: true,
             internal: true,
-            route: "_sitemap",
+            route: '_sitemap',
           }),
           expect.objectContaining({
             children: [],
-            contextKey: "./[...404].tsx",
+            contextKey: './[...404].tsx',
             dynamic: [
               {
                 deep: true,
-                name: "404",
+                name: '404',
               },
             ],
             generated: true,
             internal: true,
-            route: "[...404]",
+            route: '[...404]',
           }),
         ],
-        contextKey: "./_layout.tsx",
+        contextKey: './_layout.tsx',
         dynamic: null,
         generated: true,
-        route: "",
+        route: '',
       }),
       linking: expect.objectContaining({
         config: {
           initialRouteName: undefined,
           screens: {
-            "[...404]": "*404",
-            _sitemap: "_sitemap",
-            index: "",
+            '[...404]': '*404',
+            _sitemap: '_sitemap',
+            index: '',
           },
         },
       }),
       rootState: undefined,
       initialState: undefined,
       routeInfo: {
-        unstable_globalHref: "",
-        pathname: "",
+        unstable_globalHref: '',
+        pathname: '',
         params: {},
         segments: [],
       },
@@ -91,7 +91,7 @@ describe(RouterStore, () => {
         index: () => null,
       }),
       createNavigationContainerRef(),
-      new URL("/", "http://acme.com")
+      new URL('/', 'http://acme.com')
     );
 
     // Should be the same as`creates qualified context with routes`, but with these
@@ -100,22 +100,22 @@ describe(RouterStore, () => {
       rootState: {
         routes: [
           {
-            name: "index",
-            path: "/",
+            name: 'index',
+            path: '/',
           },
         ],
       },
       initialState: {
         routes: [
           {
-            name: "index",
-            path: "/",
+            name: 'index',
+            path: '/',
           },
         ],
       },
       routeInfo: {
-        unstable_globalHref: "/",
-        pathname: "/",
+        unstable_globalHref: '/',
+        pathname: '/',
         params: {},
         segments: [],
       },

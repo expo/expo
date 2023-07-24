@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 import {
   DynamicConvention,
@@ -7,16 +7,14 @@ import {
   RouteNode,
   sortRoutesWithInitial,
   useRouteNode,
-} from "./Route";
-import EXPO_ROUTER_IMPORT_MODE from "./import-mode";
-import { Screen } from "./primitives";
-import { EmptyRoute } from "./views/EmptyRoute";
-import { SuspenseFallback } from "./views/SuspenseFallback";
-import { Try } from "./views/Try";
+} from './Route';
+import EXPO_ROUTER_IMPORT_MODE from './import-mode';
+import { Screen } from './primitives';
+import { EmptyRoute } from './views/EmptyRoute';
+import { SuspenseFallback } from './views/SuspenseFallback';
+import { Try } from './views/Try';
 
-export type ScreenProps<
-  TOptions extends Record<string, any> = Record<string, any>
-> = {
+export type ScreenProps<TOptions extends Record<string, any> = Record<string, any>> = {
   /** Name is required when used inside a Layout component. */
   name?: string;
   /**
@@ -30,11 +28,7 @@ export type ScreenProps<
   // TODO: types
   listeners?: any;
 
-  getId?: ({
-    params,
-  }: {
-    params?: Record<string, any> | undefined;
-  }) => string | undefined;
+  getId?: ({ params }: { params?: Record<string, any> | undefined }) => string | undefined;
 };
 
 function getSortedChildren(
@@ -52,9 +46,7 @@ function getSortedChildren(
   const ordered = order
     .map(({ name, redirect, initialParams, listeners, options, getId }) => {
       if (!entries.length) {
-        console.warn(
-          `[Layout children]: Too many screens defined. Route "${name}" is extraneous.`
-        );
+        console.warn(`[Layout children]: Too many screens defined. Route "${name}" is extraneous.`);
         return null;
       }
       const matchIndex = entries.findIndex((child) => child.route === name);
@@ -71,10 +63,8 @@ function getSortedChildren(
 
         // Ensure to return null after removing from entries.
         if (redirect) {
-          if (typeof redirect === "string") {
-            throw new Error(
-              `Redirecting to a specific route is not supported yet.`
-            );
+          if (typeof redirect === 'string') {
+            throw new Error(`Redirecting to a specific route is not supported yet.`);
           }
           return null;
         }
@@ -92,9 +82,7 @@ function getSortedChildren(
 
   // Add any remaining children
   ordered.push(
-    ...entries
-      .sort(sortRoutesWithInitial(initialRouteName))
-      .map((route) => ({ route, props: {} }))
+    ...entries.sort(sortRoutesWithInitial(initialRouteName)).map((route) => ({ route, props: {} }))
   );
 
   return ordered;
@@ -127,9 +115,9 @@ function fromImport({ ErrorBoundary, ...component }: LoadedRoute) {
       }),
     };
   }
-  if (process.env.NODE_ENV !== "production") {
+  if (process.env.NODE_ENV !== 'production') {
     if (
-      typeof component.default === "object" &&
+      typeof component.default === 'object' &&
       component.default &&
       Object.keys(component.default).length === 0
     ) {
@@ -160,7 +148,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
   let getLoadable: (props: any, ref: any) => JSX.Element;
 
   // TODO: This ensures sync doesn't use React.lazy, but it's not ideal.
-  if (EXPO_ROUTER_IMPORT_MODE === "lazy") {
+  if (EXPO_ROUTER_IMPORT_MODE === 'lazy') {
     const AsyncComponent = React.lazy(async () => {
       const res = value.loadRoute();
       return fromLoadedRoute(res) as Promise<{
@@ -226,9 +214,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
 }
 
 /** @returns a function which provides a screen id that matches the dynamic route name in params. */
-export function createGetIdForRoute(
-  route: Pick<RouteNode, "dynamic" | "route">
-) {
+export function createGetIdForRoute(route: Pick<RouteNode, 'dynamic' | 'route'>) {
   if (!route.dynamic?.length) {
     return undefined;
   }
@@ -245,20 +231,17 @@ export function createGetIdForRoute(
         } else if (preferredId.length) {
           // Deep dynamic routes will return as an array, so we'll join them to create a
           // fully qualified string.
-          return preferredId.join("/");
+          return preferredId.join('/');
         }
         // Empty arrays...
       }
       return segment.deep ? `[...${segment.name}]` : `[${segment.name}]`;
     };
-    return route.dynamic?.map((segment) => getPreferredId(segment)).join("/");
+    return route.dynamic?.map((segment) => getPreferredId(segment)).join('/');
   };
 }
 
-function routeToScreen(
-  route: RouteNode,
-  { options, ...props }: Partial<ScreenProps> = {}
-) {
+function routeToScreen(route: RouteNode, { options, ...props }: Partial<ScreenProps> = {}) {
   return (
     <Screen
       // Users can override the screen getId function.
@@ -268,15 +251,10 @@ function routeToScreen(
       key={route.route}
       options={(args) => {
         // Only eager load generated components
-        const staticOptions = route.generated
-          ? route.loadRoute()?.getNavOptions
-          : null;
+        const staticOptions = route.generated ? route.loadRoute()?.getNavOptions : null;
         const staticResult =
-          typeof staticOptions === "function"
-            ? staticOptions(args)
-            : staticOptions;
-        const dynamicResult =
-          typeof options === "function" ? options?.(args) : options;
+          typeof staticOptions === 'function' ? staticOptions(args) : staticOptions;
+        const dynamicResult = typeof options === 'function' ? options?.(args) : options;
         const output = {
           ...staticResult,
           ...dynamicResult,
@@ -286,7 +264,7 @@ function routeToScreen(
         if (route.generated) {
           output.tabBarButton = () => null;
           // TODO: React Navigation doesn't provide a way to prevent rendering the drawer item.
-          output.drawerItemStyle = { height: 0, display: "none" };
+          output.drawerItemStyle = { height: 0, display: 'none' };
         }
 
         return output;

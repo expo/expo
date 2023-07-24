@@ -1,5 +1,5 @@
-import Constants from "expo-constants";
-import URL from "url-parse";
+import Constants from 'expo-constants';
+import URL from 'url-parse';
 
 const protocolWarningString = `{ plugins: [["expo-router", { origin: "...<URL>..." }]] }`;
 
@@ -22,9 +22,7 @@ function sanitizeUrl(url: string): string {
 
   // Allow empty protocol, http, and https
   const validProtocol =
-    !parsed.protocol ||
-    parsed.protocol === "http:" ||
-    parsed.protocol === "https:";
+    !parsed.protocol || parsed.protocol === 'http:' || parsed.protocol === 'https:';
 
   if (!validProtocol) {
     throwOrAlert(
@@ -32,12 +30,12 @@ function sanitizeUrl(url: string): string {
     );
   }
 
-  parsed.set("pathname", "");
-  parsed.set("query", {});
-  parsed.set("hash", undefined);
-  parsed.set("protocol", parsed.protocol ?? "https:");
+  parsed.set('pathname', '');
+  parsed.set('query', {});
+  parsed.set('hash', undefined);
+  parsed.set('protocol', parsed.protocol ?? 'https:');
 
-  return parsed.toString().replace(/\/$/, "");
+  return parsed.toString().replace(/\/$/, '');
 }
 
 const memoSanitizeUrl = memoize(sanitizeUrl);
@@ -46,15 +44,14 @@ function getUrlFromConstants(): string | null {
   // This will require a rebuild in bare-workflow to update.
   const manifest = Constants.expoConfig;
 
-  const origin =
-    manifest?.extra?.router?.headOrigin ?? manifest?.extra?.router?.origin;
+  const origin = manifest?.extra?.router?.headOrigin ?? manifest?.extra?.router?.origin;
 
   if (!origin) {
     throwOrAlert(
       `Expo Head: Add the handoff origin to the Expo Config (requires rebuild). Add the Config Plugin ${protocolWarningString}, where \`origin\` is the hosted URL.`
     );
     // Fallback value that shouldn't be used for real.
-    return "https://expo.dev";
+    return 'https://expo.dev';
   }
 
   // Without this, the URL will go to an IP address which is not allowed.
@@ -72,7 +69,7 @@ function throwOrAlert(msg: string) {
   // Production apps fatally crash which is often not helpful.
   if (
     // @ts-ignore: process is defined
-    process.env.NODE_ENV === "production"
+    process.env.NODE_ENV === 'production'
   ) {
     console.error(msg);
     alert(msg);

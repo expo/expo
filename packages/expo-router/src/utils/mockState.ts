@@ -1,13 +1,11 @@
-import { getNavigationConfig } from "../getLinkingConfig";
-import { getExactRoutes } from "../getRoutes";
-import { RequireContext } from "../types";
+import { getNavigationConfig } from '../getLinkingConfig';
+import { getExactRoutes } from '../getRoutes';
+import { RequireContext } from '../types';
 
-export function createMockContextModule(
-  map: Record<string, Record<string, any>> = {}
-) {
+export function createMockContextModule(map: Record<string, Record<string, any>> = {}) {
   const contextModule = jest.fn((key) => map[key]);
 
-  Object.defineProperty(contextModule, "keys", {
+  Object.defineProperty(contextModule, 'keys', {
     value: () => Object.keys(map),
   });
 
@@ -16,7 +14,7 @@ export function createMockContextModule(
 
 export function configFromFs(map: (string | [string, object])[] = []) {
   const ctx = map.reduce((acc, value: any) => {
-    if (typeof value === "string") {
+    if (typeof value === 'string') {
       acc[value] = { default: () => {} };
       return acc;
     }

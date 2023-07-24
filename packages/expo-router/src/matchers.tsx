@@ -22,35 +22,35 @@ export function getNameFromFilePath(name: string): string {
 export function getContextKey(name: string): string {
   // The root path is `` (empty string) so always prepend `/` to ensure
   // there is some value.
-  const normal = "/" + getNameFromFilePath(name);
-  if (!normal.endsWith("_layout")) {
+  const normal = '/' + getNameFromFilePath(name);
+  if (!normal.endsWith('_layout')) {
     return normal;
   }
-  return normal.replace(/\/?_layout$/, "");
+  return normal.replace(/\/?_layout$/, '');
 }
 
 /** Remove `.js`, `.ts`, `.jsx`, `.tsx` */
 export function removeSupportedExtensions(name: string): string {
-  return name.replace(/\.[jt]sx?$/g, "");
+  return name.replace(/\.[jt]sx?$/g, '');
 }
 
 // Remove any amount of `./` and `../` from the start of the string
 export function removeFileSystemDots(filePath: string): string {
-  return filePath.replace(/^(?:\.\.?\/)+/g, "");
+  return filePath.replace(/^(?:\.\.?\/)+/g, '');
 }
 
 export function stripGroupSegmentsFromPath(path: string): string {
   return path
-    .split("/")
+    .split('/')
     .reduce((acc, v) => {
       if (matchGroupName(v) == null) {
         acc.push(v);
       }
       return acc;
     }, [] as string[])
-    .join("/");
+    .join('/');
 }
 
 export function stripInvisibleSegmentsFromPath(path: string): string {
-  return stripGroupSegmentsFromPath(path).replace(/\/?index$/, "");
+  return stripGroupSegmentsFromPath(path).replace(/\/?index$/, '');
 }

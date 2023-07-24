@@ -1,16 +1,13 @@
-const formatToList = (items: string[]) =>
-  items.map((key) => `- ${key}`).join("\n");
+const formatToList = (items: string[]) => items.map((key) => `- ${key}`).join('\n');
 
 export default function validatePathConfig(config: any, root = true) {
-  const validKeys = ["initialRouteName", "screens", "_route"];
+  const validKeys = ['initialRouteName', 'screens', '_route'];
 
   if (!root) {
-    validKeys.push("path", "exact", "stringify", "parse");
+    validKeys.push('path', 'exact', 'stringify', 'parse');
   }
 
-  const invalidKeys = Object.keys(config).filter(
-    (key) => !validKeys.includes(key)
-  );
+  const invalidKeys = Object.keys(config).filter((key) => !validKeys.includes(key));
 
   if (invalidKeys.length) {
     throw new Error(
@@ -24,7 +21,7 @@ export default function validatePathConfig(config: any, root = true) {
 
   if (config.screens) {
     Object.entries(config.screens).forEach(([_, value]) => {
-      if (typeof value !== "string") {
+      if (typeof value !== 'string') {
         validatePathConfig(value, false);
       }
     });

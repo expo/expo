@@ -1,10 +1,10 @@
-import fs from "fs";
-import path from "path";
+import fs from 'fs';
+import path from 'path';
 
-import { RequireContext } from "../types";
+import { RequireContext } from '../types';
 
 export default function requireContext(
-  base = ".",
+  base = '.',
   scanSubDirectories = true,
   regularExpression = /\.[tj]sx?$/
 ) {
@@ -36,7 +36,7 @@ export default function requireContext(
     {
       keys: () => Object.keys(files),
       resolve: (key: string) => key,
-      id: "0",
+      id: '0',
     }
   );
 

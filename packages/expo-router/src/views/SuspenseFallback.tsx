@@ -1,7 +1,7 @@
-import React from "react";
+import React from 'react';
 
-import { RouteNode } from "../Route";
-import { Toast, ToastWrapper } from "./Toast";
+import { RouteNode } from '../Route';
+import { Toast, ToastWrapper } from './Toast';
 
 export function SuspenseFallback({ route }: { route: RouteNode }) {
   return (

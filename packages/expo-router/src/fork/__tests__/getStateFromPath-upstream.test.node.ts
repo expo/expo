@@ -1,10 +1,10 @@
-import { findFocusedRoute } from "@react-navigation/native";
-import type { InitialState } from "@react-navigation/routers";
-import produce from "immer";
+import { findFocusedRoute } from '@react-navigation/native';
+import type { InitialState } from '@react-navigation/routers';
+import produce from 'immer';
 
-import { configFromFs } from "../../utils/mockState";
-import getPathFromState from "../getPathFromState";
-import getStateFromPath from "../getStateFromPath";
+import { configFromFs } from '../../utils/mockState';
+import getPathFromState from '../getPathFromState';
+import getStateFromPath from '../getStateFromPath';
 
 const changePath = <T extends InitialState>(state: T, path: string): T =>
   produce(state, (draftState) => {
@@ -13,25 +13,24 @@ const changePath = <T extends InitialState>(state: T, path: string): T =>
     route.path = path;
   });
 
-it("returns undefined for invalid path", () => {
-  expect(getStateFromPath<object>("//", { screens: {} })).toBe(undefined);
+it('returns undefined for invalid path', () => {
+  expect(getStateFromPath<object>('//', { screens: {} })).toBe(undefined);
 });
 
-it("converts path string to initial state with config", () => {
-  const path = "/foo/bar/sweet/apple/baz/jane?count=10&answer=42&valid=true";
+it('converts path string to initial state with config', () => {
+  const path = '/foo/bar/sweet/apple/baz/jane?count=10&answer=42&valid=true';
   const config = {
     screens: {
       Foo: {
-        path: "foo",
+        path: 'foo',
         screens: {
           Bar: {
-            path: "bar/:type/:fruit",
+            path: 'bar/:type/:fruit',
             screens: {
               Baz: {
-                path: "baz/:author",
+                path: 'baz/:author',
                 parse: {
-                  author: (author: string) =>
-                    author.replace(/^\w/, (c) => c.toUpperCase()),
+                  author: (author: string) => author.replace(/^\w/, (c) => c.toUpperCase()),
                   count: Number,
                   valid: Boolean,
                 },
@@ -49,27 +48,27 @@ it("converts path string to initial state with config", () => {
   const state = {
     routes: [
       {
-        name: "Foo",
+        name: 'Foo',
         params: {
-          author: "Jane",
-          fruit: "apple",
-          type: "sweet",
+          author: 'Jane',
+          fruit: 'apple',
+          type: 'sweet',
         },
         state: {
           routes: [
             {
-              name: "Bar",
-              params: { author: "Jane", fruit: "apple", type: "sweet" },
+              name: 'Bar',
+              params: { author: 'Jane', fruit: 'apple', type: 'sweet' },
               state: {
                 routes: [
                   {
-                    name: "Baz",
+                    name: 'Baz',
                     params: {
-                      author: "Jane",
+                      author: 'Jane',
                       count: 10,
-                      fruit: "apple",
-                      type: "sweet",
-                      answer: "42",
+                      fruit: 'apple',
+                      type: 'sweet',
+                      answer: '42',
                       valid: true,
                     },
                     path,
@@ -86,17 +85,17 @@ it("converts path string to initial state with config", () => {
   testConversions(path, config, state);
 });
 
-it("handles leading slash when converting", () => {
-  const path = "/foo/bar/?count=42";
+it('handles leading slash when converting', () => {
+  const path = '/foo/bar/?count=42';
 
   expect(
     getStateFromPath<object>(path, {
       screens: {
         foo: {
-          path: "foo",
+          path: 'foo',
           screens: {
             bar: {
-              path: "bar",
+              path: 'bar',
             },
           },
         },
@@ -105,12 +104,12 @@ it("handles leading slash when converting", () => {
   ).toEqual({
     routes: [
       {
-        name: "foo",
+        name: 'foo',
         state: {
           routes: [
             {
-              name: "bar",
-              params: { count: "42" },
+              name: 'bar',
+              params: { count: '42' },
               path,
             },
           ],
@@ -120,17 +119,17 @@ it("handles leading slash when converting", () => {
   });
 });
 
-it("handles ending slash when converting", () => {
-  const path = "foo/bar/?count=42";
+it('handles ending slash when converting', () => {
+  const path = 'foo/bar/?count=42';
 
   expect(
     getStateFromPath<object>(path, {
       screens: {
         foo: {
-          path: "foo",
+          path: 'foo',
           screens: {
             bar: {
-              path: "bar",
+              path: 'bar',
             },
           },
         },
@@ -139,12 +138,12 @@ it("handles ending slash when converting", () => {
   ).toEqual({
     routes: [
       {
-        name: "foo",
+        name: 'foo',
         state: {
           routes: [
             {
-              name: "bar",
-              params: { count: "42" },
+              name: 'bar',
+              params: { count: '42' },
               path,
             },
           ],
@@ -154,25 +153,24 @@ it("handles ending slash when converting", () => {
   });
 });
 
-it("converts path string to initial state with config with nested screens", () => {
-  const path = "/foe/bar/sweet/apple/baz/jane?count=10&answer=42&valid=true";
+it('converts path string to initial state with config with nested screens', () => {
+  const path = '/foe/bar/sweet/apple/baz/jane?count=10&answer=42&valid=true';
   const config = {
     screens: {
       Foo: {
-        path: "foo",
+        path: 'foo',
         screens: {
           Foe: {
-            path: "foe",
+            path: 'foe',
             exact: true,
             screens: {
               Bar: {
-                path: "bar/:type/:fruit",
+                path: 'bar/:type/:fruit',
                 screens: {
                   Baz: {
-                    path: "baz/:author",
+                    path: 'baz/:author',
                     parse: {
-                      author: (author: string) =>
-                        author.replace(/^\w/, (c) => c.toUpperCase()),
+                      author: (author: string) => author.replace(/^\w/, (c) => c.toUpperCase()),
                       count: Number,
                       valid: Boolean,
                     },
@@ -192,40 +190,40 @@ it("converts path string to initial state with config with nested screens", () =
   const state = {
     routes: [
       {
-        name: "Foo",
+        name: 'Foo',
         params: {
-          fruit: "apple",
-          type: "sweet",
-          author: "Jane",
+          fruit: 'apple',
+          type: 'sweet',
+          author: 'Jane',
         },
         state: {
           routes: [
             {
-              name: "Foe",
+              name: 'Foe',
               params: {
-                fruit: "apple",
-                type: "sweet",
-                author: "Jane",
+                fruit: 'apple',
+                type: 'sweet',
+                author: 'Jane',
               },
               state: {
                 routes: [
                   {
-                    name: "Bar",
+                    name: 'Bar',
                     params: {
-                      fruit: "apple",
-                      type: "sweet",
-                      author: "Jane",
+                      fruit: 'apple',
+                      type: 'sweet',
+                      author: 'Jane',
                     },
                     state: {
                       routes: [
                         {
-                          name: "Baz",
+                          name: 'Baz',
                           params: {
-                            fruit: "apple",
-                            type: "sweet",
-                            author: "Jane",
+                            fruit: 'apple',
+                            type: 'sweet',
+                            author: 'Jane',
                             count: 10,
-                            answer: "42",
+                            answer: '42',
                             valid: true,
                           },
                           path,
@@ -245,22 +243,21 @@ it("converts path string to initial state with config with nested screens", () =
   testConversions(path, config, state);
 });
 
-it("converts path string to initial state with config with nested screens and unused parse functions", () => {
-  const path = "/foe/baz/jane?count=10&answer=42&valid=true";
+it('converts path string to initial state with config with nested screens and unused parse functions', () => {
+  const path = '/foe/baz/jane?count=10&answer=42&valid=true';
   const config = {
     screens: {
       Foo: {
-        path: "foo",
+        path: 'foo',
         screens: {
           Foe: {
-            path: "foe",
+            path: 'foe',
             exact: true,
             screens: {
               Baz: {
-                path: "baz/:author",
+                path: 'baz/:author',
                 parse: {
-                  author: (author: string) =>
-                    author.replace(/^\w/, (c) => c.toUpperCase()),
+                  author: (author: string) => author.replace(/^\w/, (c) => c.toUpperCase()),
                   count: Number,
                   valid: Boolean,
                   id: Boolean,
@@ -276,25 +273,25 @@ it("converts path string to initial state with config with nested screens and un
   const state = {
     routes: [
       {
-        name: "Foo",
+        name: 'Foo',
         params: {
-          author: "Jane",
+          author: 'Jane',
         },
         state: {
           routes: [
             {
-              name: "Foe",
+              name: 'Foe',
               params: {
-                author: "Jane",
+                author: 'Jane',
               },
               state: {
                 routes: [
                   {
-                    name: "Baz",
+                    name: 'Baz',
                     params: {
-                      author: "Jane",
+                      author: 'Jane',
                       count: 10,
-                      answer: "42",
+                      answer: '42',
                       valid: true,
                     },
                     path,
@@ -309,38 +306,36 @@ it("converts path string to initial state with config with nested screens and un
   };
 
   expect(getStateFromPath<object>(path, config)).toEqual(state);
-  expect(
-    getStateFromPath<object>(getPathFromState<object>(state, config), config)
-  ).toEqual(changePath(state, "/foe/baz/Jane?count=10&answer=42&valid=true"));
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(
+    changePath(state, '/foe/baz/Jane?count=10&answer=42&valid=true')
+  );
 });
 
-it("handles nested object with unused configs and with parse in it", () => {
-  const path = "/bar/sweet/apple/foe/bis/jane?count=10&answer=42&valid=true";
+it('handles nested object with unused configs and with parse in it', () => {
+  const path = '/bar/sweet/apple/foe/bis/jane?count=10&answer=42&valid=true';
   const config = {
     screens: {
       Bar: {
-        path: "bar/:type/:fruit",
+        path: 'bar/:type/:fruit',
         screens: {
           Foo: {
             screens: {
               Foe: {
-                path: "foe",
+                path: 'foe',
                 screens: {
                   Baz: {
                     screens: {
                       Bos: {
-                        path: "bos",
+                        path: 'bos',
                         exact: true,
                       },
                       Bis: {
-                        path: "bis/:author",
+                        path: 'bis/:author',
                         stringify: {
-                          author: (author: string) =>
-                            author.replace(/^\w/, (c) => c.toLowerCase()),
+                          author: (author: string) => author.replace(/^\w/, (c) => c.toLowerCase()),
                         },
                         parse: {
-                          author: (author: string) =>
-                            author.replace(/^\w/, (c) => c.toUpperCase()),
+                          author: (author: string) => author.replace(/^\w/, (c) => c.toUpperCase()),
                           count: Number,
                           valid: Boolean,
                         },
@@ -359,46 +354,46 @@ it("handles nested object with unused configs and with parse in it", () => {
   const state = {
     routes: [
       {
-        name: "Bar",
-        params: { fruit: "apple", type: "sweet", author: "Jane" },
+        name: 'Bar',
+        params: { fruit: 'apple', type: 'sweet', author: 'Jane' },
         state: {
           routes: [
             {
-              name: "Foo",
+              name: 'Foo',
               params: {
-                author: "Jane",
-                fruit: "apple",
-                type: "sweet",
+                author: 'Jane',
+                fruit: 'apple',
+                type: 'sweet',
               },
               state: {
                 routes: [
                   {
-                    name: "Foe",
+                    name: 'Foe',
                     params: {
-                      author: "Jane",
-                      fruit: "apple",
-                      type: "sweet",
+                      author: 'Jane',
+                      fruit: 'apple',
+                      type: 'sweet',
                     },
                     state: {
                       routes: [
                         {
-                          name: "Baz",
+                          name: 'Baz',
                           params: {
-                            author: "Jane",
-                            fruit: "apple",
-                            type: "sweet",
+                            author: 'Jane',
+                            fruit: 'apple',
+                            type: 'sweet',
                           },
                           state: {
                             routes: [
                               {
-                                name: "Bis",
+                                name: 'Bis',
                                 params: {
-                                  author: "Jane",
+                                  author: 'Jane',
                                   count: 10,
-                                  answer: "42",
+                                  answer: '42',
                                   valid: true,
-                                  fruit: "apple",
-                                  type: "sweet",
+                                  fruit: 'apple',
+                                  type: 'sweet',
                                 },
                                 path,
                               },
@@ -420,23 +415,23 @@ it("handles nested object with unused configs and with parse in it", () => {
   testConversions(path, config, state);
 });
 
-it("handles parse in nested object for second route depth", () => {
-  const path = "/baz";
+it('handles parse in nested object for second route depth', () => {
+  const path = '/baz';
   const config = {
     screens: {
       Foo: {
-        path: "foo",
+        path: 'foo',
         screens: {
           Foe: {
-            path: "foe",
+            path: 'foe',
             exact: true,
           },
           Bar: {
-            path: "bar",
+            path: 'bar',
             exact: true,
             screens: {
               Baz: {
-                path: "baz",
+                path: 'baz',
                 exact: true,
               },
             },
@@ -449,13 +444,13 @@ it("handles parse in nested object for second route depth", () => {
   const state = {
     routes: [
       {
-        name: "Foo",
+        name: 'Foo',
         state: {
           routes: [
             {
-              name: "Bar",
+              name: 'Bar',
               state: {
-                routes: [{ name: "Baz", path }],
+                routes: [{ name: 'Baz', path }],
               },
             },
           ],
@@ -467,12 +462,12 @@ it("handles parse in nested object for second route depth", () => {
   testConversions(path, config, state);
 });
 
-it("handles parse in nested object for second route depth and and path and parse in roots", () => {
-  const path = "/baz";
+it('handles parse in nested object for second route depth and and path and parse in roots', () => {
+  const path = '/baz';
   const config = {
     screens: {
       Foo: {
-        path: "foo/:id",
+        path: 'foo/:id',
         parse: {
           id: Number,
         },
@@ -480,11 +475,11 @@ it("handles parse in nested object for second route depth and and path and parse
           id: (id: number) => `id=${id}`,
         },
         screens: {
-          Foe: "foe",
+          Foe: 'foe',
           Bar: {
             screens: {
               Baz: {
-                path: "baz",
+                path: 'baz',
                 exact: true,
               },
             },
@@ -497,13 +492,13 @@ it("handles parse in nested object for second route depth and and path and parse
   const state = {
     routes: [
       {
-        name: "Foo",
+        name: 'Foo',
         state: {
           routes: [
             {
-              name: "Bar",
+              name: 'Bar',
               state: {
-                routes: [{ name: "Baz", path }],
+                routes: [{ name: 'Baz', path }],
               },
             },
           ],
@@ -515,17 +510,17 @@ it("handles parse in nested object for second route depth and and path and parse
   testConversions(path, config, state);
 });
 
-it("handles initialRouteName inside a screen", () => {
-  const path = "/baz";
+it('handles initialRouteName inside a screen', () => {
+  const path = '/baz';
   const config = {
     screens: {
       Foo: {
-        initialRouteName: "Foe",
+        initialRouteName: 'Foe',
         screens: {
-          Foe: "foe",
+          Foe: 'foe',
           Bar: {
             screens: {
-              Baz: "baz",
+              Baz: 'baz',
             },
           },
         },
@@ -536,17 +531,17 @@ it("handles initialRouteName inside a screen", () => {
   const state = {
     routes: [
       {
-        name: "Foo",
+        name: 'Foo',
         state: {
           index: 1,
           routes: [
             {
-              name: "Foe",
+              name: 'Foe',
             },
             {
-              name: "Bar",
+              name: 'Bar',
               state: {
-                routes: [{ name: "Baz", path }],
+                routes: [{ name: 'Baz', path }],
               },
             },
           ],
@@ -558,19 +553,19 @@ it("handles initialRouteName inside a screen", () => {
   testConversions(path, config, state);
 });
 
-it("handles initialRouteName included in path", () => {
-  const path = "/baz";
+it('handles initialRouteName included in path', () => {
+  const path = '/baz';
   const config = {
     screens: {
       Foo: {
-        initialRouteName: "Foe",
+        initialRouteName: 'Foe',
         screens: {
           Foe: {
             screens: {
-              Baz: "baz",
+              Baz: 'baz',
             },
           },
-          Bar: "bar",
+          Bar: 'bar',
         },
       },
     },
@@ -579,13 +574,13 @@ it("handles initialRouteName included in path", () => {
   const state = {
     routes: [
       {
-        name: "Foo",
+        name: 'Foo',
         state: {
           routes: [
             {
-              name: "Foe",
+              name: 'Foe',
               state: {
-                routes: [{ name: "Baz", path }],
+                routes: [{ name: 'Baz', path }],
               },
             },
           ],
@@ -597,34 +592,32 @@ it("handles initialRouteName included in path", () => {
   testConversions(path, config, state);
 });
 
-it("handles two initialRouteNames", () => {
-  const path = "/bar/sweet/apple/foe/bis/jane?answer=42&count=10&valid=true";
+it('handles two initialRouteNames', () => {
+  const path = '/bar/sweet/apple/foe/bis/jane?answer=42&count=10&valid=true';
   const config = {
     screens: {
       Bar: {
-        path: "bar/:type/:fruit",
+        path: 'bar/:type/:fruit',
         screens: {
           Foo: {
             screens: {
               Foe: {
-                path: "foe",
+                path: 'foe',
                 screens: {
                   Baz: {
-                    initialRouteName: "Bos",
+                    initialRouteName: 'Bos',
                     screens: {
                       Bos: {
-                        path: "bos",
+                        path: 'bos',
                         exact: true,
                       },
                       Bis: {
-                        path: "bis/:author",
+                        path: 'bis/:author',
                         stringify: {
-                          author: (author: string) =>
-                            author.replace(/^\w/, (c) => c.toLowerCase()),
+                          author: (author: string) => author.replace(/^\w/, (c) => c.toLowerCase()),
                         },
                         parse: {
-                          author: (author: string) =>
-                            author.replace(/^\w/, (c) => c.toUpperCase()),
+                          author: (author: string) => author.replace(/^\w/, (c) => c.toUpperCase()),
                           count: Number,
                           valid: Boolean,
                         },
@@ -643,40 +636,40 @@ it("handles two initialRouteNames", () => {
   const state = {
     routes: [
       {
-        name: "Bar",
-        params: { author: "Jane", fruit: "apple", type: "sweet" },
+        name: 'Bar',
+        params: { author: 'Jane', fruit: 'apple', type: 'sweet' },
         state: {
           routes: [
             {
-              name: "Foo",
-              params: { author: "Jane", fruit: "apple", type: "sweet" },
+              name: 'Foo',
+              params: { author: 'Jane', fruit: 'apple', type: 'sweet' },
               state: {
                 routes: [
                   {
-                    name: "Foe",
-                    params: { author: "Jane", fruit: "apple", type: "sweet" },
+                    name: 'Foe',
+                    params: { author: 'Jane', fruit: 'apple', type: 'sweet' },
                     state: {
                       routes: [
                         {
-                          name: "Baz",
+                          name: 'Baz',
                           params: {
-                            author: "Jane",
-                            fruit: "apple",
-                            type: "sweet",
+                            author: 'Jane',
+                            fruit: 'apple',
+                            type: 'sweet',
                           },
                           state: {
                             index: 1,
                             routes: [
-                              { name: "Bos" },
+                              { name: 'Bos' },
                               {
-                                name: "Bis",
+                                name: 'Bis',
                                 params: {
-                                  answer: "42",
-                                  author: "Jane",
+                                  answer: '42',
+                                  author: 'Jane',
                                   count: 10,
                                   valid: true,
-                                  fruit: "apple",
-                                  type: "sweet",
+                                  fruit: 'apple',
+                                  type: 'sweet',
                                 },
                                 path,
                               },
@@ -698,34 +691,32 @@ it("handles two initialRouteNames", () => {
   testConversions(path, config, state);
 });
 
-it("accepts initialRouteName without config for it", () => {
-  const path = "/bar/sweet/apple/foe/bis/jane?answer=42&count=10&valid=true";
+it('accepts initialRouteName without config for it', () => {
+  const path = '/bar/sweet/apple/foe/bis/jane?answer=42&count=10&valid=true';
   const config = {
     screens: {
       Bar: {
-        path: "bar/:type/:fruit",
+        path: 'bar/:type/:fruit',
         screens: {
           Foo: {
             screens: {
               Foe: {
-                path: "foe",
+                path: 'foe',
                 screens: {
                   Baz: {
-                    initialRouteName: "Bas",
+                    initialRouteName: 'Bas',
                     screens: {
                       Bos: {
-                        path: "bos",
+                        path: 'bos',
                         exact: true,
                       },
                       Bis: {
-                        path: "bis/:author",
+                        path: 'bis/:author',
                         stringify: {
-                          author: (author: string) =>
-                            author.replace(/^\w/, (c) => c.toLowerCase()),
+                          author: (author: string) => author.replace(/^\w/, (c) => c.toLowerCase()),
                         },
                         parse: {
-                          author: (author: string) =>
-                            author.replace(/^\w/, (c) => c.toUpperCase()),
+                          author: (author: string) => author.replace(/^\w/, (c) => c.toUpperCase()),
                           count: Number,
                           valid: Boolean,
                         },
@@ -744,44 +735,44 @@ it("accepts initialRouteName without config for it", () => {
   const state = {
     routes: [
       {
-        name: "Bar",
-        params: { author: "Jane", fruit: "apple", type: "sweet" },
+        name: 'Bar',
+        params: { author: 'Jane', fruit: 'apple', type: 'sweet' },
         state: {
           routes: [
             {
-              name: "Foo",
-              params: { author: "Jane", fruit: "apple", type: "sweet" },
+              name: 'Foo',
+              params: { author: 'Jane', fruit: 'apple', type: 'sweet' },
               state: {
                 routes: [
                   {
-                    name: "Foe",
-                    params: { author: "Jane", fruit: "apple", type: "sweet" },
+                    name: 'Foe',
+                    params: { author: 'Jane', fruit: 'apple', type: 'sweet' },
                     state: {
                       routes: [
                         {
-                          name: "Baz",
+                          name: 'Baz',
                           params: {
-                            author: "Jane",
-                            fruit: "apple",
-                            type: "sweet",
+                            author: 'Jane',
+                            fruit: 'apple',
+                            type: 'sweet',
                           },
                           state: {
                             index: 1,
                             routes: [
                               {
-                                name: "Bas",
+                                name: 'Bas',
                               },
                               {
-                                name: "Bis",
+                                name: 'Bis',
                                 params: {
-                                  answer: "42",
-                                  author: "Jane",
+                                  answer: '42',
+                                  author: 'Jane',
                                   count: 10,
-                                  fruit: "apple",
-                                  type: "sweet",
+                                  fruit: 'apple',
+                                  type: 'sweet',
                                   valid: true,
                                 },
-                                path: "/bar/sweet/apple/foe/bis/jane?answer=42&count=10&valid=true",
+                                path: '/bar/sweet/apple/foe/bis/jane?answer=42&count=10&valid=true',
                               },
                             ],
                           },
@@ -801,15 +792,15 @@ it("accepts initialRouteName without config for it", () => {
   testConversions(path, config, state);
 });
 
-it("returns undefined if path is empty and no matching screen is present", () => {
+it('returns undefined if path is empty and no matching screen is present', () => {
   const config = {
     screens: {
       Foo: {
         screens: {
-          Foe: "foe",
+          Foe: 'foe',
           Bar: {
             screens: {
-              Baz: "baz",
+              Baz: 'baz',
             },
           },
         },
@@ -817,22 +808,22 @@ it("returns undefined if path is empty and no matching screen is present", () =>
     },
   };
 
-  const path = "";
+  const path = '';
 
   expect(getStateFromPath<object>(path, config)).toEqual(undefined);
 });
 
-it("returns matching screen if path is empty", () => {
-  const path = "";
+it('returns matching screen if path is empty', () => {
+  const path = '';
   const config = {
     screens: {
       Foo: {
         screens: {
-          Foe: "foe",
+          Foe: 'foe',
           Bar: {
             screens: {
-              Qux: "",
-              Baz: "baz",
+              Qux: '',
+              Baz: 'baz',
             },
           },
         },
@@ -843,13 +834,13 @@ it("returns matching screen if path is empty", () => {
   const state = {
     routes: [
       {
-        name: "Foo",
+        name: 'Foo',
         state: {
           routes: [
             {
-              name: "Bar",
+              name: 'Bar',
               state: {
-                routes: [{ name: "Qux", path }],
+                routes: [{ name: 'Qux', path }],
               },
             },
           ],
@@ -859,22 +850,22 @@ it("returns matching screen if path is empty", () => {
   };
 
   expect(getStateFromPath<object>(path, config)).toEqual(state);
-  expect(
-    getStateFromPath<object>(getPathFromState<object>(state, config), config)
-  ).toEqual(changePath(state, "/"));
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(
+    changePath(state, '/')
+  );
 });
 
-it("returns matching screen if path is only slash", () => {
-  const path = "/";
+it('returns matching screen if path is only slash', () => {
+  const path = '/';
   const config = {
     screens: {
       Foo: {
         screens: {
-          Foe: "foe",
+          Foe: 'foe',
           Bar: {
             screens: {
-              Qux: "",
-              Baz: "baz",
+              Qux: '',
+              Baz: 'baz',
             },
           },
         },
@@ -885,13 +876,13 @@ it("returns matching screen if path is only slash", () => {
   const state = {
     routes: [
       {
-        name: "Foo",
+        name: 'Foo',
         state: {
           routes: [
             {
-              name: "Bar",
+              name: 'Bar',
               state: {
-                routes: [{ name: "Qux", path }],
+                routes: [{ name: 'Qux', path }],
               },
             },
           ],
@@ -901,51 +892,51 @@ it("returns matching screen if path is only slash", () => {
   };
 
   expect(getStateFromPath<object>(path, config)).toEqual(state);
-  expect(
-    getStateFromPath<object>(getPathFromState<object>(state, config), config)
-  ).toEqual(changePath(state, "/"));
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(
+    changePath(state, '/')
+  );
 });
 
 // Test `app/(app)/index.js` matching `/`
-it("returns matching screen if path is only slash and root is a group", () => {
+it('returns matching screen if path is only slash and root is a group', () => {
   expect(
-    getStateFromPath<object>("/", {
+    getStateFromPath<object>('/', {
       screens: {
-        "(app)/index": "(app)",
-        "[id]": ":id",
-        "[...404]": "*404",
+        '(app)/index': '(app)',
+        '[id]': ':id',
+        '[...404]': '*404',
       },
     })
-  ).toEqual({ routes: [{ name: "(app)/index", path: "/" }] });
+  ).toEqual({ routes: [{ name: '(app)/index', path: '/' }] });
 });
 
 // Test `app/(one)/(two)/index.js` matching `/`
-it("returns matching screen if path is only slash and root is a nested group", () => {
+it('returns matching screen if path is only slash and root is a nested group', () => {
   expect(
-    getStateFromPath<object>("/", {
+    getStateFromPath<object>('/', {
       screens: {
-        "(one)/(two)/index": "(one)/(two)",
-        "[id]": ":id",
-        "[...404]": "*404",
+        '(one)/(two)/index': '(one)/(two)',
+        '[id]': ':id',
+        '[...404]': '*404',
       },
     })
-  ).toEqual({ routes: [{ name: "(one)/(two)/index", path: "/" }] });
+  ).toEqual({ routes: [{ name: '(one)/(two)/index', path: '/' }] });
 });
 
-it("returns matching screen with params if path is empty", () => {
-  const path = "?foo=42";
+it('returns matching screen with params if path is empty', () => {
+  const path = '?foo=42';
   const config = {
     screens: {
       Foo: {
         screens: {
-          Foe: "foe",
+          Foe: 'foe',
           Bar: {
             screens: {
               Qux: {
-                path: "",
+                path: '',
                 parse: { foo: Number },
               },
-              Baz: "baz",
+              Baz: 'baz',
             },
           },
         },
@@ -956,13 +947,13 @@ it("returns matching screen with params if path is empty", () => {
   const state = {
     routes: [
       {
-        name: "Foo",
+        name: 'Foo',
         state: {
           routes: [
             {
-              name: "Bar",
+              name: 'Bar',
               state: {
-                routes: [{ name: "Qux", params: { foo: 42 }, path }],
+                routes: [{ name: 'Qux', params: { foo: 42 }, path }],
               },
             },
           ],
@@ -972,9 +963,9 @@ it("returns matching screen with params if path is empty", () => {
   };
 
   expect(getStateFromPath<object>(path, config)).toEqual(state);
-  expect(
-    getStateFromPath<object>(getPathFromState<object>(state, config), config)
-  ).toEqual(changePath(state, "/?foo=42"));
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(
+    changePath(state, '/?foo=42')
+  );
 });
 
 it("doesn't match nested screen if path is empty", () => {
@@ -982,12 +973,12 @@ it("doesn't match nested screen if path is empty", () => {
     screens: {
       Foo: {
         screens: {
-          Foe: "foe",
+          Foe: 'foe',
           Bar: {
-            path: "bar",
+            path: 'bar',
             screens: {
               Qux: {
-                path: "",
+                path: '',
                 parse: { foo: Number },
               },
             },
@@ -997,23 +988,23 @@ it("doesn't match nested screen if path is empty", () => {
     },
   };
 
-  const path = "";
+  const path = '';
 
   expect(getStateFromPath<object>(path, config)).toEqual(undefined);
 });
 
-it("chooses more exhaustive pattern", () => {
-  const path = "/foo/5";
+it('chooses more exhaustive pattern', () => {
+  const path = '/foo/5';
 
   const config = {
     screens: {
       Foe: {
-        path: "/",
-        initialRouteName: "Foo",
+        path: '/',
+        initialRouteName: 'Foo',
         screens: {
-          Foo: "foo",
+          Foo: 'foo',
           Bis: {
-            path: "foo/:id",
+            path: 'foo/:id',
             parse: {
               id: Number,
             },
@@ -1026,7 +1017,7 @@ it("chooses more exhaustive pattern", () => {
   const state = {
     routes: [
       {
-        name: "Foe",
+        name: 'Foe',
         params: {
           id: 5,
         },
@@ -1034,10 +1025,10 @@ it("chooses more exhaustive pattern", () => {
           index: 1,
           routes: [
             {
-              name: "Foo",
+              name: 'Foo',
             },
             {
-              name: "Bis",
+              name: 'Bis',
               params: { id: 5 },
               path,
             },
@@ -1050,18 +1041,18 @@ it("chooses more exhaustive pattern", () => {
   testConversions(path, config, state);
 });
 
-it("handles same paths beginnings", () => {
-  const path = "/foos";
+it('handles same paths beginnings', () => {
+  const path = '/foos';
 
   const config = {
     screens: {
       Foe: {
-        path: "/",
-        initialRouteName: "Foo",
+        path: '/',
+        initialRouteName: 'Foo',
         screens: {
-          Foo: "foo",
+          Foo: 'foo',
           Bis: {
-            path: "foos",
+            path: 'foos',
           },
         },
       },
@@ -1071,15 +1062,15 @@ it("handles same paths beginnings", () => {
   const state = {
     routes: [
       {
-        name: "Foe",
+        name: 'Foe',
         state: {
           index: 1,
           routes: [
             {
-              name: "Foo",
+              name: 'Foo',
             },
             {
-              name: "Bis",
+              name: 'Bis',
               path,
             },
           ],
@@ -1091,18 +1082,18 @@ it("handles same paths beginnings", () => {
   testConversions(path, config, state);
 });
 
-it("handles same paths beginnings with params", () => {
-  const path = "/foos/5";
+it('handles same paths beginnings with params', () => {
+  const path = '/foos/5';
 
   const config = {
     screens: {
       Foe: {
-        path: "/",
-        initialRouteName: "Foo",
+        path: '/',
+        initialRouteName: 'Foo',
         screens: {
-          Foo: "foo",
+          Foo: 'foo',
           Bis: {
-            path: "foos/:id",
+            path: 'foos/:id',
             parse: {
               id: Number,
             },
@@ -1115,7 +1106,7 @@ it("handles same paths beginnings with params", () => {
   const state = {
     routes: [
       {
-        name: "Foe",
+        name: 'Foe',
         params: {
           id: 5,
         },
@@ -1124,10 +1115,10 @@ it("handles same paths beginnings with params", () => {
           index: 1,
           routes: [
             {
-              name: "Foo",
+              name: 'Foo',
             },
             {
-              name: "Bis",
+              name: 'Bis',
               params: { id: 5 },
               path,
             },
@@ -1140,24 +1131,24 @@ it("handles same paths beginnings with params", () => {
   testConversions(path, config, state);
 });
 
-it("handles not taking path with too many segments", () => {
-  const path = "/foos/5";
+it('handles not taking path with too many segments', () => {
+  const path = '/foos/5';
 
   const config = {
     screens: {
       Foe: {
-        path: "/",
-        initialRouteName: "Foo",
+        path: '/',
+        initialRouteName: 'Foo',
         screens: {
-          Foo: "foo",
+          Foo: 'foo',
           Bis: {
-            path: "foos/:id",
+            path: 'foos/:id',
             parse: {
               id: Number,
             },
           },
           Bas: {
-            path: "foos/:id/:nip",
+            path: 'foos/:id/:nip',
             parse: {
               id: Number,
               pwd: Number,
@@ -1171,7 +1162,7 @@ it("handles not taking path with too many segments", () => {
   const state = {
     routes: [
       {
-        name: "Foe",
+        name: 'Foe',
         params: {
           id: 5,
         },
@@ -1180,10 +1171,10 @@ it("handles not taking path with too many segments", () => {
           index: 1,
           routes: [
             {
-              name: "Foo",
+              name: 'Foo',
             },
             {
-              name: "Bis",
+              name: 'Bis',
               params: { id: 5 },
               path,
             },
@@ -1196,24 +1187,24 @@ it("handles not taking path with too many segments", () => {
   testConversions(path, config, state);
 });
 
-it("handles differently ordered params v1", () => {
-  const path = "/foos/5/res/20";
+it('handles differently ordered params v1', () => {
+  const path = '/foos/5/res/20';
 
   const config = {
     screens: {
       Foe: {
-        path: "/",
-        initialRouteName: "Foo",
+        path: '/',
+        initialRouteName: 'Foo',
         screens: {
-          Foo: "foo",
+          Foo: 'foo',
           Bis: {
-            path: "foos/:id",
+            path: 'foos/:id',
             parse: {
               id: Number,
             },
           },
           Bas: {
-            path: "foos/:id/res/:pwd",
+            path: 'foos/:id/res/:pwd',
             parse: {
               id: Number,
               pwd: Number,
@@ -1227,7 +1218,7 @@ it("handles differently ordered params v1", () => {
   const state = {
     routes: [
       {
-        name: "Foe",
+        name: 'Foe',
         params: {
           id: 5,
           pwd: 20,
@@ -1236,10 +1227,10 @@ it("handles differently ordered params v1", () => {
           index: 1,
           routes: [
             {
-              name: "Foo",
+              name: 'Foo',
             },
             {
-              name: "Bas",
+              name: 'Bas',
               params: { id: 5, pwd: 20 },
               path,
             },
@@ -1252,24 +1243,24 @@ it("handles differently ordered params v1", () => {
   testConversions(path, config, state);
 });
 
-it("handles differently ordered params v2", () => {
-  const path = "/5/20/foos/res";
+it('handles differently ordered params v2', () => {
+  const path = '/5/20/foos/res';
 
   const config = {
     screens: {
       Foe: {
-        path: "/",
-        initialRouteName: "Foo",
+        path: '/',
+        initialRouteName: 'Foo',
         screens: {
-          Foo: "foo",
+          Foo: 'foo',
           Bis: {
-            path: "foos/:id",
+            path: 'foos/:id',
             parse: {
               id: Number,
             },
           },
           Bas: {
-            path: ":id/:pwd/foos/res",
+            path: ':id/:pwd/foos/res',
             parse: {
               id: Number,
               pwd: Number,
@@ -1283,7 +1274,7 @@ it("handles differently ordered params v2", () => {
   const state = {
     routes: [
       {
-        name: "Foe",
+        name: 'Foe',
         params: {
           id: 5,
           pwd: 20,
@@ -1293,10 +1284,10 @@ it("handles differently ordered params v2", () => {
           index: 1,
           routes: [
             {
-              name: "Foo",
+              name: 'Foo',
             },
             {
-              name: "Bas",
+              name: 'Bas',
               params: { id: 5, pwd: 20 },
               path,
             },
@@ -1309,24 +1300,24 @@ it("handles differently ordered params v2", () => {
   testConversions(path, config, state);
 });
 
-it("handles differently ordered params v3", () => {
-  const path = "/foos/5/20/res";
+it('handles differently ordered params v3', () => {
+  const path = '/foos/5/20/res';
 
   const config = {
     screens: {
       Foe: {
-        path: "/",
-        initialRouteName: "Foo",
+        path: '/',
+        initialRouteName: 'Foo',
         screens: {
-          Foo: "foo",
+          Foo: 'foo',
           Bis: {
-            path: "foos/:id",
+            path: 'foos/:id',
             parse: {
               id: Number,
             },
           },
           Bas: {
-            path: "foos/:id/:pwd/res",
+            path: 'foos/:id/:pwd/res',
             parse: {
               id: Number,
               pwd: Number,
@@ -1340,7 +1331,7 @@ it("handles differently ordered params v3", () => {
   const state = {
     routes: [
       {
-        name: "Foe",
+        name: 'Foe',
         params: {
           id: 5,
           pwd: 20,
@@ -1349,10 +1340,10 @@ it("handles differently ordered params v3", () => {
           index: 1,
           routes: [
             {
-              name: "Foo",
+              name: 'Foo',
             },
             {
-              name: "Bas",
+              name: 'Bas',
               params: { id: 5, pwd: 20 },
               path,
             },
@@ -1365,24 +1356,24 @@ it("handles differently ordered params v3", () => {
   testConversions(path, config, state);
 });
 
-it("handles differently ordered params v4", () => {
-  const path = "5/foos/res/20";
+it('handles differently ordered params v4', () => {
+  const path = '5/foos/res/20';
 
   const config = {
     screens: {
       Foe: {
-        path: "/",
-        initialRouteName: "Foo",
+        path: '/',
+        initialRouteName: 'Foo',
         screens: {
-          Foo: "foo",
+          Foo: 'foo',
           Bis: {
-            path: "foos/:id",
+            path: 'foos/:id',
             parse: {
               id: Number,
             },
           },
           Bas: {
-            path: ":id/foos/res/:pwd",
+            path: ':id/foos/res/:pwd',
             parse: {
               id: Number,
               pwd: Number,
@@ -1396,7 +1387,7 @@ it("handles differently ordered params v4", () => {
   const state = {
     routes: [
       {
-        name: "Foe",
+        name: 'Foe',
         params: {
           id: 5,
           pwd: 20,
@@ -1405,10 +1396,10 @@ it("handles differently ordered params v4", () => {
           index: 1,
           routes: [
             {
-              name: "Foo",
+              name: 'Foo',
             },
             {
-              name: "Bas",
+              name: 'Bas',
               params: { id: 5, pwd: 20 },
               path,
             },
@@ -1419,29 +1410,29 @@ it("handles differently ordered params v4", () => {
   };
 
   expect(getStateFromPath<object>(path, config)).toEqual(state);
-  expect(
-    getStateFromPath<object>(getPathFromState<object>(state, config), config)
-  ).toEqual(changePath(state, "/5/foos/res/20"));
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(
+    changePath(state, '/5/foos/res/20')
+  );
 });
 
-it("handles simple optional params", () => {
-  const path = "/foos/5";
+it('handles simple optional params', () => {
+  const path = '/foos/5';
 
   const config = {
     screens: {
       Foe: {
-        path: "/",
-        initialRouteName: "Foo",
+        path: '/',
+        initialRouteName: 'Foo',
         screens: {
-          Foo: "foo",
+          Foo: 'foo',
           Bis: {
-            path: "foo/:id",
+            path: 'foo/:id',
             parse: {
               id: Number,
             },
           },
           Bas: {
-            path: "foos/:id/:nip?",
+            path: 'foos/:id/:nip?',
             parse: {
               id: Number,
               nip: Number,
@@ -1455,7 +1446,7 @@ it("handles simple optional params", () => {
   const state = {
     routes: [
       {
-        name: "Foe",
+        name: 'Foe',
         params: {
           id: 5,
         },
@@ -1463,10 +1454,10 @@ it("handles simple optional params", () => {
           index: 1,
           routes: [
             {
-              name: "Foo",
+              name: 'Foo',
             },
             {
-              name: "Bas",
+              name: 'Bas',
               params: { id: 5 },
               path,
             },
@@ -1479,24 +1470,24 @@ it("handles simple optional params", () => {
   testConversions(path, config, state);
 });
 
-it("handle 2 optional params at the end v1", () => {
-  const path = "/foos/5";
+it('handle 2 optional params at the end v1', () => {
+  const path = '/foos/5';
 
   const config = {
     screens: {
       Foe: {
-        path: "/",
-        initialRouteName: "Foo",
+        path: '/',
+        initialRouteName: 'Foo',
         screens: {
-          Foo: "foo",
+          Foo: 'foo',
           Bis: {
-            path: "foo/:id",
+            path: 'foo/:id',
             parse: {
               id: Number,
             },
           },
           Bas: {
-            path: "foos/:id/:nip?/:pwd?",
+            path: 'foos/:id/:nip?/:pwd?',
             parse: {
               id: Number,
               nip: Number,
@@ -1510,7 +1501,7 @@ it("handle 2 optional params at the end v1", () => {
   const state = {
     routes: [
       {
-        name: "Foe",
+        name: 'Foe',
         params: {
           id: 5,
         },
@@ -1518,10 +1509,10 @@ it("handle 2 optional params at the end v1", () => {
           index: 1,
           routes: [
             {
-              name: "Foo",
+              name: 'Foo',
             },
             {
-              name: "Bas",
+              name: 'Bas',
               params: { id: 5 },
               path,
             },
@@ -1534,24 +1525,24 @@ it("handle 2 optional params at the end v1", () => {
   testConversions(path, config, state);
 });
 
-it("handle 2 optional params at the end v2", () => {
-  const path = "/foos/5/10";
+it('handle 2 optional params at the end v2', () => {
+  const path = '/foos/5/10';
 
   const config = {
     screens: {
       Foe: {
-        path: "/",
-        initialRouteName: "Foo",
+        path: '/',
+        initialRouteName: 'Foo',
         screens: {
-          Foo: "foo",
+          Foo: 'foo',
           Bis: {
-            path: "foo/:id",
+            path: 'foo/:id',
             parse: {
               id: Number,
             },
           },
           Bas: {
-            path: "foos/:id/:nip?/:pwd?",
+            path: 'foos/:id/:nip?/:pwd?',
             parse: {
               id: Number,
               nip: Number,
@@ -1565,7 +1556,7 @@ it("handle 2 optional params at the end v2", () => {
   const state = {
     routes: [
       {
-        name: "Foe",
+        name: 'Foe',
         params: {
           id: 5,
           nip: 10,
@@ -1575,10 +1566,10 @@ it("handle 2 optional params at the end v2", () => {
           index: 1,
           routes: [
             {
-              name: "Foo",
+              name: 'Foo',
             },
             {
-              name: "Bas",
+              name: 'Bas',
               params: { id: 5, nip: 10 },
               path,
             },
@@ -1591,24 +1582,24 @@ it("handle 2 optional params at the end v2", () => {
   testConversions(path, config, state);
 });
 
-it("handle 2 optional params at the end v3", () => {
-  const path = "/foos/5/10/15";
+it('handle 2 optional params at the end v3', () => {
+  const path = '/foos/5/10/15';
 
   const config = {
     screens: {
       Foe: {
-        path: "/",
-        initialRouteName: "Foo",
+        path: '/',
+        initialRouteName: 'Foo',
         screens: {
-          Foo: "foo",
+          Foo: 'foo',
           Bis: {
-            path: "foo/:id",
+            path: 'foo/:id',
             parse: {
               id: Number,
             },
           },
           Bas: {
-            path: "foos/:id/:nip?/:pwd?",
+            path: 'foos/:id/:nip?/:pwd?',
             parse: {
               id: Number,
               nip: Number,
@@ -1623,7 +1614,7 @@ it("handle 2 optional params at the end v3", () => {
   const state = {
     routes: [
       {
-        name: "Foe",
+        name: 'Foe',
         params: {
           nip: 10,
           pwd: 15,
@@ -1633,10 +1624,10 @@ it("handle 2 optional params at the end v3", () => {
           index: 1,
           routes: [
             {
-              name: "Foo",
+              name: 'Foo',
             },
             {
-              name: "Bas",
+              name: 'Bas',
               params: { id: 5, nip: 10, pwd: 15 },
               path,
             },
@@ -1649,24 +1640,24 @@ it("handle 2 optional params at the end v3", () => {
   testConversions(path, config, state);
 });
 
-it("handle optional params in the middle v1", () => {
-  const path = "/foos/5/10";
+it('handle optional params in the middle v1', () => {
+  const path = '/foos/5/10';
 
   const config = {
     screens: {
       Foe: {
-        path: "/",
-        initialRouteName: "Foo",
+        path: '/',
+        initialRouteName: 'Foo',
         screens: {
-          Foo: "foo",
+          Foo: 'foo',
           Bis: {
-            path: "foo/:id",
+            path: 'foo/:id',
             parse: {
               id: Number,
             },
           },
           Bas: {
-            path: "foos/:id/:nip?/:pwd",
+            path: 'foos/:id/:nip?/:pwd',
             parse: {
               id: Number,
               nip: Number,
@@ -1681,7 +1672,7 @@ it("handle optional params in the middle v1", () => {
   const state = {
     routes: [
       {
-        name: "Foe",
+        name: 'Foe',
         params: {
           id: 5,
           pwd: 10,
@@ -1691,10 +1682,10 @@ it("handle optional params in the middle v1", () => {
           index: 1,
           routes: [
             {
-              name: "Foo",
+              name: 'Foo',
             },
             {
-              name: "Bas",
+              name: 'Bas',
               params: { id: 5, pwd: 10 },
               path,
             },
@@ -1707,24 +1698,24 @@ it("handle optional params in the middle v1", () => {
   testConversions(path, config, state);
 });
 
-it("handle optional params in the middle v2", () => {
-  const path = "/foos/5/10/15";
+it('handle optional params in the middle v2', () => {
+  const path = '/foos/5/10/15';
 
   const config = {
     screens: {
       Foe: {
-        path: "/",
-        initialRouteName: "Foo",
+        path: '/',
+        initialRouteName: 'Foo',
         screens: {
-          Foo: "foo",
+          Foo: 'foo',
           Bis: {
-            path: "foo/:id",
+            path: 'foo/:id',
             parse: {
               id: Number,
             },
           },
           Bas: {
-            path: "foos/:id/:nip?/:pwd",
+            path: 'foos/:id/:nip?/:pwd',
             parse: {
               id: Number,
               nip: Number,
@@ -1739,7 +1730,7 @@ it("handle optional params in the middle v2", () => {
   const state = {
     routes: [
       {
-        name: "Foe",
+        name: 'Foe',
         params: {
           id: 5,
           nip: 10,
@@ -1749,10 +1740,10 @@ it("handle optional params in the middle v2", () => {
           index: 1,
           routes: [
             {
-              name: "Foo",
+              name: 'Foo',
             },
             {
-              name: "Bas",
+              name: 'Bas',
               params: { id: 5, nip: 10, pwd: 15 },
               path,
             },
@@ -1765,24 +1756,24 @@ it("handle optional params in the middle v2", () => {
   testConversions(path, config, state);
 });
 
-it("handle optional params in the middle v3", () => {
-  const path = "/foos/5/10/15";
+it('handle optional params in the middle v3', () => {
+  const path = '/foos/5/10/15';
 
   const config = {
     screens: {
       Foe: {
-        path: "/",
-        initialRouteName: "Foo",
+        path: '/',
+        initialRouteName: 'Foo',
         screens: {
-          Foo: "foo",
+          Foo: 'foo',
           Bis: {
-            path: "foo/:id",
+            path: 'foo/:id',
             parse: {
               id: Number,
             },
           },
           Bas: {
-            path: "foos/:id/:nip?/:pwd/:smh",
+            path: 'foos/:id/:nip?/:pwd/:smh',
             parse: {
               id: Number,
               nip: Number,
@@ -1798,7 +1789,7 @@ it("handle optional params in the middle v3", () => {
   const state = {
     routes: [
       {
-        name: "Foe",
+        name: 'Foe',
         params: {
           id: 5,
           pwd: 10,
@@ -1809,10 +1800,10 @@ it("handle optional params in the middle v3", () => {
           index: 1,
           routes: [
             {
-              name: "Foo",
+              name: 'Foo',
             },
             {
-              name: "Bas",
+              name: 'Bas',
               params: { id: 5, pwd: 10, smh: 15 },
               path,
             },
@@ -1825,24 +1816,24 @@ it("handle optional params in the middle v3", () => {
   testConversions(path, config, state);
 });
 
-it("handle optional params in the middle v4", () => {
-  const path = "/foos/5/10";
+it('handle optional params in the middle v4', () => {
+  const path = '/foos/5/10';
 
   const config = {
     screens: {
       Foe: {
-        path: "/",
-        initialRouteName: "Foo",
+        path: '/',
+        initialRouteName: 'Foo',
         screens: {
-          Foo: "foo",
+          Foo: 'foo',
           Bis: {
-            path: "foo/:id",
+            path: 'foo/:id',
             parse: {
               id: Number,
             },
           },
           Bas: {
-            path: "foos/:nip?/:pwd/:smh?/:id",
+            path: 'foos/:nip?/:pwd/:smh?/:id',
             parse: {
               id: Number,
               nip: Number,
@@ -1858,7 +1849,7 @@ it("handle optional params in the middle v4", () => {
   const state = {
     routes: [
       {
-        name: "Foe",
+        name: 'Foe',
         params: {
           id: 10,
           pwd: 5,
@@ -1867,10 +1858,10 @@ it("handle optional params in the middle v4", () => {
           index: 1,
           routes: [
             {
-              name: "Foo",
+              name: 'Foo',
             },
             {
-              name: "Bas",
+              name: 'Bas',
               params: { pwd: 5, id: 10 },
               path,
             },
@@ -1883,24 +1874,24 @@ it("handle optional params in the middle v4", () => {
   testConversions(path, config, state);
 });
 
-it("handle optional params in the middle v5", () => {
-  const path = "/foos/5/10/15";
+it('handle optional params in the middle v5', () => {
+  const path = '/foos/5/10/15';
 
   const config = {
     screens: {
       Foe: {
-        path: "/",
-        initialRouteName: "Foo",
+        path: '/',
+        initialRouteName: 'Foo',
         screens: {
-          Foo: "foo",
+          Foo: 'foo',
           Bis: {
-            path: "foo/:id",
+            path: 'foo/:id',
             parse: {
               id: Number,
             },
           },
           Bas: {
-            path: "foos/:nip?/:pwd/:smh?/:id",
+            path: 'foos/:nip?/:pwd/:smh?/:id',
             parse: {
               id: Number,
               nip: Number,
@@ -1916,7 +1907,7 @@ it("handle optional params in the middle v5", () => {
   const state = {
     routes: [
       {
-        name: "Foe",
+        name: 'Foe',
         params: {
           id: 15,
           nip: 5,
@@ -1927,10 +1918,10 @@ it("handle optional params in the middle v5", () => {
           index: 1,
           routes: [
             {
-              name: "Foo",
+              name: 'Foo',
             },
             {
-              name: "Bas",
+              name: 'Bas',
               params: { nip: 5, pwd: 10, id: 15 },
               path,
             },
@@ -1943,24 +1934,24 @@ it("handle optional params in the middle v5", () => {
   testConversions(path, config, state);
 });
 
-it("handle optional params in the beginning v1", () => {
-  const path = "5/10/foos/15";
+it('handle optional params in the beginning v1', () => {
+  const path = '5/10/foos/15';
 
   const config = {
     screens: {
       Foe: {
-        path: "/",
-        initialRouteName: "Foo",
+        path: '/',
+        initialRouteName: 'Foo',
         screens: {
-          Foo: "foo",
+          Foo: 'foo',
           Bis: {
-            path: "foo/:id",
+            path: 'foo/:id',
             parse: {
               id: Number,
             },
           },
           Bas: {
-            path: ":nip?/:pwd/foos/:smh?/:id",
+            path: ':nip?/:pwd/foos/:smh?/:id',
             parse: {
               id: Number,
               nip: Number,
@@ -1976,7 +1967,7 @@ it("handle optional params in the beginning v1", () => {
   const state = {
     routes: [
       {
-        name: "Foe",
+        name: 'Foe',
         params: {
           id: 15,
           nip: 5,
@@ -1986,10 +1977,10 @@ it("handle optional params in the beginning v1", () => {
           index: 1,
           routes: [
             {
-              name: "Foo",
+              name: 'Foo',
             },
             {
-              name: "Bas",
+              name: 'Bas',
               params: { nip: 5, pwd: 10, id: 15 },
               path,
             },
@@ -2000,29 +1991,29 @@ it("handle optional params in the beginning v1", () => {
   };
 
   expect(getStateFromPath<object>(path, config)).toEqual(state);
-  expect(
-    getStateFromPath<object>(getPathFromState<object>(state, config), config)
-  ).toEqual(changePath(state, "/5/10/foos/15"));
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(
+    changePath(state, '/5/10/foos/15')
+  );
 });
 
-it("handle optional params in the beginning v2", () => {
-  const path = "5/10/foos/15";
+it('handle optional params in the beginning v2', () => {
+  const path = '5/10/foos/15';
 
   const config = {
     screens: {
       Foe: {
-        path: "/",
-        initialRouteName: "Foo",
+        path: '/',
+        initialRouteName: 'Foo',
         screens: {
-          Foo: "foo",
+          Foo: 'foo',
           Bis: {
-            path: "foo/:id",
+            path: 'foo/:id',
             parse: {
               id: Number,
             },
           },
           Bas: {
-            path: ":nip?/:smh?/:pwd/foos/:id",
+            path: ':nip?/:smh?/:pwd/foos/:id',
             parse: {
               id: Number,
               nip: Number,
@@ -2038,7 +2029,7 @@ it("handle optional params in the beginning v2", () => {
   const state = {
     routes: [
       {
-        name: "Foe",
+        name: 'Foe',
         params: {
           id: 15,
           nip: 5,
@@ -2048,10 +2039,10 @@ it("handle optional params in the beginning v2", () => {
           index: 1,
           routes: [
             {
-              name: "Foo",
+              name: 'Foo',
             },
             {
-              name: "Bas",
+              name: 'Bas',
               params: { nip: 5, pwd: 10, id: 15 },
               path,
             },
@@ -2062,23 +2053,23 @@ it("handle optional params in the beginning v2", () => {
   };
 
   expect(getStateFromPath<object>(path, config)).toEqual(state);
-  expect(
-    getStateFromPath<object>(getPathFromState<object>(state, config), config)
-  ).toEqual(changePath(state, "/5/10/foos/15"));
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(
+    changePath(state, '/5/10/foos/15')
+  );
 });
 
-it("merges parent patterns if needed", () => {
-  const path = "foo/42/baz/babel";
+it('merges parent patterns if needed', () => {
+  const path = 'foo/42/baz/babel';
 
   const config = {
     screens: {
       Foo: {
-        path: "foo/:bar",
+        path: 'foo/:bar',
         parse: {
           bar: Number,
         },
         screens: {
-          Baz: "baz/:qux",
+          Baz: 'baz/:qux',
         },
       },
     },
@@ -2087,13 +2078,13 @@ it("merges parent patterns if needed", () => {
   const state = {
     routes: [
       {
-        name: "Foo",
-        params: { bar: 42, qux: "babel" },
+        name: 'Foo',
+        params: { bar: 42, qux: 'babel' },
         state: {
           routes: [
             {
-              name: "Baz",
-              params: { bar: 42, qux: "babel" },
+              name: 'Baz',
+              params: { bar: 42, qux: 'babel' },
               path,
             },
           ],
@@ -2103,19 +2094,19 @@ it("merges parent patterns if needed", () => {
   };
 
   expect(getStateFromPath<object>(path, config)).toEqual(state);
-  expect(
-    getStateFromPath<object>(getPathFromState<object>(state, config), config)
-  ).toEqual(changePath(state, "/foo/42/baz/babel"));
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(
+    changePath(state, '/foo/42/baz/babel')
+  );
 });
 
-it("ignores extra slashes in the pattern", () => {
-  const path = "/bar/42";
+it('ignores extra slashes in the pattern', () => {
+  const path = '/bar/42';
   const config = {
     screens: {
       Foo: {
         screens: {
           Bar: {
-            path: "/bar//:id/",
+            path: '/bar//:id/',
           },
         },
       },
@@ -2125,15 +2116,15 @@ it("ignores extra slashes in the pattern", () => {
   const state = {
     routes: [
       {
-        name: "Foo",
+        name: 'Foo',
         params: {
-          id: "42",
+          id: '42',
         },
         state: {
           routes: [
             {
-              name: "Bar",
-              params: { id: "42" },
+              name: 'Bar',
+              params: { id: '42' },
               path,
             },
           ],
@@ -2145,16 +2136,16 @@ it("ignores extra slashes in the pattern", () => {
   testConversions(path, config, state);
 });
 
-it("matches wildcard patterns at root", () => {
-  const path = "/test/bar/42/whatever";
-  const config = configFromFs(["[...404].js", "foo/bar.js", "index.js"]);
+it('matches wildcard patterns at root', () => {
+  const path = '/test/bar/42/whatever';
+  const config = configFromFs(['[...404].js', 'foo/bar.js', 'index.js']);
   const state = {
     routes: [
       {
         params: {
-          "404": ["test", "bar", "42", "whatever"],
+          '404': ['test', 'bar', '42', 'whatever'],
         },
-        name: "[...404]",
+        name: '[...404]',
         path,
       },
     ],
@@ -2163,34 +2154,34 @@ it("matches wildcard patterns at root", () => {
   testConversions(path, config, state);
 });
 
-it("matches wildcard patterns at nested level", () => {
-  const path = "/bar/42/whatever/baz/initt";
+it('matches wildcard patterns at nested level', () => {
+  const path = '/bar/42/whatever/baz/initt';
 
   const config = configFromFs([
-    "(foo)/_layout.tsx",
-    "(foo)/bar/_layout.tsx",
-    "(foo)/bar/[id].tsx",
-    "(foo)/bar/[...rest].tsx",
+    '(foo)/_layout.tsx',
+    '(foo)/bar/_layout.tsx',
+    '(foo)/bar/[id].tsx',
+    '(foo)/bar/[...rest].tsx',
   ]);
 
   const state = {
     routes: [
       {
-        name: "(foo)",
-        params: { rest: ["42", "whatever", "baz", "initt"] },
+        name: '(foo)',
+        params: { rest: ['42', 'whatever', 'baz', 'initt'] },
         state: {
           routes: [
             {
-              name: "bar",
-              params: { rest: ["42", "whatever", "baz", "initt"] },
+              name: 'bar',
+              params: { rest: ['42', 'whatever', 'baz', 'initt'] },
               state: {
                 routes: [
                   {
-                    name: "[...rest]",
+                    name: '[...rest]',
                     params: {
-                      rest: ["42", "whatever", "baz", "initt"],
+                      rest: ['42', 'whatever', 'baz', 'initt'],
                     },
-                    path: "/bar/42/whatever/baz/initt",
+                    path: '/bar/42/whatever/baz/initt',
                   },
                 ],
               },
@@ -2204,17 +2195,17 @@ it("matches wildcard patterns at nested level", () => {
   testConversions(path, config, state);
 });
 
-xit("matches wildcard patterns at nested level with exact", () => {
-  const path = "/whatever";
+xit('matches wildcard patterns at nested level with exact', () => {
+  const path = '/whatever';
   const config = {
     screens: {
       Foo: {
         screens: {
           Bar: {
-            path: "/bar/:id/",
+            path: '/bar/:id/',
             screens: {
               404: {
-                path: "*404",
+                path: '*404',
                 exact: true,
               },
             },
@@ -2228,23 +2219,23 @@ xit("matches wildcard patterns at nested level with exact", () => {
   const state = {
     routes: [
       {
-        name: "Foo",
+        name: 'Foo',
         params: {
-          "404": ["whatever"],
+          '404': ['whatever'],
         },
         state: {
           routes: [
             {
-              name: "Bar",
+              name: 'Bar',
               params: {
-                "404": ["whatever"],
+                '404': ['whatever'],
               },
               state: {
                 routes: [
                   {
-                    name: "404",
+                    name: '404',
                     params: {
-                      "404": ["whatever"],
+                      '404': ['whatever'],
                     },
                     path,
                   },
@@ -2258,24 +2249,24 @@ xit("matches wildcard patterns at nested level with exact", () => {
   };
 
   expect(getStateFromPath<object>(path, config)).toEqual(state);
-  expect(
-    getStateFromPath<object>(getPathFromState<object>(state, config), config)
-  ).toEqual(changePath(state, path));
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(
+    changePath(state, path)
+  );
 });
 
-it("tries to match wildcard patterns at the end", () => {
-  const path = "/bar/42/test";
+it('tries to match wildcard patterns at the end', () => {
+  const path = '/bar/42/test';
   const config = {
     screens: {
       bar: {
-        path: "bar",
+        path: 'bar',
         screens: {
-          "[...404]": "*404",
-          "[userSlug]": ":userSlug",
-          ":id": {
-            path: ":id",
+          '[...404]': '*404',
+          '[userSlug]': ':userSlug',
+          ':id': {
+            path: ':id',
             screens: {
-              test: "test",
+              test: 'test',
             },
           },
         },
@@ -2286,19 +2277,19 @@ it("tries to match wildcard patterns at the end", () => {
   const state = {
     routes: [
       {
-        name: "bar",
-        params: { id: "42" },
+        name: 'bar',
+        params: { id: '42' },
         state: {
           routes: [
             {
-              name: ":id",
-              params: { id: "42" },
+              name: ':id',
+              params: { id: '42' },
               state: {
                 routes: [
                   {
-                    name: "test",
-                    params: { id: "42" },
-                    path: "/bar/42/test",
+                    name: 'test',
+                    params: { id: '42' },
+                    path: '/bar/42/test',
                   },
                 ],
               },
@@ -2312,19 +2303,19 @@ it("tries to match wildcard patterns at the end", () => {
   testConversions(path, config, state);
 });
 
-it("uses nearest parent wildcard match for unmatched paths", () => {
-  const path = "/bar/42/baz/test";
+it('uses nearest parent wildcard match for unmatched paths', () => {
+  const path = '/bar/42/baz/test';
   const config = {
     screens: {
       Foo: {
         screens: {
           Bar: {
-            path: "/bar/:id/",
+            path: '/bar/:id/',
             screens: {
-              Baz: "baz",
+              Baz: 'baz',
             },
           },
-          "[...404]": "*404",
+          '[...404]': '*404',
         },
       },
     },
@@ -2333,16 +2324,16 @@ it("uses nearest parent wildcard match for unmatched paths", () => {
   const state = {
     routes: [
       {
-        name: "Foo",
+        name: 'Foo',
         params: {
-          "404": ["bar", "42", "baz", "test"],
+          '404': ['bar', '42', 'baz', 'test'],
         },
         state: {
           routes: [
             {
-              name: "[...404]",
+              name: '[...404]',
               params: {
-                "404": ["bar", "42", "baz", "test"],
+                '404': ['bar', '42', 'baz', 'test'],
               },
               path,
             },
@@ -2355,8 +2346,8 @@ it("uses nearest parent wildcard match for unmatched paths", () => {
   testConversions(path, config, state);
 });
 
-it("throws if two screens map to the same pattern", () => {
-  const path = "/bar/42/baz/test";
+it('throws if two screens map to the same pattern', () => {
+  const path = '/bar/42/baz/test';
 
   expect(() =>
     getStateFromPath<object>(path, {
@@ -2364,12 +2355,12 @@ it("throws if two screens map to the same pattern", () => {
         Foo: {
           screens: {
             Bar: {
-              path: "/bar/:id/",
+              path: '/bar/:id/',
               screens: {
-                Baz: "baz",
+                Baz: 'baz',
               },
             },
-            Bax: "/bar/:id/baz",
+            Bax: '/bar/:id/baz',
           },
         },
       },
@@ -2384,9 +2375,9 @@ it("throws if two screens map to the same pattern", () => {
         Foo: {
           screens: {
             Bar: {
-              path: "/bar/:id/",
+              path: '/bar/:id/',
               screens: {
-                Baz: "",
+                Baz: '',
               },
             },
           },
@@ -2396,8 +2387,8 @@ it("throws if two screens map to the same pattern", () => {
   ).not.toThrow();
 });
 
-it("correctly applies initialRouteName for config with similar route names", () => {
-  const path = "/weekly-earnings";
+it('correctly applies initialRouteName for config with similar route names', () => {
+  const path = '/weekly-earnings';
 
   const config = {
     screens: {
@@ -2405,17 +2396,17 @@ it("correctly applies initialRouteName for config with similar route names", () 
         screens: {
           HomeTab: {
             screens: {
-              Home: "",
-              WeeklyEarnings: "weekly-earnings",
-              EventDetails: "event-details/:eventId",
+              Home: '',
+              WeeklyEarnings: 'weekly-earnings',
+              EventDetails: 'event-details/:eventId',
             },
           },
           EarningsTab: {
-            initialRouteName: "Earnings",
-            path: "earnings",
+            initialRouteName: 'Earnings',
+            path: 'earnings',
             screens: {
-              Earnings: "",
-              WeeklyEarnings: "weekly-earnings",
+              Earnings: '',
+              WeeklyEarnings: 'weekly-earnings',
             },
           },
         },
@@ -2426,15 +2417,15 @@ it("correctly applies initialRouteName for config with similar route names", () 
   const state = {
     routes: [
       {
-        name: "RootTabs",
+        name: 'RootTabs',
         state: {
           routes: [
             {
-              name: "HomeTab",
+              name: 'HomeTab',
               state: {
                 routes: [
                   {
-                    name: "WeeklyEarnings",
+                    name: 'WeeklyEarnings',
                     path,
                   },
                 ],
@@ -2449,26 +2440,26 @@ it("correctly applies initialRouteName for config with similar route names", () 
   testConversions(path, config, state);
 });
 
-it("correctly applies initialRouteName for config with similar route names v2", () => {
-  const path = "/earnings/weekly-earnings";
+it('correctly applies initialRouteName for config with similar route names v2', () => {
+  const path = '/earnings/weekly-earnings';
 
   const config = {
     screens: {
       RootTabs: {
         screens: {
           HomeTab: {
-            initialRouteName: "Home",
+            initialRouteName: 'Home',
             screens: {
-              Home: "",
-              WeeklyEarnings: "weekly-earnings",
+              Home: '',
+              WeeklyEarnings: 'weekly-earnings',
             },
           },
           EarningsTab: {
-            initialRouteName: "Earnings",
-            path: "earnings",
+            initialRouteName: 'Earnings',
+            path: 'earnings',
             screens: {
-              Earnings: "",
-              WeeklyEarnings: "weekly-earnings",
+              Earnings: '',
+              WeeklyEarnings: 'weekly-earnings',
             },
           },
         },
@@ -2479,19 +2470,19 @@ it("correctly applies initialRouteName for config with similar route names v2", 
   const state = {
     routes: [
       {
-        name: "RootTabs",
+        name: 'RootTabs',
         state: {
           routes: [
             {
-              name: "EarningsTab",
+              name: 'EarningsTab',
               state: {
                 index: 1,
                 routes: [
                   {
-                    name: "Earnings",
+                    name: 'Earnings',
                   },
                   {
-                    name: "WeeklyEarnings",
+                    name: 'WeeklyEarnings',
                     path,
                   },
                 ],
@@ -2506,12 +2497,12 @@ it("correctly applies initialRouteName for config with similar route names v2", 
   testConversions(path, config, state);
 });
 
-it("throws when invalid properties are specified in the config", () => {
+it('throws when invalid properties are specified in the config', () => {
   expect(() =>
-    getStateFromPath<object>("", {
-      Foo: "foo",
+    getStateFromPath<object>('', {
+      Foo: 'foo',
       Bar: {
-        path: "bar",
+        path: 'bar',
       },
     } as any)
   ).toThrowErrorMatchingInlineSnapshot(`
@@ -2530,15 +2521,15 @@ it("throws when invalid properties are specified in the config", () => {
   `);
 
   expect(() =>
-    getStateFromPath<object>("", {
+    getStateFromPath<object>('', {
       screens: {
-        Foo: "foo",
+        Foo: 'foo',
         Bar: {
-          path: "bar",
+          path: 'bar',
         },
         Baz: {
           Qux: {
-            path: "qux",
+            path: 'qux',
           },
         },
       },
@@ -2564,7 +2555,5 @@ it("throws when invalid properties are specified in the config", () => {
 
 function testConversions(path: string, config: any, state: any) {
   expect(getStateFromPath<object>(path, config)).toEqual(state);
-  expect(
-    getStateFromPath<object>(getPathFromState<object>(state, config), config)
-  ).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 }

@@ -4,13 +4,13 @@ import {
   ParamListBase,
   PartialState,
   getActionFromState,
-} from "@react-navigation/native";
+} from '@react-navigation/native';
 
-import { ResultState } from "../fork/getStateFromPath";
+import { ResultState } from '../fork/getStateFromPath';
 
 export type NavigateAction = Extract<
   ReturnType<typeof getActionFromState>,
-  { type: "NAVIGATE" }
+  { type: 'NAVIGATE' }
 > & {
   payload: NavigateActionParams;
 };
@@ -123,7 +123,7 @@ export function getEarliestMismatchedRoute<T extends ParamListBase>(
     // This should never happen where there's more action than state.
     return {
       name: actionName,
-      type: "stack",
+      type: 'stack',
     };
   }
 

@@ -1,1 +1,1 @@
-export * from "./ExpoHead";
+export * from './ExpoHead';

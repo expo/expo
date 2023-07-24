@@ -1,24 +1,24 @@
-import { useIsFocused } from "@react-navigation/core";
+import { useIsFocused } from '@react-navigation/core';
 import {
   useLocalSearchParams,
   useUnstableGlobalHref,
   usePathname,
   useSegments,
   // @ts-ignore: hack
-} from "expo-router";
-import React from "react";
+} from 'expo-router';
+import React from 'react';
 
-import { ExpoHead, UserActivity } from "./ExpoHeadModule";
-import { getStaticUrlFromExpoRouter } from "./url";
+import { ExpoHead, UserActivity } from './ExpoHeadModule';
+import { getStaticUrlFromExpoRouter } from './url';
 
 function urlToId(url: string) {
-  return url.replace(/[^a-zA-Z0-9]/g, "-");
+  return url.replace(/[^a-zA-Z0-9]/g, '-');
 }
 
 function getLastSegment(path: string) {
   // Remove the extension
-  const lastSegment = path.split("/").pop() ?? "";
-  return lastSegment.replace(/\.[^/.]+$/, "").split("?")[0];
+  const lastSegment = path.split('/').pop() ?? '';
+  return lastSegment.replace(/\.[^/.]+$/, '').split('?')[0];
 }
 
 // TODO: Use Head Provider to collect all props so only one Head is rendered for a given route.
@@ -26,7 +26,7 @@ function getLastSegment(path: string) {
 function useAddressableLink() {
   const pathname = useUnstableGlobalHref();
   const params = useLocalSearchParams<any>();
-  let url = getStaticUrlFromExpoRouter(pathname);
+  const url = getStaticUrlFromExpoRouter(pathname);
   return { url, pathname, params };
 }
 
@@ -43,7 +43,7 @@ function useMetaChildren(children: React.ReactNode) {
       if (!React.isValidElement(child)) {
         return;
       }
-      if (typeof child.type === "string") {
+      if (typeof child.type === 'string') {
         metaChildren.push(child);
       } else {
         renderableChildren.push(child);
@@ -60,33 +60,22 @@ type SerializedMeta = {
 };
 
 function serializedMetaChildren(meta: MetaNode[]): SerializedMeta[] {
-  const validMeta = meta.filter(
-    (child) => child.type === "meta" || child.type === "title"
-  );
+  const validMeta = meta.filter((child) => child.type === 'meta' || child.type === 'title');
 
   return validMeta.map((child) => {
-    if (child.type === "title") {
+    if (child.type === 'title') {
       return {
-        type: "title",
+        type: 'title',
         props: {
-          children:
-            typeof child.props.children === "string"
-              ? child.props.children
-              : undefined,
+          children: typeof child.props.children === 'string' ? child.props.children : undefined,
         },
       };
     }
     return {
-      type: "meta",
+      type: 'meta',
       props: {
-        property:
-          typeof child.props.property === "string"
-            ? child.props.property
-            : undefined,
-        content:
-          typeof child.props.content === "string"
-            ? child.props.content
-            : undefined,
+        property: typeof child.props.property === 'string' ? child.props.property : undefined,
+        content: typeof child.props.content === 'string' ? child.props.content : undefined,
       },
     };
   });
@@ -102,12 +91,12 @@ function useActivityFromMetaChildren(meta: MetaNode[]) {
 
   const url = React.useMemo(() => {
     const urlMeta = sortedMeta.find(
-      (child) => child.type === "meta" && child.props.property === "og:url"
+      (child) => child.type === 'meta' && child.props.property === 'og:url'
     );
 
     if (urlMeta) {
       // Support =`/foo/bar` -> `https://example.com/foo/bar`
-      if (urlMeta.props.content?.startsWith("/")) {
+      if (urlMeta.props.content?.startsWith('/')) {
         return getStaticUrlFromExpoRouter(urlMeta.props.content);
       }
       return urlMeta.props.content;
@@ -116,15 +105,15 @@ function useActivityFromMetaChildren(meta: MetaNode[]) {
   }, [sortedMeta, href]);
 
   const title = React.useMemo(() => {
-    const titleTag = sortedMeta.find((child) => child.type === "title");
+    const titleTag = sortedMeta.find((child) => child.type === 'title');
     if (titleTag) {
-      return titleTag.props.children ?? "";
+      return titleTag.props.children ?? '';
     }
     const titleMeta = sortedMeta.find(
-      (child) => child.type === "meta" && child.props.property === "og:title"
+      (child) => child.type === 'meta' && child.props.property === 'og:title'
     );
     if (titleMeta) {
-      return titleMeta.props.content ?? "";
+      return titleMeta.props.content ?? '';
     }
 
     return getLastSegment(pathname);
@@ -145,19 +134,19 @@ function useActivityFromMetaChildren(meta: MetaNode[]) {
     sortedMeta.forEach((child) => {
       if (
         // <meta />
-        child.type === "meta"
+        child.type === 'meta'
       ) {
         const { property, content } = child.props;
 
         switch (property) {
-          case "og:description":
+          case 'og:description':
             userActivity.description = content;
             break;
           // Custom properties
-          case "expo:handoff":
+          case 'expo:handoff':
             userActivity.isEligibleForHandoff = isTruthy(content);
             break;
-          case "expo:spotlight":
+          case 'expo:spotlight':
             userActivity.isEligibleForSearch = isTruthy(content);
             break;
         }
@@ -191,7 +180,7 @@ function useActivityFromMetaChildren(meta: MetaNode[]) {
 }
 
 function isTruthy(value: any): boolean {
-  return [true, "true"].includes(value);
+  return [true, 'true'].includes(value);
 }
 
 function HeadNative(props: { children?: React.ReactNode }) {
@@ -220,8 +209,8 @@ const activities: Map<string, UserActivity> = new Map();
 function useRegisterCurrentActivity(activity: UserActivity) {
   // ID is tied to Expo Router and agnostic of URLs to ensure dynamic parameters are not considered.
   // Using all segments ensures that cascading routes are considered.
-  const activityId = urlToId(usePathname() || "/");
-  const cascadingId = urlToId(useSegments().join("-") || "-");
+  const activityId = urlToId(usePathname() || '/');
+  const cascadingId = urlToId(useSegments().join('-') || '-');
   const activityIds = Array.from(activities.keys());
   const cascadingActivity: UserActivity = React.useMemo(() => {
     // Get all nested activities together, then update the id to match the current pathname.
@@ -256,14 +245,11 @@ function useRegisterCurrentActivity(activity: UserActivity) {
 
     previousActivity.current = cascadingActivity;
     if (!cascadingActivity.id) {
-      throw new Error("Activity must have an ID");
+      throw new Error('Activity must have an ID');
     }
 
     // If no features are enabled, then skip registering the activity
-    if (
-      cascadingActivity.isEligibleForHandoff ||
-      cascadingActivity.isEligibleForSearch
-    ) {
+    if (cascadingActivity.isEligibleForHandoff || cascadingActivity.isEligibleForSearch) {
       ExpoHead?.createActivity(cascadingActivity);
     }
 
@@ -283,7 +269,7 @@ function deepObjectCompare(a: any, b: any) {
   if (typeof a !== typeof b) {
     return false;
   }
-  if (typeof a === "object") {
+  if (typeof a === 'object') {
     if (Array.isArray(a) !== Array.isArray(b)) {
       return false;
     }
@@ -316,8 +302,6 @@ function HeadShim(props: { children?: React.ReactNode }) {
 HeadShim.Provider = React.Fragment;
 
 // Native Head is only enabled in bare iOS apps.
-export const Head: ((props: {
-  children?: React.ReactNode;
-}) => React.ReactNode) & {
+export const Head: ((props: { children?: React.ReactNode }) => React.ReactNode) & {
   Provider: React.ComponentType;
 } = ExpoHead ? HeadNative : HeadShim;

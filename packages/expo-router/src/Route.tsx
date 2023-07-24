@@ -1,7 +1,7 @@
-import React, { ReactNode, useContext } from "react";
+import React, { ReactNode, useContext } from 'react';
 
-import type { ErrorBoundaryProps } from "./exports";
-import { getContextKey, matchGroupName } from "./matchers";
+import type { ErrorBoundaryProps } from './exports';
+import { getContextKey, matchGroupName } from './matchers';
 
 export type DynamicConvention = { name: string; deep: boolean };
 
@@ -36,8 +36,8 @@ export type RouteNode = {
 
 const CurrentRouteContext = React.createContext<RouteNode | null>(null);
 
-if (process.env.NODE_ENV !== "production") {
-  CurrentRouteContext.displayName = "RouteNode";
+if (process.env.NODE_ENV !== 'production') {
+  CurrentRouteContext.displayName = 'RouteNode';
 }
 
 /** Return the RouteNode at the current contextual boundary. */
@@ -48,24 +48,14 @@ export function useRouteNode(): RouteNode | null {
 export function useContextKey(): string {
   const node = useRouteNode();
   if (node == null) {
-    throw new Error("No filename found. This is likely a bug in expo-router.");
+    throw new Error('No filename found. This is likely a bug in expo-router.');
   }
   return getContextKey(node.contextKey);
 }
 
 /** Provides the matching routes and filename to the children. */
-export function Route({
-  children,
-  node,
-}: {
-  children: ReactNode;
-  node: RouteNode;
-}) {
-  return (
-    <CurrentRouteContext.Provider value={node}>
-      {children}
-    </CurrentRouteContext.Provider>
-  );
+export function Route({ children, node }: { children: ReactNode; node: RouteNode }) {
+  return <CurrentRouteContext.Provider value={node}>{children}</CurrentRouteContext.Provider>;
 }
 
 export function sortRoutesWithInitial(initialRouteName?: string) {
@@ -106,8 +96,8 @@ export function sortRoutes(a: RouteNode, b: RouteNode): number {
     return 0;
   }
 
-  const aIndex = a.route === "index" || matchGroupName(a.route) != null;
-  const bIndex = b.route === "index" || matchGroupName(b.route) != null;
+  const aIndex = a.route === 'index' || matchGroupName(a.route) != null;
+  const bIndex = b.route === 'index' || matchGroupName(b.route) != null;
 
   if (aIndex && !bIndex) {
     return -1;

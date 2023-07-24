@@ -22,16 +22,14 @@
 // https://github.com/browserify/path-browserify/blob/master/index.js
 
 function assertPath(path: string) {
-  if (typeof path !== "string") {
-    throw new TypeError(
-      "Path must be a string. Received " + JSON.stringify(path)
-    );
+  if (typeof path !== 'string') {
+    throw new TypeError('Path must be a string. Received ' + JSON.stringify(path));
   }
 }
 
 // Resolves . and .. elements in a path with directory names
 function normalizeStringPosix(path: string, allowAboveRoot?: boolean) {
-  let res = "";
+  let res = '';
   let lastSegmentLength = 0;
   let lastSlash = -1;
   let dots = 0;
@@ -55,21 +53,21 @@ function normalizeStringPosix(path: string, allowAboveRoot?: boolean) {
           res.charCodeAt(res.length - 2) !== 46 /*.*/
         ) {
           if (res.length > 2) {
-            const lastSlashIndex = res.lastIndexOf("/");
+            const lastSlashIndex = res.lastIndexOf('/');
             if (lastSlashIndex !== res.length - 1) {
               if (lastSlashIndex === -1) {
-                res = "";
+                res = '';
                 lastSegmentLength = 0;
               } else {
                 res = res.slice(0, lastSlashIndex);
-                lastSegmentLength = res.length - 1 - res.lastIndexOf("/");
+                lastSegmentLength = res.length - 1 - res.lastIndexOf('/');
               }
               lastSlash = i;
               dots = 0;
               continue;
             }
           } else if (res.length === 2 || res.length === 1) {
-            res = "";
+            res = '';
             lastSegmentLength = 0;
             lastSlash = i;
             dots = 0;
@@ -77,12 +75,12 @@ function normalizeStringPosix(path: string, allowAboveRoot?: boolean) {
           }
         }
         if (allowAboveRoot) {
-          if (res.length > 0) res += "/..";
-          else res = "..";
+          if (res.length > 0) res += '/..';
+          else res = '..';
           lastSegmentLength = 2;
         }
       } else {
-        if (res.length > 0) res += "/" + path.slice(lastSlash + 1, i);
+        if (res.length > 0) res += '/' + path.slice(lastSlash + 1, i);
         else res = path.slice(lastSlash + 1, i);
         lastSegmentLength = i - lastSlash - 1;
       }
@@ -99,7 +97,7 @@ function normalizeStringPosix(path: string, allowAboveRoot?: boolean) {
 
 // path.resolve([from ...], to)
 export function resolve(...segments: string[]) {
-  let resolvedPath = "";
+  let resolvedPath = '';
   let resolvedAbsolute = false;
 
   for (let i = segments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
@@ -107,7 +105,7 @@ export function resolve(...segments: string[]) {
     if (i >= 0) {
       path = segments[i];
     } else {
-      path = "/";
+      path = '/';
     }
 
     assertPath(path);
@@ -117,7 +115,7 @@ export function resolve(...segments: string[]) {
       continue;
     }
 
-    resolvedPath = path + "/" + resolvedPath;
+    resolvedPath = path + '/' + resolvedPath;
     resolvedAbsolute = path.charCodeAt(0) === 47 /*/*/;
   }
 
@@ -129,13 +127,13 @@ export function resolve(...segments: string[]) {
 
   if (resolvedAbsolute) {
     if (resolvedPath.length > 0) {
-      return "/" + resolvedPath;
+      return '/' + resolvedPath;
     } else {
-      return "/";
+      return '/';
     }
   } else if (resolvedPath.length > 0) {
     return resolvedPath;
   } else {
-    return ".";
+    return '.';
   }
 }

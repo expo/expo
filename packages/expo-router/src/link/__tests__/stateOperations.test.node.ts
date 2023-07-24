@@ -3,60 +3,60 @@ import {
   findTopRouteForTarget,
   getQualifiedStateForTopOfTargetState,
   getEarliestMismatchedRoute,
-} from "../stateOperations";
+} from '../stateOperations';
 
 describe(getEarliestMismatchedRoute, () => {
   it(`finds earliest mismatched route`, () => {
     expect(
       getEarliestMismatchedRoute(
         {
-          type: "tab",
+          type: 'tab',
           index: 0,
           routes: [
             {
-              name: "root",
+              name: 'root',
               state: {
-                type: "stack",
+                type: 'stack',
                 index: 0,
                 routes: [
                   {
-                    name: "(auth)/sign-in",
+                    name: '(auth)/sign-in',
                   },
                 ],
               },
             },
             {
-              name: "_sitemap",
+              name: '_sitemap',
             },
             {
-              name: "[...404]",
+              name: '[...404]',
             },
           ],
         },
         {
-          name: "root",
-          path: "",
+          name: 'root',
+          path: '',
           initial: true,
-          screen: "root",
+          screen: 'root',
           params: {
             initial: true,
-            screen: "(app)",
-            path: "",
+            screen: '(app)',
+            path: '',
             params: {
               initial: true,
-              screen: "index",
-              path: "/root",
+              screen: 'index',
+              path: '/root',
             },
           },
         }
       )
     ).toEqual({
-      name: "(app)",
-      type: "stack",
+      name: '(app)',
+      type: 'stack',
       params: {
         initial: true,
-        path: "/root",
-        screen: "index",
+        path: '/root',
+        screen: 'index',
       },
     });
   });
@@ -65,46 +65,46 @@ describe(getEarliestMismatchedRoute, () => {
     expect(
       getEarliestMismatchedRoute(
         {
-          type: "tab",
+          type: 'tab',
           index: 1,
           routes: [
             {
-              name: "root",
+              name: 'root',
             },
             {
-              name: "_sitemap",
+              name: '_sitemap',
             },
             {
-              name: "[...404]",
+              name: '[...404]',
             },
           ],
         },
         {
-          name: "root",
-          path: "",
+          name: 'root',
+          path: '',
           initial: true,
-          screen: "root",
+          screen: 'root',
           params: {
             initial: true,
-            screen: "(app)",
-            path: "",
+            screen: '(app)',
+            path: '',
             params: {
               initial: true,
-              screen: "index",
-              path: "/root",
+              screen: 'index',
+              path: '/root',
             },
           },
         }
       )
     ).toEqual({
-      name: "root",
+      name: 'root',
       params: {
         initial: true,
-        params: { initial: true, path: "/root", screen: "index" },
-        path: "",
-        screen: "(app)",
+        params: { initial: true, path: '/root', screen: 'index' },
+        path: '',
+        screen: '(app)',
       },
-      type: "tab",
+      type: 'tab',
     });
   });
 });
@@ -115,38 +115,38 @@ describe(findTopRouteForTarget, () => {
       findTopRouteForTarget({
         routes: [
           {
-            name: "one",
+            name: 'one',
             state: {
               routes: [
                 {
-                  name: "two",
+                  name: 'two',
                 },
               ],
             },
           },
         ],
       })
-    ).toEqual({ name: "two" });
+    ).toEqual({ name: 'two' });
   });
   it(`finds the top route with initial routes`, () => {
     expect(
       findTopRouteForTarget({
         routes: [
-          { name: "three" },
+          { name: 'three' },
           {
-            name: "one",
+            name: 'one',
             state: {
               routes: [
-                { name: "four" },
+                { name: 'four' },
                 {
-                  name: "two",
+                  name: 'two',
                 },
               ],
             },
           },
         ],
       })
-    ).toEqual({ name: "two" });
+    ).toEqual({ name: 'two' });
   });
 });
 
@@ -155,23 +155,23 @@ describe(getQualifiedStateForTopOfTargetState, () => {
     expect(
       getQualifiedStateForTopOfTargetState(
         {
-          type: "stack",
+          type: 'stack',
           index: 0,
-          routeNames: ["(app)", "_sitemap", "[...404]"],
+          routeNames: ['(app)', '_sitemap', '[...404]'],
           routes: [
             {
-              name: "(app)",
+              name: '(app)',
               state: {
-                type: "stack",
+                type: 'stack',
                 index: 1,
-                routeNames: ["index", "two", "send", "permissions"],
+                routeNames: ['index', 'two', 'send', 'permissions'],
                 routes: [
                   {
-                    name: "index",
+                    name: 'index',
                   },
                   {
-                    name: "two",
-                    path: "/two",
+                    name: 'two',
+                    path: '/two',
                   },
                 ],
               },
@@ -181,16 +181,16 @@ describe(getQualifiedStateForTopOfTargetState, () => {
         {
           routes: [
             {
-              name: "(app)",
+              name: '(app)',
               state: {
                 index: 1,
                 routes: [
                   {
-                    name: "index",
+                    name: 'index',
                   },
                   {
-                    name: "send",
-                    path: "/send",
+                    name: 'send',
+                    path: '/send',
                   },
                 ],
               },
@@ -200,9 +200,9 @@ describe(getQualifiedStateForTopOfTargetState, () => {
       )
     ).toEqual({
       index: 1,
-      routeNames: ["index", "two", "send", "permissions"],
-      routes: [{ name: "index" }, { name: "two", path: "/two" }],
-      type: "stack",
+      routeNames: ['index', 'two', 'send', 'permissions'],
+      routes: [{ name: 'index' }, { name: 'two', path: '/two' }],
+      type: 'stack',
     });
   });
 
@@ -210,51 +210,51 @@ describe(getQualifiedStateForTopOfTargetState, () => {
     expect(
       getQualifiedStateForTopOfTargetState(
         {
-          type: "tab",
+          type: 'tab',
           index: 0,
-          routeNames: ["index", "two", "four", "three", "_sitemap", "[...404]"],
+          routeNames: ['index', 'two', 'four', 'three', '_sitemap', '[...404]'],
 
           routes: [
             {
-              name: "index",
+              name: 'index',
             },
             {
-              name: "two",
+              name: 'two',
               state: {
-                type: "stack",
+                type: 'stack',
                 index: 0,
-                routeNames: ["index", "beta"],
+                routeNames: ['index', 'beta'],
                 routes: [
                   {
-                    name: "index",
-                    path: "/two",
+                    name: 'index',
+                    path: '/two',
                   },
                 ],
               },
             },
             {
-              name: "four",
+              name: 'four',
             },
             {
-              name: "three",
+              name: 'three',
             },
             {
-              name: "_sitemap",
+              name: '_sitemap',
             },
             {
-              name: "[...404]",
+              name: '[...404]',
             },
           ],
         },
         {
           routes: [
             {
-              name: "two",
+              name: 'two',
               state: {
                 routes: [
                   {
-                    name: "index",
-                    path: "/two",
+                    name: 'index',
+                    path: '/two',
                   },
                 ],
               },
@@ -264,9 +264,9 @@ describe(getQualifiedStateForTopOfTargetState, () => {
       )
     ).toEqual({
       index: 0,
-      routeNames: ["index", "beta"],
-      routes: [{ name: "index", path: "/two" }],
-      type: "stack",
+      routeNames: ['index', 'beta'],
+      routes: [{ name: 'index', path: '/two' }],
+      type: 'stack',
     });
   });
 });
@@ -280,57 +280,57 @@ describe(isMovingToSiblingRoute, () => {
       isMovingToSiblingRoute(
         {
           stale: false,
-          type: "stack",
-          key: "stack-a5P8_EsAnIzvh34s0mPr6",
+          type: 'stack',
+          key: 'stack-a5P8_EsAnIzvh34s0mPr6',
           index: 1,
-          routeNames: ["(tabs)", "_sitemap", "[...missing]"],
+          routeNames: ['(tabs)', '_sitemap', '[...missing]'],
           routes: [
             {
-              name: "(tabs)",
-              key: "(tabs)-nQhC-Q4Ldn0JOaFgDVqsY",
+              name: '(tabs)',
+              key: '(tabs)-nQhC-Q4Ldn0JOaFgDVqsY',
               state: {
                 stale: false,
-                type: "tab",
-                key: "tab-EpWWwS_dplNQEmSOBgnjg",
+                type: 'tab',
+                key: 'tab-EpWWwS_dplNQEmSOBgnjg',
                 index: 0,
-                routeNames: ["index", "two"],
+                routeNames: ['index', 'two'],
                 history: [
                   {
-                    type: "route",
-                    key: "index-3a4SpcHaMEUdxuaVnGGZ0",
+                    type: 'route',
+                    key: 'index-3a4SpcHaMEUdxuaVnGGZ0',
                   },
                 ],
                 routes: [
                   {
-                    name: "index",
-                    key: "index-3a4SpcHaMEUdxuaVnGGZ0",
+                    name: 'index',
+                    key: 'index-3a4SpcHaMEUdxuaVnGGZ0',
                   },
                   {
-                    name: "two",
-                    key: "two-rQPjCgQDfXpHU2Ft-6t3A",
+                    name: 'two',
+                    key: 'two-rQPjCgQDfXpHU2Ft-6t3A',
                   },
                 ],
               },
             },
             {
-              name: "[...missing]",
+              name: '[...missing]',
               params: {
-                missing: ["[...missing]", "1687982087761"],
+                missing: ['[...missing]', '1687982087761'],
               },
-              path: "/[...missing]/1687982087761",
-              key: "[...missing]-7uOsFmuZMfC6Q8bgOm7Ig",
+              path: '/[...missing]/1687982087761',
+              key: '[...missing]-7uOsFmuZMfC6Q8bgOm7Ig',
             },
           ],
         },
         {
           routes: [
             {
-              name: "(tabs)",
+              name: '(tabs)',
               state: {
                 routes: [
                   {
-                    name: "index",
-                    path: "/",
+                    name: 'index',
+                    path: '/',
                   },
                 ],
               },
@@ -345,31 +345,31 @@ describe(isMovingToSiblingRoute, () => {
     expect(
       isMovingToSiblingRoute(
         {
-          type: "tab",
+          type: 'tab',
           index: 0,
           routes: [
             {
-              name: "index",
+              name: 'index',
             },
             {
-              name: "two",
+              name: 'two',
               params: {
                 initial: true,
-                screen: "index",
-                path: "/two",
+                screen: 'index',
+                path: '/two',
               },
               state: {
-                type: "stack",
-                key: "stack-VMqQmYOqAsiJFz0PcXxDV",
+                type: 'stack',
+                key: 'stack-VMqQmYOqAsiJFz0PcXxDV',
                 index: 1,
-                routeNames: ["index", "beta"],
+                routeNames: ['index', 'beta'],
                 routes: [
                   {
-                    name: "beta",
+                    name: 'beta',
                   },
                   {
-                    name: "index",
-                    path: "/two",
+                    name: 'index',
+                    path: '/two',
                   },
                 ],
               },
@@ -379,12 +379,12 @@ describe(isMovingToSiblingRoute, () => {
         {
           routes: [
             {
-              name: "two",
+              name: 'two',
               state: {
                 routes: [
                   {
-                    name: "index",
-                    path: "/two",
+                    name: 'index',
+                    path: '/two',
                   },
                 ],
               },
@@ -400,44 +400,44 @@ describe(isMovingToSiblingRoute, () => {
       isMovingToSiblingRoute(
         {
           stale: false,
-          type: "stack",
-          key: "stack-ufSP1t4BKV-9JHUrsMFje",
+          type: 'stack',
+          key: 'stack-ufSP1t4BKV-9JHUrsMFje',
           index: 0,
-          routeNames: ["(app)", "_sitemap", "(auth)/sign-in", "[...404]"],
+          routeNames: ['(app)', '_sitemap', '(auth)/sign-in', '[...404]'],
           routes: [
             {
-              name: "(app)",
+              name: '(app)',
               state: {
                 stale: false,
-                type: "stack",
-                key: "stack-WGuvSdOQTVdKFB0xn02sG",
+                type: 'stack',
+                key: 'stack-WGuvSdOQTVdKFB0xn02sG',
                 index: 0,
-                routeNames: ["index", "compose", "note/[note]"],
+                routeNames: ['index', 'compose', 'note/[note]'],
                 routes: [
                   {
-                    name: "index",
-                    path: "/",
-                    key: "index-t4yhmcdkL8Uw_YvZDshj4",
+                    name: 'index',
+                    path: '/',
+                    key: 'index-t4yhmcdkL8Uw_YvZDshj4',
                   },
                 ],
               },
-              key: "(app)-HJs7pocOQpWMG1CKd6Be-",
+              key: '(app)-HJs7pocOQpWMG1CKd6Be-',
             },
           ],
         },
         {
           routes: [
             {
-              name: "(app)",
+              name: '(app)',
               state: {
                 index: 1,
                 routes: [
                   {
-                    name: "index",
+                    name: 'index',
                   },
                   {
-                    name: "compose",
-                    path: "/compose",
+                    name: 'compose',
+                    path: '/compose',
                   },
                 ],
               },

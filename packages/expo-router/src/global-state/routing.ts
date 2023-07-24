@@ -1,27 +1,23 @@
-import {
-  CommonActions,
-  getActionFromState,
-  StackActions,
-} from "@react-navigation/core";
-import { TabActions } from "@react-navigation/native";
-import * as Linking from "expo-linking";
+import { CommonActions, getActionFromState, StackActions } from '@react-navigation/core';
+import { TabActions } from '@react-navigation/native';
+import * as Linking from 'expo-linking';
 
-import { Href, resolveHref } from "../link/href";
-import { resolve } from "../link/path";
+import { Href, resolveHref } from '../link/href';
+import { resolve } from '../link/path';
 import {
   NavigateAction,
   findTopRouteForTarget,
   getEarliestMismatchedRoute,
   getQualifiedStateForTopOfTargetState,
   isMovingToSiblingRoute,
-} from "../link/stateOperations";
-import { hasUrlProtocolPrefix } from "../utils/url";
-import type { RouterStore } from "./router-store";
+} from '../link/stateOperations';
+import { hasUrlProtocolPrefix } from '../utils/url';
+import type { RouterStore } from './router-store';
 
 function assertIsReady(store: RouterStore) {
   if (!store.navigationRef.isReady()) {
     throw new Error(
-      "Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render."
+      'Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.'
     );
   }
 }
@@ -31,7 +27,7 @@ export function push(this: RouterStore, url: Href) {
 }
 
 export function replace(this: RouterStore, url: Href) {
-  return this.linkTo(resolveHref(url), "REPLACE");
+  return this.linkTo(resolveHref(url), 'REPLACE');
 }
 
 export function goBack(this: RouterStore) {
@@ -44,10 +40,7 @@ export function canGoBack(this: RouterStore): boolean {
   return this.navigationRef?.current?.canGoBack() ?? false;
 }
 
-export function setParams(
-  this: RouterStore,
-  params: Record<string, string | number> = {}
-) {
+export function setParams(this: RouterStore, params: Record<string, string | number> = {}) {
   assertIsReady(this);
   return (this.navigationRef?.current?.setParams as any)(params);
 }
@@ -68,23 +61,23 @@ export function linkTo(this: RouterStore, href: string, event?: string) {
   }
 
   if (!this.linking) {
-    throw new Error("Attempted to link to route when no routes are present");
+    throw new Error('Attempted to link to route when no routes are present');
   }
 
-  if (href === ".." || href === "../") {
+  if (href === '..' || href === '../') {
     navigationRef.goBack();
     return;
   }
 
-  if (href.startsWith(".")) {
+  if (href.startsWith('.')) {
     let base =
       this.linking.getPathFromState?.(navigationRef.getRootState(), {
         screens: [],
         preserveGroups: true,
-      }) ?? "";
+      }) ?? '';
 
-    if (base && !base.endsWith("/")) {
-      base += "/..";
+    if (base && !base.endsWith('/')) {
+      base += '/..';
     }
     href = resolve(base, href);
   }
@@ -92,9 +85,7 @@ export function linkTo(this: RouterStore, href: string, event?: string) {
   const state = this.linking.getStateFromPath!(href, this.linking.config);
 
   if (!state) {
-    console.error(
-      "Could not generate a valid navigation state for the given path: " + href
-    );
+    console.error('Could not generate a valid navigation state for the given path: ' + href);
     return;
   }
 
@@ -105,33 +96,22 @@ export function linkTo(this: RouterStore, href: string, event?: string) {
   // TODO: We may need to apply this at a larger scale in the future.
   if (isMovingToSiblingRoute(rootState, state)) {
     // Can perform naive movements
-    const knownOwnerState = getQualifiedStateForTopOfTargetState(
-      rootState,
-      state
-    )!;
+    const knownOwnerState = getQualifiedStateForTopOfTargetState(rootState, state)!;
     const nextRoute = findTopRouteForTarget(state);
 
-    if (knownOwnerState.type === "tab") {
-      if (event === "REPLACE") {
-        navigationRef.dispatch(
-          TabActions.jumpTo(nextRoute.name, nextRoute.params)
-        );
+    if (knownOwnerState.type === 'tab') {
+      if (event === 'REPLACE') {
+        navigationRef.dispatch(TabActions.jumpTo(nextRoute.name, nextRoute.params));
       } else {
-        navigationRef.dispatch(
-          CommonActions.navigate(nextRoute.name, nextRoute.params)
-        );
+        navigationRef.dispatch(CommonActions.navigate(nextRoute.name, nextRoute.params));
       }
       return;
     } else {
-      if (event === "REPLACE") {
-        navigationRef.dispatch(
-          StackActions.replace(nextRoute.name, nextRoute.params)
-        );
+      if (event === 'REPLACE') {
+        navigationRef.dispatch(StackActions.replace(nextRoute.name, nextRoute.params));
       } else {
         // NOTE: Not sure if we should pop or push here...
-        navigationRef.dispatch(
-          CommonActions.navigate(nextRoute.name, nextRoute.params)
-        );
+        navigationRef.dispatch(CommonActions.navigate(nextRoute.name, nextRoute.params));
       }
       return;
     }
@@ -147,17 +127,13 @@ export function linkTo(this: RouterStore, href: string, event?: string) {
     // Then find the nearest mismatched route in the existing state.
     // Finally, use the correct navigator-based action to replace the nested screens.
     // NOTE(EvanBacon): A future version of this will involve splitting the navigation request so we replace as much as possible, then push the remaining screens to fulfill the request.
-    if (event === "REPLACE" && isAbsoluteInitialRoute(action)) {
+    if (event === 'REPLACE' && isAbsoluteInitialRoute(action)) {
       const earliest = getEarliestMismatchedRoute(rootState, action.payload);
       if (earliest) {
-        if (earliest.type === "stack") {
-          navigationRef.dispatch(
-            StackActions.replace(earliest.name, earliest.params)
-          );
+        if (earliest.type === 'stack') {
+          navigationRef.dispatch(StackActions.replace(earliest.name, earliest.params));
         } else {
-          navigationRef.dispatch(
-            TabActions.jumpTo(earliest.name, earliest.params)
-          );
+          navigationRef.dispatch(TabActions.jumpTo(earliest.name, earliest.params));
         }
         return;
       } else {
@@ -178,7 +154,7 @@ export function linkTo(this: RouterStore, href: string, event?: string) {
 export function isAbsoluteInitialRoute(
   action: ReturnType<typeof getActionFromState>
 ): action is NavigateAction {
-  if (action?.type !== "NAVIGATE") {
+  if (action?.type !== 'NAVIGATE') {
     return false;
   }
 
@@ -209,5 +185,5 @@ type NavStateParams = {
 };
 
 function isNavigationState(obj: any): obj is NavStateParams {
-  return "initial" in obj;
+  return 'initial' in obj;
 }

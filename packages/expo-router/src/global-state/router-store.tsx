@@ -2,20 +2,20 @@ import {
   NavigationContainerRefWithCurrent,
   getPathFromState,
   useNavigationContainerRef,
-} from "@react-navigation/native";
-import { useSyncExternalStore, useMemo, ComponentType, Fragment } from "react";
+} from '@react-navigation/native';
+import { useSyncExternalStore, useMemo, ComponentType, Fragment } from 'react';
 
-import { UrlObject, getRouteInfoFromState } from "../LocationProvider";
-import { RouteNode } from "../Route";
-import { deepEqual, getPathDataFromState } from "../fork/getPathFromState";
-import { ResultState } from "../fork/getStateFromPath";
-import { ExpoLinkingOptions, getLinkingConfig } from "../getLinkingConfig";
-import { getRoutes } from "../getRoutes";
-import { RequireContext } from "../types";
-import { getQualifiedRouteComponent } from "../useScreens";
-import { _internal_maybeHideAsync } from "../views/Splash";
-import { canGoBack, goBack, linkTo, push, replace, setParams } from "./routing";
-import { getSortedRoutes } from "./sort-routes";
+import { UrlObject, getRouteInfoFromState } from '../LocationProvider';
+import { RouteNode } from '../Route';
+import { deepEqual, getPathDataFromState } from '../fork/getPathFromState';
+import { ResultState } from '../fork/getStateFromPath';
+import { ExpoLinkingOptions, getLinkingConfig } from '../getLinkingConfig';
+import { getRoutes } from '../getRoutes';
+import { RequireContext } from '../types';
+import { getQualifiedRouteComponent } from '../useScreens';
+import { _internal_maybeHideAsync } from '../views/Splash';
+import { canGoBack, goBack, linkTo, push, replace, setParams } from './routing';
+import { getSortedRoutes } from './sort-routes';
 
 /**
  * This is the global state for the router. It is used to keep track of the current route, and to provide a way to navigate to other routes.
@@ -64,13 +64,11 @@ export class RouterStore {
 
     this.routeNode = getRoutes(context);
 
-    this.rootComponent = this.routeNode
-      ? getQualifiedRouteComponent(this.routeNode)
-      : Fragment;
+    this.rootComponent = this.routeNode ? getQualifiedRouteComponent(this.routeNode) : Fragment;
 
     // Only error in production, in development we will show the onboarding screen
-    if (!this.routeNode && process.env.NODE_ENV === "production") {
-      throw new Error("No routes found");
+    if (!this.routeNode && process.env.NODE_ENV === 'production') {
+      throw new Error('No routes found');
     }
 
     this.navigationRef = navigationRef;
@@ -94,8 +92,8 @@ export class RouterStore {
       this.routeInfo = this.getRouteInfo(this.initialState);
     } else {
       this.routeInfo = {
-        unstable_globalHref: "",
-        pathname: "",
+        unstable_globalHref: '',
+        pathname: '',
         params: {},
         segments: [],
       };
@@ -112,35 +110,32 @@ export class RouterStore {
      * that hooks will manually update the store.
      *
      */
-    this.navigationRefSubscription = navigationRef.addListener(
-      "state",
-      (data) => {
-        const state = data.data.state as ResultState;
+    this.navigationRefSubscription = navigationRef.addListener('state', (data) => {
+      const state = data.data.state as ResultState;
 
-        if (!this.hasAttemptedToHideSplash) {
-          this.hasAttemptedToHideSplash = true;
-          // NOTE(EvanBacon): `navigationRef.isReady` is sometimes not true when state is called initially.
-          requestAnimationFrame(() => _internal_maybeHideAsync());
-        }
+      if (!this.hasAttemptedToHideSplash) {
+        this.hasAttemptedToHideSplash = true;
+        // NOTE(EvanBacon): `navigationRef.isReady` is sometimes not true when state is called initially.
+        requestAnimationFrame(() => _internal_maybeHideAsync());
+      }
 
-        let shouldUpdateSubscribers = this.nextState === state;
-        this.nextState = undefined;
+      let shouldUpdateSubscribers = this.nextState === state;
+      this.nextState = undefined;
 
-        // This can sometimes be undefined when an error is thrown in the Root Layout Route.
-        // Additionally that state may already equal the rootState if it was updated within a hook
-        if (state && state !== this.rootState) {
-          store.updateState(state, undefined);
-          shouldUpdateSubscribers = true;
-        }
+      // This can sometimes be undefined when an error is thrown in the Root Layout Route.
+      // Additionally that state may already equal the rootState if it was updated within a hook
+      if (state && state !== this.rootState) {
+        store.updateState(state, undefined);
+        shouldUpdateSubscribers = true;
+      }
 
-        // If the state has changed, or was changed inside a hook we need to update the subscribers
-        if (shouldUpdateSubscribers) {
-          for (const subscriber of this.rootStateSubscribers) {
-            subscriber();
-          }
+      // If the state has changed, or was changed inside a hook we need to update the subscribers
+      if (shouldUpdateSubscribers) {
+        for (const subscriber of this.rootStateSubscribers) {
+          subscriber();
         }
       }
-    );
+    });
 
     for (const subscriber of this.storeSubscribers) {
       subscriber();
@@ -175,7 +170,7 @@ export class RouterStore {
   // This is only used in development, to show the onboarding screen
   // In production we should have errored during the initialization
   shouldShowTutorial() {
-    return !this.routeNode && process.env.NODE_ENV === "development";
+    return !this.routeNode && process.env.NODE_ENV === 'development';
   }
 
   /** Make sure these are arrow functions so `this` is correctly bound */
@@ -201,17 +196,12 @@ export class RouterStore {
 export const store = new RouterStore();
 
 export function useExpoRouter() {
-  return useSyncExternalStore(
-    store.subscribeToStore,
-    store.snapshot,
-    store.snapshot
-  );
+  return useSyncExternalStore(store.subscribeToStore, store.snapshot, store.snapshot);
 }
 
 function syncStoreRootState() {
   if (store.navigationRef.isReady()) {
-    const currentState =
-      store.navigationRef.getRootState() as unknown as ResultState;
+    const currentState = store.navigationRef.getRootState() as unknown as ResultState;
 
     if (store.rootState !== currentState) {
       store.updateState(currentState);
@@ -237,10 +227,7 @@ export function useStoreRouteInfo() {
   );
 }
 
-export function useInitializeExpoRouter(
-  context: RequireContext,
-  initialLocation: URL | undefined
-) {
+export function useInitializeExpoRouter(context: RequireContext, initialLocation: URL | undefined) {
   const navigationRef = useNavigationContainerRef();
   useMemo(
     () => store.initialize(context, navigationRef, initialLocation),

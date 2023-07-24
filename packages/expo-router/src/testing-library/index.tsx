@@ -1,24 +1,24 @@
 /// <reference types="../../types/jest" />
-import "./expect";
+import './expect';
 
-import { render, RenderResult } from "@testing-library/react-native";
-import path from "path";
-import React from "react";
+import { render, RenderResult } from '@testing-library/react-native';
+import path from 'path';
+import React from 'react';
 
-import { ExpoRoot } from "../ExpoRoot";
-import { stateCache } from "../getLinkingConfig";
-import { store } from "../global-state/router-store";
-import { RequireContext } from "../types";
+import { ExpoRoot } from '../ExpoRoot';
+import { stateCache } from '../getLinkingConfig';
+import { store } from '../global-state/router-store';
+import { RequireContext } from '../types';
 import {
   FileStub,
   inMemoryContext,
   requireContext,
   requireContextWithOverrides,
-} from "./context-stubs";
-import { initialUrlRef } from "./mocks";
+} from './context-stubs';
+import { initialUrlRef } from './mocks';
 
 // re-export everything
-export * from "@testing-library/react-native";
+export * from '@testing-library/react-native';
 
 type RenderRouterOptions = Parameters<typeof render>[1] & {
   initialUrl?: any;
@@ -33,13 +33,10 @@ type Result = ReturnType<typeof render> & {
 function isOverrideContext(
   context: object
 ): context is { appDir: string; overrides: Record<string, FileStub> } {
-  return Boolean(typeof context === "object" && "appDir" in context);
+  return Boolean(typeof context === 'object' && 'appDir' in context);
 }
 
-export function renderRouter(
-  context?: string,
-  options?: RenderRouterOptions
-): Result;
+export function renderRouter(context?: string, options?: RenderRouterOptions): Result;
 export function renderRouter(
   context: Record<string, FileStub>,
   options?: RenderRouterOptions
@@ -52,8 +49,8 @@ export function renderRouter(
   context:
     | string
     | { appDir: string; overrides: Record<string, FileStub> }
-    | Record<string, FileStub> = "./app",
-  { initialUrl = "/", ...options }: RenderRouterOptions = {}
+    | Record<string, FileStub> = './app',
+  { initialUrl = '/', ...options }: RenderRouterOptions = {}
 ): Result {
   jest.useFakeTimers();
 
@@ -63,11 +60,11 @@ export function renderRouter(
   initialUrlRef.value = initialUrl as any;
 
   // Force the render to be synchronous
-  process.env.EXPO_ROUTER_IMPORT_MODE_WEB = "sync";
-  process.env.EXPO_ROUTER_IMPORT_MODE_IOS = "sync";
-  process.env.EXPO_ROUTER_IMPORT_MODE_ANDROID = "sync";
+  process.env.EXPO_ROUTER_IMPORT_MODE_WEB = 'sync';
+  process.env.EXPO_ROUTER_IMPORT_MODE_IOS = 'sync';
+  process.env.EXPO_ROUTER_IMPORT_MODE_ANDROID = 'sync';
 
-  if (typeof context === "string") {
+  if (typeof context === 'string') {
     ctx = requireContext(path.resolve(process.cwd(), context));
   } else if (isOverrideContext(context)) {
     ctx = requireContextWithOverrides(context.appDir, context.overrides);
@@ -79,8 +76,8 @@ export function renderRouter(
 
   let location: URL | undefined;
 
-  if (typeof initialUrl === "string") {
-    location = new URL(initialUrl, "test://");
+  if (typeof initialUrl === 'string') {
+    location = new URL(initialUrl, 'test://');
   } else if (initialUrl instanceof URL) {
     location = initialUrl;
   }

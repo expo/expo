@@ -1,13 +1,13 @@
-import Constants from "expo-constants";
-import { StatusBar } from "expo-status-bar";
-import React, { FunctionComponent, ReactNode, Fragment } from "react";
-import { Platform } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import Constants from 'expo-constants';
+import { StatusBar } from 'expo-status-bar';
+import React, { FunctionComponent, ReactNode, Fragment } from 'react';
+import { Platform } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import UpstreamNavigationContainer from "./fork/NavigationContainer";
-import { useInitializeExpoRouter } from "./global-state/router-store";
-import { RequireContext } from "./types";
-import { SplashScreen } from "./views/Splash";
+import UpstreamNavigationContainer from './fork/NavigationContainer';
+import { useInitializeExpoRouter } from './global-state/router-store';
+import { RequireContext } from './types';
+import { SplashScreen } from './views/Splash';
 
 export type ExpoRootProps = {
   context: RequireContext;
@@ -18,7 +18,7 @@ export type ExpoRootProps = {
 function getGestureHandlerRootView() {
   try {
     const { GestureHandlerRootView } =
-      require("react-native-gesture-handler") as typeof import("react-native-gesture-handler");
+      require('react-native-gesture-handler') as typeof import('react-native-gesture-handler');
 
     if (!GestureHandlerRootView) {
       return React.Fragment;
@@ -28,9 +28,9 @@ function getGestureHandlerRootView() {
     function GestureHandler(props: any) {
       return <GestureHandlerRootView style={{ flex: 1 }} {...props} />;
     }
-    if (process.env.NODE_ENV === "development") {
+    if (process.env.NODE_ENV === 'development') {
       // @ts-expect-error
-      GestureHandler.displayName = "GestureHandlerRootView";
+      GestureHandler.displayName = 'GestureHandlerRootView';
     }
     return GestureHandler;
   } catch {
@@ -46,33 +46,26 @@ const INITIAL_METRICS = {
 };
 
 const hasViewControllerBasedStatusBarAppearance =
-  Platform.OS === "ios" &&
-  !!Constants.expoConfig?.ios?.infoPlist
-    ?.UIViewControllerBasedStatusBarAppearance;
+  Platform.OS === 'ios' &&
+  !!Constants.expoConfig?.ios?.infoPlist?.UIViewControllerBasedStatusBarAppearance;
 
-export function ExpoRoot({
-  wrapper: ParentWrapper = Fragment,
-  ...props
-}: ExpoRootProps) {
+export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRootProps) {
   /*
    * Due to static rendering we need to wrap these top level views in second wrapper
    * View's like <GestureHandlerRootView /> generate a <div> so if the parent wrapper
    * is a HTML document, we need to ensure its inside the <body>
    */
-  const wrapper: ExpoRootProps["wrapper"] = ({ children }) => {
+  const wrapper: ExpoRootProps['wrapper'] = ({ children }) => {
     return (
       <ParentWrapper>
         <GestureHandlerRootView>
           <SafeAreaProvider
             // SSR support
-            initialMetrics={INITIAL_METRICS}
-          >
+            initialMetrics={INITIAL_METRICS}>
             {children}
 
             {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
-            {!hasViewControllerBasedStatusBarAppearance && (
-              <StatusBar style="auto" />
-            )}
+            {!hasViewControllerBasedStatusBarAppearance && <StatusBar style="auto" />}
           </SafeAreaProvider>
         </GestureHandlerRootView>
       </ParentWrapper>
@@ -83,7 +76,7 @@ export function ExpoRoot({
 }
 
 const initialUrl =
-  Platform.OS === "web" && typeof window !== "undefined"
+  Platform.OS === 'web' && typeof window !== 'undefined'
     ? new URL(window.location.href)
     : undefined;
 
@@ -96,8 +89,8 @@ function ContextNavigator({
 
   if (store.shouldShowTutorial()) {
     SplashScreen.hideAsync();
-    if (process.env.NODE_ENV === "development") {
-      const Tutorial = require("./onboard/Tutorial").Tutorial;
+    if (process.env.NODE_ENV === 'development') {
+      const Tutorial = require('./onboard/Tutorial').Tutorial;
       return (
         <WrapperComponent>
           <Tutorial />
@@ -118,8 +111,7 @@ function ContextNavigator({
       linking={store.linking}
       documentTitle={{
         enabled: false,
-      }}
-    >
+      }}>
       <WrapperComponent>
         <Component />
       </WrapperComponent>

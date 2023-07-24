@@ -1,18 +1,18 @@
-import React from "react";
-import { Text } from "react-native";
+import React from 'react';
+import { Text } from 'react-native';
 
-import Stack from "../layouts/Stack";
-import { renderRouter, screen } from "../testing-library";
+import Stack from '../layouts/Stack';
+import { renderRouter, screen } from '../testing-library';
 
 /**
  * initialRouteName sets the "default" screen for a navigator, with the functionality changing per navigator
  */
 
-it("will default to the initialRouteName", async () => {
+it('will default to the initialRouteName', async () => {
   renderRouter(
     {
       _layout: {
-        unstable_settings: { initialRouteName: "apple" },
+        unstable_settings: { initialRouteName: 'apple' },
         default: () => <Stack />,
       },
       index: function Index() {
@@ -21,18 +21,18 @@ it("will default to the initialRouteName", async () => {
       apple: () => <Text>apple</Text>,
     },
     {
-      initialUrl: "/apple",
+      initialUrl: '/apple',
     }
   );
 
-  expect(screen).toHavePathname("/apple");
+  expect(screen).toHavePathname('/apple');
 });
 
-it("initialURL overrides initialRouteName", async () => {
+it('initialURL overrides initialRouteName', async () => {
   renderRouter(
     {
       _layout: {
-        unstable_settings: { initialRouteName: "index" },
+        unstable_settings: { initialRouteName: 'index' },
         default: () => <Stack />,
       },
       index: function Index() {
@@ -41,9 +41,9 @@ it("initialURL overrides initialRouteName", async () => {
       apple: () => <Text>apple</Text>,
     },
     {
-      initialUrl: "/apple",
+      initialUrl: '/apple',
     }
   );
 
-  expect(screen).toHavePathname("/apple");
+  expect(screen).toHavePathname('/apple');
 });

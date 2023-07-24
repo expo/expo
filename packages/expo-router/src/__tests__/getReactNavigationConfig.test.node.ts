@@ -1,4 +1,4 @@
-import { getReactNavigationScreensConfig } from "../getReactNavigationConfig";
+import { getReactNavigationScreensConfig } from '../getReactNavigationConfig';
 
 const mockRoutes = [
   {
@@ -6,13 +6,13 @@ const mockRoutes = [
       {
         children: [],
         dynamic: null,
-        route: "people",
-        contextKey: "./(second-group)/people.tsx",
+        route: 'people',
+        contextKey: './(second-group)/people.tsx',
       },
     ],
     dynamic: null,
-    route: "(second-group)",
-    contextKey: "./(second-group)/_layout.tsx",
+    route: '(second-group)',
+    contextKey: './(second-group)/_layout.tsx',
   },
   {
     children: [
@@ -20,58 +20,58 @@ const mockRoutes = [
         children: [],
         dynamic: [
           {
-            name: "deep",
+            name: 'deep',
             deep: true,
           },
         ],
-        route: "[...deep]",
-        contextKey: "./(group)/[...deep].tsx",
+        route: '[...deep]',
+        contextKey: './(group)/[...deep].tsx',
       },
       {
         children: [],
         dynamic: [
           {
-            name: "dynamic",
+            name: 'dynamic',
             deep: false,
           },
         ],
-        route: "[dynamic]",
-        contextKey: "./(group)/[dynamic].tsx",
+        route: '[dynamic]',
+        contextKey: './(group)/[dynamic].tsx',
       },
       {
         children: [],
         dynamic: null,
-        route: "index",
-        contextKey: "./(group)/index.tsx",
+        route: 'index',
+        contextKey: './(group)/index.tsx',
       },
     ],
     dynamic: null,
-    route: "(group)",
-    contextKey: "./(group)/_layout.tsx",
+    route: '(group)',
+    contextKey: './(group)/_layout.tsx',
   },
   {
     children: [],
     dynamic: [
       {
-        name: "screen",
+        name: 'screen',
         deep: true,
       },
     ],
-    route: "other/nested/[...screen]",
-    contextKey: "./other/nested/[...screen].js",
+    route: 'other/nested/[...screen]',
+    contextKey: './other/nested/[...screen].js',
   },
   {
     children: [],
     dynamic: null,
-    route: "_sitemap",
-    contextKey: "./_sitemap.tsx",
+    route: '_sitemap',
+    contextKey: './_sitemap.tsx',
     generated: true,
     internal: true,
   },
 ];
 
 describe(getReactNavigationScreensConfig, () => {
-  it("should return a valid linking config", () => {
+  it('should return a valid linking config', () => {
     expect(
       getReactNavigationScreensConfig(
         // @ts-expect-error
@@ -79,21 +79,21 @@ describe(getReactNavigationScreensConfig, () => {
         true
       )
     ).toEqual({
-      "(group)": {
+      '(group)': {
         initialRouteName: undefined,
-        path: "(group)",
-        screens: { "[...deep]": "*deep", "[dynamic]": ":dynamic", index: "" },
+        path: '(group)',
+        screens: { '[...deep]': '*deep', '[dynamic]': ':dynamic', index: '' },
       },
-      "(second-group)": {
+      '(second-group)': {
         initialRouteName: undefined,
-        path: "(second-group)",
-        screens: { people: "people" },
+        path: '(second-group)',
+        screens: { people: 'people' },
       },
-      _sitemap: "_sitemap",
-      "other/nested/[...screen]": "other/nested/*screen",
+      _sitemap: '_sitemap',
+      'other/nested/[...screen]': 'other/nested/*screen',
     });
   });
-  it("should return a valid linking config with route nodes", () => {
+  it('should return a valid linking config with route nodes', () => {
     expect(
       getReactNavigationScreensConfig(
         // @ts-expect-error
@@ -101,35 +101,35 @@ describe(getReactNavigationScreensConfig, () => {
         false
       )
     ).toEqual({
-      "(group)": {
+      '(group)': {
         initialRouteName: undefined,
-        path: "(group)",
+        path: '(group)',
         _route: expect.anything(),
         screens: {
-          "[...deep]": {
-            path: "*deep",
+          '[...deep]': {
+            path: '*deep',
             screens: {},
             _route: expect.anything(),
           },
-          "[dynamic]": {
-            path: ":dynamic",
+          '[dynamic]': {
+            path: ':dynamic',
             screens: {},
             _route: expect.anything(),
           },
-          index: { path: "", screens: {}, _route: expect.anything() },
+          index: { path: '', screens: {}, _route: expect.anything() },
         },
       },
-      "(second-group)": {
+      '(second-group)': {
         initialRouteName: undefined,
-        path: "(second-group)",
+        path: '(second-group)',
         _route: expect.anything(),
         screens: {
-          people: { path: "people", screens: {}, _route: expect.anything() },
+          people: { path: 'people', screens: {}, _route: expect.anything() },
         },
       },
-      _sitemap: { path: "_sitemap", screens: {}, _route: expect.anything() },
-      "other/nested/[...screen]": {
-        path: "other/nested/*screen",
+      _sitemap: { path: '_sitemap', screens: {}, _route: expect.anything() },
+      'other/nested/[...screen]': {
+        path: 'other/nested/*screen',
         screens: {},
         _route: expect.anything(),
       },

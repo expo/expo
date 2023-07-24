@@ -1,16 +1,16 @@
 // Fork of @react-navigation/native Link.tsx with `href` and `replace` support added and
 // `to` / `action` support removed.
-import { Text, TextProps } from "@bacons/react-views";
-import { Slot } from "@radix-ui/react-slot";
-import * as React from "react";
-import { GestureResponderEvent, Platform } from "react-native";
+import { Text, TextProps } from '@bacons/react-views';
+import { Slot } from '@radix-ui/react-slot';
+import * as React from 'react';
+import { GestureResponderEvent, Platform } from 'react-native';
 
-import { useRouter } from "../hooks";
-import { useFocusEffect } from "../useFocusEffect";
-import { Href, resolveHref } from "./href";
-import useLinkToPathProps from "./useLinkToPathProps";
+import { useRouter } from '../hooks';
+import { useFocusEffect } from '../useFocusEffect';
+import { Href, resolveHref } from './href';
+import useLinkToPathProps from './useLinkToPathProps';
 
-export interface LinkProps extends Omit<TextProps, "href" | "hoverStyle"> {
+export interface LinkProps extends Omit<TextProps, 'href' | 'hoverStyle'> {
   /** Path to route to. */
   href: Href;
 
@@ -21,9 +21,7 @@ export interface LinkProps extends Omit<TextProps, "href" | "hoverStyle"> {
   /** Should replace the current route without adding to the history. */
   replace?: boolean;
 
-  onPress?: (
-    e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent
-  ) => void;
+  onPress?: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent) => void;
 }
 
 /** Redirects to the href as soon as the component is mounted. */
@@ -54,9 +52,7 @@ export interface LinkComponent {
  * @param props.asChild Forward props to child component. Useful for custom buttons.
  * @param props.children Child elements to render the content.
  */
-export const Link = React.forwardRef(
-  ExpoRouterLink
-) as unknown as LinkComponent;
+export const Link = React.forwardRef(ExpoRouterLink) as unknown as LinkComponent;
 
 Link.resolveHref = resolveHref;
 
@@ -72,17 +68,15 @@ function ExpoRouterLink(
 ) {
   const resolvedHref = React.useMemo(() => {
     if (href == null) {
-      throw new Error("Link: href is required");
+      throw new Error('Link: href is required');
     }
     return resolveHref(href);
   }, [href]);
 
   const props = useLinkToPathProps({ href: resolvedHref, replace });
 
-  const onPress = (
-    e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent
-  ) => {
-    if ("onPress" in rest) {
+  const onPress = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent) => {
+    if ('onPress' in rest) {
       rest.onPress?.(e);
     }
     props.onPress(e);

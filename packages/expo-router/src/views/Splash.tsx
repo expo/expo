@@ -1,9 +1,9 @@
-import * as SplashModule from "expo-splash-screen";
-import { nanoid } from "nanoid/non-secure";
-import * as React from "react";
-import { Platform } from "react-native";
+import * as SplashModule from 'expo-splash-screen';
+import { nanoid } from 'nanoid/non-secure';
+import * as React from 'react';
+import { Platform } from 'react-native';
 
-import { useDeprecated } from "../useDeprecated";
+import { useDeprecated } from '../useDeprecated';
 
 const globalStack: string[] = [];
 
@@ -28,7 +28,7 @@ const globalStack: string[] = [];
 export function SplashScreen() {
   useGlobalSplash();
   useDeprecated(
-    "The <SplashScreen /> component is deprecated. Use `SplashScreen.preventAutoHideAsync()` and `SplashScreen.hideAsync` from `expo-router` instead."
+    'The <SplashScreen /> component is deprecated. Use `SplashScreen.preventAutoHideAsync()` and `SplashScreen.hideAsync` from `expo-router` instead.'
   );
   return null;
 }
@@ -67,7 +67,7 @@ export const _internal_preventAutoHideAsync = () => {
   }
   _preventAutoHideAsyncInvoked = true;
   // Append error handling to ensure any uncaught exceptions result in the splash screen being hidden.
-  if (Platform.OS !== "web" && ErrorUtils?.getGlobalHandler) {
+  if (Platform.OS !== 'web' && ErrorUtils?.getGlobalHandler) {
     const originalHandler = ErrorUtils.getGlobalHandler();
     ErrorUtils.setGlobalHandler((error, isFatal) => {
       SplashScreen.hideAsync();
@@ -92,7 +92,7 @@ async function forceHideAsync() {
     if (
       // Only throw the error is something unexpected happened.
       _preventAutoHideAsyncInvoked &&
-      error.message.includes("No native splash screen registered for ")
+      error.message.includes('No native splash screen registered for ')
     ) {
       return;
     }

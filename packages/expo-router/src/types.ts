@@ -1,4 +1,4 @@
-import { Href } from "./link/href";
+import { Href } from './link/href';
 
 // TODO: Use the global type
 export interface RequireContext {
@@ -13,8 +13,7 @@ export interface RequireContext {
 }
 
 /** The list of input keys will become optional, everything else will remain the same. */
-export type PickPartial<T, K extends keyof T> = Omit<T, K> &
-  Partial<Pick<T, K>>;
+export type PickPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export type Router = {
   /** Navigate to the provided href. */

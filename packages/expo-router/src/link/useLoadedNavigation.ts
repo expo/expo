@@ -1,7 +1,7 @@
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { useCallback, useState, useEffect, useRef } from "react";
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { useCallback, useState, useEffect, useRef } from 'react';
 
-import { useExpoRouter } from "../global-state/router-store";
+import { useExpoRouter } from '../global-state/router-store';
 
 type GenericNavigation = NavigationProp<ReactNavigation.RootParamList>;
 

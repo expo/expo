@@ -1,6 +1,6 @@
-import path from "path";
+import path from 'path';
 
-import requireContext from "./require-context-ponyfill";
+import requireContext from './require-context-ponyfill';
 
 export type ReactComponent = () => React.ReactElement<any, any> | null;
 export type FileStub =
@@ -15,30 +15,25 @@ export { requireContext };
 export function inMemoryContext(context: Record<string, FileStub>) {
   return Object.assign(
     function (id: string) {
-      id = id.replace(/^\.\//, "").replace(/\.js$/, "");
-      return typeof context[id] === "function"
-        ? { default: context[id] }
-        : context[id];
+      id = id.replace(/^\.\//, '').replace(/\.js$/, '');
+      return typeof context[id] === 'function' ? { default: context[id] } : context[id];
     },
     {
-      keys: () => Object.keys(context).map((key) => "./" + key + ".js"),
+      keys: () => Object.keys(context).map((key) => './' + key + '.js'),
       resolve: (key: string) => key,
-      id: "0",
+      id: '0',
     }
   );
 }
 
-export function requireContextWithOverrides(
-  dir: string,
-  overrides: Record<string, FileStub>
-) {
+export function requireContextWithOverrides(dir: string, overrides: Record<string, FileStub>) {
   const existingContext = requireContext(path.resolve(process.cwd(), dir));
 
   return Object.assign(
     function (id: string) {
       if (id in overrides) {
         const route = overrides[id];
-        return typeof route === "function" ? { default: route } : route;
+        return typeof route === 'function' ? { default: route } : route;
       } else {
         return existingContext(id);
       }
@@ -46,7 +41,7 @@ export function requireContextWithOverrides(
     {
       keys: () => [...Object.keys(overrides), ...existingContext.keys()],
       resolve: (key: string) => key,
-      id: "0",
+      id: '0',
     }
   );
 }

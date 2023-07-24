@@ -1,4 +1,4 @@
-import matchers from "expect/build/matchers";
+import matchers from 'expect/build/matchers';
 
 matchers.customTesters = [];
 

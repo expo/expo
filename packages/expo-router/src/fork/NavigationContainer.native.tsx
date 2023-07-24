@@ -9,7 +9,7 @@ import {
   NavigationContainerRef,
   ParamListBase,
   validatePathConfig,
-} from "@react-navigation/core";
+} from '@react-navigation/core';
 import {
   DefaultTheme,
   DocumentTitleOptions,
@@ -17,13 +17,13 @@ import {
   LinkingOptions,
   Theme,
   ThemeProvider,
-} from "@react-navigation/native";
-import useBackButton from "@react-navigation/native/src/useBackButton";
-import useDocumentTitle from "@react-navigation/native/src/useDocumentTitle";
-import useThenable from "@react-navigation/native/src/useThenable";
-import * as React from "react";
+} from '@react-navigation/native';
+import useBackButton from '@react-navigation/native/src/useBackButton';
+import useDocumentTitle from '@react-navigation/native/src/useDocumentTitle';
+import useThenable from '@react-navigation/native/src/useThenable';
+import * as React from 'react';
 
-import useLinking from "./useLinking";
+import useLinking from './useLinking';
 
 declare global {
   // eslint-disable-next-line no-var
@@ -74,8 +74,7 @@ function NavigationContainerInner(
     validatePathConfig(linking.config);
   }
 
-  const refContainer =
-    React.useRef<NavigationContainerRef<ParamListBase>>(null);
+  const refContainer = React.useRef<NavigationContainerRef<ParamListBase>>(null);
 
   useBackButton(refContainer);
   useDocumentTitle(refContainer, documentTitle);
@@ -99,8 +98,7 @@ function NavigationContainerInner(
             prefixes: linking?.prefixes ?? [],
             getStateFromPath: linking?.getStateFromPath ?? getStateFromPath,
             getPathFromState: linking?.getPathFromState ?? getPathFromState,
-            getActionFromState:
-              linking?.getActionFromState ?? getActionFromState,
+            getActionFromState: linking?.getActionFromState ?? getActionFromState,
           };
         },
       });
@@ -138,9 +136,7 @@ function NavigationContainerInner(
       <ThemeProvider value={theme}>
         <BaseNavigationContainer
           {...rest}
-          initialState={
-            rest.initialState == null ? initialState : rest.initialState
-          }
+          initialState={rest.initialState == null ? initialState : rest.initialState}
           ref={refContainer}
         />
       </ThemeProvider>

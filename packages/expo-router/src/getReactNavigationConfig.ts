@@ -1,5 +1,5 @@
-import type { RouteNode } from "./Route";
-import { matchDeepDynamicRouteName, matchDynamicName } from "./matchers";
+import type { RouteNode } from './Route';
+import { matchDeepDynamicRouteName, matchDynamicName } from './matchers';
 
 export type Screen =
   | string
@@ -14,13 +14,13 @@ export type Screen =
 // `page` -> `page`
 function convertDynamicRouteToReactNavigation(segment: string): string {
   // NOTE(EvanBacon): To support shared routes we preserve group segments.
-  if (segment === "index") {
-    return "";
+  if (segment === 'index') {
+    return '';
   }
 
   const rest = matchDeepDynamicRouteName(segment);
   if (rest != null) {
-    return "*" + rest;
+    return '*' + rest;
   }
   const dynamicName = matchDynamicName(segment);
 
@@ -37,13 +37,13 @@ function parseRouteSegments(segments: string): string {
     // the node.route will be something like `app/home/index`
     // this needs to be split to ensure each segment is parsed correctly.
     segments
-      .split("/")
+      .split('/')
       // Convert each segment to a React Navigation format.
       .map(convertDynamicRouteToReactNavigation)
       // Remove any empty paths from groups or index routes.
       .filter(Boolean)
       // Join to return as a path.
-      .join("/")
+      .join('/')
   );
 }
 
@@ -83,9 +83,7 @@ export function getReactNavigationScreensConfig(
   metaOnly: boolean
 ): Record<string, Screen> {
   return Object.fromEntries(
-    nodes.map(
-      (node) => [node.route, convertRouteNodeToScreen(node, metaOnly)] as const
-    )
+    nodes.map((node) => [node.route, convertRouteNodeToScreen(node, metaOnly)] as const)
   );
 }
 

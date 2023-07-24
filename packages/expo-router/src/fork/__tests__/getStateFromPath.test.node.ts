@@ -1,68 +1,57 @@
-import { configFromFs } from "../../utils/mockState";
-import getStateFromPath, {
-  getUrlWithReactNavigationConcessions,
-} from "../getStateFromPath";
+import { configFromFs } from '../../utils/mockState';
+import getStateFromPath, { getUrlWithReactNavigationConcessions } from '../getStateFromPath';
 
 describe(getUrlWithReactNavigationConcessions, () => {
-  ["/", "foo/", "foo/bar/", "foo/bar/baz/"].forEach((path) => {
+  ['/', 'foo/', 'foo/bar/', 'foo/bar/baz/'].forEach((path) => {
     it(`returns the pathname for ${path}`, () => {
-      expect(
-        getUrlWithReactNavigationConcessions(path).nonstandardPathname
-      ).toBe(path);
+      expect(getUrlWithReactNavigationConcessions(path).nonstandardPathname).toBe(path);
     });
   });
 
   [
-    ["", "/"],
-    ["https://acme.com/hello/world?foo=bar#123", "hello/world/"],
-    ["https://acme.com/hello/world/?foo=bar#123", "hello/world/"],
+    ['', '/'],
+    ['https://acme.com/hello/world?foo=bar#123', 'hello/world/'],
+    ['https://acme.com/hello/world/?foo=bar#123', 'hello/world/'],
   ].forEach(([url, expected]) => {
     it(`returns the pathname for ${url}`, () => {
-      expect(
-        getUrlWithReactNavigationConcessions(url).nonstandardPathname
-      ).toBe(expected);
+      expect(getUrlWithReactNavigationConcessions(url).nonstandardPathname).toBe(expected);
     });
   });
   [
-    ["", ""],
-    [
-      "https://acme.com/hello/world/?foo=bar#123",
-      "https://acme.com/hello/world/?foo=bar",
-    ],
-    ["/foobar#123", "/foobar"],
+    ['', ''],
+    ['https://acme.com/hello/world/?foo=bar#123', 'https://acme.com/hello/world/?foo=bar'],
+    ['/foobar#123', '/foobar'],
   ].forEach(([url, expected]) => {
     it(`returns the pathname without hash for ${url}`, () => {
-      expect(
-        getUrlWithReactNavigationConcessions(url).inputPathnameWithoutHash
-      ).toBe(expected);
+      expect(getUrlWithReactNavigationConcessions(url).inputPathnameWithoutHash).toBe(expected);
     });
   });
 });
 
 it(`strips hashes`, () => {
   expect(
-    getStateFromPath("/hello#123", {
+    getStateFromPath('/hello#123', {
       screens: {
-        hello: "hello",
+        hello: 'hello',
       },
     } as any)
   ).toEqual({
     routes: [
       {
-        name: "hello",
-        path: "/hello",
+        name: 'hello',
+        path: '/hello',
       },
     ],
   });
 
-  expect(getStateFromPath("/hello#123", configFromFs(["[hello].js"]))).toEqual({
+  expect(getStateFromPath('/hello#123', configFromFs(['[hello].js']))).toEqual({
     routes: [
       {
-        name: "[hello]",
+        name: '[hello]',
         params: {
-          hello: "hello",
+          hello: 'hello',
         },
-        path: "/hello",
+        path: '/hello',
       },
     ],
   });
@@ -72,30 +61,28 @@ it(`strips hashes`, () => {
 
 it(`supports spaces`, () => {
   expect(
-    getStateFromPath("/hello%20world", {
+    getStateFromPath('/hello%20world', {
       screens: {
-        "hello world": "hello world",
+        'hello world': 'hello world',
       },
     } as any)
   ).toEqual({
     routes: [
       {
-        name: "hello world",
-        path: "/hello%20world",
+        name: 'hello world',
+        path: '/hello%20world',
       },
     ],
   });
 
-  expect(
-    getStateFromPath("/hello%20world", configFromFs(["[hello world].js"]))
-  ).toEqual({
+  expect(getStateFromPath('/hello%20world', configFromFs(['[hello world].js']))).toEqual({
     routes: [
       {
-        name: "[hello world]",
+        name: '[hello world]',
         params: {
-          "hello world": "hello%20world",
+          'hello world': 'hello%20world',
         },
-        path: "/hello%20world",
+        path: '/hello%20world',
       },
     ],
   });
@@ -106,37 +93,37 @@ it(`supports spaces`, () => {
 it(`matches unmatched existing groups against 404`, () => {
   expect(
     getStateFromPath(
-      "/(app)/(explore)",
+      '/(app)/(explore)',
       configFromFs([
-        "[...404].js",
+        '[...404].js',
 
-        "(app)/_layout.tsx",
+        '(app)/_layout.tsx',
 
-        "(app)/(explore)/_layout.tsx",
-        "(app)/(explore)/[user]/index.tsx",
-        "(app)/(explore)/explore.tsx",
+        '(app)/(explore)/_layout.tsx',
+        '(app)/(explore)/[user]/index.tsx',
+        '(app)/(explore)/explore.tsx',
 
-        "(app)/([user])/_layout.tsx",
-        "(app)/([user])/[user]/index.tsx",
-        "(app)/([user])/explore.tsx",
+        '(app)/([user])/_layout.tsx',
+        '(app)/([user])/[user]/index.tsx',
+        '(app)/([user])/explore.tsx',
       ])
     )
   ).toEqual({
     routes: [
       {
-        name: "(app)",
-        params: { user: "(explore)" },
+        name: '(app)',
+        params: { user: '(explore)' },
         state: {
           routes: [
             {
-              name: "([user])",
-              params: { user: "(explore)" },
+              name: '([user])',
+              params: { user: '(explore)' },
               state: {
                 routes: [
                   {
-                    name: "[user]/index",
-                    params: { user: "(explore)" },
-                    path: "",
+                    name: '[user]/index',
+                    params: { user: '(explore)' },
+                    path: '',
                   },
                 ],
               },
@@ -152,39 +139,39 @@ it(`adds dynamic route params from all levels of the path`, () => {
   // A route at `app/[foo]/bar/[baz]/other` should get all of the params from the path.
   expect(
     getStateFromPath(
-      "/foo/bar/baz/other",
+      '/foo/bar/baz/other',
 
       configFromFs([
-        "[foo]/_layout.tsx",
-        "[foo]/bar/_layout.tsx",
-        "[foo]/bar/[baz]/_layout.tsx",
-        "[foo]/bar/[baz]/other.tsx",
+        '[foo]/_layout.tsx',
+        '[foo]/bar/_layout.tsx',
+        '[foo]/bar/[baz]/_layout.tsx',
+        '[foo]/bar/[baz]/other.tsx',
       ])
     )
   ).toEqual({
     routes: [
       {
-        name: "[foo]",
-        params: { baz: "baz", foo: "foo" },
+        name: '[foo]',
+        params: { baz: 'baz', foo: 'foo' },
         state: {
           routes: [
             {
-              name: "bar",
-              params: { baz: "baz", foo: "foo" },
+              name: 'bar',
+              params: { baz: 'baz', foo: 'foo' },
               state: {
                 routes: [
                   {
-                    name: "[baz]",
-                    params: { baz: "baz", foo: "foo" },
+                    name: '[baz]',
+                    params: { baz: 'baz', foo: 'foo' },
                     state: {
                       routes: [
                         {
-                          name: "other",
+                          name: 'other',
                           params: {
-                            baz: "baz",
-                            foo: "foo",
+                            baz: 'baz',
+                            foo: 'foo',
                           },
-                          path: "/foo/bar/baz/other",
+                          path: '/foo/bar/baz/other',
                         },
                       ],
                     },
