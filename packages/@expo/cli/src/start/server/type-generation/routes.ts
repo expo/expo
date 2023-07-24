@@ -174,6 +174,10 @@ export function getTypedRoutesUtils(appRoot: string, filePathSeperator = path.se
   };
 
   const addFilePath = (filePath: string): boolean => {
+    if (!isRouteFile(filePath)) {
+      return false;
+    }
+
     const route = filePathToRoute(filePath);
 
     // We have already processed this file
