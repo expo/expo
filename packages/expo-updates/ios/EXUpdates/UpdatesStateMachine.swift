@@ -167,13 +167,11 @@ internal struct UpdatesStateContext {
   let downloadError: [String: String]?
   let lastCheckForUpdateTime: Date?
 
-  private var dateString: String? {
-    switch lastCheckForUpdateTime {
-    case nil:
+  private var lastCheckForUpdateTimeDateString: String? {
+    guard let lastCheckForUpdateTime = lastCheckForUpdateTime else {
       return nil
-    default:
-      return iso8601DateFormatter.string(from: lastCheckForUpdateTime ?? Date())
     }
+    return iso8601DateFormatter.string(from: lastCheckForUpdateTime)
   }
 
   var json: [String: Any?] {
@@ -188,7 +186,7 @@ internal struct UpdatesStateContext {
       "downloadedManifest": self.downloadedManifest,
       "checkError": self.checkError,
       "downloadError": self.downloadError,
-      "lastCheckForUpdateTimeString": dateString
+      "lastCheckForUpdateTimeString": lastCheckForUpdateTimeDateString
     ] as [String: Any?]
   }
 }
