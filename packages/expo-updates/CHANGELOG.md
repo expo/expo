@@ -15,6 +15,7 @@
 - [iOS] Fix unmatched selection policy. ([#23535](https://github.com/expo/expo/pull/23535) by [@chochihim](https://github.com/chochihim))
 - Handle initialization errors in useUpdates(). ([#23640](https://github.com/expo/expo/pull/23640) by [@douglowder](https://github.com/douglowder))
 - [iOS] Fix error handling on iOS during startup check for updates. ([#23663](https://github.com/expo/expo/pull/23663) by [@douglowder](https://github.com/douglowder))
+- Last check dateTime should come from native. ([#23692](https://github.com/expo/expo/pull/23692) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others
 

@@ -14,14 +14,12 @@ export default function App() {
       <Text style={styles.titleText}>Updates JS API test</Text>
       <Pressable
         style={styles.button}
-        onPress={() => setShowingView1((showingView1) => !showingView1)}
-      >
+        onPress={() => setShowingView1((showingView1) => !showingView1)}>
         <Text style={styles.buttonText}>Toggle view 1</Text>
       </Pressable>
       <Pressable
         style={styles.button}
-        onPress={() => setShowingView2((showingView2) => !showingView2)}
-      >
+        onPress={() => setShowingView2((showingView2) => !showingView2)}>
         <Text style={styles.buttonText}>Toggle view 2</Text>
       </Pressable>
       {showingView1 ? <UpdatesStatusView index={1} /> : null}
@@ -50,6 +48,7 @@ function UpdatesStatusView(props: { index: number }) {
     availableUpdate,
     checkError,
     downloadError,
+    lastCheckForUpdateTimeSinceRestart,
   } = Updates.useUpdates();
 
   useEffect(() => {
@@ -68,22 +67,21 @@ function UpdatesStatusView(props: { index: number }) {
     const availableMessage = isUpdateAvailable
       ? isRollback
         ? 'Rollback directive found\n'
-        : `Found a new update: manifest = \n${manifestToString(
-            availableUpdate?.manifest,
-          )}...` + '\n'
+        : `Found a new update: manifest = \n${manifestToString(availableUpdate?.manifest)}...` +
+          '\n'
       : 'No new update available\n';
-    const checkErrorMessage = checkError
-      ? `Error in check: ${checkError.message}`
-      : '';
-    const downloadErrorMessage = downloadError
-      ? `Error in check: ${downloadError.message}`
+    const checkErrorMessage = checkError ? `Error in check: ${checkError.message}\n` : '';
+    const downloadErrorMessage = downloadError ? `Error in check: ${downloadError.message}\n` : '';
+    const lastCheckTimeMessage = lastCheckForUpdateTimeSinceRestart
+      ? `Last check: ${lastCheckForUpdateTimeSinceRestart.toLocaleString()}\n`
       : '';
     setUpdateMessage(
       checkingMessage +
         downloadingMessage +
         availableMessage +
         checkErrorMessage +
-        downloadErrorMessage,
+        downloadErrorMessage +
+        lastCheckTimeMessage
     );
   }, [
     isUpdateAvailable,
@@ -99,9 +97,7 @@ function UpdatesStatusView(props: { index: number }) {
     const handleReloadAsync = async () => {
       let countdown = 5;
       while (countdown > 0) {
-        setUpdateMessage(
-          `Downloaded update... launching it in ${countdown} seconds.`,
-        );
+        setUpdateMessage(`Downloaded update... launching it in ${countdown} seconds.`);
         countdown = countdown - 1;
         await delay(1000);
       }
@@ -198,7 +194,7 @@ const manifestToString = (manifest?: Updates.Manifest) => {
           // metadata: manifest.metadata,
         },
         null,
-        2,
+        2
       )
     : 'null';
 };

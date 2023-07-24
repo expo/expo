@@ -48,6 +48,12 @@ function _emitNativeStateChangeEvent(params: any) {
     newParams.context.downloadedManifest = JSON.parse(newParams.context.downloadedManifestString);
     delete newParams.context.downloadedManifestString;
   }
+  if (newParams.context.lastCheckForUpdateTimeString) {
+    newParams.context.lastCheckForUpdateTime = new Date(
+      newParams.context.lastCheckForUpdateTimeString
+    );
+    delete newParams.context.lastCheckForUpdateTimeString;
+  }
   if (!_emitter) {
     throw new Error(`EventEmitter must be initialized to use from its listener`);
   }
@@ -87,8 +93,5 @@ export const addUpdatesStateChangeListener = (
  */
 export const emitStateChangeEvent = (event: UpdatesNativeStateChangeEvent) => {
   // Allows JS to emit a state change event (used in testing)
-  if (!_emitter) {
-    throw new Error(`EventEmitter must be initialized to use from its listener`);
-  }
-  _emitter?.emit('Expo.updatesStateChangeEvent', event);
+  _emitNativeStateChangeEvent(event);
 };
