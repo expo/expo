@@ -251,6 +251,10 @@ export async function getNativeStateMachineContextAsync() {
         nativeContext.downloadedManifest = JSON.parse(nativeContext.downloadedManifestString);
         delete nativeContext.downloadedManifestString;
     }
+    if (nativeContext.lastCheckForUpdateTimeString) {
+        nativeContext.lastCheckForUpdateTime = new Date(nativeContext.lastCheckForUpdateTimeString);
+        delete nativeContext.lastCheckForUpdateTimeString;
+    }
     return nativeContext;
 }
 //# sourceMappingURL=Updates.js.map
