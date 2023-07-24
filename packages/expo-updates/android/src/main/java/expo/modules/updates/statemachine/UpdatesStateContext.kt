@@ -100,11 +100,10 @@ data class UpdatesStateContext(
     }
 
   companion object {
-    val DATE_FORMATTER: SimpleDateFormat
-      get() {
-        val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
-        formatter.timeZone = java.util.TimeZone.getTimeZone("GMT")
-        return formatter
+    val DATE_FORMATTER: SimpleDateFormat by lazy {
+      SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US).apply {
+        timeZone = java.util.TimeZone.getTimeZone("GMT")
       }
+    }
   }
 }
