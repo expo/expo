@@ -269,6 +269,7 @@ dependencies {
   api "androidx.exifinterface:exifinterface:1.0.0"
   api "androidx.legacy:legacy-support-v4:1.0.0"
   api "androidx.browser:browser:1.0.0"
+  implementation "androidx.tracing:tracing-ktx:1.1.0"
 
   // expo-face-detector
   implementation 'com.google.mlkit:face-detection:16.1.5'

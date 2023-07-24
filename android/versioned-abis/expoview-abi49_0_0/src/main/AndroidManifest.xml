@@ -241,6 +241,20 @@
                 android:resource="@xml/file_system_provider_paths" />
         </provider>
 
+        <service
+            android:name="com.google.android.gms.metadata.ModuleDependencies"
+            android:enabled="false"
+            android:exported="false"
+            tools:ignore="MissingClass" >
+            <intent-filter>
+                <action android:name="com.google.android.gms.metadata.MODULE_DEPENDENCIES" />
+            </intent-filter>
+
+            <meta-data
+                android:name="photopicker_activity:0:required"
+                android:value="" />
+        </service>
+
         <activity
             android:name="com.canhub.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" /> <!-- https://developer.android.com/guide/topics/manifest/provider-element.html -->
@@ -268,6 +282,11 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/mail_composer_provider_paths" />
         </provider>
+
+        <meta-data
+            android:name="com.facebook.soloader.enabled"
+            android:value="true"
+            tools:replace="android:value" />
 
         <service
             android:name="expo.modules.notifications.service.ExpoFirebaseMessagingService"

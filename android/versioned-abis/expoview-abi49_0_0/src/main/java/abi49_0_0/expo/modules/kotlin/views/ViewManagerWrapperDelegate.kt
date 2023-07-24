@@ -7,9 +7,9 @@ import abi49_0_0.com.facebook.react.common.MapBuilder
 import abi49_0_0.expo.modules.core.utilities.ifNull
 import abi49_0_0.expo.modules.kotlin.ModuleHolder
 import abi49_0_0.expo.modules.kotlin.events.normalizeEventName
-import abi49_0_0.expo.modules.kotlin.exception.CodedException
 import abi49_0_0.expo.modules.kotlin.exception.OnViewDidUpdatePropsException
 import abi49_0_0.expo.modules.kotlin.exception.exceptionDecorator
+import abi49_0_0.expo.modules.kotlin.exception.toCodedException
 import abi49_0_0.expo.modules.kotlin.logger
 import abi49_0_0.expo.modules.kotlin.viewevent.ViewEventDelegate
 import kotlin.reflect.full.declaredMemberProperties
@@ -42,9 +42,16 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder) {
         exceptionDecorator({ OnViewDidUpdatePropsException(view.javaClass.kotlin, it) }) {
           it.invoke(view)
         }
-      } catch (exception: CodedException) {
-        logger.error("❌ Error occurred when invoking 'onViewDidUpdateProps' on '${view.javaClass.simpleName}'", exception)
-        definition.handleException(view, exception)
+      } catch (exception: Throwable) {
+        // The view wasn't constructed correctly, so errors are expected.
+        // We can ignore them.
+        if (view.isErrorView()) {
+          return@let
+        }
+
+        val codedException = exception.toCodedException()
+        logger.error("❌ Error occurred when invoking 'onViewDidUpdateProps' on '${view.javaClass.simpleName}'", codedException)
+        definition.handleException(view, codedException)
       }
     }
   }
@@ -65,15 +72,47 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder) {
     while (iterator.hasNextKey()) {
       val key = iterator.nextKey()
       expoProps[key]?.let { expoProp ->
-        expoProp.set(propsMap.getDynamic(key), view)
-        handledProps.add(key)
+        try {
+          expoProp.set(propsMap.getDynamic(key), view)
+        } catch (exception: Throwable) {
+          // The view wasn't constructed correctly, so errors are expected.
+          // We can ignore them.
+          if (view.isErrorView()) {
+            return@let
+          }
+
+          val codedException = exception.toCodedException()
+          logger.error("❌ Cannot set the '$name' prop on the '$view'", codedException)
+          definition.handleException(
+            view,
+            codedException
+          )
+        } finally {
+          handledProps.add(key)
+        }
       }
     }
     return handledProps
   }
 
-  fun onDestroy(view: View) =
-    definition.onViewDestroys?.invoke(view)
+  fun onDestroy(view: View) {
+    try {
+      definition.onViewDestroys?.invoke(view)
+    } catch (exception: Throwable) {
+      // The view wasn't constructed correctly, so errors are expected.
+      // We can ignore them.
+      if (view.isErrorView()) {
+        return
+      }
+
+      val codedException = exception.toCodedException()
+      logger.error("❌ '$view' wasn't able to destroy itself", codedException)
+      definition.handleException(
+        view,
+        codedException
+      )
+    }
+  }
 
   fun getExportedCustomDirectEventTypeConstants(): Map<String, Any>? {
     val builder = MapBuilder.builder<String, Any>()

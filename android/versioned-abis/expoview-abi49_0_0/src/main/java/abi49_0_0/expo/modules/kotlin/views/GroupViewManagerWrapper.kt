@@ -37,7 +37,7 @@ class GroupViewManagerWrapper(
   override fun getNativeProps(): MutableMap<String, String> {
     val props = super.getNativeProps()
     viewWrapperDelegate.props.forEach { (key, prop) ->
-      props[key] = prop.type.kType.toString()
+      props[key] = prop.type.kType.classifier.toString()
     }
     return props
   }
