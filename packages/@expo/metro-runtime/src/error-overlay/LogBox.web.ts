@@ -1,15 +1,15 @@
 /**
- * Copyright (c) Evan Bacon.
+ * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-import { Platform } from "react-native";
+import { Platform } from 'react-native';
 
-import { IgnorePattern, LogData } from "./Data/LogBoxData";
-import { ExtendedExceptionData } from "./Data/parseLogBoxLog";
+import { IgnorePattern, LogData } from './Data/LogBoxData';
+import { ExtendedExceptionData } from './Data/parseLogBoxLog';
 
 export { LogData, ExtendedExceptionData, IgnorePattern };
 
@@ -30,9 +30,9 @@ interface ILogBox {
  * LogBox displays logs in the app.
  */
 if (__DEV__) {
-  const LogBoxData = require("./Data/LogBoxData");
+  const LogBoxData = require('./Data/LogBoxData');
   const { parseLogBoxLog, parseInterpolation } =
-    require("./Data/parseLogBoxLog") as typeof import("./Data/parseLogBoxLog");
+    require('./Data/parseLogBoxLog') as typeof import('./Data/parseLogBoxLog');
 
   let originalConsoleError: typeof console.error | undefined;
   let consoleErrorImpl: typeof console.error | undefined;
@@ -114,7 +114,7 @@ if (__DEV__) {
   };
 
   const isWarningModuleWarning = (...args: any) => {
-    return typeof args[0] === "string" && args[0].startsWith("Warning: ");
+    return typeof args[0] === 'string' && args[0].startsWith('Warning: ');
   };
 
   const registerError = (...args: Parameters<typeof console.error>): void => {
@@ -148,9 +148,7 @@ if (__DEV__) {
         LogBoxData.addLog({
           // Always show the static rendering issues as full screen since they
           // are too confusing otherwise.
-          level: /did not match\. Server:/.test(message.content)
-            ? "fatal"
-            : "error",
+          level: /did not match\. Server:/.test(message.content) ? 'fatal' : 'error',
           category,
           message,
           componentStack,

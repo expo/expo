@@ -1,25 +1,20 @@
 /**
- * Copyright (c) Evan Bacon.
+ * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-import * as React from "react";
+import * as React from 'react';
 
-import NativeLogBox from "../modules/NativeLogBox";
-import parseErrorStack from "../modules/parseErrorStack";
-import { LogBoxLog, StackType } from "./LogBoxLog";
-import type { LogLevel } from "./LogBoxLog";
-import { LogContext } from "./LogContext";
-import { parseLogBoxException } from "./parseLogBoxLog";
-import type {
-  Message,
-  Category,
-  ComponentStack,
-  ExtendedExceptionData,
-} from "./parseLogBoxLog";
+import NativeLogBox from '../modules/NativeLogBox';
+import parseErrorStack from '../modules/parseErrorStack';
+import { LogBoxLog, StackType } from './LogBoxLog';
+import type { LogLevel } from './LogBoxLog';
+import { LogContext } from './LogContext';
+import { parseLogBoxException } from './parseLogBoxLog';
+import type { Message, Category, ComponentStack, ExtendedExceptionData } from './parseLogBoxLog';
 
 export type LogBoxLogs = Set<LogBoxLog>;
 
@@ -68,15 +63,12 @@ type State = {
 const observers: Set<{ observer: Observer } & any> = new Set();
 const ignorePatterns: Set<IgnorePattern> = new Set();
 let logs: LogBoxLogs = new Set();
-let updateTimeout:
-  | null
-  | ReturnType<typeof setImmediate>
-  | ReturnType<typeof setTimeout> = null;
+let updateTimeout: null | ReturnType<typeof setImmediate> | ReturnType<typeof setTimeout> = null;
 let _isDisabled = false;
 let _selectedIndex = -1;
 
 const LOGBOX_ERROR_MESSAGE =
-  "An error was thrown when attempting to render log messages via LogBox.";
+  'An error was thrown when attempting to render log messages via LogBox.';
 
 function getNextState() {
   return {
@@ -86,11 +78,8 @@ function getNextState() {
   };
 }
 
-export function reportLogBoxError(
-  error: ExtendedError,
-  componentStack?: string
-): void {
-  const ExceptionsManager = require("../modules/ExceptionsManager");
+export function reportLogBoxError(error: ExtendedError, componentStack?: string): void {
+  const ExceptionsManager = require('../modules/ExceptionsManager');
 
   if (componentStack != null) {
     error.componentStack = componentStack;
@@ -98,23 +87,20 @@ export function reportLogBoxError(
   ExceptionsManager.handleException(error);
 }
 
-export function reportUnexpectedLogBoxError(
-  error: ExtendedError,
-  componentStack?: string
-): void {
+export function reportUnexpectedLogBoxError(error: ExtendedError, componentStack?: string): void {
   error.message = `${LOGBOX_ERROR_MESSAGE}\n\n${error.message}`;
   return reportLogBoxError(error, componentStack);
 }
 
 export function isLogBoxErrorMessage(message: string): boolean {
-  return typeof message === "string" && message.includes(LOGBOX_ERROR_MESSAGE);
+  return typeof message === 'string' && message.includes(LOGBOX_ERROR_MESSAGE);
 }
 
 export function isMessageIgnored(message: string): boolean {
   for (const pattern of ignorePatterns) {
     if (
       (pattern instanceof RegExp && pattern.test(message)) ||
-      (typeof pattern === "string" && message.includes(pattern))
+      (typeof pattern === 'string' && message.includes(pattern))
     ) {
       return true;
     }
@@ -156,7 +142,7 @@ function appendNewLog(newLog: LogBoxLog): void {
     return;
   }
 
-  if (newLog.level === "fatal") {
+  if (newLog.level === 'fatal') {
     // If possible, to avoid jank, we don't want to open the error before
     // it's symbolicated. To do that, we optimistically wait for
     // symbolication for up to a second before adding the log.
@@ -179,18 +165,18 @@ function appendNewLog(newLog: LogBoxLog): void {
     }, OPTIMISTIC_WAIT_TIME);
 
     // TODO: HANDLE THIS
-    newLog.symbolicate("component");
+    newLog.symbolicate('component');
 
-    newLog.symbolicate("stack", (status) => {
-      if (addPendingLog && status !== "PENDING") {
+    newLog.symbolicate('stack', (status) => {
+      if (addPendingLog && status !== 'PENDING') {
         addPendingLog();
         clearTimeout(optimisticTimeout);
-      } else if (status !== "PENDING") {
+      } else if (status !== 'PENDING') {
         // The log has already been added but we need to trigger a render.
         handleUpdate();
       }
     });
-  } else if (newLog.level === "syntax") {
+  } else if (newLog.level === 'syntax') {
     logs.add(newLog);
     setSelectedLog(logs.size - 1);
   } else {
@@ -267,7 +253,7 @@ export function setSelectedLog(proposedNewIndex: number): void {
   let index = logArray.length - 1;
   while (index >= 0) {
     // The latest syntax error is selected and displayed before all other logs.
-    if (logArray[index].level === "syntax") {
+    if (logArray[index].level === 'syntax') {
       newIndex = index;
       break;
     }
@@ -287,7 +273,7 @@ export function setSelectedLog(proposedNewIndex: number): void {
 }
 
 export function clearWarnings(): void {
-  const newLogs = Array.from(logs).filter((log) => log.level !== "warn");
+  const newLogs = Array.from(logs).filter((log) => log.level !== 'warn');
   if (newLogs.length !== logs.size) {
     logs = new Set(newLogs);
     setSelectedLog(-1);
@@ -296,9 +282,7 @@ export function clearWarnings(): void {
 }
 
 export function clearErrors(): void {
-  const newLogs = Array.from(logs).filter(
-    (log) => log.level !== "error" && log.level !== "fatal"
-  );
+  const newLogs = Array.from(logs).filter((log) => log.level !== 'error' && log.level !== 'fatal');
   if (newLogs.length !== logs.size) {
     logs = new Set(newLogs);
     setSelectedLog(-1);
@@ -341,9 +325,7 @@ export function addIgnorePatterns(patterns: IgnorePattern[]): void {
   // This allows adding an ignore pattern anywhere in the codebase.
   // Without this, if you ignore a pattern after the a log is created,
   // then we would keep showing the log.
-  logs = new Set(
-    Array.from(logs).filter((log) => !isMessageIgnored(log.message.content))
-  );
+  logs = new Set(Array.from(logs).filter((log) => !isMessageIgnored(log.message.content)));
   handleUpdate();
 }
 
@@ -372,13 +354,8 @@ export function observe(observer: Observer): Subscription {
   };
 }
 
-export function withSubscription(
-  WrappedComponent: React.FC<object>
-): React.Component<object> {
-  class LogBoxStateSubscription extends React.Component<
-    React.PropsWithChildren<Props>,
-    State
-  > {
+export function withSubscription(WrappedComponent: React.FC<object>): React.Component<object> {
+  class LogBoxStateSubscription extends React.Component<React.PropsWithChildren<Props>, State> {
     static getDerivedStateFromError() {
       return { hasError: true };
     }
@@ -411,8 +388,7 @@ export function withSubscription(
             selectedLogIndex: this.state.selectedLogIndex,
             isDisabled: this.state.isDisabled,
             logs: Array.from(this.state.logs),
-          }}
-        >
+          }}>
           {this.props.children}
           <WrappedComponent />
         </LogContext.Provider>

@@ -1,24 +1,17 @@
 /**
- * Copyright (c) Evan Bacon.
+ * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import React from "react";
-import {
-  Image,
-  Platform,
-  StatusBar,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import React from 'react';
+import { Image, Platform, StatusBar, StyleSheet, Text, View } from 'react-native';
 
-import type { LogLevel } from "../Data/LogBoxLog";
-import { useLogs } from "../Data/LogContext";
-import { LogBoxButton } from "../UI/LogBoxButton";
-import * as LogBoxStyle from "../UI/LogBoxStyle";
+import type { LogLevel } from '../Data/LogBoxLog';
+import { useLogs } from '../Data/LogContext';
+import { LogBoxButton } from '../UI/LogBoxButton';
+import * as LogBoxStyle from '../UI/LogBoxStyle';
 
 type Props = {
   onSelectIndex: (selectedIndex: number) => void;
@@ -29,7 +22,7 @@ export function LogBoxInspectorHeader(props: Props) {
   const { selectedLogIndex: selectedIndex, logs } = useLogs();
   const total = logs.length;
 
-  if (props.level === "syntax") {
+  if (props.level === 'syntax') {
     return (
       <View style={[styles.safeArea, styles[props.level]]}>
         <View style={styles.header}>
@@ -52,7 +45,7 @@ export function LogBoxInspectorHeader(props: Props) {
         <LogBoxInspectorHeaderButton
           disabled={total <= 1}
           level={props.level}
-          image={require("@expo/metro-runtime/assets/chevron-left.png")}
+          image={require('@expo/metro-runtime/assets/chevron-left.png')}
           onPress={() => props.onSelectIndex(prevIndex)}
         />
         <View style={styles.title}>
@@ -61,7 +54,7 @@ export function LogBoxInspectorHeader(props: Props) {
         <LogBoxInspectorHeaderButton
           disabled={total <= 1}
           level={props.level}
-          image={require("@expo/metro-runtime/assets/chevron-right.png")}
+          image={require('@expo/metro-runtime/assets/chevron-right.png')}
           onPress={() => props.onSelectIndex(nextIndex)}
         />
       </View>
@@ -72,23 +65,23 @@ export function LogBoxInspectorHeader(props: Props) {
 const backgroundForLevel = (level: LogLevel) =>
   ({
     warn: {
-      default: "transparent",
+      default: 'transparent',
       pressed: LogBoxStyle.getWarningDarkColor(),
     },
     error: {
-      default: "transparent",
+      default: 'transparent',
       pressed: LogBoxStyle.getErrorDarkColor(),
     },
     fatal: {
-      default: "transparent",
+      default: 'transparent',
       pressed: LogBoxStyle.getFatalDarkColor(),
     },
     syntax: {
-      default: "transparent",
+      default: 'transparent',
       pressed: LogBoxStyle.getFatalDarkColor(),
     },
     static: {
-      default: "transparent",
+      default: 'transparent',
       pressed: LogBoxStyle.getFatalDarkColor(),
     },
   }[level]);
@@ -103,8 +96,7 @@ function LogBoxInspectorHeaderButton(props: {
     <LogBoxButton
       backgroundColor={backgroundForLevel(props.level)}
       onPress={props.disabled ? undefined : props.onPress}
-      style={headerStyles.button}
-    >
+      style={headerStyles.button}>
       {props.disabled ? null : (
         <Image
           source={props.image}
@@ -118,8 +110,8 @@ function LogBoxInspectorHeaderButton(props: {
 
 const headerStyles = StyleSheet.create({
   button: {
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     aspectRatio: 1,
     marginRight: 6,
     marginLeft: 6,
@@ -148,8 +140,8 @@ const styles = StyleSheet.create({
     backgroundColor: LogBoxStyle.getErrorColor(),
   },
   header: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
 
     paddingHorizontal: 8,
     height: Platform.select({
@@ -158,18 +150,18 @@ const styles = StyleSheet.create({
     }),
   },
   title: {
-    alignItems: "center",
+    alignItems: 'center',
     flex: 1,
-    justifyContent: "center",
+    justifyContent: 'center',
   },
   titleText: {
     color: LogBoxStyle.getTextColor(),
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
     includeFontPadding: false,
     lineHeight: 20,
   },
   safeArea: {
-    paddingTop: Platform.OS !== "ios" ? StatusBar.currentHeight : 40,
+    paddingTop: Platform.OS !== 'ios' ? StatusBar.currentHeight : 40,
   },
 });

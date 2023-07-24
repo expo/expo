@@ -1,27 +1,22 @@
-import { StyleSheet, Text } from "@bacons/react-views";
-import React from "react";
+import React from 'react';
+import { StyleSheet, Text } from 'react-native';
 
-import type { Message as MessageType } from "../Data/parseLogBoxLog";
-import { LogBoxMessage } from "../UI/LogBoxMessage";
-import * as LogBoxStyle from "../UI/LogBoxStyle";
+import { LogBoxMessage } from '../UI/LogBoxMessage';
+import * as LogBoxStyle from '../UI/LogBoxStyle';
+
+import type { Message as MessageType } from '../Data/parseLogBoxLog';
 
 export function ErrorToastMessage({ message }: { message?: MessageType }) {
   return (
     <Text numberOfLines={1} style={styles.text}>
-      {message && (
-        <LogBoxMessage
-          plaintext
-          message={message}
-          style={styles.substitutionText}
-        />
-      )}
+      {message && <LogBoxMessage plaintext message={message} style={styles.substitutionText} />}
     </Text>
   );
 }
 
 const styles = StyleSheet.create({
   text: {
-    userSelect: "none",
+    userSelect: 'none',
     paddingLeft: 8,
     color: LogBoxStyle.getTextColor(1),
     flex: 1,

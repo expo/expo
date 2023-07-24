@@ -1,18 +1,18 @@
 /**
- * Copyright (c) Evan Bacon.
+ * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import React, { useCallback, useMemo } from "react";
-import { StyleSheet, View } from "react-native";
+import React, { useCallback, useMemo } from 'react';
+import { StyleSheet, View } from 'react-native';
 
-import * as LogBoxData from "../Data/LogBoxData";
-import { LogBoxLog } from "../Data/LogBoxLog";
-import { useLogs } from "../Data/LogContext";
-import { useRejectionHandler } from "../useRejectionHandler";
-import { ErrorToast } from "./ErrorToast";
+import * as LogBoxData from '../Data/LogBoxData';
+import { LogBoxLog } from '../Data/LogBoxLog';
+import { useLogs } from '../Data/LogContext';
+import { useRejectionHandler } from '../useRejectionHandler';
+import { ErrorToast } from './ErrorToast';
 
 export function ErrorToastContainer() {
   useRejectionHandler();
@@ -46,13 +46,10 @@ function ErrorToastStack({ logs }: { logs: LogBoxLog[] }) {
     setSelectedLog(index);
   }
 
-  const warnings = useMemo(
-    () => logs.filter((log) => log.level === "warn"),
-    [logs]
-  );
+  const warnings = useMemo(() => logs.filter((log) => log.level === 'warn'), [logs]);
 
   const errors = useMemo(
-    () => logs.filter((log) => log.level === "error" || log.level === "fatal"),
+    () => logs.filter((log) => log.level === 'error' || log.level === 'fatal'),
     [logs]
   );
 
@@ -86,7 +83,7 @@ const styles = StyleSheet.create({
     bottom: 6,
     left: 10,
     right: 10,
-    position: "absolute",
+    position: 'absolute',
     maxWidth: 320,
   },
 });

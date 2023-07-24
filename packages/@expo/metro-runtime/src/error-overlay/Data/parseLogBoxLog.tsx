@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Evan Bacon.
+ * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,11 +7,11 @@
  */
 
 // @ts-expect-error
-import UTFSequence from "react-native/Libraries/UTFSequence";
+import UTFSequence from 'react-native/Libraries/UTFSequence';
 
-import parseErrorStack from "../modules/parseErrorStack";
-import stringifySafe from "../modules/stringifySafe";
-import type { LogBoxLogData } from "./LogBoxLog";
+import parseErrorStack from '../modules/parseErrorStack';
+import stringifySafe from '../modules/stringifySafe';
+import type { LogBoxLogData } from './LogBoxLog';
 type ExceptionData = any;
 
 const BABEL_TRANSFORM_ERROR_FORMAT =
@@ -51,7 +51,7 @@ export type Message = {
 
 export type ComponentStack = CodeFrame[];
 
-const SUBSTITUTION = UTFSequence.BOM + "%s";
+const SUBSTITUTION = UTFSequence.BOM + '%s';
 
 export function parseInterpolation(args: readonly any[]): {
   category: Category;
@@ -62,14 +62,14 @@ export function parseInterpolation(args: readonly any[]): {
   const substitutionOffsets: { length: number; offset: number }[] = [];
 
   const remaining = [...args];
-  if (typeof remaining[0] === "string") {
+  if (typeof remaining[0] === 'string') {
     const formatString = String(remaining.shift());
-    const formatStringParts = formatString.split("%s");
+    const formatStringParts = formatString.split('%s');
     const substitutionCount = formatStringParts.length - 1;
     const substitutions = remaining.splice(0, substitutionCount);
 
-    let categoryString = "";
-    let contentString = "";
+    let categoryString = '';
+    let contentString = '';
 
     let substitutionIndex = 0;
     for (const formatStringPart of formatStringParts) {
@@ -82,7 +82,7 @@ export function parseInterpolation(args: readonly any[]): {
           // It adds quotation mark wrappers around the string,
           // which causes the LogBox to look odd.
           const substitution =
-            typeof substitutions[substitutionIndex] === "string"
+            typeof substitutions[substitutionIndex] === 'string'
               ? substitutions[substitutionIndex]
               : stringifySafe(substitutions[substitutionIndex]);
           substitutionOffsets.push({
@@ -98,8 +98,8 @@ export function parseInterpolation(args: readonly any[]): {
             offset: contentString.length,
           });
 
-          categoryString += "%s";
-          contentString += "%s";
+          categoryString += '%s';
+          contentString += '%s';
         }
 
         substitutionIndex++;
@@ -114,15 +114,15 @@ export function parseInterpolation(args: readonly any[]): {
     // Don't stringify a string type.
     // It adds quotation mark wrappers around the string,
     // which causes the LogBox to look odd.
-    return typeof arg === "string" ? arg : stringifySafe(arg);
+    return typeof arg === 'string' ? arg : stringifySafe(arg);
   });
   categoryParts.push(...remainingArgs);
   contentParts.push(...remainingArgs);
 
   return {
-    category: categoryParts.join(" "),
+    category: categoryParts.join(' '),
     message: {
-      content: contentParts.join(" "),
+      content: contentParts.join(' '),
       substitutions: substitutionOffsets,
     },
   };
@@ -133,11 +133,7 @@ function isComponentStack(consoleArgument: string) {
   const isNewComponentStackFormat = / {4}at/.test(consoleArgument);
   const isNewJSCComponentStackFormat = /@.*\n/.test(consoleArgument);
 
-  return (
-    isOldComponentStackFormat ||
-    isNewComponentStackFormat ||
-    isNewJSCComponentStackFormat
-  );
+  return isOldComponentStackFormat || isNewComponentStackFormat || isNewJSCComponentStackFormat;
 }
 
 export function parseComponentStack(message: string): ComponentStack {
@@ -149,7 +145,7 @@ export function parseComponentStack(message: string): ComponentStack {
     return stack.map((frame) => ({
       content: frame.methodName,
       collapse: frame.collapse || false,
-      fileName: frame.file == null ? "unknown" : frame.file,
+      fileName: frame.file == null ? 'unknown' : frame.file,
       location: {
         column: frame.column == null ? -1 : frame.column,
         row: frame.lineNumber == null ? -1 : frame.lineNumber,
@@ -178,20 +174,16 @@ export function parseComponentStack(message: string): ComponentStack {
     .filter(Boolean) as ComponentStack;
 }
 
-export function parseLogBoxException(
-  error: ExtendedExceptionData
-): LogBoxLogData {
-  const message =
-    error.originalMessage != null ? error.originalMessage : "Unknown";
+export function parseLogBoxException(error: ExtendedExceptionData): LogBoxLogData {
+  const message = error.originalMessage != null ? error.originalMessage : 'Unknown';
 
   const metroInternalError = message.match(METRO_ERROR_FORMAT);
   if (metroInternalError) {
-    const [content, fileName, row, column, codeFrame] =
-      metroInternalError.slice(1);
+    const [content, fileName, row, column, codeFrame] = metroInternalError.slice(1);
 
     return {
-      level: "fatal",
-      type: "Metro Error",
+      level: 'fatal',
+      type: 'Metro Error',
       stack: [],
       isComponentError: false,
       componentStack: [],
@@ -214,11 +206,10 @@ export function parseLogBoxException(
   const babelTransformError = message.match(BABEL_TRANSFORM_ERROR_FORMAT);
   if (babelTransformError) {
     // Transform errors are thrown from inside the Babel transformer.
-    const [fileName, content, row, column, codeFrame] =
-      babelTransformError.slice(1);
+    const [fileName, content, row, column, codeFrame] = babelTransformError.slice(1);
 
     return {
-      level: "syntax",
+      level: 'syntax',
       stack: [],
       isComponentError: false,
       componentStack: [],
@@ -244,7 +235,7 @@ export function parseLogBoxException(
     // Codeframe errors are thrown from any use of buildCodeFrameError.
     const [fileName, content, codeFrame] = babelCodeFrameError.slice(1);
     return {
-      level: "syntax",
+      level: 'syntax',
       stack: [],
       isComponentError: false,
       componentStack: [],
@@ -263,7 +254,7 @@ export function parseLogBoxException(
 
   if (message.match(/^TransformError /)) {
     return {
-      level: "syntax",
+      level: 'syntax',
       stack: error.stack,
       isComponentError: error.isComponentError,
       componentStack: [],
@@ -278,11 +269,10 @@ export function parseLogBoxException(
   const componentStack = error.componentStack;
   if (error.isFatal || error.isComponentError) {
     return {
-      level: "fatal",
+      level: 'fatal',
       stack: error.stack,
       isComponentError: error.isComponentError,
-      componentStack:
-        componentStack != null ? parseComponentStack(componentStack) : [],
+      componentStack: componentStack != null ? parseComponentStack(componentStack) : [],
       ...parseInterpolation([message]),
     };
   }
@@ -290,7 +280,7 @@ export function parseLogBoxException(
   if (componentStack != null) {
     // It is possible that console errors have a componentStack.
     return {
-      level: "error",
+      level: 'error',
       stack: error.stack,
       isComponentError: error.isComponentError,
       componentStack: parseComponentStack(componentStack),
@@ -301,7 +291,7 @@ export function parseLogBoxException(
   // Most `console.error` calls won't have a componentStack. We parse them like
   // regular logs which have the component stack burried in the message.
   return {
-    level: "error",
+    level: 'error',
     stack: error.stack,
     isComponentError: error.isComponentError,
     ...parseLogBoxLog([message]),
@@ -318,13 +308,9 @@ export function parseLogBoxLog(args: readonly any[]): {
   let componentStack: ComponentStack = [];
 
   // Extract component stack from warnings like "Some warning%s".
-  if (
-    typeof message === "string" &&
-    message.slice(-2) === "%s" &&
-    args.length > 0
-  ) {
+  if (typeof message === 'string' && message.slice(-2) === '%s' && args.length > 0) {
     const lastArg = args[args.length - 1];
-    if (typeof lastArg === "string" && isComponentStack(lastArg)) {
+    if (typeof lastArg === 'string' && isComponentStack(lastArg)) {
       argsWithoutComponentStack = args.slice(0, -1);
       argsWithoutComponentStack[0] = message.slice(0, -2);
       componentStack = parseComponentStack(lastArg);
@@ -334,7 +320,7 @@ export function parseLogBoxLog(args: readonly any[]): {
   if (componentStack.length === 0) {
     // Try finding the component stack elsewhere.
     for (const arg of args) {
-      if (typeof arg === "string" && isComponentStack(arg)) {
+      if (typeof arg === 'string' && isComponentStack(arg)) {
         // Strip out any messages before the component stack.
         let messageEndIndex = arg.search(/\n {4}(in|at) /);
         if (messageEndIndex < 0) {

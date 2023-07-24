@@ -1,17 +1,17 @@
 /**
- * Copyright (c) Evan Bacon.
+ * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-import parseErrorStack from "../parseErrorStack";
+import parseErrorStack from '../parseErrorStack';
 
 type ExtendedError = any;
 
 class SyntheticError extends Error {
-  name: string = "";
+  name: string = '';
 }
 
 /**
@@ -22,26 +22,24 @@ let exceptionID = 0;
 function parseException(e: ExtendedError, isFatal: boolean) {
   const stack = parseErrorStack(e?.stack);
   const currentExceptionID = ++exceptionID;
-  const originalMessage = e.message || "";
+  const originalMessage = e.message || '';
   let message = originalMessage;
   if (e.componentStack != null) {
     message += `\n\nThis error is located at:${e.componentStack}`;
   }
-  const namePrefix = e.name == null || e.name === "" ? "" : `${e.name}: `;
+  const namePrefix = e.name == null || e.name === '' ? '' : `${e.name}: `;
 
   if (!message.startsWith(namePrefix)) {
     message = namePrefix + message;
   }
 
-  message =
-    e.jsEngine == null ? message : `${message}, js engine: ${e.jsEngine}`;
+  message = e.jsEngine == null ? message : `${message}, js engine: ${e.jsEngine}`;
 
   const data = {
     message,
     originalMessage: message === originalMessage ? null : originalMessage,
-    name: e.name == null || e.name === "" ? null : e.name,
-    componentStack:
-      typeof e.componentStack === "string" ? e.componentStack : null,
+    name: e.name == null || e.name === '' ? null : e.name,
+    componentStack: typeof e.componentStack === 'string' ? e.componentStack : null,
     stack,
     id: currentExceptionID,
     isFatal,
@@ -72,7 +70,7 @@ function handleException(e: any) {
     error = new SyntheticError(e);
   }
 
-  require("../../LogBox").addException(parseException(error, true));
+  require('../../LogBox').addException(parseException(error, true));
 }
 
 const ErrorUtils = {

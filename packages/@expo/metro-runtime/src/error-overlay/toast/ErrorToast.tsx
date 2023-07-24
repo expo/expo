@@ -1,22 +1,22 @@
 /**
- * Copyright (c) Evan Bacon.
+ * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { Image, Pressable, StyleSheet, Text, View } from "@bacons/react-views";
-import React, { useEffect } from "react";
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect } from 'react';
 
-import * as LogBoxData from "../Data/LogBoxData";
-import { LogBoxLog } from "../Data/LogBoxLog";
-import * as LogBoxStyle from "../UI/LogBoxStyle";
-import { ErrorToastMessage } from "./ErrorToastMessage";
+import * as LogBoxData from '../Data/LogBoxData';
+import { LogBoxLog } from '../Data/LogBoxLog';
+import * as LogBoxStyle from '../UI/LogBoxStyle';
+import { ErrorToastMessage } from './ErrorToastMessage';
 
 type Props = {
   log: LogBoxLog;
   totalLogCount: number;
-  level: "warn" | "error";
+  level: 'warn' | 'error';
   onPressOpen: () => void;
   onPressDismiss: () => void;
 };
@@ -24,8 +24,8 @@ type Props = {
 function useSymbolicatedLog(log: LogBoxLog) {
   // Eagerly symbolicate so the stack is available when pressing to inspect.
   useEffect(() => {
-    LogBoxData.symbolicateLogLazy("stack", log);
-    LogBoxData.symbolicateLogLazy("component", log);
+    LogBoxData.symbolicateLogLazy('stack', log);
+    LogBoxData.symbolicateLogLazy('component', log);
   }, [log]);
 }
 
@@ -42,15 +42,14 @@ export function ErrorToast(props: Props) {
             style={[
               toastStyles.press,
               {
-                transitionDuration: "150ms",
+                transitionDuration: '150ms',
                 backgroundColor: pressed
-                  ? "#323232"
+                  ? '#323232'
                   : hovered
-                  ? "#111111"
+                  ? '#111111'
                   : LogBoxStyle.getBackgroundColor(),
               },
-            ]}
-          >
+            ]}>
             <Count count={totalLogCount} level={level} />
             <ErrorToastMessage message={log.message} />
             <Dismiss onPress={props.onPressDismiss} />
@@ -61,10 +60,10 @@ export function ErrorToast(props: Props) {
   );
 }
 
-function Count({ count, level }: { count: number; level: Props["level"] }) {
+function Count({ count, level }: { count: number; level: Props['level'] }) {
   return (
     <View style={[countStyles.inside, countStyles[level]]}>
-      <Text style={countStyles.text}>{count <= 1 ? "!" : count}</Text>
+      <Text style={countStyles.text}>{count <= 1 ? '!' : count}</Text>
     </View>
   );
 }
@@ -81,18 +80,12 @@ function Dismiss({ onPress }: { onPress: () => void }) {
         bottom: 12,
         left: 10,
       }}
-      onPress={onPress}
-    >
+      onPress={onPress}>
       {({ hovered, pressed }) => (
         <View
-          style={[
-            dismissStyles.press,
-            hovered && { opacity: 0.8 },
-            pressed && { opacity: 0.5 },
-          ]}
-        >
+          style={[dismissStyles.press, hovered && { opacity: 0.8 }, pressed && { opacity: 0.5 }]}>
           <Image
-            source={require("@expo/metro-runtime/assets/close.png")}
+            source={require('@expo/metro-runtime/assets/close.png')}
             style={dismissStyles.image}
           />
         </View>
@@ -117,27 +110,27 @@ const countStyles = StyleSheet.create({
     aspectRatio: 1,
     paddingHorizontal: 4,
     borderRadius: 11,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   text: {
     color: LogBoxStyle.getTextColor(1),
     fontSize: 14,
     lineHeight: 18,
-    textAlign: "center",
-    fontWeight: "600",
+    textAlign: 'center',
+    fontWeight: '600',
     textShadow: `0px 0px 3px ${LogBoxStyle.getBackgroundColor(0.8)}`,
   },
 });
 
 const dismissStyles = StyleSheet.create({
   press: {
-    backgroundColor: "#323232",
+    backgroundColor: '#323232',
     height: 20,
     width: 20,
     borderRadius: 25,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   image: {
     height: 8,
@@ -148,16 +141,16 @@ const dismissStyles = StyleSheet.create({
 const toastStyles = StyleSheet.create({
   container: {
     height: 48,
-    justifyContent: "center",
+    justifyContent: 'center',
     marginBottom: 4,
   },
   press: {
     borderWidth: 1,
     borderRadius: 8,
-    overflow: "hidden",
-    flexDirection: "row",
-    alignItems: "center",
-    borderColor: "#323232",
+    overflow: 'hidden',
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderColor: '#323232',
     backgroundColor: LogBoxStyle.getBackgroundColor(),
     flex: 1,
     paddingHorizontal: 12,

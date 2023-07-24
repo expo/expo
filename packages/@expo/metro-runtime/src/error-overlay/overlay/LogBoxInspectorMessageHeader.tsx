@@ -1,17 +1,17 @@
 /**
- * Copyright (c) Evan Bacon.
+ * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
-import type { LogLevel } from "../Data/LogBoxLog";
-import type { Message } from "../Data/parseLogBoxLog";
-import { LogBoxMessage } from "../UI/LogBoxMessage";
-import * as LogBoxStyle from "../UI/LogBoxStyle";
+import type { LogLevel } from '../Data/LogBoxLog';
+import type { Message } from '../Data/parseLogBoxLog';
+import { LogBoxMessage } from '../UI/LogBoxMessage';
+import * as LogBoxStyle from '../UI/LogBoxStyle';
 
 type Props = {
   collapsed: boolean;
@@ -27,7 +27,7 @@ function ShowMoreButton({
   message,
   collapsed,
   onPress,
-}: Pick<Props, "collapsed" | "message" | "onPress">) {
+}: Pick<Props, 'collapsed' | 'message' | 'onPress'>) {
   if (message.content.length < SHOW_MORE_MESSAGE_LENGTH || !collapsed) {
     return null;
   }
@@ -42,9 +42,7 @@ export function LogBoxInspectorMessageHeader(props: Props) {
   return (
     <View style={styles.body}>
       <View style={styles.heading}>
-        <Text style={[styles.headingText, styles[props.level]]}>
-          {props.title}
-        </Text>
+        <Text style={[styles.headingText, styles[props.level]]}>{props.title}</Text>
       </View>
       <Text style={styles.bodyText}>
         <LogBoxMessage
@@ -68,13 +66,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     includeFontPadding: false,
     lineHeight: 20,
-    fontWeight: "500",
+    fontWeight: '500',
     paddingHorizontal: 12,
     paddingBottom: 10,
   },
   heading: {
-    alignItems: "center",
-    flexDirection: "row",
+    alignItems: 'center',
+    flexDirection: 'row',
     paddingHorizontal: 12,
     marginTop: 10,
     marginBottom: 5,
@@ -82,7 +80,7 @@ const styles = StyleSheet.create({
   headingText: {
     flex: 1,
     fontSize: 20,
-    fontWeight: "600",
+    fontWeight: '600',
     includeFontPadding: false,
     lineHeight: 28,
   },
@@ -107,7 +105,7 @@ const styles = StyleSheet.create({
   collapse: {
     color: LogBoxStyle.getTextColor(0.7),
     fontSize: 14,
-    fontWeight: "300",
+    fontWeight: '300',
     lineHeight: 12,
   },
   button: {

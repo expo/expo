@@ -1,21 +1,14 @@
 /**
- * Copyright (c) Evan Bacon.
+ * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import React, { useState } from "react";
-import {
-  GestureResponderEvent,
-  Insets,
-  Platform,
-  Pressable,
-  View,
-  ViewStyle,
-} from "react-native";
+import React, { useState } from 'react';
+import { GestureResponderEvent, Insets, Platform, Pressable, View, ViewStyle } from 'react-native';
 
-import * as LogBoxStyle from "./LogBoxStyle";
+import * as LogBoxStyle from './LogBoxStyle';
 
 type Props = {
   backgroundColor: {
@@ -43,18 +36,15 @@ export function LogBoxButton(props: Props) {
     <View
       style={[
         {
-          backgroundColor: pressed
-            ? backgroundColor.pressed
-            : backgroundColor.default,
+          backgroundColor: pressed ? backgroundColor.pressed : backgroundColor.default,
           ...Platform.select({
             web: {
-              cursor: "pointer",
+              cursor: 'pointer',
             },
           }),
         },
         props.style,
-      ]}
-    >
+      ]}>
       {props.children}
     </View>
   );
@@ -66,8 +56,7 @@ export function LogBoxButton(props: Props) {
       hitSlop={props.hitSlop}
       onPress={props.onPress}
       onPressIn={() => setPressed(true)}
-      onPressOut={() => setPressed(false)}
-    >
+      onPressOut={() => setPressed(false)}>
       {content}
     </Pressable>
   );

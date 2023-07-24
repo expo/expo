@@ -1,31 +1,30 @@
 /**
- * Copyright (c) Evan Bacon.
+ * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { StyleSheet } from "@bacons/react-views";
-import React, { useCallback, useEffect, useState } from "react";
-import { Keyboard, ScrollView, View } from "react-native";
+import React, { useCallback, useEffect, useState } from 'react';
+import { Keyboard, ScrollView, View, StyleSheet } from 'react-native';
 
-import * as LogBoxData from "./Data/LogBoxData";
-import { LogBoxLog, StackType } from "./Data/LogBoxLog";
-import { useLogs, useSelectedLog } from "./Data/LogContext";
-import * as LogBoxStyle from "./UI/LogBoxStyle";
-import { LogBoxInspectorCodeFrame } from "./overlay/LogBoxInspectorCodeFrame";
-import { LogBoxInspectorFooter as ErrorOverlayFooter } from "./overlay/LogBoxInspectorFooter";
-import { LogBoxInspectorHeader as ErrorOverlayHeader } from "./overlay/LogBoxInspectorHeader";
-import { LogBoxInspectorMessageHeader } from "./overlay/LogBoxInspectorMessageHeader";
-import { LogBoxInspectorStackFrames } from "./overlay/LogBoxInspectorStackFrames";
+import * as LogBoxData from './Data/LogBoxData';
+import { LogBoxLog, StackType } from './Data/LogBoxLog';
+import { useLogs, useSelectedLog } from './Data/LogContext';
+import * as LogBoxStyle from './UI/LogBoxStyle';
+import { LogBoxInspectorCodeFrame } from './overlay/LogBoxInspectorCodeFrame';
+import { LogBoxInspectorFooter as ErrorOverlayFooter } from './overlay/LogBoxInspectorFooter';
+import { LogBoxInspectorHeader as ErrorOverlayHeader } from './overlay/LogBoxInspectorHeader';
+import { LogBoxInspectorMessageHeader } from './overlay/LogBoxInspectorMessageHeader';
+import { LogBoxInspectorStackFrames } from './overlay/LogBoxInspectorStackFrames';
 
 const HEADER_TITLE_MAP = {
-  warn: "Console Warning",
-  error: "Console Error",
-  fatal: "Uncaught Error",
-  syntax: "Syntax Error",
-  static: "Static Rendering Error (Node.js)",
-  component: "Render Error",
+  warn: 'Console Warning',
+  error: 'Console Error',
+  fatal: 'Uncaught Error',
+  syntax: 'Syntax Error',
+  static: 'Static Rendering Error (Node.js)',
+  component: 'Render Error',
 };
 
 export function LogBoxInspectorContainer() {
@@ -34,13 +33,7 @@ export function LogBoxInspectorContainer() {
   if (log == null) {
     return null;
   }
-  return (
-    <LogBoxInspector
-      log={log}
-      selectedLogIndex={selectedLogIndex}
-      logs={logs}
-    />
-  );
+  return <LogBoxInspector log={log} selectedLogIndex={selectedLogIndex} logs={logs} />;
 }
 
 export function LogBoxInspector({
@@ -78,8 +71,8 @@ export function LogBoxInspector({
 
   useEffect(() => {
     if (log) {
-      LogBoxData.symbolicateLogNow("stack", log);
-      LogBoxData.symbolicateLogNow("component", log);
+      LogBoxData.symbolicateLogNow('stack', log);
+      LogBoxData.symbolicateLogNow('component', log);
     }
   }, [log]);
 
@@ -90,7 +83,7 @@ export function LogBoxInspector({
       const lastIndex = logs.length - 1;
       const prevIndex = selected - 1 < 0 ? lastIndex : selected - 1;
       const nextIndex = selected + 1 > lastIndex ? 0 : selected + 1;
-      for (const type of ["component", "stack"] as const) {
+      for (const type of ['component', 'stack'] as const) {
         LogBoxData.symbolicateLogLazy(type, logs[prevIndex]);
         LogBoxData.symbolicateLogLazy(type, logs[nextIndex]);
       }
@@ -110,21 +103,14 @@ export function LogBoxInspector({
 
   return (
     <View style={styles.container}>
-      <ErrorOverlayHeader
-        onSelectIndex={onChangeSelectedIndex}
-        level={log.level}
-      />
+      <ErrorOverlayHeader onSelectIndex={onChangeSelectedIndex} level={log.level} />
       <ErrorOverlayBody onRetry={_handleRetry} />
       <ErrorOverlayFooter onDismiss={onDismiss} onMinimize={onMinimize} />
     </View>
   );
 }
 
-export function ErrorOverlayBody({
-  onRetry,
-}: {
-  onRetry: (type: StackType) => void;
-}) {
+export function ErrorOverlayBody({ onRetry }: { onRetry: (type: StackType) => void }) {
   const log = useSelectedLog();
   return <ErrorOverlayBodyContents log={log} onRetry={onRetry} />;
 }
@@ -142,9 +128,7 @@ export function ErrorOverlayBodyContents({
     setCollapsed(true);
   }, [log]);
 
-  const headerTitle =
-    HEADER_TITLE_MAP[log.isComponentError ? "component" : log.level] ??
-    log.type;
+  const headerTitle = HEADER_TITLE_MAP[log.isComponentError ? 'component' : log.level] ?? log.type;
 
   const header = (
     <LogBoxInspectorMessageHeader
@@ -166,13 +150,13 @@ export function ErrorOverlayBodyContents({
         <LogBoxInspectorStackFrames
           type="stack"
           // eslint-disable-next-line react/jsx-no-bind
-          onRetry={onRetry.bind(onRetry, "stack")}
+          onRetry={onRetry.bind(onRetry, 'stack')}
         />
         {!!log?.componentStack?.length && (
           <LogBoxInspectorStackFrames
             type="component"
             // eslint-disable-next-line react/jsx-no-bind
-            onRetry={onRetry.bind(onRetry, "component")}
+            onRetry={onRetry.bind(onRetry, 'component')}
           />
         )}
       </ScrollView>
@@ -192,7 +176,7 @@ const styles = StyleSheet.create({
     right: 0,
     zIndex: 999,
     flex: 1,
-    position: "fixed",
+    position: 'fixed',
   },
 });
 

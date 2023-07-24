@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Evan Bacon.
+ * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -8,13 +8,13 @@
  * Based on this but with web support:
  * https://github.com/facebook/react-native/blob/086714b02b0fb838dee5a66c5bcefe73b53cf3df/Libraries/Utilities/HMRClient.js
  */
-import prettyFormat, { plugins } from "pretty-format";
+import prettyFormat, { plugins } from 'pretty-format';
 
-import LoadingView from "./LoadingView";
-import LogBox from "./error-overlay/LogBox";
-import getDevServer from "./getDevServer";
+import LoadingView from './LoadingView';
+import LogBox from './error-overlay/LogBox';
+import getDevServer from './getDevServer';
 
-const MetroHMRClient = require("metro-runtime/src/modules/HMRClient");
+const MetroHMRClient = require('metro-runtime/src/modules/HMRClient');
 const pendingEntryPoints: string[] = [];
 
 type HMRClientType = {
@@ -32,15 +32,15 @@ let didConnect: boolean = false;
 const pendingLogs: [LogLevel, any[]][] = [];
 
 type LogLevel =
-  | "trace"
-  | "info"
-  | "warn"
-  | "error"
-  | "log"
-  | "group"
-  | "groupCollapsed"
-  | "groupEnd"
-  | "debug";
+  | 'trace'
+  | 'info'
+  | 'warn'
+  | 'error'
+  | 'log'
+  | 'group'
+  | 'groupCollapsed'
+  | 'groupEnd'
+  | 'debug';
 
 export type HMRClientNativeInterface = {
   enable(): void;
@@ -68,18 +68,18 @@ const HMRClient: HMRClientNativeInterface = {
       throw new Error(hmrUnavailableReason);
     }
 
-    assert(hmrClient, "Expected HMRClient.setup() call at startup.");
+    assert(hmrClient, 'Expected HMRClient.setup() call at startup.');
 
     // We use this for internal logging only.
     // It doesn't affect the logic.
-    hmrClient.send(JSON.stringify({ type: "log-opt-in" }));
+    hmrClient.send(JSON.stringify({ type: 'log-opt-in' }));
 
     // When toggling Fast Refresh on, we might already have some stashed updates.
     // Since they'll get applied now, we'll show a banner.
     const hasUpdates = hmrClient!.hasPendingUpdates();
 
     if (hasUpdates) {
-      LoadingView.showMessage("Refreshing...", "refresh");
+      LoadingView.showMessage('Refreshing...', 'refresh');
     }
     try {
       hmrClient.enable();
@@ -95,12 +95,12 @@ const HMRClient: HMRClientNativeInterface = {
   },
 
   disable() {
-    assert(hmrClient, "Expected HMRClient.setup() call at startup.");
+    assert(hmrClient, 'Expected HMRClient.setup() call at startup.');
     hmrClient.disable();
   },
 
   registerBundle(requestUrl: string) {
-    assert(hmrClient, "Expected HMRClient.setup() call at startup.");
+    assert(hmrClient, 'Expected HMRClient.setup() call at startup.');
     pendingEntryPoints.push(requestUrl);
     registerBundleEntryPoints(hmrClient);
   },
@@ -118,11 +118,11 @@ const HMRClient: HMRClientNativeInterface = {
     try {
       hmrClient.send(
         JSON.stringify({
-          type: "log",
+          type: 'log',
           level,
-          mode: "BRIDGE",
+          mode: 'BRIDGE',
           data: data.map((item) =>
-            typeof item === "string"
+            typeof item === 'string'
               ? item
               : prettyFormat(item, {
                   escapeString: true,
@@ -143,12 +143,10 @@ const HMRClient: HMRClientNativeInterface = {
   // Called once by the bridge on startup, even if Fast Refresh is off.
   // It creates the HMR client but doesn't actually set up the socket yet.
   setup({ isEnabled }: { isEnabled: boolean }) {
-    assert(!hmrClient, "Cannot initialize hmrClient twice");
+    assert(!hmrClient, 'Cannot initialize hmrClient twice');
 
-    const serverScheme = window.location.protocol === "https:" ? "wss" : "ws";
-    const client = new MetroHMRClient(
-      `${serverScheme}://${window.location.host}/hot`
-    );
+    const serverScheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    const client = new MetroHMRClient(`${serverScheme}://${window.location.host}/hot`);
     hmrClient = client;
 
     const { fullBundleUrl } = getDevServer();
@@ -159,7 +157,7 @@ const HMRClient: HMRClientNativeInterface = {
       fullBundleUrl
     );
 
-    client.on("connection-error", (e: Error) => {
+    client.on('connection-error', (e: Error) => {
       let error = `Cannot connect to Metro.
  
  Try the following to fix the issue:
@@ -173,45 +171,35 @@ const HMRClient: HMRClientNativeInterface = {
       setHMRUnavailableReason(error);
     });
 
-    client.on(
-      "update-start",
-      ({ isInitialUpdate }: { isInitialUpdate?: boolean }) => {
-        currentCompileErrorMessage = null;
-        didConnect = true;
+    client.on('update-start', ({ isInitialUpdate }: { isInitialUpdate?: boolean }) => {
+      currentCompileErrorMessage = null;
+      didConnect = true;
 
-        if (client.isEnabled() && !isInitialUpdate) {
-          LoadingView.showMessage("Refreshing...", "refresh");
-        }
+      if (client.isEnabled() && !isInitialUpdate) {
+        LoadingView.showMessage('Refreshing...', 'refresh');
       }
-    );
+    });
 
-    client.on(
-      "update",
-      ({ isInitialUpdate }: { isInitialUpdate?: boolean }) => {
-        if (client.isEnabled() && !isInitialUpdate) {
-          dismissRedbox();
-          LogBox.clearAllLogs();
-        }
+    client.on('update', ({ isInitialUpdate }: { isInitialUpdate?: boolean }) => {
+      if (client.isEnabled() && !isInitialUpdate) {
+        dismissRedbox();
+        LogBox.clearAllLogs();
       }
-    );
+    });
 
-    client.on("update-done", () => {
+    client.on('update-done', () => {
       LoadingView.hide();
     });
 
-    client.on("error", (data: { type: string; message: string }) => {
+    client.on('error', (data: { type: string; message: string }) => {
       LoadingView.hide();
 
-      if (data.type === "GraphNotFoundError") {
+      if (data.type === 'GraphNotFoundError') {
         client.close();
-        setHMRUnavailableReason(
-          "Metro has restarted since the last edit. Reload to reconnect."
-        );
-      } else if (data.type === "RevisionNotFoundError") {
+        setHMRUnavailableReason('Metro has restarted since the last edit. Reload to reconnect.');
+      } else if (data.type === 'RevisionNotFoundError') {
         client.close();
-        setHMRUnavailableReason(
-          "Metro and the client are out of sync. Reload to reconnect."
-        );
+        setHMRUnavailableReason('Metro and the client are out of sync. Reload to reconnect.');
       } else {
         currentCompileErrorMessage = `${data.type} ${data.message}`;
         if (client.isEnabled()) {
@@ -220,7 +208,7 @@ const HMRClient: HMRClientNativeInterface = {
       }
     });
 
-    client.on("close", (closeEvent: { code: number; reason: string }) => {
+    client.on('close', (closeEvent: { code: number; reason: string }) => {
       LoadingView.hide();
 
       // https://www.rfc-editor.org/rfc/rfc6455.html#section-7.4.1
@@ -234,7 +222,7 @@ const HMRClient: HMRClientNativeInterface = {
       setHMRUnavailableReason(
         `${
           isNormalOrUnsetCloseReason
-            ? "Disconnected from Metro."
+            ? 'Disconnected from Metro.'
             : `Disconnected from Metro (${closeEvent.code}: "${closeEvent.reason}").`
         }
 
@@ -257,7 +245,7 @@ To reconnect:
 };
 
 function setHMRUnavailableReason(reason: string) {
-  assert(hmrClient, "Expected HMRClient.setup() call at startup.");
+  assert(hmrClient, 'Expected HMRClient.setup() call at startup.');
   if (hmrUnavailableReason !== null) {
     // Don't show more than one warning.
     return;
@@ -283,7 +271,7 @@ function registerBundleEntryPoints(client: HMRClientType | null) {
   if (pendingEntryPoints.length > 0) {
     client?.send(
       JSON.stringify({
-        type: "register-entrypoints",
+        type: 'register-entrypoints',
         entryPoints: pendingEntryPoints,
       })
     );

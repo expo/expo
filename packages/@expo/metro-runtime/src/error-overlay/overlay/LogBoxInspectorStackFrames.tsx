@@ -1,34 +1,31 @@
 /**
- * Copyright (c) Evan Bacon.
+ * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import React, { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React, { useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
-import type { StackType } from "../Data/LogBoxLog";
-import type { Stack } from "../Data/LogBoxSymbolication";
-import { useSelectedLog } from "../Data/LogContext";
-import { LogBoxButton } from "../UI/LogBoxButton";
-import * as LogBoxStyle from "../UI/LogBoxStyle";
-import openFileInEditor from "../modules/openFileInEditor";
-import { LogBoxInspectorSection } from "./LogBoxInspectorSection";
-import { LogBoxInspectorSourceMapStatus } from "./LogBoxInspectorSourceMapStatus";
-import { LogBoxInspectorStackFrame } from "./LogBoxInspectorStackFrame";
+import type { StackType } from '../Data/LogBoxLog';
+import type { Stack } from '../Data/LogBoxSymbolication';
+import { useSelectedLog } from '../Data/LogContext';
+import { LogBoxButton } from '../UI/LogBoxButton';
+import * as LogBoxStyle from '../UI/LogBoxStyle';
+import openFileInEditor from '../modules/openFileInEditor';
+import { LogBoxInspectorSection } from './LogBoxInspectorSection';
+import { LogBoxInspectorSourceMapStatus } from './LogBoxInspectorSourceMapStatus';
+import { LogBoxInspectorStackFrame } from './LogBoxInspectorStackFrame';
 
 type Props = {
   type: StackType;
   onRetry: () => void;
 };
 
-export function getCollapseMessage(
-  stackFrames: Stack,
-  collapsed: boolean
-): string {
+export function getCollapseMessage(stackFrames: Stack, collapsed: boolean): string {
   if (stackFrames.length === 0) {
-    return "No frames to show";
+    return 'No frames to show';
   }
 
   const collapsedCount = stackFrames.reduce((count, { collapse }) => {
@@ -40,18 +37,14 @@ export function getCollapseMessage(
   }, 0);
 
   if (collapsedCount === 0) {
-    return "Showing all frames";
+    return 'Showing all frames';
   }
 
-  const framePlural = `frame${collapsedCount > 1 ? "s" : ""}`;
+  const framePlural = `frame${collapsedCount > 1 ? 's' : ''}`;
   if (collapsedCount === stackFrames.length) {
     return collapsed
-      ? `See${
-          collapsedCount > 1 ? " all " : " "
-        }${collapsedCount} collapsed ${framePlural}`
-      : `Collapse${
-          collapsedCount > 1 ? " all " : " "
-        }${collapsedCount} ${framePlural}`;
+      ? `See${collapsedCount > 1 ? ' all ' : ' '}${collapsedCount} collapsed ${framePlural}`
+      : `Collapse${collapsedCount > 1 ? ' all ' : ' '}${collapsedCount} ${framePlural}`;
   } else {
     return collapsed
       ? `See ${collapsedCount} more ${framePlural}`
@@ -81,26 +74,22 @@ export function LogBoxInspectorStackFrames({ onRetry, type }: Props) {
 
   return (
     <LogBoxInspectorSection
-      heading={type === "component" ? "Component Stack" : "Call Stack"}
+      heading={type === 'component' ? 'Component Stack' : 'Call Stack'}
       action={
         <LogBoxInspectorSourceMapStatus
-          onPress={log.symbolicated[type].status === "FAILED" ? onRetry : null}
+          onPress={log.symbolicated[type].status === 'FAILED' ? onRetry : null}
           status={log.symbolicated[type].status}
         />
-      }
-    >
-      {log.symbolicated[type].status !== "COMPLETE" && (
+      }>
+      {log.symbolicated[type].status !== 'COMPLETE' && (
         <View style={stackStyles.hintBox}>
           <Text style={stackStyles.hintText}>
-            This call stack is not symbolicated. Some features are unavailable
-            such as viewing the function name or tapping to open files.
+            This call stack is not symbolicated. Some features are unavailable such as viewing the
+            function name or tapping to open files.
           </Text>
         </View>
       )}
-      <StackFrameList
-        list={getStackList()!}
-        status={log.symbolicated[type].status}
-      />
+      <StackFrameList list={getStackList()!} status={log.symbolicated[type].status} />
       <StackFrameFooter
         onPress={() => setCollapsed(!collapsed)}
         message={getCollapseMessage(log.getAvailableStack(type)!, !!collapsed)}
@@ -114,7 +103,7 @@ function StackFrameList({
   status,
 }: {
   list: Stack;
-  status: "NONE" | "PENDING" | "COMPLETE" | "FAILED";
+  status: 'NONE' | 'PENDING' | 'COMPLETE' | 'FAILED';
 }): any {
   return list.map((frame, index) => {
     const { file, lineNumber } = frame;
@@ -123,7 +112,7 @@ function StackFrameList({
         key={index}
         frame={frame}
         onPress={
-          status === "COMPLETE" && file != null && lineNumber != null
+          status === 'COMPLETE' && file != null && lineNumber != null
             ? () => openFileInEditor(file, lineNumber)
             : undefined
         }
@@ -132,23 +121,16 @@ function StackFrameList({
   });
 }
 
-function StackFrameFooter({
-  message,
-  onPress,
-}: {
-  message: string;
-  onPress: () => void;
-}) {
+function StackFrameFooter({ message, onPress }: { message: string; onPress: () => void }) {
   return (
     <View style={stackStyles.collapseContainer}>
       <LogBoxButton
         backgroundColor={{
-          default: "transparent",
+          default: 'transparent',
           pressed: LogBoxStyle.getBackgroundColor(1),
         }}
         onPress={onPress}
-        style={stackStyles.collapseButton}
-      >
+        style={stackStyles.collapseButton}>
         <Text style={stackStyles.collapse}>{message}</Text>
       </LogBoxButton>
     </View>
@@ -160,8 +142,8 @@ const stackStyles = StyleSheet.create({
     marginTop: 15,
   },
   heading: {
-    alignItems: "center",
-    flexDirection: "row",
+    alignItems: 'center',
+    flexDirection: 'row',
     paddingHorizontal: 12,
     marginBottom: 10,
   },
@@ -169,7 +151,7 @@ const stackStyles = StyleSheet.create({
     color: LogBoxStyle.getTextColor(1),
     flex: 1,
     fontSize: 20,
-    fontWeight: "600",
+    fontWeight: '600',
     includeFontPadding: false,
     lineHeight: 20,
   },
@@ -181,7 +163,7 @@ const stackStyles = StyleSheet.create({
     fontSize: 14,
     includeFontPadding: false,
     lineHeight: 18,
-    fontWeight: "500",
+    fontWeight: '500',
     paddingHorizontal: 27,
   },
   hintText: {
@@ -189,7 +171,7 @@ const stackStyles = StyleSheet.create({
     fontSize: 13,
     includeFontPadding: false,
     lineHeight: 18,
-    fontWeight: "400",
+    fontWeight: '400',
     marginHorizontal: 10,
   },
   hintBox: {
@@ -202,7 +184,7 @@ const stackStyles = StyleSheet.create({
   },
   collapseContainer: {
     marginLeft: 15,
-    flexDirection: "row",
+    flexDirection: 'row',
   },
   collapseButton: {
     borderRadius: 5,
@@ -210,7 +192,7 @@ const stackStyles = StyleSheet.create({
   collapse: {
     color: LogBoxStyle.getTextColor(0.7),
     fontSize: 12,
-    fontWeight: "300",
+    fontWeight: '300',
     lineHeight: 20,
     marginTop: 0,
     paddingHorizontal: 10,

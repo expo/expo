@@ -1,14 +1,14 @@
 /**
- * Copyright (c) Evan Bacon.
+ * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
-import * as LogBoxStyle from "../UI/LogBoxStyle";
+import * as LogBoxStyle from '../UI/LogBoxStyle';
 
 type Props = {
   heading: string;
@@ -33,8 +33,8 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   heading: {
-    alignItems: "center",
-    flexDirection: "row",
+    alignItems: 'center',
+    flexDirection: 'row',
     paddingHorizontal: 12,
     marginBottom: 10,
   },
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     color: LogBoxStyle.getTextColor(1),
     flex: 1,
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: '600',
     includeFontPadding: false,
     lineHeight: 20,
   },

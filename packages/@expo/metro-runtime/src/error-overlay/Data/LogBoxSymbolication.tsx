@@ -1,14 +1,14 @@
 /**
- * Copyright (c) Evan Bacon.
+ * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-import { StackFrame as UpstreamStackFrame } from "stacktrace-parser";
+import { StackFrame as UpstreamStackFrame } from 'stacktrace-parser';
 
-import symbolicateStackTrace from "../modules/symbolicateStackTrace";
+import symbolicateStackTrace from '../modules/symbolicateStackTrace';
 
 type SymbolicatedStackTrace = any;
 
@@ -26,14 +26,14 @@ const sanitize = ({
   codeFrame,
 }: SymbolicatedStackTrace): SymbolicatedStackTrace => {
   if (!Array.isArray(maybeStack)) {
-    throw new Error("Expected stack to be an array.");
+    throw new Error('Expected stack to be an array.');
   }
   const stack: StackFrame[] = [];
   for (const maybeFrame of maybeStack) {
     let collapse = false;
-    if ("collapse" in maybeFrame) {
-      if (typeof maybeFrame.collapse !== "boolean") {
-        throw new Error("Expected stack frame `collapse` to be a boolean.");
+    if ('collapse' in maybeFrame) {
+      if (typeof maybeFrame.collapse !== 'boolean') {
+        throw new Error('Expected stack frame `collapse` to be a boolean.');
       }
       collapse = maybeFrame.collapse;
     }
