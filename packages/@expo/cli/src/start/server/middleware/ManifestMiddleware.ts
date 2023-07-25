@@ -1,6 +1,7 @@
 import { ExpoConfig, ExpoGoConfig, getConfig, ProjectConfig } from '@expo/config';
 import findWorkspaceRoot from 'find-yarn-workspace-root';
 import path from 'path';
+import resolveFrom from 'resolve-from';
 import { resolve } from 'url';
 
 import * as Log from '../../../log';
@@ -15,7 +16,6 @@ import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAsset
 import { resolveAbsoluteEntryPoint } from './resolveEntryPoint';
 import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
 import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './server.types';
-import resolveFrom from 'resolve-from';
 
 const debug = require('debug')('expo:start:server:middleware:manifest') as typeof console.log;
 
