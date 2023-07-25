@@ -62,7 +62,7 @@
     "@expo/vector-icons": "^13.0.0",
     "@expo/config-plugins": "7.2.5",
     "@expo/config": "8.1.2",
-    "babel-preset-expo": "~9.5.0",
+    "babel-preset-expo": "~9.5.1",
     "expo-application": "~5.3.0",
     "expo-asset": "~8.10.1",
     "expo-constants": "~14.4.2",
