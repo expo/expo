@@ -74,8 +74,6 @@ export const reduceUpdatesStateFromContext: (
     downloadedUpdate,
     checkError: context.checkError,
     downloadError: context.downloadError,
-    lastCheckForUpdateTimeSinceRestart: context.isChecking
-      ? new Date()
-      : updatesState.lastCheckForUpdateTimeSinceRestart,
+    lastCheckForUpdateTimeSinceRestart: context.lastCheckForUpdateTime,
   };
 };

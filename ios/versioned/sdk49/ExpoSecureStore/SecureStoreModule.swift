@@ -111,7 +111,6 @@ public final class SecureStoreModule: Module {
       guard let item = item as? Data else {
         return nil
       }
-
       return item
     case errSecItemNotFound:
       return nil

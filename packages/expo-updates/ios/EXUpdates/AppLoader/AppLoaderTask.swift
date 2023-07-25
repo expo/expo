@@ -2,6 +2,7 @@
 
 // swiftlint:disable closure_body_length
 // swiftlint:disable superfluous_else
+// swiftlint:disable cyclomatic_complexity
 
 // this class uses a ton of implicit non-null properties based on method call order. not worth changing to appease lint
 // swiftlint:disable force_unwrapping
@@ -33,6 +34,7 @@ public enum RemoteCheckResult {
   case noUpdateAvailable
   case updateAvailable(manifest: [String: Any])
   case rollBackToEmbedded
+  case error(error: Error)
 }
 
 public protocol AppLoaderTaskSwiftDelegate: AnyObject {
@@ -437,6 +439,11 @@ public final class AppLoaderTask: NSObject {
     } success: { updateResponse in
       completion(nil, updateResponse)
     } error: { error in
+      if let swiftDelegate = self.swiftDelegate {
+        self.delegateQueue.async {
+          swiftDelegate.appLoaderTask(self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.error(error: error))
+        }
+      }
       completion(error, nil)
     }
   }
@@ -518,3 +525,4 @@ public final class AppLoaderTask: NSObject {
 // swiftlint:enable closure_body_length
 // swiftlint:enable force_unwrapping
 // swiftlint:enable superfluous_else
+// swiftlint:enable cyclomatic_complexity
