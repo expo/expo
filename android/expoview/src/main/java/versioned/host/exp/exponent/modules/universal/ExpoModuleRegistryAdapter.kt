@@ -84,7 +84,9 @@ open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistry
       reactContext,
       moduleRegistry,
       Consumer { appContext ->
-        appContext.registry.register(ExpoGoModule())
+        appContext.registry.register(
+          ExpoGoModule(manifest)
+        )
       }
     )
   }
