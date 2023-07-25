@@ -73,7 +73,7 @@ class ImageViewWrapperTarget(
     val isPlaceholder = if (request is ThumbnailRequestCoordinator) {
       (request as? ThumbnailRequestCoordinator)
         ?.getPrivateFullRequest()
-        ?.isComplete != true
+        ?.isComplete == false
     } else {
       false
     }
