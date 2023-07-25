@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Downgrade play-services-location to 20.0.0 to support react-native-maps. ([#23501](https://github.com/expo/expo/pull/23501) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 💡 Others
+
+## 16.1.0 - 2023-07-13
+
+### 🐛 Bug fixes
+
+- Downgrade play-services-location to 20.0.0 to support react-native-maps. ([#23501](https://github.com/expo/expo/pull/23501) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 16.0.0 — 2023-06-21
 
