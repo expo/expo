@@ -25,9 +25,7 @@ static NSPointerArray *currentFontProcessors;
       return font;
     }
   }
-  //  EXFont* font = EXFontManager.registry2[name];
   return [self EXfontWithName:name size:fontSize];
-  //
 }
 
 @end
@@ -49,7 +47,6 @@ static NSPointerArray *currentFontProcessors;
       return font;
     }
   }
-  
   return [self EXUpdateFont:uiFont withFamily:family size:size weight:weight style:style variant:variant scaleMultiplier:scaleMultiplier];
 }
 
@@ -97,18 +94,6 @@ EX_REGISTER_MODULE();
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
   return @[@protocol(EXFontManagerInterface)];
-}
-
-// A utility function used for swizzling RCTFont in old architecture
-+ (void)registerFontsForRCTFont
-{
-  
-}
-
-// A utility function used for swizzling UIFont for new architecture
-+ (void)registerFontsForUIFont
-{
-  
 }
 
 + (void)initialize
