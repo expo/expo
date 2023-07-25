@@ -80,9 +80,13 @@ open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistry
         moduleRegistry.registerExtraListener(otherModule as RegistryLifecycleListener)
       }
     }
-    return getNativeModulesFromModuleRegistry(reactContext, moduleRegistry, Consumer { appContext ->
-      appContext.registry.register(ExpoGoModule())
-    })
+    return getNativeModulesFromModuleRegistry(
+      reactContext,
+      moduleRegistry,
+      Consumer { appContext ->
+        appContext.registry.register(ExpoGoModule())
+      }
+    )
   }
 
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
