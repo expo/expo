@@ -187,7 +187,8 @@ function buildBabelConfig(filename, options, plugins = []) /*: BabelCoreOptions*
   if (options.inlineRequires) {
     extraPlugins.push(_inlineRequires().default);
   }
-  const withExtrPlugins = config.plugins = extraPlugins.concat(config.plugins, plugins);
+  config.plugins = extraPlugins.concat(config.plugins, plugins);
+  const withExtraPlugins = config.plugins;
   if (options.dev && options.hot) {
     // Note: this intentionally doesn't include the path separator because
     // I'm not sure which one it should use on Windows, and false positives
@@ -197,7 +198,7 @@ function buildBabelConfig(filename, options, plugins = []) /*: BabelCoreOptions*
     const mayContainEditableReactComponents = !filename.includes('node_modules');
     if (mayContainEditableReactComponents) {
       const hmrConfig = (0, _hmr().default)();
-      hmrConfig.plugins = withExtrPlugins.concat(hmrConfig.plugins);
+      hmrConfig.plugins = withExtraPlugins.concat(hmrConfig.plugins);
       config = {
         ...config,
         ...hmrConfig
