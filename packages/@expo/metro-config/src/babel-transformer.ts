@@ -156,7 +156,9 @@ function buildBabelConfig(
     extraPlugins.push(inlineRequiresPlugin);
   }
 
-  const withExtrPlugins = (config.plugins = extraPlugins.concat(config.plugins, plugins));
+  config.plugins = extraPlugins.concat(config.plugins, plugins);
+
+  const withExtraPlugins = config.plugins;
 
   if (options.dev && options.hot) {
     // Note: this intentionally doesn't include the path separator because
@@ -168,7 +170,7 @@ function buildBabelConfig(
 
     if (mayContainEditableReactComponents) {
       const hmrConfig = makeHMRConfig();
-      hmrConfig.plugins = withExtrPlugins.concat(hmrConfig.plugins);
+      hmrConfig.plugins = withExtraPlugins.concat(hmrConfig.plugins);
       config = { ...config, ...hmrConfig };
     }
   }
