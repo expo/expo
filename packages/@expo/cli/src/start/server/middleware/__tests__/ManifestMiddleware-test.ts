@@ -93,7 +93,7 @@ describe('checkBrowserRequestAsync', () => {
         // NOTE(EvanBacon): Browsers won't pass the `expo-platform` header so we need to
         // provide the `platform=web` query parameter in order for the multi-platform dev server
         // to return the correct bundle.
-        '/index.bundle?platform=web&dev=true&hot=false&lazy=true',
+        '/index.bundle?platform=web&dev=true&hot=false&lazy=false',
       ],
     });
     expect(res.setHeader).toBeCalledWith('Content-Type', 'text/html');
@@ -139,7 +139,7 @@ describe('_getBundleUrl', () => {
         platform: 'android',
       })
     ).toEqual(
-      'http://evanbacon.dev:8080/index.bundle?platform=android&dev=true&hot=false&lazy=true'
+      'http://evanbacon.dev:8080/index.bundle?platform=android&dev=true&hot=false&lazy=false'
     );
 
     expect(constructUrl).toHaveBeenCalledWith({ hostname: 'evanbacon.dev', scheme: 'http' });
@@ -157,7 +157,7 @@ describe('_getBundleUrl', () => {
         platform: 'ios',
       })
     ).toEqual(
-      'http://localhost:8080/node_modules/expo/AppEntry.bundle?platform=ios&dev=false&hot=false&lazy=true&minify=true'
+      'http://localhost:8080/node_modules/expo/AppEntry.bundle?platform=ios&dev=false&hot=false&lazy=false&minify=true'
     );
 
     expect(constructUrl).toHaveBeenCalledWith({ hostname: undefined, scheme: 'http' });
