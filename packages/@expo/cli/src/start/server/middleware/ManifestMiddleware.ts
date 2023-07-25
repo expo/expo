@@ -1,6 +1,7 @@
 import { ExpoConfig, ExpoGoConfig, getConfig, ProjectConfig } from '@expo/config';
 import findWorkspaceRoot from 'find-yarn-workspace-root';
 import path from 'path';
+import resolveFrom from 'resolve-from';
 import { resolve } from 'url';
 
 import * as Log from '../../../log';
@@ -62,11 +63,25 @@ export function resolveMainModuleName(
   return stripExtension(entryPoint, 'js');
 }
 
+export function canUseLazyAsyncRequire(projectRoot: string): boolean {
+  // Disable lazy async require when intentionally disabled
+  if (env.EXPO_NO_METRO_LAZY) {
+    return false;
+  }
+
+  const hasMetroRuntime = !!resolveFrom.silent(projectRoot, '@expo/metro-runtime');
+  const hasExpoRouter = !!resolveFrom.silent(projectRoot, 'expo-router');
+
+  // TODO(cedric): enable this for React Native 0.73+ projects
+  return hasMetroRuntime || hasExpoRouter;
+}
+
 export function createBundleUrlPath({
   platform,
   mainModuleName,
   mode,
   minify = mode === 'production',
+  lazy = false,
   environment,
   serializerOutput,
 }: {
@@ -74,6 +89,7 @@ export function createBundleUrlPath({
   mainModuleName: string;
   mode: string;
   minify?: boolean;
+  lazy?: boolean;
   environment?: string;
   serializerOutput?: 'static';
 }): string {
@@ -82,7 +98,7 @@ export function createBundleUrlPath({
     dev: String(mode !== 'production'),
     // TODO: Is this still needed?
     hot: String(false),
-    lazy: String(!env.EXPO_NO_METRO_LAZY),
+    lazy: String(lazy),
   });
 
   if (minify) {
@@ -237,6 +253,7 @@ export abstract class ManifestMiddleware<
       minify: this.options.minify,
       platform,
       mainModuleName,
+      lazy: canUseLazyAsyncRequire(this.projectRoot),
     });
 
     return (
@@ -260,7 +277,7 @@ export abstract class ManifestMiddleware<
       dev: String(this.options.mode !== 'production'),
       // TODO: Is this still needed?
       hot: String(false),
-      lazy: String(!env.EXPO_NO_METRO_LAZY),
+      lazy: String(canUseLazyAsyncRequire(this.projectRoot)),
     });
 
     if (this.options.minify) {
