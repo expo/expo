@@ -12,6 +12,7 @@
 ### 🐛 Bug fixes
 
 - Fixed placeholders aren't always replaced by full-size images on Android. ([#23705](https://github.com/expo/expo/pull/23705) by [@lukmccall](https://github.com/lukmccall))
+- Fixed the image components rendering incorrect assets when the Proguard is enabled on Android. ([#23704](https://github.com/expo/expo/pull/23704) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
