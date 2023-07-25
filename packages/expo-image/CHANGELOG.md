@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed placeholders aren't always replaced by full-size images on Android.
+
 ### 💡 Others
 
 - [Web] Refactored and split some functions for better readability. ([#23465](https://github.com/expo/expo/pull/23465) by [@aleqsio](https://github.com/aleqsio))
