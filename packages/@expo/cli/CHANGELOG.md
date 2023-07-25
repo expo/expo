@@ -14,7 +14,7 @@
 - Fixed JavaScript Inspector does not work on Windows. ([#23367](https://github.com/expo/expo/pull/23367) by [@kudo](https://github.com/kudo))
 - Fixed route types generation on Windows not working. ([#23386](https://github.com/expo/expo/pull/23386) by [@gsporto](https://github.com/gsporto) and [@marklawlor](https://github.com/marklawlor))
 - Added additional guard to prevent invalid route files type generation. ([#23694](https://github.com/expo/expo/pull/23694) by [@marklawlor](https://github.com/marklawlor))
-- Only enable actual async require handling when available.
+- Only enable actual async require handling when available. ([#23715](https://github.com/expo/expo/pull/23715) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
