@@ -2,17 +2,20 @@
 
 #import <Foundation/Foundation.h>
 #import <React/RCTLog.h>
+#import <React/RCTBridge.h>
+
+#import "EXVersionUtils.h"
 
 @class EXManifestsManifest;
 
-@interface EXVersionManager : NSObject
+@interface EXVersionManagerObjC : NSObject
 
-// Uses a params dict since the internal workings may change over time, but we want to keep the interface the same.
-- (instancetype)initWithParams:(NSDictionary *)params
-                      manifest:(EXManifestsManifest *)manifest
-                  fatalHandler:(void (^)(NSError *))fatalHandler
-                   logFunction:(RCTLogFunction)logFunction
-                  logThreshold:(NSInteger)threshold;
+- (nonnull instancetype)initWithParams:(nonnull NSDictionary *)params
+                              manifest:(nonnull EXManifestsManifest *)manifest
+                          fatalHandler:(void (^ _Nonnull)(NSError * _Nullable))fatalHandler
+                           logFunction:(nonnull RCTLogFunction)logFunction
+                          logThreshold:(RCTLogLevel)logThreshold;
+
 - (void)bridgeWillStartLoading:(id)bridge;
 - (void)bridgeFinishedLoading:(id)bridge;
 - (void)invalidate;

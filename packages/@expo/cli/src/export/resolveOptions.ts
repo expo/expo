@@ -17,57 +17,60 @@ export type Options = {
 /** Returns an array of platforms based on the input platform identifier and runtime constraints. */
 export function resolvePlatformOption(
   platformBundlers: PlatformBundlers,
-  platform: string = 'all'
+  platform: string[] = ['all']
 ): Platform[] {
-  const platforms: Partial<PlatformBundlers> = Object.fromEntries(
+  const platformsAvailable: Partial<PlatformBundlers> = Object.fromEntries(
     Object.entries(platformBundlers).filter(([, bundler]) => bundler === 'metro')
   );
 
-  if (!Object.keys(platforms).length) {
+  if (!Object.keys(platformsAvailable).length) {
     throw new CommandError(
       `No platforms are configured to use the Metro bundler in the project Expo config.`
     );
   }
 
-  const assertPlatformBundler = (platform: Platform) => {
-    if (!platforms[platform]) {
+  const assertPlatformBundler = (platform: Platform): Platform => {
+    if (!platformsAvailable[platform]) {
       throw new CommandError(
         'BAD_ARGS',
         `Platform "${platform}" is not configured to use the Metro bundler in the project Expo config.`
       );
     }
+
+    return platform;
   };
 
-  switch (platform) {
-    case 'ios':
-      assertPlatformBundler('ios');
-      return ['ios'];
-    case 'web':
-      assertPlatformBundler('web');
-      return ['web'];
-    case 'android':
-      assertPlatformBundler('android');
-      return ['android'];
-    case 'all':
-      return Object.keys(platforms) as Platform[];
-    default:
+  const knownPlatforms = ['android', 'ios', 'web'] as Platform[];
+  const assertPlatformIsKnown = (platform: string): Platform => {
+    if (!knownPlatforms.includes(platform as Platform)) {
       throw new CommandError(
-        `Unsupported platform "${platform}". Options are: ${Object.keys(platforms).join(',')}, all`
+        `Unsupported platform "${platform}". Options are: ${knownPlatforms.join(',')},all`
       );
-  }
+    }
+
+    return platform as Platform;
+  };
+
+  return (
+    platform
+      // Expand `all` to all available platforms.
+      .map((platform) => (platform === 'all' ? Object.keys(platformsAvailable) : platform))
+      .flat()
+      // Remove duplicated platforms
+      .filter((platform, index, list) => list.indexOf(platform) === index)
+      // Assert platforms are valid
+      .map((platform) => assertPlatformIsKnown(platform))
+      .map((platform) => assertPlatformBundler(platform))
+  );
 }
 
 export async function resolveOptionsAsync(projectRoot: string, args: any): Promise<Options> {
   const { exp } = getConfig(projectRoot, { skipPlugins: true, skipSDKVersionRequirement: true });
   const platformBundlers = getPlatformBundlers(exp);
-  const platforms: Platform[] = resolvePlatformOption(
-    platformBundlers,
-    args['--platform'] ?? 'all'
-  );
 
   return {
+    platforms: resolvePlatformOption(platformBundlers, args['--platform']),
     outputDir: args['--output-dir'] ?? 'dist',
-    platforms,
     minify: !args['--no-minify'],
     clear: !!args['--clear'],
     dev: !!args['--dev'],

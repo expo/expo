@@ -40,6 +40,7 @@ abstract_target 'Expo Go' do
       'expo-network-addons',
       'expo-insights',
       'expo-face-detector',
+      'expo-head'
     ],
     includeTests: true,
     flags: {

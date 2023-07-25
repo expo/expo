@@ -126,6 +126,7 @@ async function copyCommonFixturesToProject(projectRoot, appJsFileName, repoRoot)
       'eas-hooks',
       'e2e',
       'scripts',
+      'xcode.env.local',
     ],
     {
       cwd: projectFilesSourcePath,
@@ -516,15 +517,6 @@ async function initAsync(
     '\n-keep class org.apache.commons.** { *; }\n',
     'utf-8'
   );
-
-  // Force bundling on iOS for debug builds
-  const iosProjectPath = glob.sync(
-    path.join(projectRoot, 'ios', '*.xcodeproj', 'project.pbxproj')
-  )[0];
-  const iosProject = await fs.readFile(iosProjectPath, 'utf-8');
-  const iosProjectEdited = iosProject.replace('SKIP', 'FORCE');
-  await fs.rm(iosProjectPath);
-  await fs.writeFile(iosProjectPath, iosProjectEdited, 'utf-8');
 
   // Cleanup local updates module if needed
   if (cleanupLocalUpdatesModule) {
