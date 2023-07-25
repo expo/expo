@@ -1,4 +1,5 @@
 import { getConfig } from '@expo/config';
+import resolveFrom from 'resolve-from';
 
 import { asMock } from '../../../../__tests__/asMock';
 import * as Log from '../../../../log';
@@ -41,6 +42,7 @@ jest.mock('@expo/config', () => ({
 jest.mock('../../../project/devices', () => ({
   saveDevicesAsync: jest.fn(async () => ({})),
 }));
+jest.mock('resolve-from');
 
 class MockManifestMiddleware extends ManifestMiddleware<any> {
   public _getManifestResponseAsync(
@@ -161,6 +163,52 @@ describe('_getBundleUrl', () => {
     );
 
     expect(constructUrl).toHaveBeenCalledWith({ hostname: undefined, scheme: 'http' });
+  });
+  it('returns the bundle url with lazy mode when `@expo/metro-runtime` is installed', () => {
+    const constructUrl = createConstructUrl();
+    const middleware = new MockManifestMiddleware('/', {
+      constructUrl,
+      mode: 'production',
+      minify: true,
+    });
+
+    jest
+      .mocked(resolveFrom.silent)
+      .mockImplementation((_projectRoot, packageName) =>
+        packageName === '@expo/metro-runtime' ? 'node_modules/@expo/metro-runtime' : undefined
+      );
+
+    expect(
+      middleware._getBundleUrl({
+        mainModuleName: 'node_modules/expo/AppEntry',
+        platform: 'ios',
+      })
+    ).toEqual(
+      'http://localhost:8080/node_modules/expo/AppEntry.bundle?platform=ios&dev=false&hot=false&lazy=true&minify=true'
+    );
+  });
+  it('returns the bundle url with lazy mode when `expo-router` is installed', () => {
+    const constructUrl = createConstructUrl();
+    const middleware = new MockManifestMiddleware('/', {
+      constructUrl,
+      mode: 'production',
+      minify: true,
+    });
+
+    jest
+      .mocked(resolveFrom.silent)
+      .mockImplementation((_projectRoot, packageName) =>
+        packageName === 'expo-router' ? 'node_modules/expo-router' : undefined
+      );
+
+    expect(
+      middleware._getBundleUrl({
+        mainModuleName: 'node_modules/expo/AppEntry',
+        platform: 'ios',
+      })
+    ).toEqual(
+      'http://localhost:8080/node_modules/expo/AppEntry.bundle?platform=ios&dev=false&hot=false&lazy=true&minify=true'
+    );
   });
 });
 
