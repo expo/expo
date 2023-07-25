@@ -104,15 +104,16 @@ export class MetroTerminalReporter extends TerminalReporter {
 
   _logBundlingError(error: SnippetError): void {
     const moduleResolutionError = formatUsingNodeStandardLibraryError(this.projectRoot, error);
+    const cause = error.cause as undefined | { _expoImportStack?: string };
     if (moduleResolutionError) {
       let message = maybeAppendCodeFrame(moduleResolutionError, error.message);
-      if (error.cause?._expoImportStack) {
-        message += `\n\n${error.cause?._expoImportStack}`;
+      if (cause?._expoImportStack) {
+        message += `\n\n${cause?._expoImportStack}`;
       }
       return this.terminal.log(message);
     }
-    if (error.cause?._expoImportStack) {
-      error.message += `\n\n${error.cause._expoImportStack}`;
+    if (cause?._expoImportStack) {
+      error.message += `\n\n${cause._expoImportStack}`;
     }
     return super._logBundlingError(error);
   }

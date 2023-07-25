@@ -9,6 +9,7 @@ import { ConfigT as MetroConfig } from 'metro-config';
 import { ResolutionContext } from 'metro-resolver';
 import path from 'path';
 
+import { env } from '../../../utils/env';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
 import { importMetroResolverFromProject } from './resolveFromProject';
 
@@ -64,7 +65,7 @@ export function withMetroResolvers(
     moduleName: string,
     platform: string | null
   ) {
-    if (!platform) {
+    if (!env.EXPO_METRO_UNSTABLE_ERRORS || !platform) {
       debug('Cannot mutate resolution error');
       return error;
     }
@@ -105,7 +106,7 @@ export function withMetroResolvers(
       return new Array(num).fill(' ').join('');
     };
 
-    const root = config.server.unstable_serverRoot ?? config.projectRoot ?? projectRoot;
+    const root = config.server?.unstable_serverRoot ?? config.projectRoot ?? projectRoot;
 
     type InverseDepResult = {
       origin: string;
@@ -227,7 +228,7 @@ export function withMetroResolvers(
       ...config.resolver,
       resolveRequest(context, moduleName, platform) {
         const storeResult = (res: NonNullable<ReturnType<ExpoCustomMetroResolver>>) => {
-          if (!platform) return;
+          if (!env.EXPO_METRO_UNSTABLE_ERRORS || !platform) return;
 
           const key = optionsKeyForContext(context);
           if (!depGraph.has(key)) depGraph.set(key, new Map());
@@ -238,7 +239,7 @@ export function withMetroResolvers(
             mapByPlatform!.set(context.originModulePath, new Set());
           const setForModule = mapByPlatform!.get(context.originModulePath)!;
 
-          const qualifiedModuleName = res.type === 'sourceFile' ? res.filePath : moduleName;
+          const qualifiedModuleName = res?.type === 'sourceFile' ? res.filePath : moduleName;
           setForModule.add({ path: qualifiedModuleName, request: moduleName });
         };
 
