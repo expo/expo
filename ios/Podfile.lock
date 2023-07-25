@@ -1425,7 +1425,7 @@ PODS:
     - ABI49_0_0ExpoModulesCore
   - ABI49_0_0EXPermissions (14.2.1):
     - ABI49_0_0ExpoModulesCore
-  - ABI49_0_0Expo (49.0.4):
+  - ABI49_0_0Expo (49.0.5):
     - ABI49_0_0ExpoModulesCore
   - ABI49_0_0ExpoAppleAuthentication (6.1.0):
     - ABI49_0_0ExpoModulesCore
@@ -1615,7 +1615,7 @@ PODS:
     - ABI49_0_0ExpoModulesCore
   - ABI49_0_0ExpoRandom (13.2.0):
     - ABI49_0_0ExpoModulesCore
-  - ABI49_0_0ExpoScreenOrientation (6.0.3):
+  - ABI49_0_0ExpoScreenOrientation (6.0.4):
     - ABI49_0_0ExpoModulesCore
     - ABI49_0_0React-Core
     - ExpoScreenOrientation
@@ -4787,7 +4787,7 @@ SPEC CHECKSUMS:
   ABI49_0_0EXMediaLibrary: 0e0e244712394523c90e1bda78127d8c76814434
   ABI49_0_0EXNotifications: b8a6fdc20a5c93452177fb980d07d8c1ca73138c
   ABI49_0_0EXPermissions: c549c5f059b10d340bf9b31815d2c99f5fc7dec3
-  ABI49_0_0Expo: 295fa05eab055508cfad1915c6c462b49585068f
+  ABI49_0_0Expo: 23219e47e61ce908be48903c880e587ae6197cdb
   ABI49_0_0ExpoAppleAuthentication: af85867e111a296a561ddf9d3f659728ee8675d0
   ABI49_0_0ExpoBattery: 9417f9897691a8af49a93047d99b27c2c6c13528
   ABI49_0_0ExpoBlur: 9293857092c742630ef6dadbbd6378c0965cb317
@@ -4815,7 +4815,7 @@ SPEC CHECKSUMS:
   ABI49_0_0ExpoNetwork: 028f02f5d15379f89e529b37982559e445f86ab9
   ABI49_0_0ExpoPrint: ae4bf76583805fa1c6c5b4e8d8781586482c6f5d
   ABI49_0_0ExpoRandom: 83829ccecffd4afbdd4f711e053639e2109df0b6
-  ABI49_0_0ExpoScreenOrientation: dca033da69f2b9d2b1ec2aa9c4a742a9ff5b8f24
+  ABI49_0_0ExpoScreenOrientation: 7b85060c428a421b10a6a464e552454e9ede59b3
   ABI49_0_0ExpoSecureStore: 271e5700f526af62d1572189a37ac09111ad2c12
   ABI49_0_0ExpoSharing: e915ee89f06fe8f6985bf35a5a854c44612f34d5
   ABI49_0_0ExpoSMS: 78e004b964755de5f25d07c5ad1aa09d968723ad
