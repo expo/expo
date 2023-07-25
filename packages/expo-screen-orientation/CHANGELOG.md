@@ -16,6 +16,7 @@
 
 - [iOS] Fix event emitter sending events with no registered listeners. ([#23462](https://github.com/expo/expo/pull/23462) by [@behenate](https://github.com/behenate))
 - [iOS] Fix config plugin deleting the orientations key from `Info.plist` when the initial orientation value is set to `DEFAULT`. ([#23637](https://github.com/expo/expo/pull/23637) by [@behenate](https://github.com/behenate))
+- Fix addOrientationChangeListener not working on iPadOS. ([#23656](https://github.com/expo/expo/pull/23656) by [@behenate](https://github.com/behenate))
 
 ## 6.0.3 - 2023-07-12
 

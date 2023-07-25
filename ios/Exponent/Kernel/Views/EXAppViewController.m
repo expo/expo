@@ -79,6 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) BOOL isStandalone;
 @property (nonatomic, assign) BOOL isHomeApp;
+@property (nonatomic, assign) UIInterfaceOrientation previousInterfaceOrientation;
 
 /*
  * Controller for handling all messages from bundler/fetcher.
@@ -113,6 +114,11 @@ NS_ASSUME_NONNULL_BEGIN
   if (self = [super init]) {
     _appRecord = record;
     _isStandalone = [EXEnvironment sharedEnvironment].isDetached;
+    // For iPads traitCollectionDidChange will not be called (it's always in the same size class). It is necessary
+    // to init it in here, so it's possible to return it in the didUpdateDimensionsEvent of the module
+    if (ScreenOrientationRegistry.shared.currentTraitCollection == nil) {
+      [ScreenOrientationRegistry.shared traitCollectionDidChangeTo:self.traitCollection];
+    }
   }
   return self;
 }
@@ -595,7 +601,8 @@ NS_ASSUME_NONNULL_BEGIN
   return NO;
 }
 
-- (UIInterfaceOrientationMask)orientationMaskFromManifestOrDefault {
+- (UIInterfaceOrientationMask)orientationMaskFromManifestOrDefault
+{
   if (_appRecord.appLoader.manifest) {
     NSString *orientationConfig = _appRecord.appLoader.manifest.orientation;
     if ([orientationConfig isEqualToString:@"portrait"]) {
@@ -608,6 +615,28 @@ NS_ASSUME_NONNULL_BEGIN
   }
   // no config or default value: allow autorotation
   return UIInterfaceOrientationMaskAllButUpsideDown;
+}
+
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+  [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+
+  __weak typeof(self) weakSelf = self;
+
+  // Update after the transition ends, this ensures that the trait collection passed to didUpdateDimensionsEvent is already updated
+  [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> _Nonnull context) {
+    __strong __typeof(self) strongSelf = weakSelf;
+
+    if (!strongSelf) {
+      return;
+    }
+
+    if (self.windowInterfaceOrientation != self.previousInterfaceOrientation) {
+      [ScreenOrientationRegistry.shared viewDidTransitionToOrientation:self.windowInterfaceOrientation];
+    }
+
+    self->_previousInterfaceOrientation = self.windowInterfaceOrientation;
+  } completion: nil];
 }
 
 - (void)traitCollectionDidChange:(nullable UITraitCollection *)previousTraitCollection {
@@ -720,6 +749,9 @@ NS_ASSUME_NONNULL_BEGIN
   return manifest.iosOrRootBackgroundColor;
 }
 
+- (UIInterfaceOrientation)windowInterfaceOrientation {
+  return [[[UIApplication sharedApplication].windows firstObject].windowScene interfaceOrientation];
+}
 
 #pragma mark - Internal
 

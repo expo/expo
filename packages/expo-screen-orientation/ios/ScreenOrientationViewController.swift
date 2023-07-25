@@ -7,10 +7,20 @@ let ipadSupportedOrientationsKey = "UISupportedInterfaceOrientations~ipad"
 class ScreenOrientationViewController: UIViewController {
   let screenOrientationRegistry = ScreenOrientationRegistry.shared
   private var defaultOrientationMask: UIInterfaceOrientationMask
+  private var previousInterfaceOrientation: UIInterfaceOrientation = .unknown
+  private var windowInterfaceOrientation: UIInterfaceOrientation? {
+    return UIApplication.shared.windows.first?.windowScene?.interfaceOrientation
+  }
 
   init(defaultOrientationMask: UIInterfaceOrientationMask = doesDeviceHaveNotch ? .allButUpsideDown : .all) {
     self.defaultOrientationMask = defaultOrientationMask
     super.init(nibName: nil, bundle: nil)
+
+    // For iPads traitCollectionDidChange will not be called (it's always in the same size class). It is necessary
+    // to init it in here, so it's possible to return it in the didUpdateDimensionsEvent of the module
+    if self.screenOrientationRegistry.currentTraitCollection == nil {
+      self.screenOrientationRegistry.traitCollectionDidChange(to: self.traitCollection)
+    }
   }
 
   convenience init(defaultScreenOrientationFromPlist: Void) {
@@ -57,11 +67,23 @@ class ScreenOrientationViewController: UIViewController {
 
   override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
     super.traitCollectionDidChange(previousTraitCollection)
+    screenOrientationRegistry.traitCollectionDidChange(to: traitCollection)
+  }
 
-    if traitCollection.verticalSizeClass != previousTraitCollection?.verticalSizeClass ||
-      traitCollection.horizontalSizeClass != previousTraitCollection?.horizontalSizeClass {
-      screenOrientationRegistry.traitCollectionDidChange(to: traitCollection)
-    }
+  override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+    super.viewWillTransition(to: size, with: coordinator)
+
+    // Update after the transition ends, this ensures that the trait collection passed to didUpdateDimensionsEvent is already updated
+    coordinator.animate(alongsideTransition: { [weak self] _ in
+      guard let self = self, let windowInterfaceOrientation = self.windowInterfaceOrientation else {
+        return
+      }
+
+      if windowInterfaceOrientation != self.previousInterfaceOrientation {
+        self.screenOrientationRegistry.viewDidTransition(toOrientation: windowInterfaceOrientation)
+      }
+      self.previousInterfaceOrientation = windowInterfaceOrientation
+    })
   }
 
   private func shouldUseRNScreenOrientation() -> Bool {
