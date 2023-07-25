@@ -17,10 +17,9 @@ static NSPointerArray *currentFontProcessors;
 
 + (nullable UIFont *)EXfontWithName:(NSString *)name size:(CGFloat)fontSize
 {
-  UIFont *font;
   for (id<EXFontProcessorInterface> fontProcessor in currentFontProcessors) {
     NSNumber *size = [NSNumber numberWithFloat:fontSize];
-    font = [fontProcessor updateFont:nil withFamily:name size:size weight:nil style:nil variant:nil scaleMultiplier:1];
+    UIFont *font = [fontProcessor updateFont:nil withFamily:name size:size weight:nil style:nil variant:nil scaleMultiplier:1];
     if (font) {
       return font;
     }
