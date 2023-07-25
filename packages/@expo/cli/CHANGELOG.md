@@ -27,6 +27,7 @@
 - Fix API Routes not updating in `src/app` directory. ([#24968](https://github.com/expo/expo/pull/24968) by [@EvanBacon](https://github.com/EvanBacon))
 - Prevent `npx expo export` and `npx expo export:embed` from hanging with file watchers. ([#24952](https://github.com/expo/expo/pull/24952) by [@EvanBacon](https://github.com/EvanBacon))
 - Prevent `Runtime.callFunctionOn` messages from Vscode debugger to avoid Hermes crashes. ([#25270](https://github.com/expo/expo/pull/25270) by [@byCedric](https://github.com/byCedric))
+- Make `NODE_ENV` selector case insensitive when derriving from build type.
 
 ### 💡 Others
 
