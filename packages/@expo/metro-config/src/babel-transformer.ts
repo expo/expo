@@ -6,9 +6,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 // A fork of the upstream babel-transformer that uses Expo-specific babel defaults
-// and adds support for web and Node.js environments.
+// and adds support for web and Node.js environments via `metroTarget` on the Babel caller.
 
-import { parseSync, PluginItem, transformFromAstSync } from '@babel/core';
 // @ts-expect-error
 import inlineRequiresPlugin from 'babel-preset-fbjs/plugins/inline-requires';
 import type { BabelTransformer, BabelTransformerArgs } from 'metro-babel-transformer';
@@ -19,6 +18,13 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import resolveFrom from 'resolve-from';
+
+import {
+  parseSync,
+  type PluginItem,
+  type TransformOptions,
+  transformFromAstSync,
+} from './babel-core';
 
 const cacheKeyParts = [
   fs.readFileSync(__filename),
@@ -51,7 +57,7 @@ function getBabelPresetExpo(projectRoot: string): string | null {
  * default RN babelrc file and uses that.
  */
 const getBabelRC = (function () {
-  let babelRC: any | null /*: ?BabelCoreOptions */ = null;
+  let babelRC: TransformOptions | null /*: ?BabelCoreOptions */ = null;
 
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
    * LTI update could not be added via codemod */
@@ -95,27 +101,34 @@ const getBabelRC = (function () {
       // If we found a babel config file, extend our config off of it
       // otherwise the default config will be used
       if (fs.existsSync(projectBabelRCPath)) {
-        // $FlowFixMe[incompatible-use] `extends` is missing in null or undefined.
         babelRC.extends = projectBabelRCPath;
       }
     }
 
     // If a babel config file doesn't exist in the project then
     // the default preset for react-native will be used instead.
-    // $FlowFixMe[incompatible-use] `extends` is missing in null or undefined.
-    // $FlowFixMe[incompatible-type] `extends` is missing in null or undefined.
     if (!babelRC.extends) {
       const { experimentalImportSupport, ...presetOptions } = options;
 
-      // $FlowFixMe[incompatible-use] `presets` is missing in null or undefined.
+      // Convert the options into the format expected by the Expo preset.
+      const platformOptions = {
+        // @ts-expect-error: This is how Metro works by default
+        unstable_transformProfile: presetOptions.unstable_transformProfile,
+        // @ts-expect-error: This is how Metro works by default
+        withDevTools: presetOptions.withDevTools,
+        disableImportExportTransform: experimentalImportSupport,
+        dev: presetOptions.dev,
+        enableBabelRuntime: presetOptions.enableBabelRuntime,
+      };
+
       babelRC.presets = [
         [
-          require('metro-react-native-babel-preset'),
+          // NOTE(EvanBacon): Here we use the Expo babel wrapper instead of the default react-native preset.
+          require('babel-preset-expo'),
           {
-            projectRoot,
-            ...presetOptions,
-            disableImportExportTransform: experimentalImportSupport,
-            enableBabelRuntime: options.enableBabelRuntime,
+            web: platformOptions,
+            native: platformOptions,
+            // lazyImports: presetOptions.lazyImportExportTransform,
           },
         ],
       ];
@@ -133,10 +146,10 @@ function buildBabelConfig(
   filename: string,
   options: BabelTransformerArgs['options'],
   plugins: PluginItem[] = []
-) /*: BabelCoreOptions*/ {
+): TransformOptions {
   const babelRC = getBabelRC(options);
 
-  const extraConfig /*: BabelCoreOptions */ = {
+  const extraConfig: TransformOptions = {
     babelrc: typeof options.enableBabelRCLookup === 'boolean' ? options.enableBabelRCLookup : true,
     code: false,
     cwd: options.projectRoot,
@@ -144,7 +157,7 @@ function buildBabelConfig(
     highlightCode: true,
   };
 
-  let config /*: BabelCoreOptions */ = {
+  let config: TransformOptions = {
     ...babelRC,
     ...extraConfig,
   };
@@ -194,18 +207,19 @@ const transform: BabelTransformer['transform'] = ({
   options.extendsBabelConfigPath = getBabelPresetExpo(options.projectRoot) ?? undefined;
 
   try {
-    const babelConfig = {
+    const babelConfig: TransformOptions = {
       // ES modules require sourceType='module' but OSS may not always want that
       sourceType: 'unambiguous',
       ...buildBabelConfig(filename, options, plugins),
       caller: {
         name: 'metro',
+        // @ts-expect-error: Custom values passed to the caller.
         bundler: 'metro',
         platform: options.platform,
         // Empower the babel preset to know the env it's bundling for.
         // Metro automatically updates the cache to account for the custom transform options.
         // client | node | undefined
-        environment: options.customTransformOptions?.environment,
+        metroTarget: options.customTransformOptions?.environment,
       },
       ast: true,
 

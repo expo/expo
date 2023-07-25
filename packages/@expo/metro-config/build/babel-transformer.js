@@ -1,12 +1,5 @@
 "use strict";
 
-function _core() {
-  const data = require("@babel/core");
-  _core = function () {
-    return data;
-  };
-  return data;
-}
 function _inlineRequires() {
   const data = _interopRequireDefault(require("babel-preset-fbjs/plugins/inline-requires"));
   _inlineRequires = function () {
@@ -56,6 +49,13 @@ function _resolveFrom() {
   };
   return data;
 }
+function _babelCore() {
+  const data = require("./babel-core");
+  _babelCore = function () {
+    return data;
+  };
+  return data;
+}
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 /**
  * Copyright (c) 650 Industries (Expo). All rights reserved.
@@ -65,7 +65,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * LICENSE file in the root directory of this source tree.
  */
 // A fork of the upstream babel-transformer that uses Expo-specific babel defaults
-// and adds support for web and Node.js environments.
+// and adds support for web and Node.js environments via `metroTarget` on the Babel caller.
 
 // @ts-expect-error
 
@@ -137,29 +137,37 @@ const getBabelRC = function () {
       // If we found a babel config file, extend our config off of it
       // otherwise the default config will be used
       if (_nodeFs().default.existsSync(projectBabelRCPath)) {
-        // $FlowFixMe[incompatible-use] `extends` is missing in null or undefined.
         babelRC.extends = projectBabelRCPath;
       }
     }
 
     // If a babel config file doesn't exist in the project then
     // the default preset for react-native will be used instead.
-    // $FlowFixMe[incompatible-use] `extends` is missing in null or undefined.
-    // $FlowFixMe[incompatible-type] `extends` is missing in null or undefined.
     if (!babelRC.extends) {
       const {
         experimentalImportSupport,
         ...presetOptions
       } = options;
 
-      // $FlowFixMe[incompatible-use] `presets` is missing in null or undefined.
-      babelRC.presets = [[require('metro-react-native-babel-preset'), {
-        projectRoot,
-        ...presetOptions,
+      // Convert the options into the format expected by the Expo preset.
+      const platformOptions = {
+        // @ts-expect-error: This is how Metro works by default
+        unstable_transformProfile: presetOptions.unstable_transformProfile,
+        // @ts-expect-error: This is how Metro works by default
+        withDevTools: presetOptions.withDevTools,
         disableImportExportTransform: experimentalImportSupport,
-        enableBabelRuntime: options.enableBabelRuntime
+        dev: presetOptions.dev,
+        enableBabelRuntime: presetOptions.enableBabelRuntime
+      };
+      babelRC.presets = [[
+      // NOTE(EvanBacon): Here we use the Expo babel wrapper instead of the default react-native preset.
+      require('babel-preset-expo'), {
+        web: platformOptions,
+        native: platformOptions
+        // lazyImports: presetOptions.lazyImportExportTransform,
       }]];
     }
+
     return babelRC;
   };
 }();
@@ -168,16 +176,16 @@ const getBabelRC = function () {
  * Given a filename and options, build a Babel
  * config object with the appropriate plugins.
  */
-function buildBabelConfig(filename, options, plugins = []) /*: BabelCoreOptions*/{
+function buildBabelConfig(filename, options, plugins = []) {
   const babelRC = getBabelRC(options);
-  const extraConfig /*: BabelCoreOptions */ = {
+  const extraConfig = {
     babelrc: typeof options.enableBabelRCLookup === 'boolean' ? options.enableBabelRCLookup : true,
     code: false,
     cwd: options.projectRoot,
     filename,
     highlightCode: true
   };
-  let config /*: BabelCoreOptions */ = {
+  let config = {
     ...babelRC,
     ...extraConfig
   };
@@ -230,12 +238,13 @@ const transform = ({
       ...buildBabelConfig(filename, options, plugins),
       caller: {
         name: 'metro',
+        // @ts-expect-error: Custom values passed to the caller.
         bundler: 'metro',
         platform: options.platform,
         // Empower the babel preset to know the env it's bundling for.
         // Metro automatically updates the cache to account for the custom transform options.
         // client | node | undefined
-        environment: (_options$customTransf = options.customTransformOptions) === null || _options$customTransf === void 0 ? void 0 : _options$customTransf.environment
+        metroTarget: (_options$customTransf = options.customTransformOptions) === null || _options$customTransf === void 0 ? void 0 : _options$customTransf.environment
       },
       ast: true,
       // NOTE(EvanBacon): We split the parse/transform steps up to accommodate
@@ -244,11 +253,11 @@ const transform = ({
       // You get this behavior by default when using Babel's `transform` method directly.
       cloneInputAst: false
     };
-    const sourceAst = isTypeScriptSource(filename) || isTSXSource(filename) || !options.hermesParser ? (0, _core().parseSync)(src, babelConfig) : require('hermes-parser').parse(src, {
+    const sourceAst = isTypeScriptSource(filename) || isTSXSource(filename) || !options.hermesParser ? (0, _babelCore().parseSync)(src, babelConfig) : require('hermes-parser').parse(src, {
       babel: true,
       sourceType: babelConfig.sourceType
     });
-    const result = (0, _core().transformFromAstSync)(sourceAst, src, babelConfig);
+    const result = (0, _babelCore().transformFromAstSync)(sourceAst, src, babelConfig);
 
     // The result from `transformFromAstSync` can be null (if the file is ignored)
     if (!result) {
