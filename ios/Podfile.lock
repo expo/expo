@@ -2309,7 +2309,7 @@ PODS:
     - ExpoModulesCore
   - ExpoRandom (13.2.0):
     - ExpoModulesCore
-  - ExpoScreenOrientation (6.0.4):
+  - ExpoScreenOrientation (6.0.5):
     - ExpoModulesCore
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
@@ -4936,7 +4936,7 @@ SPEC CHECKSUMS:
   ExpoNetwork: 6ee4b3b6cfdba3bfb90b07f483d1111308a9c76a
   ExpoPrint: e1531d216196f51b431c7cc4d906e569f79f10e7
   ExpoRandom: 4f2bba684312acd6c0700528ae62f85265776c84
-  ExpoScreenOrientation: 9250fe520d6a3a3b31722321e38e192a49594893
+  ExpoScreenOrientation: 5d109570b17835fe0cfb822268a8ff087c2112ad
   ExpoSecureStore: 57db3b6da8b59046e2057e95bf7738a8027b47c3
   ExpoSharing: 825b2b3fc919a2656f75def0069f584bbd6e359a
   ExpoSMS: c8079b3018ae5206b3f1f6f445fd4eee2a19a335

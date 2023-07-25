@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix addOrientationChangeListener not working on iPadOS. ([#23656](https://github.com/expo/expo/pull/23656) by [@behenate](https://github.com/behenate))
-
 ### 💡 Others
+
+## 6.0.5 — 2023-07-25
+
+### 🐛 Bug fixes
+
+- Fix addOrientationChangeListener not working on iPadOS. ([#23656](https://github.com/expo/expo/pull/23656) by [@behenate](https://github.com/behenate))
 
 ## 6.0.4 — 2023-07-23
 
