@@ -16,7 +16,7 @@ Consider the following project:
 First, we'll setup a [React Context provider](https://react.dev/reference/react/createContext) that we can use to protect routes. This provider will use a mock implementation, you can replace it with your own [authentication provider](/guides/authentication/).
 
 ```jsx context/auth.js
-import { router, useSegments } from 'expo-router';
+import { useRootNavigationState, router, useSegments } from 'expo-router';
 import React from 'react';
 
 const AuthContext = React.createContext(null);
@@ -29,8 +29,12 @@ export function useAuth() {
 // This hook will protect the route access based on user authentication.
 function useProtectedRoute(user) {
   const segments = useSegments();
+  const navigationState = useRootNavigationState();
+
 
   React.useEffect(() => {
+    if (!navigationState?.key) return; // it should only redirect, when the router is ready. 
+
     const inAuthGroup = segments[0] === '(auth)';
 
     if (
@@ -44,7 +48,7 @@ function useProtectedRoute(user) {
       // Redirect away from the sign-in page.
       router.replace('/');
     }
-  }, [user, segments]);
+  }, [user, segments, navigationState]);
 }
 
 export function Provider(props) {
