@@ -1,6 +1,8 @@
 package expo.modules.devlauncher.rncompatibility
 
 import android.content.Context
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log
 import android.widget.Toast
 import com.facebook.common.logging.FLog
@@ -220,47 +222,56 @@ class DevLauncherDevSupportManager(
   // copied from https://github.com/facebook/react-native/blob/aa4da248c12e3ba41ecc9f1c547b21c208d9a15f/ReactAndroid/src/main/java/com/facebook/react/devsupport/BridgeDevSupportManager.java#L233-L277
   /** Starts of stops the sampling profiler  */
   private fun toggleJSSamplingProfiler() {
-    val javaScriptExecutorFactory = reactInstanceDevHelper.javaScriptExecutorFactory
+    val handler = Handler(Looper.getMainLooper())
+    val javaScriptExecutorFactory = reactInstanceManagerHelper?.javaScriptExecutorFactory
     if (!mIsSamplingProfilerEnabled) {
       try {
-        javaScriptExecutorFactory.startSamplingProfiler()
-        Toast.makeText(applicationContext, "Starting Sampling Profiler", Toast.LENGTH_SHORT)
-          .show()
+        javaScriptExecutorFactory?.startSamplingProfiler()
+        handler.post {
+          Toast.makeText(applicationContext, "Starting Sampling Profiler", Toast.LENGTH_SHORT)
+            .show()
+        }
       } catch (e: UnsupportedOperationException) {
-        Toast.makeText(
-          applicationContext,
-          "$javaScriptExecutorFactory does not support Sampling Profiler",
-          Toast.LENGTH_LONG
-        )
-          .show()
+        handler.post {
+          Toast.makeText(
+            applicationContext,
+            javaScriptExecutorFactory.toString() + " does not support Sampling Profiler",
+            Toast.LENGTH_LONG
+          )
+            .show()
+        }
       } finally {
         mIsSamplingProfilerEnabled = true
       }
     } else {
       try {
-        val outputPath: String = File.createTempFile(
+        val outputPath = File.createTempFile(
           "sampling-profiler-trace", ".cpuprofile", applicationContext.cacheDir
-        )
-          .path
-        javaScriptExecutorFactory.stopSamplingProfiler(outputPath)
-        Toast.makeText(
-          applicationContext,
-          "Saved results from Profiler to $outputPath",
-          Toast.LENGTH_LONG
-        )
-          .show()
+        ).path
+        javaScriptExecutorFactory?.stopSamplingProfiler(outputPath)
+        handler.post {
+          Toast.makeText(
+            applicationContext,
+            "Saved results from Profiler to $outputPath",
+            Toast.LENGTH_LONG
+          )
+            .show()
+        }
       } catch (e: IOException) {
         FLog.e(
           ReactConstants.TAG,
-          "Could not create temporary file for saving results from Sampling Profiler"
+          "Could not create temporary file for saving results from Sampling Profiler",
+          e
         )
       } catch (e: UnsupportedOperationException) {
-        Toast.makeText(
-          applicationContext,
-          javaScriptExecutorFactory.toString() + "does not support Sampling Profiler",
-          Toast.LENGTH_LONG
-        )
-          .show()
+        handler.post {
+          Toast.makeText(
+            applicationContext,
+            javaScriptExecutorFactory.toString() + " does not support Sampling Profiler",
+            Toast.LENGTH_LONG
+          )
+            .show()
+        }
       } finally {
         mIsSamplingProfilerEnabled = false
       }
