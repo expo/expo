@@ -50,9 +50,7 @@ export const reduceUpdatesStateFromContext = (updatesState, context) => {
         downloadedUpdate,
         checkError: context.checkError,
         downloadError: context.downloadError,
-        lastCheckForUpdateTimeSinceRestart: context.isChecking
-            ? new Date()
-            : updatesState.lastCheckForUpdateTimeSinceRestart,
+        lastCheckForUpdateTimeSinceRestart: context.lastCheckForUpdateTime,
     };
 };
 //# sourceMappingURL=UseUpdatesUtils.js.map

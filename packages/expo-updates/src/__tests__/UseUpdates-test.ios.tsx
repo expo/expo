@@ -2,10 +2,17 @@ import { act, render, screen } from '@testing-library/react-native';
 import '@testing-library/jest-native/extend-expect';
 import React from 'react';
 
-import type { Manifest, UpdatesNativeStateChangeEvent } from '../Updates.types';
+import ExpoUpdates from '../ExpoUpdates';
+import type { Manifest, UpdatesNativeStateMachineContext } from '../Updates.types';
 import { emitStateChangeEvent } from '../UpdatesEmitter';
 import { updateFromManifest } from '../UseUpdatesUtils';
 import UseUpdatesTestApp from './UseUpdatesTestApp';
+
+type UpdatesNativeStateChangeTestEvent = {
+  context: UpdatesNativeStateMachineContext & {
+    lastCheckForUpdateTimeString?: string;
+  };
+};
 
 jest.mock('../ExpoUpdates');
 
@@ -23,7 +30,7 @@ describe('useUpdates()', () => {
       metadata: {},
     };
     const mockError = { name: 'UpdatesError', code: 'ERR_TEST', message: 'test message' };
-    const isCheckingEvent: UpdatesNativeStateChangeEvent = {
+    const isCheckingEvent: UpdatesNativeStateChangeTestEvent = {
       context: {
         isUpdateAvailable: false,
         isUpdatePending: false,
@@ -31,9 +38,10 @@ describe('useUpdates()', () => {
         isRestarting: false,
         isChecking: true,
         isDownloading: false,
+        lastCheckForUpdateTimeString: mockDate.toISOString(),
       },
     };
-    const updateAvailableEvent: UpdatesNativeStateChangeEvent = {
+    const updateAvailableEvent: UpdatesNativeStateChangeTestEvent = {
       context: {
         isUpdateAvailable: true,
         isUpdatePending: false,
@@ -42,9 +50,10 @@ describe('useUpdates()', () => {
         isChecking: false,
         isDownloading: false,
         latestManifest: mockManifest,
+        lastCheckForUpdateTimeString: mockDate.toISOString(),
       },
     };
-    const updateUnavailableEvent: UpdatesNativeStateChangeEvent = {
+    const updateUnavailableEvent: UpdatesNativeStateChangeTestEvent = {
       context: {
         isUpdateAvailable: false,
         isUpdatePending: false,
@@ -52,9 +61,10 @@ describe('useUpdates()', () => {
         isRestarting: false,
         isChecking: false,
         isDownloading: false,
+        lastCheckForUpdateTimeString: mockDate.toISOString(),
       },
     };
-    const checkErrorEvent: UpdatesNativeStateChangeEvent = {
+    const checkErrorEvent: UpdatesNativeStateChangeTestEvent = {
       context: {
         isUpdateAvailable: false,
         isUpdatePending: false,
@@ -63,9 +73,10 @@ describe('useUpdates()', () => {
         isChecking: false,
         isDownloading: false,
         checkError: mockError,
+        lastCheckForUpdateTimeString: mockDate.toISOString(),
       },
     };
-    const isDownloadingEvent: UpdatesNativeStateChangeEvent = {
+    const isDownloadingEvent: UpdatesNativeStateChangeTestEvent = {
       context: {
         isUpdateAvailable: false,
         isUpdatePending: false,
@@ -73,9 +84,10 @@ describe('useUpdates()', () => {
         isRestarting: false,
         isChecking: false,
         isDownloading: true,
+        lastCheckForUpdateTimeString: mockDate.toISOString(),
       },
     };
-    const updateDownloadedEvent: UpdatesNativeStateChangeEvent = {
+    const updateDownloadedEvent: UpdatesNativeStateChangeTestEvent = {
       context: {
         isUpdateAvailable: true,
         isUpdatePending: true,
@@ -85,9 +97,10 @@ describe('useUpdates()', () => {
         isDownloading: false,
         latestManifest: mockManifest,
         downloadedManifest: mockManifest,
+        lastCheckForUpdateTimeString: mockDate.toISOString(),
       },
     };
-    const downloadErrorEvent: UpdatesNativeStateChangeEvent = {
+    const downloadErrorEvent: UpdatesNativeStateChangeTestEvent = {
       context: {
         isUpdateAvailable: false,
         isUpdatePending: false,
@@ -96,6 +109,7 @@ describe('useUpdates()', () => {
         isChecking: false,
         isDownloading: false,
         downloadError: mockError,
+        lastCheckForUpdateTimeString: mockDate.toISOString(),
       },
     };
 
@@ -117,13 +131,12 @@ describe('useUpdates()', () => {
       await act(async () => {
         emitStateChangeEvent(updateAvailableEvent);
       });
-      const lastCheckForUpdateTime = new Date();
       const updateIdView = await screen.findByTestId('availableUpdate_updateId');
       expect(updateIdView).toHaveTextContent('0000-2222');
       const lastCheckForUpdateTimeView = await screen.findByTestId('lastCheckForUpdateTime');
       expect(lastCheckForUpdateTimeView).toHaveTextContent(
         // truncate the fractional part of the seconds value in the time
-        lastCheckForUpdateTime.toISOString().substring(0, 19)
+        mockDate.toISOString().substring(0, 19)
       );
       const isUpdateAvailableView = await screen.findByTestId('isUpdateAvailable');
       expect(isUpdateAvailableView).toHaveTextContent('true');
@@ -140,11 +153,10 @@ describe('useUpdates()', () => {
       const updateIdView = await screen.findByTestId('availableUpdate_updateId');
       // No update so text is empty
       expect(updateIdView).toHaveTextContent('');
-      const lastCheckForUpdateTime = new Date();
       const lastCheckForUpdateTimeView = await screen.findByTestId('lastCheckForUpdateTime');
       expect(lastCheckForUpdateTimeView).toHaveTextContent(
         // truncate the fractional part of the seconds value in the time
-        lastCheckForUpdateTime.toISOString().substring(0, 19)
+        mockDate.toISOString().substring(0, 19)
       );
       const isUpdateAvailableView = await screen.findByTestId('isUpdateAvailable');
       expect(isUpdateAvailableView).toHaveTextContent('false');
@@ -194,6 +206,13 @@ describe('useUpdates()', () => {
       expect(isUpdateAvailableView).toHaveTextContent('false');
       const isUpdatePendingView = await screen.findByTestId('isUpdatePending');
       expect(isUpdatePendingView).toHaveTextContent('false');
+    });
+
+    it('Handles error in initial read of native context', async () => {
+      ExpoUpdates.getNativeStateMachineContextAsync.mockRejectedValueOnce(new Error('In dev mode'));
+      render(<UseUpdatesTestApp />);
+      const errorView = await screen.findByTestId('initializationError');
+      expect(errorView).toHaveTextContent('In dev mode');
     });
   });
 

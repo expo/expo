@@ -2,6 +2,7 @@ package expo.modules.updates.statemachine
 
 import android.content.Context
 import expo.modules.updates.logging.UpdatesLogger
+import java.util.Date
 
 /**
  * The Updates state machine class. There should be only one instance of this class
@@ -106,25 +107,29 @@ class UpdatesStateMachine(
           checkError = null,
           latestManifest = null,
           isUpdateAvailable = false,
-          isRollback = false
+          isRollback = false,
+          lastCheckForUpdateTime = Date(),
         )
         is UpdatesStateEvent.CheckCompleteWithRollback -> context.copy(
           isChecking = false,
           checkError = null,
           latestManifest = null,
           isUpdateAvailable = true,
-          isRollback = true
+          isRollback = true,
+          lastCheckForUpdateTime = Date()
         )
         is UpdatesStateEvent.CheckCompleteWithUpdate -> context.copy(
           isChecking = false,
           checkError = null,
           latestManifest = event.manifest,
           isUpdateAvailable = true,
-          isRollback = false
+          isRollback = false,
+          lastCheckForUpdateTime = Date()
         )
         is UpdatesStateEvent.CheckError -> context.copy(
           isChecking = false,
-          checkError = event.error
+          checkError = event.error,
+          lastCheckForUpdateTime = Date()
         )
         is UpdatesStateEvent.Download -> context.copy(isDownloading = true)
         is UpdatesStateEvent.DownloadComplete -> context.copy(
