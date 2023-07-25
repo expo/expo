@@ -11,7 +11,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix the image components rendering incorrect assets when the Proguard is enabled on Android.
+- Fix the image components rendering incorrect assets when the Proguard is enabled on Android. ([#23704](https://github.com/expo/expo/pull/23704) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
