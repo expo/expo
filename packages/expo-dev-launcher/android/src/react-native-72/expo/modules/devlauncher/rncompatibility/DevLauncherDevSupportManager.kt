@@ -223,10 +223,10 @@ class DevLauncherDevSupportManager(
   /** Starts of stops the sampling profiler  */
   private fun toggleJSSamplingProfiler() {
     val handler = Handler(Looper.getMainLooper())
-    val javaScriptExecutorFactory = reactInstanceManagerHelper?.javaScriptExecutorFactory
+    val javaScriptExecutorFactory = reactInstanceDevHelper.javaScriptExecutorFactory
     if (!mIsSamplingProfilerEnabled) {
       try {
-        javaScriptExecutorFactory?.startSamplingProfiler()
+        javaScriptExecutorFactory.startSamplingProfiler()
         handler.post {
           Toast.makeText(applicationContext, "Starting Sampling Profiler", Toast.LENGTH_SHORT)
             .show()
@@ -245,10 +245,10 @@ class DevLauncherDevSupportManager(
       }
     } else {
       try {
-        val outputPath = File.createTempFile(
+        val outputPath: String = File.createTempFile(
           "sampling-profiler-trace", ".cpuprofile", applicationContext.cacheDir
         ).path
-        javaScriptExecutorFactory?.stopSamplingProfiler(outputPath)
+        javaScriptExecutorFactory.stopSamplingProfiler(outputPath)
         handler.post {
           Toast.makeText(
             applicationContext,
