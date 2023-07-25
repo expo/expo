@@ -4,12 +4,12 @@
 
 ### 🛠 Breaking changes
 
-- Use custom Babel transformer by default.
+- Use custom Babel transformer by default. ([#23607](https://github.com/expo/expo/pull/23607) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
-- Expose default Babel transformer with `@expo/metro-config/babel-transformer`.
-- Expose `metroTarget: 'client' | 'node'` to the Babel caller.
+- Expose default Babel transformer with `@expo/metro-config/babel-transformer`. ([#23607](https://github.com/expo/expo/pull/23607) by [@EvanBacon](https://github.com/EvanBacon))
+- Expose `metroTarget: 'client' | 'node'` to the Babel caller. ([#23607](https://github.com/expo/expo/pull/23607) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
