@@ -108,10 +108,6 @@ export function getDefaultConfig(
   const babelConfigPath = getProjectBabelConfigFile(projectRoot);
   const isCustomBabelConfigDefined = !!babelConfigPath;
 
-  const resolverMainFields: string[] = [];
-
-  resolverMainFields.push('react-native', 'browser', 'main');
-
   const pkg = getPackageJson(projectRoot);
   const watchFolders = getWatchFolders(projectRoot);
   // TODO: nodeModulesPaths does not work with the new Node.js package.json exports API, this causes packages like uuid to fail. Disabling for now.
@@ -125,7 +121,6 @@ export function getDefaultConfig(
     console.log(`- Extensions: ${sourceExts.join(', ')}`);
     console.log(`- React Native: ${reactNativePath}`);
     console.log(`- Babel config: ${babelConfigPath || 'babel-preset-expo (default)'}`);
-    console.log(`- Resolver Fields: ${resolverMainFields.join(', ')}`);
     console.log(`- Watch Folders: ${watchFolders.join(', ')}`);
     console.log(`- Node Module Paths: ${nodeModulesPaths.join(', ')}`);
     console.log(`- Exotic: ${isExotic}`);
@@ -147,7 +142,7 @@ export function getDefaultConfig(
     resolver: {
       // unstable_conditionsByPlatform: { web: ['browser'] },
       unstable_conditionNames: ['require', 'import', 'react-native'],
-      resolverMainFields,
+      resolverMainFields: ['react-native', 'browser', 'main'],
       platforms: ['ios', 'android'],
       assetExts: metroDefaultValues.resolver.assetExts
         .concat(

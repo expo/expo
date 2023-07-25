@@ -286,6 +286,17 @@ export function withExtendedResolver(
 
       let result: Resolution | null = null;
 
+      // React Native uses `event-target-shim` incorrectly and this causes the native runtime
+      // to fail to load. This is a temporary workaround until we can fix this upstream.
+      // https://github.com/facebook/react-native/pull/38628
+      if (
+        moduleName.includes('event-target-shim') &&
+        context.originModulePath.includes(path.sep + 'react-native' + path.sep)
+      ) {
+        context.sourceExts = context.sourceExts.filter((f) => !f.includes('mjs'));
+        debug('Skip mjs support for event-target-shim in:', context.originModulePath);
+      }
+
       if (tsConfigResolve) {
         result = tsConfigResolve(
           {

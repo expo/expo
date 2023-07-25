@@ -195,8 +195,6 @@ function getDefaultConfig(projectRoot, options = {}) {
   });
   const babelConfigPath = getProjectBabelConfigFile(projectRoot);
   const isCustomBabelConfigDefined = !!babelConfigPath;
-  const resolverMainFields = [];
-  resolverMainFields.push('react-native', 'browser', 'main');
   const pkg = (0, _config().getPackageJson)(projectRoot);
   const watchFolders = (0, _getWatchFolders().getWatchFolders)(projectRoot);
   // TODO: nodeModulesPaths does not work with the new Node.js package.json exports API, this causes packages like uuid to fail. Disabling for now.
@@ -210,7 +208,6 @@ function getDefaultConfig(projectRoot, options = {}) {
     console.log(`- Extensions: ${sourceExts.join(', ')}`);
     console.log(`- React Native: ${reactNativePath}`);
     console.log(`- Babel config: ${babelConfigPath || 'babel-preset-expo (default)'}`);
-    console.log(`- Resolver Fields: ${resolverMainFields.join(', ')}`);
     console.log(`- Watch Folders: ${watchFolders.join(', ')}`);
     console.log(`- Node Module Paths: ${nodeModulesPaths.join(', ')}`);
     console.log(`- Exotic: ${isExotic}`);
@@ -232,7 +229,7 @@ function getDefaultConfig(projectRoot, options = {}) {
     resolver: {
       // unstable_conditionsByPlatform: { web: ['browser'] },
       unstable_conditionNames: ['require', 'import', 'react-native'],
-      resolverMainFields,
+      resolverMainFields: ['react-native', 'browser', 'main'],
       platforms: ['ios', 'android'],
       assetExts: metroDefaultValues.resolver.assetExts.concat(
       // Add default support for `expo-image` file types.
