@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed placeholders aren't always replaced by full-size images on Android. ([#23705](https://github.com/expo/expo/pull/23705) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 1.3.2 — 2023-07-12

@@ -316,7 +316,12 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
 
         firstView
           .recycleView()
-          ?.clear(requestManager)
+          ?.apply {
+            // The current target is already bound to the view. We don't want to cancel it in that case.
+            if (this != target) {
+              clear(requestManager)
+            }
+          }
 
         configureView(firstView, target, resource, isPlaceholder)
         if (transitionDuration > 0) {
