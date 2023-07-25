@@ -5,9 +5,7 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.kernel.ExpoViewKernel
 
-class ExpoGoModule(
-  private val manifest: Manifest
-  ) : Module() {
+class ExpoGoModule(private val manifest: Manifest) : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoGoModules")
 
