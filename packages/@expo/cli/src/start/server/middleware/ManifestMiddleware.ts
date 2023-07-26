@@ -1,6 +1,7 @@
 import { ExpoConfig, ExpoGoConfig, getConfig, ProjectConfig } from '@expo/config';
 import findWorkspaceRoot from 'find-yarn-workspace-root';
 import path from 'path';
+import resolveFrom from 'resolve-from';
 import { resolve } from 'url';
 
 import * as Log from '../../../log';
@@ -62,6 +63,18 @@ export function resolveMainModuleName(
   return stripExtension(entryPoint, 'js');
 }
 
+export function shouldEnableAsyncImports(projectRoot: string): boolean {
+  if (env.EXPO_NO_METRO_LAZY) {
+    return false;
+  }
+
+  // `@expo/metro-runtime` includes support for the fetch + eval runtime code required
+  // to support async imports. If it's not installed, we can't support async imports.
+  // If it is installed, the user MUST import it somewhere in their project.
+  // Expo Router automatically pulls this in, so we can check for it.
+  return resolveFrom.silent(projectRoot, '@expo/metro-runtime') != null;
+}
+
 export function createBundleUrlPath({
   platform,
   mainModuleName,
@@ -69,6 +82,7 @@ export function createBundleUrlPath({
   minify = mode === 'production',
   environment,
   serializerOutput,
+  lazy,
 }: {
   platform: string;
   mainModuleName: string;
@@ -76,14 +90,18 @@ export function createBundleUrlPath({
   minify?: boolean;
   environment?: string;
   serializerOutput?: 'static';
+  lazy?: boolean;
 }): string {
   const queryParams = new URLSearchParams({
     platform: encodeURIComponent(platform),
     dev: String(mode !== 'production'),
     // TODO: Is this still needed?
     hot: String(false),
-    lazy: String(!env.EXPO_NO_METRO_LAZY),
   });
+
+  if (lazy) {
+    queryParams.append('lazy', String(lazy));
+  }
 
   if (minify) {
     queryParams.append('minify', String(minify));
@@ -237,6 +255,7 @@ export abstract class ManifestMiddleware<
       minify: this.options.minify,
       platform,
       mainModuleName,
+      lazy: shouldEnableAsyncImports(this.projectRoot),
     });
 
     return (
@@ -260,8 +279,10 @@ export abstract class ManifestMiddleware<
       dev: String(this.options.mode !== 'production'),
       // TODO: Is this still needed?
       hot: String(false),
-      lazy: String(!env.EXPO_NO_METRO_LAZY),
     });
+    if (shouldEnableAsyncImports(this.projectRoot)) {
+      queryParams.append('lazy', String(true));
+    }
 
     if (this.options.minify) {
       queryParams.append('minify', String(this.options.minify));
