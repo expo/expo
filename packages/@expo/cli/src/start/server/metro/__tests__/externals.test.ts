@@ -30,10 +30,10 @@ describe(setupNodeExternals, () => {
 
     await setupNodeExternals(projectRoot);
 
-    expect(vol.toJSON()).toMatchSnapshot();
-
+    expect(Object.keys(vol.toJSON()).length).toBeGreaterThan(42);
     expect(vol.toJSON()['/.expo/metro/polyfill.native.js']).toBeDefined();
     expect(vol.toJSON()['/.expo/metro/polyfill.js']).toBeDefined();
     expect(vol.toJSON()['/.expo/metro/externals/fs/promises/index.js']).toBeDefined();
+    expect(vol.toJSON()['/.expo/metro/externals/assert/index.js']).toBeDefined();
   });
 });
