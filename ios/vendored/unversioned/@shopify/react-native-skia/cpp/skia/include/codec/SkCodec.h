@@ -8,10 +8,7 @@
 #ifndef SkCodec_DEFINED
 #define SkCodec_DEFINED
 
-#include "include/codec/SkCodecAnimation.h"
 #include "include/codec/SkEncodedOrigin.h"
-#include "include/core/SkAlphaType.h"
-#include "include/core/SkEncodedImageFormat.h"
 #include "include/core/SkImageInfo.h"
 #include "include/core/SkPixmap.h"
 #include "include/core/SkRect.h"
@@ -20,21 +17,30 @@
 #include "include/core/SkTypes.h"
 #include "include/core/SkYUVAPixmaps.h"
 #include "include/private/SkEncodedInfo.h"
-#include "include/private/SkNoncopyable.h"
+#include "include/private/base/SkNoncopyable.h"
 #include "modules/skcms/skcms.h"
 
 #include <cstddef>
+#include <functional>
 #include <memory>
 #include <tuple>
 #include <vector>
 
-class SkAndroidCodec;
 class SkData;
 class SkFrameHolder;
 class SkImage;
 class SkPngChunkReader;
 class SkSampler;
 class SkStream;
+struct SkGainmapInfo;
+enum SkAlphaType : int;
+enum class SkEncodedImageFormat;
+
+namespace SkCodecAnimation {
+enum class Blend;
+enum class DisposalMethod;
+}
+
 
 namespace DM {
 class CodecSrc;
@@ -767,6 +773,8 @@ protected:
         return fSrcXformFormat;
     }
 
+    virtual bool onGetGainmapInfo(SkGainmapInfo*, std::unique_ptr<SkStream>*) { return false; }
+
     virtual SkISize onGetScaledDimensions(float /*desiredScale*/) const {
         // By default, scaling is not supported.
         return this->dimensions();
@@ -887,8 +895,8 @@ private:
     const SkEncodedInfo                fEncodedInfo;
     XformFormat                        fSrcXformFormat;
     std::unique_ptr<SkStream>          fStream;
-    bool                               fNeedsRewind;
-    const SkEncodedOrigin              fOrigin;
+    bool fNeedsRewind = false;
+    const SkEncodedOrigin fOrigin;
 
     SkImageInfo                        fDstInfo;
     Options                            fOptions;
@@ -904,13 +912,13 @@ private:
     skcms_AlphaFormat                  fDstXformAlphaFormat;
 
     // Only meaningful during scanline decodes.
-    int                                fCurrScanline;
+    int fCurrScanline = -1;
 
-    bool                               fStartedIncrementalDecode;
+    bool fStartedIncrementalDecode = false;
 
     // Allows SkAndroidCodec to call handleFrameIndex (potentially decoding a prior frame and
-    // clearing to transparent) without SkCodec calling it, too.
-    bool                               fAndroidCodecHandlesFrameIndex;
+    // clearing to transparent) without SkCodec itself calling it, too.
+    bool fUsingCallbackForHandleFrameIndex = false;
 
     bool initializeColorXform(const SkImageInfo& dstInfo, SkEncodedInfo::Alpha, bool srcIsOpaque);
 
@@ -934,17 +942,23 @@ private:
         return nullptr;
     }
 
+    // Callback for decoding a prior frame. The `Options::fFrameIndex` is ignored,
+    // being replaced by frameIndex. This allows opts to actually be a subclass of
+    // SkCodec::Options which SkCodec itself does not know how to copy or modify,
+    // but just passes through to the caller (where it can be reinterpret_cast'd).
+    using GetPixelsCallback = std::function<Result(const SkImageInfo&, void* pixels,
+                                                   size_t rowBytes, const Options& opts,
+                                                   int frameIndex)>;
+
     /**
      *  Check for a valid Options.fFrameIndex, and decode prior frames if necessary.
      *
-     *  If androidCodec is not null, that means this SkCodec is owned by an SkAndroidCodec. In that
-     *  case, the Options will be treated as an AndroidOptions, and SkAndroidCodec will be used to
-     *  decode a prior frame, if a prior frame is needed. When such an owned SkCodec calls
-     *  handleFrameIndex, it will immediately return kSuccess, since SkAndroidCodec already handled
-     *  it.
+     * If GetPixelsCallback is not null, it will be used to decode a prior frame instead
+     * of using this SkCodec directly. It may also be used recursively, if that in turn
+     * depends on a prior frame. This is used by SkAndroidCodec.
      */
     Result handleFrameIndex(const SkImageInfo&, void* pixels, size_t rowBytes, const Options&,
-            SkAndroidCodec* androidCodec = nullptr);
+                            GetPixelsCallback = nullptr);
 
     // Methods for scanline decoding.
     virtual Result onStartScanlineDecode(const SkImageInfo& /*dstInfo*/,

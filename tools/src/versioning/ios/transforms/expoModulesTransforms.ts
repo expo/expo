@@ -1,9 +1,11 @@
+import { Podspec } from '../../../CocoaPods';
 import { FileTransforms } from '../../../Transforms.types';
+import { VersioningModuleConfig } from '../types';
 
 const objcFilesPattern = '*.{h,m,mm,cpp}';
 const swiftFilesPattern = '*.swift';
 
-export function expoModulesTransforms(prefix: string): FileTransforms {
+export function getCommonExpoModulesTransforms(prefix: string): FileTransforms {
   return {
     path: [
       // Here we prefix names of Objective-C/C++ files.
@@ -68,13 +70,13 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
       {
         // Prefix `Expo*` frameworks in imports.
         paths: objcFilesPattern,
-        find: /#(import|include) <(Expo|EAS)(.*?)\//g,
-        replaceWith: `#$1 <${prefix}$2$3/`,
+        find: /#(import |include |if __has_include\()<(Expo|EAS)(.*?)\//g,
+        replaceWith: `#$1<${prefix}$2$3/`,
       },
       {
         paths: objcFilesPattern,
-        find: /#import <(.*?)\/(Expo|EAS)(.*?)\.h>/g,
-        replaceWith: `#import <$1/${prefix}$2$3.h>`,
+        find: /#(import |include |if __has_include\()<(.*?)\/(Expo|EAS)(.*?)\.h>/g,
+        replaceWith: `#$1<$2/${prefix}$3$4.h>`,
       },
       {
         // Rename Swift compatibility headers from frameworks starting with `Expo`.
@@ -137,7 +139,7 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
       {
         paths: '*.h',
         // Use negative look ahead regexp for `prefix` to prevent duplicated versioning
-        find: new RegExp(`\b(!?${prefix})(\w+-umbrella\.h)\b`, 'g'),
+        find: new RegExp(`[\b/](!?${prefix})(\w+-umbrella\.h)\b`, 'g'),
         replaceWith: `${prefix}$1`,
       },
 
@@ -149,4 +151,57 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
       },
     ],
   };
+}
+
+export function getVersioningExpoModuleConfig(
+  prefix: string,
+  moduleName: string
+): VersioningModuleConfig {
+  const config: Record<string, VersioningModuleConfig> = {
+    'expo-constants': {
+      mutatePodspec: removeScriptPhasesAndResourceBundles,
+    },
+    'expo-updates': {
+      mutatePodspec: removeScriptPhasesAndResourceBundles,
+    },
+    'expo-screen-orientation': {
+      // Versioned expo-screen-orientation shouldn't include its own registry, it should use the unversioned one instead.
+      transforms: {
+        path: [],
+        content: [
+          {
+            paths: 'ScreenOrientationRegistry.swift',
+            find: /(.|\n)*/,
+            replaceWith: [
+              '// The original implementations of `ScreenOrientationRegistry` and `ScreenOrientationController`',
+              '// were removed from this file as part of the versioning process to always use their "unversioned" version.',
+              'import ExpoScreenOrientation',
+              '',
+              'typealias ScreenOrientationRegistry = ExpoScreenOrientation.ScreenOrientationRegistry',
+              'typealias ScreenOrientationController = ExpoScreenOrientation.ScreenOrientationController',
+              '',
+            ].join('\n'),
+          },
+        ],
+      },
+      mutatePodspec(podspec: Podspec) {
+        // Versioned screen orientation must depend on unversioned copy to use unversioned singleton object.
+        addDependency(podspec, podspec.name.replace(prefix, ''));
+      },
+    },
+  };
+  return config[moduleName] ?? {};
+}
+
+function removeScriptPhasesAndResourceBundles(podspec: Podspec): void {
+  // For expo-updates and expo-constants in Expo Go, we don't need app.config and app.manifest in versioned code.
+  delete podspec['script_phases'];
+  delete podspec['resource_bundles'];
+}
+
+function addDependency(podspec: Podspec, dependencyName: string) {
+  if (!podspec.dependencies) {
+    podspec.dependencies = {};
+  }
+  podspec.dependencies[dependencyName] = [];
 }

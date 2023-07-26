@@ -61,14 +61,7 @@ export function collectManifestSchemes() {
         android: Constants.expoConfig?.android,
         web: {},
     }) ?? {};
-    const schemes = getSchemes(Constants.expoConfig);
-    // Add the detached scheme after the manifest scheme for legacy ExpoKit support.
-    if (Constants.expoConfig?.detach?.scheme) {
-        schemes.push(Constants.expoConfig.detach.scheme);
-    }
-    // Add the unimplemented platform schemes last.
-    schemes.push(...getSchemes(platformManifest));
-    return schemes;
+    return getSchemes(Constants.expoConfig).concat(getSchemes(platformManifest));
 }
 function getNativeAppIdScheme() {
     // Add the native application identifier to the list of schemes for parity with `expo build`.
@@ -84,8 +77,7 @@ function getNativeAppIdScheme() {
  * Ensure the user has linked the expo-constants manifest in bare workflow.
  */
 export function hasConstantsManifest() {
-    return (!!Object.keys(Constants.manifest ?? {}).length ||
-        !!Object.keys(Constants.manifest2 ?? {}).length);
+    return !!Object.keys(Constants.expoConfig ?? {}).length;
 }
 // @docsMissing
 export function resolveScheme(options) {

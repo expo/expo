@@ -42,7 +42,10 @@ export async function versionCxxExpoModulesAsync(version: string) {
     const versionedAbiRoot = path.join(ANDROID_DIR, 'versioned-abis', `expoview-${abiName}`);
     const packageFiles = await glob('**/*.{h,cpp,txt,gradle}', {
       cwd: path.join(PACKAGES_DIR, packageName),
-      ignore: ['android/{build,.cxx}/**/*', 'ios/**/*'],
+      ignore: [
+        '{android,android-annotation,android-annotation-processor}/{build,.cxx}/**/*',
+        'ios/**/*',
+      ],
       absolute: true,
     });
 
@@ -78,8 +81,8 @@ function isVersionableCxxExpoModule(pkg: Package) {
   );
 }
 
-function transformPackageAsync(packageFiles: string[], abiName: string) {
-  return transformFilesAsync(packageFiles, baseTransforms(abiName));
+async function transformPackageAsync(packageFiles: string[], abiName: string) {
+  await transformFilesAsync(packageFiles, baseTransforms(abiName));
 }
 
 function revertTransformPackageAsync(packageFiles: string[]) {

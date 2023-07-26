@@ -2,13 +2,16 @@
 title: metro.config.js
 ---
 
+import { Terminal } from '~/ui/components/Snippet';
+import { FileTree } from '~/ui/components/FileTree';
+
 See more information about **metro.config.js** in the [customizing Metro guide](/guides/customizing-metro/).
 
 ## Environment variables
 
-> For SDK 49 and above
+In SDK 49 and higher, the Expo CLI can load environment variables from **.env** files. Learn more about how to use environment variables in Expo CLI in the [environment variables guide](/guides/environment-variables/).
 
-Environment variables can be loaded using **.env** files. These files are loaded according to the [standard **.env** file resolution](https://github.com/bkeepers/dotenv/blob/c6e583a/README.md#what-other-env-files-can-i-use).
+EAS CLI uses a different mechanism for environment variables, except when it invokes Expo CLI for compiling and bundling. Learn more about [environment variables in EAS](https://docs.expo.dev/build-reference/variables/).
 
 If you are migrating an older project to SDK 49 or above, then you should ignore local env files by adding the following to your **.gitignore**:
 
@@ -17,19 +20,33 @@ If you are migrating an older project to SDK 49 or above, then you should ignore
 .env*.local
 ```
 
-### Client environment variables
+### Disabling dotenv files
+
+Dotenv file loading can be fully disabled in Expo CLI by enabling the `EXPO_NO_DOTENV` environment variable, before invoking any Expo CLI command.
+
+<Terminal
+  cmd={[
+    '# All users can run cross-env, followed by the Expo CLI command',
+    '$ npx cross-env EXPO_NO_DOTENV=1 expo start',
+    '# Alternatively, macOS and Linux users can define the environment variable, then run npx, followed by the Expo CLI command',
+    '$ EXPO_NO_DOTENV=1 npx expo start',
+  ]}
+/>
+
+### Disabling `EXPO_PUBLIC_`-prefixed client environment variables
 
 Environment variables prefixed with `EXPO_PUBLIC_` will be exposed to the app at build-time. For example, `EXPO_PUBLIC_API_KEY` will be available as `process.env.EXPO_PUBLIC_API_KEY`.
 
-Environment variables will not be inlined in code inside of **node_modules**.
+Client environment variable inlining can be disabled with the environment variable `EXPO_NO_CLIENT_ENV_VARS=1`, this must be defined before any bundling is performed.
 
-For security purposes, client environment variables are inlined in the bundle, which means that `process.env` is not an iterable object, and you cannot dynamically access environment variables. Every variable must be referenced as a static property in order for it to be inlined. For example, the expression `process.env.EXPO_PUBLIC_KEY` will be rewritten and `process.env[‘EXPO_PUBLIC_KEY’]` will not.
-
-- Client environment variables should not contain secrets as they will be viewable in plain-text format in the production binary.
-- Use client environment variables for partially protected values, such as public API keys you don't want to commit to Git or hard-code in your app and that may change depending on the environment.
-- Expo environment variables can be updated while the development server (`npx expo start`) is running, without restarting or clearing the bundler cache — however, you'll need to modify and save an included source file to see the updates. You must also perform a client reload, as environment variables do not support Fast Refresh.
-
-{/* TODO: Usage in EAS */}
+<Terminal
+  cmd={[
+    '# All users can run cross-env, followed by the Expo CLI command',
+    '$ npx cross-env EXPO_NO_CLIENT_ENV_VARS=1 expo start',
+    '# Alternatively, macOS and Linux users can define the environment variable, then run npx, followed by the Expo CLI command',
+    '$ EXPO_NO_CLIENT_ENV_VARS=1 npx expo start',
+  ]}
+/>
 
 ## CSS
 
@@ -53,15 +70,13 @@ module.exports = config;
 
 Now you'll need to clear the Metro cache and restart the development server:
 
-```sh
-yarn expo start --clear
-```
+<Terminal cmd={['$ npx expo start --clear']} />
 
 Ensure you don't have a custom Metro transformer that processes CSS files. If you do, you'll need to remove it.
 
 ### Global CSS
 
-> Warning: Global styles are web-only, usage will cause your application to diverge visually on native.
+> **warning** Global styles are web-only, usage will cause your application to diverge visually on native.
 
 You can import a CSS file from any component. The CSS will be applied to the entire page.
 
@@ -110,11 +125,11 @@ import 'emoji-mart/css/emoji-mart.css';
 
 ### CSS Modules
 
-> CSS Modules for native are under development and currently only work on web.
+> **warning** CSS Modules for native are under development and currently only work on web.
 
 CSS Modules are a way to scope CSS to a specific component. This is useful for avoiding naming collisions and for ensuring that styles are only applied to the intended component.
 
-In Expo, CSS Modules are defined by creating a file with the `.module.css` extension. The file can be imported from any component. The exported value is an object with the class names as keys and the React Native style objects as values.
+In Expo, CSS Modules are defined by creating a file with the `.module.css` extension. The file can be imported from any component. The exported value is an object with the class names as keys and the web-only scoped names as the values. The import `unstable_styles` can be used to access `react-native-web`-safe styles.
 
 CSS Modules support platform extensions to allow you to define different styles for different platforms. For example, you can define a `module.ios.css` and `module.android.css` file to define styles for iOS and Android respectively. You'll need to import without the extension, for example:
 
@@ -129,20 +144,34 @@ Flipping the extension, e.g. `App.ios.module.css` will not work and result in a 
 > You cannot pass styles to the `className` prop of a React Native or React Native for web component. Instead, you must use the `style` prop.
 
 ```js App.js
-import styles from './App.module.css';
+import styles, { unstable_styles } from './App.module.css';
 
 export default function Page() {
-  return <View style={styles.container}>Hello World</View>;
+  return (
+    <>
+      <Text
+        style={{
+          // This is how react-native-web class names are applied
+          $$css: true,
+          _: styles.text,
+        }}>
+        Hello World
+      </Text>
+      <Text style={unstable_styles.text}>Hello World</Text>
+      {/* Web-only usage: */}
+      <p className={styles.text}>Hello World</p>
+    </>
+  );
 }
 ```
 
 ```css App.module.css
-.container {
-  background-color: red;
+.text {
+  color: red;
 }
 ```
 
-- On web, all CSS values are available. CSS is not processed or auto-prefixed like it is with the React Native Web `StyleSheet` API.
+- On web, all CSS values are available. CSS is not processed or auto-prefixed like it is with the React Native Web `StyleSheet` API. You can use `postcss.config.js` to autoprefix your CSS.
 - CSS Modules use [lightningcss](https://github.com/parcel-bundler/lightningcss) under the hood, check [the issues](https://github.com/parcel-bundler/lightningcss/issues) for unsupported features.
 
 ### PostCSS
@@ -167,15 +196,139 @@ Expo Metro has _partial_ support for SCSS/SASS.
 
 To setup, install the `sass` package in your project:
 
-```sh
-yarn add sass
-```
+<Terminal cmd={['$ yarn add -D sass']} />
 
 Then, ensure [CSS is setup](#css) in the `metro.config.js` file.
 
 - When `sass` is installed, then modules without extensions will be resolved in the following order: `scss`, `sass`, `css`.
 - Only use the intended syntax with `sass` files.
 - Importing other files from inside a scss/sass file is not currently supported.
+
+### Tailwind
+
+> **info** Tailwind does not support native platforms, this is web-only.
+
+[Tailwind](https://tailwindcss.com/) can be used with Metro for web. However, due to the advanced caching system in Metro, the setup is a little different from the default Tailwind setup. The following files are modified:
+
+<FileTree
+  files={[
+    'app.json',
+    'package.json',
+    'global.css',
+    'metro.config.js',
+    'tailwind.config.js',
+    'index.js',
+  ]}
+/>
+
+To setup, install the `tailwindcss` package in your project:
+
+<Terminal cmd={['$ yarn add -D tailwindcss@^3.3.1']} />
+
+In your **app.json** ensure the project is using Metro for web:
+
+```json app.json
+{
+  "expo": {
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}
+```
+
+Create **global.css** in your project:
+
+```css global.css
+/* This file adds the requisite utility classes for Tailwind to work. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+Create **tailwind.config.js** in your project:
+
+```js tailwind.config.js
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    // Ensure this points to your source code...
+    './app/**/*.{js,tsx,ts,jsx}',
+    // If you use a `src` folder, add: './src/**/*.{js,tsx,ts,jsx}'
+    // Do the same with `components`, `hooks`, `styles`, or any other top-level folders...
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+};
+```
+
+In **metro.config.js**, enable CSS support and run the Tailwind CLI:
+
+```js metro.config.js
+const path = require('path');
+const { getDefaultConfig } = require('expo/metro-config');
+const tailwind = require('tailwindcss/lib/cli/build');
+
+module.exports = (async () => {
+  /** @type {import('expo/metro-config').MetroConfig} */
+  const config = getDefaultConfig(__dirname, {
+    // Enable CSS support.
+    isCSSEnabled: true,
+  });
+
+  // Run Tailwind CLI to generate CSS files.
+  await tailwind.build({
+    '--input': path.relative(__dirname, './global.css'),
+    '--output': path.resolve(__dirname, 'node_modules/.cache/expo/tailwind/eval.css'),
+    '--watch': process.env.NODE_ENV === 'development' ? 'always' : false,
+    '--poll': true,
+  });
+
+  return config;
+})();
+```
+
+In your app main entry file, add the following:
+
+```js index.js/App.js
+// Ensure we import the CSS for Tailwind so it's included in hot module reloads.
+const ctx = require.context(
+  // If this require.context is not inside the root directory (next to the package.json) then adjust this file path
+  // to resolve correctly.
+  './node_modules/.cache/expo/tailwind'
+);
+if (ctx.keys().length) ctx(ctx.keys()[0]);
+```
+
+#### Tailwind Usage
+
+You can use Tailwind with React DOM elements as-is:
+
+```jsx
+export default function Page() {
+  return (
+    <div className="bg-slate-100 rounded-xl">
+      <p className="text-lg font-medium">Welcome to Tailwind</p>
+    </div>
+  );
+}
+```
+
+You can use the `{ $$css: true }` syntax to use Tailwind with React Native web elements:
+
+```jsx
+import { View, Text } from 'react-native';
+
+export default function Page() {
+  return (
+    <View style={{ $$css: true, _: 'bg-slate-100 rounded-xl' }}>
+      <Text style={{ $$css: true, _: 'text-lg font-medium' }}>Welcome to Tailwind</Text>
+    </View>
+  );
+}
+```
 
 ## Bare workflow setup
 
@@ -185,7 +338,7 @@ Projects that don't use [Expo Prebuild](/workflow/prebuild) must configure nativ
 
 {/* If this isn't done, then features like [aliases](/guides/typescript#path-aliases), [absolute imports](/guides/typescript#absolute-imports), asset hashing, and more will not work. */}
 
-These modifications are meant to replace `npx react-native bundle` and `npx react-native start` with `npx expo export:embed` and `npx expo start --dev-client` respectively.
+These modifications are meant to replace `npx react-native bundle` and `npx react-native start` with `npx expo export:embed` and `npx expo start` respectively.
 
 ### `metro.config.js`
 

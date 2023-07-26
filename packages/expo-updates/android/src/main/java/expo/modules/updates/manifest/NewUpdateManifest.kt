@@ -99,7 +99,7 @@ class NewUpdateManifest private constructor(
       val launchAsset = manifest.getLaunchAsset()
       val assets = manifest.getAssets()
       val commitTime: Date = try {
-        UpdatesUtils.parseDateString(manifest.getCreatedAt())
+        UpdatesUtils.parseDateString(manifest.getCreatedAt()) ?: Date()
       } catch (e: ParseException) {
         Log.e(TAG, "Could not parse manifest createdAt string; falling back to current time", e)
         Date()

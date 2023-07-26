@@ -12,6 +12,10 @@
 #import <stdatomic.h>
 #endif
 
+#if __has_include(<RNScreens/RNSScreenStackHeaderConfig.h>)
+#import <RNScreens/RNSScreenStackHeaderConfig.h>
+#endif
+
 #ifdef RCT_NEW_ARCH_ENABLED
 using namespace facebook::react;
 #endif
@@ -85,9 +89,70 @@ using namespace facebook::react;
 
 @end
 
-@interface REANodesManager () <RCTUIManagerObserver>
+#ifndef RCT_NEW_ARCH_ENABLED
+
+@interface REASyncUpdateObserver : NSObject <RCTUIManagerObserver>
+@end
+
+@implementation REASyncUpdateObserver {
+  volatile void (^_mounting)(void);
+  volatile BOOL _waitTimedOut;
+  dispatch_semaphore_t _semaphore;
+}
+
+- (instancetype)init
+{
+  self = [super init];
+  if (self) {
+    _mounting = nil;
+    _waitTimedOut = NO;
+    _semaphore = dispatch_semaphore_create(0);
+  }
+  return self;
+}
+
+- (void)dealloc
+{
+  RCTAssert(_mounting == nil, @"Mouting block was set but never executed. This may lead to UI inconsistencies");
+}
+
+- (void)unblockUIThread
+{
+  RCTAssertUIManagerQueue();
+  dispatch_semaphore_signal(_semaphore);
+}
+
+- (void)waitAndMountWithTimeout:(NSTimeInterval)timeout
+{
+  RCTAssertMainQueue();
+  long result = dispatch_semaphore_wait(_semaphore, dispatch_time(DISPATCH_TIME_NOW, timeout * NSEC_PER_SEC));
+  if (result != 0) {
+    @synchronized(self) {
+      _waitTimedOut = YES;
+    }
+  }
+  if (_mounting) {
+    _mounting();
+    _mounting = nil;
+  }
+}
+
+- (BOOL)uiManager:(RCTUIManager *)manager performMountingWithBlock:(RCTUIManagerMountingBlock)block
+{
+  RCTAssertUIManagerQueue();
+  @synchronized(self) {
+    if (_waitTimedOut) {
+      return NO;
+    } else {
+      _mounting = block;
+      return YES;
+    }
+  }
+}
 
 @end
+
+#endif
 
 @implementation REANodesManager {
   CADisplayLink *_displayLink;
@@ -95,9 +160,6 @@ using namespace facebook::react;
   NSMutableArray<REAOnAnimationCallback> *_onAnimationCallbacks;
   BOOL _tryRunBatchUpdatesSynchronously;
   REAEventHandler _eventHandler;
-  volatile void (^_mounting)(void);
-  NSObject *_syncLayoutUpdatesWaitLock;
-  volatile BOOL _syncLayoutUpdatesWaitTimedOut;
   NSMutableDictionary<NSNumber *, ComponentUpdate *> *_componentUpdateBuffer;
   NSMutableDictionary<NSNumber *, UIView *> *_viewRegistry;
 #ifdef RCT_NEW_ARCH_ENABLED
@@ -125,7 +187,6 @@ using namespace facebook::react;
     _operationsInBatch = [NSMutableDictionary new];
     _componentUpdateBuffer = [NSMutableDictionary new];
     _viewRegistry = [_uiManager valueForKey:@"_viewRegistry"];
-    _syncLayoutUpdatesWaitLock = [NSObject new];
   }
 
   _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(onAnimationFrame:)];
@@ -241,19 +302,6 @@ using namespace facebook::react;
   }
 }
 
-- (BOOL)uiManager:(RCTUIManager *)manager performMountingWithBlock:(RCTUIManagerMountingBlock)block
-{
-  RCTAssert(_mounting == nil, @"Mouting block is expected to not be set");
-  @synchronized(_syncLayoutUpdatesWaitLock) {
-    if (_syncLayoutUpdatesWaitTimedOut) {
-      return NO;
-    } else {
-      _mounting = block;
-      return YES;
-    }
-  }
-}
-
 - (void)performOperations
 {
 #ifdef RCT_NEW_ARCH_ENABLED
@@ -268,8 +316,7 @@ using namespace facebook::react;
     _tryRunBatchUpdatesSynchronously = NO;
 
     __weak __typeof__(self) weakSelf = self;
-    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-    _syncLayoutUpdatesWaitTimedOut = NO;
+    REASyncUpdateObserver *syncUpdateObserver = [REASyncUpdateObserver new];
     RCTExecuteOnUIManagerQueue(^{
       __typeof__(self) strongSelf = weakSelf;
       if (strongSelf == nil) {
@@ -278,7 +325,7 @@ using namespace facebook::react;
       BOOL canUpdateSynchronously = trySynchronously && ![strongSelf.uiManager hasEnqueuedUICommands];
 
       if (!canUpdateSynchronously) {
-        dispatch_semaphore_signal(semaphore);
+        [syncUpdateObserver unblockUIThread];
       }
 
       for (int i = 0; i < copiedOperationsQueue.count; i++) {
@@ -286,8 +333,8 @@ using namespace facebook::react;
       }
 
       if (canUpdateSynchronously) {
-        [strongSelf.uiManager runSyncUIUpdatesWithObserver:strongSelf];
-        dispatch_semaphore_signal(semaphore);
+        [strongSelf.uiManager runSyncUIUpdatesWithObserver:syncUpdateObserver];
+        [syncUpdateObserver unblockUIThread];
       }
       // In case canUpdateSynchronously=true we still have to send uiManagerWillPerformMounting event
       // to observers because some components (e.g. TextInput) update their UIViews only on that event.
@@ -298,17 +345,7 @@ using namespace facebook::react;
       // from CADisplayLink but it is easier to hardcode it for the time being.
       // The reason why we use frame duration here is that if takes longer than one frame to complete layout tasks
       // there is no point of synchronizing layout with the UI interaction as we get that one frame delay anyways.
-      long result = dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 16 * NSEC_PER_MSEC));
-      if (result != 0) {
-        @synchronized(_syncLayoutUpdatesWaitLock) {
-          _syncLayoutUpdatesWaitTimedOut = YES;
-        }
-      }
-    }
-
-    if (_mounting) {
-      _mounting();
-      _mounting = nil;
+      [syncUpdateObserver waitAndMountWithTimeout:0.016];
     }
   }
   _wantRunUpdates = NO;
@@ -368,7 +405,16 @@ using namespace facebook::react;
 
 - (BOOL)isNativeViewMounted:(NSNumber *)viewTag
 {
-  return _viewRegistry[viewTag].superview != nil;
+  UIView *view = _viewRegistry[viewTag];
+  if (view.superview != nil) {
+    return YES;
+  }
+#if __has_include(<RNScreens/RNSScreenStackHeaderConfig.h>)
+  if ([view isKindOfClass:[RNSScreenStackHeaderConfig class]]) {
+    return ((RNSScreenStackHeaderConfig *)view).screenView != nil;
+  }
+#endif
+  return NO;
 }
 
 #ifdef RCT_NEW_ARCH_ENABLED

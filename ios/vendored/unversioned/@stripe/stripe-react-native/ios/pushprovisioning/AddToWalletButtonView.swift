@@ -39,7 +39,7 @@ class AddToWalletButtonView: UIView {
     }
 
     @objc func beginPushProvisioning() {
-        if (!PushProvisioningUtils.canAddPaymentPass(primaryAccountIdentifier: cardDetails?["primaryAccountIdentifier"] as? String ?? "", isTestMode: self.testEnv)) {
+        if (!PushProvisioningUtils.canAddPaymentPass(isTestMode: self.testEnv)) {
             onCompleteAction!(
                 Errors.createError(
                     ErrorType.Failed,

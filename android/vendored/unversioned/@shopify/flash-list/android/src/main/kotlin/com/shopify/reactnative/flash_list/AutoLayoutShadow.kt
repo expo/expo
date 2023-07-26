@@ -25,23 +25,27 @@ class AutoLayoutShadow {
         for (i in 0 until sortedItems.size - 1) {
             val cell = sortedItems[i]
             val neighbour = sortedItems[i + 1]
+            // Only apply correction if the next cell is consecutive.
+            val isNeighbourConsecutive = neighbour.index == cell.index + 1
             if (isWithinBounds(cell)) {
                 if (!horizontal) {
                     maxBound = kotlin.math.max(maxBound, cell.bottom);
                     minBound = kotlin.math.min(minBound, cell.top);
                     maxBoundNeighbour = maxBound
-                    if (cell.left < neighbour.left) {
-                        if (cell.right != neighbour.left) {
-                            neighbour.right = cell.right + neighbour.width
-                            neighbour.left = cell.right
+                    if (isNeighbourConsecutive) {
+                        if (cell.left < neighbour.left) {
+                            if (cell.right != neighbour.left) {
+                                neighbour.right = cell.right + neighbour.width
+                                neighbour.left = cell.right
+                            }
+                            if (cell.top != neighbour.top) {
+                                neighbour.bottom = cell.top + neighbour.height
+                                neighbour.top = cell.top
+                            }
+                        } else {
+                            neighbour.bottom = maxBound + neighbour.height
+                            neighbour.top = maxBound
                         }
-                        if (cell.top != neighbour.top) {
-                            neighbour.bottom = cell.top + neighbour.height
-                            neighbour.top = cell.top
-                        }
-                    } else {
-                        neighbour.bottom = maxBound + neighbour.height
-                        neighbour.top = maxBound
                     }
                     if (isWithinBounds(neighbour)) {
                         maxBoundNeighbour = kotlin.math.max(maxBound, neighbour.bottom)
@@ -50,18 +54,20 @@ class AutoLayoutShadow {
                     maxBound = kotlin.math.max(maxBound, cell.right);
                     minBound = kotlin.math.min(minBound, cell.left);
                     maxBoundNeighbour = maxBound
-                    if (cell.top < neighbour.top) {
-                        if (cell.bottom != neighbour.top) {
-                            neighbour.bottom = cell.bottom + neighbour.height
-                            neighbour.top = cell.bottom
+                    if (isNeighbourConsecutive) {
+                        if (cell.top < neighbour.top) {
+                            if (cell.bottom != neighbour.top) {
+                                neighbour.bottom = cell.bottom + neighbour.height
+                                neighbour.top = cell.bottom
+                            }
+                            if (cell.left != neighbour.left) {
+                                neighbour.right = cell.left + neighbour.width
+                                neighbour.left = cell.left
+                            }
+                        } else {
+                            neighbour.right = maxBound + neighbour.width
+                            neighbour.left = maxBound
                         }
-                        if (cell.left != neighbour.left) {
-                            neighbour.right = cell.left + neighbour.width
-                            neighbour.left = cell.left
-                        }
-                    } else {
-                        neighbour.right = maxBound + neighbour.width
-                        neighbour.left = maxBound
                     }
                     if (isWithinBounds(neighbour)) {
                         maxBoundNeighbour = kotlin.math.max(maxBound, neighbour.right)

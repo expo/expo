@@ -10,7 +10,7 @@
 
 #include "include/core/SkContourMeasure.h"
 #include "include/core/SkPath.h"
-#include "include/private/SkTDArray.h"
+#include "include/private/base/SkTDArray.h"
 
 class SK_API SkPathMeasure {
 public:

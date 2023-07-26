@@ -288,7 +288,7 @@ export abstract class ManifestMiddleware<
     hostname?: string | null;
   }): ExpoGoConfig {
     return {
-      // localhost:19000
+      // localhost:8081
       debuggerHost: this.options.constructUrl({ scheme: '', hostname }),
       // Required for Expo Go to function.
       developer: {
@@ -303,8 +303,8 @@ export abstract class ManifestMiddleware<
       mainModuleName,
       // Add this string to make Flipper register React Native / Metro as "running".
       // Can be tested by running:
-      // `METRO_SERVER_PORT=19000 open -a flipper.app`
-      // Where 19000 is the port where the Expo project is being hosted.
+      // `METRO_SERVER_PORT=8081 open -a flipper.app`
+      // Where 8081 is the port where the Expo project is being hosted.
       __flipperHack: 'React Native packager is running',
     };
   }

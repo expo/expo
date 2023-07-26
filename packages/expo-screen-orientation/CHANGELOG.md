@@ -10,6 +10,41 @@
 
 ### 💡 Others
 
+## 6.0.5 — 2023-07-25
+
+### 🐛 Bug fixes
+
+- Fix addOrientationChangeListener not working on iPadOS. ([#23656](https://github.com/expo/expo/pull/23656) by [@behenate](https://github.com/behenate))
+
+## 6.0.4 — 2023-07-23
+
+### 🐛 Bug fixes
+
+- [iOS] Fix event emitter sending events with no registered listeners. ([#23462](https://github.com/expo/expo/pull/23462) by [@behenate](https://github.com/behenate))
+- [iOS] Fix config plugin deleting the orientations key from `Info.plist` when the initial orientation value is set to `DEFAULT`. ([#23637](https://github.com/expo/expo/pull/23637) by [@behenate](https://github.com/behenate))
+
+## 6.0.3 — 2023-07-12
+
+### 🐛 Bug fixes
+
+- [iOS] When config plugin is not configured the initial orientation is now based on values in `Info.plist` instead of being set to portrait. ([#23456](https://github.com/expo/expo/pull/23456) by [@behenate](https://github.com/behenate))
+
+## 6.0.2 — 2023-07-04
+
+### 💡 Others
+
+- [iOS] Refactor the singleton class to work properly in versioned code in Expo Go. ([#23228](https://github.com/expo/expo/pull/23228) by [@tsapeta](https://github.com/tsapeta))
+
+## 6.0.1 — 2023-06-23
+
+### 🐛 Bug fixes
+
+- [iOS] Fix crash when reading `rootViewController` value. ([#23039](https://github.com/expo/expo/pull/23039) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 6.0.0 — 2023-06-21
+
+_This version does not introduce any user-facing changes._
+
 ## 6.0.0-beta.1 — 2023-06-13
 
 ### 🎉 New features

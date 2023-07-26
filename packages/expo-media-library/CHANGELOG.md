@@ -2,11 +2,26 @@
 
 ## Unpublished
 
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 15.4.1 - 2023-07-23
+
+### 🐛 Bug fixes
+
+- Fix `albumNeedsMigrationAsync` crashing if called with invalid `albumId` on Android. ([#23516](https://github.com/expo/expo/pull/23516) by [@lukmccall](https://github.com/lukmccall))
+- Fix `the bind value at index 1 is null` exception thrown by `ExpoMediaLibrary.migrateAlbumIfNeededAsync` on Android. ([#23515](https://github.com/expo/expo/pull/23515) by [@lukmccall](https://github.com/lukmccall))
+
+## 15.4.0 — 2023-06-21
+
 ### 📚 3rd party library updates
 
 - Updated `robolectric` to `4.10`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
-
-### 🛠 Breaking changes
 
 ### 🎉 New features
 
@@ -16,8 +31,6 @@
 
 - Fixed missing permissions error on Android when the user only requests write permissions ([#22457](https://github.com/expo/expo/pull/22457) by [@alanjhughes](https://github.com/alanjhughes))
 - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 15.3.0 — 2023-05-08
 

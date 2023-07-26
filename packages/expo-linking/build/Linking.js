@@ -71,7 +71,7 @@ function ensureLeadingSlash(input, shouldAppend) {
  * - Standalone, Custom: `yourscheme:///path`
  * - Web (dev): `https://localhost:19006/path`
  * - Web (prod): `https://myapp.com/path`
- * - Expo Client (dev): `exp://128.0.0.1:19000/--/path`
+ * - Expo Client (dev): `exp://128.0.0.1:8081/--/path`
  * - Expo Client (prod): `exp://exp.host/@yourname/your-app/--/path`
  *
  * @param path addition path components to append to the base URL.
@@ -100,7 +100,7 @@ export function makeUrl(path = '', queryParams, scheme) {
  * - Standalone, Custom: `yourscheme://path`
  * - Web (dev): `https://localhost:19006/path`
  * - Web (prod): `https://myapp.com/path`
- * - Expo Client (dev): `exp://128.0.0.1:19000/--/path`
+ * - Expo Client (dev): `exp://128.0.0.1:8081/--/path`
  * - Expo Client (prod): `exp://exp.host/@yourname/your-app/--/path`
  *
  * @param path Addition path components to append to the base URL.

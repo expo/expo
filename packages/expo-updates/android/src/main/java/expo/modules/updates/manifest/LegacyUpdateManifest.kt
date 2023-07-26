@@ -105,8 +105,8 @@ class LegacyUpdateManifest private constructor(
         commitTime = Date()
       } else {
         id = UUID.fromString(manifest.getReleaseId())
-        val commitTimeString = manifest.getCommitTime()
         commitTime = try {
+          val commitTimeString = manifest.getCommitTime() ?: throw JSONException("missing commitTime")
           UpdatesUtils.parseDateString(commitTimeString)
         } catch (e: ParseException) {
           Log.e(TAG, "Could not parse commitTime", e)

@@ -16,7 +16,7 @@ fi
 
 pushd $EXPO_ROOT_DIR/android
 
-export REACT_NATIVE_OVERRIDE_HERMES_DIR="$EXPO_ROOT_DIR/android/versioned-react-native/sdks/hermes"
+export REACT_NATIVE_OVERRIDE_HERMES_DIR="$EXPO_ROOT_DIR/android/versioned-react-native/packages/react-native/sdks/hermes"
 
 # Clean aar
 rm -rf expoview/libs/ReactAndroid-temp
@@ -24,13 +24,13 @@ rm -rf expoview/libs/ReactAndroid-temp
 # Build aar
 pushd versioned-react-native
 set -e
-./gradlew :ReactAndroid:assembleRelease
-./gradlew :ReactAndroid:hermes-engine:assembleRelease
+./gradlew :packages:react-native:ReactAndroid:assembleRelease
+./gradlew :packages:react-native:ReactAndroid:hermes-engine:assembleRelease
 popd
 
 mkdir -p expoview/libs
 # Grab the aar and unzip it
-cp versioned-react-native/ReactAndroid/build/outputs/aar/ReactAndroid-release.aar expoview/libs/ReactAndroid-temp.aar
+cp versioned-react-native/packages/react-native/ReactAndroid/build/outputs/aar/ReactAndroid-release.aar expoview/libs/ReactAndroid-temp.aar
 rm -rf expoview/libs/ReactAndroid-temp
 unzip expoview/libs/ReactAndroid-temp.aar -d expoview/libs/ReactAndroid-temp
 
@@ -60,7 +60,7 @@ do
 done < $TOOLS_DIR/android-packages-to-rename.txt
 
 # Rename packages in jars
-java -jar $TOOLS_DIR/jarjar-1.4.1.jar process jarjar-rules.txt expoview/libs/ReactAndroid-temp/classes.jar expoview/libs/ReactAndroid-temp/classes.jar
+java -jar $TOOLS_DIR/jarjar-e11d5636.jar process jarjar-rules.txt expoview/libs/ReactAndroid-temp/classes.jar expoview/libs/ReactAndroid-temp/classes.jar
 
 # fix annotations
 unzip expoview/libs/ReactAndroid-temp/annotations.zip -d expoview/libs/ReactAndroid-temp/annotations
@@ -88,7 +88,7 @@ do
   echo "rule temporarydontversion.$PACKAGE.** $PACKAGE.@1" >> jarjar-rules.txt
 done < $TOOLS_DIR/android-packages-to-keep.txt
 
-java -jar $TOOLS_DIR/jarjar-1.4.1.jar process jarjar-rules.txt expoview/libs/ReactAndroid-temp/classes.jar expoview/libs/ReactAndroid-temp/classes.jar
+java -jar $TOOLS_DIR/jarjar-e11d5636.jar process jarjar-rules.txt expoview/libs/ReactAndroid-temp/classes.jar expoview/libs/ReactAndroid-temp/classes.jar
 
 
 pushd expoview/libs/ReactAndroid-temp

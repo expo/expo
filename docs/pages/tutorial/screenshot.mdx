@@ -11,7 +11,7 @@ import { BookOpen02Icon } from '@expo/styleguide-icons';
 
 In this chapter, we will learn how to take a screenshot using a third-party library and save it on the device's media library.
 We'll use the following libraries [`react-native-view-shot`](https://github.com/gre/react-native-view-shot) that allows taking a screenshot,
-and <A href="/versions/latest/sdk/media-library/" openInNewTab>`expo-media-library`</A> that allows accessing a device's media library to save an image.
+and <A href="/versions/latest/sdk/media-library/">`expo-media-library`</A> that allows accessing a device's media library to save an image.
 
 > So far, we have been using some third-party libraries such as `react-native-gesture-handler`, `react-native-reanimated`, and now `react-native-view-shot`.
 > We can find hundreds of other third-party libraries on [React Native Directory](https://reactnative.directory/).
@@ -122,7 +122,7 @@ Now we can capture a screenshot of the view by calling the `captureRef()` method
 We can read more about available options in [the library's documentation](https://github.com/gre/react-native-view-shot#capturerefview-options-lower-level-imperative-api).
 
 The `captureRef()` method returns a promise that fulfills with the URI of the captured screenshot.
-We will pass this URI as a parameter to <A href="/versions/latest/sdk/media-library/#medialibrarysavetolibraryasynclocaluri" openInNewTab>`MediaLibrary.saveToLibraryAsync()`</A>,
+We will pass this URI as a parameter to <A href="/versions/latest/sdk/media-library/#medialibrarysavetolibraryasynclocaluri">`MediaLibrary.saveToLibraryAsync()`</A>,
 which will save the screenshot to the device's media library.
 
 Update the `onSaveImageAsync()` function with the following code:

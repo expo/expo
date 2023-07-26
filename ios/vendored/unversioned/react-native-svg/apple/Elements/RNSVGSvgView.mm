@@ -11,13 +11,13 @@
 #import "RNSVGNode.h"
 #import "RNSVGViewBox.h"
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 #import <React/RCTConversions.h>
 #import <React/RCTFabricComponentsPlugins.h>
 #import <react/renderer/components/rnsvg/ComponentDescriptors.h>
 #import <react/renderer/components/view/conversions.h>
 #import "RNSVGFabricConversions.h"
-#endif // RN_FABRIC_ENABLED
+#endif // RCT_NEW_ARCH_ENABLED
 
 @implementation RNSVGSvgView {
   NSMutableDictionary<NSString *, RNSVGNode *> *_clipPaths;
@@ -29,9 +29,9 @@
   bool rendered;
 }
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 using namespace facebook::react;
-#endif // RN_FABRIC_ENABLED
+#endif // RCT_NEW_ARCH_ENABLED
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -42,17 +42,19 @@ using namespace facebook::react;
     self.contentMode = UIViewContentModeRedraw;
 #endif // TARGET_OS_OSX
     rendered = false;
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
     static const auto defaultProps = std::make_shared<const RNSVGSvgViewProps>();
     _props = defaultProps;
+#if !TARGET_OS_OSX // On macOS, views are transparent by default
     // TODO: think if we can do it better
     self.opaque = NO;
-#endif // RN_FABRIC_ENABLED
+#endif // TARGET_OS_OSX
+#endif // RCT_NEW_ARCH_ENABLED
   }
   return self;
 }
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 #pragma mark - RCTComponentViewProtocol
 
 + (ComponentDescriptorProvider)componentDescriptorProvider
@@ -78,7 +80,7 @@ using namespace facebook::react;
   if (RCTUIColorFromSharedColor(newProps.color)) {
     self.tintColor = RCTUIColorFromSharedColor(newProps.color);
   }
-  _props = std::static_pointer_cast<RNSVGSvgViewProps const>(props);
+  [super updateProps:props oldProps:oldProps];
 }
 
 - (void)prepareForRecycle
@@ -108,7 +110,7 @@ using namespace facebook::react;
   _invviewBoxTransform = CGAffineTransformIdentity;
   rendered = NO;
 }
-#endif // RN_FABRIC_ENABLED
+#endif // RCT_NEW_ARCH_ENABLED
 
 - (void)insertReactSubview:(RNSVGView *)subview atIndex:(NSInteger)atIndex
 {
@@ -253,6 +255,9 @@ using namespace facebook::react;
 - (void)drawToContext:(CGContextRef)context withRect:(CGRect)rect
 {
   rendered = true;
+  _clipPaths = nil;
+  _templates = nil;
+  _painters = nil;
   self.initialCTM = CGContextGetCTM(context);
   self.invInitialCTM = CGAffineTransformInvert(self.initialCTM);
   if (self.align) {
@@ -264,10 +269,14 @@ using namespace facebook::react;
     _viewBoxTransform = CGAffineTransformIdentity;
     _invviewBoxTransform = CGAffineTransformIdentity;
   }
-
   for (RNSVGView *node in self.subviews) {
     if ([node isKindOfClass:[RNSVGNode class]]) {
       RNSVGNode *svg = (RNSVGNode *)node;
+      if (svg.responsible && !self.responsible) {
+        self.responsible = YES;
+      }
+
+      [svg parseReference];
       [svg renderTo:context rect:rect];
     } else {
       [node drawRect:rect];
@@ -281,23 +290,8 @@ using namespace facebook::react;
   if ([parent isKindOfClass:[RNSVGNode class]]) {
     return;
   }
-  rendered = true;
-  _clipPaths = nil;
-  _templates = nil;
-  _painters = nil;
   _boundingBox = rect;
   CGContextRef context = UIGraphicsGetCurrentContext();
-
-  for (RNSVGPlatformView *node in self.subviews) {
-    if ([node isKindOfClass:[RNSVGNode class]]) {
-      RNSVGNode *svg = (RNSVGNode *)node;
-      if (svg.responsible && !self.responsible) {
-        self.responsible = YES;
-      }
-
-      [svg parseReference];
-    }
-  }
 
   [self drawToContext:context withRect:rect];
 }
@@ -435,9 +429,9 @@ using namespace facebook::react;
 
 @end
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 Class<RCTComponentViewProtocol> RNSVGSvgViewCls(void)
 {
   return RNSVGSvgView.class;
 }
-#endif // RN_FABRIC_ENABLED
+#endif // RCT_NEW_ARCH_ENABLED

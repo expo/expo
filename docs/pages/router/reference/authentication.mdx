@@ -1,6 +1,8 @@
 ---
 title: Authentication in Expo Router
-description: How to handle authentication when using Expo Router.
+sidebar_title: Authentication
+description: How to protect routes with Expo Router.
+hideTOC: true
 ---
 
 import { FileTree } from '~/ui/components/FileTree';
@@ -11,10 +13,10 @@ Consider the following project:
 
 <FileTree files={['app/_layout.js', 'app/index.js', 'app/(auth)/sign-in.js']} />
 
-First, we'll setup a [React Context provider](https://reactjs.org/docs/context.html) that we can use to protect routes. This provider will use a mock implementation, you can replace it with your own [authentication provider](/guides/authentication/).
+First, we'll setup a [React Context provider](https://react.dev/reference/react/createContext) that we can use to protect routes. This provider will use a mock implementation, you can replace it with your own [authentication provider](/guides/authentication/).
 
-```js title=context/auth.js
-import { useRouter, useSegments } from 'expo-router';
+```jsx context/auth.js
+import { router, useSegments } from 'expo-router';
 import React from 'react';
 
 const AuthContext = React.createContext(null);
@@ -27,7 +29,6 @@ export function useAuth() {
 // This hook will protect the route access based on user authentication.
 function useProtectedRoute(user) {
   const segments = useSegments();
-  const router = useRouter();
 
   React.useEffect(() => {
     const inAuthGroup = segments[0] === '(auth)';
@@ -66,7 +67,7 @@ export function Provider(props) {
 
 Now we can use this context to control the access to the routes, we'll do this by using a Layout Route that wraps all the screens which require authentication.
 
-```js app/_layout.js
+```jsx app/_layout.js
 import { Slot } from 'expo-router';
 import { Provider } from '../context/auth';
 
@@ -82,7 +83,7 @@ export default function Root() {
 
 Now we can create our `(auth)` group which is unprotected, this screen can toggle the authentication using `signIn()`.
 
-```js app/(auth)/sign-in.js
+```jsx app/(auth)/sign-in.js
 import { Text, View } from 'react-native';
 import { useAuth } from '../../context/auth';
 
@@ -98,7 +99,7 @@ export default function SignIn() {
 
 And finally we'll implement an authenticated screen which can sign out.
 
-```js app/index.js
+```jsx app/index.js
 import { Text, View } from 'react-native';
 
 import { useAuth } from '../context/auth';

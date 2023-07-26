@@ -8,7 +8,21 @@
 
 ### 🐛 Bug fixes
 
+- Fixed issue with checking camera/microphone permissions in Firefox. ([#22855](https://github.com/expo/expo/pull/22855) by [@loganrosen](https://github.com/loganrosen))
+
 ### 💡 Others
+
+## 13.4.2 - 2023-07-04
+
+### 🐛 Bug fixes
+
+- Fix crash when onBarCodeScanned or onFacesDetected callback is removed. ([#23223](https://github.com/expo/expo/pull/23223) by [@thespacemanatee](https://github.com/thespacemanatee))
+
+## 13.4.1 — 2023-06-28
+
+### 🐛 Bug fixes
+
+- Resolved an issue on Android where recording a video, even with the mute: true option, would still result in an audio permission exception. Furthermore, the mute flag was incorrectly referred to as muteValue, causing it to be consistently ignored ([#23145](https://github.com/expo/expo/pull/23145) by [@hirbod](https://github.com/hirbod))
 
 ## 13.4.0 — 2023-06-13
 

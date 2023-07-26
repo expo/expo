@@ -1,14 +1,20 @@
 --- android/CMakeLists.txt
 +++ android/CMakeLists.txt
-@@ -47,17 +47,17 @@
+@@ -47,21 +47,21 @@ add_library(
          "${PROJECT_SOURCE_DIR}/cpp/rnskia-android/RNSkOpenGLCanvasProvider.cpp"
          "${PROJECT_SOURCE_DIR}/cpp/rnskia-android/SkiaOpenGLRenderer.cpp"
-
+ 
 -        "${PROJECT_SOURCE_DIR}/cpp/jsi/JsiHostObject.cpp"
 -        "${PROJECT_SOURCE_DIR}/cpp/jsi/JsiValue.cpp"
+-        "${PROJECT_SOURCE_DIR}/cpp/jsi/RuntimeLifecycleMonitor.cpp"
+-        "${PROJECT_SOURCE_DIR}/cpp/jsi/RuntimeAwareCache.cpp"        
+-        "${PROJECT_SOURCE_DIR}/cpp/jsi/JsiPromises.cpp"
 +        "${PROJECT_SOURCE_DIR}/../cpp/jsi/JsiHostObject.cpp"
 +        "${PROJECT_SOURCE_DIR}/../cpp/jsi/JsiValue.cpp"
-
++        "${PROJECT_SOURCE_DIR}/../cpp/jsi/RuntimeLifecycleMonitor.cpp"
++        "${PROJECT_SOURCE_DIR}/../cpp/jsi/RuntimeAwareCache.cpp"        
++        "${PROJECT_SOURCE_DIR}/../cpp/jsi/JsiPromises.cpp"
+ 
 -        "${PROJECT_SOURCE_DIR}/cpp/rnskia/RNSkManager.cpp"
 -        "${PROJECT_SOURCE_DIR}/cpp/rnskia/RNSkJsView.cpp"
 -        "${PROJECT_SOURCE_DIR}/cpp/rnskia/RNSkDomView.cpp"
@@ -19,14 +25,16 @@
 +        "${PROJECT_SOURCE_DIR}/../cpp/rnskia/RNSkDispatchQueue.cpp"
  
 -        "${PROJECT_SOURCE_DIR}/cpp/rnskia/dom/base/DrawingContext.cpp"
+-        "${PROJECT_SOURCE_DIR}/cpp/rnskia/dom/base/ConcatablePaint.cpp"
 +        "${PROJECT_SOURCE_DIR}/../cpp/rnskia/dom/base/DrawingContext.cpp"
++        "${PROJECT_SOURCE_DIR}/../cpp/rnskia/dom/base/ConcatablePaint.cpp"
  
 -        "${PROJECT_SOURCE_DIR}/cpp/api/third_party/CSSColorParser.cpp"
 +        "${PROJECT_SOURCE_DIR}/../cpp/api/third_party/CSSColorParser.cpp"
-         
+ 
  )
  
-@@ -71,33 +71,33 @@
+@@ -75,33 +75,33 @@ target_include_directories(
          "${NODE_MODULES_DIR}/react-native/ReactCommon/react/nativemodule/core"
          "${NODE_MODULES_DIR}/react-native/ReactAndroid/src/main/java/com/facebook/react/turbomodule/core/jni"
  
@@ -45,9 +53,7 @@
          #cpp/skia/modules/skparagraph/include/
 -        cpp/skia/include/
 -        cpp/skia
-+        ${PROJECT_SOURCE_DIR}/../cpp/skia/include/
-+        ${PROJECT_SOURCE_DIR}/../cpp/skia
- 
+-
 -        cpp/api
 -        cpp/jsi
 -        cpp/jni/include
@@ -58,7 +64,10 @@
 -        cpp/rnskia/dom/base
 -        cpp/rnskia/dom/nodes
 -        cpp/rnskia/dom/props
--        cpp/utils  
+-        cpp/utils
++        ${PROJECT_SOURCE_DIR}/../cpp/skia/include/
++        ${PROJECT_SOURCE_DIR}/../cpp/skia
++
 +        ${PROJECT_SOURCE_DIR}/../cpp/api
 +        ${PROJECT_SOURCE_DIR}/../cpp/jsi
 +        ${PROJECT_SOURCE_DIR}/cpp/jni/include
@@ -69,7 +78,7 @@
 +        ${PROJECT_SOURCE_DIR}/../cpp/rnskia/dom/base
 +        ${PROJECT_SOURCE_DIR}/../cpp/rnskia/dom/nodes
 +        ${PROJECT_SOURCE_DIR}/../cpp/rnskia/dom/props
-+        ${PROJECT_SOURCE_DIR}/../cpp/utils  
++        ${PROJECT_SOURCE_DIR}/../cpp/utils
  
          ${libfbjni_include_DIRS}
  )
@@ -80,16 +89,9 @@
  
  add_library(skia STATIC IMPORTED)
  set_property(TARGET skia PROPERTY IMPORTED_LOCATION "${SKIA_LIBS_PATH}/libskia.a")
-@@ -204,4 +204,4 @@
-         -lGLESv2
-         -lEGL
-         -landroid
--    )
-\ No newline at end of file
-+    )
 --- android/build.gradle
 +++ android/build.gradle
-@@ -43,7 +43,7 @@
+@@ -48,7 +48,7 @@ static def findNodeModules(baseDir) {
    throw new GradleException("React-Native-Skia: Failed to find node_modules/ path!")
  }
  
@@ -98,8 +100,8 @@
  logger.warn("react-native-skia: node_modules/ found at: ${nodeModules}")
  
  def sourceBuild = false
-@@ -51,9 +51,9 @@ def defaultDir
-
+@@ -56,9 +56,9 @@ def defaultDir
+ 
  if (rootProject.ext.has('reactNativeAndroidRoot')) {
    defaultDir = rootProject.ext.get('reactNativeAndroidRoot')
 -} else if (findProject(':ReactAndroid') != null) {
@@ -110,31 +112,3 @@
  } else {
    defaultDir = file("$nodeModules/react-native")
  }
-@@ -76,6 +76,11 @@
-     buildType = "debug"
- }
- 
-+def reactNativeArchitectures() {
-+    def value = project.getProperties().get("reactNativeArchitectures")
-+    return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
-+}
-+
- def reactProperties = new Properties()
- file("$nodeModules/react-native/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
- def FULL_RN_VERSION =  (System.getenv("REACT_NATIVE_OVERRIDE_VERSION") ?: reactProperties.getProperty("VERSION_NAME"))
-@@ -117,7 +122,7 @@
-         externalNativeBuild {
-             cmake {
-                 cppFlags "-fexceptions", "-frtti", "-std=c++1y", "-DONANDROID"
--                abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
-+                abiFilters (*reactNativeArchitectures())
-                 arguments '-DANDROID_STL=c++_shared',
-                           "-DREACT_NATIVE_VERSION=${REACT_NATIVE_VERSION}",
-                           "-DNODE_MODULES_DIR=${nodeModules}",
-@@ -267,4 +272,4 @@
- afterEvaluate {
-   nativeBuildDependsOn(extractAARHeaders, null)
-   nativeBuildDependsOn(extractJNIFiles, null)  
--}
-\ No newline at end of file
-+}

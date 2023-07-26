@@ -1,5 +1,6 @@
 ---
 title: Sitemap
+description: Learn how to use the sitemap to debug your app with Expo Router.
 hideTOC: true
 ---
 
@@ -20,10 +21,16 @@ You can also search for links directly in a browser like Safari or Chrome to tes
 
 <ImageSpotlight
   alt="Directory structure"
-  src="/static/images/expo-router-advance/directory.png"
+  src="/static/images/expo-router/directory.png"
   style={{ maxWidth: 720 }}
 />
 
-We currently inject a **/\_sitemap** which provides a list of all routes in the app. This is useful for debugging and development. This screen is only injected during development, and won't be available in production.
+Expo Router currently injects a **/\_sitemap** automatically that provides a list of all routes in the app. This is useful for debugging.
 
-We may remove this feature for the official release, but it's useful for now.
+To remove it, add a **app/\_sitemap.js** and return a null component:
+
+```jsx app/_sitemap.js
+export default function Sitemap() {
+  return null;
+}
+```

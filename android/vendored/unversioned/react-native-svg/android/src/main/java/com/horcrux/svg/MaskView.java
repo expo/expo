@@ -9,13 +9,8 @@
 package com.horcrux.svg;
 
 import android.annotation.SuppressLint;
-import android.graphics.Matrix;
-import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.common.ReactConstants;
-import javax.annotation.Nullable;
 
 @SuppressLint("ViewConstructor")
 class MaskView extends GroupView {
@@ -31,14 +26,6 @@ class MaskView extends GroupView {
 
   @SuppressWarnings({"FieldCanBeLocal", "unused"})
   private Brush.BrushUnits mMaskContentUnits;
-
-  private static final float[] sRawMatrix =
-      new float[] {
-        1, 0, 0,
-        0, 1, 0,
-        0, 0, 1
-      };
-  private Matrix mMatrix = null;
 
   public MaskView(ReactContext reactContext) {
     super(reactContext);
@@ -125,24 +112,6 @@ class MaskView extends GroupView {
         mMaskContentUnits = Brush.BrushUnits.USER_SPACE_ON_USE;
         break;
     }
-    invalidate();
-  }
-
-  public void setMaskTransform(@Nullable ReadableArray matrixArray) {
-    if (matrixArray != null) {
-      int matrixSize = PropHelper.toMatrixData(matrixArray, sRawMatrix, mScale);
-      if (matrixSize == 6) {
-        if (mMatrix == null) {
-          mMatrix = new Matrix();
-        }
-        mMatrix.setValues(sRawMatrix);
-      } else if (matrixSize != -1) {
-        FLog.w(ReactConstants.TAG, "RNSVG: Transform matrices must be of size 6");
-      }
-    } else {
-      mMatrix = null;
-    }
-
     invalidate();
   }
 

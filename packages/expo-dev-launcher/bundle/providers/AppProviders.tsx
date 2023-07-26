@@ -20,8 +20,8 @@ import { PendingDeepLinkProvider } from './PendingDeepLinkProvider';
 import { QueryProvider } from './QueryProvider';
 import { RecentApp, RecentlyOpenedAppsProvider } from './RecentlyOpenedAppsProvider';
 import { ToastStackProvider } from './ToastStackProvider';
-import { UserContextProvider } from './UserContextProvider';
 import { UpdatesConfigProvider } from './UpdatesConfigProvider';
+import { UserContextProvider } from './UserContextProvider';
 
 export type AppProvidersProps = {
   children?: React.ReactNode;

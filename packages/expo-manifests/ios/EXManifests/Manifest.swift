@@ -3,8 +3,6 @@
 // this uses abstract class patterns
 // swiftlint:disable unavailable_function
 
-// swiftlint:disable type_body_length file_length
-
 import Foundation
 import UIKit
 
@@ -148,6 +146,10 @@ public class Manifest: NSObject {
 
   public func revisionId() -> String? {
     return expoClientConfigRootObject()?.optionalValue(forKey: "revisionId")
+  }
+
+  public func getMetadata() -> [String: Any]? {
+    return rawManifestJSONInternal.optionalValue(forKey: "metadata")
   }
 
   public func slug() -> String? {
@@ -311,9 +313,8 @@ public class Manifest: NSObject {
       let sdkMajorVersion = expoGoSDKMajorVersion()
       if sdkMajorVersion > 0 && sdkMajorVersion < 48 {
         return "jsc"
-      } else {
-        return "hermes"
       }
+      return "hermes"
     }
     return jsEngine
   }
@@ -333,8 +334,14 @@ public class Manifest: NSObject {
           return nil
         }
         if let valueArray = value as? [Any],
-          let name = valueArray[0] as? String, let props = valueArray[1] as? [String: Any] {
-          return .withProps((name, props))
+          let name = valueArray[0] as? String {
+          if valueArray.count > 1 {
+            guard let props = valueArray[1] as? [String: Any] else {
+              return .withoutProps((name))
+            }
+            return .withProps((name, props))
+          }
+          return .withoutProps((name))
         }
         if let value = value as? String {
           return .withoutProps(value)
@@ -407,3 +414,5 @@ public class Manifest: NSObject {
     return nil
   }
 }
+
+// swiftlint:enable unavailable_function

@@ -13,6 +13,8 @@ import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactDelegate
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactRootView
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
+import com.facebook.react.defaults.DefaultReactActivityDelegate
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import expo.modules.devmenu.helpers.getPrivateDeclaredFieldValue
@@ -31,7 +33,7 @@ class DevMenuActivity : ReactActivity() {
     get() = Build.FINGERPRINT.contains("vbox") || Build.FINGERPRINT.contains("generic")
 
   override fun createReactActivityDelegate(): ReactActivityDelegate {
-    return object : ReactActivityDelegate(this, mainComponentName) {
+    return object : DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled) {
       // We don't want to destroy the root view, because we want to reuse it later.
       override fun onDestroy() = Unit
 
@@ -47,18 +49,15 @@ class DevMenuActivity : ReactActivity() {
           .getPrivateDeclaredFieldValue("mReactDelegate", this)
 
         ReactDelegate::class.java
+          .setPrivateDeclaredFieldValue("mFabricEnabled", reactDelegate, fabricEnabled)
+        ReactDelegate::class.java
           .setPrivateDeclaredFieldValue("mReactRootView", reactDelegate, rootView)
 
         // Removes the root view from the previous activity
         (rootView.parent as? ViewGroup)?.removeView(rootView)
 
         // Attaches the root view to the current activity
-        plainActivity.setContentView(reactDelegate.reactRootView)
-
-        // Sets up new app properties
-        runOnUiThread {
-          rootView.appProperties = launchOptions
-        }
+        plainActivity.setContentView(reactDelegate.getReactRootView())
       }
 
       override fun getReactNativeHost() = DevMenuManager.getMenuHost()
@@ -77,7 +76,18 @@ class DevMenuActivity : ReactActivity() {
           return rootView
         }
 
-        rootView = super.createRootView()
+        rootView = super.createRootView().apply { setIsFabric(fabricEnabled) }
+
+        return rootView
+      }
+
+      override fun createRootView(bundle: Bundle?): ReactRootView {
+        if (rootViewWasInitialized()) {
+          return rootView
+        }
+
+        rootView = super.createRootView(bundle)
+
         return rootView
       }
     }

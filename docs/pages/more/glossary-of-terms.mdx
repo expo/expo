@@ -40,7 +40,6 @@ A cross-platform tool for automatically linking native modules to native apps vi
 - On Android the tool is used in the **android/app/build.gradle** and invoked during the [Gradle](#gradle) sync process.
 - On iOS the tool is used in [CocoaPods](#cocoapods) **ios/Podfile** and invoked during `pod install`.
 
-
 There are two versions of Autolinking: [Expo Autolinking](#expo-autolinking), and [Community Autolinking](#community-autolinking).
 
 The default [Prebuild template](#prebuild-template) includes support for [Expo Autolinking](#expo-autolinking), and the [Community Autolinking](#community-autolinking) fork.
@@ -103,7 +102,7 @@ A [native runtime](#native-runtime) that has been built in development mode. The
 
 A development server (or dev server) is a server that is started locally, usually by running `npx expo start` from [Expo CLI](#expo-cli).
 
-The development server is typically hosted on `http://localhost:19000`. It hosts a [manifest](#manifest) from `/` which the client uses to request the JavaScript bundle from the bundler.
+The development server is typically hosted on `http://localhost:8081`. It hosts a [manifest](#manifest) from `/` which the client uses to request the JavaScript bundle from the bundler.
 
 ### EAS
 
@@ -270,9 +269,9 @@ Platform extensions are a feature of the [Metro bundler](#metro-bundler) which e
 
 By default, platform extensions are resolved in `@expo/metro-config` using the following formula:
 
-- Android: **&#42;.android.js**, **&#42;.native.js**, **&#42;.js**
-- iOS: **&#42;.ios.js**, **&#42;.native.js**, **&#42;.js**
-- Web: **&#42;.web.js**, **&#42;.js**
+- Android: **\*.android.js**, **\*.native.js**, **\*.js**
+- iOS: **\*.ios.js**, **\*.native.js**, **\*.js**
+- Web: **\*.web.js**, **\*.js**
 
 {/* TODO: Multi-Resolution Asset Extensions */}
 

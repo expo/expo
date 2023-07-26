@@ -41,8 +41,15 @@ export function printUsage(
   const isIosDisabled = !platforms.includes('ios');
   const isWebDisable = !platforms.includes('web');
 
+  const switchMsg = `switch to ${options.devClient === false ? 'development build' : 'Expo Go'}`;
+  const target = options.devClient === false ? `Expo Go` : 'development build';
+
+  Log.log();
+  Log.log(printItem(chalk`Using {cyan ${target}}`));
+
   if (verbose) {
     logCommandsTable([
+      { key: 's', msg: switchMsg },
       {},
       { key: 'a', msg: 'open Android', disabled: isAndroidDisabled },
       { key: 'shift+a', msg: 'select a device or emulator', disabled: isAndroidDisabled },
@@ -60,6 +67,7 @@ export function printUsage(
     ]);
   } else {
     logCommandsTable([
+      { key: 's', msg: switchMsg },
       {},
       { key: 'a', msg: 'open Android', disabled: isAndroidDisabled },
       isMac && { key: 'i', msg: 'open iOS simulator', disabled: isIosDisabled },
@@ -68,6 +76,7 @@ export function printUsage(
       { key: 'j', msg: 'open debugger' },
       { key: 'r', msg: 'reload app' },
       !!options.isWebSocketsEnabled && { key: 'm', msg: 'toggle menu' },
+      { key: 'o', msg: 'open project code in your editor' },
       {},
     ]);
   }

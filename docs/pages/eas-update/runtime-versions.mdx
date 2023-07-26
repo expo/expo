@@ -1,5 +1,6 @@
 ---
 title: Runtime versions and updates
+sidebar_title: Runtime versions
 description: Learn about different runtime version policies and how they may suite your project.
 ---
 
@@ -70,7 +71,7 @@ For a project that has the following in its app config:
 }
 ```
 
-The `"appVersion"` policy will set the runtime version to the projects current `"version"` property. The runtime version for the iOS and Android builds and any updates would be in this case `"1.0.0"`.
+The `"appVersion"` policy will set the runtime version to the project's current `"version"` property. The runtime version for the iOS and Android builds and any updates would be in this case `"1.0.0"`.
 
 This policy is great for projects that contain custom native code and that update the `"version"` field after every public release. To submit an app, the app stores require an updated native version number for each submitted build, which makes this policy convenient if you want to be sure that every version installed on user devices has a different runtime version.
 
@@ -90,7 +91,7 @@ We provide the `"nativeVersion"` runtime version policy for projects that have c
 }
 ```
 
-The `"nativeVersion"` policy will set the runtime version to the projects current `"version"` and `"buildNumber"` (iOS) or `"versionCode"` (Android) properties. For a project that has the following in its app config:
+The `"nativeVersion"` policy will set the runtime version to the project's current `"version"` and `"buildNumber"` (iOS) or `"versionCode"` (Android) properties. For a project that has the following in its app config:
 
 ```json
 {

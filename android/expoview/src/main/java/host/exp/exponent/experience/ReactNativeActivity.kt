@@ -287,6 +287,7 @@ abstract class ReactNativeActivity :
   override fun onPause() {
     super.onPause()
     if (reactInstanceManager.isNotNull && !isCrashed) {
+      KernelNetworkInterceptor.onPause()
       reactInstanceManager.onHostPause()
       // TODO: use onHostPause(activity)
     }
@@ -296,6 +297,7 @@ abstract class ReactNativeActivity :
     super.onResume()
     if (reactInstanceManager.isNotNull && !isCrashed) {
       reactInstanceManager.onHostResume(this, this)
+      KernelNetworkInterceptor.onResume(reactInstanceManager.get())
     }
   }
 
@@ -486,6 +488,8 @@ abstract class ReactNativeActivity :
       appKey ?: KernelConstants.DEFAULT_APPLICATION_KEY,
       initialProps(bundle)
     )
+
+    KernelNetworkInterceptor.start(manifest!!, mReactInstanceManager.get())
 
     // Requesting layout to make sure {@link ReactRootView} attached to {@link ReactInstanceManager}
     // Otherwise, {@link ReactRootView} will hang in {@link waitForReactRootViewToHaveChildrenAndRunCallback}.

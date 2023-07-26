@@ -11,8 +11,10 @@ static PropId PropNameMatrix = JsiPropId::get("matrix");
 
 class MatrixProp : public DerivedProp<SkMatrix> {
 public:
-  explicit MatrixProp(PropId name) : DerivedProp<SkMatrix>() {
-    _matrixProp = addProperty(std::make_shared<NodeProp>(name));
+  explicit MatrixProp(PropId name,
+                      const std::function<void(BaseNodeProp *)> &onChange)
+      : DerivedProp<SkMatrix>(onChange) {
+    _matrixProp = defineProperty<NodeProp>(name);
   }
 
   void updateDerivedValue() override {

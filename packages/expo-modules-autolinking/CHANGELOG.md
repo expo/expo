@@ -10,6 +10,13 @@
 
 ### 💡 Others
 
+## 1.5.0 — 2023-06-21
+
+### 🎉 New features
+
+- Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
+- Added extra CocoaPods dependencies and Maven repositories from `expo-build-properties`. ([#22785](https://github.com/expo/expo/pull/22785) by [@kudo](https://github.com/kudo))
+
 ## 1.4.0 — 2023-06-13
 
 ### 🎉 New features

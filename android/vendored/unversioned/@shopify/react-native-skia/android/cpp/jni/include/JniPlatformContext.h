@@ -44,7 +44,11 @@ public:
 
   void notifyTaskReadyExternal();
 
+  void runTaskOnMainThread(std::function<void()> task);
+
   float getPixelDensity() { return _pixelDensity; }
+
+  sk_sp<SkImage> takeScreenshotFromViewTag(size_t tag);
 
   void setOnNotifyDrawLoop(const std::function<void(void)> &callback) {
     _onNotifyDrawLoop = callback;

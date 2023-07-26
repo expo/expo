@@ -1,5 +1,6 @@
 ---
 title: SQLite
+description: A library that provides access to a database that can be queried through a WebSQL-like API.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-sqlite'
 packageName: 'expo-sqlite'
 ---
@@ -74,6 +75,18 @@ async function openDatabase(pathToDatabaseFile: string): Promise<SQLite.WebSQLDa
 
 </Step>
 
+### Executing statements with an async transaction
+
+```js
+const db = SQLite.openDatabase('dbName', version);
+
+const readOnly = true;
+await db.transactionAsync(async tx => {
+  const result = await tx.executeSqlAsync('SELECT COUNT(*) FROM USERS', []);
+  console.log('Count:', result.rows[0]['COUNT(*)']);
+}, readOnly);
+```
+
 ### Executing statements outside of a transaction
 
 > You should use this kind of execution only when it is necessary. For instance, when code is a no-op within transactions. Example: `PRAGMA foreign_keys = ON;`.
@@ -81,9 +94,8 @@ async function openDatabase(pathToDatabaseFile: string): Promise<SQLite.WebSQLDa
 ```js
 const db = SQLite.openDatabase('dbName', version);
 
-db.exec([{ sql: 'PRAGMA foreign_keys = ON;', args: [] }], false, () =>
-  console.log('Foreign keys turned on')
-);
+await db.execAsync([{ sql: 'PRAGMA foreign_keys = ON;', args: [] }], false);
+console.log('Foreign keys turned on');
 ```
 
 ## API

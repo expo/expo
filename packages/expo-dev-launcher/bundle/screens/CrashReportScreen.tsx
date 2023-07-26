@@ -6,7 +6,7 @@ import { copyToClipboardAsync } from '../native-modules/DevLauncherInternal';
 import { useBuildInfo } from '../providers/BuildInfoProvider';
 
 export function CrashReportScreen({ route }) {
-  const [clipboardError, setClipboardError] = React.useState('');
+  const [, setClipboardError] = React.useState('');
   const [clipboardContent, setClipboardContent] = React.useState('');
 
   const buildInfo = useBuildInfo();
