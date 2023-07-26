@@ -64,7 +64,7 @@
   && !RCT_NEW_ARCH_ENABLED
   // required and available only for react-native-reanimated < 3.4.0
   reanimated::REAInitializer(bridge);
-#endif // __has_inclide(<RNReanimated/REAInitializer.h>) && !RCT_NEW_ARCH_ENABLED
+#endif
 
   return [super jsExecutorFactoryForBridge:bridge];
 }
