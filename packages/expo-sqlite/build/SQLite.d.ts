@@ -8,7 +8,7 @@ export declare class SQLiteDatabase {
     /**
      * Executes the SQL statement and returns a callback resolving with the result.
      */
-    exec(queries: Query[], readOnly: boolean, callback: SQLiteCallback): void;
+    exec(queries: Query[], readOnly: boolean, requiresSync: boolean | undefined, callback: SQLiteCallback): void;
     /**
      * Executes the SQL statement and returns a Promise resolving with the result.
      */
@@ -36,6 +36,7 @@ export declare class SQLiteDatabase {
      * @param readOnly true if all the SQL statements in the callback are read only.
      */
     transactionAsync(asyncCallback: SQLTransactionAsyncCallback, readOnly?: boolean): Promise<void>;
+    onDatabaseChange(cb: SQLiteCallback): import("expo-modules-core").Subscription;
 }
 /**
  * Open a database, creating it if it doesn't exist, and return a `Database` object. On disk,

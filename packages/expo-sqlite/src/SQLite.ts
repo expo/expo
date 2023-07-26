@@ -1,7 +1,7 @@
 import './polyfillNextTick';
 
 import customOpenDatabase from '@expo/websql/custom';
-import { requireNativeModule } from 'expo-modules-core';
+import { requireNativeModule, EventEmitter } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import type {
@@ -14,6 +14,7 @@ import type {
 } from './SQLite.types';
 
 const ExpoSQLite = requireNativeModule('ExpoSQLite');
+const emitter = new EventEmitter(ExpoSQLite);
 
 function zipObject(keys: string[], values: any[]) {
   const result = {};
@@ -35,12 +36,17 @@ export class SQLiteDatabase {
   /**
    * Executes the SQL statement and returns a callback resolving with the result.
    */
-  exec(queries: Query[], readOnly: boolean, callback: SQLiteCallback): void {
+  exec(
+    queries: Query[],
+    readOnly: boolean,
+    requiresSync: boolean = true,
+    callback: SQLiteCallback
+  ): void {
     if (this._closed) {
       throw new Error(`The SQLite database is closed`);
     }
 
-    ExpoSQLite.exec(this._name, queries.map(_serializeQuery), readOnly).then(
+    ExpoSQLite.exec(this._name, queries.map(_serializeQuery), readOnly, requiresSync).then(
       (nativeResultSets) => {
         callback(null, nativeResultSets.map(_deserializeResultSet));
       },
@@ -121,6 +127,22 @@ export class SQLiteDatabase {
       throw e;
     }
   }
+
+  onDatabaseChange(cb: SQLiteCallback) {
+    return emitter.addListener('onDatabaseUpdate', () => {
+      this.exec(
+        [
+          {
+            sql: `SELECT "table", quote(pk) as pk, cid, val, col_version, db_version, site_id FROM crsql_changes where db_version > -1`,
+            args: [],
+          },
+        ],
+        false,
+        false,
+        cb
+      );
+    });
+  }
 }
 
 function _serializeQuery(query: Query): Query | [string, any[]] {
@@ -191,6 +213,7 @@ export function openDatabase(
   db.execAsync = db._db.execAsync.bind(db._db);
   db.closeSync = db._db.closeSync.bind(db._db);
   db.closeAsync = db._db.closeAsync.bind(db._db);
+  db.onDatabaseChange = db._db.onDatabaseChange.bind(db._db);
   db.deleteAsync = db._db.deleteAsync.bind(db._db);
   db.transactionAsync = db._db.transactionAsync.bind(db._db);
   return db;
