@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed getting content uri for external files on Android. by ([@G-Ray](https://github.com/G-Ray))
+
 ### 💡 Others
 
 - Fork `uuid@3.4.0` and move into `expo-modules-core`. Remove the original dependency. ([#23249](https://github.com/expo/expo/pull/23249) by [@alanhughes](https://github.com/alanjhughes))
