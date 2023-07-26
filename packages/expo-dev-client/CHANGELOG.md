@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed compatibility with the Reanimated 3.4.0 on iOS. ([#23726](https://github.com/expo/expo/pull/23726) by [@piaskowyk](https://github.com/piaskowyk))
+
 ### 💡 Others
 
 ## 2.4.2 — 2023-06-28
