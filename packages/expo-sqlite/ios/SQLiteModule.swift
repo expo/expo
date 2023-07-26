@@ -7,13 +7,13 @@ public final class SQLiteModule: Module {
 
   public func definition() -> ModuleDefinition {
     Name("ExpoSQLite")
-    
+
     Events("onDatabaseUpdate")
-    
+
     OnCreate {
       crsqlite_init_from_swift()
     }
-    
+
     AsyncFunction("exec") { (dbName: String, queries: [[Any]], readOnly: Bool, requiresSync: Bool) -> [Any?] in
       guard let db = openDatabase(dbName: dbName) else {
         throw DatabaseException()
@@ -30,7 +30,7 @@ public final class SQLiteModule: Module {
 
         return executeSql(sql: sql, with: args, for: db, readOnly: readOnly)
       }
-      
+
       if requiresSync {
         if hasListeners {
           sendEvent("onDatabaseUpdate")
@@ -71,7 +71,7 @@ public final class SQLiteModule: Module {
     OnStartObserving {
       hasListeners = true
     }
-    
+
     OnStopObserving {
       hasListeners = false
     }
@@ -109,11 +109,11 @@ public final class SQLiteModule: Module {
 
     if db == nil {
       cachedDatabases.removeValue(forKey: dbName)
-   
+
       if sqlite3_open(path.absoluteString, &db) != SQLITE_OK {
         return nil
       }
-      
+
       cachedDatabases[dbName] = db
     }
     return db
@@ -235,5 +235,5 @@ public final class SQLiteModule: Module {
     let message = NSString(utf8String: sqlite3_errmsg(db)) ?? ""
     return NSString(format: "Error code %i: %@", code, message) as String
   }
-  
+
 }
