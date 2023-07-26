@@ -63,12 +63,13 @@ class ExponentPackage : ReactPackage {
     experienceProperties: Map<String, Any?>,
     manifest: Manifest,
     expoPackages: List<Package>,
+    moduleProvider: ModulesProvider,
     singletonModules: List<SingletonModule>?
   ) {
     this.isKernel = isKernel
     this.experienceProperties = experienceProperties
     this.manifest = manifest
-    moduleRegistryAdapter = createDefaultModuleRegistryAdapterForPackages(expoPackages, singletonModules)
+    moduleRegistryAdapter = createDefaultModuleRegistryAdapterForPackages(expoPackages, singletonModules, moduleProvider)
   }
 
   constructor(
@@ -221,6 +222,7 @@ class ExponentPackage : ReactPackage {
       context: Context,
       manifest: Manifest,
       expoPackages: List<Package>,
+      modulesProvider: ModulesProvider,
       initialURL: String?
     ): ExponentPackage {
       val kernelExperienceProperties = mutableMapOf(
@@ -237,6 +239,7 @@ class ExponentPackage : ReactPackage {
         kernelExperienceProperties,
         manifest,
         expoPackages,
+        modulesProvider,
         singletonModules
       )
     }

@@ -13,19 +13,33 @@ import com.facebook.react.ReactRootView
 import com.facebook.soloader.SoLoader
 import com.squareup.leakcanary.LeakCanary
 import de.greenrobot.event.EventBus
+import expo.modules.barcodescanner.BarCodeScannerModule
 import expo.modules.barcodescanner.BarCodeScannerPackage
+import expo.modules.blur.BlurModule
+import expo.modules.camera.CameraViewModule
+import expo.modules.clipboard.ClipboardModule
+import expo.modules.constants.ConstantsModule
 import expo.modules.constants.ConstantsPackage
 import expo.modules.core.interfaces.Package
+import expo.modules.device.DeviceModule
+import expo.modules.easclient.EASClientModule
 import expo.modules.facedetector.FaceDetectorPackage
+import expo.modules.filesystem.FileSystemModule
 import expo.modules.filesystem.FileSystemPackage
 import expo.modules.font.FontLoaderPackage
+import expo.modules.haptics.HapticsModule
 import expo.modules.keepawake.KeepAwakePackage
+import expo.modules.kotlin.ModulesProvider
+import expo.modules.kotlin.modules.Module
+import expo.modules.lineargradient.LinearGradientModule
 import expo.modules.notifications.NotificationsPackage
 import expo.modules.permissions.PermissionsPackage
 import expo.modules.splashscreen.SplashScreenImageResizeMode
+import expo.modules.splashscreen.SplashScreenModule
 import expo.modules.splashscreen.SplashScreenPackage
 import expo.modules.splashscreen.singletons.SplashScreen
 import expo.modules.taskManager.TaskManagerPackage
+import expo.modules.webbrowser.WebBrowserModule
 import host.exp.exponent.Constants
 import host.exp.exponent.ExponentManifest
 import host.exp.exponent.RNObject
@@ -136,7 +150,7 @@ open class HomeActivity : BaseExperienceActivity() {
     kernel.setHasError()
   }
 
-  companion object {
+  companion object : ModulesProvider {
     fun homeExpoPackages(): List<Package> {
       return listOf(
         ConstantsPackage(),
@@ -149,6 +163,23 @@ open class HomeActivity : BaseExperienceActivity() {
         NotificationsPackage(), // home doesn't use notifications, but we want the singleton modules created
         TaskManagerPackage(), // load expo-task-manager to restore tasks once the client is opened
         SplashScreenPackage()
+      )
+    }
+
+    override fun getModulesList(): List<Class<out Module>> {
+      return listOf(
+        BarCodeScannerModule::class.java,
+        BlurModule::class.java,
+        CameraViewModule::class.java,
+        ClipboardModule::class.java,
+        ConstantsModule::class.java,
+        DeviceModule::class.java,
+        EASClientModule::class.java,
+        FileSystemModule::class.java,
+        HapticsModule::class.java,
+        LinearGradientModule::class.java,
+        SplashScreenModule::class.java,
+        WebBrowserModule::class.java,
       )
     }
   }
