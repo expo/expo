@@ -7,7 +7,7 @@ import host.exp.exponent.kernel.ExpoViewKernel
 
 class ExpoGoModule(private val manifest: Manifest) : Module() {
   override fun definition() = ModuleDefinition {
-    Name("ExpoGoModules")
+    Name("ExpoGo")
 
     Constants {
       mapOf(
