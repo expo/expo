@@ -59,9 +59,12 @@
 
 - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
 {
-#if __has_include(<RNReanimated/REAInitializer.h>) && !RCT_NEW_ARCH_ENABLED
+#if __has_include(<RNReanimated/REAInitializer.h>) \
+  && __has_include(<RNReanimated/UIResponder+Reanimated.h>) /* removed in react-native-reanimated@3.4.0 */ \
+  && !RCT_NEW_ARCH_ENABLED
+  // required and available only for react-native-reanimated < 3.4.0
   reanimated::REAInitializer(bridge);
-#endif // __has_inclide(<RNReanimated/REAInitializer.h>) && !RCT_NEW_ARCH_ENABLED
+#endif
 
   return [super jsExecutorFactoryForBridge:bridge];
 }
