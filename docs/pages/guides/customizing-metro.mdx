@@ -57,15 +57,99 @@ config.resolver.assetExts.push(
 module.exports = config;
 ```
 
+## Tree shaking by mode
+
+To strip code in production or development, use the `process.env.NODE_ENV` environment variable. For example:
+
+```js Input
+if (process.env.NODE_ENV === 'development') {
+  console.log('Hello in development');
+}
+```
+
+```js Output (development)
+'development' === process.env.NODE_ENV && console.log('Hello in development');
+```
+
+```js Output (production)
+/* @hide Empty file */
+```
+
+Metro also supports removing code based on the `__DEV__` global boolean, however this is less common in the JavaScript ecosystem.
+
+## Tree shaking by platform
+
+In order to remove code based on the `Platform` module from `react-native`, you need to add the following to your **metro.config.js**:
+
+```js metro.config.js
+const { getDefaultConfig } = require('expo/metro-config');
+
+const config = getDefaultConfig(__dirname);
+
+config.transformer.getTransformOptions = async () => ({
+  transform: {
+    /* @info this feature is experimental and may cause other issues. */
+    experimentalImportSupport: true,
+    /* @end */
+  },
+});
+
+module.exports = config;
+```
+
+And configure the `babel.config.js` to preserve import/export syntax:
+
+```js babel.config.js
+module.exports = function (api) {
+  api.cache(true);
+  /* @info */
+  const disableImportExportTransform = true;
+  /* @end */
+  return {
+    presets: [
+      [
+        'babel-preset-expo',
+        {
+          native: {
+            /* @info */
+            disableImportExportTransform,
+            /* @end */
+          },
+          web: {
+            /* @info */
+            disableImportExportTransform,
+            /* @end */
+          },
+        },
+      ],
+    ],
+  };
+};
+```
+
+Now the following transformation input:
+
+```js Input
+import { Platform } from 'react-native';
+
+if (Platform.OS === 'ios') {
+  console.log('Hello on iOS');
+}
+```
+
+Will produce the following output:
+
+```js Output (iOS)
+console.log('Hello on iOS');
+```
+
+```js Output (Android)
+/* @hide Empty on Android */
+```
+
 ## Minification
 
 The source code is optimized for readability and debugging. To optimize your application for performance, the source code is automatically minified when [compiling](/more/expo-cli/#compiling) and [exporting](/more/expo-cli/#exporting). You can also minify your code during development with `npx expo start --minify`. This is sometimes useful for testing production optimizations.
-
-By default, Metro uses `uglify-es` to minify code. According to [this benchmark](https://github.com/privatenumber/minification-benchmarks) `uglify` generally produces the smallest bundles, and is nearly the _slowest_ minifier. There are alternative minifiers you can use with Metro:
-
-### esbuild
-
-You can use [`esbuild`](https://esbuild.github.io/) to minify exponentially faster than `uglify-es` and `terser`. For more information, see [`metro-minify-esbuild` usage](https://github.com/EvanBacon/metro-minify-esbuild#usage).
 
 ### Terser
 
@@ -99,6 +183,56 @@ module.exports = config;
 ```
 
 </Step>
+
+Minification collapses whitespace, removes comments, and shortens static operations. For example, the following code:
+
+```js Input
+// This comment will be stripped
+console.log('a' + ' ' + 'long' + ' string' + ' to ' + 'collapse');
+```
+
+Is minified to:
+
+```js Output
+console.log('a long string to collapse');
+```
+
+Comments can be preserved by using the `/** @preserve */` directive.
+
+### Unsafe Terser options
+
+For additional compression that may not work in all JavaScript engines, you can enable the [`unsafe` `compress` options](https://terser.org/docs/miscellaneous/#the-unsafe-compress-option):
+
+```js metro.config.js
+const { getDefaultConfig } = require('expo/metro-config');
+
+const config = getDefaultConfig(__dirname);
+
+config.transformer.minifierPath = 'metro-minify-terser';
+
+config.transformer.minifierConfig = {
+  compress: {
+    // Enable all unsafe optimizations.
+    unsafe: true,
+    unsafe_arrows: true,
+    unsafe_comps: true,
+    unsafe_Function: true,
+    unsafe_math: true,
+    unsafe_symbols: true,
+    unsafe_methods: true,
+    unsafe_proto: true,
+    unsafe_regexp: true,
+    unsafe_undefined: true,
+    unused: true,
+  },
+};
+
+module.exports = config;
+```
+
+### esbuild
+
+You can use [`esbuild`](https://esbuild.github.io/) to minify exponentially faster than `uglify-es` and `terser`. For more information, see [`metro-minify-esbuild` usage](https://github.com/EvanBacon/metro-minify-esbuild#usage).
 
 ### Uglify
 
