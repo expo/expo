@@ -76,7 +76,7 @@
   "devDependencies": {
     "@types/react": "~18.0.14",
     "@types/react-test-renderer": "^18.0.0",
-    "expo-module-scripts": "^3.0.10",
+    "expo-module-scripts": "^3.0.12",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.72.3"
