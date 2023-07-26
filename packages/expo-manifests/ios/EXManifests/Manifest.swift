@@ -119,11 +119,11 @@ public class Manifest: NSObject {
     preconditionFailure("Must override in concrete class")
   }
 
-  func expoGoConfigRootObject() -> [String: Any]? {
+  public func expoGoConfigRootObject() -> [String: Any]? {
     preconditionFailure("Must override in concrete class")
   }
 
-  func expoClientConfigRootObject() -> [String: Any]? {
+  public func expoClientConfigRootObject() -> [String: Any]? {
     preconditionFailure("Must override in concrete class")
   }
 

@@ -10,21 +10,26 @@
 
 ### 💡 Others
 
-## 6.0.4 - 2023-07-23
+## 6.0.5 — 2023-07-25
+
+### 🐛 Bug fixes
+
+- Fix addOrientationChangeListener not working on iPadOS. ([#23656](https://github.com/expo/expo/pull/23656) by [@behenate](https://github.com/behenate))
+
+## 6.0.4 — 2023-07-23
 
 ### 🐛 Bug fixes
 
 - [iOS] Fix event emitter sending events with no registered listeners. ([#23462](https://github.com/expo/expo/pull/23462) by [@behenate](https://github.com/behenate))
 - [iOS] Fix config plugin deleting the orientations key from `Info.plist` when the initial orientation value is set to `DEFAULT`. ([#23637](https://github.com/expo/expo/pull/23637) by [@behenate](https://github.com/behenate))
-- Fix addOrientationChangeListener not working on iPadOS. ([#23656](https://github.com/expo/expo/pull/23656) by [@behenate](https://github.com/behenate))
 
-## 6.0.3 - 2023-07-12
+## 6.0.3 — 2023-07-12
 
 ### 🐛 Bug fixes
 
 - [iOS] When config plugin is not configured the initial orientation is now based on values in `Info.plist` instead of being set to portrait. ([#23456](https://github.com/expo/expo/pull/23456) by [@behenate](https://github.com/behenate))
 
-## 6.0.2 - 2023-07-04
+## 6.0.2 — 2023-07-04
 
 ### 💡 Others
 
