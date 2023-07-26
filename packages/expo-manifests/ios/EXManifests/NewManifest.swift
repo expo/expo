@@ -73,11 +73,11 @@ public class NewManifest: Manifest {
     return launchAsset().requiredValue(forKey: "url")
   }
 
-  override func expoClientConfigRootObject() -> [String: Any]? {
+  public override func expoClientConfigRootObject() -> [String: Any]? {
     return extra()?.optionalValue(forKey: "expoClient")
   }
 
-  override func expoGoConfigRootObject() -> [String: Any]? {
+  public override func expoGoConfigRootObject() -> [String: Any]? {
     return extra()?.optionalValue(forKey: "expoGo")
   }
 }

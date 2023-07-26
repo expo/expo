@@ -87,7 +87,11 @@ final class VersionManager: EXVersionManagerObjC {
    Registers Expo modules that are not generated in ``ExpoModulesProvider``, but are necessary for Expo Go apps.
    */
   private func registerExpoModules() {
-    appContext?.moduleRegistry.register(moduleType: ExpoGoModule.self)
+    guard let appContext else {
+      log.error("Unable to register Expo modules, the app context is unavailable")
+      return
+    }
+    appContext.moduleRegistry.register(module: ExpoGoModule(appContext: appContext, manifest: manifest))
   }
 }
 
