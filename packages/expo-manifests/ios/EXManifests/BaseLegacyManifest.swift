@@ -5,11 +5,11 @@ import Foundation
 @objc(EXManifestBaseLegacyManifest)
 @objcMembers
 public class BaseLegacyManifest: Manifest {
-  override func expoClientConfigRootObject() -> [String: Any]? {
+  public override func expoClientConfigRootObject() -> [String: Any]? {
     return rawManifestJSON()
   }
 
-  override func expoGoConfigRootObject() -> [String: Any]? {
+  public override func expoGoConfigRootObject() -> [String: Any]? {
     return rawManifestJSON()
   }
 

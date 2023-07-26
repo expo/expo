@@ -18,15 +18,25 @@ public final class ModuleRegistry: Sequence {
   }
 
   /**
+   Registers an instance of the module.
+   */
+  public func register(module: AnyModule) {
+    guard let appContext else {
+      log.error("Unable to register a module '\(module)', the app context is unavailable")
+      return
+    }
+    register(holder: ModuleHolder(appContext: appContext, module: module))
+  }
+
+  /**
    Registers a module by its type.
    */
   public func register(moduleType: AnyModule.Type) {
-    guard let appContext = appContext else {
+    guard let appContext else {
+      log.error("Unable to register a module '\(moduleType)', the app context is unavailable")
       return
     }
-    let module = moduleType.init(appContext: appContext)
-    let holder = ModuleHolder(appContext: appContext, module: module)
-    register(holder: holder)
+    register(module: moduleType.init(appContext: appContext))
   }
 
   /**
