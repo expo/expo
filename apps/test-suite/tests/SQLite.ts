@@ -557,7 +557,7 @@ export function test(t) {
         });
       });
 
-      t.it('ooxx', async () => {
+      t.it('should load crsqlite extension correctly', async () => {
         const db = SQLite.openDatabase('test.db');
         await db.execAsync([{ sql: 'DROP TABLE IF EXISTS foo;', args: [] }], false);
         await db.execAsync([{ sql: 'create table foo (a primary key, b);', args: [] }], false);

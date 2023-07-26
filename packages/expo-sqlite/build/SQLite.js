@@ -1,8 +1,9 @@
 import './polyfillNextTick';
 import customOpenDatabase from '@expo/websql/custom';
-import { requireNativeModule } from 'expo-modules-core';
+import { requireNativeModule, EventEmitter } from 'expo-modules-core';
 import { Platform } from 'react-native';
 const ExpoSQLite = requireNativeModule('ExpoSQLite');
+const emitter = new EventEmitter(ExpoSQLite);
 function zipObject(keys, values) {
     const result = {};
     for (let i = 0; i < keys.length; i++) {
@@ -20,11 +21,11 @@ export class SQLiteDatabase {
     /**
      * Executes the SQL statement and returns a callback resolving with the result.
      */
-    exec(queries, readOnly, callback) {
+    exec(queries, readOnly, requiresSync = true, callback) {
         if (this._closed) {
             throw new Error(`The SQLite database is closed`);
         }
-        ExpoSQLite.exec(this._name, queries.map(_serializeQuery), readOnly).then((nativeResultSets) => {
+        ExpoSQLite.exec(this._name, queries.map(_serializeQuery), readOnly, requiresSync).then((nativeResultSets) => {
             callback(null, nativeResultSets.map(_deserializeResultSet));
         }, (error) => {
             // TODO: make the native API consistently reject with an error, not a string or other type
@@ -86,8 +87,16 @@ export class SQLiteDatabase {
             throw e;
         }
     }
-    // @ts-expect-error: properties that are added from websql
-    version;
+    onDatabaseChange(cb) {
+        return emitter.addListener('onDatabaseUpdate', () => {
+            this.exec([
+                {
+                    sql: `SELECT "table", quote(pk) as pk, cid, val, col_version, db_version, site_id FROM crsql_changes where db_version > -1`,
+                    args: [],
+                },
+            ], false, false, cb);
+        });
+    }
 }
 function _serializeQuery(query) {
     return Platform.OS === 'android'
@@ -147,7 +156,12 @@ export function openDatabase(name, version = '1.0', description = name, size = 1
     db.execAsync = db._db.execAsync.bind(db._db);
     db.closeSync = db._db.closeSync.bind(db._db);
     db.closeAsync = db._db.closeAsync.bind(db._db);
+<<<<<<< HEAD
     db.closeSync = db._db.closeSync.bind(db._db);
+||||||| parent of 8ef50d6e1f (add sync param)
+=======
+    db.onDatabaseChange = db._db.onDatabaseChange.bind(db._db);
+>>>>>>> 8ef50d6e1f (add sync param)
     db.deleteAsync = db._db.deleteAsync.bind(db._db);
     db.transactionAsync = db._db.transactionAsync.bind(db._db);
     return db;

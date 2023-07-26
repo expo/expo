@@ -3,15 +3,18 @@ import sqlite3
 
 public final class SQLiteModule: Module {
   private var cachedDatabases = [String: OpaquePointer]()
+  private var hasListeners = false
 
   public func definition() -> ModuleDefinition {
     Name("ExpoSQLite")
+    
+    Events("onDatabaseUpdate")
     
     OnCreate {
       crsqlite_init_from_swift()
     }
     
-    AsyncFunction("exec") { (dbName: String, queries: [[Any]], readOnly: Bool) -> [Any?] in
+    AsyncFunction("exec") { (dbName: String, queries: [[Any]], readOnly: Bool, requiresSync: Bool) -> [Any?] in
       guard let db = openDatabase(dbName: dbName) else {
         throw DatabaseException()
       }
@@ -26,6 +29,12 @@ public final class SQLiteModule: Module {
         }
 
         return executeSql(sql: sql, with: args, for: db, readOnly: readOnly)
+      }
+      
+      if requiresSync {
+        if hasListeners {
+          sendEvent("onDatabaseUpdate")
+        }
       }
 
       return results
@@ -59,6 +68,14 @@ public final class SQLiteModule: Module {
       }
     }
 
+    OnStartObserving {
+      hasListeners = true
+    }
+    
+    OnStopObserving {
+      hasListeners = false
+    }
+
     OnDestroy {
       cachedDatabases.values.forEach {
         executeSql(sql: "SELECT crsql_finalize()", with: [], for: $0, readOnly: false)
@@ -72,7 +89,7 @@ public final class SQLiteModule: Module {
       return nil
     }
 
-    var directory = URL(string: fileSystem.documentDirectory)?.appendingPathComponent("SQLite")
+    let directory = URL(string: fileSystem.documentDirectory)?.appendingPathComponent("SQLite")
     fileSystem.ensureDirExists(withPath: directory?.absoluteString)
 
     return directory?.appendingPathComponent(name)
@@ -80,7 +97,7 @@ public final class SQLiteModule: Module {
 
   private func openDatabase(dbName: String) -> OpaquePointer? {
     var db: OpaquePointer?
-    guard let path = try pathForDatabaseName(name: dbName) else {
+    guard let path = pathForDatabaseName(name: dbName) else {
       return nil
     }
 
