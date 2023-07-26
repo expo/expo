@@ -36,12 +36,7 @@ export class SQLiteDatabase {
   /**
    * Executes the SQL statement and returns a callback resolving with the result.
    */
-  exec(
-    queries: Query[],
-    readOnly: boolean,
-    requiresSync: boolean = true,
-    callback: SQLiteCallback
-  ): void {
+  exec(queries: Query[], readOnly: boolean, requiresSync: boolean, callback: SQLiteCallback): void {
     if (this._closed) {
       throw new Error(`The SQLite database is closed`);
     }

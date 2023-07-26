@@ -8,7 +8,7 @@ export declare class SQLiteDatabase {
     /**
      * Executes the SQL statement and returns a callback resolving with the result.
      */
-    exec(queries: Query[], readOnly: boolean, requiresSync: boolean | undefined, callback: SQLiteCallback): void;
+    exec(queries: Query[], readOnly: boolean, requiresSync: boolean, callback: SQLiteCallback): void;
     /**
      * Executes the SQL statement and returns a Promise resolving with the result.
      */
