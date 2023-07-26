@@ -334,7 +334,7 @@ export default function Page() {
 
 Expo's Metro config uses a custom `transformer.babelTransformerPath` value to ensure `expo-babel-preset` is always used and web/Node.js environments are supported.
 
-If you want to extend the Babel transformer, ensure you import the upstream transformer from `@expo/metro-config/babel-transformer` instead of `metro-react-native-babel-transformer`, for example:
+If you want to extend the Babel transformer, import the upstream transformer from `@expo/metro-config/babel-transformer` instead of `metro-react-native-babel-transformer`. For example:
 
 ```js metro.transformer.js
 const upstreamTransformer = require('@expo/metro-config/babel-transformer');
