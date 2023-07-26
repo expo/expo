@@ -17,7 +17,7 @@
 
 ### 💡 Others
 
-- Fix Metro externals test.
+- Fix Metro externals test. ([#23741](https://github.com/expo/expo/pull/23741) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.10.11 - 2023-07-21
 
