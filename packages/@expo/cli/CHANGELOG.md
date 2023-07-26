@@ -17,6 +17,8 @@
 
 ### 💡 Others
 
+- Fix Metro externals test.
+
 ## 0.10.11 - 2023-07-21
 
 ### 🎉 New features
