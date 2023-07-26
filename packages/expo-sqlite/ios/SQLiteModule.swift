@@ -235,5 +235,4 @@ public final class SQLiteModule: Module {
     let message = NSString(utf8String: sqlite3_errmsg(db)) ?? ""
     return NSString(format: "Error code %i: %@", code, message) as String
   }
-
 }
