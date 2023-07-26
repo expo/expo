@@ -113,6 +113,16 @@ JSIInteropModuleRegistry::callGetJavaScriptModuleObjectMethod(const std::string 
   return method(javaPart_, moduleName);
 }
 
+jni::local_ref<JavaScriptModuleObject::javaobject>
+JSIInteropModuleRegistry::callGetCoreModuleObject() const {
+  const static auto method = expo::JSIInteropModuleRegistry::javaClassLocal()
+    ->getMethod<jni::local_ref<JavaScriptModuleObject::javaobject>()>(
+      "getCoreModuleObject"
+    );
+
+  return method(javaPart_);
+}
+
 jni::local_ref<jni::JArrayClass<jni::JString>>
 JSIInteropModuleRegistry::callGetJavaScriptModulesNames() const {
   const static auto method = expo::JSIInteropModuleRegistry::javaClassLocal()
@@ -133,6 +143,10 @@ bool JSIInteropModuleRegistry::callHasModule(const std::string &moduleName) cons
 jni::local_ref<JavaScriptModuleObject::javaobject>
 JSIInteropModuleRegistry::getModule(const std::string &moduleName) const {
   return callGetJavaScriptModuleObjectMethod(moduleName);
+}
+
+jni::local_ref<JavaScriptModuleObject::javaobject> JSIInteropModuleRegistry::getCoreModule() const {
+  return callGetCoreModuleObject();
 }
 
 bool JSIInteropModuleRegistry::hasModule(const std::string &moduleName) const {

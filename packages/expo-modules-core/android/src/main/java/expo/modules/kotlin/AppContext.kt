@@ -28,6 +28,7 @@ import expo.modules.interfaces.sensors.SensorServiceInterface
 import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.kotlin.activityresult.ActivityResultsManager
 import expo.modules.kotlin.activityresult.DefaultAppContextActivityResultCaller
+import expo.modules.kotlin.defaultmodules.CoreModule
 import expo.modules.kotlin.defaultmodules.ErrorManagerModule
 import expo.modules.kotlin.defaultmodules.NativeModulesProxyModule
 import expo.modules.kotlin.events.EventEmitter
@@ -60,6 +61,17 @@ class AppContext(
 
   // We postpone creating the `JSIInteropModuleRegistry` to not load so files in unit tests.
   internal lateinit var jsiInterop: JSIInteropModuleRegistry
+
+  /**
+   * The core module that defines the `expo` object in the global scope of the JS runtime.
+   *
+   * Note: in current implementation this module won't receive any events.
+   */
+  internal val coreModule = run {
+    val module = CoreModule()
+    module._appContext = this
+    ModuleHolder(module)
+  }
 
   internal val sharedObjectRegistry = SharedObjectRegistry()
 
@@ -278,6 +290,7 @@ class AppContext(
     reactContextHolder.get()?.removeLifecycleEventListener(reactLifecycleDelegate)
     registry.post(EventName.MODULE_DESTROY)
     registry.cleanUp()
+    coreModule.module._appContext = null
     modulesQueue.cancel(ContextDestroyedException())
     mainQueue.cancel(ContextDestroyedException())
     backgroundCoroutineScope.cancel(ContextDestroyedException())

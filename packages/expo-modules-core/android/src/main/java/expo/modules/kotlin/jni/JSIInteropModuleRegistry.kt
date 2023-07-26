@@ -44,7 +44,7 @@ class JSIInteropModuleRegistry(appContext: AppContext) : Destructible {
   )
 
   fun installJSIForTests() = installJSIForTests(
-    JNIDeallocator(shouldCreateDestructorThread = false)
+    appContextHolder.get()!!.jniDeallocator
   )
 
   /**
@@ -104,6 +104,12 @@ class JSIInteropModuleRegistry(appContext: AppContext) : Destructible {
       .get()
       ?.sharedObjectRegistry
       ?.add(native as SharedObject, js)
+  }
+
+  @Suppress("unused")
+  @DoNotStrip
+  fun getCoreModuleObject(): JavaScriptModuleObject? {
+    return appContextHolder.get()?.coreModule?.jsObject
   }
 
   @Throws(Throwable::class)

@@ -162,7 +162,10 @@ void JavaScriptRuntime::drainJSEventLoop() {
 }
 
 void JavaScriptRuntime::installMainObject() {
-  mainObject = std::make_shared<jsi::Object>(*runtime);
+  auto coreModule = jsiInteropModuleRegistry->getCoreModule();
+  coreModule->cthis()->jsiInteropModuleRegistry = jsiInteropModuleRegistry;
+  mainObject = coreModule->cthis()->getJSIObject(*runtime);
+
   auto global = runtime->global();
   auto objectClass = global.getPropertyAsObject(*runtime, "Object");
   jsi::Function definePropertyFunction = objectClass.getPropertyAsFunction(
