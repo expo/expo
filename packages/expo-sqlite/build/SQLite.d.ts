@@ -22,10 +22,6 @@ export declare class SQLiteDatabase {
      */
     closeAsync(): void;
     /**
-     * Synchoronsly close the database.
-     */
-    closeSync(): void;
-    /**
      * Delete the database file.
      * > The database has to be closed prior to deletion.
      */
