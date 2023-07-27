@@ -158,7 +158,7 @@ export async function getExpoAutolinkingAndroidSourcesAsync(
       ['expo-modules-autolinking', 'resolve', '-p', 'android', '--json'],
       { cwd: projectRoot }
     );
-    const config = JSON.parse(stdout);
+    const config = sortExpoAutolinkingAndroidConfig(JSON.parse(stdout));
     for (const module of config.modules) {
       for (const project of module.projects) {
         const filePath = path.relative(projectRoot, project.sourceDir);
@@ -214,4 +214,17 @@ export async function getExpoAutolinkingIosSourcesAsync(
   } catch {
     return [];
   }
+}
+
+/**
+ * Sort the expo-modules-autolinking android config to make it stable from hashing.
+ */
+export function sortExpoAutolinkingAndroidConfig(config: Record<string, any>): Record<string, any> {
+  for (const module of config.modules) {
+    // Sort the projects by project.name
+    module.projects.sort((a: Record<string, any>, b: Record<string, any>) =>
+      a.name < b.name ? -1 : a.name > b.name ? 1 : 0
+    );
+  }
+  return config;
 }
