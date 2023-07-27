@@ -110,8 +110,8 @@ describe('managed project test', () => {
           "type": "dir",
         },
         {
-          "contents": "{"sourceDir":"node_modules/@react-native-community/netinfo/android","packageImportPath":"import com.reactnativecommunity.netinfo.NetInfoPackage;","packageInstance":"new NetInfoPackage()","buildTypes":[],"componentDescriptors":[],"androidMkPath":"node_modules/@react-native-community/netinfo/android/build/generated/source/codegen/jni/Android.mk","cmakeListsPath":"node_modules/@react-native-community/netinfo/android/build/generated/source/codegen/jni/CMakeLists.txt"}",
-          "hash": "cb4dfbb38f9151ecd6621bc9e36055540495c463",
+          "contents": "{"sourceDir":"node_modules/@react-native-community/netinfo/android","packageImportPath":"import com.reactnativecommunity.netinfo.NetInfoPackage;","packageInstance":"new NetInfoPackage()","buildTypes":[],"componentDescriptors":[],"cmakeListsPath":"node_modules/@react-native-community/netinfo/android/build/generated/source/codegen/jni/CMakeLists.txt"}",
+          "hash": "7612d745a76df00c1a8781735858c16030b3cc53",
           "id": "rncliAutolinkingConfig:@react-native-community/netinfo:android",
           "reasons": [
             "bareRncliAutolinking",
