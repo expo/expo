@@ -104,19 +104,20 @@ it(
     // Remove the generated files if they exist (when testing locally the folder may be cached)
     await Promise.all(
       generatedFiles.map((file) =>
-        fs.rm(path.join(projectRoot, file), { recursive: true, force: true })
+        fs.promises.rm(path.join(projectRoot, file), { recursive: true, force: true })
       )
     );
 
     // `npx expo typescript
     await execa('node', [bin, 'customize', 'tsconfig.json'], {
       cwd: projectRoot,
+      // env: { NODE_OPTIONS: '--inspect-brk' },
     });
 
     // Expect them to exist with correct access controls
     for (const file of generatedFiles) {
       await expect(
-        fs.access(path.join(projectRoot, file), fsConstants.F_OK)
+        fs.promises.access(path.join(projectRoot, file), fsConstants.F_OK)
       ).resolves.toBeUndefined();
     }
   },
