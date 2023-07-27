@@ -304,7 +304,7 @@ EX_REGISTER_MODULE();
 {
   float interval = 1.0f / 60.0f;
   [[self manager] setDeviceMotionUpdateInterval:interval];
-  CMAttitudeReferenceFrame referenceFrame = ([CMMotionManager availableAttitudeReferenceFrames] & CMAttitudeReferenceFrameXMagneticNorthZVertical) ? CMAttitudeReferenceFrameXMagneticNorthZVertical : CMAttitudeReferenceFrameXArbitraryCorrectedZVertical
+  CMAttitudeReferenceFrame referenceFrame = ([CMMotionManager availableAttitudeReferenceFrames] & CMAttitudeReferenceFrameXMagneticNorthZVertical) ? CMAttitudeReferenceFrameXMagneticNorthZVertical : CMAttitudeReferenceFrameXArbitraryCorrectedZVertical;
   __weak EXSensorsManager *weakSelf = self;
   [[self manager] startDeviceMotionUpdatesUsingReferenceFrame:referenceFrame toQueue:[NSOperationQueue mainQueue] withHandler:^(CMDeviceMotion *data, NSError *error) {
     __strong EXSensorsManager *strongSelf = weakSelf;
