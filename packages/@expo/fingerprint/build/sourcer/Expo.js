@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getExpoAutolinkingIosSourcesAsync = exports.getExpoAutolinkingAndroidSourcesAsync = exports.getEasBuildSourcesAsync = exports.getExpoConfigSourcesAsync = void 0;
+exports.sortExpoAutolinkingAndroidConfig = exports.getExpoAutolinkingIosSourcesAsync = exports.getExpoAutolinkingAndroidSourcesAsync = exports.getEasBuildSourcesAsync = exports.getExpoConfigSourcesAsync = void 0;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const assert_1 = __importDefault(require("assert"));
 const chalk_1 = __importDefault(require("chalk"));
@@ -120,7 +120,7 @@ async function getExpoAutolinkingAndroidSourcesAsync(projectRoot, options) {
         const reasons = ['expoAutolinkingAndroid'];
         const results = [];
         const { stdout } = await (0, spawn_async_1.default)('npx', ['expo-modules-autolinking', 'resolve', '-p', 'android', '--json'], { cwd: projectRoot });
-        const config = JSON.parse(stdout);
+        const config = sortExpoAutolinkingAndroidConfig(JSON.parse(stdout));
         for (const module of config.modules) {
             for (const project of module.projects) {
                 const filePath = path_1.default.relative(projectRoot, project.sourceDir);
@@ -172,4 +172,15 @@ async function getExpoAutolinkingIosSourcesAsync(projectRoot, options) {
     }
 }
 exports.getExpoAutolinkingIosSourcesAsync = getExpoAutolinkingIosSourcesAsync;
+/**
+ * Sort the expo-modules-autolinking android config to make it stable from hashing.
+ */
+function sortExpoAutolinkingAndroidConfig(config) {
+    for (const module of config.modules) {
+        // Sort the projects by project.name
+        module.projects.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
+    }
+    return config;
+}
+exports.sortExpoAutolinkingAndroidConfig = sortExpoAutolinkingAndroidConfig;
 //# sourceMappingURL=Expo.js.map

@@ -11,6 +11,7 @@ import {
   getExpoAutolinkingAndroidSourcesAsync,
   getExpoAutolinkingIosSourcesAsync,
   getExpoConfigSourcesAsync,
+  sortExpoAutolinkingAndroidConfig,
 } from '../Expo';
 
 jest.mock('@expo/spawn-async');
@@ -274,5 +275,52 @@ export default ({ config }) => {
     const sources2 = await getExpoConfigSourcesAsync('/app', normalizeOptions());
 
     expect(sources).toEqual(sources2);
+  });
+});
+
+describe('sortExpoAutolinkingConfig', () => {
+  it('should sort autolinking projects by name', () => {
+    const config = {
+      extraDependencies: { androidMavenRepos: [], iosPods: {} },
+      modules: [
+        {
+          packageName: 'expo',
+          packageVersion: '49.0.5',
+          projects: [
+            {
+              name: 'expo',
+              sourceDir: '/app/node_modules/expo/android',
+            },
+          ],
+          modules: [],
+        },
+        {
+          packageName: 'expo-modules-core',
+          packageVersion: '1.5.8',
+          projects: [
+            {
+              name: 'expo-modules-core$android-annotation',
+              sourceDir: '/app/node_modules/expo-modules-core/android-annotation',
+            },
+            {
+              name: 'expo-modules-core',
+              sourceDir: '/app/node_modules/expo-modules-core/android',
+            },
+            {
+              name: 'expo-modules-core$android-annotation-processor',
+              sourceDir: '/app/node_modules/expo-modules-core/android-annotation-processor',
+            },
+          ],
+          modules: [],
+        },
+      ],
+    };
+
+    const result = sortExpoAutolinkingAndroidConfig(config);
+    expect(result.modules[1].projects[0].name).toBe('expo-modules-core');
+    expect(result.modules[1].projects[1].name).toBe('expo-modules-core$android-annotation');
+    expect(result.modules[1].projects[2].name).toBe(
+      'expo-modules-core$android-annotation-processor'
+    );
   });
 });
