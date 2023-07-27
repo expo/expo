@@ -4,7 +4,7 @@ import { View } from 'react-native-web';
 import { ImageNativeProps, ImageSource, ImageLoadEventData } from './Image.types';
 import AnimationManager, { AnimationManagerNode } from './web/AnimationManager';
 import ImageWrapper from './web/ImageWrapper';
-import loadStyle from './web/style';
+import loadStyle from './web/imageStyles';
 import useSourceSelection from './web/useSourceSelection';
 
 loadStyle();
@@ -146,10 +146,7 @@ export default function ExpoImage({
         ),
   ];
   return (
-    <View
-      ref={containerRef}
-      className="expo-image-container"
-      style={[{ overflow: 'hidden' }, style]}>
+    <View ref={containerRef} dataSet={{ expoimage: true }} style={[{ overflow: 'hidden' }, style]}>
       <AnimationManager transition={transition} recyclingKey={recyclingKey} initial={initialNode}>
         {currentNode}
       </AnimationManager>

@@ -31,25 +31,24 @@ export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
   }
 
   /**
-   * Initialize the server address from the metro server.
-   * This is required to properly reference sourcemaps for the debugger.
+   * Normalize the server address for clients to connect to.
+   * @param addressInfo the server address returned by `HttpServer.address()` or `HttpsServer.address()`.
+   * @returns "address:port"
    */
-  private setServerAddress(server: HttpServer | HttpsServer) {
-    const addressInfo = server.address();
-
+  public static normalizeServerAddress(addressInfo: ReturnType<HttpServer['address']>): string {
     if (typeof addressInfo === 'string') {
       throw new Error(`Inspector proxy could not resolve the server address, got "${addressInfo}"`);
     } else if (addressInfo === null) {
       throw new Error(`Inspector proxy could not resolve the server address, got "null"`);
     }
 
-    const { address, port, family } = addressInfo;
-
-    if (family === 'IPv6') {
-      this.metroProxy._serverAddressWithPort = `[${address ?? '::1'}]:${port}`;
+    let address = addressInfo.address;
+    if (addressInfo.family === 'IPv6') {
+      address = address === '::' ? `[::1]` : `[${address}]`;
     } else {
-      this.metroProxy._serverAddressWithPort = `${address ?? 'localhost'}:${port}`;
+      address = address === '0.0.0.0' ? 'localhost' : address;
     }
+    return `${address}:${addressInfo.port}`;
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/#endpoints */
@@ -58,7 +57,11 @@ export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
   }
 
   public createWebSocketListeners(server: HttpServer | HttpsServer): Record<string, WSServer> {
-    this.setServerAddress(server);
+    // Initialize the server address from the metro server.
+    // This is required to properly reference sourcemaps for the debugger.
+    this.metroProxy._serverAddressWithPort = ExpoInspectorProxy.normalizeServerAddress(
+      server.address()
+    );
 
     return {
       [WS_DEVICE_URL]: this.createDeviceWebSocketServer(),

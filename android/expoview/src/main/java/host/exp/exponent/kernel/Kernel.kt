@@ -269,6 +269,7 @@ class Kernel : KernelInterface() {
                 context,
                 exponentManifest.getKernelManifest(),
                 HomeActivity.homeExpoPackages(),
+                HomeActivity.Companion,
                 initialURL
               )
             )

@@ -10,6 +10,26 @@
 
 ### 💡 Others
 
+## 2.4.9 — 2023-07-26
+
+### 🐛 Bug fixes
+
+- Fixed "Can't toast on a thread that has not called Looper.prepare()" Exception when enabling "Sampling Profiler on init" ([#23706](https://github.com/expo/expo/pull/23706) by [@hirbod](https://github.com/hirbod))
+
+## 2.4.8 - 2023-07-12
+
+### 💡 Others
+
+- Added support for React Native 0.72.3 ([#23502](https://github.com/expo/expo/pull/23502) by [@tsapeta](https://github.com/tsapeta))
+
+## 2.4.7 - 2023-07-10
+
+_This version does not introduce any user-facing changes._
+
+## 2.4.6 - 2023-07-04
+
+_This version does not introduce any user-facing changes._
+
 ## 2.4.5 - 2023-06-30
 
 ### 🐛 Bug fixes

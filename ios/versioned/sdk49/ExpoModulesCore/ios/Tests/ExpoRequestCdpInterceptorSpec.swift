@@ -77,22 +77,24 @@ final class ExpoRequestCdpInterceptorSpec: ExpoSpec {
             expect(params["requestId"] as? String).to(equal(requestId))
             expect(response["status"] as? Int).to(equal(200))
             expect((response["headers"] as! [String: Any]).count).to(beGreaterThan(0))
-
-            // Network.loadingFinished
-            json = self.parseJSON(data: self.mockDelegate.events[3])
-            method = json["method"] as! String
-            params = json["params"] as! [String: Any]
-            expect(method).to(equal("Network.loadingFinished"))
-            expect(params["requestId"] as? String).to(equal(requestId))
+            expect(response["encodedDataLength"] as? Int64).to(beGreaterThan(0))
 
             // Expo(Network.receivedResponseBody)
-            json = self.parseJSON(data: self.mockDelegate.events[4])
+            json = self.parseJSON(data: self.mockDelegate.events[3])
             method = json["method"] as! String
             params = json["params"] as! [String: Any]
             expect(method).to(equal("Expo(Network.receivedResponseBody)"))
             expect(params["requestId"] as? String).to(equal(requestId))
             expect(params["body"] as? String).notTo(beEmpty())
             expect(params["base64Encoded"] as? Bool).to(beFalse())
+
+            // Network.loadingFinished
+            json = self.parseJSON(data: self.mockDelegate.events[4])
+            method = json["method"] as! String
+            params = json["params"] as! [String: Any]
+            expect(method).to(equal("Network.loadingFinished"))
+            expect(params["requestId"] as? String).to(equal(requestId))
+            expect(params["encodedDataLength"] as? Int64).to(beGreaterThan(0))
 
             done()
           }
@@ -145,10 +147,8 @@ final class ExpoRequestCdpInterceptorSpec: ExpoSpec {
             expect(response["mimeType"] as? String).to(equal("image/png"))
             expect((response["headers"] as! [String: Any]).count).to(beGreaterThan(0))
 
-            // Network.loadingFinished
-
             // Expo(Network.receivedResponseBody)
-            json = self.parseJSON(data: self.mockDelegate.events[6])
+            json = self.parseJSON(data: self.mockDelegate.events[5])
             method = json["method"] as! String
             params = json["params"] as! [String: Any]
             expect(method).to(equal("Expo(Network.receivedResponseBody)"))
@@ -156,12 +156,13 @@ final class ExpoRequestCdpInterceptorSpec: ExpoSpec {
             expect(params["body"] as? String).notTo(beEmpty())
             expect(params["base64Encoded"] as? Bool).to(beTrue())
 
+            // Network.loadingFinished
+
             done()
           }
         }.resume()
       }
     }
-
 
     it("respect image mimeType to CDP event") {
       waitUntil(timeout: .seconds(2)) { done in
@@ -181,6 +182,30 @@ final class ExpoRequestCdpInterceptorSpec: ExpoSpec {
             expect(response["status"] as? Int).to(equal(200))
             expect(response["mimeType"] as? String).to(equal("image/png"))
             expect(params["type"] as? String).to(equal("Image"))
+
+            done()
+          }
+        }.resume()
+      }
+    }
+
+    it("skip `receivedResponseBody` when response size exceeding 1MB limit") {
+      waitUntil(timeout: .seconds(5)) { done in
+        self.session.dataTask(with: URL(string: "https://raw.githubusercontent.com/expo/expo/main/apps/native-component-list/assets/videos/ace.mp4")!) { (data, response, error) in
+          DispatchQueue.main.async {
+            expect(self.mockDelegate.events.count).to(equal(4))
+
+            var json = self.parseJSON(data: self.mockDelegate.events[0])
+            expect(json["method"] as! String).to(equal("Network.requestWillBeSent"))
+
+            json = self.parseJSON(data: self.mockDelegate.events[1])
+            expect(json["method"] as! String).to(equal("Network.requestWillBeSentExtraInfo"))
+
+            json = self.parseJSON(data: self.mockDelegate.events[2])
+            expect(json["method"] as! String).to(equal("Network.responseReceived"))
+
+            json = self.parseJSON(data: self.mockDelegate.events[3])
+            expect(json["method"] as! String).to(equal("Network.loadingFinished"))
 
             done()
           }

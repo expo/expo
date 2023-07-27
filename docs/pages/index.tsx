@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { theme, typography } from '@expo/styleguide';
+import { Button, theme, typography } from '@expo/styleguide';
 import { spacing, breakpoints, borderRadius } from '@expo/styleguide-base';
 import {
   ArrowUpRightIcon,
@@ -11,11 +11,19 @@ import {
   TwitterIcon,
 } from '@expo/styleguide-icons';
 import type { PropsWithChildren } from 'react';
-import { Container, Row, ScreenClassProvider } from 'react-grid-system';
+import { Row, ScreenClassProvider } from 'react-grid-system';
 
 import DocumentationPage from '~/components/DocumentationPage';
+import TALKS from '~/public/static/talks';
 import { AppJSBanner } from '~/ui/components/AppJSBanner';
-import { APIGridCell, CommunityGridCell, GridCell, HomeButton } from '~/ui/components/Home';
+import {
+  CellContainer,
+  APIGridCell,
+  CommunityGridCell,
+  GridCell,
+  HomeButton,
+  TalkGridCell,
+} from '~/ui/components/Home';
 import {
   APICameraIcon,
   APIListIcon,
@@ -30,13 +38,6 @@ import {
 } from '~/ui/components/Home/resources';
 import { Terminal } from '~/ui/components/Snippet';
 import { H1, RawH2, RawH3, P } from '~/ui/components/Text';
-
-export const CellContainer = ({ children }: PropsWithChildren<object>) => (
-  // https://github.com/sealninja/react-grid-system/issues/175
-  <Container fluid style={{ paddingLeft: -15, paddingRight: -15, marginBottom: spacing[6] }}>
-    {children}
-  </Container>
-);
 
 const Description = ({ children }: PropsWithChildren<object>) => (
   <P css={css({ marginTop: spacing[1], marginBottom: spacing[3], color: theme.text.secondary })}>
@@ -119,21 +120,21 @@ const Home = () => {
               xl={6}
               lg={6}
               css={css({
-                backgroundColor: palette.purple3,
-                borderColor: palette.purple7,
+                backgroundColor: palette.orange3,
+                borderColor: palette.orange7,
               })}>
               <SnackImage />
-              <RawH3 css={css({ color: palette.purple11 })}>Try Expo in your browser</RawH3>
-              <P css={css({ color: palette.purple11, ...typography.fontSizes[14] })}>
+              <RawH3 css={css({ color: palette.orange11 })}>Try Expo in your browser</RawH3>
+              <P css={css({ color: palette.orange11, ...typography.fontSizes[14] })}>
                 Expo’s Snack lets you try Expo
                 <br />
                 with zero local setup.
               </P>
               <HomeButton
-                className="bg-palette-purple11 border-palette-purple11 text-palette-purple3 hocus:bg-palette-purple11 hocus:opacity-80"
+                className="bg-palette-orange11 border-palette-orange11 text-palette-orange3 hocus:bg-palette-orange11 hocus:opacity-80"
                 href="https://snack.expo.dev/"
                 target="_blank"
-                rightSlot={<ArrowUpRightIcon className="text-palette-purple3 icon-md" />}>
+                rightSlot={<ArrowUpRightIcon className="text-palette-orange3 icon-md" />}>
                 Create a Snack
               </HomeButton>
             </GridCell>
@@ -183,20 +184,20 @@ const Home = () => {
               xl={6}
               lg={6}
               css={css({
-                backgroundColor: palette.gray3,
-                borderColor: palette.gray8,
+                backgroundColor: palette.purple3,
+                borderColor: palette.purple7,
               })}>
-              <div className="absolute bottom-6 right-6 p-5 bg-palette-gray12 rounded-full">
+              <div className="absolute bottom-6 right-6 p-5 bg-palette-purple9 rounded-full">
                 <DiscordIcon className="icon-2xl text-palette-white" />
               </div>
-              <RawH3 css={css({ color: palette.gray12 })}>Chat with the community</RawH3>
-              <P css={{ color: palette.gray12, ...typography.fontSizes[14] }}>
+              <RawH3 css={css({ color: palette.purple11 })}>Chat with the community</RawH3>
+              <P css={{ color: palette.purple11, ...typography.fontSizes[14] }}>
                 Join over 15,000 other developers
                 <br />
                 on the Expo Community Discord.
               </P>
               <HomeButton
-                className="bg-palette-gray12 border-palette-gray11 text-palette-gray2 hocus:bg-palette-gray11 hocus:opacity-80"
+                className="bg-palette-purple11 border-palette-purple11 text-palette-purple2 hocus:bg-palette-purple11 hocus:opacity-80"
                 href="https://chat.expo.dev"
                 rightSlot={<ArrowUpRightIcon className="text-palette-gray2 icon-md" />}>
                 Go to Discord
@@ -222,6 +223,28 @@ const Home = () => {
               icon={<APINotificationsIcon />}
             />
             <APIGridCell title="View all APIs" link="/versions/latest/" icon={<APIListIcon />} />
+          </Row>
+        </CellContainer>
+        <div className="flex items-center gap-2">
+          <div>
+            <RawH3>Watch our latest talks</RawH3>
+            <Description>
+              Explore our team's presentations. Stay informed and gain expertise.
+            </Description>
+          </div>
+          <Button
+            theme="secondary"
+            className="ml-auto"
+            rightSlot={<ArrowRightIcon />}
+            href="/additional-resources/#talks">
+            See more talks
+          </Button>
+        </div>
+        <CellContainer>
+          <Row>
+            {TALKS.filter(talk => talk.home).map(talk => (
+              <TalkGridCell key={talk.videoId} {...talk} />
+            ))}
           </Row>
         </CellContainer>
         <RawH3>Join the community</RawH3>
@@ -281,11 +304,11 @@ export function JoinTheCommunity() {
 }
 
 const docsTitleStyle = css({
-  marginTop: 0,
+  marginTop: spacing[2],
   marginBottom: spacing[2],
   paddingBottom: 0,
   borderBottomWidth: 0,
-  fontWeight: '900',
+  fontWeight: '800',
 });
 
 const baseGradientStyle = css({

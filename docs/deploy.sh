@@ -3,7 +3,7 @@
 set -euo pipefail
 
 scriptdir=$(dirname "${BASH_SOURCE[0]}")
-bucket="docs.expo.dev"
+bucket="$AWS_BUCKET"
 target="${1-$scriptdir/out}"
 
 if [ ! -d "$target" ]; then
@@ -215,6 +215,8 @@ done
 echo "::endgroup::"
 
 
-echo "::group::[6/6] Notify Google of sitemap changes"
-curl -m 15 "https://www.google.com/ping\?sitemap\=https%3A%2F%2F${bucket}%2Fsitemap.xml"
-echo "\n::endgroup::"
+if [ "$bucket" = "docs.expo.dev" ]; then
+  echo "::group::[6/6] Notify Google of sitemap changes"
+  curl -m 15 "https://www.google.com/ping\?sitemap\=https%3A%2F%2F${bucket}%2Fsitemap.xml"
+  echo "\n::endgroup::"
+fi

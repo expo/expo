@@ -33,12 +33,12 @@ object KernelNetworkInterceptor {
   }
 
   val okhttpAppInterceptorProxy = Interceptor { chain ->
-    versionedAppInterceptorObject?.call("intercept", chain) as? Response
+    versionedAppInterceptorObject?.callWithThrowable("intercept", chain) as? Response
       ?: chain.proceed(chain.request())
   }
 
   val okhttpNetworkInterceptorProxy = Interceptor { chain ->
-    versionedNetworkInterceptorObject?.call("intercept", chain) as? Response
+    versionedNetworkInterceptorObject?.callWithThrowable("intercept", chain) as? Response
       ?: chain.proceed(chain.request())
   }
 

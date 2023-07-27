@@ -6,9 +6,44 @@
 
 ### 🎉 New features
 
+- New useUpdates() JS API. ([#23532](https://github.com/expo/expo/pull/23532) by [@douglowder](https://github.com/douglowder))
+
 ### 🐛 Bug fixes
 
+- [Android] Fix rollback embedded update logic. ([#23244](https://github.com/expo/expo/pull/23244) by [@wschurman](https://github.com/wschurman))
+- Correctly handle roll backs in JS module methods. ([#23356](https://github.com/expo/expo/pull/23356), [#23377](https://github.com/expo/expo/pull/23377) by [@wschurman](https://github.com/wschurman))
+- [iOS] Fix unmatched selection policy. ([#23535](https://github.com/expo/expo/pull/23535) by [@chochihim](https://github.com/chochihim))
+- Handle initialization errors in useUpdates(). ([#23640](https://github.com/expo/expo/pull/23640) by [@douglowder](https://github.com/douglowder))
+- [iOS] Fix error handling on iOS during startup check for updates. ([#23663](https://github.com/expo/expo/pull/23663) by [@douglowder](https://github.com/douglowder))
+- Last check dateTime should come from native. ([#23692](https://github.com/expo/expo/pull/23692) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
+
+- Native getter for state machine context. ([#23428](https://github.com/expo/expo/pull/23428) by [@douglowder](https://github.com/douglowder))
+- [iOS] Fix template for EX_UPDATES_NATIVE_DEBUG. ([#23602](https://github.com/expo/expo/pull/23602) by [@douglowder](https://github.com/douglowder))
+
+## 0.18.11 - 2023-07-23
+
+### 💡 Others
+
+- [Android] EX_UPDATES_ANDROID_DELAY_LOAD_APP settable by env. ([#23479](https://github.com/expo/expo/pull/23479) by [@douglowder](https://github.com/douglowder))
+
+## 0.18.10 - 2023-07-12
+
+### 🐛 Bug fixes
+
+- [CLI] Add missing chalk dependency for the `expo-updates` cli. ([#23429](https://github.com/expo/expo/pull/23429) by [@byCedric](https://github.com/byCedric))
+- [CLI] Drop `fs-extra` in favor of `fs`. ([#23431](https://github.com/expo/expo/pull/23431) by [@byCedric](https://github.com/byCedric))
+
+## 0.18.9 - 2023-07-10
+
+### 🐛 Bug fixes
+
+- [ios] Allow nil scopeKey for bare/embedded updates. ([#23385](https://github.com/expo/expo/pull/23385) by [@wschurman](https://github.com/wschurman))
+
+## 0.18.8 - 2023-07-04
+
+_This version does not introduce any user-facing changes._
 
 ## 0.18.7 - 2023-06-30
 
