@@ -127,7 +127,7 @@ if (!isSubcommand) {
     'client:install:ios': 'npx expo start --ios',
     'client:install:android': 'npx expo start --android',
     doctor: 'npx expo-doctor',
-    upgrade: 'expo-cli upgrade',
+    upgrade: 'npm install expo@latest && npx expo install --fix',
     'customize:web': 'npx expo customize',
 
     publish: 'eas update',
