@@ -78,10 +78,6 @@ async function syncChangelogAsync(pkg: Package, sourceBranch: string) {
 
   const changes = await sourceChangelog.getChangesAsync(targetLastVersion, sourceLastVersion);
 
-  if (changes.totalCount < 1) {
-    return false;
-  }
-
   delete changes.versions[UNPUBLISHED_VERSION_NAME];
   let updated = false;
   for (const version of Object.keys(changes.versions).sort((v1, v2) =>
