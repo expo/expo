@@ -31,7 +31,6 @@ const commands: { [command: string]: () => Promise<Command> } = {
   install: () => import('../src/install').then((i) => i.expoInstall),
   add: () => import('../src/install').then((i) => i.expoInstall),
   customize: () => import('../src/customize').then((i) => i.expoCustomize),
-  typescript: () => import('../src/typescript').then((i) => i.expoTypescript),
 
   // Auth
   login: () => import('../src/login').then((i) => i.expoLogin),
@@ -85,7 +84,6 @@ if (!isSubcommand && args['--help']) {
     config,
     customize,
     prebuild,
-    typescript,
     'run:ios': runIos,
     'run:android': runAndroid,
     // NOTE(EvanBacon): Don't document this command as it's a temporary
@@ -102,7 +100,7 @@ if (!isSubcommand && args['--help']) {
   {bold Commands}
     ${Object.keys({ start, export: _export, ...others }).join(', ')}
     ${Object.keys({ 'run:ios': runIos, 'run:android': runAndroid, prebuild }).join(', ')}
-    ${Object.keys({ install, customize, config, typescript }).join(', ')}
+    ${Object.keys({ install, customize, config }).join(', ')}
     {dim ${Object.keys({ login, logout, whoami, register }).join(', ')}}
 
   {bold Options}

@@ -2,7 +2,7 @@ import { getConfig } from '@expo/config';
 
 import { Log } from '../log';
 
-export async function typescriptAsync(projectRoot: string) {
+export async function typescript(projectRoot: string) {
   const { TypeScriptProjectPrerequisite } = await import(
     '../start/doctor/typescript/TypeScriptProjectPrerequisite'
   );

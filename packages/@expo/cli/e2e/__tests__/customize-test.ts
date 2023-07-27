@@ -1,5 +1,6 @@
 /* eslint-env jest */
 import execa from 'execa';
+import { constants as fsConstants } from 'fs';
 import fs from 'fs-extra';
 import klawSync from 'klaw-sync';
 import path from 'path';
@@ -8,16 +9,19 @@ import { execute, projectRoot, getLoadedModulesAsync, setupTestProjectAsync, bin
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
+const originalUseTypedRoutes = process.env._EXPO_E2E_USE_TYPED_ROUTES;
 
 beforeAll(async () => {
   await fs.mkdir(projectRoot, { recursive: true });
   process.env.FORCE_COLOR = '0';
   process.env.CI = '1';
+  process.env._EXPO_E2E_USE_TYPED_ROUTES = '1';
 });
 
 afterAll(() => {
   process.env.FORCE_COLOR = originalForceColor;
   process.env.CI = originalCI;
+  process.env._EXPO_E2E_USE_TYPED_ROUTES = originalUseTypedRoutes;
 });
 
 it('loads expected modules by default', async () => {
@@ -80,6 +84,41 @@ it(
       'web/serve.json',
       'yarn.lock',
     ]);
+  },
+  // Could take 45s depending on how fast npm installs
+  120 * 1000
+);
+
+it(
+  'runs `npx expo customize tsconfig.json`',
+  async () => {
+    const projectRoot = await setupTestProjectAsync('expo-typescript', 'with-router', '48.0.0');
+
+    const generatedFiles = [
+      'tsconfig.json',
+      'expo-env.d.ts',
+      '.expo/types/router.d.ts',
+      '.gitignore',
+    ];
+
+    // Remove the generated files if they exist (when testing locally the folder may be cached)
+    await Promise.all(
+      generatedFiles.map((file) =>
+        fs.rm(path.join(projectRoot, file), { recursive: true, force: true })
+      )
+    );
+
+    // `npx expo typescript
+    await execa('node', [bin, 'customize', 'tsconfig.json'], {
+      cwd: projectRoot,
+    });
+
+    // Expect them to exist with correct access controls
+    for (const file of generatedFiles) {
+      await expect(
+        fs.access(path.join(projectRoot, file), fsConstants.F_OK)
+      ).resolves.toBeUndefined();
+    }
   },
   // Could take 45s depending on how fast npm installs
   120 * 1000
