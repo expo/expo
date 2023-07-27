@@ -143,9 +143,6 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 
 const debug = require('debug')('expo:metro:config');
-function getProjectBabelConfigFile(projectRoot) {
-  return _resolveFrom().default.silent(projectRoot, './babel.config.js') || _resolveFrom().default.silent(projectRoot, './.babelrc') || _resolveFrom().default.silent(projectRoot, './.babelrc.js');
-}
 function getAssetPlugins(projectRoot) {
   const hashAssetFilesPath = _resolveFrom().default.silent(projectRoot, 'expo-asset/tools/hashAssetFiles');
   if (!hashAssetFilesPath) {
@@ -193,8 +190,6 @@ function getDefaultConfig(projectRoot, options = {}) {
   const envFiles = runtimeEnv().getFiles(process.env.NODE_ENV, {
     silent: true
   });
-  const babelConfigPath = getProjectBabelConfigFile(projectRoot);
-  const isCustomBabelConfigDefined = !!babelConfigPath;
   const resolverMainFields = [];
 
   // Disable `react-native` in exotic mode, since library authors
@@ -215,7 +210,6 @@ function getDefaultConfig(projectRoot, options = {}) {
     } catch {}
     console.log(`- Extensions: ${sourceExts.join(', ')}`);
     console.log(`- React Native: ${reactNativePath}`);
-    console.log(`- Babel config: ${babelConfigPath || 'babel-preset-expo (default)'}`);
     console.log(`- Resolver Fields: ${resolverMainFields.join(', ')}`);
     console.log(`- Watch Folders: ${watchFolders.join(', ')}`);
     console.log(`- Node Module Paths: ${nodeModulesPaths.join(', ')}`);
@@ -286,13 +280,9 @@ function getDefaultConfig(projectRoot, options = {}) {
       // `require.context` support
       unstable_allowRequireContext: true,
       allowOptionalDependencies: true,
-      babelTransformerPath: isExotic ? require.resolve('./transformer/metro-expo-exotic-babel-transformer') : isCustomBabelConfigDefined ?
-      // If the user defined a babel config file in their project,
-      // then use the default transformer.
-      // Try to use the project copy before falling back on the global version
-      _resolveFrom().default.silent(projectRoot, 'metro-react-native-babel-transformer') :
-      // Otherwise, use a custom transformer that uses `babel-preset-expo` by default for projects.
-      require.resolve('./transformer/metro-expo-babel-transformer'),
+      babelTransformerPath: isExotic ?
+      // TODO: Combine these into one transformer.
+      require.resolve('./transformer/metro-expo-exotic-babel-transformer') : require.resolve('./babel-transformer'),
       assetRegistryPath: 'react-native/Libraries/Image/AssetRegistry',
       assetPlugins: getAssetPlugins(projectRoot)
     }

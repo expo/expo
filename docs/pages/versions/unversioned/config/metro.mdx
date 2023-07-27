@@ -330,6 +330,25 @@ export default function Page() {
 }
 ```
 
+## Extending the Babel transformer
+
+Expo's Metro config uses a custom `transformer.babelTransformerPath` value to ensure `expo-babel-preset` is always used and web/Node.js environments are supported.
+
+If you want to extend the Babel transformer, import the upstream transformer from `@expo/metro-config/babel-transformer` instead of `metro-react-native-babel-transformer`. For example:
+
+```js metro.transformer.js
+const upstreamTransformer = require('@expo/metro-config/babel-transformer');
+
+module.exports.transform = async ({ src, filename, options }) => {
+  // Do something custom for SVG files...
+  if (filename.endsWith('.svg')) {
+    src = '...';
+  }
+  // Pass the source through the upstream Expo transformer.
+  return upstreamTransformer.transform({ src, filename, options });
+};
+```
+
 ## Bare workflow setup
 
 > This guide is versioned and will need to be revisited when upgrading/downgrading Expo. Alternatively, use [Expo Prebuild](/workflow/prebuild) for fully automated setup.
