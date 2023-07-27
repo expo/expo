@@ -27,9 +27,11 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/metro-config#readme",
   "files": [
     "build",
-    "transformer"
+    "transformer",
+    "babel-transformer"
   ],
   "dependencies": {
+    "babel-preset-fbjs": "^3.4.0",
     "@expo/config": "~8.1.0",
     "@expo/env": "~0.0.2",
     "@expo/json-file": "~8.2.37",
@@ -42,6 +44,10 @@
     "postcss": "~8.4.21",
     "resolve-from": "^5.0.0",
     "sucrase": "^3.20.0"
+  },
+  "peerDependencies": {
+    "@babel/core": "*",
+    "metro-react-native-babel-preset": "*"
   },
   "devDependencies": {
     "@babel/core": "^7.15.5",

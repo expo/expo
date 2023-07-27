@@ -4,7 +4,12 @@
 
 ### 🛠 Breaking changes
 
+- Use custom Babel transformer by default. ([#23607](https://github.com/expo/expo/pull/23607) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
+
+- Expose default Babel transformer with `@expo/metro-config/babel-transformer`. ([#23607](https://github.com/expo/expo/pull/23607) by [@EvanBacon](https://github.com/EvanBacon))
+- Expose `metroTarget: 'client' | 'node'` to the Babel caller. ([#23607](https://github.com/expo/expo/pull/23607) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
@@ -15,7 +20,7 @@
 ### 🐛 Bug fixes
 
 - Add missing `unstable_styles` export on native for CSS Modules. ([#23260](https://github.com/expo/expo/pull/23260) by [@EvanBacon](https://github.com/EvanBacon))
-- Keep other URL components in place when rewriting full URLs for virtual entrypoints.  ([#23546](https://github.com/expo/expo/pull/23546) by [@byCedric](https://github.com/byCedric))
+- Keep other URL components in place when rewriting full URLs for virtual entrypoints. ([#23546](https://github.com/expo/expo/pull/23546) by [@byCedric](https://github.com/byCedric))
 
 ## 0.10.6 - 2023-07-02
 

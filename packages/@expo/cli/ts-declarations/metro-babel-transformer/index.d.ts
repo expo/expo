@@ -1,6 +1,6 @@
 declare module 'metro-babel-transformer' {
   import type { FBSourceFunctionMap } from 'metro-source-map';
-  import type { Ast, PluginItem } from '@babel/core';
+  import type { Ast, PluginItem, BabelFileMetadata } from '@babel/core';
 
   export type CustomTransformOptions = {
     [key: string]: unknown;
@@ -23,6 +23,8 @@ declare module 'metro-babel-transformer' {
     platform: ?string;
     projectRoot: string;
     publicPath: string;
+    extendsBabelConfigPath?: string;
+    hermesParser?: boolean;
   };
 
   export type BabelTransformerArgs = {
@@ -35,7 +37,8 @@ declare module 'metro-babel-transformer' {
   export type BabelTransformer = {
     transform: (args: BabelTransformerArgs) => {
       ast: Ast;
-      code: string | null;
+      metadata?: BabelFileMetadata;
+      code?: string | null;
       functionMap?: FBSourceFunctionMap | null;
     };
     getCacheKey?: () => string;
