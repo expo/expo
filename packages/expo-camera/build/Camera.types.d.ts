@@ -401,8 +401,8 @@ export type CameraProps = ViewProps & {
      */
     useCamera2Api?: boolean;
     /**
-     * A string representing the size of pictures [`takePictureAsync`](#takepictureasync) will take.
-     * Available sizes can be fetched with [`getAvailablePictureSizesAsync`](#getavailablepicturesizesasync).
+     * A string representing the size of pictures [`takePictureAsync`](#takepictureasyncoptions) will take.
+     * Available sizes can be fetched with [`getAvailablePictureSizesAsync`](#getavailablepicturesizesasyncratio).
      */
     pictureSize?: string;
     /**
