@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Move `pointerEvents` to `styles.pointerEvents`. ([#23446](https://github.com/expo/expo/pull/23446) by [@EvanBacon](https://github.com/EvanBacon))
+- [Android] Fixed splash screen is missing when using the `getDelayLoadAppHandler()` from expo-updates. ([#23747](https://github.com/expo/expo/pull/23747) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
