@@ -30,7 +30,11 @@ public final class SQLiteModule: Module {
     AsyncFunction("close") { (dbName: String) in
       cachedDatabases.removeValue(forKey: dbName)
     }
-
+  
+    Function("closeSync") { (dbName: String) in
+      cachedDatabases.removeValue(forKey: dbName)
+    }
+    
     AsyncFunction("deleteAsync") { (dbName: String) in
       if cachedDatabases[dbName] != nil {
         throw DeleteDatabaseException(dbName)
