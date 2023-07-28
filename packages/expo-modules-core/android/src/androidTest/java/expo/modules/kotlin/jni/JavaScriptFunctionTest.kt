@@ -3,7 +3,6 @@
 package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
-import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Test
@@ -13,7 +12,7 @@ class JavaScriptFunctionTest {
 
   @Before
   fun before() {
-    jsiInterop = JSIInteropModuleRegistry(mockk()).apply {
+    jsiInterop = JSIInteropModuleRegistry(defaultAppContextMock()).apply {
       installJSIForTests()
     }
   }

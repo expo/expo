@@ -2,7 +2,26 @@
 
 ## Unpublished
 
+- Fixed typo in connection message when opening React DevTools ([#23672](https://github.com/expo/expo/pull/23672) by [@frankcalise](https://github.com/frankcalise))
+
 ### 🛠 Breaking changes
+
+### 🎉 New features
+
+- Add inverse dependency stack to Metro resolution errors. ([#23551](https://github.com/expo/expo/pull/23551) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+- Fixed opening browser on Windows when debugging or opening Metro web. ([#23287](https://github.com/expo/expo/pull/23287) by [@byCedric](https://github.com/byCedric))
+- Fixed JavaScript Inspector does not work on Windows. ([#23367](https://github.com/expo/expo/pull/23367) by [@kudo](https://github.com/kudo))
+- Fixed route types generation on Windows not working. ([#23386](https://github.com/expo/expo/pull/23386) by [@gsporto](https://github.com/gsporto) and [@marklawlor](https://github.com/marklawlor))
+- Added additional guard to prevent invalid route files type generation. ([#23694](https://github.com/expo/expo/pull/23694) by [@marklawlor](https://github.com/marklawlor))
+
+### 💡 Others
+
+- Fix Metro externals test. ([#23741](https://github.com/expo/expo/pull/23741) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.10.11 - 2023-07-21
 
 ### 🎉 New features
 
@@ -13,10 +32,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed opening browser on Windows when debugging or opening Metro web. ([#23287](https://github.com/expo/expo/pull/23287) by [@byCedric](https://github.com/byCedric))
-- Fixed JavaScript Inspector does not work on Windows. ([#23367](https://github.com/expo/expo/pull/23367) by [@kudo](https://github.com/kudo))
 - Rework Expo Router types for HrefObject and SearchParams hooks. ([#23507](https://github.com/expo/expo/pull/23507) by [@marklawlor](https://github.com/marklawlor))
-- Fixed route types generation on Windows not working. ([#23386](https://github.com/expo/expo/pull/23386) by [@gsporto](https://github.com/gsporto) and [@marklawlor](https://github.com/marklawlor))
 - Added improved error message for static metro when a package is missing. ([#23499](https://github.com/expo/expo/pull/23499) by [@EvanBacon](https://github.com/EvanBacon))
 - Set `preferNativePlatform` to `false` for all web requests. ([#23527](https://github.com/expo/expo/pull/23527) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix Expo Router generating types for invalid route files. ([#23421](https://github.com/expo/expo/pull/23421) by [@marklawlor](https://github.com/marklawlor))
@@ -24,9 +40,7 @@
 - Fix running typed routes without an app directory. ([#23661](https://github.com/expo/expo/pull/23661) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix Expo Router type generation for filenames with spaces. ([#23662](https://github.com/expo/expo/pull/23662) by [@marklawlor](https://github.com/marklawlor))
 - Fix ensure `.expo/types` folder exists during type generation. ([#23664](https://github.com/expo/expo/pull/23664) by [@marklawlor](https://github.com/marklawlor))
-- Added additional guard to prevent invalid route files type generation. ([#23694](https://github.com/expo/expo/pull/23694) by [@marklawlor](https://github.com/marklawlor))
-
-### 💡 Others
+- Disable lazy bundling if `@expo/metro-runtime` is not installed. ([#23675](https://github.com/expo/expo/pull/23675) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.10.10 - 2023-07-07
 

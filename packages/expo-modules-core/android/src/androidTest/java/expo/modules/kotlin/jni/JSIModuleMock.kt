@@ -6,7 +6,9 @@ import com.facebook.react.uimanager.UIBlock
 import com.facebook.react.uimanager.UIManagerModule
 import com.google.common.truth.Truth
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.ModuleRegistry
+import expo.modules.kotlin.defaultmodules.CoreModule
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -20,6 +22,20 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import java.lang.ref.WeakReference
 
+internal fun defaultAppContextMock(
+  jniDeallocator: JNIDeallocator = JNIDeallocator(shouldCreateDestructorThread = false)
+): AppContext {
+  val appContextMock = mockk<AppContext>()
+  val coreModule = run {
+    val module = CoreModule()
+    module._appContext = appContextMock
+    ModuleHolder(module)
+  }
+  every { appContextMock.coreModule } answers { coreModule }
+  every { appContextMock.jniDeallocator } answers { jniDeallocator }
+  return appContextMock
+}
+
 /**
  * Sets up a test jsi environment with provided modules.
  */
@@ -29,11 +45,11 @@ internal inline fun withJSIInterop(
   block: JSIInteropModuleRegistry.(methodQueue: TestScope) -> Unit,
   afterCleanup: (deallocator: JNIDeallocator) -> Unit
 ) {
-  val appContextMock = mockk<AppContext>()
-  val methodQueue = TestScope()
   val jniDeallocator = JNIDeallocator(
     shouldCreateDestructorThread = false
   )
+  val appContextMock = defaultAppContextMock(jniDeallocator)
+  val methodQueue = TestScope()
 
   val uiManagerModuleMock = mockk<UIManagerModule>()
   val slot = slot<UIBlock>()
@@ -57,7 +73,6 @@ internal inline fun withJSIInterop(
   every { appContextMock.mainQueue } answers { methodQueue }
   every { appContextMock.backgroundCoroutineScope } answers { methodQueue }
   every { appContextMock.reactContext } answers { reactContextMock }
-  every { appContextMock.jniDeallocator } answers { jniDeallocator }
 
   val registry = ModuleRegistry(WeakReference(appContextMock)).apply {
     modules.forEach {

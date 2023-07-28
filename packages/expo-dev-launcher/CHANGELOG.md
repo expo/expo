@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 2.4.9 — 2023-07-26
+
+### 🐛 Bug fixes
+
+- Fixed "Can't toast on a thread that has not called Looper.prepare()" Exception when enabling "Sampling Profiler on init" ([#23706](https://github.com/expo/expo/pull/23706) by [@hirbod](https://github.com/hirbod))
+
 ## 2.4.8 - 2023-07-12
 
 ### 💡 Others
