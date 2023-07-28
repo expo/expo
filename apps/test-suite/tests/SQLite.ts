@@ -1,5 +1,4 @@
-'use strict';
-
+import assert from 'assert';
 import { Asset } from 'expo-asset';
 import * as FS from 'expo-file-system';
 import { Platform } from 'expo-modules-core';
@@ -16,7 +15,10 @@ export function test(t) {
         db.transaction(
           (tx) => {
             const nop = () => {};
-            const onError = (tx, error) => reject(error);
+            const onError = (tx, error) => {
+              reject(error);
+              return false;
+            };
 
             tx.executeSql('DROP TABLE IF EXISTS Users;', [], nop, onError);
             tx.executeSql(
@@ -55,7 +57,9 @@ export function test(t) {
             );
           },
           reject,
-          resolve
+          () => {
+            resolve(null);
+          }
         );
       });
 
@@ -78,7 +82,10 @@ export function test(t) {
           await new Promise((resolve, reject) => {
             db.transaction(
               (tx) => {
-                const onError = (tx, error) => reject(error);
+                const onError = (tx, error) => {
+                  reject(error);
+                  return false;
+                };
                 tx.executeSql(
                   'SELECT * FROM Users',
                   [],
@@ -90,7 +97,9 @@ export function test(t) {
                 );
               },
               reject,
-              resolve
+              () => {
+                resolve(null);
+              }
             );
           });
           db.closeAsync();
@@ -106,7 +115,10 @@ export function test(t) {
           db.transaction(
             (tx) => {
               const nop = () => {};
-              const onError = (tx, error) => reject(error);
+              const onError = (tx, error) => {
+                reject(error);
+                return false;
+              };
 
               tx.executeSql('DROP TABLE IF EXISTS Users;', [], nop, onError);
               tx.executeSql(
@@ -132,7 +144,9 @@ export function test(t) {
               );
             },
             reject,
-            resolve
+            () => {
+              resolve(null);
+            }
           );
         });
       }
@@ -154,7 +168,10 @@ export function test(t) {
           db.transaction(
             (tx) => {
               const nop = () => {};
-              const onError = (tx, error) => reject(error);
+              const onError = (tx, error) => {
+                reject(error);
+                return false;
+              };
 
               tx.executeSql('DROP TABLE IF EXISTS Users;', [], nop, onError);
               tx.executeSql(
@@ -188,7 +205,9 @@ export function test(t) {
               );
             },
             reject,
-            resolve
+            () => {
+              resolve(null);
+            }
           );
         });
       }
@@ -200,7 +219,10 @@ export function test(t) {
         db.transaction(
           (tx) => {
             const nop = () => {};
-            const onError = (tx, error) => reject(error);
+            const onError = (tx, error) => {
+              reject(error);
+              return false;
+            };
 
             tx.executeSql('DROP TABLE IF EXISTS Nulling;', [], nop, onError);
             tx.executeSql(
@@ -225,7 +247,9 @@ export function test(t) {
             );
           },
           reject,
-          resolve
+          () => {
+            resolve(null);
+          }
         );
       });
 
@@ -245,7 +269,10 @@ export function test(t) {
           db.transaction(
             (tx) => {
               const nop = () => {};
-              const onError = (tx, error) => reject(error);
+              const onError = (tx, error) => {
+                reject(error);
+                return false;
+              };
 
               tx.executeSql('DROP TABLE IF EXISTS SomeTable;', [], nop, onError);
               tx.executeSql(
@@ -280,7 +307,9 @@ export function test(t) {
               );
             },
             reject,
-            resolve
+            () => {
+              resolve(null);
+            }
           );
         });
       });
@@ -292,7 +321,10 @@ export function test(t) {
         db.transaction(
           (tx) => {
             const nop = () => {};
-            const onError = (tx, error) => reject(error);
+            const onError = (tx, error) => {
+              reject(error);
+              return false;
+            };
 
             tx.executeSql('DROP TABLE IF EXISTS Users;', [], nop, onError);
             tx.executeSql(
@@ -309,13 +341,18 @@ export function test(t) {
             );
           },
           reject,
-          resolve
+          () => {
+            resolve(null);
+          }
         );
       });
       await new Promise((resolve, reject) => {
         db.transaction(
           (tx) => {
-            const onError = (tx, error) => reject(error);
+            const onError = (tx, error) => {
+              reject(error);
+              return false;
+            };
             tx.executeSql(
               'DELETE FROM Users WHERE name=?',
               ['name1'],
@@ -343,7 +380,9 @@ export function test(t) {
             );
           },
           reject,
-          resolve
+          () => {
+            resolve(null);
+          }
         );
       });
     });
@@ -357,7 +396,10 @@ export function test(t) {
           db.transaction(
             (tx) => {
               const nop = () => {};
-              const onError = (tx, error) => reject(error);
+              const onError = (tx, error) => {
+                reject(error);
+                return false;
+              };
 
               tx.executeSql('DROP TABLE IF EXISTS Users;', [], nop, onError);
               tx.executeSql('DROP TABLE IF EXISTS Posts;', [], nop, onError);
@@ -389,14 +431,19 @@ export function test(t) {
               tx.executeSql('PRAGMA foreign_keys=off;', [], nop, onError);
             },
             reject,
-            resolve
+            () => {
+              resolve(null);
+            }
           );
         });
         await new Promise((resolve, reject) => {
           db.transaction(
             (tx) => {
               const nop = () => {};
-              const onError = (tx, error) => reject(error);
+              const onError = (tx, error) => {
+                reject(error);
+                return false;
+              };
               tx.executeSql('PRAGMA foreign_keys=on;', [], nop, onError);
               tx.executeSql(
                 'DELETE FROM Users WHERE name=?',
@@ -436,7 +483,9 @@ export function test(t) {
               tx.executeSql('PRAGMA foreign_keys=off;', [], nop, onError);
             },
             reject,
-            resolve
+            () => {
+              resolve(null);
+            }
           );
         });
       });
@@ -501,9 +550,9 @@ export function test(t) {
         const userName = await fakeUserFetcher(1);
         await db.transactionAsync(async (tx) => {
           await tx.executeSqlAsync('INSERT INTO Users (name) VALUES (?)', [userName]);
-
-          const currentUser = (await tx.executeSqlAsync('SELECT * FROM Users LIMIT 1')).rows[0]
-            .name;
+          const result = await tx.executeSqlAsync('SELECT * FROM Users LIMIT 1');
+          assert(!isResultSetError(result));
+          const currentUser = result.rows[0].name;
           t.expect(currentUser).toEqual('Tim Duncan');
         });
       });
@@ -527,9 +576,9 @@ export function test(t) {
             tx.executeSqlAsync('INSERT INTO Users (name) VALUES (?)', ['ccc']),
           ]);
 
-          const recordCount = (await tx.executeSqlAsync('SELECT COUNT(*) FROM Users')).rows[0][
-            'COUNT(*)'
-          ];
+          const result = await tx.executeSqlAsync('SELECT COUNT(*) FROM Users');
+          assert(!isResultSetError(result));
+          const recordCount = result.rows[0]['COUNT(*)'];
           t.expect(recordCount).toEqual(3);
         });
       });
@@ -542,6 +591,7 @@ export function test(t) {
           // create table in readOnly transaction
           await db.transactionAsync(async (tx) => {
             const result = await tx.executeSqlAsync('DROP TABLE IF EXISTS Users;', []);
+            assert(isResultSetError(result));
             t.expect(result.error).toBeDefined();
             t.expect(result.error.message).toContain('could not prepare ');
           }, true);
@@ -563,9 +613,9 @@ export function test(t) {
           await tx.executeSqlAsync('INSERT INTO Users (name) VALUES (?)', ['aaa']);
         });
         await db.transactionAsync(async (tx) => {
-          const recordCount = (await tx.executeSqlAsync('SELECT COUNT(*) FROM Users')).rows[0][
-            'COUNT(*)'
-          ];
+          const result = await tx.executeSqlAsync('SELECT COUNT(*) FROM Users');
+          assert(!isResultSetError(result));
+          const recordCount = result.rows[0]['COUNT(*)'];
           t.expect(recordCount).toEqual(1);
         }, true);
 
@@ -579,9 +629,9 @@ export function test(t) {
         );
 
         await db.transactionAsync(async (tx) => {
-          const recordCount = (await tx.executeSqlAsync('SELECT COUNT(*) FROM Users')).rows[0][
-            'COUNT(*)'
-          ];
+          const result = await tx.executeSqlAsync('SELECT COUNT(*) FROM Users');
+          assert(!isResultSetError(result));
+          const recordCount = result.rows[0]['COUNT(*)'];
           t.expect(recordCount).toEqual(1);
         }, true);
       });
@@ -595,19 +645,27 @@ export function test(t) {
             []
           );
           // a result-returning pragma
-          let results = await tx.executeSqlAsync('PRAGMA table_info(SomeTable);', []);
-          t.expect(results.rows.length).toEqual(2);
-          t.expect(results.rows[0].name).toEqual('id');
-          t.expect(results.rows[1].name).toEqual('name');
+          let result = await tx.executeSqlAsync('PRAGMA table_info(SomeTable);', []);
+          assert(!isResultSetError(result));
+          t.expect(result.rows.length).toEqual(2);
+          t.expect(result.rows[0].name).toEqual('id');
+          t.expect(result.rows[1].name).toEqual('name');
           // a no-result pragma
           await tx.executeSqlAsync('PRAGMA case_sensitive_like = true;', []);
           // a setter/getter pragma
           await tx.executeSqlAsync('PRAGMA user_version = 123;', []);
-          results = await tx.executeSqlAsync('PRAGMA user_version;', []);
-          t.expect(results.rows.length).toEqual(1);
-          t.expect(results.rows[0].user_version).toEqual(123);
+          result = await tx.executeSqlAsync('PRAGMA user_version;', []);
+          assert(!isResultSetError(result));
+          t.expect(result.rows.length).toEqual(1);
+          t.expect(result.rows[0].user_version).toEqual(123);
         });
       });
     }); // t.describe('SQLiteAsync')
   }
+}
+
+function isResultSetError(
+  result: SQLite.ResultSet | SQLite.ResultSetError
+): result is SQLite.ResultSetError {
+  return 'error' in result;
 }

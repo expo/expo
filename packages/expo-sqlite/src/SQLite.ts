@@ -11,6 +11,8 @@ import type {
   SQLiteCallback,
   SQLTransactionAsyncCallback,
   SQLTransactionAsync,
+  SQLTransactionCallback,
+  SQLTransactionErrorCallback,
 } from './SQLite.types';
 
 const ExpoSQLite = requireNativeModule('ExpoSQLite');
@@ -54,7 +56,7 @@ export class SQLiteDatabase {
   /**
    * Executes the SQL statement and returns a Promise resolving with the result.
    */
-  async execAsync(queries: Query[], readOnly: boolean): Promise<ResultSet[]> {
+  async execAsync(queries: Query[], readOnly: boolean): Promise<(ResultSetError | ResultSet)[]> {
     if (this._closed) {
       throw new Error(`The SQLite database is closed`);
     }
@@ -113,6 +115,31 @@ export class SQLiteDatabase {
       throw e;
     }
   }
+
+  // @ts-expect-error: properties that are added from websql
+  version: string;
+
+  /**
+   * Execute a database transaction.
+   * @param callback A function representing the transaction to perform. Takes a Transaction
+   * (see below) as its only parameter, on which it can add SQL statements to execute.
+   * @param errorCallback Called if an error occurred processing this transaction. Takes a single
+   * parameter describing the error.
+   * @param successCallback Called when the transaction has completed executing on the database.
+   */
+  // @ts-expect-error: properties that are added from websql
+  transaction(
+    callback: SQLTransactionCallback,
+    errorCallback?: SQLTransactionErrorCallback,
+    successCallback?: () => void
+  ): void;
+
+  // @ts-expect-error: properties that are added from websql
+  readTransaction(
+    callback: SQLTransactionCallback,
+    errorCallback?: SQLTransactionErrorCallback,
+    successCallback?: () => void
+  ): void;
 }
 
 function _serializeQuery(query: Query): Query | [string, any[]] {
@@ -194,7 +221,10 @@ export function openDatabase(
 export class ExpoSQLTransactionAsync implements SQLTransactionAsync {
   constructor(private readonly db: SQLiteDatabase, private readonly readOnly: boolean) {}
 
-  async executeSqlAsync(sqlStatement: string, args?: (number | string)[]): Promise<ResultSet> {
+  async executeSqlAsync(
+    sqlStatement: string,
+    args?: (number | string)[]
+  ): Promise<ResultSetError | ResultSet> {
     const resultSets = await this.db.execAsync(
       [{ sql: sqlStatement, args: args ?? [] }],
       this.readOnly
