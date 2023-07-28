@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.19.0 — 2023-07-28
+
+### 🎉 New features
+
 - New useUpdates() JS API. ([#23532](https://github.com/expo/expo/pull/23532) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
