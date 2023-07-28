@@ -51,6 +51,12 @@ class SQLiteModule : Module() {
         ?.close()
     }
 
+    Function("closeSync") { dbName: String ->
+      DATABASES
+        .remove(dbName)
+        ?.close()
+    }
+
     AsyncFunction("deleteAsync") { dbName: String ->
       if (DATABASES.containsKey(dbName)) {
         throw OpenDatabaseException(dbName)

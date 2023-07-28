@@ -31,6 +31,10 @@ public final class SQLiteModule: Module {
       cachedDatabases.removeValue(forKey: dbName)
     }
 
+    Function("closeSync") { (dbName: String) in
+      cachedDatabases.removeValue(forKey: dbName)
+    }
+
     AsyncFunction("deleteAsync") { (dbName: String) in
       if cachedDatabases[dbName] != nil {
         throw DeleteDatabaseException(dbName)
@@ -184,7 +188,7 @@ public final class SQLiteModule: Module {
       }
 
       let SQLITE_TRANSIENT = unsafeBitCast(OpaquePointer(bitPattern: -1), to: sqlite3_destructor_type.self)
-      
+
       let data = stringArg.data(using: NSUTF8StringEncoding)
       sqlite3_bind_text(statement, index, stringArg.utf8String, Int32(data?.count ?? 0), SQLITE_TRANSIENT)
     }
