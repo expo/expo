@@ -1,0 +1,62 @@
+---
+title: Single Sign-On (SSO)
+description: Learn about how your enterprise organization can use your Identity Provider to manage Expo users.
+---
+
+## Configure SSO for your organization
+
+SSO is available for Enterprise Plan customers. To get started, contact us and we'll help you set it up for your organization.
+
+> The Expo SSO system should support any Identity Provider (IdP) that supports [OpenID Connect Discovery 1.0](https://openid.net/specs/openid-connect-discovery-1_0.html). We have tested [Okta](https://www.okta.com/) and plan to test others as requested.
+
+## SSO user sign in
+
+### Expo website
+
+1. Navigate to https://expo.dev/sso-login and enter the account name of your organization.
+
+    > You can create a link that pre-fills the organization name. For example, https://expo.dev/sso-login/test-org will pre-fill `test-org`.
+
+1. Log in to your identity provider (IdP).
+1. You will then be asked to choose a Expo username. This will be your username in Expo.
+
+### Expo CLI
+
+`npx expo login --sso`
+
+### EAS CLI
+
+`eas login --sso`
+
+### Expo Go
+
+1. Go through normal sign in flow but click "Continue with SSO" button on sign in page.
+1. Follow steps for Expo website above.
+
+## SSO user restrictions
+
+SSO users are just like regular users for the most part, but there are a few known exceptions:
+- SSO users can only belong to their SSO organization. They also cannot create additional organizations.
+- SSO users cannot leave their SSO organization. Doing so deletes their SSO user.
+- SSO users cannot access the Expo forums.
+- SSO users cannot subscribe to EAS for their personal accounts.
+
+## SSO administration
+
+### Removing SSO users
+
+If someone has left your organization, first remove/disable them in your IdP. This user will no longer have access to their Expo account in at most the token refresh duration you have configured in your IdP.
+If you wish to remove them ahead of that time or you wish to remove them to clean up users on your account, you may do so in the organization member settings page.
+
+1. Navigate to your [organization account member settings](https://expo.dev/accounts/[account]/settings/members)
+2. Click the dropdown next to the member you wish to delete, and click "Delete SSO user"
+
+    > **warning** This will delete their personal account and all data associated with it. All data in your organization account will remain unaffected.
+
+### Changing billing or discontinuing use of SSO
+
+An active Enterprise Plan is required to continue using SSO. Contact us if you wish to discontinue use of SSO or change your plan.
+
+### Deleting your SSO organization
+
+Once SSO is configured for an organization, account deletion must be done manually by Expo. Contact us for assistance.
