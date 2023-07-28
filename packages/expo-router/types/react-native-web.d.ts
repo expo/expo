@@ -1,7 +1,7 @@
-import "react-native";
+import 'react-native';
 
-declare module "react-native" {
-  import { StyleProp } from "react-native";
+declare module 'react-native' {
+  import { StyleProp } from 'react-native';
   /**
    * View
    */
@@ -23,7 +23,7 @@ declare module "react-native" {
     /** @platform web */
     animationName?: string | any[];
     /** @platform web */
-    animationIterationCount?: number | "infinite";
+    animationIterationCount?: number | 'infinite';
     /** @platform web */
     animationPlayState?: string;
     /** @platform web */
@@ -37,7 +37,7 @@ declare module "react-native" {
     /** @platform web */
     backgroundImage?: string;
     /** @platform web */
-    backgroundOrigin?: "border-box" | "content-box" | "padding-box";
+    backgroundOrigin?: 'border-box' | 'content-box' | 'padding-box';
     /** @platform web */
     backgroundPosition?: string;
     /** @platform web */
@@ -87,11 +87,11 @@ declare module "react-native" {
     /** @platform web */
     overflowY?: string;
     /** @platform web */
-    overscrollBehavior?: "auto" | "contain" | "none";
+    overscrollBehavior?: 'auto' | 'contain' | 'none';
     /** @platform web */
-    overscrollBehaviorX?: "auto" | "contain" | "none";
+    overscrollBehaviorX?: 'auto' | 'contain' | 'none';
     /** @platform web */
-    overscrollBehaviorY?: "auto" | "contain" | "none";
+    overscrollBehaviorY?: 'auto' | 'contain' | 'none';
     /** @platform web */
     perspective?: string;
     /** @platform web */
@@ -115,7 +115,7 @@ declare module "react-native" {
     /** @platform web */
     willChange?: string;
     /** @platform web */
-    position?: "static" | "relative" | "absolute" | "fixed" | "sticky";
+    position?: 'static' | 'relative' | 'absolute' | 'fixed' | 'sticky';
   }
 
   /**
@@ -144,7 +144,7 @@ declare module "react-native" {
     /** @platform web */
     animationName?: string | any[];
     /** @platform web */
-    animationIterationCount?: number | "infinite";
+    animationIterationCount?: number | 'infinite';
     /** @platform web */
     animationPlayState?: string;
     /** @platform web */
@@ -158,7 +158,7 @@ declare module "react-native" {
     /** @platform web */
     backgroundImage?: string;
     /** @platform web */
-    backgroundOrigin?: "border-box" | "content-box" | "padding-box";
+    backgroundOrigin?: 'border-box' | 'content-box' | 'padding-box';
     /** @platform web */
     backgroundPosition?: string;
     /** @platform web */
@@ -208,11 +208,11 @@ declare module "react-native" {
     /** @platform web */
     overflowY?: string;
     /** @platform web */
-    overscrollBehavior?: "auto" | "contain" | "none";
+    overscrollBehavior?: 'auto' | 'contain' | 'none';
     /** @platform web */
-    overscrollBehaviorX?: "auto" | "contain" | "none";
+    overscrollBehaviorX?: 'auto' | 'contain' | 'none';
     /** @platform web */
-    overscrollBehaviorY?: "auto" | "contain" | "none";
+    overscrollBehaviorY?: 'auto' | 'contain' | 'none';
     /** @platform web */
     perspective?: string;
     /** @platform web */
@@ -236,7 +236,7 @@ declare module "react-native" {
     /** @platform web */
     willChange?: string;
     /** @platform web */
-    position?: "static" | "relative" | "absolute" | "fixed" | "sticky";
+    position?: 'static' | 'relative' | 'absolute' | 'fixed' | 'sticky';
     /** @platform web */
     fontFeatureSettings?: string;
     /** @platform web */
@@ -266,9 +266,7 @@ declare module "react-native" {
       | React.ReactNode
       | ((state: PressableStateCallbackType) => React.ReactNode)
       | undefined;
-    style?:
-      | StyleProp<ViewStyle>
-      | ((state: PressableStateCallbackType) => StyleProp<ViewStyle>);
+    style?: StyleProp<ViewStyle> | ((state: PressableStateCallbackType) => StyleProp<ViewStyle>);
   }
 
   // export const Pressable: React.ForwardRefExoticComponent<

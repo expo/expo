@@ -76,6 +76,7 @@ describe(assertDuplicateRoutes, () => {
   const originalEnv = process.env.NODE_ENV;
 
   afterEach(() => {
+    // @ts-expect-error
     process.env.NODE_ENV = originalEnv;
   });
   it(`throws if there are duplicate routes`, () => {
@@ -89,6 +90,7 @@ describe(assertDuplicateRoutes, () => {
   });
 
   it(`doesn't throw if running in production`, () => {
+    // @ts-expect-error
     process.env.NODE_ENV = 'production';
     expect(() => assertDuplicateRoutes(['a', 'a.js'])).not.toThrow();
   });

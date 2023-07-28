@@ -37,7 +37,7 @@ declare namespace __MetroModuleApi {
       path: string,
       recursive?: boolean,
       filter?: RegExp,
-      mode?: "sync" | "eager" | "weak" | "lazy" | "lazy-once"
+      mode?: 'sync' | 'eager' | 'weak' | 'lazy' | 'lazy-once'
     ): RequireContext;
   }
 }

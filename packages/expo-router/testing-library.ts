@@ -1,1 +1,1 @@
-export * from "./src/testing-library";
+export * from './src/testing-library';

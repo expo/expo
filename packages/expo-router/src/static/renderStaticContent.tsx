@@ -23,7 +23,6 @@ function resetReactNavigationContexts() {
   // React Navigation is storing providers in a global, this is fine for the first static render
   // but subsequent static renders of Stack or Tabs will cause React to throw a warning. To prevent this warning, we'll reset the globals before rendering.
   const contexts = '__react_navigation__elements_contexts';
-  // @ts-expect-error: global
   global[contexts] = new Map<string, React.Context<any>>();
 }
 
