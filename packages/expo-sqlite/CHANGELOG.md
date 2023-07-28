@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add synchronous method `closeSync`. ([#23757](https://github.com/expo/expo/pull/23757) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
 
 - Fixed missing `transaction()` and `readTransaction()` function types from `SQLiteDatabase`. ([#23751](https://github.com/expo/expo/pull/23751) by [@kudo](https://github.com/kudo))
