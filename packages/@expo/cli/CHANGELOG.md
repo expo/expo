@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Add inverse dependency stack to Metro resolution errors. ([#23551](https://github.com/expo/expo/pull/23551) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 - Fixed opening browser on Windows when debugging or opening Metro web. ([#23287](https://github.com/expo/expo/pull/23287) by [@byCedric](https://github.com/byCedric))

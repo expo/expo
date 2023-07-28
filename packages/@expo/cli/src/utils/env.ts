@@ -151,6 +151,11 @@ class Env {
   get EXPO_NO_METRO_LAZY() {
     return boolish('EXPO_NO_METRO_LAZY', false);
   }
+
+  /** Enable the unstable inverse dependency stack trace for Metro bundling errors. */
+  get EXPO_METRO_UNSTABLE_ERRORS() {
+    return boolish('EXPO_METRO_UNSTABLE_ERRORS', false);
+  }
 }
 
 export const env = new Env();
