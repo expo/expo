@@ -40,14 +40,6 @@ export interface DefaultConfigOptions {
   isCSSEnabled?: boolean;
 }
 
-function getProjectBabelConfigFile(projectRoot: string): string | undefined {
-  return (
-    resolveFrom.silent(projectRoot, './babel.config.js') ||
-    resolveFrom.silent(projectRoot, './.babelrc') ||
-    resolveFrom.silent(projectRoot, './.babelrc.js')
-  );
-}
-
 function getAssetPlugins(projectRoot: string): string[] {
   const hashAssetFilesPath = resolveFrom.silent(projectRoot, 'expo-asset/tools/hashAssetFiles');
 
@@ -105,9 +97,6 @@ export function getDefaultConfig(
 
   const envFiles = runtimeEnv.getFiles(process.env.NODE_ENV, { silent: true });
 
-  const babelConfigPath = getProjectBabelConfigFile(projectRoot);
-  const isCustomBabelConfigDefined = !!babelConfigPath;
-
   const pkg = getPackageJson(projectRoot);
   const watchFolders = getWatchFolders(projectRoot);
   // TODO: nodeModulesPaths does not work with the new Node.js package.json exports API, this causes packages like uuid to fail. Disabling for now.
@@ -120,7 +109,6 @@ export function getDefaultConfig(
     } catch {}
     console.log(`- Extensions: ${sourceExts.join(', ')}`);
     console.log(`- React Native: ${reactNativePath}`);
-    console.log(`- Babel config: ${babelConfigPath || 'babel-preset-expo (default)'}`);
     console.log(`- Watch Folders: ${watchFolders.join(', ')}`);
     console.log(`- Node Module Paths: ${nodeModulesPaths.join(', ')}`);
     console.log(`- Exotic: ${isExotic}`);
@@ -203,14 +191,9 @@ export function getDefaultConfig(
       unstable_allowRequireContext: true,
       allowOptionalDependencies: true,
       babelTransformerPath: isExotic
-        ? require.resolve('./transformer/metro-expo-exotic-babel-transformer')
-        : isCustomBabelConfigDefined
-        ? // If the user defined a babel config file in their project,
-          // then use the default transformer.
-          // Try to use the project copy before falling back on the global version
-          resolveFrom.silent(projectRoot, 'metro-react-native-babel-transformer')
-        : // Otherwise, use a custom transformer that uses `babel-preset-expo` by default for projects.
-          require.resolve('./transformer/metro-expo-babel-transformer'),
+        ? // TODO: Combine these into one transformer.
+          require.resolve('./transformer/metro-expo-exotic-babel-transformer')
+        : require.resolve('./babel-transformer'),
       assetRegistryPath: 'react-native/Libraries/Image/AssetRegistry',
       assetPlugins: getAssetPlugins(projectRoot),
     },

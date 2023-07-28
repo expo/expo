@@ -63,7 +63,7 @@ describe(getDefaultConfig, () => {
   });
 
   it('loads default configuration for apps', () => {
-    expect(getDefaultConfig(projectRoot).resolver.sourceExts).toEqual(
+    expect(getDefaultConfig(projectRoot).resolver?.sourceExts).toEqual(
       expect.not.arrayContaining(['expo.js'])
     );
   });
