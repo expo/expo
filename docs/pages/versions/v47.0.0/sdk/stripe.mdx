@@ -8,6 +8,7 @@ packageName: '@stripe/stripe-react-native'
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline } from '~/ui/components/Snippet';
+import { PlatformTags } from '~/ui/components/Tag';
 
 Expo includes support for [`@stripe/stripe-react-native`](https://github.com/stripe/stripe-react-native), which allows you to build delightful payment experiences in your native Android and iOS apps using React Native & Expo. This library provides powerful and customizable UI screens and elements that can be used out-of-the-box to collect your users' payment details.
 
@@ -44,6 +45,10 @@ If you're using EAS Build, you can do most of your Stripe setup using the `@stri
 
 - **merchantIdentifier**: iOS only. This is the Apple merchant ID obtained [here](https://stripe.com/docs/apple-pay?platform=react-native). Otherwise, Apple Pay will not work as expected. If you have multiple merchantIdentifiers, you can set them in an array.
 - **enableGooglePay**: Android only. Boolean indicating whether or not Google Pay is enabled. Defaults to `false`.
+
+#### Known issues&ensp;<PlatformTags platforms={['android']} />
+
+SDK 47 onwards, `@stripe/stripe-react-native` library version `0.19.x` requires `compileSdkVersion` on Android to be `33`. However, on SDK 47, it is `31`. To override this `compileSdkVersion` value, use [`expo-build-properties`](/versions/v47.0.0/sdk/build-properties/#pluginconfigtypeandroid) config plugin.
 
 ## Example
 
