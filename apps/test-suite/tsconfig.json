@@ -1,4 +1,5 @@
 {
+  "extends": "expo/tsconfig.base",
   "compilerOptions": {},
-  "extends": "expo/tsconfig.base"
+  "include": ["tests/**/*"]
 }

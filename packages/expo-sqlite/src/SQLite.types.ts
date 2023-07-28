@@ -155,16 +155,16 @@ export interface WebSQLDatabase extends Database {
 export type Query = { sql: string; args: unknown[] };
 
 // @docsMissing
-export type ResultSetError = {
+export interface ResultSetError {
   error: Error;
-};
+}
 
 // @needsAudit
 /**
  * `ResultSet` objects are returned through second parameter of the `success` callback for the
  * `tx.executeSql()` method on a `SQLTransaction` (see above).
  */
-export type ResultSet = {
+export interface ResultSet {
   /**
    * The row ID of the row that the SQL statement inserted into the database, if a row was inserted.
    */
@@ -174,7 +174,7 @@ export type ResultSet = {
    */
   rowsAffected: number;
   rows: { [column: string]: any }[];
-};
+}
 
 // @docsMissing
 export type SQLiteCallback = (
@@ -185,7 +185,10 @@ export type SQLiteCallback = (
 /** A transaction object to perform SQL statements in async mode. */
 export interface SQLTransactionAsync {
   /** Executes a SQL statement in async mode. */
-  executeSqlAsync(sqlStatement: string, args?: (number | string)[]): Promise<ResultSet>;
+  executeSqlAsync(
+    sqlStatement: string,
+    args?: (number | string)[]
+  ): Promise<ResultSetError | ResultSet>;
 }
 
 /** A transaction callback with given `SQLTransactionAsync` object to perform SQL statements in async mode. */
