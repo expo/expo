@@ -1,11 +1,11 @@
 // This MUST be first to ensure that `fetch` is defined in the React Native environment.
-import "react-native/Libraries/Core/InitializeCore";
+import 'react-native/Libraries/Core/InitializeCore';
 
-import Constants from "expo-constants";
-import URL from "url-parse";
+import Constants from 'expo-constants';
+import URL from 'url-parse';
 
-import getDevServer from "../getDevServer";
-import { install, setLocationHref } from "./Location";
+import getDevServer from '../getDevServer';
+import { install, setLocationHref } from './Location';
 
 let hasWarned = false;
 
@@ -29,9 +29,9 @@ function warnProductionOriginNotConfigured(requestUrl: string) {
 // TODO: This would be better if native and tied as close to the JS engine as possible, i.e. it should
 // reflect the exact location of the JS file that was executed.
 function getBaseUrl() {
-  if (process.env.NODE_ENV !== "production") {
+  if (process.env.NODE_ENV !== 'production') {
     // e.g. http://localhost:19006
-    return getDevServer().url?.replace(/\/$/, "");
+    return getDevServer().url?.replace(/\/$/, '');
   }
 
   // TODO: Make it official by moving out of `extra`
@@ -42,37 +42,28 @@ function getBaseUrl() {
   }
 
   // Ensure no trailing slash
-  return productionBaseUrl?.replace(/\/$/, "");
+  return productionBaseUrl?.replace(/\/$/, '');
 }
 
-function wrapFetchWithWindowLocation(
-  fetch: Function & { __EXPO_BASE_URL_POLYFILLED?: boolean }
-) {
+function wrapFetchWithWindowLocation(fetch: Function & { __EXPO_BASE_URL_POLYFILLED?: boolean }) {
   if (fetch.__EXPO_BASE_URL_POLYFILLED) {
     return fetch;
   }
 
   const _fetch = (...props: any[]) => {
-    if (props[0] && typeof props[0] === "string" && props[0].startsWith("/")) {
-      if (process.env.NODE_ENV !== "production") {
+    if (props[0] && typeof props[0] === 'string' && props[0].startsWith('/')) {
+      if (process.env.NODE_ENV !== 'production') {
         warnProductionOriginNotConfigured(props[0]);
       }
 
       props[0] = new URL(props[0], window.location?.origin).toString();
-    } else if (props[0] && typeof props[0] === "object") {
-      if (
-        props[0].url &&
-        typeof props[0].url === "string" &&
-        props[0].url.startsWith("/")
-      ) {
-        if (process.env.NODE_ENV !== "production") {
+    } else if (props[0] && typeof props[0] === 'object') {
+      if (props[0].url && typeof props[0].url === 'string' && props[0].url.startsWith('/')) {
+        if (process.env.NODE_ENV !== 'production') {
           warnProductionOriginNotConfigured(props[0]);
         }
 
-        props[0].url = new URL(
-          props[0].url,
-          window.location?.origin
-        ).toString();
+        props[0].url = new URL(props[0].url, window.location?.origin).toString();
       }
     }
     return fetch(...props);
@@ -85,7 +76,7 @@ function wrapFetchWithWindowLocation(
 
 if (manifest?.extra?.router?.origin !== false) {
   // Polyfill window.location in native runtimes.
-  if (typeof window !== "undefined" && !window.location) {
+  if (typeof window !== 'undefined' && !window.location) {
     const url = getBaseUrl();
     if (url) {
       setLocationHref(url);
@@ -93,7 +84,7 @@ if (manifest?.extra?.router?.origin !== false) {
     }
   }
   // Polyfill native fetch to support relative URLs
-  Object.defineProperty(global, "fetch", {
+  Object.defineProperty(global, 'fetch', {
     value: wrapFetchWithWindowLocation(fetch),
   });
 }

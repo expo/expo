@@ -176,6 +176,7 @@ const styles = StyleSheet.create({
     right: 0,
     zIndex: 999,
     flex: 1,
+    // @ts-expect-error: fixed is not in the RN types but it works on web
     position: 'fixed',
   },
 });

@@ -1,6 +1,6 @@
-import { Platform } from "react-native";
+import { Platform } from 'react-native';
 
-import HMRClient from "./HMRClient";
+import HMRClient from './HMRClient';
 
 // Sets up developer tools for React Native web.
 if (!Platform.isTesting) {
@@ -25,9 +25,7 @@ if (!Platform.isTesting) {
   //   };
   // });
 
-  HMRClient.log("log", [
-    `[${Platform.OS}] Logs will appear in the browser console`,
-  ]);
+  HMRClient.log('log', [`[${Platform.OS}] Logs will appear in the browser console`]);
 }
 
 // This is called native on native platforms

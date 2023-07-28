@@ -5,8 +5,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import React, { useEffect } from 'react';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import * as LogBoxData from '../Data/LogBoxData';
 import { LogBoxLog } from '../Data/LogBoxLog';
@@ -37,11 +37,16 @@ export function ErrorToast(props: Props) {
   return (
     <View style={toastStyles.container}>
       <Pressable style={{ flex: 1 }} onPress={props.onPressOpen}>
-        {({ hovered, pressed }) => (
+        {({
+          /** @ts-expect-error: react-native types are broken. */
+          hovered,
+          pressed,
+        }) => (
           <View
             style={[
               toastStyles.press,
               {
+                // @ts-expect-error: web-only type
                 transitionDuration: '150ms',
                 backgroundColor: pressed
                   ? '#323232'
@@ -81,7 +86,11 @@ function Dismiss({ onPress }: { onPress: () => void }) {
         left: 10,
       }}
       onPress={onPress}>
-      {({ hovered, pressed }) => (
+      {({
+        /** @ts-expect-error: react-native types are broken. */
+        hovered,
+        pressed,
+      }) => (
         <View
           style={[dismissStyles.press, hovered && { opacity: 0.8 }, pressed && { opacity: 0.5 }]}>
           <Image

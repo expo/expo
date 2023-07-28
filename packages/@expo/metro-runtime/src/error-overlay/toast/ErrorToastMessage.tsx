@@ -1,10 +1,9 @@
 import React from 'react';
 import { StyleSheet, Text } from 'react-native';
 
+import type { Message as MessageType } from '../Data/parseLogBoxLog';
 import { LogBoxMessage } from '../UI/LogBoxMessage';
 import * as LogBoxStyle from '../UI/LogBoxStyle';
-
-import type { Message as MessageType } from '../Data/parseLogBoxLog';
 
 export function ErrorToastMessage({ message }: { message?: MessageType }) {
   return (

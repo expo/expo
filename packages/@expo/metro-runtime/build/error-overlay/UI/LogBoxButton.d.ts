@@ -1,4 +1,4 @@
-import { GestureResponderEvent, Insets, ViewStyle } from "react-native";
+import { GestureResponderEvent, Insets, ViewStyle } from 'react-native';
 type Props = {
     backgroundColor: {
         default: string;

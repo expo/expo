@@ -1,5 +1,5 @@
-import type { StackType } from "../Data/LogBoxLog";
-import type { Stack } from "../Data/LogBoxSymbolication";
+import type { StackType } from '../Data/LogBoxLog';
+import type { Stack } from '../Data/LogBoxSymbolication';
 type Props = {
     type: StackType;
     onRetry: () => void;

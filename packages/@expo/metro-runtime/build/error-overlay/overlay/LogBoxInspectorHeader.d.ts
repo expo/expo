@@ -1,4 +1,4 @@
-import type { LogLevel } from "../Data/LogBoxLog";
+import type { LogLevel } from '../Data/LogBoxLog';
 type Props = {
     onSelectIndex: (selectedIndex: number) => void;
     level: LogLevel;

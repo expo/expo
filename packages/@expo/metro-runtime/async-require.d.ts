@@ -1,1 +1,1 @@
-export * from "./build/async-require/index";
+export * from './build/async-require/index';

@@ -1,5 +1,5 @@
-import { IgnorePattern, LogData } from "./Data/LogBoxData";
-import { ExtendedExceptionData } from "./Data/parseLogBoxLog";
+import { IgnorePattern, LogData } from './Data/LogBoxData';
+import { ExtendedExceptionData } from './Data/parseLogBoxLog';
 export { LogData, ExtendedExceptionData, IgnorePattern };
 interface ILogBox {
     install(): void;

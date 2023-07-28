@@ -1,17 +1,20 @@
-import React from "react";
+import React from 'react';
 
-import ExceptionsManager from "./modules/ExceptionsManager";
+import ExceptionsManager from './modules/ExceptionsManager';
 
 function useStackTraceLimit(limit: number) {
   const current = React.useRef(0);
   React.useEffect(() => {
     try {
+      // @ts-expect-error: StackTraceLimit is not defined in the Error type
       const currentLimit = Error.stackTraceLimit;
+      // @ts-expect-error: StackTraceLimit is not defined in the Error type
       Error.stackTraceLimit = limit;
       current.current = currentLimit;
     } catch {}
     return () => {
       try {
+        // @ts-expect-error: StackTraceLimit is not defined in the Error type
         Error.stackTraceLimit = current.current;
       } catch {}
     };
@@ -28,11 +31,7 @@ export function useRejectionHandler() {
       hasError.current = true;
 
       const error = ev?.error;
-      if (
-        !error ||
-        !(error instanceof Error) ||
-        typeof error.stack !== "string"
-      ) {
+      if (!error || !(error instanceof Error) || typeof error.stack !== 'string') {
         return;
       }
 
@@ -43,22 +42,18 @@ export function useRejectionHandler() {
       hasError.current = true;
 
       const reason = ev?.reason;
-      if (
-        !reason ||
-        !(reason instanceof Error) ||
-        typeof reason.stack !== "string"
-      ) {
+      if (!reason || !(reason instanceof Error) || typeof reason.stack !== 'string') {
         return;
       }
 
       ExceptionsManager.handleException(reason);
     }
 
-    window.addEventListener("unhandledrejection", onUnhandledRejection);
-    window.addEventListener("error", onUnhandledError);
+    window.addEventListener('unhandledrejection', onUnhandledRejection);
+    window.addEventListener('error', onUnhandledError);
     return () => {
-      window.removeEventListener("error", onUnhandledError);
-      window.removeEventListener("unhandledrejection", onUnhandledRejection);
+      window.removeEventListener('error', onUnhandledError);
+      window.removeEventListener('unhandledrejection', onUnhandledRejection);
     };
   }, []);
 

@@ -1,14 +1,14 @@
 /**
- * Copyright (c) Evan Bacon.
+ * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import type { Stack } from "./LogBoxSymbolication";
-import type { Category, Message, ComponentStack, CodeFrame } from "./parseLogBoxLog";
-type SymbolicationStatus = "NONE" | "PENDING" | "COMPLETE" | "FAILED";
-export type LogLevel = "warn" | "error" | "fatal" | "syntax" | "static";
+import type { Stack } from './LogBoxSymbolication';
+import type { Category, Message, ComponentStack, CodeFrame } from './parseLogBoxLog';
+type SymbolicationStatus = 'NONE' | 'PENDING' | 'COMPLETE' | 'FAILED';
+export type LogLevel = 'warn' | 'error' | 'fatal' | 'syntax' | 'static';
 export type LogBoxLogData = {
     level: LogLevel;
     type?: string;
@@ -19,23 +19,23 @@ export type LogBoxLogData = {
     codeFrame?: CodeFrame;
     isComponentError: boolean;
 };
-export type StackType = "stack" | "component";
+export type StackType = 'stack' | 'component';
 type SymbolicationResult = {
     error: null;
     stack: null;
-    status: "NONE";
+    status: 'NONE';
 } | {
     error: null;
     stack: null;
-    status: "PENDING";
+    status: 'PENDING';
 } | {
     error: null;
     stack: Stack;
-    status: "COMPLETE";
+    status: 'COMPLETE';
 } | {
     error: Error;
     stack: null;
-    status: "FAILED";
+    status: 'FAILED';
 };
 export declare class LogBoxLog {
     message: Message;

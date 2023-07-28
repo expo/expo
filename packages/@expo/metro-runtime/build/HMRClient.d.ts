@@ -1,4 +1,4 @@
-type LogLevel = "trace" | "info" | "warn" | "error" | "log" | "group" | "groupCollapsed" | "groupEnd" | "debug";
+type LogLevel = 'trace' | 'info' | 'warn' | 'error' | 'log' | 'group' | 'groupCollapsed' | 'groupEnd' | 'debug';
 export type HMRClientNativeInterface = {
     enable(): void;
     disable(): void;

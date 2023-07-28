@@ -1,4 +1,4 @@
-import { StackFrame } from "stacktrace-parser";
+import { StackFrame } from 'stacktrace-parser';
 declare function parseErrorStack(stack?: string): (StackFrame & {
     collapse?: boolean;
 })[];

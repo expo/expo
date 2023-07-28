@@ -1,33 +1,5 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
 /**
- * Copyright (c) Evan Bacon.
+ * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -36,11 +8,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * Based on this but with web support:
  * https://github.com/facebook/react-native/blob/086714b02b0fb838dee5a66c5bcefe73b53cf3df/Libraries/Utilities/HMRClient.js
  */
-const pretty_format_1 = __importStar(require("pretty-format"));
-const LoadingView_1 = __importDefault(require("./LoadingView"));
-const LogBox_1 = __importDefault(require("./error-overlay/LogBox"));
-const getDevServer_1 = __importDefault(require("./getDevServer"));
-const MetroHMRClient = require("metro-runtime/src/modules/HMRClient");
+import prettyFormat, { plugins } from 'pretty-format';
+import LoadingView from './LoadingView';
+import LogBox from './error-overlay/LogBox';
+import getDevServer from './getDevServer';
+const MetroHMRClient = require('metro-runtime/src/modules/HMRClient');
 const pendingEntryPoints = [];
 let hmrClient = null;
 let hmrUnavailableReason = null;
@@ -64,22 +36,22 @@ const HMRClient = {
             // in response to a direct user action.
             throw new Error(hmrUnavailableReason);
         }
-        assert(hmrClient, "Expected HMRClient.setup() call at startup.");
+        assert(hmrClient, 'Expected HMRClient.setup() call at startup.');
         // We use this for internal logging only.
         // It doesn't affect the logic.
-        hmrClient.send(JSON.stringify({ type: "log-opt-in" }));
+        hmrClient.send(JSON.stringify({ type: 'log-opt-in' }));
         // When toggling Fast Refresh on, we might already have some stashed updates.
         // Since they'll get applied now, we'll show a banner.
         const hasUpdates = hmrClient.hasPendingUpdates();
         if (hasUpdates) {
-            LoadingView_1.default.showMessage("Refreshing...", "refresh");
+            LoadingView.showMessage('Refreshing...', 'refresh');
         }
         try {
             hmrClient.enable();
         }
         finally {
             if (hasUpdates) {
-                LoadingView_1.default.hide();
+                LoadingView.hide();
             }
         }
         // There could be a compile error while Fast Refresh was off,
@@ -87,11 +59,11 @@ const HMRClient = {
         showCompileError();
     },
     disable() {
-        assert(hmrClient, "Expected HMRClient.setup() call at startup.");
+        assert(hmrClient, 'Expected HMRClient.setup() call at startup.');
         hmrClient.disable();
     },
     registerBundle(requestUrl) {
-        assert(hmrClient, "Expected HMRClient.setup() call at startup.");
+        assert(hmrClient, 'Expected HMRClient.setup() call at startup.');
         pendingEntryPoints.push(requestUrl);
         registerBundleEntryPoints(hmrClient);
     },
@@ -107,17 +79,17 @@ const HMRClient = {
         }
         try {
             hmrClient.send(JSON.stringify({
-                type: "log",
+                type: 'log',
                 level,
-                mode: "BRIDGE",
-                data: data.map((item) => typeof item === "string"
+                mode: 'BRIDGE',
+                data: data.map((item) => typeof item === 'string'
                     ? item
-                    : (0, pretty_format_1.default)(item, {
+                    : prettyFormat(item, {
                         escapeString: true,
                         highlight: true,
                         maxDepth: 3,
                         min: true,
-                        plugins: [pretty_format_1.plugins.ReactElement],
+                        plugins: [plugins.ReactElement],
                     })),
             }));
         }
@@ -129,17 +101,17 @@ const HMRClient = {
     // Called once by the bridge on startup, even if Fast Refresh is off.
     // It creates the HMR client but doesn't actually set up the socket yet.
     setup({ isEnabled }) {
-        assert(!hmrClient, "Cannot initialize hmrClient twice");
-        const serverScheme = window.location.protocol === "https:" ? "wss" : "ws";
+        assert(!hmrClient, 'Cannot initialize hmrClient twice');
+        const serverScheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
         const client = new MetroHMRClient(`${serverScheme}://${window.location.host}/hot`);
         hmrClient = client;
-        const { fullBundleUrl } = (0, getDevServer_1.default)();
+        const { fullBundleUrl } = getDevServer();
         pendingEntryPoints.push(
         // HMRServer understands regular bundle URLs, so prefer that in case
         // there are any important URL parameters we can't reconstruct from
         // `setup()`'s arguments.
         fullBundleUrl);
-        client.on("connection-error", (e) => {
+        client.on('connection-error', (e) => {
             let error = `Cannot connect to Metro.
  
  Try the following to fix the issue:
@@ -151,31 +123,31 @@ const HMRClient = {
  Error: ${e.message}`;
             setHMRUnavailableReason(error);
         });
-        client.on("update-start", ({ isInitialUpdate }) => {
+        client.on('update-start', ({ isInitialUpdate }) => {
             currentCompileErrorMessage = null;
             didConnect = true;
             if (client.isEnabled() && !isInitialUpdate) {
-                LoadingView_1.default.showMessage("Refreshing...", "refresh");
+                LoadingView.showMessage('Refreshing...', 'refresh');
             }
         });
-        client.on("update", ({ isInitialUpdate }) => {
+        client.on('update', ({ isInitialUpdate }) => {
             if (client.isEnabled() && !isInitialUpdate) {
                 dismissRedbox();
-                LogBox_1.default.clearAllLogs();
+                LogBox.clearAllLogs();
             }
         });
-        client.on("update-done", () => {
-            LoadingView_1.default.hide();
+        client.on('update-done', () => {
+            LoadingView.hide();
         });
-        client.on("error", (data) => {
-            LoadingView_1.default.hide();
-            if (data.type === "GraphNotFoundError") {
+        client.on('error', (data) => {
+            LoadingView.hide();
+            if (data.type === 'GraphNotFoundError') {
                 client.close();
-                setHMRUnavailableReason("Metro has restarted since the last edit. Reload to reconnect.");
+                setHMRUnavailableReason('Metro has restarted since the last edit. Reload to reconnect.');
             }
-            else if (data.type === "RevisionNotFoundError") {
+            else if (data.type === 'RevisionNotFoundError') {
                 client.close();
-                setHMRUnavailableReason("Metro and the client are out of sync. Reload to reconnect.");
+                setHMRUnavailableReason('Metro and the client are out of sync. Reload to reconnect.');
             }
             else {
                 currentCompileErrorMessage = `${data.type} ${data.message}`;
@@ -184,8 +156,8 @@ const HMRClient = {
                 }
             }
         });
-        client.on("close", (closeEvent) => {
-            LoadingView_1.default.hide();
+        client.on('close', (closeEvent) => {
+            LoadingView.hide();
             // https://www.rfc-editor.org/rfc/rfc6455.html#section-7.4.1
             // https://www.rfc-editor.org/rfc/rfc6455.html#section-7.1.5
             const isNormalOrUnsetCloseReason = closeEvent == null ||
@@ -193,7 +165,7 @@ const HMRClient = {
                 closeEvent.code === 1005 ||
                 closeEvent.code == null;
             setHMRUnavailableReason(`${isNormalOrUnsetCloseReason
-                ? "Disconnected from Metro."
+                ? 'Disconnected from Metro.'
                 : `Disconnected from Metro (${closeEvent.code}: "${closeEvent.reason}").`}
 
 To reconnect:
@@ -212,7 +184,7 @@ To reconnect:
     },
 };
 function setHMRUnavailableReason(reason) {
-    assert(hmrClient, "Expected HMRClient.setup() call at startup.");
+    assert(hmrClient, 'Expected HMRClient.setup() call at startup.');
     if (hmrUnavailableReason !== null) {
         // Don't show more than one warning.
         return;
@@ -233,8 +205,8 @@ function registerBundleEntryPoints(client) {
         return;
     }
     if (pendingEntryPoints.length > 0) {
-        client === null || client === void 0 ? void 0 : client.send(JSON.stringify({
-            type: "register-entrypoints",
+        client?.send(JSON.stringify({
+            type: 'register-entrypoints',
             entryPoints: pendingEntryPoints,
         }));
         pendingEntryPoints.length = 0;
@@ -269,5 +241,5 @@ function showCompileError() {
     error.preventSymbolication = true;
     throw error;
 }
-exports.default = HMRClient;
+export default HMRClient;
 //# sourceMappingURL=HMRClient.js.map

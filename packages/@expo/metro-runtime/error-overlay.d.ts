@@ -1,1 +1,1 @@
-export * from "./build/error-overlay";
+export * from './build/error-overlay';

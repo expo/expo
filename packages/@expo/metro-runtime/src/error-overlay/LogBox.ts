@@ -1,5 +1,5 @@
-import { IgnorePattern, LogData } from "./Data/LogBoxData";
-import { ExtendedExceptionData } from "./Data/parseLogBoxLog";
+import { IgnorePattern, LogData } from './Data/LogBoxData';
+import { ExtendedExceptionData } from './Data/parseLogBoxLog';
 
 export { LogData, ExtendedExceptionData, IgnorePattern };
 
@@ -47,7 +47,5 @@ const LogBox: ILogBox = {
     // Do nothing.
   },
 };
-
-module.exports = LogBox;
 
 export default LogBox;

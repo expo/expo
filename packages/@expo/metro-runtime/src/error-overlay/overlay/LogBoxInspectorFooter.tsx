@@ -5,8 +5,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { Pressable, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useSelectedLog } from '../Data/LogContext';
 import * as LogBoxStyle from '../UI/LogBoxStyle';
@@ -40,11 +40,16 @@ export function LogBoxInspectorFooter(props: Props) {
 function FooterButton({ text, onPress }: { onPress: () => void; text: string }) {
   return (
     <Pressable onPress={onPress} style={{ flex: 1 }}>
-      {({ hovered, pressed }) => (
+      {({
+        /** @ts-expect-error: react-native types are broken. */
+        hovered,
+        pressed,
+      }) => (
         <View
           style={[
             buttonStyles.safeArea,
             {
+              // @ts-expect-error: web-only type
               transitionDuration: '150ms',
               backgroundColor: pressed
                 ? '#323232'

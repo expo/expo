@@ -1,4 +1,4 @@
-declare function showMessage(message: string, type: "load" | "refresh"): void;
+declare function showMessage(message: string, type: 'load' | 'refresh'): void;
 declare function hide(): void;
 declare const _default: {
     showMessage: typeof showMessage;

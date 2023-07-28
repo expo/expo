@@ -13,19 +13,17 @@ export function fetchThenEvalAsync(
     crossOrigin,
   }: { scriptType?: string; nonce?: string; crossOrigin?: string } = {}
 ): Promise<void> {
-  if (typeof document === "undefined") {
-    throw new Error(
-      "Cannot use fetchThenEvalAsync in a non-browser environment."
-    );
+  if (typeof document === 'undefined') {
+    throw new Error('Cannot use fetchThenEvalAsync in a non-browser environment.');
   }
   return new Promise<void>((resolve, reject) => {
-    const script = document.createElement("script");
+    const script = document.createElement('script');
     if (scriptType) script.type = scriptType;
-    if (nonce) script.setAttribute("nonce", nonce);
+    if (nonce) script.setAttribute('nonce', nonce);
     // script.setAttribute('data-expo-metro', ...);
     script.src = url;
 
-    if (crossOrigin && script.src.indexOf(window.location.origin + "/") !== 0) {
+    if (crossOrigin && script.src.indexOf(window.location.origin + '/') !== 0) {
       script.crossOrigin = crossOrigin;
     }
 
@@ -39,9 +37,9 @@ export function fetchThenEvalAsync(
     // Server error or network error.
     script.onerror = (ev) => {
       let event: Event;
-      if (typeof ev === "string") {
+      if (typeof ev === 'string') {
         event = {
-          type: "error",
+          type: 'error',
           target: {
             // @ts-expect-error
             src: event,
@@ -51,18 +49,10 @@ export function fetchThenEvalAsync(
         event = ev;
       }
 
-      const errorType =
-        event && (event.type === "load" ? "missing" : event.type);
+      const errorType = event && (event.type === 'load' ? 'missing' : event.type);
       // @ts-expect-error
       const realSrc = event?.target?.src;
-      error.message =
-        "Loading module " +
-        url +
-        " failed.\n(" +
-        errorType +
-        ": " +
-        realSrc +
-        ")";
+      error.message = 'Loading module ' + url + ' failed.\n(' + errorType + ': ' + realSrc + ')';
       error.type = errorType;
       error.request = realSrc;
 
@@ -74,7 +64,7 @@ export function fetchThenEvalAsync(
 }
 
 class AsyncRequireError extends Error {
-  readonly name = "AsyncRequireError";
+  readonly name = 'AsyncRequireError';
   type?: string;
   request?: string;
 }

@@ -4,8 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { buildUrlForBundle } from "./buildUrlForBundle";
-import { fetchThenEvalAsync } from "./fetchThenEval";
+import { buildUrlForBundle } from './buildUrlForBundle';
+import { fetchThenEvalAsync } from './fetchThenEval';
+// import LoadingView from '../LoadingView';
 
 let pendingRequests = 0;
 
@@ -17,23 +18,22 @@ let pendingRequests = 0;
 export async function loadBundleAsync(bundlePath: string): Promise<void> {
   const requestUrl = buildUrlForBundle(bundlePath);
 
-  if (process.env.NODE_ENV === "production") {
+  if (process.env.NODE_ENV === 'production') {
     return fetchThenEvalAsync(requestUrl);
   } else {
-    const LoadingView =
-      require("../LoadingView") as typeof import("../LoadingView").default;
+    const LoadingView = require('../LoadingView')
+      .default as typeof import('../LoadingView').default;
 
-    if (process.env.NODE_ENV !== "production") {
-      // Send a signal to the `expo` package to show the loading indicator.
-      LoadingView.showMessage("Downloading...", "load");
-    }
+    // Send a signal to the `expo` package to show the loading indicator.
+    LoadingView.showMessage('Downloading...', 'load');
+
     pendingRequests++;
 
     return fetchThenEvalAsync(requestUrl)
       .then(() => {
-        if (process.env.NODE_ENV !== "production") {
-          const HMRClient = require("../HMRClient")
-            .default as typeof import("../HMRClient").default;
+        if (process.env.NODE_ENV !== 'production') {
+          const HMRClient = require('../HMRClient')
+            .default as typeof import('../HMRClient').default;
           HMRClient.registerBundle(requestUrl);
         }
       })

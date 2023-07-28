@@ -14,5 +14,5 @@
 export function buildUrlForBundle(bundlePath: string): string {
   // NOTE(EvanBacon): This must come from the window origin (at least in dev mode).
   // Otherwise Metro will crash from attempting to load a bundle that doesn't exist.
-  return "/" + bundlePath.replace(/^\/+/, "");
+  return '/' + bundlePath.replace(/^\/+/, '');
 }

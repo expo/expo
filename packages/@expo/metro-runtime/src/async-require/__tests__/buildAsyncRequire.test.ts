@@ -1,17 +1,16 @@
-import { buildAsyncRequire } from "../buildAsyncRequire";
-import { loadBundleAsync } from "../loadBundle";
+import { buildAsyncRequire } from '../buildAsyncRequire';
+import { loadBundleAsync } from '../loadBundle';
 
-export const asMock = <T extends (...args: any[]) => any>(
-  fn: T
-): jest.MockedFunction<T> => fn as jest.MockedFunction<T>;
+export const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
+  fn as jest.MockedFunction<T>;
 
-jest.mock("../loadBundle", () => ({
+jest.mock('../loadBundle', () => ({
   loadBundleAsync: jest.fn(async () => {}),
 }));
 
 const originalEnv = process.env.NODE_ENV;
 beforeEach(() => {
-  process.env.NODE_ENV = "development";
+  process.env.NODE_ENV = 'development';
 });
 
 afterAll(() => {
@@ -26,9 +25,9 @@ it(`builds required object`, async () => {
 it(`loads the module with \`loadBundleAsync\` if the module has not been loaded already`, async () => {
   const asyncRequire = buildAsyncRequire();
 
-  const myModule = asyncRequire("/bacon.bundle?platform=ios");
+  const myModule = asyncRequire('/bacon.bundle?platform=ios');
   expect(myModule).toEqual(expect.any(Promise));
 
   // Did attempt to fetch the bundle
-  expect(loadBundleAsync).toBeCalledWith("/bacon.bundle?platform=ios");
+  expect(loadBundleAsync).toBeCalledWith('/bacon.bundle?platform=ios');
 });

@@ -1,8 +1,8 @@
-import { LogBoxLog } from "../Data/LogBoxLog";
+import { LogBoxLog } from '../Data/LogBoxLog';
 type Props = {
     log: LogBoxLog;
     totalLogCount: number;
-    level: "warn" | "error";
+    level: 'warn' | 'error';
     onPressOpen: () => void;
     onPressDismiss: () => void;
 };

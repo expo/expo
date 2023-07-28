@@ -1346,6 +1346,14 @@
     json5 "^2.2.2"
     write-file-atomic "^2.3.0"
 
+"@expo/metro-runtime@2.2.4":
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/@expo/metro-runtime/-/metro-runtime-2.2.4.tgz#97ce932d1113aee9cf41b1b8b40771ba4b7dc58e"
+  integrity sha512-QvpAt0sMNmCJYue94bQFHUonYjKB/x2UY1Z3Yt1QgMkRC8h/HNMvdBgtuwPyXJHQMaJrauOXsRMOd+d3fg/Aig==
+  dependencies:
+    "@bacons/react-views" "^1.1.3"
+    qs "^6.10.3"
+
 "@expo/multipart-body-parser@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@expo/multipart-body-parser/-/multipart-body-parser-1.0.0.tgz#7227bab9cfe9d4baea925b748a3212e0239ba55d"

@@ -1,12 +1,6 @@
-"use strict";
 // Copyright © 2023 650 Industries.
 // Copyright 2018-2023 the Deno authors. All rights reserved. MIT license.
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.install = exports.setLocationHref = void 0;
-const url_parse_1 = __importDefault(require("url-parse"));
+import URL from 'url-parse';
 class DOMException extends Error {
     constructor(message, name) {
         super(message);
@@ -20,20 +14,20 @@ class DOMException extends Error {
 // - https://heycam.github.io/webidl/#LegacyUnforgeable
 class Location {
     constructor(href = null) {
-        const url = new url_parse_1.default(
+        const url = new URL(
         // @ts-expect-error
         href);
         // @ts-expect-error
-        url.username = "";
+        url.username = '';
         // @ts-expect-error
-        url.password = "";
+        url.password = '';
         Object.defineProperties(this, {
             hash: {
                 get() {
                     return url.hash;
                 },
                 set() {
-                    throw new DOMException(`Cannot set "location.hash".`, "NotSupportedError");
+                    throw new DOMException(`Cannot set "location.hash".`, 'NotSupportedError');
                 },
                 enumerable: true,
             },
@@ -42,7 +36,7 @@ class Location {
                     return url.host;
                 },
                 set() {
-                    throw new DOMException(`Cannot set "location.host".`, "NotSupportedError");
+                    throw new DOMException(`Cannot set "location.host".`, 'NotSupportedError');
                 },
                 enumerable: true,
             },
@@ -51,7 +45,7 @@ class Location {
                     return url.hostname;
                 },
                 set() {
-                    throw new DOMException(`Cannot set "location.hostname".`, "NotSupportedError");
+                    throw new DOMException(`Cannot set "location.hostname".`, 'NotSupportedError');
                 },
                 enumerable: true,
             },
@@ -60,7 +54,7 @@ class Location {
                     return url.href;
                 },
                 set() {
-                    throw new DOMException(`Cannot set "location.href".`, "NotSupportedError");
+                    throw new DOMException(`Cannot set "location.href".`, 'NotSupportedError');
                 },
                 enumerable: true,
             },
@@ -75,7 +69,7 @@ class Location {
                     return url.pathname;
                 },
                 set() {
-                    throw new DOMException(`Cannot set "location.pathname".`, "NotSupportedError");
+                    throw new DOMException(`Cannot set "location.pathname".`, 'NotSupportedError');
                 },
                 enumerable: true,
             },
@@ -84,7 +78,7 @@ class Location {
                     return url.port;
                 },
                 set() {
-                    throw new DOMException(`Cannot set "location.port".`, "NotSupportedError");
+                    throw new DOMException(`Cannot set "location.port".`, 'NotSupportedError');
                 },
                 enumerable: true,
             },
@@ -93,7 +87,7 @@ class Location {
                     return url.protocol;
                 },
                 set() {
-                    throw new DOMException(`Cannot set "location.protocol".`, "NotSupportedError");
+                    throw new DOMException(`Cannot set "location.protocol".`, 'NotSupportedError');
                 },
                 enumerable: true,
             },
@@ -103,7 +97,7 @@ class Location {
                     return url.search;
                 },
                 set() {
-                    throw new DOMException(`Cannot set "location.search".`, "NotSupportedError");
+                    throw new DOMException(`Cannot set "location.search".`, 'NotSupportedError');
                 },
                 enumerable: true,
             },
@@ -119,29 +113,30 @@ class Location {
             },
             assign: {
                 value: function assign() {
-                    throw new DOMException(`Cannot call "location.assign()".`, "NotSupportedError");
+                    throw new DOMException(`Cannot call "location.assign()".`, 'NotSupportedError');
                 },
                 enumerable: true,
             },
             reload: {
                 value: function reload() {
-                    if (process.env.NODE_ENV !== "production") {
+                    if (process.env.NODE_ENV !== 'production') {
                         // NOTE: This does change how native fast refresh works. The upstream metro-runtime will check
                         // if `location.reload` exists before falling back on an implementation that is nearly identical to
                         // this. The main difference is that on iOS there is a "reason" message sent, but at the time of writing
                         // this, that message is unused (ref: `RCTTriggerReloadCommandNotification`).
-                        const DevSettings = require("react-native").DevSettings;
+                        const DevSettings = require('react-native')
+                            .DevSettings;
                         return DevSettings.reload();
                     }
                     else {
-                        throw new DOMException(`Cannot call "location.reload()".`, "NotSupportedError");
+                        throw new DOMException(`Cannot call "location.reload()".`, 'NotSupportedError');
                     }
                 },
                 enumerable: true,
             },
             replace: {
                 value: function replace() {
-                    throw new DOMException(`Cannot call "location.replace()".`, "NotSupportedError");
+                    throw new DOMException(`Cannot call "location.replace()".`, 'NotSupportedError');
                 },
                 enumerable: true,
             },
@@ -151,7 +146,7 @@ class Location {
                 },
                 enumerable: true,
             },
-            [Symbol.for("Expo.privateCustomInspect")]: {
+            [Symbol.for('Expo.privateCustomInspect')]: {
                 value(inspect) {
                     const object = {
                         hash: this.hash,
@@ -172,30 +167,28 @@ class Location {
 }
 Object.defineProperties(Location.prototype, {
     [Symbol.toString()]: {
-        value: "Location",
+        value: 'Location',
         configurable: true,
     },
 });
 let location = undefined;
-function setLocationHref(href) {
+export function setLocationHref(href) {
     location = new Location(href);
 }
-exports.setLocationHref = setLocationHref;
-function install() {
-    Object.defineProperty(global, "Location", {
+export function install() {
+    Object.defineProperty(global, 'Location', {
         value: Location,
         configurable: true,
         writable: true,
     });
-    Object.defineProperty(window, "location", {
+    Object.defineProperty(window, 'location', {
         get() {
             return location;
         },
         set() {
-            throw new DOMException(`Cannot set "location".`, "NotSupportedError");
+            throw new DOMException(`Cannot set "location".`, 'NotSupportedError');
         },
         enumerable: true,
     });
 }
-exports.install = install;
 //# sourceMappingURL=Location.native.js.map

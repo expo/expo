@@ -1,5 +1,5 @@
-import { GestureResponderEvent } from "react-native";
-import { StackFrame } from "stacktrace-parser";
+import { GestureResponderEvent } from 'react-native';
+import { StackFrame } from 'stacktrace-parser';
 type Props = {
     frame: StackFrame & {
         collapse?: boolean;

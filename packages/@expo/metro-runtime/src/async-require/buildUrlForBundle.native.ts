@@ -6,16 +6,16 @@
  */
 
 export function buildUrlForBundle(bundlePath: string): string {
-  if (process.env.NODE_ENV === "production") {
-    if (typeof location !== "undefined") {
+  if (process.env.NODE_ENV === 'production') {
+    if (typeof location !== 'undefined') {
       return joinComponents(location.origin, bundlePath);
     }
     throw new Error(
       'Unable to determine the production URL where additional JavaScript chunks are hosted because the global "location" variable is not defined.'
     );
   } else {
-    const getDevServer =
-      require("../getDevServer") as typeof import("../getDevServer").default;
+    const getDevServer = require('../getDevServer')
+      .default as typeof import('../getDevServer').default;
 
     const { url: serverUrl } = getDevServer();
 
@@ -24,5 +24,5 @@ export function buildUrlForBundle(bundlePath: string): string {
 }
 
 function joinComponents(prefix: string, suffix: string): string {
-  return prefix.replace(/\/+$/, "") + "/" + suffix.replace(/^\/+/, "");
+  return prefix.replace(/\/+$/, '') + '/' + suffix.replace(/^\/+/, '');
 }

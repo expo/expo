@@ -1,6 +1,5 @@
-"use strict";
 // This needs to run before the renderer initializes.
-const ReactRefreshRuntime = require("react-refresh/runtime");
+const ReactRefreshRuntime = require('react-refresh/runtime');
 ReactRefreshRuntime.injectIntoGlobalHook(global);
 const Refresh = {
     performFullRefresh() {
@@ -20,6 +19,5 @@ const Refresh = {
 };
 // The metro require polyfill can not have dependencies (applies for all polyfills).
 // Expose `Refresh` by assigning it to global to make it available in the polyfill.
-// @ts-expect-error
-global[(global.__METRO_GLOBAL_PREFIX__ || "") + "__ReactRefresh"] = Refresh;
+global[(global.__METRO_GLOBAL_PREFIX__ || '') + '__ReactRefresh'] = Refresh;
 //# sourceMappingURL=setupFastRefresh.js.map

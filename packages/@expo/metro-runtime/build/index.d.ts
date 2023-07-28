@@ -1,3 +1,3 @@
-import "./location/install";
-import "./effects";
+import './location/install';
+import './effects';
 //# sourceMappingURL=index.d.ts.map

@@ -1,20 +1,18 @@
-"use strict";
 /**
- * Copyright (c) Evan Bacon.
+ * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-const react_native_1 = require("react-native");
+import { Platform } from 'react-native';
 let LogBox;
 /**
  * LogBox displays logs in the app.
  */
 if (__DEV__) {
-    const LogBoxData = require("./Data/LogBoxData");
-    const { parseLogBoxLog, parseInterpolation } = require("./Data/parseLogBoxLog");
+    const LogBoxData = require('./Data/LogBoxData');
+    const { parseLogBoxLog, parseInterpolation } = require('./Data/parseLogBoxLog');
     let originalConsoleError;
     let consoleErrorImpl;
     let isLogBoxInstalled = false;
@@ -33,11 +31,11 @@ if (__DEV__) {
             if (isFirstInstall) {
                 originalConsoleError = console.error.bind(console);
                 console.error = (...args) => {
-                    consoleErrorImpl === null || consoleErrorImpl === void 0 ? void 0 : consoleErrorImpl(...args);
+                    consoleErrorImpl?.(...args);
                 };
             }
             consoleErrorImpl = registerError;
-            if (react_native_1.Platform.isTesting) {
+            if (Platform.isTesting) {
                 LogBoxData.setDisabled(true);
             }
         },
@@ -77,12 +75,12 @@ if (__DEV__) {
         },
     };
     const isWarningModuleWarning = (...args) => {
-        return typeof args[0] === "string" && args[0].startsWith("Warning: ");
+        return typeof args[0] === 'string' && args[0].startsWith('Warning: ');
     };
     const registerError = (...args) => {
         // Let errors within LogBox itself fall through.
         if (LogBoxData.isLogBoxErrorMessage(args[0])) {
-            originalConsoleError === null || originalConsoleError === void 0 ? void 0 : originalConsoleError(...args);
+            originalConsoleError?.(...args);
             return;
         }
         try {
@@ -94,7 +92,7 @@ if (__DEV__) {
                 //
                 // The 'warning' module needs to be handled here because React internally calls
                 // `console.error('Warning: ')` with the component stack already included.
-                originalConsoleError === null || originalConsoleError === void 0 ? void 0 : originalConsoleError(...args);
+                originalConsoleError?.(...args);
                 return;
             }
             const { category, message, componentStack } = parseLogBoxLog(args);
@@ -102,13 +100,11 @@ if (__DEV__) {
                 // Interpolate the message so they are formatted for adb and other CLIs.
                 // This is different than the message.content above because it includes component stacks.
                 const interpolated = parseInterpolation(args);
-                originalConsoleError === null || originalConsoleError === void 0 ? void 0 : originalConsoleError(interpolated.message.content);
+                originalConsoleError?.(interpolated.message.content);
                 LogBoxData.addLog({
                     // Always show the static rendering issues as full screen since they
                     // are too confusing otherwise.
-                    level: /did not match\. Server:/.test(message.content)
-                        ? "fatal"
-                        : "error",
+                    level: /did not match\. Server:/.test(message.content) ? 'fatal' : 'error',
                     category,
                     message,
                     componentStack,
@@ -134,6 +130,5 @@ else {
         addException(ex) { },
     };
 }
-module.exports = LogBox;
-exports.default = LogBox;
+export default LogBox;
 //# sourceMappingURL=LogBox.web.js.map

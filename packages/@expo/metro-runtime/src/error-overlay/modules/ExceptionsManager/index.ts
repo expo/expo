@@ -70,7 +70,7 @@ function handleException(e: any) {
     error = new SyntheticError(e);
   }
 
-  require('../../LogBox').addException(parseException(error, true));
+  require('../../LogBox').default.addException(parseException(error, true));
 }
 
 const ErrorUtils = {
@@ -79,5 +79,4 @@ const ErrorUtils = {
   SyntheticError,
 };
 
-module.exports = ErrorUtils;
 export default ErrorUtils;

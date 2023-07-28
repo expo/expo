@@ -1,7 +1,7 @@
-import React from "react";
-import { Platform } from "react-native";
+import React from 'react';
+import { Platform } from 'react-native';
 
-import { LogBoxLog } from "./LogBoxLog";
+import { LogBoxLog } from './LogBoxLog';
 
 // Context provider for Array<LogBoxLog>
 
@@ -18,10 +18,9 @@ export function useLogs(): {
 } {
   const logs = React.useContext(LogContext);
   if (!logs) {
-    if (Platform.OS === "web" && typeof window !== "undefined") {
+    if (Platform.OS === 'web' && typeof window !== 'undefined') {
       // Logbox data that is pre-fetched on the dev server and rendered here.
-      const expoCliStaticErrorElement =
-        document.getElementById("_expo-static-error");
+      const expoCliStaticErrorElement = document.getElementById('_expo-static-error');
       if (expoCliStaticErrorElement?.textContent) {
         const raw = JSON.parse(expoCliStaticErrorElement.textContent);
         return {
@@ -31,7 +30,7 @@ export function useLogs(): {
       }
     }
 
-    throw new Error("useLogs must be used within a LogProvider");
+    throw new Error('useLogs must be used within a LogProvider');
   }
   return logs;
 }

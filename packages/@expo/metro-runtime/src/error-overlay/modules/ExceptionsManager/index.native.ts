@@ -1,3 +1,4 @@
-const ExceptionsManager = require("react-native/Library/Core/ExceptionsManager");
+// @ts-expect-error
+import ExceptionsManager from 'react-native/Library/Core/ExceptionsManager';
 
-module.exports = ExceptionsManager;
+export default ExceptionsManager;

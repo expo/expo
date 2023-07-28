@@ -1,52 +1,23 @@
-"use strict";
 /**
- * Copyright (c) Evan Bacon.
+ * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.withSubscription = exports.observe = exports.isDisabled = exports.setDisabled = exports.addIgnorePatterns = exports.getIgnorePatterns = exports.dismiss = exports.clearErrors = exports.clearWarnings = exports.setSelectedLog = exports.clear = exports.symbolicateLogLazy = exports.retrySymbolicateLogNow = exports.symbolicateLogNow = exports.addException = exports.addLog = exports.isMessageIgnored = exports.isLogBoxErrorMessage = exports.reportUnexpectedLogBoxError = exports.reportLogBoxError = void 0;
-const React = __importStar(require("react"));
-const NativeLogBox_1 = __importDefault(require("../modules/NativeLogBox"));
-const parseErrorStack_1 = __importDefault(require("../modules/parseErrorStack"));
-const LogBoxLog_1 = require("./LogBoxLog");
-const LogContext_1 = require("./LogContext");
-const parseLogBoxLog_1 = require("./parseLogBoxLog");
+import * as React from 'react';
+import NativeLogBox from '../modules/NativeLogBox';
+import parseErrorStack from '../modules/parseErrorStack';
+import { LogBoxLog } from './LogBoxLog';
+import { LogContext } from './LogContext';
+import { parseLogBoxException } from './parseLogBoxLog';
 const observers = new Set();
 const ignorePatterns = new Set();
 let logs = new Set();
 let updateTimeout = null;
 let _isDisabled = false;
 let _selectedIndex = -1;
-const LOGBOX_ERROR_MESSAGE = "An error was thrown when attempting to render log messages via LogBox.";
+const LOGBOX_ERROR_MESSAGE = 'An error was thrown when attempting to render log messages via LogBox.';
 function getNextState() {
     return {
         logs,
@@ -54,33 +25,29 @@ function getNextState() {
         selectedLogIndex: _selectedIndex,
     };
 }
-function reportLogBoxError(error, componentStack) {
-    const ExceptionsManager = require("../modules/ExceptionsManager");
+export function reportLogBoxError(error, componentStack) {
+    const ExceptionsManager = require('../modules/ExceptionsManager').default;
     if (componentStack != null) {
         error.componentStack = componentStack;
     }
     ExceptionsManager.handleException(error);
 }
-exports.reportLogBoxError = reportLogBoxError;
-function reportUnexpectedLogBoxError(error, componentStack) {
+export function reportUnexpectedLogBoxError(error, componentStack) {
     error.message = `${LOGBOX_ERROR_MESSAGE}\n\n${error.message}`;
     return reportLogBoxError(error, componentStack);
 }
-exports.reportUnexpectedLogBoxError = reportUnexpectedLogBoxError;
-function isLogBoxErrorMessage(message) {
-    return typeof message === "string" && message.includes(LOGBOX_ERROR_MESSAGE);
+export function isLogBoxErrorMessage(message) {
+    return typeof message === 'string' && message.includes(LOGBOX_ERROR_MESSAGE);
 }
-exports.isLogBoxErrorMessage = isLogBoxErrorMessage;
-function isMessageIgnored(message) {
+export function isMessageIgnored(message) {
     for (const pattern of ignorePatterns) {
         if ((pattern instanceof RegExp && pattern.test(message)) ||
-            (typeof pattern === "string" && message.includes(pattern))) {
+            (typeof pattern === 'string' && message.includes(pattern))) {
             return true;
         }
     }
     return false;
 }
-exports.isMessageIgnored = isMessageIgnored;
 function setImmediateShim(callback) {
     if (!global.setImmediate) {
         return setTimeout(callback, 0);
@@ -111,7 +78,7 @@ function appendNewLog(newLog) {
         handleUpdate();
         return;
     }
-    if (newLog.level === "fatal") {
+    if (newLog.level === 'fatal') {
         // If possible, to avoid jank, we don't want to open the error before
         // it's symbolicated. To do that, we optimistically wait for
         // symbolication for up to a second before adding the log.
@@ -132,19 +99,19 @@ function appendNewLog(newLog) {
             }
         }, OPTIMISTIC_WAIT_TIME);
         // TODO: HANDLE THIS
-        newLog.symbolicate("component");
-        newLog.symbolicate("stack", (status) => {
-            if (addPendingLog && status !== "PENDING") {
+        newLog.symbolicate('component');
+        newLog.symbolicate('stack', (status) => {
+            if (addPendingLog && status !== 'PENDING') {
                 addPendingLog();
                 clearTimeout(optimisticTimeout);
             }
-            else if (status !== "PENDING") {
+            else if (status !== 'PENDING') {
                 // The log has already been added but we need to trigger a render.
                 handleUpdate();
             }
         });
     }
-    else if (newLog.level === "syntax") {
+    else if (newLog.level === 'syntax') {
         logs.add(newLog);
         setSelectedLog(logs.size - 1);
     }
@@ -153,14 +120,14 @@ function appendNewLog(newLog) {
         handleUpdate();
     }
 }
-function addLog(log) {
+export function addLog(log) {
     const errorForStackTrace = new Error();
     // Parsing logs are expensive so we schedule this
     // otherwise spammy logs would pause rendering.
     setImmediate(() => {
         try {
-            const stack = (0, parseErrorStack_1.default)(errorForStackTrace === null || errorForStackTrace === void 0 ? void 0 : errorForStackTrace.stack);
-            appendNewLog(new LogBoxLog_1.LogBoxLog({
+            const stack = parseErrorStack(errorForStackTrace?.stack);
+            appendNewLog(new LogBoxLog({
                 level: log.level,
                 message: log.message,
                 isComponentError: false,
@@ -174,51 +141,45 @@ function addLog(log) {
         }
     });
 }
-exports.addLog = addLog;
-function addException(error) {
+export function addException(error) {
     // Parsing logs are expensive so we schedule this
     // otherwise spammy logs would pause rendering.
     setImmediate(() => {
         try {
-            appendNewLog(new LogBoxLog_1.LogBoxLog((0, parseLogBoxLog_1.parseLogBoxException)(error)));
+            appendNewLog(new LogBoxLog(parseLogBoxException(error)));
         }
         catch (loggingError) {
             reportUnexpectedLogBoxError(loggingError);
         }
     });
 }
-exports.addException = addException;
-function symbolicateLogNow(type, log) {
+export function symbolicateLogNow(type, log) {
     log.symbolicate(type, () => {
         handleUpdate();
     });
 }
-exports.symbolicateLogNow = symbolicateLogNow;
-function retrySymbolicateLogNow(type, log) {
+export function retrySymbolicateLogNow(type, log) {
     log.retrySymbolicate(type, () => {
         handleUpdate();
     });
 }
-exports.retrySymbolicateLogNow = retrySymbolicateLogNow;
-function symbolicateLogLazy(type, log) {
+export function symbolicateLogLazy(type, log) {
     log.symbolicate(type);
 }
-exports.symbolicateLogLazy = symbolicateLogLazy;
-function clear() {
+export function clear() {
     if (logs.size > 0) {
         logs = new Set();
         setSelectedLog(-1);
     }
 }
-exports.clear = clear;
-function setSelectedLog(proposedNewIndex) {
+export function setSelectedLog(proposedNewIndex) {
     const oldIndex = _selectedIndex;
     let newIndex = proposedNewIndex;
     const logArray = Array.from(logs);
     let index = logArray.length - 1;
     while (index >= 0) {
         // The latest syntax error is selected and displayed before all other logs.
-        if (logArray[index].level === "syntax") {
+        if (logArray[index].level === 'syntax') {
             newIndex = index;
             break;
         }
@@ -226,47 +187,42 @@ function setSelectedLog(proposedNewIndex) {
     }
     _selectedIndex = newIndex;
     handleUpdate();
-    if (NativeLogBox_1.default) {
+    if (NativeLogBox) {
         setTimeout(() => {
             if (oldIndex < 0 && newIndex >= 0) {
-                NativeLogBox_1.default.show();
+                NativeLogBox.show();
             }
             else if (oldIndex >= 0 && newIndex < 0) {
-                NativeLogBox_1.default.hide();
+                NativeLogBox.hide();
             }
         }, 0);
     }
 }
-exports.setSelectedLog = setSelectedLog;
-function clearWarnings() {
-    const newLogs = Array.from(logs).filter((log) => log.level !== "warn");
+export function clearWarnings() {
+    const newLogs = Array.from(logs).filter((log) => log.level !== 'warn');
     if (newLogs.length !== logs.size) {
         logs = new Set(newLogs);
         setSelectedLog(-1);
         handleUpdate();
     }
 }
-exports.clearWarnings = clearWarnings;
-function clearErrors() {
-    const newLogs = Array.from(logs).filter((log) => log.level !== "error" && log.level !== "fatal");
+export function clearErrors() {
+    const newLogs = Array.from(logs).filter((log) => log.level !== 'error' && log.level !== 'fatal');
     if (newLogs.length !== logs.size) {
         logs = new Set(newLogs);
         setSelectedLog(-1);
     }
 }
-exports.clearErrors = clearErrors;
-function dismiss(log) {
+export function dismiss(log) {
     if (logs.has(log)) {
         logs.delete(log);
         handleUpdate();
     }
 }
-exports.dismiss = dismiss;
-function getIgnorePatterns() {
+export function getIgnorePatterns() {
     return Array.from(ignorePatterns);
 }
-exports.getIgnorePatterns = getIgnorePatterns;
-function addIgnorePatterns(patterns) {
+export function addIgnorePatterns(patterns) {
     const existingSize = ignorePatterns.size;
     // The same pattern may be added multiple times, but adding a new pattern
     // can be expensive so let's find only the ones that are new.
@@ -292,20 +248,17 @@ function addIgnorePatterns(patterns) {
     logs = new Set(Array.from(logs).filter((log) => !isMessageIgnored(log.message.content)));
     handleUpdate();
 }
-exports.addIgnorePatterns = addIgnorePatterns;
-function setDisabled(value) {
+export function setDisabled(value) {
     if (value === _isDisabled) {
         return;
     }
     _isDisabled = value;
     handleUpdate();
 }
-exports.setDisabled = setDisabled;
-function isDisabled() {
+export function isDisabled() {
     return _isDisabled;
 }
-exports.isDisabled = isDisabled;
-function observe(observer) {
+export function observe(observer) {
     const subscription = { observer };
     observers.add(subscription);
     observer(getNextState());
@@ -315,40 +268,8 @@ function observe(observer) {
         },
     };
 }
-exports.observe = observe;
-function withSubscription(WrappedComponent) {
+export function withSubscription(WrappedComponent) {
     class LogBoxStateSubscription extends React.Component {
-        constructor() {
-            super(...arguments);
-            this.state = {
-                logs: new Set(),
-                isDisabled: false,
-                hasError: false,
-                selectedLogIndex: -1,
-            };
-            this._handleDismiss = () => {
-                // Here we handle the cases when the log is dismissed and it
-                // was either the last log, or when the current index
-                // is now outside the bounds of the log array.
-                const { selectedLogIndex, logs: stateLogs } = this.state;
-                const logsArray = Array.from(stateLogs);
-                if (selectedLogIndex != null) {
-                    if (logsArray.length - 1 <= 0) {
-                        setSelectedLog(-1);
-                    }
-                    else if (selectedLogIndex >= logsArray.length - 1) {
-                        setSelectedLog(selectedLogIndex - 1);
-                    }
-                    dismiss(logsArray[selectedLogIndex]);
-                }
-            };
-            this._handleMinimize = () => {
-                setSelectedLog(-1);
-            };
-            this._handleSetSelectedLog = (index) => {
-                setSelectedLog(index);
-            };
-        }
         static getDerivedStateFromError() {
             return { hasError: true };
         }
@@ -357,13 +278,20 @@ function withSubscription(WrappedComponent) {
              * this parameters */
             reportLogBoxError(err, errorInfo.componentStack);
         }
+        _subscription;
+        state = {
+            logs: new Set(),
+            isDisabled: false,
+            hasError: false,
+            selectedLogIndex: -1,
+        };
         render() {
             if (this.state.hasError) {
                 // This happens when the component failed to render, in which case we delegate to the native redbox.
                 // We can't show any fallback UI here, because the error may be with <View> or <Text>.
                 return null;
             }
-            return (React.createElement(LogContext_1.LogContext.Provider, { value: {
+            return (React.createElement(LogContext.Provider, { value: {
                     selectedLogIndex: this.state.selectedLogIndex,
                     isDisabled: this.state.isDisabled,
                     logs: Array.from(this.state.logs),
@@ -381,9 +309,30 @@ function withSubscription(WrappedComponent) {
                 this._subscription.unsubscribe();
             }
         }
+        _handleDismiss = () => {
+            // Here we handle the cases when the log is dismissed and it
+            // was either the last log, or when the current index
+            // is now outside the bounds of the log array.
+            const { selectedLogIndex, logs: stateLogs } = this.state;
+            const logsArray = Array.from(stateLogs);
+            if (selectedLogIndex != null) {
+                if (logsArray.length - 1 <= 0) {
+                    setSelectedLog(-1);
+                }
+                else if (selectedLogIndex >= logsArray.length - 1) {
+                    setSelectedLog(selectedLogIndex - 1);
+                }
+                dismiss(logsArray[selectedLogIndex]);
+            }
+        };
+        _handleMinimize = () => {
+            setSelectedLog(-1);
+        };
+        _handleSetSelectedLog = (index) => {
+            setSelectedLog(index);
+        };
     }
     // @ts-expect-error
     return LogBoxStateSubscription;
 }
-exports.withSubscription = withSubscription;
 //# sourceMappingURL=LogBoxData.js.map

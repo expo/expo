@@ -1,1 +1,3 @@
-module.exports = require("react-native/Libraries/Utilities/LoadingView");
+import LoadingView from 'react-native/Libraries/Utilities/LoadingView';
+
+export default LoadingView;

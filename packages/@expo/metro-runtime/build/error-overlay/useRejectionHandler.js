@@ -1,60 +1,52 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.useRejectionHandler = void 0;
-const react_1 = __importDefault(require("react"));
-const ExceptionsManager_1 = __importDefault(require("./modules/ExceptionsManager"));
+import React from 'react';
+import ExceptionsManager from './modules/ExceptionsManager';
 function useStackTraceLimit(limit) {
-    const current = react_1.default.useRef(0);
-    react_1.default.useEffect(() => {
+    const current = React.useRef(0);
+    React.useEffect(() => {
         try {
+            // @ts-expect-error: StackTraceLimit is not defined in the Error type
             const currentLimit = Error.stackTraceLimit;
+            // @ts-expect-error: StackTraceLimit is not defined in the Error type
             Error.stackTraceLimit = limit;
             current.current = currentLimit;
         }
         catch { }
         return () => {
             try {
+                // @ts-expect-error: StackTraceLimit is not defined in the Error type
                 Error.stackTraceLimit = current.current;
             }
             catch { }
         };
     }, [limit]);
 }
-function useRejectionHandler() {
-    const hasError = react_1.default.useRef(false);
+export function useRejectionHandler() {
+    const hasError = React.useRef(false);
     useStackTraceLimit(35);
-    react_1.default.useEffect(() => {
+    React.useEffect(() => {
         function onUnhandledError(ev) {
             hasError.current = true;
-            const error = ev === null || ev === void 0 ? void 0 : ev.error;
-            if (!error ||
-                !(error instanceof Error) ||
-                typeof error.stack !== "string") {
+            const error = ev?.error;
+            if (!error || !(error instanceof Error) || typeof error.stack !== 'string') {
                 return;
             }
-            ExceptionsManager_1.default.handleException(error);
+            ExceptionsManager.handleException(error);
         }
         function onUnhandledRejection(ev) {
             hasError.current = true;
-            const reason = ev === null || ev === void 0 ? void 0 : ev.reason;
-            if (!reason ||
-                !(reason instanceof Error) ||
-                typeof reason.stack !== "string") {
+            const reason = ev?.reason;
+            if (!reason || !(reason instanceof Error) || typeof reason.stack !== 'string') {
                 return;
             }
-            ExceptionsManager_1.default.handleException(reason);
+            ExceptionsManager.handleException(reason);
         }
-        window.addEventListener("unhandledrejection", onUnhandledRejection);
-        window.addEventListener("error", onUnhandledError);
+        window.addEventListener('unhandledrejection', onUnhandledRejection);
+        window.addEventListener('error', onUnhandledError);
         return () => {
-            window.removeEventListener("error", onUnhandledError);
-            window.removeEventListener("unhandledrejection", onUnhandledRejection);
+            window.removeEventListener('error', onUnhandledError);
+            window.removeEventListener('unhandledrejection', onUnhandledRejection);
         };
     }, []);
     return hasError;
 }
-exports.useRejectionHandler = useRejectionHandler;
 //# sourceMappingURL=useRejectionHandler.js.map

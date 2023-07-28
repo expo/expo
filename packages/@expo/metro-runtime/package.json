@@ -1,9 +1,12 @@
 {
   "name": "@expo/metro-runtime",
-  "version": "2.2.4",
-  "description": "Tools for making experimental Metro bundler features work",
+  "version": "3.0.0",
+  "description": "Tools for making advanced Metro bundler features work",
   "main": "build",
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/metro-runtime",
+  "keywords": [],
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
   "files": [
     "build",
     "symbolicate",
@@ -30,15 +33,23 @@
   "peerDependencies": {
     "react-native": "*"
   },
-  "keywords": [
-    "expo",
-    "metro",
-    "fast-refresh",
-    "react-native"
-  ],
-  "author": "Evan Bacon",
-  "license": "BSD-3-Clause",
   "dependencies": {
     "qs": "^6.10.3"
+  },
+  "jest": {
+    "projects": [
+      {
+        "preset": "jest-expo/ios",
+        "clearMocks": true
+      },
+      {
+        "preset": "jest-expo/android",
+        "clearMocks": true
+      },
+      {
+        "preset": "jest-expo/web",
+        "clearMocks": true
+      }
+    ]
   }
 }

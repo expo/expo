@@ -1,5 +1,5 @@
-import type { LogLevel } from "../Data/LogBoxLog";
-import type { Message } from "../Data/parseLogBoxLog";
+import type { LogLevel } from '../Data/LogBoxLog';
+import type { Message } from '../Data/parseLogBoxLog';
 type Props = {
     collapsed: boolean;
     message: Message;

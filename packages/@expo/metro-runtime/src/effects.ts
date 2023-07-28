@@ -1,4 +1,4 @@
-import { Platform } from "expo-modules-core";
+import { Platform } from 'expo-modules-core';
 
 declare let global: {
   __DEV__?: boolean;
@@ -17,7 +17,7 @@ if (
   // NOTE(EvanBacon): This can probably be removed in favor of `expo/metro-config` injecting this file.
   global.__METRO_GLOBAL_PREFIX__ != null
 ) {
-  require("./setupFastRefresh");
-  require("./setupHMR");
-  require("./messageSocket");
+  require('./setupFastRefresh');
+  require('./setupHMR');
+  require('./messageSocket');
 }

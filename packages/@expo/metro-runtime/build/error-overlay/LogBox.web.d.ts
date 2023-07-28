@@ -1,12 +1,12 @@
 /**
- * Copyright (c) Evan Bacon.
+ * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { IgnorePattern, LogData } from "./Data/LogBoxData";
-import { ExtendedExceptionData } from "./Data/parseLogBoxLog";
+import { IgnorePattern, LogData } from './Data/LogBoxData';
+import { ExtendedExceptionData } from './Data/parseLogBoxLog';
 export { LogData, ExtendedExceptionData, IgnorePattern };
 declare let LogBox: ILogBox;
 interface ILogBox {

@@ -1,3 +1,3 @@
-"use strict";
-module.exports = require("react-native/Libraries/Core/Devtools/getDevServer");
+import getDevServer from 'react-native/Libraries/Core/Devtools/getDevServer';
+export default getDevServer;
 //# sourceMappingURL=getDevServer.native.js.map

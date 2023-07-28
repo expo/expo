@@ -1,5 +1,5 @@
-import React from "react";
-import { LogBoxLog } from "./LogBoxLog";
+import React from 'react';
+import { LogBoxLog } from './LogBoxLog';
 export declare const LogContext: React.Context<{
     selectedLogIndex: number;
     isDisabled: boolean;

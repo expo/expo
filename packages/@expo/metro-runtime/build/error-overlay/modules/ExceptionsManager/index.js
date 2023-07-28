@@ -1,45 +1,36 @@
-"use strict";
 /**
- * Copyright (c) Evan Bacon.
+ * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const parseErrorStack_1 = __importDefault(require("../parseErrorStack"));
+import parseErrorStack from '../parseErrorStack';
 class SyntheticError extends Error {
-    constructor() {
-        super(...arguments);
-        this.name = "";
-    }
+    name = '';
 }
 /**
  * Handles the developer-visible aspect of errors and exceptions
  */
 let exceptionID = 0;
 function parseException(e, isFatal) {
-    const stack = (0, parseErrorStack_1.default)(e === null || e === void 0 ? void 0 : e.stack);
+    const stack = parseErrorStack(e?.stack);
     const currentExceptionID = ++exceptionID;
-    const originalMessage = e.message || "";
+    const originalMessage = e.message || '';
     let message = originalMessage;
     if (e.componentStack != null) {
         message += `\n\nThis error is located at:${e.componentStack}`;
     }
-    const namePrefix = e.name == null || e.name === "" ? "" : `${e.name}: `;
+    const namePrefix = e.name == null || e.name === '' ? '' : `${e.name}: `;
     if (!message.startsWith(namePrefix)) {
         message = namePrefix + message;
     }
-    message =
-        e.jsEngine == null ? message : `${message}, js engine: ${e.jsEngine}`;
+    message = e.jsEngine == null ? message : `${message}, js engine: ${e.jsEngine}`;
     const data = {
         message,
         originalMessage: message === originalMessage ? null : originalMessage,
-        name: e.name == null || e.name === "" ? null : e.name,
-        componentStack: typeof e.componentStack === "string" ? e.componentStack : null,
+        name: e.name == null || e.name === '' ? null : e.name,
+        componentStack: typeof e.componentStack === 'string' ? e.componentStack : null,
         stack,
         id: currentExceptionID,
         isFatal,
@@ -68,13 +59,12 @@ function handleException(e) {
         // `throw '<error message>'` somewhere in your codebase.
         error = new SyntheticError(e);
     }
-    require("../../LogBox").addException(parseException(error, true));
+    require('../../LogBox').default.addException(parseException(error, true));
 }
 const ErrorUtils = {
     parseException,
     handleException,
     SyntheticError,
 };
-module.exports = ErrorUtils;
-exports.default = ErrorUtils;
+export default ErrorUtils;
 //# sourceMappingURL=index.js.map

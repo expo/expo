@@ -1,4 +1,4 @@
-import type { StackFrame } from "stacktrace-parser";
+import type { StackFrame } from 'stacktrace-parser';
 export type MetroStackFrame = StackFrame & {
     collapse?: boolean;
 };

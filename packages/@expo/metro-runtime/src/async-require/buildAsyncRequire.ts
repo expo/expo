@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { loadBundleAsync } from "./loadBundle";
+import { loadBundleAsync } from './loadBundle';
 
 /**
  * Must satisfy the requirements of the Metro bundler.

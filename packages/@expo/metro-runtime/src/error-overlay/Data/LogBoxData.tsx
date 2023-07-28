@@ -79,7 +79,7 @@ function getNextState() {
 }
 
 export function reportLogBoxError(error: ExtendedError, componentStack?: string): void {
-  const ExceptionsManager = require('../modules/ExceptionsManager');
+  const ExceptionsManager = require('../modules/ExceptionsManager').default;
 
   if (componentStack != null) {
     error.componentStack = componentStack;

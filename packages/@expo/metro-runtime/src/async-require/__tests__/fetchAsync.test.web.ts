@@ -1,5 +1,5 @@
 /* eslint-env jest browser */
-import { fetchAsync } from "../fetchAsync";
+import { fetchAsync } from '../fetchAsync';
 
 declare const global: any;
 
@@ -18,9 +18,9 @@ afterAll(() => {
 });
 
 it(`fetches`, async () => {
-  await expect(fetchAsync("https://example.com")).resolves.toBeDefined();
-  expect(global.fetch).toBeCalledWith("https://example.com", {
-    headers: { "expo-platform": "web" },
-    method: "GET",
+  await expect(fetchAsync('https://example.com')).resolves.toBeDefined();
+  expect(global.fetch).toBeCalledWith('https://example.com', {
+    headers: { 'expo-platform': 'web' },
+    method: 'GET',
   });
 });
