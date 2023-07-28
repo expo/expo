@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 14.4.0 — 2023-07-28
+
+_This version does not introduce any user-facing changes._
+
 ## 14.3.2 - 2023-07-23
 
 ### 💡 Others
