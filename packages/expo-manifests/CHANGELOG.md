@@ -6,13 +6,19 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.8.0 — 2023-07-28
+
+### 🎉 New features
+
 - [iOS] Expose getMetadata method to match android. ([#23445](https://github.com/expo/expo/pull/23445) by [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 
 - [iOS] Fix error in handling nested array. ([#23562](https://github.com/expo/expo/pull/23562) by [@douglowder](https://github.com/douglowder))
-
-### 💡 Others
 
 ## 0.7.1 - 2023-06-30
 

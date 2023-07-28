@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.8.0 — 2023-07-28
+
+_This version does not introduce any user-facing changes._
+
 ## 0.7.1 - 2023-07-10
 
 ### 🛠 Breaking changes
