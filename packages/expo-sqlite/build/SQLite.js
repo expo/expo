@@ -79,6 +79,8 @@ export class SQLiteDatabase {
             throw e;
         }
     }
+    // @ts-expect-error: properties that are added from websql
+    version;
 }
 function _serializeQuery(query) {
     return Platform.OS === 'android'

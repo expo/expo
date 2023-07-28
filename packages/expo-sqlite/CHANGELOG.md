@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed missing `transaction()` and `readTransaction()` function types from `SQLiteDatabase`. ([#23751](https://github.com/expo/expo/pull/23751) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 11.3.1 — 2023-06-28
