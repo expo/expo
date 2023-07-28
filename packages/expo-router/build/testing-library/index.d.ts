@@ -1,7 +1,7 @@
-import "./expect";
-import { render } from "@testing-library/react-native";
-import { FileStub } from "./context-stubs";
-export * from "@testing-library/react-native";
+import './expect';
+import { render } from '@testing-library/react-native';
+import { FileStub } from './context-stubs';
+export * from '@testing-library/react-native';
 type RenderRouterOptions = Parameters<typeof render>[1] & {
     initialUrl?: any;
 };

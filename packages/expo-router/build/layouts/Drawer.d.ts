@@ -1,5 +1,5 @@
 /// <reference types="react" />
-import { DrawerNavigationOptions } from "@react-navigation/drawer";
+import { DrawerNavigationOptions } from '@react-navigation/drawer';
 export declare const Drawer: import("react").ForwardRefExoticComponent<Omit<Omit<import("@react-navigation/routers").DefaultRouterOptions<string> & {
     id?: string | undefined;
     children: import("react").ReactNode;

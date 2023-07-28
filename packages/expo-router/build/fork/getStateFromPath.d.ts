@@ -1,6 +1,6 @@
-import { PathConfigMap } from "@react-navigation/core";
-import type { NavigationState, PartialState } from "@react-navigation/routers";
-import { RouteNode } from "../Route";
+import { PathConfigMap } from '@react-navigation/core';
+import type { NavigationState, PartialState } from '@react-navigation/routers';
+import { RouteNode } from '../Route';
 type Options<ParamList extends object> = {
     initialRouteName?: string;
     screens: PathConfigMap<ParamList>;

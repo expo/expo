@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 export declare const CODE_FONT: string;
 export declare function ToastWrapper({ children }: {
     children: React.ReactNode;

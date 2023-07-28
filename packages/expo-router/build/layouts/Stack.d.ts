@@ -1,5 +1,5 @@
 /// <reference types="react" />
-import { NativeStackNavigationOptions } from "@react-navigation/native-stack";
+import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 export declare const Stack: import("react").ForwardRefExoticComponent<Omit<Omit<import("@react-navigation/routers").DefaultRouterOptions<string> & {
     id?: string | undefined;
     children: import("react").ReactNode;

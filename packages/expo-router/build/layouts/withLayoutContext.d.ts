@@ -1,6 +1,6 @@
-import React from "react";
-import { PickPartial } from "../types";
-import { ScreenProps } from "../useScreens";
+import React from 'react';
+import { PickPartial } from '../types';
+import { ScreenProps } from '../useScreens';
 export declare function useFilterScreenChildren(children: React.ReactNode, { isCustomNavigator, contextKey, }?: {
     isCustomNavigator?: boolean;
     /** Used for sending developer hints */
@@ -10,7 +10,7 @@ export declare function useFilterScreenChildren(children: React.ReactNode, { isC
     children: any[];
 };
 /** Return a navigator that automatically injects matched routes and renders nothing when there are no children. Return type with children prop optional */
-export declare function withLayoutContext<TOptions extends object, T extends React.ComponentType<any>>(Nav: T, processor?: (options: ScreenProps<TOptions>[]) => ScreenProps<TOptions>[]): React.ForwardRefExoticComponent<React.PropsWithoutRef<PickPartial<React.ComponentProps<T>, "children">> & React.RefAttributes<unknown>> & {
+export declare function withLayoutContext<TOptions extends object, T extends React.ComponentType<any>>(Nav: T, processor?: (options: ScreenProps<TOptions>[]) => ScreenProps<TOptions>[]): React.ForwardRefExoticComponent<React.PropsWithoutRef<PickPartial<React.ComponentProps<T>, 'children'>> & React.RefAttributes<unknown>> & {
     Screen: (props: ScreenProps<TOptions>) => null;
 };
 //# sourceMappingURL=withLayoutContext.d.ts.map

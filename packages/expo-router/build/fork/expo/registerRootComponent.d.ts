@@ -1,6 +1,6 @@
-import "expo/build/Expo.fx";
-import "@expo/metro-runtime";
-import * as React from "react";
+import 'expo/build/Expo.fx';
+import '@expo/metro-runtime';
+import * as React from 'react';
 type InitialProps = {
     exp: {
         notification?: any;

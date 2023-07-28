@@ -1,10 +1,10 @@
-import { PathConfigMap } from "@react-navigation/core";
-import type { NavigationState, PartialState } from "@react-navigation/routers";
+import { PathConfigMap } from '@react-navigation/core';
+import type { NavigationState, PartialState } from '@react-navigation/routers';
 type Options<ParamList extends object> = {
     initialRouteName?: string;
     screens: PathConfigMap<ParamList>;
 };
-export type State = NavigationState | Omit<PartialState<NavigationState>, "stale">;
+export type State = NavigationState | Omit<PartialState<NavigationState>, 'stale'>;
 /**
  * Utility to serialize a navigation state object to a path string.
  *

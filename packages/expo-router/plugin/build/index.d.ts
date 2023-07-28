@@ -1,4 +1,4 @@
-import { ConfigPlugin } from "expo/config-plugins";
+import { ConfigPlugin } from 'expo/config-plugins';
 declare const withRouter: ConfigPlugin<{
     /** Production origin URL where assets in the public folder are hosted. The fetch function is polyfilled to support relative requests from this origin in production, development origin is inferred using the Expo CLI development server. */
     origin?: string;

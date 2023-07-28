@@ -1,4 +1,4 @@
-import { NavigationProp } from "@react-navigation/native";
+import { NavigationProp } from '@react-navigation/native';
 /**
  * Return the navigation object for the current route.
  * @param parent Provide an absolute path like `/(root)` to the parent route or a relative path like `../../` to the parent route.

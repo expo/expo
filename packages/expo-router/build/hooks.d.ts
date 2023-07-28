@@ -1,4 +1,4 @@
-import { Router } from "./types";
+import { Router } from './types';
 type SearchParams = Record<string, string | string[]>;
 export declare function useRootNavigationState(): import("./fork/getStateFromPath").ResultState;
 export declare function useRouteInfo(): import("./LocationProvider").UrlObject;

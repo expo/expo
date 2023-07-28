@@ -1,4 +1,4 @@
-import { RequireContext } from "../types";
+import { RequireContext } from '../types';
 export declare function createMockContextModule(map?: Record<string, Record<string, any>>): RequireContext;
 export declare function configFromFs(map?: (string | [string, object])[]): {
     initialRouteName?: string | undefined;

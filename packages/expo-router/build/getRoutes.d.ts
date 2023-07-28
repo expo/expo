@@ -1,6 +1,6 @@
-import type { DynamicConvention, RouteNode } from "./Route";
-import type { RequireContext } from "./types";
-export type FileNode = Pick<RouteNode, "contextKey" | "loadRoute"> & {
+import type { DynamicConvention, RouteNode } from './Route';
+import type { RequireContext } from './types';
+export type FileNode = Pick<RouteNode, 'contextKey' | 'loadRoute'> & {
     /** Like `(tab)/index` */
     normalizedName: string;
 };
@@ -17,7 +17,7 @@ type Options = {
 /** Convert a flat map of file nodes into a nested tree of files. */
 export declare function getRecursiveTree(files: FileNode[]): TreeNode;
 export declare function generateDynamicFromSegment(name: string): DynamicConvention | null;
-export declare function generateDynamic(name: string): RouteNode["dynamic"];
+export declare function generateDynamic(name: string): RouteNode['dynamic'];
 /**
  * Asserts if the require.context has files that share the same name but have different extensions. Exposed for testing.
  * @private

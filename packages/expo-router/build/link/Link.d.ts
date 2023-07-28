@@ -1,8 +1,8 @@
-import { TextProps } from "@bacons/react-views";
-import * as React from "react";
-import { GestureResponderEvent } from "react-native";
-import { Href, resolveHref } from "./href";
-export interface LinkProps extends Omit<TextProps, "href" | "hoverStyle"> {
+import { TextProps } from '@bacons/react-views';
+import * as React from 'react';
+import { GestureResponderEvent } from 'react-native';
+import { Href, resolveHref } from './href';
+export interface LinkProps extends Omit<TextProps, 'href' | 'hoverStyle'> {
     /** Path to route to. */
     href: Href;
     /** Forward props to child component. Useful for custom buttons. */

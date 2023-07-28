@@ -1,5 +1,5 @@
-import * as React from "react";
-import { GestureResponderEvent } from "react-native";
+import * as React from 'react';
+import { GestureResponderEvent } from 'react-native';
 export default function useLinkToPathProps(props: {
     href: string;
     replace?: boolean;

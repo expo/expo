@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 /** Props passed to a page's `ErrorBoundary` export. */
 export type ErrorBoundaryProps = {
     /** Retry rendering the component by clearing the `error` state. */

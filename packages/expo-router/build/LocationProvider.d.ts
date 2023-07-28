@@ -1,4 +1,4 @@
-import { State } from "./fork/getPathFromState";
+import { State } from './fork/getPathFromState';
 type SearchParams = Record<string, string | string[]>;
 export type UrlObject = {
     unstable_globalHref: string;
@@ -13,6 +13,6 @@ export declare function getRouteInfoFromState(getPathFromState: (state: State, a
 export declare function getNormalizedStatePath({ path: statePath, params, }: {
     path: string;
     params: any;
-}): Pick<UrlObject, "segments" | "params">;
+}): Pick<UrlObject, 'segments' | 'params'>;
 export {};
 //# sourceMappingURL=LocationProvider.d.ts.map

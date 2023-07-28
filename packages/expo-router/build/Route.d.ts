@@ -1,5 +1,5 @@
-import React, { ReactNode } from "react";
-import type { ErrorBoundaryProps } from "./exports";
+import React, { ReactNode } from 'react';
+import type { ErrorBoundaryProps } from './exports';
 export type DynamicConvention = {
     name: string;
     deep: boolean;
@@ -35,7 +35,7 @@ export type RouteNode = {
 export declare function useRouteNode(): RouteNode | null;
 export declare function useContextKey(): string;
 /** Provides the matching routes and filename to the children. */
-export declare function Route({ children, node, }: {
+export declare function Route({ children, node }: {
     children: ReactNode;
     node: RouteNode;
 }): JSX.Element;

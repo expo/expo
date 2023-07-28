@@ -1,10 +1,10 @@
-import { NavigationContainerRefWithCurrent } from "@react-navigation/native";
-import { ComponentType } from "react";
-import { UrlObject } from "../LocationProvider";
-import { RouteNode } from "../Route";
-import { ResultState } from "../fork/getStateFromPath";
-import { ExpoLinkingOptions } from "../getLinkingConfig";
-import { RequireContext } from "../types";
+import { NavigationContainerRefWithCurrent } from '@react-navigation/native';
+import { ComponentType } from 'react';
+import { UrlObject } from '../LocationProvider';
+import { RouteNode } from '../Route';
+import { ResultState } from '../fork/getStateFromPath';
+import { ExpoLinkingOptions } from '../getLinkingConfig';
+import { RequireContext } from '../types';
 /**
  * This is the global state for the router. It is used to keep track of the current route, and to provide a way to navigate to other routes.
  *
@@ -23,13 +23,13 @@ export declare class RouterStore {
     navigationRefSubscription: () => void;
     rootStateSubscribers: Set<() => void>;
     storeSubscribers: Set<() => void>;
-    linkTo: (href: string, event?: string | undefined) => void;
-    getSortedRoutes: () => RouteNode[];
-    goBack: () => void;
-    canGoBack: () => boolean;
-    push: (url: import("../link/href").Href) => void;
-    replace: (url: import("../link/href").Href) => void;
-    setParams: (params?: Record<string, string | number> | undefined) => any;
+    linkTo: any;
+    getSortedRoutes: any;
+    goBack: any;
+    canGoBack: any;
+    push: any;
+    replace: any;
+    setParams: any;
     initialize(context: RequireContext, navigationRef: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>, initialLocation?: URL): void;
     updateState(state: ResultState, nextState?: ResultState): void;
     getRouteInfo(state: ResultState): UrlObject;
