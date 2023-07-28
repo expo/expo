@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import * as Updates from './Updates';
+import { useEffect, useRef } from 'react';
+import { addListener } from './UpdatesEmitter';
 /**
  * React hook to create an [`UpdateEvent`](#updateevent) listener subscription on mount, using
  * [`addListener`](#updatesaddlistenerlistener). It calls `remove()` on the subscription during unmount.
@@ -31,43 +31,12 @@ export const useUpdateEvents = (listener) => {
     }, [listener]);
     useEffect(() => {
         if (listenerRef.current) {
-            const subscription = Updates.addListener(listenerRef.current);
+            const subscription = addListener(listenerRef.current);
             return () => {
                 subscription.remove();
             };
         }
         return undefined;
     }, []);
-};
-/**
- * @hidden
- */
-export const useUpdatesState = () => {
-    // Hook to return the Updates state machine context maintained
-    // in native code.
-    // Eventually, this will be used to construct the information returned by `useUpdates()`.
-    // Used internally by this module and not exported publicly.
-    const [localState, setLocalState] = useState({
-        isUpdateAvailable: false,
-        isUpdatePending: false,
-        isRollback: false,
-        isChecking: false,
-        isDownloading: false,
-        isRestarting: false,
-        checkError: undefined,
-        downloadError: undefined,
-        latestManifest: undefined,
-        downloadedManifest: undefined,
-    });
-    useEffect(() => {
-        Updates.getNativeStateMachineContextAsync().then((context) => {
-            setLocalState(context);
-        });
-        const subscription = Updates.addUpdatesStateChangeListener((event) => {
-            setLocalState(event.context);
-        });
-        return () => subscription.remove();
-    }, []);
-    return localState;
 };
 //# sourceMappingURL=UpdatesHooks.js.map

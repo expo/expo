@@ -1,4 +1,4 @@
-// Gradle script for generating serialized public app config (from app.config.js/ts or app.json) and bundling it into the APK 
+// Gradle script for generating serialized public app config (from app.config.js/ts or app.json) and bundling it into the APK
 
 import org.apache.tools.ant.taskdefs.condition.Os
 
@@ -47,20 +47,24 @@ afterEvaluate {
       description = "expo-constants: Copy generated app.config into ${targetName}."
 
       from(assetsDir)
-      into("${projectDir}/src/main/assets")
+      into("${projectDir}/src/${targetPath}/assets")
       include('app.config')
 
-      dependsOn("create${targetName}ExpoConfig")
+      dependsOn(currentBundleTask)
     }
 
     def currentCleanupAppConfigTask = tasks.register("cleanup${targetName}ExpoConfig", Delete) {
       description = "expo-constants: Cleanup generated app.config from ${targetName}."
 
+      // In the past, the `app.config` file was placed in the `main` directory.
+      // However, this is no longer the case. To ensure a smooth transition,
+      // we’re also cleaning the `app.config` from the old location.
       delete files("${projectDir}/src/main/assets/app.config")
+      delete files("${projectDir}/src/${targetPath}/assets/app.config")
       dependsOn(packageTaskName)
     }
 
-    // In summary, these tasks try to create `src/main/assets/app.config` in building time for gradle to merge the asset.
+    // In summary, these tasks try to create `src/${targetPath}/assets/app.config` in building time for gradle to merge the asset.
     // And cleanup the generated app.config after building time.
     tasks.findByPath(packageTaskName).dependsOn(currentCopyAppConfigTask)
     tasks.findByPath("process${targetName}JavaRes").dependsOn(currentCleanupAppConfigTask)

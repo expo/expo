@@ -34,7 +34,7 @@ Rather, the purpose is to prevent updates from "bricking" your app (causing a cr
 
 If your app throws a fatal error when executing JS which is early enough in the app's lifecycle that it may prevent the app from being able to download further updates, `expo-updates` will catch this error.
 
-> If more than 10 seconds have elapsed between your app's first render and the time a fatal error is thrown, `expo-updates` will not catch this error at all and none of the error recovery code will be triggered. Therefore, we highly recommend that your app check for updates very shortly after launching, whether [automatically](/bare/updating-your-app/#automatic-updates) or [manually](/bare/updating-your-app/#manual-updates) to ensure you can push out fixes in the event of a future error.
+> If more than 10 seconds have elapsed between your app's first render and the time a fatal error is thrown, `expo-updates` will not catch this error at all and none of the error recovery code will be triggered. Therefore, we highly recommend that your app check for updates very shortly after launching, whether automatically or manually to ensure you can push out fixes in the event of a future error.
 
 If `expo-updates` catches a JS error, what will happen next depends on whether React Native has fired the native "content appeared" event (`RCTContentDidAppearNotification` on iOS, or `ReactMarkerConstants.CONTENT_APPEARED` on Android)—approximately when your app's first view has been rendered on the screen—for this particular update, either on this launch or a previous one.
 

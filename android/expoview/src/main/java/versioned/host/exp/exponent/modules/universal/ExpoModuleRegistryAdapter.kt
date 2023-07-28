@@ -4,11 +4,13 @@ import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import expo.modules.adapters.react.ModuleRegistryAdapter
 import expo.modules.adapters.react.ReactModuleRegistryProvider
+import expo.modules.core.interfaces.Consumer
 import expo.modules.core.interfaces.RegistryLifecycleListener
 import expo.modules.kotlin.ModulesProvider
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.utils.ScopedContext
 import host.exp.exponent.kernel.ExperienceKey
+import versioned.host.exp.exponent.core.modules.ExpoGoModule
 import versioned.host.exp.exponent.modules.api.notifications.ScopedNotificationsCategoriesSerializer
 import versioned.host.exp.exponent.modules.api.notifications.channels.ScopedNotificationsChannelsProvider
 import versioned.host.exp.exponent.modules.universal.av.SharedCookiesDataSourceFactoryProvider
@@ -78,7 +80,15 @@ open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistry
         moduleRegistry.registerExtraListener(otherModule as RegistryLifecycleListener)
       }
     }
-    return getNativeModulesFromModuleRegistry(reactContext, moduleRegistry)
+    return getNativeModulesFromModuleRegistry(
+      reactContext,
+      moduleRegistry,
+      Consumer { appContext ->
+        appContext.registry.register(
+          ExpoGoModule(manifest)
+        )
+      }
+    )
   }
 
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {

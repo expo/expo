@@ -71,6 +71,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: 'us-east-2'
+          AWS_BUCKET: 'docs.expo.dev'
       - name: 🔔 Notify on Slack
         uses: 8398a7/action-slack@v3
         if: failure() && github.event.ref == 'refs/heads/main'

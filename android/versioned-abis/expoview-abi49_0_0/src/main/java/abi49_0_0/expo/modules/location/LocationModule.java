@@ -275,7 +275,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   @ExpoMethod
   public void getCurrentPositionAsync(final Map<String, Object> options, final Promise promise) {
     // Read options
-    final LocationRequest.Builder builder = LocationHelpers.prepareLocationRequest(options);
+    final LocationRequest locationRequest = LocationHelpers.prepareLocationRequest(options);
     boolean showUserSettingsDialog = !options.containsKey(SHOW_USER_SETTINGS_DIALOG_KEY) || (boolean) options.get(SHOW_USER_SETTINGS_DIALOG_KEY);
 
     // Check for permissions
@@ -285,12 +285,12 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     }
 
     if (LocationHelpers.hasNetworkProviderEnabled(mContext) || !showUserSettingsDialog) {
-      LocationHelpers.requestSingleLocation(this, builder, promise);
+      LocationHelpers.requestSingleLocation(this, locationRequest, promise);
     } else {
       // Pending requests can ask the user to turn on improved accuracy mode in user's settings.
-      addPendingLocationRequest(builder.build(), resultCode -> {
+      addPendingLocationRequest(locationRequest, resultCode -> {
         if (resultCode == Activity.RESULT_OK) {
-          LocationHelpers.requestSingleLocation(LocationModule.this, builder, promise);
+          LocationHelpers.requestSingleLocation(LocationModule.this, locationRequest, promise);
         } else {
           promise.reject(new LocationSettingsUnsatisfiedException());
         }
@@ -336,16 +336,16 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
       return;
     }
 
-    final LocationRequest.Builder locationRequest = LocationHelpers.prepareLocationRequest(options);
+    final LocationRequest locationRequest = LocationHelpers.prepareLocationRequest(options);
     boolean showUserSettingsDialog = !options.containsKey(SHOW_USER_SETTINGS_DIALOG_KEY) || (boolean) options.get(SHOW_USER_SETTINGS_DIALOG_KEY);
 
     if (LocationHelpers.hasNetworkProviderEnabled(mContext) || !showUserSettingsDialog) {
-      LocationHelpers.requestContinuousUpdates(this, locationRequest.build(), watchId, promise);
+      LocationHelpers.requestContinuousUpdates(this, locationRequest, watchId, promise);
     } else {
       // Pending requests can ask the user to turn on improved accuracy mode in user's settings.
-      addPendingLocationRequest(locationRequest.build(), resultCode -> {
+      addPendingLocationRequest(locationRequest, resultCode -> {
         if (resultCode == Activity.RESULT_OK) {
-          LocationHelpers.requestContinuousUpdates(LocationModule.this, locationRequest.build(), watchId, promise);
+          LocationHelpers.requestContinuousUpdates(LocationModule.this, locationRequest, watchId, promise);
         } else {
           promise.reject(new LocationSettingsUnsatisfiedException());
         }
@@ -443,9 +443,9 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
       return;
     }
 
-    LocationRequest.Builder locationRequest = LocationHelpers.prepareLocationRequest(new HashMap<>());
+    LocationRequest locationRequest = LocationHelpers.prepareLocationRequest(new HashMap<>());
 
-    addPendingLocationRequest(locationRequest.build(), resultCode -> {
+    addPendingLocationRequest(locationRequest, resultCode -> {
       if (resultCode == Activity.RESULT_OK) {
         promise.resolve(null);
       } else {

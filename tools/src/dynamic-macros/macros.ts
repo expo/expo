@@ -172,7 +172,7 @@ export default {
     try {
       const manifest = await getManifestAsync(url, platform, null);
 
-      if (manifest.extra?.expoClient?.name !== 'expo-home') {
+      if (manifest.name !== 'expo-home') {
         console.log(
           `Manifest at ${url} is not expo-home; using published kernel manifest instead...`
         );

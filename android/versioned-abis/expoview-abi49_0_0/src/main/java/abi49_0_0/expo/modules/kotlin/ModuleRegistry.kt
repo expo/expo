@@ -2,6 +2,7 @@ package abi49_0_0.expo.modules.kotlin
 
 import abi49_0_0.expo.modules.kotlin.events.EventName
 import abi49_0_0.expo.modules.kotlin.modules.Module
+import abi49_0_0.expo.modules.kotlin.tracing.trace
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -16,7 +17,7 @@ class ModuleRegistry(
   @PublishedApi
   internal val registry = mutableMapOf<String, ModuleHolder>()
 
-  fun register(module: Module) {
+  fun register(module: Module) = trace("ModuleRegistry.register(${module.javaClass})") {
     module._appContext = requireNotNull(appContext.get()) { "Cannot create a module for invalid app context." }
 
     val holder = ModuleHolder(module)

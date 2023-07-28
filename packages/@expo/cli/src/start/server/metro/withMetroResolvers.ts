@@ -53,14 +53,25 @@ export function withMetroResolvers(
     ...config,
     resolver: {
       ...config.resolver,
-      resolveRequest(...args: Parameters<MetroResolver>) {
+      resolveRequest(context, moduleName, platform) {
+        const universalContext = {
+          ...context,
+          preferNativePlatform: platform !== 'web',
+        };
+
         for (const resolver of resolvers) {
           try {
-            const resolution = resolver(...args);
+            const resolution = resolver(universalContext, moduleName, platform);
             if (resolution) {
               return resolution;
             }
           } catch (error: any) {
+            // If no user-defined resolver, use Expo's default behavior.
+            // This prevents extraneous resolution attempts on failure.
+            if (!config.resolver.resolveRequest) {
+              throw error;
+            }
+
             // If the error is directly related to a resolver not being able to resolve a module, then
             // we can ignore the error and try the next resolver. Otherwise, we should throw the error.
             const isResolutionError =
@@ -69,12 +80,12 @@ export function withMetroResolvers(
               throw error;
             }
             debug(
-              `Custom resolver threw: ${error.constructor.name}. (module: ${args[1]}, platform: ${args[2]})`
+              `Custom resolver threw: ${error.constructor.name}. (module: ${moduleName}, platform: ${platform})`
             );
           }
         }
         // If we haven't returned by now, use the original resolver or upstream resolver.
-        return originalResolveRequest(...args);
+        return originalResolveRequest(universalContext, moduleName, platform);
       },
     },
   };

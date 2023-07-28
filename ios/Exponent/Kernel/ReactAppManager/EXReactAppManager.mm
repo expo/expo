@@ -12,7 +12,7 @@
 #import "ExpoKit.h"
 #import "EXReactAppManager.h"
 #import "EXReactAppManager+Private.h"
-#import "EXVersionManager.h"
+#import "EXVersionManagerObjC.h"
 #import "EXVersions.h"
 #import "EXAppViewController.h"
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
@@ -55,6 +55,18 @@
 @property (nonatomic, copy) RCTSourceLoadBlock loadCallback;
 @property (nonatomic, strong) NSDictionary *initialProps;
 @property (nonatomic, strong) NSTimer *viewTestTimer;
+
+@end
+
+@protocol EXVersionManagerProtocol
+
++ (instancetype)alloc;
+
+- (instancetype)initWithParams:(nonnull NSDictionary *)params
+                      manifest:(nonnull EXManifestsManifest *)manifest
+                  fatalHandler:(void (^)(NSError *))fatalHandler
+                   logFunction:(RCTLogFunction)logFunction
+                  logThreshold:(NSInteger)threshold;
 
 @end
 
@@ -114,7 +126,7 @@
 
 
   if ([self isReadyToLoad]) {
-    Class versionManagerClass = [self versionedClassFromString:@"EXVersionManager"];
+    Class<EXVersionManagerProtocol> versionManagerClass = [self versionedClassFromString:@"EXVersionManager"];
     Class bridgeClass = [self versionedClassFromString:@"RCTBridge"];
     Class rootViewClass = [self versionedClassFromString:@"RCTRootView"];
 
@@ -123,6 +135,7 @@
                                                      fatalHandler:handleFatalReactError
                                                       logFunction:[self logFunction]
                                                      logThreshold:[self logLevel]];
+
     _reactBridge = [[bridgeClass alloc] initWithDelegate:self launchOptions:[self launchOptionsForBridge]];
 
     if (!_isHeadless) {
@@ -485,7 +498,7 @@
 - (void)reloadBridge
 {
   if ([self enablesDeveloperTools]) {
-    [self.reactBridge reload];
+    [(RCTBridge *) self.reactBridge reload];
   }
 }
 

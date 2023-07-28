@@ -43,9 +43,3 @@ internal final class UpdatesUnsupportedDirectiveException: Exception {
     "Updates service response included a directive that this client does not support."
   }
 }
-
-internal final class UpdatesStateException: Exception {
-  convenience init(_ message: String) {
-    self.init(name: "UpdatesStateException", description: message, code: "ERR_UPDATES_STATE_EXCEPTION", file: #fileID, line: #line, function: #function)
-  }
-}
