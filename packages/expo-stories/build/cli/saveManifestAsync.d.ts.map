@@ -1,1 +1,0 @@
-{"version":3,"file":"saveManifestAsync.d.ts","sourceRoot":"","sources":["../../src/cli/saveManifestAsync.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,aAAa,EAAE,MAAM,UAAU,CAAC;AAGzC,wBAAsB,iBAAiB,CACrC,aAAa,EAAE,aAAa,EAC5B,MAAM,EAAE;IAAE,SAAS,EAAE,MAAM,CAAC;IAAC,WAAW,EAAE,MAAM,CAAA;CAAE,iBAQnD"}
