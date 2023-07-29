@@ -1,7 +1,6 @@
 package expo.modules.imagepicker
 
 import java.io.Serializable
-import android.net.Uri
 import android.provider.MediaStore
 import androidx.annotation.FloatRange
 import androidx.annotation.IntRange
