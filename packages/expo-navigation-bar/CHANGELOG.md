@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix support for importing on iOS.
+- Fix support for importing on iOS. ([#23761](https://github.com/expo/expo/pull/23761) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
