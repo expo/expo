@@ -61,7 +61,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (14.2.1):
     - ExpoModulesCore
-  - Expo (49.0.5):
+  - Expo (49.0.6):
     - ExpoModulesCore
   - expo-dev-client (2.4.6):
     - EXManifests
@@ -201,13 +201,13 @@ PODS:
     - ExpoModulesCore
     - GoogleMaps (= 7.3.0)
     - GooglePlaces (= 7.3.0)
-  - ExpoModulesCore (1.5.8):
+  - ExpoModulesCore (1.5.9):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-NativeModulesApple
     - React-RCTAppDelegate
     - ReactCommon/turbomodule/core
-  - ExpoModulesCore/Tests (1.5.8):
+  - ExpoModulesCore/Tests (1.5.9):
     - ExpoModulesTestCore
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
@@ -237,7 +237,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSpeech (11.3.0):
     - ExpoModulesCore
-  - ExpoSQLite (11.3.1):
+  - ExpoSQLite (11.3.2):
     - ExpoModulesCore
   - ExpoStoreReview (6.4.0):
     - ExpoModulesCore
@@ -253,7 +253,7 @@ PODS:
     - ExpoModulesCore
   - EXSensors (12.3.0):
     - ExpoModulesCore
-  - EXSplashScreen (0.20.4):
+  - EXSplashScreen (0.20.5):
     - ExpoModulesCore
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
@@ -1382,7 +1382,7 @@ SPEC CHECKSUMS:
   EXMediaLibrary: 8ac14ce76f266026b10cac2ab049debe032d7ae7
   EXNotifications: 09394cbd7165f9a4a00a53328aa09bf874bae717
   EXPermissions: 4f80cf527001aa408a22eddf076e61465ea71d5a
-  Expo: f2485e8fab9988e5dcee34159df5e475c9c3730c
+  Expo: 5601f86edc81c7e7e1772b9af9ae58fa3b45ad53
   expo-dev-client: 4f773679557bc150e44eea1a1e3a3fd65ab82a5a
   expo-dev-launcher: de065738958421c704ee024f4fe1bf14b2d8a713
   expo-dev-menu: 9b3792cc2241011b63747cc77d06b0dcbcc57780
@@ -1408,7 +1408,7 @@ SPEC CHECKSUMS:
   ExpoLocalization: be37fdd0b5930c6a49cd307b4542f4b426d6134c
   ExpoMailComposer: feaebd62095efad901ede864b95406f02bf61681
   ExpoMaps: 6c13da830da56dea669ec89c708f2d248e66f7b5
-  ExpoModulesCore: 924a69d9bffa2925c1f7eafab37764565f861d5d
+  ExpoModulesCore: e4e437139259c5a73530a8895af69774ff8ec12d
   ExpoModulesTestCore: f116cd4cc4288e0e0005a1f910efc7cedf455659
   ExpoNetwork: 6ee4b3b6cfdba3bfb90b07f483d1111308a9c76a
   ExpoPrint: e1531d216196f51b431c7cc4d906e569f79f10e7
@@ -1418,7 +1418,7 @@ SPEC CHECKSUMS:
   ExpoSharing: 825b2b3fc919a2656f75def0069f584bbd6e359a
   ExpoSMS: c8079b3018ae5206b3f1f6f445fd4eee2a19a335
   ExpoSpeech: 3c06cdcd31c07889a9f7085c2496ab97364427be
-  ExpoSQLite: fdbc8d08a0efa64fd4ebbc5c261d55fc0ae3b21d
+  ExpoSQLite: 4caf114e0f7ef450525b88799e8168ea9860fb66
   ExpoStoreReview: f154c9fdf3dbd877ca0115757f0b2b6f43dd9db4
   ExpoSystemUI: fa4854e3226e87f86d3383570264c6e4e90bc782
   ExpoTrackingTransparency: 28cb4ba43e61231c4173507ba05b3ce8c777f173
@@ -1426,7 +1426,7 @@ SPEC CHECKSUMS:
   ExpoWebBrowser: 2c788f9c07718a780fe6d8bf2f6195c47609faaa
   EXScreenCapture: 81002ba5fb40a367fba9047d223068abb558594d
   EXSensors: d26e160b5c91ada2df4a638859ef0c5731bf6404
-  EXSplashScreen: 89586b0961acd173b04713b7457949b063a659da
+  EXSplashScreen: c0e7f2d4a640f3b875808ed0b88575538daf6d82
   EXStructuredHeaders: 324cc3130571d2696357fafd8be7fd9a0b5fdf6e
   EXTaskManager: f1730c315eb6fe457a3a2ee4ed899a51d717f302
   EXUpdatesInterface: 82ed48d417cdcd376c12ca1c2ce390d35500bed6
