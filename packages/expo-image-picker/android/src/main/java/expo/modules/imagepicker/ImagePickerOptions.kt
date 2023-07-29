@@ -46,7 +46,7 @@ internal class ImagePickerOptions : Record, Serializable {
   @Field
   var cameraType: CameraType = CameraType.BACK
 
-  fun toCameraContractOptions(uri: Uri) = CameraContractOptions(uri, this)
+  fun toCameraContractOptions(uri: String) = CameraContractOptions(uri, this)
 
   fun toImageLibraryContractOptions() = ImageLibraryContractOptions(this)
 }

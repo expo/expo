@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- On Android, the `Uri` type is not serializable and causes a crash when recreating the activity.
+
 ### 💡 Others
 
 ## 14.4.0 — 2023-07-28

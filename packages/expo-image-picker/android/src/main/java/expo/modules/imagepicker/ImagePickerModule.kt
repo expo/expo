@@ -63,7 +63,7 @@ class ImagePickerModule : Module() {
 
       val mediaFile = createOutputFile(cacheDirectory, options.mediaTypes.toFileExtension())
       val uri = mediaFile.toContentUri(context)
-      val contractOptions = options.toCameraContractOptions(uri)
+      val contractOptions = options.toCameraContractOptions(uri.toString())
 
       launchContract({ cameraLauncher.launch(contractOptions) }, options)
     }
@@ -138,7 +138,7 @@ class ImagePickerModule : Module() {
         result.data[0].first == MediaType.IMAGE
       ) {
         result = launchPicker {
-          cropImageLauncher.launch(CropImageContractOptions(result.data[0].second, options))
+          cropImageLauncher.launch(CropImageContractOptions(result.data[0].second.toString(), options))
         }
       }
       mediaHandler.readExtras(result.data, options)
