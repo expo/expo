@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Update tests with latest fixtures.
+- Update tests with latest fixtures. ([#23763](https://github.com/expo/expo/pull/23763) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 7.3.0 — 2023-07-28
 
