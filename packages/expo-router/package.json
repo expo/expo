@@ -85,6 +85,8 @@
     }
   },
   "devDependencies": {
+    "@testing-library/jest-native": "^5.4.2",
+    "@testing-library/react-native": "^12.0.1",
     "@expo/spawn-async": "^1.6.0",
     "@react-navigation/drawer": "^6.5.0",
     "@types/execa": "^0.9.0",
