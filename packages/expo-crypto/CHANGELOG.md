@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 12.5.0 — 2023-07-28
+
+_This version does not introduce any user-facing changes._
+
 ## 12.4.0 — 2023-06-13
 
 ### 📚 3rd party library updates

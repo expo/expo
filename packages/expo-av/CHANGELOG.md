@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 13.5.0 — 2023-07-28
+
+_This version does not introduce any user-facing changes._
+
 ## 13.4.0 — 2023-06-21
 
 ### 🐛 Bug fixes
