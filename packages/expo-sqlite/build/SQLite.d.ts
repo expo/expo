@@ -16,11 +16,15 @@ export declare class SQLiteDatabase {
     /**
      * @deprecated Use `closeAsync()` instead.
      */
-    close: () => void;
+    close: () => Promise<void>;
     /**
      * Close the database.
      */
-    closeAsync(): void;
+    closeAsync(): Promise<void>;
+    /**
+     * Synchronously closes the database.
+     */
+    closeSync(): void;
     /**
      * Delete the database file.
      * > The database has to be closed prior to deletion.
