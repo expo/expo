@@ -74,7 +74,6 @@
 /packages/expo-standard-web-crypto              @EvanBacon
 /packages/expo-status-bar                       @brentvatne
 /packages/expo-store-review                     @EvanBacon
-/packages/expo-stories                          @bycedric @EvanBacon
 /packages/expo-structured-headers               @douglowder
 /packages/expo-system-ui                        @EvanBacon
 /packages/expo-task-manager                     @tsapeta @bycedric
