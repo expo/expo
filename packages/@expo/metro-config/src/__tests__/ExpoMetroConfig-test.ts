@@ -55,7 +55,7 @@ describe(getDefaultConfig, () => {
       expect.objectContaining({
         projectRoot,
         resolver: expect.objectContaining({
-          resolverMainFields: ['browser', 'main'],
+          resolverMainFields: ['react-native', 'browser', 'main'],
           sourceExts: expect.arrayContaining(['cjs']),
         }),
       })

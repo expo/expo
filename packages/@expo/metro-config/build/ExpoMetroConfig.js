@@ -174,7 +174,7 @@ function getDefaultConfig(projectRoot, options = {}) {
   const sourceExtsConfig = {
     isTS: true,
     isReact: true,
-    isModern: false
+    isModern: true
   };
   const sourceExts = (0, _paths().getBareExtensions)([], sourceExtsConfig);
 
@@ -190,14 +190,6 @@ function getDefaultConfig(projectRoot, options = {}) {
   const envFiles = runtimeEnv().getFiles(process.env.NODE_ENV, {
     silent: true
   });
-  const resolverMainFields = [];
-
-  // Disable `react-native` in exotic mode, since library authors
-  // use it to ship raw application code to the project.
-  if (!isExotic) {
-    resolverMainFields.push('react-native');
-  }
-  resolverMainFields.push('browser', 'main');
   const pkg = (0, _config().getPackageJson)(projectRoot);
   const watchFolders = (0, _getWatchFolders().getWatchFolders)(projectRoot);
   // TODO: nodeModulesPaths does not work with the new Node.js package.json exports API, this causes packages like uuid to fail. Disabling for now.
@@ -210,7 +202,6 @@ function getDefaultConfig(projectRoot, options = {}) {
     } catch {}
     console.log(`- Extensions: ${sourceExts.join(', ')}`);
     console.log(`- React Native: ${reactNativePath}`);
-    console.log(`- Resolver Fields: ${resolverMainFields.join(', ')}`);
     console.log(`- Watch Folders: ${watchFolders.join(', ')}`);
     console.log(`- Node Module Paths: ${nodeModulesPaths.join(', ')}`);
     console.log(`- Exotic: ${isExotic}`);
@@ -230,7 +221,9 @@ function getDefaultConfig(projectRoot, options = {}) {
   const metroConfig = mergeConfig(metroDefaultValues, {
     watchFolders,
     resolver: {
-      resolverMainFields,
+      // unstable_conditionsByPlatform: { web: ['browser'] },
+      unstable_conditionNames: ['require', 'import', 'react-native'],
+      resolverMainFields: ['react-native', 'browser', 'main'],
       platforms: ['ios', 'android'],
       assetExts: metroDefaultValues.resolver.assetExts.concat(
       // Add default support for `expo-image` file types.
