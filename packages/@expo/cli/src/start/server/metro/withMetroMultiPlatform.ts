@@ -123,6 +123,7 @@ export function withExtendedResolver(
   const aliases: { [key: string]: Record<string, string> } = {
     web: {
       'react-native': 'react-native-web',
+      'react-native/index': 'react-native-web',
     },
   };
 
@@ -249,9 +250,7 @@ export function withExtendedResolver(
         return resolve(
           {
             ...context,
-            preferNativePlatform: platform !== 'web',
             resolveRequest: undefined,
-
             mainFields,
 
             // Passing `mainFields` directly won't be considered (in certain version of Metro)
