@@ -33,7 +33,7 @@ struct MetadataOptions: Record {
     var description: String?
 }
 
-let INDEXED_ROUTE = Bundle.main.bundleIdentifier! + ".expo.index_route"
+let indexRouteTag = Bundle.main.bundleIdentifier! + ".expo.index_route"
 
 var launchedActivity: NSUserActivity?
 
@@ -53,15 +53,17 @@ public class ExpoHeadModule: Module {
     // Each module class must implement the definition function. The definition consists of components
     // that describes the module's functionality and behavior.
     // See https://docs.expo.dev/modules/module-api for more details about available components.
+    // swiftlint:disable:next function_body_length
     public func definition() -> ModuleDefinition {
-        // Sets the name of the module that JavaScript code will use to refer to the module. Takes a string as an argument.
-        // Can be inferred from module's class name, but it's recommended to set it explicitly for clarity.
+        // Sets the name of the module that JavaScript code will use to refer to the module.
+        // Takes a string as an argument. Can be inferred from module's class name, but it's
+        // recommended to set it explicitly for clarity.
         // The module will be accessible from `requireNativeModule('ExpoHead')` in JavaScript.
         Name("ExpoHead")
 
         Constants([
             "activities": [
-                "INDEXED_ROUTE": INDEXED_ROUTE
+                "INDEXED_ROUTE": indexRouteTag
             ]
         ])
 
@@ -88,6 +90,7 @@ public class ExpoHeadModule: Module {
 
         Function("createActivity") { (value: MetadataOptions) in
             if value.webpageURL?.absoluteString.starts(with: "file://") == true {
+                // swiftlint:disable:next line_length
                 throw Exception(name: "Invalid webpageUrl", description: "Scheme file:// is not allowed for location origin (webpageUrl in NSUserActivity). URL: \(value.webpageURL!.absoluteString)")
             }
 
@@ -102,6 +105,7 @@ public class ExpoHeadModule: Module {
 
             CSSearchableIndex.default().deleteSearchableItems(withIdentifiers: ids, completionHandler: { error in
                 if error != nil {
+                    // swiftlint:disable:next force_cast
                     promise.reject(error as! Exception)
                 } else {
                     promise.resolve()
@@ -143,15 +147,16 @@ public class ExpoHeadModule: Module {
         activity.userInfo = value.userInfo
 
         if value.webpageURL != nil {
-            // If you’re using all three APIs, it works well to use the URL of the relevant webpage as the value for uniqueIdentifier, relatedUniqueIdentifier, and webpageURL.
-            // https://developer.apple.com/library/archive/documentation/General/Conceptual/AppSearch/CombiningAPIs.html#//apple_ref/doc/uid/TP40016308-CH10-SW1
+            // If you’re using all three APIs, it works well to use the URL of the relevant webpage as the value
+            // for uniqueIdentifier, relatedUniqueIdentifier, and webpageURL.
+            // https://developer.apple.com/library/archive/documentation/General/Conceptual/AppSearch/CombiningAPIs.html
             activity.webpageURL = value.webpageURL
             att.relatedUniqueIdentifier = value.webpageURL?.absoluteString
         }
 
         att.title = value.title
         // Make all indexed routes deletable
-        att.domainIdentifier = INDEXED_ROUTE
+        att.domainIdentifier = indexRouteTag
 
         if let localUrl = value.imageUrl?.path {
             att.thumbnailURL = value.imageUrl

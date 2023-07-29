@@ -63,11 +63,12 @@ func prefixDeepLink(fragment: String) -> String {
 }
 
 public class ExpoHeadAppDelegateSubscriber: ExpoAppDelegateSubscriber {
-    public func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+    public func application(_ application: UIApplication,
+                            continue userActivity: NSUserActivity,
+                            restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
         launchedActivity = userActivity
 
         if let wellKnownHref = userActivity.userInfo?["href"] as? String {
-            // TODO: Maybe just use the `webpageUrl` prop from the NSUserActivity.
             // From a stored NSUserActivity, e.g. Quick Note or Siri Reminder
             // From other native device to app
             sendFakeDeepLinkEventToReactNative(obj: self, url: prefixDeepLink(fragment: wellKnownHref))
@@ -76,7 +77,8 @@ public class ExpoHeadAppDelegateSubscriber: ExpoAppDelegateSubscriber {
             if let query = userActivity.userInfo?[CSSearchQueryString] as? String {
                 let schemes = InfoPlist.bundleURLSchemes()
                 let encodedQuery = query.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? query
-                // TODO: Allow user to define the scheme using structured data or something.
+                // swiftlint:disable:next todo
+                // TODO(EvanBacon): Allow user to define the scheme using structured data or something.
                 // opensearch = Chrome. spotlight = custom thing we're using to identify iOS
                 let url = "\(schemes[0])://search?q=\(encodedQuery)&ref=spotlight"
 
