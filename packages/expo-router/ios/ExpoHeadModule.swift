@@ -128,7 +128,6 @@ public class ExpoHeadModule: Module {
             self.activities.insert(activity)
         }
 
-        // TODO: https://gist.github.com/alexruperez/ea81aa3e371f7d0d7ea5e594d7e9ad08
         activity.targetContentIdentifier = value.id
         activity.persistentIdentifier = value.id
         activity.isEligibleForHandoff = value.isEligibleForHandoff
@@ -142,8 +141,6 @@ public class ExpoHeadModule: Module {
         }
 
         activity.userInfo = value.userInfo
-        // Required for handling incoming requests
-        //      activity.requiredUserInfoKeys = ["href"]
 
         if value.webpageURL != nil {
             // If you’re using all three APIs, it works well to use the URL of the relevant webpage as the value for uniqueIdentifier, relatedUniqueIdentifier, and webpageURL.

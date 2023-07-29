@@ -10,7 +10,7 @@ public struct InfoPlist {
     /// Returns the custom URL schemes registered by the app ('CFBundleURLSchemes' array).
     public static func bundleURLSchemes() -> [String] {
         guard let path = Bundle.main.path(forResource: "Info", ofType: "plist") else {
-            log.error("Can’t find path to Info.plist in the main bundle.")
+            log.error("Can't find path to Info.plist in the main bundle.")
             return []
         }
         guard
@@ -18,7 +18,7 @@ public struct InfoPlist {
             let anyDictionary = (infoDict["CFBundleURLTypes"] as? [[String: Any]])?.first,
             let urlSchemes = anyDictionary["CFBundleURLSchemes"] as? [String]
         else {
-            log.error("Can’t find path to CFBundleURLSchemes in the Info.plist.")
+            log.error("Can't find path to CFBundleURLSchemes in the Info.plist.")
             return []
         }
         return urlSchemes
