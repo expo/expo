@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Add support for `.mjs` extensions in Expo Metro. ([#23528](https://github.com/expo/expo/pull/23528) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

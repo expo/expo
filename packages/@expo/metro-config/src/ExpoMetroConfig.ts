@@ -81,7 +81,7 @@ export function getDefaultConfig(
     // noop -- falls back to a hardcoded value.
   }
 
-  const sourceExtsConfig = { isTS: true, isReact: true, isModern: false };
+  const sourceExtsConfig = { isTS: true, isReact: true, isModern: true };
   const sourceExts = getBareExtensions([], sourceExtsConfig);
 
   // Add support for cjs (without platform extensions).
@@ -97,15 +97,6 @@ export function getDefaultConfig(
 
   const envFiles = runtimeEnv.getFiles(process.env.NODE_ENV, { silent: true });
 
-  const resolverMainFields: string[] = [];
-
-  // Disable `react-native` in exotic mode, since library authors
-  // use it to ship raw application code to the project.
-  if (!isExotic) {
-    resolverMainFields.push('react-native');
-  }
-  resolverMainFields.push('browser', 'main');
-
   const pkg = getPackageJson(projectRoot);
   const watchFolders = getWatchFolders(projectRoot);
   // TODO: nodeModulesPaths does not work with the new Node.js package.json exports API, this causes packages like uuid to fail. Disabling for now.
@@ -118,7 +109,6 @@ export function getDefaultConfig(
     } catch {}
     console.log(`- Extensions: ${sourceExts.join(', ')}`);
     console.log(`- React Native: ${reactNativePath}`);
-    console.log(`- Resolver Fields: ${resolverMainFields.join(', ')}`);
     console.log(`- Watch Folders: ${watchFolders.join(', ')}`);
     console.log(`- Node Module Paths: ${nodeModulesPaths.join(', ')}`);
     console.log(`- Exotic: ${isExotic}`);
@@ -138,7 +128,9 @@ export function getDefaultConfig(
   const metroConfig: Partial<MetroConfig> = mergeConfig(metroDefaultValues, {
     watchFolders,
     resolver: {
-      resolverMainFields,
+      // unstable_conditionsByPlatform: { web: ['browser'] },
+      unstable_conditionNames: ['require', 'import', 'react-native'],
+      resolverMainFields: ['react-native', 'browser', 'main'],
       platforms: ['ios', 'android'],
       assetExts: metroDefaultValues.resolver.assetExts
         .concat(

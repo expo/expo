@@ -40,7 +40,10 @@ export const INTERNAL_CALLSITES_REGEX = new RegExp(
     `\\[native code\\]`,
     // Hide react-dom (web)
     'node_modules/react-dom/.+\\.js$',
+    // Block expo's metro-runtime
     '@expo/metro-runtime/build/.+\\.js$',
+    // Block upstream metro-runtime
+    '/metro-runtime/.+\\.js$',
   ].join('|')
 );
 

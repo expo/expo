@@ -54,10 +54,10 @@ export function withMetroResolvers(
   debug(
     `Appending ${
       resolvers.length
-    } custom resolvers to Metro config. (has custom resolver: ${!!config.resolver.resolveRequest})`
+    } custom resolvers to Metro config. (has custom resolver: ${!!config.resolver?.resolveRequest})`
   );
   const originalResolveRequest =
-    config.resolver.resolveRequest || getDefaultMetroResolver(projectRoot);
+    config.resolver?.resolveRequest || getDefaultMetroResolver(projectRoot);
 
   function mutateResolutionError(
     error: Error,
