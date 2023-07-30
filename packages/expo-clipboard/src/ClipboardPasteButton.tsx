@@ -8,8 +8,8 @@ import ExpoClipboardPasteButton from './ExpoClipboardPasteButton';
 /**
  * This component displays the `UIPasteControl` button on your screen. This allows pasting from the clipboard without requesting permission from the user.
  *
- * You should only attempt to render this if [`Clipboard.pasteButtonIsAvailable()`](#pasteButtonIsAvailable)
- * returns `true`. This component will render nothing if it is not available, and you will get
+ * You should only attempt to render this if [`Clipboard.isPasteButtonAvailable`](#ispastebuttonavailable)
+ * is `true`. This component will render nothing if it is not available, and you will get
  * a warning in development mode (`__DEV__ === true`).
  *
  * The properties of this component extend from `View`; however, you should not attempt to set
