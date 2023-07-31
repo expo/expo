@@ -24,14 +24,14 @@ Consider the following file structure which is used as an example in this guide:
   ]}
 />
 
-In the above example, **app/home/feed.js** matches `/home/feed` and **app/home/messages.js** matches `/home/messages`.
+In the above example, **app/home/feed.js** matches `/home/feed`, and **app/home/messages.js** matches `/home/messages`.
 
 ```jsx app/_layout.js
 import { Stack } from 'expo-router';
 export default Stack;
 ```
 
-This is nested in the **\_layout.js** layout, so it will be rendered as a stack.
+Both **app/_layout.js** and **app/index.js** below are nested in the **\_layout.js** layout, so it will be rendered as a stack.
 
 ```jsx app/home/_layout.js
 import { Tabs } from 'expo-router';
@@ -45,7 +45,7 @@ export default function Root() {
 }
 ```
 
-This is nested in the **home/\_layout.js** layout, so it will be rendered as a tab.
+Both **app/home/feed.js** and **app/home/messages.js** below are nested in the **home/\_layout.js** layout, so it will be rendered as a tab.
 
 ```jsx app/home/feed.js
 import { View, Text } from 'react-native';
