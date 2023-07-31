@@ -373,9 +373,6 @@ export async function withMetroMultiPlatformAsync(
 
   if (platformBundlers.web === 'metro') {
     await new WebSupportProjectPrerequisite(projectRoot).assertAsync();
-  } else if (!isTsconfigPathsEnabled) {
-    // Bail out early for performance enhancements if no special features are enabled.
-    return config;
   }
 
   let tsconfig: null | TsConfigPaths = null;
