@@ -14,7 +14,9 @@ public struct InfoPlist {
       return []
     }
     guard
+      // swiftlint:disable:next legacy_objc_type
       let infoDict = NSDictionary(contentsOfFile: path) as? [String: AnyObject],
+      // swiftlint:disable:next legacy_objc_type
       let anyDictionary = (infoDict["CFBundleURLTypes"] as? [[String: Any]])?.first,
       let urlSchemes = anyDictionary["CFBundleURLSchemes"] as? [String]
     else {
@@ -62,8 +64,8 @@ func prefixDeepLink(fragment: String) -> String {
 
 public class ExpoHeadAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   public func application(_ application: UIApplication,
-                  continue userActivity: NSUserActivity,
-                     restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+                          continue userActivity: NSUserActivity,
+                          restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
     launchedActivity = userActivity
 
     if let wellKnownHref = userActivity.userInfo?["href"] as? String {
