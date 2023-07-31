@@ -63,9 +63,11 @@ func prefixDeepLink(fragment: String) -> String {
 }
 
 public class ExpoHeadAppDelegateSubscriber: ExpoAppDelegateSubscriber {
-  public func application(_ application: UIApplication,
-                          continue userActivity: NSUserActivity,
-                          restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+  public func application(
+    _ application: UIApplication,
+    continue userActivity: NSUserActivity,
+    restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
+  ) -> Bool {
     launchedActivity = userActivity
 
     if let wellKnownHref = userActivity.userInfo?["href"] as? String {
