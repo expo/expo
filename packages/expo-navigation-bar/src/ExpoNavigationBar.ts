@@ -1,3 +1,1 @@
-import { requireNativeModule } from 'expo-modules-core';
-
-export default requireNativeModule('ExpoNavigationBar');
+export default {} as any;
