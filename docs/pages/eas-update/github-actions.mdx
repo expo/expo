@@ -103,6 +103,7 @@ jobs:
     name: EAS Update
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       pull-requests: write
     steps:
       - name: Check for EXPO_TOKEN
