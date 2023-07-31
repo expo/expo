@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Always apply custom Metro resolver in Expo CLI. ([#23784](https://github.com/expo/expo/pull/23784) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
