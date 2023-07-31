@@ -1,14 +1,14 @@
-const { getConfig, getNameFromConfig } = require("expo/config");
+const { getConfig, getNameFromConfig } = require('expo/config');
 // Use root to work better with create-react-app
 const DEFAULT_LANGUAGE_ISO_CODE = `en`;
-const DEFAULT_DISPLAY = "standalone";
-const DEFAULT_STATUS_BAR = "black-translucent";
+const DEFAULT_DISPLAY = 'standalone';
+const DEFAULT_STATUS_BAR = 'black-translucent';
 const DEFAULT_PREFER_RELATED_APPLICATIONS = true;
 // Convert expo value to PWA value
 function ensurePWAorientation(orientation) {
-  if (orientation && typeof orientation === "string") {
+  if (orientation && typeof orientation === 'string') {
     const webOrientation = orientation.toLowerCase();
-    if (webOrientation !== "default") {
+    if (webOrientation !== 'default') {
       return webOrientation;
     }
   }
@@ -17,18 +17,18 @@ function ensurePWAorientation(orientation) {
 
 const RESTRICTED_MANIFEST_FIELDS = [
   // Omit app.json properties that get removed during the native build
-  "facebookScheme",
-  "facebookAppId",
-  "facebookDisplayName",
+  'facebookScheme',
+  'facebookAppId',
+  'facebookDisplayName',
   // Remove iOS and Android.
-  "ios",
-  "android",
+  'ios',
+  'android',
   // Hide internal / build values
-  "plugins",
-  "hooks",
-  "_internal",
+  'plugins',
+  'hooks',
+  '_internal',
   // Remove metro-specific values
-  "assetBundlePatterns",
+  'assetBundlePatterns',
 ];
 function getExpoConstantsManifest(projectRoot) {
   const { exp } = getConfig(projectRoot, {
@@ -45,12 +45,7 @@ function applyWebDefaults(appJSON) {
   // For RN CLI support
   // @ts-ignore: expo object doesn't exist on ExpoConfig
   const appManifest = appJSON.expo || appJSON || {};
-  const {
-    web: webManifest = {},
-    splash = {},
-    ios = {},
-    android = {},
-  } = appManifest;
+  const { web: webManifest = {}, splash = {}, ios = {}, android = {} } = appManifest;
   // rn-cli apps use a displayName value as well.
   const { appName, webName } = getNameFromConfig(appJSON);
   const languageISOCode = webManifest.lang || DEFAULT_LANGUAGE_ISO_CODE;
@@ -64,9 +59,7 @@ function applyWebDefaults(appJSON) {
   const startUrl = webManifest.startUrl;
   const { scope, crossorigin } = webManifest;
   const barStyle = webManifest.barStyle || DEFAULT_STATUS_BAR;
-  const orientation = ensurePWAorientation(
-    webManifest.orientation || appManifest.orientation
-  );
+  const orientation = ensurePWAorientation(webManifest.orientation || appManifest.orientation);
   /**
    * **Splash screen background color**
    * `https://developers.google.com/web/fundamentals/web-app-manifest/#splash-screen`
@@ -88,8 +81,7 @@ function applyWebDefaults(appJSON) {
     webManifest.preferRelatedApplications === undefined
       ? DEFAULT_PREFER_RELATED_APPLICATIONS
       : webManifest.preferRelatedApplications;
-  const relatedApplications =
-    inferWebRelatedApplicationsFromConfig(appManifest);
+  const relatedApplications = inferWebRelatedApplicationsFromConfig(appManifest);
   return {
     ...appManifest,
     name: appName,
@@ -131,18 +123,12 @@ function applyWebDefaults(appJSON) {
  * Such applications are intended to be alternatives to the
  * website that provides similar/equivalent functionality — like the native app version of the website.
  */
-function inferWebRelatedApplicationsFromConfig({
-  web = {},
-  ios = {},
-  android = {},
-}) {
+function inferWebRelatedApplicationsFromConfig({ web = {}, ios = {}, android = {} }) {
   const relatedApplications = web.relatedApplications || [];
   const { bundleIdentifier, appStoreUrl } = ios;
   if (bundleIdentifier) {
-    const PLATFORM_ITUNES = "itunes";
-    const iosApp = relatedApplications.some(
-      ({ platform }) => platform === PLATFORM_ITUNES
-    );
+    const PLATFORM_ITUNES = 'itunes';
+    const iosApp = relatedApplications.some(({ platform }) => platform === PLATFORM_ITUNES);
     if (!iosApp) {
       relatedApplications.push({
         platform: PLATFORM_ITUNES,
@@ -153,16 +139,14 @@ function inferWebRelatedApplicationsFromConfig({
   }
   const { package: androidPackage, playStoreUrl } = android;
   if (androidPackage) {
-    const PLATFORM_PLAY = "play";
+    const PLATFORM_PLAY = 'play';
     const alreadyHasAndroidApp = relatedApplications.some(
       ({ platform }) => platform === PLATFORM_PLAY
     );
     if (!alreadyHasAndroidApp) {
       relatedApplications.push({
         platform: PLATFORM_PLAY,
-        url:
-          playStoreUrl ||
-          `http://play.google.com/store/apps/details?id=${androidPackage}`,
+        url: playStoreUrl || `http://play.google.com/store/apps/details?id=${androidPackage}`,
         id: androidPackage,
       });
     }

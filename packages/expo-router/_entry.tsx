@@ -5,11 +5,10 @@ import '@expo/metro-runtime';
 import React from 'react';
 
 import { ctx } from './_ctx';
-import { ExpoRoot } from './src';
-import { ExpoRootProps } from './src/ExpoRoot';
-import { getNavigationConfig } from './src/getLinkingConfig';
-import { getRoutes } from './src/getRoutes';
-import { loadStaticParamsAsync } from './src/loadStaticParamsAsync';
+import { ExpoRoot, ExpoRootProps } from './build/ExpoRoot';
+import { getNavigationConfig } from './build/getLinkingConfig';
+import { getRoutes } from './build/getRoutes';
+import { loadStaticParamsAsync } from './build/loadStaticParamsAsync';
 
 // Must be exported or Fast Refresh won't update the context >:[
 export default function ExpoRouterRoot(props: Omit<ExpoRootProps, 'context'>) {
