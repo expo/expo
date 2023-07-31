@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Always apply custom Metro resolver in Expo CLI.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
