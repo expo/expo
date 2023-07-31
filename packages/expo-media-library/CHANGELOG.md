@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- On iOS, fix issue where the wrong requester class was used if the user had requested `writeOnly` permissions.
+
 ### 💡 Others
 
 ## 15.5.0 — 2023-07-28
