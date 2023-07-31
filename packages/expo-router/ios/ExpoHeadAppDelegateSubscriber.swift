@@ -16,7 +16,6 @@ public struct InfoPlist {
     guard
       // swiftlint:disable:next legacy_objc_type
       let infoDict = NSDictionary(contentsOfFile: path) as? [String: AnyObject],
-      // swiftlint:disable:next legacy_objc_type
       let anyDictionary = (infoDict["CFBundleURLTypes"] as? [[String: Any]])?.first,
       let urlSchemes = anyDictionary["CFBundleURLSchemes"] as? [String]
     else {
@@ -33,6 +32,7 @@ func encoded(_ value: String) -> String {
 
 func sendFakeDeepLinkEventToReactNative(obj: Any, url: String) {
   NotificationCenter.default.post(
+    // swiftlint:disable:next legacy_objc_type
     name: NSNotification.Name(rawValue: "RCTOpenURLNotification"),
     object: obj,
     userInfo: ["url": url])
