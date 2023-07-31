@@ -6,7 +6,6 @@
  */
 import { ServerContainer } from '@react-navigation/native';
 import App, { getManifest } from 'expo-router/_entry';
-import Head from 'expo-router/head';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { AppRegistry } from 'react-native-web';

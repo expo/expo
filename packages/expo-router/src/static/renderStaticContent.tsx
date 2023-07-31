@@ -4,9 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import '@expo/metro-runtime';
 
 import { ServerContainer, ServerContainerRef } from '@react-navigation/native';
-import App, { getManifest } from 'expo-router/_entry';
+import { ctx } from 'expo-router/_ctx';
+import { ExpoRoot, ExpoRootProps } from 'expo-router/build/ExpoRoot';
+import { getNavigationConfig } from 'expo-router/build/getLinkingConfig';
+import { getRoutes } from 'expo-router/build/getRoutes';
+import { loadStaticParamsAsync } from 'expo-router/build/loadStaticParamsAsync';
 import Head from 'expo-router/head';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
@@ -14,7 +19,28 @@ import { AppRegistry } from 'react-native-web';
 
 import { getRootComponent } from './getRootComponent';
 
+/// <reference types="expo-router/index" />
+
 AppRegistry.registerComponent('App', () => App);
+
+// Must be exported or Fast Refresh won't update the context >:[
+function App(props: Omit<ExpoRootProps, 'context'>) {
+  return <ExpoRoot context={ctx} {...props} />;
+}
+
+/** Get the linking manifest from a Node.js process. */
+async function getManifest(options: any) {
+  const routeTree = getRoutes(ctx, options);
+
+  if (!routeTree) {
+    throw new Error('No routes found');
+  }
+
+  // Evaluate all static params
+  await loadStaticParamsAsync(routeTree);
+
+  return getNavigationConfig(routeTree);
+}
 
 function resetReactNavigationContexts() {
   // https://github.com/expo/router/discussions/588
