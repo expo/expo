@@ -4,13 +4,34 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import '@expo/metro-runtime';
 import { ServerContainer } from '@react-navigation/native';
-import App, { getManifest } from 'expo-router/_entry';
+import { ctx } from 'expo-router/_ctx';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { AppRegistry } from 'react-native-web';
+import { ExpoRoot } from '../ExpoRoot';
+import { getNavigationConfig } from '../getLinkingConfig';
+import { getRoutes } from '../getRoutes';
+import { Head } from '../head';
+import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
 import { getRootComponent } from './getRootComponent';
+/// <reference types="expo-router/index" />
 AppRegistry.registerComponent('App', () => App);
+// Must be exported or Fast Refresh won't update the context >:[
+function App(props) {
+    return React.createElement(ExpoRoot, { context: ctx, ...props });
+}
+/** Get the linking manifest from a Node.js process. */
+async function getManifest(options) {
+    const routeTree = getRoutes(ctx, options);
+    if (!routeTree) {
+        throw new Error('No routes found');
+    }
+    // Evaluate all static params
+    await loadStaticParamsAsync(routeTree);
+    return getNavigationConfig(routeTree);
+}
 function resetReactNavigationContexts() {
     // https://github.com/expo/router/discussions/588
     // https://github.com/react-navigation/react-navigation/blob/9fe34b445fcb86e5666f61e144007d7540f014fa/packages/elements/src/getNamedContext.tsx#LL3C1-L4C1

@@ -8,15 +8,15 @@ import '@expo/metro-runtime';
 
 import { ServerContainer, ServerContainerRef } from '@react-navigation/native';
 import { ctx } from 'expo-router/_ctx';
-import { ExpoRoot, ExpoRootProps } from 'expo-router/build/ExpoRoot';
-import { getNavigationConfig } from 'expo-router/build/getLinkingConfig';
-import { getRoutes } from 'expo-router/build/getRoutes';
-import { loadStaticParamsAsync } from 'expo-router/build/loadStaticParamsAsync';
-import Head from 'expo-router/head';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { AppRegistry } from 'react-native-web';
 
+import { ExpoRoot, ExpoRootProps } from '../ExpoRoot';
+import { getNavigationConfig } from '../getLinkingConfig';
+import { getRoutes } from '../getRoutes';
+import { Head } from '../head';
+import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
 import { getRootComponent } from './getRootComponent';
 
 /// <reference types="expo-router/index" />
