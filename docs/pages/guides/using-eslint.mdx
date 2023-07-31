@@ -34,7 +34,7 @@ Install ESLint in your project.
 
 <Step label="2">
 
-Create an ESLint config file––**.eslintrc.js**––in the project root.
+Create an ESLint config file called **.eslintrc.js** in the project root.
 
 ```js .eslintrc.js
 module.exports = {
@@ -51,7 +51,7 @@ module.exports = {
 
 <Step label="3">
 
-Add a **script** to your **package.json** to run ESLint.
+Add a `script` to your **package.json** to run ESLint.
 
 ```json package.json
 {
@@ -61,13 +61,13 @@ Add a **script** to your **package.json** to run ESLint.
 }
 ```
 
-You may want to replace the `.` with specific directories or files to lint. For example, if you use Expo Router, you can use `eslint app` to lint only your routes.
+You can replace the `.` with specific directories or files to lint. For example, if you use Expo Router, you can use the `eslint app` command to lint only your routes inside the **app** directory.
 
 </Step>
 
 ## Usage
 
-You can lint your code manually from the command-line with with the script:
+You can lint your code manually from the command-line with the script:
 
 <Tabs>
     <Tab label="npm">
@@ -80,13 +80,13 @@ You can lint your code manually from the command-line with with the script:
 
 </Tabs>
 
-If you're using VS Code, you can install the [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) to lint your code as you type (recommended).
+> **Recommended:** If you're using VS Code, install the [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) to lint your code as you type.
 
 ## Envrionment configuration
 
-ESLint is generally configured for a single environment, the source code in an Expo app, while written in JavaScript, is run in multiple different environments. For example, the **app.config.js**, **metro.config.js**, **babel.config.js**, and **app/+html.tsx** files are run in Node.js envrionments, this means they have access to the global `__dirname` variable, and can use Node.js modules like `path`. Standard Expo project files like **app/index.js** can be run in Hermes, Node.js, or the web browser.
+ESLint is generally configured for a single environment. However, the source code is written in JavaScript in an Expo app runs in multiple different environments. For example, the **app.config.js**, **metro.config.js**, **babel.config.js**, and **app/+html.tsx** files are run in a Node.js environment. It means they have access to the global `__dirname` variable and can use Node.js modules such as `path`. Standard Expo project files like **app/index.js** can be run in Hermes, Node.js, or the web browser.
 
-You can add the `eslint-env` comment directive to the top of a file to tell ESLint which environment the file is run in. For example, to tell ESLint that a file is run in Node.js, add the following comment to the top of the file:
+You can add the `eslint-env` comment directive to the top of a file to tell ESLint which environment the file is running in. For example, to tell ESLint that a file is run in Node.js, add the following comment to the top of the file:
 
 ```js metro.config.js
 /* eslint-env node */
@@ -104,11 +104,11 @@ module.exports = config;
 
 ### ESLint is not updating in VS Code
 
-If you're using VS Code, you may need to install the [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) to lint your code as you type. You can try restarting the ESLint server by running the command `ESLint: Restart ESLint Server` from the command palette (<kbd>cmd+shift+P</kbd>).
+If you're using VS Code, install the [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) to lint your code as you type. You can try restarting the ESLint server by running the command `ESLint: Restart ESLint Server` from the [command palette](https://code.visualstudio.com/docs/getstarted/userinterface#_command-palette).
 
 ### ESLint is slow
 
-ESLint can be slow to run on large projects, the easiest way to speed up the process is to lint fewer files. Add a **.eslintignore** file to your project root to ignore files and directories. For example:
+ESLint can be slow to run on large projects. The easiest way to speed up the process is to lint fewer files. Add a **.eslintignore** file to your project root to ignore certain files and directories such as:
 
 ```sh .eslintignore
 # @info Ignore the root <b>.expo</b> directory. #
