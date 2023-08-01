@@ -295,7 +295,7 @@ describe('static-rendering', () => {
   );
 });
 
-xdescribe('single-page', () => {
+describe('single-page', () => {
   // Render the entire static-rendering project using single-page mode.
   const projectRoot = ensureTesterReady('static-rendering');
   const outputDir = path.join(projectRoot, 'dist');
@@ -494,7 +494,7 @@ xdescribe('single-page', () => {
   );
 });
 
-xdescribe('url-polyfill', () => {
+describe('url-polyfill', () => {
   const projectRoot = ensureTesterReady('url-polyfill');
   const outputDir = path.join(projectRoot, 'dist');
 
