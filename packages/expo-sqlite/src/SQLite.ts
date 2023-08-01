@@ -121,6 +121,10 @@ export class SQLiteDatabase {
     });
   }
 
+  onSqliteUpdate(cb: (result: { tableName: string; rowId: number }) => void) {
+    return emitter.addListener('onSqliteUpdate', cb);
+  }
+
   /**
    * Creates a new transaction with Promise support.
    * @param asyncCallback A `SQLTransactionAsyncCallback` function that can perform SQL statements in a transaction.
@@ -236,6 +240,7 @@ export function openDatabase(
   db.closeAsync = db._db.closeAsync.bind(db._db);
   db.closeSync = db._db.closeSync.bind(db._db);
   db.onDatabaseChange = db._db.onDatabaseChange.bind(db._db);
+  db.onSqliteUpdate = db._db.onSqliteUpdate.bind(db._db);
   db.deleteAsync = db._db.deleteAsync.bind(db._db);
   db.transactionAsync = db._db.transactionAsync.bind(db._db);
   return db;

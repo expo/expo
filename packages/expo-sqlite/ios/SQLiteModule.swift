@@ -4,12 +4,13 @@ import sqlite3
 public final class SQLiteModule: Module {
   private var cachedDatabases = [String: OpaquePointer]()
   private var hasListeners = false
+  private lazy var selfPointer = Unmanaged.passRetained(self).toOpaque()
 
   public func definition() -> ModuleDefinition {
     Name("ExpoSQLite")
 
-    Events("onDatabaseUpdate")
-
+    Events("onDatabaseUpdate", "onSqliteUpdate")
+  
     OnCreate {
       crsqlite_init_from_swift()
     }
@@ -113,6 +114,17 @@ public final class SQLiteModule: Module {
       if sqlite3_open(path.absoluteString, &db) != SQLITE_OK {
         return nil
       }
+      
+      sqlite3_update_hook(db, { (obj, action, _, tableName, rowId) in
+        if let obj, let tableName {
+          let selfObj = Unmanaged<SQLiteModule>.fromOpaque(obj).takeUnretainedValue()
+          selfObj.sendEvent("onSqliteUpdate", [
+            "tableName": String(cString: UnsafePointer(tableName)),
+            "rowId": rowId,
+            "typeId": SqlAction.fromCode(value: action)
+          ])
+        }
+      }, selfPointer)
 
       cachedDatabases[dbName] = db
     }
@@ -234,5 +246,25 @@ public final class SQLiteModule: Module {
     let code = sqlite3_errcode(db)
     let message = NSString(utf8String: sqlite3_errmsg(db)) ?? ""
     return NSString(format: "Error code %i: %@", code, message) as String
+  }
+}
+
+
+enum SqlAction: Int, Enumerable {
+  case insert
+  case delete
+  case update
+  
+  static func fromCode(value: Int32) -> SqlAction {
+    switch value {
+    case 9:
+      return .delete
+    case 10:
+      return .insert
+    case 12:
+      return .update
+    default:
+      return .insert
+    }
   }
 }

@@ -31,6 +31,10 @@ export declare class SQLiteDatabase {
      */
     deleteAsync(): Promise<void>;
     onDatabaseChange(cb: SQLiteCallback): import("expo-modules-core").Subscription;
+    onSqliteUpdate(cb: (result: {
+        tableName: string;
+        rowId: number;
+    }) => void): import("expo-modules-core").Subscription;
     /**
      * Creates a new transaction with Promise support.
      * @param asyncCallback A `SQLTransactionAsyncCallback` function that can perform SQL statements in a transaction.
