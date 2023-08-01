@@ -27,7 +27,7 @@ module.exports = {
     typedRoutes: true,
   },
   web: {
-    output: process.env.EXPO_USE_STATIC ? 'static' : 'single',
+    output: process.env.EXPO_USE_STATIC === '1' ? 'static' : 'single',
     bundler: 'metro',
   },
   plugins: [
