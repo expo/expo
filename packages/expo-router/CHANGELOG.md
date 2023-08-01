@@ -12,4 +12,6 @@
 
 ### 🐛 Bug fixes
 
+- Fix exports.
+
 ### 💡 Others
