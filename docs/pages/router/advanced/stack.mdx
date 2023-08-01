@@ -189,7 +189,7 @@ By default, the `Stack` will deduplicate pages when pushing a route that is alre
 
 <FileTree files={['app/_layout.js', 'app/[user].js']} />
 
-You can use the `<Stack.Screen name="[user]" getId={} />` component in the layout component route to modify the pushing behavior.
+You can use the `<Stack.Screen name="[user]" getId={} />` component in the layout component route to modify the pushing behavior. In the following example, we use the `getId` function to push a new page every time the user navigates to a profile.
 
 ```jsx app/_layout.js
 import { Stack } from 'expo-router';
