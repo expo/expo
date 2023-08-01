@@ -1,4 +1,5 @@
 /* eslint-env jest */
+
 import findProcess from 'find-process';
 import os from 'os';
 import path from 'path';
@@ -17,6 +18,7 @@ export async function ensureTesterReadyAsync(fixtureName: string): Promise<strin
   // Clear metro cache for the env var to be updated
   // await fs.remove(path.join(root, "node_modules/.cache/metro"));
 
+  // @ts-ignore
   process.env.E2E_ROUTER_SRC = fixtureName;
 
   return root;
