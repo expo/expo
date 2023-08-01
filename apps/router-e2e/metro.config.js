@@ -13,10 +13,7 @@ const path = require('path');
 
 const root = path.join(projectRoot, '../..');
 
-config.watchFolders = [
-  projectRoot,
-  ...['packages', 'node_modules', 'react-native-lab'].map((v) => path.join(root, v)),
-];
+config.watchFolders = [projectRoot, ...['packages', 'node_modules'].map((v) => path.join(root, v))];
 
 config.resolver.blockList = [
   ...config.resolver.blockList,
