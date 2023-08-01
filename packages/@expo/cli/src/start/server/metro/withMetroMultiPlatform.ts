@@ -177,14 +177,6 @@ export function withExtendedResolver(
     debug('Skipping tsconfig.json paths support');
   }
 
-  const cacheMap = new Map<
-    // Module name
-    string,
-    // node module path
-    Set<string>
-  >();
-  const warningCache = new Set<string>();
-
   let nodejsSourceExtensions: string[] | null = null;
 
   return withMetroResolvers(config, projectRoot, [
@@ -316,50 +308,6 @@ export function withExtendedResolver(
 
       result ??= doResolve(moduleName);
 
-      // // Monorepo diffing warnings
-      // // TODO: Add platforms to the cache key
-      // if (result?.type === 'sourceFile' && isProbablyNodeModule(moduleName)) {
-      //   const pkgPath = findUpPackageJson(result.filePath);
-      //   if (pkgPath) {
-      //     const pkg = context.getPackage(pkgPath);
-      //     if (typeof pkg?.name === 'string') {
-      //       if (!cacheMap.has(pkg.name)) {
-      //         cacheMap.set(pkg.name, new Set([pkgPath]));
-      //       } else {
-      //         cacheMap.get(pkg.name)?.add(pkgPath);
-      //       }
-
-      //       if (cacheMap.get(pkg.name)?.size > 1) {
-      //         if (!warningCache.has(pkg.name)) {
-      //           warningCache.add(pkg.name);
-      //           const paths = Array.from(cacheMap.get(pkg.name) ?? []);
-
-      //           const pathInfo = paths.map((v) => {
-      //             return {
-      //               path: v,
-      //               relative: path.relative(projectRoot, path.dirname(v)),
-      //               version: context.getPackage(v)?.version,
-      //             };
-      //           });
-
-      //           const areIdentical = pathInfo.every((v) => v.version === pathInfo[0].version);
-
-      //           Log.warn(
-      //             chalk.yellow`\nUsing multiple ${
-      //               areIdentical ? chalk.green('copies') : chalk.red('versions')
-      //             } of {bold "${pkg.name}"}:\n${pathInfo
-      //               .map((v) => chalk.gray('- ' + v.relative + ` (${v.version})`))
-      //               .join('\n')}\nRequested from: ${path.relative(
-      //               projectRoot,
-      //               context.originModulePath
-      //             )}`
-      //           );
-      //         }
-      //       }
-      //     }
-      //   }
-      // }
-
       if (result) {
         // Replace the web resolver with the original one.
         // This is basically an alias for web-only.
@@ -371,27 +319,6 @@ export function withExtendedResolver(
       return result;
     },
   ]);
-}
-
-function isProbablyNodeModule(moduleName: string) {
-  if (moduleName.startsWith('.') || moduleName.startsWith('/') || moduleName.startsWith('@/')) {
-    return false;
-  }
-  return true;
-}
-
-function findUpPackageJson(projectRoot: string): string | null {
-  let previous = null;
-  let current = projectRoot;
-  while (previous !== current) {
-    const candidate = path.join(current, 'package.json');
-    if (fs.existsSync(candidate)) {
-      return candidate;
-    }
-    previous = current;
-    current = path.dirname(current);
-  }
-  return null;
 }
 
 /** @returns `true` if the incoming resolution should be swapped on web. */
