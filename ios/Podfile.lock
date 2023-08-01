@@ -2264,6 +2264,8 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoHaptics (12.4.0):
     - ExpoModulesCore
+  - ExpoHead (2.0.1):
+    - ExpoModulesCore
   - ExpoImage (1.4.0):
     - ExpoModulesCore
     - SDWebImage (~> 5.15.8)
@@ -3475,6 +3477,7 @@ DEPENDENCIES:
   - ExpoDocumentPicker (from `../packages/expo-document-picker/ios`)
   - ExpoGL (from `../packages/expo-gl`)
   - ExpoHaptics (from `../packages/expo-haptics/ios`)
+  - ExpoHead (from `../packages/expo-router/ios`)
   - ExpoImage (from `../packages/expo-image/ios`)
   - ExpoImageManipulator (from `../packages/expo-image-manipulator/ios`)
   - ExpoImagePicker (from `../packages/expo-image-picker/ios`)
@@ -4366,6 +4369,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-gl"
   ExpoHaptics:
     :path: "../packages/expo-haptics/ios"
+  ExpoHead:
+    :path: "../packages/expo-router/ios"
   ExpoImage:
     :path: "../packages/expo-image/ios"
   ExpoImageManipulator:
@@ -4923,6 +4928,7 @@ SPEC CHECKSUMS:
   ExpoDocumentPicker: 77603ff34122863e8011d96368c515f650da4094
   ExpoGL: ff70ada41e42fceefc9e8c8342f18e8cf6b339b1
   ExpoHaptics: 360af6898407ee4e8265d30a1a8fb16491a660eb
+  ExpoHead: 04cd9e62afc1efd225b1edcd05c119876db3c7ea
   ExpoImage: d940c1a403aa25cb4461a7e082f74676a3f7af0f
   ExpoImageManipulator: 8e2622c495f608e0599a479a724886e075081759
   ExpoImagePicker: 8db1880aa6147a799982f4d0748d2a2f9762870a
@@ -5058,6 +5064,6 @@ SPEC CHECKSUMS:
   Yoga: 8796b55dba14d7004f980b54bcc9833ee45b28ce
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: bcce4c9da3c04b2293f04d808c79568dddf33ff3
+PODFILE CHECKSUM: 3105ed43bf6053b4069c983367de5c39bb094d6f
 
 COCOAPODS: 1.12.1
