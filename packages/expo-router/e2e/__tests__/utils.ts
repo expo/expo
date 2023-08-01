@@ -1,21 +1,19 @@
 /* eslint-env jest */
-import findProcess from "find-process";
-import os from "os";
-import path from "path";
-import treeKill from "tree-kill";
-import { promisify } from "util";
+import findProcess from 'find-process';
+import os from 'os';
+import path from 'path';
+import treeKill from 'tree-kill';
+import { promisify } from 'util';
 
-export const bin = "expo-internal";
+export const bin = 'expo-internal';
 
 export function getTemporaryPath() {
   return path.join(os.tmpdir(), Math.random().toString(36).substring(2));
 }
 
-export async function ensureTesterReadyAsync(
-  fixtureName: string
-): Promise<string> {
-  const root = path.join(__dirname, "../../../../apps/tester");
-  console.log("Using fixture:", fixtureName);
+export async function ensureTesterReadyAsync(fixtureName: string): Promise<string> {
+  const root = path.join(__dirname, '../../../../apps/router-e2e');
+  console.log('Using fixture:', fixtureName);
   // Clear metro cache for the env var to be updated
   // await fs.remove(path.join(root, "node_modules/.cache/metro"));
 
@@ -27,7 +25,7 @@ export async function ensureTesterReadyAsync(
 const pTreeKill = promisify(treeKill);
 
 export async function ensurePortFreeAsync(port: number) {
-  const [portProcess] = await findProcess("port", port);
+  const [portProcess] = await findProcess('port', port);
   if (!portProcess) {
     return;
   }
@@ -36,8 +34,6 @@ export async function ensurePortFreeAsync(port: number) {
     await pTreeKill(portProcess.pid);
     console.log(`Killed process ${portProcess.name} on port ${port}`);
   } catch (error: any) {
-    console.log(
-      `Failed to kill process ${portProcess.name} on port ${port}: ${error.message}`
-    );
+    console.log(`Failed to kill process ${portProcess.name} on port ${port}: ${error.message}`);
   }
 }

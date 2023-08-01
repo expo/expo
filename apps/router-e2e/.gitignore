@@ -1,0 +1,3 @@
+# Preserve the root .env for testing.
+!/.env
+dist
