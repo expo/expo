@@ -6,16 +6,34 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.19.0 — 2023-07-28
+
+### 🎉 New features
+
 - New useUpdates() JS API. ([#23532](https://github.com/expo/expo/pull/23532) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 
 - [Android] Fix rollback embedded update logic. ([#23244](https://github.com/expo/expo/pull/23244) by [@wschurman](https://github.com/wschurman))
 - Correctly handle roll backs in JS module methods. ([#23356](https://github.com/expo/expo/pull/23356), [#23377](https://github.com/expo/expo/pull/23377) by [@wschurman](https://github.com/wschurman))
+- [iOS] Fix unmatched selection policy. ([#23535](https://github.com/expo/expo/pull/23535) by [@chochihim](https://github.com/chochihim))
+- Handle initialization errors in useUpdates(). ([#23640](https://github.com/expo/expo/pull/23640) by [@douglowder](https://github.com/douglowder))
+- [iOS] Fix error handling on iOS during startup check for updates. ([#23663](https://github.com/expo/expo/pull/23663) by [@douglowder](https://github.com/douglowder))
+- Last check dateTime should come from native. ([#23692](https://github.com/expo/expo/pull/23692) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others
 
 - Native getter for state machine context. ([#23428](https://github.com/expo/expo/pull/23428) by [@douglowder](https://github.com/douglowder))
+- [iOS] Fix template for EX_UPDATES_NATIVE_DEBUG. ([#23602](https://github.com/expo/expo/pull/23602) by [@douglowder](https://github.com/douglowder))
+
+## 0.18.11 - 2023-07-23
+
+### 💡 Others
+
 - [Android] EX_UPDATES_ANDROID_DELAY_LOAD_APP settable by env. ([#23479](https://github.com/expo/expo/pull/23479) by [@douglowder](https://github.com/douglowder))
 
 ## 0.18.10 - 2023-07-12
@@ -230,6 +248,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🛠 Breaking changes
 
+- Drop support for `logUrl` which sent console logs to the legacy `expo-cli`. ([#18596](https://github.com/expo/expo/pull/18596) by [@EvanBacon](https://github.com/EvanBacon))
 - [plugin] Upgrade minimum runtime requirement to Node 14 (LTS). ([#18204](https://github.com/expo/expo/pull/18204) by [@EvanBacon](https://github.com/EvanBacon))
 - Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
 

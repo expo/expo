@@ -1,0 +1,118 @@
+{
+  "name": "expo-router",
+  "version": "2.0.1",
+  "main": "build/index",
+  "types": "build/index.d.ts",
+  "files": [
+    "assets",
+    "build",
+    "ios",
+    "node",
+    "plugin",
+    "!src",
+    "types",
+    "_ctx.*",
+    "_error.js",
+    "app.plugin.js",
+    "babel.js",
+    "drawer.js",
+    "drawer.d.ts",
+    "entry.js",
+    "expo-module.config.json",
+    "head.js",
+    "head.d.ts",
+    "html.js",
+    "html.d.js",
+    "index.d.ts",
+    "stack.js",
+    "stack.d.ts",
+    "tabs.js",
+    "tabs.d.ts",
+    "testing-library.js",
+    "testing-library.d.ts"
+  ],
+  "repository": {
+    "url": "https://github.com/expo/expo.git",
+    "type": "git",
+    "directory": "packages/expo-router"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://docs.expo.dev/routing/introduction/",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "test:e2e": "jest --config e2e/jest.config.js",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "keywords": [
+    "react-native",
+    "expo"
+  ],
+  "jest": {
+    "preset": "jest-expo",
+    "roots": [
+      "src"
+    ],
+    "setupFilesAfterEnv": [
+      "./build/testing-library/mocks.js"
+    ]
+  },
+  "peerDependencies": {
+    "@react-navigation/drawer": "^6.5.8",
+    "expo": "^49.0.0",
+    "expo-constants": "*",
+    "expo-linking": "*",
+    "expo-status-bar": "*",
+    "metro": "~0.76.7",
+    "react-native-gesture-handler": "*",
+    "react-native-reanimated": "*",
+    "react-native-safe-area-context": "*",
+    "react-native-screens": "*"
+  },
+  "peerDependenciesMeta": {
+    "react-native-reanimated": {
+      "optional": true
+    },
+    "@react-navigation/drawer": {
+      "optional": true
+    },
+    "@testing-library/jest-native": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@testing-library/jest-native": "^5.4.2",
+    "@testing-library/react-native": "^12.0.1",
+    "@expo/spawn-async": "^1.6.0",
+    "@react-navigation/drawer": "^6.5.0",
+    "@types/execa": "^0.9.0",
+    "@types/fs-extra": "^11.0.1",
+    "@types/klaw-sync": "^6.0.1",
+    "@types/url-parse": "^1.4.8",
+    "execa": "^4",
+    "find-process": "^1.4.7",
+    "fs-extra": "^9.0.0",
+    "klaw-sync": "^6.0.0",
+    "tree-kill": "^1.2.2",
+    "tsd": "^0.28.1"
+  },
+  "dependencies": {
+    "@bacons/react-views": "^1.1.3",
+    "@expo/metro-runtime": "3.0.0",
+    "@radix-ui/react-slot": "1.0.1",
+    "@react-navigation/bottom-tabs": "~6.5.7",
+    "@react-navigation/native": "~6.1.6",
+    "@react-navigation/native-stack": "~6.9.12",
+    "expo-splash-screen": "0.21.0",
+    "query-string": "7.1.3",
+    "react-helmet-async": "^1.3.0",
+    "schema-utils": "^4.0.1",
+    "url": "^0.11.0"
+  }
+}

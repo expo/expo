@@ -1,0 +1,1 @@
+{"version":3,"file":"LoadingView.native.js","sourceRoot":"","sources":["../src/LoadingView.native.ts"],"names":[],"mappings":"AAAA,OAAO,WAAW,MAAM,8CAA8C,CAAC;AAEvE,eAAe,WAAW,CAAC","sourcesContent":["import LoadingView from 'react-native/Libraries/Utilities/LoadingView';\n\nexport default LoadingView;\n"]}

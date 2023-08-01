@@ -14,7 +14,7 @@
 
 @implementation EXModuleRegistryAdapter
 
-- (instancetype)initWithModuleRegistryProvider:(EXModuleRegistryProvider *)moduleRegistryProvider
+- (nonnull instancetype)initWithModuleRegistryProvider:(EXModuleRegistryProvider *)moduleRegistryProvider
 {
   if (self = [super init]) {
     _moduleRegistryProvider = moduleRegistryProvider;

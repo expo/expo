@@ -20,6 +20,7 @@ export type UseUpdatesStateType = {
   downloadedUpdate?: UpdateInfo;
   checkError?: Error;
   downloadError?: Error;
+  initializationError?: Error;
   isUpdateAvailable: boolean;
   isUpdatePending: boolean;
   isChecking: boolean;
@@ -73,8 +74,6 @@ export const reduceUpdatesStateFromContext: (
     downloadedUpdate,
     checkError: context.checkError,
     downloadError: context.downloadError,
-    lastCheckForUpdateTimeSinceRestart: context.isChecking
-      ? new Date()
-      : updatesState.lastCheckForUpdateTimeSinceRestart,
+    lastCheckForUpdateTimeSinceRestart: context.lastCheckForUpdateTime,
   };
 };

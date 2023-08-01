@@ -2,6 +2,7 @@
 
 #import <Foundation/FoundationErrors.h>
 
+#import <ExpoModulesCore/EXSingletonModule.h>
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 #import <ExpoModulesCore/EXLegacyAppDelegateWrapper.h>
 

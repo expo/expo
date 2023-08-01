@@ -28,6 +28,7 @@ import expo.modules.interfaces.sensors.SensorServiceInterface
 import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.kotlin.activityresult.ActivityResultsManager
 import expo.modules.kotlin.activityresult.DefaultAppContextActivityResultCaller
+import expo.modules.kotlin.defaultmodules.CoreModule
 import expo.modules.kotlin.defaultmodules.ErrorManagerModule
 import expo.modules.kotlin.defaultmodules.NativeModulesProxyModule
 import expo.modules.kotlin.events.EventEmitter
@@ -40,6 +41,7 @@ import expo.modules.kotlin.jni.JSIInteropModuleRegistry
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.providers.CurrentActivityProvider
 import expo.modules.kotlin.sharedobjects.SharedObjectRegistry
+import expo.modules.kotlin.tracing.trace
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -59,6 +61,17 @@ class AppContext(
 
   // We postpone creating the `JSIInteropModuleRegistry` to not load so files in unit tests.
   internal lateinit var jsiInterop: JSIInteropModuleRegistry
+
+  /**
+   * The core module that defines the `expo` object in the global scope of the JS runtime.
+   *
+   * Note: in current implementation this module won't receive any events.
+   */
+  internal val coreModule = run {
+    val module = CoreModule()
+    module._appContext = this
+    ModuleHolder(module)
+  }
 
   internal val sharedObjectRegistry = SharedObjectRegistry()
 
@@ -120,26 +133,28 @@ class AppContext(
    * Initializes a JSI part of the module registry.
    * It will be a NOOP if the remote debugging was activated.
    */
-  fun installJSIInterop() = synchronized<Unit>(this) {
-    try {
-      jsiInterop = JSIInteropModuleRegistry(this)
-      val reactContext = reactContextHolder.get() ?: return
-      val jsContextProvider = legacyModule<JavaScriptContextProvider>() ?: return
-      val jsContextHolder = jsContextProvider.javaScriptContextRef
-      val catalystInstance = reactContext.catalystInstance ?: return
-      jsContextHolder
-        .takeIf { it != 0L }
-        ?.let {
-          jsiInterop.installJSI(
-            it,
-            jniDeallocator,
-            jsContextProvider.jsCallInvokerHolder,
-            catalystInstance.nativeCallInvokerHolder as CallInvokerHolderImpl
-          )
-          logger.info("✅ JSI interop was installed")
-        }
-    } catch (e: Throwable) {
-      logger.error("❌ Cannot install JSI interop: $e", e)
+  fun installJSIInterop() = synchronized(this) {
+    trace("AppContext.installJSIInterop") {
+      try {
+        jsiInterop = JSIInteropModuleRegistry(this)
+        val reactContext = reactContextHolder.get() ?: return@trace
+        val jsContextProvider = legacyModule<JavaScriptContextProvider>() ?: return@trace
+        val jsContextHolder = jsContextProvider.javaScriptContextRef
+        val catalystInstance = reactContext.catalystInstance ?: return@trace
+        jsContextHolder
+          .takeIf { it != 0L }
+          ?.let {
+            jsiInterop.installJSI(
+              it,
+              jniDeallocator,
+              jsContextProvider.jsCallInvokerHolder,
+              catalystInstance.nativeCallInvokerHolder as CallInvokerHolderImpl
+            )
+            logger.info("✅ JSI interop was installed")
+          }
+      } catch (e: Throwable) {
+        logger.error("❌ Cannot install JSI interop: $e", e)
+      }
     }
   }
 
@@ -271,10 +286,11 @@ class AppContext(
   internal val errorManager: ErrorManagerModule?
     get() = registry.getModule()
 
-  internal fun onDestroy() {
+  internal fun onDestroy() = trace("AppContext.onDestroy") {
     reactContextHolder.get()?.removeLifecycleEventListener(reactLifecycleDelegate)
     registry.post(EventName.MODULE_DESTROY)
     registry.cleanUp()
+    coreModule.module._appContext = null
     modulesQueue.cancel(ContextDestroyedException())
     mainQueue.cancel(ContextDestroyedException())
     backgroundCoroutineScope.cancel(ContextDestroyedException())

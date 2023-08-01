@@ -253,6 +253,7 @@ export type UpdatesNativeStateMachineContext = {
     downloadedManifest?: Manifest;
     checkError?: Error;
     downloadError?: Error;
+    lastCheckForUpdateTime?: Date;
 };
 /**
  * @hidden
