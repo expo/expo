@@ -71,15 +71,9 @@
     "expo-keep-awake": "~12.4.0",
     "expo-modules-autolinking": "1.5.0",
     "expo-modules-core": "1.6.0",
-    "fbemitter": "^3.0.0",
-    "invariant": "^2.2.4",
-    "md5-file": "^3.2.3",
-    "node-fetch": "^2.6.7",
-    "pretty-format": "^26.5.2"
+    "md5-file": "^3.2.3"
   },
   "devDependencies": {
-    "@types/fbemitter": "^2.0.32",
-    "@types/invariant": "^2.2.33",
     "@types/react": "~18.0.14",
     "@types/react-test-renderer": "^18.0.0",
     "expo-module-scripts": "^3.0.12",
