@@ -10,7 +10,7 @@ public final class SQLiteModule: Module {
     Name("ExpoSQLite")
 
     Events("onDatabaseUpdate", "onSqliteUpdate")
-  
+
     OnCreate {
       crsqlite_init_from_swift()
     }
@@ -114,7 +114,7 @@ public final class SQLiteModule: Module {
       if sqlite3_open(path.absoluteString, &db) != SQLITE_OK {
         return nil
       }
-      
+
       sqlite3_update_hook(db, { (obj, action, _, tableName, rowId) in
         if let obj, let tableName {
           let selfObj = Unmanaged<SQLiteModule>.fromOpaque(obj).takeUnretainedValue()
@@ -249,12 +249,11 @@ public final class SQLiteModule: Module {
   }
 }
 
-
 enum SqlAction: Int, Enumerable {
   case insert
   case delete
   case update
-  
+
   static func fromCode(value: Int32) -> SqlAction {
     switch value {
     case 9:
