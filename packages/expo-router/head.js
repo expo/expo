@@ -1,1 +1,1 @@
-module.exports.default = require('./build/head/index').Head;
+export { Head as default } from './build/head/ExpoHead';
