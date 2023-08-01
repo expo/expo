@@ -106,6 +106,7 @@ describe('static-rendering', () => {
       // Normal routes
       expect(files).toContain('about.html');
       expect(files).toContain('index.html');
+      expect(files).toContain('styled.html');
 
       // generateStaticParams values
       expect(files).toContain('[post].html');
@@ -148,11 +149,69 @@ describe('static-rendering', () => {
   it(
     'static styles are injected',
     async () => {
+      const indexHtml = await getPageHtml(outputDir, 'index.html');
+      expect(indexHtml.querySelectorAll('html > head > style')?.length).toBe(
+        // React Native and Expo resets
+        2
+      );
+      // The Expo style reset
+      expect(indexHtml.querySelector('html > head > style#expo-reset')?.innerHTML).toEqual(
+        expect.stringContaining('#root,body{display:flex}')
+      );
+
       expect(
-        (await getPageHtml(outputDir, 'index.html')).querySelector(
-          'html > head > style#react-native-stylesheet'
-        )?.innerHTML
+        indexHtml.querySelector('html > head > style#react-native-stylesheet')?.innerHTML
       ).toEqual(expect.stringContaining('[stylesheet-group="0"]{}'));
+    },
+    2 * 1000
+  );
+
+  it(
+    'statically extracts CSS',
+    async () => {
+      // Unfortunately, the CSS is injected in every page for now since we don't have bundle splitting.
+      const indexHtml = await getPageHtml(outputDir, 'index.html');
+
+      const links = indexHtml.querySelectorAll('html > head > link');
+      expect(links.length).toBe(
+        // Global CSS and CSS Module
+        4
+      );
+
+      links.forEach((link) => {
+        // Linked to the expected static location
+        expect(link.attributes.href).toMatch(/^\/_expo\/static\/css\/.*\.css$/);
+      });
+
+      expect(links[0].toString()).toMatchInlineSnapshot(
+        `"<link rel="preload" href="/_expo/static/css/global-67b6bc5b348b2db946e81c5f0040f565.css" as="style">"`
+      );
+      expect(links[1].toString()).toMatchInlineSnapshot(
+        `"<link rel="stylesheet" href="/_expo/static/css/global-67b6bc5b348b2db946e81c5f0040f565.css">"`
+      );
+      // CSS Module
+      expect(links[2].toString()).toMatch(
+        /\<link rel="preload" href="\/_expo\/static\/css\/test\.module-[\d\w]+\.css" as="style">/
+      );
+      expect(links[3].toString()).toMatch(
+        /\<link rel="stylesheet" href="\/_expo\/static\/css\/test\.module-[\d\w]+\.css">/
+      );
+
+      expect(
+        fs.readFileSync(path.join(outputDir, links[0].attributes.href), 'utf-8')
+      ).toMatchInlineSnapshot(`"div{background:#0ff}"`);
+
+      // CSS Module
+      expect(
+        fs.readFileSync(path.join(outputDir, links[2].attributes.href), 'utf-8')
+      ).toMatchInlineSnapshot(`".HPV33q_text{color:#1e90ff}"`);
+
+      const styledHtml = await getPageHtml(outputDir, 'styled.html');
+
+      // Ensure the atomic CSS class is used
+      expect(
+        styledHtml.querySelector('html > body div[data-testid="styled-text"]')?.attributes.class
+      ).toMatch('HPV33q_text');
     },
     2 * 1000
   );

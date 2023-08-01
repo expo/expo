@@ -5,5 +5,9 @@ import '../global.css';
 import { unstable_styles } from '../test.module.css';
 
 export default function Page() {
-  return <Text style={unstable_styles.text}>Hello World</Text>;
+  return (
+    <Text testID="styled-text" style={unstable_styles.text}>
+      Hello World
+    </Text>
+  );
 }
