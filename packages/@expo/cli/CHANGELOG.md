@@ -15,6 +15,8 @@
 
 ### 💡 Others
 
+- Update Expo Router tests.
+
 ## 0.11.0 — 2023-07-28
 
 - Fixed typo in connection message when opening React DevTools ([#23672](https://github.com/expo/expo/pull/23672) by [@frankcalise](https://github.com/frankcalise))
