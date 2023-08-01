@@ -1,0 +1,1 @@
+{"version":3,"file":"useLinking.js","sourceRoot":"","sources":["../../src/fork/useLinking.ts"],"names":[],"mappings":"AAAA,OAAO,UAAU,MAAM,gDAAgD,CAAC;AAExE,eAAe,UAA0D,CAAC","sourcesContent":["import useLinking from '@react-navigation/native/lib/module/useLinking';\n\nexport default useLinking as typeof import('./useLinking.native').default;\n"]}
