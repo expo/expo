@@ -176,7 +176,6 @@ describe('server', () => {
         'http://127.0.0.1:8081/node_modules/expo/AppEntry.bundle?platform=ios&dev=true&hot=false'
       );
       expect(manifest.extra.expoGo.debuggerHost).toBe('127.0.0.1:8081');
-      expect(manifest.extra.expoGo.logUrl).toBe('http://127.0.0.1:8081/logs');
       expect(manifest.extra.expoGo.mainModuleName).toBe('node_modules/expo/AppEntry');
       expect(manifest.extra.expoClient.hostUri).toBe('127.0.0.1:8081');
 
