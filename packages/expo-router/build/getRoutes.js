@@ -175,7 +175,7 @@ function treeNodeToRouteNode(tree) {
     }
     return folderNodeToRouteNode(tree);
 }
-function contextModuleToFileNodes(contextModule, files = contextModule.keys()) {
+function contextModuleToFileNodes(contextModule, options = {}, files = contextModule.keys()) {
     const nodes = files.map((key) => {
         // In development, check if the file exports a default component
         // this helps keep things snappy when creating files. In production we load all screens lazily.
@@ -184,14 +184,25 @@ function contextModuleToFileNodes(contextModule, files = contextModule.keys()) {
                 // If the user has set the `EXPO_ROUTER_IMPORT_MODE` to `sync` then we should
                 // filter the missing routes.
                 if (EXPO_ROUTER_IMPORT_MODE === 'sync') {
-                    if (!contextModule(key)?.default) {
+                    const isApi = key.match(/\+api\.[jt]sx?$/);
+                    if (!isApi && !contextModule(key)?.default) {
                         return null;
                     }
                 }
             }
             const node = {
                 loadRoute() {
-                    return contextModule(key);
+                    if (options.ignoreRequireErrors) {
+                        try {
+                            return contextModule(key);
+                        }
+                        catch {
+                            return {};
+                        }
+                    }
+                    else {
+                        return contextModule(key);
+                    }
                 },
                 normalizedName: getNameFromFilePath(key),
                 contextKey: key,
@@ -271,6 +282,9 @@ export async function getRoutesAsync(contextModule, options) {
 }
 function getIgnoreList(options) {
     const ignore = [/^\.\/\+html\.[tj]sx?$/, ...(options?.ignore ?? [])];
+    if (options?.preserveApiRoutes !== true) {
+        ignore.push(/\+api\.[tj]sx?$/);
+    }
     return ignore;
 }
 /** Get routes without unmatched or sitemap. */
@@ -285,7 +299,7 @@ function contextModuleToTree(contextModule, options) {
         ignore: getIgnoreList(options),
     });
     assertDuplicateRoutes(allowed);
-    const files = contextModuleToFileNodes(contextModule, allowed);
+    const files = contextModuleToFileNodes(contextModule, options, allowed);
     return getRecursiveTree(files);
 }
 export async function getExactRoutesAsync(contextModule, options) {

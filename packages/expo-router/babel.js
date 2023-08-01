@@ -130,6 +130,11 @@ module.exports = function (api) {
     visitor: {
       // Add support for Node.js __filename
       Identifier(path, state) {
+        // Prevent converting object keys
+        if (path.parentPath.isObjectProperty()) {
+          return;
+        }
+
         if (path.node.name === '__filename') {
           path.replaceWith(
             t.stringLiteral(

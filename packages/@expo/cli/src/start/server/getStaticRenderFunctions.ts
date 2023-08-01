@@ -233,10 +233,7 @@ export async function getExpoRouteManifestBuilderAsync(
     dev: boolean;
   }
 ) {
-  const matchNodePath = path.join(
-    resolveFrom(projectRoot, 'expo-router/package.json'),
-    '../routes-manifest.ts'
-  );
+  const matchNodePath = resolveFrom(projectRoot, 'expo-router/build/routes-manifest');
 
   try {
     const { createRoutesManifest } = await requireWithMetro<{

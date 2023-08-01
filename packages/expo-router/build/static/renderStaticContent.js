@@ -24,7 +24,7 @@ function App(props) {
 }
 /** Get the linking manifest from a Node.js process. */
 async function getManifest(options) {
-    const routeTree = getRoutes(ctx, options);
+    const routeTree = getRoutes(ctx, { preserveApiRoutes: true, ...options });
     if (!routeTree) {
         throw new Error('No routes found');
     }
