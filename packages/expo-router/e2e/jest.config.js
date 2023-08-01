@@ -1,3 +1,5 @@
+/* eslint-env node */
+
 const path = require('path');
 
 const roots = ['.'];
@@ -10,5 +12,4 @@ module.exports = {
   rootDir: path.resolve(__dirname),
   displayName: require('../package').name,
   roots,
-  setupFilesAfterEnv: ['./types.d.ts'],
 };
