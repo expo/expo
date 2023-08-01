@@ -1,15 +1,26 @@
 const { createMetroConfiguration } = require('expo-yarn-workspaces');
 const path = require('path');
 
-const baseConfig = createMetroConfiguration(__dirname);
+/** @type {import('expo/metro-config').MetroConfig} */
+const baseConfig = createMetroConfiguration(__dirname, {
+  isCSSEnabled: true,
+});
 
-if (process.env.EXPO_USE_EXOTIC) {
-  // Use the custom transformer when exotic is enabled.
-  baseConfig.transformer.babelTransformerPath = require.resolve('./metro.transformer.js');
-}
+const root = path.join(__dirname, '../..');
 
 // To test NCL from Expo Go, the react-native js source is from our fork.
-const reactNativeRoot = path.join(__dirname, '..', '..', 'react-native-lab', 'react-native', 'packages', 'react-native');
+const reactNativeRoot = path.join(
+  root,
+  'react-native-lab',
+  'react-native',
+  'packages',
+  'react-native'
+);
+
+baseConfig.watchFolders = [
+  __dirname,
+  ...['packages', 'node_modules', 'react-native-lab'].map((v) => path.join(root, v)),
+];
 
 module.exports = {
   ...baseConfig,
