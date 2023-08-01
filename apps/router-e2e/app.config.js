@@ -36,7 +36,7 @@ module.exports = {
       {
         asyncRoutes: process.env.E2E_ROUTER_ASYNC,
         // THIS WILL BREAK YOUR APP -- DO NOT USE!
-        unstable_src: path.join('__e2e__', process.env.E2E_ROUTER_SRC, 'app'),
+        unstable_src: path.join('__e2e__', process.env.E2E_ROUTER_SRC ?? 'static-rendering', 'app'),
         origin: 'https://smart-symbiote.netlify.app/',
       },
     ],
