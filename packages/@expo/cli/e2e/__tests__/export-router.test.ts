@@ -61,11 +61,11 @@ beforeEach(() => ensurePortFreeAsync(19000));
 
 describe('static-rendering', () => {
   const projectRoot = ensureTesterReady('static-rendering');
-  const outputDir = path.join(projectRoot, 'dist');
+  const outputDir = path.join(projectRoot, 'dist-static-rendering');
 
   beforeAll(
     async () => {
-      await execa('npx', ['expo', 'export', '-p', 'web'], {
+      await execa('npx', ['expo', 'export', '-p', 'web', '--output-dir', 'dist-static-rendering'], {
         cwd: projectRoot,
         env: {
           NODE_ENV: 'production',
@@ -298,7 +298,7 @@ describe('static-rendering', () => {
 describe('single-page', () => {
   // Render the entire static-rendering project using single-page mode.
   const projectRoot = ensureTesterReady('static-rendering');
-  const outputDir = path.join(projectRoot, 'dist');
+  const outputDir = path.join(projectRoot, 'dist-spa');
 
   beforeAll(
     async () => {
@@ -310,6 +310,8 @@ describe('single-page', () => {
           '-p',
           'web',
           // '--clear'
+          '--output-dir',
+          'dist-spa',
         ],
         {
           cwd: projectRoot,
@@ -496,11 +498,11 @@ describe('single-page', () => {
 
 describe('url-polyfill', () => {
   const projectRoot = ensureTesterReady('url-polyfill');
-  const outputDir = path.join(projectRoot, 'dist');
+  const outputDir = path.join(projectRoot, 'dist-url-polyfill');
 
   beforeAll(
     async () => {
-      await execa('npx', ['expo', 'export', '-p', 'ios'], {
+      await execa('npx', ['expo', 'export', '-p', 'ios', '--output-dir', 'dist-url-polyfill'], {
         cwd: projectRoot,
         env: {
           NODE_ENV: 'production',
