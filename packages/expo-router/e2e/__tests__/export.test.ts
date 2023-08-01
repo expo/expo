@@ -4,8 +4,9 @@ import execa from 'execa';
 import fs from 'fs-extra';
 import klawSync from 'klaw-sync';
 import path from 'path';
+import * as htmlParser from 'node-html-parser';
 
-import { bin, ensurePortFreeAsync, ensureTesterReadyAsync } from './utils';
+import { bin, ensurePortFreeAsync, ensureTesterReady } from './utils';
 
 declare const process: {
   env: {
@@ -25,120 +26,216 @@ declare const process: {
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
 
-beforeAll(async () => {
+function clearEnv() {
   process.env.FORCE_COLOR = '0';
   process.env.CI = '1';
   process.env.EXPO_USE_PATH_ALIASES = '1';
   delete process.env.EXPO_USE_STATIC;
-});
-
-afterAll(() => {
+}
+function restoreEnv() {
   process.env.FORCE_COLOR = originalForceColor;
   process.env.CI = originalCI;
   delete process.env.EXPO_USE_PATH_ALIASES;
+}
+beforeAll(async () => {
+  clearEnv();
+});
+
+afterAll(() => {
+  restoreEnv();
 });
 
 beforeEach(() => ensurePortFreeAsync(19000));
 
-it(
-  'exports with custom +html.js wrapper',
-  async () => {
-    const projectRoot = await ensureTesterReadyAsync('static-rendering');
+describe('static-rendering', () => {
+  const projectRoot = ensureTesterReady('static-rendering');
+  const outputDir = path.join(projectRoot, 'dist');
 
-    await execa('npx', [bin, 'export', '-p', 'web'], {
-      cwd: projectRoot,
-      env: {
-        NODE_ENV: 'production',
-        EXPO_USE_STATIC: '1',
-        E2E_ROUTER_SRC: 'static-rendering',
-        E2E_ROUTER_ASYNC: 'development',
-      },
-    });
-
-    const outputDir = path.join(projectRoot, 'dist');
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(outputDir)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(outputDir, entry.path);
-      })
-      .filter(Boolean);
-
-    const metadata = await JsonFile.readAsync(path.resolve(outputDir, 'metadata.json'));
-
-    expect(metadata).toEqual({
-      bundler: 'metro',
-      fileMetadata: {
-        web: {
-          assets: expect.anything(),
-          bundle: expect.stringMatching(/bundles\/web-.*\.js/),
+  beforeAll(
+    async () => {
+      await execa('npx', [bin, 'export', '-p', 'web'], {
+        cwd: projectRoot,
+        env: {
+          NODE_ENV: 'production',
+          EXPO_USE_STATIC: '1',
+          E2E_ROUTER_SRC: 'static-rendering',
+          E2E_ROUTER_ASYNC: 'development',
         },
-      },
-      version: 0,
-    });
+      });
+    },
+    // Could take 45s depending on how fast npm installs
+    240 * 1000
+  );
 
-    // The wrapper should not be included as a route.
-    expect(files).not.toContain('+html.html');
-    expect(files).toContain('index.html');
-    expect(files).toContain('_sitemap.html');
-    expect(files).toContain('[...404].html');
+  it(
+    'has expected files',
+    async () => {
+      // List output files with sizes for snapshotting.
+      // This is to make sure that any changes to the output are intentional.
+      // Posix path formatting is used to make paths the same across OSes.
+      const files = klawSync(outputDir)
+        .map((entry) => {
+          if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
+            return null;
+          }
+          return path.posix.relative(outputDir, entry.path);
+        })
+        .filter(Boolean);
 
-    // expect(files).toContain('welcome-to-the-universe.html');
-    // expect(files).toContain('other.html');
-    // expect(files).toContain('[post].html');
-    // expect(await fs.readFile(path.join(outputDir, 'welcome-to-the-universe.html'), 'utf8')).toContain('Post: <!-- -->welcome-to-the-universe');
+      const metadata = await JsonFile.readAsync(path.resolve(outputDir, 'metadata.json'));
 
-    // expect(files).toContain(expect.stringMatching(/bundles\/web-.*\.js/));
+      expect(metadata).toEqual({
+        bundler: 'metro',
+        fileMetadata: {
+          web: {
+            assets: expect.anything(),
+            bundle: expect.stringMatching(/bundles\/web-.*\.js/),
+          },
+        },
+        version: 0,
+      });
 
-    const page = await fs.readFile(path.join(outputDir, 'index.html'), 'utf8');
+      // The wrapper should not be included as a route.
+      expect(files).not.toContain('+html.html');
+      expect(files).not.toContain('_layout.html');
 
-    expect(page).toContain('<meta name="custom-value" content="value"/>');
+      // Injected by framework
+      expect(files).toContain('_sitemap.html');
+      expect(files).toContain('[...404].html');
 
-    // Root element
-    expect(page).toContain('<div id="root">');
+      // Normal routes
+      expect(files).toContain('about.html');
+      expect(files).toContain('index.html');
 
-    const sanitized = page.replace(
-      /<script src="\/_expo\/static\/js\/web\/.*" defer>/g,
-      '<script src="/_expo/static/js/web/[mock].js" defer>'
-    );
-    expect(sanitized).toMatchSnapshot();
+      // generateStaticParams values
+      expect(files).toContain('[post].html');
+      expect(files).toContain('welcome-to-the-universe.html');
+      expect(files).toContain('other.html');
+    },
+    2 * 1000
+  );
 
-    expect(await fs.readFile(path.join(outputDir, 'index.html'), 'utf8')).toContain(
-      '<meta name="expo-e2e-pathname" content="/"/>'
-    );
+  it(
+    'can use environment variables',
+    async () => {
+      const indexHtml = await getPageHtml(outputDir, 'index.html');
 
-    expect(await fs.readFile(path.join(outputDir, 'about.html'), 'utf8')).toContain(
-      '<meta name="expo-e2e-pathname" content="/about"/>'
-    );
+      const queryMeta = (name: string) =>
+        indexHtml.querySelector(`html > head > meta[name="${name}"]`)?.attributes.content;
 
-    // // Test nested head tags
-    // const aboutPage = await fs.readFile(path.join(outputDir, 'about.html'), 'utf8');
+      // Injected in app/+html.js
+      expect(queryMeta('expo-e2e-public-env-var')).toEqual('foobar');
+      // non-public env vars are injected during SSG
+      expect(queryMeta('expo-e2e-private-env-var')).toEqual('not-public-value');
 
-    // // If this breaks, it's likely because the Server context is not the same between the client and server.
-    // // Route-specific head tags
-    // expect(aboutPage).toContain(`<title data-rh="true">About | Website</title>`);
+      // Injected in app/_layout.js
+      expect(queryMeta('expo-e2e-public-env-var-client')).toEqual('foobar');
+      // non-public env vars are injected during SSG
+      expect(queryMeta('expo-e2e-private-env-var-client')).toEqual('not-public-value');
 
-    // // Nested head tags from layout route
-    // expect(aboutPage).toContain('<meta data-rh="true" name="fake" content="bar"/>');
+      indexHtml.querySelectorAll('script').forEach((script) => {
+        const jsBundle = fs.readFileSync(path.join(outputDir, script.attributes.src), 'utf8');
 
-    // // Content of the page
-    // expect(aboutPage).toContain('data-testid="content">About</div>');
+        // Ensure the bundle is valid
+        expect(jsBundle).toMatch('__BUNDLE_START_TIME__');
+        // Ensure the non-public env var is not included in the bundle
+        expect(jsBundle).not.toMatch('not-public-value');
+      });
+    },
+    2 * 1000
+  );
 
-    // // Root element
-    // expect(aboutPage).toContain('<div id="root">');
-  },
-  // Could take 45s depending on how fast npm installs
-  240 * 1000
-);
+  it(
+    'static styles are injected',
+    async () => {
+      expect(
+        (await getPageHtml(outputDir, 'index.html')).querySelector(
+          'html > head > style#react-native-stylesheet'
+        )?.innerHTML
+      ).toEqual(expect.stringContaining('[stylesheet-group="0"]{}'));
+    },
+    2 * 1000
+  );
+
+  it(
+    'supports usePathname in +html files',
+    async () => {
+      const page = await fs.readFile(path.join(outputDir, 'index.html'), 'utf8');
+
+      expect(page).toContain('<meta name="custom-value" content="value"/>');
+
+      // Root element
+      expect(page).toContain('<div id="root">');
+
+      const sanitized = page.replace(
+        /<script src="\/_expo\/static\/js\/web\/.*" defer>/g,
+        '<script src="/_expo/static/js/web/[mock].js" defer>'
+      );
+      expect(sanitized).toMatchSnapshot();
+
+      expect(
+        (await getPageHtml(outputDir, 'about.html')).querySelector(
+          'html > head > meta[name="expo-e2e-pathname"]'
+        )?.attributes.content
+      ).toBe('/about');
+
+      expect(
+        (await getPageHtml(outputDir, 'index.html')).querySelector(
+          'html > head > meta[name="expo-e2e-pathname"]'
+        )?.attributes.content
+      ).toBe('/');
+
+      expect(
+        (await getPageHtml(outputDir, 'welcome-to-the-universe.html')).querySelector(
+          'html > head > meta[name="expo-e2e-pathname"]'
+        )?.attributes.content
+      ).toBe('/welcome-to-the-universe');
+    },
+    2 * 1000
+  );
+
+  it(
+    'supports nested static head values',
+    async () => {
+      // <title>About | Website</title>
+      // <meta name="description" content="About page" />
+      const about = await getPageHtml(outputDir, 'about.html');
+
+      expect(about.querySelector('html > body div[data-testid="content"]')?.innerText).toBe(
+        'About'
+      );
+      expect(about.querySelector('html > head > title')?.innerText).toBe('About | Website');
+      expect(
+        about.querySelector('html > head > meta[name="description"]')?.attributes.content
+      ).toBe('About page');
+      expect(
+        // Nested from app/_layout.js
+        about.querySelector('html > head > meta[name="expo-nested-layout"]')?.attributes.content
+      ).toBe('TEST_VALUE');
+
+      expect(
+        // Other routes have the nested layout value
+        (await getPageHtml(outputDir, 'welcome-to-the-universe.html')).querySelector(
+          'html > head > meta[name="expo-nested-layout"]'
+        )?.attributes.content
+      ).toBe('TEST_VALUE');
+    },
+    2 * 1000
+  );
+});
+
+async function getPage(output: string, route: string): Promise<string> {
+  return await fs.readFile(path.join(output, route), 'utf8');
+}
+
+async function getPageHtml(output: string, route: string) {
+  return htmlParser.parse(await getPage(output, route));
+}
 
 xit(
   'exports with relative fetch enabled',
   async () => {
-    const projectRoot = await ensureTesterReadyAsync('relative-fetch');
+    const projectRoot = await ensureTesterReady('relative-fetch');
 
     await execa('npx', [bin, 'export', '-p', 'ios'], {
       cwd: projectRoot,
@@ -180,7 +277,7 @@ xit(
 xit(
   'exports with global CSS',
   async () => {
-    const projectRoot = await ensureTesterReadyAsync('global-css');
+    const projectRoot = await ensureTesterReady('global-css');
 
     await execa('npx', [bin, 'export'], {
       cwd: projectRoot,

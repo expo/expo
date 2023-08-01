@@ -12,7 +12,7 @@ export function getTemporaryPath() {
   return path.join(os.tmpdir(), Math.random().toString(36).substring(2));
 }
 
-export async function ensureTesterReadyAsync(fixtureName: string): Promise<string> {
+export function ensureTesterReady(fixtureName: string): string {
   const root = path.join(__dirname, '../../../../apps/router-e2e');
   console.log('Using fixture:', fixtureName);
   // Clear metro cache for the env var to be updated
