@@ -1,16 +1,11 @@
 /* eslint-env jest */
 
 import findProcess from 'find-process';
-import os from 'os';
 import path from 'path';
 import treeKill from 'tree-kill';
 import { promisify } from 'util';
 
 export const bin = 'expo-internal';
-
-export function getTemporaryPath() {
-  return path.join(os.tmpdir(), Math.random().toString(36).substring(2));
-}
 
 export function ensureTesterReady(fixtureName: string): string {
   const root = path.join(__dirname, '../../../../apps/router-e2e');

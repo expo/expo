@@ -6,7 +6,7 @@ import klawSync from 'klaw-sync';
 import path from 'path';
 import * as htmlParser from 'node-html-parser';
 
-import { bin, ensurePortFreeAsync, ensureTesterReady } from './utils';
+import { ensurePortFreeAsync, ensureTesterReady } from './utils';
 
 declare const process: {
   env: {
@@ -53,7 +53,7 @@ describe('static-rendering', () => {
 
   beforeAll(
     async () => {
-      await execa('npx', [bin, 'export', '-p', 'web'], {
+      await execa('npx', ['expo', 'export', '-p', 'web'], {
         cwd: projectRoot,
         env: {
           NODE_ENV: 'production',
@@ -293,7 +293,7 @@ describe('single-page', () => {
       await execa(
         'npx',
         [
-          bin,
+          'expo',
           'export',
           '-p',
           'web',
@@ -488,7 +488,7 @@ describe('url-polyfill', () => {
 
   beforeAll(
     async () => {
-      await execa('npx', [bin, 'export', '-p', 'ios'], {
+      await execa('npx', ['expo', 'export', '-p', 'ios'], {
         cwd: projectRoot,
         env: {
           NODE_ENV: 'production',
