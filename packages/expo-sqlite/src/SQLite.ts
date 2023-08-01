@@ -105,6 +105,22 @@ export class SQLiteDatabase {
     return ExpoSQLite.deleteAsync(this._name);
   }
 
+  onDatabaseChange(cb: SQLiteCallback) {
+    return emitter.addListener('onDatabaseUpdate', async () => {
+      this.exec(
+        [
+          {
+            sql: `SELECT "table", quote(pk) as pk, cid, val, col_version, db_version, site_id FROM crsql_changes where db_version > -1`,
+            args: [],
+          },
+        ],
+        false,
+        false,
+        cb
+      );
+    });
+  }
+
   /**
    * Creates a new transaction with Promise support.
    * @param asyncCallback A `SQLTransactionAsyncCallback` function that can perform SQL statements in a transaction.

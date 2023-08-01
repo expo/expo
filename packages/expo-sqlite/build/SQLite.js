@@ -54,7 +54,6 @@ export class SQLiteDatabase {
         return ExpoSQLite.close(this._name);
     }
     /**
-<<<<<<< HEAD
      * Synchronously closes the database.
      */
     closeSync() {
@@ -62,16 +61,6 @@ export class SQLiteDatabase {
         return ExpoSQLite.closeSync(this._name);
     }
     /**
-||||||| parent of 14729a19cd ([sqlite] remove function on js)
-     * Synchoronsly close the database.
-     */
-    closeSync() {
-        this._closed = true;
-        return ExpoSQLite.closeSync(this._name);
-    }
-    /**
-=======
->>>>>>> 14729a19cd ([sqlite] remove function on js)
      * Delete the database file.
      * > The database has to be closed prior to deletion.
      */
@@ -80,6 +69,16 @@ export class SQLiteDatabase {
             throw new Error(`Unable to delete '${this._name}' database that is currently open. Close it prior to deletion.`);
         }
         return ExpoSQLite.deleteAsync(this._name);
+    }
+    onDatabaseChange(cb) {
+        return emitter.addListener('onDatabaseUpdate', async () => {
+            this.exec([
+                {
+                    sql: `SELECT "table", quote(pk) as pk, cid, val, col_version, db_version, site_id FROM crsql_changes where db_version > -1`,
+                    args: [],
+                },
+            ], false, false, cb);
+        });
     }
     /**
      * Creates a new transaction with Promise support.
@@ -98,16 +97,8 @@ export class SQLiteDatabase {
             throw e;
         }
     }
-    onDatabaseChange(cb) {
-        return emitter.addListener('onDatabaseUpdate', () => {
-            this.exec([
-                {
-                    sql: `SELECT "table", quote(pk) as pk, cid, val, col_version, db_version, site_id FROM crsql_changes where db_version > -1`,
-                    args: [],
-                },
-            ], false, false, cb);
-        });
-    }
+    // @ts-expect-error: properties that are added from websql
+    version;
 }
 function _serializeQuery(query) {
     return Platform.OS === 'android'
