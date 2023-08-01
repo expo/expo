@@ -1,5 +1,5 @@
 ---
-title: Server Routes
+title: API Routes
 description: Learn how to create universal serverless functions with Expo Router.
 ---
 
@@ -15,7 +15,7 @@ Expo Router supports enables you to write universal backend server code directly
     "web": {
       "bundler": "metro",
       /* @info Output a dynamic server. */
-      "output": "server"
+      "output": "dynamic"
       /* @end */
     }
   }
@@ -39,10 +39,10 @@ Server Routes are defined by creating files in the `app` directory with the `+ap
 Create a server route in the `app` directory.
 
 ```js app/hello+api.ts
-import { Request, Response } from 'expo-router/server';
+import { ExpoRequest, ExpoResponse } from 'expo-router/server';
 
-export function GET(request: Request) {
-  return Response.json({ hello: 'world' });
+export function GET(request: ExpoRequest) {
+  return ExpoResponse.json({ hello: 'world' });
 }
 ```
 
@@ -115,3 +115,70 @@ Route handlers are executed in a sandboxed environment that is isolated from the
 - If your client code imports code with a secret, it will still be included in the client bundle. This also applies to ALL files in the `app` directory that are not a route handler (suffixed with `+api.js`).
 - If your secret is in a `<...>+api.js` (Route Handler) file, it will not be included in the client bundle. This applies to all files that are imported in the route handler.
 - The secret stripping takes place in `expo/metro-config` and requires this be used in your `metro.config.js`!
+
+## Adapters
+
+Every cloud hosting provider needs a custom adapter to support the Expo server runtime. The following providers have unofficial/experimental support from the Expo team.
+
+### Express
+
+- Bundle the server with `npx expo export`.
+- Host the server locally with `node server.js`:
+
+```js server.js
+#!/usr/bin/env node
+
+const path = require('path');
+const { createRequestHandler } = require('@expo/server/build/vendor/express');
+
+const express = require('express');
+const compression = require('compression');
+const morgan = require('morgan');
+
+const BUILD_DIR = path.join(process.cwd(), 'dist');
+
+const app = express();
+
+app.use(compression());
+
+// http://expressjs.com/en/advanced/best-practice-security.html#at-a-minimum-disable-x-powered-by-header
+app.disable('x-powered-by');
+
+process.env.NODE_ENV = 'production';
+
+app.use(
+  // Prevent access to expo functions as these may
+  // contain sensitive information.
+  [/^\/_expo\/functions($|\/)/, '/'],
+  express.static(BUILD_DIR, {
+    maxAge: '1h',
+    extensions: ['html'],
+  })
+);
+
+app.use(morgan('tiny'));
+
+app.all(
+  '*',
+  createRequestHandler({
+    build: BUILD_DIR,
+  })
+);
+const port = process.env.PORT || 3000;
+
+app.listen(port, () => {
+  console.log(`Express server listening on port ${port}`);
+});
+```
+
+### http
+
+TODO
+
+### Netlify
+
+TODO
+
+### Vercel
+
+TODO
