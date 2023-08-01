@@ -16,4 +16,4 @@
 
 ### 💡 Others
 
-- Update Expo Router tests.
+- Update Expo Router tests. ([#23795](https://github.com/expo/expo/pull/23795) by [@EvanBacon](https://github.com/EvanBacon))
