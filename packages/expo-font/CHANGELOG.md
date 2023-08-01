@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Change unloaded font error to a warning.
+
 ## 11.5.0 — 2023-07-28
 
 ### 🐛 Bug fixes
