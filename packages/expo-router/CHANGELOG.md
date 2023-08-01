@@ -12,6 +12,6 @@
 
 ### 🐛 Bug fixes
 
-- Fix exports.
+- Fix exports. ([#23789](https://github.com/expo/expo/pull/23789) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
