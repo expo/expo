@@ -1,7 +1,7 @@
 {
   "extends": "../../../tsconfig.node",
   "include": ["./src"],
-  "exclude": ["**/__mocks__/*", "**/__tests__/*"],
+  "exclude": ["**/__mocks__/*", "**/__tests__/*", "**/__typetests__/*"],
   "compilerOptions": {
     "outDir": "./build",
     "typeRoots": [

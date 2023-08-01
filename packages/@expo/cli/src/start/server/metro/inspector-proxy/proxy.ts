@@ -31,25 +31,24 @@ export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
   }
 
   /**
-   * Initialize the server address from the metro server.
-   * This is required to properly reference sourcemaps for the debugger.
+   * Normalize the server address for clients to connect to.
+   * @param addressInfo the server address returned by `HttpServer.address()` or `HttpsServer.address()`.
+   * @returns "address:port"
    */
-  private setServerAddress(server: HttpServer | HttpsServer) {
-    const addressInfo = server.address();
-
+  public static normalizeServerAddress(addressInfo: ReturnType<HttpServer['address']>): string {
     if (typeof addressInfo === 'string') {
       throw new Error(`Inspector proxy could not resolve the server address, got "${addressInfo}"`);
     } else if (addressInfo === null) {
       throw new Error(`Inspector proxy could not resolve the server address, got "null"`);
     }
 
-    const { address, port, family } = addressInfo;
-
-    if (family === 'IPv6') {
-      this.metroProxy._serverAddressWithPort = `[${address ?? '::1'}]:${port}`;
+    let address = addressInfo.address;
+    if (addressInfo.family === 'IPv6') {
+      address = address === '::' ? `[::1]` : `[${address}]`;
     } else {
-      this.metroProxy._serverAddressWithPort = `${address ?? 'localhost'}:${port}`;
+      address = address === '0.0.0.0' ? 'localhost' : address;
     }
+    return `${address}:${addressInfo.port}`;
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/#endpoints */
@@ -58,7 +57,11 @@ export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
   }
 
   public createWebSocketListeners(server: HttpServer | HttpsServer): Record<string, WSServer> {
-    this.setServerAddress(server);
+    // Initialize the server address from the metro server.
+    // This is required to properly reference sourcemaps for the debugger.
+    this.metroProxy._serverAddressWithPort = ExpoInspectorProxy.normalizeServerAddress(
+      server.address()
+    );
 
     return {
       [WS_DEVICE_URL]: this.createDeviceWebSocketServer(),
@@ -76,7 +79,7 @@ export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
     wss.on('connection', (socket, request) => {
       try {
         const fallbackDeviceId = String(this.metroProxy._deviceCounter++);
-        const { deviceId: newDeviceId, deviceName, appName } = getNewDeviceInfo(request.url);
+        const { deviceId: newDeviceId, deviceName, appName } = getDeviceInfo(request.url);
 
         const deviceId = newDeviceId ?? fallbackDeviceId;
 
@@ -137,7 +140,7 @@ export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
     // See: https://github.com/facebook/metro/blob/eeb211fdcfdcb9e7f8a51721bd0f48bc7d0d211f/packages/metro-inspector-proxy/src/InspectorProxy.js#L193
     wss.on('connection', (socket, request) => {
       try {
-        const { deviceId, pageId } = getExistingDeviceInfo(request.url);
+        const { deviceId, pageId, debuggerType } = getDebuggerInfo(request.url);
         if (!deviceId || !pageId) {
           // TODO(cedric): change these errors to proper error types
           throw new Error(`Missing "device" and/or "page" IDs in query parameters`);
@@ -151,7 +154,13 @@ export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
 
         debug('New debugger connected: device=%s, app=%s', device._name, device._app);
 
-        device.handleDebuggerConnection(socket, pageId);
+        // @ts-expect-error The `handleDebuggerConnectionWithType` is part of our device implementation, not Metro's device
+        if (debuggerType && typeof device.handleDebuggerConnectionWithType === 'function') {
+          // @ts-expect-error The `handleDebuggerConnectionWithType` is part of our device implementation, not Metro's device
+          device.handleDebuggerConnectionWithType(socket, pageId, debuggerType);
+        } else {
+          device.handleDebuggerConnection(socket, pageId);
+        }
 
         socket.on('close', () => {
           debug('Debugger disconnected: device=%s, app=%s', device._name, device._app);
@@ -181,7 +190,7 @@ function asString(value: string | string[] = ''): string {
   return Array.isArray(value) ? value.join() : value;
 }
 
-function getNewDeviceInfo(url: IncomingMessage['url']) {
+function getDeviceInfo(url: IncomingMessage['url']) {
   const { query } = parse(url ?? '', true);
   return {
     deviceId: asString(query.device) || undefined,
@@ -190,10 +199,11 @@ function getNewDeviceInfo(url: IncomingMessage['url']) {
   };
 }
 
-function getExistingDeviceInfo(url: IncomingMessage['url']) {
+function getDebuggerInfo(url: IncomingMessage['url']) {
   const { query } = parse(url ?? '', true);
   return {
     deviceId: asString(query.device),
     pageId: asString(query.page),
+    debuggerType: asString(query.type) ?? undefined,
   };
 }

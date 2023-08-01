@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface ABI49_0_0EXReactDelegateWrapper(Private)
 
-- (instancetype)initWithExpoReactDelegate:(ExpoReactDelegate *)expoReactDelegate;
+- (instancetype)initWithExpoReactDelegate:(ABI49_0_0EXReactDelegate *)expoReactDelegate;
 
 @end
 

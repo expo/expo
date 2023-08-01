@@ -47,7 +47,8 @@ useExpoModules([
         'expo-dev-menu',
         'expo-dev-launcher',
         'expo-dev-client',
-        'expo-maps'
+        'expo-maps',
+        'expo-network-addons',
     ]
 ])
 

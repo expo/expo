@@ -1,7 +1,6 @@
 ---
 title: Install Expo Router
 description: Learn how to quickly get started by creating a new project with Expo Router or add the library to an existing project.
-hideFromSearch: true
 sidebar_title: Installation
 ---
 
@@ -19,7 +18,7 @@ Find the steps below to create a new project with Expo Router library or add it 
 
 We recommend creating a new Expo app using `create-expo-app`. This will create a minimal project with the Expo Router library already installed. To create a project, run the command:
 
-<Terminal cmd={['$ npx create-expo-app@latest --template tabs']} />
+<Terminal cmd={['$ npx create-expo-app@latest --template tabs@49']} />
 
 </Step>
 
@@ -117,7 +116,7 @@ The above command will install versions of these libraries that are compatible w
 
 ### Modify project configuration
 
-Add a deep linking `scheme` and enable [Metro web](/guides/customizing-metro/#web-support-how) in your app config (**app.json** or **app.config.js**):
+Add a deep linking `scheme` and enable [Metro web](/guides/customizing-metro/#adding-web-support-to-metro) in your app config (**app.json** or **app.config.js**):
 
 ```diff
 {
@@ -128,6 +127,26 @@ Add a deep linking `scheme` and enable [Metro web](/guides/customizing-metro/#we
 +   }
   }
 }
+```
+
+</Step>
+
+<Step label="5">
+
+### Modify babel.config.js
+
+Add `expo-router/babel` plugin in the `plugins` array to your project's **babel.config.js**:
+
+```js babel.config.js
+module.exports = function (api) {
+  api.cache(true);
+  return {
+    presets: ['babel-preset-expo'],
+    /* @info Add it in the plugins list as the last plugin.*/
+    plugins: ['expo-router/babel'],
+    /* @end */
+  };
+};
 ```
 
 </Step>

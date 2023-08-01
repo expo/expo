@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   detox_latest_e2e:
-    runs-on: macos-12
+    runs-on: macos-13
     strategy:
       matrix:
         api-level: [33]
@@ -29,6 +29,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
+          ruby-version: 3.2.2
       - name: 💎 Install cocoapods
         run: sudo gem install cocoapods
       - name: 🔨 Use JDK 11

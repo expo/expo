@@ -4,11 +4,23 @@
 
 ### 🛠 Breaking changes
 
+- Drop support for `logUrl` which sent console logs to the legacy `expo-cli`. ([#18596](https://github.com/expo/expo/pull/18596) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 14.5.0 — 2023-07-28
+
+### 🐛 Bug fixes
+
+- Fix task ':expo-constants:packageDebugAssets' uses this output of task ':expo-constants:copyReleaseExpoConfig' without declaring an explicit or implicit dependency when running `gradlew test` on Android. ([#23511](https://github.com/expo/expo/pull/23511) by [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
+- Fork `uuid@3.4.0` and move into `expo-modules-core`. Remove the original dependency. ([#23249](https://github.com/expo/expo/pull/23249) by [@alanhughes](https://github.com/alanjhughes))
 
 ## 14.4.2 — 2023-06-24
 

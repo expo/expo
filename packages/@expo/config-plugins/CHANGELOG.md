@@ -10,6 +10,22 @@
 
 ### 💡 Others
 
+- Update tests with latest fixtures. ([#23763](https://github.com/expo/expo/pull/23763) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 7.3.0 — 2023-07-28
+
+_This version does not introduce any user-facing changes._
+
+## 7.2.4 - 2023-06-30
+
+### 🎉 New features
+
+- Add existing native files ignore option for entitlements evaluation. ([#23165](https://github.com/expo/expo/pull/23165) by [@byCedric](https://github.com/byCedric))
+
+## 7.2.3 - 2023-06-29
+
+_This version does not introduce any user-facing changes._
+
 ## 7.2.2 — 2023-06-27
 
 ### 💡 Others

@@ -5,13 +5,15 @@ description: Different ways to publish the Expo web app with third-party service
 
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import { Tab, Tabs } from '~/ui/components/Tabs';
+import { Tab, Tabs, TabsGroup } from '~/ui/components/Tabs';
 
 A web app created using Expo can be served locally for testing out the production behavior. Once the testing phase checks out, you can choose from a variety of third-party services to host it.
 
 ## Create a build
 
 Creating a build of the project is the first step to publishing a web app. Whether you want to serve it locally or host it on a third-party service, you'll need to export all JavaScript and assets of a project. This is known as a static bundle. It can be exported by running the following command:
+
+<TabsGroup>
 
 <Tabs>
 
@@ -81,6 +83,7 @@ Open [`http://localhost:5000`](http://localhost:5000) to see your project in act
 
 ## Hosting on third-party services
 
+
 ### Netlify
 
 [Netlify](https://www.netlify.com/) is a mostly-unopinionated platform for deploying web apps. This has the highest compatibility with Expo web apps as it makes few assumptions about the framework.
@@ -105,7 +108,7 @@ Configure redirects for single-page applications.
 
 > If your app uses [static rendering](/router/reference/static-rendering), then you can skip this step.
 
-`expo.web.output: 'single'` generates a single-page application. It means there's only one **dist/index.html** file to which all requests must be redirected. This can be done in Netlify by creating a **./public/_redirects** file and redirecting all requests to **/index.html**.
+`expo.web.output: 'single'` generates a single-page application. It means there's only one **dist/index.html** file to which all requests must be redirected. This can be done in Netlify by creating a **./public/\_redirects** file and redirecting all requests to **/index.html**.
 
 ```sh public/_redirects
 /*    /index.html   200
@@ -117,7 +120,7 @@ If you modify this file, you must rebuild your project with `npx expo export -p 
 
 <Tab label="webpack">
 
-If your app implements any navigation, you'll need to configure Netlify to redirect requests to the single **web-build/index.html** file. This can be done in Netlify by creating a **./public/_redirects** file and redirecting all requests to **/index.html**.
+If your app implements any navigation, you'll need to configure Netlify to redirect requests to the single **web-build/index.html** file. This can be done in Netlify by creating a **./public/\_redirects** file and redirecting all requests to **/index.html**.
 
 Navigate inside the **web-build** directory and run the following command to create **\_redirects** file with follwing rule:
 
@@ -163,7 +166,6 @@ Netlify can also build and deploy when you push to git or open a new pull reques
 
 [Vercel](https://vercel.com/) has a single-command deployment flow.
 
-
 <Step label="1">
 
 Install the [Vercel CLI](https://vercel.com/docs/cli).
@@ -175,40 +177,46 @@ Install the [Vercel CLI](https://vercel.com/docs/cli).
   Configure redirects for single-page applications.
   <Tabs>
     <Tab label="Expo Router">
-      > If your app uses [static rendering](/router/reference/static-rendering), then you can skip this step.
 
-      `expo.web.output: 'single'` generates a single-page application. It means there's only one **dist/index.html** file to which all requests must be redirected. This can be done in Vercel by creating a **./public/vercel.json** file and redirecting all requests to **/index.html**.
+      Create a **vercel.json** file at the root of your app and add the following configuration:
 
-      ```json public/vercel.json
+      ```json vercel.json
       {
-        "version": 2,
-        "routes": [
+        "buildCommand": "expo export -p web",
+        "outputDirectory": "dist",
+        "devCommand": "expo",
+        "cleanUrls": true,
+        "framework": null,
+        "rewrites": [
           {
-            "src": "/(.*)",
-            "dest": "/"
+            "source": "/:path*",
+            "destination": "/"
           }
         ]
       }
       ```
-      If you modify this file, you will need to rebuild your project with `npx expo export -p web` to have it safely copied into the **dist** directory.
+
+      If your app uses [static rendering](/router/reference/static-rendering), then you may want to add additional [dynamic route configuration](/router/reference/static-rendering#dynamic-routes).
+
     </Tab>
     <Tab label="webpack">
-      If your app implements any navigation, you must configure Vercel to redirect requests to the single **web-build/index.html** file. This can be done in Vercel by creating a **`./public/vercel.json` file and redirecting all requests to `/index.html`.**
+      Create a **vercel.json** file at the root of your app and add the following:
 
-      Navigate inside the **web-build** directory and run the following command to create **\_redirects** file with rule:
-
-      ```json web/vercel.json
+      ```json vercel.json
       {
-        "version": 2,
-        "routes": [
+        "buildCommand": "expo export:web",
+        "outputDirectory": "web-build",
+        "devCommand": "expo",
+        "cleanUrls": true,
+        "framework": null,
+        "rewrites": [
           {
-            "src": "/(.*)",
-            "dest": "/"
+            "source": "/:path*",
+            "destination": "/"
           }
         ]
       }
       ```
-      If you modify this file, you will need to rebuild your project with `npx expo export:web` to have it safely copied into the **web-build** directory.
 
     </Tab>
 
@@ -216,27 +224,9 @@ Install the [Vercel CLI](https://vercel.com/docs/cli).
 </Step>
 
 <Step label="3">
-  Compile the Expo website.
-  <Tabs>
-    <Tab label="Expo Router">
-      <Terminal cmd={['# Compiles to ./dist', '$ npx expo export -p web']} />
-    </Tab>
-    <Tab label="webpack">
-      <Terminal cmd={['# Compiles to ./web-build', '$ npx expo export:web']} />
-    </Tab>
-  </Tabs>
-</Step>
-
-<Step label="4">
   Deploy the website.
-  <Tabs>
-    <Tab label="Expo Router">
-      <Terminal cmd={['$ vercel deploy dist --prebuilt']} />
-    </Tab>
-    <Tab label="webpack">
-      <Terminal cmd={['$ vercel deploy web-build --prebuilt']} />
-    </Tab>
-  </Tabs>
+  
+  <Terminal cmd={['$ vercel']} />
 
 You'll now see a URL that you can use to view your project online. Paste that URL into your browser when the build is complete, and you'll see your deployed app.
 
@@ -248,7 +238,7 @@ The [AWS Amplify Console](https://console.amplify.aws) provides a Git-based work
 
 <Step label="1">
 
-Add the [**amplify-explicit.yml**](https://github.com/expo/amplify-demo/blob/master/amplify-explicit.yml) file to the root of your repo.
+Add the [**amplify-explicit.yml**](https://github.com/expo/amplify-demo/blob/master/amplify-explicit.yml) file to the root of your repository. Ensure you have removed the generated **dist** directory from the **.gitignore** file and committed those changes.
 
 </Step>
 
@@ -260,19 +250,23 @@ Push your local Expo project to a GitHub repository. If you haven't pushed to Gi
 
 <Step label="3">
 
-Login to the [Amplify Console](https://console.aws.amazon.com/amplify/home) and choose **Get started** under **Deploy**. Grant Amplify permission to read from your GitHub account or the organization that owns your repo.
+Login to the [Amplify Console](https://console.aws.amazon.com/amplify/home) and select an existing app or create a new app. Grant Amplify permission to read from your GitHub account or the organization that owns your repo.
 
 </Step>
 
 <Step label="4">
 
-The Amplify Console will detect that the **amplify.yml** file is in your repo. Choose **Next**.
+Add your repo, select the branch, and select **Connecting a monorepo?** to enter the path to your app's **dist** directory and choose **Next**.
+
+The Amplify Console will detect the **amplify.yml** file in your project. Select **Allow AWS Amplify to automatically deploy all files hosted in your project root directory** and choose **Next**.
 
 </Step>
 
 <Step label="5">
 
-Review your settings and choose **Save and deploy**. Your app will now be deployed to a `https://branchname.xxxxxx.amplifyapp.com` URL.
+Review your settings and choose **Save and deploy**. Your app will now be deployed to a `https://branchname.xxxxxx.amplifyapp.com` URL. You can now visit your web app, deploy another branch, or add a unified backend environment across your Expo mobile and web apps. 
+
+Follow the steps in the **Learn how to get the most out of Amplify Hosting** drop-down to **Add a custom domain with a free SSL certificate** and more information.
 
 </Step>
 
@@ -463,3 +457,5 @@ In case you want to change the header for hosting add the following config for `
 ```
 
 </Step>
+
+</TabsGroup>

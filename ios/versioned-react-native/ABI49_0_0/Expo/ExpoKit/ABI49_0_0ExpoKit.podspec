@@ -1,7 +1,6 @@
 
 # generated from template-files/ios/ExpoKit.podspec
 
-
 folly_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'
 folly_compiler_flags = folly_flags + ' ' + '-Wno-comma -Wno-shorten-64-to-32'
 boost_compiler_flags = '-Wno-documentation'
@@ -22,6 +21,7 @@ Pod::Spec.new do |s|
   s.compiler_flags = folly_compiler_flags + ' ' + boost_compiler_flags
 
   s.pod_target_xcconfig = {
+    'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
     'USE_HEADERMAP' => 'YES',
     'DEFINES_MODULE' => 'YES',
   }
@@ -34,6 +34,7 @@ Pod::Spec.new do |s|
     '"$(PODS_ROOT)/RCT-Folly"',
     '"$(PODS_ROOT)/Headers/Private/ABI49_0_0React-Core"',
     '"$(PODS_CONFIGURATION_BUILD_DIR)/ABI49_0_0ExpoModulesCore/Swift Compatibility Header"',
+    '"$(PODS_CONFIGURATION_BUILD_DIR)/ABI49_0_0EXManifests/Swift Compatibility Header"',
     '"$(PODS_CONFIGURATION_BUILD_DIR)/ABI49_0_0EXUpdatesInterface/Swift Compatibility Header"',
     '"$(PODS_CONFIGURATION_BUILD_DIR)/ABI49_0_0EXUpdates/Swift Compatibility Header"',
   ]
@@ -43,6 +44,7 @@ Pod::Spec.new do |s|
     "DEFINES_MODULE"      => "YES",
     "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
   }
+  
 
   s.subspec "Expo" do |ss|
     ss.source_files     = "Core/**/*.{h,m,mm,cpp}"

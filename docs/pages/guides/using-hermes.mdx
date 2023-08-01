@@ -58,7 +58,7 @@ You may want to use Hermes on one platform and JSC on another. One way to do thi
 
 Publishing updates with `eas update` and `npx expo export` will generate Hermes bytecode bundles and their source maps.
 
-Please note that the Hermes bytecode format may change between different Hermes versions — an update produced for a specific version of Hermes will not run on a different version of Hermes. Starting from Expo SDK 46 (React Native 0.69), [Hermes is bundled within React Native](https://reactnative.dev/architecture/bundled-hermes). Updating React Native version or Hermes version can be thought of in the same way as updating any other native module. So if you update the `react-native` version you should also update the `runtimeVersion` in **app.json**. If you don't do this, your app may crash on launch because the update may be loaded by an existing binary that uses an older Hermes version that is incompatible with the updated bytecode format. See ["runtimeVersion"](/eas-update/runtime-versions/) for more information.
+Please note that the Hermes bytecode format may change between different Hermes versions — an update produced for a specific version of Hermes will not run on a different version of Hermes. Starting from Expo SDK 46 (React Native 0.69), [Hermes is bundled within React Native](https://reactnative.dev/architecture/bundled-hermes). Updating React Native version or Hermes version can be thought of in the same way as updating any other native module. So if you update the `react-native` version you should also update the `runtimeVersion` in **app.json**. If you don't do this, your app may crash on launch because the update may be loaded by an existing binary that uses an older Hermes version that is incompatible with the updated bytecode format. See [`runtimeVersion`](/eas-update/runtime-versions/) for more information.
 
 ## JavaScript debugger
 
@@ -78,7 +78,7 @@ Alternatively, you can use the JavaScript inspector from the following tools:
 - Internally, the app will establish a WebSocket connection, make sure your app is connected to the development server.
 
   - Try to reload the app by pressing <kbd>r</kbd> in the Expo CLI Terminal UI.
-  - Test debugging availability by running the command: `curl http://127.0.0.1:19000/json/list` (adjust the `127.0.0.1:19000` to match your dev server URL). The HTTP response should be an array, as shown below. If it is an empty response, add either the `--localhost` or `--tunnel` flag to the `npx expo start` command.
+  - Test debugging availability by running the command: `curl http://127.0.0.1:8081/json/list` (adjust the `127.0.0.1:8081` to match your dev server URL). The HTTP response should be an array, as shown below. If it is an empty response, add either the `--localhost` or `--tunnel` flag to the `npx expo start` command.
 
   ```json
   [
@@ -87,9 +87,9 @@ Alternatively, you can use the JavaScript inspector from the following tools:
       "description": "host.exp.Exponent",
       "title": "Hermes ABI47_0_0React Native",
       "faviconUrl": "https://react.dev/favicon.ico",
-      "devtoolsFrontendUrl": "devtools://devtools/bundled/js_app.html?experiments=true&v8only=true&ws=%5B%3A%3A1%5D%3A19000%2Finspector%2Fdebug%3Fdevice%3D0%26page%3D2",
+      "devtoolsFrontendUrl": "devtools://devtools/bundled/js_app.html?experiments=true&v8only=true&ws=%5B%3A%3A1%5D%3A8081%2Finspector%2Fdebug%3Fdevice%3D0%26page%3D2",
       "type": "node",
-      "webSocketDebuggerUrl": "ws://[::1]:19000/inspector/debug?device=0&page=2",
+      "webSocketDebuggerUrl": "ws://[::1]:8081/inspector/debug?device=0&page=2",
       "vm": "Hermes"
     },
     {
@@ -97,9 +97,9 @@ Alternatively, you can use the JavaScript inspector from the following tools:
       "description": "host.exp.Exponent",
       "title": "React Native Experimental (Improved Chrome Reloads)",
       "faviconUrl": "https://react.dev/favicon.ico",
-      "devtoolsFrontendUrl": "devtools://devtools/bundled/js_app.html?experiments=true&v8only=true&ws=%5B%3A%3A1%5D%3A19000%2Finspector%2Fdebug%3Fdevice%3D0%26page%3D-1",
+      "devtoolsFrontendUrl": "devtools://devtools/bundled/js_app.html?experiments=true&v8only=true&ws=%5B%3A%3A1%5D%3A8081%2Finspector%2Fdebug%3Fdevice%3D0%26page%3D-1",
       "type": "node",
-      "webSocketDebuggerUrl": "ws://[::1]:19000/inspector/debug?device=0&page=-1",
+      "webSocketDebuggerUrl": "ws://[::1]:8081/inspector/debug?device=0&page=-1",
       "vm": "don't use"
     }
   ]

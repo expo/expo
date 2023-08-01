@@ -1,6 +1,6 @@
 {
   "name": "ABI49_0_0ExpoScreenOrientation",
-  "version": "6.0.1",
+  "version": "6.0.4",
   "summary": "Expo universal module for managing device's screen orientation",
   "description": "Expo universal module for managing device's screen orientation",
   "license": "MIT",
@@ -19,7 +19,8 @@
       "2021.07.22.00"
     ],
     "ABI49_0_0ExpoModulesCore": [],
-    "ABI49_0_0React-Core": []
+    "ABI49_0_0React-Core": [],
+    "ExpoScreenOrientation": []
   },
   "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32",
   "pod_target_xcconfig": {

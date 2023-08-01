@@ -1,5 +1,11 @@
 import { requireNativeModule } from 'expo-modules-core';
-import { NativeModules, Platform } from 'react-native';
-const module = Platform.OS === 'android' ? requireNativeModule('ExpoDevMenu') : NativeModules.ExpoDevMenu;
-export default module;
+let ExpoDevMenu;
+// Use try-catch to prevent crashes in release builds
+try {
+    ExpoDevMenu = requireNativeModule('ExpoDevMenu');
+}
+catch {
+    ExpoDevMenu = null;
+}
+export default ExpoDevMenu;
 //# sourceMappingURL=ExpoDevMenu.js.map

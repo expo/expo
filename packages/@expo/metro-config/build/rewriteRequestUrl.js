@@ -78,8 +78,16 @@ function getRewriteRequestUrl(projectRoot) {
         serverRoot
       });
 
-      // Like: `/index.bundle?platform=ios&dev=true&minify=false&modulesOnly=false&runModule=true&app=com.bacon.test-custom-entry`
-      return '/' + relativeEntry + '.bundle' + search;
+      // Only return the pathname when url is relative
+      if (url.startsWith('/')) {
+        // Like: `/index.bundle?platform=ios&dev=true&minify=false&modulesOnly=false&runModule=true&app=com.bacon.test-custom-entry`
+        return '/' + relativeEntry + '.bundle' + search;
+      }
+
+      // Modify the pathname within the URL and return the full URL
+      ensured.pathname = '/' + relativeEntry + '.bundle';
+      // Like: `http://localhost:19001/index.bundle?platform=ios&dev=true&minify=false&modulesOnly=false&runModule=true&app=com.bacon.test-custom-entry`
+      return ensured.toString();
     }
     return url;
   }

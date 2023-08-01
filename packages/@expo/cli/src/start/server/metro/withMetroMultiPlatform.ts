@@ -15,6 +15,7 @@ import { Log } from '../../../log';
 import { FileNotifier } from '../../../utils/FileNotifier';
 import { env } from '../../../utils/env';
 import { installExitHooks } from '../../../utils/exit';
+import { isInteractive } from '../../../utils/interactive';
 import { learnMore } from '../../../utils/link';
 import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/loadTsConfigPaths';
 import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
@@ -68,6 +69,20 @@ function normalizeSlashes(p: string) {
   return p.replace(/\\/g, '/');
 }
 
+export function getNodejsExtensions(srcExts: readonly string[]): string[] {
+  const mjsExts = srcExts.filter((ext) => /mjs$/.test(ext));
+  const nodejsSourceExtensions = srcExts.filter((ext) => !/mjs$/.test(ext));
+  // find index of last `*.js` extension
+  const jsIndex = nodejsSourceExtensions.reduce((index, ext, i) => {
+    return /jsx?$/.test(ext) ? i : index;
+  }, -1);
+
+  // insert `*.mjs` extensions after `*.js` extensions
+  nodejsSourceExtensions.splice(jsIndex + 1, 0, ...mjsExts);
+
+  return nodejsSourceExtensions;
+}
+
 /**
  * Apply custom resolvers to do the following:
  * - Disable `.native.js` extensions on web.
@@ -108,6 +123,7 @@ export function withExtendedResolver(
   const aliases: { [key: string]: Record<string, string> } = {
     web: {
       'react-native': 'react-native-web',
+      'react-native/index': 'react-native-web',
     },
   };
 
@@ -132,7 +148,7 @@ export function withExtendedResolver(
       })
     : null;
 
-  if (isTsconfigPathsEnabled && !env.CI) {
+  if (isTsconfigPathsEnabled && isInteractive()) {
     // TODO: We should track all the files that used imports and invalidate them
     // currently the user will need to save all the files that use imports to
     // use the new aliases.
@@ -161,6 +177,8 @@ export function withExtendedResolver(
     debug('Skipping tsconfig.json paths support');
   }
 
+  let nodejsSourceExtensions: string[] | null = null;
+
   return withMetroResolvers(config, projectRoot, [
     // Add a resolver to alias the web asset resolver.
     (immutableContext: ResolutionContext, moduleName: string, platform: string | null) => {
@@ -182,6 +200,12 @@ export function withExtendedResolver(
           moduleName = getNodeExternalModuleId(context.originModulePath, moduleId);
           debug(`Redirecting Node.js external "${moduleId}" to "${moduleName}"`);
         }
+
+        // Adjust nodejs source extensions to sort mjs after js, including platform variants.
+        if (nodejsSourceExtensions === null) {
+          nodejsSourceExtensions = getNodejsExtensions(context.sourceExts);
+        }
+        context.sourceExts = nodejsSourceExtensions;
       }
 
       // Conditionally remap `react-native` to `react-native-web` on web in
@@ -216,7 +240,7 @@ export function withExtendedResolver(
       if (isNode) {
         // Node.js runtimes should only be importing main at the moment.
         // This is a temporary fix until we can support the package.json exports.
-        mainFields = ['main'];
+        mainFields = ['main', 'module'];
       } else if (env.EXPO_METRO_NO_MAIN_FIELD_OVERRIDE) {
         mainFields = context.mainFields;
       } else if (platform && platform in preferredMainFields) {
@@ -226,9 +250,7 @@ export function withExtendedResolver(
         return resolve(
           {
             ...context,
-            preferNativePlatform: platform !== 'web',
             resolveRequest: undefined,
-
             mainFields,
 
             // Passing `mainFields` directly won't be considered (in certain version of Metro)
@@ -262,6 +284,17 @@ export function withExtendedResolver(
       }
 
       let result: Resolution | null = null;
+
+      // React Native uses `event-target-shim` incorrectly and this causes the native runtime
+      // to fail to load. This is a temporary workaround until we can fix this upstream.
+      // https://github.com/facebook/react-native/pull/38628
+      if (
+        moduleName.includes('event-target-shim') &&
+        context.originModulePath.includes(path.sep + 'react-native' + path.sep)
+      ) {
+        context.sourceExts = context.sourceExts.filter((f) => !f.includes('mjs'));
+        debug('Skip mjs support for event-target-shim in:', context.originModulePath);
+      }
 
       if (tsConfigResolve) {
         result = tsConfigResolve(
@@ -340,9 +373,6 @@ export async function withMetroMultiPlatformAsync(
 
   if (platformBundlers.web === 'metro') {
     await new WebSupportProjectPrerequisite(projectRoot).assertAsync();
-  } else if (!isTsconfigPathsEnabled) {
-    // Bail out early for performance enhancements if no special features are enabled.
-    return config;
   }
 
   let tsconfig: null | TsConfigPaths = null;
