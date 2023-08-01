@@ -1,5 +1,6 @@
 package expo.modules.securestore
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.os.Build
@@ -39,7 +40,26 @@ class AuthenticationHelper(
 
     isAuthenticating = true
 
+    assertBiometricsSupport()
+    val fragmentActivity = getCurrentActivity() as FragmentActivity?
+      ?: throw AuthenticationException("Cannot display biometric prompt when the app is not in the foreground", null)
+
+    val authenticationPrompt = AuthenticationPrompt(fragmentActivity, context, title)
+
+    return withContext(Dispatchers.Main.immediate) {
+      try {
+        val result = authenticationPrompt.authenticate(cipher)
+        result ?: throw AuthenticationException("Couldn't get the authentication result", null)
+        return@withContext result
+      } finally {
+        isAuthenticating = false
+      }
+    }
+  }
+
+  fun assertBiometricsSupport() {
     val biometricManager = BiometricManager.from(context)
+    @SuppressLint("SwitchIntDef") // BiometricManager.BIOMETRIC_SUCCESS shouldn't do anything
     when (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)) {
       BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE, BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
         throw AuthenticationException("No hardware available for biometric authentication. Use expo-local-authentication to check if the device supports it", null)
@@ -53,19 +73,8 @@ class AuthenticationHelper(
       BiometricManager.BIOMETRIC_ERROR_UNSUPPORTED -> {
         throw AuthenticationException("Biometric authentication is unsupported", null)
       }
-    }
-    val fragmentActivity = getCurrentActivity() as FragmentActivity?
-      ?: throw AuthenticationException("Cannot display biometric prompt when the app is not in the foreground", null)
-
-    val authenticationPrompt = AuthenticationPrompt(fragmentActivity, context, title)
-
-    return withContext(Dispatchers.Main.immediate) {
-      try {
-        val result = authenticationPrompt.authenticate(cipher)
-        result ?: throw AuthenticationException("Couldn't get the authentication result", null)
-        return@withContext result
-      } finally {
-        isAuthenticating = false
+      BiometricManager.BIOMETRIC_STATUS_UNKNOWN -> {
+        throw AuthenticationException("Biometric authentication status is unknown", null)
       }
     }
   }

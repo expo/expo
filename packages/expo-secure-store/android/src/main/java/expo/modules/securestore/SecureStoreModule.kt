@@ -14,12 +14,15 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.securestore.encryptors.AESEncryptor
 import expo.modules.securestore.encryptors.HybridAESEncryptor
 import expo.modules.securestore.encryptors.KeyBasedEncryptor
+import expo.modules.securestore.encryptors.KeyPurpose
+import kotlinx.coroutines.runBlocking
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 import java.security.GeneralSecurityException
 import java.security.KeyStore
-import java.security.KeyStoreException
+import java.security.KeyStore.SecretKeyEntry
+import java.security.KeyStore.PrivateKeyEntry
 
 class SecureStoreModule : Module() {
   private val mAESEncryptor = AESEncryptor()
@@ -35,7 +38,6 @@ class SecureStoreModule : Module() {
 
     AsyncFunction("setValueWithKeyAsync") Coroutine { value: String?, key: String?, options: SecureStoreOptions ->
       key ?: throw NullKeyException()
-
       return@Coroutine setItemImpl(key, value, options, false)
     }
 
@@ -48,9 +50,22 @@ class SecureStoreModule : Module() {
         deleteItemImpl(key, options)
       } catch (e: CodedException) {
         throw e
-      } catch (e: java.lang.Exception) {
+      } catch (e: Exception) {
         Log.e(TAG, "Caught unexpected exception when deleting from SecureStore", e)
         throw DeleteException(null, e)
+      }
+    }
+
+    Function("setValueWithKeySync") { value: String?, key: String?, options: SecureStoreOptions ->
+      key ?: throw NullKeyException()
+      return@Function runBlocking {
+        return@runBlocking setItemImpl(key, value, options, keyIsInvalidated = false, isRunSynchronously = true)
+      }
+    }
+
+    Function("getValueWithKeySync") { key: String, options: SecureStoreOptions ->
+      return@Function runBlocking {
+        return@runBlocking getItemImpl(key, options, isRunSynchronously = true)
       }
     }
 
@@ -64,21 +79,20 @@ class SecureStoreModule : Module() {
     }
   }
 
-  private suspend fun getItemImpl(key: String, options: SecureStoreOptions): String? {
+  private suspend fun getItemImpl(key: String, options: SecureStoreOptions, isRunSynchronously: Boolean = false): String? {
     // We use a SecureStore-specific shared preferences file, which lets us do things like enumerate
     // its entries or clear all of them
     val prefs: SharedPreferences = getSharedPreferences()
     val keychainAwareKey = createKeychainAwareKey(key, options.keychainService)
-
     if (prefs.contains(keychainAwareKey)) {
-      return readJSONEncodedItem(key, prefs, options)
+      return readJSONEncodedItem(key, prefs, options, isRunSynchronously)
     } else if (prefs.contains(key)) { // For backwards-compatibility try to read using the old key format
-      return readJSONEncodedItem(key, prefs, options)
+      return readJSONEncodedItem(key, prefs, options, isRunSynchronously)
     }
     return null
   }
 
-  private suspend fun readJSONEncodedItem(key: String, prefs: SharedPreferences, options: SecureStoreOptions): String? {
+  private suspend fun readJSONEncodedItem(key: String, prefs: SharedPreferences, options: SecureStoreOptions, isRunSynchronously: Boolean): String? {
     val keychainAwareKey = createKeychainAwareKey(key, options.keychainService)
     val encryptedItemString = prefs.getString(keychainAwareKey, null) ?: prefs.getString(key, null)
 
@@ -96,18 +110,24 @@ class SecureStoreModule : Module() {
     val requireAuthentication = encryptedItem.optBoolean(AUTHENTICATION_PROPERTY, false)
     val usesKeystoreSuffix = encryptedItem.optBoolean(USES_KEYSTORE_SUFFIX_PROPERTY, false)
 
+    if (requireAuthentication && isRunSynchronously) {
+      throw DecryptException("Reading values which require authentication is unsupported in synchronous calls. Use `getItemAsync()` instead", null)
+    }
+
     try {
       when (scheme) {
         AESEncryptor.NAME -> {
-          val secretKeyEntry = getPreferredKeyEntry(KeyStore.SecretKeyEntry::class.java, mAESEncryptor, options, requireAuthentication, usesKeystoreSuffix)
+          val secretKeyEntry = getPreferredKeyEntry(SecretKeyEntry::class.java, mAESEncryptor, options, requireAuthentication, usesKeystoreSuffix)
             ?: throw DecryptException("Could not find a keychain for key $key", null)
-
           return mAESEncryptor.decryptItem(encryptedItem, secretKeyEntry, options, authenticationHelper)
         }
+        AESEncryptor.SYNCHRONOUS_NAME -> {
+          val (_, decryptKeyEntry) = getKeyPair(mAESEncryptor, options, requireAuthentication)
+          return mAESEncryptor.decryptItem(encryptedItem, decryptKeyEntry, options, authenticationHelper)
+        }
         HybridAESEncryptor.NAME -> {
-          val privateKeyEntry = getPreferredKeyEntry(KeyStore.PrivateKeyEntry::class.java, hybridAESEncryptor, options, requireAuthentication, usesKeystoreSuffix)
+          val privateKeyEntry = getPreferredKeyEntry(PrivateKeyEntry::class.java, hybridAESEncryptor, options, requireAuthentication, usesKeystoreSuffix)
             ?: throw DecryptException("Could not  find a keychain for key $key", null)
-
           return hybridAESEncryptor.decryptItem(encryptedItem, privateKeyEntry, options, authenticationHelper)
         }
         else -> {
@@ -131,7 +151,7 @@ class SecureStoreModule : Module() {
     }
   }
 
-  private suspend fun setItemImpl(key: String, value: String?, options: SecureStoreOptions, keyIsInvalidated: Boolean) {
+  private suspend fun setItemImpl(key: String, value: String?, options: SecureStoreOptions, keyIsInvalidated: Boolean, isRunSynchronously: Boolean = false) {
     val keychainAwareKey = createKeychainAwareKey(key, options.keychainService)
     val prefs: SharedPreferences = getSharedPreferences()
 
@@ -144,31 +164,36 @@ class SecureStoreModule : Module() {
     }
 
     try {
+      if (keyIsInvalidated) {
+        // Invalidated keys will block writing even though it's not possible to re-validate them
+        // so we remove them before saving.
+        val alias = mAESEncryptor.getExtendedKeyStoreAlias(options, options.requireAuthentication)
+        removeKeyFromKeystore(alias, options.keychainService)
+      }
+
       /* Android API 23+ supports storing symmetric keys in the keystore and on older Android
        versions we store an asymmetric key pair and use hybrid encryption. We store the scheme we
        use in the encrypted JSON item so that we know how to decode and decrypt it when reading
        back a value.
       */
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        if (keyIsInvalidated) {
-          val alias = mAESEncryptor.getExtendedKeyStoreAlias(options, options.requireAuthentication)
-          removeKeyFromKeystore(alias, options.keychainService)
+        if (isRunSynchronously) {
+          val (encryptKeyEntry, _) = getKeyPair(mAESEncryptor, options, options.requireAuthentication)
+          // In synchronous calls we always encrypt with a key that doesn't require authentication
+          val encryptedItem = mAESEncryptor.createEncryptedItem(value, encryptKeyEntry, false, options.authenticationPrompt, authenticationHelper)
+          encryptedItem.put(SCHEME_PROPERTY, AESEncryptor.SYNCHRONOUS_NAME)
+          saveEncryptedItem(encryptedItem, prefs, keychainAwareKey, options.requireAuthentication, options.keychainService)
+        } else {
+          val secretKeyEntry: SecretKeyEntry = getKeyEntry(SecretKeyEntry::class.java, mAESEncryptor, options, options.requireAuthentication)
+          val encryptedItem = mAESEncryptor.createEncryptedItem(value, secretKeyEntry, options.requireAuthentication, options.authenticationPrompt, authenticationHelper)
+          encryptedItem.put(SCHEME_PROPERTY, AESEncryptor.NAME)
+          saveEncryptedItem(encryptedItem, prefs, keychainAwareKey, options.requireAuthentication, options.keychainService)
         }
-
-        val secretKeyEntry: KeyStore.SecretKeyEntry = getKeyEntry(KeyStore.SecretKeyEntry::class.java, mAESEncryptor, options, options.requireAuthentication)
-        val encryptedItem = mAESEncryptor.createEncryptedItem(value, secretKeyEntry, options, authenticationHelper)
-        encryptedItem.put(SCHEME_PROPERTY, AESEncryptor.NAME)
-        val result = saveEncryptedItem(encryptedItem, prefs, keychainAwareKey, options.keychainService)
-        Log.w(TAG, "$result")
       } else {
-        if (keyIsInvalidated) {
-          val alias = hybridAESEncryptor.getExtendedKeyStoreAlias(options, options.requireAuthentication)
-          removeKeyFromKeystore(alias, options.keychainService)
-        }
-        val privateKeyEntry: KeyStore.PrivateKeyEntry = getKeyEntry(KeyStore.PrivateKeyEntry::class.java, hybridAESEncryptor, options, options.requireAuthentication)
-        val encryptedItem = hybridAESEncryptor.createEncryptedItem(value, privateKeyEntry, options, authenticationHelper)
+        val privateKeyEntry: PrivateKeyEntry = getKeyEntry(PrivateKeyEntry::class.java, hybridAESEncryptor, options, options.requireAuthentication)
+        val encryptedItem = hybridAESEncryptor.createEncryptedItem(value, privateKeyEntry, options.requireAuthentication, options.authenticationPrompt, authenticationHelper)
         encryptedItem.put(SCHEME_PROPERTY, HybridAESEncryptor.NAME)
-        saveEncryptedItem(encryptedItem, prefs, key, options.keychainService)
+        saveEncryptedItem(encryptedItem, prefs, keychainAwareKey, options.requireAuthentication, options.keychainService)
       }
     } catch (e: IOException) {
       throw SecureStoreIOException(e)
@@ -176,7 +201,7 @@ class SecureStoreModule : Module() {
       val isInvalidationException = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && e is KeyPermanentlyInvalidatedException
 
       if (isInvalidationException && !keyIsInvalidated) {
-        // If the key has been invalidated by the OS we try to reinitialize it.
+        // If the key has been invalidated by the OS we try to reinitialize it in the save retry.
         Log.w(TAG, "Key has been invalidated, retrying with the key deleted")
         setItemImpl(key, value, options, true)
       } else if (isInvalidationException) {
@@ -217,16 +242,16 @@ class SecureStoreModule : Module() {
     }
   }
 
-  private fun saveEncryptedItem(encryptedItem: JSONObject, prefs: SharedPreferences, key: String, keychainService: String): Boolean {
+  private fun saveEncryptedItem(encryptedItem: JSONObject, prefs: SharedPreferences, key: String, requireAuthentication: Boolean, keychainService: String): Boolean {
     // We need a way to recognize entries that have been saved after adding suffixes to the keychains
     encryptedItem.put(USES_KEYSTORE_SUFFIX_PROPERTY, true)
     // In order to be able to have the same keys under different keychains
     // we need a way to recognize what is the keychain of the item when we read it
     encryptedItem.put(KEYSTORE_ALIAS_PROPERTY, keychainService)
+    encryptedItem.put(AuthenticationHelper.REQUIRE_AUTHENTICATION_PROPERTY, requireAuthentication)
 
     val encryptedItemString = encryptedItem.toString()
-
-    if (encryptedItemString.isNullOrEmpty()) { // lint warning suppressed, JSONObject#toString() may return null
+    if (encryptedItemString.isNullOrEmpty()) { // JSONObject#toString() may return null
       throw SecureStoreJSONException("Could not JSON-encode the encrypted item for SecureStore", null)
     }
     return prefs.edit().putString(key, encryptedItemString).commit()
@@ -260,7 +285,7 @@ class SecureStoreModule : Module() {
    * Keys used to be stored under a single keychain, which led to different behaviour on iOS and Android.
    * Because of that we need to check if there are any keys stored with the old secure-store key format.
    */
-  private fun <E : KeyStore.Entry> getLegacyKeystoreEntry(
+  private fun <E : KeyStore.Entry> getLegacyKeyEntry(
     keyStoreEntryClass: Class<E>,
     encryptor: KeyBasedEncryptor<E>,
     options: SecureStoreOptions
@@ -283,9 +308,12 @@ class SecureStoreModule : Module() {
     options: SecureStoreOptions,
     requireAuthentication: Boolean
   ): E {
-
     val keystoreAlias = encryptor.getExtendedKeyStoreAlias(options, requireAuthentication)
     val keyStoreEntry = if (!keyStore.containsAlias(keystoreAlias)) {
+      // Android won't allow us to generate the keys if the device doesn't support biometrics or no biometrics are enrolled
+      if (requireAuthentication) {
+        authenticationHelper.assertBiometricsSupport()
+      }
       encryptor.initializeKeyStoreEntry(keyStore, options)
     } else {
       val entry = keyStore.getEntry(keystoreAlias, null)
@@ -308,7 +336,39 @@ class SecureStoreModule : Module() {
     return if (usesKeystoreSuffix) {
       getKeyEntry(keyStoreEntryClass, encryptor, options, requireAuthentication)
     } else {
-      getLegacyKeystoreEntry(keyStoreEntryClass, encryptor, options)
+      getLegacyKeyEntry(keyStoreEntryClass, encryptor, options)
+    }
+  }
+
+  private fun getKeyPair(
+    encryptor: AESEncryptor,
+    options: SecureStoreOptions,
+    requireAuthentication: Boolean
+  ): Pair<SecretKeyEntry, SecretKeyEntry> {
+    val encryptAlias = encryptor.getExtendedKeyStoreAlias(options, requireAuthentication, KeyPurpose.ENCRYPT)
+    val decryptAlias = encryptor.getExtendedKeyStoreAlias(options, requireAuthentication, KeyPurpose.DECRYPT)
+
+    return if (!keyStore.containsAlias(decryptAlias)) {
+      if (requireAuthentication) {
+        authenticationHelper.assertBiometricsSupport()
+      }
+
+      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+        throw KeyStoreException("Tried accessing SDK23+ key store functionality on Android API < 23")
+      }
+
+      encryptor.initializeKeyStorePair(keyStore, options)
+    } else {
+      val (encryptEntry, decryptEntry) = listOf(encryptAlias, decryptAlias).map { alias ->
+        val entry = keyStore.getEntry(alias, null)
+
+        if (!SecretKeyEntry::class.java.isInstance(entry)) {
+          throw KeyStoreException("The entry for the keystore alias \"$alias\" is not a ${SecretKeyEntry::class.java.simpleName}")
+        }
+        SecretKeyEntry::class.java.cast(entry)
+          ?: throw KeyStoreException("The entry for the keystore alias \"$alias\" couldn't be cast to correct class")
+      }
+      Pair(encryptEntry, decryptEntry)
     }
   }
 

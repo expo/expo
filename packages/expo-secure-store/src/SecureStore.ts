@@ -172,6 +172,24 @@ export async function setItemAsync(
   await ExpoSecureStore.setValueWithKeyAsync(value, key, options);
 }
 
+export function setItemSync(key: string, value: string, options: SecureStoreOptions = {}) {
+  _ensureValidKey(key);
+  if (!_isValidValue(value)) {
+    throw new Error(
+      `Invalid value provided to SecureStore. Values must be strings; consider JSON-encoding your values if they are serializable.`
+    );
+  }
+  if (!ExpoSecureStore.setValueWithKeySync) {
+    throw new UnavailabilityError('SecureStore', 'setItemAsync');
+  }
+  return ExpoSecureStore.setValueWithKeySync(value, key, options);
+}
+
+export function getItemSync(key: string, options: SecureStoreOptions = {}): string | null {
+  _ensureValidKey(key);
+  return ExpoSecureStore.getValueWithKeySync(key, options);
+}
+
 function _ensureValidKey(key: string) {
   if (!_isValidKey(key)) {
     throw new Error(

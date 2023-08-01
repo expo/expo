@@ -25,3 +25,6 @@ internal class DeleteException(message: String?, cause: Throwable?) :
 
 internal class AuthenticationException(message: String?, cause: Throwable?) :
   CodedException(message ?: "An unexpected error occurred when authenticating the user", cause)
+
+internal class KeyStoreException(message: String?) :
+  CodedException(message ?: "An unexpected error occurred when accessing the key store", null)

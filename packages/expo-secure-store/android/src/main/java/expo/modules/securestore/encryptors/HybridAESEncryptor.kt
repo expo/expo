@@ -33,7 +33,7 @@ import javax.crypto.spec.SecretKeySpec
 import javax.security.auth.x500.X500Principal
 
 /**
- * An AES encrypter that works with Android L (API 22) and below, which cannot store symmetric
+ * An AES encryptor that works with Android L (API 22) and below, which cannot store symmetric
  * keys in the keystore. We store an asymmetric key pair (RSA) in the keystore, which is used to
  * securely encrypt a symmetric key (AES) that we use to encrypt the data.
  *
@@ -69,6 +69,8 @@ class HybridAESEncryptor(private var mContext: Context, private val mAESEncrypto
     val keystoreAlias = getExtendedKeyStoreAlias(options, options.requireAuthentication)
     // See https://tools.ietf.org/html/rfc1779#section-2.3 for the DN grammar
     val escapedCommonName = '"'.toString() + keystoreAlias.replace("\\", "\\\\").replace("\"", "\\\"") + '"'
+
+    @Suppress("DEPRECATION") // This will only be called on API level < 23
     val algorithmSpec: AlgorithmParameterSpec = KeyPairGeneratorSpec.Builder(mContext)
       .setAlias(keystoreAlias)
       .setSubject(X500Principal("CN=$escapedCommonName, OU=SecureStore"))
@@ -77,8 +79,9 @@ class HybridAESEncryptor(private var mContext: Context, private val mAESEncrypto
       .setEndDate(Date(Long.MAX_VALUE))
       .build()
 
-    // constant value will be copied
-    @SuppressLint("InlinedApi") val keyPairGenerator = KeyPairGenerator.getInstance(KeyProperties.KEY_ALGORITHM_RSA, keyStore.provider)
+    @SuppressLint("InlinedApi") // constant value will be copied
+    val keyPairGenerator = KeyPairGenerator.getInstance(KeyProperties.KEY_ALGORITHM_RSA, keyStore.provider)
+
     keyPairGenerator.initialize(algorithmSpec)
     keyPairGenerator.generateKeyPair()
     return keyStore.getEntry(keystoreAlias, null) as? KeyStore.PrivateKeyEntry
@@ -86,8 +89,13 @@ class HybridAESEncryptor(private var mContext: Context, private val mAESEncrypto
   }
 
   @Throws(GeneralSecurityException::class, JSONException::class)
-  override suspend fun createEncryptedItem(plaintextValue: String, keyStoreEntry: KeyStore.PrivateKeyEntry, options: SecureStoreOptions, authenticationHelper: AuthenticationHelper): JSONObject {
-
+  override suspend fun createEncryptedItem(
+    plaintextValue: String,
+    keyStoreEntry: KeyStore.PrivateKeyEntry,
+    requireAuthentication: Boolean,
+    authenticationPrompt: String,
+    authenticationHelper: AuthenticationHelper
+  ): JSONObject {
     // Generate the IV and symmetric key with which we encrypt the value
     val ivBytes = ByteArray(GCM_IV_LENGTH_BYTES)
     mSecureRandom.nextBytes(ivBytes)
@@ -117,16 +125,16 @@ class HybridAESEncryptor(private var mContext: Context, private val mAESEncrypto
       gcmSpec
     }
 
-    val authenticatedCipher = authenticationHelper.authenticateCipher(aesCipher, options.requireAuthentication, options.authenticationPrompt)
+    val authenticatedCipher = authenticationHelper.authenticateCipher(aesCipher, requireAuthentication, authenticationPrompt)
 
-    val aesResult = mAESEncryptor.createEncryptedItemWithCipher(plaintextValue, options, authenticatedCipher, chosenSpec)
+    val aesResult = mAESEncryptor.createEncryptedItemWithCipher(plaintextValue, authenticatedCipher, chosenSpec)
 
     // Ensure the IV in the encrypted item matches our generated IV
     val ivString = aesResult.getString(AESEncryptor.IV_PROPERTY)
     val expectedIVString = Base64.encodeToString(ivBytes, Base64.NO_WRAP)
     if (ivString != expectedIVString) {
       Log.e(SecureStoreModule.TAG, String.format("HybridAESEncrypter generated two different IVs: %s and %s", expectedIVString, ivString))
-      throw IllegalStateException("HybridAESEncrypter must store the same IV as the one used to parameterize the secret key")
+      throw IllegalStateException("HybridAESEncryptor must store the same IV as the one used to parameterize the secret key")
     }
 
     // Encrypt the symmetric key with the asymmetric public key

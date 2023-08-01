@@ -1,6 +1,5 @@
 package expo.modules.securestore
 
-import android.R
 import android.content.Context
 import androidx.biometric.BiometricPrompt
 import androidx.biometric.BiometricPrompt.PromptInfo
@@ -16,7 +15,7 @@ class AuthenticationPrompt(private val currentActivity: FragmentActivity, contex
   private var executor: Executor = ContextCompat.getMainExecutor(context)
   private var promptInfo = PromptInfo.Builder()
     .setTitle(title)
-    .setNegativeButtonText(context.getString(R.string.cancel))
+    .setNegativeButtonText(context.getString(android.R.string.cancel))
     .build()
 
   suspend fun authenticate(cipher: Cipher): BiometricPrompt.AuthenticationResult? =

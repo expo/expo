@@ -7,6 +7,10 @@ import org.json.JSONObject
 import java.security.GeneralSecurityException
 import java.security.KeyStore
 
+enum class KeyPurpose {
+  ENCRYPT,
+  DECRYPT
+}
 interface KeyBasedEncryptor<E : KeyStore.Entry> {
   fun getExtendedKeyStoreAlias(options: SecureStoreOptions, requireAuthentication: Boolean): String
 
@@ -19,7 +23,8 @@ interface KeyBasedEncryptor<E : KeyStore.Entry> {
   suspend fun createEncryptedItem(
     plaintextValue: String,
     keyStoreEntry: E,
-    options: SecureStoreOptions,
+    requireAuthentication: Boolean,
+    authenticationPrompt: String,
     authenticationHelper: AuthenticationHelper,
   ): JSONObject
 
