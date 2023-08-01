@@ -37,6 +37,7 @@ NSString *const EXMediaLibraryShouldDownloadFromNetworkKey = @"shouldDownloadFro
 @property (nonatomic, weak) id<EXFileSystemInterface> fileSystem;
 @property (nonatomic, weak) id<EXEventEmitterService> eventEmitter;
 @property (nonatomic, strong) NSMutableSet *saveToLibraryDelegates;
+@property (nonatomic) BOOL writeOnly;
 
 @end
 
@@ -112,6 +113,7 @@ EX_EXPORT_METHOD_AS(getPermissionsAsync,
                     resolve:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
+  _writeOnly = writeOnly;
   [EXPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
                                                       withRequester:[self requesterClass:writeOnly]
                                                             resolve:resolve
@@ -123,6 +125,7 @@ EX_EXPORT_METHOD_AS(requestPermissionsAsync,
                     resolve:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
+  _writeOnly = writeOnly;
   [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                          withRequester:[self requesterClass:writeOnly]
                                                                resolve:resolve
@@ -1177,7 +1180,7 @@ EX_EXPORT_METHOD_AS(getAssetsAsync,
 
 - (BOOL)_checkPermissions:(EXPromiseRejectBlock)reject
 {
-  if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXMediaLibraryMediaLibraryPermissionRequester class]]) {
+  if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[self requesterClass:_writeOnly]]) {
     reject(@"E_NO_PERMISSIONS", @"MEDIA_LIBRARY permission is required to do this operation.", nil);
     return NO;
   }
