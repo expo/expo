@@ -10,8 +10,6 @@
 
 ### 💡 Others
 
-- Update API documentation to clarify `channel` behavior in Expo Go/ development builds. ([#23783](https://github.com/expo/expo/pull/23783) by [@keith-kurak](https://github.com/keith-kurak))
-
 ## 50.0.0-alpha.0 — 2023-07-28
 
 ### 🐛 Bug fixes
