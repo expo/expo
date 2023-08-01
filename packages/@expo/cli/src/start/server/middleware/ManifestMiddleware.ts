@@ -311,9 +311,6 @@ export abstract class ManifestMiddleware<
     return {
       // localhost:8081
       debuggerHost: this.options.constructUrl({ scheme: '', hostname }),
-      // http://localhost:8081/logs -- used to send logs to the CLI for displaying in the terminal.
-      // This is deprecated in favor of the WebSocket connection setup in Metro.
-      logUrl: this.options.constructUrl({ scheme: 'http', hostname }) + '/logs',
       // Required for Expo Go to function.
       developer: {
         tool: DEVELOPER_TOOL,

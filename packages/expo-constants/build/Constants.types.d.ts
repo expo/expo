@@ -113,7 +113,6 @@ export type ClientScopingConfig = {
 export type ExpoGoConfig = {
     mainModuleName?: string;
     debuggerHost?: string;
-    logUrl?: string;
     developer?: {
         tool?: string;
         [key: string]: any;
@@ -171,7 +170,6 @@ export interface PlatformManifest {
         scheme?: string;
         [key: string]: any;
     };
-    logUrl?: string;
     scheme?: string;
     hostUri?: string;
     developer?: string;

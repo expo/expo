@@ -43,7 +43,6 @@ class NewManifestSpec : ExpoSpec {
         expect(manifest.orientation()).to(beNil())
         expect(manifest.experiments()).to(beNil())
         expect(manifest.developer()).to(beNil())
-        expect(manifest.logUrl()).to(beNil())
         expect(manifest.facebookAppId()).to(beNil())
         expect(manifest.facebookApplicationName()).to(beNil())
         expect(manifest.facebookAutoInitEnabled()) == false
