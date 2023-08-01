@@ -200,10 +200,6 @@ public class Manifest: NSObject {
     return expoGoConfigRootObject()?.optionalValue(forKey: "developer")
   }
 
-  public func logUrl() -> String? {
-    return expoGoConfigRootObject()?.optionalValue(forKey: "logUrl")
-  }
-
   public func facebookAppId() -> String? {
     return expoClientConfigRootObject()?.optionalValue(forKey: "facebookAppId")
   }

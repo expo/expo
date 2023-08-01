@@ -164,6 +164,7 @@
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@babel/plugin-proposal-export-namespace-from": "^7.18.9",
+    "@types/fbemitter": "^2.0.32",
     "@types/i18n-js": "^3.0.1",
     "@types/pixi.js": "^4.8.6",
     "@types/react": "~18.0.14",
