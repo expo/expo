@@ -17,7 +17,6 @@ import path from 'path';
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
-import { env } from '../../../utils/env';
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import {
@@ -45,11 +44,11 @@ import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { invalidateManifestCache, refetchManifest } from './fetchRouterManifest';
+import { rebundleApiRoute } from './fetchServerRoutes';
 import { instantiateMetroAsync } from './instantiateMetro';
 import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import { observeApiRouteChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
-import { rebundleApiRoute } from './fetchServerRoutes';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
