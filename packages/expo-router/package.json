@@ -60,7 +60,7 @@
       "src"
     ],
     "setupFilesAfterEnv": [
-      "./src/testing-library/mocks.ts"
+      "./build/testing-library/mocks.js"
     ]
   },
   "peerDependencies": {
