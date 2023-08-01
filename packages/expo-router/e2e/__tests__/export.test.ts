@@ -86,6 +86,12 @@ it(
     expect(files).toContain('index.html');
     expect(files).toContain('_sitemap.html');
     expect(files).toContain('[...404].html');
+
+    // expect(files).toContain('welcome-to-the-universe.html');
+    // expect(files).toContain('other.html');
+    // expect(files).toContain('[post].html');
+    // expect(await fs.readFile(path.join(outputDir, 'welcome-to-the-universe.html'), 'utf8')).toContain('Post: <!-- -->welcome-to-the-universe');
+
     // expect(files).toContain(expect.stringMatching(/bundles\/web-.*\.js/));
 
     const page = await fs.readFile(path.join(outputDir, 'index.html'), 'utf8');
@@ -100,167 +106,30 @@ it(
       '<script src="/_expo/static/js/web/[mock].js" defer>'
     );
     expect(sanitized).toMatchSnapshot();
-  },
-  // Could take 45s depending on how fast npm installs
-  240 * 1000
-);
-
-xit(
-  'can use hooks in the +html.js wrapper',
-  async () => {
-    const projectRoot = await ensureTesterReadyAsync('html-hooks');
-
-    await execa('npx', [bin, 'export', '-p', 'web'], {
-      cwd: projectRoot,
-      env: {
-        NODE_ENV: 'production',
-        EXPO_USE_STATIC: '1',
-        E2E_ROUTER_SRC: 'html-hooks',
-        E2E_ROUTER_ASYNC: 'development',
-      },
-    });
-
-    const outputDir = path.join(projectRoot, 'dist');
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(outputDir)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(outputDir, entry.path);
-      })
-      .filter(Boolean);
-
-    const metadata = await JsonFile.readAsync(path.resolve(outputDir, 'metadata.json'));
-
-    expect(metadata).toEqual({
-      bundler: 'metro',
-      fileMetadata: {
-        web: {
-          assets: expect.anything(),
-          bundle: expect.stringMatching(/bundles\/web-.*\.js/),
-        },
-      },
-      version: 0,
-    });
-
-    // The wrapper should not be included as a route.
-    expect(files).not.toContain('+html.html');
-    expect(files).toContain('index.html');
-    expect(files).toContain('test.html');
-    expect(files).toContain('_sitemap.html');
-    expect(files).toContain('[...404].html');
 
     expect(await fs.readFile(path.join(outputDir, 'index.html'), 'utf8')).toContain(
-      '<meta name="custom-value" content="/"/>'
+      '<meta name="expo-e2e-pathname" content="/"/>'
     );
 
-    expect(await fs.readFile(path.join(outputDir, 'test.html'), 'utf8')).toContain(
-      '<meta name="custom-value" content="/test"/>'
+    expect(await fs.readFile(path.join(outputDir, 'about.html'), 'utf8')).toContain(
+      '<meta name="expo-e2e-pathname" content="/about"/>'
     );
-  },
-  // Could take 45s depending on how fast npm installs
-  240 * 1000
-);
 
-xit(
-  'exports with nested static head',
-  async () => {
-    const projectRoot = await ensureTesterReadyAsync('static-head');
+    // // Test nested head tags
+    // const aboutPage = await fs.readFile(path.join(outputDir, 'about.html'), 'utf8');
 
-    await execa('npx', [bin, 'export', '-p', 'web'], {
-      cwd: projectRoot,
-      env: {
-        NODE_ENV: 'production',
-        EXPO_USE_STATIC: '1',
-        E2E_ROUTER_SRC: 'static-head',
-      },
-    });
+    // // If this breaks, it's likely because the Server context is not the same between the client and server.
+    // // Route-specific head tags
+    // expect(aboutPage).toContain(`<title data-rh="true">About | Website</title>`);
 
-    const outputDir = path.join(projectRoot, 'dist');
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(outputDir)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(outputDir, entry.path);
-      })
-      .filter(Boolean);
+    // // Nested head tags from layout route
+    // expect(aboutPage).toContain('<meta data-rh="true" name="fake" content="bar"/>');
 
-    // The wrapper should not be included as a route.
-    expect(files).not.toContain('+html.html');
-    expect(files).toContain('index.html');
-    expect(files).toContain('about.html');
-    expect(files).toContain('_sitemap.html');
-    expect(files).toContain('[...404].html');
-    // expect(files).toContain(expect.stringMatching(/bundles\/web-.*\.js/));
+    // // Content of the page
+    // expect(aboutPage).toContain('data-testid="content">About</div>');
 
-    const page = await fs.readFile(path.join(outputDir, 'about.html'), 'utf8');
-
-    // If this breaks, it's likely because the Server context is not the same between the client and server.
-    // Route-specific head tags
-    expect(page).toContain(`<title data-rh="true">About | Website</title>`);
-
-    // Nested head tags from layout route
-    expect(page).toContain('<meta data-rh="true" name="fake" content="bar"/>');
-
-    // Content of the page
-    expect(page).toContain('data-testid="content">About</div>');
-
-    // Root element
-    expect(page).toContain('<div id="root">');
-
-    const sanitized = page.replace(
-      /<script src="\/_expo\/static\/js\/web\/.*" defer>/g,
-      '<script src="/_expo/static/js/web/[mock].js" defer>'
-    );
-    expect(sanitized).toMatchSnapshot();
-  },
-  // Could take 45s depending on how fast npm installs
-  240 * 1000
-);
-
-xit(
-  'exports with static params',
-  async () => {
-    const projectRoot = await ensureTesterReadyAsync('static-params');
-
-    await execa('npx', [bin, 'export', '-p', 'web'], {
-      cwd: projectRoot,
-      env: {
-        NODE_ENV: 'production',
-        EXPO_USE_STATIC: '1',
-        E2E_ROUTER_SRC: 'static-params',
-      },
-    });
-
-    const outputDir = path.join(projectRoot, 'dist');
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(outputDir)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(outputDir, entry.path);
-      })
-      .filter(Boolean);
-
-    // The wrapper should not be included as a route.
-    expect(files).not.toContain('+html.html');
-    expect(files).toContain('welcome-to-the-universe.html');
-    expect(files).toContain('other.html');
-    expect(files).toContain('[post].html');
-    // expect(files).toContain(expect.stringMatching(/bundles\/web-.*\.js/));
-
-    const page = await fs.readFile(path.join(outputDir, 'welcome-to-the-universe.html'), 'utf8');
-    expect(page).toContain('Post: <!-- -->welcome-to-the-universe');
+    // // Root element
+    // expect(aboutPage).toContain('<div id="root">');
   },
   // Could take 45s depending on how fast npm installs
   240 * 1000
