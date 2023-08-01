@@ -9,7 +9,10 @@ public final class SQLiteModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoSQLite")
 
-    Events("onDatabaseUpdate", "onSqliteUpdate")
+    Events(
+      "onDatabaseUpdate",
+      "onSqliteUpdate"
+    )
 
     OnCreate {
       crsqlite_init_from_swift()
@@ -115,16 +118,19 @@ public final class SQLiteModule: Module {
         return nil
       }
 
-      sqlite3_update_hook(db, { (obj, action, _, tableName, rowId) in
-        if let obj, let tableName {
-          let selfObj = Unmanaged<SQLiteModule>.fromOpaque(obj).takeUnretainedValue()
-          selfObj.sendEvent("onSqliteUpdate", [
-            "tableName": String(cString: UnsafePointer(tableName)),
-            "rowId": rowId,
-            "typeId": SqlAction.fromCode(value: action)
-          ])
-        }
-      }, selfPointer)
+      sqlite3_update_hook(
+        db, { (obj, action, _, tableName, rowId) in
+          if let obj, let tableName {
+            let selfObj = Unmanaged<SQLiteModule>.fromOpaque(obj).takeUnretainedValue()
+            selfObj.sendEvent("onSqliteUpdate", [
+              "tableName": String(cString: UnsafePointer(tableName)),
+              "rowId": rowId,
+              "typeId": SqlAction.fromCode(value: action)
+            ])
+          }
+        },
+        selfPointer
+      )
 
       cachedDatabases[dbName] = db
     }
@@ -253,17 +259,18 @@ enum SqlAction: Int, Enumerable {
   case insert
   case delete
   case update
+  case unknown
 
   static func fromCode(value: Int32) -> SqlAction {
     switch value {
     case 9:
       return .delete
-    case 10:
+    case 18:
       return .insert
-    case 12:
+    case 23:
       return .update
     default:
-      return .insert
+      return .unknown
     }
   }
 }
