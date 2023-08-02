@@ -101,10 +101,7 @@ export default function App() {
     };
 
     function stablePaths(src) {
-      return src.replace(
-        /\\"sources\\":\[\\".*\/babel-preset-expo\/__tests__\/samples\/worklet\.js\\"\]}/,
-        '"sources":["[mock]/worklet.js"]}'
-      );
+      return src.replace(new RegExp(samplesPath, 'g'), '[mock]/worklet.js');
     }
 
     const code = stablePaths(babel.transformFileSync(samplesPath, options).code);
