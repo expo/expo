@@ -42,6 +42,10 @@ If the `bundler` is not defined, it will default to checking if a `babel-loader`
 
 ## Options
 
+### `reanimated`
+
+`boolean`, defaults to `true`. Set `reanimated: false` to disable adding the `react-native-reanimated/plugin` when `react-native-reanimated` is installed.
+
 ### [`jsxRuntime`](https://babeljs.io/docs/en/babel-plugin-transform-react-jsx#runtime)
 
 `classic | automatic`, defaults to `automatic`

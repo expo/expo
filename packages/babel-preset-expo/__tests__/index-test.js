@@ -87,6 +87,56 @@ export default function App() {
     expect(code).toMatchSnapshot();
   });
 
+  it(`supports disabling reanimated`, () => {
+    expect(require.resolve('react-native-reanimated/plugin')).toBeDefined();
+
+    const samplesPath = path.resolve(__dirname, 'samples/worklet.js');
+
+    const options = {
+      babelrc: false,
+      presets: [[preset, { reanimated: false, jsxRuntime: 'automatic' }]],
+      // Make the snapshot easier to read
+      retainLines: true,
+      caller,
+    };
+
+    const code = babel.transformFileSync(samplesPath, options).code;
+    expect(code).toContain("'worklet';");
+    expect(code).toMatchSnapshot();
+  });
+
+  it(`supports reanimated worklets`, () => {
+    expect(require.resolve('react-native-reanimated/plugin')).toBeDefined();
+
+    const samplesPath = path.resolve(__dirname, 'samples/worklet.js');
+
+    const options = {
+      babelrc: false,
+      presets: [[preset, { jsxRuntime: 'automatic' }]],
+      // Make the snapshot easier to read
+      retainLines: true,
+      caller,
+    };
+
+    function stablePaths(src) {
+      return src.replace(new RegExp(samplesPath, 'g'), '[mock]/worklet.js');
+    }
+
+    const code = stablePaths(babel.transformFileSync(samplesPath, options).code);
+
+    expect(code).toMatchSnapshot();
+
+    expect(
+      stablePaths(
+        babel.transformFileSync(samplesPath, {
+          ...options,
+          // Test that duplicate plugins make no difference
+          plugins: [require.resolve('react-native-reanimated/plugin')],
+        }).code
+      )
+    ).toBe(code);
+  });
+
   it(`supports classic JSX runtime`, () => {
     const options = {
       babelrc: false,
