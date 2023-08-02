@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Use stable hashing for static CSS asset names.
+
 ### 💡 Others
 
 ## 0.11.0 — 2023-07-28
