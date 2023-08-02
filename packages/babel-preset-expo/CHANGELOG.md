@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Automatically add `react-native-reanimated/plugin` when available.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

@@ -112,6 +112,9 @@ module.exports = function (api, options = {}) {
       platform === 'web' && [require.resolve('babel-plugin-react-native-web')],
       isWebpack && platform !== 'web' && [require.resolve('./plugins/disable-ambiguous-requires')],
       require.resolve('@babel/plugin-proposal-export-namespace-from'),
+
+      // Automatically add `react-native-reanimated/plugin` when the package is installed.
+      hasModule('react-native-reanimated') && [require.resolve('react-native-reanimated/plugin')],
     ].filter(Boolean),
   };
 };
