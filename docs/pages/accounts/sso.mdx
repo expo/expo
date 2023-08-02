@@ -1,0 +1,74 @@
+---
+title: Single Sign-On (SSO)
+description: Learn how your enterprise organization can use your Identity Provider to manage Expo users on your team.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+SSO is available for [Enterprise Plan](https://expo.dev/pricing) customers. To get started, contact us and we'll help you set it up for your organization.
+
+> The Expo SSO system currently formally supports [Okta](https://www.okta.com/), but we implement the [OpenID Connect Discovery 1.0](https://openid.net/specs/openid-connect-discovery-1_0.html) specification and are working to verify additional compatible identity providers. If you use another identity provider and are interested in SSO, let us know.
+
+## SSO user sign in
+
+### Expo website
+
+1. Navigate to [expo.dev/sso-login](https://expo.dev/sso-login) and enter the account name of your organization.
+
+    > You can create a link that pre-fills the organization name. For example, [expo.dev/sso-login/test-org](https://expo.dev/sso-login/test-org) pre-fills `test-org`.
+
+1. Log in to your identity provider (IdP).
+1. Next, you'll be prompted to select an Expo username. This will be the username for your Expo account.
+
+### Expo CLI
+
+When using the Expo CLI, you can run the following command to log in to your Expo account.
+
+<Terminal cmd={["$ npx expo login --sso"]} />
+
+You will be prompted to log in via the Expo website in a browser and will be redirected back to the CLI upon completion.
+
+### EAS CLI
+
+When using the EAS CLI, you can run the following command to log in to your Expo account.
+
+<Terminal cmd={["$ eas login --sso"]} />
+
+You will be prompted to log in via the Expo website in a browser and will be redirected back to the CLI upon completion.
+
+### Expo Go
+
+1. Click the **Continue with SSO** button on the sign-in page when going through the sign-in flow.
+1. Follow the above steps for signing in to the Expo website.
+
+## SSO user restrictions
+
+SSO users are like regular users. However, there are a few known exceptions:
+- SSO users can only belong to their SSO organization. They also cannot create additional organizations.
+- SSO users cannot leave their SSO organization. Doing so deletes their SSO user.
+- SSO users cannot log in to the Expo forums.
+- SSO users cannot subscribe to EAS for their personal accounts.
+
+## SSO administration
+
+Both new organizations and existing organizations can enable SSO as a sign in option. Organizations with existing non-SSO members can enable SSO, and both non-SSO users and SSO users can continue to be added as members of SSO organizations.
+
+People with existing non-SSO accounts can evaluate SSO by signing in with SSO, thus creating a second account, but we don't recommend this for all members. For simplicity, we recommend that new organization members use SSO to sign up but existing members continue to sign in as they normally would with their credentials. Migration of a non-SSO user to a SSO user is not currently supported.
+
+### Remove SSO users
+
+If someone has left your organization, remove or disable them in your IdP. Depending on the token refresh duration you configured with your IdP, the removed user will subsequently lose access to their Expo account.
+If you wish to remove them ahead of that time or you wish to remove them to clean up users on your account, you may do so on the organization member settings page:
+
+1. Navigate to your [organization account member settings](https://expo.dev/accounts/[account]/settings/members).
+2. Click the dropdown next to the member you wish to delete, and click **Delete SSO user**.
+
+    > **warning** This will delete their personal account and all data associated with it. All data in your organization account will remain unaffected.
+
+### Change billing or discontinue use of SSO
+
+An active Enterprise Plan is required to continue using SSO. [Contact us](https://expo.dev/contact) if you wish to discontinue the use of SSO or change your plan.
+
+### Delete your SSO organization
+
+Once SSO is configured for an organization, account deletion must be done manually by the Expo team. [Contact us](https://expo.dev/contact) for assistance.
