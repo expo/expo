@@ -8,8 +8,8 @@
 
 import type { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
 import type { Bundle } from 'metro-runtime/src/modules/types.flow';
-
 import getAppendScripts from 'metro/src/lib/getAppendScripts';
+
 import { processModules } from './processModules';
 
 export function baseJSBundle(
@@ -63,13 +63,16 @@ export function baseJSBundle(
     .map(([_, code]) => code.src)
     .join('\n');
 
-    const mods = processModules([...graph.dependencies.values()], processModulesOptions).map(
-        ([module, code]) => [options.createModuleId(module.path), code]
-      );
+  const mods = processModules([...graph.dependencies.values()], processModulesOptions).map(
+    ([module, code]) => [options.createModuleId(module.path), code]
+  );
   return {
     pre: preCode,
     post: postCode,
-    modules: mods.map(([id, code]) => [id, typeof code === 'number' ? code : code.src])
-    _expoSplitBundlePaths: mods.map(([id, code]) => [id, typeof code === 'number' ? {} : code.paths]),
+    modules: mods.map(([id, code]) => [id, typeof code === 'number' ? code : code.src]),
+    _expoSplitBundlePaths: mods.map(([id, code]) => [
+      id,
+      typeof code === 'number' ? {} : code.paths,
+    ]),
   };
 }

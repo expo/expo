@@ -5,18 +5,19 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
-import { Graph, MixedOutput, Module, ReadOnlyGraph } from 'metro';
+import { MixedOutput, Module, ReadOnlyGraph } from 'metro';
 import { ConfigT, InputConfigT } from 'metro-config';
-import { baseJSBundle } from './fork/baseJSBundle';
+
 // import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
 import bundleToString from 'metro/src/lib/bundleToString';
 import path from 'path';
 
 import { env } from '../env';
 import { environmentVariableSerializerPlugin } from './environmentVariableSerializerPlugin';
-import { fileNameFromContents, getCssSerialAssets } from './getCssDeps';
-import { SerialAsset } from './serializerAssets';
+import { baseJSBundle } from './fork/baseJSBundle';
 import { getExportPathForDependency } from './fork/js';
+import { getCssSerialAssets } from './getCssDeps';
+import { SerialAsset } from './serializerAssets';
 
 export type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 
@@ -195,7 +196,7 @@ const generateDependencyGraphForEachSplitPoint = (
 ) => {
   entryFiles.forEach((entryFile) => {
     if (multiBundles.has(entryFile)) {
-      return multiBundles;
+      return;
     }
 
     const result = getTransitiveDependencies(entryFile, graph, used);

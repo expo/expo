@@ -6,13 +6,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import type { Dependency, MixedOutput, Module } from 'metro';
-import type { JsOutput } from 'metro-transform-worker';
-
 import invariant from 'invariant';
 import jscSafeUrl from 'jsc-safe-url';
+import type { MixedOutput, Module } from 'metro';
 import { addParamsToDefineCall } from 'metro-transform-plugins';
+import type { JsOutput } from 'metro-transform-worker';
 import path from 'path';
+
 import { fileNameFromContents } from '../getCssDeps';
 
 export type Options = {
