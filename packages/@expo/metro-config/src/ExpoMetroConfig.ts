@@ -7,11 +7,13 @@ import chalk from 'chalk';
 import { Reporter } from 'metro';
 import { stableHash } from 'metro-cache';
 import { ConfigT as MetroConfig, InputConfigT } from 'metro-config';
+import os from 'os';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import { getDefaultCustomizeFrame, INTERNAL_CALLSITES_REGEX } from './customizeFrame';
 import { env } from './env';
+import { ExpoMetroFileStore } from './file-store';
 import { getModulesPaths, getServerRoot } from './getModulesPaths';
 import { getWatchFolders } from './getWatchFolders';
 import { getRewriteRequestUrl } from './rewriteRequestUrl';
@@ -123,6 +125,11 @@ export function getDefaultConfig(
     ...metroDefaultValues
   } = getDefaultMetroConfig.getDefaultValues(projectRoot);
 
+  const cacheStore = new ExpoMetroFileStore<any>({
+    root: path.join(os.tmpdir(), 'metro-cache'),
+    // root: path.join(getServerRoot(projectRoot), 'node_modules/.cache/metro')
+  });
+
   // Merge in the default config from Metro here, even though loadConfig uses it as defaults.
   // This is a convenience for getDefaultConfig use in metro.config.js, e.g. to modify assetExts.
   const metroConfig: Partial<MetroConfig> = mergeConfig(metroDefaultValues, {
@@ -141,6 +148,7 @@ export function getDefaultConfig(
       sourceExts,
       nodeModulesPaths,
     },
+    cacheStores: [cacheStore],
     watcher: {
       // strip starting dot from env files
       additionalExts: envFiles.map((file: string) => file.replace(/^\./, '')),

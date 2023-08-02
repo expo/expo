@@ -67,6 +67,13 @@ function _metroConfig() {
   };
   return data;
 }
+function _os() {
+  const data = _interopRequireDefault(require("os"));
+  _os = function () {
+    return data;
+  };
+  return data;
+}
 function _path() {
   const data = _interopRequireDefault(require("path"));
   _path = function () {
@@ -91,6 +98,13 @@ function _customizeFrame() {
 function _env2() {
   const data = require("./env");
   _env2 = function () {
+    return data;
+  };
+  return data;
+}
+function _fileStore() {
+  const data = require("./file-store");
+  _fileStore = function () {
     return data;
   };
   return data;
@@ -215,6 +229,10 @@ function getDefaultConfig(projectRoot, options = {}) {
     reporter,
     ...metroDefaultValues
   } = getDefaultMetroConfig.getDefaultValues(projectRoot);
+  const cacheStore = new (_fileStore().ExpoMetroFileStore)({
+    root: _path().default.join(_os().default.tmpdir(), 'metro-cache')
+    // root: path.join(getServerRoot(projectRoot), 'node_modules/.cache/metro')
+  });
 
   // Merge in the default config from Metro here, even though loadConfig uses it as defaults.
   // This is a convenience for getDefaultConfig use in metro.config.js, e.g. to modify assetExts.
@@ -231,6 +249,7 @@ function getDefaultConfig(projectRoot, options = {}) {
       sourceExts,
       nodeModulesPaths
     },
+    cacheStores: [cacheStore],
     watcher: {
       // strip starting dot from env files
       additionalExts: envFiles.map(file => file.replace(/^\./, ''))
