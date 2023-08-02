@@ -13,11 +13,7 @@ exports[`within Expo client loadAsync throws if loading a downloaded font fails 
 
 exports[`within Expo client processFontFamily defaults missing fonts to the system font 1`] = `
 [
-  "fontFamily "not-loaded" is not a system font and has not been loaded through Font.loadAsync.
-
-- If you intended to use a system font, make sure you typed the name correctly and that it is supported by your device operating system.
-
-- If this is a custom font, be sure to load it with Font.loadAsync.",
+  "fontFamily "not-loaded" is not a system font and has not been loaded through expo-font.",
 ]
 `;
 
