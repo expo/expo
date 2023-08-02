@@ -380,6 +380,7 @@ const general = [
         makePage('accounts/two-factor.mdx'),
         makePage('accounts/programmatic-access.mdx'),
         makePage('accounts/working-together.mdx'),
+        makePage('accounts/sso.mdx'),
       ]),
       makeSection('Bare React Native', [
         makePage('bare/overview.mdx'),
