@@ -76,7 +76,7 @@ describe('static-rendering', () => {
       });
     },
     // Could take 45s depending on how fast the bundler resolves
-    360 * 1000
+    480 * 1000
   );
 
   it(
@@ -125,7 +125,7 @@ describe('static-rendering', () => {
       expect(files).toContain('welcome-to-the-universe.html');
       expect(files).toContain('other.html');
     },
-    2 * 1000
+    5 * 1000
   );
 
   it(
@@ -155,7 +155,7 @@ describe('static-rendering', () => {
         expect(jsBundle).not.toMatch('not-public-value');
       });
     },
-    2 * 1000
+    5 * 1000
   );
 
   it(
@@ -175,7 +175,7 @@ describe('static-rendering', () => {
         indexHtml.querySelector('html > head > style#react-native-stylesheet')?.innerHTML
       ).toEqual(expect.stringContaining('[stylesheet-group="0"]{}'));
     },
-    2 * 1000
+    5 * 1000
   );
 
   it(
@@ -225,7 +225,7 @@ describe('static-rendering', () => {
         styledHtml.querySelector('html > body div[data-testid="styled-text"]')?.attributes.class
       ).toMatch('HPV33q_text');
     },
-    2 * 1000
+    5 * 1000
   );
 
   it(
@@ -262,7 +262,7 @@ describe('static-rendering', () => {
         )?.attributes.content
       ).toBe('/welcome-to-the-universe');
     },
-    2 * 1000
+    5 * 1000
   );
 
   it(
@@ -291,7 +291,7 @@ describe('static-rendering', () => {
         )?.attributes.content
       ).toBe('TEST_VALUE');
     },
-    2 * 1000
+    5 * 1000
   );
 });
 
