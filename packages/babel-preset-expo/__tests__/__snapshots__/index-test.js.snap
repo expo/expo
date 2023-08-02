@@ -275,6 +275,14 @@ return React.createElement(_reactNative.View,null,React.createElement(_reactNati
 }"
 `;
 
+exports[`metro supports disabling reanimated 1`] = `
+"
+function someWorklet(greeting){
+'worklet';
+console.log("Hey I'm running on the UI thread");
+}"
+`;
+
 exports[`metro supports reanimated worklets 1`] = `
 "var _worklet_2797951844470_init_data={code:"function someWorklet(greeting) {\\n  console.log(\\"Hey I'm running on the UI thread\\");\\n}",location:"[mock]/worklet.js",sourceMap:"{\\"version\\":3,\\"mappings\\":\\"AAAA;EAAAA;AACA\\",\\"names\\":[\\"console\\"],\\"sources\\":[\\"[mock]/worklet.js\\"]}"};var
 someWorklet=function(){var _e=[new global.Error(),1,-27];var _f=function _f(greeting){
@@ -317,6 +325,14 @@ exports[`webpack supports classic JSX runtime 1`] = `
 
 export default function App(){
 return React.createElement(View,null,React.createElement(Text,null,"Hello World"));
+}"
+`;
+
+exports[`webpack supports disabling reanimated 1`] = `
+"
+function someWorklet(greeting){
+'worklet';
+console.log("Hey I'm running on the UI thread");
 }"
 `;
 

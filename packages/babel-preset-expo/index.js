@@ -3,7 +3,7 @@ const lazyImportsBlacklist = require('./lazy-imports-blacklist');
 let hasWarnedJsxRename = false;
 
 module.exports = function (api, options = {}) {
-  const { web = {}, native = {} } = options;
+  const { web = {}, native = {}, reanimated } = options;
 
   const bundler = api.caller(getBundler);
   const isWebpack = bundler === 'webpack';
@@ -114,7 +114,8 @@ module.exports = function (api, options = {}) {
       require.resolve('@babel/plugin-proposal-export-namespace-from'),
 
       // Automatically add `react-native-reanimated/plugin` when the package is installed.
-      hasModule('react-native-reanimated') && [require.resolve('react-native-reanimated/plugin')],
+      hasModule('react-native-reanimated') &&
+        reanimated !== false && [require.resolve('react-native-reanimated/plugin')],
     ].filter(Boolean),
   };
 };
