@@ -108,6 +108,18 @@ export async function setItemAsync(key, value, options = {}) {
     }
     await ExpoSecureStore.setValueWithKeyAsync(value, key, options);
 }
+/**
+ * Store a key–value pair synchronously.
+ * This function can be used in the global scope in order to save values before React Native components are mounted.
+ * > On Android this function won't ask for authentication on save, even when `requireAuthentication` is set to `true`.
+ * > Authentication will only be required on read.
+ *
+ * @param key The key to associate with the stored value. Keys may contain alphanumeric characters
+ * `.`, `-`, and `_`.
+ * @param value The value to store. Size limit is 2048 bytes.
+ * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
+ *
+ */
 export function setItemSync(key, value, options = {}) {
     _ensureValidKey(key);
     if (!_isValidValue(value)) {
@@ -118,6 +130,16 @@ export function setItemSync(key, value, options = {}) {
     }
     return ExpoSecureStore.setValueWithKeySync(value, key, options);
 }
+/**
+ * Fetch the stored value associated with the provided key synchronously.
+ * This function can be used in the global scope in order to read values before React Native components are mounted.
+ * > Values stored with `requireAuthentication` set to `true` cannot be read with this function.
+ *
+ * @param key The key that was used to store the associated value.
+ * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
+ *
+ * @return Previously stored value. It will return `null` if there is no entry for the given key or if the key has been invalidated.
+ */
 export function getItemSync(key, options = {}) {
     _ensureValidKey(key);
     return ExpoSecureStore.getValueWithKeySync(key, options);
