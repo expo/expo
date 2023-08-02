@@ -100,16 +100,25 @@ export default function App() {
       caller,
     };
 
-    const { code } = babel.transformFileSync(samplesPath, options);
+    function stablePaths(src) {
+      return src.replace(
+        /\\"sources\\":\[\\".*\/babel-preset-expo\/__tests__\/samples\/worklet\.js\\"\]}/,
+        '"sources":["[mock]/worklet.js"]}'
+      );
+    }
+
+    const code = stablePaths(babel.transformFileSync(samplesPath, options).code);
 
     expect(code).toMatchSnapshot();
 
     expect(
-      babel.transformFileSync(samplesPath, {
-        ...options,
-        // Test that duplicate plugins make no difference
-        plugins: [require.resolve('react-native-reanimated/plugin')],
-      }).code
+      stablePaths(
+        babel.transformFileSync(samplesPath, {
+          ...options,
+          // Test that duplicate plugins make no difference
+          plugins: [require.resolve('react-native-reanimated/plugin')],
+        }).code
+      )
     ).toBe(code);
   });
 
