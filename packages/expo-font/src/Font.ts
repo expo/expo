@@ -30,19 +30,15 @@ export function processFontFamily(fontFamily: string | null): string | null {
   if (!isLoaded(fontFamily)) {
     if (__DEV__) {
       if (isLoading(fontFamily)) {
-        console.error(
+        console.warn(
           `You started loading the font "${fontFamily}", but used it before it finished loading. You need to wait for Font.loadAsync to complete before using the font.`
         );
       } else {
-        console.error(
-          `fontFamily "${fontFamily}" is not a system font and has not been loaded through Font.loadAsync.\n
-- If you intended to use a system font, make sure you typed the name correctly and that it is supported by your device operating system.\n
-- If this is a custom font, be sure to load it with Font.loadAsync.`
+        console.warn(
+          `fontFamily "${fontFamily}" is not a system font and has not been loaded through expo-font.`
         );
       }
     }
-
-    return 'System';
   }
 
   return `ExpoFont-${getNativeFontName(fontFamily)}`;

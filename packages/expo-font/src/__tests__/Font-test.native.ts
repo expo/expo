@@ -266,17 +266,17 @@ describe('within Expo client', () => {
     });
 
     it(`defaults missing fonts to the system font`, () => {
-      console.error = jest.fn();
+      console.warn = jest.fn();
 
       const fontName = 'not-loaded';
       expect(Font.isLoaded(fontName)).toBe(false);
-      expect(Font.processFontFamily(fontName)).toBe('System');
-      expect(console.error).toHaveBeenCalled();
-      expect((console.error as jest.Mock).mock.calls[0]).toMatchSnapshot();
+      expect(Font.processFontFamily(fontName)).toBe('ExpoFont-testsession-not-loaded');
+      expect(console.warn).toHaveBeenCalled();
+      expect((console.warn as jest.Mock).mock.calls[0]).toMatchSnapshot();
     });
 
     it(`defaults still-loading fonts to the system font`, () => {
-      console.error = jest.fn();
+      console.warn = jest.fn();
 
       const fontName = 'loading';
       const mockAsset = _createMockAsset();
@@ -284,9 +284,9 @@ describe('within Expo client', () => {
       expect(Font.isLoaded(fontName)).toBe(false);
       expect(Font.isLoading(fontName)).toBe(true);
 
-      expect(Font.processFontFamily(fontName)).toBe('System');
-      expect(console.error).toHaveBeenCalled();
-      expect((console.error as jest.Mock).mock.calls[0]).toMatchSnapshot();
+      expect(Font.processFontFamily(fontName)).toBe('ExpoFont-testsession-loading');
+      expect(console.warn).toHaveBeenCalled();
+      expect((console.warn as jest.Mock).mock.calls[0]).toMatchSnapshot();
     });
 
     it(`scopes loaded names of loaded fonts`, async () => {
