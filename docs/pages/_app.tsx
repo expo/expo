@@ -4,6 +4,7 @@ import { MDXProvider } from '@mdx-js/react';
 import * as Sentry from '@sentry/react';
 import { AppProps } from 'next/app';
 import { Inter, Fira_Code } from 'next/font/google';
+import Prism from 'prismjs';
 
 import { preprocessSentryError } from '~/common/sentry-utilities';
 import { useNProgress } from '~/common/use-nprogress';
@@ -16,6 +17,20 @@ import 'global-styles/global.css';
 import '@expo/styleguide/dist/expo-theme.css';
 import '@expo/styleguide-search-ui/dist/expo-search-ui.css';
 import 'tippy.js/dist/tippy.css';
+
+import 'prismjs/components/prism-bash';
+import 'prismjs/components/prism-diff';
+import 'prismjs/components/prism-groovy';
+import 'prismjs/components/prism-ini';
+import 'prismjs/components/prism-java';
+import 'prismjs/components/prism-json';
+import 'prismjs/components/prism-objectivec';
+import 'prismjs/components/prism-properties';
+import 'prismjs/components/prism-ruby';
+import 'prismjs/components/prism-tsx';
+
+// Read more: https://github.com/FormidableLabs/prism-react-renderer#custom-language-support
+(typeof global !== 'undefined' ? global : window).Prism = Prism;
 
 const isDev = process.env.NODE_ENV === 'development';
 
