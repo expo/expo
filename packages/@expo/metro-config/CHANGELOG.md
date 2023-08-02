@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Use stable hashing for static CSS asset names.
+- Use stable hashing for static CSS asset names. ([#23795](https://github.com/expo/expo/pull/23795) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
