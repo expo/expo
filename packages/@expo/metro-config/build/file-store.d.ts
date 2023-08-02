@@ -1,8 +1,5 @@
 /// <reference types="node" />
-export declare class ExpoMetroFileStore<T> {
-    private fileStore;
-    constructor(options: any);
-    get(key: Buffer): Promise<T | null>;
+import FileStore from 'metro-cache/src/stores/FileStore';
+export declare class ExpoMetroFileStore<T> extends FileStore<T> {
     set(key: Buffer, value: any): Promise<void>;
-    clear(): void;
 }
