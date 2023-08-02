@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 11.5.1 — 2023-08-02
+
+### 💡 Others
+
 - Change unloaded font error to a warning. ([#23788](https://github.com/expo/expo/pull/23788) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 11.5.0 — 2023-07-28

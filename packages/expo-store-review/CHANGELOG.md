@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 6.5.0 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
 ## 6.4.0 — 2023-06-21
 
 ### 🐛 Bug fixes
