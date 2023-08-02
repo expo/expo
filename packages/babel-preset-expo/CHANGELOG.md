@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Automatically add `react-native-reanimated/plugin` when available. ([#23798](https://github.com/expo/expo/pull/23798) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 9.6.1 — 2023-08-02
+
+### 🎉 New features
+
+- Automatically add `react-native-reanimated/plugin` when available. ([#23798](https://github.com/expo/expo/pull/23798) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 9.6.0 — 2023-07-28
 
