@@ -87,9 +87,11 @@ export function getDefaultConfig(
   // Add support for cjs (without platform extensions).
   sourceExts.push('cjs');
 
+  const reanimatedVersion = getPkgVersion(projectRoot, 'react-native-reanimated');
+
   let sassVersion: string | null = null;
   if (options.isCSSEnabled) {
-    sassVersion = getSassVersion(projectRoot);
+    sassVersion = getPkgVersion(projectRoot, 'sass');
     // Enable SCSS by default so we can provide a better error message
     // when sass isn't installed.
     sourceExts.push('scss', 'sass', 'css');
@@ -114,6 +116,7 @@ export function getDefaultConfig(
     console.log(`- Exotic: ${isExotic}`);
     console.log(`- Env Files: ${envFiles}`);
     console.log(`- Sass: ${sassVersion}`);
+    console.log(`- Reanimated: ${reanimatedVersion}`);
     console.log();
   }
   const {
@@ -186,6 +189,8 @@ export function getDefaultConfig(
         ? stableHash(JSON.stringify(pkg.browserslist)).toString('hex')
         : null,
       sassVersion,
+      // Ensure invalidation when the version changes due to the Babel plugin.
+      reanimatedVersion,
 
       // `require.context` support
       unstable_allowRequireContext: true,
@@ -222,17 +227,17 @@ export { MetroConfig, INTERNAL_CALLSITES_REGEX };
 // re-export for legacy cases.
 export const EXPO_DEBUG = env.EXPO_DEBUG;
 
-function getSassVersion(projectRoot: string): string | null {
-  const sassPkg = resolveFrom.silent(projectRoot, 'sass');
-  if (!sassPkg) return null;
-  const sassPkgJson = findUpPackageJson(sassPkg);
-  if (!sassPkgJson) return null;
-  const pkg = JsonFile.read(sassPkgJson);
+function getPkgVersion(projectRoot: string, pkgName: string): string | null {
+  const targetPkg = resolveFrom.silent(projectRoot, pkgName);
+  if (!targetPkg) return null;
+  const targetPkgJson = findUpPackageJson(targetPkg);
+  if (!targetPkgJson) return null;
+  const pkg = JsonFile.read(targetPkgJson);
 
-  debug('sass package.json:', sassPkgJson);
-  const sassVersion = pkg.version;
-  if (typeof sassVersion === 'string') {
-    return sassVersion;
+  debug(`${pkgName} package.json:`, targetPkgJson);
+  const pkgVersion = pkg.version;
+  if (typeof pkgVersion === 'string') {
+    return pkgVersion;
   }
 
   return null;
