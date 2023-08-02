@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Migrate to Expo CLI.
+
 ## 2.4.7 — 2023-07-26
 
 ### 🐛 Bug fixes

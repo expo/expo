@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Migrate to Expo CLI.
+
 ## 3.1.9 — 2023-07-26
 
 _This version does not introduce any user-facing changes._
