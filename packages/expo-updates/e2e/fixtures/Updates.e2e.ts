@@ -533,8 +533,6 @@ describe('JS API tests', () => {
       projectRoot
     );
 
-    console.warn(`signed manifest = ${JSON.stringify(manifest, null, 2)}`);
-
     // Launch app
     await device.installApp();
     await device.launchApp({
@@ -555,9 +553,9 @@ describe('JS API tests', () => {
     console.warn(`latestManifestId = ${latestManifestId}`);
     console.warn(`downloadedManifestId = ${downloadedManifestId}`);
 
-    const updatesExpoConfigEmbeddedString = await testElementValueAsync('updates.expoConfig');
+    const updatesExpoClientEmbeddedString = await testElementValueAsync('updates.expoClient');
     const constantsExpoConfigEmbeddedString = await testElementValueAsync('constants.expoConfig');
-    console.warn(`updatesExpoConfigEmbedded = ${updatesExpoConfigEmbeddedString}`);
+    console.warn(`updatesExpoClientEmbedded = ${updatesExpoClientEmbeddedString}`);
     console.warn(`constantsExpoConfigEmbedded = ${constantsExpoConfigEmbeddedString}`);
 
     // Now serve a manifest
@@ -603,6 +601,15 @@ describe('JS API tests', () => {
     console.warn(`latestManifestId3 = ${latestManifestId3}`);
     console.warn(`downloadedManifestId3 = ${downloadedManifestId3}`);
 
+    // Test native context reader
+    await pressTestButtonAsync('readNativeStateContext');
+    await waitFor(element(by.id('activity')))
+      .not.toBeVisible()
+      .withTimeout(2000);
+    const nativeStateContextString = await testElementValueAsync('nativeStateContextString');
+    const nativeStateContext = JSON.parse(nativeStateContextString);
+    console.warn(`nativeStateContext = ${JSON.stringify(nativeStateContext, null, 2)}`);
+
     // Terminate and relaunch app, we should be running the update, and back to the default state
     await device.terminateApp();
     await device.launchApp();
@@ -620,9 +627,9 @@ describe('JS API tests', () => {
     console.warn(`latestManifestId4 = ${latestManifestId4}`);
     console.warn(`downloadedManifestId4 = ${downloadedManifestId4}`);
 
-    const updatesExpoConfigUpdateString = await testElementValueAsync('updates.expoConfig');
+    const updatesExpoClientUpdateString = await testElementValueAsync('updates.expoClient');
     const constantsExpoConfigUpdateString = await testElementValueAsync('constants.expoConfig');
-    console.warn(`updatesExpoConfigUpdate = ${updatesExpoConfigUpdateString}`);
+    console.warn(`updatesExpoClientUpdate = ${updatesExpoClientUpdateString}`);
     console.warn(`constantsExpoConfigUpdate = ${constantsExpoConfigUpdateString}`);
 
     // Now serve a rollback
@@ -643,16 +650,6 @@ describe('JS API tests', () => {
     console.warn(`isRollback5 = ${isRollback5}`);
     console.warn(`latestManifestId5 = ${latestManifestId5}`);
     console.warn(`downloadedManifestId5 = ${downloadedManifestId5}`);
-    {
-      const logEntries: any[] = await readLogEntriesAsync();
-      console.warn(
-        'Total number of log entries = ' +
-          logEntries.length +
-          '\n' +
-          JSON.stringify(logEntries, null, 2)
-      );
-      await clearLogEntriesAsync();
-    }
 
     // Terminate and relaunch app, we should be running the original bundle again, and back to the default state
     await device.terminateApp();
@@ -671,13 +668,13 @@ describe('JS API tests', () => {
     console.warn(`latestManifestId6 = ${latestManifestId6}`);
     console.warn(`downloadedManifestId6 = ${downloadedManifestId6}`);
 
-    const updatesExpoConfigRollbackString = await testElementValueAsync('updates.expoConfig');
+    const updatesExpoConfigRollbackString = await testElementValueAsync('updates.expoClient');
     const constantsExpoConfigRollbackString = await testElementValueAsync('constants.expoConfig');
     console.warn(`updatesExpoConfigRollback = ${updatesExpoConfigRollbackString}`);
     console.warn(`constantsExpoConfigRollback = ${constantsExpoConfigRollbackString}`);
 
     // Unpack expo config values and check them
-    const updatesExpoConfigEmbedded = JSON.parse(updatesExpoConfigEmbeddedString);
+    const updatesExpoConfigEmbedded = JSON.parse(updatesExpoClientEmbeddedString);
     jestExpect(updatesExpoConfigEmbedded).not.toBeNull();
 
     // Verify correct behavior
@@ -699,6 +696,11 @@ describe('JS API tests', () => {
     jestExpect(isRollback3).toEqual('false');
     jestExpect(latestManifestId3).toEqual(manifest.id);
     jestExpect(downloadedManifestId3).toEqual(manifest.id);
+    // native state context values
+    jestExpect(nativeStateContext.latestManifest?.id).toEqual(manifest.id);
+    jestExpect(nativeStateContext.isUpdateAvailable).toBe(true);
+    jestExpect(nativeStateContext.isUpdatePending).toBe(true);
+    jestExpect(nativeStateContext.isRollback).toBe(false);
     // After restarting
     jestExpect(isUpdateAvailable4).toEqual('false');
     jestExpect(isUpdatePending4).toEqual('false');
@@ -737,24 +739,19 @@ describe('JS API tests', () => {
       newInstance: true,
     });
     await waitForAppToBecomeVisible();
-    {
-      const logEntries: any[] = await readLogEntriesAsync();
-      console.warn(
-        'Total number of log entries = ' +
-          logEntries.length +
-          '\n' +
-          JSON.stringify(logEntries, null, 2)
-      );
-      await clearLogEntriesAsync();
-    }
 
     const lastUpdateEventType = await testElementValueAsync('lastUpdateEventType');
     // Server is not running, so error received
     console.warn(`lastUpdateEventType = ${lastUpdateEventType}`);
 
+    // Error should be surfaced in checkError
+    const checkErrorMessage = await testElementValueAsync('state.checkError');
+    console.warn(`checkErrorMessage = ${checkErrorMessage}`);
+
     // Start server with no update available directive,
     // then restart app, we should get "No update available" event
     let lastUpdateEventType2 = '';
+    let checkErrorMessage2 = '';
     if (protocolVersion === 1) {
       Server.start(Update.serverPort, protocolVersion);
       const directive = Update.getNoUpdateAvailableDirective();
@@ -762,19 +759,12 @@ describe('JS API tests', () => {
       await device.terminateApp();
       await device.launchApp();
       await waitForAppToBecomeVisible();
-      {
-        const logEntries: any[] = await readLogEntriesAsync();
-        console.warn(
-          'Total number of log entries = ' +
-            logEntries.length +
-            '\n' +
-            JSON.stringify(logEntries, null, 2)
-        );
-        await clearLogEntriesAsync();
-      }
+      await readLogEntriesAsync();
 
       lastUpdateEventType2 = await testElementValueAsync('lastUpdateEventType');
+      checkErrorMessage2 = await testElementValueAsync('state.checkError');
       console.warn(`lastUpdateEventType2 = ${lastUpdateEventType2}`);
+      console.warn(`checkErrorMessage2 = ${checkErrorMessage2}`);
       Server.stop();
     }
 
@@ -785,20 +775,11 @@ describe('JS API tests', () => {
     await device.terminateApp();
     await device.launchApp();
     await waitForAppToBecomeVisible();
-    {
-      const logEntries: any[] = await readLogEntriesAsync();
-      console.warn(
-        'Total number of log entries = ' +
-          logEntries.length +
-          '\n' +
-          JSON.stringify(logEntries, null, 2)
-      );
-      jestExpect(logEntries.length).toBeGreaterThan(0);
-      await clearLogEntriesAsync();
-    }
 
     const lastUpdateEventType3 = await testElementValueAsync('lastUpdateEventType');
+    const checkErrorMessage3 = await testElementValueAsync('state.checkError');
     console.warn(`lastUpdateEventType3 = ${lastUpdateEventType3}`);
+    console.warn(`checkErrorMessage3 = ${checkErrorMessage3}`);
 
     // Test passes if all the event types seen are the expected ones
     // This test not working on Android in 0.72 in the CI environment, so disable it for now.
@@ -806,6 +787,9 @@ describe('JS API tests', () => {
       jestExpect(lastUpdateEventType).toEqual('error');
       jestExpect(lastUpdateEventType2).toEqual('noUpdateAvailable');
       jestExpect(lastUpdateEventType3).toEqual('updateAvailable');
+      jestExpect(checkErrorMessage).toEqual('Could not connect to the server.');
+      jestExpect(checkErrorMessage2).toEqual('');
+      jestExpect(checkErrorMessage3).toEqual('');
     }
   });
 });

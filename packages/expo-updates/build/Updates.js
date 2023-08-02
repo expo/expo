@@ -1,7 +1,5 @@
-import { DeviceEventEmitter, CodedError, NativeModulesProxy, UnavailabilityError, } from 'expo-modules-core';
-import { EventEmitter } from 'fbemitter';
+import { CodedError, NativeModulesProxy, UnavailabilityError } from 'expo-modules-core';
 import ExpoUpdates from './ExpoUpdates';
-export * from './Updates.types';
 /**
  * The UUID that uniquely identifies the currently running update if `expo-updates` is enabled. The
  * UUID is represented in its canonical string form (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`) and
@@ -236,40 +234,27 @@ export async function fetchUpdateAsync() {
 export function clearUpdateCacheExperimentalAsync(_sdkVersion) {
     console.warn("This method is no longer necessary. `expo-updates` now automatically deletes your app's old bundle files!");
 }
-let _emitter;
-function _getEmitter() {
-    if (!_emitter) {
-        _emitter = new EventEmitter();
-        DeviceEventEmitter.addListener('Expo.nativeUpdatesEvent', _emitEvent);
-    }
-    return _emitter;
-}
-function _emitEvent(params) {
-    let newParams = { ...params };
-    if (typeof params === 'string') {
-        newParams = JSON.parse(params);
-    }
-    if (newParams.manifestString) {
-        newParams.manifest = JSON.parse(newParams.manifestString);
-        delete newParams.manifestString;
-    }
-    if (!_emitter) {
-        throw new Error(`EventEmitter must be initialized to use from its listener`);
-    }
-    _emitter.emit('Expo.updatesEvent', newParams);
-}
 /**
- * Adds a callback to be invoked when updates-related events occur (such as upon the initial app
- * load) due to auto-update settings chosen at build-time. See also the
- * [`useUpdateEvents`](#useupdateeventslistener) React hook.
- *
- * @param listener A function that will be invoked with an [`UpdateEvent`](#updateevent) instance
- * and should not return any value.
- * @return An `EventSubscription` object on which you can call `remove()` to unsubscribe the
- * listener.
+ * @hidden
  */
-export function addListener(listener) {
-    const emitter = _getEmitter();
-    return emitter.addListener('Expo.updatesEvent', listener);
+export async function getNativeStateMachineContextAsync() {
+    // Return the current state machine context
+    if (!ExpoUpdates.getNativeStateMachineContextAsync) {
+        throw new UnavailabilityError('Updates', 'getNativeStateMachineContextAsync');
+    }
+    const nativeContext = await ExpoUpdates.getNativeStateMachineContextAsync();
+    if (nativeContext.latestManifestString) {
+        nativeContext.latestManifest = JSON.parse(nativeContext.latestManifestString);
+        delete nativeContext.latestManifestString;
+    }
+    if (nativeContext.downloadedManifestString) {
+        nativeContext.downloadedManifest = JSON.parse(nativeContext.downloadedManifestString);
+        delete nativeContext.downloadedManifestString;
+    }
+    if (nativeContext.lastCheckForUpdateTimeString) {
+        nativeContext.lastCheckForUpdateTime = new Date(nativeContext.lastCheckForUpdateTimeString);
+        delete nativeContext.lastCheckForUpdateTimeString;
+    }
+    return nativeContext;
 }
 //# sourceMappingURL=Updates.js.map

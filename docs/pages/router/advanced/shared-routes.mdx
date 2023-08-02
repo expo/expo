@@ -1,7 +1,7 @@
 ---
 title: Shared routes
 description: Learn how to define shared routes or use arrays to use the same route multiple times with different layouts using Expo Router.
-hideFromSearch: true
+hideTOC: true
 ---
 
 import { FileTree } from '~/ui/components/FileTree';
@@ -36,7 +36,7 @@ Instead of defining the same route multiple times with different layouts, use th
 
 To distinguish between the two routes use a layout's `segment` prop:
 
-```js app/(home,search)/_layout.js
+```jsx app/(home,search)/_layout.js
 export default function DynamicLayout({ segment }) {
   if (segment === '(search)') {
     return <SearchStack />;

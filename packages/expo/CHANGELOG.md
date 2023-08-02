@@ -4,15 +4,51 @@
 
 ### 🛠 Breaking changes
 
+- Drop `Logs` module export. ([#18596](https://github.com/expo/expo/pull/18596) by [@EvanBacon](https://github.com/EvanBacon))
+- Drop support for `logUrl` endpoint (legacy `expo-cli` logging will no longer work). ([#18596](https://github.com/expo/expo/pull/18596) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 50.0.0-alpha.0 — 2023-07-28
+
+### 🐛 Bug fixes
+
 - Move `pointerEvents` to `styles.pointerEvents`. ([#23446](https://github.com/expo/expo/pull/23446) by [@EvanBacon](https://github.com/EvanBacon))
+- [Android] Fixed splash screen is missing when using the `getDelayLoadAppHandler()` from expo-updates. ([#23747](https://github.com/expo/expo/pull/23747) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
 - Fork `uuid@3.4.0` and move into `expo-modules-core`. Remove the original dependency. ([#23249](https://github.com/expo/expo/pull/23249) by [@alanhughes](https://github.com/alanjhughes))
+
+## 49.0.3 — 2023-07-12
+
+### 🎉 New features
+
+- Added support for React Native 0.72.3 ([#23502](https://github.com/expo/expo/pull/23502) by [@tsapeta](https://github.com/tsapeta))
+
+## 49.0.1 — 2023-07-10
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.1 — 2023-07-07
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.1 - 2023-07-07
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0 - 2023-07-05
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-beta.5 - 2023-07-04
+
+_This version does not introduce any user-facing changes._
 
 ## 49.0.0-beta.4 - 2023-07-02
 

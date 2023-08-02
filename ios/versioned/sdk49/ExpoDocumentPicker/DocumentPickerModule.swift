@@ -156,15 +156,61 @@ public class DocumentPickerModule: Module, PickingResultHandler {
     }
   }
 
+  @available(iOS 14.0, *)
+  private func toUTType(mimeType: String) -> UTType? {
+    switch mimeType {
+    case "*/*":
+      return UTType.item
+    case "image/*":
+      return UTType.image
+    case "video/*":
+      return UTType.video
+    case "audio/*":
+      return UTType.audio
+    case "text/*":
+      return UTType.text
+    default:
+      return UTType(mimeType: mimeType)
+    }
+  }
+
+  private func toUTI(mimeType: String) -> String {
+    var uti: CFString
+
+    switch mimeType {
+    case "*/*":
+      uti = kUTTypeItem
+    case "image/*":
+      uti = kUTTypeImage
+    case "video/*":
+      uti = kUTTypeVideo
+    case "audio/*":
+      uti = kUTTypeAudio
+    case "text/*":
+      uti = kUTTypeText
+    default:
+      if let ref = UTTypeCreatePreferredIdentifierForTag(
+        kUTTagClassMIMEType,
+        mimeType as CFString,
+        nil
+      )?.takeRetainedValue() {
+        uti = ref
+      } else {
+        uti = kUTTypeItem
+      }
+    }
+    return uti as String
+  }
+
   private func createDocumentPicker(with options: DocumentPickerOptions) -> UIDocumentPickerViewController {
     if #available(iOS 14.0, *) {
-      let utTypes = options.type.compactMap { $0.toUTType() }
+      let utTypes = options.type.compactMap { toUTType(mimeType: $0) }
       return UIDocumentPickerViewController(
         forOpeningContentTypes: utTypes,
         asCopy: true
       )
     } else {
-      let utiTypes = options.type.map { $0.toUTI() }
+      let utiTypes = options.type.map { toUTI(mimeType: $0) }
       return UIDocumentPickerViewController(
         documentTypes: utiTypes,
         in: .import

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 
-import * as Updates from './Updates';
 import { UpdateEvent } from './Updates.types';
+import { addListener } from './UpdatesEmitter';
 
 /**
  * React hook to create an [`UpdateEvent`](#updateevent) listener subscription on mount, using
@@ -36,7 +36,7 @@ export const useUpdateEvents = (listener: (event: UpdateEvent) => void) => {
 
   useEffect(() => {
     if (listenerRef.current) {
-      const subscription = Updates.addListener(listenerRef.current);
+      const subscription = addListener(listenerRef.current);
       return () => {
         subscription.remove();
       };

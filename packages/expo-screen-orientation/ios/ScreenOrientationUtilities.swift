@@ -73,6 +73,21 @@ internal func plistStringToInterfaceOrientationMask(_ maskName: String) -> UIInt
   }
 }
 
+internal func orientationStringToInterfaceOrientationMask(_ orientationString: String) -> UIInterfaceOrientationMask? {
+  switch orientationString {
+  case "UIInterfaceOrientationPortrait":
+    return .portrait
+  case "UIInterfaceOrientationPortraitUpsideDown":
+    return .portraitUpsideDown
+  case "UIInterfaceOrientationLandscapeRight":
+    return .landscapeRight
+  case "UIInterfaceOrientationLandscapeLeft":
+    return .landscapeLeft
+  default:
+    return nil
+  }
+}
+
 extension UIInterfaceOrientation {
   internal func toInterfaceOrientationMask() -> UIInterfaceOrientationMask {
     return UIInterfaceOrientationMask(rawValue: 1 << self.rawValue)

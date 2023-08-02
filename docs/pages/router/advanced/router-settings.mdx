@@ -1,8 +1,8 @@
 ---
 title: Router Settings
 description: Learn how to configure layouts with static properties in Expo Router.
-hideTOC: true
 sidebar_title: Settings
+hideTOC: true
 ---
 
 import { APIBox } from '~/components/plugins/APIBox';
@@ -12,11 +12,11 @@ import { FileTree } from '~/ui/components/FileTree';
 
 <APIBox header="initialRouteName">
 
-When deep-linking to a route may want to provide a user with a "back" button. The `initialRouteName` sets the default screen of the stack and should match a valid filename (without the extension).
+When deep linking to a route, you may want to provide a user with a "back" button. The `initialRouteName` sets the default screen of the stack and should match a valid filename (without the extension).
 
 <FileTree files={['app/_layout.js', 'app/index.js', 'app/other.js']} />
 
-```js app/_layout.js
+```jsx app/_layout.js
 import { Stack } from 'expo-router';
 
 export const unstable_settings = {
@@ -31,7 +31,7 @@ export default function Layout() {
 
 Now deep linking directly to `/other` or reloading the page will continue to show the back arrow.
 
-When using [array syntax](/router/routing/groups/#arrays) `(foo,bar)` you can specify the name of a group in the `unstable_settings` object to target a particular segment.
+When using [array syntax](/router/advanced/shared-routes/#arrays) `(foo,bar)` you can specify the name of a group in the `unstable_settings` object to target a particular segment.
 
 ```js other.js
 export const unstable_settings = {

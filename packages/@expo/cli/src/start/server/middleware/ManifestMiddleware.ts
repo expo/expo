@@ -1,6 +1,7 @@
 import { ExpoConfig, ExpoGoConfig, getConfig, ProjectConfig } from '@expo/config';
 import findWorkspaceRoot from 'find-yarn-workspace-root';
 import path from 'path';
+import resolveFrom from 'resolve-from';
 import { resolve } from 'url';
 
 import * as Log from '../../../log';
@@ -62,6 +63,18 @@ export function resolveMainModuleName(
   return stripExtension(entryPoint, 'js');
 }
 
+export function shouldEnableAsyncImports(projectRoot: string): boolean {
+  if (env.EXPO_NO_METRO_LAZY) {
+    return false;
+  }
+
+  // `@expo/metro-runtime` includes support for the fetch + eval runtime code required
+  // to support async imports. If it's not installed, we can't support async imports.
+  // If it is installed, the user MUST import it somewhere in their project.
+  // Expo Router automatically pulls this in, so we can check for it.
+  return resolveFrom.silent(projectRoot, '@expo/metro-runtime') != null;
+}
+
 export function createBundleUrlPath({
   platform,
   mainModuleName,
@@ -87,6 +100,10 @@ export function createBundleUrlPath({
     hot: String(false),
     lazy: String(lazy),
   });
+
+  if (lazy) {
+    queryParams.append('lazy', String(lazy));
+  }
 
   if (minify) {
     queryParams.append('minify', String(minify));
@@ -241,6 +258,7 @@ export abstract class ManifestMiddleware<
       platform,
       lazy: false,
       mainModuleName,
+      lazy: shouldEnableAsyncImports(this.projectRoot),
     });
 
     return (
@@ -264,8 +282,10 @@ export abstract class ManifestMiddleware<
       dev: String(this.options.mode !== 'production'),
       // TODO: Is this still needed?
       hot: String(false),
-      lazy: String(!env.EXPO_NO_METRO_LAZY),
     });
+    if (shouldEnableAsyncImports(this.projectRoot)) {
+      queryParams.append('lazy', String(true));
+    }
 
     if (this.options.minify) {
       queryParams.append('minify', String(this.options.minify));
@@ -294,9 +314,6 @@ export abstract class ManifestMiddleware<
     return {
       // localhost:8081
       debuggerHost: this.options.constructUrl({ scheme: '', hostname }),
-      // http://localhost:8081/logs -- used to send logs to the CLI for displaying in the terminal.
-      // This is deprecated in favor of the WebSocket connection setup in Metro.
-      logUrl: this.options.constructUrl({ scheme: 'http', hostname }) + '/logs',
       // Required for Expo Go to function.
       developer: {
         tool: DEVELOPER_TOOL,

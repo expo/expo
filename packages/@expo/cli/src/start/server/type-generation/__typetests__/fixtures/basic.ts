@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
 import type { LinkProps as OriginalLinkProps } from 'expo-router/build/link/Link';
+import type { Router as OriginalRouter } from 'expo-router/src/types';
 export * from 'expo-router/build';
 
 // prettier-ignore
@@ -23,6 +24,8 @@ type AllRoutes = ExpoRouterRoutes | ExternalPathString;
  ****************/
 
 type SearchOrHash = `?${string}` | `#${string}`;
+type UnknownInputParams = Record<string, string | number | (string | number)[]>;
+type UnknownOutputParams = Record<string, string | string[]>;
 
 /**
  * Return only the RoutePart of a string. If the string has multiple parts return never
@@ -42,6 +45,10 @@ type SingleRoutePart<S extends string> = S extends `${string}/${string}`
   ? never
   : S extends ''
   ? never
+  : S extends `(${string})`
+  ? never
+  : S extends `[${string}]`
+  ? never
   : S;
 
 /**
@@ -50,6 +57,10 @@ type SingleRoutePart<S extends string> = S extends `${string}/${string}`
 type CatchAllRoutePart<S extends string> = S extends `${string}${SearchOrHash}`
   ? never
   : S extends ''
+  ? never
+  : S extends `${string}(${string})${string}`
+  ? never
+  : S extends `${string}[${string}]${string}`
   ? never
   : S;
 
@@ -87,25 +98,34 @@ type RouteSegments<Path> = Path extends `${infer PartA}/${infer PartB}`
   : [Path];
 
 /**
- * Returns a Record of the routes parameters as strings and CatchAll parameters as string[]
+ * Returns a Record of the routes parameters as strings and CatchAll parameters
+ *
+ * There are two versions, input and output, as you can input 'string | number' but
+ *  the output will always be 'string'
  *
  * /[id]/[...rest] -> { id: string, rest: string[] }
  * /no-params      -> {}
  */
-type RouteParams<Path> = {
+type InputRouteParams<Path> = {
+  [Key in ParameterNames<Path> as Key extends `...${infer Name}`
+    ? Name
+    : Key]: Key extends `...${string}` ? (string | number)[] : string | number;
+} & UnknownInputParams;
+
+type OutputRouteParams<Path> = {
   [Key in ParameterNames<Path> as Key extends `...${infer Name}`
     ? Name
     : Key]: Key extends `...${string}` ? string[] : string;
-};
+} & UnknownOutputParams;
 
 /**
- * Returns the search parameters for a route
+ * Returns the search parameters for a route.
  */
 export type SearchParams<T extends AllRoutes> = T extends DynamicRouteTemplate
-  ? RouteParams<T>
+  ? OutputRouteParams<T>
   : T extends StaticRoutes
   ? never
-  : Record<string, string>;
+  : UnknownOutputParams;
 
 /**
  * Route is mostly used as part of Href to ensure that a valid route is provided
@@ -120,71 +140,98 @@ export type SearchParams<T extends AllRoutes> = T extends DynamicRouteTemplate
  *
  * This is named Route to prevent confusion, as users they will often see it in tooltips
  */
-export type Route<T> = T extends DynamicRouteTemplate
-  ? never
-  :
-      | StaticRoutes
-      | RelativePathString
-      | ExternalPathString
-      | (T extends DynamicRoutes<infer _> ? T : never);
+export type Route<T> = T extends string
+  ? T extends DynamicRouteTemplate
+    ? never
+    :
+        | StaticRoutes
+        | RelativePathString
+        | ExternalPathString
+        | (T extends `${infer P}${SearchOrHash}`
+            ? P extends DynamicRoutes<infer _>
+              ? T
+              : never
+            : T extends DynamicRoutes<infer _>
+            ? T
+            : never)
+  : never;
 
 /*********
  * Href  *
  *********/
 
-export type Href<T extends string> = Route<T> | HrefObject<T>;
+export type Href<T> = T extends Record<'pathname', string> ? HrefObject<T> : Route<T>;
 
-export type HrefObject<T = AllRoutes> = T extends DynamicRouteTemplate
-  ? { pathname: T; params: RouteParams<T> }
-  : T extends Route<T>
-  ? { pathname: Route<T>; params?: never }
+export type HrefObject<
+  R extends Record<'pathname', string>,
+  P = R['pathname']
+> = P extends DynamicRouteTemplate
+  ? { pathname: P; params: InputRouteParams<P> }
+  : P extends Route<P>
+  ? { pathname: Route<P> | DynamicRouteTemplate; params?: never | InputRouteParams<never> }
   : never;
 
 /***********************
  * Expo Router Exports *
  ***********************/
 
-export type Router = {
+export type Router = Omit<OriginalRouter, 'push' | 'replace' | 'setParams'> & {
   /** Navigate to the provided href. */
-  push: <T extends string>(href: Href<T>) => void;
+  push: <T>(href: Href<T>) => void;
   /** Navigate to route without appending to the history. */
-  replace: <T extends string>(href: Href<T>) => void;
-  /** Go back in the history. */
-  back: () => void;
+  replace: <T>(href: Href<T>) => void;
   /** Update the current route query params. */
-  setParams: <T extends string = ''>(
-    params?: T extends '' ? Record<string, string> : RouteParams<T>
-  ) => void;
+  setParams: <T = ''>(params?: T extends '' ? Record<string, string> : InputRouteParams<T>) => void;
 };
+
+/** The imperative router. */
+export declare const router: Router;
 
 /************
  * <Link /> *
  ************/
-export interface LinkProps<T extends string> extends OriginalLinkProps {
-  href: T extends DynamicRouteTemplate ? HrefObject<T> : Href<T>;
+export interface LinkProps<T> extends OriginalLinkProps {
+  href: Href<T>;
 }
 
 export interface LinkComponent {
-  <T extends string>(props: React.PropsWithChildren<LinkProps<T>>): JSX.Element;
+  <T>(props: React.PropsWithChildren<LinkProps<T>>): JSX.Element;
   /** Helper method to resolve an Href object into a string. */
-  resolveHref: <T extends string>(href: Href<T>) => string;
+  resolveHref: <T>(href: Href<T>) => string;
 }
 
+/**
+ * Component to render link to another route using a path.
+ * Uses an anchor tag on the web.
+ *
+ * @param props.href Absolute path to route (e.g. `/feeds/hot`).
+ * @param props.replace Should replace the current route without adding to the history.
+ * @param props.asChild Forward props to child component. Useful for custom buttons.
+ * @param props.children Child elements to render the content.
+ */
 export declare const Link: LinkComponent;
+
+/** Redirects to the href as soon as the component is mounted. */
+export declare const Redirect: <T>(
+  props: React.PropsWithChildren<{ href: Href<T> }>
+) => JSX.Element;
 
 /************
  * Hooks *
  ************/
 export declare function useRouter(): Router;
+
 export declare function useLocalSearchParams<
-  T extends DynamicRouteTemplate | StaticRoutes | RelativePathString
->(): SearchParams<T>;
+  T extends AllRoutes | UnknownOutputParams = UnknownOutputParams
+>(): T extends AllRoutes ? SearchParams<T> : T;
+
+/** @deprecated renamed to `useGlobalSearchParams` */
 export declare function useSearchParams<
-  T extends AllRoutes | SearchParams<DynamicRouteTemplate>
+  T extends AllRoutes | UnknownOutputParams = UnknownOutputParams
 >(): T extends AllRoutes ? SearchParams<T> : T;
 
 export declare function useGlobalSearchParams<
-  T extends AllRoutes | SearchParams<DynamicRouteTemplate>
+  T extends AllRoutes | UnknownOutputParams = UnknownOutputParams
 >(): T extends AllRoutes ? SearchParams<T> : T;
 
 export declare function useSegments<

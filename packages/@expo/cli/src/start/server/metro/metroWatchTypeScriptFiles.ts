@@ -2,7 +2,9 @@ import path from 'path';
 
 import type { ServerLike } from '../BundlerDevServer';
 
-const debug = require('debug')('expo:start:server:metro:waitForTypescript') as typeof console.log;
+const debug = require('debug')(
+  'expo:start:server:metro:metroWatchTypeScriptFiles'
+) as typeof console.log;
 
 export interface MetroWatchTypeScriptFilesOptions {
   projectRoot: string;

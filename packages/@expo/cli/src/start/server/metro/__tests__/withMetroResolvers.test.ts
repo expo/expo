@@ -70,4 +70,28 @@ describe(withMetroResolvers, () => {
     // Never called
     expect(originalResolveRequest).not.toBeCalled();
   });
+  it(`disables native extensions for all web resolvers regardless of if web is enabled`, () => {
+    const customResolver1 = jest.fn(() => {
+      return {} as any;
+    });
+
+    const originalResolveRequest = jest.fn();
+    const modified = withMetroResolvers(
+      asMetroConfig({
+        // @ts-expect-error
+        resolver: {
+          resolveRequest: originalResolveRequest,
+        },
+      }),
+      '/',
+      [customResolver1]
+    );
+
+    // @ts-expect-error: invalid types on resolveRequest
+    modified.resolver.resolveRequest!({}, 'react-native', 'web');
+
+    // Resolves
+    expect(customResolver1).toBeCalledTimes(1);
+    expect(customResolver1).toBeCalledWith({ preferNativePlatform: false }, 'react-native', 'web');
+  });
 });
