@@ -122,8 +122,10 @@ function getExpoRouterAbsoluteAppRoot(projectRoot) {
 
 module.exports = function (api) {
   const { types: t } = api;
+
   const getRelPath = (state) => './' + nodePath.relative(state.file.opts.root, state.filename);
 
+  const metroTarget = api.caller((caller) => caller?.metroTarget || 'client');
   const platform = api.caller((caller) => caller?.platform);
   return {
     name: 'expo-router',
@@ -219,7 +221,11 @@ module.exports = function (api) {
           }) &&
           !parent.parentPath.isAssignmentExpression()
         ) {
-          parent.replaceWith(t.stringLiteral(getExpoRouterImportMode(projectRoot, platform)));
+          parent.replaceWith(
+            t.stringLiteral(
+              metroTarget === 'node' ? 'sync' : getExpoRouterImportMode(projectRoot, platform)
+            )
+          );
         }
       },
     },
