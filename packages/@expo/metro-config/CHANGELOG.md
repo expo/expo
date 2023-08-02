@@ -8,7 +8,7 @@
 
 ### 🎉 New features
 
-- Automatically invalidate cache when `react-native-reanimated` version changes or is added.
+- Automatically invalidate cache when `react-native-reanimated` version changes or is added. ([#23798](https://github.com/expo/expo/pull/23798) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
