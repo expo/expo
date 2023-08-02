@@ -21,11 +21,11 @@ export class SQLiteDatabase {
     /**
      * Executes the SQL statement and returns a callback resolving with the result.
      */
-    exec(queries, readOnly, requiresSync, callback) {
+    exec(queries, readOnly, callback) {
         if (this._closed) {
             throw new Error(`The SQLite database is closed`);
         }
-        ExpoSQLite.exec(this._name, queries.map(_serializeQuery), readOnly, requiresSync).then((nativeResultSets) => {
+        ExpoSQLite.exec(this._name, queries.map(_serializeQuery), readOnly).then((nativeResultSets) => {
             callback(null, nativeResultSets.map(_deserializeResultSet));
         }, (error) => {
             // TODO: make the native API consistently reject with an error, not a string or other type
@@ -71,17 +71,7 @@ export class SQLiteDatabase {
         return ExpoSQLite.deleteAsync(this._name);
     }
     onDatabaseChange(cb) {
-        return emitter.addListener('onDatabaseUpdate', async () => {
-            this.exec([
-                {
-                    sql: `SELECT "table", quote(pk) as pk, cid, val, col_version, db_version, site_id FROM crsql_changes where db_version > -1`,
-                    args: [],
-                },
-            ], false, false, cb);
-        });
-    }
-    onSqliteUpdate(cb) {
-        return emitter.addListener('onSqliteUpdate', cb);
+        return emitter.addListener('onDatabaseChange', cb);
     }
     /**
      * Creates a new transaction with Promise support.
@@ -162,7 +152,6 @@ export function openDatabase(name, version = '1.0', description = name, size = 1
     db.closeAsync = db._db.closeAsync.bind(db._db);
     db.closeSync = db._db.closeSync.bind(db._db);
     db.onDatabaseChange = db._db.onDatabaseChange.bind(db._db);
-    db.onSqliteUpdate = db._db.onSqliteUpdate.bind(db._db);
     db.deleteAsync = db._db.deleteAsync.bind(db._db);
     db.transactionAsync = db._db.transactionAsync.bind(db._db);
     return db;

@@ -38,12 +38,12 @@ export class SQLiteDatabase {
   /**
    * Executes the SQL statement and returns a callback resolving with the result.
    */
-  exec(queries: Query[], readOnly: boolean, requiresSync: boolean, callback: SQLiteCallback): void {
+  exec(queries: Query[], readOnly: boolean, callback: SQLiteCallback): void {
     if (this._closed) {
       throw new Error(`The SQLite database is closed`);
     }
 
-    ExpoSQLite.exec(this._name, queries.map(_serializeQuery), readOnly, requiresSync).then(
+    ExpoSQLite.exec(this._name, queries.map(_serializeQuery), readOnly).then(
       (nativeResultSets) => {
         callback(null, nativeResultSets.map(_deserializeResultSet));
       },
@@ -105,24 +105,8 @@ export class SQLiteDatabase {
     return ExpoSQLite.deleteAsync(this._name);
   }
 
-  onDatabaseChange(cb: SQLiteCallback) {
-    return emitter.addListener('onDatabaseUpdate', async () => {
-      this.exec(
-        [
-          {
-            sql: `SELECT "table", quote(pk) as pk, cid, val, col_version, db_version, site_id FROM crsql_changes where db_version > -1`,
-            args: [],
-          },
-        ],
-        false,
-        false,
-        cb
-      );
-    });
-  }
-
-  onSqliteUpdate(cb: (result: { tableName: string; rowId: number }) => void) {
-    return emitter.addListener('onSqliteUpdate', cb);
+  onDatabaseChange(cb: (result: { tableName: string; rowId: number }) => void) {
+    return emitter.addListener('onDatabaseChange', cb);
   }
 
   /**
@@ -240,7 +224,6 @@ export function openDatabase(
   db.closeAsync = db._db.closeAsync.bind(db._db);
   db.closeSync = db._db.closeSync.bind(db._db);
   db.onDatabaseChange = db._db.onDatabaseChange.bind(db._db);
-  db.onSqliteUpdate = db._db.onSqliteUpdate.bind(db._db);
   db.deleteAsync = db._db.deleteAsync.bind(db._db);
   db.transactionAsync = db._db.transactionAsync.bind(db._db);
   return db;

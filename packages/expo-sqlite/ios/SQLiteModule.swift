@@ -9,16 +9,13 @@ public final class SQLiteModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoSQLite")
 
-    Events(
-      "onDatabaseUpdate",
-      "onSqliteUpdate"
-    )
+    Events("onDatabaseChange")
 
     OnCreate {
       crsqlite_init_from_swift()
     }
 
-    AsyncFunction("exec") { (dbName: String, queries: [[Any]], readOnly: Bool, requiresSync: Bool) -> [Any?] in
+    AsyncFunction("exec") { (dbName: String, queries: [[Any]], readOnly: Bool) -> [Any?] in
       guard let db = openDatabase(dbName: dbName) else {
         throw DatabaseException()
       }
@@ -33,12 +30,6 @@ public final class SQLiteModule: Module {
         }
 
         return executeSql(sql: sql, with: args, for: db, readOnly: readOnly)
-      }
-
-      if requiresSync {
-        if hasListeners {
-          sendEvent("onDatabaseUpdate")
-        }
       }
 
       return results
@@ -119,10 +110,11 @@ public final class SQLiteModule: Module {
       }
 
       sqlite3_update_hook(
-        db, { (obj, action, _, tableName, rowId) in
+        db,
+        { (obj, action, _, tableName, rowId) in
           if let obj, let tableName {
             let selfObj = Unmanaged<SQLiteModule>.fromOpaque(obj).takeUnretainedValue()
-            selfObj.sendEvent("onSqliteUpdate", [
+            selfObj.sendEvent("onDatabaseChange", [
               "tableName": String(cString: UnsafePointer(tableName)),
               "rowId": rowId,
               "typeId": SqlAction.fromCode(value: action)
