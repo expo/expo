@@ -19,14 +19,20 @@ export default [
     name: 'releaseChannel',
     type: 'string',
     description: [
-      'Name of the release channel for the `expo-updates` package ([Learn more about this](../../archive/classic-updates/release-channels)). If you do not specify a channel, your binary will pull releases from the `default` channel. If you do not use `expo-updates` in your project then this property will have no effect. **This field only applies to the Classic Update service**; if you use EAS Update, use the [channel](#channel) field instead.',
+      '**Deprecated**: Name of the release channel for the Classic Updates service, which is only supported in SDK 49 and lower. If you do not specify a channel, your binary will pull releases from the `default` channel.',
+      '',
+      'EAS Update uses the [channel](#channel) field, so you can remove [releaseChannel](#releasechannel) after migrating to EAS Update. [Learn more about migrating from Classic Updates to EAS Update](/eas-update/migrate-from-classic-updates/).',
     ],
   },
   {
     name: 'channel',
     type: 'string',
     description: [
-      'The channel is a name we can give to multiple builds to identify them easily. [Learn more](../../eas-update/how-it-works). **This field only applies to the EAS Update service**, if your project still uses Classic Updates then use the [releaseChannel](#releasechannel) field instead.',
+      'The EAS Update channel where this build will look for updates. [Learn more](../../eas-update/how-it-works). Standalone builds will check for and download updates matching platform, native runtime, and channel.',
+      '',
+      'This field has no effect when [developmentClient](#developmentclient) is set to `true`, as development builds can run updates from any channnel.',
+      '',
+      'If you have not yet migrated from Classic Updates to EAS Update, then continue to use the [releaseChannel](#releasechannel) field instead.',
     ],
   },
   {
