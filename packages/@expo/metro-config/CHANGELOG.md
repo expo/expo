@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Automatically invalidate cache when `react-native-reanimated` version changes or is added.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
