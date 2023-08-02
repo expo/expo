@@ -276,7 +276,8 @@ return React.createElement(_reactNative.View,null,React.createElement(_reactNati
 `;
 
 exports[`metro supports reanimated worklets 1`] = `
-"var _worklet_2797951844470_init_data={code:"function someWorklet(greeting) {\\n  console.log(\\"Hey I'm running on the UI thread\\");\\n}",location:"[mock]/worklet.js",sourceMap:"{\\"version\\":3,\\"mappings\\":\\"AAAA,oBAASA,CAAYC,UAAQ;EAE3BC,OAAO,CAACC,GAAG,CAAC,kCAAkC,CAAC;AACjD\\",\\"names\\":[\\"someWorklet\\",\\"greeting\\",\\"console\\",\\"log\\"],\\"sources\\":[\\"[mock]/worklet.js\\"]}"};var someWorklet=function(){var _e=[new global.Error(),1,-27];var _f=function _f(greeting){
+"var _worklet_2797951844470_init_data={code:"function someWorklet(greeting) {\\n  console.log(\\"Hey I'm running on the UI thread\\");\\n}",location:"[mock]/worklet.js",sourceMap:"{\\"version\\":3,\\"mappings\\":\\"AAAA;EAAAA;AACA\\",\\"names\\":[\\"console\\"],\\"sources\\":[\\"[mock]/worklet.js\\"]}"};var
+someWorklet=function(){var _e=[new global.Error(),1,-27];var _f=function _f(greeting){
 
 console.log("Hey I'm running on the UI thread");
 };_f._closure={};_f.__initData=_worklet_2797951844470_init_data;_f.__workletHash=2797951844470;_f.__stackDetails=_e;_f.__version="3.3.0";return _f;}();"
@@ -320,7 +321,8 @@ return React.createElement(View,null,React.createElement(Text,null,"Hello World"
 `;
 
 exports[`webpack supports reanimated worklets 1`] = `
-"var _worklet_2797951844470_init_data={code:"function someWorklet(greeting) {\\n  console.log(\\"Hey I'm running on the UI thread\\");\\n}",location:"[mock]/worklet.js",sourceMap:"{\\"version\\":3,\\"mappings\\":\\"AAAA,oBAASA,CAAYC,UAAQ;EAE3BC,OAAO,CAACC,GAAG,CAAC,kCAAkC,CAAC;AACjD\\",\\"names\\":[\\"someWorklet\\",\\"greeting\\",\\"console\\",\\"log\\"],\\"sources\\":[\\"[mock]/worklet.js\\"]}"};var someWorklet=function(){var _e=[new global.Error(),1,-27];var _f=function _f(greeting){
+"var _worklet_2797951844470_init_data={code:"function someWorklet(greeting) {\\n  console.log(\\"Hey I'm running on the UI thread\\");\\n}",location:"[mock]/worklet.js",sourceMap:"{\\"version\\":3,\\"mappings\\":\\"AAAA;EAAAA;AACA\\",\\"names\\":[\\"console\\"],\\"sources\\":[\\"[mock]/worklet.js\\"]}"};var
+someWorklet=function(){var _e=[new global.Error(),1,-27];var _f=function _f(greeting){
 
 console.log("Hey I'm running on the UI thread");
 };_f._closure={};_f.__initData=_worklet_2797951844470_init_data;_f.__workletHash=2797951844470;_f.__stackDetails=_e;_f.__version="3.3.0";return _f;}();"
