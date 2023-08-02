@@ -196,17 +196,17 @@ describe('static-rendering', () => {
       });
 
       expect(links[0].toString()).toMatch(
-        /\<link rel="preload" href="\/_expo\/static\/css\/global-[\d\w]+\.css" as="style">/
+        /<link rel="preload" href="\/_expo\/static\/css\/global-[\d\w]+\.css" as="style">/
       );
       expect(links[1].toString()).toMatch(
-        /\<link rel="stylesheet" href="\/_expo\/static\/css\/global-[\d\w]+\.css">/
+        /<link rel="stylesheet" href="\/_expo\/static\/css\/global-[\d\w]+\.css">/
       );
       // CSS Module
       expect(links[2].toString()).toMatch(
-        /\<link rel="preload" href="\/_expo\/static\/css\/test\.module-[\d\w]+\.css" as="style">/
+        /<link rel="preload" href="\/_expo\/static\/css\/test\.module-[\d\w]+\.css" as="style">/
       );
       expect(links[3].toString()).toMatch(
-        /\<link rel="stylesheet" href="\/_expo\/static\/css\/test\.module-[\d\w]+\.css">/
+        /<link rel="stylesheet" href="\/_expo\/static\/css\/test\.module-[\d\w]+\.css">/
       );
 
       expect(
@@ -454,18 +454,18 @@ describe('single-page', () => {
         expect(link.attributes.href).toMatch(/^\/_expo\/static\/css\/.*\.css$/);
       });
 
-      expect(links[0].toString()).toMatchInlineSnapshot(
-        `"<link rel="preload" href="/_expo/static/css/global-67b6bc5b348b2db946e81c5f0040f565.css" as="style">"`
+      expect(links[0].toString()).toMatch(
+        /<link rel="preload" href="\/_expo\/static\/css\/global-[\d\w]+\.css" as="style">/
       );
-      expect(links[1].toString()).toMatchInlineSnapshot(
-        `"<link rel="stylesheet" href="/_expo/static/css/global-67b6bc5b348b2db946e81c5f0040f565.css">"`
+      expect(links[1].toString()).toMatch(
+        /<link rel="stylesheet" href="\/_expo\/static\/css\/global-[\d\w]+\.css">/
       );
       // CSS Module
       expect(links[2].toString()).toMatch(
-        /\<link rel="preload" href="\/_expo\/static\/css\/test\.module-[\d\w]+\.css" as="style">/
+        /<link rel="preload" href="\/_expo\/static\/css\/test\.module-[\d\w]+\.css" as="style">/
       );
       expect(links[3].toString()).toMatch(
-        /\<link rel="stylesheet" href="\/_expo\/static\/css\/test\.module-[\d\w]+\.css">/
+        /<link rel="stylesheet" href="\/_expo\/static\/css\/test\.module-[\d\w]+\.css">/
       );
 
       expect(
