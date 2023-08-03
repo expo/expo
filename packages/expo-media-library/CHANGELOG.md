@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 15.5.1 — 2023-08-02
+
+### 🐛 Bug fixes
+
+- On iOS, fix issue where the wrong requester class was used if the user had requested `writeOnly` permissions. ([#23780](https://github.com/expo/expo/pull/23780) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 15.5.0 — 2023-07-28
 
 _This version does not introduce any user-facing changes._

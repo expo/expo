@@ -30,6 +30,10 @@ export declare class SQLiteDatabase {
      * > The database has to be closed prior to deletion.
      */
     deleteAsync(): Promise<void>;
+    onDatabaseChange(cb: (result: {
+        tableName: string;
+        rowId: number;
+    }) => void): import("expo-modules-core").Subscription;
     /**
      * Creates a new transaction with Promise support.
      * @param asyncCallback A `SQLTransactionAsyncCallback` function that can perform SQL statements in a transaction.

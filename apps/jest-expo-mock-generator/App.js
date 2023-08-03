@@ -1,8 +1,5 @@
 import mux from '@expo/mux';
 import { setStringAsync } from 'expo-clipboard';
-import Constants from 'expo-constants';
-import { uuidv4 } from 'expo-modules-core';
-import getInstallationIdAsync from 'expo/build/environment/getInstallationIdAsync';
 import React from 'react';
 import { Button, NativeModules, StyleSheet, Text, View } from 'react-native';
 
@@ -10,9 +7,6 @@ import { Button, NativeModules, StyleSheet, Text, View } from 'react-native';
 global.performance = {
   now: () => 0,
 };
-
-const logUrl = Constants.expoGoConfig.logUrl;
-const sessionId = uuidv4();
 
 const { ExpoNativeModuleIntrospection } = NativeModules;
 
@@ -86,7 +80,7 @@ ${code}
 THE TEXT WAS ALSO COPIED TO YOUR CLIPBOARD
 
 `;
-    await _sendRawLogAsync(message, logUrl);
+    console.log(message);
   }
 
   render() {
@@ -105,35 +99,6 @@ THE TEXT WAS ALSO COPIED TO YOUR CLIPBOARD
       </View>
     );
   }
-}
-
-/**
- * Sends a log message without truncating it.
- */
-async function _sendRawLogAsync(message, logUrl) {
-  const headers = {
-    'Content-Type': 'application/json',
-    Connection: 'keep-alive',
-    'Proxy-Connection': 'keep-alive',
-    Accept: 'application/json',
-    'Device-Id': await getInstallationIdAsync(),
-    'Session-Id': sessionId,
-  };
-  if (Constants.deviceName) {
-    headers['Device-Name'] = Constants.deviceName;
-  }
-  await fetch(logUrl, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify([
-      {
-        count: 0,
-        level: 'info',
-        body: [message],
-        includesStack: false,
-      },
-    ]),
-  });
 }
 
 async function _getExpoModuleSpecsAsync() {

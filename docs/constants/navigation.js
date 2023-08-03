@@ -370,6 +370,7 @@ const general = [
         makePage('guides/using-firebase.mdx'),
         makePage('guides/using-flipper.mdx'),
         makePage('guides/google-authentication.mdx'),
+        makePage('guides/using-eslint.mdx'),
         makePage('guides/using-nextjs.mdx'),
         makePage('guides/using-sentry.mdx'),
         makePage('guides/typescript.mdx'),
@@ -379,6 +380,7 @@ const general = [
         makePage('accounts/two-factor.mdx'),
         makePage('accounts/programmatic-access.mdx'),
         makePage('accounts/working-together.mdx'),
+        makePage('accounts/sso.mdx'),
       ]),
       makeSection('Bare React Native', [
         makePage('bare/overview.mdx'),

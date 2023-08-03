@@ -60,6 +60,7 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
     image={ASSETS.google}
   />
   <GridItem title="Imgur" protocol={['OAuth 2']} image={ASSETS.imgur} />
+  <GridItem title="Keycloak" protocol={['OAuth 2', 'OpenID']} image={ASSETS.keycloak} />
   <GridItem title="Okta" protocol={['OAuth 2', 'OpenID']} image={ASSETS.okta} />
   <GridItem title="Reddit" protocol={['OAuth 2']} image={ASSETS.reddit} />
   <GridItem title="Slack" protocol={['OAuth 2']} image={ASSETS.slack} />
@@ -356,8 +357,13 @@ const styles = StyleSheet.create({
 ```tsx Azure Example
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
-import { Button } from 'react-native';
+import {
+  exchangeCodeAsync,
+  makeRedirectUri,
+  useAuthRequest,
+  useAutoDiscovery,
+} from 'expo-auth-session';
+import { Button, Text, SafeAreaView } from 'react-native';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
@@ -365,33 +371,67 @@ WebBrowser.maybeCompleteAuthSession();
 
 export default function App() {
   // Endpoint
-  const discovery = useAutoDiscovery('https://login.microsoftonline.com/<TENANT_ID>/v2.0');
+  const discovery = useAutoDiscovery(
+    'https://login.microsoftonline.com/<TENANT_ID>/v2.0',
+  );
+  const redirectUri = makeRedirectUri({
+    /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+    scheme: undefined,
+    /* @end */
+    /* @info Azure requires there to be a path in your redirect URI. */
+    path: 'auth',
+    /* @end */
+  });
+  const clientId = '<CLIENT_ID>';
+
+  // We store the JWT in here
+  const [token, setToken] = React.useState<string | null>(null);
+
   // Request
-  const [request, response, promptAsync] = useAuthRequest(
+  const [request, , promptAsync] = useAuthRequest(
     {
-      clientId: 'CLIENT_ID',
+      clientId,
       scopes: ['openid', 'profile', 'email', 'offline_access'],
-      redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
-        scheme: 'your.app'
-        /* @end */
-      }),
+      redirectUri,
     },
-    discovery
+    discovery,
   );
 
   return (
-    <Button
-      /* @info Disable the button until the request is loaded asynchronously. */
-      disabled={!request}
-      /* @end */
-      title="Login"
-      onPress={() => {
-        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync();
+    <SafeAreaView>
+      <Button
+        /* @info Disable the button until the request is loaded asynchronously. */
+        disabled={!request}
         /* @end */
-      }}
-    />
+        title="Login"
+        onPress={() => {
+          /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+          promptAsync().then((codeResponse) => {
+            /* @end */
+            if (request && codeResponse?.type === 'success' && discovery) {
+              /* @info Exchange the code to get the JWT. */
+              exchangeCodeAsync(
+                /* @end */
+                {
+                  clientId,
+                  code: codeResponse.params.code,
+                  /* @info Reuse the codeVerifier for PCKE */
+                  extraParams: request.codeVerifier
+                    ? { code_verifier: request.codeVerifier }
+                    : undefined,
+                  /* @end */
+                  redirectUri,
+                },
+                discovery,
+              ).then((res) => {
+                setToken(res.accessToken);
+              });
+            }
+          });
+        }}
+      />
+      <Text>{token}</Text>
+    </SafeAreaView>
   );
 }
 ```
@@ -1363,6 +1403,55 @@ export default function App() {
 </Tabs>
 </Box>
 {/* End Imgur */}
+
+<Box
+  name="Keycloak"
+  image={ASSETS.keycloak}
+>
+
+| Website                  | Provider | PKCE     | Auto Discovery |
+| ------------------------ | -------- | -------- | -------------- |
+| - | OpenID   | Required | Available      |
+
+{/* prettier-ignore */}
+```tsx Keycloak Example
+import * as React from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
+import { Button, Text, View } from 'react-native';
+
+WebBrowser.maybeCompleteAuthSession();
+
+export default function App() {
+  /* @info If the provider supports auto discovery then you can pass an issuer to the `useAutoDiscovery` hook to fetch the discovery document. */
+  const discovery = useAutoDiscovery('https://YOUR_KEYCLOAK/realms/YOUR_REALM');
+  /* @end */
+  
+// Create and load an auth request
+  const [request, result, promptAsync] = useAuthRequest(
+    {
+      clientId: 'YOUR_CLIENT_NAME',
+      /* @info After a user finishes authenticating, the server will redirect them to this URI. Learn more about <a href="../../guides/linking/">linking here</a>. */
+      redirectUri: makeRedirectUri({
+        scheme: 'YOUR_SCHEME'
+      }),
+      /* @end */
+      scopes: ['openid', 'profile'],
+    },
+    discovery
+  );
+
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Button title="Login!" disabled={!request} onPress={() => promptAsync()} />
+      {result && <Text>{JSON.stringify(result, null, 2)}</Text>}
+    </View>
+  );
+}
+```
+
+</Box>
+{/* End Keycloak */}
 
 <Box
   name="Okta"

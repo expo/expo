@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 0.19.1 — 2023-08-02
+
+### 💡 Others
+
+- Update API documentation to clarify `channel` behavior in Expo Go/ development builds. ([#23783](https://github.com/expo/expo/pull/23783) by [@keith-kurak](https://github.com/keith-kurak))
+
 ## 0.19.0 — 2023-07-28
 
 ### 🎉 New features
@@ -248,6 +254,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🛠 Breaking changes
 
+- Drop support for `logUrl` which sent console logs to the legacy `expo-cli`. ([#18596](https://github.com/expo/expo/pull/18596) by [@EvanBacon](https://github.com/EvanBacon))
 - [plugin] Upgrade minimum runtime requirement to Node 14 (LTS). ([#18204](https://github.com/expo/expo/pull/18204) by [@EvanBacon](https://github.com/EvanBacon))
 - Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
 
