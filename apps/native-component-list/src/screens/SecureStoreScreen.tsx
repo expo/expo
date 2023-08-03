@@ -65,9 +65,39 @@ function SecureStoreView() {
     }
   };
 
+  const _setValueSync = async (value: string, key: string) => {
+    try {
+      SecureStore.setItemSync(key, value, {
+        keychainService: service,
+        requireAuthentication: requireAuth,
+        authenticationPrompt: 'Authenticate',
+      });
+      Alert.alert('Success!', 'Value: ' + value + ', stored successfully for key: ' + key, [
+        { text: 'OK', onPress: () => {} },
+      ]);
+    } catch (e) {
+      Alert.alert('Error!', e.message, [{ text: 'OK', onPress: () => {} }]);
+    }
+  };
+
   const _getValue = async (key: string) => {
     try {
       const fetchedValue = await SecureStore.getItemAsync(key, {
+        keychainService: service,
+        requireAuthentication: requireAuth,
+        authenticationPrompt: 'Authenticate',
+      });
+      Alert.alert('Success!', 'Fetched value: ' + fetchedValue, [
+        { text: 'OK', onPress: () => {} },
+      ]);
+    } catch (e) {
+      Alert.alert('Error!', e.message, [{ text: 'OK', onPress: () => {} }]);
+    }
+  };
+
+  const _getValueSync = async (key: string) => {
+    try {
+      const fetchedValue = SecureStore.getItemSync(key, {
         keychainService: service,
         requireAuthentication: requireAuth,
         authenticationPrompt: 'Authenticate',
@@ -120,6 +150,15 @@ function SecureStoreView() {
         <ListButton onPress={() => _setValue(value, key)} title="Store value with key" />
       )}
       {key && <ListButton onPress={() => _getValue(key)} title="Get value with key" />}
+      {value && key && (
+        <ListButton
+          onPress={() => _setValueSync(value, key)}
+          title="Store value with key synchronously"
+        />
+      )}
+      {key && (
+        <ListButton onPress={() => _getValueSync(key)} title="Get value with key synchronously" />
+      )}
       {key && <ListButton onPress={() => _deleteValue(key)} title="Delete value with key" />}
     </ScrollView>
   );

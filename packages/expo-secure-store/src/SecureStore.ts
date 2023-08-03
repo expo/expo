@@ -196,7 +196,7 @@ export function setItemSync(key: string, value: string, options: SecureStoreOpti
     );
   }
   if (!ExpoSecureStore.setValueWithKeySync) {
-    throw new UnavailabilityError('SecureStore', 'setItemAsync');
+    throw new UnavailabilityError('SecureStore', 'setItemSync');
   }
   return ExpoSecureStore.setValueWithKeySync(value, key, options);
 }

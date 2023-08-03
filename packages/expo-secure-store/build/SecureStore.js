@@ -126,7 +126,7 @@ export function setItemSync(key, value, options = {}) {
         throw new Error(`Invalid value provided to SecureStore. Values must be strings; consider JSON-encoding your values if they are serializable.`);
     }
     if (!ExpoSecureStore.setValueWithKeySync) {
-        throw new UnavailabilityError('SecureStore', 'setItemAsync');
+        throw new UnavailabilityError('SecureStore', 'setItemSync');
     }
     return ExpoSecureStore.setValueWithKeySync(value, key, options);
 }
