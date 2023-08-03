@@ -1,11 +1,19 @@
 import ExpoModulesCore
-import SQLite3
+import sqlite3
 
 public final class SQLiteModule: Module {
   private var cachedDatabases = [String: OpaquePointer]()
+  private var hasListeners = false
+  private lazy var selfPointer = Unmanaged.passRetained(self).toOpaque()
 
   public func definition() -> ModuleDefinition {
     Name("ExpoSQLite")
+
+    Events("onDatabaseChange")
+
+    OnCreate {
+      crsqlite_init_from_swift()
+    }
 
     AsyncFunction("exec") { (dbName: String, queries: [[Any]], readOnly: Bool) -> [Any?] in
       guard let db = openDatabase(dbName: dbName) else {
@@ -55,8 +63,17 @@ public final class SQLiteModule: Module {
       }
     }
 
+    OnStartObserving {
+      hasListeners = true
+    }
+
+    OnStopObserving {
+      hasListeners = false
+    }
+
     OnDestroy {
       cachedDatabases.values.forEach {
+        executeSql(sql: "SELECT crsql_finalize()", with: [], for: $0, readOnly: false)
         sqlite3_close($0)
       }
     }
@@ -67,7 +84,7 @@ public final class SQLiteModule: Module {
       return nil
     }
 
-    var directory = URL(string: fileSystem.documentDirectory)?.appendingPathComponent("SQLite")
+    let directory = URL(string: fileSystem.documentDirectory)?.appendingPathComponent("SQLite")
     fileSystem.ensureDirExists(withPath: directory?.absoluteString)
 
     return directory?.appendingPathComponent(name)
@@ -75,7 +92,7 @@ public final class SQLiteModule: Module {
 
   private func openDatabase(dbName: String) -> OpaquePointer? {
     var db: OpaquePointer?
-    guard let path = try pathForDatabaseName(name: dbName) else {
+    guard let path = pathForDatabaseName(name: dbName) else {
       return nil
     }
 
@@ -87,9 +104,25 @@ public final class SQLiteModule: Module {
 
     if db == nil {
       cachedDatabases.removeValue(forKey: dbName)
+
       if sqlite3_open(path.absoluteString, &db) != SQLITE_OK {
         return nil
       }
+
+      sqlite3_update_hook(
+        db,
+        { (obj, action, _, tableName, rowId) in
+          if let obj, let tableName {
+            let selfObj = Unmanaged<SQLiteModule>.fromOpaque(obj).takeUnretainedValue()
+            selfObj.sendEvent("onDatabaseChange", [
+              "tableName": String(cString: UnsafePointer(tableName)),
+              "rowId": rowId,
+              "typeId": SqlAction.fromCode(value: action)
+            ])
+          }
+        },
+        selfPointer
+      )
 
       cachedDatabases[dbName] = db
     }
@@ -211,5 +244,25 @@ public final class SQLiteModule: Module {
     let code = sqlite3_errcode(db)
     let message = NSString(utf8String: sqlite3_errmsg(db)) ?? ""
     return NSString(format: "Error code %i: %@", code, message) as String
+  }
+}
+
+enum SqlAction: Int, Enumerable {
+  case insert
+  case delete
+  case update
+  case unknown
+
+  static func fromCode(value: Int32) -> SqlAction {
+    switch value {
+    case 9:
+      return .delete
+    case 18:
+      return .insert
+    case 23:
+      return .update
+    default:
+      return .unknown
+    }
   }
 }

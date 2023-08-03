@@ -1,8 +1,9 @@
 import './polyfillNextTick';
 import customOpenDatabase from '@expo/websql/custom';
-import { requireNativeModule } from 'expo-modules-core';
+import { requireNativeModule, EventEmitter } from 'expo-modules-core';
 import { Platform } from 'react-native';
 const ExpoSQLite = requireNativeModule('ExpoSQLite');
+const emitter = new EventEmitter(ExpoSQLite);
 function zipObject(keys, values) {
     const result = {};
     for (let i = 0; i < keys.length; i++) {
@@ -68,6 +69,9 @@ export class SQLiteDatabase {
             throw new Error(`Unable to delete '${this._name}' database that is currently open. Close it prior to deletion.`);
         }
         return ExpoSQLite.deleteAsync(this._name);
+    }
+    onDatabaseChange(cb) {
+        return emitter.addListener('onDatabaseChange', cb);
     }
     /**
      * Creates a new transaction with Promise support.
@@ -147,6 +151,7 @@ export function openDatabase(name, version = '1.0', description = name, size = 1
     db.execAsync = db._db.execAsync.bind(db._db);
     db.closeAsync = db._db.closeAsync.bind(db._db);
     db.closeSync = db._db.closeSync.bind(db._db);
+    db.onDatabaseChange = db._db.onDatabaseChange.bind(db._db);
     db.deleteAsync = db._db.deleteAsync.bind(db._db);
     db.transactionAsync = db._db.transactionAsync.bind(db._db);
     return db;
