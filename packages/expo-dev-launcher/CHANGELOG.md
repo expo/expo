@@ -12,6 +12,10 @@
 
 - Migrate to Expo CLI. ([#23806](https://github.com/expo/expo/pull/23806) by [@EvanBacon](https://github.com/EvanBacon))
 
+## 3.0.0 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
 ## 2.4.9 — 2023-07-26
 
 ### 🐛 Bug fixes

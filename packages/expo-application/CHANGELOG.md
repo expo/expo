@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 5.3.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
 ## 5.3.0 — 2023-06-13
 
 ### 📚 3rd party library updates

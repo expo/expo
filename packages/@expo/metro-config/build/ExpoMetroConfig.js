@@ -180,9 +180,10 @@ function getDefaultConfig(projectRoot, options = {}) {
 
   // Add support for cjs (without platform extensions).
   sourceExts.push('cjs');
+  const reanimatedVersion = getPkgVersion(projectRoot, 'react-native-reanimated');
   let sassVersion = null;
   if (options.isCSSEnabled) {
-    sassVersion = getSassVersion(projectRoot);
+    sassVersion = getPkgVersion(projectRoot, 'sass');
     // Enable SCSS by default so we can provide a better error message
     // when sass isn't installed.
     sourceExts.push('scss', 'sass', 'css');
@@ -207,6 +208,7 @@ function getDefaultConfig(projectRoot, options = {}) {
     console.log(`- Exotic: ${isExotic}`);
     console.log(`- Env Files: ${envFiles}`);
     console.log(`- Sass: ${sassVersion}`);
+    console.log(`- Reanimated: ${reanimatedVersion}`);
     console.log();
   }
   const {
@@ -270,6 +272,8 @@ function getDefaultConfig(projectRoot, options = {}) {
       postcssHash: (0, _postcss().getPostcssConfigHash)(projectRoot),
       browserslistHash: pkg.browserslist ? (0, _metroCache().stableHash)(JSON.stringify(pkg.browserslist)).toString('hex') : null,
       sassVersion,
+      // Ensure invalidation when the version changes due to the Babel plugin.
+      reanimatedVersion,
       // `require.context` support
       unstable_allowRequireContext: true,
       allowOptionalDependencies: true,
@@ -308,16 +312,16 @@ async function loadAsync(projectRoot, {
 // re-export for legacy cases.
 const EXPO_DEBUG = _env2().env.EXPO_DEBUG;
 exports.EXPO_DEBUG = EXPO_DEBUG;
-function getSassVersion(projectRoot) {
-  const sassPkg = _resolveFrom().default.silent(projectRoot, 'sass');
-  if (!sassPkg) return null;
-  const sassPkgJson = findUpPackageJson(sassPkg);
-  if (!sassPkgJson) return null;
-  const pkg = _jsonFile().default.read(sassPkgJson);
-  debug('sass package.json:', sassPkgJson);
-  const sassVersion = pkg.version;
-  if (typeof sassVersion === 'string') {
-    return sassVersion;
+function getPkgVersion(projectRoot, pkgName) {
+  const targetPkg = _resolveFrom().default.silent(projectRoot, pkgName);
+  if (!targetPkg) return null;
+  const targetPkgJson = findUpPackageJson(targetPkg);
+  if (!targetPkgJson) return null;
+  const pkg = _jsonFile().default.read(targetPkgJson);
+  debug(`${pkgName} package.json:`, targetPkgJson);
+  const pkgVersion = pkg.version;
+  if (typeof pkgVersion === 'string') {
+    return pkgVersion;
   }
   return null;
 }

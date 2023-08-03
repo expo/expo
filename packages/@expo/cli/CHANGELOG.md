@@ -4,16 +4,22 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.11.1 — 2023-08-02
+
+### 🛠 Breaking changes
+
 - Drop support for sending `logUrl` in manifests (unimplemented feature from `expo-cli`). ([#18596](https://github.com/expo/expo/pull/18596) by [@EvanBacon](https://github.com/EvanBacon))
 - Add support for `.mjs` extensions in Expo Metro. ([#23528](https://github.com/expo/expo/pull/23528) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
 - Always apply custom Metro resolver in Expo CLI. ([#23784](https://github.com/expo/expo/pull/23784) by [@EvanBacon](https://github.com/EvanBacon))
-
-### 🐛 Bug fixes
-
-### 💡 Others
 
 ## 0.11.0 — 2023-07-28
 
