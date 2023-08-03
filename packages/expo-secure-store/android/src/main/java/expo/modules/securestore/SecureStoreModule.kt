@@ -14,7 +14,6 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.securestore.encryptors.AESEncryptor
 import expo.modules.securestore.encryptors.HybridAESEncryptor
 import expo.modules.securestore.encryptors.KeyBasedEncryptor
-import expo.modules.securestore.encryptors.KeyPurpose
 import kotlinx.coroutines.runBlocking
 import org.json.JSONException
 import org.json.JSONObject
@@ -23,8 +22,6 @@ import java.security.GeneralSecurityException
 import java.security.KeyStore
 import java.security.KeyStore.PrivateKeyEntry
 import java.security.KeyStore.SecretKeyEntry
-import javax.crypto.Cipher
-import javax.crypto.spec.GCMParameterSpec
 
 class SecureStoreModule : Module() {
   private val mAESEncryptor = AESEncryptor()
@@ -47,6 +44,19 @@ class SecureStoreModule : Module() {
       return@Coroutine getItemImpl(key, options)
     }
 
+    Function("setValueWithKeySync") { value: String?, key: String?, options: SecureStoreOptions ->
+      key ?: throw NullKeyException()
+      return@Function runBlocking {
+        return@runBlocking setItemImpl(key, value, options, keyIsInvalidated = false)
+      }
+    }
+
+    Function("getValueWithKeySync") { key: String, options: SecureStoreOptions ->
+      return@Function runBlocking {
+        return@runBlocking getItemImpl(key, options)
+      }
+    }
+
     AsyncFunction("deleteValueWithKeyAsync") { key: String, options: SecureStoreOptions ->
       try {
         deleteItemImpl(key, options)
@@ -55,19 +65,6 @@ class SecureStoreModule : Module() {
       } catch (e: Exception) {
         Log.e(TAG, "Caught unexpected exception when deleting from SecureStore", e)
         throw DeleteException(null, e)
-      }
-    }
-
-    Function("setValueWithKeySync") { value: String?, key: String?, options: SecureStoreOptions ->
-      key ?: throw NullKeyException()
-      return@Function runBlocking {
-        return@runBlocking setItemImpl(key, value, options, keyIsInvalidated = false, isRunSynchronously = true)
-      }
-    }
-
-    Function("getValueWithKeySync") { key: String, options: SecureStoreOptions ->
-      return@Function runBlocking {
-        return@runBlocking getItemImpl(key, options, isRunSynchronously = true)
       }
     }
 
@@ -81,20 +78,20 @@ class SecureStoreModule : Module() {
     }
   }
 
-  private suspend fun getItemImpl(key: String, options: SecureStoreOptions, isRunSynchronously: Boolean = false): String? {
+  private suspend fun getItemImpl(key: String, options: SecureStoreOptions): String? {
     // We use a SecureStore-specific shared preferences file, which lets us do things like enumerate
     // its entries or clear all of them
     val prefs: SharedPreferences = getSharedPreferences()
     val keychainAwareKey = createKeychainAwareKey(key, options.keychainService)
     if (prefs.contains(keychainAwareKey)) {
-      return readJSONEncodedItem(key, prefs, options, isRunSynchronously)
+      return readJSONEncodedItem(key, prefs, options)
     } else if (prefs.contains(key)) { // For backwards-compatibility try to read using the old key format
-      return readJSONEncodedItem(key, prefs, options, isRunSynchronously)
+      return readJSONEncodedItem(key, prefs, options)
     }
     return null
   }
 
-  private suspend fun readJSONEncodedItem(key: String, prefs: SharedPreferences, options: SecureStoreOptions, isRunSynchronously: Boolean): String? {
+  private suspend fun readJSONEncodedItem(key: String, prefs: SharedPreferences, options: SecureStoreOptions): String? {
     val keychainAwareKey = createKeychainAwareKey(key, options.keychainService)
     val encryptedItemString = prefs.getString(keychainAwareKey, null) ?: prefs.getString(key, null)
 
@@ -112,20 +109,12 @@ class SecureStoreModule : Module() {
     val requireAuthentication = encryptedItem.optBoolean(AUTHENTICATION_PROPERTY, false)
     val usesKeystoreSuffix = encryptedItem.optBoolean(USES_KEYSTORE_SUFFIX_PROPERTY, false)
 
-    if (requireAuthentication && isRunSynchronously) {
-      throw DecryptException("Reading values which require authentication is unsupported in synchronous calls. Use `getItemAsync()` instead", null)
-    }
-
     try {
       when (scheme) {
         AESEncryptor.NAME -> {
           val secretKeyEntry = getPreferredKeyEntry(SecretKeyEntry::class.java, mAESEncryptor, options, requireAuthentication, usesKeystoreSuffix)
             ?: throw DecryptException("Could not find a keychain for key $key", null)
           return mAESEncryptor.decryptItem(encryptedItem, secretKeyEntry, options, authenticationHelper)
-        }
-        AESEncryptor.SYNCHRONOUS_NAME -> {
-          val (_, decryptKeyEntry) = getKeyPair(mAESEncryptor, options, requireAuthentication)
-          return mAESEncryptor.decryptItem(encryptedItem, decryptKeyEntry, options, authenticationHelper)
         }
         HybridAESEncryptor.NAME -> {
           val privateKeyEntry = getPreferredKeyEntry(PrivateKeyEntry::class.java, hybridAESEncryptor, options, requireAuthentication, usesKeystoreSuffix)
@@ -153,7 +142,7 @@ class SecureStoreModule : Module() {
     }
   }
 
-  private suspend fun setItemImpl(key: String, value: String?, options: SecureStoreOptions, keyIsInvalidated: Boolean, isRunSynchronously: Boolean = false) {
+  private suspend fun setItemImpl(key: String, value: String?, options: SecureStoreOptions, keyIsInvalidated: Boolean) {
     val keychainAwareKey = createKeychainAwareKey(key, options.keychainService)
     val prefs: SharedPreferences = getSharedPreferences()
 
@@ -170,7 +159,7 @@ class SecureStoreModule : Module() {
         // Invalidated keys will block writing even though it's not possible to re-validate them
         // so we remove them before saving.
         val alias = mAESEncryptor.getExtendedKeyStoreAlias(options, options.requireAuthentication)
-        removeKeyFromKeystore(alias, options.keychainService, AESEncryptor.NAME)
+        removeKeyFromKeystore(alias, options.keychainService)
       }
 
       /* Android API 23+ supports storing symmetric keys in the keystore and on older Android
@@ -179,26 +168,10 @@ class SecureStoreModule : Module() {
        back a value.
       */
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        if (isRunSynchronously) {
-          val (encryptKeyEntry, decryptKeyEntry) = getKeyPair(mAESEncryptor, options, options.requireAuthentication)
-
-          if (decryptionKeyIsInvalidated(decryptKeyEntry)) {
-            val encryptAlias = mAESEncryptor.getExtendedKeyStoreAlias(options, options.requireAuthentication, KeyPurpose.ENCRYPT)
-            val decryptAlias = mAESEncryptor.getExtendedKeyStoreAlias(options, options.requireAuthentication, KeyPurpose.DECRYPT)
-            removeKeyFromKeystore(encryptAlias, options.keychainService, AESEncryptor.SYNCHRONOUS_NAME)
-            removeKeyFromKeystore(decryptAlias, options.keychainService, AESEncryptor.SYNCHRONOUS_NAME)
-            return setItemImpl(key, value, options, keyIsInvalidated, true)
-          }
-          // In synchronous calls we always encrypt with a key that doesn't require authentication
-          val encryptedItem = mAESEncryptor.createEncryptedItem(value, encryptKeyEntry, false, options.authenticationPrompt, authenticationHelper)
-          encryptedItem.put(SCHEME_PROPERTY, AESEncryptor.SYNCHRONOUS_NAME)
-          saveEncryptedItem(encryptedItem, prefs, keychainAwareKey, options.requireAuthentication, options.keychainService)
-        } else {
-          val secretKeyEntry: SecretKeyEntry = getKeyEntry(SecretKeyEntry::class.java, mAESEncryptor, options, options.requireAuthentication)
-          val encryptedItem = mAESEncryptor.createEncryptedItem(value, secretKeyEntry, options.requireAuthentication, options.authenticationPrompt, authenticationHelper)
-          encryptedItem.put(SCHEME_PROPERTY, AESEncryptor.NAME)
-          saveEncryptedItem(encryptedItem, prefs, keychainAwareKey, options.requireAuthentication, options.keychainService)
-        }
+        val secretKeyEntry: SecretKeyEntry = getKeyEntry(SecretKeyEntry::class.java, mAESEncryptor, options, options.requireAuthentication)
+        val encryptedItem = mAESEncryptor.createEncryptedItem(value, secretKeyEntry, options.requireAuthentication, options.authenticationPrompt, authenticationHelper)
+        encryptedItem.put(SCHEME_PROPERTY, AESEncryptor.NAME)
+        saveEncryptedItem(encryptedItem, prefs, keychainAwareKey, options.requireAuthentication, options.keychainService)
       } else {
         val privateKeyEntry: PrivateKeyEntry = getKeyEntry(PrivateKeyEntry::class.java, hybridAESEncryptor, options, options.requireAuthentication)
         val encryptedItem = hybridAESEncryptor.createEncryptedItem(value, privateKeyEntry, options.requireAuthentication, options.authenticationPrompt, authenticationHelper)
@@ -267,7 +240,7 @@ class SecureStoreModule : Module() {
     }
   }
 
-  private fun removeKeyFromKeystore(keyStoreAlias: String, keychainService: String, scheme: String? = null) {
+  private fun removeKeyFromKeystore(keyStoreAlias: String, keychainService: String) {
     val sharedPreferences = getSharedPreferences()
     val allEntries: Map<String, *> = sharedPreferences.all
 
@@ -283,12 +256,11 @@ class SecureStoreModule : Module() {
       }
 
       val entryKeychainService = jsonEntry.optString(KEYSTORE_ALIAS_PROPERTY) ?: continue
-      val entryScheme = jsonEntry.optString(SCHEME_PROPERTY).takeIf { it.isNotEmpty() } ?: continue
       val requireAuthentication = jsonEntry.optBoolean(AUTHENTICATION_PROPERTY, false)
 
       // Entries which don't require authentication use separate keychains which can't be invalidated,
-      // so we shouldn't delete them. Encryption scheme might also determine a different keychain so they have to match.
-      if (requireAuthentication && keychainService == entryKeychainService && (entryScheme == scheme || scheme == null)) {
+      // so we shouldn't delete them.
+      if (requireAuthentication && keychainService == entryKeychainService) {
         sharedPreferences.edit().remove(key).apply()
         Log.w(TAG, "Removing entry: $key due to the encryption key being deleted")
       }
@@ -355,38 +327,6 @@ class SecureStoreModule : Module() {
     }
   }
 
-  private fun getKeyPair(
-    encryptor: AESEncryptor,
-    options: SecureStoreOptions,
-    requireAuthentication: Boolean
-  ): Pair<SecretKeyEntry, SecretKeyEntry> {
-    val encryptAlias = encryptor.getExtendedKeyStoreAlias(options, requireAuthentication, KeyPurpose.ENCRYPT)
-    val decryptAlias = encryptor.getExtendedKeyStoreAlias(options, requireAuthentication, KeyPurpose.DECRYPT)
-
-    return if (!keyStore.containsAlias(decryptAlias)) {
-      if (requireAuthentication) {
-        authenticationHelper.assertBiometricsSupport()
-      }
-
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-        throw KeyStoreException("Tried accessing SDK23+ key store functionality on Android API < 23")
-      }
-
-      encryptor.initializeKeyStorePair(keyStore, options)
-    } else {
-      val (encryptEntry, decryptEntry) = listOf(encryptAlias, decryptAlias).map { alias ->
-        val entry = keyStore.getEntry(alias, null)
-
-        if (!SecretKeyEntry::class.java.isInstance(entry)) {
-          throw KeyStoreException("The entry for the keystore alias \"$alias\" is not a ${SecretKeyEntry::class.java.simpleName}")
-        }
-        SecretKeyEntry::class.java.cast(entry)
-          ?: throw KeyStoreException("The entry for the keystore alias \"$alias\" couldn't be cast to correct class")
-      }
-      Pair(encryptEntry, decryptEntry)
-    }
-  }
-
   private fun getSharedPreferences(): SharedPreferences {
     return reactContext.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
   }
@@ -397,25 +337,6 @@ class SecureStoreModule : Module() {
    */
   private fun createKeychainAwareKey(key: String, keychainService: String): String {
     return "$keychainService-$key"
-  }
-
-  /**
-   * A way for checking if the encryption key has been invalidated without decrypting any actual value.
-   * We use arbitrary values for the gcmSpec, because we won't be trying to decrypt anything with the cipher.
-   */
-  private fun decryptionKeyIsInvalidated(key: SecretKeyEntry): Boolean {
-    try {
-      val ivBytes = ByteArray(12)
-      val cipher = Cipher.getInstance(AESEncryptor.AES_CIPHER)
-      val gcmSpec = GCMParameterSpec(128, ivBytes)
-
-      cipher.init(Cipher.DECRYPT_MODE, key.secretKey, gcmSpec)
-    } catch (e: GeneralSecurityException) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && e is KeyPermanentlyInvalidatedException) {
-        return true
-      }
-    }
-    return false
   }
 
   companion object {

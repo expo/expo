@@ -1,12 +1,9 @@
 package expo.modules.securestore.encryptors
 
 import android.annotation.TargetApi
-import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
-import android.security.keystore.KeyProtection
 import android.util.Base64
-import androidx.annotation.RequiresApi
 import expo.modules.securestore.AuthenticationHelper
 import expo.modules.securestore.SecureStoreModule
 import expo.modules.securestore.SecureStoreOptions
@@ -20,7 +17,6 @@ import java.security.spec.AlgorithmParameterSpec
 import javax.crypto.Cipher
 import javax.crypto.IllegalBlockSizeException
 import javax.crypto.KeyGenerator
-import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 
 /**
@@ -53,10 +49,6 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
     return "${getKeyStoreAlias(options)}:$suffix"
   }
 
-  fun getExtendedKeyStoreAlias(options: SecureStoreOptions, requireAuthentication: Boolean, purpose: KeyPurpose): String {
-    return "$purpose:${getExtendedKeyStoreAlias(options, requireAuthentication)}"
-  }
-
   @TargetApi(23)
   @Throws(GeneralSecurityException::class)
   override fun initializeKeyStoreEntry(keyStore: KeyStore, options: SecureStoreOptions): KeyStore.SecretKeyEntry {
@@ -79,49 +71,6 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
       ?: throw UnrecoverableEntryException("Could not retrieve the newly generated secret key entry")
   }
 
-  /**
-   * Function used for creating key store entries when user uses a synchronous version of `setItem`
-   * function. This is necessary for saving encrypted values, which require authentication without asking for
-   * biometrics on save. Instead of storing a single key entry used for both decryption and encryption
-   * (which requires authentication on both encryption and decryption if authentication is enabled)
-   * we generate a key pair where only the decryption key requires authentication.
-   * */
-  @RequiresApi(Build.VERSION_CODES.M)
-  fun initializeKeyStorePair(keyStore: KeyStore, options: SecureStoreOptions): Pair<KeyStore.SecretKeyEntry, KeyStore.SecretKeyEntry> {
-
-    val keyGen = KeyGenerator.getInstance("AES")
-    val secretKey = keyGen.generateKey()
-    val encryptAlias = getExtendedKeyStoreAlias(options, options.requireAuthentication, KeyPurpose.ENCRYPT)
-    val decryptAlias = getExtendedKeyStoreAlias(options, options.requireAuthentication, KeyPurpose.DECRYPT)
-
-    keyStore.setEntry(
-      encryptAlias,
-      KeyStore.SecretKeyEntry(secretKey),
-      KeyProtection.Builder(KeyProperties.PURPOSE_ENCRYPT)
-        .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
-        .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
-        .build()
-    )
-
-    keyStore.setEntry(
-      decryptAlias,
-      KeyStore.SecretKeyEntry(secretKey),
-      KeyProtection.Builder(KeyProperties.PURPOSE_DECRYPT)
-        .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
-        .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
-        .setUserAuthenticationRequired(options.requireAuthentication)
-        .build()
-    )
-
-    val encryptEntry = keyStore.getEntry(encryptAlias, null) as? KeyStore.SecretKeyEntry
-      ?: throw UnrecoverableEntryException("Could not retrieve the newly generated encryption secret key entry")
-
-    val decryptEntry = keyStore.getEntry(decryptAlias, null) as? KeyStore.SecretKeyEntry
-      ?: throw UnrecoverableEntryException("Could not retrieve the newly generated decryption secret key entry")
-
-    return encryptEntry to decryptEntry
-  }
-
   @Throws(IllegalBlockSizeException::class, GeneralSecurityException::class)
   override suspend fun createEncryptedItem(
     plaintextValue: String,
@@ -131,7 +80,10 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
     authenticationHelper: AuthenticationHelper,
   ): JSONObject {
     val secretKey = keyStoreEntry.secretKey
-    val (cipher, gcmSpec) = getCipherAndGCMSpec(secretKey)
+    val cipher = Cipher.getInstance(AES_CIPHER)
+    cipher.init(Cipher.ENCRYPT_MODE, secretKey)
+
+    val gcmSpec = cipher.parameters.getParameterSpec(GCMParameterSpec::class.java)
     val authenticatedCipher = authenticationHelper.authenticateCipher(cipher, requireAuthentication, authenticationPrompt)
 
     return createEncryptedItemWithCipher(plaintextValue, authenticatedCipher, gcmSpec)
@@ -175,17 +127,8 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
     return String(unlockedCipher.doFinal(ciphertextBytes), StandardCharsets.UTF_8)
   }
 
-  private fun getCipherAndGCMSpec(secretKey: SecretKey): Pair<Cipher, GCMParameterSpec> {
-    val cipher = Cipher.getInstance(AES_CIPHER)
-    cipher.init(Cipher.ENCRYPT_MODE, secretKey)
-
-    val gcmSpec = cipher.parameters.getParameterSpec(GCMParameterSpec::class.java)
-    return Pair(cipher, gcmSpec)
-  }
-
   companion object {
     const val NAME = "aes"
-    const val SYNCHRONOUS_NAME = "aes_synchronous"
     const val AES_CIPHER = "AES/GCM/NoPadding"
     const val AES_KEY_SIZE_BITS = 256
     private const val CIPHERTEXT_PROPERTY = "ct"

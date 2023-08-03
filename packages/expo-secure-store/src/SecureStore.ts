@@ -178,9 +178,8 @@ export async function setItemAsync(
 
 /**
  * Store a key–value pair synchronously.
- * This function can be used in the global scope in order to save values before React Native components are mounted.
- * > On Android this function won't ask for authentication on save, even when `requireAuthentication` is set to `true`.
- * > Authentication will only be required on read.
+ * > It is not recommended to use this function with `requireAuthentication` set to `true`, as it will block the JavaScript
+ * thread until the user authenticates.
  *
  * @param key The key to associate with the stored value. Keys may contain alphanumeric characters
  * `.`, `-`, and `_`.
@@ -202,9 +201,9 @@ export function setItemSync(key: string, value: string, options: SecureStoreOpti
 }
 
 /**
- * Fetch the stored value associated with the provided key synchronously.
- * This function can be used in the global scope in order to read values before React Native components are mounted.
- * > Values stored with `requireAuthentication` set to `true` cannot be read with this function.
+ * Fetch the stored value associated with the provided key synchronously. This function can be used in the global scope.
+ * > It is not recommended to use this funciton with values which require authentication, as it will block the JavaScript
+ * thread until the user authenticates.
  *
  * @param key The key that was used to store the associated value.
  * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
