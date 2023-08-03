@@ -107,7 +107,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         dev: mode !== 'production',
         environment: 'node',
       });
-      output[path.relative(appDir, file)] = middleware;
+      output[path.relative(appDir, file.replace(/\.[tj]sx?$/, '.js'))] = middleware;
     }
 
     return [manifest, output];

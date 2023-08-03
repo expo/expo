@@ -1,11 +1,16 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
 // This MUST be first to ensure that `fetch` is defined in the React Native environment.
-import 'react-native/Libraries/Core/InitializeCore';
-import Constants from 'expo-constants';
-import URL from 'url-parse';
-import getDevServer from '../getDevServer';
-import { install, setLocationHref } from './Location';
+require("react-native/Libraries/Core/InitializeCore");
+const expo_constants_1 = __importDefault(require("expo-constants"));
+const url_parse_1 = __importDefault(require("url-parse"));
+const getDevServer_1 = __importDefault(require("../getDevServer"));
+const Location_1 = require("./Location");
 let hasWarned = false;
-const manifest = Constants.expoConfig;
+const manifest = expo_constants_1.default.expoConfig;
 // Add a development warning for fetch requests with relative paths
 // to ensure developers are aware of the need to configure a production
 // base URL in the Expo config (app.json) under `expo.extra.router.origin`.
@@ -23,7 +28,7 @@ function warnProductionOriginNotConfigured(requestUrl) {
 function getBaseUrl() {
     if (process.env.NODE_ENV !== 'production') {
         // e.g. http://localhost:19006
-        return getDevServer().url?.replace(/\/$/, '');
+        return (0, getDevServer_1.default)().url?.replace(/\/$/, '');
     }
     // TODO: Make it official by moving out of `extra`
     const productionBaseUrl = manifest?.extra?.router?.origin;
@@ -42,14 +47,14 @@ function wrapFetchWithWindowLocation(fetch) {
             if (process.env.NODE_ENV !== 'production') {
                 warnProductionOriginNotConfigured(props[0]);
             }
-            props[0] = new URL(props[0], window.location?.origin).toString();
+            props[0] = new url_parse_1.default(props[0], window.location?.origin).toString();
         }
         else if (props[0] && typeof props[0] === 'object') {
             if (props[0].url && typeof props[0].url === 'string' && props[0].url.startsWith('/')) {
                 if (process.env.NODE_ENV !== 'production') {
                     warnProductionOriginNotConfigured(props[0]);
                 }
-                props[0].url = new URL(props[0].url, window.location?.origin).toString();
+                props[0].url = new url_parse_1.default(props[0].url, window.location?.origin).toString();
             }
         }
         return fetch(...props);
@@ -62,8 +67,8 @@ if (manifest?.extra?.router?.origin !== false) {
     if (typeof window !== 'undefined' && !window.location) {
         const url = getBaseUrl();
         if (url) {
-            setLocationHref(url);
-            install();
+            (0, Location_1.setLocationHref)(url);
+            (0, Location_1.install)();
         }
     }
     // Polyfill native fetch to support relative URLs

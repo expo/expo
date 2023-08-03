@@ -1,3 +1,32 @@
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.LogBoxInspectorStackFrames = exports.getCollapseMessage = void 0;
 /**
  * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -5,16 +34,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { useSelectedLog } from '../Data/LogContext';
-import { LogBoxButton } from '../UI/LogBoxButton';
-import * as LogBoxStyle from '../UI/LogBoxStyle';
-import openFileInEditor from '../modules/openFileInEditor';
-import { LogBoxInspectorSection } from './LogBoxInspectorSection';
-import { LogBoxInspectorSourceMapStatus } from './LogBoxInspectorSourceMapStatus';
-import { LogBoxInspectorStackFrame } from './LogBoxInspectorStackFrame';
-export function getCollapseMessage(stackFrames, collapsed) {
+const react_1 = __importStar(require("react"));
+const react_native_1 = require("react-native");
+const LogContext_1 = require("../Data/LogContext");
+const LogBoxButton_1 = require("../UI/LogBoxButton");
+const LogBoxStyle = __importStar(require("../UI/LogBoxStyle"));
+const openFileInEditor_1 = __importDefault(require("../modules/openFileInEditor"));
+const LogBoxInspectorSection_1 = require("./LogBoxInspectorSection");
+const LogBoxInspectorSourceMapStatus_1 = require("./LogBoxInspectorSourceMapStatus");
+const LogBoxInspectorStackFrame_1 = require("./LogBoxInspectorStackFrame");
+function getCollapseMessage(stackFrames, collapsed) {
     if (stackFrames.length === 0) {
         return 'No frames to show';
     }
@@ -39,9 +68,10 @@ export function getCollapseMessage(stackFrames, collapsed) {
             : `Collapse ${collapsedCount} ${framePlural}`;
     }
 }
-export function LogBoxInspectorStackFrames({ onRetry, type }) {
-    const log = useSelectedLog();
-    const [collapsed, setCollapsed] = useState(() => {
+exports.getCollapseMessage = getCollapseMessage;
+function LogBoxInspectorStackFrames({ onRetry, type }) {
+    const log = (0, LogContext_1.useSelectedLog)();
+    const [collapsed, setCollapsed] = (0, react_1.useState)(() => {
         // Only collapse frames initially if some frames are not collapsed.
         return log.getAvailableStack(type)?.some(({ collapse }) => !collapse);
     });
@@ -56,29 +86,30 @@ export function LogBoxInspectorStackFrames({ onRetry, type }) {
     if (log.getAvailableStack(type)?.length === 0) {
         return null;
     }
-    return (React.createElement(LogBoxInspectorSection, { heading: type === 'component' ? 'Component Stack' : 'Call Stack', action: React.createElement(LogBoxInspectorSourceMapStatus, { onPress: log.symbolicated[type].status === 'FAILED' ? onRetry : null, status: log.symbolicated[type].status }) },
-        log.symbolicated[type].status !== 'COMPLETE' && (React.createElement(View, { style: stackStyles.hintBox },
-            React.createElement(Text, { style: stackStyles.hintText }, "This call stack is not symbolicated. Some features are unavailable such as viewing the function name or tapping to open files."))),
-        React.createElement(StackFrameList, { list: getStackList(), status: log.symbolicated[type].status }),
-        React.createElement(StackFrameFooter, { onPress: () => setCollapsed(!collapsed), message: getCollapseMessage(log.getAvailableStack(type), !!collapsed) })));
+    return (react_1.default.createElement(LogBoxInspectorSection_1.LogBoxInspectorSection, { heading: type === 'component' ? 'Component Stack' : 'Call Stack', action: react_1.default.createElement(LogBoxInspectorSourceMapStatus_1.LogBoxInspectorSourceMapStatus, { onPress: log.symbolicated[type].status === 'FAILED' ? onRetry : null, status: log.symbolicated[type].status }) },
+        log.symbolicated[type].status !== 'COMPLETE' && (react_1.default.createElement(react_native_1.View, { style: stackStyles.hintBox },
+            react_1.default.createElement(react_native_1.Text, { style: stackStyles.hintText }, "This call stack is not symbolicated. Some features are unavailable such as viewing the function name or tapping to open files."))),
+        react_1.default.createElement(StackFrameList, { list: getStackList(), status: log.symbolicated[type].status }),
+        react_1.default.createElement(StackFrameFooter, { onPress: () => setCollapsed(!collapsed), message: getCollapseMessage(log.getAvailableStack(type), !!collapsed) })));
 }
+exports.LogBoxInspectorStackFrames = LogBoxInspectorStackFrames;
 function StackFrameList({ list, status, }) {
     return list.map((frame, index) => {
         const { file, lineNumber } = frame;
-        return (React.createElement(LogBoxInspectorStackFrame, { key: index, frame: frame, onPress: status === 'COMPLETE' && file != null && lineNumber != null
-                ? () => openFileInEditor(file, lineNumber)
+        return (react_1.default.createElement(LogBoxInspectorStackFrame_1.LogBoxInspectorStackFrame, { key: index, frame: frame, onPress: status === 'COMPLETE' && file != null && lineNumber != null
+                ? () => (0, openFileInEditor_1.default)(file, lineNumber)
                 : undefined }));
     });
 }
 function StackFrameFooter({ message, onPress }) {
-    return (React.createElement(View, { style: stackStyles.collapseContainer },
-        React.createElement(LogBoxButton, { backgroundColor: {
+    return (react_1.default.createElement(react_native_1.View, { style: stackStyles.collapseContainer },
+        react_1.default.createElement(LogBoxButton_1.LogBoxButton, { backgroundColor: {
                 default: 'transparent',
                 pressed: LogBoxStyle.getBackgroundColor(1),
             }, onPress: onPress, style: stackStyles.collapseButton },
-            React.createElement(Text, { style: stackStyles.collapse }, message))));
+            react_1.default.createElement(react_native_1.Text, { style: stackStyles.collapse }, message))));
 }
-const stackStyles = StyleSheet.create({
+const stackStyles = react_native_1.StyleSheet.create({
     section: {
         marginTop: 15,
     },
