@@ -48,6 +48,7 @@ import { rebundleApiRoute } from './fetchServerRoutes';
 import { instantiateMetroAsync } from './instantiateMetro';
 import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
+import { getRouterDirectory, isApiRouteConvention } from './router';
 import { observeApiRouteChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
@@ -80,13 +81,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }
 
   async getFunctionsAsync({ mode }: { mode: 'development' | 'production' }) {
-    const devServerUrl = `http://localhost:${this.getInstance()?.location.port}`;
-
+    const { exp } = getConfig(this.projectRoot, { skipSDKVersionRequirement: true });
     const appDir = path.join(
       this.projectRoot,
-      // TODO: Support other directories via app.json
-      'app'
+      exp.extra?.router?.unstable_src ?? getRouterDirectory(this.projectRoot)
     );
+
+    const devServerUrl = `http://localhost:${this.getInstance()?.location.port}`;
 
     function getRouteFiles() {
       // TODO: Cache this
@@ -398,10 +399,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       middleware.use(new ServeStaticMiddleware(this.projectRoot).getHandler());
 
       if (exp.web?.output === 'dynamic') {
+        const appDir = path.join(
+          this.projectRoot,
+          exp.extra?.router?.unstable_src ?? getRouterDirectory(this.projectRoot)
+        );
         // Middleware for hosting middleware
         middleware.use(
           createRouteHandlerMiddleware(this.projectRoot, {
             ...options,
+            appDir,
             getWebBundleUrl: manifestMiddleware.getWebBundleUrl.bind(manifestMiddleware),
           })
         );
@@ -413,19 +419,19 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             server,
           },
           async (filepath, op) => {
-            const isApiRoute = filepath.match(/\+api\.[tj]sx?$/);
+            const isApiRoute = isApiRouteConvention(filepath);
             if (op === 'delete') {
               // update manifest
-              console.log('update manifest');
+              debug('update manifest');
               await refetchManifest(this.projectRoot, options);
             } else if (op === 'add' || (op === 'change' && !isApiRoute)) {
-              console.log('invalidate manifest');
+              debug('invalidate manifest');
               // The manifest won't be fresh instantly so we should just clear it to ensure the next request will get the latest.
               invalidateManifestCache();
             }
 
             if (isApiRoute) {
-              console.log(`[expo-cli] ${op} ${filepath}`);
+              debug(`[expo-cli] ${op} ${filepath}`);
               if (op === 'change' || op === 'add') {
                 rebundleApiRoute(this.projectRoot, filepath, options);
               }

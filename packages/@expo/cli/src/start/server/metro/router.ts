@@ -47,3 +47,7 @@ export function getRouterDirectory(projectRoot: string): string {
   Log.debug('Using app as the root directory for Expo Router.');
   return 'app';
 }
+
+export function isApiRouteConvention(name: string): boolean {
+  return /\+api\.[tj]sx?$/.test(name);
+}

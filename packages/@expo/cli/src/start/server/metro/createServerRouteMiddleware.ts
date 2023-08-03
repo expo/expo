@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import path from 'path';
 import requireString from 'require-from-string';
 import resolve from 'resolve';
 import resolveFrom from 'resolve-from';
@@ -30,7 +29,7 @@ const resolveAsync = promisify(resolve) as any as (
 
 export function createRouteHandlerMiddleware(
   projectRoot: string,
-  options: { mode?: string; port?: number; getWebBundleUrl: () => string }
+  options: { mode?: string; appDir: string; port?: number; getWebBundleUrl: () => string }
 ) {
   // Install Node.js browser polyfills and source map support
   require(resolveFrom(projectRoot, '@expo/server/install'));
@@ -45,12 +44,6 @@ export function createRouteHandlerMiddleware(
   refetchManifest(projectRoot, options);
 
   const devServerUrl = `http://localhost:${options.port}`;
-
-  const appDir = path.join(
-    projectRoot,
-    // TODO: Support other directories via app.json
-    'app'
-  );
 
   return async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
     if (!req?.url || !req.method) {
@@ -148,7 +141,7 @@ export function createRouteHandlerMiddleware(
     }
     const resolvedFunctionPath = await resolveAsync(functionRoute.file, {
       extensions: ['.js', '.jsx', '.ts', '.tsx'],
-      basedir: appDir,
+      basedir: options.appDir,
     });
 
     const middlewareContents = await bundleApiRoute(projectRoot, resolvedFunctionPath!, options);
@@ -161,7 +154,7 @@ export function createRouteHandlerMiddleware(
     try {
       debug(`Bundling middleware at: ${resolvedFunctionPath}`);
       middleware = requireString(middlewareContents);
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof Error) {
         await logMetroErrorAsync({ projectRoot, error });
       } else {
