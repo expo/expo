@@ -793,7 +793,7 @@ export async function createEventAsync(
  */
 export async function updateEventAsync(
   id: string,
-  details: Partial<Event> = {},
+  details: Omit<Partial<Event>, 'id'> = {},
   recurringEventOptions: RecurringEventOptions = {}
 ): Promise<string> {
   if (!ExpoCalendar.saveEventAsync) {

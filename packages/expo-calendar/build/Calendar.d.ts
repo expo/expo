@@ -592,7 +592,7 @@ export declare function createEventAsync(calendarId: string, eventData?: Omit<Pa
  * @param details A map of properties to be updated.
  * @param recurringEventOptions A map of options for recurring events.
  */
-export declare function updateEventAsync(id: string, details?: Partial<Event>, recurringEventOptions?: RecurringEventOptions): Promise<string>;
+export declare function updateEventAsync(id: string, details?: Omit<Partial<Event>, 'id'>, recurringEventOptions?: RecurringEventOptions): Promise<string>;
 /**
  * Deletes an existing event from the device. Use with caution.
  * @param id ID of the event to be deleted.
