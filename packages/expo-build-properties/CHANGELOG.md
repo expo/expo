@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+## 0.9.0 — 2023-07-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.8.3 — 2023-06-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.8.2 — 2023-06-27
+
+### 💡 Others
+
+- Upgrade `semver` lib. ([#23113](https://github.com/expo/expo/pull/23113) by [@felipemillhouse](https://github.com/felipemillhouse))
+
+## 0.8.1 — 2023-06-23
+
+_This version does not introduce any user-facing changes._
+
 ## 0.8.0 — 2023-06-21
 
 ### 🛠 Breaking changes
@@ -19,6 +37,7 @@
 ### 🎉 New features
 
 - Added `android.extraMavenRepos` and `ios.extraPods` support. ([#22785](https://github.com/expo/expo/pull/22785) by [@kudo](https://github.com/kudo))
+- Added `android.usesCleartextTraffic` support. ([#23043](https://github.com/expo/expo/pull/23043) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 0.7.0 — 2023-05-08
 

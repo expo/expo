@@ -114,6 +114,14 @@ export interface PluginConfigTypeAndroid {
    * this property is actually handled by `expo-modules-autolinking` but not the config-plugins inside expo-build-properties.
    */
   extraMavenRepos?: string[];
+  /**
+   * Indicates whether the app intends to use cleartext network traffic.
+   *
+   * @default false
+   *
+   * @see [Android documentation](https://developer.android.com/guide/topics/manifest/application-element#usesCleartextTraffic)
+   */
+  usesCleartextTraffic?: boolean;
 }
 
 /**
@@ -136,7 +144,7 @@ export interface PluginConfigTypeIos {
    * Enable [`use_frameworks!`](https://guides.cocoapods.org/syntax/podfile.html#use_frameworks_bang)
    * in `Podfile` to use frameworks instead of static libraries for Pods.
    *
-   * > You cannot use `useFrameworks` and `flipper` at the same time , and
+   * > You cannot use `useFrameworks` and `flipper` at the same time, and
    * doing so will generate an error.
    */
   useFrameworks?: 'static' | 'dynamic';
@@ -307,6 +315,8 @@ const schema: JSONSchemaType<PluginConfigType> = {
         networkInspector: { type: 'boolean', nullable: true },
 
         extraMavenRepos: { type: 'array', items: { type: 'string' }, nullable: true },
+
+        usesCleartextTraffic: { type: 'boolean', nullable: true },
       },
       nullable: true,
     },

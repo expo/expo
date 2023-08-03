@@ -1,6 +1,6 @@
 {
   "name": "stripe-react-native",
-  "version": "0.27.2",
+  "version": "0.28.0",
   "summary": "Stripe SDK for React Native",
   "homepage": "https://github.com/stripe/stripe-react-native/#readme",
   "license": "MIT",
@@ -10,7 +10,7 @@
   },
   "source": {
     "git": "https://github.com/stripe/stripe-react-native.git",
-    "tag": "0.27.2"
+    "tag": "0.28.0"
   },
   "source_files": "ios/**/*.{h,m,mm,swift}",
   "exclude_files": "ios/Tests/",

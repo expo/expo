@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 1.7.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 1.7.0 — 2023-07-28
+
+### 🎉 New features
+
+- Added support for `animated` property in `setStatusBarStyle`. ([#23408](https://github.com/expo/expo/pull/23408) by [@haikov](https://github.com/haikov))
+
 ## 1.6.0 — 2023-06-21
 
 _This version does not introduce any user-facing changes._

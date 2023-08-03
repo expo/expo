@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+## 12.4.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 12.4.0 — 2023-07-28
+
+_This version does not introduce any user-facing changes._
+
+## 12.3.2 — 2023-06-28
+
+_This version does not introduce any user-facing changes._
+
+## 12.3.1 — 2023-06-27
+
+### 🐛 Bug fixes
+
+- On `iOS`, fixed crash when opening an invalid URL in the web browser. ([#22986](https://github.com/expo/expo/pull/23084) by [@hirbod](https://github.com/hirbod))
+
 ## 12.3.0 — 2023-06-21
 
 ### 📚 3rd party library updates

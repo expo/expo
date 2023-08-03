@@ -20,8 +20,6 @@ public final class UpdatesModule: Module {
 
   public required init(appContext: AppContext) {
     updatesService = appContext.legacyModule(implementing: EXUpdatesModuleInterface.self)
-    // Ensures the universal UpdatesConfig can cast to versioned UpdatesConfig without exception in Swift
-    object_setClass(updatesService?.config, UpdatesConfig.self)
     super.init(appContext: appContext)
   }
 
@@ -103,7 +101,8 @@ public final class UpdatesModule: Module {
         if result["manifest"] != nil {
           promise.resolve([
             "isAvailable": true,
-            "manifest": result["manifest"]
+            "manifest": result["manifest"],
+            "isRollBackToEmbedded": false
           ])
           return
         }
@@ -114,7 +113,7 @@ public final class UpdatesModule: Module {
           ])
           return
         }
-        promise.resolve(["isAvailable": false])
+        promise.resolve(["isAvailable": false, "isRollBackToEmbedded": false])
       }
     }
 
@@ -191,6 +190,28 @@ public final class UpdatesModule: Module {
             return
           }
           promise.reject("ERR_UPDATES_FETCH", message)
+          return
+        } else {
+          promise.resolve(result)
+        }
+      }
+    }
+
+    // Getter used internally by @expo/use-updates useUpdates()
+    // to initialize its state
+    AsyncFunction("getNativeStateMachineContextAsync") { (promise: Promise) in
+      let maybeIsCheckForUpdateEnabled: Bool? = updatesService?.canCheckForUpdateAndFetchUpdate ?? true
+      guard maybeIsCheckForUpdateEnabled ?? false else {
+        promise.resolve(UpdatesUtils.defaultNativeStateMachineContextJson())
+        return
+      }
+      UpdatesUtils.getNativeStateMachineContextJson { result in
+        if result["message"] != nil {
+          guard let message = result["message"] as? String else {
+            promise.reject("ERR_UPDATES_CHECK", "")
+            return
+          }
+          promise.reject("ERR_UPDATES_CHECK", message)
           return
         } else {
           promise.resolve(result)

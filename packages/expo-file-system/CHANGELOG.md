@@ -10,6 +10,26 @@
 
 ### 💡 Others
 
+## 15.5.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 15.5.0 — 2023-07-28
+
+### 💡 Others
+
+- Fork `uuid@3.4.0` and move into `expo-modules-core`. Remove the original dependency. ([#23249](https://github.com/expo/expo/pull/23249) by [@alanhughes](https://github.com/alanjhughes))
+
+## 15.4.2 — 2023-06-28
+
+_This version does not introduce any user-facing changes._
+
+## 15.4.1 — 2023-06-27
+
+### 🐛 Bug fixes
+
+- Fixed hard crash on iOS when calling readDirectoryAsync. ([#23106](https://github.com/expo/expo/pull/23106) by [@aleqsio](https://github.com/aleqsio))
+
 ## 15.4.0 — 2023-06-13
 
 ### 🎉 New features

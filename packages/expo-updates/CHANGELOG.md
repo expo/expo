@@ -10,6 +10,101 @@
 
 ### 💡 Others
 
+## 0.19.1 — 2023-08-02
+
+### 💡 Others
+
+- Update API documentation to clarify `channel` behavior in Expo Go/ development builds. ([#23783](https://github.com/expo/expo/pull/23783) by [@keith-kurak](https://github.com/keith-kurak))
+
+## 0.19.0 — 2023-07-28
+
+### 🎉 New features
+
+- New useUpdates() JS API. ([#23532](https://github.com/expo/expo/pull/23532) by [@douglowder](https://github.com/douglowder))
+
+### 🐛 Bug fixes
+
+- [Android] Fix rollback embedded update logic. ([#23244](https://github.com/expo/expo/pull/23244) by [@wschurman](https://github.com/wschurman))
+- Correctly handle roll backs in JS module methods. ([#23356](https://github.com/expo/expo/pull/23356), [#23377](https://github.com/expo/expo/pull/23377) by [@wschurman](https://github.com/wschurman))
+- [iOS] Fix unmatched selection policy. ([#23535](https://github.com/expo/expo/pull/23535) by [@chochihim](https://github.com/chochihim))
+- Handle initialization errors in useUpdates(). ([#23640](https://github.com/expo/expo/pull/23640) by [@douglowder](https://github.com/douglowder))
+- [iOS] Fix error handling on iOS during startup check for updates. ([#23663](https://github.com/expo/expo/pull/23663) by [@douglowder](https://github.com/douglowder))
+- Last check dateTime should come from native. ([#23692](https://github.com/expo/expo/pull/23692) by [@douglowder](https://github.com/douglowder))
+
+### 💡 Others
+
+- Native getter for state machine context. ([#23428](https://github.com/expo/expo/pull/23428) by [@douglowder](https://github.com/douglowder))
+- [iOS] Fix template for EX_UPDATES_NATIVE_DEBUG. ([#23602](https://github.com/expo/expo/pull/23602) by [@douglowder](https://github.com/douglowder))
+
+## 0.18.11 - 2023-07-23
+
+### 💡 Others
+
+- [Android] EX_UPDATES_ANDROID_DELAY_LOAD_APP settable by env. ([#23479](https://github.com/expo/expo/pull/23479) by [@douglowder](https://github.com/douglowder))
+
+## 0.18.10 - 2023-07-12
+
+### 🐛 Bug fixes
+
+- [CLI] Add missing chalk dependency for the `expo-updates` cli. ([#23429](https://github.com/expo/expo/pull/23429) by [@byCedric](https://github.com/byCedric))
+- [CLI] Drop `fs-extra` in favor of `fs`. ([#23431](https://github.com/expo/expo/pull/23431) by [@byCedric](https://github.com/byCedric))
+
+## 0.18.9 - 2023-07-10
+
+### 🐛 Bug fixes
+
+- [ios] Allow nil scopeKey for bare/embedded updates. ([#23385](https://github.com/expo/expo/pull/23385) by [@wschurman](https://github.com/wschurman))
+
+## 0.18.8 - 2023-07-04
+
+_This version does not introduce any user-facing changes._
+
+## 0.18.7 - 2023-06-30
+
+### 🐛 Bug fixes
+
+- Fix expo-extra-params header. ([#23206](https://github.com/expo/expo/pull/23206) by [@wschurman](https://github.com/wschurman))
+- [iOS] Fix response header casing bug. ([#23234](https://github.com/expo/expo/pull/23234) by [@wschurman](https://github.com/wschurman))
+- Fix tsconfig paths and other SDK 49 Metro features. ([#23276](https://github.com/expo/expo/pull/23276) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.18.6 - 2023-06-29
+
+### 🐛 Bug fixes
+
+- Support discriminated unions for JS API method result types. ([#23173](https://github.com/expo/expo/pull/23173) by [@wschurman](https://github.com/wschurman))
+
+## 0.18.5 — 2023-06-28
+
+### 💡 Others
+
+- README.md changes. ([#23142](https://github.com/expo/expo/pull/23142) by [@douglowder](https://github.com/douglowder))
+
+## 0.18.4 — 2023-06-27
+
+### 🐛 Bug fixes
+
+- [iOS] Use weak delegate for state machine. ([#23060](https://github.com/expo/expo/pull/23060) by [@wschurman](https://github.com/wschurman))
+- [Android] Convert LoaderTask.RemoteCheckResult to sealed class. ([#23061](https://github.com/expo/expo/pull/23061) by [@wschurman](https://github.com/wschurman))
+- [iOS] Use swift enum for AppLoaderTask delegate. ([#23064](https://github.com/expo/expo/pull/23064) by [@wschurman](https://github.com/wschurman))
+
+## 0.18.3 — 2023-06-24
+
+### 🐛 Bug fixes
+
+- [Android] fix instrumentation tests. ([#23037](https://github.com/expo/expo/pull/23037) by [@douglowder](https://github.com/douglowder))
+- [iOS] Fix crash when dev-client and updates used together. ([#23070](https://github.com/expo/expo/pull/23070) by [@douglowder](https://github.com/douglowder))
+- [Android] Use sealed class for UpdatesStateEvent. ([#23038](https://github.com/expo/expo/pull/23038) by [@wschurman](https://github.com/wschurman))
+
+## 0.18.2 — 2023-06-23
+
+### 🐛 Bug fixes
+
+- [Android] fix instrumentation tests. ([#23037](https://github.com/expo/expo/pull/23037) by [@douglowder](https://github.com/douglowder))
+
+## 0.18.1 — 2023-06-22
+
+_This version does not introduce any user-facing changes._
+
 ## 0.18.0 — 2023-06-22
 
 _This version does not introduce any user-facing changes._
@@ -25,7 +120,7 @@ _This version does not introduce any user-facing changes._
 - [Android] Load updates in background thread and prevent ANR from initial launch. ([#20273](https://github.com/expo/expo/pull/20273) by [@kudo](https://github.com/kudo))
 - Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
 - Added the Brotli compression support for EAS Update on Android. ([#22982](https://github.com/expo/expo/pull/22982) by [@kudo](https://github.com/kudo))
-- [Android][iOS] State machine implementation. ([#22845](https://github.com/expo/expo/pull/22845) by [@douglowder](https://github.com/douglowder))
+- [Android][ios] State machine implementation. ([#22845](https://github.com/expo/expo/pull/22845) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 
@@ -159,6 +254,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🛠 Breaking changes
 
+- Drop support for `logUrl` which sent console logs to the legacy `expo-cli`. ([#18596](https://github.com/expo/expo/pull/18596) by [@EvanBacon](https://github.com/EvanBacon))
 - [plugin] Upgrade minimum runtime requirement to Node 14 (LTS). ([#18204](https://github.com/expo/expo/pull/18204) by [@EvanBacon](https://github.com/EvanBacon))
 - Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
 

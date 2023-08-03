@@ -38,7 +38,7 @@ const getAlgoliaFetchParams = (
 
 export const getExpoDocsResults = (query: string, version?: string) => {
   return fetch(
-    ...getAlgoliaFetchParams(query, 'QEX7PB7D46', '6652d26570e8628af4601e1d78ad456b', 'expo', 10, {
+    ...getAlgoliaFetchParams(query, 'QEX7PB7D46', '6652d26570e8628af4601e1d78ad456b', 'expo', 20, {
       facetFilters: [['version:none', `version:${version}`]],
     })
   );

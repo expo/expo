@@ -1,7 +1,6 @@
 package versioned.host.exp.exponent.modules.api.components.datetimepicker;
 
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.facebook.react.TurboReactPackage;
@@ -10,9 +9,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import host.exp.expoview.BuildConfig;
@@ -59,15 +56,5 @@ public class RNDateTimePickerPackage extends TurboReactPackage {
         ));
       return moduleInfos;
     };
-  }
-
-  @NonNull
-  @Override
-  public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-    List<NativeModule> modules = new ArrayList<>();
-    modules.add(new DatePickerModule(reactContext));
-    modules.add(new TimePickerModule(reactContext));
-
-    return modules;
   }
 }

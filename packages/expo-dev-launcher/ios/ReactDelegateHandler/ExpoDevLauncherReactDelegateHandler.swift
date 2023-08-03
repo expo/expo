@@ -10,7 +10,7 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTB
   public static var enableAutoSetup: Bool = true
 
   private weak var reactDelegate: ExpoReactDelegate?
-  private var bridgeDelegateHandler: DevClientAppDelegate = ExpoDevLauncherBridgeDelegateHandler()
+  private var bridgeDelegateHandler: DevClientAppDelegate?
   private var deferredRootView: EXDevLauncherDeferredRCTRootView?
   private var rootViewModuleName: String?
   private var rootViewInitialProperties: [AnyHashable : Any]?
@@ -74,10 +74,13 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTB
   // MARK: EXDevelopmentClientControllerDelegate implementations
 
   public func devLauncherController(_ developmentClientController: EXDevLauncherController, didStartWithSuccess success: Bool) {
-    let bridge = self.bridgeDelegateHandler.createBridgeAndSetAdapter(launchOptions: developmentClientController.getLaunchOptions())
+    guard let bridgeDelegateHandler = self.bridgeDelegateHandler else {
+      fatalError("bridgeDelegateHandler is not initialized")
+    }
+    let bridge = bridgeDelegateHandler.createBridgeAndSetAdapter(launchOptions: developmentClientController.getLaunchOptions())
     developmentClientController.appBridge = bridge
 
-    guard let rootView = self.bridgeDelegateHandler.createRootView(
+    guard let rootView = bridgeDelegateHandler.createRootView(
       with: bridge,
       // swiftlint:disable:next force_unwrapping
       moduleName: self.rootViewModuleName!,

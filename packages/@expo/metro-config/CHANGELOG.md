@@ -10,6 +10,66 @@
 
 ### 💡 Others
 
+## 0.11.1 — 2023-08-02
+
+### 🛠 Breaking changes
+
+- Add support for `.mjs` extensions in Expo Metro. ([#23528](https://github.com/expo/expo/pull/23528) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🎉 New features
+
+- Automatically invalidate cache when `react-native-reanimated` version changes or is added. ([#23798](https://github.com/expo/expo/pull/23798) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.11.0 — 2023-07-28
+
+### 🛠 Breaking changes
+
+- Use custom Babel transformer by default. ([#23607](https://github.com/expo/expo/pull/23607) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🎉 New features
+
+- Expose default Babel transformer with `@expo/metro-config/babel-transformer`. ([#23607](https://github.com/expo/expo/pull/23607) by [@EvanBacon](https://github.com/EvanBacon))
+- Expose `metroTarget: 'client' | 'node'` to the Babel caller. ([#23607](https://github.com/expo/expo/pull/23607) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.10.7 - 2023-07-21
+
+### 🐛 Bug fixes
+
+- Add missing `unstable_styles` export on native for CSS Modules. ([#23260](https://github.com/expo/expo/pull/23260) by [@EvanBacon](https://github.com/EvanBacon))
+- Keep other URL components in place when rewriting full URLs for virtual entrypoints. ([#23546](https://github.com/expo/expo/pull/23546) by [@byCedric](https://github.com/byCedric))
+
+## 0.10.6 - 2023-07-02
+
+_This version does not introduce any user-facing changes._
+
+## 0.10.5 - 2023-06-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.10.4 - 2023-06-29
+
+### 🎉 New features
+
+- Silence dotenv file watching warnings. ([#23169](https://github.com/expo/expo/pull/23169) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.10.3 — 2023-06-27
+
+### 🐛 Bug fixes
+
+- Fix css modules syntax. ([#23086](https://github.com/expo/expo/pull/23086) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.10.2 — 2023-06-24
+
+### 🎉 New features
+
+- Ignore `@expo/metro-runtime` in stacks. ([#22738](https://github.com/expo/expo/pull/22738) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.10.1 — 2023-06-22
+
+### 🐛 Bug fixes
+
+- Re-arrange the `Libraries/Core/InitializeCore` import. ([#23049](https://github.com/expo/expo/pull/23049) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.10.0 — 2023-06-21
 
 ### 🛠 Breaking changes

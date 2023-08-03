@@ -26,6 +26,9 @@
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
 #import <React/RCTAppearance.h>
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI49_0_0React/ABI49_0_0RCTAppearance.h>)
+#import <ABI49_0_0React/ABI49_0_0RCTAppearance.h>
+#endif
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI48_0_0React/ABI48_0_0RCTAppearance.h>)
 #import <ABI48_0_0React/ABI48_0_0RCTAppearance.h>
 #endif
@@ -76,6 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) BOOL isStandalone;
 @property (nonatomic, assign) BOOL isHomeApp;
+@property (nonatomic, assign) UIInterfaceOrientation previousInterfaceOrientation;
 
 /*
  * Controller for handling all messages from bundler/fetcher.
@@ -110,6 +114,11 @@ NS_ASSUME_NONNULL_BEGIN
   if (self = [super init]) {
     _appRecord = record;
     _isStandalone = [EXEnvironment sharedEnvironment].isDetached;
+    // For iPads traitCollectionDidChange will not be called (it's always in the same size class). It is necessary
+    // to init it in here, so it's possible to return it in the didUpdateDimensionsEvent of the module
+    if (ScreenOrientationRegistry.shared.currentTraitCollection == nil) {
+      [ScreenOrientationRegistry.shared traitCollectionDidChangeTo:self.traitCollection];
+    }
   }
   return self;
 }
@@ -575,10 +584,9 @@ NS_ASSUME_NONNULL_BEGIN
     return [super supportedInterfaceOrientations];
   }
 
-  if ([ScreenOrientationRegistry.shared requiredOrientationMask] > 0) {
+  if ([ScreenOrientationRegistry.shared requiredOrientationMask] > 0 && !self.isHomeApp) {
     return [ScreenOrientationRegistry.shared requiredOrientationMask];
   }
-
 
   return [self orientationMaskFromManifestOrDefault];
 }
@@ -593,7 +601,8 @@ NS_ASSUME_NONNULL_BEGIN
   return NO;
 }
 
-- (UIInterfaceOrientationMask)orientationMaskFromManifestOrDefault {
+- (UIInterfaceOrientationMask)orientationMaskFromManifestOrDefault
+{
   if (_appRecord.appLoader.manifest) {
     NSString *orientationConfig = _appRecord.appLoader.manifest.orientation;
     if ([orientationConfig isEqualToString:@"portrait"]) {
@@ -606,6 +615,28 @@ NS_ASSUME_NONNULL_BEGIN
   }
   // no config or default value: allow autorotation
   return UIInterfaceOrientationMaskAllButUpsideDown;
+}
+
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+  [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+
+  __weak typeof(self) weakSelf = self;
+
+  // Update after the transition ends, this ensures that the trait collection passed to didUpdateDimensionsEvent is already updated
+  [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> _Nonnull context) {
+    __strong __typeof(self) strongSelf = weakSelf;
+
+    if (!strongSelf) {
+      return;
+    }
+
+    if (self.windowInterfaceOrientation != self.previousInterfaceOrientation) {
+      [ScreenOrientationRegistry.shared viewDidTransitionToOrientation:self.windowInterfaceOrientation];
+    }
+
+    self->_previousInterfaceOrientation = self.windowInterfaceOrientation;
+  } completion: nil];
 }
 
 - (void)traitCollectionDidChange:(nullable UITraitCollection *)previousTraitCollection {
@@ -636,6 +667,9 @@ NS_ASSUME_NONNULL_BEGIN
     appearancePreference = nil;
   }
   RCTOverrideAppearancePreference(appearancePreference);
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI49_0_0React/ABI49_0_0RCTAppearance.h>)
+  ABI49_0_0RCTOverrideAppearancePreference(appearancePreference);
+#endif
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI48_0_0React/ABI48_0_0RCTAppearance.h>)
   ABI48_0_0RCTOverrideAppearancePreference(appearancePreference);
 #endif
@@ -715,6 +749,9 @@ NS_ASSUME_NONNULL_BEGIN
   return manifest.iosOrRootBackgroundColor;
 }
 
+- (UIInterfaceOrientation)windowInterfaceOrientation {
+  return [[[UIApplication sharedApplication].windows firstObject].windowScene interfaceOrientation];
+}
 
 #pragma mark - Internal
 

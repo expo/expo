@@ -10,6 +10,23 @@
 
 ### 💡 Others
 
+## 15.5.1 — 2023-08-02
+
+### 🐛 Bug fixes
+
+- On iOS, fix issue where the wrong requester class was used if the user had requested `writeOnly` permissions. ([#23780](https://github.com/expo/expo/pull/23780) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 15.5.0 — 2023-07-28
+
+_This version does not introduce any user-facing changes._
+
+## 15.4.1 - 2023-07-23
+
+### 🐛 Bug fixes
+
+- Fix `albumNeedsMigrationAsync` crashing if called with invalid `albumId` on Android. ([#23516](https://github.com/expo/expo/pull/23516) by [@lukmccall](https://github.com/lukmccall))
+- Fix `the bind value at index 1 is null` exception thrown by `ExpoMediaLibrary.migrateAlbumIfNeededAsync` on Android. ([#23515](https://github.com/expo/expo/pull/23515) by [@lukmccall](https://github.com/lukmccall))
+
 ## 15.4.0 — 2023-06-21
 
 ### 📚 3rd party library updates

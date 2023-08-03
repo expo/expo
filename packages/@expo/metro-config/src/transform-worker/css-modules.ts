@@ -33,7 +33,7 @@ export async function transformCssModuleWeb(props: {
 
   let outputModule = `module.exports=Object.assign(${JSON.stringify(
     styles
-  )},{unstable_styles:${JSON.stringify(reactNativeWeb)}}${JSON.stringify(variables)});`;
+  )},{unstable_styles:${JSON.stringify(reactNativeWeb)}},${JSON.stringify(variables)});`;
 
   if (props.options.dev) {
     const runtimeCss = wrapDevelopmentCSS({

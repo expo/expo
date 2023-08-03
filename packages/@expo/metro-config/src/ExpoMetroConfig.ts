@@ -40,14 +40,6 @@ export interface DefaultConfigOptions {
   isCSSEnabled?: boolean;
 }
 
-function getProjectBabelConfigFile(projectRoot: string): string | undefined {
-  return (
-    resolveFrom.silent(projectRoot, './babel.config.js') ||
-    resolveFrom.silent(projectRoot, './.babelrc') ||
-    resolveFrom.silent(projectRoot, './.babelrc.js')
-  );
-}
-
 function getAssetPlugins(projectRoot: string): string[] {
   const hashAssetFilesPath = resolveFrom.silent(projectRoot, 'expo-asset/tools/hashAssetFiles');
 
@@ -89,33 +81,23 @@ export function getDefaultConfig(
     // noop -- falls back to a hardcoded value.
   }
 
-  const sourceExtsConfig = { isTS: true, isReact: true, isModern: false };
+  const sourceExtsConfig = { isTS: true, isReact: true, isModern: true };
   const sourceExts = getBareExtensions([], sourceExtsConfig);
 
   // Add support for cjs (without platform extensions).
   sourceExts.push('cjs');
 
+  const reanimatedVersion = getPkgVersion(projectRoot, 'react-native-reanimated');
+
   let sassVersion: string | null = null;
   if (options.isCSSEnabled) {
-    sassVersion = getSassVersion(projectRoot);
+    sassVersion = getPkgVersion(projectRoot, 'sass');
     // Enable SCSS by default so we can provide a better error message
     // when sass isn't installed.
     sourceExts.push('scss', 'sass', 'css');
   }
 
-  const envFiles = runtimeEnv.getFiles(process.env.NODE_ENV);
-
-  const babelConfigPath = getProjectBabelConfigFile(projectRoot);
-  const isCustomBabelConfigDefined = !!babelConfigPath;
-
-  const resolverMainFields: string[] = [];
-
-  // Disable `react-native` in exotic mode, since library authors
-  // use it to ship raw application code to the project.
-  if (!isExotic) {
-    resolverMainFields.push('react-native');
-  }
-  resolverMainFields.push('browser', 'main');
+  const envFiles = runtimeEnv.getFiles(process.env.NODE_ENV, { silent: true });
 
   const pkg = getPackageJson(projectRoot);
   const watchFolders = getWatchFolders(projectRoot);
@@ -129,13 +111,12 @@ export function getDefaultConfig(
     } catch {}
     console.log(`- Extensions: ${sourceExts.join(', ')}`);
     console.log(`- React Native: ${reactNativePath}`);
-    console.log(`- Babel config: ${babelConfigPath || 'babel-preset-expo (default)'}`);
-    console.log(`- Resolver Fields: ${resolverMainFields.join(', ')}`);
     console.log(`- Watch Folders: ${watchFolders.join(', ')}`);
     console.log(`- Node Module Paths: ${nodeModulesPaths.join(', ')}`);
     console.log(`- Exotic: ${isExotic}`);
     console.log(`- Env Files: ${envFiles}`);
     console.log(`- Sass: ${sassVersion}`);
+    console.log(`- Reanimated: ${reanimatedVersion}`);
     console.log();
   }
   const {
@@ -150,7 +131,9 @@ export function getDefaultConfig(
   const metroConfig: Partial<MetroConfig> = mergeConfig(metroDefaultValues, {
     watchFolders,
     resolver: {
-      resolverMainFields,
+      // unstable_conditionsByPlatform: { web: ['browser'] },
+      unstable_conditionNames: ['require', 'import', 'react-native'],
+      resolverMainFields: ['react-native', 'browser', 'main'],
       platforms: ['ios', 'android'],
       assetExts: metroDefaultValues.resolver.assetExts
         .concat(
@@ -167,7 +150,10 @@ export function getDefaultConfig(
     },
     serializer: {
       getModulesRunBeforeMainModule: () => {
-        const preModules: string[] = [];
+        const preModules: string[] = [
+          // MUST be first
+          require.resolve(path.join(reactNativePath, 'Libraries/Core/InitializeCore')),
+        ];
 
         // We need to shift this to be the first module so web Fast Refresh works as expected.
         // This will only be applied if the module is installed and imported somewhere in the bundle already.
@@ -176,9 +162,6 @@ export function getDefaultConfig(
           preModules.push(metroRuntime);
         }
 
-        preModules.push(
-          require.resolve(path.join(reactNativePath, 'Libraries/Core/InitializeCore'))
-        );
         return preModules;
       },
       getPolyfills: () => require(path.join(reactNativePath, 'rn-get-polyfills'))(),
@@ -206,19 +189,16 @@ export function getDefaultConfig(
         ? stableHash(JSON.stringify(pkg.browserslist)).toString('hex')
         : null,
       sassVersion,
+      // Ensure invalidation when the version changes due to the Babel plugin.
+      reanimatedVersion,
 
       // `require.context` support
       unstable_allowRequireContext: true,
       allowOptionalDependencies: true,
       babelTransformerPath: isExotic
-        ? require.resolve('./transformer/metro-expo-exotic-babel-transformer')
-        : isCustomBabelConfigDefined
-        ? // If the user defined a babel config file in their project,
-          // then use the default transformer.
-          // Try to use the project copy before falling back on the global version
-          resolveFrom.silent(projectRoot, 'metro-react-native-babel-transformer')
-        : // Otherwise, use a custom transformer that uses `babel-preset-expo` by default for projects.
-          require.resolve('./transformer/metro-expo-babel-transformer'),
+        ? // TODO: Combine these into one transformer.
+          require.resolve('./transformer/metro-expo-exotic-babel-transformer')
+        : require.resolve('./babel-transformer'),
       assetRegistryPath: 'react-native/Libraries/Image/AssetRegistry',
       assetPlugins: getAssetPlugins(projectRoot),
     },
@@ -247,17 +227,17 @@ export { MetroConfig, INTERNAL_CALLSITES_REGEX };
 // re-export for legacy cases.
 export const EXPO_DEBUG = env.EXPO_DEBUG;
 
-function getSassVersion(projectRoot: string): string | null {
-  const sassPkg = resolveFrom.silent(projectRoot, 'sass');
-  if (!sassPkg) return null;
-  const sassPkgJson = findUpPackageJson(sassPkg);
-  if (!sassPkgJson) return null;
-  const pkg = JsonFile.read(sassPkgJson);
+function getPkgVersion(projectRoot: string, pkgName: string): string | null {
+  const targetPkg = resolveFrom.silent(projectRoot, pkgName);
+  if (!targetPkg) return null;
+  const targetPkgJson = findUpPackageJson(targetPkg);
+  if (!targetPkgJson) return null;
+  const pkg = JsonFile.read(targetPkgJson);
 
-  debug('sass package.json:', sassPkgJson);
-  const sassVersion = pkg.version;
-  if (typeof sassVersion === 'string') {
-    return sassVersion;
+  debug(`${pkgName} package.json:`, targetPkgJson);
+  const pkgVersion = pkg.version;
+  if (typeof pkgVersion === 'string') {
+    return pkgVersion;
   }
 
   return null;

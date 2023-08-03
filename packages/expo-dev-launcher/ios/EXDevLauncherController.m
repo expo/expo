@@ -8,15 +8,15 @@
 #import <React/RCTConstants.h>
 #import <React/RCTKeyCommands.h>
 
-#import "EXDevLauncherController.h"
-#import "EXDevLauncherRCTBridge.h"
-#import "EXDevLauncherManifestParser.h"
-#import "EXDevLauncherLoadingView.h"
-#import "EXDevLauncherRCTDevSettings.h"
-#import "EXDevLauncherUpdatesHelper.h"
-#import "RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h"
+#import <EXDevLauncher/EXDevLauncherController.h>
+#import <EXDevLauncher/EXDevLauncherRCTBridge.h>
+#import <EXDevLauncher/EXDevLauncherManifestParser.h>
+#import <EXDevLauncher/EXDevLauncherLoadingView.h>
+#import <EXDevLauncher/EXDevLauncherRCTDevSettings.h>
+#import <EXDevLauncher/EXDevLauncherUpdatesHelper.h>
+#import <EXDevLauncher/RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h>
 
-#import "EXDevLauncherBridgeDelegate.h"
+#import <EXDevLauncher/EXDevLauncherBridgeDelegate.h>
 
 #if __has_include(<EXDevLauncher/EXDevLauncher-Swift.h>)
 // For cocoapods framework, the generated swift header will be inside EXDevLauncher module

@@ -1,35 +1,44 @@
 ---
 title: Static Rendering
 description: Learn how to render routes to static HTML and CSS files with Expo Router.
-hideFromSearch: true
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
 import { FileTree } from '~/ui/components/FileTree';
+import { Step } from '~/ui/components/Step';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+import { APIBox } from '~/components/plugins/APIBox';
 
-> This guide requires `expo@49.0.0-alpha.3` or higher &mdash; everything listed here is still experimental. To use these features, you may need to [use Expo CLI on `main`](https://github.com/expo/expo/tree/main/packages/%40expo/cli#contributing).
+> Available from Expo SDK 49 and Expo Router v2.
 
 To enable Search Engine Optimization (SEO) on the web you must statically render your app. This guide will walk you through the process of statically rendering your Expo Router app.
 
 ## Setup
 
-Start by enabling static rendering in the project's [app config](/versions/latest/config/app/) (only available when `web.bundler` is set to `metro`):
+<Step label="1">
+  Enable metro bundler and static rendering in the project's [app config](/versions/latest/config/app/):
 
 ```json app.json
 {
   "expo": {
+    /* @hide ... */
+    /* @end */
     "web": {
+      /* @info Static rendering is only supported with Metro bundler and Expo Router */
       "bundler": "metro",
+      /* @end */
       "output": "static"
     }
   }
 }
 ```
 
-Next, if you have a **metro.config.js** in your project, ensure it extends `expo/metro-config` as shown below:
+</Step>
+
+<Step label="2">
+  If you have a **metro.config.js** file in your project, ensure it extends **expo/metro-config** as shown below:
 
 ```js metro.config.js
-// Learn more: https://docs.expo.dev/guides/customizing-metro/
 const { getDefaultConfig } = require('expo/metro-config');
 
 /** @type {import('expo/metro-config').MetroConfig} */
@@ -40,17 +49,53 @@ const config = getDefaultConfig(__dirname, {
 module.exports = config;
 ```
 
-Finally, start the development server:
+You can also [learn more](/guides/customizing-metro/) about customizing Metro.
 
-<Terminal cmd={['$ npx expo start']} />
+</Step>
+
+<Step label="3">
+  Expo Router requires at least `react-refresh@0.14.0`. React Native hasn't upgraded yet, so you need to force upgrade your `react-refresh` version by setting a Yarn resolution or npm override.
+
+  <Tabs>
+    <Tab label="Yarn">
+        ```json package.json
+        {
+          /* @hide ... */
+          /* @end */
+          "resolutions": {
+            "react-refresh": "~0.14.0"
+          }
+        }
+        ```
+    </Tab>
+    <Tab label="npm">
+        ```json package.json
+        {
+          /* @hide ... */
+          /* @end */
+          "overrides": {
+            "react-refresh": "~0.14.0"
+          }
+        }
+        ```
+    </Tab>
+  </Tabs>
+</Step>
+
+<Step label="4">
+  Finally, start the development server:
+
+  <Terminal cmd={['$ npx expo start']} />
+</Step>
 
 ## Production
 
-To bundle your static website for production, run the following command:
+To bundle your static website for production, run the universal export command:
 
 <Terminal cmd={['$ npx expo export --platform web']} />
 
-This will create a **dist** directory with your statically rendered website. You can test this production build locally by running the following command and opening the linked URL in your browser:
+This will create a **dist** directory with your statically rendered website. If you have files in a local **public** directory, these will be copied over as well.
+You can test the production build locally by running the following command and opening the linked URL in your browser:
 
 <Terminal cmd={['$ npx serve dist']} />
 
@@ -60,11 +105,13 @@ This project can be deployed to almost every hosting service. Note that this is 
 
 The `static` output will generate HTML files for each route. This means dynamic routes (**app/[id].tsx**) will not work out of the box. You can generate known routes ahead of time using the `generateStaticParams` function.
 
-```js app/blog/[id].tsx
+```tsx app/blog/[id].tsx
 import { Text } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 
-export async function generateStaticParams() {
+/* @info This method is run in a Node.js environment at build-time. */
+export async function generateStaticParams(): Promise<Record<string, string>[]> {
+  /* @end */
   const posts = await getPosts();
   // Return an array of params to generate static HTML files for.
   // Each entry in the array will be a new page.
@@ -82,6 +129,48 @@ This will output a file for each post in the **dist** directory. For example, if
 
 <FileTree files={['dist/blog/alpha.html', 'dist/blog/beta.html']} />
 
+<APIBox header="generateStaticParams">
+
+A server-only function evaluated at build-time in a Node.js environment by Expo CLI. This means it has access to `__dirname`, `process.cwd()`, `process.env`, and more. It also has access to every environment variable that's available in the process, not just the values prefixed with **EXPO*PUBLIC***. **generateStaticParams** is not run in a browser environment, so it cannot access browser APIs like **localStorage** or **document**, nor can it access native Expo APIs such as **expo-camera** or **expo-location**.
+
+```tsx app/[id].tsx
+export async function generateStaticParams(): Promise<Record<string, string>[]> {
+  /* @info Prints the current working directory */
+  console.log(process.cwd());
+  /* @end */
+
+  return [];
+}
+```
+
+**generateStaticParams** cascades from nested parents down to children. The cascading parameters are passed to every dynamic child route that exports **generateStaticParams**.
+
+```tsx app/[id]/_layout.tsx
+export async function generateStaticParams(): Promise<Record<string, string>[]> {
+  /* @info Any dynamic children that export <b>generateStaticParams</b> will be invoked once for every entry in the array. */
+  return [{ id: 'one' }, { id: 'two' }];
+  /* @end */
+}
+```
+
+Now the dynamic child routes will be invoked twice, once with `{ id: 'one' }` and once with `{ id: 'two' }`. All variations must be accounted for.
+
+```tsx app/[id]/[comment].tsx
+export async function generateStaticParams(params: {
+  id: 'one' | 'two';
+}): Promise<Record<string, string>[]> {
+  const comments = await getComments(params.id);
+  return comments.map(comment => ({
+    /* @info Ensure the parent properties are passed down too. */
+    ...params,
+    /* @end */
+    comment: comment.id,
+  }));
+}
+```
+
+</APIBox>
+
 ## Root HTML
 
 By default, every page is wrapped with some small HTML boilerplate, this is known as the **root HTML**.
@@ -90,21 +179,22 @@ You can customize the root HTML file by creating an **app/+html.tsx** file in yo
 
 > **Note**: Global context providers should go in the [Root Layout](/router/advanced/root-layout) component, not the Root HTML component.
 
-```js app/+html.tsx
+```tsx app/+html.tsx
 import { ScrollViewStyleReset } from 'expo-router/html';
+import type { PropsWithChildren } from 'react';
 
 // This file is web-only and used to configure the root HTML for every
 // web page during static rendering.
 // The contents of this function only run in Node.js environments and
 // do not have access to the DOM or browser APIs.
-export default function Root({ children }: { children: React.ReactNode }) {
+export default function Root({ children }: PropsWithChildren) {
   return (
     <html lang="en">
       <head>
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
 
-        {/* 
+        {/*
           This viewport disables scaling which makes the mobile website act more like a native app.
           However this does reduce built-in accessibility. If you want to enable scaling, use this instead:
             <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -113,8 +203,8 @@ export default function Root({ children }: { children: React.ReactNode }) {
           name="viewport"
           content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1.00001,viewport-fit=cover"
         />
-        {/* 
-          Disable body scrolling on web. This makes ScrollView components work closer to how they do on native. 
+        {/*
+          Disable body scrolling on web. This makes ScrollView components work closer to how they do on native.
           However, body scrolling is often nice to have for mobile web. If you want to enable it, remove this line.
         */}
         <ScrollViewStyleReset />
@@ -141,9 +231,9 @@ The exports from `expo-router/html` are related to the Root HTML component.
 
 ## Meta Tags
 
-You can add meta tags to your pages with the [`<Head />`](/docs/features/head) module from `expo-router`:
+You can add meta tags to your pages with the `<Head />` module from `expo-router`:
 
-```js app/about.tsx
+```tsx app/about.tsx
 import Head from 'expo-router/head';
 import { Text } from 'react-native';
 
@@ -185,7 +275,7 @@ These files will be copied to the **dist** folder during static rendering:
 
 > **info** **Web only**: Static assets can be accessed in runtime code using relative paths. For example, the **logo.png** can be accessed at `/logo.png`:
 
-```js app/index.tsx
+```tsx app/index.tsx
 import { Image } from 'react-native';
 
 export default function Page() {

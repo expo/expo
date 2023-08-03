@@ -5,6 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.createControlledEnvironment = createControlledEnvironment;
 exports.getFiles = getFiles;
+exports.isEnabled = isEnabled;
 function _chalk() {
   const data = _interopRequireDefault(require("chalk"));
   _chalk = function () {
@@ -33,6 +34,13 @@ function fs() {
   };
   return data;
 }
+function _getenv() {
+  const data = require("getenv");
+  _getenv = function () {
+    return data;
+  };
+  return data;
+}
 function path() {
   const data = _interopRequireWildcard(require("path"));
   path = function () {
@@ -51,11 +59,21 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 
 const debug = require('debug')('expo:env');
+function isEnabled() {
+  return !(0, _getenv().boolish)('EXPO_NO_DOTENV', false);
+}
 function createControlledEnvironment() {
   const IS_DEBUG = require('debug').enabled('expo:env');
   let userDefinedEnvironment = undefined;
-  let memoEnvironment = undefined;
-  function _getForce(projectRoot) {
+  let memo = undefined;
+  function _getForce(projectRoot, options = {}) {
+    if (!isEnabled()) {
+      debug(`Skipping .env files because EXPO_NO_DOTENV is defined`);
+      return {
+        env: {},
+        files: []
+      };
+    }
     if (!userDefinedEnvironment) {
       userDefinedEnvironment = {
         ...process.env
@@ -63,7 +81,7 @@ function createControlledEnvironment() {
     }
 
     // https://github.com/bkeepers/dotenv#what-other-env-files-can-i-use
-    const dotenvFiles = getFiles(process.env.NODE_ENV);
+    const dotenvFiles = getFiles(process.env.NODE_ENV, options);
     const loadedEnvFiles = [];
     const parsed = {};
 
@@ -110,30 +128,45 @@ function createControlledEnvironment() {
     if (!loadedEnvFiles.length) {
       debug(`No environment variables loaded from .env files.`);
     }
-    return parsed;
+    return {
+      env: parsed,
+      files: loadedEnvFiles
+    };
   }
 
   /** Get the environment variables without mutating the environment. This returns memoized values unless the `force` property is provided. */
-  function get(projectRoot, {
-    force
-  } = {}) {
-    if (!force && memoEnvironment) {
-      return memoEnvironment;
+  function get(projectRoot, options = {}) {
+    if (!isEnabled()) {
+      debug(`Skipping .env files because EXPO_NO_DOTENV is defined`);
+      return {
+        env: {},
+        files: []
+      };
     }
-    memoEnvironment = _getForce(projectRoot);
-    return memoEnvironment;
+    if (!options.force && memo) {
+      return memo;
+    }
+    memo = _getForce(projectRoot, options);
+    return memo;
   }
 
   /** Load environment variables from .env files and mutate the current `process.env` with the results. */
-  function load(projectRoot, {
-    force
-  } = {}) {
-    const env = get(projectRoot, {
-      force
-    });
+  function load(projectRoot, options = {}) {
+    if (!isEnabled()) {
+      debug(`Skipping .env files because EXPO_NO_DOTENV is defined`);
+      return process.env;
+    }
+    const envInfo = get(projectRoot, options);
+    if (!options.force) {
+      const keys = Object.keys(envInfo.env);
+      if (keys.length) {
+        console.log(_chalk().default.gray('env: load', envInfo.files.map(file => path().basename(file)).join(' ')));
+        console.log(_chalk().default.gray('env: export', keys.join(' ')));
+      }
+    }
     process.env = {
       ...process.env,
-      ...env
+      ...envInfo.env
     };
     return process.env;
   }
@@ -143,10 +176,20 @@ function createControlledEnvironment() {
     _getForce
   };
 }
-function getFiles(mode) {
+function getFiles(mode, {
+  silent = false
+} = {}) {
+  if (!isEnabled()) {
+    debug(`Skipping .env files because EXPO_NO_DOTENV is defined`);
+    return [];
+  }
   if (!mode) {
-    console.error(_chalk().default.red('The NODE_ENV environment variable is required but was not specified. Ensure the project is bundled with Expo CLI or NODE_ENV is set.'));
-    console.error(_chalk().default.red('Proceeding without mode-specific .env'));
+    if (silent) {
+      debug('NODE_ENV is not defined, proceeding without mode-specific .env');
+    } else {
+      console.error(_chalk().default.red('The NODE_ENV environment variable is required but was not specified. Ensure the project is bundled with Expo CLI or NODE_ENV is set.'));
+      console.error(_chalk().default.red('Proceeding without mode-specific .env'));
+    }
   }
   if (mode && !['development', 'test', 'production'].includes(mode)) {
     throw new Error(`Environment variable "NODE_ENV=${mode}" is invalid. Valid values are "development", "test", and "production`);

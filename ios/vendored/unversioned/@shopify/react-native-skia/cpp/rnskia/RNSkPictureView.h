@@ -44,8 +44,7 @@ public:
       : RNSkRenderer(requestRedraw), _platformContext(context) {}
 
   bool tryRender(std::shared_ptr<RNSkCanvasProvider> canvasProvider) override {
-    performDraw(canvasProvider);
-    return true;
+    return performDraw(canvasProvider);
   }
 
   void
@@ -56,19 +55,14 @@ public:
   void setPicture(std::shared_ptr<jsi::HostObject> picture) {
     if (picture == nullptr) {
       _picture = nullptr;
-      return;
+    } else {
+      _picture = std::dynamic_pointer_cast<JsiSkPicture>(picture);
     }
-
-    _picture = std::dynamic_pointer_cast<JsiSkPicture>(picture);
     _requestRedraw();
   }
 
 private:
-  void performDraw(std::shared_ptr<RNSkCanvasProvider> canvasProvider) {
-    if (_picture == nullptr) {
-      return;
-    }
-
+  bool performDraw(std::shared_ptr<RNSkCanvasProvider> canvasProvider) {
     canvasProvider->renderToCanvas([=](SkCanvas *canvas) {
       // Make sure to scale correctly
       auto pd = _platformContext->getPixelDensity();
@@ -76,10 +70,13 @@ private:
       canvas->save();
       canvas->scale(pd, pd);
 
-      canvas->drawPicture(_picture->getObject());
+      if (_picture != nullptr) {
+        canvas->drawPicture(_picture->getObject());
+      }
 
       canvas->restore();
     });
+    return true;
   }
 
   std::shared_ptr<RNSkPlatformContext> _platformContext;
@@ -109,7 +106,6 @@ public:
           // Clear picture
           std::static_pointer_cast<RNSkPictureRenderer>(getRenderer())
               ->setPicture(nullptr);
-          requestRedraw();
           continue;
         } else if (prop.second.getType() !=
                    RNJsi::JsiWrapperValueType::HostObject) {
@@ -121,9 +117,6 @@ public:
         // Save picture
         std::static_pointer_cast<RNSkPictureRenderer>(getRenderer())
             ->setPicture(prop.second.getAsHostObject());
-
-        // Request redraw
-        requestRedraw();
       }
     }
   }

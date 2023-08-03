@@ -10,6 +10,27 @@
 
 ### 💡 Others
 
+## 14.4.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 14.4.0 — 2023-07-28
+
+_This version does not introduce any user-facing changes._
+
+## 14.3.2 - 2023-07-23
+
+### 💡 Others
+
+- On Android, restore behavior from [#22658](https://github.com/expo/expo/pull/22658). ([#23617](https://github.com/expo/expo/pull/23617) by [@alanhughes](https://github.com/alanjhughes)) ([#22658](https://github.com/expo/expo/pull/22658), [#23617](https://github.com/expo/expo/pull/23617) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 14.3.1 - 2023-07-04
+
+### 🐛 Bug fixes
+
+- Fix manifest merger build fail on Android. ([#23191](https://github.com/expo/expo/pull/23191) by [@alexandrius](https://github.com/alexandrius))
+- [Android] Fix backported photo picker crashing with null intent. ([#23224](https://github.com/expo/expo/pull/23224) by [@thespacemanatee](https://github.com/thespacemanatee))
+
 ## 14.3.0 — 2023-06-13
 
 ### 🎉 New features

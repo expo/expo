@@ -286,13 +286,10 @@ class UpdatesController private constructor(
         }
 
         override fun onRemoteCheckForUpdateFinished(result: LoaderTask.RemoteCheckResult) {
-          var event = UpdatesStateEvent.CheckComplete()
-          if (result.manifest != null) {
-            event = UpdatesStateEvent.CheckCompleteWithUpdate(
-              result.manifest
-            )
-          } else if (result.isRollBackToEmbedded == true) {
-            event = UpdatesStateEvent.CheckCompleteWithRollback()
+          val event = when (result) {
+            is LoaderTask.RemoteCheckResult.NoUpdateAvailable -> UpdatesStateEvent.CheckCompleteUnavailable()
+            is LoaderTask.RemoteCheckResult.UpdateAvailable -> UpdatesStateEvent.CheckCompleteWithUpdate(result.manifest)
+            is LoaderTask.RemoteCheckResult.RollBackToEmbedded -> UpdatesStateEvent.CheckCompleteWithRollback()
           }
           stateMachine.processEvent(event)
         }
@@ -378,7 +375,7 @@ class UpdatesController private constructor(
               params.putString("manifestString", update.manifest.toString())
               sendLegacyUpdateEventToJS(UPDATE_AVAILABLE_EVENT, params)
               stateMachine.processEvent(
-                UpdatesStateEvent.DownloadCompleteWithUpdate(update.manifest)
+                UpdatesStateEvent.DownloadCompleteWithUpdate(update.manifest!!)
               )
             }
             RemoteUpdateStatus.NO_UPDATE_AVAILABLE -> {

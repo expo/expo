@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 12.4.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 12.4.0 — 2023-07-28
+
+### 💡 Others
+
+- Use absolute motion reference frame to calculate device rotation if available on iOS. ([#23738](https://github.com/expo/expo/pull/23738) by [@jkaufman](https://github.com/jkaufman))
+
 ## 12.3.0 — 2023-06-21
 
 ### 🐛 Bug fixes

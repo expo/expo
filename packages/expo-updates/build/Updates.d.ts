@@ -1,11 +1,8 @@
-import { EventSubscription } from 'fbemitter';
-import { LocalAssets, Manifest, UpdateCheckResult, UpdateEvent, UpdateFetchResult, UpdatesCheckAutomaticallyValue, UpdatesLogEntry } from './Updates.types';
-export * from './Updates.types';
+import { LocalAssets, Manifest, UpdateCheckResult, UpdateFetchResult, UpdatesCheckAutomaticallyValue, UpdatesLogEntry, UpdatesNativeStateMachineContext } from './Updates.types';
 /**
- * The UUID that uniquely identifies the currently running update if `expo-updates` is enabled. The
+ * The UUID that uniquely identifies the currently running update. The
  * UUID is represented in its canonical string form (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`) and
- * will always use lowercase letters. In development mode, or any other environment in which
- * `expo-updates` is disabled, this value is `null`.
+ * will always use lowercase letters. This value is `null` when running in a local development environment or any other environment where `expo-updates` is disabled.
  */
 export declare const updateId: string | null;
 /**
@@ -14,7 +11,9 @@ export declare const updateId: string | null;
  */
 export declare const releaseChannel: string;
 /**
- * The channel name of the current build, if configured for use with EAS Update. Null otherwise.
+ * The channel name of the current build, if configured for use with EAS Update. `null` otherwise.
+ *
+ * Expo Go and development builds are not set to a specific channel and can run any updates compatible with their native runtime. Therefore, this value will always be `null` when running an update on Expo Go or a development build.
  */
 export declare const channel: string | null;
 /**
@@ -162,14 +161,7 @@ export declare function fetchUpdateAsync(): Promise<UpdateFetchResult>;
  */
 export declare function clearUpdateCacheExperimentalAsync(_sdkVersion?: string): void;
 /**
- * Adds a callback to be invoked when updates-related events occur (such as upon the initial app
- * load) due to auto-update settings chosen at build-time. See also the
- * [`useUpdateEvents`](#useupdateeventslistener) React hook.
- *
- * @param listener A function that will be invoked with an [`UpdateEvent`](#updateevent) instance
- * and should not return any value.
- * @return An `EventSubscription` object on which you can call `remove()` to unsubscribe the
- * listener.
+ * @hidden
  */
-export declare function addListener(listener: (event: UpdateEvent) => void): EventSubscription;
+export declare function getNativeStateMachineContextAsync(): Promise<UpdatesNativeStateMachineContext>;
 //# sourceMappingURL=Updates.d.ts.map

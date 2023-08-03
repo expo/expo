@@ -32,7 +32,7 @@ public protocol AppControllerDelegate: AnyObject {
  */
 @objc(EXUpdatesAppController)
 @objcMembers
-public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelegate, UpdatesStateChangeDelegate {
+public class AppController: NSObject, AppLoaderTaskDelegate, AppLoaderTaskSwiftDelegate, ErrorRecoveryDelegate, UpdatesStateChangeDelegate {
   private static let ErrorDomain = "EXUpdatesAppController"
   private static let EXUpdatesEventName = "Expo.nativeUpdatesEvent"
   private static let EXUpdatesStateChangeEventName = "Expo.nativeUpdatesStateChangeEvent"
@@ -167,6 +167,10 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
       .raise()
     }
 
+    defaultSelectionPolicy = SelectionPolicyFactory.filterAwarePolicy(
+      withRuntimeVersion: UpdatesUtils.getRuntimeVersion(withConfig: config)
+    )
+
     resetSelectionPolicyToDefault()
   }
 
@@ -267,6 +271,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
       delegateQueue: controllerQueue
     )
     loaderTask!.delegate = self
+    loaderTask!.swiftDelegate = self
     loaderTask!.start()
   }
 
@@ -345,18 +350,21 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     return true
   }
 
-  public func didStartCheckingForRemoteUpdate() {
+  public func appLoaderTaskDidStartCheckingForRemoteUpdate(_: AppLoaderTask) {
     stateMachine?.processEvent(UpdatesStateEventCheck())
   }
 
-  public func didFinishCheckingForRemoteUpdate(_ body: [String: Any]) {
-    let manifest: [String: Any]? = body["manifest"] as? [String: Any]
-    let rollback: Bool = body["isRollBackToEmbedded"] as? Bool ?? false
-    var event: UpdatesStateEvent = UpdatesStateEventCheckComplete()
-    if manifest != nil {
+  public func appLoaderTask(_: AppLoaderTask, didFinishCheckingForRemoteUpdateWithRemoteCheckResult remoteCheckResult: RemoteCheckResult) {
+    let event: UpdatesStateEvent
+    switch remoteCheckResult {
+    case .noUpdateAvailable:
+      event = UpdatesStateEventCheckComplete()
+    case .updateAvailable(let manifest):
       event = UpdatesStateEventCheckCompleteWithUpdate(manifest: manifest)
-    } else if rollback {
+    case .rollBackToEmbedded:
       event = UpdatesStateEventCheckCompleteWithRollback()
+    case .error(let error):
+      event = UpdatesStateEventCheckError(message: error.localizedDescription)
     }
     stateMachine?.processEvent(event)
   }
@@ -439,12 +447,9 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
       )
       // Since errors can happen through a number of paths, we do these checks
       // to make sure the state machine is valid
-      if stateMachine?.state == .idle {
-        stateMachine?.processEvent(UpdatesStateEventDownload())
-        stateMachine?.processEvent(UpdatesStateEventDownloadError(message: error.localizedDescription))
-      } else if stateMachine?.state == .checking {
+      if stateMachine?.state == .checking {
         stateMachine?.processEvent(UpdatesStateEventCheckError(message: error.localizedDescription))
-      } else {
+      } else if stateMachine?.state == .downloading {
         // .downloading
         stateMachine?.processEvent(UpdatesStateEventDownloadError(message: error.localizedDescription))
       }
@@ -569,10 +574,14 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     mutableBody["type"] = eventType
 
     guard let bridge = bridge else {
-      eventsToSendToJS.append(mutableBody)
+      eventsToSendToJS.append([
+        "eventName": eventName,
+        "mutableBody": mutableBody
+      ])
       logger.warn(message: "EXUpdates: Could not emit event: name = \(eventName), type = \(eventType). Event will be emitted when the bridge is available", code: .jsRuntimeError)
       return
     }
+    logger.debug(message: "sendEventToBridge: \(eventName), \(mutableBody)")
     bridge.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [eventName, mutableBody])
   }
 
@@ -580,8 +589,13 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     guard let bridge = bridge else {
       return
     }
-    eventsToSendToJS.forEach { mutableBody in
-      bridge.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [AppController.EXUpdatesEventName, mutableBody])
+    eventsToSendToJS.forEach { event in
+      guard let eventName = event["eventName"] as? String,
+        let mutableBody = event["mutableBody"] as? [String: Any?] else {
+        return
+      }
+      logger.debug(message: "sendEventToBridge: \(eventName), \(mutableBody)")
+      bridge.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [eventName, mutableBody])
     }
     eventsToSendToJS = []
   }

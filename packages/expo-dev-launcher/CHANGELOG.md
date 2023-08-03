@@ -10,6 +10,66 @@
 
 ### 💡 Others
 
+## 3.0.0 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 2.4.9 — 2023-07-26
+
+### 🐛 Bug fixes
+
+- Fixed "Can't toast on a thread that has not called Looper.prepare()" Exception when enabling "Sampling Profiler on init" ([#23706](https://github.com/expo/expo/pull/23706) by [@hirbod](https://github.com/hirbod))
+
+## 2.4.8 - 2023-07-12
+
+### 💡 Others
+
+- Added support for React Native 0.72.3 ([#23502](https://github.com/expo/expo/pull/23502) by [@tsapeta](https://github.com/tsapeta))
+
+## 2.4.7 - 2023-07-10
+
+_This version does not introduce any user-facing changes._
+
+## 2.4.6 - 2023-07-04
+
+_This version does not introduce any user-facing changes._
+
+## 2.4.5 - 2023-06-30
+
+### 🐛 Bug fixes
+
+- Enable network inspector by default even the `EX_DEV_CLIENT_NETWORK_INSPECTOR` property is not defined. ([#23185](https://github.com/expo/expo/pull/23185) by [@kudo](https://github.com/kudo))
+- Fixed iOS build errors in `use_frameworks!` mode. ([#23218](https://github.com/expo/expo/pull/23218) by [@kudo](https://github.com/kudo))
+- Added support for React Native 0.72.1. ([#23262](https://github.com/expo/expo/pull/23262) by [@kudo](https://github.com/kudo))
+
+## 2.4.4 — 2023-06-28
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed network inspector losing events when the dev-server listening on port other than 8081. ([#23122](https://github.com/expo/expo/pull/23122) by [@kudo](https://github.com/kudo))
+- Fixed no updates showing in the Extensions tab. ([#23163](https://github.com/expo/expo/pull/23163) by [@kudo](https://github.com/kudo))
+
+## 2.4.3 — 2023-06-27
+
+### 🎉 New features
+
+- Add support for SSO users. ([#22873](https://github.com/expo/expo/pull/22873) by [@wschurman](https://github.com/wschurman))
+- Update user avatars to use the same logic as the website. ([#23114](https://github.com/expo/expo/pull/23114) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 💡 Others
+
+- Upgrade `semver` lib. ([#23113](https://github.com/expo/expo/pull/23113) by [@felipemillhouse](https://github.com/felipemillhouse))
+
+## 2.4.2 — 2023-06-23
+
+### 🐛 Bug fixes
+
+- Fixed compatibility issue with react-native-reanimated on iOS. ([#23057](https://github.com/expo/expo/pull/23057) by [@kudo](https://github.com/kudo))
+
+## 2.4.1 — 2023-06-22
+
+_This version does not introduce any user-facing changes._
+
 ## 2.4.0 — 2023-06-21
 
 ### 📚 3rd party library updates

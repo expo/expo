@@ -10,6 +10,22 @@
 
 ### 💡 Others
 
+## 12.4.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 12.4.0 — 2023-07-28
+
+### 🎉 New features
+
+- Added a config plugin to automatically set NSFaceIDUsageDescription on iOS. ([#23268](https://github.com/expo/expo/pull/23268) by [@aleqsio](https://github.com/aleqsio))
+
+## 12.3.1 - 2023-07-04
+
+### 💡 Others
+
+- Added a check for the `NSFaceIDUsageDescription` key in the `set` function. ([#23275](https://github.com/expo/expo/pull/23275) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 12.3.0 — 2023-06-13
 
 ### 🐛 Bug fixes

@@ -10,6 +10,7 @@ import {
   BranchIcon,
   Cube02Icon,
   Dataflow03Icon,
+  DataIcon,
 } from '@expo/styleguide-icons';
 
 export const entries = [
@@ -32,6 +33,11 @@ export const entries = [
     label: 'Project Overview',
     url: 'https://expo.dev/accounts/[account]/projects/[project]',
     Icon: Grid01Icon,
+  },
+  {
+    label: 'Project Insights',
+    url: 'https://expo.dev/accounts/[account]/projects/[project]/insights',
+    Icon: DataIcon,
   },
   {
     label: 'Project Deployments',

@@ -10,6 +10,28 @@
 
 ### 💡 Others
 
+## 0.8.1 — 2023-08-02
+
+### 🛠 Breaking changes
+
+- Drop support for `logUrl` which sent console logs to the legacy `expo-cli`. ([#18596](https://github.com/expo/expo/pull/18596) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.8.0 — 2023-07-28
+
+### 🎉 New features
+
+- [iOS] Expose getMetadata method to match android. ([#23445](https://github.com/expo/expo/pull/23445) by [@wschurman](https://github.com/wschurman))
+
+### 🐛 Bug fixes
+
+- [iOS] Fix error in handling nested array. ([#23562](https://github.com/expo/expo/pull/23562) by [@douglowder](https://github.com/douglowder))
+
+## 0.7.1 - 2023-06-30
+
+### 🐛 Bug fixes
+
+- Fixed iOS build errors in `use_frameworks!` mode. ([#23218](https://github.com/expo/expo/pull/23218) by [@kudo](https://github.com/kudo))
+
 ## 0.7.0 — 2023-06-21
 
 ### 📚 3rd party library updates

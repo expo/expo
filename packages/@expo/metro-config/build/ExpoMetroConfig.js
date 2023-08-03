@@ -143,9 +143,6 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 
 const debug = require('debug')('expo:metro:config');
-function getProjectBabelConfigFile(projectRoot) {
-  return _resolveFrom().default.silent(projectRoot, './babel.config.js') || _resolveFrom().default.silent(projectRoot, './.babelrc') || _resolveFrom().default.silent(projectRoot, './.babelrc.js');
-}
 function getAssetPlugins(projectRoot) {
   const hashAssetFilesPath = _resolveFrom().default.silent(projectRoot, 'expo-asset/tools/hashAssetFiles');
   if (!hashAssetFilesPath) {
@@ -177,30 +174,23 @@ function getDefaultConfig(projectRoot, options = {}) {
   const sourceExtsConfig = {
     isTS: true,
     isReact: true,
-    isModern: false
+    isModern: true
   };
   const sourceExts = (0, _paths().getBareExtensions)([], sourceExtsConfig);
 
   // Add support for cjs (without platform extensions).
   sourceExts.push('cjs');
+  const reanimatedVersion = getPkgVersion(projectRoot, 'react-native-reanimated');
   let sassVersion = null;
   if (options.isCSSEnabled) {
-    sassVersion = getSassVersion(projectRoot);
+    sassVersion = getPkgVersion(projectRoot, 'sass');
     // Enable SCSS by default so we can provide a better error message
     // when sass isn't installed.
     sourceExts.push('scss', 'sass', 'css');
   }
-  const envFiles = runtimeEnv().getFiles(process.env.NODE_ENV);
-  const babelConfigPath = getProjectBabelConfigFile(projectRoot);
-  const isCustomBabelConfigDefined = !!babelConfigPath;
-  const resolverMainFields = [];
-
-  // Disable `react-native` in exotic mode, since library authors
-  // use it to ship raw application code to the project.
-  if (!isExotic) {
-    resolverMainFields.push('react-native');
-  }
-  resolverMainFields.push('browser', 'main');
+  const envFiles = runtimeEnv().getFiles(process.env.NODE_ENV, {
+    silent: true
+  });
   const pkg = (0, _config().getPackageJson)(projectRoot);
   const watchFolders = (0, _getWatchFolders().getWatchFolders)(projectRoot);
   // TODO: nodeModulesPaths does not work with the new Node.js package.json exports API, this causes packages like uuid to fail. Disabling for now.
@@ -213,13 +203,12 @@ function getDefaultConfig(projectRoot, options = {}) {
     } catch {}
     console.log(`- Extensions: ${sourceExts.join(', ')}`);
     console.log(`- React Native: ${reactNativePath}`);
-    console.log(`- Babel config: ${babelConfigPath || 'babel-preset-expo (default)'}`);
-    console.log(`- Resolver Fields: ${resolverMainFields.join(', ')}`);
     console.log(`- Watch Folders: ${watchFolders.join(', ')}`);
     console.log(`- Node Module Paths: ${nodeModulesPaths.join(', ')}`);
     console.log(`- Exotic: ${isExotic}`);
     console.log(`- Env Files: ${envFiles}`);
     console.log(`- Sass: ${sassVersion}`);
+    console.log(`- Reanimated: ${reanimatedVersion}`);
     console.log();
   }
   const {
@@ -234,7 +223,9 @@ function getDefaultConfig(projectRoot, options = {}) {
   const metroConfig = mergeConfig(metroDefaultValues, {
     watchFolders,
     resolver: {
-      resolverMainFields,
+      // unstable_conditionsByPlatform: { web: ['browser'] },
+      unstable_conditionNames: ['require', 'import', 'react-native'],
+      resolverMainFields: ['react-native', 'browser', 'main'],
       platforms: ['ios', 'android'],
       assetExts: metroDefaultValues.resolver.assetExts.concat(
       // Add default support for `expo-image` file types.
@@ -248,7 +239,9 @@ function getDefaultConfig(projectRoot, options = {}) {
     },
     serializer: {
       getModulesRunBeforeMainModule: () => {
-        const preModules = [];
+        const preModules = [
+        // MUST be first
+        require.resolve(_path().default.join(reactNativePath, 'Libraries/Core/InitializeCore'))];
 
         // We need to shift this to be the first module so web Fast Refresh works as expected.
         // This will only be applied if the module is installed and imported somewhere in the bundle already.
@@ -256,7 +249,6 @@ function getDefaultConfig(projectRoot, options = {}) {
         if (metroRuntime) {
           preModules.push(metroRuntime);
         }
-        preModules.push(require.resolve(_path().default.join(reactNativePath, 'Libraries/Core/InitializeCore')));
         return preModules;
       },
       getPolyfills: () => require(_path().default.join(reactNativePath, 'rn-get-polyfills'))()
@@ -280,16 +272,14 @@ function getDefaultConfig(projectRoot, options = {}) {
       postcssHash: (0, _postcss().getPostcssConfigHash)(projectRoot),
       browserslistHash: pkg.browserslist ? (0, _metroCache().stableHash)(JSON.stringify(pkg.browserslist)).toString('hex') : null,
       sassVersion,
+      // Ensure invalidation when the version changes due to the Babel plugin.
+      reanimatedVersion,
       // `require.context` support
       unstable_allowRequireContext: true,
       allowOptionalDependencies: true,
-      babelTransformerPath: isExotic ? require.resolve('./transformer/metro-expo-exotic-babel-transformer') : isCustomBabelConfigDefined ?
-      // If the user defined a babel config file in their project,
-      // then use the default transformer.
-      // Try to use the project copy before falling back on the global version
-      _resolveFrom().default.silent(projectRoot, 'metro-react-native-babel-transformer') :
-      // Otherwise, use a custom transformer that uses `babel-preset-expo` by default for projects.
-      require.resolve('./transformer/metro-expo-babel-transformer'),
+      babelTransformerPath: isExotic ?
+      // TODO: Combine these into one transformer.
+      require.resolve('./transformer/metro-expo-exotic-babel-transformer') : require.resolve('./babel-transformer'),
       assetRegistryPath: 'react-native/Libraries/Image/AssetRegistry',
       assetPlugins: getAssetPlugins(projectRoot)
     }
@@ -322,16 +312,16 @@ async function loadAsync(projectRoot, {
 // re-export for legacy cases.
 const EXPO_DEBUG = _env2().env.EXPO_DEBUG;
 exports.EXPO_DEBUG = EXPO_DEBUG;
-function getSassVersion(projectRoot) {
-  const sassPkg = _resolveFrom().default.silent(projectRoot, 'sass');
-  if (!sassPkg) return null;
-  const sassPkgJson = findUpPackageJson(sassPkg);
-  if (!sassPkgJson) return null;
-  const pkg = _jsonFile().default.read(sassPkgJson);
-  debug('sass package.json:', sassPkgJson);
-  const sassVersion = pkg.version;
-  if (typeof sassVersion === 'string') {
-    return sassVersion;
+function getPkgVersion(projectRoot, pkgName) {
+  const targetPkg = _resolveFrom().default.silent(projectRoot, pkgName);
+  if (!targetPkg) return null;
+  const targetPkgJson = findUpPackageJson(targetPkg);
+  if (!targetPkgJson) return null;
+  const pkg = _jsonFile().default.read(targetPkgJson);
+  debug(`${pkgName} package.json:`, targetPkgJson);
+  const pkgVersion = pkg.version;
+  if (typeof pkgVersion === 'string') {
+    return pkgVersion;
   }
   return null;
 }

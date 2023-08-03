@@ -32,7 +32,6 @@ import expo.modules.image.records.ImageLoadEvent
 import expo.modules.image.records.ImageProgressEvent
 import expo.modules.image.records.ImageTransition
 import expo.modules.image.records.SourceMap
-import expo.modules.image.svg.SVGSoftwareLayerSetter
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
@@ -151,7 +150,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
 
   var recyclingKey: String? = null
     set(value) {
-      clearViewBeforeChangingSource = value != null && value != field
+      clearViewBeforeChangingSource = field != null && value != null && value != field
       field = value
     }
 
@@ -316,7 +315,12 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
 
         firstView
           .recycleView()
-          ?.clear(requestManager)
+          ?.apply {
+            // The current target is already bound to the view. We don't want to cancel it in that case.
+            if (this != target) {
+              clear(requestManager)
+            }
+          }
 
         configureView(firstView, target, resource, isPlaceholder)
         if (transitionDuration > 0) {
@@ -643,7 +647,6 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       return cachedRequestManager
     }
 
-    private fun createNewRequestManager(activity: Activity): RequestManager =
-      Glide.with(activity).addDefaultRequestListener(SVGSoftwareLayerSetter())
+    private fun createNewRequestManager(activity: Activity): RequestManager = Glide.with(activity)
   }
 }

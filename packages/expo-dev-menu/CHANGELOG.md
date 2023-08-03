@@ -10,6 +10,59 @@
 
 ### 💡 Others
 
+## 4.0.0 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 3.1.9 — 2023-07-26
+
+_This version does not introduce any user-facing changes._
+
+## 3.1.8 - 2023-07-12
+
+### 💡 Others
+
+- Added support for React Native 0.72.3 ([#23502](https://github.com/expo/expo/pull/23502) by [@tsapeta](https://github.com/tsapeta))
+
+## 3.1.7 - 2023-07-10
+
+### 🐛 Bug fixes
+
+- Fixed release build runtime crashes when there is `import 'expo-dev-client'` in JavaScript entry file. ([#23413](https://github.com/expo/expo/pull/23413) by [@kudo](https://github.com/kudo))
+
+## 3.1.6 - 2023-07-04
+
+_This version does not introduce any user-facing changes._
+
+## 3.1.5 - 2023-06-30
+
+### 🐛 Bug fixes
+
+- Fixed the `Cannot read property 'addDevMenuCallbacks' of null` error when registering custom menu item on iOS. ([#23219](https://github.com/expo/expo/pull/23219) by [@kudo](https://github.com/kudo))
+- Fixed iOS build errors in `use_frameworks!` mode. ([#23218](https://github.com/expo/expo/pull/23218) by [@kudo](https://github.com/kudo))
+- Added support for React Native 0.72.1. ([#23262](https://github.com/expo/expo/pull/23262) by [@kudo](https://github.com/kudo))
+
+## 3.1.4 — 2023-06-28
+
+_This version does not introduce any user-facing changes._
+
+## 3.1.3 — 2023-06-27
+
+### 💡 Others
+
+- Upgrade `semver` lib. ([#23113](https://github.com/expo/expo/pull/23113) by [@felipemillhouse](https://github.com/felipemillhouse))
+- Remove unused fonts. ([#23107](https://github.com/expo/expo/pull/23107) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 3.1.2 — 2023-06-23
+
+### 🐛 Bug fixes
+
+- Fixed compatibility issue with react-native-reanimated on iOS. ([#23057](https://github.com/expo/expo/pull/23057) by [@kudo](https://github.com/kudo))
+
+## 3.1.1 — 2023-06-22
+
+_This version does not introduce any user-facing changes._
+
 ## 3.1.0 — 2023-06-21
 
 ### 📚 3rd party library updates

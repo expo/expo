@@ -1,29 +1,20 @@
-import {
-  DeviceEventEmitter,
-  CodedError,
-  NativeModulesProxy,
-  UnavailabilityError,
-} from 'expo-modules-core';
-import { EventEmitter, EventSubscription } from 'fbemitter';
+import { CodedError, NativeModulesProxy, UnavailabilityError } from 'expo-modules-core';
 
 import ExpoUpdates from './ExpoUpdates';
 import {
   LocalAssets,
   Manifest,
   UpdateCheckResult,
-  UpdateEvent,
   UpdateFetchResult,
   UpdatesCheckAutomaticallyValue,
   UpdatesLogEntry,
+  UpdatesNativeStateMachineContext,
 } from './Updates.types';
 
-export * from './Updates.types';
-
 /**
- * The UUID that uniquely identifies the currently running update if `expo-updates` is enabled. The
+ * The UUID that uniquely identifies the currently running update. The
  * UUID is represented in its canonical string form (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`) and
- * will always use lowercase letters. In development mode, or any other environment in which
- * `expo-updates` is disabled, this value is `null`.
+ * will always use lowercase letters. This value is `null` when running in a local development environment or any other environment where `expo-updates` is disabled.
  */
 export const updateId: string | null =
   ExpoUpdates.updateId && typeof ExpoUpdates.updateId === 'string'
@@ -37,7 +28,9 @@ export const updateId: string | null =
 export const releaseChannel: string = ExpoUpdates.releaseChannel ?? 'default';
 
 /**
- * The channel name of the current build, if configured for use with EAS Update. Null otherwise.
+ * The channel name of the current build, if configured for use with EAS Update. `null` otherwise.
+ *
+ * Expo Go and development builds are not set to a specific channel and can run any updates compatible with their native runtime. Therefore, this value will always be `null` when running an update on Expo Go or a development build.
  */
 export const channel: string | null = ExpoUpdates.channel ?? null;
 
@@ -297,43 +290,26 @@ export function clearUpdateCacheExperimentalAsync(_sdkVersion?: string) {
   );
 }
 
-let _emitter: EventEmitter | null;
-
-function _getEmitter(): EventEmitter {
-  if (!_emitter) {
-    _emitter = new EventEmitter();
-    DeviceEventEmitter.addListener('Expo.nativeUpdatesEvent', _emitEvent);
-  }
-  return _emitter;
-}
-
-function _emitEvent(params): void {
-  let newParams = { ...params };
-  if (typeof params === 'string') {
-    newParams = JSON.parse(params);
-  }
-  if (newParams.manifestString) {
-    newParams.manifest = JSON.parse(newParams.manifestString);
-    delete newParams.manifestString;
-  }
-
-  if (!_emitter) {
-    throw new Error(`EventEmitter must be initialized to use from its listener`);
-  }
-  _emitter.emit('Expo.updatesEvent', newParams);
-}
-
 /**
- * Adds a callback to be invoked when updates-related events occur (such as upon the initial app
- * load) due to auto-update settings chosen at build-time. See also the
- * [`useUpdateEvents`](#useupdateeventslistener) React hook.
- *
- * @param listener A function that will be invoked with an [`UpdateEvent`](#updateevent) instance
- * and should not return any value.
- * @return An `EventSubscription` object on which you can call `remove()` to unsubscribe the
- * listener.
+ * @hidden
  */
-export function addListener(listener: (event: UpdateEvent) => void): EventSubscription {
-  const emitter = _getEmitter();
-  return emitter.addListener('Expo.updatesEvent', listener);
+export async function getNativeStateMachineContextAsync(): Promise<UpdatesNativeStateMachineContext> {
+  // Return the current state machine context
+  if (!ExpoUpdates.getNativeStateMachineContextAsync) {
+    throw new UnavailabilityError('Updates', 'getNativeStateMachineContextAsync');
+  }
+  const nativeContext = await ExpoUpdates.getNativeStateMachineContextAsync();
+  if (nativeContext.latestManifestString) {
+    nativeContext.latestManifest = JSON.parse(nativeContext.latestManifestString);
+    delete nativeContext.latestManifestString;
+  }
+  if (nativeContext.downloadedManifestString) {
+    nativeContext.downloadedManifest = JSON.parse(nativeContext.downloadedManifestString);
+    delete nativeContext.downloadedManifestString;
+  }
+  if (nativeContext.lastCheckForUpdateTimeString) {
+    nativeContext.lastCheckForUpdateTime = new Date(nativeContext.lastCheckForUpdateTimeString);
+    delete nativeContext.lastCheckForUpdateTimeString;
+  }
+  return nativeContext;
 }

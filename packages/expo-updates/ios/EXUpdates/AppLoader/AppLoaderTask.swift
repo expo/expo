@@ -2,6 +2,7 @@
 
 // swiftlint:disable closure_body_length
 // swiftlint:disable superfluous_else
+// swiftlint:disable cyclomatic_complexity
 
 // this class uses a ton of implicit non-null properties based on method call order. not worth changing to appease lint
 // swiftlint:disable force_unwrapping
@@ -18,10 +19,7 @@ public protocol AppLoaderTaskDelegate: AnyObject {
    * AppLoaderTask proceed as usual.
    */
   func appLoaderTask(_: AppLoaderTask, didLoadCachedUpdate update: Update) -> Bool
-  func didStartCheckingForRemoteUpdate()
-  func didFinishCheckingForRemoteUpdate(_ body: [String: Any])
   func appLoaderTask(_: AppLoaderTask, didStartLoadingUpdate update: Update?)
-  func appLoaderTask(_: AppLoaderTask, didLoadAsset asset: UpdateAsset, successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int)
   func appLoaderTask(_: AppLoaderTask, didFinishWithLauncher launcher: AppLauncher, isUpToDate: Bool)
   func appLoaderTask(_: AppLoaderTask, didFinishWithError error: Error)
   func appLoaderTask(
@@ -30,6 +28,19 @@ public protocol AppLoaderTaskDelegate: AnyObject {
     update: Update?,
     error: Error?
   )
+}
+
+public enum RemoteCheckResult {
+  case noUpdateAvailable
+  case updateAvailable(manifest: [String: Any])
+  case rollBackToEmbedded
+  case error(error: Error)
+}
+
+public protocol AppLoaderTaskSwiftDelegate: AnyObject {
+  func appLoaderTaskDidStartCheckingForRemoteUpdate(_: AppLoaderTask)
+  func appLoaderTask(_: AppLoaderTask, didFinishCheckingForRemoteUpdateWithRemoteCheckResult remoteCheckResult: RemoteCheckResult)
+  func appLoaderTask(_: AppLoaderTask, didLoadAsset asset: UpdateAsset, successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int)
 }
 
 @objc(EXUpdatesBackgroundUpdateStatus)
@@ -64,6 +75,7 @@ public final class AppLoaderTask: NSObject {
   private static let ErrorDomain = "EXUpdatesAppLoaderTask"
 
   public weak var delegate: AppLoaderTaskDelegate?
+  public weak var swiftDelegate: AppLoaderTaskSwiftDelegate?
 
   private let config: UpdatesConfig
   private let database: UpdatesDatabase
@@ -328,9 +340,9 @@ public final class AppLoaderTask: NSObject {
       completionQueue: loaderTaskQueue
     )
 
-    if let delegate = self.delegate {
+    if let swiftDelegate = self.swiftDelegate {
       self.delegateQueue.async {
-        delegate.didStartCheckingForRemoteUpdate()
+        swiftDelegate.appLoaderTaskDidStartCheckingForRemoteUpdate(self)
       }
     }
     remoteAppLoader!.loadUpdate(
@@ -340,17 +352,23 @@ public final class AppLoaderTask: NSObject {
         switch updateDirective {
         case is NoUpdateAvailableUpdateDirective:
           self.isUpToDate = true
-          if let delegate = self.delegate {
+          if let swiftDelegate = self.swiftDelegate {
             self.delegateQueue.async {
-              delegate.didFinishCheckingForRemoteUpdate([:])
+              swiftDelegate.appLoaderTask(self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.noUpdateAvailable)
             }
           }
           return false
         case is RollBackToEmbeddedUpdateDirective:
           self.isUpToDate = false
+
+          if let swiftDelegate = self.swiftDelegate {
+            self.delegateQueue.async {
+              swiftDelegate.appLoaderTask(self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.rollBackToEmbedded)
+            }
+          }
+
           if let delegate = self.delegate {
             self.delegateQueue.async {
-              delegate.didFinishCheckingForRemoteUpdate(["isRollBackToEmbedded": true])
               delegate.appLoaderTask(self, didStartLoadingUpdate: nil)
             }
           }
@@ -364,9 +382,9 @@ public final class AppLoaderTask: NSObject {
       guard let update = updateResponse.manifestUpdateResponsePart?.updateManifest else {
         // No response, so no update available
         self.isUpToDate = true
-        if let delegate = self.delegate {
+        if let swiftDelegate = self.swiftDelegate {
           self.delegateQueue.async {
-            delegate.didFinishCheckingForRemoteUpdate([:])
+            swiftDelegate.appLoaderTask(self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.noUpdateAvailable)
           }
         }
         return false
@@ -379,9 +397,19 @@ public final class AppLoaderTask: NSObject {
       ) {
         // got a response, and it is new so should be downloaded
         self.isUpToDate = false
+        if let swiftDelegate = self.swiftDelegate {
+          self.delegateQueue.async {
+            swiftDelegate.appLoaderTask(
+              self,
+              didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.updateAvailable(
+                manifest: update.manifest.rawManifestJSON()
+              )
+            )
+          }
+        }
+
         if let delegate = self.delegate {
           self.delegateQueue.async {
-            delegate.didFinishCheckingForRemoteUpdate(["manifest": update.manifest.rawManifestJSON()])
             delegate.appLoaderTask(self, didStartLoadingUpdate: update)
           }
         }
@@ -389,17 +417,17 @@ public final class AppLoaderTask: NSObject {
       } else {
         // got a response, but we already have it
         self.isUpToDate = true
-        if let delegate = self.delegate {
+        if let swiftDelegate = self.swiftDelegate {
           self.delegateQueue.async {
-            delegate.didFinishCheckingForRemoteUpdate([:])
+            swiftDelegate.appLoaderTask(self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.noUpdateAvailable)
           }
         }
         return false
       }
     } asset: { asset, successfulAssetCount, failedAssetCount, totalAssetCount in
-      if let delegate = self.delegate {
+      if let swiftDelegate = self.swiftDelegate {
         self.delegateQueue.async {
-          delegate.appLoaderTask(
+          swiftDelegate.appLoaderTask(
             self,
             didLoadAsset: asset,
             successfulAssetCount: successfulAssetCount,
@@ -411,6 +439,11 @@ public final class AppLoaderTask: NSObject {
     } success: { updateResponse in
       completion(nil, updateResponse)
     } error: { error in
+      if let swiftDelegate = self.swiftDelegate {
+        self.delegateQueue.async {
+          swiftDelegate.appLoaderTask(self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.error(error: error))
+        }
+      }
       completion(error, nil)
     }
   }
@@ -423,71 +456,19 @@ public final class AppLoaderTask: NSObject {
     loaderTaskQueue.async {
       self.stopTimer()
 
-      let updateBeingLaunched = updateResponse?.manifestUpdateResponsePart?.updateManifest
-
-      // If directive is to roll-back to the embedded update and there is an embedded update,
-      // we need to update embedded update in the DB with the newer commitTime from the message so that
-      // the selection policy will choose it. That way future updates can continue to be applied
-      // over this roll back, but older ones won't.
-      // The embedded update is guaranteed to be in the DB from the earlier [EmbeddedAppLoader] call in this task.
-      if let rollBackDirective = updateResponse?.directiveUpdateResponsePart?.updateDirective as? RollBackToEmbeddedUpdateDirective {
-        self.processRollBackToEmbeddedDirective(rollBackDirective, manifestFilters: updateResponse?.responseHeaderData?.manifestFilters, error: error)
-      } else {
-        self.launchUpdate(updateBeingLaunched, error: error)
+      RemoteAppLoader.processSuccessLoaderResult(
+        config: self.config,
+        database: self.database,
+        selectionPolicy: self.selectionPolicy,
+        launchedUpdate: self.candidateLauncher?.launchedUpdate,
+        directory: self.directory,
+        loaderTaskQueue: self.loaderTaskQueue,
+        updateResponse: updateResponse,
+        priorError: error
+      ) { updateToLaunch, error, _ in
+        self.launchUpdate(updateToLaunch, error: error)
       }
     }
-  }
-
-  private func processRollBackToEmbeddedDirective(_ updateDirective: RollBackToEmbeddedUpdateDirective, manifestFilters: [String: Any]?, error: Error?) {
-    if !self.config.hasEmbeddedUpdate {
-      launchUpdate(nil, error: error)
-      return
-    }
-
-    guard let embeddedManifest = EmbeddedAppLoader.embeddedManifest(withConfig: self.config, database: self.database) else {
-      launchUpdate(nil, error: error)
-      return
-    }
-
-    if !self.selectionPolicy.shouldLoadRollBackToEmbeddedDirective(
-      updateDirective,
-      withEmbeddedUpdate: embeddedManifest,
-      launchedUpdate: self.candidateLauncher?.launchedUpdate,
-      filters: manifestFilters
-    ) {
-      launchUpdate(nil, error: error)
-      return
-    }
-
-    // update the embedded update commit time in the in-memory embedded update since it is a singleton
-    embeddedManifest.commitTime = updateDirective.commitTime
-
-    self.embeddedAppLoader = EmbeddedAppLoader(
-      config: self.config,
-      database: self.database,
-      directory: self.directory,
-      launchedUpdate: nil,
-      completionQueue: self.loaderTaskQueue
-    )
-    self.embeddedAppLoader!.loadUpdateResponseFromEmbeddedManifest(
-      withCallback: { _ in
-        return true
-      }, asset: { _, _, _, _ in
-      }, success: { updateResponse in
-        do {
-          let update = updateResponse?.manifestUpdateResponsePart?.updateManifest
-          // do this synchronously as it is needed to launch, and we're already on a background dispatch queue so no UI will be blocked
-          try self.database.databaseQueue.sync {
-            try self.database.setUpdateCommitTime(updateDirective.commitTime, onUpdate: update!)
-          }
-          self.launchUpdate(update, error: error)
-        } catch {
-          self.launchUpdate(nil, error: error)
-        }
-      }, error: { embeddedLoaderError in
-        self.launchUpdate(nil, error: embeddedLoaderError)
-      }
-    )
   }
 
   private func launchUpdate(_ updateBeingLaunched: Update?, error: Error?) {
@@ -544,3 +525,4 @@ public final class AppLoaderTask: NSObject {
 // swiftlint:enable closure_body_length
 // swiftlint:enable force_unwrapping
 // swiftlint:enable superfluous_else
+// swiftlint:enable cyclomatic_complexity

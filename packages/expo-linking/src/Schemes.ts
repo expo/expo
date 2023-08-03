@@ -90,10 +90,7 @@ function getNativeAppIdScheme(): string | null {
  * Ensure the user has linked the expo-constants manifest in bare workflow.
  */
 export function hasConstantsManifest(): boolean {
-  return (
-    !!Object.keys(Constants.manifest ?? {}).length ||
-    !!Object.keys(Constants.manifest2 ?? {}).length
-  );
+  return !!Object.keys(Constants.expoConfig ?? {}).length;
 }
 
 // @docsMissing

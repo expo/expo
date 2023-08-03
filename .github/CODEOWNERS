@@ -36,7 +36,7 @@
 /packages/expo-firebase-analytics               @brentvatne
 /packages/expo-firebase-recaptcha               @brentvatne
 /packages/expo-font                             @tsapeta
-/packages/expo-gl                               @tsapeta @wkozyra95
+/packages/expo-gl                               @tsapeta
 /packages/expo-haptics                          @lukmccall
 /packages/expo-image                            @lukmccall @tsapeta @aleqsio
 /packages/expo-image-manipulator                @lukmccall
@@ -74,7 +74,6 @@
 /packages/expo-standard-web-crypto              @EvanBacon
 /packages/expo-status-bar                       @brentvatne
 /packages/expo-store-review                     @EvanBacon
-/packages/expo-stories                          @bycedric @EvanBacon
 /packages/expo-structured-headers               @douglowder
 /packages/expo-system-ui                        @EvanBacon
 /packages/expo-task-manager                     @tsapeta @bycedric
@@ -89,6 +88,6 @@
 /packages/jest-expo-puppeteer                   @ide @EvanBacon
 /packages/jest-expo                             @brentvatne @EvanBacon
 /tools                                          @tsapeta
-/docs                                           @Simek @amandeepmittal @kbrandwijk
+/docs                                           @Simek @amandeepmittal
 /.github/workflows                              @tsapeta @brentvatne @kudo
 /.github/workflows/cli.yml                      @EvanBacon @bycedric

@@ -1,3 +1,3 @@
-import { NativeModulesProxy } from 'expo-modules-core';
-export default NativeModulesProxy.ExpoImageManipulator || {};
+import { requireNativeModule } from 'expo-modules-core';
+export default requireNativeModule('ExpoImageManipulator');
 //# sourceMappingURL=ExpoImageManipulator.js.map
