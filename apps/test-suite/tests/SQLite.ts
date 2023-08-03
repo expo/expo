@@ -563,11 +563,7 @@ export function test(t) {
         await db.execAsync([{ sql: 'create table foo (a primary key, b);', args: [] }], false);
         await db.execAsync([{ sql: 'select crsql_as_crr("foo");', args: [] }], false);
         await db.execAsync([{ sql: 'insert into foo (a,b) values (1,2);', args: [] }], false);
-        const result = await db.execAsync(
-          [{ sql: 'select * from crsql_changes;', args: [] }],
-          false
-        );
-        console.log('ooxx r', JSON.stringify(result, false, 2));
+        await db.execAsync([{ sql: 'select * from crsql_changes;', args: [] }], false);
       });
 
       t.it('should support Promise.all', async () => {
