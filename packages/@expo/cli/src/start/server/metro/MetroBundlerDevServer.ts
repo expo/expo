@@ -44,7 +44,7 @@ import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { invalidateManifestCache, refetchManifest } from './fetchRouterManifest';
-import { rebundleApiRoute } from './fetchServerRoutes';
+import { getApiRoutesForDirectory, rebundleApiRoute } from './fetchServerRoutes';
 import { instantiateMetroAsync } from './instantiateMetro';
 import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
@@ -89,15 +89,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const devServerUrl = `http://localhost:${this.getInstance()?.location.port}`;
 
-    function getRouteFiles() {
-      // TODO: Cache this
-      return globSync('**/*+api.@(ts|tsx|js|jsx)', {
-        cwd: appDir,
-        absolute: true,
-      });
-    }
-
-    const files = getRouteFiles();
+    const files = getApiRoutesForDirectory(appDir);
 
     const output: Record<string, string> = {};
 
@@ -433,7 +425,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             if (isApiRoute) {
               debug(`[expo-cli] ${op} ${filepath}`);
               if (op === 'change' || op === 'add') {
-                rebundleApiRoute(this.projectRoot, filepath, options);
+                rebundleApiRoute(this.projectRoot, filepath, {
+                  ...options,
+                  appDir,
+                });
               }
 
               if (op === 'delete') {

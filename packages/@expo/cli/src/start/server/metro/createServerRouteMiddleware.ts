@@ -18,7 +18,7 @@ import {
   refetchManifest,
 } from './fetchRouterManifest';
 import { bundleApiRoute, eagerBundleApiRoutes } from './fetchServerRoutes';
-import { getErrorOverlayHtmlAsync, logMetroErrorAsync } from './metroErrorInterface';
+import { getErrorOverlayHtmlAsync, logMetroError, logMetroErrorAsync } from './metroErrorInterface';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
@@ -188,9 +188,11 @@ export function createRouteHandlerMiddleware(
         res.statusCode = 500;
         res.end();
       }
-    } catch (error) {
-      // TODO: Symbolicate error stack
-      console.error(error);
+    } catch (error: any) {
+      if (error instanceof Error) {
+        logMetroError(projectRoot, { error });
+      }
+
       res.statusCode = 500;
       res.end();
     }

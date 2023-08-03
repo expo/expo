@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { sync as globSync } from 'glob';
-import path from 'path';
 
 import { requireFileContentsWithMetro } from '../getStaticRenderFunctions';
 import { logMetroErrorAsync } from './metroErrorInterface';
@@ -14,10 +13,16 @@ const debug = require('debug')('expo:server-routes') as typeof console.log;
 
 const pendingRouteOperations = new Map<string, Promise<string | null>>();
 
+export type ApiRouteOptions = {
+  mode?: string;
+  appDir: string;
+  port?: number;
+};
+
 export async function rebundleApiRoute(
   projectRoot: string,
   filepath: string,
-  options: { mode?: string; port?: number }
+  options: ApiRouteOptions
 ) {
   pendingRouteOperations.delete(filepath);
   return bundleApiRoute(projectRoot, filepath, options);
@@ -26,7 +31,7 @@ export async function rebundleApiRoute(
 export async function bundleApiRoute(
   projectRoot: string,
   filepath: string,
-  options: { mode?: string; port?: number }
+  options: ApiRouteOptions
 ): Promise<string | null | undefined> {
   if (pendingRouteOperations.has(filepath)) {
     return pendingRouteOperations.get(filepath);
@@ -36,7 +41,7 @@ export async function bundleApiRoute(
 
   async function bundleAsync() {
     try {
-      debug('Check API route:', path.join(projectRoot, 'app'), filepath);
+      debug('Check API route:', options.appDir, filepath);
 
       const middleware = await requireFileContentsWithMetro(projectRoot, devServerUrl, filepath, {
         minify: options.mode === 'production',
@@ -62,22 +67,17 @@ export async function bundleApiRoute(
   return route;
 }
 
-export async function eagerBundleApiRoutes(
-  projectRoot: string,
-  options: { mode?: string; port?: number }
-) {
-  const appDir = path.join(
-    projectRoot,
-    // TODO: Support other directories via app.json
-    'app'
+export async function eagerBundleApiRoutes(projectRoot: string, options: ApiRouteOptions) {
+  return Promise.all(
+    getApiRoutesForDirectory(options.appDir).map((filepath) =>
+      bundleApiRoute(projectRoot, filepath, options)
+    )
   );
+}
 
-  const routes = globSync('**/*+api.@(ts|tsx|js|jsx)', {
-    cwd: appDir,
+export function getApiRoutesForDirectory(cwd: string) {
+  return globSync('**/*+api.@(ts|tsx|js|jsx)', {
+    cwd,
     absolute: true,
   });
-
-  const promises = routes.map(async (filepath) => bundleApiRoute(projectRoot, filepath, options));
-
-  await Promise.all(promises);
 }

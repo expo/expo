@@ -73,7 +73,7 @@ export async function fetchManifest(
     try {
       // Get the serialized manifest
       results = await getManifest();
-    } catch (error) {
+    } catch (error: any) {
       if (!(error instanceof SilentError)) {
         // This can throw if there are any top-level errors in any files when bundling.
         debug('Error while bundling manifest:', error);
@@ -101,7 +101,7 @@ export async function fetchManifest(
         regex: new RegExp(value.regex),
       };
     });
-    console.log('manifest', results);
+    // console.log('manifest', results);
     return { manifest: results };
   }
 
