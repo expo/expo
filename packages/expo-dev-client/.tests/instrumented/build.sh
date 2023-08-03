@@ -2,7 +2,7 @@
 
 # Android
 
-npx react-native bundle \
+npx expo export:embed \
     --platform android \
     --dev false \
     --entry-file .tests/instrumented/app/index.js \
