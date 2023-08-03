@@ -305,7 +305,7 @@ class ClipboardModuleSpec: ExpoSpec {
 }
 
 // TODO: (barthap) Replace this with built-in beFailure() when upgraded to Nimble 10.0
-func beFailure<Success, Failure, T: Exception>(exception: T.Type) -> Predicate<Result<Success, Failure>> {
+func beFailure<Success, Failure, T: Exception>(exception: T.Type) -> Nimble.Predicate<Result<Success, Failure>> {
   return Predicate.simple("be \(exception)") { actualExpression in
     guard let actual = try actualExpression.evaluate(),
           case let .failure(error) = actual,
