@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Change documentation to refer to a correct replacement method in a deprecated field.
+
 ## 14.3.0 — 2023-06-21
 
 ### 🎉 New features
