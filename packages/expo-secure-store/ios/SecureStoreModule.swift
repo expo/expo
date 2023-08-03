@@ -17,20 +17,22 @@ public final class SecureStoreModule: Module {
     ])
 
     AsyncFunction("getValueWithKeyAsync") { (key: String, options: SecureStoreOptions) -> String? in
+      return try get(with: key, options: options)
+    }
+
+    Function("getValueWithKeySync") { (key: String, options: SecureStoreOptions) -> String? in
+      return try get(with: key, options: options)
+    }
+
+    AsyncFunction("setValueWithKeyAsync") { (value: String, key: String, options: SecureStoreOptions) -> Bool in
       guard let key = validate(for: key) else {
         throw InvalidKeyException()
       }
 
-      let data = try searchKeyChain(with: key, options: options)
-
-      guard let data = data else {
-        return nil
-      }
-
-      return String(data: data, encoding: .utf8)
+      return try set(value: value, with: key, options: options)
     }
 
-    AsyncFunction("setValueWithKeyAsync") { (value: String, key: String, options: SecureStoreOptions) -> Bool in
+    Function("setValueWithKeySync") {(value: String, key: String, options: SecureStoreOptions) -> Bool in
       guard let key = validate(for: key) else {
         throw InvalidKeyException()
       }
@@ -42,6 +44,20 @@ public final class SecureStoreModule: Module {
       let searchDictionary = query(with: key, options: options)
       SecItemDelete(searchDictionary as CFDictionary)
     }
+  }
+
+  private func get(with key: String, options: SecureStoreOptions) throws -> String? {
+    guard let key = validate(for: key) else {
+      throw InvalidKeyException()
+    }
+
+    let data = try searchKeyChain(with: key, options: options)
+
+    guard let data = data else {
+      return nil
+    }
+
+    return String(data: data, encoding: .utf8)
   }
 
   private func set(value: String, with key: String, options: SecureStoreOptions) throws -> Bool {
