@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Change documentation to refer to a correct replacement method in a deprecated field.
+- Change documentation to refer to a correct replacement method in a deprecated field. ([#23811](https://github.com/expo/expo/pull/23811) by [@aleqsio](https://github.com/aleqsio))
 
 ## 14.3.0 — 2023-06-21
 
