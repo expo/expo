@@ -54,7 +54,7 @@ export async function exportAppAsync(
 
   const exp = await getPublicExpoManifestAsync(projectRoot);
 
-  const useWebSSG = exp.web?.output === 'static';
+  const useServerRendering = ['static', 'dynamic'].includes(exp.web?.output ?? '');
 
   const publicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);
 
@@ -110,7 +110,7 @@ export async function exportAppAsync(
   Log.log('Finished saving JS Bundles');
 
   if (platforms.includes('web')) {
-    if (useWebSSG) {
+    if (useServerRendering) {
       await unstable_exportStaticAsync(projectRoot, {
         outputDir: outputPath,
         // TODO: Expose
