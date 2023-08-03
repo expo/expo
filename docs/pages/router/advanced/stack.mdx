@@ -183,6 +183,31 @@ export default function Home() {
 }
 ```
 
+## Custom push behavior
+
+By default, the `Stack` will deduplicate pages when pushing a route that is already in the stack. For example, if you push the same profile twice, the second push will be ignored. You can change the pushing behavior by providing a custom `getId` function to the `Stack.Screen`.
+
+<FileTree files={['app/_layout.js', 'app/[user].js']} />
+
+You can use the `<Stack.Screen name="[user]" getId={} />` component in the layout component route to modify the pushing behavior. In the following example, the `getId` function pushes a new page every time the user navigates to a profile.
+
+```jsx app/_layout.js
+import { Stack } from 'expo-router';
+
+export default function Layout() {
+  return (
+    <Stack>
+      <Stack.Screen
+        name="[user]"
+        /* @info Returning a new ID everytime will cause every page to push. */
+        getId={({ params }) => String(Date.now())}
+        /* @end */
+      />
+    </Stack>
+  );
+}
+```
+
 ## Next steps
 
 <BoxLink
