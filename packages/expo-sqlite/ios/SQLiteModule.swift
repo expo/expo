@@ -101,20 +101,19 @@ public final class SQLiteModule: Module {
     if fileExists {
       db = cachedDatabases[dbName]
     }
-    
+
     if let db {
       return db
     }
 
     cachedDatabases.removeValue(forKey: dbName)
-    
+
     if sqlite3_open(path.absoluteString, &db) != SQLITE_OK {
       return nil
     }
-    
+
     sqlite3_update_hook(
-      db,
-      { (obj, action, _, tableName, rowId) in
+      db, { (obj, action, _, tableName, rowId) in
         if let obj, let tableName {
           let selfObj = Unmanaged<SQLiteModule>.fromOpaque(obj).takeUnretainedValue()
           if selfObj.hasListeners {
@@ -128,7 +127,7 @@ public final class SQLiteModule: Module {
       },
       selfPointer
     )
-    
+
     cachedDatabases[dbName] = db
     return db
   }
