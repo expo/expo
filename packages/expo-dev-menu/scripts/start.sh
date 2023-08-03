@@ -12,4 +12,4 @@ echo $PACKAGER_HOST > $HOST_FILE
 # but it cannot just be gitignored — it must be committed and published.
 git update-index --skip-worktree $HOST_FILE
 
-react-native start --port $PACKAGER_PORT
+expo start --port $PACKAGER_PORT
