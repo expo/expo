@@ -4,7 +4,7 @@
 
 export NODE_ENV=production
 
-EXPO_BUNDLE_APP=1 npx react-native bundle \
+EXPO_BUNDLE_APP=1 npx expo export:embed \
     --platform ios \
     --dev false \
     --entry-file index.js \
@@ -17,7 +17,7 @@ rm ios/assets/__node_modules/css-tree/package.json
 
 # Android
 
-EXPO_BUNDLE_APP=1 npx react-native bundle \
+EXPO_BUNDLE_APP=1 npx expo export:embed \
     --platform android \
     --dev false \
     --entry-file index.js \
