@@ -41,8 +41,13 @@ public final class SecureStoreModule: Module {
     }
 
     AsyncFunction("deleteValueWithKeyAsync") { (key: String, options: SecureStoreOptions) in
-      let searchDictionary = query(with: key, options: options)
-      SecItemDelete(searchDictionary as CFDictionary)
+      let noAuthSearchDictionary = query(with: getKeyAlias(key: key, requiresAuthentication: false), options: options)
+      let authSearchDictionary = query(with: getKeyAlias(key: key, requiresAuthentication: true), options: options)
+      let legacySearchDictionary = query(with: key, options: options)
+
+      SecItemDelete(legacySearchDictionary as CFDictionary)
+      SecItemDelete(authSearchDictionary as CFDictionary)
+      SecItemDelete(noAuthSearchDictionary as CFDictionary)
     }
   }
 
@@ -51,37 +56,47 @@ public final class SecureStoreModule: Module {
       throw InvalidKeyException()
     }
 
-    let data = try searchKeyChain(with: key, options: options)
-
-    guard let data = data else {
-      return nil
+    if let unauthencicatedItem = try searchKeyChain(with: getKeyAlias(key: key, requiresAuthentication: false), options: options) {
+      return String(data: unauthencicatedItem, encoding: .utf8)
     }
 
-    return String(data: data, encoding: .utf8)
+    if let authenticatedItem = try searchKeyChain(with: getKeyAlias(key: key, requiresAuthentication: true), options: options) {
+      return String(data: authenticatedItem, encoding: .utf8)
+    }
+
+    if let legacyItem = try searchKeyChain(with: key, options: options) {
+      return String(data: legacyItem, encoding: .utf8)
+    }
+
+    return nil
   }
 
   private func set(value: String, with key: String, options: SecureStoreOptions) throws -> Bool {
-    var query = query(with: key, options: options)
+    let keyAlias = getKeyAlias(key: key, requiresAuthentication: options.requireAuthentication)
+    var setItemQuery = query(with: keyAlias, options: options)
 
     let valueData = value.data(using: .utf8)
-    query[kSecValueData as String] = valueData
+    setItemQuery[kSecValueData as String] = valueData
 
     let accessibility = attributeWith(options: options)
 
     if !options.requireAuthentication {
-      query[kSecAttrAccessible as String] = accessibility
+      setItemQuery[kSecAttrAccessible as String] = accessibility
     } else {
       guard let _ = Bundle.main.infoDictionary?["NSFaceIDUsageDescription"] as? String else {
         throw MissingPlistKeyException()
       }
       let accessOptions = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessibility, SecAccessControlCreateFlags.biometryCurrentSet, nil)
-      query[kSecAttrAccessControl as String] = accessOptions
+      setItemQuery[kSecAttrAccessControl as String] = accessOptions
     }
 
-    let status = SecItemAdd(query as CFDictionary, nil)
+    let status = SecItemAdd(setItemQuery as CFDictionary, nil)
 
     switch status {
     case errSecSuccess:
+      // On success we want to remove the other key alias and legacy key (if they exist) to avoid conflicts during reads
+      SecItemDelete(query(with: getKeyAlias(key: key, requiresAuthentication: !options.requireAuthentication), options: options) as CFDictionary)
+      SecItemDelete(query(with: key, options: options) as CFDictionary)
       return true
     case errSecDuplicateItem:
       return try update(value: value, with: key, options: options)
@@ -145,6 +160,10 @@ public final class SecureStoreModule: Module {
       kSecAttrGeneric as String: encodedKey,
       kSecAttrAccount as String: encodedKey
     ]
+  }
+
+  private func getKeyAlias(key: String, requiresAuthentication: Bool) -> String {
+    return "\(key):\(requiresAuthentication ? "auth" : "no-auth")"
   }
 
   private func attributeWith(options: SecureStoreOptions) -> CFString {
