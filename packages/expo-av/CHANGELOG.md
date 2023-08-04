@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed recording status not being reset when recording is paused before being stopping. ([#21747](https://github.com/expo/expo/issues/21747)) ([#23816](https://github.com/expo/expo/pull/23816) by [@mojavad](https://github.com/mojavad))
+
 ### 💡 Others
 
 ## 13.5.1 — 2023-08-02
