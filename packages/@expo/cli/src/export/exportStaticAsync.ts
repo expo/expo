@@ -16,7 +16,10 @@ import { Log } from '../log';
 import { DevServerManager } from '../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
 import { logMetroErrorAsync } from '../start/server/metro/metroErrorInterface';
-import { getRouterDirectoryWithManifest } from '../start/server/metro/router';
+import {
+  getApiRoutesForDirectory,
+  getRouterDirectoryWithManifest,
+} from '../start/server/metro/router';
 import { getVirtualFaviconAssetsAsync } from './favicon';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
@@ -134,6 +137,8 @@ export async function exportFromServerAsync(
     for (const [route, contents] of apiRoutes) {
       files.set(route, contents);
     }
+  } else {
+    warnPossibleInvalidExportType(appDir);
   }
 
   fs.mkdirSync(path.join(outputDir), { recursive: true });
@@ -248,10 +253,18 @@ async function exportApiRoutesAsync({
     server.getExpoRouterRoutesManifestAsync({
       mode: 'production',
     }),
-    server.exportExpoRouterApiRoutesAsync({
-      mode: 'production',
-      appDir,
-    }),
+    server
+      .exportExpoRouterApiRoutesAsync({
+        mode: 'production',
+        appDir,
+      })
+      .then((routes) => {
+        const files = new Map<string, string>();
+        for (const [route, contents] of routes) {
+          files.set(path.join('_expo/functions', route), contents);
+        }
+        return files;
+      }),
   ]);
 
   Log.log(chalk.bold`Exporting ${files.size} API Routes.`);
@@ -259,4 +272,16 @@ async function exportApiRoutesAsync({
   files.set('_expo/routes.json', JSON.stringify(manifest, null, 2));
 
   return files;
+}
+
+function warnPossibleInvalidExportType(appDir: string) {
+  const apiRoutes = getApiRoutesForDirectory(appDir);
+  if (apiRoutes.length) {
+    // TODO: Allow API Routes for native-only.
+    Log.warn(
+      chalk.yellow`Skipping export for API routes because \`web.output\` is not "dynamic". You may want to remove the routes: ${apiRoutes
+        .map((v) => path.relative(appDir, v))
+        .join(', ')}`
+    );
+  }
 }

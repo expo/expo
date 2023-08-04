@@ -16,6 +16,7 @@ import path from 'path';
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
+import { CommandError } from '../../../utils/errors';
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import { getStaticRenderFunctions } from '../getStaticRenderFunctions';
@@ -45,7 +46,6 @@ import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import { getRouterDirectoryWithManifest, isApiRouteConvention } from './router';
 import { observeApiRouteChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
-import { CommandError } from '../../../utils/errors';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
@@ -399,6 +399,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           })
         );
 
+        // Cache observation for API Routes...
         observeApiRouteChanges(
           this.projectRoot,
           {

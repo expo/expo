@@ -27,6 +27,7 @@ const resolveAsync = promisify(resolve) as any as (
   opts: resolve.AsyncOpts
 ) => Promise<string | null>;
 
+// TODO: Combine with expo/server more
 export function createRouteHandlerMiddleware(
   projectRoot: string,
   options: { mode?: string; appDir: string; port?: number; getWebBundleUrl: () => string }
@@ -45,7 +46,11 @@ export function createRouteHandlerMiddleware(
 
   const devServerUrl = `http://localhost:${options.port}`;
 
-  return async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
+  return async function ExpoAPIRouteDevMiddleware(
+    req: ServerRequest,
+    res: ServerResponse,
+    next: ServerNext
+  ) {
     if (!req?.url || !req.method) {
       return next();
     }
@@ -56,7 +61,7 @@ export function createRouteHandlerMiddleware(
       return next();
     }
 
-    const location = new URL(req.url, 'https://example.dev');
+    const location = new URL(req.url, 'https://expo.dev');
 
     // 1. Get pathname, e.g. `/thing`
     const pathname = location.pathname?.replace(/\/$/, '');
@@ -80,6 +85,7 @@ export function createRouteHandlerMiddleware(
           if (
             // Skip the 404 page if there's a function
             route.generated &&
+            // TODO: Add a proper 404 convention.
             route.file.match(/^\.\/\[\.\.\.404]\.[jt]sx?$/)
           ) {
             if (functionRoute) {
@@ -139,6 +145,7 @@ export function createRouteHandlerMiddleware(
     if (!functionRoute) {
       return next();
     }
+
     const resolvedFunctionPath = await resolveAsync(functionRoute.file, {
       extensions: ['.js', '.jsx', '.ts', '.tsx'],
       basedir: options.appDir,

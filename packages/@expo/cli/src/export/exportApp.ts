@@ -115,6 +115,8 @@ export async function exportAppAsync(
         outputDir: outputPath,
         // TODO: Expose
         minify,
+        // @ts-expect-error: output dynamic is not on the type yet.
+        exportServer: exp.web?.output === 'dynamic',
       });
       Log.log('Finished saving static files');
     } else {
