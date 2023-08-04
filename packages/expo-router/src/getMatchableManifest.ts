@@ -1,13 +1,5 @@
-import { DynamicConvention, RouteNode, sortRoutes } from './Route';
 import { getContextKey } from './matchers';
-async function recurseAndFlattenNodes<
-  T,
-  TProps,
-  TProcess extends (node: T, props: any) => Promise<T[]>
->(nodes: T[], props: TProps, func: TProcess): Promise<T[]> {
-  const tarr = await Promise.all(nodes.map((node) => func(node, props)).flat());
-  return tarr.filter(Boolean) as T[];
-}
+import { RouteNode, sortRoutes } from './Route';
 
 type MatchableNode = {
   page: string;
@@ -76,13 +68,17 @@ function getParametrizedRoute(route: string) {
   const segments = removeTrailingSlash(route).slice(1).split('/');
   const groups: { [groupName: string]: Group } = {};
   let groupIndex = 1;
+
   return {
     parameterizedRoute: segments
       .map((segment) => {
-        if (segment.startsWith('[') && segment.endsWith(']')) {
+        if (/^\[.*\]$/.test(segment)) {
           const { key, optional, repeat } = parseParameter(segment.slice(1, -1));
           groups[key] = { pos: groupIndex++, repeat, optional };
           return repeat ? (optional ? '(?:/(.+?))?' : '/(.+?)') : '/([^/]+?)';
+        } else if (/^\(.*\)$/.test(segment)) {
+          // Make section optional
+          return `(?:/${escapeStringRegexp(segment)})?`;
         } else {
           return `/${escapeStringRegexp(segment)}`;
         }
@@ -126,7 +122,7 @@ function getNamedParametrizedRoute(route: string) {
   return {
     namedParameterizedRoute: segments
       .map((segment) => {
-        if (segment.startsWith('[') && segment.endsWith(']')) {
+        if (/^\[.*\]$/.test(segment)) {
           const { key, optional, repeat } = parseParameter(segment.slice(1, -1));
           // replace any non-word characters since they can break
           // the named regex
@@ -152,6 +148,9 @@ function getNamedParametrizedRoute(route: string) {
               ? `(?:/(?<${cleanedKey}>.+?))?`
               : `/(?<${cleanedKey}>.+?)`
             : `/(?<${cleanedKey}>[^/]+?)`;
+        } else if (/^\(.*\)$/.test(segment)) {
+          // Make section optional
+          return `(?:/${escapeStringRegexp(segment)})?`;
         } else {
           return `/${escapeStringRegexp(segment)}`;
         }
@@ -181,7 +180,7 @@ export function escapeStringRegexp(str: string) {
  *   - `bar` -> `{ name: 'bar', repeat: false, optional: false }`
  */
 function parseParameter(param: string) {
-  const optional = param.startsWith('[') && param.endsWith(']');
+  const optional = /^\[.*\]$/.test(param);
   if (optional) {
     param = param.slice(1, -1);
   }
