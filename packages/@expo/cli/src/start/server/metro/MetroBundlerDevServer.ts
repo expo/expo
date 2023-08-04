@@ -120,7 +120,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       environment: 'node',
     });
 
-    return getManifest({ fetchData: true });
+    return getManifest({ preserveApiRoutes: false });
   }
 
   async composeResourcesWithHtml({
