@@ -971,13 +971,14 @@ EX_EXPORT_METHOD_AS(stopAudioRecording,
                     rejecter:(EXPromiseRejectBlock)reject)
 {
   if ([self _checkAudioRecorderExistsOrReject:reject]) {
+    _audioRecorderDurationMillis = [self _getDurationMillisOfRecordingAudioRecorder];
     if (_audioRecorder.recording) {
-      _audioRecorderDurationMillis = [self _getDurationMillisOfRecordingAudioRecorder];
       [_audioRecorder stop];
+    }
       _prevAudioRecorderDurationMillis = 0;
       _audioRecorderStartTimestamp = 0;
       [self demoteAudioSessionIfPossible];
-    }
+
     resolve([self _getAudioRecorderStatus]);
   }
 }
