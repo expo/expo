@@ -1,5 +1,5 @@
 import { getMatchableManifest } from '../getMatchableManifest';
-import { getExactRoutes, getRoutes } from '../getRoutes';
+import { getExactRoutes } from '../getRoutes';
 import { RequireContext } from '../types';
 
 function createMockContextModule(map: Record<string, Record<string, any>> = {}) {
