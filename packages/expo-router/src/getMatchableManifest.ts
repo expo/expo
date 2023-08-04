@@ -1,15 +1,28 @@
+/**
+ * Copyright © 2023 650 Industries.
+ * Copyright © 2023 Vercel, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * Based on https://github.com/vercel/next.js/blob/1df2686bc9964f1a86c444701fa5cbf178669833/packages/next/src/shared/lib/router/utils/route-regex.ts
+ */
 import { getContextKey } from './matchers';
 import { RouteNode, sortRoutes } from './Route';
 
-type MatchableNode = {
-  page: string;
-  regex: string;
-  routeKeys: Record<string, string>;
-  namedRegex: string;
-};
+export interface Group {
+  pos: number;
+  repeat: boolean;
+  optional: boolean;
+}
+
+export interface RouteRegex {
+  groups: { [groupName: string]: Group };
+  re: RegExp;
+}
 
 // Given a nested route tree, return a flattened array of all routes that can be matched.
-export function getMatchableManifest(route: RouteNode): MatchableNode[] {
+export function getMatchableManifest(route: RouteNode) {
   function getFlatNodes(route: RouteNode): [string, RouteNode][] {
     if (route.children.length) {
       return route.children.map((child) => getFlatNodes(child)).flat();
@@ -29,15 +42,21 @@ export function getMatchableManifest(route: RouteNode): MatchableNode[] {
 }
 
 export function getMatchableManifestForPaths(paths: string[]) {
-  return paths.map((normalizedRoutePath) => {
-    const result = getNamedParametrizedRoute(normalizedRoutePath);
+  return paths.map((normalizedRoutePath) => getNamedRouteRegex(normalizedRoutePath));
+}
 
-    return {
-      ...getRouteRegex(normalizedRoutePath),
-      namedRegex: `^${result.namedParameterizedRoute}(?:/)?$`,
-      routeKeys: result.routeKeys,
-    };
-  });
+/**
+ * This function extends `getRouteRegex` generating also a named regexp where
+ * each group is named along with a routeKeys object that indexes the assigned
+ * named group with its corresponding key.
+ */
+export function getNamedRouteRegex(normalizedRoute: string) {
+  const result = getNamedParametrizedRoute(normalizedRoute);
+  return {
+    ...getRouteRegex(normalizedRoute),
+    namedRegex: `^${result.namedParameterizedRoute}(?:/)?$`,
+    routeKeys: result.routeKeys,
+  };
 }
 
 /**
@@ -53,17 +72,6 @@ export function getRouteRegex(normalizedRoute: string): RouteRegex {
   };
 }
 
-export interface Group {
-  pos: number;
-  repeat: boolean;
-  optional: boolean;
-}
-
-export interface RouteRegex {
-  groups: { [groupName: string]: Group };
-  re: RegExp;
-}
-
 function getParametrizedRoute(route: string) {
   const segments = removeTrailingSlash(route).slice(1).split('/');
   const groups: { [groupName: string]: Group } = {};
@@ -73,8 +81,8 @@ function getParametrizedRoute(route: string) {
     parameterizedRoute: segments
       .map((segment) => {
         if (/^\[.*\]$/.test(segment)) {
-          const { key, optional, repeat } = parseParameter(segment.slice(1, -1));
-          groups[key] = { pos: groupIndex++, repeat, optional };
+          const { name, optional, repeat } = parseParameter(segment.slice(1, -1));
+          groups[name] = { pos: groupIndex++, repeat, optional };
           return repeat ? (optional ? '(?:/(.+?))?' : '/(.+?)') : '/([^/]+?)';
         } else if (/^\(.*\)$/.test(segment)) {
           // Make section optional
@@ -93,21 +101,34 @@ function getParametrizedRoute(route: string) {
  * number of characters.
  */
 function buildGetSafeRouteKey() {
-  let routeKeyCharCode = 97;
-  let routeKeyCharLength = 1;
+  let currentCharCode = 96; // Starting one before 'a' to make the increment logic simpler
+  let currentLength = 1;
 
   return () => {
-    let routeKey = '';
-    for (let i = 0; i < routeKeyCharLength; i++) {
-      routeKey += String.fromCharCode(routeKeyCharCode);
-      routeKeyCharCode++;
+    let result = '';
+    let incrementNext = true;
 
-      if (routeKeyCharCode > 122) {
-        routeKeyCharLength++;
-        routeKeyCharCode = 97;
+    // Iterate from right to left to build the key
+    for (let i = 0; i < currentLength; i++) {
+      if (incrementNext) {
+        currentCharCode++;
+        if (currentCharCode > 122) {
+          currentCharCode = 97; // Reset to 'a'
+          incrementNext = true; // Continue to increment the next character
+        } else {
+          incrementNext = false;
+        }
       }
+      result = String.fromCharCode(currentCharCode) + result;
     }
-    return routeKey;
+
+    // If all characters are 'z', increase the length of the key
+    if (incrementNext) {
+      currentLength++;
+      currentCharCode = 96; // This will make the next key start with 'a'
+    }
+
+    return result;
   };
 }
 
@@ -123,10 +144,10 @@ function getNamedParametrizedRoute(route: string) {
     namedParameterizedRoute: segments
       .map((segment) => {
         if (/^\[.*\]$/.test(segment)) {
-          const { key, optional, repeat } = parseParameter(segment.slice(1, -1));
+          const { name, optional, repeat } = parseParameter(segment.slice(1, -1));
           // replace any non-word characters since they can break
           // the named regex
-          let cleanedKey = key.replace(/\W/g, '');
+          let cleanedKey = name.replace(/\W/g, '');
           let invalidKey = false;
 
           // check if the key is still invalid and fallback to using a known
@@ -147,7 +168,7 @@ function getNamedParametrizedRoute(route: string) {
             cleanedKey = getSafeRouteKey();
           }
 
-          routeKeys[cleanedKey] = key;
+          routeKeys[cleanedKey] = name;
           return repeat
             ? optional
               ? `(?:/(?<${cleanedKey}>.+?))?`
@@ -169,7 +190,7 @@ function getNamedParametrizedRoute(route: string) {
 const reHasRegExp = /[|\\{}()[\]^$+*?.-]/;
 const reReplaceRegExp = /[|\\{}()[\]^$+*?.-]/g;
 
-export function escapeStringRegexp(str: string) {
+function escapeStringRegexp(str: string) {
   // see also: https://github.com/lodash/lodash/blob/2da024c3b4f9947a48517639de7560457cd4ec6c/escapeRegExp.js#L23
   if (reHasRegExp.test(str)) {
     return str.replace(reReplaceRegExp, '\\$&');
@@ -177,21 +198,20 @@ export function escapeStringRegexp(str: string) {
   return str;
 }
 
-/**
- * Parses a given parameter from a route to a data structure that can be used
- * to generate the parametrized route. Examples:
- *   - `[...slug]` -> `{ name: 'slug', repeat: true, optional: true }`
- *   - `[foo]` -> `{ name: 'foo', repeat: false, optional: true }`
- *   - `bar` -> `{ name: 'bar', repeat: false, optional: false }`
- */
 function parseParameter(param: string) {
-  const optional = /^\[.*\]$/.test(param);
-  if (optional) {
-    param = param.slice(1, -1);
+  let repeat = false;
+  let optional = false;
+  let name = param;
+
+  if (/^\[.*\]$/.test(name)) {
+    optional = true;
+    name = name.slice(1, -1);
   }
-  const repeat = param.startsWith('...');
-  if (repeat) {
-    param = param.slice(3);
+
+  if (/^\.\.\./.test(name)) {
+    repeat = true;
+    name = name.slice(3);
   }
-  return { key: param, repeat, optional };
+
+  return { name, repeat, optional };
 }
