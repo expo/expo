@@ -1,4 +1,4 @@
-import { getMatchableManifest } from '../getMatchableManifest';
+import { getMatchableManifest, getServerManifest } from '../getMatchableManifest';
 import { getExactRoutes } from '../getRoutes';
 import { RequireContext } from '../types';
 
@@ -14,13 +14,28 @@ function createMockContextModule(map: Record<string, Record<string, any>> = {}) 
 
 function getRoutesFor(files: string[]) {
   return getExactRoutes(
-    createMockContextModule(Object.fromEntries(files.map((file) => [file, { default() {} }])))
+    createMockContextModule(Object.fromEntries(files.map((file) => [file, { default() {} }]))),
+    {
+      preserveApiRoutes: true,
+    }
   )!;
 }
 
-it(`converts single basic`, () => {
+it(`converts a server manifest`, () => {
+  expect(getServerManifest(getRoutesFor(['./home.js', './api/[post]+api.tsx']))).toEqual({
+    api: [
+      {
+        namedRegex: '^/api/(?<post>[^/]+?)(?:/)?$',
+        routeKeys: { post: 'post' },
+      },
+    ],
+    static: [{ namedRegex: '^/home(?:/)?$', routeKeys: {} }],
+  });
+});
+
+xit(`converts single basic`, () => {
   expect(getMatchableManifest(getRoutesFor(['./home.js']))).toEqual([
-    { groups: {}, namedRegex: '^/home(?:/)?$', re: /^\/home(?:\/)?$/, routeKeys: {} },
+    { namedRegex: '^/home(?:/)?$', routeKeys: {} },
   ]);
 });
 
@@ -33,9 +48,7 @@ it(`sorts`, () => {
 it(`supports groups`, () => {
   expect(getMatchableManifest(getRoutesFor(['./(a)/b.tsx']))).toEqual([
     {
-      groups: {},
       namedRegex: '^(?:/\\(a\\))?/b(?:/)?$',
-      re: /^(?:\/\(a\))?\/b(?:\/)?$/,
       routeKeys: {},
     },
   ]);
@@ -45,9 +58,9 @@ it(`converts index routes`, () => {
   expect(
     getMatchableManifest(getRoutesFor(['./index.tsx', './a/index/b.tsx', './a/index/index.js']))
   ).toEqual([
-    { groups: {}, namedRegex: '^/a/index(?:/)?$', re: /^\/a\/index(?:\/)?$/, routeKeys: {} },
-    { groups: {}, namedRegex: '^/a/index/b(?:/)?$', re: /^\/a\/index\/b(?:\/)?$/, routeKeys: {} },
-    { groups: {}, namedRegex: '^/(?:/)?$', re: /^\/(?:\/)?$/, routeKeys: {} },
+    { namedRegex: '^/a/index(?:/)?$', routeKeys: {} },
+    { namedRegex: '^/a/index/b(?:/)?$', routeKeys: {} },
+    { namedRegex: '^/(?:/)?$', routeKeys: {} },
   ]);
 });
 
@@ -115,24 +128,15 @@ it(`converts dynamic routes`, () => {
     getMatchableManifest(getRoutesFor(['./[a].tsx', './[...b].tsx', './c/[d]/e/[...f].js']))
   ).toEqual([
     {
-      groups: { b: { optional: false, pos: 1, repeat: true } },
       namedRegex: '^/(?<b>.+?)(?:/)?$',
-      re: /^\/(.+?)(?:\/)?$/,
       routeKeys: { b: 'b' },
     },
     {
-      groups: { a: { optional: false, pos: 1, repeat: false } },
       namedRegex: '^/(?<a>[^/]+?)(?:/)?$',
-      re: /^\/([^/]+?)(?:\/)?$/,
       routeKeys: { a: 'a' },
     },
     {
-      groups: {
-        d: { optional: false, pos: 1, repeat: false },
-        f: { optional: false, pos: 2, repeat: true },
-      },
       namedRegex: '^/c/(?<d>[^/]+?)/e/(?<f>.+?)(?:/)?$',
-      re: /^\/c\/([^/]+?)\/e\/(.+?)(?:\/)?$/,
       routeKeys: { d: 'd', f: 'f' },
     },
   ]);

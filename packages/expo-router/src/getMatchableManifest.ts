@@ -41,6 +41,40 @@ export function getMatchableManifest(route: RouteNode) {
   return getMatchableManifestForPaths(flat.map(([normalizedRoutePath]) => normalizedRoutePath));
 }
 
+function isApiRoute(route: RouteNode) {
+  return !route.children.length && !!route.contextKey.match(/\+api\.[jt]sx?$/);
+}
+// Given a nested route tree, return a flattened array of all routes that can be matched.
+export function getServerManifest(route: RouteNode) {
+  function getFlatNodes(route: RouteNode): [string, RouteNode][] {
+    if (route.children.length) {
+      return route.children.map((child) => getFlatNodes(child)).flat();
+      // .sort(([, a], [, b]) => sortRoutes(a, b));
+    }
+
+    const key = getContextKey(route.contextKey).replace(/\/index$/, '') ?? '/';
+    return [[key, route]];
+  }
+
+  // TODO: Ensure routes are sorted
+  const flat = getFlatNodes(route)
+    .sort(([, a], [, b]) => sortRoutes(a, b))
+    .reverse();
+
+  const apiRoutes = flat.filter(([, route]) => isApiRoute(route));
+  console.log('apiRoutes', flat);
+  const otherRoutes = flat.filter(([, route]) => !isApiRoute(route));
+
+  return {
+    api: getMatchableManifestForPaths(
+      apiRoutes.map(([normalizedRoutePath]) => normalizedRoutePath)
+    ),
+    static: getMatchableManifestForPaths(
+      otherRoutes.map(([normalizedRoutePath]) => normalizedRoutePath)
+    ),
+  };
+}
+
 export function getMatchableManifestForPaths(paths: string[]) {
   return paths.map((normalizedRoutePath) => getNamedRouteRegex(normalizedRoutePath));
 }
@@ -53,7 +87,7 @@ export function getMatchableManifestForPaths(paths: string[]) {
 export function getNamedRouteRegex(normalizedRoute: string) {
   const result = getNamedParametrizedRoute(normalizedRoute);
   return {
-    ...getRouteRegex(normalizedRoute),
+    // ...getRouteRegex(normalizedRoute),
     namedRegex: `^${result.namedParameterizedRoute}(?:/)?$`,
     routeKeys: result.routeKeys,
   };
