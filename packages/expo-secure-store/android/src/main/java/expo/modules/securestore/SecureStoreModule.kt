@@ -17,11 +17,11 @@ import expo.modules.securestore.encryptors.KeyBasedEncryptor
 import kotlinx.coroutines.runBlocking
 import org.json.JSONException
 import org.json.JSONObject
-import java.io.IOException
 import java.security.GeneralSecurityException
 import java.security.KeyStore
 import java.security.KeyStore.PrivateKeyEntry
 import java.security.KeyStore.SecretKeyEntry
+import javax.crypto.BadPaddingException
 
 class SecureStoreModule : Module() {
   private val mAESEncryptor = AESEncryptor()
@@ -63,8 +63,7 @@ class SecureStoreModule : Module() {
       } catch (e: CodedException) {
         throw e
       } catch (e: Exception) {
-        Log.e(TAG, "Caught unexpected exception when deleting from SecureStore", e)
-        throw DeleteException(null, e)
+        throw DeleteException(e.message, key, options.keychainService, e)
       }
     }
 
@@ -93,52 +92,62 @@ class SecureStoreModule : Module() {
 
   private suspend fun readJSONEncodedItem(key: String, prefs: SharedPreferences, options: SecureStoreOptions): String? {
     val keychainAwareKey = createKeychainAwareKey(key, options.keychainService)
-    val encryptedItemString = prefs.getString(keychainAwareKey, null) ?: prefs.getString(key, null)
+
+    val legacyEncryptedItemString = prefs.getString(key, null)
+    val currentEncryptedItemString = prefs.getString(keychainAwareKey, null)
+    val encryptedItemString = currentEncryptedItemString ?: legacyEncryptedItemString
+
+    // It's not possible to efficiently remove all values from older versions of secure-store when an invalidated keychain is deleted.
+    // In some edge cases it will lead to read errors until the value is removed from the shared preferences
+    val legacyReadFailedWarning = if (currentEncryptedItemString == null) {
+      ". This exception occurred when trying to read a value saved with an " +
+        "older version of `expo-secure-store`. It usually means that the keychain you provided is incorrect, " +
+        "but it might be raised because the keychain used to decrypt this key has been invalidated and deleted." +
+        " If you are confident that the keychain you provided is correct and want to avoid this error in the " +
+        "future you should save a new value under this key or use `deleteItemImpl()` and remove the existing one."
+    } else { "" }
 
     encryptedItemString ?: return null
 
     val encryptedItem: JSONObject = try {
       JSONObject(encryptedItemString)
     } catch (e: JSONException) {
-      Log.e(TAG, String.format("Could not parse stored value as JSON (key = %s, value = %s)", key, encryptedItemString), e)
-      throw SecureStoreJSONException("Could not parse the encrypted JSON item in SecureStore", e)
+      throw DecryptException("Could not parse the encrypted JSON item in SecureStore: ${e.message}", key, options.keychainService, e)
     }
 
     val scheme = encryptedItem.optString(SCHEME_PROPERTY).takeIf { it.isNotEmpty() }
-      ?: throw DecryptException("Could not find the encryption scheme used for SecureStore item", null)
-    val requireAuthentication = encryptedItem.optBoolean(AUTHENTICATION_PROPERTY, false)
+      ?: throw DecryptException("Could not find the encryption scheme used for key: $key", key, options.keychainService)
+    val requireAuthentication = encryptedItem.optBoolean(AuthenticationHelper.REQUIRE_AUTHENTICATION_PROPERTY, false)
     val usesKeystoreSuffix = encryptedItem.optBoolean(USES_KEYSTORE_SUFFIX_PROPERTY, false)
 
     try {
       when (scheme) {
         AESEncryptor.NAME -> {
           val secretKeyEntry = getPreferredKeyEntry(SecretKeyEntry::class.java, mAESEncryptor, options, requireAuthentication, usesKeystoreSuffix)
-            ?: throw DecryptException("Could not find a keychain for key $key", null)
+            ?: throw DecryptException("Could not find a keychain for key $key$legacyReadFailedWarning", key, options.keychainService)
           return mAESEncryptor.decryptItem(encryptedItem, secretKeyEntry, options, authenticationHelper)
         }
         HybridAESEncryptor.NAME -> {
           val privateKeyEntry = getPreferredKeyEntry(PrivateKeyEntry::class.java, hybridAESEncryptor, options, requireAuthentication, usesKeystoreSuffix)
-            ?: throw DecryptException("Could not find a keychain for key $key", null)
+            ?: throw DecryptException("Could not find a keychain for key $key$legacyReadFailedWarning", key, options.keychainService)
           return hybridAESEncryptor.decryptItem(encryptedItem, privateKeyEntry, options, authenticationHelper)
         }
         else -> {
-          throw DecryptException("The item for key $key in SecureStore has an unknown encoding scheme $scheme, null)", null)
+          throw DecryptException("The item for key $key in SecureStore has an unknown encoding scheme $scheme)", key, options.keychainService)
         }
       }
-    } catch (e: IOException) {
-      throw SecureStoreIOException(e)
     } catch (e: GeneralSecurityException) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && e is KeyPermanentlyInvalidatedException) {
         Log.w(TAG, "The requested key has been permanently invalidated. Returning null")
         return null
+      } else if (e is BadPaddingException) {
+        throw (DecryptException("Could not decrypt the value with provided keychain $legacyReadFailedWarning", key, options.keychainService, e))
       }
-      throw (DecryptException(null, e))
-    } catch (e: JSONException) {
-      throw SecureStoreJSONException("Could not decode the encrypted JSON item in SecureStore", e)
+      throw (DecryptException(e.message, key, options.keychainService, e))
     } catch (e: CodedException) {
       throw e
     } catch (e: Exception) {
-      throw DecryptException("An unexpected exception appeared when trying to decode the JSON item", e)
+      throw (DecryptException(e.message, key, options.keychainService, e))
     }
   }
 
@@ -149,7 +158,7 @@ class SecureStoreModule : Module() {
     if (value == null) {
       val success = prefs.edit().putString(keychainAwareKey, null).commit()
       if (!success) {
-        throw WriteException("Could not write a null value to SecureStore", null)
+        throw WriteException("Could not write a null value to SecureStore", key, options.keychainService)
       }
       return
     }
@@ -178,8 +187,11 @@ class SecureStoreModule : Module() {
         encryptedItem.put(SCHEME_PROPERTY, HybridAESEncryptor.NAME)
         saveEncryptedItem(encryptedItem, prefs, keychainAwareKey, options.requireAuthentication, options.keychainService)
       }
-    } catch (e: IOException) {
-      throw SecureStoreIOException(e)
+
+      // If a legacy value exists under this key we remove it to avoid unexpected errors in the future
+      if (prefs.contains(key)) {
+        prefs.edit().remove(key).apply()
+      }
     } catch (e: GeneralSecurityException) {
       val isInvalidationException = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && e is KeyPermanentlyInvalidatedException
 
@@ -189,21 +201,19 @@ class SecureStoreModule : Module() {
         setItemImpl(key, value, options, true)
       } else if (isInvalidationException) {
         // If reinitialization of the key fails, reject the promise
-        throw EncryptException("Encryption Failed. The key has been permanently invalidated and cannot be reinitialized", e)
+        throw EncryptException("Encryption Failed. The key $key has been permanently invalidated and cannot be reinitialized", key, options.keychainService, e)
       } else {
-        throw EncryptException(null, e)
+        throw EncryptException(e.message, key, options.keychainService, e)
       }
-    } catch (e: JSONException) {
-      throw SecureStoreJSONException("Could not create an encrypted JSON item for SecureStore", e)
     } catch (e: CodedException) {
       throw e
     } catch (e: Exception) {
-      throw WriteException("Caught unexpected exception when writing to SecureStore", e)
+      throw WriteException(e.message, key, options.keychainService, e)
     }
   }
 
   private fun saveEncryptedItem(encryptedItem: JSONObject, prefs: SharedPreferences, key: String, requireAuthentication: Boolean, keychainService: String): Boolean {
-    // We need a way to recognize entries that have been saved after adding suffixes to the keychains
+    // We need a way to recognize entries that have been saved under an alias created with getExtendedKeychain
     encryptedItem.put(USES_KEYSTORE_SUFFIX_PROPERTY, true)
     // In order to be able to have the same keys under different keychains
     // we need a way to recognize what is the keychain of the item when we read it
@@ -212,8 +222,9 @@ class SecureStoreModule : Module() {
 
     val encryptedItemString = encryptedItem.toString()
     if (encryptedItemString.isNullOrEmpty()) { // JSONObject#toString() may return null
-      throw SecureStoreJSONException("Could not JSON-encode the encrypted item for SecureStore", null)
+      throw WriteException("Could not JSON-encode the encrypted item for SecureStore - the string $encryptedItemString is null or empty", key, keychainService)
     }
+
     return prefs.edit().putString(key, encryptedItemString).commit()
   }
 
@@ -236,7 +247,7 @@ class SecureStoreModule : Module() {
     }
 
     if (!success) {
-      throw DeleteException("Could not delete the item from SecureStore", null)
+      throw DeleteException("Could not delete the item from SecureStore", key, options.keychainService)
     }
   }
 
@@ -256,7 +267,7 @@ class SecureStoreModule : Module() {
       }
 
       val entryKeychainService = jsonEntry.optString(KEYSTORE_ALIAS_PROPERTY) ?: continue
-      val requireAuthentication = jsonEntry.optBoolean(AUTHENTICATION_PROPERTY, false)
+      val requireAuthentication = jsonEntry.optBoolean(AuthenticationHelper.REQUIRE_AUTHENTICATION_PROPERTY, false)
 
       // Entries which don't require authentication use separate keychains which can't be invalidated,
       // so we shouldn't delete them.
@@ -344,7 +355,6 @@ class SecureStoreModule : Module() {
     private const val SHARED_PREFERENCES_NAME = "SecureStore"
     private const val KEYSTORE_PROVIDER = "AndroidKeyStore"
     private const val SCHEME_PROPERTY = "scheme"
-    private const val AUTHENTICATION_PROPERTY = "requireAuthentication"
     private const val KEYSTORE_ALIAS_PROPERTY = "keystoreAlias"
     const val USES_KEYSTORE_SUFFIX_PROPERTY = "usesKeystoreSuffix"
     const val DEFAULT_KEYSTORE_ALIAS = "key_v1"

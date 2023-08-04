@@ -27,9 +27,9 @@ class AuthenticationPrompt(private val currentActivity: FragmentActivity, contex
             super.onAuthenticationError(errorCode, errString)
 
             if (errorCode == BiometricPrompt.ERROR_USER_CANCELED || errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON) {
-              continuation.resumeWithException(AuthenticationException("User canceled the authentication", null))
+              continuation.resumeWithException(AuthenticationException("User canceled the authentication"))
             } else {
-              continuation.resumeWithException(AuthenticationException("Could not authenticate the user", null))
+              continuation.resumeWithException(AuthenticationException("Could not authenticate the user"))
             }
           }
 

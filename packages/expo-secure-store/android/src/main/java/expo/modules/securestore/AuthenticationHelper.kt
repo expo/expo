@@ -22,7 +22,7 @@ class AuthenticationHelper(
   suspend fun authenticateCipher(cipher: Cipher, requiresAuthentication: Boolean, title: String): Cipher {
     if (requiresAuthentication) {
       return openAuthenticationPrompt(cipher, title).cryptoObject?.cipher
-        ?: throw AuthenticationException("Couldn't get cipher from authentication result", null)
+        ?: throw AuthenticationException("Couldn't get cipher from authentication result")
     }
     return cipher
   }
@@ -32,24 +32,24 @@ class AuthenticationHelper(
     title: String
   ): BiometricPrompt.AuthenticationResult {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      throw AuthenticationException("Biometric authentication requires Android API 23", null)
+      throw AuthenticationException("Biometric authentication requires Android API 23")
     }
     if (isAuthenticating) {
-      throw AuthenticationException("Authentication is already in progress", null)
+      throw AuthenticationException("Authentication is already in progress")
     }
 
     isAuthenticating = true
 
     assertBiometricsSupport()
     val fragmentActivity = getCurrentActivity() as FragmentActivity?
-      ?: throw AuthenticationException("Cannot display biometric prompt when the app is not in the foreground", null)
+      ?: throw AuthenticationException("Cannot display biometric prompt when the app is not in the foreground")
 
     val authenticationPrompt = AuthenticationPrompt(fragmentActivity, context, title)
 
     return withContext(Dispatchers.Main.immediate) {
       try {
         val result = authenticationPrompt.authenticate(cipher)
-        result ?: throw AuthenticationException("Couldn't get the authentication result", null)
+        result ?: throw AuthenticationException("Couldn't get the authentication result")
         return@withContext result
       } finally {
         isAuthenticating = false
@@ -62,19 +62,19 @@ class AuthenticationHelper(
     @SuppressLint("SwitchIntDef") // BiometricManager.BIOMETRIC_SUCCESS shouldn't do anything
     when (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)) {
       BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE, BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
-        throw AuthenticationException("No hardware available for biometric authentication. Use expo-local-authentication to check if the device supports it", null)
+        throw AuthenticationException("No hardware available for biometric authentication. Use expo-local-authentication to check if the device supports it")
       }
       BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
-        throw AuthenticationException("No biometrics are currently enrolled", null)
+        throw AuthenticationException("No biometrics are currently enrolled")
       }
       BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED -> {
-        throw AuthenticationException("An update is required before the biometrics can be used", null)
+        throw AuthenticationException("An update is required before the biometrics can be used")
       }
       BiometricManager.BIOMETRIC_ERROR_UNSUPPORTED -> {
-        throw AuthenticationException("Biometric authentication is unsupported", null)
+        throw AuthenticationException("Biometric authentication is unsupported")
       }
       BiometricManager.BIOMETRIC_STATUS_UNKNOWN -> {
-        throw AuthenticationException("Biometric authentication status is unknown", null)
+        throw AuthenticationException("Biometric authentication status is unknown")
       }
     }
   }
