@@ -1,18 +1,16 @@
 import {
   AbortController as NodeAbortController,
+  AppLoadContext,
   Headers as NodeHeaders,
+  RequestInit as NodeRequestInit,
+  Response as NodeResponse,
   writeReadableStreamToWritable,
 } from '@remix-run/node';
+import { VercelRequest, VercelResponse } from '@vercel/node';
 
 import { createRequestHandler as createExpoHandler } from '..';
 import { ExpoRequest } from '../environment';
 
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-import type {
-  AppLoadContext,
-  RequestInit as NodeRequestInit,
-  Response as NodeResponse,
-} from '@remix-run/node';
 /**
  * A function that returns the value to use as `context` in route `loader` and
  * `action` functions.

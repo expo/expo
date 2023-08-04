@@ -46,7 +46,7 @@ export async function refetchManifest(
 
 export async function fetchManifest(
   projectRoot: string,
-  options: { mode?: string; port?: number }
+  options: { mode?: string; port?: number; asJson?: boolean }
 ): Promise<LoadManifestResult> {
   if (manifestOperation.has('manifest')) {
     const manifest = await manifestOperation.get('manifest');
@@ -89,18 +89,9 @@ export async function fetchManifest(
       throw new Error('Routes manifest is malformed: ' + JSON.stringify(results, null, 2));
     }
 
-    results.staticHtml = results.staticHtml?.map((value: any) => {
-      return {
-        ...value,
-        regex: new RegExp(value.regex),
-      };
-    });
-    results.functions = results.functions?.map((value: any) => {
-      return {
-        ...value,
-        regex: new RegExp(value.regex),
-      };
-    });
+    if (!options.asJson) {
+      results = inflateManifest(results);
+    }
     // console.log('manifest', results);
     return { manifest: results };
   }
@@ -110,4 +101,22 @@ export async function fetchManifest(
     manifestOperation.set('manifest', manifest);
   }
   return manifest;
+}
+
+// Convert the serialized manifest to a usable format
+export function inflateManifest(json: any): ExpoRouterServerManifestV1 {
+  json.staticHtml = json.staticHtml?.map((value: any) => {
+    return {
+      ...value,
+      regex: new RegExp(value.regex),
+    };
+  });
+  json.functions = json.functions?.map((value: any) => {
+    return {
+      ...value,
+      regex: new RegExp(value.regex),
+    };
+  });
+
+  return json;
 }

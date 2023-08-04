@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { getConfig } from '@expo/config';
 import assert from 'assert';
 import chalk from 'chalk';
 import fs from 'fs';
@@ -15,11 +16,12 @@ import { Log } from '../log';
 import { DevServerManager } from '../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
 import { logMetroErrorAsync } from '../start/server/metro/metroErrorInterface';
+import { getRouterDirectoryWithManifest } from '../start/server/metro/router';
 import { getVirtualFaviconAssetsAsync } from './favicon';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
 
-type Options = { outputDir: string; minify: boolean };
+type Options = { outputDir: string; minify: boolean; exportServer: boolean };
 
 /** @private */
 export async function unstable_exportStaticAsync(projectRoot: string, options: Options) {
@@ -82,8 +84,11 @@ export async function getFilesToExportFromServerAsync(
 export async function exportFromServerAsync(
   projectRoot: string,
   devServerManager: DevServerManager,
-  { outputDir, minify }: Options
+  { outputDir, minify, exportServer }: Options
 ): Promise<void> {
+  const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
+  const appDir = getRouterDirectoryWithManifest(projectRoot, exp);
+
   const injectFaviconTag = await getVirtualFaviconAssetsAsync(projectRoot, outputDir);
 
   const devServer = devServerManager.getDefaultDevServer();
@@ -97,8 +102,6 @@ export async function exportFromServerAsync(
       minify,
     }),
   ]);
-
-  await exportRouteHandlersAsync(outputDir, devServer);
 
   debug('Routes:\n', inspect(manifest, { colors: true, depth: null }));
 
@@ -123,6 +126,15 @@ export async function exportFromServerAsync(
   resources.forEach((resource) => {
     files.set(resource.filename, resource.source);
   });
+
+  if (exportServer) {
+    const apiRoutes = await exportApiRoutesAsync({ outputDir, server: devServer, appDir });
+
+    // Add the api routes to the files to export.
+    for (const [route, contents] of apiRoutes) {
+      files.set(route, contents);
+    }
+  }
 
   fs.mkdirSync(path.join(outputDir), { recursive: true });
 
@@ -220,28 +232,31 @@ export function getPathVariations(routePath: string): string[] {
   return Array.from(variations);
 }
 
-async function exportRouteHandlersAsync(outputDir: string, server: MetroBundlerDevServer) {
+async function exportApiRoutesAsync({
+  outputDir,
+  server,
+  appDir,
+}: {
+  outputDir: string;
+  server: MetroBundlerDevServer;
+  appDir: string;
+}): Promise<Map<string, string>> {
   const funcDir = path.join(outputDir, '_expo/functions');
   fs.mkdirSync(path.join(funcDir), { recursive: true });
 
-  const [routesManifest, middleware] = await server.getFunctionsAsync({ mode: 'production' });
+  const [manifest, files] = await Promise.all([
+    server.getExpoRouterRoutesManifestAsync({
+      mode: 'production',
+    }),
+    server.exportExpoRouterApiRoutesAsync({
+      mode: 'production',
+      appDir,
+    }),
+  ]);
 
-  await fs.promises.writeFile(
-    path.join(outputDir, '_expo/routes.json'),
-    JSON.stringify(routesManifest, null, 2),
-    'utf-8'
-  );
+  Log.log(chalk.bold`Exporting ${files.size} API Routes.`);
 
-  const files = Object.entries(middleware) as [string, string][];
-  Log.log(chalk.bold`Exporting ${files.length} Route Handlers:`);
+  files.set('_expo/routes.json', JSON.stringify(manifest, null, 2));
 
-  await Promise.all(
-    files.map(async ([file, contents]) => {
-      const length = Buffer.byteLength(contents, 'utf8');
-      Log.log(file, chalk.gray`(${prettyBytes(length)})`);
-      const outputPath = path.join(funcDir, file);
-      await fs.promises.mkdir(path.dirname(outputPath), { recursive: true });
-      await fs.promises.writeFile(outputPath, contents);
-    })
-  );
+  return files;
 }

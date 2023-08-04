@@ -15,7 +15,7 @@ import { delayAsync } from '../../utils/delay';
 import { SilentError } from '../../utils/errors';
 import { memoize } from '../../utils/fn';
 import { profile } from '../../utils/profile';
-import { logMetroError, logMetroErrorAsync } from './metro/metroErrorInterface';
+import { logMetroError } from './metro/metroErrorInterface';
 import { getMetroServerRoot } from './middleware/ManifestMiddleware';
 
 const debug = require('debug')('expo:start:server:node-renderer') as typeof console.log;

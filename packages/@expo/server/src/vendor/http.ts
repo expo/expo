@@ -1,6 +1,11 @@
 import '@expo/server/install';
 
-import { AbortController, RequestInit, writeReadableStreamToWritable } from '@remix-run/node';
+import {
+  AbortController,
+  Headers,
+  RequestInit,
+  writeReadableStreamToWritable,
+} from '@remix-run/node';
 import * as http from 'http';
 
 import { ExpoRequest, ExpoResponse } from '../environment';
@@ -57,8 +62,8 @@ export async function respond(res: http.ServerResponse, expoRes: ExpoResponse): 
   res.statusMessage = expoRes.statusText;
   res.statusCode = expoRes.status;
 
-  for (let [key, values] of Object.entries(expoRes.headers.raw())) {
-    for (let value of values) {
+  for (const [key, values] of Object.entries(expoRes.headers.raw())) {
+    for (const value of values) {
       res.setHeader(key, value);
     }
   }

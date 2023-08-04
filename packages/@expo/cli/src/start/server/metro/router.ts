@@ -1,4 +1,6 @@
+import { ExpoConfig } from '@expo/config';
 import chalk from 'chalk';
+import { sync as globSync } from 'glob';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -37,6 +39,17 @@ function getFallbackEntryRoot(projectRoot: string): string {
   return path.join(projectRoot, 'node_modules/expo-router/entry');
 }
 
+export function getRouterDirectoryModuleIdWithManifest(
+  projectRoot: string,
+  exp: ExpoConfig
+): string {
+  return exp.extra?.router?.unstable_src ?? getRouterDirectory(projectRoot);
+}
+
+export function getRouterDirectoryWithManifest(projectRoot: string, exp: ExpoConfig): string {
+  return path.join(projectRoot, getRouterDirectoryModuleIdWithManifest(projectRoot, exp));
+}
+
 export function getRouterDirectory(projectRoot: string): string {
   // more specific directories first
   if (directoryExistsSync(path.join(projectRoot, 'src/app'))) {
@@ -50,4 +63,11 @@ export function getRouterDirectory(projectRoot: string): string {
 
 export function isApiRouteConvention(name: string): boolean {
   return /\+api\.[tj]sx?$/.test(name);
+}
+
+export function getApiRoutesForDirectory(cwd: string) {
+  return globSync('**/*+api.@(ts|tsx|js|jsx)', {
+    cwd,
+    absolute: true,
+  });
 }

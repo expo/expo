@@ -43,7 +43,7 @@ export function createRequestHandler(distFolder: string) {
   );
 
   return async function handler(request: ExpoRequest): Promise<Response> {
-    const url = new URL(request.url, 'http://acme.dev');
+    const url = new URL(request.url, 'http://expo.dev');
 
     const sanitizedPathname = url.pathname.replace(/^\/+/, '').replace(/\/+$/, '') + '/';
 
@@ -131,7 +131,6 @@ function getSearchParams(url: string, filePath: string) {
     }
   }
 
-  console.log('>> getSearchParams', { url, filePath, searchParams });
   return searchParams;
 }
 

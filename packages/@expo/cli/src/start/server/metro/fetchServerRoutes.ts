@@ -4,10 +4,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { sync as globSync } from 'glob';
+import path from 'node:path';
 
 import { requireFileContentsWithMetro } from '../getStaticRenderFunctions';
 import { logMetroErrorAsync } from './metroErrorInterface';
+import { getApiRoutesForDirectory } from './router';
 
 const debug = require('debug')('expo:server-routes') as typeof console.log;
 
@@ -17,6 +18,7 @@ export type ApiRouteOptions = {
   mode?: string;
   appDir: string;
   port?: number;
+  shouldThrow?: boolean;
 };
 
 export async function rebundleApiRoute(
@@ -55,6 +57,9 @@ export async function bundleApiRoute(
       if (error instanceof Error) {
         await logMetroErrorAsync({ error, projectRoot });
       }
+      if (options.shouldThrow) {
+        throw error;
+      }
       // TODO: improve error handling, maybe have this be a mock function which returns the static error html
       return null;
     } finally {
@@ -68,16 +73,14 @@ export async function bundleApiRoute(
 }
 
 export async function eagerBundleApiRoutes(projectRoot: string, options: ApiRouteOptions) {
-  return Promise.all(
-    getApiRoutesForDirectory(options.appDir).map((filepath) =>
-      bundleApiRoute(projectRoot, filepath, options)
-    )
-  );
-}
+  const files: Map<string, string> = new Map();
 
-export function getApiRoutesForDirectory(cwd: string) {
-  return globSync('**/*+api.@(ts|tsx|js|jsx)', {
-    cwd,
-    absolute: true,
-  });
+  await Promise.all(
+    getApiRoutesForDirectory(options.appDir).map(async (filepath) => {
+      const contents = await bundleApiRoute(projectRoot, filepath, options);
+      files.set(path.relative(options.appDir, filepath.replace(/\.[tj]sx?$/, '.js')), contents!);
+    })
+  );
+
+  return files;
 }
