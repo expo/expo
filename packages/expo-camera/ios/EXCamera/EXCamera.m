@@ -626,6 +626,7 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
       NSString *path = [self.fileSystem generatePathInDirectory:directory withExtension:@".mov"];
       NSURL *outputURL = [[NSURL alloc] initFileURLWithPath:path];
       [self.movieFileOutput startRecordingToOutputFileURL:outputURL recordingDelegate:self];
+      [self updateFlashMode];
       self.videoRecordedResolve = resolve;
       self.videoRecordedReject = reject;
     });
