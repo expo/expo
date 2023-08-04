@@ -57,7 +57,7 @@ export declare const locale: string;
  */
 export declare const locales: string[];
 /**
- * @deprecated Use Localization.getLocales() instead.
+ * @deprecated Use Localization.getCalendars() instead.
  * The current time zone in display format.
  * On Web time zone is calculated with Intl.DateTimeFormat().resolvedOptions().timeZone. For a
  * better estimation you could use the moment-timezone package but it will add significant bloat to
