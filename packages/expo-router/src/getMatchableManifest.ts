@@ -138,6 +138,11 @@ function getNamedParametrizedRoute(route: string) {
             invalidKey = true;
           }
 
+          // Prevent duplicates after sanitizing the key
+          if (cleanedKey in routeKeys) {
+            invalidKey = true;
+          }
+
           if (invalidKey) {
             cleanedKey = getSafeRouteKey();
           }

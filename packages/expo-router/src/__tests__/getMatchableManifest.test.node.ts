@@ -18,13 +18,13 @@ function getRoutesFor(files: string[]) {
   )!;
 }
 
-xit(`converts single basic`, () => {
+it(`converts single basic`, () => {
   expect(getMatchableManifest(getRoutesFor(['./home.js']))).toEqual([
     { groups: {}, namedRegex: '^/home(?:/)?$', re: /^\/home(?:\/)?$/, routeKeys: {} },
   ]);
 });
 
-xit(`sorts`, () => {
+it(`sorts`, () => {
   const a = getMatchableManifest(getRoutesFor(['./b/c.tsx', './a.tsx']));
   expect(a).toEqual(getMatchableManifest(getRoutesFor(['./a.tsx', './b/c.tsx'])));
   expect(a.map((r) => r.namedRegex)).toEqual(['^/b/c(?:/)?$', '^/a(?:/)?$']);
@@ -49,6 +49,65 @@ it(`converts index routes`, () => {
     { groups: {}, namedRegex: '^/a/index/b(?:/)?$', re: /^\/a\/index\/b(?:\/)?$/, routeKeys: {} },
     { groups: {}, namedRegex: '^/(?:/)?$', re: /^\/(?:\/)?$/, routeKeys: {} },
   ]);
+});
+
+function getNamedMatcher(fileName: string) {
+  return new RegExp(getMatchableManifest(getRoutesFor([fileName]))[0].namedRegex, '');
+}
+
+it(`matches expected`, () => {
+  expect(getNamedMatcher('./index.tsx').test('/')).toBe(true);
+  console.log(getNamedMatcher('./post/[my_lil-id].tsx'));
+  expect(getNamedMatcher('./post/[my_lil-id].tsx').exec('/post/123')?.groups).toEqual({
+    my_lilid: '123',
+  });
+});
+
+it(`matches expected with safe name`, () => {
+  const matcher = getMatchableManifest(
+    getRoutesFor(['./[user name]/category/[CATEGORY]/post/[my_lil-id].tsx'])
+  )[0];
+
+  const matched = new RegExp(matcher.namedRegex).exec(
+    '/evanbacon/category/announcements/post/router-v3'
+  );
+  expect(matched?.groups).toEqual({
+    CATEGORY: 'announcements',
+    my_lilid: 'router-v3',
+    username: 'evanbacon',
+  });
+  expect(matcher.routeKeys).toEqual({
+    CATEGORY: 'CATEGORY',
+    my_lilid: 'my_lil-id',
+    username: 'user name',
+  });
+});
+
+it(`matches expected with safe names that collide`, () => {
+  const matcher = getMatchableManifest(
+    getRoutesFor(['./[user name]/category/[my_lilid]/post/[my_lil-id].tsx'])
+  )[0];
+  console.log('matcher', matcher);
+
+  const matched = new RegExp(matcher.namedRegex).exec(
+    '/evanbacon/category/announcements/post/router-v3'
+  );
+  expect(matched?.groups).toEqual({
+    a: 'router-v3',
+    my_lilid: 'announcements',
+    username: 'evanbacon',
+  });
+  expect(matcher.routeKeys).toEqual({
+    a: 'my_lil-id',
+    my_lilid: 'my_lilid',
+    username: 'user name',
+  });
+});
+
+// TODO: Maybe assert sooner?
+it(`asserts duplicate keys eventually`, () => {
+  const matcher = getMatchableManifest(getRoutesFor(['./[a]/b/[a].tsx']))[0];
+  expect(() => new RegExp(matcher.namedRegex)).toThrowError();
 });
 
 it(`converts dynamic routes`, () => {
