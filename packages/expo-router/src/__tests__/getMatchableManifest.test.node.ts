@@ -23,13 +23,13 @@ function getRoutesFor(files: string[]) {
 
 it(`converts a server manifest`, () => {
   expect(getServerManifest(getRoutesFor(['./home.js', './api/[post]+api.tsx']))).toEqual({
-    api: [
+    dynamicRoutes: [
       {
         namedRegex: '^/api/(?<post>[^/]+?)(?:/)?$',
         routeKeys: { post: 'post' },
       },
     ],
-    static: [{ namedRegex: '^/home(?:/)?$', routeKeys: {} }],
+    staticRoutes: [{ namedRegex: '^/home(?:/)?$', routeKeys: {} }],
   });
 });
 

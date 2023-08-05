@@ -52,8 +52,14 @@ export const NON_STANDARD_SYMBOL = Symbol('non-standard');
 export class ExpoURL extends URL {
   static from(url: string, config: ExpoRouterServerManifestV1FunctionRoute): ExpoURL {
     const expoUrl = new ExpoURL(url);
+    const match = config.namedRegex.exec(expoUrl.pathname);
+    if (match?.groups) {
+      for (const [key, value] of Object.entries(match.groups)) {
+        const namedKey = config.routeKeys[key];
+        expoUrl.searchParams.set(namedKey, value);
+      }
+    }
 
-    console.log(config);
     return expoUrl;
   }
 }
@@ -75,7 +81,7 @@ export class ExpoRequest extends Request {
     super(info, init);
 
     const url = typeof info !== 'string' && 'url' in info ? info.url : String(info);
-
+    console.log('REX>', info, config);
     this[NON_STANDARD_SYMBOL] = {
       url: config ? ExpoURL.from(url, config) : new ExpoURL(url),
     };

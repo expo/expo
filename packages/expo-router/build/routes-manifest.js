@@ -1,39 +1,37 @@
 // no relative imports
 import { ctx } from '../_ctx';
-// import { ctx } from "expo-router/_entry-ctx-lazy";
-import { getMatchableRouteConfigs } from './fork/getStateFromPath';
-import { getReactNavigationConfig } from './getReactNavigationConfig';
+import { getServerManifest } from './getMatchableManifest';
 import { getRoutes } from './getRoutes';
-import { loadStaticParamsAsync } from './loadStaticParamsAsync';
 import { matchGroupName } from './matchers';
 export async function createRoutesManifest() {
-    let routeTree = getRoutes(ctx, {
+    const routeTree = getRoutes(ctx, {
         preserveApiRoutes: true,
         ignoreRequireErrors: true,
     });
     if (!routeTree) {
         return null;
     }
-    routeTree = await loadStaticParamsAsync(routeTree);
-    const config = getReactNavigationConfig(routeTree, false);
-    const { configs } = getMatchableRouteConfigs(config);
-    const manifest = configs.map((config) => {
-        const isApi = config._route.contextKey?.match(/\+api\.[tj]sx?/);
-        const src = config._route.contextKey.replace(/\.[tj]sx?$/, '.js').replace(/^\.\//, '');
-        return {
-            dynamic: config._route.dynamic,
-            generated: config._route.generated,
-            type: isApi ? 'dynamic' : 'static',
-            file: config._route.contextKey,
-            regex: config.regex?.source ?? /^\/$/.source,
-            src: isApi ? './_expo/functions/' + src : './' + src,
-        };
-    });
-    return {
-        functions: manifest.filter((v) => v.type === 'dynamic'),
-        staticHtml: manifest.filter((v) => v.type === 'static'),
-        staticHtmlPaths: [...getStaticFiles(config)],
-    };
+    return getServerManifest(routeTree);
+    // routeTree = await loadStaticParamsAsync(routeTree);
+    // const config = getReactNavigationConfig(routeTree, false);
+    // const { configs } = getMatchableRouteConfigs(config);
+    // const manifest = configs.map((config) => {
+    //   const isApi = config._route!.contextKey?.match(/\+api\.[tj]sx?/);
+    //   const src = config._route!.contextKey.replace(/\.[tj]sx?$/, '.js').replace(/^\.\//, '');
+    //   return {
+    //     dynamic: config._route!.dynamic,
+    //     generated: config._route!.generated,
+    //     type: isApi ? 'dynamic' : 'static',
+    //     file: config._route!.contextKey,
+    //     regex: config.regex?.source ?? /^\/$/.source,
+    //     src: isApi ? './_expo/functions/' + src : './' + src,
+    //   };
+    // });
+    // return {
+    //   functions: manifest.filter((v) => v.type === 'dynamic'),
+    //   staticHtml: manifest.filter((v) => v.type === 'static'),
+    //   staticHtmlPaths: [...getStaticFiles(config)],
+    // };
 }
 function getStaticFiles(manifest) {
     const files = new Set();

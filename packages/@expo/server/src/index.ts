@@ -1,11 +1,10 @@
 import '@expo/server/install';
 
 import { Response } from '@remix-run/node';
+import type { ExpoRoutesManifestV1 } from 'expo-router/build/routes-manifest';
 import fs from 'fs';
 import path from 'path';
 import { URL } from 'url';
-
-import type { ExpoRoutesManifestV1 } from 'expo-router/build/routes-manifest';
 
 import { ExpoRequest, ExpoResponse } from './environment';
 
@@ -13,7 +12,7 @@ const debug = require('debug')('expo:server') as typeof console.log;
 
 function getProcessedManifest(path: string): ExpoRoutesManifestV1<RegExp> {
   // TODO: JSON Schema for validation
-  let routesManifest = JSON.parse(fs.readFileSync(path, 'utf-8')) as ExpoRoutesManifestV1;
+  const routesManifest = JSON.parse(fs.readFileSync(path, 'utf-8')) as ExpoRoutesManifestV1;
 
   const parsed: ExpoRoutesManifestV1<RegExp> = {
     ...routesManifest,

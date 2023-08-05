@@ -7,8 +7,8 @@
  *
  * Based on https://github.com/vercel/next.js/blob/1df2686bc9964f1a86c444701fa5cbf178669833/packages/next/src/shared/lib/router/utils/route-regex.ts
  */
-import { getContextKey } from './matchers';
 import { RouteNode, sortRoutes } from './Route';
+import { getContextKey } from './matchers';
 
 export interface Group {
   pos: number;
@@ -38,7 +38,9 @@ export function getMatchableManifest(route: RouteNode) {
     .sort(([, a], [, b]) => sortRoutes(a, b))
     .reverse();
 
-  return getMatchableManifestForPaths(flat.map(([normalizedRoutePath]) => normalizedRoutePath));
+  return getMatchableManifestForPaths(
+    flat.map(([normalizedRoutePath, node]) => [normalizedRoutePath, node])
+  );
 }
 
 function isApiRoute(route: RouteNode) {
@@ -62,71 +64,31 @@ export function getServerManifest(route: RouteNode) {
     .reverse();
 
   const apiRoutes = flat.filter(([, route]) => isApiRoute(route));
-  console.log('apiRoutes', flat);
   const otherRoutes = flat.filter(([, route]) => !isApiRoute(route));
 
   return {
-    api: getMatchableManifestForPaths(
-      apiRoutes.map(([normalizedRoutePath]) => normalizedRoutePath)
+    dynamicRoutes: getMatchableManifestForPaths(
+      apiRoutes.map(([normalizedRoutePath, node]) => [normalizedRoutePath, node])
     ),
-    static: getMatchableManifestForPaths(
-      otherRoutes.map(([normalizedRoutePath]) => normalizedRoutePath)
+    staticRoutes: getMatchableManifestForPaths(
+      otherRoutes.map(([normalizedRoutePath, node]) => [normalizedRoutePath, node])
     ),
   };
 }
 
-export function getMatchableManifestForPaths(paths: string[]) {
-  return paths.map((normalizedRoutePath) => getNamedRouteRegex(normalizedRoutePath));
+function getMatchableManifestForPaths(paths: [string, RouteNode][]) {
+  return paths.map((normalizedRoutePath) => ({
+    ...getNamedRouteRegex(normalizedRoutePath[0], normalizedRoutePath[1].contextKey),
+    generated: normalizedRoutePath[1].generated,
+  }));
 }
 
-/**
- * This function extends `getRouteRegex` generating also a named regexp where
- * each group is named along with a routeKeys object that indexes the assigned
- * named group with its corresponding key.
- */
-export function getNamedRouteRegex(normalizedRoute: string) {
+export function getNamedRouteRegex(normalizedRoute: string, page: string) {
   const result = getNamedParametrizedRoute(normalizedRoute);
   return {
-    // ...getRouteRegex(normalizedRoute),
+    page: page.replace(/\.[jt]sx?$/, ''),
     namedRegex: `^${result.namedParameterizedRoute}(?:/)?$`,
     routeKeys: result.routeKeys,
-  };
-}
-
-/**
- * From a normalized route this function generates a regular expression and
- * a corresponding groups object intended to be used to store matching groups
- * from the regular expression.
- */
-export function getRouteRegex(normalizedRoute: string): RouteRegex {
-  const { parameterizedRoute, groups } = getParametrizedRoute(normalizedRoute);
-  return {
-    re: new RegExp(`^${parameterizedRoute}(?:/)?$`),
-    groups: groups,
-  };
-}
-
-function getParametrizedRoute(route: string) {
-  const segments = removeTrailingSlash(route).slice(1).split('/');
-  const groups: { [groupName: string]: Group } = {};
-  let groupIndex = 1;
-
-  return {
-    parameterizedRoute: segments
-      .map((segment) => {
-        if (/^\[.*\]$/.test(segment)) {
-          const { name, optional, repeat } = parseParameter(segment.slice(1, -1));
-          groups[name] = { pos: groupIndex++, repeat, optional };
-          return repeat ? (optional ? '(?:/(.+?))?' : '/(.+?)') : '/([^/]+?)';
-        } else if (/^\(.*\)$/.test(segment)) {
-          // Make section optional
-          return `(?:/${escapeStringRegexp(segment)})?`;
-        } else {
-          return `/${escapeStringRegexp(segment)}`;
-        }
-      })
-      .join(''),
-    groups,
   };
 }
 

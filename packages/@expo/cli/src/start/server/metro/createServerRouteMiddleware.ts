@@ -54,7 +54,7 @@ export function createRouteHandlerMiddleware(
     if (!req?.url || !req.method) {
       return next();
     }
-    const { manifest } = await fetchManifest(projectRoot, options);
+    const { manifest } = await fetchManifest<RegExp>(projectRoot, options);
     if (!manifest) {
       // NOTE: no app dir
       // TODO: Redirect to 404 page
@@ -67,13 +67,13 @@ export function createRouteHandlerMiddleware(
     const pathname = location.pathname?.replace(/\/$/, '');
     const sanitizedPathname = pathname.replace(/^\/+/, '').replace(/\/+$/, '') + '/';
 
-    let functionRoute: ExpoRouterServerManifestV1Route<'dynamic'> | null = null;
+    let functionRoute: ExpoRouterServerManifestV1Route<RegExp> | null = null;
 
-    const staticManifest = manifest?.staticHtml;
-    const dynamicManifest = manifest?.functions;
+    const staticManifest = manifest?.staticRoutes;
+    const dynamicManifest = manifest?.dynamicRoutes;
 
     for (const route of dynamicManifest) {
-      if (route.regex.test(sanitizedPathname)) {
+      if (route.namedRegex.test(location.pathname)) {
         functionRoute = route;
         break;
       }
@@ -81,12 +81,12 @@ export function createRouteHandlerMiddleware(
 
     if (req.method === 'GET' || req.method === 'HEAD') {
       for (const route of staticManifest) {
-        if (route.regex.test(sanitizedPathname)) {
+        if (route.namedRegex.test(sanitizedPathname)) {
           if (
             // Skip the 404 page if there's a function
             route.generated &&
             // TODO: Add a proper 404 convention.
-            route.file.match(/^\.\/\[\.\.\.404]\.[jt]sx?$/)
+            route.page.match(/^\.\/\[\.\.\.404]$/)
           ) {
             if (functionRoute) {
               continue;
@@ -146,7 +146,7 @@ export function createRouteHandlerMiddleware(
       return next();
     }
 
-    const resolvedFunctionPath = await resolveAsync(functionRoute.file, {
+    const resolvedFunctionPath = await resolveAsync(functionRoute.page, {
       extensions: ['.js', '.jsx', '.ts', '.tsx'],
       basedir: options.appDir,
     });

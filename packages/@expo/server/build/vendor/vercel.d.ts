@@ -1,7 +1,6 @@
-import { Headers as NodeHeaders } from '@remix-run/node';
+import { AppLoadContext, Headers as NodeHeaders, Response as NodeResponse } from '@remix-run/node';
+import { VercelRequest, VercelResponse } from '@vercel/node';
 import { ExpoRequest } from '../environment';
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-import type { AppLoadContext, Response as NodeResponse } from '@remix-run/node';
 /**
  * A function that returns the value to use as `context` in route `loader` and
  * `action` functions.

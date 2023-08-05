@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 
-const path = require('path');
 const { createRequestHandler } = require('@expo/server/build/vendor/express');
-
-const express = require('express');
 const compression = require('compression');
+const express = require('express');
 const morgan = require('morgan');
+const path = require('path');
 
 const BUILD_DIR = path.join(process.cwd(), 'dist');
 

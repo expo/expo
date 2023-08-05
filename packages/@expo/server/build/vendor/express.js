@@ -61,8 +61,8 @@ exports.convertRequest = convertRequest;
 async function respond(res, expoRes) {
     res.statusMessage = expoRes.statusText;
     res.status(expoRes.status);
-    for (let [key, values] of Object.entries(expoRes.headers.raw())) {
-        for (let value of values) {
+    for (const [key, values] of Object.entries(expoRes.headers.raw())) {
+        for (const value of values) {
             res.append(key, value);
         }
     }

@@ -101,7 +101,7 @@ export function convertRequest(event: HandlerEvent): ExpoRequest {
   };
 
   if (event.httpMethod !== 'GET' && event.httpMethod !== 'HEAD' && event.body) {
-    let isFormData = event.headers['content-type']?.includes('multipart/form-data');
+    const isFormData = event.headers['content-type']?.includes('multipart/form-data');
     init.body = event.isBase64Encoded
       ? isFormData
         ? Buffer.from(event.body, 'base64')
@@ -178,6 +178,6 @@ const binaryTypes = [
 
 export function isBinaryType(contentType: string | null | undefined) {
   if (!contentType) return false;
-  let [test] = contentType.split(';');
+  const [test] = contentType.split(';');
   return binaryTypes.includes(test);
 }

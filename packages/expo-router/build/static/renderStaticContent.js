@@ -12,6 +12,7 @@ import ReactDOMServer from 'react-dom/server';
 import { AppRegistry } from 'react-native-web';
 import { ExpoRoot } from '../ExpoRoot';
 import { getNavigationConfig } from '../getLinkingConfig';
+import { getServerManifest } from '../getMatchableManifest';
 import { getRoutes } from '../getRoutes';
 import { Head } from '../head';
 import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
@@ -81,5 +82,5 @@ function mixHeadComponentsWithStaticResults(helmet, html) {
     return html;
 }
 // Re-export for use in server
-export { getManifest };
+export { getManifest, getServerManifest };
 //# sourceMappingURL=renderStaticContent.js.map

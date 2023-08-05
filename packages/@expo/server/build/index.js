@@ -14,7 +14,7 @@ Object.defineProperty(exports, "ExpoResponse", { enumerable: true, get: function
 const debug = require('debug')('expo:server');
 function getProcessedManifest(path) {
     // TODO: JSON Schema for validation
-    let routesManifest = JSON.parse(fs_1.default.readFileSync(path, 'utf-8'));
+    const routesManifest = JSON.parse(fs_1.default.readFileSync(path, 'utf-8'));
     const parsed = {
         ...routesManifest,
         functions: routesManifest.functions.map((value) => {
@@ -37,7 +37,7 @@ function createRequestHandler(distFolder) {
     const routesManifest = getProcessedManifest(path_1.default.join(distFolder, '_expo/routes.json'));
     const dynamicManifest = [...routesManifest.functions, ...routesManifest.staticHtml].filter((route) => route.type === 'dynamic' || route.dynamic);
     return async function handler(request) {
-        const url = new url_1.URL(request.url, 'http://acme.dev');
+        const url = new url_1.URL(request.url, 'http://expo.dev');
         const sanitizedPathname = url.pathname.replace(/^\/+/, '').replace(/\/+$/, '') + '/';
         for (const route of dynamicManifest) {
             if (!route.regex.test(sanitizedPathname)) {
@@ -114,6 +114,5 @@ function getSearchParams(url, filePath) {
             searchParams[key] = params.get(key);
         }
     }
-    console.log('>> getSearchParams', { url, filePath, searchParams });
     return searchParams;
 }

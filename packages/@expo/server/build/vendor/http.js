@@ -25,7 +25,7 @@ function convertRequest(req, res, routeConfig) {
 }
 exports.convertRequest = convertRequest;
 function convertHeaders(requestHeaders) {
-    const headers = new Headers();
+    const headers = new node_1.Headers();
     for (const [key, values] of Object.entries(requestHeaders)) {
         if (values) {
             if (Array.isArray(values)) {
@@ -44,8 +44,8 @@ exports.convertHeaders = convertHeaders;
 async function respond(res, expoRes) {
     res.statusMessage = expoRes.statusText;
     res.statusCode = expoRes.status;
-    for (let [key, values] of Object.entries(expoRes.headers.raw())) {
-        for (let value of values) {
+    for (const [key, values] of Object.entries(expoRes.headers.raw())) {
+        for (const value of values) {
             res.setHeader(key, value);
         }
     }

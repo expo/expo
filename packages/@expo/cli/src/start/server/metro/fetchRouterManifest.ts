@@ -9,24 +9,22 @@ import { getExpoRouteManifestBuilderAsync } from '../getStaticRenderFunctions';
 
 const debug = require('debug')('expo:routes-manifest') as typeof console.log;
 
-export type ExpoRouterServerManifestV1Route<TType> = {
-  dynamic: any;
-  generated: boolean;
-  type: TType;
-  file: string;
-  regex: RegExp;
-  src: string;
+export type ExpoRouterServerManifestV1Route<TRegex = string> = {
+  page: string;
+  routeKeys: Record<string, string>;
+  namedRegex: TRegex;
+  generated?: boolean;
 };
 
-export type ExpoRouterServerManifestV1 = {
+export type ExpoRouterServerManifestV1<TRegex = string> = {
   staticHtmlPaths: string[];
-  staticHtml: ExpoRouterServerManifestV1Route<'static'>[];
-  functions: ExpoRouterServerManifestV1Route<'dynamic'>[];
+  dynamicRoutes: ExpoRouterServerManifestV1Route<TRegex>[];
+  staticRoutes: ExpoRouterServerManifestV1Route<TRegex>[];
 };
 
-export type LoadManifestResult = {
+export type LoadManifestResult<TRegex = string> = {
   error?: Error;
-  manifest?: ExpoRouterServerManifestV1 | null;
+  manifest?: ExpoRouterServerManifestV1<TRegex> | null;
 };
 
 const manifestOperation = new Map<string, Promise<any>>();
@@ -44,10 +42,10 @@ export async function refetchManifest(
   return fetchManifest(projectRoot, options);
 }
 
-export async function fetchManifest(
+export async function fetchManifest<TRegex = string>(
   projectRoot: string,
   options: { mode?: string; port?: number; asJson?: boolean }
-): Promise<LoadManifestResult> {
+): Promise<LoadManifestResult<TRegex>> {
   if (manifestOperation.has('manifest')) {
     const manifest = await manifestOperation.get('manifest');
     if (!manifest.error) {
@@ -85,7 +83,7 @@ export async function fetchManifest(
       return { manifest: null };
     }
 
-    if (!results.staticHtml || !results.functions) {
+    if (!results.staticRoutes || !results.dynamicRoutes) {
       throw new Error('Routes manifest is malformed: ' + JSON.stringify(results, null, 2));
     }
 
@@ -104,17 +102,17 @@ export async function fetchManifest(
 }
 
 // Convert the serialized manifest to a usable format
-export function inflateManifest(json: any): ExpoRouterServerManifestV1 {
-  json.staticHtml = json.staticHtml?.map((value: any) => {
+export function inflateManifest(json: any): ExpoRouterServerManifestV1<RegExp> {
+  json.staticRoutes = json.staticRoutes?.map((value: any) => {
     return {
       ...value,
-      regex: new RegExp(value.regex),
+      namedRegex: new RegExp(value.namedRegex),
     };
   });
-  json.functions = json.functions?.map((value: any) => {
+  json.dynamicRoutes = json.dynamicRoutes?.map((value: any) => {
     return {
       ...value,
-      regex: new RegExp(value.regex),
+      namedRegex: new RegExp(value.namedRegex),
     };
   });
 

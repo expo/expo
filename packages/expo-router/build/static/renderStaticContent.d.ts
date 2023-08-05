@@ -5,11 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 import '@expo/metro-runtime';
+import { getServerManifest } from '../getMatchableManifest';
 /** Get the linking manifest from a Node.js process. */
 declare function getManifest(options: any): Promise<{
     initialRouteName?: string | undefined;
     screens: Record<string, import("../getReactNavigationConfig").Screen>;
 }>;
 export declare function getStaticContent(location: URL): string;
-export { getManifest };
+export { getManifest, getServerManifest };
 //# sourceMappingURL=renderStaticContent.d.ts.map
