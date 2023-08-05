@@ -98,7 +98,7 @@
     "@types/react": "~18.0.14",
     "babel-plugin-module-resolver": "^5.0.0",
     "babel-preset-expo": "~9.6.0",
-    "detox": "^20.1.1",
+    "detox": "^20.11.2",
     "expo-module-scripts": "^3.0.0",
     "expo-yarn-workspaces": "^2.0.0",
     "getenv": "^1.0.0",
