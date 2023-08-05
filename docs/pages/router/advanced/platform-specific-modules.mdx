@@ -15,7 +15,7 @@ You can use the [`Platform`](https://reactnative.dev/docs/platform-specific-code
 
 ```jsx app/_layout.js
 import { Platform } from 'react-native';
-import { Link, Tabs } from 'expo-router';
+import { Link, Slot, Tabs } from 'expo-router';
 
 export default function Layout() {
   if (Platform.OS === 'web') {

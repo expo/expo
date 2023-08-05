@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed flash is not enabled during recordings. ([#23776](https://github.com/expo/expo/pull/23776) by [@tszheichoi](https://github.com/tszheichoi))
+
 ### 💡 Others
 
 ## 13.5.1 — 2023-08-02
