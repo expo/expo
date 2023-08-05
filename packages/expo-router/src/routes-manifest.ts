@@ -1,6 +1,5 @@
 // no relative imports
 import { ctx } from '../_ctx';
-// import { ctx } from "expo-router/_entry-ctx-lazy";
 import { getServerManifest } from './getMatchableManifest';
 import { getRoutes } from './getRoutes';
 
