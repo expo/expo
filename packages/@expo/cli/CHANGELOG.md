@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix bug preventing non-standard xcode projects from running with `npx expo run:ios`.
+
 ### 💡 Others
 
 ## 0.11.1 — 2023-08-02
