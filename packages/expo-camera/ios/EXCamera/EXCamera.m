@@ -641,40 +641,37 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
 // https://github.com/react-native-camera/react-native-camera/pull/2694
 - (void)setVideoOptions:(NSDictionary *)options forConnection:(AVCaptureConnection *)connection onReject:(EXPromiseRejectBlock)reject
 {
-  dispatch_async(self.sessionQueue, ^{
     // Reset validation flag
-    self.isValidVideoOptions = YES;
-
-    if (options[@"maxDuration"]) {
-      Float64 maxDuration = [options[@"maxDuration"] floatValue];
-      self.movieFileOutput.maxRecordedDuration = CMTimeMakeWithSeconds(maxDuration, 30);
-    }
-
-    if (options[@"maxFileSize"]) {
-      self.movieFileOutput.maxRecordedFileSize = [options[@"maxFileSize"] integerValue];
-    }
+  self.isValidVideoOptions = YES;
+  
+  if (options[@"maxDuration"]) {
+    Float64 maxDuration = [options[@"maxDuration"] floatValue];
+    self.movieFileOutput.maxRecordedDuration = CMTimeMakeWithSeconds(maxDuration, 30);
+  }
+  
+  if (options[@"maxFileSize"]) {
+    self.movieFileOutput.maxRecordedFileSize = [options[@"maxFileSize"] integerValue];
+  }
+  
+  if (options[@"codec"]) {
+    AVVideoCodecType videoCodecType = [EXCameraUtils videoCodecForType: [options[@"codec"] integerValue]];
     
-    if (options[@"codec"]) {
-      AVVideoCodecType videoCodecType = [EXCameraUtils videoCodecForType: [options[@"codec"] integerValue]];
-
-      if ([self.movieFileOutput.availableVideoCodecTypes containsObject:videoCodecType]) {
-        [self.movieFileOutput setOutputSettings: @{AVVideoCodecKey: videoCodecType} forConnection: connection];
-        self.videoCodecType = videoCodecType;
-      } else {
-        if ([videoCodecType isEqualToString: @"VIDEO_CODEC_UNKNOWN"]) {
-          videoCodecType = options[@"codec"];
-        }
-        NSString *videoCodecErrorMessage = [NSString stringWithFormat: @"Video Codec '%@' is not supported on this device", videoCodecType];
-        reject(@"E_RECORDING_FAILED", videoCodecErrorMessage, nil);
-        
-        [self cleanupMovieFileCapture];
-        self.videoRecordedResolve = nil;
-        self.videoRecordedReject = nil;
-        self.isValidVideoOptions = NO;
+    if ([self.movieFileOutput.availableVideoCodecTypes containsObject:videoCodecType]) {
+      [self.movieFileOutput setOutputSettings: @{AVVideoCodecKey: videoCodecType} forConnection: connection];
+      self.videoCodecType = videoCodecType;
+    } else {
+      if ([videoCodecType isEqualToString: @"VIDEO_CODEC_UNKNOWN"]) {
+        videoCodecType = options[@"codec"];
       }
+      NSString *videoCodecErrorMessage = [NSString stringWithFormat: @"Video Codec '%@' is not supported on this device", videoCodecType];
+      reject(@"E_RECORDING_FAILED", videoCodecErrorMessage, nil);
+      
+      [self cleanupMovieFileCapture];
+      self.videoRecordedResolve = nil;
+      self.videoRecordedReject = nil;
+      self.isValidVideoOptions = NO;
     }
-    
-  });
+  }
 }
 
 - (void)maybeStartFaceDetection:(BOOL)mirrored {
