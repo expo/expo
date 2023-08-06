@@ -56,7 +56,7 @@ and `npx react-native run-ios`. Pass in the `--device` flag to select a device o
 
 <Collapsible summary="Can I use Expo CLI without installing the Expo Modules API?">
 
-When you install the `expo` package with `npx install-expo-modules`, the Expo Module API is also installed. If you want to try out Expo CLI for now, you can install the `expo` package with `npm install` and then configure the **react-native.config.js** to exclude the package from autolinking:
+Expo Modules API is also installed when you install the `expo` package with `npx install-expo-modules`. If you want to try out Expo CLI for now without installing Expo Modules API, install the `expo` package with `npm install` and then configure the **react-native.config.js** to exclude the package from autolinking:
 
 ```js react-native.config.js
 module.exports = {
