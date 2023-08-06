@@ -8,7 +8,11 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { DEMI } from '~/ui/components/Text';
 
-To migrate from `npx react-native init` to Expo CLI, you'll need to install the `expo` package which includes the Expo Modules API and Expo CLI. For most apps, executing the following command in a project directory to install the package is all you need to do:
+To migrate from `npx react-native init` to Expo CLI, you'll need to install the `expo` package which includes the Expo Modules API and Expo CLI. This guide covers the installation step, the benefits of using Expo CLI, and how to compile and run your project after migrating to Expo CLI.
+
+## Install the `expo` package
+
+In most cases, executing the following command in a project directory to install the package is all you need to do:
 
 <Terminal cmd={['npx install-expo-modules@latest']} />
 
@@ -35,7 +39,7 @@ Expo CLI commands provide several benefits over the similar commands in `@react-
 - Support for Expo tooling such as [`expo-dev-client`](/develop/development-builds/introduction), the [Expo Updates protocol](/technical-specs/expo-updates-1) and [EAS Update](/eas-update/introduction).
 - Automated `pod install` execution when using `npx expo run:ios`.
 - `npx expo install` selects compatible dependency versions for well-known packages.
-- Automatic port detection when running `npx expo run:[android|ios]` and `npx expo start`. If another app is running on the default port, a different port is suggested.
+- Automatic port detection when running `npx expo run:[android|ios]` and `npx expo start`. If another app is running on the default port, a different port is used.
 - Android or iOS device launch selection shortcuts using <kbd>Shift</kbd> + <kbd>a</kbd> or <kbd>Shift</kbd> + <kbd>i</kbd> from the interactive prompt.
 - Built-in support for serving your app over an [ngrok tunnel](/develop/development-builds/development-workflows/#tunnel-urls).
 - Develop on any port with any entry JavaScript file.
@@ -45,12 +49,17 @@ Windows and macOS. If building for these platforms, you can utilize Expo CLI for
 
 ## Compile and run your app
 
-Once you have the `expo` package installed, use the `npx expo run:android` and `npx expo run:ios` commands as alternatives to `npx react-native run-android`
-and `npx react-native run-ios`. Pass in the `--device` flag to select a device or simulator to build for. This also works for any connected iOS device.
+After installing the `expo` package, you can use the following commands which are alternatives to `npx react-native run-android` and `npx react-native run-ios`:
 
-## Start the bundler
+<Terminal cmd={['# for Android', 'npx expo run:android', '', '# for iOS', 'npx expo run:ios']} />
 
-`npx expo run:[android|ios]` starts the bundler/development server. You can skip that by passing in `--no-bundler` flag and independently start the development server with `npx expo start`. For SDK 48 and lower, use the `--dev-client` flag with the command.
+When building your project, you can choose a device or simulator by using the `--device` flag. This also applies to any iOS device that is connected to your computer.
+
+## Independently start the bundler
+
+`npx expo run:[android|ios]` automatically starts the bundler/development server. If you want to independently start the bundler with `npx expo start` command, pass the `--no-bundler` to the `npx expo run:[android|ios]` command.
+
+> For SDK 48 and lower, use the `npx expo start --dev-client` command to start the bundler when using a development build or having `expo-dev-client` library installed in your project.
 
 ## Common questions
 
@@ -82,9 +91,9 @@ Yes! Refer to the [Customized Prebuild Example repository](https://github.com/by
 
 </Collapsible>
 
-## Learn more
+## Next steps
 
-With the `expo` package installed and configured in your project, you can start using all features from Expo CLI and SDK. To learn more, see:
+Now, with the `expo` package installed and configured in your project, you can start using all features from Expo CLI and SDK. Here are some recommended next steps to dive deep:
 
 <BoxLink
   title="Expo CLI Reference"
