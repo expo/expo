@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Allow pushing "sibling" routes by the same name.
+
 ### 💡 Others
 
 ## 3.0.0 — 2023-08-02

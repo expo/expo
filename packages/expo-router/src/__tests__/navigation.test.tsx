@@ -6,6 +6,7 @@ import {
   router,
   useLocalSearchParams,
   Redirect,
+  Slot,
 } from '../exports';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
@@ -264,21 +265,35 @@ it('can push nested initial route name', () => {
   renderRouter({
     _layout: {
       unstable_settings: {
+        // Should be able to push another stack even when this is set.
         initialRouteName: 'index',
       },
       default: () => <Stack />,
     },
     index: () => <Text />,
-    'settings/_layout': {
-      unstable_settings: {
-        initialRouteName: 'index',
-      },
-      default: () => <Stack />,
-    },
+    'settings/_layout': () => <Slot />,
     'settings/index': () => <Text />,
   });
 
   expect(screen).toHavePathname('/');
   act(() => router.push('/settings'));
+  expect(screen).toHavePathname('/settings');
+});
+it('can replace nested initial route name', () => {
+  renderRouter({
+    _layout: {
+      unstable_settings: {
+        // Should be able to push another stack even when this is set.
+        initialRouteName: 'index',
+      },
+      default: () => <Stack />,
+    },
+    index: () => <Text />,
+    'settings/_layout': () => <Slot />,
+    'settings/index': () => <Text />,
+  });
+
+  expect(screen).toHavePathname('/');
+  act(() => router.replace('/settings'));
   expect(screen).toHavePathname('/settings');
 });
