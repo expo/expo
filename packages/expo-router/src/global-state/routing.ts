@@ -110,19 +110,15 @@ export function linkTo(this: RouterStore, href: string, event?: string) {
         rootState
       )?.name !== nextRoute.name
     ) {
-      if (knownOwnerState.type === 'tab') {
-        if (event === 'REPLACE') {
+      if (event === 'REPLACE') {
+        if (knownOwnerState.type === 'tab') {
           navigationRef.dispatch(TabActions.jumpTo(nextRoute.name, nextRoute.params));
         } else {
-          navigationRef.dispatch(CommonActions.navigate(nextRoute.name, nextRoute.params));
+          navigationRef.dispatch(StackActions.replace(nextRoute.name, nextRoute.params));
         }
       } else {
-        if (event === 'REPLACE') {
-          navigationRef.dispatch(StackActions.replace(nextRoute.name, nextRoute.params));
-        } else {
-          // NOTE: Not sure if we should pop or push here...
-          navigationRef.dispatch(CommonActions.navigate(nextRoute.name, nextRoute.params));
-        }
+        // NOTE: Not sure if we should pop or push here...
+        navigationRef.dispatch(CommonActions.navigate(nextRoute.name, nextRoute.params));
       }
       return;
     }
