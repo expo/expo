@@ -323,7 +323,9 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 
 - (void)updatePictureSize
 {
+  EX_WEAKIFY(self);
   dispatch_async(self.sessionQueue, ^{
+    EX_STRONGIFY(self);
     [self updateSessionPreset:_pictureSize];
   });
 }
@@ -568,7 +570,9 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
     [_faceDetectorManager stopFaceDetection];
   }
   
+  EX_WEAKIFY(self);
   dispatch_async(self.sessionQueue, ^{
+    EX_STRONGIFY(self);
     [self configureVideoSessionWith:options reject:reject];
 
     // it is possible that the session has been invalidated at this point
@@ -690,7 +694,9 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
 
 - (void)stopRecording
 {
+  EX_WEAKIFY(self);
   dispatch_async(self.sessionQueue, ^{
+    EX_STRONGIFY(self);
     [self.movieFileOutput stopRecording];
   });
 }
@@ -716,7 +722,9 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
     [self onMountingError:@{@"message": @"Camera permissions not granted - component could not be rendered."}];
     return;
   }
+  EX_WEAKIFY(self);
   dispatch_async(self.sessionQueue, ^{
+    EX_STRONGIFY(self);
     if (self.presetCamera == AVCaptureDevicePositionUnspecified) {
       return;
     }
@@ -734,6 +742,7 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
     [self setRuntimeErrorHandlingObserver:
      [[NSNotificationCenter defaultCenter] addObserverForName:AVCaptureSessionRuntimeErrorNotification object:self.session queue:nil usingBlock:^(NSNotification *note) {
       dispatch_async(self.sessionQueue, ^{
+        EX_STRONGIFY(self);
         // Manually restarting the session since it must
         // have been stopped due to an error.
         [self.session startRunning];
@@ -745,6 +754,7 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
     // when BarCodeScanner is enabled since the beginning of camera component lifecycle,
     // some race condition occurs in reconfiguration and barcodes aren't scanned at all
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 50 * NSEC_PER_USEC), self.sessionQueue, ^{
+      EX_STRONGIFY(self);
       [self maybeStartFaceDetection:self.presetCamera!=1];
       if (self.barCodeScanner) {
         [self.barCodeScanner maybeStartBarCodeScanning];
@@ -764,7 +774,9 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
 #if TARGET_IPHONE_SIMULATOR
   return;
 #endif
+  EX_WEAKIFY(self);
   dispatch_async(self.sessionQueue, ^{
+    EX_STRONGIFY(self);
     if (self.faceDetectorManager) {
       [self.faceDetectorManager stopFaceDetection];
     }
@@ -798,7 +810,9 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
   }];
   AVCaptureVideoOrientation orientation = [EXCameraUtils videoOrientationForInterfaceOrientation:interfaceOrientation];
 
+  EX_WEAKIFY(self);
   dispatch_async(self.sessionQueue, ^{
+    EX_STRONGIFY(self);
     [self.session beginConfiguration];
 
     NSError *error = nil;
@@ -836,7 +850,9 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
 // - torchMode: https://stackoverflow.com/a/53666293/4337317
 - (void)ensureSessionConfiguration
 {
+  EX_WEAKIFY(self);
   dispatch_async(self.sessionQueue, ^{
+    EX_STRONGIFY(self);
     [self updateFlashMode];
   });
 }
@@ -888,7 +904,9 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
 {
   if (![_session isRunning] && [self isSessionPaused]) {
     _paused = NO;
+    EX_WEAKIFY(self);
     dispatch_async(self.sessionQueue, ^{
+      EX_STRONGIFY(self);
       [self.session startRunning];
       [self ensureSessionConfiguration];
     });
@@ -899,7 +917,9 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
 {
   if ([_session isRunning] && ![self isSessionPaused]) {
     _paused = YES;
+    EX_WEAKIFY(self);
     dispatch_async(self.sessionQueue, ^{
+      EX_STRONGIFY(self);
       [self.session stopRunning];
     });
   }
@@ -967,7 +987,9 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
   [self maybeStartFaceDetection:false];
 
   if (_session.sessionPreset != _pictureSize) {
+    EX_WEAKIFY(self);
     dispatch_async(self.sessionQueue, ^{
+      EX_STRONGIFY(self);
       [self updateSessionPreset:_pictureSize];
       [self cleanupMovieFileCapture];
     });
