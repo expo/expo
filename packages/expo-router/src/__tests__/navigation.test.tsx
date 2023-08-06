@@ -259,3 +259,26 @@ it('does not loop infinitely when pushing a screen with empty options to an inva
   act(() => router.push('/main/welcome'));
   expect(screen).toHavePathname('/main/welcome');
 });
+
+it('can push nested initial route name', () => {
+  renderRouter({
+    _layout: {
+      unstable_settings: {
+        initialRouteName: 'index',
+      },
+      default: () => <Stack />,
+    },
+    index: () => <Text />,
+    'settings/_layout': {
+      unstable_settings: {
+        initialRouteName: 'index',
+      },
+      default: () => <Stack />,
+    },
+    'settings/index': () => <Text />,
+  });
+
+  expect(screen).toHavePathname('/');
+  act(() => router.push('/settings'));
+  expect(screen).toHavePathname('/settings');
+});
