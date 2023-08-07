@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [Android] Made `generateExpoModulesPackageList` task cacheable.
+
 ## 1.6.0 — 2023-07-28
 
 ### 🐛 Bug fixes
