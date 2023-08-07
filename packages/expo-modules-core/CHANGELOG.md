@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Refresh NativeModulesProxy if app bundle is reloaded. ([#23824](https://github.com/expo/expo/pull/23824) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 ## 1.6.0 — 2023-07-28
