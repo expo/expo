@@ -62,13 +62,12 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     _previewLayer = [AVCaptureVideoPreviewLayer layerWithSession:_session];
     _previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
     _previewLayer.needsDisplayOnBoundsChange = YES;
+    _previewLayer.session = _session;
 #endif
     _paused = NO;
     _isValidVideoOptions = YES;
     _pictureSize = AVCaptureSessionPresetHigh;
     [self changePreviewOrientation:[UIApplication sharedApplication].statusBarOrientation];
-    [self initializeCaptureSessionInput];
-    [self startSession];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(orientationChanged:)
                                                  name:UIDeviceOrientationDidChangeNotification
@@ -77,6 +76,8 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     _motionManager = [[CMMotionManager alloc] init];
     _motionManager.accelerometerUpdateInterval = 0.2;
     _motionManager.gyroUpdateInterval = 0.2;
+    [self initializeCaptureSessionInput];
+    [self startSession];
   }
   return self;
 }
@@ -322,7 +323,11 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 
 - (void)updatePictureSize
 {
-  [self updateSessionPreset:_pictureSize];
+  EX_WEAKIFY(self);
+  dispatch_async(self.sessionQueue, ^{
+    EX_STRONGIFY(self);
+    [self updateSessionPreset:_pictureSize];
+  });
 }
 
 - (void)updateResponsiveOrientationWhenOrientationLocked
@@ -561,22 +566,60 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
 
 - (void)record:(NSDictionary *)options resolve:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)reject
 {
-  if (_movieFileOutput == nil) {
-    // At the time of writing AVCaptureMovieFileOutput and AVCaptureVideoDataOutput (> GMVDataOutput)
-    // cannot coexist on the same AVSession (see: https://stackoverflow.com/a/4986032/1123156).
-    // We stop face detection here and restart it in when AVCaptureMovieFileOutput finishes recording.
-    if (_faceDetectorManager) {
-      [_faceDetectorManager stopFaceDetection];
-    }
-    [self setupMovieFileCapture];
+  if (_faceDetectorManager) {
+    [_faceDetectorManager stopFaceDetection];
   }
+  
+  EX_WEAKIFY(self);
+  dispatch_async(self.sessionQueue, ^{
+    EX_STRONGIFY(self);
+    [self configureVideoSessionWith:options reject:reject];
 
-  if (_movieFileOutput != nil && !_movieFileOutput.isRecording && _videoRecordedResolve == nil && _videoRecordedReject == nil) {
-    bool shouldBeMuted = options[@"mute"] && [options[@"mute"] boolValue];
-    [self updateSessionAudioIsMuted:shouldBeMuted];
+    // it is possible that the session has been invalidated at this point
+    // for example, the video codec option is invalid and so this call has already rejected
+    if (!self.isValidVideoOptions) {
+      return;
+    }
+    
+    if (!self) {
+      reject(@"E_IMAGE_SAVE_FAILED", @"Camera view has been unmounted.", nil);
+      return;
+    }
+    if (!self.fileSystem) {
+      reject(@"E_IMAGE_SAVE_FAILED", @"No file system module", nil);
+      return;
+    }
+    NSString *directory = [self.fileSystem.cachesDirectory stringByAppendingPathComponent:@"Camera"];
+    NSString *path = [self.fileSystem generatePathInDirectory:directory withExtension:@".mov"];
+    NSURL *outputURL = [[NSURL alloc] initFileURLWithPath:path];
+    self.videoRecordedResolve = resolve;
+    self.videoRecordedReject = reject;
+    [self.movieFileOutput startRecordingToOutputFileURL:outputURL recordingDelegate:self];
+  });
+}
 
-    AVCaptureConnection *connection = [_movieFileOutput connectionWithMediaType:AVMediaTypeVideo];
-    // TODO: Add support for videoStabilizationMode (right now it is not only read, never written to)
+- (void)configureVideoSessionWith:(NSDictionary *)options reject:(EXPromiseRejectBlock)reject
+{
+  [self.session beginConfiguration];
+  bool shouldBeMuted = options[@"mute"] && [options[@"mute"] boolValue];
+  [self setupMovieFileCapture];
+  [self updateSessionAudioIsMuted:shouldBeMuted];
+  
+  AVCaptureConnection *connection = [_movieFileOutput connectionWithMediaType:AVMediaTypeVideo];
+  // TODO: Add support for videoStabilizationMode (right now it is not only read, never written to)
+  if (connection) {
+    AVCaptureSessionPreset preset;
+    if (options[@"quality"]) {
+      EXCameraVideoResolution resolution = [options[@"quality"] integerValue];
+      preset = [EXCameraUtils captureSessionPresetForVideoResolution:resolution];
+    } else if ([self.session.sessionPreset isEqual:AVCaptureSessionPresetPhoto]) {
+      preset = AVCaptureSessionPresetHigh;
+    }
+      
+    if (preset != nil) {
+      [self updateSessionPreset:preset];
+    }
+    
     if (connection.isVideoStabilizationSupported == NO) {
       EXLogWarn(@"%s: Video Stabilization is not supported on this device.", __func__);
     } else {
@@ -585,18 +628,6 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
     UIDeviceOrientation deviceOrientation = self.responsiveOrientationWhenOrientationLocked ? self.physicalOrientation : [[UIDevice currentDevice] orientation];
     [connection setVideoOrientation:[EXCameraUtils videoOrientationForDeviceOrientation:deviceOrientation]];
     
-    AVCaptureSessionPreset preset;
-    if (options[@"quality"]) {
-      EXCameraVideoResolution resolution = [options[@"quality"] integerValue];
-      preset = [EXCameraUtils captureSessionPresetForVideoResolution:resolution];
-    } else if ([self.session.sessionPreset isEqual:AVCaptureSessionPresetPhoto]) {
-      preset = AVCaptureSessionPresetHigh;
-    }
-
-    if (preset != nil) {
-      [self updateSessionPreset:preset];
-    }
-    
     [self setVideoOptions:options forConnection:connection onReject:reject];
     
     bool canBeMirrored = connection.isVideoMirroringSupported;
@@ -604,75 +635,47 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
     if (canBeMirrored && shouldBeMirrored) {
       [connection setVideoMirrored:shouldBeMirrored];
     }
-
-    EX_WEAKIFY(self);
-    dispatch_async(self.sessionQueue, ^{
-      EX_STRONGIFY(self);
-      // it is possible that the session has been invalidated at this point
-      // for example, the video codec option is invalid and so this call has already rejected
-      if (!self.isValidVideoOptions) {
-        return;
-      }
-
-      if (!self) {
-        reject(@"E_IMAGE_SAVE_FAILED", @"Camera view has been unmounted.", nil);
-        return;
-      }
-      if (!self.fileSystem) {
-        reject(@"E_IMAGE_SAVE_FAILED", @"No file system module", nil);
-        return;
-      }
-      NSString *directory = [self.fileSystem.cachesDirectory stringByAppendingPathComponent:@"Camera"];
-      NSString *path = [self.fileSystem generatePathInDirectory:directory withExtension:@".mov"];
-      NSURL *outputURL = [[NSURL alloc] initFileURLWithPath:path];
-      [self.movieFileOutput startRecordingToOutputFileURL:outputURL recordingDelegate:self];
-      [self updateFlashMode];
-      self.videoRecordedResolve = resolve;
-      self.videoRecordedReject = reject;
-    });
   }
+
+  [self updateFlashMode];
+  [self.session commitConfiguration];
 }
 
 // Video options are set in an async block to prevent the possible race condition outlined here:
 // https://github.com/react-native-camera/react-native-camera/pull/2694
 - (void)setVideoOptions:(NSDictionary *)options forConnection:(AVCaptureConnection *)connection onReject:(EXPromiseRejectBlock)reject
 {
-  EX_WEAKIFY(self);
-  dispatch_async(_sessionQueue, ^{
-    EX_STRONGIFY(self);
     // Reset validation flag
-    self.isValidVideoOptions = YES;
-
-    if (options[@"maxDuration"]) {
-      Float64 maxDuration = [options[@"maxDuration"] floatValue];
-      self.movieFileOutput.maxRecordedDuration = CMTimeMakeWithSeconds(maxDuration, 30);
-    }
-
-    if (options[@"maxFileSize"]) {
-      self.movieFileOutput.maxRecordedFileSize = [options[@"maxFileSize"] integerValue];
-    }
+  self.isValidVideoOptions = YES;
+  
+  if (options[@"maxDuration"]) {
+    Float64 maxDuration = [options[@"maxDuration"] floatValue];
+    self.movieFileOutput.maxRecordedDuration = CMTimeMakeWithSeconds(maxDuration, 30);
+  }
+  
+  if (options[@"maxFileSize"]) {
+    self.movieFileOutput.maxRecordedFileSize = [options[@"maxFileSize"] integerValue];
+  }
+  
+  if (options[@"codec"]) {
+    AVVideoCodecType videoCodecType = [EXCameraUtils videoCodecForType: [options[@"codec"] integerValue]];
     
-    if (options[@"codec"]) {
-      AVVideoCodecType videoCodecType = [EXCameraUtils videoCodecForType: [options[@"codec"] integerValue]];
-
-      if ([self.movieFileOutput.availableVideoCodecTypes containsObject:videoCodecType]) {
-        [self.movieFileOutput setOutputSettings: @{AVVideoCodecKey: videoCodecType} forConnection: connection];
-        self.videoCodecType = videoCodecType;
-      } else {
-        if ([videoCodecType isEqualToString: @"VIDEO_CODEC_UNKNOWN"]) {
-          videoCodecType = options[@"codec"];
-        }
-        NSString *videoCodecErrorMessage = [NSString stringWithFormat: @"Video Codec '%@' is not supported on this device", videoCodecType];
-        reject(@"E_RECORDING_FAILED", videoCodecErrorMessage, nil);
-        
-        [self cleanupMovieFileCapture];
-        self.videoRecordedResolve = nil;
-        self.videoRecordedReject = nil;
-        self.isValidVideoOptions = NO;
+    if ([self.movieFileOutput.availableVideoCodecTypes containsObject:videoCodecType]) {
+      [self.movieFileOutput setOutputSettings: @{AVVideoCodecKey: videoCodecType} forConnection: connection];
+      self.videoCodecType = videoCodecType;
+    } else {
+      if ([videoCodecType isEqualToString: @"VIDEO_CODEC_UNKNOWN"]) {
+        videoCodecType = options[@"codec"];
       }
+      NSString *videoCodecErrorMessage = [NSString stringWithFormat: @"Video Codec '%@' is not supported on this device", videoCodecType];
+      reject(@"E_RECORDING_FAILED", videoCodecErrorMessage, nil);
+      
+      [self cleanupMovieFileCapture];
+      self.videoRecordedResolve = nil;
+      self.videoRecordedReject = nil;
+      self.isValidVideoOptions = NO;
     }
-    
-  });
+  }
 }
 
 - (void)maybeStartFaceDetection:(BOOL)mirrored {
@@ -691,7 +694,11 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
 
 - (void)stopRecording
 {
-  [_movieFileOutput stopRecording];
+  EX_WEAKIFY(self);
+  dispatch_async(self.sessionQueue, ^{
+    EX_STRONGIFY(self);
+    [self.movieFileOutput stopRecording];
+  });
 }
 
 - (void)resumePreview
@@ -716,12 +723,12 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
     return;
   }
   EX_WEAKIFY(self);
-  dispatch_async(_sessionQueue, ^{
-    EX_ENSURE_STRONGIFY(self);
-
+  dispatch_async(self.sessionQueue, ^{
+    EX_STRONGIFY(self);
     if (self.presetCamera == AVCaptureDevicePositionUnspecified) {
       return;
     }
+    [self.session beginConfiguration];
 
     AVCapturePhotoOutput *photoOutput = [AVCapturePhotoOutput new];
     photoOutput.highResolutionCaptureEnabled = YES;
@@ -730,12 +737,12 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
       [self.session addOutput:photoOutput];
       self.photoOutput = photoOutput;
     }
+    [self.session commitConfiguration];
 
     [self setRuntimeErrorHandlingObserver:
      [[NSNotificationCenter defaultCenter] addObserverForName:AVCaptureSessionRuntimeErrorNotification object:self.session queue:nil usingBlock:^(NSNotification *note) {
-      EX_ENSURE_STRONGIFY(self);
       dispatch_async(self.sessionQueue, ^{
-        EX_ENSURE_STRONGIFY(self)
+        EX_STRONGIFY(self);
         // Manually restarting the session since it must
         // have been stopped due to an error.
         [self.session startRunning];
@@ -747,7 +754,7 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
     // when BarCodeScanner is enabled since the beginning of camera component lifecycle,
     // some race condition occurs in reconfiguration and barcodes aren't scanned at all
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 50 * NSEC_PER_USEC), self.sessionQueue, ^{
-      EX_ENSURE_STRONGIFY(self);
+      EX_STRONGIFY(self);
       [self maybeStartFaceDetection:self.presetCamera!=1];
       if (self.barCodeScanner) {
         [self.barCodeScanner maybeStartBarCodeScanning];
@@ -758,6 +765,7 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
       [self onReady:nil];
     });
   });
+
 #pragma clang diagnostic pop
 }
 
@@ -767,9 +775,8 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
   return;
 #endif
   EX_WEAKIFY(self);
-  dispatch_async(_sessionQueue, ^{
-    EX_ENSURE_STRONGIFY(self);
-
+  dispatch_async(self.sessionQueue, ^{
+    EX_STRONGIFY(self);
     if (self.faceDetectorManager) {
       [self.faceDetectorManager stopFaceDetection];
     }
@@ -778,8 +785,7 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
     }
     [self.motionManager stopAccelerometerUpdates];
     [self.previewLayer removeFromSuperlayer];
-    [self.session commitConfiguration];
-    [self.session stopRunning];
+    [self.session beginConfiguration];
     for (AVCaptureInput *input in self.session.inputs) {
       [self.session removeInput:input];
     }
@@ -787,6 +793,8 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
     for (AVCaptureOutput *output in self.session.outputs) {
       [self.session removeOutput:output];
     }
+    [self.session commitConfiguration];
+    [self.session stopRunning];
   });
 }
 
@@ -803,9 +811,8 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
   AVCaptureVideoOrientation orientation = [EXCameraUtils videoOrientationForInterfaceOrientation:interfaceOrientation];
 
   EX_WEAKIFY(self);
-  dispatch_async(_sessionQueue, ^{
-    EX_ENSURE_STRONGIFY(self);
-
+  dispatch_async(self.sessionQueue, ^{
+    EX_STRONGIFY(self);
     [self.session beginConfiguration];
 
     NSError *error = nil;
@@ -844,8 +851,8 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
 - (void)ensureSessionConfiguration
 {
   EX_WEAKIFY(self);
-  dispatch_async(_sessionQueue, ^{
-    EX_ENSURE_STRONGIFY(self);
+  dispatch_async(self.sessionQueue, ^{
+    EX_STRONGIFY(self);
     [self updateFlashMode];
   });
 }
@@ -856,54 +863,41 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
 {
 #if !(TARGET_IPHONE_SIMULATOR)
   if (preset) {
-    EX_WEAKIFY(self);
-    dispatch_async(_sessionQueue, ^{
-      EX_ENSURE_STRONGIFY(self);
-      [self.session beginConfiguration];
-      if ([self.session canSetSessionPreset:preset]) {
-        self.session.sessionPreset = preset;
-      }
-      [self.session commitConfiguration];
-    });
+    [self.session beginConfiguration];
+    if ([self.session canSetSessionPreset:preset]) {
+      self.session.sessionPreset = preset;
+    }
+    [self.session commitConfiguration];
   }
 #endif
 }
 
 - (void)updateSessionAudioIsMuted:(BOOL)isMuted
 {
-  EX_WEAKIFY(self);
-  dispatch_async(_sessionQueue, ^{
-    EX_ENSURE_STRONGIFY(self);
-    [self.session beginConfiguration];
-
-    for (AVCaptureDeviceInput* input in [self.session inputs]) {
-      if ([input.device hasMediaType:AVMediaTypeAudio]) {
-        if (isMuted) {
-          [self.session removeInput:input];
-        }
-        [self.session commitConfiguration];
-        return;
+  for (AVCaptureDeviceInput* input in [self.session inputs]) {
+    if ([input.device hasMediaType:AVMediaTypeAudio]) {
+      if (isMuted) {
+        [self.session removeInput:input];
       }
+      return;
     }
-
-    if (!isMuted) {
-      NSError *error = nil;
-
-      AVCaptureDevice *audioCaptureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeAudio];
-      AVCaptureDeviceInput *audioDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:audioCaptureDevice error:&error];
-
-      if (error || audioDeviceInput == nil) {
-        EXLogInfo(@"%s: %@", __func__, error);
-        return;
-      }
-
-      if ([self.session canAddInput:audioDeviceInput]) {
-        [self.session addInput:audioDeviceInput];
-      }
+  }
+  
+  if (!isMuted) {
+    NSError *error = nil;
+    
+    AVCaptureDevice *audioCaptureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeAudio];
+    AVCaptureDeviceInput *audioDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:audioCaptureDevice error:&error];
+    
+    if (error || audioDeviceInput == nil) {
+      EXLogInfo(@"%s: %@", __func__, error);
+      return;
     }
-
-    [self.session commitConfiguration];
-  });
+    
+    if ([self.session canAddInput:audioDeviceInput]) {
+      [self.session addInput:audioDeviceInput];
+    }
+  }
 }
 
 - (void)onAppForegrounded
@@ -911,8 +905,8 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
   if (![_session isRunning] && [self isSessionPaused]) {
     _paused = NO;
     EX_WEAKIFY(self);
-    dispatch_async(_sessionQueue, ^{
-      EX_ENSURE_STRONGIFY(self);
+    dispatch_async(self.sessionQueue, ^{
+      EX_STRONGIFY(self);
       [self.session startRunning];
       [self ensureSessionConfiguration];
     });
@@ -924,8 +918,8 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
   if ([_session isRunning] && ![self isSessionPaused]) {
     _paused = YES;
     EX_WEAKIFY(self);
-    dispatch_async(_sessionQueue, ^{
-      EX_ENSURE_STRONGIFY(self);
+    dispatch_async(self.sessionQueue, ^{
+      EX_STRONGIFY(self);
       [self.session stopRunning];
     });
   }
@@ -954,7 +948,6 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
 - (void)setupMovieFileCapture
 {
   AVCaptureMovieFileOutput *movieFileOutput = [[AVCaptureMovieFileOutput alloc] init];
-
   if ([_session canAddOutput:movieFileOutput]) {
     [_session addOutput:movieFileOutput];
     _movieFileOutput = movieFileOutput;
@@ -964,8 +957,10 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
 - (void)cleanupMovieFileCapture
 {
   if ([_session.outputs containsObject:_movieFileOutput]) {
+    [_session beginConfiguration];
     [_session removeOutput:_movieFileOutput];
     _movieFileOutput = nil;
+    [_session commitConfiguration];
   }
 }
 
@@ -987,13 +982,17 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
   _videoRecordedReject = nil;
   _videoCodecType = nil;
 
-  [self cleanupMovieFileCapture];
   // If face detection has been running prior to recording to file
   // we reenable it here (see comment in -record).
   [self maybeStartFaceDetection:false];
 
   if (_session.sessionPreset != _pictureSize) {
-    [self updateSessionPreset:_pictureSize];
+    EX_WEAKIFY(self);
+    dispatch_async(self.sessionQueue, ^{
+      EX_STRONGIFY(self);
+      [self updateSessionPreset:_pictureSize];
+      [self cleanupMovieFileCapture];
+    });
   }
 }
 
