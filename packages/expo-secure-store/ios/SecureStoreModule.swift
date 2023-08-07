@@ -41,8 +41,8 @@ public final class SecureStoreModule: Module {
     }
 
     AsyncFunction("deleteValueWithKeyAsync") { (key: String, options: SecureStoreOptions) in
-      let noAuthSearchDictionary = query(with: getKeyAlias(key: key, requiresAuthentication: false), options: options)
-      let authSearchDictionary = query(with: getKeyAlias(key: key, requiresAuthentication: true), options: options)
+      let noAuthSearchDictionary = query(with: key, options: options, requireAuthentication: false)
+      let authSearchDictionary = query(with: key, options: options, requireAuthentication: true)
       let legacySearchDictionary = query(with: key, options: options)
 
       SecItemDelete(legacySearchDictionary as CFDictionary)
@@ -56,11 +56,11 @@ public final class SecureStoreModule: Module {
       throw InvalidKeyException()
     }
 
-    if let unauthencicatedItem = try searchKeyChain(with: getKeyAlias(key: key, requiresAuthentication: false), options: options) {
-      return String(data: unauthencicatedItem, encoding: .utf8)
+    if let unauthenticatedItem = try searchKeyChain(with: key, options: options, requireAuthentication: false) {
+      return String(data: unauthenticatedItem, encoding: .utf8)
     }
 
-    if let authenticatedItem = try searchKeyChain(with: getKeyAlias(key: key, requiresAuthentication: true), options: options) {
+    if let authenticatedItem = try searchKeyChain(with: key, options: options, requireAuthentication: true) {
       return String(data: authenticatedItem, encoding: .utf8)
     }
 
@@ -72,8 +72,7 @@ public final class SecureStoreModule: Module {
   }
 
   private func set(value: String, with key: String, options: SecureStoreOptions) throws -> Bool {
-    let keyAlias = getKeyAlias(key: key, requiresAuthentication: options.requireAuthentication)
-    var setItemQuery = query(with: keyAlias, options: options)
+    var setItemQuery = query(with: key, options: options, requireAuthentication: options.requireAuthentication)
 
     let valueData = value.data(using: .utf8)
     setItemQuery[kSecValueData as String] = valueData
@@ -95,8 +94,8 @@ public final class SecureStoreModule: Module {
     switch status {
     case errSecSuccess:
       // On success we want to remove the other key alias and legacy key (if they exist) to avoid conflicts during reads
-      SecItemDelete(query(with: getKeyAlias(key: key, requiresAuthentication: !options.requireAuthentication), options: options) as CFDictionary)
       SecItemDelete(query(with: key, options: options) as CFDictionary)
+      SecItemDelete(query(with: key, options: options, requireAuthentication: !options.requireAuthentication) as CFDictionary)
       return true
     case errSecDuplicateItem:
       return try update(value: value, with: key, options: options)
@@ -106,7 +105,7 @@ public final class SecureStoreModule: Module {
   }
 
   private func update(value: String, with key: String, options: SecureStoreOptions) throws -> Bool {
-    var query = query(with: key, options: options)
+    var query = query(with: key, options: options, requireAuthentication: options.requireAuthentication)
 
     let valueData = value.data(using: .utf8)
     let updateDictionary = [kSecValueData as String: valueData]
@@ -124,8 +123,8 @@ public final class SecureStoreModule: Module {
     }
   }
 
-  private func searchKeyChain(with key: String, options: SecureStoreOptions) throws -> Data? {
-    var query = query(with: key, options: options)
+  private func searchKeyChain(with key: String, options: SecureStoreOptions, requireAuthentication: Bool? = nil) throws -> Data? {
+    var query = query(with: key, options: options, requireAuthentication: requireAuthentication)
 
     query[kSecMatchLimit as String] = kSecMatchLimitOne
     query[kSecReturnData as String] = kCFBooleanTrue
@@ -150,8 +149,12 @@ public final class SecureStoreModule: Module {
     }
   }
 
-  private func query(with key: String, options: SecureStoreOptions) -> [String: Any] {
-    let service = options.keychainService ?? "app"
+  private func query(with key: String, options: SecureStoreOptions, requireAuthentication: Bool? = nil) -> [String: Any] {
+    var service = options.keychainService ?? "app"
+    if let requireAuthentication = requireAuthentication {
+      service.append(":\(requireAuthentication ? "auth" : "no-auth")")
+    }
+
     let encodedKey = Data(key.utf8)
 
     return [
@@ -160,10 +163,6 @@ public final class SecureStoreModule: Module {
       kSecAttrGeneric as String: encodedKey,
       kSecAttrAccount as String: encodedKey
     ]
-  }
-
-  private func getKeyAlias(key: String, requiresAuthentication: Bool) -> String {
-    return "\(key):\(requiresAuthentication ? "auth" : "no-auth")"
   }
 
   private func attributeWith(options: SecureStoreOptions) -> CFString {
