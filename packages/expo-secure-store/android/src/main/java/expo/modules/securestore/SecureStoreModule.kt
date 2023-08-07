@@ -23,9 +23,9 @@ import java.security.KeyStore.PrivateKeyEntry
 import java.security.KeyStore.SecretKeyEntry
 import javax.crypto.BadPaddingException
 
-class SecureStoreModule : Module() {
+open class SecureStoreModule : Module() {
   private val mAESEncryptor = AESEncryptor()
-  private val reactContext: Context
+  open val reactContext: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
   private lateinit var keyStore: KeyStore
@@ -338,7 +338,7 @@ class SecureStoreModule : Module() {
     }
   }
 
-  private fun getSharedPreferences(): SharedPreferences {
+  fun getSharedPreferences(): SharedPreferences {
     return reactContext.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
   }
 

@@ -51,7 +51,6 @@ import expo.modules.permissions.PermissionsPackage
 import expo.modules.random.RandomModule
 import expo.modules.screencapture.ScreenCaptureModule
 import expo.modules.screenorientation.ScreenOrientationModule
-import expo.modules.securestore.SecureStorePackage
 import expo.modules.sensors.SensorsPackage
 import expo.modules.sharing.SharingModule
 import expo.modules.sms.SMSModule
@@ -88,7 +87,6 @@ object ExperiencePackagePicker : ModulesProvider {
     NavigationBarPackage(),
     NotificationsPackage(),
     PermissionsPackage(),
-    SecureStorePackage(),
     SensorsPackage(),
     SpeechPackage(),
     SplashScreenPackage(),
