@@ -5,6 +5,5 @@ export * as IOSSimulatorTestSuite from './IOSSimulatorTestSuite';
 export * as Log from './Log';
 export * as Packages from './Packages';
 export * as ProjectVersions from './ProjectVersions';
-export * as S3 from './S3';
 export * as TestSuite from './TestSuite';
 export * as XDL from './XDL';
