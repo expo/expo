@@ -194,6 +194,7 @@ export class DevServerManager {
       return;
     }
 
+    // The dev server shouldn't wait for the typescript services
     if (!typescriptPrerequisite) {
       server.waitForTypeScriptAsync().then(async (success) => {
         if (success) {

@@ -43,7 +43,7 @@ export class TypeScriptProjectPrerequisite extends ProjectPrerequisite<boolean> 
     await this._ensureDependenciesInstalledAsync();
 
     // Update the config
-    await updateTSConfigAsync({ tsConfigPath, isBootstrapping: intent.isBootstrapping });
+    await updateTSConfigAsync({ tsConfigPath });
 
     return true;
   }
@@ -62,7 +62,7 @@ export class TypeScriptProjectPrerequisite extends ProjectPrerequisite<boolean> 
     const tsConfigPath = path.join(this.projectRoot, 'tsconfig.json');
 
     // Update the config
-    await updateTSConfigAsync({ tsConfigPath, isBootstrapping: true });
+    await updateTSConfigAsync({ tsConfigPath });
   }
 
   /** Exposed for testing. */

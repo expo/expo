@@ -11,6 +11,8 @@ const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
 const originalUseTypedRoutes = process.env._EXPO_E2E_USE_TYPED_ROUTES;
 
+const generatedFiles = ['tsconfig.json', 'expo-env.d.ts', '.expo/types/router.d.ts', '.gitignore'];
+
 beforeAll(async () => {
   await fs.mkdir(projectRoot, { recursive: true });
   process.env.FORCE_COLOR = '0';
@@ -18,10 +20,17 @@ beforeAll(async () => {
   process.env._EXPO_E2E_USE_TYPED_ROUTES = '1';
 });
 
-afterAll(() => {
+afterAll(async () => {
   process.env.FORCE_COLOR = originalForceColor;
   process.env.CI = originalCI;
   process.env._EXPO_E2E_USE_TYPED_ROUTES = originalUseTypedRoutes;
+
+  // Remove the generated files
+  await Promise.all(
+    generatedFiles.map((file) =>
+      fs.promises.rm(path.join(projectRoot, file), { recursive: true, force: true })
+    )
+  );
 });
 
 it('loads expected modules by default', async () => {
@@ -94,20 +103,6 @@ it(
   async () => {
     const projectRoot = await setupTestProjectAsync('expo-typescript', 'with-router', '48.0.0');
 
-    const generatedFiles = [
-      'tsconfig.json',
-      'expo-env.d.ts',
-      '.expo/types/router.d.ts',
-      '.gitignore',
-    ];
-
-    // Remove the generated files if they exist (when testing locally the folder may be cached)
-    await Promise.all(
-      generatedFiles.map((file) =>
-        fs.promises.rm(path.join(projectRoot, file), { recursive: true, force: true })
-      )
-    );
-
     // `npx expo typescript
     await execa('node', [bin, 'customize', 'tsconfig.json'], {
       cwd: projectRoot,
@@ -120,6 +115,45 @@ it(
         fs.promises.access(path.join(projectRoot, file), fsConstants.F_OK)
       ).resolves.toBeUndefined();
     }
+  },
+  // Could take 45s depending on how fast npm installs
+  120 * 1000
+);
+
+it(
+  'runs `npx expo customize tsconfig.json` on a partially setup project',
+  async () => {
+    const projectRoot = await setupTestProjectAsync('expo-typescript', 'with-router', '48.0.0');
+
+    const existingTsConfig = {
+      extends: 'custom-package',
+      compilerOptions: {
+        strict: true,
+      },
+      customOption: true,
+      include: ['custom'],
+    };
+
+    // Write a tsconfig with partial data
+    await fs.promises.writeFile(
+      path.join(projectRoot, 'tsconfig.json'),
+      JSON.stringify(existingTsConfig)
+    );
+
+    // `npx expo typescript
+    const a = await execa('node', [bin, 'customize', 'tsconfig.json'], {
+      cwd: projectRoot,
+    });
+
+    const newTsconfig = await fs.promises.readFile(
+      path.join(projectRoot, 'tsconfig.json'),
+      'utf-8'
+    );
+
+    expect(JSON.parse(newTsconfig)).toEqual({
+      ...existingTsConfig,
+      include: ['custom', '.expo/types/**/*.ts', 'expo-env.d.ts'],
+    });
   },
   // Could take 45s depending on how fast npm installs
   120 * 1000

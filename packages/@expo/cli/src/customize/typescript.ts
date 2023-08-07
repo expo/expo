@@ -10,7 +10,6 @@ export async function typescript(projectRoot: string) {
   const { getPlatformBundlers } = await import('../start/server/platformBundlers');
 
   try {
-    console.log(222);
     await new TypeScriptProjectPrerequisite(projectRoot).bootstrapAsync();
   } catch (error: any) {
     // Ensure the process doesn't fail if the TypeScript check fails.
