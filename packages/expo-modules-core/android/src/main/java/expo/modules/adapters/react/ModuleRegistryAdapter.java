@@ -135,7 +135,7 @@ public class ModuleRegistryAdapter implements ReactPackage {
     @Nullable ModuleRegistry moduleRegistry
   ) {
     if (mModulesProxy != null && mModulesProxy.getReactContext() != reactContext) {
-      setModulesProxy(mModulesProxy);
+      setModulesProxy(null);
     }
     if (mModulesProxy == null) {
       ModuleRegistry registry = moduleRegistry != null ? moduleRegistry : mModuleRegistryProvider.get(reactContext);
