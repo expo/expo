@@ -9,7 +9,9 @@ import { Terminal } from '~/ui/components/Snippet';
 
 Rollouts incrementally deploy updates on a new branch to a specific channel. With rollouts, we can roll out updates from one branch to a percentage of end users and leave the remaining percentage of users on the current branch. This is useful when testing a new feature to minimize the risk of introducing bugs or other issues to our production environment.
 
-To start a rollout, we use `npx eas-cli@latest` or ensure we have version \<TODO\> or above for `eas-cli`. Then we run the following command:
+## Start a rollout
+
+To start a rollout, use `npx eas-cli@latest` or ensure you have version \<TODO\> or above for `eas-cli`. Then, run the following command:
 
 <Terminal cmd={['npx eas-cli@latest channel:rollout [channel]']} />
 
