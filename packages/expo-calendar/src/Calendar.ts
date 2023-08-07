@@ -748,7 +748,7 @@ export async function getEventAsync(
  */
 export async function createEventAsync(
   calendarId: string,
-  eventData: Partial<Event> = {}
+  eventData: Omit<Partial<Event>, 'id'> = {}
 ): Promise<string> {
   if (!ExpoCalendar.saveEventAsync) {
     throw new UnavailabilityError('Calendar', 'createEventAsync');
@@ -757,7 +757,14 @@ export async function createEventAsync(
     throw new Error('createEventAsync must be called with an id (string) of the target calendar');
   }
 
+  // @ts-expect-error id could be passed if user doesn't use TypeScript or doesn't use the method with an object litteral
   const { id, ...details } = eventData;
+
+  if (id) {
+    console.warn(
+      'You attempted to create an event with an id. Event ids are assigned by the system.'
+    );
+  }
 
   if (Platform.OS === 'android') {
     if (!details.startDate) {
@@ -786,7 +793,7 @@ export async function createEventAsync(
  */
 export async function updateEventAsync(
   id: string,
-  details: Partial<Event> = {},
+  details: Omit<Partial<Event>, 'id'> = {},
   recurringEventOptions: RecurringEventOptions = {}
 ): Promise<string> {
   if (!ExpoCalendar.saveEventAsync) {

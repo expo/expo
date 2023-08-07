@@ -187,7 +187,11 @@ export async function createEventAsync(calendarId, eventData = {}) {
     if (!calendarId) {
         throw new Error('createEventAsync must be called with an id (string) of the target calendar');
     }
+    // @ts-expect-error id could be passed if user doesn't use TypeScript or doesn't use the method with an object litteral
     const { id, ...details } = eventData;
+    if (id) {
+        console.warn('You attempted to create an event with an id. Event ids are assigned by the system.');
+    }
     if (Platform.OS === 'android') {
         if (!details.startDate) {
             throw new Error('createEventAsync requires a startDate (Date)');
