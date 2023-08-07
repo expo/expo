@@ -49,12 +49,12 @@ const config: VendoringTargetConfig = {
       // },
     },
     'lottie-react-native': {
-      source: 'https://github.com/lottie-react-native/lottie-react-native.git',
-      ios: {},
-      // android: {
-      //   includeFiles: 'src/android/**',
-      //   excludeFiles: ['src/android/gradle.properties', 'src/android/gradle-maven-push.gradle'],
-      // },
+      source: 'lottie-react-native',
+      sourceType: 'npm',
+      android: {
+        includeFiles: ['android/**'],
+        excludeFiles: ['src/android/gradle.properties', 'src/android/gradle-maven-push.gradle'],
+      },
     },
     'react-native-gesture-handler': {
       source: 'https://github.com/software-mansion/react-native-gesture-handler.git',
