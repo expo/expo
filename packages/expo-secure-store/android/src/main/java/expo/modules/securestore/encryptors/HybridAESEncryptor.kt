@@ -150,7 +150,6 @@ class HybridAESEncryptor(private var mContext: Context, private val mAESEncrypto
 
   @Throws(GeneralSecurityException::class, JSONException::class)
   override suspend fun decryptItem(encryptedItem: JSONObject, keyStoreEntry: KeyStore.PrivateKeyEntry, options: SecureStoreOptions, authenticationHelper: AuthenticationHelper): String {
-
     // Decrypt the encrypted symmetric key
     val encryptedSecretKeyString = encryptedItem.getString(ENCRYPTED_SECRET_KEY_PROPERTY)
     val encryptedSecretKeyBytes = Base64.decode(encryptedSecretKeyString, Base64.DEFAULT)
@@ -172,7 +171,6 @@ class HybridAESEncryptor(private var mContext: Context, private val mAESEncrypto
   companion object {
     const val NAME = "hybrid"
     private const val RSA_CIPHER = "RSA/None/PKCS1Padding"
-
     private const val RSA_CIPHER_LEGACY_PROVIDER = "AndroidOpenSSL"
     private const val X509_SERIAL_NUMBER_LENGTH_BITS = 20 * 8
     private const val GCM_IV_LENGTH_BYTES = 12

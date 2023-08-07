@@ -202,7 +202,7 @@ export function setItemSync(key: string, value: string, options: SecureStoreOpti
 
 /**
  * Fetch the stored value associated with the provided key synchronously. This function can be used in the global scope.
- * > It is not recommended to use this funciton with values which require authentication, as it will block the JavaScript
+ * > It is not recommended to use this function with values that require authentication, as it will block the JavaScript
  * thread until the user authenticates.
  *
  * @param key The key that was used to store the associated value.

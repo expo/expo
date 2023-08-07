@@ -21,7 +21,8 @@ class AuthenticationPrompt(private val currentActivity: FragmentActivity, contex
   suspend fun authenticate(cipher: Cipher): BiometricPrompt.AuthenticationResult? =
     suspendCoroutine { continuation ->
       BiometricPrompt(
-        currentActivity, executor,
+        currentActivity,
+        executor,
         object : BiometricPrompt.AuthenticationCallback() {
           override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
             super.onAuthenticationError(errorCode, errString)

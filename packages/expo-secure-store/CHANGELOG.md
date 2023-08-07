@@ -6,6 +6,9 @@
 
 ### 🎉 New features
 
+- [Android] Migrated to Expo Modules API.
+- [Android] It is now possible to store values that require authentication and ones that don't under the same `keychainService`.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
