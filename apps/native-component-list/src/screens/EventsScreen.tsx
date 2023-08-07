@@ -101,7 +101,7 @@ export default class EventsScreen extends React.Component<Props, State> {
       };
     }
     try {
-      await Calendar.createEventAsync(calendar.id, newEvent as any);
+      await Calendar.createEventAsync(calendar.id, newEvent);
       Alert.alert('Event saved successfully');
       this._findEvents(calendar.id);
     } catch (e) {
