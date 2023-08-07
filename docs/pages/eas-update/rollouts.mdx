@@ -13,7 +13,7 @@ Rollouts incrementally deploy updates on a new branch to a specific channel. Wit
 
 To start a rollout, use `npx eas-cli@latest` or ensure you have version \<TODO\> or above for `eas-cli`. Then, run the following command:
 
-<Terminal cmd={['npx eas-cli@latest channel:rollout [channel]']} />
+<Terminal cmd={['npx eas-cli@latest channel:rollout']} />
 
 In the terminal, an interactive guide will assist you in selecting a channel, choosing a branch for the rollout, and setting the percentage of users for the rollout. To increase or decrease the rollout amount, run the command again and choose the `Edit` option to adjust the rollout percentage.
 
@@ -27,6 +27,6 @@ Two methods are available to end a rollout when you choose the `End` option in t
 ## Work with rollouts
 
 - Only one branch can be rolled out on a channel at a single time.
-- To see the state of the rollout, use the `eas channel:rollout [channel]` command.
+- To see the state of the rollout, use the `eas channel:rollout` command.
 - When a rollout is in progress, you can publish updates to both branches by running `eas update --branch [branch]`, for example.
 - `eas update --channel [channel]` cannot be used when a rollout is in progress since it cannot know which branch to associate the update with.
