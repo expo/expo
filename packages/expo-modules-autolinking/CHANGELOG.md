@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add support for pnpm isolated modules
+
 ### 💡 Others
 
 - [Android] Made `generateExpoModulesPackageList` task cacheable. ([#23847](https://github.com/expo/expo/pull/23847) by [@lukmccall](https://github.com/lukmccall))
