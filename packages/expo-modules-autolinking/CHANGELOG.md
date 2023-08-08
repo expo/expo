@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Add support for pnpm isolated modules
+- Add support for pnpm isolated modules ([#23867](https://github.com/expo/expo/pull/23867) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
