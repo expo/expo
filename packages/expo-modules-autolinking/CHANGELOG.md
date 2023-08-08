@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Android] Made `generateExpoModulesPackageList` task cacheable. ([#23847](https://github.com/expo/expo/pull/23847) by [@lukmccall](https://github.com/lukmccall))
+
 ## 1.5.0 — 2023-06-21
 
 ### 🎉 New features
