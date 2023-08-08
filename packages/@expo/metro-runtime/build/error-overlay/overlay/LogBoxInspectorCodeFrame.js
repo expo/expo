@@ -1,3 +1,32 @@
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.LogBoxInspectorCodeFrame = void 0;
 /**
  * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -5,21 +34,21 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import React from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import { Ansi } from '../UI/AnsiHighlight';
-import { LogBoxButton } from '../UI/LogBoxButton';
-import * as LogBoxStyle from '../UI/LogBoxStyle';
-import { CODE_FONT } from '../UI/constants';
-import { formatProjectFilePath } from '../formatProjectFilePath';
-import openFileInEditor from '../modules/openFileInEditor';
-import { LogBoxInspectorSection } from './LogBoxInspectorSection';
-export function LogBoxInspectorCodeFrame({ codeFrame }) {
+const react_1 = __importDefault(require("react"));
+const react_native_1 = require("react-native");
+const AnsiHighlight_1 = require("../UI/AnsiHighlight");
+const LogBoxButton_1 = require("../UI/LogBoxButton");
+const LogBoxStyle = __importStar(require("../UI/LogBoxStyle"));
+const constants_1 = require("../UI/constants");
+const formatProjectFilePath_1 = require("../formatProjectFilePath");
+const openFileInEditor_1 = __importDefault(require("../modules/openFileInEditor"));
+const LogBoxInspectorSection_1 = require("./LogBoxInspectorSection");
+function LogBoxInspectorCodeFrame({ codeFrame }) {
     if (codeFrame == null) {
         return null;
     }
     function getFileName() {
-        return formatProjectFilePath(process.env.EXPO_PROJECT_ROOT, codeFrame?.fileName);
+        return (0, formatProjectFilePath_1.formatProjectFilePath)(process.env.EXPO_PROJECT_ROOT, codeFrame?.fileName);
     }
     function getLocation() {
         const location = codeFrame?.location;
@@ -28,22 +57,23 @@ export function LogBoxInspectorCodeFrame({ codeFrame }) {
         }
         return null;
     }
-    return (React.createElement(LogBoxInspectorSection, { heading: "Source" },
-        React.createElement(View, { style: styles.box },
-            React.createElement(View, { style: styles.frame },
-                React.createElement(ScrollView, { horizontal: true },
-                    React.createElement(Ansi, { style: styles.content, text: codeFrame.content }))),
-            React.createElement(LogBoxButton, { backgroundColor: {
+    return (react_1.default.createElement(LogBoxInspectorSection_1.LogBoxInspectorSection, { heading: "Source" },
+        react_1.default.createElement(react_native_1.View, { style: styles.box },
+            react_1.default.createElement(react_native_1.View, { style: styles.frame },
+                react_1.default.createElement(react_native_1.ScrollView, { horizontal: true },
+                    react_1.default.createElement(AnsiHighlight_1.Ansi, { style: styles.content, text: codeFrame.content }))),
+            react_1.default.createElement(LogBoxButton_1.LogBoxButton, { backgroundColor: {
                     default: 'transparent',
                     pressed: LogBoxStyle.getBackgroundDarkColor(1),
                 }, style: styles.button, onPress: () => {
-                    openFileInEditor(codeFrame.fileName, codeFrame.location?.row ?? 0);
+                    (0, openFileInEditor_1.default)(codeFrame.fileName, codeFrame.location?.row ?? 0);
                 } },
-                React.createElement(Text, { style: styles.fileText },
+                react_1.default.createElement(react_native_1.Text, { style: styles.fileText },
                     getFileName(),
                     getLocation())))));
 }
-const styles = StyleSheet.create({
+exports.LogBoxInspectorCodeFrame = LogBoxInspectorCodeFrame;
+const styles = react_native_1.StyleSheet.create({
     box: {
         backgroundColor: LogBoxStyle.getBackgroundColor(),
         borderWidth: 1,
@@ -67,7 +97,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         includeFontPadding: false,
         lineHeight: 20,
-        fontFamily: CODE_FONT,
+        fontFamily: constants_1.CODE_FONT,
     },
     fileText: {
         userSelect: 'none',
@@ -76,7 +106,7 @@ const styles = StyleSheet.create({
         flex: 1,
         fontSize: 16,
         includeFontPadding: false,
-        fontFamily: CODE_FONT,
+        fontFamily: constants_1.CODE_FONT,
     },
 });
 //# sourceMappingURL=LogBoxInspectorCodeFrame.js.map
