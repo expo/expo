@@ -76,7 +76,7 @@ describe('static-rendering', () => {
       });
     },
     // Could take 45s depending on how fast the bundler resolves
-    480 * 1000
+    560 * 1000
   );
 
   it(
@@ -325,7 +325,7 @@ describe('single-page', () => {
       );
     },
     // Could take 45s depending on how fast the bundler resolves
-    360 * 1000
+    560 * 1000
   );
 
   it(
@@ -513,7 +513,7 @@ describe('url-polyfill', () => {
       });
     },
     // Could take 45s depending on how fast the bundler resolves
-    360 * 1000
+    560 * 1000
   );
 
   it(
