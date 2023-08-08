@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix bug preventing non-standard xcode projects from running with `npx expo run:ios`. ([#23831](https://github.com/expo/expo/pull/23831) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 0.11.1 — 2023-08-02
