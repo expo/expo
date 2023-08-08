@@ -87,6 +87,10 @@ export function mutateXcodeProjectWithAutoCodeSigningInfo({
     Object.entries(IOSConfig.XcodeUtils.getProjectSection(project))
       .filter(IOSConfig.XcodeUtils.isNotComment)
       .forEach(([, item]: IOSConfig.XcodeUtils.ProjectSectionEntry) => {
+        if (!item.attributes.TargetAttributes) {
+          item.attributes.TargetAttributes = {};
+        }
+
         if (!item.attributes.TargetAttributes[nativeTargetId]) {
           item.attributes.TargetAttributes[nativeTargetId] = {};
         }
