@@ -13,7 +13,6 @@ import java.util.Map;
 
 public class ModuleRegistry {
   private final Map<Class, InternalModule> mInternalModulesMap = new HashMap<>();
-  private final Map<String, ViewManager> mViewManagersMap = new HashMap<>();
   private final Map<String, ExportedModule> mExportedModulesMap = new HashMap<>();
   private final Map<Class, ExportedModule> mExportedModulesByClassMap = new HashMap<>();
   private final Map<String, SingletonModule> mSingletonModulesMap = new HashMap<>();
@@ -31,10 +30,6 @@ public class ModuleRegistry {
 
     for (ExportedModule module : exportedModules) {
       registerExportedModule(module);
-    }
-
-    for (ViewManager manager : viewManagers) {
-      registerViewManager(manager);
     }
 
     for (SingletonModule singleton : singletonModules) {
@@ -59,10 +54,6 @@ public class ModuleRegistry {
 
   public ExportedModule getExportedModuleOfClass(Class moduleClass) {
     return mExportedModulesByClassMap.get(moduleClass);
-  }
-
-  public Collection<ViewManager> getAllViewManagers() {
-    return mViewManagersMap.values();
   }
 
   public Collection<ExportedModule> getAllExportedModules() {
@@ -93,11 +84,6 @@ public class ModuleRegistry {
     String moduleName = module.getName();
     mExportedModulesMap.put(moduleName, module);
     mExportedModulesByClassMap.put(module.getClass(), module);
-  }
-
-  public void registerViewManager(ViewManager manager) {
-    String managerName = manager.getName();
-    mViewManagersMap.put(managerName, manager);
   }
 
   public void registerSingletonModule(SingletonModule singleton) {
@@ -137,7 +123,6 @@ public class ModuleRegistry {
     List<RegistryLifecycleListener> lifecycleListeners = new ArrayList<>();
     lifecycleListeners.addAll(mExportedModulesMap.values());
     lifecycleListeners.addAll(mInternalModulesMap.values());
-    lifecycleListeners.addAll(mViewManagersMap.values());
 
     for (WeakReference<RegistryLifecycleListener> ref : mExtraRegistryLifecycleListeners) {
       if (ref.get() != null) {
@@ -154,7 +139,6 @@ public class ModuleRegistry {
     List<RegistryLifecycleListener> lifecycleListeners = new ArrayList<>();
     lifecycleListeners.addAll(mExportedModulesMap.values());
     lifecycleListeners.addAll(mInternalModulesMap.values());
-    lifecycleListeners.addAll(mViewManagersMap.values());
 
     for (WeakReference<RegistryLifecycleListener> ref : mExtraRegistryLifecycleListeners) {
       if (ref.get() != null) {

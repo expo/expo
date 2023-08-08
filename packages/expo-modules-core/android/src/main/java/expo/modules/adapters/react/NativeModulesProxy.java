@@ -1,6 +1,5 @@
 package expo.modules.adapters.react;
 
-import android.util.Log;
 import android.util.SparseArray;
 
 import com.facebook.react.bridge.Dynamic;
@@ -24,7 +23,6 @@ import javax.annotation.Nullable;
 
 import expo.modules.core.ExportedModule;
 import expo.modules.core.ModuleRegistry;
-import expo.modules.core.ViewManager;
 import expo.modules.core.interfaces.ExpoMethod;
 import expo.modules.kotlin.CoreLoggerKt;
 import expo.modules.kotlin.ExpoModulesHelper;
@@ -102,11 +100,9 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
     getKotlinInteropModuleRegistry().installJSIInterop();
 
     Collection<ExportedModule> exportedModules = mModuleRegistry.getAllExportedModules();
-    Collection<ViewManager> viewManagers = mModuleRegistry.getAllViewManagers();
 
     Map<String, Object> modulesConstants = new HashMap<>(exportedModules.size());
     Map<String, Object> exportedMethodsMap = new HashMap<>(exportedModules.size());
-    Map<String, Object> viewManagersMetadata = new HashMap<>(viewManagers.size());
 
     for (ExportedModule exportedModule : exportedModules) {
       String moduleName = exportedModule.getName();
@@ -124,16 +120,10 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
       return null;
     }));
 
-    for (ViewManager viewManager : viewManagers) {
-      viewManagersMetadata.put(viewManager.getName(), viewManager.getMetadata());
-    }
-
-    viewManagersMetadata.putAll(mKotlinInteropModuleRegistry.viewManagersMetadata());
-
     Map<String, Object> constants = new HashMap<>(3);
     constants.put(MODULES_CONSTANTS_KEY, modulesConstants);
     constants.put(EXPORTED_METHODS_KEY, exportedMethodsMap);
-    constants.put(VIEW_MANAGERS_METADATA_KEY, viewManagersMetadata);
+    constants.put(VIEW_MANAGERS_METADATA_KEY, mKotlinInteropModuleRegistry.viewManagersMetadata());
 
     CoreLoggerKt.getLogger().info("✅ Constants were exported");
 

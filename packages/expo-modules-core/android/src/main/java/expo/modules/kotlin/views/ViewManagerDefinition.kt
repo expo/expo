@@ -5,7 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.facebook.react.bridge.ReactContext
 import expo.modules.adapters.react.NativeModulesProxy
-import expo.modules.core.ViewManager
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.functions.BaseAsyncFunctionComponent
@@ -25,11 +24,11 @@ class ViewManagerDefinition(
 
   val propsNames: List<String> = props.keys.toList()
 
-  fun getViewManagerType(): ViewManager.ViewManagerType {
+  fun getViewManagerType(): ViewManagerType {
     return if (ViewGroup::class.java.isAssignableFrom(viewType)) {
-      ViewManager.ViewManagerType.GROUP
+      ViewManagerType.GROUP
     } else {
-      ViewManager.ViewManagerType.SIMPLE
+      ViewManagerType.SIMPLE
     }
   }
 
