@@ -50,7 +50,35 @@ export type LinearGradientProps = ViewProps & {
      * @default { x: 0.5, y: 1.0 }
      */
     end?: LinearGradientPoint | null;
+    /**
+     * Specifies the direction of the gradient color transition. Each value represents a particular direction:
+     * - `GradientDirection.UP` starts the gradient at the bottom and ends at the top.
+     * - `GradientDirection.TOP_RIGHT` starts the gradient at the bottom left and ends at the top right.
+     * - `GradientDirection.RIGHT` starts the gradient on the left and ends on the right.
+     * - `GradientDirection.BOTTOM_RIGHT` starts the gradient at the top left and ends at the bottom right.
+     * - `GradientDirection.DOWN` starts the gradient at the top and ends at the bottom.
+     * - `GradientDirection.BOTTOM_LEFT` starts the gradient at the top right and ends at the bottom left.
+     * - `GradientDirection.LEFT` starts the gradient on the right and ends on the left.
+     * - `GradientDirection.TOP_LEFT` starts the gradient at the bottom right and ends at the top left.
+     *
+     * Specifying 'start' or 'end' properties will override the 'gradientDirection' property.
+     *
+     * If not specified, it defaults to the start and end properties
+     *
+     * Note: For web, the direction will only alter the angle of the gradient, as CSS gradients do not support changing start and end positions.
+     */
+    gradientDirection?: GradientDirection | undefined;
 };
+export declare enum GradientDirection {
+    UP = "up",
+    TOP_RIGHT = "top-right",
+    RIGHT = "right",
+    BOTTOM_RIGHT = "bottom-right",
+    DOWN = "down",
+    BOTTOM_LEFT = "bottom-left",
+    LEFT = "left",
+    TOP_LEFT = "top-left"
+}
 /**
  * Renders a native view that transitions between multiple colors in a linear direction.
  */

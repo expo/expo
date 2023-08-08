@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added 'gradientDirection' property to expo-linear-gradient for easier gradient direction setting. ([#22819](https://github.com/expo/expo/pull/22819) by [@betomoedano](https://github.com/betomoedano))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
