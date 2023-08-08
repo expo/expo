@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 function openFileInEditor(file, lineNumber) {
     if (process.env.NODE_ENV !== 'production') {
         // TODO: This is not a great URL since it now blocks users from accessing the `/open-stack-frame` url in their router
@@ -9,5 +11,5 @@ function openFileInEditor(file, lineNumber) {
         });
     }
 }
-export default openFileInEditor;
+exports.default = openFileInEditor;
 //# sourceMappingURL=index.js.map

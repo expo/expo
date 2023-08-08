@@ -1,6 +1,12 @@
+"use strict";
 // Copyright © 2023 650 Industries.
 // Copyright 2018-2023 the Deno authors. All rights reserved. MIT license.
-import URL from 'url-parse';
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.install = exports.setLocationHref = void 0;
+const url_parse_1 = __importDefault(require("url-parse"));
 class DOMException extends Error {
     constructor(message, name) {
         super(message);
@@ -14,7 +20,7 @@ class DOMException extends Error {
 // - https://heycam.github.io/webidl/#LegacyUnforgeable
 class Location {
     constructor(href = null) {
-        const url = new URL(
+        const url = new url_parse_1.default(
         // @ts-expect-error
         href);
         // @ts-expect-error
@@ -172,10 +178,11 @@ Object.defineProperties(Location.prototype, {
     },
 });
 let location = undefined;
-export function setLocationHref(href) {
+function setLocationHref(href) {
     location = new Location(href);
 }
-export function install() {
+exports.setLocationHref = setLocationHref;
+function install() {
     Object.defineProperty(global, 'Location', {
         value: Location,
         configurable: true,
@@ -191,4 +198,5 @@ export function install() {
         enumerable: true,
     });
 }
+exports.install = install;
 //# sourceMappingURL=Location.native.js.map

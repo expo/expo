@@ -1,3 +1,29 @@
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ErrorToast = void 0;
 /**
  * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -5,25 +31,25 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import React, { useEffect } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import * as LogBoxData from '../Data/LogBoxData';
-import * as LogBoxStyle from '../UI/LogBoxStyle';
-import { ErrorToastMessage } from './ErrorToastMessage';
+const react_1 = __importStar(require("react"));
+const react_native_1 = require("react-native");
+const LogBoxData = __importStar(require("../Data/LogBoxData"));
+const LogBoxStyle = __importStar(require("../UI/LogBoxStyle"));
+const ErrorToastMessage_1 = require("./ErrorToastMessage");
 function useSymbolicatedLog(log) {
     // Eagerly symbolicate so the stack is available when pressing to inspect.
-    useEffect(() => {
+    (0, react_1.useEffect)(() => {
         LogBoxData.symbolicateLogLazy('stack', log);
         LogBoxData.symbolicateLogLazy('component', log);
     }, [log]);
 }
-export function ErrorToast(props) {
+function ErrorToast(props) {
     const { totalLogCount, level, log } = props;
     useSymbolicatedLog(log);
-    return (React.createElement(View, { style: toastStyles.container },
-        React.createElement(Pressable, { style: { flex: 1 }, onPress: props.onPressOpen }, ({ 
+    return (react_1.default.createElement(react_native_1.View, { style: toastStyles.container },
+        react_1.default.createElement(react_native_1.Pressable, { style: { flex: 1 }, onPress: props.onPressOpen }, ({ 
         /** @ts-expect-error: react-native types are broken. */
-        hovered, pressed, }) => (React.createElement(View, { style: [
+        hovered, pressed, }) => (react_1.default.createElement(react_native_1.View, { style: [
                 toastStyles.press,
                 {
                     // @ts-expect-error: web-only type
@@ -35,16 +61,17 @@ export function ErrorToast(props) {
                             : LogBoxStyle.getBackgroundColor(),
                 },
             ] },
-            React.createElement(Count, { count: totalLogCount, level: level }),
-            React.createElement(ErrorToastMessage, { message: log.message }),
-            React.createElement(Dismiss, { onPress: props.onPressDismiss }))))));
+            react_1.default.createElement(Count, { count: totalLogCount, level: level }),
+            react_1.default.createElement(ErrorToastMessage_1.ErrorToastMessage, { message: log.message }),
+            react_1.default.createElement(Dismiss, { onPress: props.onPressDismiss }))))));
 }
+exports.ErrorToast = ErrorToast;
 function Count({ count, level }) {
-    return (React.createElement(View, { style: [countStyles.inside, countStyles[level]] },
-        React.createElement(Text, { style: countStyles.text }, count <= 1 ? '!' : count)));
+    return (react_1.default.createElement(react_native_1.View, { style: [countStyles.inside, countStyles[level]] },
+        react_1.default.createElement(react_native_1.Text, { style: countStyles.text }, count <= 1 ? '!' : count)));
 }
 function Dismiss({ onPress }) {
-    return (React.createElement(Pressable, { style: {
+    return (react_1.default.createElement(react_native_1.Pressable, { style: {
             marginLeft: 5,
         }, hitSlop: {
             top: 12,
@@ -53,10 +80,10 @@ function Dismiss({ onPress }) {
             left: 10,
         }, onPress: onPress }, ({ 
     /** @ts-expect-error: react-native types are broken. */
-    hovered, pressed, }) => (React.createElement(View, { style: [dismissStyles.press, hovered && { opacity: 0.8 }, pressed && { opacity: 0.5 }] },
-        React.createElement(Image, { source: require('@expo/metro-runtime/assets/close.png'), style: dismissStyles.image })))));
+    hovered, pressed, }) => (react_1.default.createElement(react_native_1.View, { style: [dismissStyles.press, hovered && { opacity: 0.8 }, pressed && { opacity: 0.5 }] },
+        react_1.default.createElement(react_native_1.Image, { source: require('@expo/metro-runtime/assets/close.png'), style: dismissStyles.image })))));
 }
-const countStyles = StyleSheet.create({
+const countStyles = react_native_1.StyleSheet.create({
     warn: {
         backgroundColor: LogBoxStyle.getWarningColor(1),
     },
@@ -84,7 +111,7 @@ const countStyles = StyleSheet.create({
         textShadow: `0px 0px 3px ${LogBoxStyle.getBackgroundColor(0.8)}`,
     },
 });
-const dismissStyles = StyleSheet.create({
+const dismissStyles = react_native_1.StyleSheet.create({
     press: {
         backgroundColor: '#323232',
         height: 20,
@@ -98,7 +125,7 @@ const dismissStyles = StyleSheet.create({
         width: 8,
     },
 });
-const toastStyles = StyleSheet.create({
+const toastStyles = react_native_1.StyleSheet.create({
     container: {
         height: 48,
         justifyContent: 'center',

@@ -1,3 +1,9 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Ansi = void 0;
 /**
  * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -5,9 +11,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import Anser from 'anser';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+const anser_1 = __importDefault(require("anser"));
+const react_1 = __importDefault(require("react"));
+const react_native_1 = require("react-native");
 // Afterglow theme from https://iterm2colorschemes.com/
 const COLORS = {
     'ansi-black': 'rgb(27, 27, 27)',
@@ -28,9 +34,9 @@ const COLORS = {
     'ansi-bright-cyan': 'rgb(140, 220, 216)',
     'ansi-bright-white': 'rgb(247, 247, 247)',
 };
-export function Ansi({ text, style }) {
+function Ansi({ text, style }) {
     let commonWhitespaceLength = Infinity;
-    const parsedLines = text.split(/\n/).map((line) => Anser.ansiToJson(line, {
+    const parsedLines = text.split(/\n/).map((line) => anser_1.default.ansiToJson(line, {
         json: true,
         remove_empty: true,
         use_classes: true,
@@ -58,7 +64,7 @@ export function Ansi({ text, style }) {
             return content;
         }
     };
-    return (React.createElement(View, null, parsedLines.map((items, i) => (React.createElement(View, { style: styles.line, key: i }, items.map((bundle, key) => {
+    return (react_1.default.createElement(react_native_1.View, null, parsedLines.map((items, i) => (react_1.default.createElement(react_native_1.View, { style: styles.line, key: i }, items.map((bundle, key) => {
         const textStyle = bundle.fg && COLORS[bundle.fg]
             ? {
                 backgroundColor: bundle.bg && COLORS[bundle.bg],
@@ -67,10 +73,11 @@ export function Ansi({ text, style }) {
             : {
                 backgroundColor: bundle.bg && COLORS[bundle.bg],
             };
-        return (React.createElement(Text, { style: [style, textStyle], key: key }, getText(bundle.content, key)));
+        return (react_1.default.createElement(react_native_1.Text, { style: [style, textStyle], key: key }, getText(bundle.content, key)));
     }))))));
 }
-const styles = StyleSheet.create({
+exports.Ansi = Ansi;
+const styles = react_native_1.StyleSheet.create({
     line: {
         flexDirection: 'row',
     },

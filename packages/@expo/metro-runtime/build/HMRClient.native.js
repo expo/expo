@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const HMRClient = require('react-native/Libraries/Utilities/HMRClient');
-export default HMRClient;
+exports.default = HMRClient;
 //# sourceMappingURL=HMRClient.native.js.map
