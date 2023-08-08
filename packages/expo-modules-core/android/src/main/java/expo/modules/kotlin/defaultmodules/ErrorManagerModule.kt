@@ -27,10 +27,10 @@ class ErrorManagerModule : Module() {
   fun reportWarningToLogBox(warning: String) {
     val eventEmitter = appContext.eventEmitter(this) ?: return
     eventEmitter.emit(
-            onNewWarning,
-            Bundle().apply {
-              putString("message", warning)
-            }
+      onNewWarning,
+      Bundle().apply {
+        putString("message", warning)
+      }
     )
   }
 }
