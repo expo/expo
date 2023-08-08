@@ -2,7 +2,7 @@
 
 #include "JavaScriptModuleObject.h"
 #include "JSIInteropModuleRegistry.h"
-#include "ObjectDeallocator.h"
+#include "JSIUtils.h"
 
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
@@ -61,7 +61,7 @@ void decorateObjectWithProperties(
       jsi::Value(runtime, *setter.toJSFunction(runtime,
                                                jsiInteropModuleRegistry))
     );
-    JavaScriptObject::defineProperty(runtime, jsObject, name, std::move(descriptor));
+    common::definePropertyOnJSIObject(runtime, jsObject, name.c_str(), std::move(descriptor));
   }
 }
 
@@ -215,8 +215,7 @@ std::shared_ptr<jsi::Object> JavaScriptModuleObject::getJSIObject(jsi::Runtime &
     auto descriptor = JavaScriptObject::preparePropertyDescriptor(runtime, 0);
     descriptor.setProperty(runtime, "value", jsi::Value(runtime, nativeConstructor));
 
-    JavaScriptObject::defineProperty(runtime, &prototype, nativeConstructorKey,
-                                     std::move(descriptor));
+    common::definePropertyOnJSIObject(runtime, &prototype, nativeConstructorKey.c_str(), std::move(descriptor));
 
     moduleObject->setProperty(
       runtime,

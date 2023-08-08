@@ -5,6 +5,7 @@
 #include "JavaScriptObject.h"
 #include "Exceptions.h"
 #include "JSIInteropModuleRegistry.h"
+#include "JSIUtils.h"
 
 #if UNIT_TEST
 
@@ -167,21 +168,17 @@ void JavaScriptRuntime::installMainObject() {
   mainObject = coreModule->cthis()->getJSIObject(*runtime);
 
   auto global = runtime->global();
-  auto objectClass = global.getPropertyAsObject(*runtime, "Object");
-  jsi::Function definePropertyFunction = objectClass.getPropertyAsFunction(
-    *runtime,
-    "defineProperty"
-  );
 
   jsi::Object descriptor = JavaScriptObject::preparePropertyDescriptor(*runtime, 1 << 1);
 
   descriptor.setProperty(*runtime, "value", jsi::Value(*runtime, *mainObject));
 
-  definePropertyFunction.callWithThis(*runtime, objectClass, {
-    jsi::Value(*runtime, global),
-    jsi::String::createFromUtf8(*runtime, "expo"),
+  common::definePropertyOnJSIObject(
+    *runtime,
+    &global,
+    "expo",
     std::move(descriptor)
-  });
+  );
 }
 
 std::shared_ptr<jsi::Object> JavaScriptRuntime::getMainObject() {
