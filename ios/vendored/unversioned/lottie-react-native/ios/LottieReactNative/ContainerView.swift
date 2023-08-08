@@ -29,25 +29,25 @@ class ContainerView: RCTView {
     
     @objc var completionCallback: LottieCompletionBlock {
         return { [weak self] animationFinished in
-            guard let self else { return }
+            guard let self = self else { return }
             
-            if let onFinish = onAnimationFinish {
+            if let onFinish = self.onAnimationFinish {
                 onFinish(["isCancelled": !animationFinished])
             }
             
-            delegate?.onAnimationFinish(isCancelled: !animationFinished);
+            self.delegate?.onAnimationFinish(isCancelled: !animationFinished);
         };
     }
     
     @objc var failureCallback: (_ error: String) -> Void {
         return { [weak self] error in
-            guard let self else { return }
+            guard let self = self else { return }
             
-            if let onFinish = onAnimationFailure {
+            if let onFinish = self.onAnimationFailure {
                 onFinish(["error": error])
             }
             
-            delegate?.onAnimationFailure(error: error)
+            self.delegate?.onAnimationFailure(error: error)
         };
     }
     
@@ -160,14 +160,14 @@ class ContainerView: RCTView {
             dotLottieUrl: url,
             configuration: lottieConfiguration,
             completion: { [weak self] view, error in
-                guard let self else { return }
+                guard let self = self else { return }
                 
-                if let error {
-                    failureCallback(error.localizedDescription)
+                if let error = error {
+                    self.failureCallback(error.localizedDescription)
                     return
                 }
                 
-                replaceAnimationView(next: view)
+                self.replaceAnimationView(next: view)
             }
         )
     }
@@ -184,9 +184,7 @@ class ContainerView: RCTView {
             url = URL(fileURLWithPath: newSourceURLString, relativeTo: Bundle.main.resourceURL)
         }
         
-        guard let url else {
-            return
-        }
+        guard let url = url else { return }
         
         self.fetchRemoteAnimation(from: url)
     }
@@ -325,7 +323,7 @@ class ContainerView: RCTView {
     }
     
     private func checkReactSourceString(_ sourceStr: String?) -> Bool {
-        guard let sourceStr else {
+        guard let sourceStr = sourceStr else {
             return false
         }
         
@@ -334,15 +332,15 @@ class ContainerView: RCTView {
     
     private func fetchRemoteAnimation(from url: URL) {
         URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
-            guard let self else { return }
+            guard let self = self else { return }
 
             if let error = error {
-                failureCallback("Unable to fetch the Lottie animation from the URL: \(error.localizedDescription)")
+                self.failureCallback("Unable to fetch the Lottie animation from the URL: \(error.localizedDescription)")
                 return
             }
             
             guard let data = data else {
-                failureCallback("No data received for the Lottie animation from the URL.")
+                self.failureCallback("No data received for the Lottie animation from the URL.")
                 return
             }
             
@@ -354,13 +352,13 @@ class ContainerView: RCTView {
                     
                     let nextAnimationView = LottieAnimationView(
                         animation: animation,
-                        configuration: lottieConfiguration
+                        configuration: self.lottieConfiguration
                     )
                     
-                    replaceAnimationView(next: nextAnimationView)
+                    self.replaceAnimationView(next: nextAnimationView)
                 }
             } catch {
-                failureCallback("Unable to decode the Lottie animation object from the fetched URL source: \(error.localizedDescription)")
+                self.failureCallback("Unable to decode the Lottie animation object from the fetched URL source: \(error.localizedDescription)")
             }
         }.resume()
     }
