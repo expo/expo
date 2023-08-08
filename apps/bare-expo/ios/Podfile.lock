@@ -169,10 +169,10 @@ PODS:
     - ExpoModulesCore
   - ExpoImage (1.4.1):
     - ExpoModulesCore
-    - SDWebImage (~> 5.15.8)
-    - SDWebImageAVIFCoder (~> 0.10.0)
+    - SDWebImage (~> 5.17.0)
+    - SDWebImageAVIFCoder (~> 0.10.1)
     - SDWebImageSVGCoder (~> 1.7.0)
-    - SDWebImageWebPCoder (~> 0.11.0)
+    - SDWebImageWebPCoder (~> 0.13.0)
   - ExpoImageManipulator (11.4.1):
     - EXImageLoader
     - ExpoModulesCore
@@ -287,15 +287,18 @@ PODS:
     - libavif/core
   - libevent (2.1.12)
   - libvmaf (2.3.1)
-  - libwebp (1.2.4):
-    - libwebp/demux (= 1.2.4)
-    - libwebp/mux (= 1.2.4)
-    - libwebp/webp (= 1.2.4)
-  - libwebp/demux (1.2.4):
+  - libwebp (1.3.1):
+    - libwebp/demux (= 1.3.1)
+    - libwebp/mux (= 1.3.1)
+    - libwebp/sharpyuv (= 1.3.1)
+    - libwebp/webp (= 1.3.1)
+  - libwebp/demux (1.3.1):
     - libwebp/webp
-  - libwebp/mux (1.2.4):
+  - libwebp/mux (1.3.1):
     - libwebp/demux
-  - libwebp/webp (1.2.4)
+  - libwebp/sharpyuv (1.3.1)
+  - libwebp/webp (1.3.1):
+    - libwebp/sharpyuv
   - Nimble (9.2.1)
   - OHHTTPStubs (9.1.0):
     - OHHTTPStubs/Default (= 9.1.0)
@@ -785,17 +788,17 @@ PODS:
     - React-RCTImage
   - RNSVG (13.9.0):
     - React-Core
-  - SDWebImage (5.15.8):
-    - SDWebImage/Core (= 5.15.8)
-  - SDWebImage/Core (5.15.8)
-  - SDWebImageAVIFCoder (0.10.0):
+  - SDWebImage (5.17.0):
+    - SDWebImage/Core (= 5.17.0)
+  - SDWebImage/Core (5.17.0)
+  - SDWebImageAVIFCoder (0.10.1):
     - libavif (>= 0.11.0)
     - SDWebImage (~> 5.10)
   - SDWebImageSVGCoder (1.7.0):
     - SDWebImage/Core (~> 5.6)
-  - SDWebImageWebPCoder (0.11.0):
+  - SDWebImageWebPCoder (0.13.0):
     - libwebp (~> 1.0)
-    - SDWebImage/Core (~> 5.15)
+    - SDWebImage/Core (~> 5.17)
   - SocketRocket (0.6.1)
   - sqlite3 (3.42.0):
     - sqlite3/common (= 3.42.0)
@@ -1322,7 +1325,7 @@ SPEC CHECKSUMS:
   ExpoDocumentPicker: 5081b10ffc8f7f5051e49316c613c2084520af01
   ExpoGL: ff70ada41e42fceefc9e8c8342f18e8cf6b339b1
   ExpoHaptics: c7b4bdec1d791b93a79cd3da9e57f206acff656e
-  ExpoImage: f345323299804fe839c92a4e18f9a1bc82784029
+  ExpoImage: d932e3923f0826c29831841d8c45a489471f86e5
   ExpoImageManipulator: 8ea73d1961367b881a767f4a0554bdf06eacbabc
   ExpoImagePicker: 6d6b75f99ca2115f83a86c90b7dd421c3e256fbb
   ExpoInsights: 5ed22079629157f3a1088d5cb40a49a146e44aae
@@ -1365,7 +1368,7 @@ SPEC CHECKSUMS:
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   libvmaf: 27f523f1e63c694d14d534cd0fddd2fab0ae8711
-  libwebp: f62cb61d0a484ba548448a4bd52aabf150ff6eef
+  libwebp: 33dc822fbbf4503668d09f7885bbfedc76c45e96
   Nimble: d954d0accfd082f2225e62d71008440493e318f4
   OHHTTPStubs: 90eac6d8f2c18317baeca36698523dc67c513831
   Quick: 749aa754fd1e7d984f2000fe051e18a3a9809179
@@ -1417,10 +1420,10 @@ SPEC CHECKSUMS:
   RNReanimated: 11ef210bd11e80668ed3708f7a9dd846ae29e99c
   RNScreens: 68fd1060f57dd1023880bf4c05d74784b5392789
   RNSVG: 53c661b76829783cdaf9b7a57258f3d3b4c28315
-  SDWebImage: cb032eba469c54e0000e78bcb0a13cdde0a52798
-  SDWebImageAVIFCoder: 4aeea8fdf65af5c18525ecb5bdd8b8ed9bb45019
+  SDWebImage: 750adf017a315a280c60fde706ab1e552a3ae4e9
+  SDWebImageAVIFCoder: 8348fef6d0ec69e129c66c9fe4d74fbfbf366112
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
-  SDWebImageWebPCoder: 295a6573c512f54ad2dd58098e64e17dcf008499
+  SDWebImageWebPCoder: af09429398d99d524cae2fe00f6f0f6e491ed102
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   sqlite3: f163dbbb7aa3339ad8fc622782c2d9d7b72f7e9c
   UMAppLoader: e83f024f75f07802fce99739f04b4537d188caaf
