@@ -1,6 +1,8 @@
-import './location/install';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+require("./location/install");
 // IMPORT POSITION MATTERS FOR FAST REFRESH ON WEB
-import './effects';
+require("./effects");
 // Ensure this is removed in production.
 // TODO: Enable in production.
 if (process.env.NODE_ENV !== 'production') {

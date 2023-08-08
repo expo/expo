@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Copyright (c) 650 Industries.
  * Copyright (c) Facebook, Inc. and its affiliates.
@@ -5,10 +6,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { Platform } from 'react-native';
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.fetchAsync = void 0;
+const react_native_1 = require("react-native");
 // @ts-expect-error
-import Networking from 'react-native/Libraries/Network/RCTNetworking';
-export function fetchAsync(url) {
+const RCTNetworking_1 = __importDefault(require("react-native/Libraries/Network/RCTNetworking"));
+function fetchAsync(url) {
     let id = null;
     let responseText = null;
     let headers = {};
@@ -16,7 +22,7 @@ export function fetchAsync(url) {
     let completeListener = null;
     let responseListener = null;
     return new Promise((resolve, reject) => {
-        const addListener = Networking.addListener;
+        const addListener = RCTNetworking_1.default.addListener;
         dataListener = addListener('didReceiveNetworkData', ([requestId, response]) => {
             if (requestId === id) {
                 responseText = response;
@@ -37,8 +43,8 @@ export function fetchAsync(url) {
                 }
             }
         });
-        Networking.sendRequest('GET', 'asyncRequest', url, {
-            'expo-platform': Platform.OS,
+        RCTNetworking_1.default.sendRequest('GET', 'asyncRequest', url, {
+            'expo-platform': react_native_1.Platform.OS,
         }, '', 'text', false, 0, (requestId) => {
             id = requestId;
         }, true);
@@ -48,4 +54,5 @@ export function fetchAsync(url) {
         responseListener?.remove();
     });
 }
+exports.fetchAsync = fetchAsync;
 //# sourceMappingURL=fetchAsync.native.js.map
