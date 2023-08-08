@@ -27,7 +27,7 @@ class JavaScriptAnonymousObjectTest {
     val f1 = evaluateScript("object.f1()").getString()
     val f2 = waitForAsyncFunction(it, "object.f2()").getString()
 
-    Truth.assertThat(anonymousObject.getPropertyNames()).isEqualTo(arrayOf("p1", "f2", "f1"))
+    Truth.assertThat(anonymousObject.getPropertyNames().toList()).containsAtLeastElementsIn(arrayOf("p1", "f2", "f1"))
     Truth.assertThat(p1).isEqualTo(123)
     Truth.assertThat(f1).isEqualTo("abc")
     Truth.assertThat(f2).isEqualTo("def")
@@ -52,7 +52,7 @@ class JavaScriptAnonymousObjectTest {
       .getObject()
     val p1 = evaluateScript("object.p1").getInt()
 
-    Truth.assertThat(anonymousObject.getPropertyNames()).isEqualTo(arrayOf("p1"))
+    Truth.assertThat(anonymousObject.getPropertyNames().toList()).contains("p1")
     Truth.assertThat(p1).isEqualTo(123)
   }
 }

@@ -2,7 +2,7 @@
 
 #include "JNIToJSIConverter.h"
 #include "../JavaReferencesCache.h"
-#include "../ObjectDeallocator.h"
+#include "ObjectDeallocator.h"
 
 #include <react/jni/ReadableNativeMap.h>
 #include <react/jni/ReadableNativeArray.h>
@@ -70,15 +70,14 @@ jsi::Value convert(
     auto jsiObject = anonymousObject->getJSIObject(rt);
 
     jni::global_ref<jobject> globalRef = jni::make_global(value);
-    std::shared_ptr<expo::ObjectDeallocator> deallocator = std::make_shared<ObjectDeallocator>(
+
+    common::setDeallocator(
+      rt,
+      jsiObject,
       [globalRef = std::move(globalRef)]() mutable {
         globalRef.reset();
-      });
-
-    auto descriptor = JavaScriptObject::preparePropertyDescriptor(rt, 0);
-    descriptor.setProperty(rt, "value", jsi::Object::createFromHostObject(rt, deallocator));
-    JavaScriptObject::defineProperty(rt, jsiObject.get(), "__expo_object_deallocator__",
-                                     std::move(descriptor));
+      }
+    );
 
     return jsi::Value(rt, *jsiObject);
   }

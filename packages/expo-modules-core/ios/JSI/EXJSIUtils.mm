@@ -5,6 +5,7 @@
 #import <React/RCTUtils.h>
 #import <ExpoModulesCore/EXJSIConversions.h>
 #import <ExpoModulesCore/EXJSIUtils.h>
+#import <ExpoModulesCore/JSIUtils.h>
 
 namespace expo {
 
@@ -110,7 +111,10 @@ std::shared_ptr<jsi::Function> createClass(jsi::Runtime &runtime, const char *na
       return jsi::Value::undefined();
     });
 
-  defineProperty(runtime, &prototype, nativeConstructorKey.c_str(), jsi::Value(runtime, nativeConstructor));
+  jsi::Object descriptor(runtime);
+  descriptor.setProperty(runtime, "value", jsi::Value(runtime, nativeConstructor));
+
+  common::definePropertyOnJSIObject(runtime, &prototype, nativeConstructorKey.c_str(), std::move(descriptor));
 
   return std::make_shared<jsi::Function>(klass.asFunction(runtime));
 }
@@ -159,32 +163,6 @@ std::shared_ptr<jsi::Object> derefWeakRef(jsi::Runtime &runtime, std::shared_ptr
     return nullptr;
   }
   return std::make_shared<jsi::Object>(ref.asObject(runtime));
-}
-
-#pragma mark - Define property
-
-void defineProperty(jsi::Runtime &runtime, const jsi::Object *object, const char *name, jsi::Value value) {
-  jsi::Object global = runtime.global();
-  jsi::Object objectClass = global.getPropertyAsObject(runtime, "Object");
-  jsi::Function definePropertyFunction = objectClass.getPropertyAsFunction(runtime, "defineProperty");
-
-  jsi::Object descriptor(runtime);
-  descriptor.setProperty(runtime, "value", value);
-
-  definePropertyFunction.callWithThis(runtime, objectClass, {
-    jsi::Value(runtime, *object),
-    jsi::String::createFromUtf8(runtime, name),
-    std::move(descriptor),
-  });
-}
-
-#pragma mark - Deallocator
-
-void setDeallocator(jsi::Runtime &runtime, std::shared_ptr<jsi::Object> object, ObjectDeallocatorBlock deallocatorBlock) {
-  std::shared_ptr<expo::ObjectDeallocator> hostObjectPtr = std::make_shared<ObjectDeallocator>(deallocatorBlock);
-  jsi::Object jsObject = jsi::Object::createFromHostObject(runtime, hostObjectPtr);
-
-  object->setProperty(runtime, "__expo_object_deallocator__", jsi::Value(runtime, jsObject));
 }
 
 #pragma mark - Errors

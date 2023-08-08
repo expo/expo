@@ -6,6 +6,7 @@
 #import <ExpoModulesCore/EXJavaScriptRuntime.h>
 #import <ExpoModulesCore/EXJavaScriptWeakObject.h>
 #import <ExpoModulesCore/EXJSIUtils.h>
+#import <ExpoModulesCore/JSIUtils.h>
 
 @implementation EXJavaScriptObject {
   /**
@@ -73,34 +74,20 @@
 - (void)defineProperty:(nonnull NSString *)name descriptor:(nonnull EXJavaScriptObject *)descriptor
 {
   jsi::Runtime *runtime = [_runtime get];
-  jsi::Object global = runtime->global();
-  jsi::Object objectClass = global.getPropertyAsObject(*runtime, "Object");
-  jsi::Function definePropertyFunction = objectClass.getPropertyAsFunction(*runtime, "defineProperty");
+  jsi::Object *jsThis = _jsObjectPtr.get();
 
-  // This call is basically the same as `Object.defineProperty(object, name, descriptor)` in JS
-  definePropertyFunction.callWithThis(*runtime, objectClass, {
-    jsi::Value(*runtime, *_jsObjectPtr.get()),
-    jsi::String::createFromUtf8(*runtime, [name UTF8String]),
-    std::move(*[descriptor get]),
-  });
+  expo::common::definePropertyOnJSIObject(*runtime, jsThis, [name UTF8String], std::move(*[descriptor get]));
 }
 
 - (void)defineProperty:(nonnull NSString *)name value:(nullable id)value options:(EXJavaScriptObjectPropertyDescriptor)options
 {
   jsi::Runtime *runtime = [_runtime get];
-  jsi::Object global = runtime->global();
-  jsi::Object objectClass = global.getPropertyAsObject(*runtime, "Object");
-  jsi::Function definePropertyFunction = objectClass.getPropertyAsFunction(*runtime, "defineProperty");
-  jsi::Object descriptor = [self preparePropertyDescriptorWithOptions:options];
+  jsi::Object *jsThis = _jsObjectPtr.get();
 
+  jsi::Object descriptor = [self preparePropertyDescriptorWithOptions:options];
   descriptor.setProperty(*runtime, "value", expo::convertObjCObjectToJSIValue(*runtime, value));
 
-  // This call is basically the same as `Object.defineProperty(object, name, descriptor)` in JS
-  definePropertyFunction.callWithThis(*runtime, objectClass, {
-    jsi::Value(*runtime, *_jsObjectPtr.get()),
-    jsi::String::createFromUtf8(*runtime, [name UTF8String]),
-    std::move(descriptor),
-  });
+  expo::common::definePropertyOnJSIObject(*runtime, jsThis, [name UTF8String], std::move(descriptor));
 }
 
 #pragma mark - WeakObject
@@ -114,7 +101,7 @@
 
 - (void)setObjectDeallocator:(void (^)(void))deallocatorBlock
 {
-  expo::setDeallocator(*[_runtime get], _jsObjectPtr, deallocatorBlock);
+  expo::common::setDeallocator(*[_runtime get], _jsObjectPtr, deallocatorBlock);
 }
 
 #pragma mark - Equality
