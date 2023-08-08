@@ -1,17 +1,20 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.fetchThenEvalAsync = void 0;
 /**
  * Copyright © 2022 650 Industries.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { fetchAsync } from './fetchAsync';
+const fetchAsync_1 = require("./fetchAsync");
 /**
  * Load a bundle for a URL using fetch + eval on native and script tag injection on web.
  *
  * @param bundlePath Given a statement like `import('./Bacon')` `bundlePath` would be `Bacon`.
  */
-export function fetchThenEvalAsync(url) {
-    return fetchAsync(url).then(({ body, headers }) => {
+function fetchThenEvalAsync(url) {
+    return (0, fetchAsync_1.fetchAsync)(url).then(({ body, headers }) => {
         if (headers?.has?.('Content-Type') != null &&
             headers.get('Content-Type').includes('application/json')) {
             // Errors are returned as JSON.
@@ -29,4 +32,5 @@ export function fetchThenEvalAsync(url) {
         }
     });
 }
+exports.fetchThenEvalAsync = fetchThenEvalAsync;
 //# sourceMappingURL=fetchThenEval.js.map
