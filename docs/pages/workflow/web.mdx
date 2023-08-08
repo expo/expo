@@ -16,7 +16,7 @@ Install the `expo` package which contains the [Expo CLI](/more/expo-cli/) used f
 
 Then you can use Expo CLI to install the web dependencies in your project:
 
-<Terminal cmd={['$ npx expo install react-dom react-native-web @expo/webpack-config']} />
+<Terminal cmd={['$ npx expo install react-dom react-native-web']} />
 
 ### Update the entry file
 
@@ -35,6 +35,22 @@ import App from './App';
 
 > Learn more about [`registerRootComponent`](/versions/latest/sdk/register-root-component#registerrootcomponentcomponent).
 
+### Enable Metro on Web
+
+To enable Metro web support, modify your [app config](/workflow/configuration) to enable the feature using the `expo.web.bundler` field:
+
+```json app.json
+{
+  "expo": {
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}
+```
+
+> Learn more about [Metro web support](/guides/customizing-metro#web-support).
+
 ### Start the dev server
 
 Finally you can start the webpack dev server with:
@@ -42,8 +58,6 @@ Finally you can start the webpack dev server with:
 <Terminal cmd={['$ npx expo start --web']} cmdCopy="npx expo start --web" />
 
 You can test secure web APIs like the camera and user location by adding the `--https` flag to `npx expo start`. This will host your app from a secure origin like `https://localhost:19006`.
-
-> You can try experimental [Metro web support](/guides/customizing-metro#web-support) instead of webpack.
 
 ## Alternative Rendering Patterns
 

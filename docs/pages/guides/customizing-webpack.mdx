@@ -5,6 +5,8 @@ description: Learn about different webpack bundler configurations that can be cu
 
 import { Terminal } from '~/ui/components/Snippet';
 
+> **warning** Metro is now recommended for web. The `@expo/webpack-config` package is currently in maintenance mode, and our efforts on web support are focused on Metro. We strongly recommend all new projects use Metro for web. Many existing projects should work well with Metro as long as they don’t require any of the few remaining features only supported by Webpack.
+
 When you run `npx expo start --web` or `expo export:web` the CLI will check to see if your project has a **webpack.config.js** in the root directory. If the project doesn't then Expo will use the default `@expo/webpack-config` (preferred).
 
 > This is similar to `react-scripts` and `create-react-app`.
