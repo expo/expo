@@ -137,6 +137,8 @@ object ExperiencePackagePicker : ModulesProvider {
     RandomModule::class.java,
     ScreenCaptureModule::class.java,
     ScreenOrientationModule::class.java,
+    // SecureStoreModule is not added here, instead it is added in ExpoModuleRegistryAdapter.kt,
+    // because it needs access to scopedContext for Expo Go support
     SMSModule::class.java,
     SharingModule::class.java,
     SplashScreenModule::class.java,

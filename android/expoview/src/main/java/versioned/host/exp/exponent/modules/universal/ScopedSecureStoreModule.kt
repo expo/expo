@@ -10,7 +10,7 @@ import host.exp.exponent.Constants
 private const val SHARED_PREFERENCES_NAME = "SecureStore"
 
 class ScopedSecureStoreModule(private val scopedContext: ScopedContext) : SecureStoreModule() {
-    override var reactContext = scopedContext
+  override var reactContext = scopedContext
 
   // In standalone apps on SDK 41 and below, SecureStore was initiated with scoped context,
   // so SharedPreferences was scoped to that particular experienceId. This meant you

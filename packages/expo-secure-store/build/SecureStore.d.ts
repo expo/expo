@@ -109,7 +109,7 @@ export declare function getItemAsync(key: string, options?: SecureStoreOptions):
  */
 export declare function setItemAsync(key: string, value: string, options?: SecureStoreOptions): Promise<void>;
 /**
- * Store a key–value pair synchronously.
+ * Store a key–value pair synchronously. This function can be used in the global scope.
  * > It is not recommended to use this function with `requireAuthentication` set to `true`, as it will block the JavaScript
  * thread until the user authenticates.
  *
@@ -122,7 +122,7 @@ export declare function setItemAsync(key: string, value: string, options?: Secur
 export declare function setItemSync(key: string, value: string, options?: SecureStoreOptions): void;
 /**
  * Fetch the stored value associated with the provided key synchronously. This function can be used in the global scope.
- * > It is not recommended to use this funciton with values which require authentication, as it will block the JavaScript
+ * > It is not recommended to use this function with values that require authentication, as it will block the JavaScript
  * thread until the user authenticates.
  *
  * @param key The key that was used to store the associated value.

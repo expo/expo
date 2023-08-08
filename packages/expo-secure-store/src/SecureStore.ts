@@ -177,7 +177,7 @@ export async function setItemAsync(
 }
 
 /**
- * Store a key–value pair synchronously.
+ * Store a key–value pair synchronously. This function can be used in the global scope.
  * > It is not recommended to use this function with `requireAuthentication` set to `true`, as it will block the JavaScript
  * thread until the user authenticates.
  *
