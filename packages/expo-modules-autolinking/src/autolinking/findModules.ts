@@ -132,7 +132,13 @@ function addRevisionToResults(
 async function findPackagesConfigPathsAsync(searchPath: string): Promise<string[]> {
   const bracedFilenames = '{' + EXPO_MODULE_CONFIG_FILENAMES.join(',') + '}';
   const paths = await glob(
-    [`*/${bracedFilenames}`, `@*/*/${bracedFilenames}`, `./${bracedFilenames}`],
+    [
+      `*/${bracedFilenames}`,
+      `@*/*/${bracedFilenames}`,
+      `./${bracedFilenames}`,
+      `.pnpm/*/node_modules/*/${bracedFilenames}`,
+      `.pnpm/*/node_modules/@*/*/${bracedFilenames}`,
+    ],
     {
       cwd: searchPath,
     }
