@@ -5,7 +5,6 @@ import android.widget.TextView
 import com.google.common.truth.Truth
 import io.mockk.mockk
 import org.junit.Test
-import expo.modules.core.ViewManager
 
 class ViewManagerDefinitionTest {
 
@@ -23,7 +22,7 @@ class ViewManagerDefinitionTest {
       emptyMap()
     )
 
-    Truth.assertThat(simpleViewManagerDefinition.getViewManagerType()).isEqualTo(ViewManager.ViewManagerType.SIMPLE)
-    Truth.assertThat(groupViewManagerDefinition.getViewManagerType()).isEqualTo(ViewManager.ViewManagerType.GROUP)
+    Truth.assertThat(simpleViewManagerDefinition.getViewManagerType()).isEqualTo(ViewManagerType.SIMPLE)
+    Truth.assertThat(groupViewManagerDefinition.getViewManagerType()).isEqualTo(ViewManagerType.GROUP)
   }
 }
