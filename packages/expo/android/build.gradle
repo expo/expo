@@ -148,6 +148,13 @@ dependencies { dependencyHandler ->
 
 // A task generating a package list of expo modules.
 task generateExpoModulesPackageList {
+  def modulesConfig = getModulesConfig()
+  def outputPath = getGenerateExpoModulesPackagesListPath()
+  if (modulesConfig) {
+    outputs.file(file(outputPath))
+    inputs.property("modulesConfig", modulesConfig)
+  }
+
   doLast {
     generateExpoModulesPackageList()
   }
