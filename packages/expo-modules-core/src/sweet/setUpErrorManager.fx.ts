@@ -5,10 +5,15 @@ import NativeErrorManager from './NativeErrorManager';
 
 if (__DEV__ && Platform.OS === 'android' && NativeErrorManager) {
   const onNewException = 'ExpoModulesCoreErrorManager.onNewException';
+  const onNewWarning = 'ExpoModulesCoreErrorManager.onNewWarning';
   const eventEmitter = new EventEmitter(NativeErrorManager);
 
   eventEmitter.addListener(onNewException, ({ message }: { message: string }) => {
     console.error(message);
+  });
+
+  eventEmitter.addListener(onNewWarning, ({ message }: { message: string }) => {
+    console.warn(message);
   });
 }
 
