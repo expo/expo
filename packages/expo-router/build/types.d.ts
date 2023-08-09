@@ -1,4 +1,4 @@
-import { Href } from './link/href';
+import type { Href } from './link/href';
 export interface RequireContext {
     /** Return the keys that can be resolved. */
     keys(): string[];

@@ -1,5 +1,7 @@
-import fs from 'fs';
-import path from 'path';
+// @ts-expect-error: types node
+import fs from 'node:fs';
+// @ts-expect-error: types node
+import path from 'node:path';
 export default function requireContext(base = '.', scanSubDirectories = true, regularExpression = /\.[tj]sx?$/) {
     const files = {};
     function readDirectory(directory) {
