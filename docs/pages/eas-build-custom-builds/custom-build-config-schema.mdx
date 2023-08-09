@@ -482,7 +482,7 @@ functions:
 
 ### `functions.[function_name].path`
 
-Used to define the path to a JS/TS module implementing the function. Each function is **required** to define either a `command` or a `path` to JS/TS module implementing the function. For example, the path `./greetings` is used to execute a `greetings` function declared in `greetings` module:
+Used to define the path to a JavaScript/TypeScript module implementing the function. Each function is **required** to define either a `command` or a `path` property. For example, the path `./greetings` is used to execute a `greetings` function declared in the `greetings` module:
 
 ```yaml
 functions:
@@ -493,7 +493,7 @@ functions:
     # @end #
 ```
 
-Learn more about custom TS/JS functions TODO.
+Learn more about building and using custom TypeScript/JavaScript functions [here](/eas-build-custom-builds/custom-build-functions/).
 
 ### `functions.[function_name].shell`
 
