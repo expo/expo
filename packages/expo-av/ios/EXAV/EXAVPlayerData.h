@@ -1,6 +1,7 @@
 // Copyright 2017-present 650 Industries. All rights reserved.
 
 #import <AVFoundation/AVFoundation.h>
+#import <MediaPlayer/MediaPlayer.h>
 
 #import <EXAV/EXAV.h>
 #import <EXAV/EXAudioSampleCallback.h>
@@ -8,11 +9,14 @@
 @interface EXAVPlayerData : NSObject <EXAVObject>
 
 @property (nonatomic, strong) AVQueuePlayer *player;
+@property (nonatomic, strong) MPNowPlayingInfoCenter *infoCenter;
+@property (nonatomic, strong) MPRemoteCommandCenter *commandCenter;
 @property (nonatomic, strong) NSURL *url;
 @property (nonatomic, strong) NSDictionary *headers;
 @property (nonatomic, strong) EXAudioSampleCallback *sampleBufferCallback;
 @property (nonatomic, strong) void (^statusUpdateCallback)(NSDictionary *);
 @property (nonatomic, strong) void (^metadataUpdateCallback)(NSDictionary *);
+@property (nonatomic, strong) void (^remoteCommandTriggerCallback)(NSString *);
 @property (nonatomic, strong) void (^errorCallback)(NSString *);
 
 + (NSDictionary *)getUnloadedStatus;
