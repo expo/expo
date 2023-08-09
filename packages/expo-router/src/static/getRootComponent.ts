@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { ctx as rootContext } from 'expo-router/_ctx-html';
+import { ctx as rootContext } from '../../_ctx-html';
 
 export function getRootComponent() {
   const keys = rootContext.keys();

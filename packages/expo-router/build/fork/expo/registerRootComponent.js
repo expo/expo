@@ -4,7 +4,6 @@
 import 'expo/build/Expo.fx';
 // NOTE(EvanBacon): Add Metro web support to the global runtime.
 import '@expo/metro-runtime';
-// @ts-ignore: build order issue
 import { withErrorOverlay } from '@expo/metro-runtime/error-overlay';
 import * as React from 'react';
 import { AppRegistry, Platform } from 'react-native';

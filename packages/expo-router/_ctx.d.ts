@@ -1,3 +1,1 @@
-import { RequireContext } from './build/types';
-
-export const ctx: RequireContext;
+export const ctx: ReturnType<typeof require.context>;

@@ -32,7 +32,17 @@ export function Toast({ children, filename, warning, }) {
     }, [filename]);
     const value = useFadeIn();
     return (React.createElement(View, { style: styles.container },
-        React.createElement(Animated.View, { style: [styles.toast, { opacity: value }] },
+        React.createElement(Animated.View, { style: [
+                styles.toast,
+                // @ts-expect-error: fixed is supported on web.
+                {
+                    position: Platform.select({
+                        web: 'fixed',
+                        default: 'absolute',
+                    }),
+                    opacity: value,
+                },
+            ] },
             !warning && React.createElement(ActivityIndicator, { color: "white" }),
             warning && React.createElement(Image, { source: require('expo-router/assets/error.png'), style: styles.icon }),
             React.createElement(View, { style: { marginLeft: 8 } },
@@ -50,10 +60,6 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'rgba(255,255,255,0.2)',
         flexDirection: 'row',
-        position: Platform.select({
-            web: 'fixed',
-            default: 'absolute',
-        }),
         bottom: 8,
         left: 8,
         paddingVertical: 8,

@@ -1,13 +1,7 @@
 import { useIsFocused } from '@react-navigation/core';
-import {
-  useLocalSearchParams,
-  useUnstableGlobalHref,
-  usePathname,
-  useSegments,
-  // @ts-ignore: hack
-} from 'expo-router';
 import React from 'react';
 
+import { useLocalSearchParams, useUnstableGlobalHref, usePathname, useSegments } from '../hooks';
 import { ExpoHead, UserActivity } from './ExpoHeadModule';
 import { getStaticUrlFromExpoRouter } from './url';
 

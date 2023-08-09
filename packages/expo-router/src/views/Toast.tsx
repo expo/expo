@@ -49,7 +49,18 @@ export function Toast({
   const value = useFadeIn();
   return (
     <View style={styles.container}>
-      <Animated.View style={[styles.toast, { opacity: value }]}>
+      <Animated.View
+        style={[
+          styles.toast,
+          // @ts-expect-error: fixed is supported on web.
+          {
+            position: Platform.select({
+              web: 'fixed',
+              default: 'absolute',
+            }),
+            opacity: value,
+          },
+        ]}>
         {!warning && <ActivityIndicator color="white" />}
         {warning && <Image source={require('expo-router/assets/error.png')} style={styles.icon} />}
         <View style={{ marginLeft: 8 }}>
@@ -72,10 +83,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.2)',
     flexDirection: 'row',
-    position: Platform.select({
-      web: 'fixed',
-      default: 'absolute',
-    }),
     bottom: 8,
     left: 8,
     paddingVertical: 8,
