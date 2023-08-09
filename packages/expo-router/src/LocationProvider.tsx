@@ -1,4 +1,4 @@
-import { State } from './fork/getPathFromState';
+import type { State } from './fork/getPathFromState';
 
 type SearchParams = Record<string, string | string[]>;
 

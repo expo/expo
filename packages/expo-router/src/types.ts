@@ -1,4 +1,4 @@
-import { Href } from './link/href';
+import type { Href } from './link/href';
 
 // TODO: Use the global type
 export interface RequireContext {
