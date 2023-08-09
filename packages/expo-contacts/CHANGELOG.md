@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix `addContactAsync` failing when an e-mail or a phone number is provided with an id.
+
 ### 💡 Others
 
 ## 12.3.1 — 2023-08-02
