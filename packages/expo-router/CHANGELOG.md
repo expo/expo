@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- Drop unused tests.
+- Drop unused tests. ([#23890](https://github.com/expo/expo/pull/23890) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.0.0 — 2023-08-02
 
