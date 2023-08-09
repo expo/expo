@@ -10,6 +10,12 @@ import java.util.ArrayDeque
 import java.util.Locale
 import java.util.Queue
 
+const val speakingStartedEvent = "Exponent.speakingStarted"
+const val speakingWillSayNextStringEvent = "Exponent.speakingWillSayNextString"
+const val speakingDoneEvent = "Exponent.speakingDone"
+const val speakingStoppedEvent = "Exponent.speakingStopped"
+const val speakingErrorEvent = "Exponent.speakingError"
+
 class SpeechModule : Module() {
   private val delayedUtterances: Queue<Utterance> = ArrayDeque()
 
@@ -17,11 +23,11 @@ class SpeechModule : Module() {
     Name("ExpoSpeech")
 
     Events(
-      "Exponent.speakingStarted",
-      "Exponent.speakingWillSayNextString",
-      "Exponent.speakingDone",
-      "Exponent.speakingStopped",
-      "Exponent.speakingError"
+      speakingStartedEvent,
+      speakingWillSayNextStringEvent,
+      speakingDoneEvent,
+      speakingStoppedEvent,
+      speakingErrorEvent
     )
 
     Constants("maxSpeechInputLength" to TextToSpeech.getMaxSpeechInputLength())
@@ -124,7 +130,7 @@ class SpeechModule : Module() {
           _textToSpeech!!.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
 
             override fun onStart(utteranceId: String) {
-              sendEvent("Exponent.speakingStarted", idToMap(utteranceId))
+              sendEvent(speakingStartedEvent, idToMap(utteranceId))
             }
 
             override fun onRangeStart(utteranceId: String, start: Int, end: Int, frame: Int) {
@@ -133,19 +139,19 @@ class SpeechModule : Module() {
                 putInt("charIndex", start)
                 putInt("charLength", end - start)
               }
-              sendEvent("Exponent.speakingWillSayNextString", map)
+              sendEvent(speakingWillSayNextStringEvent, map)
             }
 
             override fun onDone(utteranceId: String) {
-              sendEvent("Exponent.speakingDone", idToMap(utteranceId))
+              sendEvent(speakingDoneEvent, idToMap(utteranceId))
             }
 
             override fun onStop(utteranceId: String, interrupted: Boolean) {
-              sendEvent("Exponent.speakingStopped", idToMap(utteranceId))
+              sendEvent(speakingStoppedEvent, idToMap(utteranceId))
             }
 
             override fun onError(utteranceId: String) {
-              sendEvent("Exponent.speakingError", idToMap(utteranceId))
+              sendEvent(speakingErrorEvent, idToMap(utteranceId))
             }
           })
           for ((id, text, options) in delayedUtterances) {
