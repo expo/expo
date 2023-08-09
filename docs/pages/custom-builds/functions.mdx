@@ -9,7 +9,7 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { GithubIcon } from '@expo/styleguide-icons';
 
-EAS Build functions are a great way to extend the functionality of EAS Build custom builds. You can use them to write reusable pieces of custom build config in a very powerful and convenient way. This guide provides a walkthrough.
+EAS Build functions are a great way to extend the functionality of custom builds. You can use them to create reusable steps, and to write your logic in JavaScript, TypeScript, or Bash. This guide provides a walkthrough of creating a function in TypeScript.
 
 <Step label="1">
 
@@ -59,13 +59,13 @@ export default myFunction;
 
 <Step label="2">
 
-## Build the EAS Build function and connect it to the config file
+## Compiling the function and connect it to the config file
 
-After generating the custom build function, the next thing you need to do is to build it and connect it to your EAS Build custom builds config YAML file.
+After generating the function, you will want to compile it and connect it to your custom build YAML configuration.
 
-### Build the EAS Build function
+### Compile the function
 
-To build the custom function you need to run the following command in **.eas/build/myFunction** directory:
+Functions must be compiled to a single JavaScript file that can be run without installing any Node Module dependencies. The default `build` script for generated functions uses the [ncc](https://github.com/vercel/ncc) to compile your function into a single file with all its dependencies. If you don't have the `ncc` installed globally on your machine, run `npm install -g @vercel/ncc` to install it. Next, run the build script in the  **.eas/build/myFunction** directory:
 
 <Terminal cmd={['$ npm run build']} />
 
@@ -83,15 +83,11 @@ This command triggers the `build` script placed in the **package.json** file of 
 }
 ```
 
-> **Info** The `build` script uses the [ncc](https://github.com/vercel/ncc) to compile your custom function module into a single file with all its dependencies. If you don't have the `ncc` installed globally on your machine, run `npm install -g @vercel/ncc` to install it.
+The `build` script generates **build/index.js**. This file must be uploaded to EAS Build as a part of your project archive, so that the builder can run your function. Ensure that the file is not excluded by a **.gitignore** file or **.easignore** file.
 
-The `build` script generates the **build/index.js** file that is used by the EAS Build to run your custom function.
+### Connect the function to the custom build config
 
-> **Warning** The **build/index.js** file must be uploaded to EAS Build as a part of your project archive so the EAS Build builder can run your custom function. Make sure it's not excluded by **.gitignore** file or **.easignore** file.
-
-### Connect the custom function to the config file
-
-Let's assume that except from `myFunction`, you have a **config.yml** file in the **.eas/build** directory. It contains the following content:
+Let's assume that you have a **config.yml** file in the **.eas/build** directory. It contains the following content:
 
 ```yaml .eas/build/config.yml
 build:
@@ -106,7 +102,7 @@ build:
         command: echo Finished
 ```
 
-To add your custom function to the config, you need to add the following lines to the **config.yml** file:
+To add your function to the config, you need to add the following lines to the **config.yml** file:
 
 ```yaml .eas/build/config.yml
 build:
@@ -128,7 +124,7 @@ functions:
 # @end #
 ```
 
-The `path` property should be a relative path from the config file to your custom function module. In this case, it's just `./myFunction`.
+The `path` property should be a relative path from the config file to your function directory. In this case, it's just `./myFunction`.
 
 Now, add a call to the `my_function` function in the **config.yml** file:
 
@@ -154,7 +150,7 @@ functions:
 ```
 
 <ImageSpotlight
-  alt="Example of a custom build config using custom JavaScript/TypeScript function."
+  alt="Example of a custom build config using a JavaScript/TypeScript function."
   src="/static/images/eas-build/custom-build-function.png"
 />
 
@@ -162,9 +158,9 @@ functions:
 
 <Step label="3">
 
-## Modify and develop the custom function
+## Working on the function
 
-Consider an advanced example. Let's say you want to make a custom function sum two numbers and print the result to the console, and save it as an output of the function. To do so, you can modify the **config.yml** and **index.ts** files to make the function accept two inputs called `num1` and `num2` and return the sum of them as an output called `sum`.
+For a more advanced example, let's say you want to make a function calculate the sum of two numbers and print the result to the console, and then output that value from the function. To do this, modify the **config.yml** and **index.ts** files to make the function accept two inputs called `num1` and `num2` and return their sum as an output called `sum`.
 
 ```yaml .eas/build/config.yml
 build:
@@ -251,7 +247,7 @@ async function myFunction(
 
   ctx.logger.info(`sum: ${sum}`);
 
-  outputs.sum.set(sum.toString()); // for now outputs can only of string type, but that will change in the future
+  outputs.sum.set(sum.toString()); // Currently, outputs must be strings. This will improve in the future.
   /* @end */
 }
 
@@ -263,16 +259,16 @@ export default myFunction;
   src="/static/images/eas-build/custom-build-function-advanced.png"
 />
 
-> **Info** Remember to rebuild your custom function after making any changes to it.
+> **Info** Remember to compile your function each time you make changes to it: `npm run build`.
 
 </Step>
 
 ## Summary
 
-- Writing custom EAS Build functions is a great way to extend the functionality of EAS Build custom builds with your own logic.
-- EAS Build functions are reusable and can be used in multiple workflows.
+- Writing functions is a great way to extend the functionality of custom builds with your own logic.
+- EAS Build functions are reusable — you can use them in multiple custom build configurations.
 - Using EAS Build functions is a great option for more advanced use cases that are not easy to do by writing shell scripts.
-- Most of our [built-in functions](/custom-builds/schema/#built-in-eas-functions) are open-sourced and can be used as a reference for writing your own custom functions.
+- Most of the [built-in functions](/custom-builds/schema/#built-in-eas-functions) are open-source and can be forked or used as a reference for writing your own functions.
 
 Check out the **example repository** for more detailed examples:
 
