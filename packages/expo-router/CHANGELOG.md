@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Move entry registration to `expo`.
+
 ## 3.0.0 — 2023-08-02
 
 ### 🛠 Breaking changes

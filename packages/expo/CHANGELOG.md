@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for React static rehydration on web.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
