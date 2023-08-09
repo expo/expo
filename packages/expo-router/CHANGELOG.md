@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- Move entry registration to `expo`.
+- Move entry registration to `expo`. ([#23891](https://github.com/expo/expo/pull/23891) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.0.0 — 2023-08-02
 
