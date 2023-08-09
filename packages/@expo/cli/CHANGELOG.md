@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix bug preventing non-standard xcode projects from running with `npx expo run:ios`. ([#23831](https://github.com/expo/expo/pull/23831) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix `EXPO_SKIP_MANIFEST_VALIDATION_TOKEN` usage.
 
 ### 💡 Others
 
