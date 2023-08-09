@@ -1,5 +1,5 @@
 ---
-title: EAS Build functions
+title: TypeScript functions
 description: Learn how to create and use EAS Build functions in your custom build configurations.
 ---
 
@@ -9,11 +9,11 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { GithubIcon } from '@expo/styleguide-icons';
 
-EAS Build functions are a great way to extend the functionality of custom builds. You can use them to create reusable steps, and to write your logic in JavaScript, TypeScript, or Bash. This guide provides a walkthrough of creating a function in TypeScript.
+EAS Build functions are a great way to extend the functionality of custom builds. You can use them to create reusable steps, and to write your logic in JavaScript, TypeScript, or Bash (more information in [`command` in the config schema](./schema.mdx#functionsfunction_namecommand)). This guide provides a walkthrough of creating a function in TypeScript.
 
 <Step label="1">
 
-## Create EAS Build function
+## Initialize an EAS Build function module
 
 The easiest way to create an EAS Build function is to use the `create-eas-build-function` CLI tool. By running the following command from the same directory as your **eas.json** file, you can create a new custom TypeScript function:
 
