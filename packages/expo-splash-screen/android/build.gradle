@@ -21,5 +21,8 @@ android {
 dependencies {
   implementation 'com.facebook.react:react-android'
   implementation 'androidx.appcompat:appcompat:1.2.0'
-  implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion()}"
+  implementation "org.jetbrains.kotlin:kotlin-reflect:${getKotlinVersion()}"
+
+  implementation "androidx.core:core-splashscreen:1.0.0"
+  implementation "androidx.cardview:cardview:+"
 }
