@@ -2209,9 +2209,9 @@ PODS:
     - ExpoModulesCore
   - EXContacts (12.2.0):
     - ExpoModulesCore
-  - EXFileSystem (15.4.2):
+  - EXFileSystem (15.4.3):
     - ExpoModulesCore
-  - EXFileSystem/Tests (15.4.2):
+  - EXFileSystem/Tests (15.4.3):
     - ExpoModulesCore
     - ExpoModulesTestCore
   - EXFont (11.4.0):
@@ -2236,7 +2236,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (14.2.1):
     - ExpoModulesCore
-  - Expo (49.0.6):
+  - Expo (49.0.7):
     - ExpoModulesCore
   - ExpoAppleAuthentication (6.1.0):
     - ExpoModulesCore
@@ -2248,9 +2248,9 @@ PODS:
     - ExpoModulesCore
   - ExpoCellular (5.3.0):
     - ExpoModulesCore
-  - ExpoClipboard (4.3.0):
+  - ExpoClipboard (4.3.1):
     - ExpoModulesCore
-  - ExpoClipboard/Tests (4.3.0):
+  - ExpoClipboard/Tests (4.3.1):
     - ExpoModulesCore
     - ExpoModulesTestCore
   - ExpoCrypto (12.4.1):
@@ -4902,7 +4902,7 @@ SPEC CHECKSUMS:
   EXCamera: 0fbfa338a3776af2722d626a3437abe33f708aad
   EXConstants: ce5bbea779da8031ac818c36bea41b10e14d04e1
   EXContacts: 9e8626eefc90c428af3d61a9e2869ac413d2569b
-  EXFileSystem: d7f59869885cfeab3ac771e2a8d0f5ed98cd3fdb
+  EXFileSystem: 941b273758aee14be2ecc671dacb4f10dd28c833
   EXFont: 738c44c390953ebcbab075a4848bfbef025fd9ee
   EXImageLoader: 34b214f9387e98f3c73989f15d8d5b399c9ab3f7
   EXJSONUtils: 6802be4282d42b97c51682468ddc1026a06f8276
@@ -4911,13 +4911,13 @@ SPEC CHECKSUMS:
   EXMediaLibrary: 8ac14ce76f266026b10cac2ab049debe032d7ae7
   EXNotifications: 09394cbd7165f9a4a00a53328aa09bf874bae717
   EXPermissions: 4f80cf527001aa408a22eddf076e61465ea71d5a
-  Expo: 5601f86edc81c7e7e1772b9af9ae58fa3b45ad53
+  Expo: d310f3b84bd30843324d41f23ea7cc5e4273abf1
   ExpoAppleAuthentication: 7bdf1a2962ebfe9b00eb4183a17b78d736e57185
   ExpoBattery: e9d7a71960cbc40733d956a29f8ba240173feb08
   ExpoBlur: a2c90bdfa4ff9f459cdb0f83191bddf020e3e2db
   ExpoBrightness: 60c23f8aaf7b7c691907549fdc125e22f30364fe
   ExpoCellular: 6817ef77e75c6d18f28388a909b96c0b3f3eb25a
-  ExpoClipboard: ddd3ecf4af93c003667dab75a0f2ed3ae4f73d85
+  ExpoClipboard: 695f274f8e028cd113837f917da40c76850877eb
   ExpoCrypto: a382ab9a2fa91f0b511ce1fe4d6baecee40a1615
   ExpoDevice: 1c1b0c9cad96c292c1de73948649cfd654b2b3c0
   ExpoDocumentPicker: 5cb7389ff935b4addefdd466a606de51a512e922
