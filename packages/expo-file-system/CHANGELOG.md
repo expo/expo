@@ -12,6 +12,8 @@
 
 ## 15.4.3 — 2023-08-09
 
+### 🐛 Bug fixes
+
 - Fix regression in `copyAsync` on Android. ([#23892](https://github.com/expo/expo/pull/23892) by [@brentvatne](https://github.com/brentvatne))
 
 ## 15.4.2 — 2023-06-28
