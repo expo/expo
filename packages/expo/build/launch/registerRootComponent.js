@@ -1,4 +1,4 @@
-import 'expo/build/Expo.fx';
+import '../Expo.fx';
 import * as React from 'react';
 import { AppRegistry, Platform } from 'react-native';
 import { createRoot } from './createRoot';
