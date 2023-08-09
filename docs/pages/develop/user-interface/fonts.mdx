@@ -86,19 +86,19 @@ SplashScreen.preventAutoHideAsync();
 /* @end */
 
 export default function App() {
-  const [fontsLoaded] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     'Inter-Black': require('./assets/fonts/Inter-Black.otf'),
   });
 
   /* @info After the custom fonts have loaded, we can hide the splash screen and display the app screen. */
   const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded) {
+    if (fontsLoaded || fontError) {
       await SplashScreen.hideAsync();
     }
-  }, [fontsLoaded]);
+  }, [fontsLoaded, fontError]);
   /* @end */
 
-  if (!fontsLoaded) {
+  if (!fontsLoaded && !fontError) {
     return null;
   }
 
@@ -171,11 +171,11 @@ import { View, Text, StyleSheet } from 'react-native';
 import { useFonts, Inter_900Black } from '@expo-google-fonts/inter';
 
 export default function App() {
-  let [fontsLoaded] = useFonts({
+  let [fontsLoaded, fontError] = useFonts({
     Inter_900Black,
   });
 
-  if (!fontsLoaded) {
+  if (!fontsLoaded && !fontError) {
     return null;
   }
 
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
 
 ## Wait for fonts to load
 
-Since your fonts won't be ready right away, it is generally a good practice to not render anything until the font is ready. Instead, you can continue to display the Splash Screen of your app until all fonts have loaded. It is done by using [`expo-splash-screen`](/versions/latest/sdk/splash-screen/) package. See the [minimal example](#minimal-example) section on how to use it.
+Since your fonts won't be ready right away, it is generally a good practice to not render anything until the font is ready. Instead, you can continue to display the Splash Screen of your app until all fonts have loaded (or an error has been returned). It is done by using [`expo-splash-screen`](/versions/latest/sdk/splash-screen/) package. See the [minimal example](#minimal-example) section on how to use it.
 
 ### Load fonts on the web
 

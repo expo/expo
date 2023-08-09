@@ -33,19 +33,19 @@ SplashScreen.preventAutoHideAsync();
 /* @end */
 
 export default function App() {
-  const [fontsLoaded] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     'Inter-Black': require('./assets/fonts/Inter-Black.otf'),
   });
 
   /* @info After the custom fonts have loaded, we can hide the splash screen and display the app screen. */
   const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded) {
+    if (fontsLoaded || fontError) {
       await SplashScreen.hideAsync();
     }
-  }, [fontsLoaded]);
+  }, [fontsLoaded, fontError]);
   /* @end */
 
-  if (!fontsLoaded) {
+  if (!fontsLoaded && !fontError) {
     return null;
   }
 

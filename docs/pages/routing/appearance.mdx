@@ -34,20 +34,19 @@ SplashScreen.preventAutoHideAsync();
 
 export default function Layout() {
   // Load the font `Inter_500Medium`
-  const [fontsLoaded] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     Inter_500Medium,
   });
 
   useEffect(() => {
-    if (fontsLoaded) {
-      // Hide the splash screen after the fonts have loaded and the
-      // UI is ready.
+    if (fontsLoaded || fontError) {
+      // Hide the splash screen after the fonts have loaded (or an error was returned) and the UI is ready.
       SplashScreen.hideAsync();
     }
-  }, [fontsLoaded]);
+  }, [fontsLoaded, fontError]);
 
-  // Prevent rendering until the font has loaded
-  if (!fontsLoaded) {
+  // Prevent rendering until the font has loaded or an error was returned
+  if (!fontsLoaded && !fontError) {
     return null;
   }
 
