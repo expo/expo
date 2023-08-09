@@ -1,6 +1,6 @@
 ---
-title: Custom JavaScript/TypeScript functions
-description: Learn how to create and use custom JavaScript/TypeScript functions in your EAS Build custom builds configuration.
+title: EAS Build functions
+description: Learn how to create and use EAS Build functions in your custom builds configuration.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
@@ -9,13 +9,13 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { GithubIcon } from '@expo/styleguide-icons';
 
-Custom functions are a great way to extend the functionality of EAS Build custom builds. You can use them to write reusable pieces of custom build config in a very powerful and convenient way.
+EAS Build functions are a great way to extend the functionality of EAS Build custom builds. You can use them to write reusable pieces of custom build config in a very powerful and convenient way. This guide provides a walkthrough.
 
 <Step label="1">
 
-## Create custom JavaScript/TypeScript functions
+## Create EAS Build function
 
-The easiest way to create a custom function is to use the `create-eas-build-function` CLI tool. By running the following command from the same directory as your **eas.json** file, you can create a new custom TypeScript function:
+The easiest way to create an EAS Build function is to use the `create-eas-build-function` CLI tool. By running the following command from the same directory as your **eas.json** file, you can create a new custom TypeScript function:
 
 <Terminal cmd={['$ npx create-eas-build-function@latest ./.eas/build/myFunction']} />
 
@@ -59,11 +59,11 @@ export default myFunction;
 
 <Step label="2">
 
-## Build a custom function and connect it to the config file
+## Build the EAS Build function and connect it to the config file
 
 After generating the custom build function, the next thing you need to do is to build it and connect it to your EAS Build custom builds config YAML file.
 
-### Build a custom function
+### Build the EAS Build function
 
 To build the custom function you need to run the following command in **.eas/build/myFunction** directory:
 
@@ -269,10 +269,10 @@ export default myFunction;
 
 ## Summary
 
-- Writing custom JavaScript/TypeScript functions is a great way to extend the functionality of EAS Build custom builds with your own logic.
-- Custom JavaScript/TypeScript functions are reusable and can be used in multiple workflows.
-- Using custom JavaScript/TypeScript functions is a great option for more advanced use cases that are not easy to do by writing shell scripts.
-- Most of our [built-in functions](/eas-build-custom-builds/schema/#built-in-eas-functions) are open-sourced and can be used as a reference for writing your own custom functions.
+- Writing custom EAS Build functions is a great way to extend the functionality of EAS Build custom builds with your own logic.
+- EAS Build functions are reusable and can be used in multiple workflows.
+- Using EAS Build functions is a great option for more advanced use cases that are not easy to do by writing shell scripts.
+- Most of our [built-in functions](/custom-builds/schema/#built-in-eas-functions) are open-sourced and can be used as a reference for writing your own custom functions.
 
 Check out the **example repository** for more detailed examples:
 

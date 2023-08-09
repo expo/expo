@@ -250,9 +250,9 @@ const general = [
     makeGroup(
       'Custom builds',
       [
-        makePage('eas-build-custom-builds/get-started.mdx'),
-        makePage('eas-build-custom-builds/schema.mdx'),
-        makePage('eas-build-custom-builds/functions.mdx'),
+        makePage('custom-builds/get-started.mdx'),
+        makePage('custom-builds/schema.mdx'),
+        makePage('custom-builds/functions.mdx'),
       ],
       { expanded: false }
     ),
