@@ -283,7 +283,7 @@ class AppContext(
       return KEventEmitterWrapper(legacyEventEmitter, reactContextHolder)
     }
 
-  internal val errorManager: ErrorManagerModule?
+  val errorManager: ErrorManagerModule?
     get() = registry.getModule()
 
   internal fun onDestroy() = trace("AppContext.onDestroy") {

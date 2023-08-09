@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Surfaced errorManager to allow throwing errors and warnings from modules. ([#23848](https://github.com/expo/expo/pull/23848) by [@aleqsio](https://github.com/aleqsio))
+
 ### 🐛 Bug fixes
 
 - [Android] Refresh NativeModulesProxy if app bundle is reloaded. ([#23824](https://github.com/expo/expo/pull/23824) by [@douglowder](https://github.com/douglowder))
