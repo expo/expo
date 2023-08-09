@@ -84,7 +84,7 @@ export declare function isAvailableAsync(): Promise<boolean>;
  */
 export declare function deleteItemAsync(key: string, options?: SecureStoreOptions): Promise<void>;
 /**
- * Fetch the stored value associated with the provided key.
+ * Reads the stored value associated with the provided key.
  *
  * @param key The key that was used to store the associated value.
  * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
@@ -98,10 +98,9 @@ export declare function deleteItemAsync(key: string, options?: SecureStoreOption
  */
 export declare function getItemAsync(key: string, options?: SecureStoreOptions): Promise<string | null>;
 /**
- * Store a key–value pair.
+ * Stores a key–value pair.
  *
- * @param key The key to associate with the stored value. Keys may contain alphanumeric characters
- * `.`, `-`, and `_`.
+ * @param key The key to associate with the stored value. Keys may contain alphanumeric characters `.`, `-`, and `_`.
  * @param value The value to store. Size limit is 2048 bytes.
  * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
  *
@@ -109,9 +108,8 @@ export declare function getItemAsync(key: string, options?: SecureStoreOptions):
  */
 export declare function setItemAsync(key: string, value: string, options?: SecureStoreOptions): Promise<void>;
 /**
- * Store a key–value pair synchronously. This function can be used in the global scope.
- * > It is not recommended to use this function with `requireAuthentication` set to `true`, as it will block the JavaScript
- * thread until the user authenticates.
+ * Stores a key–value pair synchronously.
+ * > **Note** This function blocks the JavaScript thread, so the application may not be interactive when the `requireAuthentication` option is set to `true` until the user authenticates.
  *
  * @param key The key to associate with the stored value. Keys may contain alphanumeric characters
  * `.`, `-`, and `_`.
@@ -119,16 +117,15 @@ export declare function setItemAsync(key: string, value: string, options?: Secur
  * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
  *
  */
-export declare function setItemSync(key: string, value: string, options?: SecureStoreOptions): void;
+export declare function setItem(key: string, value: string, options?: SecureStoreOptions): void;
 /**
- * Fetch the stored value associated with the provided key synchronously. This function can be used in the global scope.
- * > It is not recommended to use this function with values that require authentication, as it will block the JavaScript
- * thread until the user authenticates.
- *
+ * Synchronously reads the stored value associated with the provided key.
+ * > **Note** This function blocks the JavaScript thread, so the application may not be interactive when reading a value with `requireAuthentication`
+ * > option set to `true` until the user authenticates.
  * @param key The key that was used to store the associated value.
  * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
  *
  * @return Previously stored value. It will return `null` if there is no entry for the given key or if the key has been invalidated.
  */
-export declare function getItemSync(key: string, options?: SecureStoreOptions): string | null;
+export declare function getItem(key: string, options?: SecureStoreOptions): string | null;
 //# sourceMappingURL=SecureStore.d.ts.map
