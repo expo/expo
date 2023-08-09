@@ -11,6 +11,8 @@ import { GithubIcon } from '@expo/styleguide-icons';
 
 > **Warning** This functionality is in preview, under active development, and it can be subject to changes.
 
+{/* TODO: link to the blog post */}
+
 > **Warning** Other, current limitations of custom builds are highlighted in the launch blog post and include: not adapted pricing, limitations regarding uploading artifacts, lack of reusable steps for caching dependencies, no support for classic updates, and not ready GitHub integration for custom builds.
 
 Custom workflows allow running tests on the cloud, adding instructions for native platforms, resigning a build to share with your team or multiple test devices, and so on. With EAS Build, you can create build configs to customize the process by adding your workflows. It helps saving time especially when working in teams.
@@ -111,6 +113,24 @@ Let's create a new [build profile](/build/eas-json/#build-profiles) called `test
 ```
 
 We can also use the `withoutCredentials` option to skip the credentials setup on the CLI side as they are not needed for running tests.
+
+If you wish to use different, separate configs for each platform, you can create separate YAML config files for iOS and Android. For example:
+
+```json eas.json
+{
+  "build": {
+    /* @hide ... */ /* @end */
+    "test": {
+      "ios": {
+        "config": "test-ios.yml",
+      },
+      "android": {
+        "config": "test-android.yml",
+      },
+      "withoutCredentials": true
+    },
+}
+```
 
 </Step>
 
