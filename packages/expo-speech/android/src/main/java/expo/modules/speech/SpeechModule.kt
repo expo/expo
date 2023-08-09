@@ -1,94 +1,87 @@
 package expo.modules.speech
 
-import android.content.Context
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import android.speech.tts.Voice
-import expo.modules.core.ExportedModule
-import expo.modules.core.ModuleRegistry
-import expo.modules.core.ModuleRegistryDelegate
-import expo.modules.core.Promise
-import expo.modules.core.interfaces.ExpoMethod
-import expo.modules.core.interfaces.LifecycleEventListener
-import expo.modules.core.interfaces.services.EventEmitter
-import expo.modules.core.interfaces.services.UIManager
-import java.util.*
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
+import java.util.ArrayDeque
+import java.util.Locale
+import java.util.Queue
 
-class SpeechModule(
-  context: Context,
-  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
-) : ExportedModule(context), LifecycleEventListener {
+const val speakingStartedEvent = "Exponent.speakingStarted"
+const val speakingWillSayNextStringEvent = "Exponent.speakingWillSayNextString"
+const val speakingDoneEvent = "Exponent.speakingDone"
+const val speakingStoppedEvent = "Exponent.speakingStopped"
+const val speakingErrorEvent = "Exponent.speakingError"
 
-  private inline fun <reified T> moduleRegistry() =
-    moduleRegistryDelegate.getFromModuleRegistry<T>()
-
-  private val uiManager: UIManager by moduleRegistry()
+class SpeechModule : Module() {
   private val delayedUtterances: Queue<Utterance> = ArrayDeque()
 
-  // Module basic definitions
-  override fun getName() = "ExpoSpeech"
-  override fun getConstants() = mapOf(
-    "maxSpeechInputLength" to TextToSpeech.getMaxSpeechInputLength()
-  )
+  override fun definition() = ModuleDefinition {
+    Name("ExpoSpeech")
 
-  // Module methods
+    Events(
+      speakingStartedEvent,
+      speakingWillSayNextStringEvent,
+      speakingDoneEvent,
+      speakingStoppedEvent,
+      speakingErrorEvent
+    )
 
-  @ExpoMethod
-  fun isSpeaking(promise: Promise) = promise.resolve(textToSpeech.isSpeaking)
+    Constants("maxSpeechInputLength" to TextToSpeech.getMaxSpeechInputLength())
 
-  @ExpoMethod
-  fun getVoices(promise: Promise) {
-    var nativeVoices: List<Voice> = emptyList()
-    try {
-      nativeVoices = textToSpeech.voices.toList()
-    } catch (e: Exception) {}
+    OnActivityDestroys {
+      textToSpeech.shutdown()
+    }
 
-    val voices = nativeVoices.map {
-      val quality = if (it.quality > Voice.QUALITY_NORMAL) {
-        "Enhanced"
+    AsyncFunction("isSpeaking") {
+      textToSpeech.isSpeaking
+    }
+
+    AsyncFunction("getVoices") {
+      val nativeVoices = try {
+        textToSpeech.voices.toList()
+      } catch (_: Exception) {
+        emptyList()
+      }
+
+      return@AsyncFunction nativeVoices.map {
+        val quality = if (it.quality > Voice.QUALITY_NORMAL) {
+          VoiceQuality.ENHANCED
+        } else {
+          VoiceQuality.DEFAULT
+        }
+
+        VoiceRecord(
+          identifier = it.name,
+          name = it.name,
+          quality = quality,
+          language = LanguageUtils.getISOCode(it.locale)
+        )
+      }
+    }
+
+    AsyncFunction("stop") {
+      textToSpeech.stop()
+    }
+
+    AsyncFunction("speak") { id: String, text: String, options: SpeechOptions ->
+      if (text.length > TextToSpeech.getMaxSpeechInputLength()) {
+        throw SpeechInputIsToLongException()
+      }
+
+      if (isTextToSpeechReady) {
+        speakOut(id, text, options)
       } else {
-        "Default"
+        delayedUtterances.add(Utterance(id, text, options))
+
+        // init TTS, speaking will be available only after onInit
+        textToSpeech
       }
-
-      Bundle().apply {
-        putString("identifier", it.name)
-        putString("name", it.name)
-        putString("quality", quality)
-        putString("language", LanguageUtils.getISOCode(it.locale))
-      }
+      Unit
     }
-
-    promise.resolve(voices)
-  }
-
-  @ExpoMethod
-  fun stop(promise: Promise) {
-    textToSpeech.stop()
-    promise.resolve(null)
-  }
-
-  @ExpoMethod
-  fun speak(id: String, text: String, options: Map<String, Any>?, promise: Promise) {
-    val speechOptions = SpeechOptions.optionsFromMap(options, promise) ?: return
-
-    if (text.length > TextToSpeech.getMaxSpeechInputLength()) {
-      promise.reject(
-        "ERR_SPEECH_INPUT_LENGTH",
-        "Speech input text is too long! Limit of input length is: " + TextToSpeech.getMaxSpeechInputLength()
-      )
-      return
-    }
-
-    if (isTextToSpeechReady) {
-      speakOut(id, text, speechOptions)
-    } else {
-      delayedUtterances.add(Utterance(id, text, speechOptions))
-
-      // init TTS, speaking will be available only after onInit
-      textToSpeech
-    }
-    promise.resolve(null)
   }
 
   private fun speakOut(id: String, text: String, options: SpeechOptions) {
@@ -129,37 +122,36 @@ class SpeechModule(
     get() = _ttsReady
 
   private val textToSpeech: TextToSpeech by lazy {
-    val newTtsInstance = TextToSpeech(context) { status: Int ->
+    val newTtsInstance = TextToSpeech(appContext.reactContext) { status: Int ->
       if (status == TextToSpeech.SUCCESS) {
         // synchronize because in some cases this runs on another thread and _textToSpeech is null
         synchronized(this@SpeechModule) {
           _ttsReady = true
           _textToSpeech!!.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
-            private val emitter by moduleRegistry<EventEmitter>()
 
             override fun onStart(utteranceId: String) {
-              emitter.emit("Exponent.speakingStarted", idToMap(utteranceId))
+              sendEvent(speakingStartedEvent, idToMap(utteranceId))
             }
 
             override fun onRangeStart(utteranceId: String, start: Int, end: Int, frame: Int) {
-              var map = Bundle().apply {
+              val map = Bundle().apply {
                 putString("id", utteranceId)
                 putInt("charIndex", start)
                 putInt("charLength", end - start)
               }
-              emitter.emit("Exponent.speakingWillSayNextString", map)
+              sendEvent(speakingWillSayNextStringEvent, map)
             }
 
             override fun onDone(utteranceId: String) {
-              emitter.emit("Exponent.speakingDone", idToMap(utteranceId))
+              sendEvent(speakingDoneEvent, idToMap(utteranceId))
             }
 
             override fun onStop(utteranceId: String, interrupted: Boolean) {
-              emitter.emit("Exponent.speakingStopped", idToMap(utteranceId))
+              sendEvent(speakingStoppedEvent, idToMap(utteranceId))
             }
 
             override fun onError(utteranceId: String) {
-              emitter.emit("Exponent.speakingError", idToMap(utteranceId))
+              sendEvent(speakingErrorEvent, idToMap(utteranceId))
             }
           })
           for ((id, text, options) in delayedUtterances) {
@@ -170,17 +162,6 @@ class SpeechModule(
     }
     _textToSpeech = newTtsInstance
     newTtsInstance
-  }
-
-  // Lifecycle methods
-  override fun onCreate(moduleRegistry: ModuleRegistry) {
-    moduleRegistryDelegate.onCreate(moduleRegistry)
-    uiManager.registerLifecycleEventListener(this)
-  }
-  override fun onHostPause() {}
-  override fun onHostResume() {}
-  override fun onHostDestroy() {
-    textToSpeech.shutdown()
   }
 
   // Helpers

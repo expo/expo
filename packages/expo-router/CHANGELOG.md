@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Allow pushing "sibling" routes by the same name. ([#23833](https://github.com/expo/expo/pull/23833) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 - Update Expo Router tests. ([#23795](https://github.com/expo/expo/pull/23795) by [@EvanBacon](https://github.com/EvanBacon))

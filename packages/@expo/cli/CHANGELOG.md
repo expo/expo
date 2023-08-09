@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix bug preventing non-standard xcode projects from running with `npx expo run:ios`. ([#23831](https://github.com/expo/expo/pull/23831) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 - Update Expo Router tests. ([#23795](https://github.com/expo/expo/pull/23795) by [@EvanBacon](https://github.com/EvanBacon))
