@@ -104,8 +104,7 @@ export async function setItemAsync(key, value, options = {}) {
  * Stores a key–value pair synchronously.
  * > **Note** This function blocks the JavaScript thread, so the application may not be interactive when the `requireAuthentication` option is set to `true` until the user authenticates.
  *
- * @param key The key to associate with the stored value. Keys may contain alphanumeric characters
- * `.`, `-`, and `_`.
+ * @param key The key to associate with the stored value. Keys may contain alphanumeric characters `.`, `-`, and `_`.
  * @param value The value to store. Size limit is 2048 bytes.
  * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
  *
