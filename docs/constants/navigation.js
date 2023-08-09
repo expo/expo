@@ -276,6 +276,14 @@ const general = [
       ],
       { expanded: false }
     ),
+    makeGroup(
+      'Custom builds',
+      [
+        makePage('eas-build-custom-builds/custom-build-config.mdx'),
+        makePage('eas-build-custom-builds/custom-build-config-schema.mdx'),
+      ],
+      { expanded: false }
+    ),
   ]),
   makeSection('EAS Submit', [
     makePage('submit/introduction.mdx'),
@@ -439,10 +447,6 @@ const preview = [
   makeSection('Preview', [
     makePage('preview/introduction.mdx'),
     makePage('preview/support.mdx'),
-    makeGroup('Custom builds', [
-      makePage('preview/custom-build-config.mdx'),
-      makePage('preview/custom-build-config-schema.mdx'),
-    ]),
     { expanded: true },
   ]),
 ];

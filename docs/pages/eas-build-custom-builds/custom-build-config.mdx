@@ -1,7 +1,6 @@
 ---
 title: EAS Build custom builds
 description: Learn how to create and use custom workflows with EAS Build by creating custom build configs.
-hideFromSearch: true
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
@@ -10,7 +9,9 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { GithubIcon } from '@expo/styleguide-icons';
 
-> **Warning** All content in this document is experimental, under active development, and likely to change. Use at your own risk. If you're looking to execute custom code before or after certain steps in the build process, but don't need to actually modify any of the steps, you may want to use the stable [build lifecycle hooks API](/build-reference/npm-hooks/).
+> **Warning** This functionality is in preview, under active development, and it can be subject to changes.
+
+> **Warning** Other, current limitations of custom builds are highlighted in the launch blog post and include: not adapted pricing, limitations regarding uploading artifacts, lack of reusable steps for caching dependencies, no support for classic updates, and not ready GitHub integration for custom builds.
 
 Custom workflows allow running tests on the cloud, adding instructions for native platforms, resigning a build to share with your team or multiple test devices, and so on. With EAS Build, you can create build configs to customize the process by adding your workflows. It helps saving time especially when working in teams.
 
@@ -103,12 +104,13 @@ Let's create a new [build profile](/build/eas-json/#build-profiles) called `test
   "build": {
     /* @hide ... */ /* @end */
     "test": {
-      "android": {
-        "config": "test.yml"
-      }
+      "config": "test.yml",
+      "withoutCredentials": true
     },
 }
 ```
+
+We can also use the `withoutCredentials` option to skip the credentials setup on the CLI side as they are not needed for running tests.
 
 </Step>
 
@@ -132,8 +134,7 @@ After the build is complete, you can verify that the `npm test` script was execu
 ## Summary
 
 - Build configs are customizable by adding steps you want to run on the EAS service as an extension to your existing regular builds.
-- When the **eas.json** file contains the `config` property, credentials such as the keystore setup for Android and distribution certificate for iOS are skipped. This is not implemented yet because both the keystore and distribution certificate are unavailable on the server side.
-- If an existing project already has credentials (keystore and distribution certificate), they remain unchanged.
+- You can configure the credentials for custom builds the same way as for regular builds. Especially if you want to run a custom build that doesn't require credentials, you can use the `withoutCredentials` option as shown above. See [App credentials docs](/app-signing/app-credentials/) for more information.
 - If your regular builds have [EAS secrets](/build-reference/variables/#adding-secrets-with-eas-cli), they are also available for custom builds.
 
 Also, check out the **example repository** for more detailed examples:
