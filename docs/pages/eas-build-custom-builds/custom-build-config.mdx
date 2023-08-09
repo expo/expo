@@ -1,5 +1,6 @@
 ---
-title: EAS Build custom builds
+title: EAS Build custom builds: Get started
+sidebar_title: Get started
 description: Learn how to create and use custom workflows with EAS Build by creating custom build configs.
 ---
 
@@ -13,7 +14,7 @@ import { GithubIcon } from '@expo/styleguide-icons';
 
 {/* TODO: link to the blog post */}
 
-> **Warning** Other, current limitations of custom builds are highlighted in the launch blog post and include: not adapted pricing, limitations regarding uploading artifacts, lack of reusable steps for caching dependencies, no support for classic updates, and not ready GitHub integration for custom builds.
+> **Warning** Current limitations of custom builds are highlighted in the [changelog](https://expo.dev/changelog/2023/08-10-custom-build-jobs) and include not adapted pricing, limitations regarding uploading artifacts, lack of reusable steps for caching dependencies, no support for classic updates, and not ready GitHub integration for custom builds.
 
 Custom workflows allow running tests on the cloud, adding instructions for native platforms, resigning a build to share with your team or multiple test devices, and so on. With EAS Build, you can create build configs to customize the process by adding your workflows. It helps saving time especially when working in teams.
 
@@ -112,9 +113,9 @@ Let's create a new [build profile](/build/eas-json/#build-profiles) called `test
 }
 ```
 
-We can also use the `withoutCredentials` option to skip the credentials setup on the CLI side as they are not needed for running tests.
+You can also use the `withoutCredentials` option to skip the credentials setup on the CLI side, as they are not needed for running tests.
 
-If you wish to use different, separate configs for each platform, you can create separate YAML config files for iOS and Android. For example:
+If you wish to use separate configs for each platform, you can create separate YAML config files for Android and iOS. For example:
 
 ```json eas.json
 {
@@ -157,7 +158,7 @@ After the build is complete, you can verify that the `npm test` script was execu
 - You can configure the credentials for custom builds the same way as for regular builds. Especially if you want to run a custom build that doesn't require credentials, you can use the `withoutCredentials` option as shown above. See [App credentials docs](/app-signing/app-credentials/) for more information.
 - If your regular builds have [EAS secrets](/build-reference/variables/#adding-secrets-with-eas-cli), they are also available for custom builds.
 
-Also, check out the **example repository** for more detailed examples:
+Check out the **example repository** for more detailed examples:
 
 <BoxLink
   title="Custom build example repository"

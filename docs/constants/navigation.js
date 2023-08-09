@@ -248,6 +248,15 @@ const general = [
       { expanded: false }
     ),
     makeGroup(
+      'Custom builds',
+      [
+        makePage('eas-build-custom-builds/get-started.mdx'),
+        makePage('eas-build-custom-builds/schema.mdx'),
+        makePage('eas-build-custom-builds/functions.mdx'),
+      ],
+      { expanded: false }
+    ),
+    makeGroup(
       'Reference',
       [
         makePage('build-reference/eas-json.mdx'),
@@ -273,15 +282,6 @@ const general = [
         makePage('build-reference/app-extensions.mdx'),
         makePage('build-reference/e2e-tests.mdx'),
         makePage('build-reference/limitations.mdx'),
-      ],
-      { expanded: false }
-    ),
-    makeGroup(
-      'Custom builds',
-      [
-        makePage('eas-build-custom-builds/custom-build-config.mdx'),
-        makePage('eas-build-custom-builds/custom-build-config-schema.mdx'),
-        makePage('eas-build-custom-builds/custom-build-functions.mdx'),
       ],
       { expanded: false }
     ),
