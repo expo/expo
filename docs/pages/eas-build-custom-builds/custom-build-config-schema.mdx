@@ -4,6 +4,9 @@ description: A reference of configuration options for custom workflows with EAS 
 maxHeadingDepth: 5
 ---
 
+import { BoxLink } from '~/ui/components/BoxLink';
+import { GithubIcon } from '@expo/styleguide-icons';
+
 Creating custom workflows for EAS Build helps customize the build process for your project.
 
 ## YAML syntax for workflows
@@ -580,6 +583,13 @@ build:
         run: ls assets
 ```
 
+<BoxLink
+  title="eas/checkout source code"
+  description="View the source code for the eas/checkout function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/checkout.ts"
+/>
+
 #### `eas/use_npm_token`
 
 Configures node package managers (npm, pnpm, or Yarn) for use with private packages, published either to npm or private registry.
@@ -598,6 +608,13 @@ build:
         run: npm install # <---- Can now install private packages
 ```
 
+<BoxLink
+  title="eas/use_npm_token source code"
+  description="View the source code for the eas/use_npm_token function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/useNpmToken.ts"
+/>
+
 #### `eas/install_node_modules`
 
 Installs node modules using the package manager (npm, pnpm, or Yarn) detected based on your project. Works with monorepos.
@@ -611,6 +628,13 @@ build:
     - eas/install_node_modules
     # @end #
 ```
+
+<BoxLink
+  title="eas/install_node_modules source code"
+  description="View the source code for the eas/install_node_modules function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/installNodeModules.ts"
+/>
 
 #### `eas/resolve_apple_team_id_from_credentials`
 
@@ -637,6 +661,13 @@ build:
 | -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `name`               | The name of the step in the reusable function that shows in the build logs. Defaults to `Resolve Apple team ID from credentials`.                                                                        |
 | `inputs.credentials` | **json** Optional input defining the app credentials for your iOS build. Defaults to `${ eas.job.secrets.buildCredentials }`. Needs to comply to `${ eas.job.secrets.buildCredentials }` schema for iOS. |
+
+<BoxLink
+  title="eas/resolve_apple_team_id_from_credentials source code"
+  description="View the source code for the eas/resolve_apple_team_id_from_credentials function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/resolveAppleTeamIdFromCredentials.ts"
+/>
 
 #### `eas/prebuild`
 
@@ -674,6 +705,13 @@ build:
 | `name`                 | The name of the step in the reusable function that shows in the build logs. Defaults to `Prebuild`.                                                  |
 | `inputs.clean`         | **boolean** Optional input defining whether the function should use `--clean` flag when running the command. Defaults to false                       |
 | `inputs.apple_team_id` | **boolean** Optional input defining Apple team ID which should be used when doing prebuild. It should be specified for iOS builds using credentials. |
+
+<BoxLink
+  title="eas/prebuild source code"
+  description="View the source code for the eas/resolve_apple_team_id_from_credentials function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/prebuild.ts"
+/>
 
 #### `eas/configure_eas_update`
 
@@ -714,6 +752,13 @@ build:
 | `inputs.runtime_version` | **string** Optional input defining runtime version which should be configured for the build. Defaults to `${ eas.job.version.runtimeVersion }` or natively defined runtime version. |
 | `inputs.channel`         | **string** Optional input defining channel which should be configured for the build. Defaults to `${ eas.job.updates.channel }`.                                                    |
 
+<BoxLink
+  title="eas/configure_eas_update source code"
+  description="View the source code for the eas/configure_eas_update function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/configureEASUpdateIfInstalled.ts"
+/>
+
 #### `eas/inject_android_credentials`
 
 > **Warning** This function is only available for Android builds
@@ -737,7 +782,12 @@ build:
 | `name`               | The name of the step in the reusable function that shows in the build logs. Defaults to `Inject Android credentials`.                                                                                            |
 | `inputs.credentials` | **json** Optional input defining the app credentials for your Android build. Defaults to `${ eas.job.secrets.buildCredentials }`. Needs to comply to `${ eas.job.secrets.buildCredentials }` schema for Android. |
 
-{/* TODO: examples with inline credentials */}
+<BoxLink
+  title="eas/inject_android_credentials source code"
+  description="View the source code for the eas/inject_android_credentials function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/injectAndroidCredentials.ts"
+/>
 
 #### `eas/configure_ios_credentials`
 
@@ -768,7 +818,12 @@ build:
 | `inputs.build_configuration` | **string** Optional input defining the Xcode project's Build Configuration. Defaults to `${ eas.job.buildConfiguration }` or if not specified is resolved to `Debug` for development client or `Release` for other builds. |
 | `inputs.credentials`         | **json** Optional input defining the app credentials for your iOS build. Defaults to `${ eas.job.secrets.buildCredentials }`. Needs to comply to `${ eas.job.secrets.buildCredentials }` schema for iOS.                   |
 
-{/* TODO: examples with inline credentials */}
+<BoxLink
+  title="eas/configure_ios_credentials source code"
+  description="View the source code for the eas/configure_ios_credentials function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/configureIosCredentials.ts"
+/>
 
 #### `eas/configure_android_version`
 
@@ -814,6 +869,13 @@ build:
 | `name`                | The name of the step in the reusable function that shows in the build logs. Defaults to `Configure Android version`.    |
 | `inputs.version_code` | **number** Optional input defining `versionCode` of your Android build. Defaults to `${ eas.job.version.versionCode }`  |
 | `inputs.version_name` | **string** Optional input defining `versionName` of your Android build. Defaults to `${ eas.job.version.versionName }`. |
+
+<BoxLink
+  title="eas/configure_android_version source code"
+  description="View the source code for the eas/configure_android_version function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/configureAndroidVersion.ts"
+/>
 
 #### `eas/configure_ios_version`
 
@@ -872,6 +934,13 @@ build:
 | `inputs.build_configuration` | **string** Optional input defining the Xcode project's Build Configuration. Defaults to `${ eas.job.buildConfiguration }` or if not specified is resolved to `Debug` for development client or `Release` for other builds. |
 | `inputs.credentials`         | **json** Optional input defining the app credentials for your iOS build. Defaults to `${ eas.job.secrets.buildCredentials }`. Needs to comply to `${ eas.job.secrets.buildCredentials }` schema for iOS.                   |
 
+<BoxLink
+  title="eas/configure_ios_version source code"
+  description="View the source code for the eas/configure_ios_version function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/configureIosVersion.ts"
+/>
+
 #### `eas/run_gradle`
 
 > **Warning** This function is only available for Android builds
@@ -912,6 +981,13 @@ build:
 | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `name`           | The name of the step in the reusable function that shows in the build logs. Defaults to `Run gradle`.                                                                                              |
 | `inputs.command` | **string** Optional input defining the Gradle command to run to build the Android app. If not specified it is resolved based on the build configuration and contents of the `${ eas.job }` object. |
+
+<BoxLink
+  title="eas/run_gradle source code"
+  description="View the source code for the eas/run_gradle function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/runGradle.ts"
+/>
 
 #### `eas/generate_gymfile_from_template`
 
@@ -1063,6 +1139,13 @@ build:
 | `inputs.clean`               | **boolean** Optional input defining whether the Xcode project should be cleaned before the build. Defaults to `true`. Corresponds to `CLEAN` template variable.                                                                                                                     |
 | `inputs.extra`               | **json** Optional input defining extra values which should be provided to the template.                                                                                                                                                                                             |
 
+<BoxLink
+  title="eas/generate_gymfile_from_template source code"
+  description="View the source code for the eas/generate_gymfile_template function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/generateGymfileFromTemplate.ts"
+/>
+
 #### `eas/run_fastlane`
 
 > **Warning** This function is only available for iOS builds
@@ -1104,6 +1187,13 @@ build:
     - eas/run_fastlane
     # @end #
 ```
+
+<BoxLink
+  title="eas/run_fastlane source code"
+  description="View the source code for the eas/run_fastlane function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/runFastlane.ts"
+/>
 
 #### `eas/find_and_upload_build_artifacts`
 
@@ -1162,6 +1252,13 @@ build:
     - eas/find_and_upload_build_artifacts
 ```
 
+<BoxLink
+  title="eas/find_and_upload_build_artifacts source code"
+  description="View the source code for the eas/find_and_upload_build_artifacts function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/findAndUploadBuildArtifacts.ts"
+/>
+
 #### `eas/upload_artifact`
 
 Uploads a build artifact.
@@ -1187,13 +1284,18 @@ build:
           path: assets/icon.png
 ```
 
-The `eas/upload_artifact` function has the following properties
-
 | Property      | Description                                                                                                                                                     |
 | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `name`        | The name of the step in the reusable function that shows in the build logs.                                                                                     |
 | `inputs.path` | **string** Required. The path to the artifact that is uploaded to the EAS servers.                                                                              |
 | `inputs.type` | **string** The type of artifact that is uploaded to the EAS servers. Allowed values: `application-archive`, `build-artifact`. Defaults to `application-archive` |
+
+<BoxLink
+  title="eas/upload_artifact source code"
+  description="View the source code for the eas/upload_artifact function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/uploadArtifact.ts"
+/>
 
 ### Use a reusable function in a `build`
 
