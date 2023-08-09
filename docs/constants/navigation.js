@@ -281,6 +281,7 @@ const general = [
       [
         makePage('eas-build-custom-builds/custom-build-config.mdx'),
         makePage('eas-build-custom-builds/custom-build-config-schema.mdx'),
+        makePage('eas-build-custom-builds/custom-build-functions.mdx'),
       ],
       { expanded: false }
     ),
