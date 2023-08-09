@@ -7,19 +7,17 @@
 import '@expo/metro-runtime';
 
 import { ServerContainer, ServerContainerRef } from '@react-navigation/native';
-import { ctx } from 'expo-router/_ctx';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { AppRegistry } from 'react-native-web';
 
+import { ctx } from '../../_ctx';
 import { ExpoRoot, ExpoRootProps } from '../ExpoRoot';
 import { getNavigationConfig } from '../getLinkingConfig';
 import { getRoutes } from '../getRoutes';
 import { Head } from '../head';
 import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
 import { getRootComponent } from './getRootComponent';
-
-/// <reference types="expo-router/index" />
 
 AppRegistry.registerComponent('App', () => App);
 
