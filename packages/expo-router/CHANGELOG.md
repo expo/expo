@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove `@bacons/react-views` -> the undocumented `hoverStyle` property is no longer supported on `<Link />`.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
