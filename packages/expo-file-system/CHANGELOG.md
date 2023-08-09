@@ -12,7 +12,7 @@
 
 ## 15.5.1 — 2023-08-02
 
-_This version does not introduce any user-facing changes._
+- Fix regression in `copyAsync` on Android. ([#23892](https://github.com/expo/expo/pull/23892) by [@brentvatne](https://github.com/brentvatne))
 
 ## 15.5.0 — 2023-07-28
 
