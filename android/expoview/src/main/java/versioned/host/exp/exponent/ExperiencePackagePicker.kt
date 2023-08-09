@@ -55,7 +55,7 @@ import expo.modules.securestore.SecureStorePackage
 import expo.modules.sensors.SensorsPackage
 import expo.modules.sharing.SharingModule
 import expo.modules.sms.SMSModule
-import expo.modules.speech.SpeechPackage
+import expo.modules.speech.SpeechModule
 import expo.modules.splashscreen.SplashScreenModule
 import expo.modules.splashscreen.SplashScreenPackage
 import expo.modules.sqlite.SQLiteModule
@@ -90,7 +90,6 @@ object ExperiencePackagePicker : ModulesProvider {
     PermissionsPackage(),
     SecureStorePackage(),
     SensorsPackage(),
-    SpeechPackage(),
     SplashScreenPackage(),
     SystemUIPackage(),
     TaskManagerPackage(),
@@ -141,6 +140,7 @@ object ExperiencePackagePicker : ModulesProvider {
     ScreenOrientationModule::class.java,
     SMSModule::class.java,
     SharingModule::class.java,
+    SpeechModule::class.java,
     SplashScreenModule::class.java,
     StoreReviewModule::class.java,
     SQLiteModule::class.java,
