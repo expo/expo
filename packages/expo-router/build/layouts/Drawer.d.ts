@@ -23,7 +23,7 @@ export declare const Drawer: import("react").ForwardRefExoticComponent<Omit<Omit
         route: import("@react-navigation/core").RouteProp<import("@react-navigation/routers").ParamListBase, string>;
         navigation: any;
     }) => DrawerNavigationOptions) | undefined;
-} & {
+} & import("@react-navigation/routers").DefaultRouterOptions & {
     backBehavior?: import("@react-navigation/routers/lib/typescript/src/TabRouter").BackBehavior | undefined;
 } & {
     defaultStatus?: import("@react-navigation/routers").DrawerStatus | undefined;
@@ -73,7 +73,7 @@ export declare const Drawer: import("react").ForwardRefExoticComponent<Omit<Omit
         route: import("@react-navigation/core").RouteProp<import("@react-navigation/routers").ParamListBase, string>;
         navigation: any;
     }) => DrawerNavigationOptions) | undefined;
-} & {
+} & import("@react-navigation/routers").DefaultRouterOptions & {
     backBehavior?: import("@react-navigation/routers/lib/typescript/src/TabRouter").BackBehavior | undefined;
 } & {
     defaultStatus?: import("@react-navigation/routers").DrawerStatus | undefined;

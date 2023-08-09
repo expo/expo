@@ -26,7 +26,7 @@ export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@re
         route: import("@react-navigation/core").RouteProp<import("@react-navigation/routers").ParamListBase, string>;
         navigation: any;
     }) => BottomTabNavigationOptions) | undefined;
-} & {
+} & import("@react-navigation/routers").DefaultRouterOptions & {
     backBehavior?: import("@react-navigation/routers/lib/typescript/src/TabRouter").BackBehavior | undefined;
 } & import("@react-navigation/bottom-tabs/lib/typescript/src/types").BottomTabNavigationConfig, "initialRouteName" | "children" | "id" | "screenListeners" | "screenOptions"> & import("@react-navigation/routers").DefaultRouterOptions<string> & {
     id?: string | undefined;
@@ -78,7 +78,7 @@ export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@re
         route: import("@react-navigation/core").RouteProp<import("@react-navigation/routers").ParamListBase, string>;
         navigation: any;
     }) => BottomTabNavigationOptions) | undefined;
-} & {
+} & import("@react-navigation/routers").DefaultRouterOptions & {
     backBehavior?: import("@react-navigation/routers/lib/typescript/src/TabRouter").BackBehavior | undefined;
 } & import("@react-navigation/bottom-tabs/lib/typescript/src/types").BottomTabNavigationConfig, "initialRouteName" | "children" | "id" | "screenListeners" | "screenOptions"> & import("@react-navigation/routers").DefaultRouterOptions<string> & {
     id?: string | undefined;
