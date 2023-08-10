@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Forward exact Metro server error during static rendering.
+- Forward exact Metro server error during static rendering. ([#23909](https://github.com/expo/expo/pull/23909) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
