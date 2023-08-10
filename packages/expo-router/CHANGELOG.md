@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Remove `@bacons/react-views` -> the undocumented `hoverStyle` property is no longer supported on `<Link />`.
+- Remove `@bacons/react-views` -> the undocumented `hoverStyle` property is no longer supported on `<Link />`. ([#23889](https://github.com/expo/expo/pull/23889) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
