@@ -5,5 +5,13 @@
     "rootDir": "./src"
   },
   "include": ["./src", "./types/jest.d.ts", "./types/expect.d.ts", "../expo/src/ts-declarations"],
-  "exclude": ["**/__mocks__/*", "**/__tests__/*"]
+  "exclude": [
+    "**/__mocks__/*",
+    "**/.expo/*",
+    "./build/*",
+    "**/__tests__/*",
+    "./node",
+    "./entry.js",
+    "./_ctx.d.ts"
+  ]
 }
