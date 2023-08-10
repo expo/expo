@@ -1,6 +1,5 @@
-import { TextProps } from '@bacons/react-views';
 import * as React from 'react';
-import { GestureResponderEvent } from 'react-native';
+import { TextProps, GestureResponderEvent } from 'react-native';
 import { Href, resolveHref } from './href';
 export interface LinkProps extends Omit<TextProps, 'href' | 'hoverStyle'> {
     /** Path to route to. */
