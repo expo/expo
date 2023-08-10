@@ -16,6 +16,7 @@ import path from 'path';
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
+import { CommandError } from '../../../utils/errors';
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import { getStaticRenderFunctions } from '../getStaticRenderFunctions';
@@ -41,7 +42,6 @@ import { instantiateMetroAsync } from './instantiateMetro';
 import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import { observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
-import { CommandError } from '../../../utils/errors';
 
 class ForwardHtmlError extends CommandError {
   constructor(message: string, public html: string, public statusCode: number) {
