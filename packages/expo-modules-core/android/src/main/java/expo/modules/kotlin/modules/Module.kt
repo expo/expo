@@ -40,7 +40,6 @@ abstract class Module : AppContextProvider {
     moduleEventEmitter?.emit(convertEnumToString(enum), body)
   }
 
-
   fun <T> sendEvent(enum: T, body: Map<String, Any?>? = null) where T : Enumerable, T : Enum<T> {
     moduleEventEmitter?.emit(convertEnumToString(enum), body)
   }
