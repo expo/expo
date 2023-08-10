@@ -51,7 +51,7 @@ class BatteryModule : Module() {
     }
 
     AsyncFunction("getBatteryLevelAsync") {
-      val batteryIntent: Intent = context.applicationContext.registerReceiver(
+      val batteryIntent = context.applicationContext.registerReceiver(
         null,
         IntentFilter(Intent.ACTION_BATTERY_CHANGED)
       ) ?: return@AsyncFunction -1
@@ -68,7 +68,7 @@ class BatteryModule : Module() {
     }
 
     AsyncFunction("getBatteryStateAsync") {
-      val batteryIntent: Intent = context.applicationContext.registerReceiver(
+      val batteryIntent = context.applicationContext.registerReceiver(
         null,
         IntentFilter(Intent.ACTION_BATTERY_CHANGED)
       ) ?: return@AsyncFunction BatteryState.UNKNOWN.value
@@ -83,17 +83,15 @@ class BatteryModule : Module() {
 
     AsyncFunction("isBatteryOptimizationEnabledAsync") {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        val packageName: String = context.applicationContext.packageName
-        val powerManager = context.applicationContext.getSystemService(Context.POWER_SERVICE) as PowerManager?
-        if (powerManager != null && !powerManager.isIgnoringBatteryOptimizations(packageName)) {
-          return@AsyncFunction true
-        }
+        val packageName = context.applicationContext.packageName
+        val powerManager = context.applicationContext.getSystemService(Context.POWER_SERVICE) as? PowerManager
+        return@AsyncFunction powerManager?.isIgnoringBatteryOptimizations(packageName) == false
       }
       return@AsyncFunction false
     }
   }
 
-  val context: Context
+  private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
   private val broadcastReceivers = mutableListOf<BroadcastReceiver>()
