@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Migrated Android codebase to use Expo modules API.
+
 ## 12.4.1 — 2023-08-02
 
 _This version does not introduce any user-facing changes._
