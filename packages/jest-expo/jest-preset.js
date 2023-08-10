@@ -5,6 +5,8 @@ const isEqual = require('lodash/isEqual');
 // Derive the Expo Jest preset from the React Native one
 const jestPreset = cloneDeep(require('react-native/jest-preset'));
 
+const { withTypescriptMapping } = require('./src/preset/withTypescriptMapping');
+
 // transform
 if (!jestPreset.transform) {
   jestPreset.transform = {
@@ -49,4 +51,5 @@ if (!Array.isArray(jestPreset.setupFiles)) {
 }
 jestPreset.setupFiles.push(require.resolve('jest-expo/src/preset/setup.js'));
 
-module.exports = jestPreset;
+// Add typescript custom mapping
+module.exports = withTypescriptMapping(jestPreset);
