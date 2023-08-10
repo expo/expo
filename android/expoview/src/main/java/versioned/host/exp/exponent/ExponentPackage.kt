@@ -3,6 +3,7 @@ package versioned.host.exp.exponent
 
 import android.content.Context
 import android.os.Looper
+import com.airbnb.android.react.lottie.LottiePackage
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
@@ -32,7 +33,6 @@ import org.json.JSONException
 import versioned.host.exp.exponent.modules.api.*
 import versioned.host.exp.exponent.modules.api.cognito.RNAWSCognitoModule
 import versioned.host.exp.exponent.modules.api.components.datetimepicker.RNDateTimePickerPackage
-import versioned.host.exp.exponent.modules.api.components.lottie.LottiePackage
 import versioned.host.exp.exponent.modules.api.components.maps.MapsPackage
 import versioned.host.exp.exponent.modules.api.components.maskedview.RNCMaskedViewPackage
 import versioned.host.exp.exponent.modules.api.components.picker.RNCPickerPackage
