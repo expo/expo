@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Made the `setStatusBarHidden` methods `animation` parameter optional to match the documentation. (#23866 by @DoctorJohn)
+- Made the `setStatusBarHidden` methods `animation` parameter optional to match the documentation. ([#23866](https://github.com/expo/expo/pull/23866) by [@DoctorJohn](https://github.com/DoctorJohn))
 
 ### 💡 Others
 
