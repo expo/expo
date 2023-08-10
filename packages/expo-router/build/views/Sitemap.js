@@ -1,11 +1,11 @@
-import { Image, Pressable, StyleSheet, Text, View } from '@bacons/react-views';
 import React from 'react';
-import { ScrollView, Platform, StatusBar, useWindowDimensions } from 'react-native';
+import { Image, StyleSheet, Text, View, ScrollView, Platform, StatusBar, useWindowDimensions, } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useExpoRouter } from '../global-state/router-store';
 import { router } from '../imperative-api';
 import { Link } from '../link/Link';
 import { matchDeepDynamicRouteName } from '../matchers';
+import { Pressable } from './Pressable';
 const INDENT = 24;
 export function getNavOptions() {
     return {

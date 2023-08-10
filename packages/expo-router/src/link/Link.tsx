@@ -1,9 +1,8 @@
 // Fork of @react-navigation/native Link.tsx with `href` and `replace` support added and
 // `to` / `action` support removed.
-import { Text, TextProps } from '@bacons/react-views';
 import { Slot } from '@radix-ui/react-slot';
 import * as React from 'react';
-import { GestureResponderEvent, Platform } from 'react-native';
+import { Text, TextProps, GestureResponderEvent, Platform } from 'react-native';
 
 import { useRouter } from '../hooks';
 import { useFocusEffect } from '../useFocusEffect';

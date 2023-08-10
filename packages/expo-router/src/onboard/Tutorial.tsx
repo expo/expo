@@ -1,8 +1,9 @@
-import { View, Text, Pressable, StyleSheet } from '@bacons/react-views';
 import React from 'react';
-import { StatusBar, Platform } from 'react-native';
+import { Platform, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { Link } from '../exports';
+import { Pressable } from '../views/Pressable';
 import { createEntryFileAsync } from './createEntryFile';
 
 // TODO: Use openLinkFromBrowser thing
@@ -15,7 +16,7 @@ function Header() {
           aria-level={1}
           style={[styles.title, Platform.OS !== 'web' && { textAlign: 'left' }]}>
           Welcome to{' '}
-          <Text
+          <Link
             href="https://github.com/expo/expo-router/"
             style={[
               hovered && {
@@ -24,7 +25,7 @@ function Header() {
               },
             ]}>
             Expo
-          </Text>
+          </Link>
         </Text>
       )}
     </Pressable>
@@ -122,13 +123,17 @@ function Button() {
 
 const styles = StyleSheet.create({
   background: {
+    ...Platform.select({
+      web: {
+        backgroundImage:
+          'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)',
+        backgroundPositionX: -3,
+        backgroundPositionY: -3,
+        backgroundSize: '40px 40px',
+      },
+    }),
     backgroundColor: 'black',
     flex: 1,
-    backgroundImage:
-      'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)',
-    backgroundPositionX: -3,
-    backgroundPositionY: -3,
-    backgroundSize: '40px 40px',
   },
   safeArea: {
     flex: 1,
@@ -149,10 +154,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   buttonContainer: {
-    transitionDuration: '200ms',
-    backgroundColor: Platform.select({
-      web: 'transparent',
-      default: 'white',
+    ...Platform.select({
+      web: {
+        transitionDuration: '200ms',
+        backgroundColor: 'transparent',
+      },
+      default: {
+        backgroundColor: 'white',
+      },
     }),
 
     borderColor: 'white',
@@ -164,19 +173,24 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   code: {
+    ...Platform.select({
+      web: {
+        transitionDuration: '200ms',
+        color: 'white',
+        fontFamily: 'Courier',
+      },
+      default: {
+        color: 'black',
+        fontFamily: Platform.select({
+          ios: 'Courier New',
+          android: 'monospace',
+        }),
+      },
+    }),
+
     userSelect: 'none',
     fontSize: 18,
-    transitionDuration: '200ms',
     fontWeight: 'bold',
-    color: Platform.select({
-      web: 'white',
-      default: 'black',
-    }),
-    fontFamily: Platform.select({
-      default: 'Courier',
-      ios: 'Courier New',
-      android: 'monospace',
-    }),
   },
   subtitle: {
     color: '#BCC3CD',

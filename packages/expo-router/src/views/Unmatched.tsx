@@ -1,6 +1,6 @@
-import { StyleSheet, Text, View } from '@bacons/react-views';
 import { createURL } from 'expo-linking';
 import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { usePathname, useRouter } from '../hooks';
 import { Link } from '../link/Link';
