@@ -4,6 +4,13 @@ const iosResourcesList = iosResources.map(({symbol, description}) => `- \`${symb
 
 export default [
   {
+    name: 'withoutCredentials',
+    type: 'boolean',
+    description: [
+      "When set to `true`, EAS CLI won't require you to configure credentials when building the app. This comes in handy when using EAS Build [custom builds](/custom-builds/get-started/).",
+    ],
+  },
+  {
     name: 'simulator',
     type: 'boolean',
     description: [ 'If set to true, creates build for simulator. Defaults to false' ],

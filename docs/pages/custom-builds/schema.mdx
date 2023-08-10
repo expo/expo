@@ -862,7 +862,7 @@ build:
     # @info #
     - eas/configure_android_version:
         inputs:
-          version_code: 123
+          version_code: '123'
           version_name: '1.0.0'
     # @end #
 ```
@@ -870,7 +870,7 @@ build:
 | Property              | Description                                                                                                             |
 | --------------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | `name`                | The name of the step in the reusable function that shows in the build logs. Defaults to `Configure Android version`.    |
-| `inputs.version_code` | **number** Optional input defining `versionCode` of your Android build. Defaults to `${ eas.job.version.versionCode }`  |
+| `inputs.version_code` | **string** Optional input defining `versionCode` of your Android build. Defaults to `${ eas.job.version.versionCode }`  |
 | `inputs.version_name` | **string** Optional input defining `versionName` of your Android build. Defaults to `${ eas.job.version.versionName }`. |
 
 <BoxLink
@@ -1298,6 +1298,153 @@ build:
   description="View the source code for the eas/upload_artifact function on GitHub."
   Icon={GithubIcon}
   href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/uploadArtifact.ts"
+/>
+
+### Using built-in EAS functions to build an app
+
+Using the built-in EAS functions you can recreate the default EAS Build workflow for different build types.
+
+For example, to trigger a build that creates internal distribution build for Android and a simulator build for iOS you can use the following configuration:
+
+```json eas.json
+{
+  ...,
+  "build": {
+    ...,
+    "developmentBuild": {
+      "distribution": "internal",
+      "android": {
+        "config": "development-build-android.yml"
+      },
+      "ios": {
+        "simulator": true,
+        "config": "development-build-ios.yml"
+      }
+    },
+    ...
+  },
+  ...
+}
+```
+
+```yaml .eas/build/development-build-android.yml
+build:
+  name: Simple internal distribution Android build
+  steps:
+    - eas/checkout
+
+    - eas/install_node_modules
+
+    - eas/prebuild
+
+    - eas/inject_android_credentials
+
+    - eas/run_gradle
+
+    - eas/find_and_upload_build_artifacts
+```
+
+```yaml .eas/build/development-build-ios.yml
+build:
+  name: Simple simulator iOS build
+  steps:
+    - eas/checkout
+
+    - eas/install_node_modules
+
+    - eas/prebuild
+
+    - run:
+        name: Install pods
+        working_directory: ./ios
+        command: pod install
+
+    - eas/generate_gymfile_from_template
+
+    - eas/run_fastlane
+
+    - eas/find_and_upload_build_artifacts
+```
+
+To create Play Store build for Android and App Store build for iOS you can use the following configuration:
+
+```json eas.json
+{
+  ...,
+  "build": {
+    ...,
+    "productionBuild": {
+      "android": {
+        "config": "production-build-android.yml"
+      },
+      "ios": {
+        "config": "production-build-ios.yml"
+      }
+    },
+    ...
+  },
+  ...
+}
+```
+
+```yaml .eas/build/production-build-android.yml
+build:
+  name: Customized Android Play Store build example
+  steps:
+    - eas/checkout
+
+    - eas/install_node_modules
+
+    - eas/prebuild
+
+    - eas/inject_android_credentials
+
+    - run:
+        name: Build Android app
+        working_directory: ./android
+        command: ./gradlew :app:bundleRelease
+
+    - eas/find_and_upload_build_artifacts
+```
+
+```yaml .eas/build/production-build-ios.yml
+build:
+  name: Customized iOS App Store build example
+  steps:
+    - eas/checkout
+
+    - eas/install_node_modules
+
+    - eas/resolve_apple_team_id_from_credentials:
+        id: resolve_apple_team_id_from_credentials
+
+    - eas/prebuild:
+        inputs:
+          apple_team_id: ${ steps.resolve_apple_team_id_from_credentials.apple_team_id }
+
+    - run:
+        name: Install pods
+        working_directory: ./ios
+        command: pod install
+
+    - eas/configure_ios_credentials
+
+    - eas/generate_gymfile_from_template:
+        inputs:
+          credentials: ${ eas.job.secrets.buildCredentials }
+
+    - eas/run_fastlane
+
+    - eas/find_and_upload_build_artifacts
+```
+
+Check out the **example repository** for more detailed examples:
+
+<BoxLink
+  title="Custom build example repository"
+  description="A custom EAS Build example that includes examples for workflows such as setting up functions, using environment variables, uploading artifacts, and more."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-custom-builds-example/tree/main"
 />
 
 ### Use a reusable function in a `build`
