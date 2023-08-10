@@ -1,7 +1,15 @@
-import { Image, Pressable, StyleSheet, Text, View } from '@bacons/react-views';
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import React from 'react';
-import { ScrollView, Platform, StatusBar, useWindowDimensions } from 'react-native';
+import {
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  Platform,
+  StatusBar,
+  useWindowDimensions,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { RouteNode } from '../Route';
@@ -9,6 +17,7 @@ import { useExpoRouter } from '../global-state/router-store';
 import { router } from '../imperative-api';
 import { Link } from '../link/Link';
 import { matchDeepDynamicRouteName } from '../matchers';
+import { Pressable } from './Pressable';
 
 const INDENT = 24;
 

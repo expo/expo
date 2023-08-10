@@ -1,13 +1,13 @@
-import { Pressable, StyleSheet, Text, View } from '@bacons/react-views';
 import { LogContext } from '@expo/metro-runtime/build/error-overlay/Data/LogContext';
 import { LogBoxInspectorStackFrames } from '@expo/metro-runtime/build/error-overlay/overlay/LogBoxInspectorStackFrames';
 import { LogBoxLog, parseErrorStack } from '@expo/metro-runtime/symbolicate';
 import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
 import React from 'react';
-import { Platform, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Platform, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Link } from '../link/Link';
+import { Pressable } from './Pressable';
 import { ErrorBoundaryProps } from './Try';
 
 function useMetroSymbolication(error: Error) {
@@ -78,7 +78,6 @@ export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
                 style={[
                   styles.buttonText,
                   {
-                    transitionDuration: '100ms',
                     color: hovered || pressed ? 'black' : 'white',
                   },
                 ]}>
@@ -127,6 +126,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: 'black',
+    ...Platform.select({
+      web: {
+        transitionDuration: '100ms',
+      },
+    }),
   },
   buttonInner: {
     transitionDuration: '100ms',
