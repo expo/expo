@@ -68,16 +68,18 @@ export function getCssSerialAssets<T extends any>(
     const cssMetadata = getCssMetadata(module);
     if (cssMetadata) {
       const contents = cssMetadata.code;
+      const originFilename = path.relative(projectRoot, module.path);
+
       const filename = path.join(
         // Consistent location
         STATIC_EXPORT_DIRECTORY,
         // Hashed file contents + name for caching
         fileNameFromContents({
-          filepath: module.path,
+          // Stable filename for hashing in CI.
+          filepath: originFilename,
           src: contents,
         }) + '.css'
       );
-      const originFilename = path.relative(projectRoot, module.path);
       assets.push({
         type: 'css',
         originFilename,
