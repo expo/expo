@@ -41,6 +41,13 @@ import { instantiateMetroAsync } from './instantiateMetro';
 import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import { observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
+import { CommandError } from '../../../utils/errors';
+
+class ForwardHtmlError extends CommandError {
+  constructor(message: string, public html: string, public statusCode: number) {
+    super(message);
+  }
+}
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
@@ -149,14 +156,25 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const txt = await results.text();
 
+    // console.log('STAT:', results.status, results.statusText);
     let data: any;
     try {
       data = JSON.parse(txt);
     } catch (error: any) {
+      debug(txt);
+
+      // Metro can throw this error when the initial module id cannot be resolved.
+      if (!results.ok && txt.startsWith('<!DOCTYPE html>')) {
+        throw new ForwardHtmlError(
+          `Metro failed to bundle the project. Check the console for more information.`,
+          txt,
+          results.status
+        );
+      }
+
       Log.error(
         'Failed to generate resources with Metro, the Metro config may not be using the correct serializer. Ensure the metro.config.js is extending the expo/metro-config and is not overriding the serializer.'
       );
-      debug(txt);
       throw error;
     }
 
@@ -375,6 +393,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             return;
           } catch (error: any) {
             res.setHeader('Content-Type', 'text/html');
+            // Forward the Metro server response as-is. It won't be pretty, but at least it will be accurate.
+            if (error instanceof ForwardHtmlError) {
+              res.statusCode = error.statusCode;
+              res.end(error.html);
+              return;
+            }
             try {
               res.end(await this.renderStaticErrorAsync(error));
             } catch (staticError: any) {
