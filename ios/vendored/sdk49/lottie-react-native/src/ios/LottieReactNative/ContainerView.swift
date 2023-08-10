@@ -11,7 +11,7 @@ class ContainerView: ABI49_0_0RCTView {
     private var colorFilters: [NSDictionary] = []
     private var textFilters: [NSDictionary] = []
     @objc var onAnimationFinish: ABI49_0_0RCTBubblingEventBlock?
-    var animationView: AnimationView?
+    var animationView: LottieAnimationView?
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
@@ -62,7 +62,7 @@ class ContainerView: ABI49_0_0RCTView {
                 filters[key] = value;
             }
             
-            let starAnimationView = AnimationView()
+            let starAnimationView = LottieAnimationView()
             starAnimationView.textProvider = DictionaryTextProvider(filters)
             starAnimationView.animation = animationView?.animation
             replaceAnimationView(next: starAnimationView)
@@ -82,7 +82,7 @@ class ContainerView: ABI49_0_0RCTView {
                 do {
                     let sourceJson = try String(contentsOf: url!)
                     guard let data = sourceJson.data(using: String.Encoding.utf8),
-                    let animation = try? JSONDecoder().decode(Animation.self, from: data) else {
+                    let animation = try? JSONDecoder().decode(LottieAnimation.self, from: data) else {
                         if (ABI49_0_0RCT_DEBUG == 1) {
                             print("Unable to decode the lottie animation object from the fetched URL source")
                         }
@@ -90,7 +90,7 @@ class ContainerView: ABI49_0_0RCTView {
                     }
 
                     DispatchQueue.main.async {
-                        let starAnimationView = AnimationView()
+                        let starAnimationView = LottieAnimationView()
                         starAnimationView.animation = animation
                         self.replaceAnimationView(next: starAnimationView)
                         self.animationView?.play()
@@ -108,14 +108,14 @@ class ContainerView: ABI49_0_0RCTView {
         sourceJson = newSourceJson
 
         guard let data = sourceJson.data(using: String.Encoding.utf8),
-        let animation = try? JSONDecoder().decode(Animation.self, from: data) else {
+        let animation = try? JSONDecoder().decode(LottieAnimation.self, from: data) else {
             if (ABI49_0_0RCT_DEBUG == 1) {
                 print("Unable to create the lottie animation object from the JSON source")
             }
             return
         }
 
-        let starAnimationView = AnimationView()
+        let starAnimationView = LottieAnimationView()
         starAnimationView.animation = animation
         replaceAnimationView(next: starAnimationView)
     }
@@ -126,7 +126,7 @@ class ContainerView: ABI49_0_0RCTView {
         }
         sourceName = newSourceName
 
-        let starAnimationView = AnimationView(name: sourceName)
+        let starAnimationView = LottieAnimationView(name: sourceName)
         replaceAnimationView(next: starAnimationView)
     }
 
@@ -184,7 +184,7 @@ class ContainerView: ABI49_0_0RCTView {
 
     // MARK: Private
 
-    func replaceAnimationView(next: AnimationView) {
+    func replaceAnimationView(next: LottieAnimationView) {
         animationView?.removeFromSuperview()
 
         let contentMode = animationView?.contentMode ?? .scaleAspectFit
