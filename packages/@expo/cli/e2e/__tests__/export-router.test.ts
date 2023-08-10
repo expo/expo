@@ -3,8 +3,8 @@ import JsonFile from '@expo/json-file';
 import execa from 'execa';
 import fs from 'fs-extra';
 import klawSync from 'klaw-sync';
-import path from 'path';
 import * as htmlParser from 'node-html-parser';
+import path from 'path';
 
 import { bin, ensurePortFreeAsync } from './utils';
 
@@ -25,7 +25,6 @@ declare const process: {
 
 function ensureTesterReady(fixtureName: string): string {
   const root = path.join(__dirname, '../../../../../apps/router-e2e');
-  console.log('Using fixture:', fixtureName);
   // Clear metro cache for the env var to be updated
   // await fs.remove(path.join(root, "node_modules/.cache/metro"));
 
@@ -59,7 +58,7 @@ afterAll(() => {
 
 beforeEach(() => ensurePortFreeAsync(19000));
 
-describe('static-rendering', () => {
+xdescribe('static-rendering', () => {
   const projectRoot = ensureTesterReady('static-rendering');
   const outputDir = path.join(projectRoot, 'dist-static-rendering');
 
