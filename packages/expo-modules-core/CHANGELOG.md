@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [Android] Surfaced errorManager to allow throwing errors and warnings from modules. ([#23848](https://github.com/expo/expo/pull/23848) by [@aleqsio](https://github.com/aleqsio))
+- [Android] Enums can now be used to define events. ([#23875](https://github.com/expo/expo/pull/23875) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 

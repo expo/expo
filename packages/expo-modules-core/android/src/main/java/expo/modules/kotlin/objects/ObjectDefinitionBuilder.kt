@@ -25,7 +25,10 @@ import expo.modules.kotlin.functions.SyncFunctionComponent
 import expo.modules.kotlin.jni.JavaScriptModuleObject
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinitionBuilder
+import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.types.toAnyType
+import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.typeOf
 
 /**
@@ -33,7 +36,9 @@ import kotlin.reflect.typeOf
  */
 open class ObjectDefinitionBuilder {
   private var constantsProvider = { emptyMap<String, Any?>() }
-  private var eventsDefinition: EventsDefinition? = null
+
+  @PublishedApi
+  internal var eventsDefinition: EventsDefinition? = null
 
   @PublishedApi
   internal var syncFunctions = mutableMapOf<String, SyncFunctionComponent>()
@@ -319,6 +324,28 @@ open class ObjectDefinitionBuilder {
   @JvmName("EventsWithArray")
   fun Events(events: Array<String>) {
     eventsDefinition = EventsDefinition(events)
+  }
+
+  inline fun <reified T> Events() where T : Enumerable, T : Enum<T> {
+    val primaryConstructor = T::class.primaryConstructor
+    val events = if (primaryConstructor?.parameters?.size == 1) {
+      val parameterName = primaryConstructor.parameters.first().name
+
+      val parameterProperty = T::class
+        .declaredMemberProperties
+        .find { it.name == parameterName }
+      requireNotNull(parameterProperty) { "Cannot find a property for $parameterName parameter" }
+      require(parameterProperty.returnType.classifier == String::class) { "The enum parameter has to be a string." }
+      enumValues<T>().map {
+        parameterProperty.get(it) as String
+      }
+    } else {
+      enumValues<T>().map {
+        it.name
+      }
+    }
+
+    eventsDefinition = EventsDefinition(events.toTypedArray())
   }
 
   /**
