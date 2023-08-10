@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Made the `setStatusBarHidden` methods `animation` parameter optional to match the documentation. (#23866 by @DoctorJohn)
+
 ### 💡 Others
 
 ## 1.7.1 — 2023-08-02
