@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
   s.static_framework = true
   
   s.dependency 'ExpoModulesCore'
-  s.dependency 'sqlite3'
+  s.dependency 'sqlite3', '~> 3.39.4'
   s.resource_bundles = { 'ExpoSQLite' => ['../crsqlite.dylib'] }
   
   # Swift/Objective-C compatibility
