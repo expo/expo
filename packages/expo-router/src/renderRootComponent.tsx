@@ -1,7 +1,7 @@
+import { registerRootComponent } from 'expo';
 import React from 'react';
 import { Platform, View } from 'react-native';
 
-import registerRootComponent from './fork/expo/registerRootComponent';
 import { SplashScreen, _internal_preventAutoHideAsync } from './views/Splash';
 
 function isBaseObject(obj: any) {
