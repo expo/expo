@@ -9,6 +9,9 @@ import expo.modules.kotlin.modules.ModuleDefinition
 
 private class AVManagerModuleNotFound : CodedException(message = "AVManagerInterface not found")
 
+private typealias KotlinPromise = expo.modules.kotlin.Promise
+private typealias LegacyPromise = expo.modules.core.Promise
+
 class AVModule : Module() {
   private val _avManager by lazy { appContext.legacyModule<AVManagerInterface>() }
   private val avManager: AVManagerInterface
@@ -25,95 +28,95 @@ class AVModule : Module() {
       avManager.setAudioMode(map)
     }
 
-    AsyncFunction("loadForSound") { source: ReadableArguments, status: ReadableArguments, promise: expo.modules.kotlin.Promise ->
+    AsyncFunction("loadForSound") { source: ReadableArguments, status: ReadableArguments, promise: KotlinPromise ->
       avManager.loadForSound(source, status, promise.toLegacyPromise())
     }
 
-    AsyncFunction("unloadForSound") { key: Int, promise: expo.modules.kotlin.Promise ->
+    AsyncFunction("unloadForSound") { key: Int, promise: KotlinPromise ->
       avManager.unloadForSound(key, promise.toLegacyPromise())
     }
 
-    AsyncFunction("setStatusForSound") { key: Int, status: ReadableArguments, promise: expo.modules.kotlin.Promise ->
+    AsyncFunction("setStatusForSound") { key: Int, status: ReadableArguments, promise: KotlinPromise ->
       avManager.setStatusForSound(key, status, promise.toLegacyPromise())
     }
 
-    AsyncFunction("replaySound") { key: Int, status: ReadableArguments, promise: expo.modules.kotlin.Promise ->
+    AsyncFunction("replaySound") { key: Int, status: ReadableArguments, promise: KotlinPromise ->
       avManager.replaySound(key, status, promise.toLegacyPromise())
     }
 
-    AsyncFunction("getStatusForSound") { key: Int, promise: expo.modules.kotlin.Promise ->
+    AsyncFunction("getStatusForSound") { key: Int, promise: KotlinPromise ->
       avManager.getStatusForSound(key, promise.toLegacyPromise())
     }
 
-    AsyncFunction("loadForVideo") { tag: Int, source: ReadableArguments?, status: ReadableArguments?, promise: expo.modules.kotlin.Promise ->
+    AsyncFunction("loadForVideo") { tag: Int, source: ReadableArguments?, status: ReadableArguments?, promise: KotlinPromise ->
       avManager.loadForVideo(tag, source, status, promise.toLegacyPromise())
     }
 
-    AsyncFunction("unloadForVideo") { tag: Int, promise: expo.modules.kotlin.Promise ->
+    AsyncFunction("unloadForVideo") { tag: Int, promise: KotlinPromise ->
       avManager.unloadForVideo(tag, promise.toLegacyPromise())
     }
 
-    AsyncFunction("setStatusForVideo") { tag: Int, status: ReadableArguments, promise: expo.modules.kotlin.Promise ->
+    AsyncFunction("setStatusForVideo") { tag: Int, status: ReadableArguments, promise: KotlinPromise ->
       avManager.setStatusForVideo(tag, status, promise.toLegacyPromise())
     }
 
-    AsyncFunction("replayVideo") { tag: Int, status: ReadableArguments, promise: expo.modules.kotlin.Promise ->
+    AsyncFunction("replayVideo") { tag: Int, status: ReadableArguments, promise: KotlinPromise ->
       avManager.replayVideo(tag, status, promise.toLegacyPromise())
     }
 
-    AsyncFunction("getStatusForVideo") { tag: Int, promise: expo.modules.kotlin.Promise ->
+    AsyncFunction("getStatusForVideo") { tag: Int, promise: KotlinPromise ->
       avManager.getStatusForVideo(tag, promise.toLegacyPromise())
     }
 
-    AsyncFunction("prepareAudioRecorder") { options: ReadableArguments, promise: expo.modules.kotlin.Promise ->
+    AsyncFunction("prepareAudioRecorder") { options: ReadableArguments, promise: KotlinPromise ->
       avManager.prepareAudioRecorder(options, promise.toLegacyPromise())
     }
 
-    AsyncFunction("getAvailableInputs") { promise: expo.modules.kotlin.Promise ->
+    AsyncFunction("getAvailableInputs") { promise: KotlinPromise ->
       avManager.getAvailableInputs(promise.toLegacyPromise())
     }
 
-    AsyncFunction("getCurrentInput") { promise: expo.modules.kotlin.Promise ->
+    AsyncFunction("getCurrentInput") { promise: KotlinPromise ->
       avManager.getCurrentInput(promise.toLegacyPromise())
     }
 
-    AsyncFunction("setInput") { uid: String, promise: expo.modules.kotlin.Promise ->
+    AsyncFunction("setInput") { uid: String, promise: KotlinPromise ->
       avManager.setInput(uid, promise.toLegacyPromise())
     }
 
-    AsyncFunction("startAudioRecording") { promise: expo.modules.kotlin.Promise ->
+    AsyncFunction("startAudioRecording") { promise: KotlinPromise ->
       avManager.startAudioRecording(promise.toLegacyPromise())
     }
 
-    AsyncFunction("pauseAudioRecording") { promise: expo.modules.kotlin.Promise ->
+    AsyncFunction("pauseAudioRecording") { promise: KotlinPromise ->
       avManager.pauseAudioRecording(promise.toLegacyPromise())
     }
 
-    AsyncFunction("stopAudioRecording") { promise: expo.modules.kotlin.Promise ->
+    AsyncFunction("stopAudioRecording") { promise: KotlinPromise ->
       avManager.stopAudioRecording(promise.toLegacyPromise())
     }
 
-    AsyncFunction("getAudioRecordingStatus") { promise: expo.modules.kotlin.Promise ->
+    AsyncFunction("getAudioRecordingStatus") { promise: KotlinPromise ->
       avManager.getAudioRecordingStatus(promise.toLegacyPromise())
     }
 
-    AsyncFunction("unloadAudioRecorder") { promise: expo.modules.kotlin.Promise ->
+    AsyncFunction("unloadAudioRecorder") { promise: KotlinPromise ->
       avManager.unloadAudioRecorder(promise.toLegacyPromise())
     }
 
-    AsyncFunction("requestPermissionsAsync") { promise: expo.modules.kotlin.Promise ->
+    AsyncFunction("requestPermissionsAsync") { promise: KotlinPromise ->
       Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.RECORD_AUDIO)
     }
 
-    AsyncFunction("getPermissionsAsync") { promise: expo.modules.kotlin.Promise ->
+    AsyncFunction("getPermissionsAsync") { promise: KotlinPromise ->
       Permissions.getPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.RECORD_AUDIO)
     }
   }
 }
 
-private fun expo.modules.kotlin.Promise.toLegacyPromise(): expo.modules.core.Promise {
+private fun KotlinPromise.toLegacyPromise(): LegacyPromise {
   val newPromise = this
-  return object : expo.modules.core.Promise {
+  return object : LegacyPromise {
     override fun resolve(value: Any) {
       newPromise.resolve(value)
     }
