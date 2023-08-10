@@ -197,6 +197,12 @@ import App from './App';
 registerRootComponent(App);
 ```
 
+If you are using [Expo Router](/routing/introduction/), change the default entry point (`main`) to **index.js** in **package.json**. Then, create the **index.js** file within the root of your project with the following:
+
+```js index.js
+import 'expo-router/entry';
+```
+
 > This new entrypoint already exists for bare projects. You only need to add this if you have a managed project.
 
 ### Create a package
