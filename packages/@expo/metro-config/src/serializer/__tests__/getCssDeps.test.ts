@@ -72,7 +72,7 @@ describe(getCssSerialAssets, () => {
       )
     ).toEqual([
       {
-        filename: '_expo/static/css/foobar-6d014d3eceae935c7be31bfa294bf590.css',
+        filename: '_expo/static/css/foobar-572ab956c69cfba498b99ddeaa42abd8.css',
         metadata: {
           hmrId: 'foobar_js',
         },

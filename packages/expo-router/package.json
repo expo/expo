@@ -48,7 +48,6 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "test:e2e": "jest --config e2e/jest.config.js",
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
@@ -90,19 +89,10 @@
     }
   },
   "devDependencies": {
+    "@react-navigation/drawer": "^6.5.0",
     "@testing-library/jest-native": "^5.4.2",
     "@testing-library/react-native": "^12.0.1",
-    "@expo/spawn-async": "^1.6.0",
-    "@react-navigation/drawer": "^6.5.0",
-    "@types/execa": "^0.9.0",
-    "@types/fs-extra": "^11.0.1",
-    "@types/klaw-sync": "^6.0.1",
     "@types/url-parse": "^1.4.8",
-    "execa": "^4",
-    "find-process": "^1.4.7",
-    "fs-extra": "^9.0.0",
-    "klaw-sync": "^6.0.0",
-    "tree-kill": "^1.2.2",
     "tsd": "^0.28.1"
   },
   "dependencies": {

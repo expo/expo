@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Use stable hashing for static CSS asset names. ([#23890](https://github.com/expo/expo/pull/23890) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 0.11.1 — 2023-08-02

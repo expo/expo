@@ -15,6 +15,7 @@ import { Log } from '../log';
 import { DevServerManager } from '../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
 import { logMetroErrorAsync } from '../start/server/metro/metroErrorInterface';
+import { learnMore } from '../utils/link';
 import { getVirtualFaviconAssetsAsync } from './favicon';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
@@ -23,8 +24,10 @@ type Options = { outputDir: string; minify: boolean };
 
 /** @private */
 export async function unstable_exportStaticAsync(projectRoot: string, options: Options) {
-  // NOTE(EvanBacon): Please don't use this feature.
-  Log.warn('Static exporting with Metro is an experimental feature.');
+  Log.warn(
+    `Experimental static rendering is enabled. ` +
+      learnMore('https://docs.expo.dev/router/reference/static-rendering/')
+  );
 
   const devServerManager = new DevServerManager(projectRoot, {
     minify: options.minify,
