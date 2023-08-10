@@ -1399,10 +1399,7 @@ build:
 
     - eas/inject_android_credentials
 
-    - run:
-        name: Build Android app
-        working_directory: ./android
-        command: ./gradlew :app:bundleRelease
+    - eas/run_gradle
 
     - eas/find_and_upload_build_artifacts
 ```
