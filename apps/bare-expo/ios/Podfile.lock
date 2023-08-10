@@ -233,7 +233,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSQLite (11.5.0):
     - ExpoModulesCore
-    - sqlite3
+    - sqlite3 (~> 3.39.4)
   - ExpoStoreReview (6.5.0):
     - ExpoModulesCore
   - ExpoSystemUI (2.5.0):
@@ -800,9 +800,9 @@ PODS:
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
   - SocketRocket (0.6.1)
-  - sqlite3 (3.42.0):
-    - sqlite3/common (= 3.42.0)
-  - sqlite3/common (3.42.0)
+  - sqlite3 (3.39.4):
+    - sqlite3/common (= 3.39.4)
+  - sqlite3/common (3.39.4)
   - UMAppLoader (4.2.0)
   - Yoga (1.14.0)
   - ZXingObjC/Core (3.6.5)
@@ -1345,7 +1345,7 @@ SPEC CHECKSUMS:
   ExpoSharing: 134ecbecb2f81295d7dd5d66ce90ae050962ecfd
   ExpoSMS: c8079b3018ae5206b3f1f6f445fd4eee2a19a335
   ExpoSpeech: cd3a86aedd2340f22eeca8a93040a825be9a280b
-  ExpoSQLite: 1634b80b00d7292b38ce64e1c0ed523a0e745f53
+  ExpoSQLite: ee6a9a91c593750e1904a364110d48e9162cd729
   ExpoStoreReview: f0e23d74a1cfae7a75c2ca7dac9c762dda382f03
   ExpoSystemUI: 2fce488f61a0e2849988a40b34b49a99e8e72af5
   ExpoTrackingTransparency: b14d3e7946b36962ee87c8656be540d60ff70c5d
@@ -1425,7 +1425,7 @@ SPEC CHECKSUMS:
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: af09429398d99d524cae2fe00f6f0f6e491ed102
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
-  sqlite3: f163dbbb7aa3339ad8fc622782c2d9d7b72f7e9c
+  sqlite3: 401936402fe5aa242c07f87fccfee5fc2b606f45
   UMAppLoader: e83f024f75f07802fce99739f04b4537d188caaf
   Yoga: 8796b55dba14d7004f980b54bcc9833ee45b28ce
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
