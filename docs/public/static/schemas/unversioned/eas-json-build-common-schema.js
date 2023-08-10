@@ -3,7 +3,7 @@ export default [
     name: 'withoutCredentials',
     type: 'boolean',
     description: [
-      "When set to `true`, EAS CLI won't require you to configure credentials when building the app. This comes in handy when using EAS Build custom builds",
+      "When set to `true`, EAS CLI won't require you to configure credentials when building the app. This comes in handy when using EAS Build [custom builds](/custom-builds/get-started/).",
     ],
   },
   {
