@@ -1,5 +1,5 @@
-import { ImageSource } from '../Image.types';
 import { ImageWrapperEvents } from './ImageWrapper.types';
+import { ImageSource } from '../Image.types';
 
 export function getImageWrapperEventHandler(
   events: ImageWrapperEvents | undefined,

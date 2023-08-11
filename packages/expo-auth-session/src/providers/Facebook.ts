@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 import { Platform } from 'react-native';
 
+import { ProviderAuthRequestConfig } from './Provider.types';
+import { applyRequiredScopes } from './ProviderUtils';
 import { AuthRequestConfig } from '../AuthRequest.types';
 import { useAuthRequestResult, useLoadedAuthRequest } from '../AuthRequestHooks';
 import {
@@ -13,8 +15,6 @@ import {
   ResponseType,
 } from '../AuthSession';
 import { generateHexStringAsync } from '../PKCE';
-import { ProviderAuthRequestConfig } from './Provider.types';
-import { applyRequiredScopes } from './ProviderUtils';
 
 const settings = {
   windowFeatures: { width: 700, height: 600 },
@@ -126,7 +126,7 @@ export function useAuthRequest(
 ): [
   FacebookAuthRequest | null,
   AuthSessionResult | null,
-  (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>
+  (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>,
 ] {
   const clientId = useMemo((): string => {
     const propertyName = Platform.select({

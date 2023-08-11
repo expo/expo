@@ -2,6 +2,7 @@ import { ExpoConfig } from '@expo/config';
 import fs from 'fs/promises';
 import path from 'path';
 
+import { updateTSConfigAsync } from './updateTSConfig';
 import * as Log from '../../../log';
 import { fileExistsAsync } from '../../../utils/dir';
 import { env } from '../../../utils/env';
@@ -9,7 +10,6 @@ import { memoize } from '../../../utils/fn';
 import { everyMatchAsync, wrapGlobWithTimeout } from '../../../utils/glob';
 import { ProjectPrerequisite } from '../Prerequisite';
 import { ensureDependenciesAsync } from '../dependencies/ensureDependenciesAsync';
-import { updateTSConfigAsync } from './updateTSConfig';
 
 const debug = require('debug')('expo:doctor:typescriptSupport') as typeof console.log;
 

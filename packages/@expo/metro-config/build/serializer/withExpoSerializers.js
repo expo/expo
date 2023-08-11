@@ -33,13 +33,6 @@ function _bundleToString() {
   };
   return data;
 }
-function _env() {
-  const data = require("../env");
-  _env = function () {
-    return data;
-  };
-  return data;
-}
 function _environmentVariableSerializerPlugin() {
   const data = require("./environmentVariableSerializerPlugin");
   _environmentVariableSerializerPlugin = function () {
@@ -57,6 +50,13 @@ function _getCssDeps() {
 function _serializerAssets() {
   const data = require("./serializerAssets");
   _serializerAssets = function () {
+    return data;
+  };
+  return data;
+}
+function _env() {
+  const data = require("../env");
+  _env = function () {
     return data;
   };
   return data;

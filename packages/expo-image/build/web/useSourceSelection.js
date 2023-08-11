@@ -46,7 +46,9 @@ function selectSource(sources, size, responsivePolicy) {
     const srcset = staticSupportedSources
         ?.map((source) => `${source.uri} ${source.width}w`)
         .join(', ');
-    const sizes = `${staticSupportedSources?.map(getCSSMediaQueryForSource).join(', ')}, ${staticSupportedSources[staticSupportedSources.length - 1]?.width}px`;
+    const sizes = `${staticSupportedSources
+        ?.map(getCSSMediaQueryForSource)
+        .join(', ')}, ${staticSupportedSources[staticSupportedSources.length - 1]?.width}px`;
     return {
         srcset,
         sizes,
