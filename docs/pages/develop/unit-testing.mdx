@@ -8,7 +8,9 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { FileTree } from '~/ui/components/FileTree';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
-[Jest](https://jestjs.io) is the most widely used JavaScript unit testing framework. In this guide, you'll learn how to set up Jest in your project, write a unit test, write a snapshot test, and best practices for structuring your tests when using Jest with React Native. This guide explains how to use install and configure to use `jest-expo` which is a Jest preset, mocks the native part of the Expo SDK and handles most of the configuration.
+[Jest](https://jestjs.io) is the most widely used JavaScript unit testing framework. In this guide, you'll learn how to set up Jest in your project, write a unit test, write a snapshot test, and best practices for structuring your tests when using Jest with React Native.
+
+You'll also use the `jest-expo` package which is a Jest preset and mocks the native part of the Expo SDK and handles most of the configuration.
 
 ## Installation
 
@@ -16,7 +18,7 @@ To install `jest-expo` in your project, run the following command:
 
 <Terminal cmd={['$ npx expo install jest-expo jest']} />
 
-> **info** If you are using TypeScript, then also install `@types/jest` as a dev dependency.
+> > **info** If you are using TypeScript, then also install `@types/jest` as a dev dependency.
 
 Then, update **package.json** to add a script for running tests and add the preset for using the base configuration from `jest-expo`:
 
