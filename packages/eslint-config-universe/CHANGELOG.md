@@ -4,13 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- Upgrade from Prettier 2.4+ to Prettier 3. Projects that use this ESLint config will need to upgrade the version of Prettier they use to 3.0.0+. See the Prettier 3 [changelog](https://prettier.io/blog/2023/07/05/3.0.0.html#breaking-changes). ([#23544](https://github.com/expo/expo/pull/23544) by [@ide](https://github.com/ide))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 12.0.0 — 2023-08-11
+
+### 🛠 Breaking changes
+
+- Upgrade from Prettier 2.4+ to Prettier 3. Projects that use this ESLint config will need to upgrade the version of Prettier they use to 3.0.0+. See the Prettier 3 [changelog](https://prettier.io/blog/2023/07/05/3.0.0.html#breaking-changes). ([#23544](https://github.com/expo/expo/pull/23544) by [@ide](https://github.com/ide))
 
 ## 11.3.0 — 2023-05-08
 
