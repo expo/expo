@@ -104,6 +104,9 @@ android {
       withSourcesJar()
     }
   }
+  buildFeatures {
+    buildConfig true
+  }
 }
 
 task copyAssets(type: Copy) {
