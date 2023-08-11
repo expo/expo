@@ -1,7 +1,5 @@
 import chalk from 'chalk';
 
-import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
-import { profile } from '../utils/Profile';
 import {
   getBareAndroidSourcesAsync,
   getBareIosSourcesAsync,
@@ -16,6 +14,8 @@ import {
   getExpoConfigSourcesAsync,
 } from './Expo';
 import { getPatchPackageSourcesAsync } from './PatchPackage';
+import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
+import { profile } from '../utils/Profile';
 
 const debug = require('debug')('expo:fingerprint:sourcer:Sourcer');
 

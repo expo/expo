@@ -222,7 +222,7 @@ describe('_getManifestResponseAsync', () => {
             },
             ...extraExpFields,
           },
-        } as any)
+        }) as any
     );
     return middleware;
   }

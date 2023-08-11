@@ -1,7 +1,7 @@
-import { ConfigPlugin } from '../Plugin.types';
-import { ExpoConfigUpdates } from '../utils/Updates';
 import { AndroidManifest } from './Manifest';
 import { ResourceXML } from './Resources';
+import { ConfigPlugin } from '../Plugin.types';
+import { ExpoConfigUpdates } from '../utils/Updates';
 export declare enum Config {
     ENABLED = "expo.modules.updates.ENABLED",
     CHECK_ON_LAUNCH = "expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH",

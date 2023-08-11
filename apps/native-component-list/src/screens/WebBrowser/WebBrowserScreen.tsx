@@ -3,9 +3,9 @@ import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import Button from '../../components/Button';
 import OpenAuthSessionAsyncDemo from './OpenAuthSessionAsyncDemo';
 import OpenBrowserAsyncDemo from './OpenBrowserAsyncDemo';
+import Button from '../../components/Button';
 
 const url = 'https://expo.dev';
 interface Package {

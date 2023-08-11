@@ -1,7 +1,7 @@
+import { AppDispatch, AppThunk } from './Store.types';
 import LocalStorage from '../storage/LocalStorage';
 import { HistoryItem } from '../types';
 import { Manifest } from '../types/Manifest';
-import { AppDispatch, AppThunk } from './Store.types';
 
 export default {
   loadHistory(): AppThunk {

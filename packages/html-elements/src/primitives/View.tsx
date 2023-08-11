@@ -6,8 +6,8 @@ import {
   ViewStyle as NativeViewStyle,
 } from 'react-native';
 
-import { createSafeStyledView } from '../css/createSafeStyledView';
 import { createDevView } from './createDevView';
+import { createSafeStyledView } from '../css/createSafeStyledView';
 
 // https://github.com/necolas/react-native-web/issues/832
 

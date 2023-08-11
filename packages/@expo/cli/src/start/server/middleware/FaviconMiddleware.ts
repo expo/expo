@@ -1,6 +1,6 @@
-import { getFaviconFromExpoConfigAsync } from '../../../export/favicon';
 import { ExpoMiddleware } from './ExpoMiddleware';
 import { ServerNext, ServerRequest, ServerResponse } from './server.types';
+import { getFaviconFromExpoConfigAsync } from '../../../export/favicon';
 
 const debug = require('debug')('expo:start:server:middleware:favicon') as typeof console.log;
 

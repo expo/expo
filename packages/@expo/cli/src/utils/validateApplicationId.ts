@@ -1,12 +1,12 @@
 import assert from 'assert';
 import chalk from 'chalk';
 
-import { fetchAsync } from '../api/rest/client';
-import { Log } from '../log';
 import { env } from './env';
 import { memoize } from './fn';
 import { learnMore } from './link';
 import { isUrlAvailableAsync } from './url';
+import { fetchAsync } from '../api/rest/client';
+import { Log } from '../log';
 
 const debug = require('debug')('expo:utils:validateApplicationId') as typeof console.log;
 

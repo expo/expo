@@ -1,10 +1,10 @@
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 
-import * as Log from '../log';
 import { env } from './env';
 import { isInteractive } from './interactive';
 import { confirmAsync } from './prompts';
+import * as Log from '../log';
 
 export async function maybeBailOnGitStatusAsync(): Promise<boolean> {
   if (env.EXPO_NO_GIT_STATUS) {

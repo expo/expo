@@ -1,7 +1,7 @@
 import Protocol from 'devtools-protocol';
 
-import { ExpoDebuggerInfo } from '../device';
 import { CdpMessage, DebuggerRequest, DeviceResponse, InspectorHandler } from './types';
+import { ExpoDebuggerInfo } from '../device';
 
 /**
  * Hermes doesn't seem to handle this request, but `locations` have to be returned.

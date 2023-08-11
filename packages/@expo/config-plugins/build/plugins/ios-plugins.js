@@ -7,6 +7,13 @@ exports.createEntitlementsPlugin = createEntitlementsPlugin;
 exports.createInfoPlistPlugin = createInfoPlistPlugin;
 exports.createInfoPlistPluginWithPropertyGuard = createInfoPlistPluginWithPropertyGuard;
 exports.withXcodeProject = exports.withPodfileProperties = exports.withInfoPlist = exports.withExpoPlist = exports.withEntitlementsPlist = exports.withAppDelegate = void 0;
+function _withMod() {
+  const data = require("./withMod");
+  _withMod = function () {
+    return data;
+  };
+  return data;
+}
 function _obj() {
   const data = require("../utils/obj");
   _obj = function () {
@@ -17,13 +24,6 @@ function _obj() {
 function _warnings() {
   const data = require("../utils/warnings");
   _warnings = function () {
-    return data;
-  };
-  return data;
-}
-function _withMod() {
-  const data = require("./withMod");
-  _withMod = function () {
     return data;
   };
   return data;

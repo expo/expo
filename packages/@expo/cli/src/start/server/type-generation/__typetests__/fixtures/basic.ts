@@ -164,7 +164,7 @@ export type Href<T> = T extends Record<'pathname', string> ? HrefObject<T> : Rou
 
 export type HrefObject<
   R extends Record<'pathname', string>,
-  P = R['pathname']
+  P = R['pathname'],
 > = P extends DynamicRouteTemplate
   ? { pathname: P; params: InputRouteParams<P> }
   : P extends Route<P>
@@ -222,18 +222,18 @@ export declare const Redirect: <T>(
 export declare function useRouter(): Router;
 
 export declare function useLocalSearchParams<
-  T extends AllRoutes | UnknownOutputParams = UnknownOutputParams
+  T extends AllRoutes | UnknownOutputParams = UnknownOutputParams,
 >(): T extends AllRoutes ? SearchParams<T> : T;
 
 /** @deprecated renamed to `useGlobalSearchParams` */
 export declare function useSearchParams<
-  T extends AllRoutes | UnknownOutputParams = UnknownOutputParams
+  T extends AllRoutes | UnknownOutputParams = UnknownOutputParams,
 >(): T extends AllRoutes ? SearchParams<T> : T;
 
 export declare function useGlobalSearchParams<
-  T extends AllRoutes | UnknownOutputParams = UnknownOutputParams
+  T extends AllRoutes | UnknownOutputParams = UnknownOutputParams,
 >(): T extends AllRoutes ? SearchParams<T> : T;
 
 export declare function useSegments<
-  T extends AbsoluteRoute | RouteSegments<AbsoluteRoute> | RelativePathString
+  T extends AbsoluteRoute | RouteSegments<AbsoluteRoute> | RelativePathString,
 >(): T extends AbsoluteRoute ? RouteSegments<T> : T extends string ? string[] : T;

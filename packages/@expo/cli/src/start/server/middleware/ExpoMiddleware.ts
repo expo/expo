@@ -1,11 +1,14 @@
 import { parse } from 'url';
 
-import * as Log from '../../../log';
 import { ServerNext, ServerRequest, ServerResponse } from './server.types';
+import * as Log from '../../../log';
 
 /** Base middleware creator for Expo dev servers. */
 export abstract class ExpoMiddleware {
-  constructor(protected projectRoot: string, protected supportedPaths: string[]) {}
+  constructor(
+    protected projectRoot: string,
+    protected supportedPaths: string[]
+  ) {}
 
   /**
    * Returns true when the middleware should handle the incoming server request.

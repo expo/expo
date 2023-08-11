@@ -4,9 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PnpmPackageManager = void 0;
+const BasePackageManager_1 = require("./BasePackageManager");
 const env_1 = __importDefault(require("../utils/env"));
 const nodeWorkspaces_1 = require("../utils/nodeWorkspaces");
-const BasePackageManager_1 = require("./BasePackageManager");
 class PnpmPackageManager extends BasePackageManager_1.BasePackageManager {
     constructor() {
         super(...arguments);

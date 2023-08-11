@@ -3,10 +3,10 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import * as React from 'react';
 import { Platform } from 'react-native';
 
+import { BranchListView } from './BranchListView';
 import { AppPlatform, useBranchesForProjectQuery } from '../../graphql/types';
 import * as Kernel from '../../kernel/Kernel';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
-import { BranchListView } from './BranchListView';
 
 function useBranchesQuery({
   appId,

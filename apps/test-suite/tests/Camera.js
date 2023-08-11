@@ -3,8 +3,8 @@ import { Camera } from 'expo-camera';
 import React from 'react';
 import { Platform } from 'react-native';
 
-import * as TestUtils from '../TestUtils';
 import { waitFor, mountAndWaitFor as originalMountAndWaitFor, retryForStatus } from './helpers';
+import * as TestUtils from '../TestUtils';
 
 export const name = 'Camera';
 const style = { width: 200, height: 200 };

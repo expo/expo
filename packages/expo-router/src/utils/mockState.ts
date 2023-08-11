@@ -13,17 +13,20 @@ export function createMockContextModule(map: Record<string, Record<string, any>>
 }
 
 export function configFromFs(map: (string | [string, object])[] = []) {
-  const ctx = map.reduce((acc, value: any) => {
-    if (typeof value === 'string') {
-      acc[value] = { default: () => {} };
+  const ctx = map.reduce(
+    (acc, value: any) => {
+      if (typeof value === 'string') {
+        acc[value] = { default: () => {} };
+        return acc;
+      }
+      acc[value[0]] = {
+        default: () => {},
+        ...value[1],
+      };
       return acc;
-    }
-    acc[value[0]] = {
-      default: () => {},
-      ...value[1],
-    };
-    return acc;
-  }, {} as Record<string, Record<string, any>>);
+    },
+    {} as Record<string, Record<string, any>>
+  );
 
   return getNavigationConfig(getExactRoutes(createMockContextModule(ctx))!);
 }

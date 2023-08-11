@@ -36,13 +36,13 @@ exports.LogBoxInspectorCodeFrame = void 0;
  */
 const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
+const LogBoxInspectorSection_1 = require("./LogBoxInspectorSection");
 const AnsiHighlight_1 = require("../UI/AnsiHighlight");
 const LogBoxButton_1 = require("../UI/LogBoxButton");
 const LogBoxStyle = __importStar(require("../UI/LogBoxStyle"));
 const constants_1 = require("../UI/constants");
 const formatProjectFilePath_1 = require("../formatProjectFilePath");
 const openFileInEditor_1 = __importDefault(require("../modules/openFileInEditor"));
-const LogBoxInspectorSection_1 = require("./LogBoxInspectorSection");
 function LogBoxInspectorCodeFrame({ codeFrame }) {
     if (codeFrame == null) {
         return null;

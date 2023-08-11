@@ -1,8 +1,8 @@
 import { ExpoConfig } from '@expo/config-types';
 
+import { AndroidManifest, getMainActivityOrThrow } from './Manifest';
 import { ConfigPlugin } from '../Plugin.types';
 import { withAndroidManifest } from '../plugins/android-plugins';
-import { AndroidManifest, getMainActivityOrThrow } from './Manifest';
 
 const ANDROID_WINDOW_SOFT_INPUT_MODE = 'android:windowSoftInputMode';
 

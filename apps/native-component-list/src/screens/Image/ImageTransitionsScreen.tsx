@@ -59,7 +59,7 @@ export default function ImageTransitionsScreen() {
     ImageTransition['duration'],
     ImageTransition['effect'],
     ImageTransition['timing'],
-    boolean
+    boolean,
   ];
 
   const changeImage = useCallback(() => {

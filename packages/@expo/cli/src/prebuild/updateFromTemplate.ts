@@ -2,14 +2,14 @@ import { ExpoConfig, PackageJSONConfig } from '@expo/config';
 import { ModPlatform } from '@expo/config-plugins';
 import chalk from 'chalk';
 
-import * as Log from '../log';
-import { AbortCommandError, SilentError } from '../utils/errors';
-import { logNewSection } from '../utils/ora';
-import { profile } from '../utils/profile';
 import { copyTemplateFilesAsync, createCopyFilesSuccessMessage } from './copyTemplateFiles';
 import { cloneTemplateAsync } from './resolveTemplate';
 import { DependenciesModificationResults, updatePackageJSONAsync } from './updatePackageJson';
 import { validateTemplatePlatforms } from './validateTemplatePlatforms';
+import * as Log from '../log';
+import { AbortCommandError, SilentError } from '../utils/errors';
+import { logNewSection } from '../utils/ora';
+import { profile } from '../utils/profile';
 
 /**
  * Creates local native files from an input template file path.

@@ -4,16 +4,16 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-function _createLegacyPlugin() {
-  const data = require("../createLegacyPlugin");
-  _createLegacyPlugin = function () {
+function _withAndroidNavigationBar() {
+  const data = require("./withAndroidNavigationBar");
+  _withAndroidNavigationBar = function () {
     return data;
   };
   return data;
 }
-function _withAndroidNavigationBar() {
-  const data = require("./withAndroidNavigationBar");
-  _withAndroidNavigationBar = function () {
+function _createLegacyPlugin() {
+  const data = require("../createLegacyPlugin");
+  _createLegacyPlugin = function () {
     return data;
   };
   return data;

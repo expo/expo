@@ -47,6 +47,13 @@ function _xcode() {
   };
   return data;
 }
+function _createBaseMod() {
+  const data = require("./createBaseMod");
+  _createBaseMod = function () {
+    return data;
+  };
+  return data;
+}
 function _ios() {
   const data = require("../ios");
   _ios = function () {
@@ -92,13 +99,6 @@ function _sortObject() {
 function _warnings() {
   const data = require("../utils/warnings");
   _warnings = function () {
-    return data;
-  };
-  return data;
-}
-function _createBaseMod() {
-  const data = require("./createBaseMod");
-  _createBaseMod = function () {
     return data;
   };
   return data;

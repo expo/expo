@@ -1,13 +1,6 @@
 import { ExpoConfig, getConfig } from '@expo/config';
 import chalk from 'chalk';
 
-import * as Log from '../log';
-import getDevClientProperties from '../utils/analytics/getDevClientProperties';
-import { logEventAsync } from '../utils/analytics/rudderstackClient';
-import { installExitHooks } from '../utils/exit';
-import { isInteractive } from '../utils/interactive';
-import { setNodeEnv } from '../utils/nodeEnv';
-import { profile } from '../utils/profile';
 import { validateDependenciesVersionsAsync } from './doctor/dependencies/validateDependenciesVersions';
 import { WebSupportProjectPrerequisite } from './doctor/web/WebSupportProjectPrerequisite';
 import { startInterfaceAsync } from './interface/startInterface';
@@ -16,6 +9,13 @@ import { BundlerStartOptions } from './server/BundlerDevServer';
 import { DevServerManager, MultiBundlerStartOptions } from './server/DevServerManager';
 import { openPlatformsAsync } from './server/openPlatforms';
 import { getPlatformBundlers, PlatformBundlers } from './server/platformBundlers';
+import * as Log from '../log';
+import getDevClientProperties from '../utils/analytics/getDevClientProperties';
+import { logEventAsync } from '../utils/analytics/rudderstackClient';
+import { installExitHooks } from '../utils/exit';
+import { isInteractive } from '../utils/interactive';
+import { setNodeEnv } from '../utils/nodeEnv';
+import { profile } from '../utils/profile';
 
 async function getMultiBundlerStartOptions(
   projectRoot: string,

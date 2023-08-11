@@ -1,8 +1,8 @@
 import { AndroidConfig, withGradleProperties, withPodfileProperties } from 'expo/config-plugins';
 
+import { compileMockModWithResultsAsync } from './mockMods';
 import type { PluginConfigType } from '../pluginConfig';
 import { withBuildProperties } from '../withBuildProperties';
-import { compileMockModWithResultsAsync } from './mockMods';
 
 jest.mock('expo/config-plugins', () => {
   const plugins = jest.requireActual('expo/config-plugins');

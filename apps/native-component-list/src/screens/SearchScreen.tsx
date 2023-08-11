@@ -5,12 +5,12 @@ import React from 'react';
 import { Animated, Platform, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import ExpoAPIIcon from '../components/ExpoAPIIcon';
-import SearchBar from '../components/SearchBar';
-import { Colors } from '../constants';
 import ComponentListScreen from './ComponentListScreen';
 import { ScreenItems as ApiScreenItems } from './ExpoApisScreen';
 import { ScreenItems as ComponentScreenItems } from './ExpoComponentsScreen';
+import ExpoAPIIcon from '../components/ExpoAPIIcon';
+import SearchBar from '../components/SearchBar';
+import { Colors } from '../constants';
 
 const fuse = new Fuse(ApiScreenItems.concat(ComponentScreenItems), { keys: ['name'] });
 

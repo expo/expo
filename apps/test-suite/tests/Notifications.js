@@ -7,9 +7,9 @@ import { Platform } from 'expo-modules-core';
 import * as Notifications from 'expo-notifications';
 import { Alert, AppState } from 'react-native';
 
+import { waitFor } from './helpers';
 import * as TestUtils from '../TestUtils';
 import { isInteractive } from '../utils/Environment';
-import { waitFor } from './helpers';
 
 export const name = 'Notifications';
 

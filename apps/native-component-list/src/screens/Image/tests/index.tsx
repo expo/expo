@@ -1,8 +1,8 @@
-import { ImageTestGroup } from '../types';
 import AppearanceTests from './appearance';
 import BorderTests from './borders';
 import ShadowsTests from './shadows';
 import SourcesTests from './sources';
+import { ImageTestGroup } from '../types';
 
 const tests: ImageTestGroup = {
   name: 'Image',

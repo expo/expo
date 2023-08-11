@@ -5,13 +5,13 @@ import * as Linking from 'expo-linking';
 import * as React from 'react';
 import { Platform, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import ContactDetailList, { DetailListItem } from './ContactDetailList';
+import * as ContactUtils from './ContactUtils';
+import ContactsAvatar from './ContactsAvatar';
 import HeaderContainerRight from '../../components/HeaderContainerRight';
 import HeaderIconButton from '../../components/HeaderIconButton';
 import Colors from '../../constants/Colors';
 import usePermissions from '../../utilities/usePermissions';
-import ContactDetailList, { DetailListItem } from './ContactDetailList';
-import * as ContactUtils from './ContactUtils';
-import ContactsAvatar from './ContactsAvatar';
 
 const isIos = Platform.OS === 'ios';
 

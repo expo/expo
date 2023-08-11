@@ -5,11 +5,11 @@ import chalk from 'chalk';
 import resolveFrom from 'resolve-from';
 import semver from 'semver';
 
+import { BundledNativeModules } from './bundledNativeModules';
+import { getCombinedKnownVersionsAsync } from './getVersionedPackages';
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
-import { BundledNativeModules } from './bundledNativeModules';
-import { getCombinedKnownVersionsAsync } from './getVersionedPackages';
 
 const debug = require('debug')('expo:doctor:dependencies:validate') as typeof console.log;
 
@@ -164,10 +164,13 @@ async function resolvePackageVersionsAsync(
   const packageVersionsFromPackageJSON = await Promise.all(
     packages.map((packageName) => getPackageVersionAsync(projectRoot, packageName))
   );
-  return packages.reduce((acc, packageName, idx) => {
-    acc[packageName] = packageVersionsFromPackageJSON[idx];
-    return acc;
-  }, {} as Record<string, string>);
+  return packages.reduce(
+    (acc, packageName, idx) => {
+      acc[packageName] = packageVersionsFromPackageJSON[idx];
+      return acc;
+    },
+    {} as Record<string, string>
+  );
 }
 
 async function getPackageVersionAsync(projectRoot: string, packageName: string): Promise<string> {

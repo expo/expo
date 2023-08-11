@@ -4,13 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-function _createLegacyPlugin() {
-  const data = require("../createLegacyPlugin");
-  _createLegacyPlugin = function () {
-    return data;
-  };
-  return data;
-}
 function _withAndroidAdMob() {
   const data = require("./withAndroidAdMob");
   _withAndroidAdMob = function () {
@@ -21,6 +14,13 @@ function _withAndroidAdMob() {
 function _withIosAdMob() {
   const data = require("./withIosAdMob");
   _withIosAdMob = function () {
+    return data;
+  };
+  return data;
+}
+function _createLegacyPlugin() {
+  const data = require("../createLegacyPlugin");
+  _createLegacyPlugin = function () {
     return data;
   };
   return data;

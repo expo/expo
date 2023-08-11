@@ -3,8 +3,8 @@ import { Platform } from 'expo-modules-core';
 import * as Notifications from 'expo-notifications';
 import React from 'react';
 
-import ExpoAPIIcon from '../components/ExpoAPIIcon';
 import ComponentListScreen from './ComponentListScreen';
+import ExpoAPIIcon from '../components/ExpoAPIIcon';
 
 if (Platform.OS !== 'web') {
   Notifications.setNotificationHandler({

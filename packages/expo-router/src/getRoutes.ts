@@ -318,10 +318,13 @@ export function assertDuplicateRoutes(filenames: string[]) {
 
   const duplicates = filenames
     .map((filename) => removeSupportedExtensions(filename))
-    .reduce((acc, filename) => {
-      acc[filename] = acc[filename] ? acc[filename] + 1 : 1;
-      return acc;
-    }, {} as Record<string, number>);
+    .reduce(
+      (acc, filename) => {
+        acc[filename] = acc[filename] ? acc[filename] + 1 : 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
 
   Object.entries(duplicates).forEach(([filename, count]) => {
     if (count > 1) {

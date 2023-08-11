@@ -9,8 +9,8 @@ const fast_glob_1 = __importDefault(require("fast-glob"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const module_1 = require("module");
 const path_1 = __importDefault(require("path"));
-const ExpoModuleConfig_1 = require("../ExpoModuleConfig");
 const mergeLinkingOptions_1 = require("./mergeLinkingOptions");
+const ExpoModuleConfig_1 = require("../ExpoModuleConfig");
 // Names of the config files. From lowest to highest priority.
 const EXPO_MODULE_CONFIG_FILENAMES = ['unimodule.json', 'expo-module.config.json'];
 /**

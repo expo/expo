@@ -16,10 +16,10 @@ import {
   View,
 } from 'react-native';
 
+import MediaLibraryCell from './MediaLibraryCell';
 import Button from '../../components/Button';
 import HeadingText from '../../components/HeadingText';
 import Colors from '../../constants/Colors';
-import MediaLibraryCell from './MediaLibraryCell';
 
 const COLUMNS = 3;
 const PAGE_SIZE = COLUMNS * 10;

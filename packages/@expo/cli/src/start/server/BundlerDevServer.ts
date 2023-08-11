@@ -2,6 +2,10 @@ import { MessageSocket } from '@expo/dev-server';
 import assert from 'assert';
 import resolveFrom from 'resolve-from';
 
+import { AsyncNgrok } from './AsyncNgrok';
+import { DevelopmentSession } from './DevelopmentSession';
+import { CreateURLOptions, UrlCreator } from './UrlCreator';
+import { PlatformBundlers } from './platformBundlers';
 import * as Log from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
 import { resolveWithTimeout } from '../../utils/delay';
@@ -13,10 +17,6 @@ import {
   BaseResolveDeviceProps,
   PlatformManager,
 } from '../platforms/PlatformManager';
-import { AsyncNgrok } from './AsyncNgrok';
-import { DevelopmentSession } from './DevelopmentSession';
-import { CreateURLOptions, UrlCreator } from './UrlCreator';
-import { PlatformBundlers } from './platformBundlers';
 
 const debug = require('debug')('expo:start:server:devServer') as typeof console.log;
 

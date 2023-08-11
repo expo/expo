@@ -1,11 +1,11 @@
 import { AndroidConfig, withAndroidColors, withAndroidStyles, XML } from '@expo/config-plugins';
 
+import { compileMockModWithResultsAsync } from './mockMods';
 import {
   getRootViewBackgroundColor,
   withRootViewBackgroundColorColors,
   withRootViewBackgroundColorStyles,
 } from '../withAndroidRootViewBackgroundColor';
-import { compileMockModWithResultsAsync } from './mockMods';
 
 const { parseXMLAsync } = XML;
 const { getColorsAsObject, getObjectAsColorsXml } = AndroidConfig.Colors;

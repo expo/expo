@@ -21,27 +21,6 @@ function _path() {
   };
   return data;
 }
-function _Xcodeproj() {
-  const data = require("../ios/utils/Xcodeproj");
-  _Xcodeproj = function () {
-    return data;
-  };
-  return data;
-}
-function _errors() {
-  const data = require("../utils/errors");
-  _errors = function () {
-    return data;
-  };
-  return data;
-}
-function Warnings() {
-  const data = _interopRequireWildcard(require("../utils/warnings"));
-  Warnings = function () {
-    return data;
-  };
-  return data;
-}
 function _createBaseMod() {
   const data = require("./createBaseMod");
   _createBaseMod = function () {
@@ -59,6 +38,27 @@ function _withAndroidBaseMods() {
 function _withIosBaseMods() {
   const data = require("./withIosBaseMods");
   _withIosBaseMods = function () {
+    return data;
+  };
+  return data;
+}
+function _Xcodeproj() {
+  const data = require("../ios/utils/Xcodeproj");
+  _Xcodeproj = function () {
+    return data;
+  };
+  return data;
+}
+function _errors() {
+  const data = require("../utils/errors");
+  _errors = function () {
+    return data;
+  };
+  return data;
+}
+function Warnings() {
+  const data = _interopRequireWildcard(require("../utils/warnings"));
+  Warnings = function () {
     return data;
   };
   return data;

@@ -4,16 +4,16 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.getInfoPlistPathFromPbxproj = getInfoPlistPathFromPbxproj;
-function _Target() {
-  const data = require("../Target");
-  _Target = function () {
+function _Xcodeproj() {
+  const data = require("./Xcodeproj");
+  _Xcodeproj = function () {
     return data;
   };
   return data;
 }
-function _Xcodeproj() {
-  const data = require("./Xcodeproj");
-  _Xcodeproj = function () {
+function _Target() {
+  const data = require("../Target");
+  _Target = function () {
     return data;
   };
   return data;

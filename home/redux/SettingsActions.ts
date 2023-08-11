@@ -1,8 +1,8 @@
 import { Appearance } from 'react-native';
 
+import { AppDispatch, AppThunk } from './Store.types';
 import * as DevMenu from '../menu/DevMenuModule';
 import LocalStorage from '../storage/LocalStorage';
-import { AppDispatch, AppThunk } from './Store.types';
 
 type ColorSchemeName = Appearance.AppearancePreferences['colorScheme'];
 

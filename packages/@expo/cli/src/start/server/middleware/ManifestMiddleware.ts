@@ -4,6 +4,11 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 import { resolve } from 'url';
 
+import { ExpoMiddleware } from './ExpoMiddleware';
+import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
+import { resolveAbsoluteEntryPoint } from './resolveEntryPoint';
+import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
+import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './server.types';
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
 import { stripExtension } from '../../../utils/url';
@@ -11,11 +16,6 @@ import * as ProjectDevices from '../../project/devices';
 import { UrlCreator } from '../UrlCreator';
 import { getPlatformBundlers } from '../platformBundlers';
 import { createTemplateHtmlFromExpoConfigAsync } from '../webTemplate';
-import { ExpoMiddleware } from './ExpoMiddleware';
-import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
-import { resolveAbsoluteEntryPoint } from './resolveEntryPoint';
-import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
-import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './server.types';
 
 const debug = require('debug')('expo:start:server:middleware:manifest') as typeof console.log;
 
@@ -157,11 +157,14 @@ export type ManifestMiddlewareOptions = {
 
 /** Base middleware creator for serving the Expo manifest (like the index.html but for native runtimes). */
 export abstract class ManifestMiddleware<
-  TManifestRequestInfo extends ManifestRequestInfo
+  TManifestRequestInfo extends ManifestRequestInfo,
 > extends ExpoMiddleware {
   private initialProjectConfig: ProjectConfig;
 
-  constructor(protected projectRoot: string, protected options: ManifestMiddlewareOptions) {
+  constructor(
+    protected projectRoot: string,
+    protected options: ManifestMiddlewareOptions
+  ) {
     super(
       projectRoot,
       /**

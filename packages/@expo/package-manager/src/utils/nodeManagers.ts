@@ -1,10 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 
-import { PackageManagerOptions } from '../PackageManager';
-import { NpmPackageManager } from '../node/NpmPackageManager';
-import { PnpmPackageManager } from '../node/PnpmPackageManager';
-import { YarnPackageManager } from '../node/YarnPackageManager';
 import {
   findPnpmWorkspaceRoot,
   findYarnOrNpmWorkspaceRoot,
@@ -12,6 +8,10 @@ import {
   PNPM_LOCK_FILE,
   YARN_LOCK_FILE,
 } from './nodeWorkspaces';
+import { PackageManagerOptions } from '../PackageManager';
+import { NpmPackageManager } from '../node/NpmPackageManager';
+import { PnpmPackageManager } from '../node/PnpmPackageManager';
+import { YarnPackageManager } from '../node/YarnPackageManager';
 
 export type NodePackageManager = NpmPackageManager | PnpmPackageManager | YarnPackageManager;
 

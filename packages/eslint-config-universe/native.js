@@ -7,7 +7,7 @@ const {
 
 const allExtensions = computeExpoExtensions(
   [...jsExtensions, ...tsExtensions],
-  platformSubextensions
+  platformSubextensions,
 );
 
 module.exports = {

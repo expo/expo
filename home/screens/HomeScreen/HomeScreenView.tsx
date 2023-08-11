@@ -12,6 +12,16 @@ import {
   RefreshControl,
 } from 'react-native';
 
+import { DevelopmentServerListItem } from './DevelopmentServerListItem';
+import { DevelopmentServersHeader } from './DevelopmentServersHeader';
+import { DevelopmentServersOpenQR } from './DevelopmentServersOpenQR';
+import { DevelopmentServersOpenURL } from './DevelopmentServersOpenURL';
+import { DevelopmentServersPlaceholder } from './DevelopmentServersPlaceholder';
+import { HomeScreenHeader } from './HomeScreenHeader';
+import { ProjectsSection } from './ProjectsSection';
+import { RecentlyOpenedHeader } from './RecentlyOpenedHeader';
+import { RecentlyOpenedSection } from './RecentlyOpenedSection';
+import { SnacksSection } from './SnacksSection';
 import FeatureFlags from '../../FeatureFlags';
 import { APIV2Client } from '../../api/APIV2Client';
 import ApolloClient from '../../api/ApolloClient';
@@ -29,16 +39,6 @@ import HistoryActions from '../../redux/HistoryActions';
 import { DevSession, HistoryList } from '../../types';
 import addListenerWithNativeCallback from '../../utils/addListenerWithNativeCallback';
 import getSnackId from '../../utils/getSnackId';
-import { DevelopmentServerListItem } from './DevelopmentServerListItem';
-import { DevelopmentServersHeader } from './DevelopmentServersHeader';
-import { DevelopmentServersOpenQR } from './DevelopmentServersOpenQR';
-import { DevelopmentServersOpenURL } from './DevelopmentServersOpenURL';
-import { DevelopmentServersPlaceholder } from './DevelopmentServersPlaceholder';
-import { HomeScreenHeader } from './HomeScreenHeader';
-import { ProjectsSection } from './ProjectsSection';
-import { RecentlyOpenedHeader } from './RecentlyOpenedHeader';
-import { RecentlyOpenedSection } from './RecentlyOpenedSection';
-import { SnacksSection } from './SnacksSection';
 
 const PROJECT_UPDATE_INTERVAL = 10000;
 

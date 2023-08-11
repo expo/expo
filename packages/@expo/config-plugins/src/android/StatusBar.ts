@@ -1,11 +1,11 @@
 import { ExpoConfig } from '@expo/config-types';
 import assert from 'assert';
 
-import { ConfigPlugin } from '../Plugin.types';
-import { withAndroidColors, withAndroidStyles } from '../plugins/android-plugins';
 import { assignColorValue } from './Colors';
 import { ResourceXML } from './Resources';
 import { assignStylesValue, getAppThemeLightNoActionBarGroup } from './Styles';
+import { ConfigPlugin } from '../Plugin.types';
+import { withAndroidColors, withAndroidStyles } from '../plugins/android-plugins';
 
 // https://developer.android.com/reference/android/R.attr#colorPrimaryDark
 const COLOR_PRIMARY_DARK_KEY = 'colorPrimaryDark';

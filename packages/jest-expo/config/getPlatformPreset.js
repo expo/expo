@@ -1,8 +1,8 @@
 'use strict';
 const { getBareExtensions } = require('@expo/config/paths');
 
-const expoPreset = require('../jest-preset');
 const { withWatchPlugins } = require('./withWatchPlugins');
+const expoPreset = require('../jest-preset');
 
 function getPlatformPreset(displayOptions, extensions) {
   const moduleFileExtensions = getBareExtensions(extensions, {

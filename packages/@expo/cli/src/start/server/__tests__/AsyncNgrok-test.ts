@@ -109,7 +109,7 @@ describe('startAsync', () => {
     const connect = jest.fn(() => {
       throw new Error('woops');
     });
-    ngrok.resolver.resolveAsync = jest.fn(async () => ({ connect } as any));
+    ngrok.resolver.resolveAsync = jest.fn(async () => ({ connect }) as any);
 
     await expect(
       ngrok._connectToNgrokAsync({
@@ -136,7 +136,7 @@ describe('startAsync', () => {
         throw err;
       })
       .mockImplementationOnce(() => 'http://localhost:3000');
-    ngrok.resolver.resolveAsync = jest.fn(async () => ({ connect } as any));
+    ngrok.resolver.resolveAsync = jest.fn(async () => ({ connect }) as any);
 
     await ngrok._connectToNgrokAsync();
 

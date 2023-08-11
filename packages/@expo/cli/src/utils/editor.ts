@@ -1,8 +1,8 @@
 import spawnAsync from '@expo/spawn-async';
 import editors from 'env-editor';
 
-import * as Log from '../log';
 import { env } from './env';
+import * as Log from '../log';
 
 const debug = require('debug')('expo:utils:editor') as typeof console.log;
 

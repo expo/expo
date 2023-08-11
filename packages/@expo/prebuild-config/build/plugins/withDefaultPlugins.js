@@ -22,13 +22,6 @@ function _debug() {
   };
   return data;
 }
-function _getAutolinkedPackages() {
-  const data = require("../getAutolinkedPackages");
-  _getAutolinkedPackages = function () {
-    return data;
-  };
-  return data;
-}
 function _withAndroidIcons() {
   const data = require("./icons/withAndroidIcons");
   _withAndroidIcons = function () {
@@ -116,6 +109,13 @@ function _expoUpdates() {
 function _reactNativeMaps() {
   const data = _interopRequireDefault(require("./unversioned/react-native-maps"));
   _reactNativeMaps = function () {
+    return data;
+  };
+  return data;
+}
+function _getAutolinkedPackages() {
+  const data = require("../getAutolinkedPackages");
+  _getAutolinkedPackages = function () {
     return data;
   };
   return data;

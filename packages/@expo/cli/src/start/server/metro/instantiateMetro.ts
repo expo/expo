@@ -6,6 +6,12 @@ import http from 'http';
 import type Metro from 'metro';
 import { Terminal } from 'metro-core';
 
+import { MetroBundlerDevServer } from './MetroBundlerDevServer';
+import { MetroTerminalReporter } from './MetroTerminalReporter';
+import { importExpoMetroConfig } from './resolveFromProject';
+import { getRouterDirectory } from './router';
+import { runServer } from './runServer-fork';
+import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 import { Log } from '../../../log';
 import { getMetroProperties } from '../../../utils/analytics/getMetroProperties';
 import { createDebuggerTelemetryMiddleware } from '../../../utils/analytics/metroDebuggerMiddleware';
@@ -14,12 +20,6 @@ import { env } from '../../../utils/env';
 import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
 import { createDevServerMiddleware } from '../middleware/createDevServerMiddleware';
 import { getPlatformBundlers } from '../platformBundlers';
-import { MetroBundlerDevServer } from './MetroBundlerDevServer';
-import { MetroTerminalReporter } from './MetroTerminalReporter';
-import { importExpoMetroConfig } from './resolveFromProject';
-import { getRouterDirectory } from './router';
-import { runServer } from './runServer-fork';
-import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {

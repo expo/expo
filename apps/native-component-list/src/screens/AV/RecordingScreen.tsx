@@ -1,10 +1,10 @@
 import React from 'react';
 import { PixelRatio, ScrollView, StyleSheet } from 'react-native';
 
-import HeadingText from '../../components/HeadingText';
 import AudioModeSelector from './AudioModeSelector';
 import Player from './AudioPlayer';
 import Recorder from './Recorder';
+import HeadingText from '../../components/HeadingText';
 
 interface State {
   recordingUri?: string;

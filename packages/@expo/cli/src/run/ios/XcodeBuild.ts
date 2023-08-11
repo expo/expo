@@ -5,14 +5,14 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
+import { BuildProps, ProjectInfo } from './XcodeBuild.types';
+import { ensureDeviceIsCodeSignedForDeploymentAsync } from './codeSigning/configureCodeSigning';
+import { simulatorBuildRequiresCodeSigning } from './codeSigning/simulatorCodeSigning';
 import * as Log from '../../log';
 import { ensureDirectory } from '../../utils/dir';
 import { env } from '../../utils/env';
 import { AbortCommandError, CommandError } from '../../utils/errors';
 import { getUserTerminal } from '../../utils/terminal';
-import { BuildProps, ProjectInfo } from './XcodeBuild.types';
-import { ensureDeviceIsCodeSignedForDeploymentAsync } from './codeSigning/configureCodeSigning';
-import { simulatorBuildRequiresCodeSigning } from './codeSigning/simulatorCodeSigning';
 export function logPrettyItem(message: string) {
   Log.log(chalk`{whiteBright \u203A} ${message}`);
 }

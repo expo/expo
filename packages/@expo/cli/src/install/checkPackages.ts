@@ -2,6 +2,8 @@ import { getConfig } from '@expo/config';
 import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
 
+import { fixPackagesAsync } from './installAsync';
+import { Options } from './resolveOptions';
 import * as Log from '../log';
 import {
   getVersionedDependenciesAsync,
@@ -11,8 +13,6 @@ import { isInteractive } from '../utils/interactive';
 import { learnMore } from '../utils/link';
 import { confirmAsync } from '../utils/prompts';
 import { joinWithCommasAnd } from '../utils/strings';
-import { fixPackagesAsync } from './installAsync';
-import { Options } from './resolveOptions';
 
 const debug = require('debug')('expo:install:check') as typeof console.log;
 

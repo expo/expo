@@ -1,8 +1,8 @@
 import React from 'react';
 import { PixelRatio, ScrollView, StyleSheet } from 'react-native';
 
-import HeadingText from '../../components/HeadingText';
 import VideoPlayer from './VideoPlayer';
+import HeadingText from '../../components/HeadingText';
 
 export default function VideoScreen() {
   return (

@@ -1,11 +1,11 @@
 import * as fs from 'fs';
 import { vol } from 'memfs';
 
+import { getDirFromFS } from './utils/getDirFromFS';
 import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 import * as WarningAggregator from '../../utils/warnings';
 import { getLocales, setLocalesAsync } from '../Locales';
 import { getPbxproj } from '../utils/Xcodeproj';
-import { getDirFromFS } from './utils/getDirFromFS';
 
 jest.mock('fs');
 jest.mock('../../utils/warnings');

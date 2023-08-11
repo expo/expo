@@ -5,6 +5,7 @@ import fs, { promises } from 'fs';
 import path from 'path';
 import xcode, { XcodeProject } from 'xcode';
 
+import { ForwardedBaseModOptions, provider, withGeneratedBaseMods } from './createBaseMod';
 import { ExportedConfig, ModConfig } from '../Plugin.types';
 import { Entitlements, Paths } from '../ios';
 import { ensureApplicationTargetEntitlementsFileConfigured } from '../ios/Entitlements';
@@ -14,7 +15,6 @@ import { getInfoPlistPathFromPbxproj } from '../ios/utils/getInfoPlistPath';
 import { fileExists } from '../utils/modules';
 import { sortObject } from '../utils/sortObject';
 import { addWarningIOS } from '../utils/warnings';
-import { ForwardedBaseModOptions, provider, withGeneratedBaseMods } from './createBaseMod';
 
 const { readFile, writeFile } = promises;
 

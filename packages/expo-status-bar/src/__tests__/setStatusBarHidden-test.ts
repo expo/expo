@@ -1,7 +1,7 @@
 import { StatusBar as ReactNativeStatusBar } from 'react-native';
 
-import { setStatusBarHidden } from '../StatusBar';
 import { mockProperty } from './Helpers';
+import { setStatusBarHidden } from '../StatusBar';
 
 describe('setStatusBarHidden', () => {
   it('delegates to the React Native StatusBar equivalent', () => {

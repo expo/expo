@@ -142,7 +142,7 @@ export function useAuthRequest(
 ): [
   AuthRequest | null,
   AuthSessionResult | null,
-  (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>
+  (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>,
 ] {
   const request = useLoadedAuthRequest(config, discovery, AuthRequest);
   const [result, promptAsync] = useAuthRequestResult(request, discovery);

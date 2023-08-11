@@ -9,13 +9,13 @@ import { ServerContainer } from '@react-navigation/native';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { AppRegistry } from 'react-native-web';
+import { getRootComponent } from './getRootComponent';
 import { ctx } from '../../_ctx';
 import { ExpoRoot } from '../ExpoRoot';
 import { getNavigationConfig } from '../getLinkingConfig';
 import { getRoutes } from '../getRoutes';
 import { Head } from '../head';
 import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
-import { getRootComponent } from './getRootComponent';
 AppRegistry.registerComponent('App', () => App);
 // Must be exported or Fast Refresh won't update the context >:[
 function App(props) {

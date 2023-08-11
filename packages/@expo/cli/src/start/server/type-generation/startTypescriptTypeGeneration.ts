@@ -3,13 +3,13 @@ import fs from 'fs/promises';
 import { Server } from 'metro';
 import path from 'path';
 
+import { removeExpoEnvDTS, writeExpoEnvDTS } from './expo-env';
+import { setupTypedRoutes } from './routes';
+import { forceRemovalTSConfig, forceUpdateTSConfig } from './tsconfig';
 import { upsertGitIgnoreContents, removeFromGitIgnore } from '../../../utils/mergeGitIgnorePaths';
 import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo';
 import { ServerLike } from '../BundlerDevServer';
 import { getRouterDirectory } from '../metro/router';
-import { removeExpoEnvDTS, writeExpoEnvDTS } from './expo-env';
-import { setupTypedRoutes } from './routes';
-import { forceRemovalTSConfig, forceUpdateTSConfig } from './tsconfig';
 
 export interface TypeScriptTypeGenerationOptions {
   server: ServerLike;

@@ -1,7 +1,7 @@
 import { StatusBar as ReactNativeStatusBar } from 'react-native';
 
-import { setStatusBarBackgroundColor } from '../StatusBar';
 import { mockProperty } from './Helpers';
+import { setStatusBarBackgroundColor } from '../StatusBar';
 
 describe('setStatusBarBackgroundColor', () => {
   it('delegates to the React Native StatusBar equivalent', () => {

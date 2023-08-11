@@ -3,17 +3,17 @@ import chalk from 'chalk';
 import prettyBytes from 'pretty-bytes';
 import table from 'text-table';
 
+import { BundleOutput } from './fork-bundleAsync';
 import * as Log from '../log';
 import { stripAnsi } from '../utils/ansi';
 import { learnMore } from '../utils/link';
-import { BundleOutput } from './fork-bundleAsync';
 
 export function printBundleSizes(bundles: Partial<Record<Platform, BundleOutput>>) {
   const files: [string, string | Uint8Array][] = [];
 
   for (const [platform, bundleOutput] of Object.entries(bundles) as [
     Platform,
-    Pick<BundleOutput, 'hermesBytecodeBundle' | 'code' | 'hermesSourcemap' | 'map'>
+    Pick<BundleOutput, 'hermesBytecodeBundle' | 'code' | 'hermesSourcemap' | 'map'>,
   ][]) {
     if (bundleOutput.hermesBytecodeBundle) {
       files.push([chalk.bold(`index.${platform}.hbc`), bundleOutput.hermesBytecodeBundle]);

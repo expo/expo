@@ -2,12 +2,12 @@ import { getConfig } from '@expo/config';
 import assert from 'assert';
 import chalk from 'chalk';
 
+import { AppIdResolver } from './AppIdResolver';
+import { DeviceManager } from './DeviceManager';
 import { Log } from '../../log';
 import { logEventAsync } from '../../utils/analytics/rudderstackClient';
 import { CommandError, UnimplementedError } from '../../utils/errors';
 import { learnMore } from '../../utils/link';
-import { AppIdResolver } from './AppIdResolver';
-import { DeviceManager } from './DeviceManager';
 
 const debug = require('debug')('expo:start:platforms:platformManager') as typeof console.log;
 
@@ -27,7 +27,7 @@ export interface BaseResolveDeviceProps<IDevice> {
 export class PlatformManager<
   IDevice,
   IOpenInCustomProps extends BaseOpenInCustomProps = BaseOpenInCustomProps,
-  IResolveDeviceProps extends BaseResolveDeviceProps<IDevice> = BaseResolveDeviceProps<IDevice>
+  IResolveDeviceProps extends BaseResolveDeviceProps<IDevice> = BaseResolveDeviceProps<IDevice>,
 > {
   constructor(
     protected projectRoot: string,

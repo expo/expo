@@ -234,7 +234,10 @@ export function openDatabase(
  * @internal
  */
 export class ExpoSQLTransactionAsync implements SQLTransactionAsync {
-  constructor(private readonly db: SQLiteDatabase, private readonly readOnly: boolean) {}
+  constructor(
+    private readonly db: SQLiteDatabase,
+    private readonly readOnly: boolean
+  ) {}
 
   async executeSqlAsync(
     sqlStatement: string,

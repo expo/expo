@@ -1,7 +1,7 @@
+import NativeErrorManager from './NativeErrorManager';
 import { EventEmitter } from '../EventEmitter';
 import Platform from '../Platform';
 import { CodedError } from '../errors/CodedError';
-import NativeErrorManager from './NativeErrorManager';
 
 if (__DEV__ && Platform.OS === 'android' && NativeErrorManager) {
   const onNewException = 'ExpoModulesCoreErrorManager.onNewException';

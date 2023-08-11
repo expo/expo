@@ -42,6 +42,13 @@ function path() {
   };
   return data;
 }
+function Entitlements() {
+  const data = _interopRequireWildcard(require("./Entitlements"));
+  Entitlements = function () {
+    return data;
+  };
+  return data;
+}
 function _errors() {
   const data = require("../utils/errors");
   _errors = function () {
@@ -52,13 +59,6 @@ function _errors() {
 function _warnings() {
   const data = require("../utils/warnings");
   _warnings = function () {
-    return data;
-  };
-  return data;
-}
-function Entitlements() {
-  const data = _interopRequireWildcard(require("./Entitlements"));
-  Entitlements = function () {
     return data;
   };
   return data;

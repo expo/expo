@@ -36,13 +36,13 @@ exports.LogBoxInspectorStackFrames = exports.getCollapseMessage = void 0;
  */
 const react_1 = __importStar(require("react"));
 const react_native_1 = require("react-native");
+const LogBoxInspectorSection_1 = require("./LogBoxInspectorSection");
+const LogBoxInspectorSourceMapStatus_1 = require("./LogBoxInspectorSourceMapStatus");
+const LogBoxInspectorStackFrame_1 = require("./LogBoxInspectorStackFrame");
 const LogContext_1 = require("../Data/LogContext");
 const LogBoxButton_1 = require("../UI/LogBoxButton");
 const LogBoxStyle = __importStar(require("../UI/LogBoxStyle"));
 const openFileInEditor_1 = __importDefault(require("../modules/openFileInEditor"));
-const LogBoxInspectorSection_1 = require("./LogBoxInspectorSection");
-const LogBoxInspectorSourceMapStatus_1 = require("./LogBoxInspectorSourceMapStatus");
-const LogBoxInspectorStackFrame_1 = require("./LogBoxInspectorStackFrame");
 function getCollapseMessage(stackFrames, collapsed) {
     if (stackFrames.length === 0) {
         return 'No frames to show';

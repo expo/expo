@@ -4,13 +4,13 @@ import assert from 'assert';
 import fs from 'fs';
 import xcode, { XCBuildConfiguration } from 'xcode';
 
-import { ConfigPlugin } from '../Plugin.types';
-import { withDangerousMod } from '../plugins/withDangerousMod';
 import { InfoPlist } from './IosConfig.types';
 import { getAllInfoPlistPaths, getAllPBXProjectPaths, getPBXProjectPath } from './Paths';
 import { findFirstNativeTarget, getXCBuildConfigurationFromPbxproj } from './Target';
 import { ConfigurationSectionEntry, getBuildConfigurationsForListId } from './utils/Xcodeproj';
 import { trimQuotes } from './utils/string';
+import { ConfigPlugin } from '../Plugin.types';
+import { withDangerousMod } from '../plugins/withDangerousMod';
 
 export const withBundleIdentifier: ConfigPlugin<{ bundleIdentifier?: string }> = (
   config,

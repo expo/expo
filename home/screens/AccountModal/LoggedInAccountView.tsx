@@ -29,7 +29,7 @@ export function LoggedInAccountView({ accounts }: Props) {
   return (
     <View flex="1">
       <View flex="1">
-        <FlatList<typeof accounts[number]>
+        <FlatList<(typeof accounts)[number]>
           data={accounts}
           contentContainerStyle={{ padding: spacing[4] }}
           ListHeaderComponent={() => (

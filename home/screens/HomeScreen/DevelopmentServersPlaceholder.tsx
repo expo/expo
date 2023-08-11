@@ -5,9 +5,9 @@ import { Text, View } from 'expo-dev-client-components';
 import * as React from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import { HomeStackRoutes } from '../../navigation/Navigation.types';
 import { DevelopmentServersOpenQR } from './DevelopmentServersOpenQR';
 import { DevelopmentServersOpenURL } from './DevelopmentServersOpenURL';
+import { HomeStackRoutes } from '../../navigation/Navigation.types';
 
 type Props = {
   isAuthenticated: boolean;

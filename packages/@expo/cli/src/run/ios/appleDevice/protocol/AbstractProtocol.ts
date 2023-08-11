@@ -16,7 +16,11 @@ const BPLIST_MAGIC = Buffer.from('bplist00');
 const debug = Debug('expo:apple-device:protocol');
 
 export class ProtocolClientError extends CommandError {
-  constructor(msg: string, public error: Error, public protocolMessage?: any) {
+  constructor(
+    msg: string,
+    public error: Error,
+    public protocolMessage?: any
+  ) {
     super(msg);
   }
 }
@@ -35,7 +39,10 @@ export abstract class ProtocolReader {
   protected body!: Buffer; // TODO: ! -> ?
   protected bodyLength!: number; // TODO: ! -> ?
   protected buffer = Buffer.alloc(0);
-  constructor(protected headerSize: number, protected callback: ProtocolReaderCallback) {
+  constructor(
+    protected headerSize: number,
+    protected callback: ProtocolReaderCallback
+  ) {
     this.onData = this.onData.bind(this);
   }
 

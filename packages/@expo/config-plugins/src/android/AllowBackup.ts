@@ -1,7 +1,7 @@
 import { ExpoConfig } from '@expo/config-types';
 
-import { createAndroidManifestPlugin } from '../plugins/android-plugins';
 import { AndroidManifest, getMainApplication, StringBoolean } from './Manifest';
+import { createAndroidManifestPlugin } from '../plugins/android-plugins';
 
 export const withAllowBackup = createAndroidManifestPlugin(setAllowBackup, 'withAllowBackup');
 

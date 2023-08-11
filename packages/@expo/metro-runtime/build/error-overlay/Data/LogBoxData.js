@@ -35,11 +35,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.withSubscription = exports.observe = exports.isDisabled = exports.setDisabled = exports.addIgnorePatterns = exports.getIgnorePatterns = exports.dismiss = exports.clearErrors = exports.clearWarnings = exports.setSelectedLog = exports.clear = exports.symbolicateLogLazy = exports.retrySymbolicateLogNow = exports.symbolicateLogNow = exports.addException = exports.addLog = exports.isMessageIgnored = exports.isLogBoxErrorMessage = exports.reportUnexpectedLogBoxError = exports.reportLogBoxError = void 0;
 const React = __importStar(require("react"));
-const NativeLogBox_1 = __importDefault(require("../modules/NativeLogBox"));
-const parseErrorStack_1 = __importDefault(require("../modules/parseErrorStack"));
 const LogBoxLog_1 = require("./LogBoxLog");
 const LogContext_1 = require("./LogContext");
 const parseLogBoxLog_1 = require("./parseLogBoxLog");
+const NativeLogBox_1 = __importDefault(require("../modules/NativeLogBox"));
+const parseErrorStack_1 = __importDefault(require("../modules/parseErrorStack"));
 const observers = new Set();
 const ignorePatterns = new Set();
 let logs = new Set();

@@ -6,10 +6,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createForProject = exports.resolvePackageManager = exports.findWorkspaceRoot = exports.RESOLUTION_ORDER = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const nodeWorkspaces_1 = require("./nodeWorkspaces");
 const NpmPackageManager_1 = require("../node/NpmPackageManager");
 const PnpmPackageManager_1 = require("../node/PnpmPackageManager");
 const YarnPackageManager_1 = require("../node/YarnPackageManager");
-const nodeWorkspaces_1 = require("./nodeWorkspaces");
 /** The order of the package managers to use when resolving automatically */
 exports.RESOLUTION_ORDER = ['yarn', 'npm', 'pnpm'];
 /**

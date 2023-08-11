@@ -11,16 +11,6 @@ import { Resolution, ResolutionContext } from 'metro-resolver';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { Log } from '../../../log';
-import { FileNotifier } from '../../../utils/FileNotifier';
-import { env } from '../../../utils/env';
-import { installExitHooks } from '../../../utils/exit';
-import { isInteractive } from '../../../utils/interactive';
-import { learnMore } from '../../../utils/link';
-import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/loadTsConfigPaths';
-import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
-import { WebSupportProjectPrerequisite } from '../../doctor/web/WebSupportProjectPrerequisite';
-import { PlatformBundlers } from '../platformBundlers';
 import {
   EXTERNAL_REQUIRE_NATIVE_POLYFILL,
   EXTERNAL_REQUIRE_POLYFILL,
@@ -32,6 +22,16 @@ import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroE
 import { importMetroResolverFromProject } from './resolveFromProject';
 import { getAppRouterRelativeEntryPath } from './router';
 import { withMetroResolvers } from './withMetroResolvers';
+import { Log } from '../../../log';
+import { FileNotifier } from '../../../utils/FileNotifier';
+import { env } from '../../../utils/env';
+import { installExitHooks } from '../../../utils/exit';
+import { isInteractive } from '../../../utils/interactive';
+import { learnMore } from '../../../utils/link';
+import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/loadTsConfigPaths';
+import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
+import { WebSupportProjectPrerequisite } from '../../doctor/web/WebSupportProjectPrerequisite';
+import { PlatformBundlers } from '../platformBundlers';
 
 type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 

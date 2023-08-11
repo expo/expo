@@ -11,8 +11,6 @@ import { ConfigT } from 'metro-config';
 import type { InspectorProxy } from 'metro-inspector-proxy';
 import { parse } from 'url';
 
-import { env } from '../../../utils/env';
-import type { ConnectAppType } from '../middleware/server.types';
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { createInspectorProxy, ExpoInspectorProxy } from './inspector-proxy';
 import {
@@ -21,6 +19,8 @@ import {
   importMetroHmrServerFromProject,
   importMetroInspectorProxyFromProject,
 } from './resolveFromProject';
+import { env } from '../../../utils/env';
+import type { ConnectAppType } from '../middleware/server.types';
 
 export const runServer = async (
   metroBundler: MetroBundlerDevServer,

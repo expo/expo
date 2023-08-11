@@ -14,9 +14,9 @@ import xcode, {
 } from 'xcode';
 import pbxFile from 'xcode/lib/pbxFile';
 
+import { trimQuotes } from './string';
 import { addWarningIOS } from '../../utils/warnings';
 import * as Paths from '../Paths';
-import { trimQuotes } from './string';
 
 export type ProjectSectionEntry = [string, PBXProject];
 

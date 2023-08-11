@@ -29,7 +29,10 @@ export class AsyncNgrok {
   /** Info about the currently running instance of ngrok. */
   private serverUrl: string | null = null;
 
-  constructor(private projectRoot: string, private port: number) {
+  constructor(
+    private projectRoot: string,
+    private port: number
+  ) {
     this.resolver = new NgrokResolver(projectRoot);
   }
 

@@ -2,6 +2,8 @@ import { ExpoConfig, getConfig } from '@expo/config';
 import assert from 'assert';
 import chalk from 'chalk';
 
+import { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
+import { getPlatformBundlers } from './platformBundlers';
 import { Log } from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
 import { logEventAsync } from '../../utils/analytics/rudderstackClient';
@@ -11,8 +13,6 @@ import { TypeScriptProjectPrerequisite } from '../doctor/typescript/TypeScriptPr
 import { printItem } from '../interface/commandsTable';
 import * as AndroidDebugBridge from '../platforms/android/adb';
 import { resolveSchemeAsync } from '../resolveOptions';
-import { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
-import { getPlatformBundlers } from './platformBundlers';
 
 const debug = require('debug')('expo:start:server:devServerManager') as typeof console.log;
 

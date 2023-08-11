@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Platform } from 'react-native';
 
-import { StatusBar as ExpoStatusBar } from '../StatusBar';
 import { mockAppearance, renderedPropValue } from './Helpers';
+import { StatusBar as ExpoStatusBar } from '../StatusBar';
 
 describe('StatusBar', () => {
   if (Platform.OS === 'android') {

@@ -1,9 +1,9 @@
 import escape from 'escape-string-regexp';
 import * as queryString from 'query-string';
 import URL from 'url-parse';
-import { matchGroupName, stripGroupSegmentsFromPath } from '../matchers';
 import { findFocusedRoute } from './findFocusedRoute';
 import validatePathConfig from './validatePathConfig';
+import { matchGroupName, stripGroupSegmentsFromPath } from '../matchers';
 export function getUrlWithReactNavigationConcessions(path) {
     const parsed = new URL(path, 'https://acme.com');
     const pathname = parsed.pathname;

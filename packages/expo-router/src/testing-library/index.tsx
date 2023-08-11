@@ -5,10 +5,6 @@ import { render, RenderResult } from '@testing-library/react-native';
 import path from 'path';
 import React from 'react';
 
-import { ExpoRoot } from '../ExpoRoot';
-import { stateCache } from '../getLinkingConfig';
-import { store } from '../global-state/router-store';
-import { RequireContext } from '../types';
 import {
   FileStub,
   inMemoryContext,
@@ -16,6 +12,10 @@ import {
   requireContextWithOverrides,
 } from './context-stubs';
 import { initialUrlRef } from './mocks';
+import { ExpoRoot } from '../ExpoRoot';
+import { stateCache } from '../getLinkingConfig';
+import { store } from '../global-state/router-store';
+import { RequireContext } from '../types';
 
 // re-export everything
 export * from '@testing-library/react-native';

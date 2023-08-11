@@ -3,11 +3,11 @@ import './expect';
 import { render } from '@testing-library/react-native';
 import path from 'path';
 import React from 'react';
+import { inMemoryContext, requireContext, requireContextWithOverrides, } from './context-stubs';
+import { initialUrlRef } from './mocks';
 import { ExpoRoot } from '../ExpoRoot';
 import { stateCache } from '../getLinkingConfig';
 import { store } from '../global-state/router-store';
-import { inMemoryContext, requireContext, requireContextWithOverrides, } from './context-stubs';
-import { initialUrlRef } from './mocks';
 // re-export everything
 export * from '@testing-library/react-native';
 function isOverrideContext(context) {
