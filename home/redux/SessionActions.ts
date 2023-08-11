@@ -1,8 +1,8 @@
+import { SessionObject } from './SessionReducer';
+import { AppDispatch, AppThunk } from './Store.types';
 import ApolloClient from '../api/ApolloClient';
 import AuthApi from '../api/AuthApi';
 import LocalStorage from '../storage/LocalStorage';
-import { SessionObject } from './SessionReducer';
-import { AppDispatch, AppThunk } from './Store.types';
 
 export default {
   setSession(session: SessionObject): AppThunk {

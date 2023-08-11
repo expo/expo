@@ -55,7 +55,7 @@ it(`rethrows assertions`, async () => {
         async openPlatformAsync() {
           throw new Error('Failed');
         },
-      } as any)
+      }) as any
   );
   const options = {
     android: true,
@@ -81,7 +81,7 @@ it(`surfaces aborting`, async () => {
           async openPlatformAsync() {
             throw new AbortCommandError();
           },
-        } as any)
+        }) as any
     );
   const options = {
     android: true,

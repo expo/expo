@@ -12,7 +12,10 @@ export class CommandError extends Error {
   name = 'CommandError';
   readonly isCommandError = true;
 
-  constructor(public code: string, message: string = '') {
+  constructor(
+    public code: string,
+    message: string = ''
+  ) {
     super('');
     // If e.toString() was called to get `message` we don't want it to look
     // like "Error: Error:".

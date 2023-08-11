@@ -2,12 +2,12 @@ import { iconSize } from '@expo/styleguide-native';
 import { Divider, Text, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
 
-import { SectionHeader } from '../../components/SectionHeader';
-import { useDispatch, useSelector } from '../../redux/Hooks';
-import SettingsActions from '../../redux/SettingsActions';
 import { CheckListItem } from './CheckListItem';
 import { ShakeDeviceIcon } from './ShakeDeviceIcon';
 import { ThreeFingerPressIcon } from './ThreeFingerPressIcon';
+import { SectionHeader } from '../../components/SectionHeader';
+import { useDispatch, useSelector } from '../../redux/Hooks';
+import SettingsActions from '../../redux/SettingsActions';
 
 export function DevMenuGestureSection() {
   const dispatch = useDispatch();

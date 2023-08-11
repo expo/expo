@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.YarnPackageManager = void 0;
+const BasePackageManager_1 = require("./BasePackageManager");
 const nodeWorkspaces_1 = require("../utils/nodeWorkspaces");
 const spawn_1 = require("../utils/spawn");
 const yarn_1 = require("../utils/yarn");
-const BasePackageManager_1 = require("./BasePackageManager");
 class YarnPackageManager extends BasePackageManager_1.BasePackageManager {
     constructor() {
         super(...arguments);

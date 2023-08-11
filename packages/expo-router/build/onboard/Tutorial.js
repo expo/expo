@@ -1,9 +1,9 @@
 import React from 'react';
 import { Platform, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { createEntryFileAsync } from './createEntryFile';
 import { Link } from '../exports';
 import { Pressable } from '../views/Pressable';
-import { createEntryFileAsync } from './createEntryFile';
 // TODO: Use openLinkFromBrowser thing
 function Header() {
     return (React.createElement(Pressable, null, ({ hovered }) => (React.createElement(Text, { role: "heading", "aria-level": 1, style: [styles.title, Platform.OS !== 'web' && { textAlign: 'left' }] },

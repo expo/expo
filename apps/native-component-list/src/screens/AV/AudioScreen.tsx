@@ -3,10 +3,10 @@ import { Audio } from 'expo-av';
 import React from 'react';
 import { PixelRatio, ScrollView, StyleSheet } from 'react-native';
 
-import HeadingText from '../../components/HeadingText';
-import ListButton from '../../components/ListButton';
 import AudioModeSelector from './AudioModeSelector';
 import Player from './AudioPlayer';
+import HeadingText from '../../components/HeadingText';
+import ListButton from '../../components/ListButton';
 
 export default class AudioScreen extends React.Component {
   static navigationOptions = {

@@ -2,9 +2,9 @@ import fs from 'fs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
+import { getBareExtensions } from './extensions';
 import { getConfig } from '../Config';
 import { ProjectConfig } from '../Config.types';
-import { getBareExtensions } from './extensions';
 
 // https://github.com/facebook/create-react-app/blob/9750738cce89a967cc71f28390daf5d4311b193c/packages/react-scripts/config/paths.js#L22
 export function ensureSlash(inputPath: string, needsSlash: boolean): string {

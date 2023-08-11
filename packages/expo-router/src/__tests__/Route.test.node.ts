@@ -14,7 +14,7 @@ const asRouteNode = (route: string) =>
     },
     route,
     contextKey: 'INVALID_TEST_VALUE',
-  } as RouteNode);
+  }) as RouteNode;
 
 describe(sortRoutes, () => {
   it(`sorts index routes by priority`, () => {

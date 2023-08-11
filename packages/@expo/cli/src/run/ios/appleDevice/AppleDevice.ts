@@ -2,16 +2,16 @@ import Debug from 'debug';
 import fs from 'fs';
 import path from 'path';
 
-import { Log } from '../../../log';
-import { XcodeDeveloperDiskImagePrerequisite } from '../../../start/doctor/apple/XcodeDeveloperDiskImagePrerequisite';
-import { delayAsync } from '../../../utils/delay';
-import { CommandError } from '../../../utils/errors';
-import { installExitHooks } from '../../../utils/exit';
 import { ClientManager } from './ClientManager';
 import { IPLookupResult, OnInstallProgressCallback } from './client/InstallationProxyClient';
 import { LockdowndClient } from './client/LockdowndClient';
 import { UsbmuxdClient } from './client/UsbmuxdClient';
 import { AFC_STATUS, AFCError } from './protocol/AFCProtocol';
+import { Log } from '../../../log';
+import { XcodeDeveloperDiskImagePrerequisite } from '../../../start/doctor/apple/XcodeDeveloperDiskImagePrerequisite';
+import { delayAsync } from '../../../utils/delay';
+import { CommandError } from '../../../utils/errors';
+import { installExitHooks } from '../../../utils/exit';
 
 const debug = Debug('expo:apple-device');
 

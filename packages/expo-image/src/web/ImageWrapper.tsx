@@ -1,14 +1,14 @@
 import React, { useEffect, Ref, useMemo } from 'react';
 
-import { ImageNativeProps, ImageSource } from '../Image.types';
-import { useBlurhash } from '../utils/blurhash/useBlurhash';
-import { isBlurhashString, isThumbhashString } from '../utils/resolveSources';
-import { thumbHashStringToDataURL } from '../utils/thumbhash/thumbhash';
 import ColorTintFilter, { getTintColorStyle } from './ColorTintFilter';
 import { ImageWrapperProps } from './ImageWrapper.types';
 import { getImageWrapperEventHandler } from './getImageWrapperEventHandler';
 import { absoluteFilledPosition, getObjectPositionFromContentPositionObject } from './positioning';
 import { SrcSetSource } from './useSourceSelection';
+import { ImageNativeProps, ImageSource } from '../Image.types';
+import { useBlurhash } from '../utils/blurhash/useBlurhash';
+import { isBlurhashString, isThumbhashString } from '../utils/resolveSources';
+import { thumbHashStringToDataURL } from '../utils/thumbhash/thumbhash';
 
 function getFetchPriorityFromImagePriority(priority: ImageNativeProps['priority'] = 'normal') {
   return priority && ['low', 'high'].includes(priority) ? priority : 'auto';

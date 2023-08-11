@@ -1,10 +1,10 @@
+import { createInspectorDeviceClass } from './device';
+import { ExpoInspectorProxy } from './proxy';
 import { MetroBundlerDevServer } from '../MetroBundlerDevServer';
 import {
   importMetroInspectorDeviceFromProject,
   importMetroInspectorProxyFromProject,
 } from '../resolveFromProject';
-import { createInspectorDeviceClass } from './device';
-import { ExpoInspectorProxy } from './proxy';
 
 export { ExpoInspectorProxy } from './proxy';
 

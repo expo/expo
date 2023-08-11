@@ -1,5 +1,9 @@
 import chalk from 'chalk';
 
+import * as XcodeBuild from './XcodeBuild';
+import { Options } from './XcodeBuild.types';
+import { launchAppAsync } from './launchApp';
+import { resolveOptionsAsync } from './options/resolveOptions';
 import * as Log from '../../log';
 import { maybePromptToSyncPodsAsync } from '../../utils/cocoapods';
 import { setNodeEnv } from '../../utils/nodeEnv';
@@ -8,10 +12,6 @@ import { getSchemesForIosAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
 import { logProjectLogsLocation } from '../hints';
 import { startBundlerAsync } from '../startBundler';
-import * as XcodeBuild from './XcodeBuild';
-import { Options } from './XcodeBuild.types';
-import { launchAppAsync } from './launchApp';
-import { resolveOptionsAsync } from './options/resolveOptions';
 
 export async function runIosAsync(projectRoot: string, options: Options) {
   setNodeEnv(options.configuration === 'Release' ? 'production' : 'development');

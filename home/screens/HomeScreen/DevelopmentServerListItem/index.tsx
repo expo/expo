@@ -5,12 +5,12 @@ import * as React from 'react';
 import { View as RNView, StyleSheet, ViewStyle, Share, Linking } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
+import { DevelopmentServerSubtitle } from './DevelopmentServerSubtitle';
+import { DevelopmentServerTitle } from './DevelopmentServerTitle';
 import PlatformIcon from '../../../components/PlatformIcon';
 import { HomeStackRoutes } from '../../../navigation/Navigation.types';
 import * as UrlUtils from '../../../utils/UrlUtils';
 import { AppIcon } from '../AppIcon';
-import { DevelopmentServerSubtitle } from './DevelopmentServerSubtitle';
-import { DevelopmentServerTitle } from './DevelopmentServerTitle';
 
 type Props = {
   style?: ViewStyle;

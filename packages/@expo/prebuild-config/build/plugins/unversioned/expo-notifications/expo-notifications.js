@@ -11,16 +11,16 @@ function _configPlugins() {
   };
   return data;
 }
-function _createLegacyPlugin() {
-  const data = require("../createLegacyPlugin");
-  _createLegacyPlugin = function () {
+function _withAndroidNotifications() {
+  const data = require("./withAndroidNotifications");
+  _withAndroidNotifications = function () {
     return data;
   };
   return data;
 }
-function _withAndroidNotifications() {
-  const data = require("./withAndroidNotifications");
-  _withAndroidNotifications = function () {
+function _createLegacyPlugin() {
+  const data = require("../createLegacyPlugin");
+  _createLegacyPlugin = function () {
     return data;
   };
   return data;

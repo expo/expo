@@ -1,6 +1,6 @@
-import { StringFormat, } from '../Clipboard.types';
 import { ClipboardUnavailableException, CopyFailureException, NoPermissionException, PasteFailureException, } from './Exceptions';
 import { base64toBlob, blobToBase64Async, findHtmlInClipboardAsync, findImageInClipboardAsync, getImageSizeFromBlobAsync, htmlToPlainText, isClipboardPermissionDeniedAsync, } from './Utils';
+import { StringFormat, } from '../Clipboard.types';
 export default {
     get name() {
         return 'ExpoClipboard';

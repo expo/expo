@@ -2,6 +2,8 @@ import * as Application from 'expo-application';
 import { useEffect, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
 
+import { ProviderAuthRequestConfig } from './Provider.types';
+import { applyRequiredScopes, invariantClientId } from './ProviderUtils';
 import { useAuthRequestResult, useLoadedAuthRequest } from '../AuthRequestHooks';
 import {
   AuthRequest,
@@ -16,8 +18,6 @@ import {
   ResponseType,
 } from '../AuthSession';
 import { AccessTokenRequest } from '../TokenRequest';
-import { ProviderAuthRequestConfig } from './Provider.types';
-import { applyRequiredScopes, invariantClientId } from './ProviderUtils';
 
 const settings = {
   windowFeatures: { width: 515, height: 680 },
@@ -159,7 +159,7 @@ export function useIdTokenAuthRequest(
 ): [
   GoogleAuthRequest | null,
   AuthSessionResult | null,
-  (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>
+  (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>,
 ] {
   const isWebAuth = Platform.OS === 'web';
 
@@ -194,7 +194,7 @@ export function useAuthRequest(
 ): [
   GoogleAuthRequest | null,
   AuthSessionResult | null,
-  (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>
+  (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>,
 ] {
   const clientId = useMemo((): string => {
     const propertyName = Platform.select({

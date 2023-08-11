@@ -2,9 +2,9 @@ import { Asset } from 'expo-asset';
 import * as MediaLibrary from 'expo-media-library';
 import { Platform } from 'react-native';
 
+import { waitFor } from './helpers';
 import * as TestUtils from '../TestUtils';
 import { isDeviceFarm } from '../utils/Environment';
-import { waitFor } from './helpers';
 
 export const name = 'MediaLibrary';
 

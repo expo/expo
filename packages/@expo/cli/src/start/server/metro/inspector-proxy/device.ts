@@ -2,7 +2,6 @@ import type { DebuggerInfo, Device as MetroDevice } from 'metro-inspector-proxy'
 import fetch from 'node-fetch';
 import type WS from 'ws';
 
-import { MetroBundlerDevServer } from '../MetroBundlerDevServer';
 import { NetworkResponseHandler } from './handlers/NetworkResponse';
 import { PageReloadHandler } from './handlers/PageReload';
 import { VscodeDebuggerGetPossibleBreakpointsHandler } from './handlers/VscodeDebuggerGetPossibleBreakpoints';
@@ -10,6 +9,7 @@ import { VscodeDebuggerScriptParsedHandler } from './handlers/VscodeDebuggerScri
 import { VscodeDebuggerSetBreakpointByUrlHandler } from './handlers/VscodeDebuggerSetBreakpointByUrl';
 import { VscodeRuntimeGetPropertiesHandler } from './handlers/VscodeRuntimeGetProperties';
 import { DeviceRequest, InspectorHandler, DebuggerRequest } from './handlers/types';
+import { MetroBundlerDevServer } from '../MetroBundlerDevServer';
 
 /** Export the supported debugger types this inspector proxy can handle */
 export type DebuggerType = 'vscode' | 'generic';

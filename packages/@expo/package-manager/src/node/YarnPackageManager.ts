@@ -1,7 +1,7 @@
+import { BasePackageManager } from './BasePackageManager';
 import { findYarnOrNpmWorkspaceRoot, YARN_LOCK_FILE } from '../utils/nodeWorkspaces';
 import { createPendingSpawnAsync } from '../utils/spawn';
 import { isYarnOfflineAsync } from '../utils/yarn';
-import { BasePackageManager } from './BasePackageManager';
 
 export class YarnPackageManager extends BasePackageManager {
   readonly name = 'yarn';

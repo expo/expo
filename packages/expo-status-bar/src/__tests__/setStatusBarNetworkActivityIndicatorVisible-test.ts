@@ -1,7 +1,7 @@
 import { StatusBar as ReactNativeStatusBar } from 'react-native';
 
-import { setStatusBarNetworkActivityIndicatorVisible } from '../StatusBar';
 import { mockProperty } from './Helpers';
+import { setStatusBarNetworkActivityIndicatorVisible } from '../StatusBar';
 
 describe('setStatusBarNetworkActivityIndicatorVisible', () => {
   it('delegates to the React Native StatusBar equivalent', () => {

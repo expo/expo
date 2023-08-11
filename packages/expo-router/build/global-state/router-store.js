@@ -1,13 +1,13 @@
 import { useNavigationContainerRef, } from '@react-navigation/native';
 import { useSyncExternalStore, useMemo, Fragment } from 'react';
+import { canGoBack, goBack, linkTo, push, replace, setParams } from './routing';
+import { getSortedRoutes } from './sort-routes';
 import { getRouteInfoFromState } from '../LocationProvider';
 import { deepEqual, getPathDataFromState } from '../fork/getPathFromState';
 import { getLinkingConfig } from '../getLinkingConfig';
 import { getRoutes } from '../getRoutes';
 import { getQualifiedRouteComponent } from '../useScreens';
 import { _internal_maybeHideAsync } from '../views/Splash';
-import { canGoBack, goBack, linkTo, push, replace, setParams } from './routing';
-import { getSortedRoutes } from './sort-routes';
 /**
  * This is the global state for the router. It is used to keep track of the current route, and to provide a way to navigate to other routes.
  *

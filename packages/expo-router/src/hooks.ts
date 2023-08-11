@@ -85,7 +85,7 @@ export function usePathname(): string {
  * @see `useLocalSearchParams`
  */
 export function useGlobalSearchParams<
-  TParams extends SearchParams = SearchParams
+  TParams extends SearchParams = SearchParams,
 >(): Partial<TParams> {
   return useStoreRouteInfo().params as Partial<TParams>;
 }
@@ -102,7 +102,7 @@ export function useSearchParams<TParams extends SearchParams = SearchParams>(): 
  * To observe updates even when the invoking route is not focused, use `useGlobalSearchParams()`.
  */
 export function useLocalSearchParams<
-  TParams extends SearchParams = SearchParams
+  TParams extends SearchParams = SearchParams,
 >(): Partial<TParams> {
   return (useOptionalLocalRoute()?.params ?? ({} as any)) as Partial<TParams>;
 }

@@ -1,8 +1,8 @@
 import Protocol from 'devtools-protocol';
 import { Device as MetroDevice } from 'metro-inspector-proxy';
 
-import { ExpoDebuggerInfo } from '../device';
 import { CdpMessage, DeviceRequest, InspectorHandler } from './types';
+import { ExpoDebuggerInfo } from '../device';
 
 /** Android's stock emulator and other emulators such as genymotion use a standard localhost alias. */
 const EMULATOR_LOCALHOST_ADDRESSES: Readonly<string[]> = ['10.0.2.2', '10.0.3.2'];

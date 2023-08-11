@@ -1,8 +1,8 @@
 import { ClassAttributes, ComponentProps, ComponentType } from 'react';
 import { Image as NativeImage, ImageStyle as NativeImageStyle, StyleProp } from 'react-native';
 
-import { createSafeStyledView } from '../css/createSafeStyledView';
 import { WebViewStyle } from './View';
+import { createSafeStyledView } from '../css/createSafeStyledView';
 
 type NativeImageProps = ComponentProps<typeof NativeImage> & ClassAttributes<typeof NativeImage>;
 

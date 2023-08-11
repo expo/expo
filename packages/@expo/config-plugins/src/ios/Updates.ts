@@ -2,6 +2,7 @@ import * as path from 'path';
 import resolveFrom from 'resolve-from';
 import xcode from 'xcode';
 
+import { ExpoPlist } from './IosConfig.types';
 import { ConfigPlugin } from '../Plugin.types';
 import { withExpoPlist } from '../plugins/ios-plugins';
 import {
@@ -17,7 +18,6 @@ import {
   getUpdatesTimeout,
   getUpdateUrl,
 } from '../utils/Updates';
-import { ExpoPlist } from './IosConfig.types';
 
 const CREATE_MANIFEST_IOS_PATH = 'expo-updates/scripts/create-manifest-ios.sh';
 

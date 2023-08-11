@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo } from 'react';
-import { useBlurhash } from '../utils/blurhash/useBlurhash';
-import { isBlurhashString, isThumbhashString } from '../utils/resolveSources';
-import { thumbHashStringToDataURL } from '../utils/thumbhash/thumbhash';
 import ColorTintFilter, { getTintColorStyle } from './ColorTintFilter';
 import { getImageWrapperEventHandler } from './getImageWrapperEventHandler';
 import { absoluteFilledPosition, getObjectPositionFromContentPositionObject } from './positioning';
+import { useBlurhash } from '../utils/blurhash/useBlurhash';
+import { isBlurhashString, isThumbhashString } from '../utils/resolveSources';
+import { thumbHashStringToDataURL } from '../utils/thumbhash/thumbhash';
 function getFetchPriorityFromImagePriority(priority = 'normal') {
     return priority && ['low', 'high'].includes(priority) ? priority : 'auto';
 }

@@ -1,6 +1,6 @@
-import { ImageNativeProps, ImageProps, ImageSource } from '../Image.types';
 import resolveAssetSource from './resolveAssetSource';
 import { resolveBlurhashString, resolveThumbhashString } from './resolveHashString';
+import { ImageNativeProps, ImageProps, ImageSource } from '../Image.types';
 
 export function isBlurhashString(str: string): boolean {
   return /^(blurhash:\/)?[\w#$%*+,\-.:;=?@[\]^_{}|~]+(\/[\d.]+)*$/.test(str);

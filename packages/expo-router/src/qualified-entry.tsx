@@ -4,9 +4,9 @@
 // This is because Fast Refresh is sending the entire file containing an updated component.
 import React from 'react';
 
-import { ctx } from '../_ctx';
 import { ExpoRoot } from './ExpoRoot';
 import { Head } from './head';
+import { ctx } from '../_ctx';
 
 // Must be exported or Fast Refresh won't update the context
 export function App() {

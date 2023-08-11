@@ -38,6 +38,13 @@ function _path() {
   };
   return data;
 }
+function _Paths() {
+  const data = require("./Paths");
+  _Paths = function () {
+    return data;
+  };
+  return data;
+}
 function _androidPlugins() {
   const data = require("../plugins/android-plugins");
   _androidPlugins = function () {
@@ -62,13 +69,6 @@ function _modules() {
 function _warnings() {
   const data = require("../utils/warnings");
   _warnings = function () {
-    return data;
-  };
-  return data;
-}
-function _Paths() {
-  const data = require("./Paths");
-  _Paths = function () {
     return data;
   };
   return data;

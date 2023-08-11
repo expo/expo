@@ -2,7 +2,10 @@ import Log from '@expo/bunyan';
 import { serializeError } from 'serialize-error';
 
 export default class LogReporter {
-  constructor(public logger: Log, public reportEvent: (event: any) => void = () => {}) {
+  constructor(
+    public logger: Log,
+    public reportEvent: (event: any) => void = () => {}
+  ) {
     this.logger = logger;
     this.reportEvent = reportEvent;
   }

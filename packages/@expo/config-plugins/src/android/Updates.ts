@@ -1,6 +1,16 @@
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
+import {
+  addMetaDataItemToMainApplication,
+  AndroidManifest,
+  findMetaDataItem,
+  getMainApplicationMetaDataValue,
+  getMainApplicationOrThrow,
+  removeMetaDataItemFromMainApplication,
+} from './Manifest';
+import { buildResourceItem, ResourceXML } from './Resources';
+import { removeStringItem, setStringItem } from './Strings';
 import { ConfigPlugin } from '../Plugin.types';
 import { createStringsXmlPlugin, withAndroidManifest } from '../plugins/android-plugins';
 import { withPlugins } from '../plugins/withPlugins';
@@ -17,16 +27,6 @@ import {
   getUpdatesTimeout,
   getUpdateUrl,
 } from '../utils/Updates';
-import {
-  addMetaDataItemToMainApplication,
-  AndroidManifest,
-  findMetaDataItem,
-  getMainApplicationMetaDataValue,
-  getMainApplicationOrThrow,
-  removeMetaDataItemFromMainApplication,
-} from './Manifest';
-import { buildResourceItem, ResourceXML } from './Resources';
-import { removeStringItem, setStringItem } from './Strings';
 
 const CREATE_MANIFEST_ANDROID_PATH = 'expo-updates/scripts/create-manifest-android.gradle';
 

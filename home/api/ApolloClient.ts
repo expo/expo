@@ -3,9 +3,9 @@ import { setContext } from '@apollo/client/link/context';
 import { HttpLink } from '@apollo/client/link/http';
 import { offsetLimitPagination } from '@apollo/client/utilities';
 
-import Store from '../redux/Store';
 import Config from './Config';
 import Connectivity from './Connectivity';
+import Store from '../redux/Store';
 
 export function createApolloClient() {
   const httpLink = new HttpLink({

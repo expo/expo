@@ -6,8 +6,8 @@ import {
   TextStyle as NativeTextStyle,
 } from 'react-native';
 
-import { createSafeStyledView } from '../css/createSafeStyledView';
 import { WebViewStyle } from './View';
+import { createSafeStyledView } from '../css/createSafeStyledView';
 
 // https://github.com/necolas/react-native-web/issues/832
 

@@ -2,8 +2,8 @@ import { ComponentType, forwardRef } from 'react';
 import { StyleSheet } from 'react-native';
 import createElement from 'react-native-web/dist/exports/createElement';
 
-import { TextProps } from '../primitives/Text';
 import { BlockQuoteProps, QuoteProps, TimeProps } from './Text.types';
+import { TextProps } from '../primitives/Text';
 
 export const P = forwardRef(({ style, ...props }: TextProps, ref) => {
   return createElement('p', { ...props, style: [styles.reset, style], ref });

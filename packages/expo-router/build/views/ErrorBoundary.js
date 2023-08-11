@@ -5,8 +5,8 @@ import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
 import React from 'react';
 import { StyleSheet, Text, View, Platform, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Link } from '../link/Link';
 import { Pressable } from './Pressable';
+import { Link } from '../link/Link';
 function useMetroSymbolication(error) {
     const [logBoxLog, setLogBoxLog] = React.useState(null);
     React.useEffect(() => {

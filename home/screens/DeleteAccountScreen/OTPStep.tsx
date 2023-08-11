@@ -9,6 +9,7 @@ import {
 } from 'expo-dev-client-components';
 import React, { Fragment, useEffect, useState } from 'react';
 
+import { SMSDevice } from './SMSDevice';
 import { Button } from '../../components/Button';
 import {
   SecondFactorMethod,
@@ -17,7 +18,6 @@ import {
   useSendSmsotpToSecondFactorDeviceMutation,
 } from '../../graphql/types';
 import { notEmpty } from '../../utils/notEmpty';
-import { SMSDevice } from './SMSDevice';
 
 export type PartialUserSecondFactorDevice = Partial<
   Pick<

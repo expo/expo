@@ -1,6 +1,8 @@
 import { promises as fs } from 'fs';
 import gql from 'graphql-tag';
 
+import UserSettings from './UserSettings';
+import { getSessionUsingBrowserAuthFlowAsync } from './expoSsoLauncher';
 import { CurrentUserQuery } from '../../graphql/generated';
 import * as Log from '../../log';
 import * as Analytics from '../../utils/analytics/rudderstackClient';
@@ -10,8 +12,6 @@ import { getExpoWebsiteBaseUrl } from '../endpoint';
 import { graphqlClient } from '../graphql/client';
 import { UserQuery } from '../graphql/queries/UserQuery';
 import { fetchAsync } from '../rest/client';
-import UserSettings from './UserSettings';
-import { getSessionUsingBrowserAuthFlowAsync } from './expoSsoLauncher';
 
 export type Actor = NonNullable<CurrentUserQuery['meActor']>;
 

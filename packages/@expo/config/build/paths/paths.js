@@ -31,16 +31,16 @@ function _resolveFrom() {
   };
   return data;
 }
-function _Config() {
-  const data = require("../Config");
-  _Config = function () {
+function _extensions() {
+  const data = require("./extensions");
+  _extensions = function () {
     return data;
   };
   return data;
 }
-function _extensions() {
-  const data = require("./extensions");
-  _extensions = function () {
+function _Config() {
+  const data = require("../Config");
+  _Config = function () {
     return data;
   };
   return data;

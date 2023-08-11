@@ -1,17 +1,17 @@
 import { ExpoConfig } from '@expo/config';
 import { ModPlatform } from '@expo/config-plugins';
 
+import { clearNativeFolder, promptToClearMalformedNativeProjectsAsync } from './clearNativeFolder';
+import { configureProjectAsync } from './configureProjectAsync';
+import { ensureConfigAsync } from './ensureConfigAsync';
+import { assertPlatforms, ensureValidPlatforms, resolveTemplateOption } from './resolveOptions';
+import { updateFromTemplateAsync } from './updateFromTemplate';
 import { installAsync } from '../install/installAsync';
 import { env } from '../utils/env';
 import { setNodeEnv } from '../utils/nodeEnv';
 import { clearNodeModulesAsync } from '../utils/nodeModules';
 import { logNewSection } from '../utils/ora';
 import { profile } from '../utils/profile';
-import { clearNativeFolder, promptToClearMalformedNativeProjectsAsync } from './clearNativeFolder';
-import { configureProjectAsync } from './configureProjectAsync';
-import { ensureConfigAsync } from './ensureConfigAsync';
-import { assertPlatforms, ensureValidPlatforms, resolveTemplateOption } from './resolveOptions';
-import { updateFromTemplateAsync } from './updateFromTemplate';
 
 const debug = require('debug')('expo:prebuild') as typeof console.log;
 

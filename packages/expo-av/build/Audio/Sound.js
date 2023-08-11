@@ -1,7 +1,7 @@
 import { EventEmitter, Platform, UnavailabilityError } from 'expo-modules-core';
+import { throwIfAudioIsDisabled } from './AudioAvailability';
 import { PlaybackMixin, assertStatusValuesInBounds, getNativeSourceAndFullInitialStatusForLoadAsync, getUnloadedStatus, } from '../AV';
 import ExponentAV from '../ExponentAV';
-import { throwIfAudioIsDisabled } from './AudioAvailability';
 // @needsAudit
 /**
  * This class represents a sound corresponding to an Asset or URL.

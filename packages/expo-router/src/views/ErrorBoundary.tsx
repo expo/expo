@@ -6,9 +6,9 @@ import React from 'react';
 import { StyleSheet, Text, View, Platform, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Link } from '../link/Link';
 import { Pressable } from './Pressable';
 import { ErrorBoundaryProps } from './Try';
+import { Link } from '../link/Link';
 
 function useMetroSymbolication(error: Error) {
   const [logBoxLog, setLogBoxLog] = React.useState<LogBoxLog | null>(null);

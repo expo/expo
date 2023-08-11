@@ -1,7 +1,7 @@
 import { PermissionResponse, PermissionStatus, PermissionHookOptions, Subscription } from 'expo-modules-core';
-import { AVPlaybackStatus, AVPlaybackStatusToSet } from '../AV';
 import { RecordingInput, RecordingObject, RecordingOptions, RecordingStatus } from './Recording.types';
 import { SoundObject } from './Sound';
+import { AVPlaybackStatus, AVPlaybackStatusToSet } from '../AV';
 /**
  * Checks user's permissions for audio recording.
  * @return A promise that resolves to an object of type `PermissionResponse`.

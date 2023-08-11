@@ -1,9 +1,9 @@
-import { AppIdResolver } from '../AppIdResolver';
-import { BaseOpenInCustomProps, BaseResolveDeviceProps, PlatformManager } from '../PlatformManager';
 import { AndroidAppIdResolver } from './AndroidAppIdResolver';
 import { AndroidDeviceManager } from './AndroidDeviceManager';
 import { Device } from './adb';
 import { startAdbReverseAsync } from './adbReverse';
+import { AppIdResolver } from '../AppIdResolver';
+import { BaseOpenInCustomProps, BaseResolveDeviceProps, PlatformManager } from '../PlatformManager';
 
 interface AndroidOpenInCustomProps extends BaseOpenInCustomProps {
   launchActivity?: string;

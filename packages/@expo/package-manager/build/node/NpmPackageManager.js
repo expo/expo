@@ -7,9 +7,9 @@ exports.NpmPackageManager = void 0;
 const json_file_1 = __importDefault(require("@expo/json-file"));
 const npm_package_arg_1 = __importDefault(require("npm-package-arg"));
 const path_1 = __importDefault(require("path"));
+const BasePackageManager_1 = require("./BasePackageManager");
 const nodeWorkspaces_1 = require("../utils/nodeWorkspaces");
 const spawn_1 = require("../utils/spawn");
-const BasePackageManager_1 = require("./BasePackageManager");
 class NpmPackageManager extends BasePackageManager_1.BasePackageManager {
     constructor() {
         super(...arguments);

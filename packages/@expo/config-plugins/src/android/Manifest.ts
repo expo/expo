@@ -176,8 +176,8 @@ function isManifest(xml: XML.XMLObject): xml is AndroidManifest {
 /** Returns the `manifest.application` tag ending in `.MainApplication` */
 export function getMainApplication(androidManifest: AndroidManifest): ManifestApplication | null {
   return (
-    androidManifest?.manifest?.application?.filter((e) =>
-      e?.$?.['android:name'].endsWith('.MainApplication')
+    androidManifest?.manifest?.application?.filter(
+      (e) => e?.$?.['android:name'].endsWith('.MainApplication')
     )[0] ?? null
   );
 }

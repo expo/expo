@@ -1,7 +1,7 @@
 import Protocol from 'devtools-protocol';
 
-import { ExpoDebuggerInfo } from '../device';
 import { CdpMessage, DebuggerRequest, InspectorHandler } from './types';
+import { ExpoDebuggerInfo } from '../device';
 
 /**
  * Hermes and vscode have trouble setting breakpoints by `urlRegex` through `Debugger.setBreakpointByUrl`.

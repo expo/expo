@@ -1,9 +1,9 @@
 import { PermissionStatus, createPermissionHook, EventEmitter, Platform, } from 'expo-modules-core';
-import { _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS, } from '../AV';
-import ExponentAV from '../ExponentAV';
 import { isAudioEnabled, throwIfAudioIsDisabled } from './AudioAvailability';
 import { RecordingOptionsPresets } from './RecordingConstants';
 import { Sound } from './Sound';
+import { _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS, } from '../AV';
+import ExponentAV from '../ExponentAV';
 let _recorderExists = false;
 const eventEmitter = Platform.OS === 'android' ? new EventEmitter(ExponentAV) : null;
 /**

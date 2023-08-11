@@ -33,9 +33,9 @@ exports.ErrorToast = void 0;
  */
 const react_1 = __importStar(require("react"));
 const react_native_1 = require("react-native");
+const ErrorToastMessage_1 = require("./ErrorToastMessage");
 const LogBoxData = __importStar(require("../Data/LogBoxData"));
 const LogBoxStyle = __importStar(require("../UI/LogBoxStyle"));
-const ErrorToastMessage_1 = require("./ErrorToastMessage");
 function useSymbolicatedLog(log) {
     // Eagerly symbolicate so the stack is available when pressing to inspect.
     (0, react_1.useEffect)(() => {

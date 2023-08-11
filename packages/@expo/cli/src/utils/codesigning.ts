@@ -16,6 +16,8 @@ import { pki as PKI } from 'node-forge';
 import path from 'path';
 import { Dictionary, parseDictionary } from 'structured-headers';
 
+import { env } from './env';
+import { CommandError } from './errors';
 import { getExpoGoIntermediateCertificateAsync } from '../api/getExpoGoIntermediateCertificate';
 import { getProjectDevelopmentCertificateAsync } from '../api/getProjectDevelopmentCertificate';
 import { AppQuery } from '../api/graphql/queries/AppQuery';
@@ -24,8 +26,6 @@ import { Actor } from '../api/user/user';
 import { AppByIdQuery, Permission } from '../graphql/generated';
 import * as Log from '../log';
 import { learnMore } from '../utils/link';
-import { env } from './env';
-import { CommandError } from './errors';
 
 const debug = require('debug')('expo:codesigning') as typeof console.log;
 

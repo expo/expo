@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { useRouteNode } from '../Route';
 import { Toast, ToastWrapper } from './Toast';
+import { useRouteNode } from '../Route';
 
 export function EmptyRoute() {
   const route = useRouteNode();

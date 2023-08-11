@@ -1,9 +1,9 @@
 import { JSONObject, JSONValue } from '@expo/json-file';
 import xcode from 'xcode';
+import { ForwardedBaseModOptions } from './createBaseMod';
 import { ExportedConfig } from '../Plugin.types';
 import { Paths } from '../ios';
 import { InfoPlist } from '../ios/IosConfig.types';
-import { ForwardedBaseModOptions } from './createBaseMod';
 declare const defaultProviders: {
     dangerous: import("./createBaseMod").BaseModProviderMethods<unknown, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     appDelegate: import("./createBaseMod").BaseModProviderMethods<Paths.AppDelegateProjectFile, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;

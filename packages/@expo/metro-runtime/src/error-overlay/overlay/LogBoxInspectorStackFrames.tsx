@@ -8,15 +8,15 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { LogBoxInspectorSection } from './LogBoxInspectorSection';
+import { LogBoxInspectorSourceMapStatus } from './LogBoxInspectorSourceMapStatus';
+import { LogBoxInspectorStackFrame } from './LogBoxInspectorStackFrame';
 import type { StackType } from '../Data/LogBoxLog';
 import type { Stack } from '../Data/LogBoxSymbolication';
 import { useSelectedLog } from '../Data/LogContext';
 import { LogBoxButton } from '../UI/LogBoxButton';
 import * as LogBoxStyle from '../UI/LogBoxStyle';
 import openFileInEditor from '../modules/openFileInEditor';
-import { LogBoxInspectorSection } from './LogBoxInspectorSection';
-import { LogBoxInspectorSourceMapStatus } from './LogBoxInspectorSourceMapStatus';
-import { LogBoxInspectorStackFrame } from './LogBoxInspectorStackFrame';
 
 type Props = {
   type: StackType;

@@ -2,11 +2,11 @@ import { act, render, screen } from '@testing-library/react-native';
 import '@testing-library/jest-native/extend-expect';
 import React from 'react';
 
+import UseUpdatesTestApp from './UseUpdatesTestApp';
 import ExpoUpdates from '../ExpoUpdates';
 import type { Manifest, UpdatesNativeStateMachineContext } from '../Updates.types';
 import { emitStateChangeEvent } from '../UpdatesEmitter';
 import { updateFromManifest } from '../UseUpdatesUtils';
-import UseUpdatesTestApp from './UseUpdatesTestApp';
 
 type UpdatesNativeStateChangeTestEvent = {
   context: UpdatesNativeStateMachineContext & {

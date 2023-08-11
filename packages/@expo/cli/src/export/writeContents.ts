@@ -47,7 +47,7 @@ export async function writeBundlesAsync({
 
   for (const [platform, bundleOutput] of Object.entries(bundles) as [
     Platform,
-    Pick<BundleOutput, 'hermesBytecodeBundle' | 'code'>
+    Pick<BundleOutput, 'hermesBytecodeBundle' | 'code'>,
   ][]) {
     const bundle = bundleOutput.hermesBytecodeBundle ?? bundleOutput.code;
     const hash = createBundleHash(bundle);

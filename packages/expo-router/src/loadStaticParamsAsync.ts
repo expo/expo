@@ -3,7 +3,7 @@ import type { DynamicConvention, RouteNode } from './Route';
 async function recurseAndFlattenNodes<
   T,
   TProps,
-  TProcess extends (node: T, props: any) => Promise<T[]>
+  TProcess extends (node: T, props: any) => Promise<T[]>,
 >(nodes: T[], props: TProps, func: TProcess): Promise<T[]> {
   const tarr = await Promise.all(nodes.map((node) => func(node, props)).flat());
   return tarr.filter(Boolean) as T[];

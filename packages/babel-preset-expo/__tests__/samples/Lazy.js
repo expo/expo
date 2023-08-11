@@ -11,8 +11,8 @@ import 'Foo';
 
 import './local-file/i-have-side-effects.fx.js';
 import '../i-also-have-side-effects.fx';
-import InlineFuncFromFileWithSideEffects from '../inline-func-with-side-effects.fx.ts';
 import InlineFuncFromFile from './inline-func';
+import InlineFuncFromFileWithSideEffects from '../inline-func-with-side-effects.fx.ts';
 
 class Lazy extends React.Component {
   componentDidMount() {

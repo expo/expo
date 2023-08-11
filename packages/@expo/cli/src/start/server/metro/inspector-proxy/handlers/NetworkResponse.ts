@@ -1,6 +1,5 @@
 import type { Protocol } from 'devtools-protocol';
 
-import { ExpoDebuggerInfo } from '../device';
 import {
   CdpMessage,
   InspectorHandler,
@@ -9,6 +8,7 @@ import {
   DebuggerResponse,
   DeviceResponse,
 } from './types';
+import { ExpoDebuggerInfo } from '../device';
 
 export class NetworkResponseHandler implements InspectorHandler {
   /** All known responses, mapped by request id */

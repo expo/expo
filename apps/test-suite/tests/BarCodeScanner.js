@@ -5,8 +5,8 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 import React from 'react';
 import { Platform } from 'react-native';
 
-import * as TestUtils from '../TestUtils';
 import { mountAndWaitFor as originalMountAndWaitFor } from './helpers';
+import * as TestUtils from '../TestUtils';
 
 export const name = 'BarCodeScanner';
 const style = { width: 200, height: 200 };

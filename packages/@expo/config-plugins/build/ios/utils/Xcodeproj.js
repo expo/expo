@@ -58,6 +58,13 @@ function _pbxFile() {
   };
   return data;
 }
+function _string() {
+  const data = require("./string");
+  _string = function () {
+    return data;
+  };
+  return data;
+}
 function _warnings() {
   const data = require("../../utils/warnings");
   _warnings = function () {
@@ -68,13 +75,6 @@ function _warnings() {
 function Paths() {
   const data = _interopRequireWildcard(require("../Paths"));
   Paths = function () {
-    return data;
-  };
-  return data;
-}
-function _string() {
-  const data = require("./string");
-  _string = function () {
     return data;
   };
   return data;

@@ -4,9 +4,9 @@ import type { Manifest, UpdateCheckResult, UpdatesLogEntry } from 'expo-updates'
 import '@testing-library/jest-native/extend-expect';
 import React from 'react';
 
+import UseUpdatesTestApp from './UseUpdatesTestApp';
 import { UseUpdatesEvent, UseUpdatesEventType } from '../UseUpdates.types';
 import { availableUpdateFromManifest, availableUpdateFromEvent } from '../UseUpdatesUtils';
-import UseUpdatesTestApp from './UseUpdatesTestApp';
 
 const { UpdatesLogEntryCode, UpdatesLogEntryLevel } = Updates;
 

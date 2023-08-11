@@ -33,10 +33,10 @@ exports.ErrorToastContainer = void 0;
  */
 const react_1 = __importStar(require("react"));
 const react_native_1 = require("react-native");
+const ErrorToast_1 = require("./ErrorToast");
 const LogBoxData = __importStar(require("../Data/LogBoxData"));
 const LogContext_1 = require("../Data/LogContext");
 const useRejectionHandler_1 = require("../useRejectionHandler");
-const ErrorToast_1 = require("./ErrorToast");
 function ErrorToastContainer() {
     (0, useRejectionHandler_1.useRejectionHandler)();
     const { logs, isDisabled } = (0, LogContext_1.useLogs)();

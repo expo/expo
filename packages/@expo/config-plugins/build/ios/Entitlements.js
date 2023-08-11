@@ -28,13 +28,6 @@ function _slash() {
   };
   return data;
 }
-function _iosPlugins() {
-  const data = require("../plugins/ios-plugins");
-  _iosPlugins = function () {
-    return data;
-  };
-  return data;
-}
 function _Target() {
   const data = require("./Target");
   _Target = function () {
@@ -52,6 +45,13 @@ function _Xcodeproj() {
 function _string() {
   const data = require("./utils/string");
   _string = function () {
+    return data;
+  };
+  return data;
+}
+function _iosPlugins() {
+  const data = require("../plugins/ios-plugins");
+  _iosPlugins = function () {
     return data;
   };
   return data;

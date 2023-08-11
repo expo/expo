@@ -5,6 +5,9 @@ import crypto from 'crypto';
 import FormData from 'form-data';
 import { serializeDictionary, Dictionary } from 'structured-headers';
 
+import { ManifestMiddleware, ManifestRequestInfo } from './ManifestMiddleware';
+import { assertRuntimePlatform, parsePlatformHeader } from './resolvePlatform';
+import { ServerHeaders, ServerRequest } from './server.types';
 import UserSettings from '../../../api/user/UserSettings';
 import { ANONYMOUS_USERNAME } from '../../../api/user/user';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
@@ -15,9 +18,6 @@ import {
 } from '../../../utils/codesigning';
 import { CommandError } from '../../../utils/errors';
 import { stripPort } from '../../../utils/url';
-import { ManifestMiddleware, ManifestRequestInfo } from './ManifestMiddleware';
-import { assertRuntimePlatform, parsePlatformHeader } from './resolvePlatform';
-import { ServerHeaders, ServerRequest } from './server.types';
 
 const debug = require('debug')('expo:start:server:middleware:ExpoGoManifestHandlerMiddleware');
 

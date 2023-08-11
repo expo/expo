@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 
+import { Device, logUnauthorized } from './adb';
 import { AbortCommandError } from '../../../utils/errors';
 import { createSelectionFilter, promptAsync } from '../../../utils/prompts';
-import { Device, logUnauthorized } from './adb';
 
 function nameStyleForDevice(device: Device): (name: string) => string {
   const isActive = device.isBooted;

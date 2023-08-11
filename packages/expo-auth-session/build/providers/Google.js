@@ -1,10 +1,10 @@
 import * as Application from 'expo-application';
 import { useEffect, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
+import { applyRequiredScopes, invariantClientId } from './ProviderUtils';
 import { useAuthRequestResult, useLoadedAuthRequest } from '../AuthRequestHooks';
 import { AuthRequest, generateHexStringAsync, makeRedirectUri, Prompt, ResponseType, } from '../AuthSession';
 import { AccessTokenRequest } from '../TokenRequest';
-import { applyRequiredScopes, invariantClientId } from './ProviderUtils';
 const settings = {
     windowFeatures: { width: 515, height: 680 },
     minimumScopes: [

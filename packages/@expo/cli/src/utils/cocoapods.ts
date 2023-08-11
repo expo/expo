@@ -5,12 +5,12 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
-import * as Log from '../log';
-import { hashForDependencyMap } from '../prebuild/updatePackageJson';
 import { ensureDirectoryAsync } from './dir';
 import { env } from './env';
 import { AbortCommandError } from './errors';
 import { logNewSection } from './ora';
+import * as Log from '../log';
+import { hashForDependencyMap } from '../prebuild/updatePackageJson';
 
 type PackageChecksums = {
   /** checksum for the `package.json` dependency object. */

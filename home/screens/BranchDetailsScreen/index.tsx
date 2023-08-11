@@ -1,8 +1,8 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
 
-import { HomeStackRoutes } from '../../navigation/Navigation.types';
 import { BranchDetailsContainer } from './BranchDetailsContainer';
+import { HomeStackRoutes } from '../../navigation/Navigation.types';
 
 export function BranchDetailsScreen(props: StackScreenProps<HomeStackRoutes, 'BranchDetails'>) {
   const { appId, branchName } = props.route.params;

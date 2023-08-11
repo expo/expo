@@ -1,11 +1,11 @@
 import { PackageJSONConfig } from '@expo/config';
 import npmPackageArg from 'npm-package-arg';
 
+import { getVersionedNativeModulesAsync } from './bundledNativeModules';
 import { getVersionsAsync, SDKVersion } from '../../../api/getVersions';
 import { Log } from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
-import { getVersionedNativeModulesAsync } from './bundledNativeModules';
 
 const debug = require('debug')(
   'expo:doctor:dependencies:getVersionedPackages'

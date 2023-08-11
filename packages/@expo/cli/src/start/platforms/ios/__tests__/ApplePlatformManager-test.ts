@@ -34,7 +34,7 @@ describe('openAsync', () => {
       () =>
         ({
           getAppIdAsync: jest.fn(() => 'dev.bacon.app'),
-        } as any)
+        }) as any
     );
 
     expect(await manager.openAsync({ runtime: 'custom' })).toStrictEqual({
@@ -62,7 +62,7 @@ describe('openAsync', () => {
       () =>
         ({
           getAppIdAsync: jest.fn(() => 'dev.bacon.app'),
-        } as any)
+        }) as any
     );
 
     Object.defineProperty(SimControl, 'openAppIdAsync', {

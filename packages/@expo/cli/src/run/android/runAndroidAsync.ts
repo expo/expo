@@ -1,5 +1,7 @@
 import path from 'path';
 
+import { resolveInstallApkNameAsync } from './resolveInstallApkName';
+import { Options, ResolvedOptions, resolveOptionsAsync } from './resolveOptions';
 import { Log } from '../../log';
 import { assembleAsync, installAsync } from '../../start/platforms/android/gradle';
 import { setNodeEnv } from '../../utils/nodeEnv';
@@ -7,8 +9,6 @@ import { getSchemesForAndroidAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
 import { logProjectLogsLocation } from '../hints';
 import { startBundlerAsync } from '../startBundler';
-import { resolveInstallApkNameAsync } from './resolveInstallApkName';
-import { Options, ResolvedOptions, resolveOptionsAsync } from './resolveOptions';
 
 const debug = require('debug')('expo:run:android');
 

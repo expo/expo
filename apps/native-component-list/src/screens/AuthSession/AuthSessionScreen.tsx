@@ -8,10 +8,10 @@ import { maybeCompleteAuthSession } from 'expo-web-browser';
 import React from 'react';
 import { Platform, ScrollView, View } from 'react-native';
 
+import { AuthSection } from './AuthResult';
 import { getGUID } from '../../api/guid';
 import TitledPicker from '../../components/TitledPicker';
 import TitledSwitch from '../../components/TitledSwitch';
-import { AuthSection } from './AuthResult';
 
 maybeCompleteAuthSession();
 

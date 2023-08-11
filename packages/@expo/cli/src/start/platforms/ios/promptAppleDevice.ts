@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 
-import { createSelectionFilter, promptAsync } from '../../../utils/prompts';
 import { getBestSimulatorAsync } from './getBestSimulator';
 import { Device } from './simctl';
+import { createSelectionFilter, promptAsync } from '../../../utils/prompts';
 
 /**
  * Sort the devices so the last simulator that was opened (user's default) is the first suggested.

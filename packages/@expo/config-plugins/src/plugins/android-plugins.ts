@@ -1,8 +1,8 @@
 import { ExpoConfig } from '@expo/config-types';
 
+import { withMod } from './withMod';
 import { ConfigPlugin, Mod } from '../Plugin.types';
 import { Manifest, Paths, Properties, Resources } from '../android';
-import { withMod } from './withMod';
 
 type OptionalPromise<T> = T | Promise<T>;
 

@@ -2,9 +2,9 @@ import type { Module } from 'metro';
 import { getJsOutput, isJsModule } from 'metro/src/DeltaBundler/Serializers/helpers/js';
 import path from 'path';
 
+import { SerialAsset } from './serializerAssets';
 import { pathToHtmlSafeName } from '../transform-worker/css';
 import { hashString } from '../utils/hash';
-import { SerialAsset } from './serializerAssets';
 
 export type ReadOnlyDependencies<T = any> = ReadonlyMap<string, Module<T>>;
 
