@@ -10,16 +10,15 @@ function getPlatformPreset(displayOptions, extensions) {
     isReact: true,
     isModern: false,
   });
-  const testMatch = ['', ...extensions].reduce((arr, cur) => {
-    const platformExtension = cur ? `.${cur}` : '';
+  const testMatch = ['', ...extensions].flatMap((extension) => {
+    const platformExtension = extension ? `.${extension}` : '';
     const sourceExtension = `.[jt]s?(x)`;
     return [
-      ...arr,
       `**/__tests__/**/*spec${platformExtension}${sourceExtension}`,
       `**/__tests__/**/*test${platformExtension}${sourceExtension}`,
       `**/?(*.)+(spec|test)${platformExtension}${sourceExtension}`,
     ];
-  }, []);
+  });
 
   return withWatchPlugins({
     displayName: displayOptions,
