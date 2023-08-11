@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Reorder imports in the AppEntry template to match the latest eslint-config-universe settings
+- Reorder imports in the AppEntry template to match the latest eslint-config-universe settings ([#23544](https://github.com/expo/expo/pull/23544) by [@ide](https://github.com/ide))
 
 ## 2.2.1 — 2023-06-21
 
