@@ -19,6 +19,21 @@ import { CODE } from '~/ui/components/Text';
 // @ts-ignore Jest ESM issue https://github.com/facebook/jest/issues/9430
 const { default: testTippy } = tippy;
 
+// Read more: https://github.com/FormidableLabs/prism-react-renderer#custom-language-support
+function initPrism() {
+  (typeof global !== 'undefined' ? global : window).Prism = Prism;
+  import('prismjs/components/prism-bash' as Language);
+  import('prismjs/components/prism-diff' as Language);
+  import('prismjs/components/prism-groovy' as Language);
+  import('prismjs/components/prism-ini' as Language);
+  import('prismjs/components/prism-java' as Language);
+  import('prismjs/components/prism-json' as Language);
+  import('prismjs/components/prism-objectivec' as Language);
+  import('prismjs/components/prism-properties' as Language);
+  import('prismjs/components/prism-ruby' as Language);
+}
+
+initPrism();
 installLanguages(Prism);
 
 const attributes = {
@@ -163,20 +178,20 @@ export function Code({ className, children }: React.PropsWithChildren<Props>) {
       lang = remapLanguages[lang];
     }
 
-    const grammar = Prism.languages[lang as keyof typeof Prism.languages];
-    if (!grammar) {
-      throw new Error(`docs currently do not support language: ${lang}`);
-    }
+      const grammar = Prism.languages[lang as keyof typeof Prism.languages];
+      if (!grammar) {
+        throw new Error(`docs currently do not support language: ${lang}`);
+      }
 
-    html = Prism.highlight(html, grammar, lang as Language);
-    if (['properties', 'ruby', 'bash', 'yaml'].includes(lang)) {
-      html = replaceHashCommentsWithAnnotations(html);
-    } else if (['xml', 'html'].includes(lang)) {
-      html = replaceXmlCommentsWithAnnotations(html);
-    } else {
-      html = replaceSlashCommentsWithAnnotations(html);
+      html = Prism.highlight(html, grammar, lang as Language);
+      if (['properties', 'ruby', 'bash', 'yaml'].includes(lang)) {
+        html = this.replaceHashCommentsWithAnnotations(html);
+      } else if (['xml', 'html'].includes(lang)) {
+        html = this.replaceXmlCommentsWithAnnotations(html);
+      } else {
+        html = this.replaceSlashCommentsWithAnnotations(html);
+      }
     }
-  }
 
   return value?.title ? (
     <Snippet>
