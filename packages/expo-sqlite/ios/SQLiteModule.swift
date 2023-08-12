@@ -102,30 +102,33 @@ public final class SQLiteModule: Module {
       db = cachedDatabases[dbName]
     }
 
-    if db == nil {
-      cachedDatabases.removeValue(forKey: dbName)
+    if let db {
+      return db
+    }
 
-      if sqlite3_open(path.absoluteString, &db) != SQLITE_OK {
-        return nil
-      }
+    cachedDatabases.removeValue(forKey: dbName)
 
-      sqlite3_update_hook(
-        db,
-        { (obj, action, _, tableName, rowId) in
-          if let obj, let tableName {
-            let selfObj = Unmanaged<SQLiteModule>.fromOpaque(obj).takeUnretainedValue()
+    if sqlite3_open(path.absoluteString, &db) != SQLITE_OK {
+      return nil
+    }
+
+    sqlite3_update_hook(
+      db, { (obj, action, _, tableName, rowId) in
+        if let obj, let tableName {
+          let selfObj = Unmanaged<SQLiteModule>.fromOpaque(obj).takeUnretainedValue()
+          if selfObj.hasListeners {
             selfObj.sendEvent("onDatabaseChange", [
               "tableName": String(cString: UnsafePointer(tableName)),
               "rowId": rowId,
               "typeId": SqlAction.fromCode(value: action)
             ])
           }
-        },
-        selfPointer
-      )
+        }
+      },
+      selfPointer
+    )
 
-      cachedDatabases[dbName] = db
-    }
+    cachedDatabases[dbName] = db
     return db
   }
 
@@ -247,7 +250,7 @@ public final class SQLiteModule: Module {
   }
 }
 
-enum SqlAction: Int, Enumerable {
+enum SqlAction: String, Enumerable {
   case insert
   case delete
   case update
