@@ -124,7 +124,7 @@ class NavigationBarModule : Module() {
       }
     }
 
-    AsyncFunction("startObserving") { promise: Promise ->
+    OnStartObserving {
       safeRunOnUiThread {
         val decorView = it.window.decorView
         @Suppress("DEPRECATION")
@@ -139,16 +139,14 @@ class NavigationBarModule : Module() {
             }
           )
         }
-        promise.resolve(null)
       }
     }
 
-    AsyncFunction("stopObserving") { promise: Promise ->
+    OnStopObserving {
       safeRunOnUiThread {
         val decorView = it.window.decorView
         @Suppress("DEPRECATION")
         decorView.setOnSystemUiVisibilityChangeListener(null)
-        promise.resolve(null)
       }
     }
   }
