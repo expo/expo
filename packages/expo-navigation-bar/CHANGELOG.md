@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Migrate to Expo Modules API.
+
 ## 2.4.1 — 2023-08-02
 
 ### 🐛 Bug fixes
