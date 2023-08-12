@@ -1,8 +1,9 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "CRSQLiteLoader.h"
+#import <ExpoSQLite/CRSQLiteLoader.h>
 #import <sqlite3/sqlite3.h>
 
+// This comes from the crsqlite.xcframework
 int sqlite3_crsqlite_init(sqlite3 *db, char **pzErrMsg,
                           const sqlite3_api_routines *pApi);
 

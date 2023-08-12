@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Remove unneeded resource bundle. ([#23813](https://github.com/expo/expo/pull/23813) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 11.5.0 — 2023-08-02
 
 _This version does not introduce any user-facing changes._
