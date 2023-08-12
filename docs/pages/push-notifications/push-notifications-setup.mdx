@@ -94,10 +94,9 @@ async function registerForPushNotificationsAsync() {
       return;
     }
     /* @info This provides the ExpoPushToken which is attributed based on the ID of the project. */
-     token = (
-      await Notifications.getExpoPushTokenAsync({
-        projectId: Constants.expoConfig.extra.eas.projectId,
-      })
+    token = await Notifications.getExpoPushTokenAsync({
+      projectId: Constants.expoConfig.extra.eas.projectId,
+    });
     /* @end */
     console.log(token);
   } else {
