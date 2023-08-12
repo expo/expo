@@ -13,10 +13,9 @@ Pod::Spec.new do |s|
   s.platform       = :ios, '13.0'
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
-  
   s.dependency 'ExpoModulesCore'
+  # The builtin sqlite does not support extensions so we update it
   s.dependency 'sqlite3', '~> 3.39.4'
-  s.resource_bundles = { 'ExpoSQLite' => ['../crsqlite.dylib'] }
   
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
