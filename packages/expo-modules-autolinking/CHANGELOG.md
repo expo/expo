@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Add support for pnpm isolated modules ([#23867](https://github.com/expo/expo/pull/23867) by [@byCedric](https://github.com/byCedric))
+- Resolve cli for isolated modules before running node scripts. ([#23926](https://github.com/expo/expo/pull/23926) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
