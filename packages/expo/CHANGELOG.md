@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Add support for pnpm isolated modules. ([#23937](https://github.com/expo/expo/pull/23937) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 - Removed the environment validator. ([#23732](https://github.com/expo/expo/pull/23732) by [@tsapeta](https://github.com/tsapeta))
