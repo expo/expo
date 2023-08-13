@@ -153,7 +153,8 @@ class ExpoAutolinkingManager {
       'node',
       '--no-warnings',
       '--eval',
-      'require(\'expo-modules-autolinking\')(process.argv.slice(1))',
+      // Resolve the `expo` > `expo-modules-autolinking` chain from the project root
+      'require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo\')] }))(process.argv.slice(1))',
       '--',
       command,
       '--platform',

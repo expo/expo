@@ -178,7 +178,7 @@ module Expo
         'node',
         '--no-warnings',
         '--eval',
-        'require(\'expo-modules-autolinking\')(process.argv.slice(1))',
+        'require(require.resolve(\'expo-modules-autolinking\', { paths: [\'' +  __dir__ + '\'] }))(process.argv.slice(1))',
         command_name,
         '--platform',
         'ios'
