@@ -28,18 +28,16 @@ public class BackgroundFetchModule: Module {
         throw BackgroundFetchDisabled()
       }
 
-      taskManager.registerTask(withName: name, consumer: ExpoBackgroundFetchTaskConsumer.self, options: options)
+      taskManager.registerTask(withName: name, consumer: BackgroundFetchTaskConsumer.self, options: options)
     }
 
     AsyncFunction("unregisterTaskAsync") { (name: String) in
-      taskManager?.unregisterTask(withName: name, consumerClass: ExpoBackgroundFetchTaskConsumer.self)
+      taskManager?.unregisterTask(withName: name, consumerClass: BackgroundFetchTaskConsumer.self)
     }
   }
 
   private func getStatus() -> BackgroundFetchStatus {
-    let refreshStatus = UIApplication.shared.backgroundRefreshStatus
-
-    switch refreshStatus {
+    switch UIApplication.shared.backgroundRefreshStatus {
     case .restricted:
       return .restricted
     case .available:

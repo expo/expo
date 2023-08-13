@@ -1,8 +1,8 @@
 import ExpoModulesCore
 
-class ExpoBackgroundFetchTaskConsumer: NSObject, EXTaskConsumerInterface {
+class BackgroundFetchTaskConsumer: NSObject, EXTaskConsumerInterface {
   var task: EXTaskInterface?
-  
+
   static func supportsLaunchReason(_ launchReason: EXTaskLaunchReason) -> Bool {
     return launchReason == EXTaskLaunchReasonBackgroundFetch
   }
@@ -44,12 +44,13 @@ class ExpoBackgroundFetchTaskConsumer: NSObject, EXTaskConsumerInterface {
   private func updateMinimumInterval() {
     let interval = task?.options?["minimumInterval"] as? Double
 
-    var timeInterval: TimeInterval
-    if let interval {
-      timeInterval = TimeInterval(interval)
-    } else {
-      timeInterval = UIApplication.backgroundFetchIntervalMinimum
-    }
+    let timeInterval = {
+      if let interval {
+        return TimeInterval(interval)
+      } else {
+        return UIApplication.backgroundFetchIntervalMinimum
+      }
+    }()
 
     DispatchQueue.main.async {
       UIApplication.shared.setMinimumBackgroundFetchInterval(timeInterval)
