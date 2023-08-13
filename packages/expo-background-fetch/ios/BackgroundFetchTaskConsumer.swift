@@ -47,9 +47,8 @@ class BackgroundFetchTaskConsumer: NSObject, EXTaskConsumerInterface {
     let timeInterval = {
       if let interval {
         return TimeInterval(interval)
-      } else {
-        return UIApplication.backgroundFetchIntervalMinimum
       }
+      return UIApplication.backgroundFetchIntervalMinimum
     }()
 
     DispatchQueue.main.async {
