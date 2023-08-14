@@ -7,6 +7,7 @@ import {
   Hash02Icon,
 } from '@expo/styleguide-icons';
 import { Command } from 'cmdk';
+import { copy } from 'fs-extra';
 
 import type { AlgoliaItemType } from '../types';
 import {
@@ -110,6 +111,12 @@ export const ExpoDocsItem = ({ item, onSelect, isNested }: Props) => {
       onSelect={() => {
         openLink(transformUrl(item.url));
         onSelect && onSelect();
+      }}
+      onContextMenu={event => {
+        event.preventDefault();
+      }}
+      onAuxClick={() => {
+        navigator.clipboard?.writeText(transformUrl(item.url));
       }}
       data-nested={isNested ? true : undefined}>
       <div className={mergeClasses('inline-flex items-center gap-3 break-words')}>
