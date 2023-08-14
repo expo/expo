@@ -6,7 +6,7 @@ import expo.modules.av.video.VideoViewModule
 import expo.modules.backgroundfetch.BackgroundFetchPackage
 import expo.modules.barcodescanner.BarCodeScannerModule
 import expo.modules.barcodescanner.BarCodeScannerPackage
-import expo.modules.battery.BatteryPackage
+import expo.modules.battery.BatteryModule
 import expo.modules.blur.BlurModule
 import expo.modules.brightness.BrightnessModule
 import expo.modules.calendar.CalendarPackage
@@ -71,7 +71,6 @@ object ExperiencePackagePicker : ModulesProvider {
   private val EXPO_MODULES_PACKAGES = listOf(
     AVPackage(),
     ApplicationPackage(),
-    BatteryPackage(),
     BackgroundFetchPackage(),
     BarCodeScannerPackage(),
     CalendarPackage(),
@@ -112,6 +111,7 @@ object ExperiencePackagePicker : ModulesProvider {
   }
 
   override fun getModulesList(): List<Class<out Module>> = listOf(
+    BatteryModule::class.java,
     BarCodeScannerModule::class.java,
     BlurModule::class.java,
     CameraViewModule::class.java,

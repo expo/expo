@@ -7,16 +7,14 @@ import android.content.IntentFilter
 import android.os.BatteryManager
 import android.os.Bundle
 import android.util.Log
-import expo.modules.core.interfaces.services.EventEmitter
 
-class BatteryLevelReceiver(private val eventEmitter: EventEmitter?) : BroadcastReceiver() {
-  private val BATTERY_LEVEL_EVENT_NAME = "Expo.batteryLevelDidChange"
+class BatteryLevelReceiver(private val sendEvent: (name: String, body: Bundle) -> Unit) : BroadcastReceiver() {
 
-  private fun onBatteryLevelChange(BatteryLevel: Float) {
-    eventEmitter?.emit(
+  private fun onBatteryLevelChange(batteryLevel: Float) {
+    sendEvent(
       BATTERY_LEVEL_EVENT_NAME,
       Bundle().apply {
-        putFloat("batteryLevel", BatteryLevel)
+        putFloat("batteryLevel", batteryLevel)
       }
     )
   }
