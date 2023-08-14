@@ -7,8 +7,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 require("react-native/Libraries/Core/InitializeCore");
 const expo_constants_1 = __importDefault(require("expo-constants"));
 const url_parse_1 = __importDefault(require("url-parse"));
-const getDevServer_1 = __importDefault(require("../getDevServer"));
 const Location_1 = require("./Location");
+const getDevServer_1 = __importDefault(require("../getDevServer"));
 let hasWarned = false;
 const manifest = expo_constants_1.default.expoConfig;
 // Add a development warning for fetch requests with relative paths

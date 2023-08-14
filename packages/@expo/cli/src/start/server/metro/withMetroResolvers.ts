@@ -9,9 +9,9 @@ import { ConfigT as MetroConfig } from 'metro-config';
 import { ResolutionContext } from 'metro-resolver';
 import path from 'path';
 
-import { env } from '../../../utils/env';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
 import { importMetroResolverFromProject } from './resolveFromProject';
+import { env } from '../../../utils/env';
 
 const debug = require('debug')('expo:metro:withMetroResolvers') as typeof console.log;
 

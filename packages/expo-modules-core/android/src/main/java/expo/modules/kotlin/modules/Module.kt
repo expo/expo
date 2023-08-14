@@ -32,7 +32,7 @@ abstract class Module : AppContextProvider {
     moduleEventEmitter?.emit(name, body)
   }
 
-  fun sendEvent(name: String, body: Map<String, Any?>? = null) {
+  fun sendEvent(name: String, body: Map<String, Any?>) {
     moduleEventEmitter?.emit(name, body)
   }
 

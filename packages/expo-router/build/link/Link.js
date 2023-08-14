@@ -3,10 +3,10 @@
 import { Slot } from '@radix-ui/react-slot';
 import * as React from 'react';
 import { Text, Platform } from 'react-native';
-import { useRouter } from '../hooks';
-import { useFocusEffect } from '../useFocusEffect';
 import { resolveHref } from './href';
 import useLinkToPathProps from './useLinkToPathProps';
+import { useRouter } from '../hooks';
+import { useFocusEffect } from '../useFocusEffect';
 /** Redirects to the href as soon as the component is mounted. */
 export function Redirect({ href }) {
     const router = useRouter();

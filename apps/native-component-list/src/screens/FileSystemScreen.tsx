@@ -154,7 +154,6 @@ export default class FileSystemScreen extends React.Component<object, State> {
         }
       } else {
         alert('Initiate a download first!');
-        return;
       }
     } catch (e) {
       console.log(e);

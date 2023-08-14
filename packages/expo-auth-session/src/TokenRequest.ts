@@ -162,7 +162,10 @@ class TokenRequest<T extends TokenRequestConfig> extends Request<T, TokenRespons
   readonly scopes?: string[];
   readonly extraParams?: Record<string, string>;
 
-  constructor(request, public grantType: GrantType) {
+  constructor(
+    request,
+    public grantType: GrantType
+  ) {
     super(request);
     this.clientId = request.clientId;
     this.clientSecret = request.clientSecret;

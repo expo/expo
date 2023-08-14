@@ -2,12 +2,12 @@ import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
 
+import getStackConfig from './StackConfig';
+import { optionalRequire } from './routeBuilder';
 import TabIcon from '../components/TabIcon';
 import { Layout } from '../constants';
 import ExpoComponents from '../screens/ExpoComponentsScreen';
 import { ImageScreens } from '../screens/Image/ImageScreen';
-import getStackConfig from './StackConfig';
-import { optionalRequire } from './routeBuilder';
 
 const Stack = createStackNavigator();
 

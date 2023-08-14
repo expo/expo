@@ -1,5 +1,6 @@
 import { EventEmitter, Platform, UnavailabilityError } from 'expo-modules-core';
 
+import { throwIfAudioIsDisabled } from './AudioAvailability';
 import {
   Playback,
   PlaybackMixin,
@@ -14,7 +15,6 @@ import {
 } from '../AV';
 import { PitchCorrectionQuality } from '../Audio';
 import ExponentAV from '../ExponentAV';
-import { throwIfAudioIsDisabled } from './AudioAvailability';
 
 // @needsAudit
 export type AudioChannel = {

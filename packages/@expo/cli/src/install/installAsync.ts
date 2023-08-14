@@ -2,6 +2,8 @@ import { getConfig } from '@expo/config';
 import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
 
+import { checkPackagesAsync } from './checkPackages';
+import { Options } from './resolveOptions';
 import * as Log from '../log';
 import {
   getOperationLog,
@@ -13,8 +15,6 @@ import { findUpProjectRootOrAssert } from '../utils/findUp';
 import { learnMore } from '../utils/link';
 import { setNodeEnv } from '../utils/nodeEnv';
 import { joinWithCommasAnd } from '../utils/strings';
-import { checkPackagesAsync } from './checkPackages';
-import { Options } from './resolveOptions';
 
 export async function installAsync(
   packages: string[],

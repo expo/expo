@@ -2,6 +2,7 @@ import { openJsInspector, queryAllInspectorAppsAsync } from '@expo/dev-server';
 import assert from 'assert';
 import chalk from 'chalk';
 
+import { BLT, printHelp, printItem, printQRCode, printUsage, StartOptions } from './commandsTable';
 import * as Log from '../../log';
 import { delayAsync } from '../../utils/delay';
 import { learnMore } from '../../utils/link';
@@ -12,7 +13,6 @@ import {
   addReactDevToolsReloadListener,
   startReactDevToolsProxyAsync,
 } from '../server/ReactDevToolsProxy';
-import { BLT, printHelp, printItem, printQRCode, printUsage, StartOptions } from './commandsTable';
 
 const debug = require('debug')('expo:start:interface:interactiveActions') as typeof console.log;
 

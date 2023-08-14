@@ -9,10 +9,10 @@ import plist from '@expo/plist';
 import Debug from 'debug';
 import { Socket, connect } from 'net';
 
+import { ResponseError, ServiceClient } from './ServiceClient';
 import { CommandError } from '../../../../utils/errors';
 import { parsePlistBuffer } from '../../../../utils/plist';
 import { UsbmuxProtocolClient } from '../protocol/UsbmuxProtocol';
-import { ResponseError, ServiceClient } from './ServiceClient';
 
 const debug = Debug('expo:apple-device:client:usbmuxd');
 

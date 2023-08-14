@@ -344,7 +344,7 @@ export function createUploadTask(
 }
 
 export abstract class FileSystemCancellableNetworkTask<
-  T extends DownloadProgressData | UploadProgressData
+  T extends DownloadProgressData | UploadProgressData,
 > {
   private _uuid = uuidv4();
   protected taskWasCanceled = false;

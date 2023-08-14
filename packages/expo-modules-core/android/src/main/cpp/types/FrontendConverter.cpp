@@ -398,8 +398,16 @@ jobject ListFrontendConverter::convert(
 
   auto arrayList = java::ArrayList<jobject>::create(size);
   for (size_t i = 0; i < size; i++) {
+    auto jsValue = jsArray.getValueAtIndex(rt, i);
+
+    // TODO(@lukmccall): pass information to CPP if the underlying type is nullable or not.
+    if (jsValue.isNull() || jsValue.isUndefined()) {
+      arrayList->add(nullptr);
+      continue;
+    }
+
     auto convertedElement = parameterConverter->convert(
-      rt, env, moduleRegistry, jsArray.getValueAtIndex(rt, i)
+      rt, env, moduleRegistry, jsValue
     );
     arrayList->add(convertedElement);
     env->DeleteLocalRef(convertedElement);
@@ -433,11 +441,20 @@ jobject MapFrontendConverter::convert(
 
   for (size_t i = 0; i < size; i++) {
     auto key = propertyNames.getValueAtIndex(rt, i).getString(rt);
-    auto convertedValue = valueConverter->convert(
-      rt, env, moduleRegistry, jsObject.getProperty(rt, key)
-    );
+    auto jsValue = jsObject.getProperty(rt, key);
 
     auto convertedKey = env->NewStringUTF(key.utf8(rt).c_str());
+
+    // TODO(@lukmccall): pass information to CPP if the underlying type is nullable or not.
+    if (jsValue.isNull() || jsValue.isUndefined()) {
+      map->put(convertedKey, nullptr);
+      continue;
+    }
+
+    auto convertedValue = valueConverter->convert(
+      rt, env, moduleRegistry, jsValue
+    );
+
     map->put(convertedKey, convertedValue);
 
     env->DeleteLocalRef(convertedKey);

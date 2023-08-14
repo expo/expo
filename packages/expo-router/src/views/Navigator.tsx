@@ -2,10 +2,10 @@ import { RouterFactory, StackRouter, useNavigationBuilder } from '@react-navigat
 import * as React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { Screen } from './Screen';
 import { useContextKey } from '../Route';
 import { useFilterScreenChildren } from '../layouts/withLayoutContext';
 import { useSortedScreens } from '../useScreens';
-import { Screen } from './Screen';
 
 type NavigatorTypes = ReturnType<typeof useNavigationBuilder>;
 

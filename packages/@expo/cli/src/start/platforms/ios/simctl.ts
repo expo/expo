@@ -1,8 +1,8 @@
 import spawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
 
+import { xcrunAsync } from './xcrun';
 import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
-import { xcrunAsync } from './xcrun';
 
 type DeviceState = 'Shutdown' | 'Booted';
 

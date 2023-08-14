@@ -145,7 +145,7 @@ function NavigationContainerInner(
 }
 
 const NavigationContainer = React.forwardRef(NavigationContainerInner) as <
-  RootParamList extends object = ReactNavigation.RootParamList
+  RootParamList extends object = ReactNavigation.RootParamList,
 >(
   props: Props<RootParamList> & {
     ref?: React.Ref<NavigationContainerRef<RootParamList>>;

@@ -4,9 +4,9 @@ import fs from 'fs-extra';
 import { createRequire } from 'module';
 import path from 'path';
 
+import { mergeLinkingOptionsAsync, projectPackageJsonPath } from './mergeLinkingOptions';
 import { requireAndResolveExpoModuleConfig } from '../ExpoModuleConfig';
 import { PackageRevision, SearchOptions, SearchResults } from '../types';
-import { mergeLinkingOptionsAsync, projectPackageJsonPath } from './mergeLinkingOptions';
 
 // Names of the config files. From lowest to highest priority.
 const EXPO_MODULE_CONFIG_FILENAMES = ['unimodule.json', 'expo-module.config.json'];
@@ -132,7 +132,13 @@ function addRevisionToResults(
 async function findPackagesConfigPathsAsync(searchPath: string): Promise<string[]> {
   const bracedFilenames = '{' + EXPO_MODULE_CONFIG_FILENAMES.join(',') + '}';
   const paths = await glob(
-    [`*/${bracedFilenames}`, `@*/*/${bracedFilenames}`, `./${bracedFilenames}`],
+    [
+      `*/${bracedFilenames}`,
+      `@*/*/${bracedFilenames}`,
+      `./${bracedFilenames}`,
+      `.pnpm/*/node_modules/*/${bracedFilenames}`,
+      `.pnpm/*/node_modules/@*/*/${bracedFilenames}`,
+    ],
     {
       cwd: searchPath,
     }
