@@ -9,6 +9,10 @@ private const val unknownCode = "UnknownCode"
 interface Promise {
   fun resolve(value: Any?)
 
+  fun resolve() {
+    resolve(null)
+  }
+
   fun reject(code: String, message: String?, cause: Throwable?)
 
   fun reject(exception: CodedException) {
@@ -18,7 +22,7 @@ interface Promise {
 
 fun Promise.toBridgePromise(): com.facebook.react.bridge.Promise {
   val expoPromise = this
-  val resolveMethod = if (expoPromise is PromiseImpl) {
+  val resolveMethod: (value: Any?) -> Unit = if (expoPromise is PromiseImpl) {
     expoPromise.resolveBlock::invoke
   } else {
     expoPromise::resolve
