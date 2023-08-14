@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Migrated Android codebase to use Expo modules API. ([#23883](https://github.com/expo/expo/pull/23883) by [@lukmccall](https://github.com/lukmccall))
+- Migrated Android codebase to use Expo Modules API. ([#23883](https://github.com/expo/expo/pull/23883) by [@lukmccall](https://github.com/lukmccall))
 
 ## 7.4.0 — 2023-08-02
 
