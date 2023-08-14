@@ -4,14 +4,14 @@
 
   "android": {
     "modules": [
-      "expo.modules.sensors.AccelerometerModule",
-      "expo.modules.sensors.BarometerModule",
-      "expo.modules.sensors.GyroscopeModule",
-      "expo.modules.sensors.LightSensorModule",
-      "expo.modules.sensors.DeviceMotionModule",
-      "expo.modules.sensors.MagnetometerModule",
-      "expo.modules.sensors.MagnetometerUncalibratedModule",
-      "expo.modules.sensors.PedometerModule"
+      "expo.modules.sensors.modules.AccelerometerModule",
+      "expo.modules.sensors.modules.BarometerModule",
+      "expo.modules.sensors.modules.GyroscopeModule",
+      "expo.modules.sensors.modules.LightSensorModule",
+      "expo.modules.sensors.modules.DeviceMotionModule",
+      "expo.modules.sensors.modules.MagnetometerModule",
+      "expo.modules.sensors.modules.MagnetometerUncalibratedModule",
+      "expo.modules.sensors.modules.PedometerModule"
     ]
   }
 }

@@ -29,7 +29,7 @@ class PedometerModule : Module() {
   }
 
   override fun definition() = ModuleDefinition {
-    Name("ExponentGyroscope")
+    Name("ExponentPedometer")
 
     UseSensorProxy(
       this@PedometerModule,
