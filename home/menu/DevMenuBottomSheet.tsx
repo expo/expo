@@ -57,7 +57,7 @@ function DevMenuBottomSheet({ children, uuid }: Props) {
   useEffect(() => {
     const closeSubscription = DevMenu.listenForCloseRequests(() => {
       bottomSheetRef.current?.collapse();
-      return new Promise((resolve) => {
+      return new Promise<void>((resolve) => {
         resolve();
       });
     });
