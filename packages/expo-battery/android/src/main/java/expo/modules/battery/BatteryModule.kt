@@ -113,14 +113,19 @@ class BatteryModule : Module() {
 
   private fun registerBroadcastReceivers(context: Context) {
     accessBroadcastReceivers {
-      if (isEmpty()) {
+      if (isNotEmpty()) {
         return
       }
     }
 
     val weakModule = WeakReference(this@BatteryModule)
     val emitEvent = { name: String, body: Bundle ->
-      weakModule.get()?.sendEvent(name, body)
+      try {
+        // It may thrown, because RN event emitter may not be available
+        // we can just ignore those cases
+        weakModule.get()?.sendEvent(name, body)
+      } catch (_: Throwable) {
+      }
       Unit
     }
     val batteryStateReceiver = BatteryStateReceiver(emitEvent)
