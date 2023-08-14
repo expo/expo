@@ -7,6 +7,7 @@ import {
   Hash02Icon,
 } from '@expo/styleguide-icons';
 import { Command } from 'cmdk';
+import { useState } from 'react';
 
 import type { AlgoliaItemType } from '../types';
 import {
@@ -22,6 +23,7 @@ import { FootnoteSection } from './FootnoteSection';
 import { FootnoteArrowIcon } from './icons';
 
 import versions from '~/public/static/constants/versions.json';
+import { Tag } from '~/ui/components/Tag';
 import { CALLOUT, CAPTION, FOOTNOTE } from '~/ui/components/Text';
 
 const { LATEST_VERSION } = versions;
@@ -99,10 +101,13 @@ const transformUrl = (url: string) => {
 };
 
 export const ExpoDocsItem = ({ item, onSelect, isNested }: Props) => {
+  const [copyDone, setCopyDone] = useState(false);
+
   const { lvl0, lvl2, lvl3, lvl4, lvl6 } = item.hierarchy;
   const TitleElement = isNested ? FOOTNOTE : CALLOUT;
   const ContentElement = isNested ? CAPTION : FOOTNOTE;
   const titleWeight = isNested ? 'regular' : 'medium';
+
   return (
     <Command.Item
       className={mergeClasses(isNested && 'ml-8 !mt-0.5 !min-h-[32px]')}
@@ -116,6 +121,8 @@ export const ExpoDocsItem = ({ item, onSelect, isNested }: Props) => {
       }}
       onAuxClick={() => {
         navigator.clipboard?.writeText(transformUrl(item.url));
+        setCopyDone(true);
+        setTimeout(() => setCopyDone(false), 1500);
       }}
       data-nested={isNested ? true : undefined}>
       <div className={mergeClasses('inline-flex items-center gap-3 break-words')}>
@@ -181,6 +188,12 @@ export const ExpoDocsItem = ({ item, onSelect, isNested }: Props) => {
             <ContentElement theme="secondary" {...getContentHighlightHTML(item)} />
           )}
         </div>
+        {copyDone && (
+          <Tag
+            name="Copied!"
+            className="absolute right-2.5 top-[calc(50%-13px)] !m-0 !border-secondary !bg-default"
+          />
+        )}
       </div>
     </Command.Item>
   );
