@@ -13,6 +13,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Refresh NativeModulesProxy if app bundle is reloaded. ([#23824](https://github.com/expo/expo/pull/23824) by [@douglowder](https://github.com/douglowder))
+- [Android] Fix nullability of parameter type in `List` and `Map` when converting from JS to native.
 
 ### 💡 Others
 
