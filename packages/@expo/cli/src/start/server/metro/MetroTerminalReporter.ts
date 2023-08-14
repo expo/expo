@@ -45,7 +45,10 @@ export class MetroTerminalReporter extends TerminalReporter {
       return color(platform + status) + time;
     }
 
-    const localPath = path.relative('.', progress.bundleDetails.entryFile);
+    const localPath = progress.bundleDetails.entryFile.startsWith(path.sep)
+      ? path.relative(this.projectRoot, progress.bundleDetails.entryFile)
+      : progress.bundleDetails.entryFile;
+
     const filledBar = Math.floor(progress.ratio * MAX_PROGRESS_BAR_CHAR_WIDTH);
 
     const _progress = inProgress
