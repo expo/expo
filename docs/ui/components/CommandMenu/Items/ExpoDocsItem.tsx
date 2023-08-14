@@ -7,7 +7,6 @@ import {
   Hash02Icon,
 } from '@expo/styleguide-icons';
 import { Command } from 'cmdk';
-import { copy } from 'fs-extra';
 
 import type { AlgoliaItemType } from '../types';
 import {
