@@ -197,13 +197,13 @@ import App from './App';
 registerRootComponent(App);
 ```
 
-If you are using [Expo Router](/routing/introduction/), change the default entry point (`main`) to **index.js** in **package.json**. Then, create the **index.js** file within the root of your project with the following:
-
-```js index.js
-import 'expo-router/entry';
-```
-
 > This new entrypoint already exists for bare projects. You only need to add this if you have a managed project.
+
+If you are using [Expo Router](/routing/introduction/), define the [`EXPO_USE_METRO_WORKSPACE_ROOT`](/more/expo-cli/#environment-variables) environment variable when running the `npx expo start` command. It enables the auto server root detection for Metro.
+
+<Terminal cmd={['$ EXPO_USE_METRO_WORKSPACE_ROOT=1 npx expo start']} />
+
+This variable can also be defined inside a **.env** file.
 
 ### Create a package
 
