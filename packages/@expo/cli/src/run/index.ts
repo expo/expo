@@ -24,6 +24,11 @@ export const expoRun: Command = async (argv) => {
   try {
     let [platform] = args._ ?? [];
 
+    // Workaround, filter `--flag` as platform
+    if (platform?.startsWith('-')) {
+      platform = '';
+    }
+
     // Remove the platform from raw arguments, when provided
     const argsWithoutPlatform = !platform ? argv : argv?.splice(1);
 
