@@ -20,6 +20,7 @@ import { env } from '../../../utils/env';
 import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
 import { createDevServerMiddleware } from '../middleware/createDevServerMiddleware';
 import { getPlatformBundlers } from '../platformBundlers';
+import { createBundleAsyncFunctionAsync } from '../../../export/fork-bundleAsync';
 
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
@@ -79,6 +80,8 @@ export async function instantiateMetroAsync(
   server: http.Server;
   middleware: any;
   messageSocket: MessageSocket;
+  buildAsync: ReturnType<typeof createBundleAsyncFunctionAsync>;
+  metroConfig: import('metro-config').ConfigT;
 }> {
   const projectRoot = metroBundler.projectRoot;
 
@@ -88,11 +91,11 @@ export async function instantiateMetroAsync(
     skipPlugins: true,
   });
 
-  const { config: metroConfig, setEventReporter } = await loadMetroConfigAsync(
-    projectRoot,
-    options,
-    { exp }
-  );
+  const {
+    config: metroConfig,
+    reporter,
+    setEventReporter,
+  } = await loadMetroConfigAsync(projectRoot, options, { exp });
 
   const { middleware, websocketEndpoints, eventsSocketEndpoint, messageSocketEndpoint } =
     createDevServerMiddleware(projectRoot, {
@@ -125,6 +128,12 @@ export async function instantiateMetroAsync(
     server,
     middleware,
     messageSocket: messageSocketEndpoint,
+    buildAsync: createBundleAsyncFunctionAsync(projectRoot, {
+      metroConfig,
+      metroServer: metro,
+      reporter,
+    }),
+    metroConfig,
   };
 }
 

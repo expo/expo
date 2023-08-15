@@ -10,11 +10,17 @@ import {
 } from '@expo/dev-server/build/metro/importMetroFromProject';
 import type { LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
-import Metro from 'metro';
+import Metro, { MetroConfig } from 'metro';
+import { ConfigT } from 'metro-config';
 import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
 
 import { CSSAsset, getCssModulesFromBundler } from '../start/server/metro/getCssModulesFromBundler';
 import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
+import { MetroTerminalReporter } from '../start/server/metro/MetroTerminalReporter';
+
+/** The list of input keys will become optional, everything else will remain the same. */
+export type PickPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+export type PickRequired<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
 
 export type MetroDevServerOptions = LoadOptions & {
   logger: import('@expo/bunyan');
@@ -175,4 +181,121 @@ export async function bundleAsync(
   } finally {
     metroServer.end();
   }
+}
+
+export type HelperOptions = Omit<
+  PickRequired<Partial<MetroBundleOptions>, 'platform' | 'entryFile'>,
+  // Simplify the usage by removing default types that we don't need changed.
+  'bundleType' | 'createModuleIdFactory' | 'onProgress'
+>;
+
+/** Create a builder method for interacting directly with Metro. */
+export function createBundleAsyncFunctionAsync(
+  projectRoot: string,
+  {
+    metroServer,
+    metroConfig,
+    reporter,
+  }: {
+    metroServer: Metro.Server;
+    metroConfig: ConfigT;
+    reporter: MetroTerminalReporter;
+  }
+) {
+  const { DEFAULT_BUNDLE_OPTIONS } = importMetroServerFromProject(projectRoot);
+
+  function getBundleOptions(bundle: HelperOptions) {
+    const buildID = `bundle_${nextBuildID++}_${bundle.platform}`;
+
+    const bundleOptions: MetroBundleOptions = {
+      ...DEFAULT_BUNDLE_OPTIONS,
+      ...bundle,
+      bundleType: 'bundle',
+      dev: bundle.dev ?? false,
+      minify: bundle.minify ?? !bundle.dev,
+      createModuleIdFactory: metroConfig?.serializer?.createModuleIdFactory,
+      onProgress(transformedFileCount: number, totalFileCount: number) {
+        reporter.update({
+          buildID,
+          // TODO: Add this to the logging message
+          // environment: bundle.customTransformOptions.environment,
+          type: 'bundle_transform_progressed',
+          transformedFileCount,
+          totalFileCount,
+        });
+      },
+    };
+    const bundleDetails = {
+      ...bundleOptions,
+      buildID,
+    };
+    return { bundleOptions, bundleDetails };
+  }
+
+  const buildAsync = async (
+    bundle: HelperOptions,
+    emit: { css: boolean; assets: boolean; hermes: boolean }
+  ): Promise<PickPartial<BundleOutput, 'css'>> => {
+    const buildID = `bundle_${nextBuildID++}_${bundle.platform}`;
+
+    const { bundleOptions, bundleDetails } = getBundleOptions(bundle);
+
+    reporter.update({
+      buildID,
+      type: 'bundle_build_started',
+      bundleDetails,
+    });
+
+    try {
+      const { code, map } = await metroServer.build(bundleOptions);
+
+      const [assets, css, hermes] = await Promise.all([
+        emit.assets ? metroServer.getAssets(bundleOptions) : undefined,
+        emit.css
+          ? getCssModulesFromBundler(metroConfig, metroServer.getBundler(), bundleOptions)
+          : undefined,
+        emit.hermes
+          ? (async () => {
+              const platformTag = chalk.bold(
+                { ios: 'iOS', android: 'Android', web: 'Web' }[bundle.platform] || bundle.platform
+              );
+
+              reporter.terminal.log(`${platformTag} Building Hermes bytecode for the bundle`);
+
+              const hermesBundleOutput = await buildHermesBundleAsync(
+                projectRoot,
+                code,
+                map!,
+                bundle.minify ?? !bundle.dev
+              );
+              return hermesBundleOutput;
+            })()
+          : undefined,
+      ]);
+
+      // TODO: Rework the logs
+      reporter.update({
+        buildID,
+        type: 'bundle_build_done',
+      });
+
+      return {
+        code,
+        map,
+        assets: assets as readonly BundleAssetWithFileHashes[],
+        css,
+        hermesBytecodeBundle: hermes?.hbc,
+        hermesSourcemap: hermes?.sourcemap,
+      };
+    } catch (error) {
+      reporter.update({
+        buildID,
+        type: 'bundle_build_failed',
+      });
+
+      throw error;
+    }
+  };
+
+  return buildAsync;
 }

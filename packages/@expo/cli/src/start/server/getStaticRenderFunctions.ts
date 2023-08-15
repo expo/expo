@@ -9,6 +9,7 @@ import fetch from 'node-fetch';
 import path from 'path';
 import requireString from 'require-from-string';
 import resolveFrom from 'resolve-from';
+import { type Server as MetroServer } from 'metro';
 
 import { logMetroError } from './metro/metroErrorInterface';
 import { getMetroServerRoot } from './middleware/ManifestMiddleware';
@@ -20,20 +21,20 @@ import { profile } from '../../utils/profile';
 
 const debug = require('debug')('expo:start:server:node-renderer') as typeof console.log;
 
-function wrapBundle(str: string) {
+export function wrapBundle(str: string) {
   // Skip the metro runtime so debugging is a bit easier.
   // Replace the __r() call with an export statement.
   // Use gm to apply to the last require line. This is needed when the bundle has side-effects.
   return str.replace(/^(__r\(.*\);)$/gm, 'module.exports = $1');
 }
 
-function stripProcess(str: string) {
+export function stripProcess(str: string) {
   // TODO: Remove from the metro prelude
   return str.replace(/process=this\.process\|\|{},/m, '');
 }
 
 // TODO(EvanBacon): Group all the code together and version.
-const getRenderModuleId = (projectRoot: string): string => {
+export const getRenderModuleId = (projectRoot: string): string => {
   const moduleId = resolveFrom.silent(projectRoot, 'expo-router/node/render.js');
   if (!moduleId) {
     throw new Error(
@@ -129,14 +130,38 @@ export class MetroNodeError extends Error {
   }
 }
 
+let buildNumber = 0;
 export async function requireFileContentsWithMetro(
   projectRoot: string,
+  metro: MetroServer,
   devServerUrl: string,
   absoluteFilePath: string,
   props: StaticRenderOptions = {}
 ): Promise<string> {
   const url = await createMetroEndpointAsync(projectRoot, devServerUrl, absoluteFilePath, props);
 
+  // metro.build({
+  //   bundleType: 'bundle',
+  //   customResolverOptions: {
+  //     environment: props.environment,
+  //   },
+  //   customTransformOptions: {
+  //     environment: props.environment,
+  //   },
+  //   buildNumber,
+  //   // bundleOptions,
+  //   // entryFile: resolvedEntryFilePath,
+  //   // graphId,
+  //   // graphOptions,
+  //   // mres,
+  //   // onProgress,
+  //   // req,
+  //   // resolverOptions,
+  //   // serializerOptions,
+  //   // transformOptions,
+  //   // bundlePerfLogger: buildContext.bundlePerfLogger,
+  // })
+  // buildNumber++
   const res = await fetch(url);
 
   // TODO: Improve error handling
@@ -191,7 +216,15 @@ export async function getStaticRenderFunctions(
     options
   );
 
-  const contents = evalMetro(scriptContents);
+  // wrap each function with a try/catch that uses Metro's error formatter
+  return evalStaticRenderFunctionsBundle(projectRoot, scriptContents);
+}
+
+export function evalStaticRenderFunctionsBundle(
+  projectRoot: string,
+  bundle: string
+): Record<string, (...args: any[]) => Promise<any>> {
+  const contents = evalMetro(bundle);
 
   // wrap each function with a try/catch that uses Metro's error formatter
   return Object.keys(contents).reduce((acc, key) => {

@@ -23,7 +23,12 @@ import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { CommandError } from '../../../utils/errors';
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
-import { getStaticRenderFunctions } from '../getStaticRenderFunctions';
+import {
+  evalStaticRenderFunctionsBundle,
+  getRenderModuleId,
+  stripProcess,
+  wrapBundle,
+} from '../getStaticRenderFunctions';
 import { ContextModuleSourceMapsMiddleware } from '../middleware/ContextModuleSourceMapsMiddleware';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
 import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
@@ -42,6 +47,7 @@ import {
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
+import { createBundleAsyncFunctionAsync, HelperOptions } from '../../../export/fork-bundleAsync';
 
 class ForwardHtmlError extends CommandError {
   constructor(
@@ -63,6 +69,7 @@ const DEV_CLIENT_METRO_PORT = 8081;
 
 export class MetroBundlerDevServer extends BundlerDevServer {
   private metro: import('metro').Server | null = null;
+  private metroBuildAsync: ReturnType<typeof createBundleAsyncFunctionAsync> | null = null;
 
   get name(): string {
     return 'metro';
@@ -84,13 +91,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
   /** Get routes from Expo Router. */
   async getRoutesAsync() {
-    const url = this.getDevServerUrl();
-    assert(url, 'Dev server must be started');
-    const { getManifest } = await getStaticRenderFunctions(this.projectRoot, url, {
-      // Ensure the API Routes are included
-      environment: 'node',
-    });
-
+    const { getManifest } = await this.metroRequireStaticRenderFunctionsAsync({});
     return getManifest({ fetchData: true });
   }
 
@@ -125,11 +126,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }) {
     const url = this.getDevServerUrl()!;
 
-    const { getStaticContent } = await getStaticRenderFunctions(this.projectRoot, url, {
-      minify,
+    const { getStaticContent } = await this.metroRequireStaticRenderFunctionsAsync({
       dev: mode !== 'production',
-      // Ensure the API Routes are included
-      environment: 'node',
+      minify,
     });
     return async (path: string) => {
       return await getStaticContent(new URL(path, url));
@@ -220,6 +219,54 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     });
   }
 
+  private async metroRequireStaticRenderFunctionsAsync(
+    options: Omit<HelperOptions, 'platform' | 'entryFile'>
+  ) {
+    const code = await this.buildForNodeAsync({
+      ...options,
+      entryFile: getRenderModuleId(this.projectRoot),
+    });
+
+    return evalStaticRenderFunctionsBundle(this.projectRoot, code);
+  }
+  /** @returns the js file contents required to generate the static generation function. */
+  private async buildForNodeAsync(options: Omit<HelperOptions, 'platform'>): Promise<string> {
+    const metroBuildAsync = this.metroBuildAsync;
+    assert(metroBuildAsync, 'Dev server must be started');
+    const { code } = await metroBuildAsync(
+      {
+        customResolverOptions: {
+          environment: 'node',
+          ...options.customResolverOptions,
+        },
+        // @ts-expect-error
+        customTransformOptions: {
+          environment: 'node',
+          ...options.customTransformOptions,
+        },
+        ...options,
+        platform: 'web',
+        hot: false,
+        lazy: false,
+        dev: false,
+        minify: false,
+      },
+      {
+        css: false,
+        assets: false,
+        hermes: false,
+      }
+    );
+
+    let bun = wrapBundle(code);
+
+    // This exposes the entire environment to the bundle.
+    // if (props.environment === 'node') {
+    bun = stripProcess(bun);
+
+    return bun;
+  }
+
   async getStaticPageAsync(
     pathname: string,
     {
@@ -239,16 +286,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     });
 
     const bundleStaticHtml = async (): Promise<string> => {
-      const { getStaticContent } = await getStaticRenderFunctions(
-        this.projectRoot,
-        this.getDevServerUrl()!,
-        {
-          minify: false,
-          dev: mode !== 'production',
-          // Ensure the API Routes are included
-          environment: 'node',
-        }
-      );
+      const { getStaticContent } = await this.metroRequireStaticRenderFunctionsAsync({
+        minify: false,
+        dev: mode !== 'production',
+      });
 
       const location = new URL(pathname, this.getDevServerUrl()!);
       return await getStaticContent(location);
@@ -320,7 +361,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     // Required for symbolication:
     process.env.EXPO_DEV_SERVER_ORIGIN = `http://localhost:${options.port}`;
 
-    const { metro, server, middleware, messageSocket } = await instantiateMetroAsync(
+    const { metro, server, middleware, messageSocket, buildAsync } = await instantiateMetroAsync(
       this,
       parsedOptions
     );
@@ -432,11 +473,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       return originalClose((err?: Error) => {
         this.instance = null;
         this.metro = null;
+        this.metroBuildAsync = null;
         callback?.(err);
       });
     };
 
     this.metro = metro;
+    this.metroBuildAsync = buildAsync;
     return {
       server,
       location: {
