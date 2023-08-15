@@ -47,6 +47,11 @@ describe('constructDevClientUrl', () => {
     expect(createDefaultCreator().constructDevClientUrl({ scheme: 'http' })).toEqual(null);
     expect(createDefaultCreator().constructDevClientUrl({ scheme: 'https' })).toEqual(null);
   });
+  it(`returns null when protocol contains "_" characters`, () => {
+    expect(
+      createDefaultCreator().constructDevClientUrl({ scheme: 'dev.expo.invalid_node_protocol' })
+    ).toEqual(null);
+  });
   it(`creates default`, () => {
     expect(createDefaultCreator().constructDevClientUrl({ scheme: 'bacon' })).toMatchInlineSnapshot(
       `"bacon://expo-development-client/?url=http%3A%2F%2F100.100.1.100%3A8081"`
