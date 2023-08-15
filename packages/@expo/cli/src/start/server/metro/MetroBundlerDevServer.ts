@@ -44,7 +44,11 @@ import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
 
 class ForwardHtmlError extends CommandError {
-  constructor(message: string, public html: string, public statusCode: number) {
+  constructor(
+    message: string,
+    public html: string,
+    public statusCode: number
+  ) {
     super(message);
   }
 }
