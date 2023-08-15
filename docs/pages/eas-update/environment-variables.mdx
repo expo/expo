@@ -34,7 +34,7 @@ For example, you might have separate `staging` and `production` channels for EAS
 }
 ```
 
- Each channel uses a different API URL, and `test` enables an experimental feature flag, and these values rarely change. Instead of defining these values in the `env` inside **eas.json**, create a **Config.js** file in your project that exports the correct values based on the channel:
+ Each channel uses a different `apiUrl`, and `enableHiddenFeatures` enables an experimental feature flag, and these values rarely change. Instead of defining these values in the `env` inside **eas.json**, create a **Config.js** file in your project that exports the correct values based on the channel:
 
 ```js Config.js
 import * as Updates from 'expo-updates';
