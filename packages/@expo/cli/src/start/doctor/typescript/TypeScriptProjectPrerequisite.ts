@@ -43,7 +43,7 @@ export class TypeScriptProjectPrerequisite extends ProjectPrerequisite<boolean> 
     await this._ensureDependenciesInstalledAsync();
 
     // Update the config
-    await updateTSConfigAsync({ tsConfigPath, isBootstrapping: intent.isBootstrapping });
+    await updateTSConfigAsync({ tsConfigPath });
 
     return true;
   }
@@ -56,12 +56,13 @@ export class TypeScriptProjectPrerequisite extends ProjectPrerequisite<boolean> 
     // Ensure TypeScript packages are installed
     await this._ensureDependenciesInstalledAsync({
       skipPrompt: true,
+      isProjectMutable: true,
     });
 
     const tsConfigPath = path.join(this.projectRoot, 'tsconfig.json');
 
     // Update the config
-    await updateTSConfigAsync({ tsConfigPath, isBootstrapping: true });
+    await updateTSConfigAsync({ tsConfigPath });
   }
 
   /** Exposed for testing. */
@@ -95,11 +96,17 @@ export class TypeScriptProjectPrerequisite extends ProjectPrerequisite<boolean> 
   async _ensureDependenciesInstalledAsync({
     exp,
     skipPrompt,
-  }: { exp?: ExpoConfig; skipPrompt?: boolean } = {}): Promise<boolean> {
+    isProjectMutable,
+  }: {
+    exp?: ExpoConfig;
+    skipPrompt?: boolean;
+    isProjectMutable?: boolean;
+  } = {}): Promise<boolean> {
     try {
       return await ensureDependenciesAsync(this.projectRoot, {
         exp,
         skipPrompt,
+        isProjectMutable,
         installMessage: `It looks like you're trying to use TypeScript but don't have the required dependencies installed.`,
         warningMessage:
           "If you're not using TypeScript, please remove the TypeScript files from your project",

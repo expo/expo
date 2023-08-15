@@ -13,5 +13,6 @@ module.exports = {
   },
   experiments: {
     tsconfigPaths: process.env._EXPO_E2E_USE_PATH_ALIASES ? true : undefined,
+    typedRoutes: process.env._EXPO_E2E_USE_TYPED_ROUTES ? true : undefined
   },
 };

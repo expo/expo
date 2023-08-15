@@ -85,6 +85,13 @@ export const TEMPLATES: {
     destination: ({ webStaticPath }) => webStaticPath + '/index.html',
     dependencies: [],
   },
+  {
+    // `tsconfig.json` is special cased and don't not follow the template
+    id: 'tsconfig.json',
+    dependencies: [],
+    destination: () => 'tsconfig.json',
+    file: () => '',
+  },
 ];
 
 /** Generate the prompt choices. */
