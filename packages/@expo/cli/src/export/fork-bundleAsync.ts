@@ -10,7 +10,7 @@ import {
 } from '@expo/dev-server/build/metro/importMetroFromProject';
 import type { LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
-import Metro, { MetroConfig } from 'metro';
+import Metro from 'metro';
 import { ConfigT } from 'metro-config';
 import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
 
@@ -236,12 +236,10 @@ export function createBundleAsyncFunctionAsync(
     bundle: HelperOptions,
     emit: { css: boolean; assets: boolean; hermes: boolean }
   ): Promise<PickPartial<BundleOutput, 'css'>> => {
-    const buildID = `bundle_${nextBuildID++}_${bundle.platform}`;
-
     const { bundleOptions, bundleDetails } = getBundleOptions(bundle);
 
     reporter.update({
-      buildID,
+      buildID: bundleDetails.buildID,
       type: 'bundle_build_started',
       bundleDetails,
     });
@@ -275,7 +273,7 @@ export function createBundleAsyncFunctionAsync(
 
       // TODO: Rework the logs
       reporter.update({
-        buildID,
+        buildID: bundleDetails.buildID,
         type: 'bundle_build_done',
       });
 
@@ -289,7 +287,7 @@ export function createBundleAsyncFunctionAsync(
       };
     } catch (error) {
       reporter.update({
-        buildID,
+        buildID: bundleDetails.buildID,
         type: 'bundle_build_failed',
       });
 

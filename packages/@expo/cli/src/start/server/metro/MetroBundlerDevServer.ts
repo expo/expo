@@ -229,6 +229,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     return evalStaticRenderFunctionsBundle(this.projectRoot, code);
   }
+
   /** @returns the js file contents required to generate the static generation function. */
   private async buildForNodeAsync(options: Omit<HelperOptions, 'platform'>): Promise<string> {
     const metroBuildAsync = this.metroBuildAsync;
@@ -248,8 +249,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         platform: 'web',
         hot: false,
         lazy: false,
-        dev: false,
-        minify: false,
       },
       {
         css: false,

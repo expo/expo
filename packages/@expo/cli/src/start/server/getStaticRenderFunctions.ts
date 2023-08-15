@@ -66,23 +66,6 @@ const moveStaticRenderFunction = memoize(async (projectRoot: string, requiredMod
 });
 
 /** @returns the js file contents required to generate the static generation function. */
-export async function getStaticRenderFunctionsContentAsync(
-  projectRoot: string,
-  devServerUrl: string,
-  { dev = false, minify = false, environment }: StaticRenderOptions = {}
-): Promise<string> {
-  const root = getMetroServerRoot(projectRoot);
-  const requiredModuleId = getRenderModuleId(root);
-  let moduleId = requiredModuleId;
-
-  // Cannot be accessed using Metro's server API, we need to move the file
-  // into the project root and try again.
-  if (path.relative(root, moduleId).startsWith('..')) {
-    moduleId = await moveStaticRenderFunction(projectRoot, requiredModuleId);
-  }
-
-  return requireFileContentsWithMetro(root, devServerUrl, moduleId, { dev, minify, environment });
-}
 
 async function ensureFileInRootDirectory(projectRoot: string, otherFile: string) {
   // Cannot be accessed using Metro's server API, we need to move the file
@@ -130,7 +113,6 @@ export class MetroNodeError extends Error {
   }
 }
 
-let buildNumber = 0;
 export async function requireFileContentsWithMetro(
   projectRoot: string,
   metro: MetroServer,
@@ -140,28 +122,6 @@ export async function requireFileContentsWithMetro(
 ): Promise<string> {
   const url = await createMetroEndpointAsync(projectRoot, devServerUrl, absoluteFilePath, props);
 
-  // metro.build({
-  //   bundleType: 'bundle',
-  //   customResolverOptions: {
-  //     environment: props.environment,
-  //   },
-  //   customTransformOptions: {
-  //     environment: props.environment,
-  //   },
-  //   buildNumber,
-  //   // bundleOptions,
-  //   // entryFile: resolvedEntryFilePath,
-  //   // graphId,
-  //   // graphOptions,
-  //   // mres,
-  //   // onProgress,
-  //   // req,
-  //   // resolverOptions,
-  //   // serializerOptions,
-  //   // transformOptions,
-  //   // bundlePerfLogger: buildContext.bundlePerfLogger,
-  // })
-  // buildNumber++
   const res = await fetch(url);
 
   // TODO: Improve error handling
@@ -189,35 +149,6 @@ export async function requireFileContentsWithMetro(
   }
 
   return bun;
-}
-export async function requireWithMetro<T>(
-  projectRoot: string,
-  devServerUrl: string,
-  absoluteFilePath: string,
-  options: StaticRenderOptions = {}
-): Promise<T> {
-  const content = await requireFileContentsWithMetro(
-    projectRoot,
-    devServerUrl,
-    absoluteFilePath,
-    options
-  );
-  return evalMetro(content);
-}
-
-export async function getStaticRenderFunctions(
-  projectRoot: string,
-  devServerUrl: string,
-  options: StaticRenderOptions = {}
-): Promise<Record<string, (...args: any[]) => Promise<any>>> {
-  const scriptContents = await getStaticRenderFunctionsContentAsync(
-    projectRoot,
-    devServerUrl,
-    options
-  );
-
-  // wrap each function with a try/catch that uses Metro's error formatter
-  return evalStaticRenderFunctionsBundle(projectRoot, scriptContents);
 }
 
 export function evalStaticRenderFunctionsBundle(
