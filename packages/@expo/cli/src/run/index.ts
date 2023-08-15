@@ -2,8 +2,7 @@
 import chalk from 'chalk';
 
 import { Command } from '../../bin/cli';
-import { Log } from '../log';
-import { assertWithOptionsArgs } from '../utils/args';
+import { assertWithOptionsArgs, printHelp } from '../utils/args';
 import { CommandError, logCmdError } from '../utils/errors';
 import { selectAsync } from '../utils/prompts';
 import { logPlatformRunCommand } from './hints';
@@ -24,20 +23,10 @@ export const expoRun: Command = async (argv) => {
   );
 
   if (args['--help']) {
-    Log.exit(
-      chalk`
-  {bold Info}
-    Run the native app locally
-
-  {bold Usage}
-    {dim $} npx expo run android <dir>
-    {dim $} npx expo run ios <dir>
-
-  {bold Options}
-    {dim $} npx expo run android --help    Output Android usage information
-    {dim $} npx expo run ios --help        Output iOS usage information
-`,
-      0
+    printHelp(
+      'Run the native app locally',
+      `npx expo run <android|ios>`,
+      chalk`{dim $} npx expo run <android|ios> --help  Output usage information`
     );
   }
 
