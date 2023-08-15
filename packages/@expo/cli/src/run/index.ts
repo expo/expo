@@ -13,13 +13,12 @@ export const expoRun: Command = async (argv) => {
     {
       // Types
       '--help': Boolean,
-      '--platform': String,
       // Aliases
       '-h': '--help',
-      // All other flags are handled by `expoRunAndroid` or `expoRunIos`
     },
     {
       argv,
+      // Allow additional flags for both android and ios commands
       permissive: true,
     }
   );
@@ -31,32 +30,26 @@ export const expoRun: Command = async (argv) => {
     Run the native app locally
 
   {bold Usage}
-    {dim $} npx expo run:android <dir>
-    {dim $} npx expo run:ios <dir>
+    {dim $} npx expo run android <dir>
+    {dim $} npx expo run ios <dir>
 
   {bold Options}
-    -p, --platform <android|ios>     Run the native app on this platform
-    -h, --help                       Output usage information
-
-    {dim $} npx expo run:android --help    Output Android usage information
-    {dim $} npx expo run:ios --help        Output iOS usage information
+    {dim $} npx expo run android --help    Output Android usage information
+    {dim $} npx expo run ios --help        Output iOS usage information
 `,
       0
     );
   }
 
   try {
-    const platform =
-      args['--platform'] ??
-      (await selectAsync('Select the platform to run', [
+    let [platform, ...argsWithoutPlatform] = args._ ?? [];
+
+    if (!platform) {
+      platform = await selectAsync('Select the platform to run', [
         { title: 'Android', value: 'android' },
         { title: 'iOS', value: 'ios' },
-      ]));
-
-    // Filter `--platform=android|ios` or `--platform android|ios` from the args for `run:android|ios`
-    const argsWithoutPlatform = Object.values(args._).filter(
-      (flag) => !flag.startsWith('--platform') || ['android', 'ios'].includes(flag)
-    );
+      ]);
+    }
 
     logPlatformRunCommand(platform, argsWithoutPlatform);
 
