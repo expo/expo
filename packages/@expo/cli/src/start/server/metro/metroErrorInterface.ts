@@ -10,6 +10,7 @@ import { StackFrame } from 'stacktrace-parser';
 import terminalLink from 'terminal-link';
 
 import { Log } from '../../../log';
+import { stripAnsi } from '../../../utils/ansi';
 import { createMetroEndpointAsync } from '../getStaticRenderFunctions';
 // import type { CodeFrame, MetroStackFrame } from '@expo/metro-runtime/symbolicate';
 
@@ -122,7 +123,7 @@ export function logFromError({ error, projectRoot }: { error: Error; projectRoot
   return new LogBoxLog({
     level: 'static',
     message: {
-      content: error.message,
+      content: stripAnsi(error.message),
       substitutions: [],
     },
     isComponentError: false,
