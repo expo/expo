@@ -8,15 +8,21 @@ import {
   importMetroFromProject,
   importMetroServerFromProject,
 } from '@expo/dev-server/build/metro/importMetroFromProject';
-import type { LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import Metro from 'metro';
 import { ConfigT } from 'metro-config';
-import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
+import path from 'node:path';
 
-import { CSSAsset, getCssModulesFromBundler } from '../start/server/metro/getCssModulesFromBundler';
+import {
+  CSSAsset,
+  fileNameFromContents,
+  getCssModulesFromBundler,
+} from '../start/server/metro/getCssModulesFromBundler';
 import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
 import { MetroTerminalReporter } from '../start/server/metro/MetroTerminalReporter';
+
+import type { LoadOptions } from '@expo/metro-config';
+import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
 
 export type SerialAsset = {
   // 'styles.css'
@@ -325,19 +331,4 @@ export function createBundleAsyncFunctionAsync(
   };
 
   return buildAsync;
-}
-
-import path from 'node:path';
-import crypto from 'node:crypto';
-
-function hashString(str: string) {
-  return crypto.createHash('md5').update(str).digest('hex');
-}
-
-export function fileNameFromContents({ filepath, src }: { filepath: string; src: string }): string {
-  return getFileName(filepath) + '-' + hashString(filepath + src);
-}
-
-export function getFileName(module: string) {
-  return path.basename(module).replace(/\.[^.]+$/, '');
 }
