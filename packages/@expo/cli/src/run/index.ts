@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 import chalk from 'chalk';
 
+import { logPlatformRunCommand } from './hints';
 import { Command } from '../../bin/cli';
 import { assertWithOptionsArgs, printHelp } from '../utils/args';
 import { CommandError, logCmdError } from '../utils/errors';
-import { selectAsync } from '../utils/prompts';
-import { logPlatformRunCommand } from './hints';
 
 export const expoRun: Command = async (argv) => {
   const args = assertWithOptionsArgs(
@@ -22,18 +21,23 @@ export const expoRun: Command = async (argv) => {
     }
   );
 
-  if (args['--help']) {
-    printHelp(
-      'Run the native app locally',
-      `npx expo run <android|ios>`,
-      chalk`{dim $} npx expo run <android|ios> --help  Output usage information`
-    );
-  }
-
   try {
-    let [platform, ...argsWithoutPlatform] = args._ ?? [];
+    let [platform] = args._ ?? [];
+
+    // Remove the platform from raw arguments, when provided
+    const argsWithoutPlatform = !platform ? argv : argv?.splice(1);
+
+    // Do not capture `--help` when platform is provided
+    if (!platform && args['--help']) {
+      printHelp(
+        'Run the native app locally',
+        `npx expo run <android|ios>`,
+        chalk`{dim $} npx expo run <android|ios> --help  Output usage information`
+      );
+    }
 
     if (!platform) {
+      const { selectAsync } = await import('../utils/prompts');
       platform = await selectAsync('Select the platform to run', [
         { title: 'Android', value: 'android' },
         { title: 'iOS', value: 'ios' },
