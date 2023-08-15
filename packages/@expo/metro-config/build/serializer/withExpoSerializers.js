@@ -12,13 +12,6 @@ Object.defineProperty(exports, "SerialAsset", {
 exports.createSerializerFromSerialProcessors = createSerializerFromSerialProcessors;
 exports.withExpoSerializers = withExpoSerializers;
 exports.withSerializerPlugins = withSerializerPlugins;
-function _jscSafeUrl() {
-  const data = require("jsc-safe-url");
-  _jscSafeUrl = function () {
-    return data;
-  };
-  return data;
-}
 function _baseJSBundle() {
   const data = _interopRequireDefault(require("metro/src/DeltaBundler/Serializers/baseJSBundle"));
   _baseJSBundle = function () {
@@ -36,13 +29,6 @@ function _bundleToString() {
 function _environmentVariableSerializerPlugin() {
   const data = require("./environmentVariableSerializerPlugin");
   _environmentVariableSerializerPlugin = function () {
-    return data;
-  };
-  return data;
-}
-function _getCssDeps() {
-  const data = require("./getCssDeps");
-  _getCssDeps = function () {
     return data;
   };
   return data;
@@ -97,36 +83,8 @@ function getDefaultSerializer(fallbackSerializer) {
     return outputCode;
   };
   return async (...props) => {
-    const [,, graph, options] = props;
-    const jsCode = await defaultSerializer(...props);
-    if (!options.sourceUrl) {
-      return jsCode;
-    }
-    const sourceUrl = (0, _jscSafeUrl().isJscSafeUrl)(options.sourceUrl) ? (0, _jscSafeUrl().toNormalUrl)(options.sourceUrl) : options.sourceUrl;
-    const url = new URL(sourceUrl, 'https://expo.dev');
-    if (url.searchParams.get('platform') !== 'web' || url.searchParams.get('serializer.output') !== 'static') {
-      // Default behavior if `serializer.output=static` is not present in the URL.
-      return jsCode;
-    }
-    const cssDeps = (0, _getCssDeps().getCssSerialAssets)(graph.dependencies, {
-      projectRoot: options.projectRoot,
-      processModuleFilter: options.processModuleFilter
-    });
-    let jsAsset;
-    if (jsCode) {
-      const stringContents = typeof jsCode === 'string' ? jsCode : jsCode.code;
-      jsAsset = {
-        filename: options.dev ? 'index.js' : `_expo/static/js/web/${(0, _getCssDeps().fileNameFromContents)({
-          filepath: url.pathname,
-          src: stringContents
-        })}.js`,
-        originFilename: 'index.js',
-        type: 'js',
-        metadata: {},
-        source: stringContents
-      };
-    }
-    return JSON.stringify([jsAsset, ...cssDeps]);
+    // TODO: Anything...
+    return defaultSerializer(...props);
   };
 }
 function createSerializerFromSerialProcessors(processors, originalSerializer) {
