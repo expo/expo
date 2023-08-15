@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import chalk from 'chalk';
+import path from 'node:path';
 import resolveFrom from 'resolve-from';
 import { StackFrame } from 'stacktrace-parser';
 import terminalLink from 'terminal-link';
@@ -118,7 +119,45 @@ export function logFromError({ error, projectRoot }: { error: Error; projectRoot
     '@expo/metro-runtime/symbolicate'
   ));
 
-  const stack = parseErrorStack(error.stack);
+  let stack = parseErrorStack(error.stack);
+
+  if (error.type === 'TransformError') {
+    // type: 'TransformError',
+    // snippet: undefined,
+    // lineNumber: 4,
+    // column: 0,
+    // filename: 'app/index.tsx'
+
+    // Drop the code frame
+    error.message = error.message.split('\n\n')[0].trim();
+    stack = [
+      {
+        file: path.join(projectRoot, error.filename), // '/Users/evanbacon/Documents/GitHub/expo/node_modules/@babel/parser/lib/index.js',
+        methodName: '[unknown]',
+        // arguments: [],
+        lineNumber: error.lineNumber,
+        column: error.column,
+      },
+    ];
+  } else if ('targetModuleName' in error) {
+    //   Unable to resolve module stylis from /Users/evanbacon/Documents/GitHub/expo/apps/sandbox/app/index.tsx: stylis could not be found within the project or in these directories:
+    // node_modules
+    // ../../node_modules
+
+    // ../../node_modules
+
+    // Drop the code frame
+    error.message = `Unable to resolve module <b>${error.targetModuleName}</b>.`;
+    stack = [
+      {
+        file: error.originModulePath, // '/Users/evanbacon/Documents/GitHub/expo/apps/sandbox/app/index.tsx',
+        methodName: '[unknown]',
+        // TODO: Unclear how to get these, Metro should probably be sending down.
+        lineNumber: 0,
+        column: 0,
+      },
+    ];
+  }
 
   return new LogBoxLog({
     level: 'static',
