@@ -9,7 +9,6 @@ import {
   importMetroServerFromProject,
 } from '@expo/dev-server/build/metro/importMetroFromProject';
 import type { LoadOptions } from '@expo/metro-config';
-import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import chalk from 'chalk';
 import Metro from 'metro';
 import { ConfigT } from 'metro-config';
@@ -18,6 +17,18 @@ import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types
 import { CSSAsset, getCssModulesFromBundler } from '../start/server/metro/getCssModulesFromBundler';
 import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
 import { MetroTerminalReporter } from '../start/server/metro/MetroTerminalReporter';
+
+export type SerialAsset = {
+  // 'styles.css'
+  originFilename: string;
+  // '_expo/static/css/bc6aa0a69dcebf8e8cac1faa76705756.css'
+  filename: string;
+  // '\ndiv {\n    background: cyan;\n}\n\n'
+  source: string;
+  type: 'css' | 'js';
+
+  metadata: Record<string, string>;
+};
 
 /** The list of input keys will become optional, everything else will remain the same. */
 export type PickPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;

@@ -4,14 +4,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
-import { MixedOutput } from 'metro';
 import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
 import bundleToString from 'metro/src/lib/bundleToString';
 import { InputConfigT, SerializerConfigT } from 'metro-config';
 
 import { environmentVariableSerializerPlugin } from './environmentVariableSerializerPlugin';
-import { fileNameFromContents, getCssSerialAssets } from './getCssDeps';
 import { SerialAsset } from './serializerAssets';
 import { env } from '../env';
 
@@ -60,48 +57,8 @@ function getDefaultSerializer(fallbackSerializer?: Serializer | null): Serialize
   return async (
     ...props: SerializerParameters
   ): Promise<string | { code: string; map: string }> => {
-    const [, , graph, options] = props;
-    const jsCode = await defaultSerializer(...props);
-
-    if (!options.sourceUrl) {
-      return jsCode;
-    }
-    const sourceUrl = isJscSafeUrl(options.sourceUrl)
-      ? toNormalUrl(options.sourceUrl)
-      : options.sourceUrl;
-    const url = new URL(sourceUrl, 'https://expo.dev');
-    if (
-      url.searchParams.get('platform') !== 'web' ||
-      url.searchParams.get('serializer.output') !== 'static'
-    ) {
-      // Default behavior if `serializer.output=static` is not present in the URL.
-      return jsCode;
-    }
-
-    const cssDeps = getCssSerialAssets<MixedOutput>(graph.dependencies, {
-      projectRoot: options.projectRoot,
-      processModuleFilter: options.processModuleFilter,
-    });
-
-    let jsAsset: SerialAsset | undefined;
-
-    if (jsCode) {
-      const stringContents = typeof jsCode === 'string' ? jsCode : jsCode.code;
-      jsAsset = {
-        filename: options.dev
-          ? 'index.js'
-          : `_expo/static/js/web/${fileNameFromContents({
-              filepath: url.pathname,
-              src: stringContents,
-            })}.js`,
-        originFilename: 'index.js',
-        type: 'js',
-        metadata: {},
-        source: stringContents,
-      };
-    }
-
-    return JSON.stringify([jsAsset, ...cssDeps]);
+    // TODO: Anything...
+    return defaultSerializer(...props);
   };
 }
 

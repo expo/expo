@@ -1,5 +1,4 @@
 import { MetroConfig } from '@expo/metro-config';
-import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import crypto from 'crypto';
 import type { Module } from 'metro';
 import { getJsOutput, isJsModule } from 'metro/src/DeltaBundler/Serializers/helpers/js';
@@ -8,6 +7,7 @@ import type IncrementalBundler from 'metro/src/IncrementalBundler';
 import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
 import path from 'path';
 
+import type { SerialAsset } from '../../../export/fork-bundleAsync';
 // import { getAssetData } from 'metro/src/Assets';
 
 type Options = {
