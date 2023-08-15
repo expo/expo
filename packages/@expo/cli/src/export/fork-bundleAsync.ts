@@ -9,6 +9,7 @@ import {
   importMetroServerFromProject,
 } from '@expo/dev-server/build/metro/importMetroFromProject';
 import type { LoadOptions } from '@expo/metro-config';
+import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import chalk from 'chalk';
 import Metro from 'metro';
 import { ConfigT } from 'metro-config';
@@ -43,6 +44,7 @@ export type BundleOutput = {
   hermesSourcemap?: string;
   css: CSSAsset[];
   assets: readonly BundleAssetWithFileHashes[];
+  artifacts?: SerialAsset[];
 };
 
 let nextBuildID = 0;
@@ -271,6 +273,21 @@ export function createBundleAsyncFunctionAsync(
           : undefined,
       ]);
 
+      // if (jsCode) {
+      const jsAsset: SerialAsset = {
+        filename: bundle.dev
+          ? 'index.js'
+          : `_expo/static/js/web/${fileNameFromContents({
+              filepath: path.relative(projectRoot, bundle.entryFile),
+              src: code,
+            })}.js`,
+        originFilename: 'index.js',
+        type: 'js',
+        metadata: {},
+        source: code,
+      };
+      // }
+
       // TODO: Rework the logs
       reporter.update({
         buildID: bundleDetails.buildID,
@@ -278,6 +295,7 @@ export function createBundleAsyncFunctionAsync(
       });
 
       return {
+        artifacts: [jsAsset, ...(css || [])],
         code,
         map,
         assets: assets as readonly BundleAssetWithFileHashes[],
@@ -296,4 +314,19 @@ export function createBundleAsyncFunctionAsync(
   };
 
   return buildAsync;
+}
+
+import path from 'node:path';
+import crypto from 'node:crypto';
+
+function hashString(str: string) {
+  return crypto.createHash('md5').update(str).digest('hex');
+}
+
+export function fileNameFromContents({ filepath, src }: { filepath: string; src: string }): string {
+  return getFileName(filepath) + '-' + hashString(filepath + src);
+}
+
+export function getFileName(module: string) {
+  return path.basename(module).replace(/\.[^.]+$/, '');
 }

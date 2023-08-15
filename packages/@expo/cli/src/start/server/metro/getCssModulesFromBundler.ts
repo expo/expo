@@ -1,4 +1,5 @@
 import { MetroConfig } from '@expo/metro-config';
+import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import crypto from 'crypto';
 import type { Module } from 'metro';
 import { getJsOutput, isJsModule } from 'metro/src/DeltaBundler/Serializers/helpers/js';
@@ -40,7 +41,7 @@ export async function getCssModulesFromBundler(
   config: MetroConfig,
   incrementalBundler: IncrementalBundler,
   options: any
-): Promise<CSSAsset[]> {
+): Promise<SerialAsset[]> {
   // Static CSS is a web-only feature.
   if (options.platform !== 'web') {
     return [];
@@ -59,7 +60,8 @@ export async function getCssModulesFromBundler(
     processModuleFilter: config.serializer.processModuleFilter,
     assetPlugins: config.transformer.assetPlugins,
     platform: transformOptions.platform,
-    projectRoot: config.server.unstable_serverRoot ?? config.projectRoot,
+    projectRoot: config.projectRoot,
+    // projectRoot: config.server.unstable_serverRoot ?? config.projectRoot,
     publicPath: config.transformer.publicPath,
   });
 }
@@ -72,7 +74,7 @@ function getCssModules(
   dependencies: ReadOnlyDependencies,
   { processModuleFilter, projectRoot }: Options
 ) {
-  const promises = [];
+  const assets: SerialAsset[] = [];
 
   for (const module of dependencies.values()) {
     if (
@@ -84,22 +86,32 @@ function getCssModules(
       const cssMetadata = getCssMetadata(module);
       if (cssMetadata) {
         const contents = cssMetadata.code;
+        const originFilename = path.relative(projectRoot, module.path);
+
         const filename = path.join(
           // Consistent location
           STATIC_EXPORT_DIRECTORY,
           // Hashed file contents + name for caching
-          getFileName(module.path) + '-' + hashString(module.path + contents) + '.css'
+          fileNameFromContents({
+            // Stable filename for hashing in CI.
+            filepath: originFilename,
+            src: contents,
+          }) + '.css'
         );
-        promises.push({
-          originFilename: path.relative(projectRoot, module.path),
+        assets.push({
+          type: 'css',
+          originFilename,
           filename,
           source: contents,
+          metadata: {
+            hmrId: pathToHtmlSafeName(originFilename),
+          },
         });
       }
     }
   }
 
-  return promises;
+  return assets;
 }
 
 function getCssMetadata(module: Module): MetroModuleCSSMetadata | null {
@@ -115,6 +127,14 @@ function getCssMetadata(module: Module): MetroModuleCSSMetadata | null {
   return null;
 }
 
+export function fileNameFromContents({ filepath, src }: { filepath: string; src: string }): string {
+  return getFileName(filepath) + '-' + hashString(filepath + src);
+}
+
 export function getFileName(module: string) {
   return path.basename(module).replace(/\.[^.]+$/, '');
+}
+
+export function pathToHtmlSafeName(path: string) {
+  return path.replace(/[^a-zA-Z0-9_]/g, '_');
 }

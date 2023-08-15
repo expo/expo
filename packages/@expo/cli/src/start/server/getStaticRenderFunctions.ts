@@ -9,14 +9,11 @@ import fetch from 'node-fetch';
 import path from 'path';
 import requireString from 'require-from-string';
 import resolveFrom from 'resolve-from';
-import { type Server as MetroServer } from 'metro';
 
 import { logMetroError } from './metro/metroErrorInterface';
 import { getMetroServerRoot } from './middleware/ManifestMiddleware';
-import { stripAnsi } from '../../utils/ansi';
 import { delayAsync } from '../../utils/delay';
 import { SilentError } from '../../utils/errors';
-import { memoize } from '../../utils/fn';
 import { profile } from '../../utils/profile';
 
 const debug = require('debug')('expo:start:server:node-renderer') as typeof console.log;
@@ -52,18 +49,6 @@ type StaticRenderOptions = {
   platform?: string;
   environment?: 'node';
 };
-
-const moveStaticRenderFunction = memoize(async (projectRoot: string, requiredModuleId: string) => {
-  // Copy the file into the project to ensure it works in monorepos.
-  // This means the file cannot have any relative imports.
-  const tempDir = path.join(projectRoot, '.expo/static');
-  await fs.promises.mkdir(tempDir, { recursive: true });
-  const moduleId = path.join(tempDir, 'render.js');
-  await fs.promises.writeFile(moduleId, await fs.promises.readFile(requiredModuleId, 'utf8'));
-  // Sleep to give watchman time to register the file.
-  await delayAsync(50);
-  return moduleId;
-});
 
 /** @returns the js file contents required to generate the static generation function. */
 
@@ -111,44 +96,6 @@ export class MetroNodeError extends Error {
   ) {
     super(message);
   }
-}
-
-export async function requireFileContentsWithMetro(
-  projectRoot: string,
-  metro: MetroServer,
-  devServerUrl: string,
-  absoluteFilePath: string,
-  props: StaticRenderOptions = {}
-): Promise<string> {
-  const url = await createMetroEndpointAsync(projectRoot, devServerUrl, absoluteFilePath, props);
-
-  const res = await fetch(url);
-
-  // TODO: Improve error handling
-  if (res.status === 500) {
-    const text = await res.text();
-    if (text.startsWith('{"originModulePath"') || text.startsWith('{"type":"TransformError"')) {
-      const errorObject = JSON.parse(text);
-
-      throw new MetroNodeError(stripAnsi(errorObject.message) ?? errorObject.message, errorObject);
-    }
-    throw new Error(`[${res.status}]: ${res.statusText}\n${text}`);
-  }
-
-  if (!res.ok) {
-    throw new Error(`Error fetching bundle for static rendering: ${res.status} ${res.statusText}`);
-  }
-
-  const content = await res.text();
-
-  let bun = wrapBundle(content);
-
-  // This exposes the entire environment to the bundle.
-  if (props.environment === 'node') {
-    bun = stripProcess(bun);
-  }
-
-  return bun;
 }
 
 export function evalStaticRenderFunctionsBundle(
