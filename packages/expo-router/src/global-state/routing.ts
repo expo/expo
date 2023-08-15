@@ -2,7 +2,6 @@ import { CommonActions, getActionFromState, StackActions } from '@react-navigati
 import { TabActions } from '@react-navigation/native';
 import * as Linking from 'expo-linking';
 
-import type { RouterStore } from './router-store';
 import { Href, resolveHref } from '../link/href';
 import { resolve } from '../link/path';
 import {
@@ -13,6 +12,7 @@ import {
   isMovingToSiblingRoute,
 } from '../link/stateOperations';
 import { hasUrlProtocolPrefix } from '../utils/url';
+import type { RouterStore } from './router-store';
 
 function assertIsReady(store: RouterStore) {
   if (!store.navigationRef.isReady()) {
@@ -36,7 +36,14 @@ export function goBack(this: RouterStore) {
 }
 
 export function canGoBack(this: RouterStore): boolean {
-  assertIsReady(this);
+  // Return a default value here if the navigation hasn't mounted yet.
+  // This can happen if the user calls `canGoBack` from the Root Layout route
+  // before mounting a navigator. This behavior exists due to React Navigation being dynamically
+  // constructed at runtime. We can get rid of this in the future if we use
+  // the static configuration internally.
+  if (!this.navigationRef.isReady()) {
+    return false;
+  }
   return this.navigationRef?.current?.canGoBack() ?? false;
 }
 

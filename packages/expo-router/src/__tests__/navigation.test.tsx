@@ -279,6 +279,7 @@ it('can push nested initial route name', () => {
   act(() => router.push('/settings'));
   expect(screen).toHavePathname('/settings');
 });
+
 it('can replace nested initial route name', () => {
   renderRouter({
     _layout: {
@@ -296,4 +297,21 @@ it('can replace nested initial route name', () => {
   expect(screen).toHavePathname('/');
   act(() => router.replace('/settings'));
   expect(screen).toHavePathname('/settings');
+});
+
+it('can check goBack before navigation mounts', () => {
+  renderRouter({
+    _layout: {
+      default() {
+        // No navigator mounted at the root, this should prevent navigation from working.
+        return <></>;
+      },
+    },
+    index: () => <Text />,
+  });
+
+  expect(screen).toHavePathname('/');
+
+  // NOTE: This also tests that `canGoBack` does not throw.
+  expect(router.canGoBack()).toBe(false);
 });
