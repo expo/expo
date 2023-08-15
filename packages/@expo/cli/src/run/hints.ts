@@ -9,7 +9,7 @@ export function logDeviceArgument(id: string) {
 }
 
 export function logPlatformRunCommand(platform: string, argv: string[] = []) {
-  Log.log(chalk.dim(`› Using expo run ${platform} ${argv.join(' ')}`));
+  Log.log(chalk.dim(`› Using expo run:${platform} ${argv.join(' ')}`));
 }
 
 export function logProjectLogsLocation() {
