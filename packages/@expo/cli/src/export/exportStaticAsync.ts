@@ -41,9 +41,11 @@ export async function unstable_exportStaticAsync(projectRoot: string, options: O
     },
   ]);
 
-  await exportFromServerAsync(projectRoot, devServerManager, options);
-
-  await devServerManager.stopAsync();
+  try {
+    await exportFromServerAsync(projectRoot, devServerManager, options);
+  } finally {
+    await devServerManager.stopAsync();
+  }
 }
 
 /** Match `(page)` -> `page` */
