@@ -6,13 +6,19 @@ on:
     paths:
       - .github/workflows/cli.yml
       - packages/@expo/cli/**
+      - packages/@expo/metro-runtime/**
+      - packages/@expo/metro-config/**
       - packages/@expo/fingerprint/**
+      - packages/expo-router/**
       - yarn.lock
   pull_request:
     paths:
       - .github/workflows/cli.yml
       - packages/@expo/cli/**
+      - packages/@expo/metro-runtime/**
+      - packages/@expo/metro-config/**
       - packages/@expo/fingerprint/**
+      - packages/expo-router/**
       - yarn.lock
   schedule:
     - cron: 0 14 * * *
