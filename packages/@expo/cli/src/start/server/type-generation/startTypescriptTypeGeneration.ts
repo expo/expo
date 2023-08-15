@@ -12,8 +12,8 @@ import { ServerLike } from '../BundlerDevServer';
 import { getRouterDirectory } from '../metro/router';
 
 export interface TypeScriptTypeGenerationOptions {
-  server: ServerLike;
-  metro: Server | null;
+  server?: ServerLike;
+  metro?: Server | null;
   projectRoot: string;
 }
 

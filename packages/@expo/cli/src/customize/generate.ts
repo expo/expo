@@ -88,8 +88,14 @@ async function generateAsync(
 ) {
   // Copy files
   await Promise.all(
-    answer.map((file) => {
+    answer.map(async (file) => {
       const template = TEMPLATES[file];
+
+      if (template.id === 'tsconfig.json') {
+        const { typescript } = await import('./typescript');
+        return typescript(projectRoot);
+      }
+
       const projectFilePath = path.resolve(projectRoot, template.destination(props));
       // copy the file from template
       return copyAsync(template.file(projectRoot), projectFilePath, {
