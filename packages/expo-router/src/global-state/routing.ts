@@ -36,7 +36,14 @@ export function goBack(this: RouterStore) {
 }
 
 export function canGoBack(this: RouterStore): boolean {
-  assertIsReady(this);
+  // Return a default value here if the navigation hasn't mounted yet.
+  // This can happen if the user calls `canGoBack` from the Root Layout route
+  // before mounting a navigator. This behavior exists due to React Navigation being dynamically
+  // constructed at runtime. We can get rid of this in the future if we use
+  // the static configuration internally.
+  if (!this.navigationRef.isReady()) {
+    return false;
+  }
   return this.navigationRef?.current?.canGoBack() ?? false;
 }
 
