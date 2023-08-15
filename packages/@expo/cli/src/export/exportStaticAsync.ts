@@ -94,8 +94,7 @@ export async function exportFromServerAsync(
   const devServer = devServerManager.getDefaultDevServer();
   assert(devServer instanceof MetroBundlerDevServer);
 
-  const [manifest, resources, renderAsync] = await Promise.all([
-    devServer.getRoutesAsync(),
+  const [resources, { manifest, renderAsync }] = await Promise.all([
     devServer.getStaticResourcesAsync({ mode: 'production', minify }),
     devServer.getStaticRenderFunctionAsync({
       mode: 'production',

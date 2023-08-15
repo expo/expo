@@ -104,12 +104,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return port;
   }
 
-  /** Get routes from Expo Router. */
-  async getRoutesAsync() {
-    const { getManifest } = await this.metroRequireStaticRenderFunctionsAsync({});
-    return getManifest({ fetchData: true });
-  }
-
   async composeResourcesWithHtml({
     mode,
     resources,
@@ -141,12 +135,17 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }) {
     const url = this.getDevServerUrl()!;
 
-    const { getStaticContent } = await this.metroRequireStaticRenderFunctionsAsync({
+    const { getStaticContent, getManifest } = await this.metroRequireStaticRenderFunctionsAsync({
       dev: mode !== 'production',
       minify,
     });
-    return async (path: string) => {
-      return await getStaticContent(new URL(path, url));
+    return {
+      // Get routes from Expo Router.
+      manifest: await getManifest({ fetchData: true }),
+      // Get route generating function
+      async renderAsync(path: string) {
+        return await getStaticContent(new URL(path, url));
+      },
     };
   }
 
@@ -163,13 +162,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const { artifacts } = await metroBuildAsync(
       {
-        customResolverOptions: {
-          environment: 'client',
-        },
-        // @ts-expect-error
-        customTransformOptions: {
-          environment: 'client',
-        },
+        // customResolverOptions: {
+        //   environment: 'client',
+        // },
+        // // @ts-expect-error
+        // customTransformOptions: {
+        //   environment: 'client',
+        // },
         entryFile: getEntryWithServerRoot(this.projectRoot, getConfig(this.projectRoot), 'web'),
         dev: mode !== 'production',
         platform: 'web',
