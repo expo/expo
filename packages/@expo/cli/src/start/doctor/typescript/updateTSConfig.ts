@@ -8,24 +8,20 @@ export const baseTSConfigName = 'expo/tsconfig.base';
 
 export async function updateTSConfigAsync({
   tsConfigPath,
-  isBootstrapping,
 }: {
   tsConfigPath: string;
-  isBootstrapping: boolean;
 }): Promise<void> {
-  const shouldGenerate = !fs.existsSync(tsConfigPath);
-  if (isBootstrapping) {
-    await JsonFile.writeAsync(tsConfigPath, {});
+  const shouldGenerate = !fs.existsSync(tsConfigPath) || fs.statSync(tsConfigPath).size === 0;
+  if (shouldGenerate) {
+    await JsonFile.writeAsync(tsConfigPath, { compilerOptions: {} });
   }
 
   const projectTSConfig = JsonFile.read(tsConfigPath, {
     // Some tsconfig.json files have a generated comment in the file.
     json5: true,
   });
-  if (projectTSConfig.compilerOptions == null) {
-    projectTSConfig.compilerOptions = {};
-    isBootstrapping = true;
-  }
+
+  projectTSConfig.compilerOptions ??= {};
 
   const modifications: [string, string][] = [];
 
@@ -45,13 +41,13 @@ export async function updateTSConfigAsync({
   await JsonFile.writeAsync(tsConfigPath, projectTSConfig);
 
   // If no changes, then quietly bail out
-  if (isBootstrapping && !shouldGenerate) {
+  if (modifications.length === 0) {
     return;
   }
 
   Log.log();
 
-  if (isBootstrapping) {
+  if (shouldGenerate) {
     Log.log(chalk`{bold TypeScript}: A {cyan tsconfig.json} has been auto-generated`);
   } else {
     Log.log(
