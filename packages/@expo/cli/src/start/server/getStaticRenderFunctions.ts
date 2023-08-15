@@ -5,10 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 import fs from 'fs';
-import fetch from 'node-fetch';
 import path from 'path';
 import requireString from 'require-from-string';
-import resolveFrom from 'resolve-from';
 
 import { logMetroError } from './metro/metroErrorInterface';
 import { getMetroServerRoot } from './middleware/ManifestMiddleware';
@@ -29,18 +27,6 @@ export function stripProcess(str: string) {
   // TODO: Remove from the metro prelude
   return str.replace(/process=this\.process\|\|{},/m, '');
 }
-
-// TODO(EvanBacon): Group all the code together and version.
-export const getRenderModuleId = (projectRoot: string): string => {
-  const moduleId = resolveFrom.silent(projectRoot, 'expo-router/node/render.js');
-  if (!moduleId) {
-    throw new Error(
-      `A version of expo-router with Node.js support is not installed in the project.`
-    );
-  }
-
-  return moduleId;
-};
 
 type StaticRenderOptions = {
   // Ensure the style format is `css-xxxx` (prod) instead of `css-view-xxxx` (dev)

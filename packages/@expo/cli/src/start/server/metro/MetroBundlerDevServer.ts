@@ -10,7 +10,6 @@ import * as runtimeEnv from '@expo/env';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import assert from 'assert';
 import chalk from 'chalk';
-import fetch from 'node-fetch';
 import path from 'path';
 
 import { instantiateMetroAsync } from './instantiateMetro';
@@ -25,7 +24,6 @@ import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import {
   evalStaticRenderFunctionsBundle,
-  getRenderModuleId,
   stripProcess,
   wrapBundle,
 } from '../getStaticRenderFunctions';
@@ -49,6 +47,19 @@ import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
 import { createBundleAsyncFunctionAsync, HelperOptions } from '../../../export/fork-bundleAsync';
+import resolveFrom from 'resolve-from';
+
+// TODO(EvanBacon): Group all the code together and version.
+const getRenderModuleId = (projectRoot: string): string => {
+  const moduleId = resolveFrom.silent(projectRoot, 'expo-router/node/render.js');
+  if (!moduleId) {
+    throw new Error(
+      `A version of expo-router with Node.js support is not installed in the project.`
+    );
+  }
+
+  return moduleId;
+};
 
 class ForwardHtmlError extends CommandError {
   constructor(
@@ -136,6 +147,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
   }
 
+  /** Returns a list of static assets that must be added to the HTML files in order to be preloaded on web. */
   async getStaticResourcesAsync({
     mode,
     minify = mode !== 'development',
@@ -143,10 +155,33 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     mode: string;
     minify?: boolean;
   }) {
-    return this.fetchStaticAssetsForBundleAsync({
-      dev: mode !== 'production',
-      minify,
-    });
+    const metroBuildAsync = this.metroBuildAsync;
+    assert(metroBuildAsync, 'Dev server must be started');
+
+    const { artifacts } = await metroBuildAsync(
+      {
+        customResolverOptions: {
+          environment: 'client',
+        },
+        // @ts-expect-error
+        customTransformOptions: {
+          environment: 'client',
+        },
+        entryFile: getEntryWithServerRoot(this.projectRoot, getConfig(this.projectRoot), 'web'),
+        dev: mode !== 'production',
+        platform: 'web',
+        minify,
+        hot: false,
+        lazy: shouldEnableAsyncImports(this.projectRoot),
+      },
+      {
+        css: true,
+        assets: false,
+        hermes: false,
+      }
+    );
+
+    return artifacts!;
   }
 
   private async renderStaticErrorAsync(error: Error) {
@@ -201,44 +236,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     bun = stripProcess(bun);
 
     return bun;
-  }
-
-  /** @returns the js file contents required to generate the static generation function. */
-  private async fetchStaticAssetsForBundleAsync(
-    options: Omit<HelperOptions, 'platform' | 'entryFile'>
-  ) {
-    const metroBuildAsync = this.metroBuildAsync;
-    assert(metroBuildAsync, 'Dev server must be started');
-
-    const { artifacts } = await metroBuildAsync(
-      {
-        // customSerializerOptions: {
-        //   output: 'static',
-        //   ...options.customSerializerOptions,
-        // },
-        customResolverOptions: {
-          environment: 'client',
-          ...options.customResolverOptions,
-        },
-        // @ts-expect-error
-        customTransformOptions: {
-          environment: 'client',
-          ...options.customTransformOptions,
-        },
-        entryFile: getEntryWithServerRoot(this.projectRoot, getConfig(this.projectRoot), 'web'),
-        ...options,
-        platform: 'web',
-        hot: false,
-        lazy: shouldEnableAsyncImports(this.projectRoot),
-      },
-      {
-        css: true,
-        assets: false,
-        hermes: false,
-      }
-    );
-
-    return artifacts!;
   }
 
   async getStaticPageAsync(

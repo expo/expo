@@ -29,21 +29,23 @@ export async function unstable_exportStaticAsync(projectRoot: string, options: O
       learnMore('https://docs.expo.dev/router/reference/static-rendering/')
   );
 
+  // TODO: Prevent starting the watcher.
   const devServerManager = new DevServerManager(projectRoot, {
     minify: options.minify,
     mode: 'production',
     location: {},
   });
-
   await devServerManager.startAsync([
     {
       type: 'metro',
     },
   ]);
 
-  await exportFromServerAsync(projectRoot, devServerManager, options);
-
-  await devServerManager.stopAsync();
+  try {
+    await exportFromServerAsync(projectRoot, devServerManager, options);
+  } finally {
+    await devServerManager.stopAsync();
+  }
 }
 
 /** Match `(page)` -> `page` */
