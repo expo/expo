@@ -21,7 +21,11 @@ Before you go further, you need to be sure that you have located the error messa
 
 ### Runtime errors
 
-Refer to the [debugging guide](/debugging/runtime-issues/#production-errors) to learn how to locate logs when your release builds are crashing at runtime.
+Common questions that fall under this category are: "my app runs well locally by crashes immediately when I run a build" or "my app works in Expo Go but hangs on the splash screen in my build". When your app builds successfully but crashes or hangs when you run it, this is considered a runtime error.
+
+Refer to the ["Proudction errors" section of the debugging guide](/debugging/runtime-issues/#production-errors) to learn how to locate logs when your release builds are crashing at runtime.
+
+If can't find any useful information through this approch, try [narrowing down the source of the crash step by step](https://expo.fyi/manual-debugging).
 
 ### Build errors
 
@@ -107,7 +111,11 @@ You can verify that your project builds on your local machine with the `npx expo
   ]}
 />
 
-> In managed projects, these commands will run `npx expo prebuild` to generate native projects &mdash; you likely want to [clean up the changes](https://expo.fyi/prebuild-cleanup) once you are done troubleshooting.
+> If use [CNG](/workflow/continuous-native-generation.mdx), these commands will run `npx expo prebuild` to generate native projects in order to compile them.You likely want to [clean up the changes](https://expo.fyi/prebuild-cleanup) once you are done troubleshooting, unless you want to start managing these projects directly instead of generating them on demand.
+> <br/>
+> You can alternatively run a local build with `eas build --local` &mdash; this command will run a series of steps that is as close as it can be to what runs remotely on the hosted EAS Build service. It will copy your project to a temporary directory and make any necessary changes there. [Learn how to set this up and use it for debugging](/build-reference/local-builds.mdx#using-local-builds-for-debugging).
+
+If your native toolchains are installed correctly and you are unable to build and run your project in release mode on your local machine, it will not build on EAS Build. Fix the issues locally, then try again on EAS Build. The other advice in this doc may be useful to help you resolve the issue locally, but often this requires some knowledge of native tooling or judicious application of Google, Stack Overflow, and GitHub Issues.
 
 <Collapsible summary="Don't have Xcode and Android Studio set up on your machine?">
 
@@ -117,20 +125,23 @@ If you are willing and able to set up the appropriate native tools, then refer t
 
 </Collapsible>
 
-If your native toolchains are installed correctly and you are unable to build and run your project in release mode on your local machine, it will not build on EAS Build. Fix the issues locally, then try again on EAS Build. The other advice in this doc may be useful to help you resolve the issue locally, but often this requires some knowledge of native tooling or judicious application of Google, Stack Overflow, and GitHub Issues.
 
-### What if my project builds locally but not on EAS Build?
+<Collapsible summary="My app builds locally, but not on EAS Build">
 
-If you find yourself in this situation, it's time to narrow down what configuration exists on your machine that hasn't been set up for your project on EAS Build yet.
+By default, EAS Build follows a relatively straightforward process for building your app (learn more: [Android](/build-reference/android-builds.mdx), [iOS](/build-reference/ios-builds.mdx)), and if `npx expo run:android --variant release` & `npx expo run:ios --configuration Release` work locally, but your builds fail, then it's time to narrow down what configuration exists on your machine that hasn't been set up for your project on EAS Build yet.
 
-There are two ways to approach this, which are quite similar:
+- Do a fresh `git clone` of your project to a new directory and get it running, ideally on a different machine. Pay attention to each of the steps that are needed and verify that they are also configured for EAS Build.
+- Check that your [environment variables](/guides/environment-variables.mdx) are properly configured.
+- Verify that versions of Node.js, npm, Yarn, Xcode, Java, and other tools are the same in both environments.
+- Ensure that the archive you are uploading to EAS Build includes the same relevant source files ([learn more](https://expo.fyi/eas-build-archive)).
 
-- Do a fresh `git clone` of your project to a new directory and get it running. Pay attention to each of the steps that are needed and verify that they are also configured for EAS Build.
-- Run a local build with `eas build --local`. This command will locally run a process that is as close as it can be to the remote, hosted EAS Build service. [Learn how to set this up and use it for debugging](/build-reference/local-builds.mdx#using-local-builds-for-debugging).
+</Collapsible>
 
-### Why does my production app not match my development app?
+<Collapsible summary="Why does my production app not match my development app?">
 
 You can test how the JS part of your app will run in production by starting it with [`npx expo start --no-dev`](/workflow/development-mode/#production-mode). This tells the bundler to minify JavaScript before serving it, most notably stripping code protected by the `__DEV__` boolean. This will remove most of the logging, HMR, Fast Refresh functionality, and make debugging a bit harder, but you can iterate on the production bundle faster this way.
+
+</Collapsible>
 
 ## Still having trouble?
 
