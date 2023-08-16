@@ -56,9 +56,7 @@ jobs:
         run: pod env
         working-directory: apps/bare-expo/ios
       - name: 🥥 Install pods in apps/bare-expo/ios
-        run: |
-          pod update hermes-engine --no-repo-update
-          pod install
+        run: npx pod-install
         working-directory: apps/bare-expo/ios
       - name: 🧹 Clean Detox
         run: yarn detox:clean
