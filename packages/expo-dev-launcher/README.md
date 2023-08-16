@@ -4,7 +4,7 @@
 
 ## Documentation
 
-You can find more information in the [Expo documentation](https://docs.expo.dev/home/develop/development-builds/introduction).
+You can find more information in the [Expo documentation](https://docs.expo.dev/develop/development-builds/introduction).
 
 ## Contributing
 
