@@ -8,7 +8,6 @@ import { getConfig } from '@expo/config';
 import { prependMiddleware } from '@expo/dev-server';
 import * as runtimeEnv from '@expo/env';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
-import assert from 'assert';
 import chalk from 'chalk';
 import fetch from 'node-fetch';
 import path from 'path';
