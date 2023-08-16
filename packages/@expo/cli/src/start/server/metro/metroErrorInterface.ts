@@ -12,7 +12,7 @@ import terminalLink from 'terminal-link';
 
 import { Log } from '../../../log';
 import { stripAnsi } from '../../../utils/ansi';
-import { createMetroEndpointAsync } from '../getStaticRenderFunctions';
+import { createSafeMetroEndpointAsync } from '../createSafeMetroEndpoint';
 // import type { CodeFrame, MetroStackFrame } from '@expo/metro-runtime/symbolicate';
 
 type CodeFrame = {
@@ -239,7 +239,7 @@ export async function getErrorOverlayHtmlAsync({
     logBoxContext
   )}</script></body></html>`;
 
-  const errorOverlayEntry = await createMetroEndpointAsync(
+  const errorOverlayEntry = await createSafeMetroEndpointAsync(
     projectRoot,
     // Keep the URL relative
     '',

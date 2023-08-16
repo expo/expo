@@ -56,7 +56,7 @@ async function ensureFileInRootDirectory(projectRoot: string, otherFile: string)
   return moduleId;
 }
 
-export async function createMetroEndpointAsync(
+export async function createSafeMetroEndpointAsync(
   projectRoot: string,
   devServerUrl: string,
   absoluteFilePath: string,
@@ -73,15 +73,6 @@ export async function createMetroEndpointAsync(
     url += `&resolver.environment=${environment}&transform.environment=${environment}`;
   }
   return url;
-}
-
-export class MetroNodeError extends Error {
-  constructor(
-    message: string,
-    public rawObject: any
-  ) {
-    super(message);
-  }
 }
 
 export function evalStaticRenderFunctionsBundle(

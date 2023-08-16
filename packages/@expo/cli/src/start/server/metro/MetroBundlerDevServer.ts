@@ -27,7 +27,7 @@ import {
   evalStaticRenderFunctionsBundle,
   stripProcess,
   wrapBundle,
-} from '../getStaticRenderFunctions';
+} from '../createSafeMetroEndpoint';
 import { ContextModuleSourceMapsMiddleware } from '../middleware/ContextModuleSourceMapsMiddleware';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
 import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
