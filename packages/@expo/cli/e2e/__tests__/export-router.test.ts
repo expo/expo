@@ -58,7 +58,7 @@ afterAll(() => {
 
 beforeEach(() => ensurePortFreeAsync(19000));
 
-xdescribe('static-rendering', () => {
+describe('static-rendering', () => {
   const projectRoot = ensureTesterReady('static-rendering');
   const outputDir = path.join(projectRoot, 'dist-static-rendering');
 
