@@ -12,7 +12,7 @@ next time you need to upgrade, install a new module, or otherwise change the nat
 
 ## Documentation
 
-You can find more information in the [Expo documentation](https://docs.expo.dev/home/develop/development-builds/introduction).
+You can find more information in the [Expo documentation](https://docs.expo.dev/develop/development-builds/introduction).
 
 ## Issues
 
