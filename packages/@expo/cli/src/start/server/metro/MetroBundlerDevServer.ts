@@ -165,13 +165,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const { serialAsset } = await metroBuildAsync(
       {
-        // customResolverOptions: {
-        //   environment: 'client',
-        // },
-        // // @ts-expect-error
-        // customTransformOptions: {
-        //   environment: 'client',
-        // },
         entryFile: getEntryWithServerRoot(this.projectRoot, getConfig(this.projectRoot), 'web'),
         dev: mode !== 'production',
         platform: 'web',
@@ -235,7 +228,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           environment: 'node',
           ...options.customResolverOptions,
         },
-        // @ts-expect-error
+        // @ts-expect-error: typed incorrectly, expects __proto__ to be defined, this will throw off the cache.
         customTransformOptions: {
           environment: 'node',
           ...options.customTransformOptions,
