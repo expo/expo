@@ -1,4 +1,3 @@
-import { useWorker } from '@koale/useworker';
 import * as React from 'react';
 
 import { BarCodeScanningResult, CameraPictureOptions, MountErrorListener } from './Camera.types';
@@ -37,12 +36,41 @@ const qrWorkerMethod = ({ data, width, height }: ImageData): any => {
   return parsed;
 };
 
-function useRemoteJsQR() {
-  return useWorker(qrWorkerMethod, {
-    remoteDependencies: ['https://cdn.jsdelivr.net/npm/jsqr@1.2.0/dist/jsQR.min.js'],
-    autoTerminate: false,
-  });
-}
+const createWorkerAsyncFunction = <T extends (data: any) => any>(fn: T, deps: string[]) => {
+  const stringifiedFn = [
+    `self.func = ${fn.toString()};`,
+    'self.onmessage = (e) => {',
+    '  const result = self.func(e.data);',
+    '  self.postMessage(result);',
+    '};',
+  ];
+
+  if (deps.length > 0) {
+    stringifiedFn.unshift(`importScripts(${deps.map((dep) => `'${dep}'`).join(', ')});`);
+  }
+
+  const blob = new Blob(stringifiedFn, { type: 'text/javascript' });
+  const worker = new Worker(URL.createObjectURL(blob));
+
+  // First-In First-Out queue of promises
+  const promises: {
+    resolve: (value: ReturnType<T>) => void;
+    reject: (reason?: any) => void;
+  }[] = [];
+
+  worker.onmessage = (e) => promises.shift()?.resolve(e.data);
+
+  return (data: Parameters<T>[0]) => {
+    return new Promise<ReturnType<T>>((resolve, reject) => {
+      promises.push({ resolve, reject });
+      worker.postMessage(data);
+    });
+  };
+};
+
+const decode = createWorkerAsyncFunction(qrWorkerMethod, [
+  'https://cdn.jsdelivr.net/npm/jsqr@1.2.0/dist/jsQR.min.js',
+]);
 
 export function useWebQRScanner(
   video: React.MutableRefObject<HTMLVideoElement | null>,
@@ -62,8 +90,6 @@ export function useWebQRScanner(
 ) {
   const isRunning = React.useRef<boolean>(false);
   const timeout = React.useRef<number | undefined>(undefined);
-
-  const [decode, clearWorker] = useRemoteJsQR();
 
   async function scanAsync() {
     // If interval is 0 then only scan once.
@@ -109,15 +135,12 @@ export function useWebQRScanner(
     if (isEnabled) {
       isRunning.current = true;
       scanAsync();
-    } else {
-      stop();
     }
-  }, [isEnabled]);
 
-  React.useEffect(() => {
     return () => {
-      stop();
-      clearWorker.kill();
+      if (isEnabled) {
+        stop();
+      }
     };
-  }, []);
+  }, [isEnabled]);
 }
