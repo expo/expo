@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import { theme, Button } from '@expo/styleguide';
 import { breakpoints, spacing } from '@expo/styleguide-base';
-import { GithubIcon, Menu01Icon } from '@expo/styleguide-icons';
+import { GithubIcon, Menu01Icon, Star01Icon } from '@expo/styleguide-icons';
 import type { ReactNode } from 'react';
 
 import { Logo } from './Logo';
@@ -31,6 +31,17 @@ export const Header = ({
           <Logo subgroup={isArchive ? 'Archive' : undefined} />
         </div>
         <div css={[columnStyle, rightColumnStyle]}>
+          <Button
+            openInNewTab
+            theme="quaternary"
+            css={hideOnMobileStyle}
+            className="px-2 text-secondary"
+            href="https://github.com/expo/expo">
+            <span className="flex gap-2 items-center">
+              <Star01Icon className="icon-sm" />
+              Star Us on GitHub
+            </span>
+          </Button>
           <Button
             openInNewTab
             theme="quaternary"
