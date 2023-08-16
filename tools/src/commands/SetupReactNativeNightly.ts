@@ -2,13 +2,17 @@ import { Command } from '@expo/commander';
 import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
+import fs from 'fs-extra';
 import path from 'path';
 
-import { EXPO_DIR } from '../Constants';
+import { EXPO_DIR, EXPOTOOLS_DIR } from '../Constants';
 import logger from '../Logger';
 import { getPackageViewAsync } from '../Npm';
 import { transformFileAsync } from '../Transforms';
+import { applyPatchAsync } from '../Utils';
 import { installAsync as workspaceInstallAsync } from '../Workspace';
+
+const PATCHES_ROOT = path.join(EXPOTOOLS_DIR, 'src', 'react-native-nightlies', 'patches');
 
 export default (program: Command) => {
   program
@@ -45,6 +49,7 @@ async function main() {
   await patchReanimatedAsync();
   await patchScreensAsync();
   await patchGestureHandlerAsync();
+  await patchSafeAreaContextAsync();
 
   logger.info('Setting up Expo modules files');
   await updateExpoModulesAsync();
@@ -205,6 +210,12 @@ async function patchGestureHandlerAsync() {
       },
     ]
   );
+}
+
+async function patchSafeAreaContextAsync() {
+  const patchFile = path.join(PATCHES_ROOT, 'react-native-safe-area-context.patch');
+  const patchContent = await fs.readFile(patchFile, 'utf8');
+  await applyPatchAsync({ patchContent, cwd: EXPO_DIR, stripPrefixNum: 1 });
 }
 
 async function updateExpoModulesAsync() {
