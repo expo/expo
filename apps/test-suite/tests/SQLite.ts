@@ -77,7 +77,6 @@ export function test(t) {
       db.transaction((tx) => {
         tx.executeSql('SELECT sqlite_version()', [], (_, results) => {
           const queryVersion = results.rows._array[0]['sqlite_version()'];
-          console.log(queryVersion);
           t.expect(queryVersion).toEqual(VERSION);
         });
       });

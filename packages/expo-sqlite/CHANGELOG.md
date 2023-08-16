@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - Remove unneeded resource bundle. ([#23813](https://github.com/expo/expo/pull/23813) by [@alanjhughes](https://github.com/alanjhughes))
+- Update `SQLite` on `Android`.
 
 ## 11.5.0 — 2023-08-02
 
