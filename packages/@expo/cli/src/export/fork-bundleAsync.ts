@@ -8,21 +8,20 @@ import {
   importMetroFromProject,
   importMetroServerFromProject,
 } from '@expo/dev-server/build/metro/importMetroFromProject';
+import type { LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import Metro from 'metro';
+import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
 import { ConfigT } from 'metro-config';
 import path from 'node:path';
 
+import { MetroTerminalReporter } from '../start/server/metro/MetroTerminalReporter';
 import {
   CSSAsset,
-  fileNameFromContents,
+  getFileNameFromContents,
   getCssModulesFromBundler,
 } from '../start/server/metro/getCssModulesFromBundler';
 import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
-import { MetroTerminalReporter } from '../start/server/metro/MetroTerminalReporter';
-
-import type { LoadOptions } from '@expo/metro-config';
-import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
 
 export type SerialAsset = {
   // 'styles.css'
@@ -40,10 +39,6 @@ export type SerialAsset = {
 export type PickPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 export type PickRequired<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
 
-export type MetroDevServerOptions = LoadOptions & {
-  logger: import('@expo/bunyan');
-  quiet?: boolean;
-};
 export type BundleOptions = {
   entryPoint: string;
   platform: 'android' | 'ios' | 'web';
@@ -51,9 +46,11 @@ export type BundleOptions = {
   minify?: boolean;
   sourceMapUrl?: string;
 };
+
 export type BundleAssetWithFileHashes = Metro.AssetData & {
   fileHashes: string[]; // added by the hashAssets asset plugin
 };
+
 export type BundleOutput = {
   code: string;
   map?: string;
@@ -61,7 +58,6 @@ export type BundleOutput = {
   hermesSourcemap?: string;
   css: CSSAsset[];
   assets: readonly BundleAssetWithFileHashes[];
-  artifacts?: SerialAsset[];
 };
 
 let nextBuildID = 0;
@@ -84,7 +80,7 @@ async function assertEngineMismatchAsync(projectRoot: string, exp: ExpoConfig, p
 export async function bundleAsync(
   projectRoot: string,
   expoConfig: ExpoConfig,
-  options: MetroDevServerOptions,
+  options: LoadOptions,
   bundles: BundleOptions[]
 ): Promise<BundleOutput[]> {
   // Assert early so the user doesn't have to wait until bundling is complete to find out that
@@ -118,14 +114,12 @@ export async function bundleAsync(
       sourceMapUrl: bundle.sourceMapUrl,
       createModuleIdFactory: config.serializer.createModuleIdFactory,
       onProgress: (transformedFileCount: number, totalFileCount: number) => {
-        if (!options.quiet) {
-          reporter.update({
-            buildID,
-            type: 'bundle_transform_progressed',
-            transformedFileCount,
-            totalFileCount,
-          });
-        }
+        reporter.update({
+          buildID,
+          type: 'bundle_transform_progressed',
+          transformedFileCount,
+          totalFileCount,
+        });
       },
     };
     const bundleDetails = {
@@ -254,7 +248,11 @@ export function createBundleAsyncFunctionAsync(
   const buildAsync = async (
     bundle: HelperOptions,
     emit: { css: boolean; assets: boolean; hermes: boolean }
-  ): Promise<PickPartial<BundleOutput, 'css'>> => {
+  ): Promise<
+    PickPartial<BundleOutput, 'css'> & {
+      serialAsset: SerialAsset[];
+    }
+  > => {
     const { bundleOptions, bundleDetails } = getBundleOptions(bundle);
 
     reporter.update({
@@ -290,21 +288,6 @@ export function createBundleAsyncFunctionAsync(
           : undefined,
       ]);
 
-      // if (jsCode) {
-      const jsAsset: SerialAsset = {
-        filename: bundle.dev
-          ? 'index.js'
-          : `_expo/static/js/web/${fileNameFromContents({
-              filepath: path.relative(projectRoot, bundle.entryFile),
-              src: code,
-            })}.js`,
-        originFilename: 'index.js',
-        type: 'js',
-        metadata: {},
-        source: code,
-      };
-      // }
-
       // TODO: Rework the logs
       reporter.update({
         buildID: bundleDetails.buildID,
@@ -312,7 +295,23 @@ export function createBundleAsyncFunctionAsync(
       });
 
       return {
-        artifacts: [jsAsset, ...(css || [])],
+        serialAsset: [
+          // This is the JavaScript bundle. This must be extended in the future
+          // to support bundle splitting.
+          {
+            filename: bundle.dev
+              ? 'index.js'
+              : `_expo/static/js/web/${getFileNameFromContents({
+                  filepath: path.relative(projectRoot, bundle.entryFile),
+                  src: code,
+                })}.js`,
+            originFilename: 'index.js',
+            type: 'js',
+            metadata: {},
+            source: code,
+          },
+          ...(css || []),
+        ],
         code,
         map,
         assets: assets as readonly BundleAssetWithFileHashes[],

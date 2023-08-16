@@ -1,5 +1,4 @@
 import { ExpoConfig, getConfig } from '@expo/config';
-import { MetroDevServerOptions } from '@expo/dev-server';
 import type { LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import http from 'http';
@@ -12,6 +11,7 @@ import { importExpoMetroConfig } from './resolveFromProject';
 import { getRouterDirectory } from './router';
 import { runServer } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
+import { createBundleAsyncFunctionAsync } from '../../../export/fork-bundleAsync';
 import { Log } from '../../../log';
 import { getMetroProperties } from '../../../utils/analytics/getMetroProperties';
 import { createDebuggerTelemetryMiddleware } from '../../../utils/analytics/metroDebuggerMiddleware';
@@ -20,7 +20,6 @@ import { env } from '../../../utils/env';
 import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
 import { createDevServerMiddleware } from '../middleware/createDevServerMiddleware';
 import { getPlatformBundlers } from '../platformBundlers';
-import { createBundleAsyncFunctionAsync } from '../../../export/fork-bundleAsync';
 
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
@@ -74,7 +73,7 @@ export async function loadMetroConfigAsync(
 /** The most generic possible setup for Metro bundler. */
 export async function instantiateMetroAsync(
   metroBundler: MetroBundlerDevServer,
-  options: Omit<MetroDevServerOptions, 'logger'>
+  options: LoadOptions
 ): Promise<{
   metro: Metro.Server;
   server: http.Server;

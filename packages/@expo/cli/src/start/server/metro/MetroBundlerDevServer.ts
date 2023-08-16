@@ -163,7 +163,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const metroBuildAsync = this.metroBuildAsync;
     assert(metroBuildAsync, 'Dev server must be started');
 
-    const { artifacts } = await metroBuildAsync(
+    const { serialAsset } = await metroBuildAsync(
       {
         // customResolverOptions: {
         //   environment: 'client',
@@ -186,7 +186,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       }
     );
 
-    return artifacts!;
+    return serialAsset;
   }
 
   private async renderStaticErrorAsync(error: Error) {

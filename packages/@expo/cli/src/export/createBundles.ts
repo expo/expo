@@ -30,15 +30,6 @@ export async function createBundlesAsync(
       // If not legacy, ignore the target option to prevent warnings from being thrown.
       resetCache: publishOptions.resetCache,
       maxWorkers: publishOptions.maxWorkers,
-      logger: {
-        info(tag: unknown, message: string) {
-          Log.log(message);
-        },
-        error(tag: unknown, message: string) {
-          Log.error(message);
-        },
-      } as any,
-      quiet: false,
     },
     bundleOptions.platforms.map((platform: Platform) => ({
       platform,

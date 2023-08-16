@@ -8,7 +8,6 @@ import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
 import path from 'path';
 
 import type { SerialAsset } from '../../../export/fork-bundleAsync';
-// import { getAssetData } from 'metro/src/Assets';
 
 type Options = {
   processModuleFilter: (modules: Module) => boolean;
@@ -66,10 +65,6 @@ export async function getCssModulesFromBundler(
   });
 }
 
-function hashString(str: string) {
-  return crypto.createHash('md5').update(str).digest('hex');
-}
-
 function getCssModules(
   dependencies: ReadOnlyDependencies,
   { processModuleFilter, projectRoot }: Options
@@ -92,7 +87,7 @@ function getCssModules(
           // Consistent location
           STATIC_EXPORT_DIRECTORY,
           // Hashed file contents + name for caching
-          fileNameFromContents({
+          getFileNameFromContents({
             // Stable filename for hashing in CI.
             filepath: originFilename,
             src: contents,
@@ -127,7 +122,13 @@ function getCssMetadata(module: Module): MetroModuleCSSMetadata | null {
   return null;
 }
 
-export function fileNameFromContents({ filepath, src }: { filepath: string; src: string }): string {
+export function getFileNameFromContents({
+  filepath,
+  src,
+}: {
+  filepath: string;
+  src: string;
+}): string {
   return getFileName(filepath) + '-' + hashString(filepath + src);
 }
 
@@ -137,4 +138,8 @@ export function getFileName(module: string) {
 
 export function pathToHtmlSafeName(path: string) {
   return path.replace(/[^a-zA-Z0-9_]/g, '_');
+}
+
+function hashString(str: string) {
+  return crypto.createHash('md5').update(str).digest('hex');
 }
