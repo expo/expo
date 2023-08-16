@@ -6,27 +6,11 @@
  */
 import fs from 'fs';
 import path from 'path';
-import requireString from 'require-from-string';
 
-import { logMetroError } from './metro/metroErrorInterface';
 import { getMetroServerRoot } from './middleware/ManifestMiddleware';
 import { delayAsync } from '../../utils/delay';
-import { SilentError } from '../../utils/errors';
-import { profile } from '../../utils/profile';
 
 const debug = require('debug')('expo:start:server:node-renderer') as typeof console.log;
-
-export function wrapBundle(str: string) {
-  // Skip the metro runtime so debugging is a bit easier.
-  // Replace the __r() call with an export statement.
-  // Use gm to apply to the last require line. This is needed when the bundle has side-effects.
-  return str.replace(/^(__r\(.*\);)$/gm, 'module.exports = $1');
-}
-
-export function stripProcess(str: string) {
-  // TODO: Remove from the metro prelude
-  return str.replace(/process=this\.process\|\|{},/m, '');
-}
 
 type StaticRenderOptions = {
   // Ensure the style format is `css-xxxx` (prod) instead of `css-view-xxxx` (dev)
@@ -37,7 +21,6 @@ type StaticRenderOptions = {
 };
 
 /** @returns the js file contents required to generate the static generation function. */
-
 async function ensureFileInRootDirectory(projectRoot: string, otherFile: string) {
   // Cannot be accessed using Metro's server API, we need to move the file
   // into the project root and try again.
@@ -60,7 +43,7 @@ export async function createSafeMetroEndpointAsync(
   projectRoot: string,
   devServerUrl: string,
   absoluteFilePath: string,
-  { dev = false, platform = 'web', minify = false, environment }: StaticRenderOptions = {}
+  { dev = true, platform = 'web', minify = false, environment }: StaticRenderOptions = {}
 ): Promise<string> {
   const root = getMetroServerRoot(projectRoot);
   const safeOtherFile = await ensureFileInRootDirectory(projectRoot, absoluteFilePath);
@@ -73,33 +56,4 @@ export async function createSafeMetroEndpointAsync(
     url += `&resolver.environment=${environment}&transform.environment=${environment}`;
   }
   return url;
-}
-
-export function evalStaticRenderFunctionsBundle(
-  projectRoot: string,
-  bundle: string
-): Record<string, (...args: any[]) => Promise<any>> {
-  const contents = evalMetro(bundle);
-
-  // wrap each function with a try/catch that uses Metro's error formatter
-  return Object.keys(contents).reduce((acc, key) => {
-    const fn = contents[key];
-    if (typeof fn !== 'function') {
-      return { ...acc, [key]: fn };
-    }
-
-    acc[key] = async function (...props: any[]) {
-      try {
-        return await fn.apply(this, props);
-      } catch (error: any) {
-        await logMetroError(projectRoot, { error });
-        throw new SilentError(error);
-      }
-    };
-    return acc;
-  }, {} as any);
-}
-
-function evalMetro(src: string) {
-  return profile(requireString, 'eval-metro-bundle')(src);
 }

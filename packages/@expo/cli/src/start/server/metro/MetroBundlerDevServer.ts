@@ -10,6 +10,7 @@ import * as runtimeEnv from '@expo/env';
 import assert from 'assert';
 import chalk from 'chalk';
 import path from 'path';
+import requireString from 'require-from-string';
 import resolveFrom from 'resolve-from';
 
 import {
@@ -20,14 +21,10 @@ import {
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
-import { CommandError } from '../../../utils/errors';
+import { SilentError } from '../../../utils/errors';
 import { getFreePortAsync } from '../../../utils/port';
+import { profile } from '../../../utils/profile';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
-import {
-  evalStaticRenderFunctionsBundle,
-  stripProcess,
-  wrapBundle,
-} from '../createSafeMetroEndpoint';
 import { ContextModuleSourceMapsMiddleware } from '../middleware/ContextModuleSourceMapsMiddleware';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
 import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
@@ -48,9 +45,21 @@ import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
 import { instantiateMetroAsync } from './instantiateMetro';
-import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
+import { getErrorOverlayHtmlAsync, logMetroError } from './metroErrorInterface';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import { observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
+
+function wrapBundle(str: string) {
+  // Skip the metro runtime so debugging is a bit easier.
+  // Replace the __r() call with an export statement.
+  // Use gm to apply to the last require line. This is needed when the bundle has side-effects.
+  return str.replace(/^(__r\(.*\);)$/gm, 'module.exports = $1');
+}
+
+function stripProcess(str: string) {
+  // TODO: Remove from the metro prelude
+  return str.replace(/process=this\.process\|\|{},/m, '');
+}
 
 // TODO(EvanBacon): Group all the code together and version.
 const getRenderModuleId = (projectRoot: string): string => {
@@ -64,14 +73,8 @@ const getRenderModuleId = (projectRoot: string): string => {
   return moduleId;
 };
 
-class ForwardHtmlError extends CommandError {
-  constructor(
-    message: string,
-    public html: string,
-    public statusCode: number
-  ) {
-    super(message);
-  }
+function evalMetro(src: string) {
+  return profile(requireString, 'eval-metro-bundle')(src);
 }
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
@@ -195,13 +198,31 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
   private async metroRequireStaticRenderFunctionsAsync(
     options: Omit<HelperOptions, 'platform' | 'entryFile'>
-  ) {
+  ): Promise<Record<string, (...args: any[]) => Promise<any>>> {
     const code = await this.buildForNodeAsync({
       ...options,
       entryFile: getRenderModuleId(this.projectRoot),
     });
 
-    return evalStaticRenderFunctionsBundle(this.projectRoot, code);
+    const contents = evalMetro(code);
+
+    // wrap each function with a try/catch that uses Metro's error formatter
+    return Object.keys(contents).reduce((acc, key) => {
+      const fn = contents[key];
+      if (typeof fn !== 'function') {
+        return { ...acc, [key]: fn };
+      }
+
+      acc[key] = async function (...props: any[]) {
+        try {
+          return await fn.apply(this, props);
+        } catch (error: any) {
+          await logMetroError(this.projectRoot, { error });
+          throw new SilentError(error);
+        }
+      };
+      return acc;
+    }, {} as any);
   }
 
   /** @returns the js file contents required to generate the static generation function. */
@@ -234,7 +255,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     let bun = wrapBundle(code);
 
     // This exposes the entire environment to the bundle.
-    // if (props.environment === 'node') {
+    // TODO: Fix this with the prelude in the serializer.
     bun = stripProcess(bun);
 
     return bun;
@@ -407,12 +428,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             res.end(content);
           } catch (error: any) {
             res.setHeader('Content-Type', 'text/html');
-            // Forward the Metro server response as-is. It won't be pretty, but at least it will be accurate.
-            if (error instanceof ForwardHtmlError) {
-              res.statusCode = error.statusCode;
-              res.end(error.html);
-              return;
-            }
             try {
               res.end(await this.renderStaticErrorAsync(error));
             } catch (staticError: any) {
