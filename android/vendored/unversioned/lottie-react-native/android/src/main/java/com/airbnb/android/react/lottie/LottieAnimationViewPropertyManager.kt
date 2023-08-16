@@ -11,6 +11,7 @@ import com.airbnb.lottie.SimpleColorFilter
 import com.airbnb.lottie.TextDelegate
 import com.airbnb.lottie.model.KeyPath
 import com.airbnb.lottie.value.LottieValueCallback
+import com.facebook.react.BuildConfig
 import com.facebook.react.bridge.ColorPropConverter
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
@@ -94,9 +95,27 @@ class LottieAnimationViewPropertyManager(view: LottieAnimationView) {
             animationURL = null
         }
 
-        sourceDotLottie?.let {
-            view.setAnimationFromUrl(it, it.hashCode().toString())
-            sourceDotLottie = null
+        sourceDotLottie?.let { assetName ->
+            if(BuildConfig.DEBUG) {
+                view.setAnimationFromUrl(assetName)
+                sourceDotLottie = null
+                return
+            }
+
+            // resource needs to be loaded in release mode: https://github.com/facebook/react-native/issues/24963#issuecomment-532168307
+            val resourceId = view.resources.getIdentifier(
+                assetName,
+                "raw",
+                view.context.packageName
+            )
+
+            if (resourceId == 0) {
+                RNLog.e("Animation for $assetName was not found in raw resources")
+                return
+            }
+
+            view.setAnimation(resourceId)
+            animationNameDirty = false
         }
 
         if (animationNameDirty) {
