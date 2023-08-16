@@ -126,7 +126,7 @@ This module requires permission to subscribe to device boot. It's used to setup 
 
 ### Config plugin setup (optional)
 
-If you're using EAS Build, you can set your Android notification icon and color tint, add custom push notification sounds, and set your iOS notification environment using the expo-notifications config plugin ([what's a config plugin?](https://docs.expo.dev/home/config-plugins/introduction)). To setup, just add the config plugin to the plugins array of your `app.json` or `app.config.js` as shown below, then rebuild the app.
+If you're using EAS Build, you can set your Android notification icon and color tint, add custom push notification sounds, and set your iOS notification environment using the expo-notifications config plugin ([what's a config plugin?](https://docs.expo.dev/config-plugins/introduction)). To setup, just add the config plugin to the plugins array of your `app.json` or `app.config.js` as shown below, then rebuild the app.
 
 ```json
 {
