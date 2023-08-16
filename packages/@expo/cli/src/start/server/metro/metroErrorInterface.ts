@@ -27,6 +27,27 @@ type CodeFrame = {
 
 type MetroStackFrame = StackFrame & { collapse?: boolean };
 
+interface MetroPackageResolutionError extends Error {
+  originModulePath: string;
+  targetModuleName: string;
+}
+
+interface MetroTransformError extends Error {
+  type: 'TransformError';
+  snippet?: string;
+  lineNumber: number;
+  column: number;
+  filename: string;
+}
+
+function isMetroTransformError(value: any): value is MetroTransformError {
+  return value && value?.type === 'TransformError';
+}
+
+function isMetroPackageResolutionError(value: any): value is MetroPackageResolutionError {
+  return value && 'targetModuleName' in value;
+}
+
 export async function logMetroErrorWithStack(
   projectRoot: string,
   {
@@ -121,7 +142,7 @@ export function logFromError({ error, projectRoot }: { error: Error; projectRoot
 
   let stack = parseErrorStack(error.stack);
 
-  if (error.type === 'TransformError') {
+  if (isMetroTransformError(error)) {
     // type: 'TransformError',
     // snippet: undefined,
     // lineNumber: 4,
@@ -139,7 +160,7 @@ export function logFromError({ error, projectRoot }: { error: Error; projectRoot
         column: error.column,
       },
     ];
-  } else if ('targetModuleName' in error) {
+  } else if (isMetroPackageResolutionError(error)) {
     //   Unable to resolve module stylis from /Users/evanbacon/Documents/GitHub/expo/apps/sandbox/app/index.tsx: stylis could not be found within the project or in these directories:
     // node_modules
     // ../../node_modules
