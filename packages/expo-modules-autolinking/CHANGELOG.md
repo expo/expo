@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `expo_patch_react_imports!` missing some lines with spaces before or after the imports. ([#23923](https://github.com/expo/expo/pull/23923) by [@liamjones](https://github.com/liamjones))
+
 ### 💡 Others
 
 ## 1.5.0 — 2023-06-21
