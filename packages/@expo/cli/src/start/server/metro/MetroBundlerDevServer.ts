@@ -8,7 +8,6 @@ import { getConfig } from '@expo/config';
 import { prependMiddleware } from '@expo/dev-server';
 import * as runtimeEnv from '@expo/env';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
-import assert from 'assert';
 import chalk from 'chalk';
 import fetch from 'node-fetch';
 import path from 'path';
@@ -82,18 +81,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return port;
   }
 
-  /** Get routes from Expo Router. */
-  async getRoutesAsync() {
-    const url = this.getDevServerUrl();
-    assert(url, 'Dev server must be started');
-    const { getManifest } = await getStaticRenderFunctions(this.projectRoot, url, {
-      // Ensure the API Routes are included
-      environment: 'node',
-    });
-
-    return getManifest({ fetchData: true });
-  }
-
   async composeResourcesWithHtml({
     mode,
     resources,
@@ -125,14 +112,23 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }) {
     const url = this.getDevServerUrl()!;
 
-    const { getStaticContent } = await getStaticRenderFunctions(this.projectRoot, url, {
-      minify,
-      dev: mode !== 'production',
-      // Ensure the API Routes are included
-      environment: 'node',
-    });
-    return async (path: string) => {
-      return await getStaticContent(new URL(path, url));
+    const { getStaticContent, getManifest } = await getStaticRenderFunctions(
+      this.projectRoot,
+      url,
+      {
+        minify,
+        dev: mode !== 'production',
+        // Ensure the API Routes are included
+        environment: 'node',
+      }
+    );
+    return {
+      // Get routes from Expo Router.
+      manifest: await getManifest({ fetchData: true }),
+      // Get route generating function
+      async renderAsync(path: string) {
+        return await getStaticContent(new URL(path, url));
+      },
     };
   }
 
