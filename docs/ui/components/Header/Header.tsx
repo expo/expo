@@ -34,17 +34,6 @@ export const Header = ({
           <Button
             openInNewTab
             theme="quaternary"
-            css={hideOnMobileStyle}
-            className="px-2 text-secondary"
-            href="https://github.com/expo/expo">
-            <span className="flex gap-2 items-center">
-              <Star01Icon className="icon-sm" />
-              Star Us on GitHub
-            </span>
-          </Button>
-          <Button
-            openInNewTab
-            theme="quaternary"
             className="px-2 text-secondary"
             href="https://blog.expo.dev">
             Blog
@@ -52,7 +41,17 @@ export const Header = ({
           <Button
             openInNewTab
             theme="quaternary"
+            css={hideOnMobileStyle}
+            className="px-2 text-secondary"
+            leftSlot={<Star01Icon className="icon-sm" />}
+            href="https://github.com/expo/expo">
+            Star Us on GitHub
+          </Button>
+          <Button
+            openInNewTab
+            theme="quaternary"
             href="https://github.com/expo/expo"
+            css={showOnMobileStyle}
             aria-label="GitHub"
             className="px-2">
             <GithubIcon className="icon-lg" />
