@@ -3,7 +3,7 @@ package expo.modules.sqlite
 
 import android.content.Context
 import android.database.Cursor
-import android.database.sqlite.SQLiteDatabase
+import io.requery.android.database.sqlite.SQLiteDatabase
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -83,7 +83,7 @@ class SQLiteModule : Module() {
           if (bindArgs[i - 1] == null) {
             statement.bindNull(i)
           } else {
-            statement.bindString(i, bindArgs[i - 1])
+            statement.bindString(i, bindArgs[i - 1]!!)
           }
         }
       }
