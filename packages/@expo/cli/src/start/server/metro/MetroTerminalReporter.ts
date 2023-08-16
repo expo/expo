@@ -32,7 +32,8 @@ export class MetroTerminalReporter extends TerminalReporter {
    * @returns `iOS path/to/bundle.js ▓▓▓▓▓░░░░░░░░░░░ 36.6% (4790/7922)`
    */
   _getBundleStatusMessage(progress: BundleProgress, phase: BuildPhase): string {
-    const platform = getPlatformTagForBuildDetails(progress.bundleDetails);
+    const env = getEnvironmentForBuildDetails(progress.bundleDetails);
+    const platform = env || getPlatformTagForBuildDetails(progress.bundleDetails);
     const inProgress = phase === 'in_progress';
 
     if (!inProgress) {
@@ -218,6 +219,16 @@ function getPlatformTagForBuildDetails(bundleDetails?: BundleDetails | null): st
   if (platform) {
     const formatted = { ios: 'iOS', android: 'Android', web: 'Web' }[platform] || platform;
     return `${chalk.bold(formatted)} `;
+  }
+
+  return '';
+}
+/** @returns platform specific tag for a `BundleDetails` object */
+function getEnvironmentForBuildDetails(bundleDetails?: BundleDetails | null): string {
+  // Expo CLI will pass `customTransformOptions.environment = 'node'` when bundling for the server.
+  const env = bundleDetails?.customTransformOptions?.environment ?? null;
+  if (env === 'node') {
+    return `${chalk.bold('Server')} `;
   }
 
   return '';
