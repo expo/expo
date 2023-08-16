@@ -170,6 +170,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/using-bugsnag/': '/guides/overview/',
   '/build/automating-submissions/': '/build/automate-submissions/',
   '/guides/routing-and-navigation/': '/routing/introduction/',
+  '/workflow/run-on-device/': '/build/internal-distribution/',
 
   // Old redirects
   '/introduction/project-lifecycle/': '/archive/managed-vs-bare/',
@@ -210,7 +211,8 @@ const RENAMED_PAGES: Record<string, string> = {
   // Changes from redoing the getting started workflow, SDK35+
   '/workflow/up-and-running/': '/get-started/installation/',
   '/introduction/additional-resources/': '/next-steps/additional-resources/',
-  '/introduction/already-used-react-native/': '/workflow/already-used-react-native/',
+  '/introduction/already-used-react-native/':
+    '/faq/#what-is-the-difference-between-expo-and-react-native',
   '/introduction/community/': '/next-steps/community/',
   '/introduction/installation/': '/get-started/installation/',
   '/versions/latest/overview/': '/versions/latest/',
@@ -247,8 +249,8 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Fundamentals had too many things
   '/workflow/linking/': '/guides/linking/',
-  '/workflow/how-expo-works/': '/workflow/already-used-react-native/#how-does-expo-work',
-  '/guides/how-expo-works/': '/workflow/already-used-react-native/#how-does-expo-work',
+  '/workflow/how-expo-works/': '/faq/#what-is-the-difference-between-expo-and-react-native',
+  '/guides/how-expo-works/': '/faq/#what-is-the-difference-between-expo-and-react-native',
 
   // Archive unused pages
   '/guides/notification-channels/': '/archived/notification-channels/',
