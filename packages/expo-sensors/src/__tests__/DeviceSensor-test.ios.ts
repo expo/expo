@@ -1,5 +1,5 @@
-import DeviceSensor from '../DeviceSensor';
 import MockNativeSensorModule from './mocks/MockNativeSensorModule';
+import DeviceSensor from '../DeviceSensor';
 
 it(`tracks the listener count on iOS`, () => {
   const nativeModule = new MockNativeSensorModule();

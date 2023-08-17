@@ -12,6 +12,7 @@ import path from 'path';
 import prettyBytes from 'pretty-bytes';
 import { inspect } from 'util';
 
+import { getVirtualFaviconAssetsAsync } from './favicon';
 import { Log } from '../log';
 import { DevServerManager } from '../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
@@ -21,6 +22,7 @@ import {
   getRouterDirectoryWithManifest,
 } from '../start/server/metro/router';
 import { getVirtualFaviconAssetsAsync } from './favicon';
+import { learnMore } from '../utils/link';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
 
@@ -28,24 +30,28 @@ type Options = { outputDir: string; minify: boolean; exportServer: boolean };
 
 /** @private */
 export async function unstable_exportStaticAsync(projectRoot: string, options: Options) {
-  // NOTE(EvanBacon): Please don't use this feature.
-  Log.warn('Static exporting with Metro is an experimental feature.');
+  Log.warn(
+    `Experimental static rendering is enabled. ` +
+      learnMore('https://docs.expo.dev/router/reference/static-rendering/')
+  );
 
+  // TODO: Prevent starting the watcher.
   const devServerManager = new DevServerManager(projectRoot, {
     minify: options.minify,
     mode: 'production',
     location: {},
   });
-
   await devServerManager.startAsync([
     {
       type: 'metro',
     },
   ]);
 
-  await exportFromServerAsync(projectRoot, devServerManager, options);
-
-  await devServerManager.stopAsync();
+  try {
+    await exportFromServerAsync(projectRoot, devServerManager, options);
+  } finally {
+    await devServerManager.stopAsync();
+  }
 }
 
 /** Match `(page)` -> `page` */
@@ -68,7 +74,7 @@ export async function getFilesToExportFromServerAsync(
 
   await Promise.all(
     getHtmlFiles({ manifest }).map(async (outputPath) => {
-      const pathname = outputPath.replace(/(index)?\.html$/, '');
+      const pathname = outputPath.replace(/(?:index)?\.html$/, '');
       try {
         files.set(outputPath, '');
         const data = await renderAsync(pathname);
@@ -97,8 +103,7 @@ export async function exportFromServerAsync(
   const devServer = devServerManager.getDefaultDevServer();
   assert(devServer instanceof MetroBundlerDevServer);
 
-  const [manifest, resources, renderAsync] = await Promise.all([
-    devServer.getRoutesAsync(),
+  const [resources, { manifest, renderAsync }] = await Promise.all([
     devServer.getStaticResourcesAsync({ mode: 'production', minify }),
     devServer.getStaticRenderFunctionAsync({
       mode: 'production',

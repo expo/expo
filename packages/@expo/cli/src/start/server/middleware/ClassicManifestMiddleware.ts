@@ -2,6 +2,14 @@ import { ExpoAppManifest, ExpoConfig } from '@expo/config';
 import chalk from 'chalk';
 import os from 'os';
 
+import {
+  DEVELOPER_TOOL,
+  HostInfo,
+  ManifestMiddleware,
+  ManifestRequestInfo,
+} from './ManifestMiddleware';
+import { assertRuntimePlatform, parsePlatformHeader } from './resolvePlatform';
+import { ServerHeaders, ServerRequest } from './server.types';
 import { disableNetwork } from '../../../api/settings';
 import { signClassicExpoGoManifestAsync } from '../../../api/signManifest';
 import UserSettings from '../../../api/user/UserSettings';
@@ -12,14 +20,6 @@ import { env } from '../../../utils/env';
 import { memoize } from '../../../utils/fn';
 import { learnMore } from '../../../utils/link';
 import { stripPort } from '../../../utils/url';
-import {
-  DEVELOPER_TOOL,
-  HostInfo,
-  ManifestMiddleware,
-  ManifestRequestInfo,
-} from './ManifestMiddleware';
-import { assertRuntimePlatform, parsePlatformHeader } from './resolvePlatform';
-import { ServerHeaders, ServerRequest } from './server.types';
 
 type SignManifestProps = {
   manifest: ExpoAppManifest;

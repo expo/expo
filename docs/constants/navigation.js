@@ -249,6 +249,15 @@ const general = [
       { expanded: false }
     ),
     makeGroup(
+      'Custom builds',
+      [
+        makePage('custom-builds/get-started.mdx'),
+        makePage('custom-builds/schema.mdx'),
+        makePage('custom-builds/functions.mdx'),
+      ],
+      { expanded: false }
+    ),
+    makeGroup(
       'Reference',
       [
         makePage('build-reference/eas-json.mdx'),
@@ -381,6 +390,7 @@ const general = [
         makePage('accounts/two-factor.mdx'),
         makePage('accounts/programmatic-access.mdx'),
         makePage('accounts/working-together.mdx'),
+        makePage('accounts/sso.mdx'),
       ]),
       makeSection('Bare React Native', [
         makePage('bare/overview.mdx'),
@@ -439,10 +449,6 @@ const preview = [
   makeSection('Preview', [
     makePage('preview/introduction.mdx'),
     makePage('preview/support.mdx'),
-    makeGroup('Custom builds', [
-      makePage('preview/custom-build-config.mdx'),
-      makePage('preview/custom-build-config-schema.mdx'),
-    ]),
     { expanded: true },
   ]),
 ];

@@ -4,12 +4,12 @@ import fs from 'fs';
 import { sync as globSync } from 'glob';
 import path from 'path';
 
+import { getAppBuildGradleFilePath, getProjectFilePath } from './Paths';
 import { ConfigPlugin } from '../Plugin.types';
 import { withAppBuildGradle } from '../plugins/android-plugins';
 import { withDangerousMod } from '../plugins/withDangerousMod';
 import { directoryExistsAsync } from '../utils/modules';
 import { addWarningAndroid } from '../utils/warnings';
-import { getAppBuildGradleFilePath, getProjectFilePath } from './Paths';
 
 const debug = Debug('expo:config-plugins:android:package');
 

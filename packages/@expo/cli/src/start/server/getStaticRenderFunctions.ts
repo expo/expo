@@ -10,13 +10,13 @@ import path from 'path';
 import requireString from 'require-from-string';
 import resolveFrom from 'resolve-from';
 
+import { logMetroError } from './metro/metroErrorInterface';
+import { getMetroServerRoot } from './middleware/ManifestMiddleware';
 import { stripAnsi } from '../../utils/ansi';
 import { delayAsync } from '../../utils/delay';
 import { SilentError } from '../../utils/errors';
 import { memoize } from '../../utils/fn';
 import { profile } from '../../utils/profile';
-import { logMetroError } from './metro/metroErrorInterface';
-import { getMetroServerRoot } from './middleware/ManifestMiddleware';
 
 const debug = require('debug')('expo:start:server:node-renderer') as typeof console.log;
 
@@ -121,7 +121,10 @@ export async function createMetroEndpointAsync(
 }
 
 export class MetroNodeError extends Error {
-  constructor(message: string, public rawObject: any) {
+  constructor(
+    message: string,
+    public rawObject: any
+  ) {
     super(message);
   }
 }

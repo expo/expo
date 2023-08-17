@@ -199,6 +199,12 @@ registerRootComponent(App);
 
 > This new entrypoint already exists for bare projects. You only need to add this if you have a managed project.
 
+If you are using [Expo Router](/routing/introduction/), define the [`EXPO_USE_METRO_WORKSPACE_ROOT`](/more/expo-cli/#environment-variables) environment variable when running the `npx expo start` command. It enables the auto server root detection for Metro.
+
+<Terminal cmd={['$ EXPO_USE_METRO_WORKSPACE_ROOT=1 npx expo start']} />
+
+This variable can also be defined inside a **.env** file.
+
 ### Create a package
 
 Monorepos can help us group code in a single repository. That includes apps but also separate packages. They also don't need to be published. The [Expo repository](https://github.com/expo/expo) uses this as well. All the Expo SDK packages live inside the [**packages/**](https://github.com/expo/expo/tree/main/packages) folder in our repo. It helps us test the code inside one of our [**apps/**](https://github.com/expo/expo/tree/main/apps/native-component-list) before we publish them.

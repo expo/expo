@@ -8,9 +8,15 @@
 
 ### 🐛 Bug fixes
 
-- Fix support for importing on iOS. ([#23761](https://github.com/expo/expo/pull/23761) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 💡 Others
+
+- Migrate to Expo Modules API. ([#23933](https://github.com/expo/expo/pull/23933) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 2.4.1 — 2023-08-02
+
+### 🐛 Bug fixes
+
+- Fix support for importing on iOS. ([#23761](https://github.com/expo/expo/pull/23761) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 2.4.0 — 2023-07-28
 

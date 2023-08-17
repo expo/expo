@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '11.4.0'
+version = '11.5.0'
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -67,7 +67,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 18
-    versionName "11.4.0"
+    versionName "11.5.0"
   }
   lintOptions {
     abortOnError false
@@ -82,5 +82,7 @@ android {
 dependencies {
   implementation project(':expo-modules-core')
 
+  implementation 'com.github.requery:sqlite-android:3.39.2'
+  implementation "androidx.sqlite:sqlite-ktx:2.3.1"
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
 }

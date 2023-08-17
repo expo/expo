@@ -2,13 +2,13 @@ import Log from '@expo/bunyan';
 import bodyParser from 'body-parser';
 import { Server as ConnectServer } from 'connect';
 
-import { importCliServerApiFromProject } from '../metro/importMetroFromProject';
-import { prependMiddleware, replaceMiddlewareWith } from '../middlwareMutations';
 import clientLogsMiddleware from './clientLogsMiddleware';
 import createJsInspectorMiddleware from './createJsInspectorMiddleware';
 import { remoteDevtoolsCorsMiddleware } from './remoteDevtoolsCorsMiddleware';
 import { remoteDevtoolsSecurityHeadersMiddleware } from './remoteDevtoolsSecurityHeadersMiddleware';
 import { suppressRemoteDebuggingErrorMiddleware } from './suppressErrorMiddleware';
+import { importCliServerApiFromProject } from '../metro/importMetroFromProject';
+import { prependMiddleware, replaceMiddlewareWith } from '../middlwareMutations';
 
 /**
  * Extends the default `createDevServerMiddleware` and adds some Expo CLI-specific dev middleware

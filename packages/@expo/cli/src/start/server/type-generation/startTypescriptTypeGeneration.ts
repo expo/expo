@@ -3,7 +3,7 @@ import fs from 'fs/promises';
 import { Server } from 'metro';
 import path from 'path';
 
-import { upsertGitIgnoreContents, removeFromGitIgnore } from '../../../utils/mergeGitIgnorePaths';
+import { removeFromGitIgnore, upsertGitIgnoreContents } from '../../../utils/mergeGitIgnorePaths';
 import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo';
 import { ServerLike } from '../BundlerDevServer';
 import { getRouterDirectoryWithManifest } from '../metro/router';
@@ -12,8 +12,8 @@ import { setupTypedRoutes } from './routes';
 import { forceRemovalTSConfig, forceUpdateTSConfig } from './tsconfig';
 
 export interface TypeScriptTypeGenerationOptions {
-  server: ServerLike;
-  metro: Server | null;
+  server?: ServerLike;
+  metro?: Server | null;
   projectRoot: string;
 }
 

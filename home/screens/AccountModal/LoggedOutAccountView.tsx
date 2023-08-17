@@ -6,7 +6,7 @@ import * as React from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import url from 'url';
 
-import { createApolloClient } from '../../api/ApolloClient';
+import ApolloClient from '../../api/ApolloClient';
 import Config from '../../api/Config';
 import {
   Home_ViewerPrimaryAccountNameDocument,
@@ -111,15 +111,23 @@ export function LoggedOutAccountView({ refetch }: Props) {
 
         const sessionSecret = decodeURIComponent(encodedSessionSecret);
 
-        const viewerPrimaryAccountNameResult = await createApolloClient().query<
+        const viewerPrimaryAccountNameResult = await ApolloClient.query<
           Home_ViewerPrimaryAccountNameQuery,
           Home_ViewerPrimaryAccountNameQueryVariables
         >({
           query: Home_ViewerPrimaryAccountNameDocument,
+          fetchPolicy: 'network-only',
           context: {
             headers: { 'expo-session': sessionSecret },
           },
         });
+
+        if (
+          viewerPrimaryAccountNameResult.errors &&
+          viewerPrimaryAccountNameResult.errors.length > 0
+        ) {
+          throw viewerPrimaryAccountNameResult.errors[0];
+        }
 
         const primaryAccountName =
           viewerPrimaryAccountNameResult.data.meUserActor?.primaryAccount.name;

@@ -4,10 +4,10 @@ import fs from 'fs';
 import { join, relative } from 'path';
 import { XcodeProject } from 'xcode';
 
+import { addResourceFileToGroup, ensureGroupRecursively, getProjectName } from './utils/Xcodeproj';
 import { ConfigPlugin } from '../Plugin.types';
 import { withXcodeProject } from '../plugins/ios-plugins';
 import { addWarningIOS } from '../utils/warnings';
-import { addResourceFileToGroup, ensureGroupRecursively, getProjectName } from './utils/Xcodeproj';
 
 type LocaleJson = Record<string, string>;
 type ResolvedLocalesJson = Record<string, LocaleJson>;

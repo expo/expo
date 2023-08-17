@@ -1,1 +1,0 @@
-{"version":3,"file":"createRoot.js","sourceRoot":"","sources":["../../src/launch/createRoot.tsx"],"names":[],"mappings":"AAAA,OAAO,EAAE,UAAU,EAAE,MAAM,kBAAkB,CAAC","sourcesContent":["export { createRoot } from 'react-dom/client';\n"]}

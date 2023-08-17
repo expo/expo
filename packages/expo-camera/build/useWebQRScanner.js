@@ -1,4 +1,3 @@
-import { useWorker } from '@koale/useworker';
 import * as React from 'react';
 import { captureImageData } from './WebCameraUtils';
 const qrWorkerMethod = ({ data, width, height }) => {
@@ -32,16 +31,35 @@ const qrWorkerMethod = ({ data, width, height }) => {
     }
     return parsed;
 };
-function useRemoteJsQR() {
-    return useWorker(qrWorkerMethod, {
-        remoteDependencies: ['https://cdn.jsdelivr.net/npm/jsqr@1.2.0/dist/jsQR.min.js'],
-        autoTerminate: false,
-    });
-}
+const createWorkerAsyncFunction = (fn, deps) => {
+    const stringifiedFn = [
+        `self.func = ${fn.toString()};`,
+        'self.onmessage = (e) => {',
+        '  const result = self.func(e.data);',
+        '  self.postMessage(result);',
+        '};',
+    ];
+    if (deps.length > 0) {
+        stringifiedFn.unshift(`importScripts(${deps.map((dep) => `'${dep}'`).join(', ')});`);
+    }
+    const blob = new Blob(stringifiedFn, { type: 'text/javascript' });
+    const worker = new Worker(URL.createObjectURL(blob));
+    // First-In First-Out queue of promises
+    const promises = [];
+    worker.onmessage = (e) => promises.shift()?.resolve(e.data);
+    return (data) => {
+        return new Promise((resolve, reject) => {
+            promises.push({ resolve, reject });
+            worker.postMessage(data);
+        });
+    };
+};
+const decode = createWorkerAsyncFunction(qrWorkerMethod, [
+    'https://cdn.jsdelivr.net/npm/jsqr@1.2.0/dist/jsQR.min.js',
+]);
 export function useWebQRScanner(video, { isEnabled, captureOptions, interval, onScanned, onError, }) {
     const isRunning = React.useRef(false);
     const timeout = React.useRef(undefined);
-    const [decode, clearWorker] = useRemoteJsQR();
     async function scanAsync() {
         // If interval is 0 then only scan once.
         if (!isRunning.current || !onScanned) {
@@ -86,15 +104,11 @@ export function useWebQRScanner(video, { isEnabled, captureOptions, interval, on
             isRunning.current = true;
             scanAsync();
         }
-        else {
-            stop();
-        }
-    }, [isEnabled]);
-    React.useEffect(() => {
         return () => {
-            stop();
-            clearWorker.kill();
+            if (isEnabled) {
+                stop();
+            }
         };
-    }, []);
+    }, [isEnabled]);
 }
 //# sourceMappingURL=useWebQRScanner.js.map

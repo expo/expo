@@ -74,4 +74,6 @@ jobs:
         timeout-minutes: 45
         env:
           FASTLANE_SKIP_UPDATE_CHECK: '1'
+          FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 30
+          FASTLANE_XCODEBUILD_SETTINGS_RETRIES: 8
         run: expotools native-unit-tests --platform ios

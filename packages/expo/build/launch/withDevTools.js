@@ -1,7 +1,7 @@
-import Constants, { ExecutionEnvironment } from 'expo-constants';
 import * as React from 'react';
 import { Platform } from 'react-native';
 import DevLoadingView from '../environment/DevLoadingView';
+import { isRunningInExpoGo } from '../environment/ExpoGo';
 /**
  * Append the Expo Fast Refresh view and optionally
  * keep the screen awake if `expo-keep-awake` is installed.
@@ -22,7 +22,7 @@ export function withDevTools(AppRootComponent) {
     })();
     const shouldUseExpoFastRefreshView = Platform.select({
         web: true,
-        ios: Constants.executionEnvironment !== ExecutionEnvironment.Bare,
+        ios: isRunningInExpoGo(),
         default: false,
     });
     function WithDevTools(props) {

@@ -20,7 +20,7 @@ export const ARRAY_GROUP_REGEX = /\(\s*\w[\w\s]*?,.*?\)/g;
 export const CAPTURE_GROUP_REGEX = /[\\(,]\s*(\w[\w\s]*?)\s*(?=[,\\)])/g;
 
 export interface SetupTypedRoutesOptions {
-  server: ServerLike;
+  server?: ServerLike;
   metro?: Server | null;
   typesDirectory: string;
   projectRoot: string;
@@ -38,7 +38,7 @@ export async function setupTypedRoutes({
   const { filePathToRoute, staticRoutes, dynamicRoutes, addFilePath, isRouteFile } =
     getTypedRoutesUtils(routerDirectory);
 
-  if (metro) {
+  if (metro && server) {
     // Setup out watcher first
     metroWatchTypeScriptFiles({
       projectRoot,
@@ -461,7 +461,7 @@ declare module "expo-router" {
 
   export type HrefObject<
     R extends Record<'pathname', string>,
-    P = R['pathname']
+    P = R['pathname'],
   > = P extends DynamicRouteTemplate
     ? { pathname: P; params: InputRouteParams<P> }
     : P extends Route<P>
@@ -519,20 +519,20 @@ declare module "expo-router" {
   export function useRouter(): Router;
 
   export function useLocalSearchParams<
-    T extends AllRoutes | UnknownOutputParams = UnknownOutputParams
+    T extends AllRoutes | UnknownOutputParams = UnknownOutputParams,
   >(): T extends AllRoutes ? SearchParams<T> : T;
 
   /** @deprecated renamed to \`useGlobalSearchParams\` */
   export function useSearchParams<
-    T extends AllRoutes | UnknownOutputParams = UnknownOutputParams
+    T extends AllRoutes | UnknownOutputParams = UnknownOutputParams,
   >(): T extends AllRoutes ? SearchParams<T> : T;
 
   export function useGlobalSearchParams<
-    T extends AllRoutes | UnknownOutputParams = UnknownOutputParams
+    T extends AllRoutes | UnknownOutputParams = UnknownOutputParams,
   >(): T extends AllRoutes ? SearchParams<T> : T;
 
   export function useSegments<
-    T extends AbsoluteRoute | RouteSegments<AbsoluteRoute> | RelativePathString
+    T extends AbsoluteRoute | RouteSegments<AbsoluteRoute> | RelativePathString,
   >(): T extends AbsoluteRoute ? RouteSegments<T> : T extends string ? string[] : T;
 }
 `;

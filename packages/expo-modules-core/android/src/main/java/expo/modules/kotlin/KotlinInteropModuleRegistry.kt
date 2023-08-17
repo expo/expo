@@ -4,6 +4,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.uimanager.ViewManager
 import expo.modules.adapters.react.NativeModulesProxy
+import expo.modules.kotlin.views.ViewManagerType
 import expo.modules.kotlin.defaultmodules.NativeModulesProxyModuleName
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.UnexpectedException
@@ -77,8 +78,8 @@ class KotlinInteropModuleRegistry(
         .map {
           val wrapperDelegate = ViewManagerWrapperDelegate(it)
           when (it.definition.viewManagerDefinition!!.getViewManagerType()) {
-            expo.modules.core.ViewManager.ViewManagerType.SIMPLE -> SimpleViewManagerWrapper(wrapperDelegate)
-            expo.modules.core.ViewManager.ViewManagerType.GROUP -> GroupViewManagerWrapper(wrapperDelegate)
+            ViewManagerType.SIMPLE -> SimpleViewManagerWrapper(wrapperDelegate)
+            ViewManagerType.GROUP -> GroupViewManagerWrapper(wrapperDelegate)
           }
         }
     }
