@@ -177,6 +177,13 @@ export type AVPlaybackStatusSuccess = {
      * with `didJustFinish` set to `true`. `didJustFinish` is never `true` in any other case.
      */
     didJustFinish: boolean;
+    /**
+     * An array of subtitles that are included in the HLS stream.
+     * > Note, on Android, that this is only available when the video was loaded using Exoplayer.
+     * @platform android
+     * @platform ios
+     */
+    subtitles?: string[];
 };
 /**
  * This is the structure passed to `setStatusAsync()` to modify the state of the `playbackObject`.
