@@ -11,7 +11,7 @@ class ClipboardModuleSpec: ExpoSpec {
     let holder = ModuleHolder(appContext: appContext, module: ClipboardModule(appContext: appContext))
 
     func testModuleFunction<T>(_ functionName: String, args: [Any], _ block: @escaping (T?) -> Void) {
-      waitUntil { done in
+      waitUntil(timeout: .seconds(3)) { done in
         holder.call(function: functionName, args: args) { result in
           let value = try! result.get()
           expect(value).to(beAKindOf(T?.self))
@@ -22,7 +22,7 @@ class ClipboardModuleSpec: ExpoSpec {
     }
 
     func expectModuleFunctionThrows<T>(_ functionName: String, args: [Any], exception: T.Type) where T: Exception {
-      waitUntil { done in
+      waitUntil(timeout: .seconds(3)) { done in
         holder.call(function: functionName, args: args) { result in
           expect(result).to(beFailure(exception: exception))
           done()
@@ -100,12 +100,13 @@ class ClipboardModuleSpec: ExpoSpec {
           "inputFormat": "html"
         ]
         testModuleFunction(function, args: [expectedHtml, options]) { (result: Bool?) in
-          let mockPasteboard = UIPasteboard.StaticVars.mockPastebaord
           expect(result) == true
-          expect(mockPasteboard._items.count) == 3
-          expect(mockPasteboard._items[kUTTypeRTF as String]).notTo(beNil())
-          expect(mockPasteboard._items[kUTTypeHTML as String] as? String).to(contain("hello"))
-          expect(mockPasteboard._items[kUTTypeUTF8PlainText as String] as? String).to(contain("hello"))
+          expect(UIPasteboard.general.items.count) == 1
+          let item = UIPasteboard.general.items[0]
+          expect(item.count) == 3
+          expect(item[kUTTypeRTF as String]).notTo(beNil())
+          expect(item[kUTTypeHTML as String] as? String).to(contain("hello"))
+          expect(item[kUTTypeUTF8PlainText as String] as? String).to(contain("hello"))
         }
       }
     }
