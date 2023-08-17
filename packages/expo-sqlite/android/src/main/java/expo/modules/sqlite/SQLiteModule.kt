@@ -83,7 +83,9 @@ class SQLiteModule : Module() {
           if (bindArgs[i - 1] == null) {
             statement.bindNull(i)
           } else {
-            statement.bindString(i, bindArgs[i - 1]!!)
+            bindArgs[i - 1]?.let {
+              statement.bindString(i, it)
+            } ?:  throw  IllegalArgumentException("the bind value at index $i is null");
           }
         }
       }
