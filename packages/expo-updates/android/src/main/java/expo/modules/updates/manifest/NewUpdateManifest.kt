@@ -31,9 +31,7 @@ class NewUpdateManifest private constructor(
   private val mExtensions: JSONObject?
 ) : UpdateManifest {
   override val updateEntity: UpdateEntity by lazy {
-    UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey).apply {
-      manifest = this@NewUpdateManifest.manifest.getRawJson()
-    }
+    UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey, this@NewUpdateManifest.manifest.getRawJson())
   }
 
   private val assetHeaders: Map<String, JSONObject> by lazy {

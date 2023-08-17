@@ -9,6 +9,7 @@ import expo.modules.updates.db.dao.UpdateDao
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateAssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
+import org.json.JSONObject
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -41,7 +42,8 @@ class UpdatesDatabaseTest {
     val date = Date()
     val runtimeVersion = "1.0"
     val projectId = "https://exp.host/@esamelson/test-project"
-    val testUpdate = UpdateEntity(uuid, date, runtimeVersion, projectId)
+    val manifest = JSONObject("{}")
+    val testUpdate = UpdateEntity(uuid, date, runtimeVersion, projectId, manifest)
 
     updateDao.insertUpdate(testUpdate)
 
@@ -51,6 +53,7 @@ class UpdatesDatabaseTest {
     Assert.assertEquals(date, byId.commitTime)
     Assert.assertEquals(runtimeVersion, byId.runtimeVersion)
     Assert.assertEquals(projectId, byId.scopeKey)
+    Assert.assertEquals(manifest.toString(), byId.manifest.toString())
 
     updateDao.deleteUpdates(listOf(testUpdate))
     Assert.assertEquals(0, updateDao.loadAllUpdates().size.toLong())
@@ -62,7 +65,7 @@ class UpdatesDatabaseTest {
     val date = Date()
     val runtimeVersion = "1.0"
     val projectId = "https://exp.host/@esamelson/test-project"
-    val testUpdate = UpdateEntity(uuid, date, runtimeVersion, projectId)
+    val testUpdate = UpdateEntity(uuid, date, runtimeVersion, projectId, JSONObject("{}"))
 
     updateDao.insertUpdate(testUpdate)
 
@@ -79,7 +82,7 @@ class UpdatesDatabaseTest {
     val date = Date()
     val runtimeVersion = "1.0"
     val projectId = "https://exp.host/@esamelson/test-project"
-    val testUpdate = UpdateEntity(uuid, date, runtimeVersion, projectId)
+    val testUpdate = UpdateEntity(uuid, date, runtimeVersion, projectId, JSONObject("{}"))
 
     updateDao.insertUpdate(testUpdate)
     Assert.assertEquals(0, updateDao.loadLaunchableUpdatesForScope(projectId).size.toLong())
@@ -95,20 +98,20 @@ class UpdatesDatabaseTest {
   fun testDeleteUnusedAssets() {
     val runtimeVersion = "1.0"
     val projectId = "https://exp.host/@esamelson/test-project"
-    val update1 = UpdateEntity(UUID.randomUUID(), Date(), runtimeVersion, projectId)
+    val update1 = UpdateEntity(UUID.randomUUID(), Date(), runtimeVersion, projectId, JSONObject("{}"))
     val asset1 = AssetEntity("asset1", "png")
     val commonAsset = AssetEntity("commonAsset", "png")
 
     updateDao.insertUpdate(update1)
     assetDao.insertAssets(listOf(asset1, commonAsset), update1)
 
-    val update2 = UpdateEntity(UUID.randomUUID(), Date(), runtimeVersion, projectId)
+    val update2 = UpdateEntity(UUID.randomUUID(), Date(), runtimeVersion, projectId, JSONObject("{}"))
     val asset2 = AssetEntity("asset2", "png")
     updateDao.insertUpdate(update2)
     assetDao.insertAssets(listOf(asset2), update2)
     assetDao.addExistingAssetToUpdate(update2, commonAsset, false)
 
-    val update3 = UpdateEntity(UUID.randomUUID(), Date(), runtimeVersion, projectId)
+    val update3 = UpdateEntity(UUID.randomUUID(), Date(), runtimeVersion, projectId, JSONObject("{}"))
     val asset3 = AssetEntity("asset3", "png")
     updateDao.insertUpdate(update3)
     assetDao.insertAssets(listOf(asset3), update3)
@@ -146,8 +149,8 @@ class UpdatesDatabaseTest {
   fun testDeleteUnusedAssets_DuplicateFilenames() {
     val runtimeVersion = "1.0"
     val projectId = "https://exp.host/@esamelson/test-project"
-    val update1 = UpdateEntity(UUID.randomUUID(), Date(), runtimeVersion, projectId)
-    val update2 = UpdateEntity(UUID.randomUUID(), Date(Date().time + 1), runtimeVersion, projectId)
+    val update1 = UpdateEntity(UUID.randomUUID(), Date(), runtimeVersion, projectId, JSONObject("{}"))
+    val update2 = UpdateEntity(UUID.randomUUID(), Date(Date().time + 1), runtimeVersion, projectId, JSONObject("{}"))
     updateDao.insertUpdate(update1)
     updateDao.insertUpdate(update2)
     updateDao.markUpdateFinished(update1)

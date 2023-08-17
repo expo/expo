@@ -154,7 +154,7 @@ class UpdatesDevLauncherController : UpdatesInterface {
           controller.setLauncher(launcher)
           callback.onSuccess(object : UpdatesInterface.Update {
             override fun getManifest(): JSONObject {
-              return launcher.launchedUpdate!!.manifest!!
+              return launcher.launchedUpdate!!.manifest
             }
 
             override fun getLaunchAssetPath(): String {

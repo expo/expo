@@ -72,8 +72,7 @@ class UpdatesModule(
         if (launchedUpdate != null) {
           constants["updateId"] = launchedUpdate.id.toString()
           constants["commitTime"] = launchedUpdate.commitTime.time
-          constants["manifestString"] =
-            if (launchedUpdate.manifest != null) launchedUpdate.manifest.toString() else "{}"
+          constants["manifestString"] = launchedUpdate.manifest.toString()
         }
         val localAssetFiles = updatesServiceLocal.localAssetFiles
         if (localAssetFiles != null) {

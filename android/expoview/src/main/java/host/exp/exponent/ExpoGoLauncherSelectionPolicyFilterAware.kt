@@ -18,7 +18,7 @@ class ExpoGoLauncherSelectionPolicyFilterAware(private val sdkVersions: List<Str
   ): UpdateEntity? {
     var updateToLaunch: UpdateEntity? = null
     for (update in updates) {
-      val manifest = Manifest.fromManifestJson(update.manifest!!)
+      val manifest = Manifest.fromManifestJson(update.manifest)
       if (!sdkVersions.contains(manifest.getExpoGoSDKVersion()) || !SelectionPolicies.matchesFilters(
           update,
           filters
