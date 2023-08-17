@@ -2325,7 +2325,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSQLite (11.5.0):
     - ExpoModulesCore
-    - sqlite3 (~> 3.39.4)
+    - sqlite3 (= 3.39.2)
   - ExpoStoreReview (6.5.0):
     - ExpoModulesCore
   - ExpoSystemUI (2.5.0):
@@ -3056,9 +3056,9 @@ PODS:
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
   - SocketRocket (0.6.1)
-  - sqlite3 (3.39.4):
-    - sqlite3/common (= 3.39.4)
-  - sqlite3/common (3.39.4)
+  - sqlite3 (3.39.2):
+    - sqlite3/common (= 3.39.2)
+  - sqlite3/common (3.39.2)
   - Stripe (23.8.0):
     - StripeApplePay (= 23.8.0)
     - StripeCore (= 23.8.0)
@@ -4955,7 +4955,7 @@ SPEC CHECKSUMS:
   ExpoSharing: 134ecbecb2f81295d7dd5d66ce90ae050962ecfd
   ExpoSMS: c8079b3018ae5206b3f1f6f445fd4eee2a19a335
   ExpoSpeech: cd3a86aedd2340f22eeca8a93040a825be9a280b
-  ExpoSQLite: 1c54251abaf0864c76dc77a5a9949f266b174c43
+  ExpoSQLite: ec466eeedbc98480ee0c4b2df1fe55c215f12b94
   ExpoStoreReview: f0e23d74a1cfae7a75c2ca7dac9c762dda382f03
   ExpoSystemUI: 2fce488f61a0e2849988a40b34b49a99e8e72af5
   ExpoTrackingTransparency: b14d3e7946b36962ee87c8656be540d60ff70c5d
@@ -5059,7 +5059,7 @@ SPEC CHECKSUMS:
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: af09429398d99d524cae2fe00f6f0f6e491ed102
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
-  sqlite3: 401936402fe5aa242c07f87fccfee5fc2b606f45
+  sqlite3: d115522c740c457b805c018b0296b5ba003da280
   Stripe: 5432fbab660595a3bee937235dd71a99028ac68c
   stripe-react-native: 096d83ad94da350f08f5cd48275e7f9645dde297
   StripeApplePay: 5e686f50ee07c439b79b907dffeb144135e601c9

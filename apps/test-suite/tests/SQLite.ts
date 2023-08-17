@@ -6,6 +6,9 @@ import * as SQLite from 'expo-sqlite';
 
 export const name = 'SQLite';
 
+// The version here needs to be the same as both the podspec and build.gradle for expo-sqlite
+const VERSION = '3.39.2';
+
 // TODO: Only tests successful cases, needs to test error cases like bad database name etc.
 export function test(t) {
   t.describe('SQLite', () => {
@@ -67,6 +70,28 @@ export function test(t) {
         const { exists } = await FS.getInfoAsync(`${FS.documentDirectory}SQLite/test.db`);
         t.expect(exists).toBeTruthy();
       }
+    });
+
+    t.it(`should use specified SQLite version: ${VERSION}`, () => {
+      const db = SQLite.openDatabase('test.db');
+
+      db.transaction((tx) => {
+        tx.executeSql('SELECT sqlite_version()', [], (_, results) => {
+          const queryVersion = results.rows._array[0]['sqlite_version()'];
+          t.expect(queryVersion).toEqual(VERSION);
+        });
+      });
+    });
+
+    t.it(`unixepoch() is supported`, () => {
+      const db = SQLite.openDatabase('test.db');
+
+      db.transaction((tx) => {
+        tx.executeSql('SELECT unixepoch()', [], (_, results) => {
+          const epoch = results.rows._array[0]['unixepoch()'];
+          t.expect(epoch).toBeTruthy();
+        });
+      });
     });
 
     if (Platform.OS !== 'web') {
@@ -641,7 +666,7 @@ export function test(t) {
             await tx.executeSqlAsync('INSERT INTO Users (name) VALUES (?)', ['bbb']);
             await tx.executeSqlAsync('INSERT INTO Users (name) VALUES (?)', ['ccc']);
             // exeuting invalid sql statement will throw an exception
-            await tx.executeSqlAsync(undefined);
+            await tx.executeSqlAsync(null);
           })
         );
 
