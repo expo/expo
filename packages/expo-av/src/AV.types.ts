@@ -202,7 +202,7 @@ export type AVPlaybackStatusSuccess = {
    * @platform android
    * @platform ios
    */
-  subtitles: string[];
+  subtitles?: string[];
 };
 
 // @needsAudit
