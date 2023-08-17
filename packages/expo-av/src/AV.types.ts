@@ -199,6 +199,8 @@ export type AVPlaybackStatusSuccess = {
   /**
    * An array of subtitles that are included in the HLS stream.
    * > Note, on Android, that this is only available when the video was loaded using Exoplayer.
+   * @platform android
+   * @platform ios
    */
   subtitles: string[];
 };
