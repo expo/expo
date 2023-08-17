@@ -60,18 +60,18 @@ export async function getFilesToExportFromServerAsync(
     renderAsync,
   }: {
     manifest: any;
-    renderAsync: (pathname: string) => Promise<string>;
+    renderAsync: (pathname: string, routeFilePath: string) => Promise<string>;
   }
 ): Promise<Map<string, string>> {
   // name : contents
   const files = new Map<string, string>();
 
   await Promise.all(
-    getHtmlFiles({ manifest }).map(async (outputPath) => {
+    getHtmlFiles({ manifest }).map(async ([outputPath, routeFilePath]) => {
       const pathname = outputPath.replace(/(?:index)?\.html$/, '');
       try {
         files.set(outputPath, '');
-        const data = await renderAsync(pathname);
+        const data = await renderAsync(pathname, routeFilePath);
         files.set(outputPath, data);
       } catch (e: any) {
         await logMetroErrorAsync({ error: e, projectRoot });
@@ -101,17 +101,53 @@ export async function exportFromServerAsync(
       minify,
     }),
   ]);
-  console.log('resources', resources);
+  // console.log('resources', resources);
 
   debug('Routes:\n', inspect(manifest, { colors: true, depth: null }));
 
+  const [entry, ...js] = resources.filter((res) => res.type === 'js');
+  // Strip out external chunks from async import syntax.
+  const routeChunks = js.filter((res) =>
+    res.originFilename.match(
+      // TODO: Support `unstable_src`
+      /^(app|src\/app)\//
+    )
+  );
+
+  const css = resources.filter((res) => res.type === 'css');
+
   const files = await getFilesToExportFromServerAsync(projectRoot, {
     manifest,
-    async renderAsync(pathname: string) {
+    async renderAsync(pathname: string, routeFilePath: string) {
       const template = await renderAsync(pathname);
+
+      const matchingResources = [
+        // Entry JS module
+        entry,
+        // Module for the specific route
+        routeChunks.find((res) => {
+          // app/two.tsx
+          return (
+            res.originFilename.replace(
+              // TODO: Support `unstable_src`
+              /^(app|src\/app)\//,
+              ''
+            ) === routeFilePath
+          );
+        }),
+        // TODO: Layout routes
+        ...css,
+      ].filter(Boolean);
+
+      console.log(
+        'matching:',
+        pathname,
+        routeFilePath,
+        matchingResources.map((e) => e?.filename)
+      );
       let html = await devServer.composeResourcesWithHtml({
         mode: 'production',
-        resources,
+        resources: matchingResources,
         template,
       });
 
@@ -145,14 +181,31 @@ export async function exportFromServerAsync(
   Log.log('');
 }
 
-export function getHtmlFiles({ manifest }: { manifest: any }): string[] {
-  const htmlFiles = new Set<string>();
+export function getHtmlFiles({ manifest }: { manifest: any }): [string, string][] {
+  const htmlFiles = new Set<[string, string]>();
 
   function traverseScreens(screens: string | { screens: any; path: string }, basePath = '') {
     for (const value of Object.values(screens)) {
-      if (typeof value === 'string') {
-        let filePath = basePath + value;
-        if (value === '') {
+      // console.log('GOT THIS',, screens, value);
+      let routeFilePath = '...';
+      const key =
+        typeof value === 'string'
+          ? value
+          : Object.keys(value.screens ?? {}).length
+          ? null
+          : value.path;
+      if (key != null) {
+        if (!value._route?.contextKey) {
+          throw new Error('Unexpected Manifest format (_route missing): ' + key);
+        }
+        // console.log('GET:', value);
+        const routeNameFragment = value._route?.contextKey;
+        if (routeNameFragment) {
+          // Convert "./index.tsx" -> "index.tsx"
+          routeFilePath = routeNameFragment.replace(/^\.\//, '');
+        }
+        let filePath = basePath + key;
+        if (key === '') {
           filePath =
             basePath === ''
               ? 'index'
@@ -161,7 +214,7 @@ export function getHtmlFiles({ manifest }: { manifest: any }): string[] {
               : basePath.slice(0, -1);
         }
         // TODO: Dedupe requests for alias routes.
-        addOptionalGroups(filePath);
+        addOptionalGroups(filePath, routeFilePath);
       } else if (typeof value === 'object' && value?.screens) {
         const newPath = basePath + value.path + '/';
         traverseScreens(value.screens, newPath);
@@ -169,16 +222,17 @@ export function getHtmlFiles({ manifest }: { manifest: any }): string[] {
     }
   }
 
-  function addOptionalGroups(path: string) {
+  function addOptionalGroups(path: string, routeFilePath: string) {
     const variations = getPathVariations(path);
     for (const variation of variations) {
-      htmlFiles.add(variation);
+      htmlFiles.add([variation, routeFilePath]);
     }
   }
 
   traverseScreens(manifest.screens);
 
-  return Array.from(htmlFiles).map((value) => {
+  console.log('html:', htmlFiles);
+  return Array.from(htmlFiles).map(([value, routeFilePath]) => {
     const parts = value.split('/');
     // Replace `:foo` with `[foo]` and `*foo` with `[...foo]`
     const partsWithGroups = parts.map((part) => {
@@ -189,7 +243,7 @@ export function getHtmlFiles({ manifest }: { manifest: any }): string[] {
       }
       return part;
     });
-    return partsWithGroups.join('/') + '.html';
+    return [partsWithGroups.join('/') + '.html', routeFilePath];
   });
 }
 

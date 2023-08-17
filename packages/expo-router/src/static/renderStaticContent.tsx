@@ -20,6 +20,7 @@ import { getNavigationConfig } from '../getLinkingConfig';
 import { getRoutes } from '../getRoutes';
 import { Head } from '../head';
 import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
+import { getReactNavigationConfig } from '../getReactNavigationConfig';
 
 AppRegistry.registerComponent('App', () => App);
 
@@ -39,7 +40,7 @@ async function getManifest(options: any) {
   // Evaluate all static params
   await loadStaticParamsAsync(routeTree);
 
-  return getNavigationConfig(routeTree);
+  return getReactNavigationConfig(routeTree, false);
 }
 
 function resetReactNavigationContexts() {

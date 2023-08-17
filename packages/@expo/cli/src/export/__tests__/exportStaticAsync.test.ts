@@ -62,38 +62,89 @@ describe(getHtmlFiles, () => {
   it(`should get html files`, () => {
     expect(
       getHtmlFiles({
+        // NOTE: Revise this to support the `_route` so we can collect route file paths with output path
         manifest: {
           initialRouteName: undefined,
           screens: {
             alpha: {
               path: 'alpha',
-              screens: { index: '', second: 'second' },
+              screens: {
+                index: {
+                  path: '',
+                  _route: {
+                    contextKey: './alpha/index.tsx',
+                  },
+                },
+                second: {
+                  path: 'second',
+                  _route: {
+                    contextKey: './alpha/second.tsx',
+                  },
+                },
+              },
               initialRouteName: 'index',
+              _route: {
+                contextKey: './alpha/_layout.tsx',
+              },
             },
             '(app)': {
-              path: '(app)',
-              screens: { compose: 'compose', index: '', 'note/[note]': 'note/:note' },
+              path: {
+                path: '(app)',
+                _route: {
+                  contextKey: './(app)/_layout.tsx',
+                },
+              },
+              screens: {
+                compose: {
+                  path: 'compose',
+                  _route: {
+                    contextKey: './(app)/compose.tsx',
+                  },
+                },
+                index: {
+                  path: '',
+                  _route: {
+                    contextKey: './(app)/index.tsx',
+                  },
+                },
+                'note/[note]': {
+                  path: 'note/:note',
+                  _route: {
+                    contextKey: './(app)/note/[note].tsx',
+                  },
+                },
+              },
               initialRouteName: 'index',
             },
-            '(auth)/sign-in': '(auth)/sign-in',
-            _sitemap: '_sitemap',
-            '[...404]': '*404',
+            '(auth)/sign-in': {
+              path: '(auth)/sign-in',
+              _route: {
+                contextKey: './(auth)/sign-in.tsx',
+              },
+            },
+            _sitemap: {
+              path: '_sitemap',
+              _route: {
+                contextKey: './_sitemap.tsx',
+              },
+            },
+            '[...404]': {
+              path: '*404',
+              _route: {
+                contextKey: './[...404].tsx',
+              },
+            },
           },
         },
       }).sort((a, b) => a.length - b.length)
     ).toEqual([
-      'index.html',
-      'compose.html',
-      'sign-in.html',
-      '_sitemap.html',
-      '[...404].html',
-      'alpha/index.html',
-      '(app)/index.html',
-      'note/[note].html',
-      'alpha/second.html',
-      '(app)/compose.html',
-      '(auth)/sign-in.html',
-      '(app)/note/[note].html',
+      ['alpha/second.html', 'alpha/second.tsx'],
+      ['[object Object]/compose.html', '(app)/compose.tsx'],
+      ['[object Object]/note/[note].html', '(app)/note/[note].tsx'],
+      ['(auth)/sign-in.html', '(auth)/sign-in.tsx'],
+      ['sign-in.html', '(auth)/sign-in.tsx'],
+      ['_sitemap.html', '_sitemap.tsx'],
+      ['[...404].html', '[...404].tsx'],
     ]);
   });
   it(`should get html files 2`, () => {
@@ -104,13 +155,34 @@ describe(getHtmlFiles, () => {
           screens: {
             '(root)': {
               path: '(root)',
+              _route: {
+                contextKey: './(root)/_layout.tsx',
+              },
               screens: {
                 '(index)': {
                   path: '(index)',
+                  _route: {
+                    contextKey: './(root)/(index)/_layout.tsx',
+                  },
                   screens: {
-                    '[...missing]': '*missing',
-                    index: '',
-                    notifications: 'notifications',
+                    '[...missing]': {
+                      path: '*missing',
+                      _route: {
+                        contextKey: './(root)/(index)/[...missing].tsx',
+                      },
+                    },
+                    index: {
+                      path: '',
+                      _route: {
+                        contextKey: './(root)/(index)/index.tsx',
+                      },
+                    },
+                    notifications: {
+                      path: 'notifications',
+                      _route: {
+                        contextKey: './(root)/notifications.tsx',
+                      },
+                    },
                   },
                   initialRouteName: 'index',
                 },
@@ -121,18 +193,14 @@ describe(getHtmlFiles, () => {
         },
       }).sort((a, b) => a.length - b.length)
     ).toEqual([
-      'index.html',
-      '[...missing].html',
-      '(root)/index.html',
-      '(index)/index.html',
-      'notifications.html',
-      '(root)/[...missing].html',
-      '(index)/[...missing].html',
-      '(root)/(index)/index.html',
-      '(root)/notifications.html',
-      '(index)/notifications.html',
-      '(root)/(index)/[...missing].html',
-      '(root)/(index)/notifications.html',
+      ['(root)/(index)/[...missing].html', '(root)/(index)/[...missing].tsx'],
+      ['(index)/[...missing].html', '(root)/(index)/[...missing].tsx'],
+      ['[...missing].html', '(root)/(index)/[...missing].tsx'],
+      ['(root)/[...missing].html', '(root)/(index)/[...missing].tsx'],
+      ['(root)/(index)/notifications.html', '(root)/notifications.tsx'],
+      ['(index)/notifications.html', '(root)/notifications.tsx'],
+      ['notifications.html', '(root)/notifications.tsx'],
+      ['(root)/notifications.html', '(root)/notifications.tsx'],
     ]);
   });
 });

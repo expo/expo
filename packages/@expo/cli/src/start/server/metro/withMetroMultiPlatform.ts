@@ -214,7 +214,7 @@ export function withExtendedResolver(
         moduleName = aliases[platform][moduleName];
       }
       if (isNode && moduleName === 'expo-router/_ctx') {
-        console.log('REMAP:', moduleName, context.originModulePath);
+        // NOTE: This is a hack
         // Disable possibility of lazy loading
         moduleName = 'expo-router/_ctx-sync';
       }

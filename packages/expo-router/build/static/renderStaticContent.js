@@ -14,10 +14,10 @@ import { AppRegistry } from 'react-native-web';
 import { ctx } from 'expo-router/_ctx';
 import { getRootComponent } from './getRootComponent';
 import { ExpoRoot } from '../ExpoRoot';
-import { getNavigationConfig } from '../getLinkingConfig';
 import { getRoutes } from '../getRoutes';
 import { Head } from '../head';
 import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
+import { getReactNavigationConfig } from '../getReactNavigationConfig';
 AppRegistry.registerComponent('App', () => App);
 // Must be exported or Fast Refresh won't update the context >:[
 function App(props) {
@@ -31,7 +31,7 @@ async function getManifest(options) {
     }
     // Evaluate all static params
     await loadStaticParamsAsync(routeTree);
-    return getNavigationConfig(routeTree);
+    return getReactNavigationConfig(routeTree, false);
 }
 function resetReactNavigationContexts() {
     // https://github.com/expo/router/discussions/588
