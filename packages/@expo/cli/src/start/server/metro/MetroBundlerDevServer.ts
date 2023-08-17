@@ -560,7 +560,7 @@ function htmlFromSerialAssets(
     ? `<script src="${bundleUrl}" defer></script>`
     : jsAssets
         // TODO: Load correct scripts for a route
-        .slice(0, 1)
+        // .slice(0, 1)
         .map(({ filename }) => {
           return `<script src="/${filename}" defer></script>`;
         })
