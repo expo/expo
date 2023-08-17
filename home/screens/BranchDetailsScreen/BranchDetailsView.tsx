@@ -6,13 +6,13 @@ import { Divider, Text, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
 import { ActivityIndicator, RefreshControl, FlatList } from 'react-native';
 
+import { BranchHeader } from './BranchHeader';
+import { EmptySection } from './EmptySection';
 import { SectionHeader } from '../../components/SectionHeader';
 import { UpdateListItem } from '../../components/UpdateListItem';
 import { BranchDetailsQuery } from '../../graphql/types';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
 import { useThrottle } from '../../utils/useThrottle';
-import { BranchHeader } from './BranchHeader';
-import { EmptySection } from './EmptySection';
 
 const ERROR_TEXT = dedent`
   An unexpected error has occurred.

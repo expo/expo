@@ -20,6 +20,13 @@ function _path() {
   };
   return data;
 }
+function _createBaseMod() {
+  const data = require("./createBaseMod");
+  _createBaseMod = function () {
+    return data;
+  };
+  return data;
+}
 function _android() {
   const data = require("../android");
   _android = function () {
@@ -37,13 +44,6 @@ function _XML() {
 function _sortObject() {
   const data = require("../utils/sortObject");
   _sortObject = function () {
-    return data;
-  };
-  return data;
-}
-function _createBaseMod() {
-  const data = require("./createBaseMod");
-  _createBaseMod = function () {
     return data;
   };
   return data;

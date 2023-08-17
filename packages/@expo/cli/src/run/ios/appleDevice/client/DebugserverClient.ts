@@ -9,8 +9,8 @@ import Debug from 'debug';
 import { Socket } from 'net';
 import * as path from 'path';
 
-import { GDBProtocolClient } from '../protocol/GDBProtocol';
 import { ServiceClient } from './ServiceClient';
+import { GDBProtocolClient } from '../protocol/GDBProtocol';
 
 const debug = Debug('expo:apple-device:client:debugserver');
 

@@ -1,16 +1,16 @@
 // This file represents an abstraction on the metro TerminalReporter.
 // We use this abstraction to safely extend the TerminalReporter for our own custom logging.
 import chalk from 'chalk';
-import { Terminal } from 'metro-core';
 import UpstreamTerminalReporter from 'metro/src/lib/TerminalReporter';
+import { Terminal } from 'metro-core';
 import util from 'util';
 
-import { stripAnsi } from '../../../utils/ansi';
 import {
   BundleDetails,
   TerminalReportableEvent,
   TerminalReporterInterface,
 } from './TerminalReporter.types';
+import { stripAnsi } from '../../../utils/ansi';
 
 /**
  * A standard way to log a warning to the terminal. This should not be called

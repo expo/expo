@@ -1,8 +1,8 @@
 import { getConfig, Platform, ProjectTarget } from '@expo/config';
 
+import { bundleAsync, BundleOutput } from './fork-bundleAsync';
 import * as Log from '../log';
 import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
-import { bundleAsync, BundleOutput } from './fork-bundleAsync';
 
 export type PublishOptions = {
   releaseChannel?: string;

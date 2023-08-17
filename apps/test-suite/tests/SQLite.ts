@@ -559,15 +559,19 @@ export function test(t) {
 
       t.it('should load crsqlite extension correctly', async () => {
         const db = SQLite.openDatabase('test.db');
-        await db.execAsync([{ sql: 'DROP TABLE IF EXISTS foo;', args: [] }], false);
-        await db.execAsync([{ sql: 'create table foo (a primary key, b);', args: [] }], false);
-        await db.execAsync([{ sql: 'select crsql_as_crr("foo");', args: [] }], false);
-        await db.execAsync([{ sql: 'insert into foo (a,b) values (1,2);', args: [] }], false);
-        const result = await db.execAsync(
-          [{ sql: 'select * from crsql_changes;', args: [] }],
-          false
-        );
-        console.log('ooxx r', JSON.stringify(result, false, 2));
+        await db.transactionAsync(async (tx) => {
+          await tx.executeSqlAsync('DROP TABLE IF EXISTS foo;', []);
+          await tx.executeSqlAsync('create table foo (a primary key, b);', []);
+          await tx.executeSqlAsync('select crsql_as_crr("foo");', []);
+          await tx.executeSqlAsync('insert into foo (a,b) values (1,2);', []);
+          await tx.executeSqlAsync('insert into foo (a,b) values (1,2);', []);
+          const result = await tx.executeSqlAsync('select * from crsql_changes;', []);
+          assert(!isResultSetError(result));
+          const table = result.rows[0].table;
+          const value = result.rows[0].val;
+          t.expect(table).toEqual('foo');
+          t.expect(value).toEqual(2);
+        });
       });
 
       t.it('should support Promise.all', async () => {

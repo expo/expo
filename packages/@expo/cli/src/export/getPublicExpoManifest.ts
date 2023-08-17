@@ -1,8 +1,8 @@
 import { ExpoAppManifest, getConfig } from '@expo/config';
 
+import { getResolvedLocalesAsync } from './getResolvedLocales';
 import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
-import { getResolvedLocalesAsync } from './getResolvedLocales';
 
 /** Get the public Expo manifest from the local project config. */
 export async function getPublicExpoManifestAsync(projectRoot: string): Promise<ExpoAppManifest> {
