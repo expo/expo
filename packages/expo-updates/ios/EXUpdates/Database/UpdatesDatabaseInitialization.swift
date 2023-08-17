@@ -21,7 +21,7 @@ enum UpdatesDatabaseInitializationError: Error {
  * Utility class that handles database initialization and migration.
  */
 internal final class UpdatesDatabaseInitialization {
-  private static let LatestFilename = "expo-v9.db"
+  private static let LatestFilename = "expo-v10.db"
   private static let LatestSchema = """
     CREATE TABLE "updates" (
       "id"  BLOB UNIQUE,
@@ -29,7 +29,7 @@ internal final class UpdatesDatabaseInitialization {
       "commit_time"  INTEGER NOT NULL,
       "runtime_version"  TEXT NOT NULL,
       "launch_asset_id" INTEGER,
-      "manifest"  TEXT,
+      "manifest"  TEXT NOT NULL,
       "status"  INTEGER NOT NULL,
       "keep"  INTEGER NOT NULL,
       "last_accessed"  INTEGER NOT NULL,
@@ -199,6 +199,13 @@ internal final class UpdatesDatabaseInitialization {
       NSLog("Error opening migrated SQLite db: %@", [UpdatesDatabaseUtils.errorCodesAndMessage(fromSqlite: db!).message])
       sqlite3_close(db)
       return false
+    }
+
+    // turn on foreign keys for database before migration in case the first migration being executed depends on them being on
+    do {
+      _ = try UpdatesDatabaseUtils.execute(sql: "PRAGMA foreign_keys=ON;", withArgs: nil, onDatabase: db!)
+    } catch {
+      NSLog("Error turning on foreign key constraint: %@", [error.localizedDescription])
     }
 
     for index in startingMigrationIndex..<migrations.count {
