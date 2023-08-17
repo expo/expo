@@ -6,14 +6,14 @@
  */
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
 import { MixedOutput } from 'metro';
-import { InputConfigT, SerializerConfigT } from 'metro-config';
 import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
 import bundleToString from 'metro/src/lib/bundleToString';
+import { InputConfigT, SerializerConfigT } from 'metro-config';
 
-import { env } from '../env';
 import { environmentVariableSerializerPlugin } from './environmentVariableSerializerPlugin';
 import { fileNameFromContents, getCssSerialAssets } from './getCssDeps';
 import { SerialAsset } from './serializerAssets';
+import { env } from '../env';
 
 export type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
 

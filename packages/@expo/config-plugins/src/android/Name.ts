@@ -1,10 +1,10 @@
 import { ExpoConfig } from '@expo/config-types';
 
+import { buildResourceItem, ResourceXML } from './Resources';
+import { removeStringItem, setStringItem } from './Strings';
 import { ConfigPlugin } from '../Plugin.types';
 import { createStringsXmlPlugin, withSettingsGradle } from '../plugins/android-plugins';
 import { addWarningAndroid } from '../utils/warnings';
-import { buildResourceItem, ResourceXML } from './Resources';
-import { removeStringItem, setStringItem } from './Strings';
 
 /**
  * Sanitize a name, this should be used for files and gradle names.

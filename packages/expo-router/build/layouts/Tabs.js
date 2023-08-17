@@ -1,8 +1,8 @@
 import { createBottomTabNavigator, } from '@react-navigation/bottom-tabs';
 import React from 'react';
 import { Pressable, Platform } from 'react-native';
-import { Link } from '../link/Link';
 import { withLayoutContext } from './withLayoutContext';
+import { Link } from '../link/Link';
 // This is the only way to access the navigator.
 const BottomTabNavigator = createBottomTabNavigator().Navigator;
 export const Tabs = withLayoutContext(BottomTabNavigator, (screens) => {

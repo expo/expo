@@ -28,27 +28,6 @@ function _resolveFrom() {
   };
   return data;
 }
-function _androidPlugins() {
-  const data = require("../plugins/android-plugins");
-  _androidPlugins = function () {
-    return data;
-  };
-  return data;
-}
-function _withPlugins() {
-  const data = require("../plugins/withPlugins");
-  _withPlugins = function () {
-    return data;
-  };
-  return data;
-}
-function _Updates() {
-  const data = require("../utils/Updates");
-  _Updates = function () {
-    return data;
-  };
-  return data;
-}
 function _Manifest() {
   const data = require("./Manifest");
   _Manifest = function () {
@@ -66,6 +45,27 @@ function _Resources() {
 function _Strings() {
   const data = require("./Strings");
   _Strings = function () {
+    return data;
+  };
+  return data;
+}
+function _androidPlugins() {
+  const data = require("../plugins/android-plugins");
+  _androidPlugins = function () {
+    return data;
+  };
+  return data;
+}
+function _withPlugins() {
+  const data = require("../plugins/withPlugins");
+  _withPlugins = function () {
+    return data;
+  };
+  return data;
+}
+function _Updates() {
+  const data = require("../utils/Updates");
+  _Updates = function () {
     return data;
   };
   return data;

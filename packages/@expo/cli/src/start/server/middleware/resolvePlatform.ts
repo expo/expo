@@ -1,7 +1,7 @@
 import { parse } from 'url';
 
-import { CommandError } from '../../../utils/errors';
 import { ServerRequest } from './server.types';
+import { CommandError } from '../../../utils/errors';
 
 const debug = require('debug')(
   'expo:start:server:middleware:resolvePlatform'
