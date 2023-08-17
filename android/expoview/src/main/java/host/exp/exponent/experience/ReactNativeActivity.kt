@@ -514,9 +514,11 @@ abstract class ReactNativeActivity :
       return true
     }
 
-    if (!KernelProvider.instance.reloadVisibleExperience(manifestUrl!!)) {
+    manifestUrl?.let {
       // Kernel couldn't reload, show error screen
-      return true
+      if (!KernelProvider.instance.reloadVisibleExperience(it)) {
+        return true
+      }
     }
 
     errorQueue.clear()
