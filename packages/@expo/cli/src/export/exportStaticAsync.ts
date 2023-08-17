@@ -29,12 +29,12 @@ export async function unstable_exportStaticAsync(projectRoot: string, options: O
       learnMore('https://docs.expo.dev/router/reference/static-rendering/')
   );
 
+  // TODO: Prevent starting the watcher.
   const devServerManager = new DevServerManager(projectRoot, {
     minify: options.minify,
     mode: 'production',
     location: {},
   });
-
   await devServerManager.startAsync([
     {
       type: 'metro',
@@ -68,7 +68,7 @@ export async function getFilesToExportFromServerAsync(
 
   await Promise.all(
     getHtmlFiles({ manifest }).map(async (outputPath) => {
-      const pathname = outputPath.replace(/(index)?\.html$/, '');
+      const pathname = outputPath.replace(/(?:index)?\.html$/, '');
       try {
         files.set(outputPath, '');
         const data = await renderAsync(pathname);
@@ -94,8 +94,7 @@ export async function exportFromServerAsync(
   const devServer = devServerManager.getDefaultDevServer();
   assert(devServer instanceof MetroBundlerDevServer);
 
-  const [manifest, resources, renderAsync] = await Promise.all([
-    devServer.getRoutesAsync(),
+  const [resources, { manifest, renderAsync }] = await Promise.all([
     devServer.getStaticResourcesAsync({ mode: 'production', minify }),
     devServer.getStaticRenderFunctionAsync({
       mode: 'production',

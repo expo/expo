@@ -11,6 +11,7 @@ export type BundleDetails = {
   entryFile: string;
   minify: boolean;
   platform: string | null | undefined;
+  customTransformOptions?: { environment?: 'node' };
   runtimeBytecodeVersion: number | null | undefined;
 };
 
