@@ -127,12 +127,12 @@ function getDefaultSerializer(
         ),
         sourceMapUrl: `${fileName}.js.map`,
       });
-      // console.log(
-      //   '_expoSplitBundlePaths',
-      //   graph.entryPoints,
-      //   graph,
-      //   jsSplitBundle._expoSplitBundlePaths
-      // );
+      console.log(
+        '_expoSplitBundlePaths',
+        graph.entryPoints,
+        graph,
+        jsSplitBundle._expoSplitBundlePaths
+      );
 
       // dll = { ...dll, ...jsSplitBundle._expoSplitBundlePaths };
 

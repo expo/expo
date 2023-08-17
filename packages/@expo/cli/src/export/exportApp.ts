@@ -49,6 +49,17 @@ export async function exportAppAsync(
     'dumpAssetmap' | 'dumpSourcemap' | 'dev' | 'clear' | 'outputDir' | 'platforms' | 'minify'
   >
 ): Promise<void> {
+  await exportNewWebAppAsync(projectRoot, {
+    platforms,
+    outputDir,
+    clear,
+    dev,
+    dumpAssetmap,
+    dumpSourcemap,
+    minify,
+  });
+  return;
+
   setNodeEnv(dev ? 'development' : 'production');
   require('@expo/env').load(projectRoot);
 
@@ -183,6 +194,152 @@ export async function exportAppAsync(
 
   // Generate a `metadata.json` and the export is complete.
   await writeMetadataJsonAsync({ outputDir: staticFolder, bundles, fileNames });
+}
+
+export async function exportNewWebAppAsync(
+  projectRoot: string,
+  {
+    platforms,
+    outputDir,
+    clear,
+    dev,
+    dumpAssetmap,
+    dumpSourcemap,
+    minify,
+  }: Pick<
+    Options,
+    'dumpAssetmap' | 'dumpSourcemap' | 'dev' | 'clear' | 'outputDir' | 'platforms' | 'minify'
+  >
+): Promise<void> {
+  setNodeEnv(dev ? 'development' : 'production');
+  require('@expo/env').load(projectRoot);
+
+  // const exp = await getPublicExpoManifestAsync(projectRoot);
+
+  // const useWebSSG = exp.web?.output === 'static';
+
+  const publicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);
+
+  const outputPath = path.resolve(projectRoot, outputDir);
+  const staticFolder = outputPath;
+  // const assetsPath = path.join(staticFolder, 'assets');
+  // const bundlesPath = path.join(staticFolder, 'bundles');
+
+  // await unstable_exportStaticAsync(projectRoot, {
+  //   outputDir: outputPath,
+  //   minify,
+  // });
+
+  // process.exit(0);
+
+  // await Promise.all([assetsPath, bundlesPath].map(ensureDirectoryAsync));
+
+  await copyPublicFolderAsync(publicPath, staticFolder);
+
+  // Run metro bundler and create the JS bundles/source maps.
+  // const bundles = await createBundlesAsync(
+  //   projectRoot,
+  //   { resetCache: !!clear },
+  //   {
+  //     platforms,
+  //     minify,
+  //     // TODO: Breaks asset exports
+  //     // platforms: useWebSSG ? platforms.filter((platform) => platform !== 'web') : platforms,
+  //     dev,
+  //     // TODO: Disable source map generation if we aren't outputting them.
+  //   }
+  // );
+
+  // const bundleEntries = Object.entries(bundles);
+  // if (bundleEntries.length) {
+  //   // Log bundle size info to the user
+  //   printBundleSizes(
+  //     Object.fromEntries(
+  //       bundleEntries.map(([key, value]) => {
+  //         if (!dumpSourcemap) {
+  //           return [
+  //             key,
+  //             {
+  //               ...value,
+  //               // Remove source maps from the bundles if they aren't going to be written.
+  //               map: undefined,
+  //             },
+  //           ];
+  //         }
+
+  //         return [key, value];
+  //       })
+  //     )
+  //   );
+  // }
+
+  // Write the JS bundles to disk, and get the bundle file names (this could change with async chunk loading support).
+  // const { hashes, fileNames } = await writeBundlesAsync({ bundles, outputDir: bundlesPath });
+
+  Log.log('Finished saving JS Bundles');
+
+  // if (platforms.includes('web')) {
+
+  await unstable_exportStaticAsync(projectRoot, {
+    outputDir: outputPath,
+    minify,
+  });
+  Log.log('Finished saving static files');
+
+  const bundles = await createBundlesAsync(
+    projectRoot,
+    { resetCache: !!clear },
+    {
+      platforms: ['web'],
+      minify,
+      // TODO: Breaks asset exports
+      // platforms: useWebSSG ? platforms.filter((platform) => platform !== 'web') : platforms,
+      dev,
+      // TODO: Disable source map generation if we aren't outputting them.
+    }
+  );
+
+  // Save assets like a typical bundler, preserving the file paths on web.
+  const saveAssets = importCliSaveAssetsFromProject(projectRoot);
+  await Promise.all(
+    Object.entries(bundles).map(([platform, bundle]) => {
+      return saveAssets(bundle.assets, platform, staticFolder, undefined);
+    })
+  );
+  // }
+
+  // const { assets } = await exportAssetsAsync(projectRoot, {
+  //   exp,
+  //   outputDir: staticFolder,
+  //   bundles,
+  // });
+
+  // if (dumpAssetmap) {
+  //   Log.log('Dumping asset map');
+  //   await writeAssetMapAsync({ outputDir: staticFolder, assets });
+  // }
+
+  // build source maps
+  // if (dumpSourcemap) {
+  //   Log.log('Dumping source maps');
+  //   await writeSourceMapsAsync({
+  //     bundles,
+  //     hashes,
+  //     outputDir: bundlesPath,
+  //     fileNames,
+  //   });
+
+  //   Log.log('Preparing additional debugging files');
+  //   // If we output source maps, then add a debug HTML file which the user can open in
+  //   // the web browser to inspect the output like web.
+  //   await writeDebugHtmlAsync({
+  //     outputDir: staticFolder,
+  //     fileNames,
+  //   });
+  // }
+
+  // Generate a `metadata.json` and the export is complete.
+  // await writeMetadataJsonAsync({ outputDir: staticFolder, bundles, fileNames });
 }
 
 /**
