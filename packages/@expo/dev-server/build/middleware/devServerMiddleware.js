@@ -11,20 +11,6 @@ function _bodyParser() {
   };
   return data;
 }
-function _importMetroFromProject() {
-  const data = require("../metro/importMetroFromProject");
-  _importMetroFromProject = function () {
-    return data;
-  };
-  return data;
-}
-function _middlwareMutations() {
-  const data = require("../middlwareMutations");
-  _middlwareMutations = function () {
-    return data;
-  };
-  return data;
-}
 function _clientLogsMiddleware() {
   const data = _interopRequireDefault(require("./clientLogsMiddleware"));
   _clientLogsMiddleware = function () {
@@ -56,6 +42,20 @@ function _remoteDevtoolsSecurityHeadersMiddleware() {
 function _suppressErrorMiddleware() {
   const data = require("./suppressErrorMiddleware");
   _suppressErrorMiddleware = function () {
+    return data;
+  };
+  return data;
+}
+function _importMetroFromProject() {
+  const data = require("../metro/importMetroFromProject");
+  _importMetroFromProject = function () {
+    return data;
+  };
+  return data;
+}
+function _middlwareMutations() {
+  const data = require("../middlwareMutations");
+  _middlwareMutations = function () {
     return data;
   };
   return data;

@@ -1,7 +1,7 @@
 {
   "name": "@expo/sandbox",
   "version": "0.0.0",
-  "main": "index.js",
+  "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "expo": "~50.0.0-alpha.0",
-    "expo-router": "^2.0.0",
+    "expo-router": "^3.0.0",
     "react": "18.2.0",
     "react-native": "0.72.3"
   },

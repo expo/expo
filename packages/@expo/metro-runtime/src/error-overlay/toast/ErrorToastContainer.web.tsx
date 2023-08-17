@@ -8,11 +8,11 @@
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { ErrorToast } from './ErrorToast';
 import * as LogBoxData from '../Data/LogBoxData';
 import { LogBoxLog } from '../Data/LogBoxLog';
 import { useLogs } from '../Data/LogContext';
 import { useRejectionHandler } from '../useRejectionHandler';
-import { ErrorToast } from './ErrorToast';
 
 export function ErrorToastContainer() {
   useRejectionHandler();

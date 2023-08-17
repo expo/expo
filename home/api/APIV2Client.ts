@@ -1,10 +1,10 @@
 import { Platform } from 'react-native';
 
-import * as Kernel from '../kernel/Kernel';
-import Store from '../redux/Store';
 import { ApiError } from './ApiError';
 import Config from './Config';
 import { GenericError } from './GenericError';
+import * as Kernel from '../kernel/Kernel';
+import Store from '../redux/Store';
 
 type SendOptions = {
   method?: string;

@@ -38,6 +38,28 @@ describe('_getBundleStatusMessage', () => {
       )
     ).toMatchInlineSnapshot(`"iOS ./index.js ▓▓▓▓▓▓▓▓░░░░░░░░ 50.0% ( 50/100)"`);
   });
+  it(`should format standard progress for a server invocation`, () => {
+    expect(
+      stripAnsi(
+        reporter._getBundleStatusMessage(
+          {
+            bundleDetails: asBundleDetails({
+              entryFile: './index.js',
+              platform: 'ios',
+              buildID,
+              customTransformOptions: {
+                environment: 'node',
+              },
+            }),
+            ratio: 0.5,
+            totalFileCount: 100,
+            transformedFileCount: 50,
+          },
+          'in_progress'
+        )
+      )
+    ).toMatchInlineSnapshot(`"Server ./index.js ▓▓▓▓▓▓▓▓░░░░░░░░ 50.0% ( 50/100)"`);
+  });
 
   it(`should format standard progress at 0%`, () => {
     expect(

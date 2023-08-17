@@ -132,4 +132,42 @@ describe('getStaticResourcesAsync', () => {
 
     expect(scope.isDone()).toBe(true);
   });
+  it(`throws from a metro server error`, async () => {
+    vol.fromJSON(
+      {
+        'index.js': '',
+        'package.json': JSON.stringify({}),
+      },
+      '/'
+    );
+    const scope = nock('http://localhost:8081')
+      .get(
+        '/index.bundle?platform=web&dev=true&hot=false&resolver.environment=client&transform.environment=client&serializer.output=static'
+      )
+      .reply(
+        500,
+        `<!DOCTYPE html>
+        <html lang="en">
+        <head>
+        <meta charset="utf-8">
+        <title>Error</title>
+        </head>
+        <body>
+        <pre>Error: Unable to resolve module ./packages/expo-router/entry from /Users/evanbacon/Documents/GitHub/expo/apps/sandbox/.: <br><br>None of these files exist:<br> &nbsp;* packages/expo-router/entry(.web.ts|.ts|.web.tsx|.tsx|.web.mjs|.mjs|.web.js|.js|.web.jsx|.jsx|.web.json|.json|.web.cjs|.cjs|.web.scss|.scss|.web.sass|.sass|.web.css|.css|.web.cjs|.cjs)<br> &nbsp;* packages/expo-router/entry/index(.web.ts|.ts|.web.tsx|.tsx|.web.mjs|.mjs|.web.js|.js|.web.jsx|.jsx|.web.json|.json|.web.cjs|.cjs|.web.scss|.scss|.web.sass|.sass|.web.css|.css|.web.cjs|.cjs)<br> &nbsp; &nbsp;at ModuleResolver.resolveDependency (/Users/evanbacon/Documents/GitHub/expo/node_modules/metro/src/node-haste/DependencyGraph/ModuleResolution.js:114:15)<br> &nbsp; &nbsp;at DependencyGraph.resolveDependency (/Users/evanbacon/Documents/GitHub/expo/node_modules/metro/src/node-haste/DependencyGraph.js:277:43)<br> &nbsp; &nbsp;at /Users/evanbacon/Documents/GitHub/expo/node_modules/metro/src/lib/transformHelpers.js:169:21<br> &nbsp; &nbsp;at Server._resolveRelativePath (/Users/evanbacon/Documents/GitHub/expo/node_modules/metro/src/Server.js:1045:12)<br> &nbsp; &nbsp;at process.processTicksAndRejections (node:internal/process/task_queues:95:5)<br> &nbsp; &nbsp;at async Server.requestProcessor [as _processBundleRequest] (/Users/evanbacon/Documents/GitHub/expo/node_modules/metro/src/Server.js:449:37)<br> &nbsp; &nbsp;at async Server._processRequest (/Users/evanbacon/Documents/GitHub/expo/node_modules/metro/src/Server.js:383:7)</pre>
+        </body>
+        </html>`
+      );
+
+    const devServer = await getStartedDevServer();
+
+    expect(devServer['postStartAsync']).toHaveBeenCalled();
+
+    await expect(
+      devServer.getStaticResourcesAsync({ mode: 'development', minify: false })
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"Metro failed to bundle the project. Check the console for more information."`
+    );
+
+    expect(scope.isDone()).toBe(true);
+  });
 });

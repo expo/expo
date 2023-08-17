@@ -1,10 +1,10 @@
 import spawnAsync from '@expo/spawn-async';
 import { execFileSync } from 'child_process';
 
+import { assertSdkRoot } from './AndroidSdk';
 import { Log } from '../../../log';
 import { AbortCommandError } from '../../../utils/errors';
 import { installExitHooks } from '../../../utils/exit';
-import { assertSdkRoot } from './AndroidSdk';
 
 const debug = require('debug')('expo:start:platforms:android:adbServer') as typeof console.log;
 

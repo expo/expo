@@ -12,12 +12,12 @@ import { ConfigT, InputConfigT } from 'metro-config';
 import bundleToString from 'metro/src/lib/bundleToString';
 import path from 'path';
 
-import { env } from '../env';
 import { environmentVariableSerializerPlugin } from './environmentVariableSerializerPlugin';
 import { baseJSBundle } from './fork/baseJSBundle';
 import { getExportPathForDependency } from './fork/js';
 import { getCssSerialAssets } from './getCssDeps';
 import { SerialAsset } from './serializerAssets';
+import { env } from '../env';
 
 export type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 
@@ -258,7 +258,7 @@ const buildDependenciesForEachSplitPoint = (
   return [...multiBundles.entries()].map((bundle) => {
     const deps = [...bundle[1].values()].map((dep) => [dep, graph.dependencies.get(dep)!]) as [
       string,
-      Module
+      Module,
     ][];
     if (!graph.dependencies.get(bundle[0])) {
       return null;

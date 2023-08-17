@@ -3,10 +3,10 @@ import { Divider, Text, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
 import { Appearance } from 'react-native';
 
+import { RadioListItem } from './RadioListItem';
 import { SectionHeader } from '../../components/SectionHeader';
 import { useDispatch, useSelector } from '../../redux/Hooks';
 import SettingsActions from '../../redux/SettingsActions';
-import { RadioListItem } from './RadioListItem';
 
 type ColorSchemeName = Appearance.AppearancePreferences['colorScheme'];
 

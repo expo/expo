@@ -1,5 +1,5 @@
-import { AuthRequest, AuthRequestConfig, AuthRequestPromptOptions, AuthSessionRedirectUriOptions, AuthSessionResult, DiscoveryDocument } from '../AuthSession';
 import { ProviderAuthRequestConfig } from './Provider.types';
+import { AuthRequest, AuthRequestConfig, AuthRequestPromptOptions, AuthSessionRedirectUriOptions, AuthSessionResult, DiscoveryDocument } from '../AuthSession';
 export declare const discovery: DiscoveryDocument;
 /**
  * @deprecated See [Google authentication](/guides/google-authentication/).

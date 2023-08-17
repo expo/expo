@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+- On iOS, bump SDWebImage versions. ([#23858](https://github.com/expo/expo/pull/23858) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 1.4.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
 ## 1.4.0 — 2023-07-28
 
 ### 🎉 New features

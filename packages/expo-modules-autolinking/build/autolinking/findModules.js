@@ -9,8 +9,8 @@ const fast_glob_1 = __importDefault(require("fast-glob"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const module_1 = require("module");
 const path_1 = __importDefault(require("path"));
-const ExpoModuleConfig_1 = require("../ExpoModuleConfig");
 const mergeLinkingOptions_1 = require("./mergeLinkingOptions");
+const ExpoModuleConfig_1 = require("../ExpoModuleConfig");
 // Names of the config files. From lowest to highest priority.
 const EXPO_MODULE_CONFIG_FILENAMES = ['unimodule.json', 'expo-module.config.json'];
 /**
@@ -109,7 +109,13 @@ function addRevisionToResults(results, name, revision) {
  */
 async function findPackagesConfigPathsAsync(searchPath) {
     const bracedFilenames = '{' + EXPO_MODULE_CONFIG_FILENAMES.join(',') + '}';
-    const paths = await (0, fast_glob_1.default)([`*/${bracedFilenames}`, `@*/*/${bracedFilenames}`, `./${bracedFilenames}`], {
+    const paths = await (0, fast_glob_1.default)([
+        `*/${bracedFilenames}`,
+        `@*/*/${bracedFilenames}`,
+        `./${bracedFilenames}`,
+        `.pnpm/*/node_modules/*/${bracedFilenames}`,
+        `.pnpm/*/node_modules/@*/*/${bracedFilenames}`,
+    ], {
         cwd: searchPath,
     });
     // If the package has multiple configs (e.g. `unimodule.json` and `expo-module.config.json` during the transition time)

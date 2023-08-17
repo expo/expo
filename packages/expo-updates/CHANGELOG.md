@@ -8,7 +8,15 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed the `node` execution on Windows. ([#23983](https://github.com/expo/expo/pull/23983) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
+
+## 0.19.1 — 2023-08-02
+
+### 💡 Others
+
+- Update API documentation to clarify `channel` behavior in Expo Go/ development builds. ([#23783](https://github.com/expo/expo/pull/23783) by [@keith-kurak](https://github.com/keith-kurak))
 
 ## 0.19.0 — 2023-07-28
 

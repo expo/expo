@@ -1,10 +1,10 @@
 import { vol } from 'memfs';
 
+import { mockExpoRootChain, mockSelfSigned } from './fixtures/certificates';
 import { asMock } from '../../__tests__/asMock';
 import { getProjectDevelopmentCertificateAsync } from '../../api/getProjectDevelopmentCertificate';
 import { getUserAsync } from '../../api/user/user';
 import { getCodeSigningInfoAsync, signManifestString } from '../codesigning';
-import { mockExpoRootChain, mockSelfSigned } from './fixtures/certificates';
 
 jest.mock('../../api/user/user');
 jest.mock('../../api/graphql/queries/AppQuery', () => ({

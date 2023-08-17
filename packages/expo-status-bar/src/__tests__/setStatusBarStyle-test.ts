@@ -1,7 +1,7 @@
 import { Platform, StatusBar as ReactNativeStatusBar } from 'react-native';
 
-import { setStatusBarStyle } from '../StatusBar';
 import { mockProperty, mockAppearance } from './Helpers';
+import { setStatusBarStyle } from '../StatusBar';
 
 if (Platform.OS === 'web') {
   describe('setStatusBarStyle', () => {

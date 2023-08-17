@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+- Migrated Android codebase to use Expo modules API. ([#23862](https://github.com/expo/expo/pull/23862) by [@lukmccall](https://github.com/lukmccall))
+
+## 11.4.0 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
 ## 11.3.0 — 2023-06-21
 
 ### 🐛 Bug fixes

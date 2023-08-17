@@ -7,13 +7,6 @@ exports.getApplicationTargetNameForSchemeAsync = getApplicationTargetNameForSche
 exports.getArchiveBuildConfigurationForSchemeAsync = getArchiveBuildConfigurationForSchemeAsync;
 exports.getRunnableSchemesFromXcodeproj = getRunnableSchemesFromXcodeproj;
 exports.getSchemesFromXcodeproj = getSchemesFromXcodeproj;
-function _XML() {
-  const data = require("../utils/XML");
-  _XML = function () {
-    return data;
-  };
-  return data;
-}
 function _Paths() {
   const data = require("./Paths");
   _Paths = function () {
@@ -31,6 +24,13 @@ function _Target() {
 function _Xcodeproj() {
   const data = require("./utils/Xcodeproj");
   _Xcodeproj = function () {
+    return data;
+  };
+  return data;
+}
+function _XML() {
+  const data = require("../utils/XML");
+  _XML = function () {
     return data;
   };
   return data;

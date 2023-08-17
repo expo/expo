@@ -8,7 +8,15 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed build error when mixing with iOS built-in SQLite3. ([#23885](https://github.com/expo/expo/pull/23885) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
+
+- Remove unneeded resource bundle. ([#23813](https://github.com/expo/expo/pull/23813) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 11.5.0 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
 
 ## 11.4.0 — 2023-07-28
 
