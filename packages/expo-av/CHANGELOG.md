@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added a `subtitles` parameter to the status object for passing a list of available subtitles in an HLS stream. ([#23998](https://github.com/expo/expo/pull/23998) by [@mojavad](https://github.com/mojavad))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
