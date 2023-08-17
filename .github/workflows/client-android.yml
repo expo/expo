@@ -28,9 +28,14 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    # runs-on: ubuntu-22.04
+    # NOTE(kudo): Temporarily use macOS runner because the limited resource on linux runners does not allow to build Expo Go
+    runs-on: macos-13
     env:
-      GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx3072m -XX:MaxMetaspaceSize=1024m
+      ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
+      # GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx3072m -XX:MaxMetaspaceSize=1024m"
+      # NOTE(kudo): Increase JVM memory because macOS runners have more memory available
+      GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
@@ -67,13 +72,26 @@ jobs:
         uses: ./.github/actions/expo-git-decrypt
         with:
           key: ${{ secrets.GIT_CRYPT_KEY_BASE64 }}
+      - name: 🔎 Check which flavor to build
+        id: flavor
+        uses: dorny/paths-filter@v2
+        with:
+          # this action fails when base is not set on schedule event
+          base: ${{ github.ref }}
+          filters: |
+            versioned:
+              - android/versioned-abis/**
+              - android/versioned-react-native/**
+              - android/expoview/src/versioned/**
+              - android/expoview/src/main/java/versioned/**
+              - android/**/*.gradle
       - name: 🏭 Build APK
+        env:
+          IS_VERSIONED_FLAVOR: ${{ github.event_name == 'schedule' || steps.flavor.outputs.versioned == 'true' }}
+          BUILD_TYPE: Debug
         run: |
-          export ORG_GRADLE_PROJECT_reactNativeArchitectures="x86_64"
-          echo "Using ABI filters: $ORG_GRADLE_PROJECT_reactNativeArchitectures"
-          BUILD_TYPE="Debug"
-          FLAVOR="Unversioned"
-          echo "Building with $FLAVOR flavor"
+          [[ "$IS_VERSIONED_FLAVOR" == "true" ]] && FLAVOR="Versioned" || FLAVOR="Unversioned"
+          echo "Building: flavor[${FLAVOR}] type[${BUILD_TYPE}]"
           fastlane android build build_type:$BUILD_TYPE flavor:$FLAVOR sign:false
       - name: 📤 Upload APK artifact
         uses: actions/upload-artifact@v3
