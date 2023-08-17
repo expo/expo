@@ -28,21 +28,22 @@ concurrency:
 
 jobs:
   build:
+    # NOTE(kudo): [macos-temp] Temporarily use macos runner because the limited resource on linux runners does not allow to build Expo Go
     # runs-on: ubuntu-22.04
-    # NOTE(kudo): Temporarily use macOS runner because the limited resource on linux runners does not allow to build Expo Go
     runs-on: macos-13
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
+      # [macos-temp] Increase JVM memory because macOS runners have more memory available
       # GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx3072m -XX:MaxMetaspaceSize=1024m"
-      # NOTE(kudo): Increase JVM memory because macOS runners have more memory available
       GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
         with:
           submodules: true
-      - name: 🧹 Cleanup GitHub Linux runner disk space
-        uses: ./.github/actions/cleanup-linux-disk-space
+      # [macos-temp]
+      # - name: 🧹 Cleanup GitHub Linux runner disk space
+      #   uses: ./.github/actions/cleanup-linux-disk-space
       - name: 🔨 Use JDK 11
         uses: actions/setup-java@v3
         with:
