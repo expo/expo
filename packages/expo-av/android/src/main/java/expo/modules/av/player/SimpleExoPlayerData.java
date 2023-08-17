@@ -40,6 +40,7 @@ import com.google.android.exoplayer2.util.Util;
 import com.google.android.exoplayer2.video.VideoSize;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
 
 import expo.modules.av.AVManagerInterface;
@@ -208,6 +209,7 @@ class SimpleExoPlayerData extends PlayerData
       getClippedIntegerForValue((int) mSimpleExoPlayer.getCurrentPosition(), 0, duration));
     map.putInt(STATUS_PLAYABLE_DURATION_MILLIS_KEY_PATH,
       getClippedIntegerForValue((int) mSimpleExoPlayer.getBufferedPosition(), 0, duration));
+    map.putParcelableArrayList("subtitles", buildSubtitlesList());
 
     map.putBoolean(STATUS_IS_PLAYING_KEY_PATH,
       mSimpleExoPlayer.getPlayWhenReady() && mSimpleExoPlayer.getPlaybackState() == Player.STATE_READY);
@@ -401,6 +403,26 @@ class SimpleExoPlayerData extends PlayerData
     }
   }
 
+  private ArrayList<Bundle> buildSubtitlesList() {
+    ArrayList<Bundle> subtitles = new ArrayList<Bundle>();
+
+    for(int i = 0; i < mSimpleExoPlayer.getCurrentTrackGroups().length; i++){
+      String format = mSimpleExoPlayer.getCurrentTrackGroups().get(i).getFormat(0).sampleMimeType;
+
+      if (format != null && format.contains("text")) {
+        String lang = mSimpleExoPlayer.getCurrentTrackGroups().get(i).getFormat(0).language;
+        String id = mSimpleExoPlayer.getCurrentTrackGroups().get(i).getFormat(0).id;
+
+        Bundle subtitle = new Bundle();
+        subtitle.putString("format", format);
+        subtitle.putString("language", lang);
+        subtitle.putString("id", id);
+
+        subtitles.add(subtitle);
+      }
+    }
+    return subtitles;
+  }
   // region MediaSourceEventListener
 
   @Override
