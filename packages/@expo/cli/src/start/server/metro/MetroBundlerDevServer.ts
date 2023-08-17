@@ -154,12 +154,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const devBundleUrlPathname = createBundleUrlPath({
       platform: 'web',
       mode,
-      lazy: true,
       minify,
       environment: 'client',
       serializerOutput: 'static',
       mainModuleName: resolveMainModuleName(this.projectRoot, getConfig(this.projectRoot), 'web'),
-      lazy: shouldEnableAsyncImports(this.projectRoot),
+      lazy: false, //shouldEnableAsyncImports(this.projectRoot),
     });
 
     const bundleUrl = new URL(devBundleUrlPathname, this.getDevServerUrl()!);

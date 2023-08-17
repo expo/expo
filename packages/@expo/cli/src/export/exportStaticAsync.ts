@@ -101,6 +101,7 @@ export async function exportFromServerAsync(
       minify,
     }),
   ]);
+  console.log('resources', resources);
 
   debug('Routes:\n', inspect(manifest, { colors: true, depth: null }));
 

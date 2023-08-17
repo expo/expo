@@ -70,9 +70,6 @@ function getDefaultSerializer(serializerConfig, fallbackSerializer) {
         const jsAssets = [];
         // Create split graph from main graph
         const splitGraph = generateDependencyGraphForEachSplitPoint(new Set([entryFile]), graph).filter(Boolean);
-        // console.log('splitty', entryFile, splitGraph.length);
-        // moduleId: url
-        // let dll: Record<number, string> = {};
         splitGraph.forEach(async (graph, index) => {
             if (!graph)
                 return;
@@ -87,8 +84,12 @@ function getDefaultSerializer(serializerConfig, fallbackSerializer) {
                 runBeforeMainModule: serializerConfig.getModulesRunBeforeMainModule(path_1.default.relative(options.projectRoot, entryFile)),
                 sourceMapUrl: `${fileName}.js.map`,
             });
-            console.log('_expoSplitBundlePaths', graph.entryPoints, graph, jsSplitBundle._expoSplitBundlePaths);
-            // dll = { ...dll, ...jsSplitBundle._expoSplitBundlePaths };
+            // console.log(
+            //   '_expoSplitBundlePaths',
+            //   graph.entryPoints,
+            //   graph,
+            //   jsSplitBundle._expoSplitBundlePaths
+            // );
             const jsCode = (0, bundleToString_1.default)(jsSplitBundle).code;
             // // Save sourcemap
             // const getSortedModules = (graph) => {
@@ -104,7 +105,7 @@ function getDefaultSerializer(serializerConfig, fallbackSerializer) {
             //   // excludeSource: options.excludeSource,
             // });
             // await writeFile(outputOpts.sourceMapOutput, sourceMap, null);
-            console.log('entry >', entryDependency, entryDependency.dependencies);
+            // console.log('entry >', entryDependency, entryDependency.dependencies);
             const relativeEntry = path_1.default.relative(options.projectRoot, entryFile);
             const outputFile = options.dev
                 ? entryFile

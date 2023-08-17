@@ -10,9 +10,11 @@ import { ServerContainer, ServerContainerRef } from '@react-navigation/native';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { AppRegistry } from 'react-native-web';
+// This has to be the string "expo-router/_ctx" as we resolve the exact string to
+// a different file in a custom resolver for bundle splitting in Node.js.
+import { ctx } from 'expo-router/_ctx';
 
 import { getRootComponent } from './getRootComponent';
-import { ctx } from '../../_ctx';
 import { ExpoRoot, ExpoRootProps } from '../ExpoRoot';
 import { getNavigationConfig } from '../getLinkingConfig';
 import { getRoutes } from '../getRoutes';

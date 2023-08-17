@@ -28,11 +28,11 @@ function getConfigMemo(projectRoot) {
   return config;
 }
 
-function getExpoRouterImportMode(projectRoot, platform) {
+function getExpoRouterImportMode(projectRoot, platform, isNode) {
   const envVar = 'EXPO_ROUTER_IMPORT_MODE_' + platform.toUpperCase();
-  if (process.env[envVar]) {
-    return process.env[envVar];
-  }
+  // if (process.env[envVar]) {
+  //   return process.env[envVar];
+  // }
   const env = process.env.NODE_ENV || process.env.BABEL_ENV;
 
   const { exp } = getConfigMemo(projectRoot);
@@ -52,16 +52,19 @@ function getExpoRouterImportMode(projectRoot, platform) {
 
   // TODO: Production bundle splitting
 
-  if (env === 'production' && mode === 'lazy') {
-    throw new Error(
-      'Async routes are not supported in production yet. Set the `expo-router` Config Plugin prop `asyncRoutes` to `development`, `false`, or `undefined`.'
-    );
-  }
+  // if (env === 'production' && mode === 'lazy') {
+  //   throw new Error(
+  //     'Async routes are not supported in production yet. Set the `expo-router` Config Plugin prop `asyncRoutes` to `development`, `false`, or `undefined`.'
+  //   );
+  // }
 
-  // NOTE: This is a temporary workaround for static rendering on web.
-  if (platform === 'web' && (exp.web || {}).output === 'static') {
+  if (isNode) {
     mode = 'sync';
   }
+  // // NOTE: This is a temporary workaround for static rendering on web.
+  // if (platform === 'web' && (exp.web || {}).output === 'static') {
+  //   mode = 'sync';
+  // }
 
   // Development
   debug('Router import mode', mode);
@@ -122,6 +125,8 @@ function getExpoRouterAbsoluteAppRoot(projectRoot) {
 
 module.exports = function (api) {
   const { types: t } = api;
+
+  const isNode = api.caller((caller) => caller && caller.metroTarget === 'node');
 
   const getRelPath = (state) => './' + nodePath.relative(state.file.opts.root, state.filename);
 
@@ -223,7 +228,9 @@ module.exports = function (api) {
         ) {
           parent.replaceWith(
             t.stringLiteral(
-              metroTarget === 'node' ? 'sync' : getExpoRouterImportMode(projectRoot, platform)
+              metroTarget === 'node'
+                ? 'sync'
+                : getExpoRouterImportMode(projectRoot, platform, isNode)
             )
           );
         }

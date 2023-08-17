@@ -3,9 +3,11 @@
 // app directory. This will cause a lot of unfortunate errors regarding HMR and Fast Refresh.
 // This is because Fast Refresh is sending the entire file containing an updated component.
 import React from 'react';
+// This has to be the string "expo-router/_ctx" as we resolve the exact string to
+// a different file in a custom resolver for bundle splitting in Node.js.
+import { ctx } from 'expo-router/_ctx';
 import { ExpoRoot } from './ExpoRoot';
 import { Head } from './head';
-import { ctx } from '../_ctx';
 // Must be exported or Fast Refresh won't update the context
 export function App() {
     return (React.createElement(Head.Provider, null,

@@ -2,5 +2,7 @@ export const ctx = require.context(
   process.env.EXPO_ROUTER_APP_ROOT,
   true,
   /.*/,
-  process.env.EXPO_ROUTER_IMPORT_MODE_WEB
+  // TODO: This isn't toggling as expected.
+  'lazy'
+  // process.env.EXPO_ROUTER_IMPORT_MODE_WEB
 );

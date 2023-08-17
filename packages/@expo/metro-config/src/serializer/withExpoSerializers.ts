@@ -103,11 +103,6 @@ function getDefaultSerializer(
       Boolean
     );
 
-    // console.log('splitty', entryFile, splitGraph.length);
-
-    // moduleId: url
-    // let dll: Record<number, string> = {};
-
     splitGraph.forEach(async (graph, index) => {
       if (!graph) return;
 
@@ -127,14 +122,12 @@ function getDefaultSerializer(
         ),
         sourceMapUrl: `${fileName}.js.map`,
       });
-      console.log(
-        '_expoSplitBundlePaths',
-        graph.entryPoints,
-        graph,
-        jsSplitBundle._expoSplitBundlePaths
-      );
-
-      // dll = { ...dll, ...jsSplitBundle._expoSplitBundlePaths };
+      // console.log(
+      //   '_expoSplitBundlePaths',
+      //   graph.entryPoints,
+      //   graph,
+      //   jsSplitBundle._expoSplitBundlePaths
+      // );
 
       const jsCode = bundleToString(jsSplitBundle).code;
 
@@ -155,7 +148,7 @@ function getDefaultSerializer(
 
       // await writeFile(outputOpts.sourceMapOutput, sourceMap, null);
 
-      console.log('entry >', entryDependency, entryDependency.dependencies);
+      // console.log('entry >', entryDependency, entryDependency.dependencies);
       const relativeEntry = path.relative(options.projectRoot, entryFile);
       const outputFile = options.dev
         ? entryFile

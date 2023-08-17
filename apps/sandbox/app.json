@@ -21,6 +21,14 @@
     "ios": {
       "supportsTablet": true
     },
+    "plugins": [
+      [
+        "expo-router",
+        {
+          "asyncRoutes": true
+        }
+      ]
+    ],
     "web": {
       "bundler": "metro",
       "output": "static"
