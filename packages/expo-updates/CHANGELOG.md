@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fixed the `node` execution on Windows. ([#23983](https://github.com/expo/expo/pull/23983) by [@kudo](https://github.com/kudo))
+- Bare update manifest non-nullability parity. ([#23166](https://github.com/expo/expo/pull/23166) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 

@@ -375,7 +375,7 @@ class UpdatesController private constructor(
               params.putString("manifestString", update.manifest.toString())
               sendLegacyUpdateEventToJS(UPDATE_AVAILABLE_EVENT, params)
               stateMachine.processEvent(
-                UpdatesStateEvent.DownloadCompleteWithUpdate(update.manifest!!)
+                UpdatesStateEvent.DownloadCompleteWithUpdate(update.manifest)
               )
             }
             RemoteUpdateStatus.NO_UPDATE_AVAILABLE -> {
