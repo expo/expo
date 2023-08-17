@@ -80,12 +80,11 @@ class SQLiteModule : Module() {
     return db.compileStatement(sql).use { statement ->
       if (bindArgs != null) {
         for (i in bindArgs.size downTo 1) {
-          if (bindArgs[i - 1] == null) {
-            statement.bindNull(i)
+          val args = bindArgs[i - 1]
+          if (args != null) {
+            statement.bindString(i, args)
           } else {
-            bindArgs[i - 1]?.let {
-              statement.bindString(i, it)
-            } ?:  throw  IllegalArgumentException("the bind value at index $i is null");
+            statement.bindNull(i)
           }
         }
       }
