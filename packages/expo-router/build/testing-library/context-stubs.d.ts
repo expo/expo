@@ -6,10 +6,10 @@ export type FileStub = (Record<string, unknown> & {
     unstable_settings?: Record<string, any>;
 }) | ReactComponent;
 export { requireContext };
-export declare function inMemoryContext(context: Record<string, FileStub>): ((id: string) => ReactComponent | (Record<string, unknown> & {
+export declare function inMemoryContext(context: Record<string, FileStub>): ((id: string) => (Record<string, unknown> & {
     default: ReactComponent;
     unstable_settings?: Record<string, any> | undefined;
-}) | {
+}) | ReactComponent | {
     default: FileStub;
 }) & {
     keys: () => string[];
