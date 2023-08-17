@@ -53,6 +53,14 @@ import expo.modules.screencapture.ScreenCaptureModule
 import expo.modules.screenorientation.ScreenOrientationModule
 import expo.modules.securestore.SecureStorePackage
 import expo.modules.sensors.SensorsPackage
+import expo.modules.sensors.modules.AccelerometerModule
+import expo.modules.sensors.modules.BarometerModule
+import expo.modules.sensors.modules.DeviceMotionModule
+import expo.modules.sensors.modules.GyroscopeModule
+import expo.modules.sensors.modules.LightSensorModule
+import expo.modules.sensors.modules.MagnetometerModule
+import expo.modules.sensors.modules.MagnetometerUncalibratedModule
+import expo.modules.sensors.modules.PedometerModule
 import expo.modules.sharing.SharingModule
 import expo.modules.sms.SMSModule
 import expo.modules.speech.SpeechModule
@@ -111,6 +119,16 @@ object ExperiencePackagePicker : ModulesProvider {
   }
 
   override fun getModulesList(): List<Class<out Module>> = listOf(
+    // Sensors
+    AccelerometerModule::class.java,
+    BarometerModule::class.java,
+    GyroscopeModule::class.java,
+    LightSensorModule::class.java,
+    DeviceMotionModule::class.java,
+    MagnetometerModule::class.java,
+    MagnetometerUncalibratedModule::class.java,
+    PedometerModule::class.java,
+    // End of Sensors
     BatteryModule::class.java,
     BarCodeScannerModule::class.java,
     BlurModule::class.java,
