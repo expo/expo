@@ -385,8 +385,9 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
     NSArray<AVMediaSelectionOption *> *subtitleOptions = subtitleGroup.options;
     for (AVMediaSelectionOption *option in subtitleOptions) {
         NSString *title = option.commonMetadata.firstObject.stringValue;
-        
-        [subtitlesList addObject:title];
+        if (title) {
+         [subtitlesList addObject:title];
+        }
     }
     
     return [subtitlesList copy];
