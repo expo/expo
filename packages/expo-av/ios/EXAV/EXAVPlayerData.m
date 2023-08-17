@@ -29,6 +29,7 @@ NSString *const EXAVPlayerDataStatusIsMutedKeyPath = @"isMuted";
 NSString *const EXAVPlayerDataStatusIsLoopingKeyPath = @"isLooping";
 NSString *const EXAVPlayerDataStatusDidJustFinishKeyPath = @"didJustFinish";
 NSString *const EXAVPlayerDataStatusHasJustBeenInterruptedKeyPath = @"hasJustBeenInterrupted";
+NSString *const EXAVPlayerDataStatusSubtitlesKeyPath = @"subtitles";
 
 NSString *const EXAVPlayerDataObserverStatusKeyPath = @"status";
 NSString *const EXAVPlayerDataObserverRateKeyPath = @"rate";
@@ -374,6 +375,24 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
   }
 }
 
+- (NSArray<NSString *> *) _getSubtitlesFromHLSAsset
+{
+    NSMutableArray<NSString *> *subtitlesList = [NSMutableArray array];
+    
+    AVAsset *asset = _player.currentItem.asset;
+    AVMediaSelectionGroup *subtitleGroup = [asset mediaSelectionGroupForMediaCharacteristic:AVMediaCharacteristicLegible];
+    
+    NSArray<AVMediaSelectionOption *> *subtitleOptions = subtitleGroup.options;
+    for (AVMediaSelectionOption *option in subtitleOptions) {
+        NSString *title = option.commonMetadata.firstObject.stringValue;
+        
+        [subtitlesList addObject:title];
+    }
+    
+    return [subtitlesList copy];
+}
+
+
 - (NSNumber *)_getRoundedMillisFromCMTime:(CMTime)time
 {
   return CMTIME_IS_INVALID(time) || CMTIME_IS_INDEFINITE(time) ? nil : @((long) (CMTimeGetSeconds(time) * 1000));
@@ -418,6 +437,10 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
   NSNumber *positionMillis = [self _getRoundedMillisFromCMTime:[_player currentTime]];
   positionMillis = [self _getClippedValueForValue:positionMillis withMin:@(0) withMax:durationMillis];
   
+    
+  // Get subtitle tracks:
+    NSArray<NSString *> * subtitles = [self _getSubtitlesFromHLSAsset];
+    
   // Calculate playable duration:
   NSNumber *playableDurationMillis;
   if (_player.status == AVPlayerStatusReadyToPlay) {
@@ -474,6 +497,7 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
   mutableStatus[EXAVPlayerDataStatusPlayableDurationMillisKeyPath] = playableDurationMillis;
   mutableStatus[EXAVPlayerDataStatusDurationMillisKeyPath] = durationMillis;
   mutableStatus[EXAVPlayerDataStatusPositionMillisKeyPath] = positionMillis;
+  mutableStatus[EXAVPlayerDataStatusSubtitlesKeyPath] = subtitles;
   
   return mutableStatus;
 }
