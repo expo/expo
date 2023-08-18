@@ -75,7 +75,7 @@ internal class ImageLibraryContract(
 
   override fun parseResult(input: ImageLibraryContractOptions, resultCode: Int, intent: Intent?) =
     if (resultCode == Activity.RESULT_CANCELED) {
-      ImagePickerContractResult.Cancelled()
+      ImagePickerContractResult.Cancelled
     } else {
       intent?.takeIf { resultCode == Activity.RESULT_OK }?.getAllDataUris()?.let { uris ->
         if (input.options.allowsMultipleSelection) {
@@ -94,10 +94,10 @@ internal class ImageLibraryContract(
             uris.firstOrNull()?.let { uri ->
               val type = uri.toMediaType(contentResolver)
               ImagePickerContractResult.Success(listOf(type to uri))
-            } ?: ImagePickerContractResult.Error()
+            } ?: ImagePickerContractResult.Error
           }
         }
-      } ?: ImagePickerContractResult.Error()
+      } ?: ImagePickerContractResult.Error
     }
 }
 

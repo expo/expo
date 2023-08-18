@@ -3,7 +3,6 @@ package expo.modules.imagepicker.contracts
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import androidx.core.net.toFile
 import androidx.core.net.toUri
@@ -26,7 +25,7 @@ internal class CropImageContract(
   private val appContextProvider: AppContextProvider,
 ) : AppContextActivityResultContract<CropImageContractOptions, ImagePickerContractResult> {
   override fun createIntent(context: Context, input: CropImageContractOptions) = Intent(context, CropImageActivity::class.java).apply {
-    val mediaType = expo.modules.imagepicker.getType(context.contentResolver, input.sourceUri)
+    val mediaType = expo.modules.imagepicker.getType(context.contentResolver, input.sourceUri.toUri())
     val compressFormat = mediaType.toBitmapCompressFormat()
     val cacheDirectory = appContextProvider.appContext.cacheDirectory
     val outputUri = createOutputFile(cacheDirectory, compressFormat.toImageFileExtension()).toUri()
@@ -34,7 +33,7 @@ internal class CropImageContract(
     putExtra(
       CropImage.CROP_IMAGE_EXTRA_BUNDLE,
       bundleOf(
-        CropImage.CROP_IMAGE_EXTRA_SOURCE to input.sourceUri,
+        CropImage.CROP_IMAGE_EXTRA_SOURCE to input.sourceUri.toUri(),
         CropImage.CROP_IMAGE_EXTRA_OPTIONS to CropImageOptions().apply {
           outputCompressFormat = compressFormat
           outputCompressQuality = (input.options.quality * 100).toInt()
@@ -47,8 +46,6 @@ internal class CropImageContract(
             fixAspectRatio = true
             initialCropWindowPaddingRatio = 0f
           }
-
-          validate()
         }
       )
     )
@@ -61,16 +58,16 @@ internal class CropImageContract(
       intent?.getParcelableExtra(CropImage.CROP_IMAGE_EXTRA_RESULT)
     }
     if (resultCode == Activity.RESULT_CANCELED || result == null) {
-      return ImagePickerContractResult.Cancelled()
+      return ImagePickerContractResult.Cancelled
     }
     val targetUri = requireNotNull(result.uriContent)
     val contentResolver = requireNotNull(appContextProvider.appContext.reactContext) { "React Application Context is null" }.contentResolver
-    runBlocking { copyExifData(input.sourceUri, targetUri.toFile(), contentResolver) }
+    runBlocking { copyExifData(input.sourceUri.toUri(), targetUri.toFile(), contentResolver) }
     return ImagePickerContractResult.Success(listOf(MediaType.IMAGE to targetUri))
   }
 }
 
 internal data class CropImageContractOptions(
-  val sourceUri: Uri,
+  val sourceUri: String,
   val options: ImagePickerOptions,
 ) : Serializable
