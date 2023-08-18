@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- On Android, migrate to Expo Modules Api. ([#24012](https://github.com/expo/expo/pull/24012) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 12.4.1 — 2023-08-02
 
 _This version does not introduce any user-facing changes._
