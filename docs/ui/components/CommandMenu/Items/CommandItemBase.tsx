@@ -30,11 +30,23 @@ export const CommandItemBase = ({
 }: Props) => {
   const [copyDone, setCopyDone] = useState(false);
 
+  const copyUrl = () => {
+    navigator.clipboard?.writeText(url);
+    setCopyDone(true);
+    setTimeout(() => setCopyDone(false), 1500);
+  };
+
   return (
     <Command.Item
       className={className}
       value={value}
       data-nested={isNested ? true : undefined}
+      onMouseUp={event => {
+        // middle click (typical *nix copy shortcut)
+        if (event.button === 1) {
+          copyUrl();
+        }
+      }}
       onSelect={() => {
         openLink(url, isExternalLink);
         onSelect && onSelect();
@@ -42,11 +54,7 @@ export const CommandItemBase = ({
       onContextMenu={event => {
         event.preventDefault();
       }}
-      onAuxClick={() => {
-        navigator.clipboard?.writeText(url);
-        setCopyDone(true);
-        setTimeout(() => setCopyDone(false), 1500);
-      }}>
+      onAuxClick={copyUrl}>
       {children}
       {copyDone && (
         <Tag
