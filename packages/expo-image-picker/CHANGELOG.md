@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- On Android, the `Uri` type is not serializable and causes a crash when recreating the activity. ([#23768](https://github.com/expo/expo/pull/23768) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 14.4.1 — 2023-08-02
