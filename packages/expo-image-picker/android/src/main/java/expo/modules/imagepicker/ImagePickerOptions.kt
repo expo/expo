@@ -1,7 +1,6 @@
 package expo.modules.imagepicker
 
 import java.io.Serializable
-import android.net.Uri
 import android.provider.MediaStore
 import androidx.annotation.FloatRange
 import androidx.annotation.IntRange
@@ -46,7 +45,7 @@ internal class ImagePickerOptions : Record, Serializable {
   @Field
   var cameraType: CameraType = CameraType.BACK
 
-  fun toCameraContractOptions(uri: Uri) = CameraContractOptions(uri, this)
+  fun toCameraContractOptions(uri: String) = CameraContractOptions(uri, this)
 
   fun toImageLibraryContractOptions() = ImageLibraryContractOptions(this)
 }
