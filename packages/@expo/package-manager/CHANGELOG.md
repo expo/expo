@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- add `bun` as package manager. ([#24008](https://github.com/expo/expo/pull/24008) by [@ImBIOS](https://github.com/ImBIOS))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
