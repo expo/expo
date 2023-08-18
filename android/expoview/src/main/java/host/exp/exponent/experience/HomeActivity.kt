@@ -26,7 +26,6 @@ import expo.modules.easclient.EASClientModule
 import expo.modules.facedetector.FaceDetectorPackage
 import expo.modules.filesystem.FileSystemModule
 import expo.modules.filesystem.FileSystemPackage
-import expo.modules.font.FontLoaderPackage
 import expo.modules.haptics.HapticsModule
 import expo.modules.keepawake.KeepAwakePackage
 import expo.modules.kotlin.ModulesProvider
@@ -156,7 +155,6 @@ open class HomeActivity : BaseExperienceActivity() {
         ConstantsPackage(),
         PermissionsPackage(),
         FileSystemPackage(),
-        FontLoaderPackage(),
         BarCodeScannerPackage(),
         KeepAwakePackage(),
         FaceDetectorPackage(),
