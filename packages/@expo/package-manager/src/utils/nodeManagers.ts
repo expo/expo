@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 import {
+  BUN_LOCK_FILE,
   findPnpmWorkspaceRoot,
   findYarnOrNpmWorkspaceRoot,
   NPM_LOCK_FILE,
@@ -9,17 +10,22 @@ import {
   YARN_LOCK_FILE,
 } from './nodeWorkspaces';
 import { PackageManagerOptions } from '../PackageManager';
+import { BunPackageManager } from '../node/BunPackageManager';
 import { NpmPackageManager } from '../node/NpmPackageManager';
 import { PnpmPackageManager } from '../node/PnpmPackageManager';
 import { YarnPackageManager } from '../node/YarnPackageManager';
 
-export type NodePackageManager = NpmPackageManager | PnpmPackageManager | YarnPackageManager;
+export type NodePackageManager =
+  | BunPackageManager
+  | NpmPackageManager
+  | PnpmPackageManager
+  | YarnPackageManager;
 
 export type NodePackageManagerForProject = PackageManagerOptions &
   Partial<Record<NodePackageManager['name'], boolean>>;
 
 /** The order of the package managers to use when resolving automatically */
-export const RESOLUTION_ORDER: NodePackageManager['name'][] = ['yarn', 'npm', 'pnpm'];
+export const RESOLUTION_ORDER: NodePackageManager['name'][] = ['yarn', 'npm', 'pnpm', 'bun'];
 
 /**
  * Resolve the workspace root for a project, if its part of a monorepo.
@@ -33,6 +39,7 @@ export function findWorkspaceRoot(
     npm: findYarnOrNpmWorkspaceRoot,
     yarn: findYarnOrNpmWorkspaceRoot,
     pnpm: findPnpmWorkspaceRoot,
+    bun: findYarnOrNpmWorkspaceRoot,
   };
 
   if (preferredManager) {
@@ -60,6 +67,7 @@ export function resolvePackageManager(
 ): NodePackageManager['name'] | null {
   const root = findWorkspaceRoot(projectRoot, preferredManager) ?? projectRoot;
   const lockFiles: Record<NodePackageManager['name'], string> = {
+    bun: BUN_LOCK_FILE,
     npm: NPM_LOCK_FILE,
     pnpm: PNPM_LOCK_FILE,
     yarn: YARN_LOCK_FILE,
@@ -97,9 +105,13 @@ export function createForProject(
     return new YarnPackageManager({ cwd: projectRoot, ...options });
   } else if (options.pnpm) {
     return new PnpmPackageManager({ cwd: projectRoot, ...options });
+  } else if (options.bun) {
+    return new BunPackageManager({ cwd: projectRoot, ...options });
   }
 
   switch (resolvePackageManager(projectRoot)) {
+    case 'bun':
+      return new BunPackageManager({ cwd: projectRoot, ...options });
     case 'npm':
       return new NpmPackageManager({ cwd: projectRoot, ...options });
     case 'pnpm':
