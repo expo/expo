@@ -1,6 +1,7 @@
 package versioned.host.exp.exponent
 
 import expo.modules.application.ApplicationPackage
+import expo.modules.av.AVModule
 import expo.modules.av.AVPackage
 import expo.modules.av.video.VideoViewModule
 import expo.modules.backgroundfetch.BackgroundFetchPackage
@@ -119,6 +120,7 @@ object ExperiencePackagePicker : ModulesProvider {
   }
 
   override fun getModulesList(): List<Class<out Module>> = listOf(
+    AVModule::class.java,
     // Sensors
     AccelerometerModule::class.java,
     BarometerModule::class.java,
