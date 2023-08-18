@@ -19,11 +19,4 @@ public class AVPackage extends BasePackage {
         new SharedCookiesDataSourceFactoryProvider()
     );
   }
-
-  @Override
-  public List<ExportedModule> createExportedModules(Context context) {
-    return Arrays.<ExportedModule>asList(
-        new AVModule(context)
-    );
-  }
 }

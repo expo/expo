@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Migrated `AVModule` to use Expo modules API. ([#23902](https://github.com/expo/expo/pull/23902) by [@lukmccall](https://github.com/lukmccall))
+
 ## 13.5.1 — 2023-08-02
 
 _This version does not introduce any user-facing changes._
