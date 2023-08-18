@@ -9,7 +9,6 @@ class FunctionBuilder(@PublishedApi internal val name: String) {
   @PublishedApi
   internal var functionComponent: SyncFunctionComponent? = null
 
-
   @JvmName("BodyWithoutArgs")
   inline fun Body(
     crossinline body: () -> Any?

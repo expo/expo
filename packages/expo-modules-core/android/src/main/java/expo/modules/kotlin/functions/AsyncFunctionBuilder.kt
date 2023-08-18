@@ -65,7 +65,6 @@ class AsyncFunctionBuilder(@PublishedApi internal val name: String) {
     }
   }
 
-
   @JvmName("AsyncBodyWithoutArgs")
   inline fun AsyncBody(crossinline body: () -> Any?): AsyncFunction {
     return AsyncFunctionComponent(name, arrayOf()) { body() }.also {
