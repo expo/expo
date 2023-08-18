@@ -32,6 +32,7 @@ export async function installAsync(
     npm: options.npm,
     yarn: options.yarn,
     pnpm: options.pnpm,
+    bun: options.bun,
     silent: options.silent,
     log: Log.log,
   });
