@@ -120,6 +120,7 @@ const generateDependencyGraphForEachSplitPoint = (entryFiles, graph, multiBundle
         }
         const result = getTransitiveDependencies(entryFile, graph, used);
         multiBundles.set(entryFile, result.deps);
+        // TODO: Reimplement this and use for a shared chunking system. Test against JSX with one layout route.
         // used = new Set([...used, ...result.deps]);
         if (result.entries.size > 0) {
             generateDependencyGraphForEachSplitPoint(result.entries, graph, multiBundles, used);
