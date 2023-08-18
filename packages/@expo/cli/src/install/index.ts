@@ -29,6 +29,7 @@ export const expoInstall: Command = async (argv) => {
         chalk`--npm       Use npm to install dependencies. {dim Default when package-lock.json exists}`,
         chalk`--yarn      Use Yarn to install dependencies. {dim Default when yarn.lock exists}`,
         chalk`--pnpm      Use pnpm to install dependencies. {dim Default when pnpm-lock.yaml exists}`,
+        chalk`--bun       Use bun to install dependencies. {dim Default when bun.lockb exists}`,
         `-h, --help  Usage info`,
       ].join('\n'),
       [
