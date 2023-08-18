@@ -11,6 +11,7 @@ import {
 describe(resolvePackageManagerOptions, () => {
   it(`resolves`, () => {
     expect(resolvePackageManagerOptions({ '--yarn': true })).toEqual({
+      bun: undefined,
       npm: undefined,
       pnpm: undefined,
       yarn: true,
@@ -21,6 +22,7 @@ describe(resolvePackageManagerOptions, () => {
     expect(() => resolvePackageManagerOptions({ '--no-install': true, '--yarn': true })).toThrow();
     expect(() =>
       resolvePackageManagerOptions({
+        '--bun': true,
         '--npm': true,
         '--pnpm': true,
         '--no-install': true,
