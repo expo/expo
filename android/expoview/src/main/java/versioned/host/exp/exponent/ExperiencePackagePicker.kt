@@ -35,6 +35,7 @@ import expo.modules.imageloader.ImageLoaderPackage
 import expo.modules.imagemanipulator.ImageManipulatorModule
 import expo.modules.imagepicker.ImagePickerModule
 import expo.modules.intentlauncher.IntentLauncherModule
+import expo.modules.keepawake.KeepAwakeModule
 import expo.modules.keepawake.KeepAwakePackage
 import expo.modules.kotlin.ModulesProvider
 import expo.modules.kotlin.modules.Module
@@ -150,6 +151,7 @@ object ExperiencePackagePicker : ModulesProvider {
     ImageManipulatorModule::class.java,
     ExpoImageModule::class.java,
     IntentLauncherModule::class.java,
+    KeepAwakeModule::class.java,
     LinearGradientModule::class.java,
     LocalizationModule::class.java,
     MailComposerModule::class.java,
