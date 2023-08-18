@@ -120,7 +120,7 @@ const generateDependencyGraphForEachSplitPoint = (entryFiles, graph, multiBundle
         }
         const result = getTransitiveDependencies(entryFile, graph, used);
         multiBundles.set(entryFile, result.deps);
-        used = new Set([...used, ...result.deps]);
+        // used = new Set([...used, ...result.deps]);
         if (result.entries.size > 0) {
             generateDependencyGraphForEachSplitPoint(result.entries, graph, multiBundles, used);
         }
