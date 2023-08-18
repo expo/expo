@@ -26,7 +26,7 @@ import expo.modules.print.PrintModule
 import expo.modules.facedetector.FaceDetectorPackage
 import expo.modules.filesystem.FileSystemModule
 import expo.modules.filesystem.FileSystemPackage
-import expo.modules.gl.GLPackage
+import expo.modules.gl.GLObjectManagerModule
 import expo.modules.gl.GLViewModule
 import expo.modules.haptics.HapticsModule
 import expo.modules.image.ExpoImageModule
@@ -87,7 +87,6 @@ object ExperiencePackagePicker : ModulesProvider {
     ContactsPackage(),
     FaceDetectorPackage(),
     FileSystemPackage(),
-    GLPackage(),
     ImageLoaderPackage(),
     KeepAwakePackage(),
     LocalAuthenticationPackage(),
@@ -144,6 +143,7 @@ object ExperiencePackagePicker : ModulesProvider {
     FileSystemModule::class.java,
     PrintModule::class.java,
     GLViewModule::class.java,
+    GLObjectManagerModule::class.java,
     HapticsModule::class.java,
     ImagePickerModule::class.java,
     ImageManipulatorModule::class.java,
