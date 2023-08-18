@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createSerializerFromSerialProcessors = exports.withSerializerPlugins = exports.withExpoSerializers = void 0;
+exports.createSerializerFromSerialProcessors = exports.getDefaultSerializer = exports.withSerializerPlugins = exports.withExpoSerializers = void 0;
 /**
  * Copyright © 2022 650 Industries.
  *
@@ -49,6 +49,7 @@ function getDefaultSerializer(serializerConfig, fallbackSerializer) {
         });
     return async (...props) => {
         const [entryFile, preModules, graph, options] = props;
+        // generateFixture(...props);
         // const jsCode = await defaultSerializer(...props);
         if (!options.sourceUrl) {
             return defaultSerializer(...props);
@@ -133,6 +134,7 @@ function getDefaultSerializer(serializerConfig, fallbackSerializer) {
         return JSON.stringify([...jsAssets, ...cssDeps]);
     };
 }
+exports.getDefaultSerializer = getDefaultSerializer;
 const generateDependencyGraphForEachSplitPoint = (entryFiles, graph, multiBundles = new Map(), used = new Set()) => {
     entryFiles.forEach((entryFile) => {
         if (multiBundles.has(entryFile)) {
@@ -147,6 +149,12 @@ const generateDependencyGraphForEachSplitPoint = (entryFiles, graph, multiBundle
     });
     return buildDependenciesForEachSplitPoint(multiBundles, graph);
 };
+// a -> one -> c
+// L> two -> c
+// entry
+// - shared x ?
+// - layouts
+// - child
 const getTransitiveDependencies = (path, graph, used) => {
     const result = collectDependenciesForSplitGraph(path, graph, new Set(), new Set(), used);
     result.deps.delete(path);
@@ -204,3 +212,46 @@ function createSerializerFromSerialProcessors(config, processors, originalSerial
 }
 exports.createSerializerFromSerialProcessors = createSerializerFromSerialProcessors;
 // __d((function(g,r,i,a,m,e,d){}),435,{"0":2,"1":18,"2":184,"3":103,"4":436,"5":438,"6":439,"paths":{"438":"/etc/external.bundle?platform=web"}});
+function generateFixture(...props) {
+    const [entryFile, preModules, graph, options] = props;
+    function modifyDep(mod) {
+        return {
+            dependencies: Object.fromEntries([...mod.dependencies.entries()].map(([key, value]) => {
+                return [key, value];
+            })),
+            getSource: '[MOCK_FUNCTION]',
+            inverseDependencies: Array.from(mod.inverseDependencies),
+            path: mod.path,
+            output: mod.output.map((output) => ({
+                type: output.type,
+                data: { ...output.data, map: [], code: '...', functionMap: {} },
+            })),
+        };
+    }
+    console.log('DATA:\n\n');
+    console.log(require('util').inspect([
+        entryFile,
+        preModules.map((mod) => modifyDep(mod)),
+        {
+            ...graph,
+            dependencies: Object.fromEntries([...graph.dependencies.entries()].map(([key, value]) => {
+                return [key, modifyDep(value)];
+            })),
+            entryPoints: [...graph.entryPoints.entries()],
+            transformOptions: {
+                ...graph.transformOptions,
+                customTransformOptions: {
+                    ...graph.transformOptions.customTransformOptions,
+                },
+            },
+        },
+        {
+            ...options,
+            processModuleFilter: '[Function: processModuleFilter]',
+            createModuleId: '[Function (anonymous)]',
+            getRunModuleStatement: '[Function: getRunModuleStatement]',
+            shouldAddToIgnoreList: '[Function: shouldAddToIgnoreList]',
+        },
+    ], { depth: 5000 }));
+    console.log('\n\n....');
+}

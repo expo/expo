@@ -57,7 +57,7 @@ export function withSerializerPlugins(
   };
 }
 
-function getDefaultSerializer(
+export function getDefaultSerializer(
   serializerConfig: ConfigT['serializer'],
   fallbackSerializer?: Serializer | null
 ): Serializer {
@@ -72,6 +72,9 @@ function getDefaultSerializer(
     ...props: SerializerParameters
   ): Promise<string | { code: string; map: string }> => {
     const [entryFile, preModules, graph, options] = props;
+
+    // generateFixture(...props);
+
     // const jsCode = await defaultSerializer(...props);
 
     if (!options.sourceUrl) {
@@ -204,6 +207,14 @@ const generateDependencyGraphForEachSplitPoint = (
   return buildDependenciesForEachSplitPoint(multiBundles, graph);
 };
 
+// a -> one -> c
+// L> two -> c
+
+// entry
+// - shared x ?
+// - layouts
+// - child
+
 const getTransitiveDependencies = (
   path: string,
   graph: ReadOnlyGraph<MixedOutput>,
@@ -291,3 +302,57 @@ export function createSerializerFromSerialProcessors(
 export { SerialAsset };
 
 // __d((function(g,r,i,a,m,e,d){}),435,{"0":2,"1":18,"2":184,"3":103,"4":436,"5":438,"6":439,"paths":{"438":"/etc/external.bundle?platform=web"}});
+
+function generateFixture(...props: SerializerParameters) {
+  const [entryFile, preModules, graph, options] = props;
+  function modifyDep(mod: Module<MixedOutput>) {
+    return {
+      dependencies: Object.fromEntries(
+        [...mod.dependencies.entries()].map(([key, value]) => {
+          return [key, value];
+        })
+      ),
+      getSource: '[MOCK_FUNCTION]',
+      inverseDependencies: Array.from(mod.inverseDependencies),
+      path: mod.path,
+      output: mod.output.map((output) => ({
+        type: output.type,
+        data: { ...output.data, map: [], code: '...', functionMap: {} },
+      })),
+    };
+  }
+
+  console.log('DATA:\n\n');
+  console.log(
+    require('util').inspect(
+      [
+        entryFile,
+        preModules.map((mod) => modifyDep(mod)),
+        {
+          ...graph,
+          dependencies: Object.fromEntries(
+            [...graph.dependencies.entries()].map(([key, value]) => {
+              return [key, modifyDep(value)];
+            })
+          ),
+          entryPoints: [...graph.entryPoints.entries()],
+          transformOptions: {
+            ...graph.transformOptions,
+            customTransformOptions: {
+              ...graph.transformOptions.customTransformOptions,
+            },
+          },
+        },
+        {
+          ...options,
+          processModuleFilter: '[Function: processModuleFilter]',
+          createModuleId: '[Function (anonymous)]',
+          getRunModuleStatement: '[Function: getRunModuleStatement]',
+          shouldAddToIgnoreList: '[Function: shouldAddToIgnoreList]',
+        },
+      ],
+      { depth: 5000 }
+    )
+  );
+  console.log('\n\n....');
+}
