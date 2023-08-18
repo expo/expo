@@ -57,6 +57,7 @@ export function withSerializerPlugins(
   };
 }
 
+import { toFixture } from './__tests__/fixtures/toFixture';
 export function getDefaultSerializer(
   serializerConfig: ConfigT['serializer'],
   fallbackSerializer?: Serializer | null
@@ -73,10 +74,7 @@ export function getDefaultSerializer(
   ): Promise<string | { code: string; map: string }> => {
     const [entryFile, preModules, graph, options] = props;
 
-    // generateFixture(...props);
-
-    // const jsCode = await defaultSerializer(...props);
-
+    // toFixture(...props);
     if (!options.sourceUrl) {
       return defaultSerializer(...props);
     }
@@ -111,10 +109,6 @@ export function getDefaultSerializer(
 
       const entryFile = graph.entryPoints[0];
 
-      const entryDependency = graph.dependencies.get(entryFile)!;
-      // const modulePath = entryDependency.path;
-      // const moduleId = options.createModuleId(modulePath);
-
       const prependInner = index === 0 ? preModules : [];
 
       const fileName = path.basename(entryFile, '.js');
@@ -125,12 +119,6 @@ export function getDefaultSerializer(
         ),
         sourceMapUrl: `${fileName}.js.map`,
       });
-      // console.log(
-      //   '_expoSplitBundlePaths',
-      //   graph.entryPoints,
-      //   graph,
-      //   jsSplitBundle._expoSplitBundlePaths
-      // );
 
       const jsCode = bundleToString(jsSplitBundle).code;
 
@@ -156,12 +144,6 @@ export function getDefaultSerializer(
       const outputFile = options.dev
         ? entryFile
         : getExportPathForDependency(entryFile, { sourceUrl, serverRoot: options.serverRoot });
-      //  `_expo/static/js/web/${fileNameFromContents({
-      //     filepath: relativeEntry,
-      //     src: jsCode,
-      //   })}.js`;
-
-      // dll[moduleId] = '/' + outputFile;
 
       jsAssets.push({
         filename: outputFile,
@@ -171,14 +153,6 @@ export function getDefaultSerializer(
         source: jsCode,
       });
     });
-
-    // jsAssets.push({
-    //   filename: '_expo/static/json/web/dll.json',
-    //   originFilename: 'dll.json',
-    //   type: 'json',
-    //   metadata: {},
-    //   source: JSON.stringify(dll),
-    // });
 
     return JSON.stringify([...jsAssets, ...cssDeps]);
   };
@@ -302,57 +276,3 @@ export function createSerializerFromSerialProcessors(
 export { SerialAsset };
 
 // __d((function(g,r,i,a,m,e,d){}),435,{"0":2,"1":18,"2":184,"3":103,"4":436,"5":438,"6":439,"paths":{"438":"/etc/external.bundle?platform=web"}});
-
-function generateFixture(...props: SerializerParameters) {
-  const [entryFile, preModules, graph, options] = props;
-  function modifyDep(mod: Module<MixedOutput>) {
-    return {
-      dependencies: Object.fromEntries(
-        [...mod.dependencies.entries()].map(([key, value]) => {
-          return [key, value];
-        })
-      ),
-      getSource: '[MOCK_FUNCTION]',
-      inverseDependencies: Array.from(mod.inverseDependencies),
-      path: mod.path,
-      output: mod.output.map((output) => ({
-        type: output.type,
-        data: { ...output.data, map: [], code: '...', functionMap: {} },
-      })),
-    };
-  }
-
-  console.log('DATA:\n\n');
-  console.log(
-    require('util').inspect(
-      [
-        entryFile,
-        preModules.map((mod) => modifyDep(mod)),
-        {
-          ...graph,
-          dependencies: Object.fromEntries(
-            [...graph.dependencies.entries()].map(([key, value]) => {
-              return [key, modifyDep(value)];
-            })
-          ),
-          entryPoints: [...graph.entryPoints.entries()],
-          transformOptions: {
-            ...graph.transformOptions,
-            customTransformOptions: {
-              ...graph.transformOptions.customTransformOptions,
-            },
-          },
-        },
-        {
-          ...options,
-          processModuleFilter: '[Function: processModuleFilter]',
-          createModuleId: '[Function (anonymous)]',
-          getRunModuleStatement: '[Function: getRunModuleStatement]',
-          shouldAddToIgnoreList: '[Function: shouldAddToIgnoreList]',
-        },
-      ],
-      { depth: 5000 }
-    )
-  );
-  console.log('\n\n....');
-}

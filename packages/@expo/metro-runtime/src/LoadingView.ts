@@ -1,4 +1,4 @@
-import { SyntheticPlatformEmitter } from 'expo-modules-core';
+import SyntheticPlatformEmitter from 'expo-modules-core/build/SyntheticPlatformEmitter';
 
 // Ensure events are sent so custom Fast Refresh views are shown.
 function showMessage(message: string, type: 'load' | 'refresh') {

@@ -1,5 +1,3 @@
-import { Platform } from 'expo-modules-core';
-
 declare let global: {
   __DEV__?: boolean;
   RN$Bridgeless?: boolean;
@@ -8,16 +6,17 @@ declare let global: {
   WebSocket: any;
 };
 
-if (
+if (process.env.NODE_ENV !== 'production') {
   // Only during development.
-  global.__DEV__ &&
-  // Disable for SSR
-  Platform.isDOMAvailable &&
-  // Disable for non-metro runtimes
-  // NOTE(EvanBacon): This can probably be removed in favor of `expo/metro-config` injecting this file.
-  global.__METRO_GLOBAL_PREFIX__ != null
-) {
-  require('./setupFastRefresh');
-  require('./setupHMR');
-  require('./messageSocket');
+  if (
+    // Disable for SSR
+    typeof window === 'undefined' &&
+    // Disable for non-metro runtimes
+    // NOTE(EvanBacon): This can probably be removed in favor of `expo/metro-config` injecting this file.
+    global.__METRO_GLOBAL_PREFIX__ != null
+  ) {
+    require('./setupFastRefresh');
+    require('./setupHMR');
+    require('./messageSocket');
+  }
 }

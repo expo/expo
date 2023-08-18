@@ -1,6 +1,15 @@
 import { getDefaultSerializer, withSerializerPlugins } from '../withExpoSerializers';
-import splitFixture from './fixtures/basic-router';
+import splitFixture from './fixtures/require-context';
 import { createModuleIdFactory } from './fixtures/fromFixture';
+import { baseJSBundle } from '../fork/baseJSBundle';
+import { simplifyGraph } from './fixtures/toFixture';
+
+jest.mock('../fork/baseJSBundle', () => {
+  return {
+    baseJSBundle: jest.fn(jest.requireActual('../fork/baseJSBundle').baseJSBundle),
+  };
+});
+
 describe(getDefaultSerializer, () => {
   it(`serializes`, async () => {
     const serializer = getDefaultSerializer({
@@ -8,8 +17,8 @@ describe(getDefaultSerializer, () => {
       // getModulesRunBeforeMainModule:
       getModulesRunBeforeMainModule() {
         return [
-          '/Users/evanbacon/Documents/GitHub/expo/node_modules/react-native/Libraries/Core/InitializeCore.js',
-          '/Users/evanbacon/Documents/GitHub/expo/packages/@expo/metro-runtime/build/index.js',
+          '/node_modules/react-native/Libraries/Core/InitializeCore.js',
+          '/packages/@expo/metro-runtime/build/index.js',
         ];
       },
     });
@@ -18,21 +27,67 @@ describe(getDefaultSerializer, () => {
     expect(typeof stringResults).toBe('string');
 
     const parts = JSON.parse(stringResults);
-    expect(parts.length).toBe(4);
+    expect(parts.length).toBe(3);
     expect(parts[0]).toEqual({
-      filename: '_expo/static/js/web/entry-e394358282e9f5097ddc0afcbe550e0f.js',
+      filename: expect.stringMatching(/_expo\/static\/js\/web\/index-.*\.js/),
       metadata: {},
-      originFilename: '../../packages/expo-router/entry.js',
+      originFilename: 'index.js',
       source: expect.anything(),
       type: 'js',
     });
     expect(parts[1]).toEqual(
       expect.objectContaining({
-        filename: '_expo/static/js/web/index-0774b4a778ea48ddb29a3d17b62a571b.js',
+        filename: expect.stringMatching(/_expo\/static\/js\/web\/index-.*\.js/),
         originFilename: 'app/index.tsx',
         type: 'js',
       })
     );
+
+    const bundles = baseJSBundle.mock.calls as Parameters<typeof baseJSBundle>[];
+
+    const first = bundles[1];
+    expect(first[0]).toBe('/apps/sandbox/app/index.tsx');
+    expect(simplifyGraph(first[2]).dependencies).toEqual({
+      '/apps/sandbox/app/index.tsx': expect.objectContaining({
+        dependencies: {
+          '5dCMGbjkz1QWCPjOwzvy5ZBkuK8=': {
+            absolutePath: '/node_modules/react/jsx-runtime.js',
+            data: expect.objectContaining({
+              name: 'react/jsx-runtime',
+            }),
+          },
+        },
+        inverseDependencies: ['/apps/sandbox/app?ctx=00a49026d14296b554d166f173e51f0f674490dc'],
+        output: [expect.anything()],
+        path: '/apps/sandbox/app/index.tsx',
+      }),
+      '/node_modules/react/cjs/react-jsx-runtime.production.min.js': expect.anything(),
+      '/node_modules/react/cjs/react.production.min.js': expect.anything(),
+      '/node_modules/react/index.js': expect.anything(),
+      '/node_modules/react/jsx-runtime.js': expect.anything(),
+    });
+
+    const second = bundles[2];
+    expect(second[0]).toBe('/apps/sandbox/app/two.tsx');
+    expect(simplifyGraph(second[2]).dependencies).toEqual({
+      '/apps/sandbox/app/two.tsx': expect.objectContaining({
+        dependencies: {
+          '5dCMGbjkz1QWCPjOwzvy5ZBkuK8=': {
+            absolutePath: '/node_modules/react/jsx-runtime.js',
+            data: expect.objectContaining({
+              name: 'react/jsx-runtime',
+            }),
+          },
+        },
+        inverseDependencies: ['/apps/sandbox/app?ctx=00a49026d14296b554d166f173e51f0f674490dc'],
+        output: [expect.anything()],
+        path: '/apps/sandbox/app/two.tsx',
+      }),
+      '/node_modules/react/cjs/react-jsx-runtime.production.min.js': expect.anything(),
+      '/node_modules/react/cjs/react.production.min.js': expect.anything(),
+      '/node_modules/react/index.js': expect.anything(),
+      '/node_modules/react/jsx-runtime.js': expect.anything(),
+    });
   });
 });
 
