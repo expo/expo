@@ -8,10 +8,8 @@ import {
   fontFamilyNeedsScoping,
   getNativeFontName,
 } from './FontLoader';
+import { loaded, loadPromises } from './memory';
 import { registerStaticFont } from './server';
-
-const loaded: { [name: string]: boolean } = {};
-const loadPromises: { [name: string]: Promise<void> } = {};
 
 // @needsAudit
 // note(brentvatne): at some point we may want to warn if this is called outside of a managed app.
@@ -54,7 +52,7 @@ export function processFontFamily(fontFamily: string | null): string | null {
  */
 export function isLoaded(fontFamily: string): boolean {
   if (Platform.OS === 'web') {
-    return fontFamily in loaded || ExpoFontLoader.isLoaded(fontFamily);
+    return fontFamily in loaded || !!ExpoFontLoader.isLoaded(fontFamily);
   }
   return fontFamily in loaded;
 }
@@ -94,9 +92,11 @@ export function loadAsync(
 
   if (typeof fontFamilyOrFontMap === 'object') {
     if (source) {
-      throw new CodedError(
-        `ERR_FONT_API`,
-        `No fontFamily can be used for the provided source: ${source}. The second argument of \`loadAsync()\` can only be used with a \`string\` value as the first argument.`
+      return Promise.reject(
+        new CodedError(
+          `ERR_FONT_API`,
+          `No fontFamily can be used for the provided source: ${source}. The second argument of \`loadAsync()\` can only be used with a \`string\` value as the first argument.`
+        )
       );
     }
     const fontMap = fontFamilyOrFontMap;
@@ -107,9 +107,9 @@ export function loadAsync(
       return Promise.resolve();
     }
 
-    return (async () => {
-      Promise.all(names.map((name) => loadFontInNamespaceAsync(name, fontMap[name])));
-    })();
+    return Promise.all(names.map((name) => loadFontInNamespaceAsync(name, fontMap[name]))).then(
+      () => {}
+    );
   }
 
   if (isServer) {

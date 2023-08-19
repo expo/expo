@@ -2,9 +2,8 @@ import { CodedError, Platform, UnavailabilityError } from 'expo-modules-core';
 import ExpoFontLoader from './ExpoFontLoader';
 import { FontDisplay } from './Font.types';
 import { getAssetForSource, loadSingleFontAsync, fontFamilyNeedsScoping, getNativeFontName, } from './FontLoader';
+import { loaded, loadPromises } from './memory';
 import { registerStaticFont } from './server';
-const loaded = {};
-const loadPromises = {};
 // @needsAudit
 // note(brentvatne): at some point we may want to warn if this is called outside of a managed app.
 /**
@@ -40,7 +39,7 @@ export function processFontFamily(fontFamily) {
  */
 export function isLoaded(fontFamily) {
     if (Platform.OS === 'web') {
-        return fontFamily in loaded || ExpoFontLoader.isLoaded(fontFamily);
+        return fontFamily in loaded || !!ExpoFontLoader.isLoaded(fontFamily);
     }
     return fontFamily in loaded;
 }
@@ -74,7 +73,7 @@ export function loadAsync(fontFamilyOrFontMap, source) {
     const isServer = Platform.OS === 'web' && typeof window === 'undefined';
     if (typeof fontFamilyOrFontMap === 'object') {
         if (source) {
-            throw new CodedError(`ERR_FONT_API`, `No fontFamily can be used for the provided source: ${source}. The second argument of \`loadAsync()\` can only be used with a \`string\` value as the first argument.`);
+            return Promise.reject(new CodedError(`ERR_FONT_API`, `No fontFamily can be used for the provided source: ${source}. The second argument of \`loadAsync()\` can only be used with a \`string\` value as the first argument.`));
         }
         const fontMap = fontFamilyOrFontMap;
         const names = Object.keys(fontMap);
@@ -82,9 +81,7 @@ export function loadAsync(fontFamilyOrFontMap, source) {
             names.map((name) => registerStaticFont(name, fontMap[name]));
             return Promise.resolve();
         }
-        return (async () => {
-            Promise.all(names.map((name) => loadFontInNamespaceAsync(name, fontMap[name])));
-        })();
+        return Promise.all(names.map((name) => loadFontInNamespaceAsync(name, fontMap[name]))).then(() => { });
     }
     if (isServer) {
         registerStaticFont(fontFamilyOrFontMap, source);
