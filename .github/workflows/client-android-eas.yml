@@ -22,6 +22,19 @@ on:
     paths:
       - .github/workflows/client-android-eas.yml
       - apps/eas-expo-go/**
+      - android/versioned-abis/**
+      - android/versioned-react-native/**
+      - android/expoview/**
+      - android/**/*.gradle
+  push:
+    branches: [main, sdk-*]
+    paths:
+      - .github/workflows/client-android-eas.yml
+      - apps/eas-expo-go/**
+      - android/versioned-abis/**
+      - android/versioned-react-native/**
+      - android/expoview/**
+      - android/**/*.gradle
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -30,7 +43,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-22.04
-    if: ${{ github.actor != 'dependabot[bot]' }}
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]' }}
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3

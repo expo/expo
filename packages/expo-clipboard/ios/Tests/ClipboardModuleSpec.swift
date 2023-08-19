@@ -11,7 +11,7 @@ class ClipboardModuleSpec: ExpoSpec {
     let holder = ModuleHolder(appContext: appContext, module: ClipboardModule(appContext: appContext))
 
     func testModuleFunction<T>(_ functionName: String, args: [Any], _ block: @escaping (T?) -> Void) {
-      waitUntil { done in
+      waitUntil(timeout: .seconds(2)) { done in
         holder.call(function: functionName, args: args) { result in
           let value = try! result.get()
           expect(value).to(beAKindOf(T?.self))
@@ -22,7 +22,7 @@ class ClipboardModuleSpec: ExpoSpec {
     }
 
     func expectModuleFunctionThrows<T>(_ functionName: String, args: [Any], exception: T.Type) where T: Exception {
-      waitUntil { done in
+      waitUntil(timeout: .seconds(2)) { done in
         holder.call(function: functionName, args: args) { result in
           expect(result).to(beFailure(exception: exception))
           done()
@@ -32,6 +32,7 @@ class ClipboardModuleSpec: ExpoSpec {
 
     beforeSuite {
       swizzleGeneralPasteboard()
+      swizzleNSAttributedString()
     }
 
     // MARK: - Strings
