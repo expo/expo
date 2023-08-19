@@ -10,13 +10,13 @@ import { Spacer } from 'expo-dev-client-components';
 import defaultNavigationOptions from 'navigation/defaultNavigationOptions';
 import * as React from 'react';
 
-import ScrollView from '../../components/NavigationScrollView';
-import { DiagnosticsStackRoutes } from '../../navigation/Navigation.types';
-import Environment from '../../utils/Environment';
 import AudioDiagnosticsScreen from './AudioDiagnosticsScreen';
 import { DiagnosticButton } from './DiagnosticsButton';
 import GeofencingScreen from './GeofencingDiagnosticsScreen';
 import LocationDiagnosticsScreen from './LocationDiagnosticsScreen';
+import ScrollView from '../../components/NavigationScrollView';
+import { DiagnosticsStackRoutes } from '../../navigation/Navigation.types';
+import Environment from '../../utils/Environment';
 
 function useThemeName() {
   const theme = useTheme();

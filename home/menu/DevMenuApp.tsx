@@ -5,11 +5,11 @@ import { AppRegistry, useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import DevMenuBottomSheet from './DevMenuBottomSheet';
+import { DevMenuView } from './DevMenuView';
 import { ColorTheme } from '../constants/Colors';
 import Themes from '../constants/Themes';
 import LocalStorage from '../storage/LocalStorage';
-import DevMenuBottomSheet from './DevMenuBottomSheet';
-import { DevMenuView } from './DevMenuView';
 
 function useUserSettings(renderId: string): { preferredAppearance?: string } {
   const [settings, setSettings] = React.useState({});

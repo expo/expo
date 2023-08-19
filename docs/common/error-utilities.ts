@@ -169,6 +169,8 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/using-styled-components/': '/guides/overview/',
   '/guides/using-bugsnag/': '/guides/overview/',
   '/build/automating-submissions/': '/build/automate-submissions/',
+  '/guides/routing-and-navigation/': '/routing/introduction/',
+  '/workflow/run-on-device/': '/build/internal-distribution/',
 
   // Old redirects
   '/introduction/project-lifecycle/': '/archive/managed-vs-bare/',
@@ -209,7 +211,8 @@ const RENAMED_PAGES: Record<string, string> = {
   // Changes from redoing the getting started workflow, SDK35+
   '/workflow/up-and-running/': '/get-started/installation/',
   '/introduction/additional-resources/': '/next-steps/additional-resources/',
-  '/introduction/already-used-react-native/': '/workflow/already-used-react-native/',
+  '/introduction/already-used-react-native/':
+    '/faq/#what-is-the-difference-between-expo-and-react-native',
   '/introduction/community/': '/next-steps/community/',
   '/introduction/installation/': '/get-started/installation/',
   '/versions/latest/overview/': '/versions/latest/',
@@ -246,8 +249,8 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Fundamentals had too many things
   '/workflow/linking/': '/guides/linking/',
-  '/workflow/how-expo-works/': '/workflow/already-used-react-native/#how-does-expo-work',
-  '/guides/how-expo-works/': '/workflow/already-used-react-native/#how-does-expo-work',
+  '/workflow/how-expo-works/': '/faq/#what-is-the-difference-between-expo-and-react-native',
+  '/guides/how-expo-works/': '/faq/#what-is-the-difference-between-expo-and-react-native',
 
   // Archive unused pages
   '/guides/notification-channels/': '/archived/notification-channels/',
@@ -281,7 +284,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/offline-support/': '/archive/classic-updates/offline-support/',
   '/guides/preloading-and-caching-assets/':
     '/archive/classic-updates/preloading-and-caching-assets/',
-  '/eas-update/bare-react-native/': '/bare/updating-your-app/',
+  '/eas-update/bare-react-native/': '/eas-update/updating-your-app/',
   '/worfkflow/publishing/': '/archive/classic-updates/publishing/',
   '/classic/building-standalone-apps/': '/archive/classic-updates/building-standalone-apps/',
   '/classic/turtle-cli/': '/archive/classic-updates/turtle-cli/',
@@ -295,6 +298,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/bare/using-web/': '/workflow/web/',
   '/guides/running-in-the-browser/': '/workflow/web/',
   '/bare/unimodules-full-list/': '/bare/overview/',
+  '/bare/updating-your-app/': '/eas-update/updating-your-app/',
 
   // Consolidate distribution
   '/distribution/security/': '/app-signing/security/',

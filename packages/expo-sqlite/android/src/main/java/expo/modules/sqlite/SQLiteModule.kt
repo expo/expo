@@ -3,7 +3,7 @@ package expo.modules.sqlite
 
 import android.content.Context
 import android.database.Cursor
-import android.database.sqlite.SQLiteDatabase
+import io.requery.android.database.sqlite.SQLiteDatabase
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -51,6 +51,12 @@ class SQLiteModule : Module() {
         ?.close()
     }
 
+    Function("closeSync") { dbName: String ->
+      DATABASES
+        .remove(dbName)
+        ?.close()
+    }
+
     AsyncFunction("deleteAsync") { dbName: String ->
       if (DATABASES.containsKey(dbName)) {
         throw OpenDatabaseException(dbName)
@@ -74,10 +80,11 @@ class SQLiteModule : Module() {
     return db.compileStatement(sql).use { statement ->
       if (bindArgs != null) {
         for (i in bindArgs.size downTo 1) {
-          if (bindArgs[i - 1] == null) {
-            statement.bindNull(i)
+          val args = bindArgs[i - 1]
+          if (args != null) {
+            statement.bindString(i, args)
           } else {
-            statement.bindString(i, bindArgs[i - 1])
+            statement.bindNull(i)
           }
         }
       }

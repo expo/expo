@@ -6,9 +6,27 @@
 
 ### 🎉 New features
 
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
+- On Android, the `Uri` type is not serializable and causes a crash when recreating the activity. ([#23768](https://github.com/expo/expo/pull/23768) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
+
+## 14.4.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 14.4.0 — 2023-07-28
+
+_This version does not introduce any user-facing changes._
+
+## 14.3.2 - 2023-07-23
+
+### 💡 Others
+
+- On Android, restore behavior from [#22658](https://github.com/expo/expo/pull/22658). ([#23617](https://github.com/expo/expo/pull/23617) by [@alanhughes](https://github.com/alanjhughes)) ([#22658](https://github.com/expo/expo/pull/22658), [#23617](https://github.com/expo/expo/pull/23617) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 14.3.1 - 2023-07-04
 

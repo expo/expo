@@ -41,7 +41,7 @@ export function create<T extends object, O extends Options>(
 
   const Component = React.forwardRef<
     T,
-    React.PropsWithChildren<T> & Nested<typeof config['variants']> & { selectors?: SelectorProps }
+    React.PropsWithChildren<T> & Nested<(typeof config)['variants']> & { selectors?: SelectorProps }
   >((props, ref) => {
     const theme = useTheme();
 

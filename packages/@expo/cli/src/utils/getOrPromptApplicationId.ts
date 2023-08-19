@@ -1,7 +1,6 @@
 import { ExpoConfig, getAccountUsername, getConfig } from '@expo/config';
 import chalk from 'chalk';
 
-import * as Log from '../log';
 import { learnMore } from './link';
 import { attemptModification } from './modifyConfigAsync';
 import prompt, { confirmAsync } from './prompts';
@@ -13,6 +12,7 @@ import {
   validateBundleId,
   validatePackage,
 } from './validateApplicationId';
+import * as Log from '../log';
 
 function getUsernameAsync(exp: ExpoConfig) {
   // TODO: Use XDL's UserManager

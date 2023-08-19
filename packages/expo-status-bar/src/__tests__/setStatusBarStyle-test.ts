@@ -1,7 +1,7 @@
 import { Platform, StatusBar as ReactNativeStatusBar } from 'react-native';
 
-import { setStatusBarStyle } from '../StatusBar';
 import { mockProperty, mockAppearance } from './Helpers';
+import { setStatusBarStyle } from '../StatusBar';
 
 if (Platform.OS === 'web') {
   describe('setStatusBarStyle', () => {
@@ -9,7 +9,7 @@ if (Platform.OS === 'web') {
       const mock = jest.fn();
       mockProperty(ReactNativeStatusBar, 'setBarStyle', mock, () => {
         setStatusBarStyle('auto');
-        expect(mock).toHaveBeenCalledWith('dark-content');
+        expect(mock).toHaveBeenCalledWith('dark-content', undefined);
       });
     });
   });
@@ -20,7 +20,17 @@ if (Platform.OS === 'web') {
       mockProperty(ReactNativeStatusBar, 'setBarStyle', mock, () => {
         mockAppearance('dark', () => {
           setStatusBarStyle('auto');
-          expect(mock).toHaveBeenCalledWith('light-content');
+          expect(mock).toHaveBeenCalledWith('light-content', undefined);
+        });
+      });
+    });
+
+    it('delegates to the React Native StatusBar equivalent, remaps style to barStyle and passes animated value correctly', () => {
+      const mock = jest.fn();
+      mockProperty(ReactNativeStatusBar, 'setBarStyle', mock, () => {
+        mockAppearance('dark', () => {
+          setStatusBarStyle('auto', true);
+          expect(mock).toHaveBeenCalledWith('light-content', true);
         });
       });
     });

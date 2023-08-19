@@ -1,31 +1,20 @@
-import {
-  DeviceEventEmitter,
-  CodedError,
-  NativeModulesProxy,
-  UnavailabilityError,
-} from 'expo-modules-core';
-import { EventEmitter, EventSubscription } from 'fbemitter';
+import { CodedError, NativeModulesProxy, UnavailabilityError } from 'expo-modules-core';
 
 import ExpoUpdates from './ExpoUpdates';
 import {
   LocalAssets,
   Manifest,
   UpdateCheckResult,
-  UpdateEvent,
   UpdateFetchResult,
   UpdatesCheckAutomaticallyValue,
   UpdatesLogEntry,
-  UpdatesNativeStateChangeEvent,
   UpdatesNativeStateMachineContext,
 } from './Updates.types';
 
-export * from './Updates.types';
-
 /**
- * The UUID that uniquely identifies the currently running update if `expo-updates` is enabled. The
+ * The UUID that uniquely identifies the currently running update. The
  * UUID is represented in its canonical string form (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`) and
- * will always use lowercase letters. In development mode, or any other environment in which
- * `expo-updates` is disabled, this value is `null`.
+ * will always use lowercase letters. This value is `null` when running in a local development environment or any other environment where `expo-updates` is disabled.
  */
 export const updateId: string | null =
   ExpoUpdates.updateId && typeof ExpoUpdates.updateId === 'string'
@@ -39,7 +28,9 @@ export const updateId: string | null =
 export const releaseChannel: string = ExpoUpdates.releaseChannel ?? 'default';
 
 /**
- * The channel name of the current build, if configured for use with EAS Update. Null otherwise.
+ * The channel name of the current build, if configured for use with EAS Update. `null` otherwise.
+ *
+ * Expo Go and development builds are not set to a specific channel and can run any updates compatible with their native runtime. Therefore, this value will always be `null` when running an update on Expo Go or a development build.
  */
 export const channel: string | null = ExpoUpdates.channel ?? null;
 
@@ -206,14 +197,8 @@ export async function getExtraParamsAsync(): Promise<{ [key: string]: string }> 
 
 /**
  * Sets an extra param if value is non-null, otherwise unsets the param.
- * Extra params are sent in a header of update requests.
- * The update server may use these params when evaluating logic to determine which update to serve.
- * EAS Update merges these params into the fields used to evaluate channel–branch mapping logic.
- *
- * @example An app may want to add a feature where users can opt-in to beta updates. In this instance,
- * extra params could be set to `{userType: 'beta'}`, and then the server can use this information
- * when deciding which update to serve. If using EAS Update, the channel-branch mapping can be set to
- * discriminate branches based on the `userType`.
+ * Extra params are sent as an [Expo Structured Field Value Dictionary](https://docs.expo.dev/technical-specs/expo-sfv-0/)
+ * in the `Expo-Extra-Params` header of update requests. A compliant update server may use these params when selecting an update to serve.
  */
 export async function setExtraParamAsync(
   key: string,
@@ -299,82 +284,6 @@ export function clearUpdateCacheExperimentalAsync(_sdkVersion?: string) {
   );
 }
 
-let _emitter: EventEmitter | null;
-
-function _getEmitter(): EventEmitter {
-  if (!_emitter) {
-    _emitter = new EventEmitter();
-    DeviceEventEmitter.addListener('Expo.nativeUpdatesEvent', _emitEvent);
-    DeviceEventEmitter.addListener(
-      'Expo.nativeUpdatesStateChangeEvent',
-      _emitNativeStateChangeEvent
-    );
-  }
-  return _emitter;
-}
-
-function _emitEvent(params): void {
-  let newParams = { ...params };
-  if (typeof params === 'string') {
-    newParams = JSON.parse(params);
-  }
-  if (newParams.manifestString) {
-    newParams.manifest = JSON.parse(newParams.manifestString);
-    delete newParams.manifestString;
-  }
-
-  if (!_emitter) {
-    throw new Error(`EventEmitter must be initialized to use from its listener`);
-  }
-  _emitter.emit('Expo.updatesEvent', newParams);
-}
-
-// Handle native state change events
-function _emitNativeStateChangeEvent(params: any) {
-  let newParams = { ...params };
-  if (typeof params === 'string') {
-    newParams = JSON.parse(params);
-  }
-  if (newParams.context.latestManifestString) {
-    newParams.context.latestManifest = JSON.parse(newParams.context.latestManifestString);
-    delete newParams.context.latestManifestString;
-  }
-  if (newParams.context.downloadedManifestString) {
-    newParams.context.downloadedManifest = JSON.parse(newParams.context.downloadedManifestString);
-    delete newParams.context.downloadedManifestString;
-  }
-  if (!_emitter) {
-    throw new Error(`EventEmitter must be initialized to use from its listener`);
-  }
-  _emitter?.emit('Expo.updatesStateChangeEvent', newParams);
-}
-
-/**
- * Adds a callback to be invoked when updates-related events occur (such as upon the initial app
- * load) due to auto-update settings chosen at build-time. See also the
- * [`useUpdateEvents`](#useupdateeventslistener) React hook.
- *
- * @param listener A function that will be invoked with an [`UpdateEvent`](#updateevent) instance
- * and should not return any value.
- * @return An `EventSubscription` object on which you can call `remove()` to unsubscribe the
- * listener.
- */
-export function addListener(listener: (event: UpdateEvent) => void): EventSubscription {
-  const emitter = _getEmitter();
-  return emitter.addListener('Expo.updatesEvent', listener);
-}
-
-/**
- * @hidden
- */
-export const addUpdatesStateChangeListener = (
-  listener: (event: UpdatesNativeStateChangeEvent) => void
-) => {
-  // Add listener for state change events
-  const emitter = _getEmitter();
-  return emitter.addListener('Expo.updatesStateChangeEvent', listener);
-};
-
 /**
  * @hidden
  */
@@ -391,6 +300,10 @@ export async function getNativeStateMachineContextAsync(): Promise<UpdatesNative
   if (nativeContext.downloadedManifestString) {
     nativeContext.downloadedManifest = JSON.parse(nativeContext.downloadedManifestString);
     delete nativeContext.downloadedManifestString;
+  }
+  if (nativeContext.lastCheckForUpdateTimeString) {
+    nativeContext.lastCheckForUpdateTime = new Date(nativeContext.lastCheckForUpdateTimeString);
+    delete nativeContext.lastCheckForUpdateTimeString;
   }
   return nativeContext;
 }

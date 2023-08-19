@@ -2,7 +2,7 @@ import { resolveWithTsConfigPaths } from '../resolveWithTsConfigPaths';
 
 describe(resolveWithTsConfigPaths, () => {
   it('resolves a simple alias', () => {
-    const resolver = jest.fn(() => ({} as any));
+    const resolver = jest.fn(() => ({}) as any);
     expect(
       resolveWithTsConfigPaths(
         {
@@ -22,7 +22,7 @@ describe(resolveWithTsConfigPaths, () => {
     expect(resolver).toHaveBeenCalledWith('foo/bar');
   });
   it('resolves an alias with baseUrl', () => {
-    const resolver = jest.fn(() => ({} as any));
+    const resolver = jest.fn(() => ({}) as any);
     expect(
       resolveWithTsConfigPaths(
         {
@@ -42,7 +42,7 @@ describe(resolveWithTsConfigPaths, () => {
     expect(resolver).toHaveBeenCalledWith('src/foo/bar');
   });
   it(`skips resolving if the origin module is inside the node_modules directory`, () => {
-    const resolver = jest.fn(() => ({} as any));
+    const resolver = jest.fn(() => ({}) as any);
     expect(
       resolveWithTsConfigPaths(
         {
@@ -63,7 +63,7 @@ describe(resolveWithTsConfigPaths, () => {
   });
   it(`skips resolving if the module name is absolute or relative`, () => {
     ['/foo/bar', './foo/bar'].forEach((moduleName) => {
-      const resolver = jest.fn(() => ({} as any));
+      const resolver = jest.fn(() => ({}) as any);
       expect(
         resolveWithTsConfigPaths(
           {

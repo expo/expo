@@ -1,55 +1,30 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 package expo.modules.sensors.modules
 
-import android.content.Context
 import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorManager
 import android.os.Bundle
-import expo.modules.interfaces.sensors.SensorServiceInterface
 import expo.modules.interfaces.sensors.services.MagnetometerServiceInterface
-import expo.modules.core.Promise
-import expo.modules.core.interfaces.ExpoMethod
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.sensors.UseSensorProxy
+import expo.modules.sensors.createSensorProxy
 
-class MagnetometerModule(reactContext: Context?) : BaseSensorModule(reactContext) {
-  override val eventName: String = "magnetometerDidUpdate"
+private const val EventName = "magnetometerDidUpdate"
 
-  override fun getName(): String = "ExponentMagnetometer"
-
-  override fun getSensorService(): SensorServiceInterface {
-    return moduleRegistry.getModule(MagnetometerServiceInterface::class.java)
-  }
-
-  override fun eventToMap(sensorEvent: SensorEvent): Bundle {
-    return Bundle().apply {
-      putDouble("x", sensorEvent.values[0].toDouble())
-      putDouble("y", sensorEvent.values[1].toDouble())
-      putDouble("z", sensorEvent.values[2].toDouble())
+class MagnetometerModule : Module() {
+  private val sensorProxy by lazy {
+    createSensorProxy<MagnetometerServiceInterface>(EventName) { sensorEvent ->
+      Bundle().apply {
+        putDouble("x", sensorEvent.values[0].toDouble())
+        putDouble("y", sensorEvent.values[1].toDouble())
+        putDouble("z", sensorEvent.values[2].toDouble())
+      }
     }
   }
 
-  @ExpoMethod
-  fun startObserving(promise: Promise) {
-    super.startObserving()
-    promise.resolve(null)
-  }
+  override fun definition() = ModuleDefinition {
+    Name("ExponentMagnetometer")
 
-  @ExpoMethod
-  fun stopObserving(promise: Promise) {
-    super.stopObserving()
-    promise.resolve(null)
-  }
-
-  @ExpoMethod
-  fun setUpdateInterval(updateInterval: Int, promise: Promise) {
-    super.setUpdateInterval(updateInterval)
-    promise.resolve(null)
-  }
-
-  @ExpoMethod
-  fun isAvailableAsync(promise: Promise) {
-    val mSensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-    val isAvailable = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) != null
-    promise.resolve(isAvailable)
+    UseSensorProxy(this@MagnetometerModule, Sensor.TYPE_MAGNETIC_FIELD, EventName) { sensorProxy }
   }
 }

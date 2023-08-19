@@ -6,11 +6,25 @@
 
 ### 🎉 New features
 
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 11.6.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 11.6.0 — 2023-07-28
+
+_This version does not introduce any user-facing changes._
+
+## 11.5.4 - 2023-07-19
+
 ### 🐛 Bug fixes
 
 - Fix `type` on `DocumentPickerOptions` on iOS. ([#23497](https://github.com/expo/expo/pull/23497) by [@aleqsio](https://github.com/aleqsio))
-
-### 💡 Others
 
 ## 11.5.3 - 2023-07-10
 

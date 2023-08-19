@@ -8,6 +8,7 @@ import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.entity.UpdateEntity
 import io.mockk.spyk
 import io.mockk.verify
+import org.json.JSONObject
 import org.junit.Assert.*
 
 import org.junit.After
@@ -57,7 +58,7 @@ class BuildDataTest {
     val date = Date()
     val runtimeVersion = "1.0"
     val projectId = "https://exp.host/@esamelson/test-project"
-    val testUpdate = UpdateEntity(uuid, date, runtimeVersion, projectId)
+    val testUpdate = UpdateEntity(uuid, date, runtimeVersion, projectId, JSONObject("{}"))
     db.updateDao().insertUpdate(testUpdate)
 
     spyBuildData = spyk(BuildData)

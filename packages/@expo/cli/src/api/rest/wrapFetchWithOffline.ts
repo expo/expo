@@ -1,5 +1,5 @@
-import { env } from '../../utils/env';
 import { FetchLike } from './client.types';
+import { env } from '../../utils/env';
 
 const debug = require('debug')('expo:api:fetch:offline') as typeof console.log;
 

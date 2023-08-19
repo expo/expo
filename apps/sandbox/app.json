@@ -22,8 +22,8 @@
       "supportsTablet": true
     },
     "web": {
-      "output": "static",
-      "bundler": "metro"
+      "bundler": "metro",
+      "output": "static"
     }
   }
 }

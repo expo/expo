@@ -6,11 +6,23 @@
 
 ### 🎉 New features
 
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 11.5.1 — 2023-08-02
+
+### 💡 Others
+
+- Change unloaded font error to a warning. ([#23788](https://github.com/expo/expo/pull/23788) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 11.5.0 — 2023-07-28
+
 ### 🐛 Bug fixes
 
 - Gracefully catch exceptions during font loading on web with `fontfaceobserver`. ([#22954](https://github.com/expo/expo/pull/22954) by [@bradjones1](https://github.com/bradjones1))
-
-### 💡 Others
 
 ## 11.4.0 — 2023-06-21
 

@@ -8,9 +8,19 @@
 
 ### 🐛 Bug fixes
 
-Update `metro-react-native-babel-preset` to `0.76.7` to match the version shipped with `react-native`. ([#23517](https://github.com/expo/expo/pull/23517)) by [@SimenB](https://github.com/SimenB)
-
 ### 💡 Others
+
+## 9.6.1 — 2023-08-02
+
+### 🎉 New features
+
+- Automatically add `react-native-reanimated/plugin` when available. ([#23798](https://github.com/expo/expo/pull/23798) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 9.6.0 — 2023-07-28
+
+### 📚 3rd party library updates
+
+- Update `metro-react-native-babel-preset` to 0.76.7. ([#23517](https://github.com/expo/expo/pull/23517) by [@SimenB](https://github.com/SimenB), [#23693](https://github.com/expo/expo/pull/23693) by [@kudo](https://github.com/kudo))
 
 ## 9.5.0 — 2023-06-21
 

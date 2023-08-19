@@ -1,0 +1,1 @@
+{"version":3,"file":"HMRClient.native.js","sourceRoot":"","sources":["../src/HMRClient.native.ts"],"names":[],"mappings":";;AAAA,MAAM,SAAS,GAAG,OAAO,CAAC,4CAA4C,CAAC,CAAC;AAExE,kBAAe,SAAS,CAAC","sourcesContent":["const HMRClient = require('react-native/Libraries/Utilities/HMRClient');\n\nexport default HMRClient;\n"]}

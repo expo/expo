@@ -6,10 +6,29 @@
 
 ### 🎉 New features
 
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- On iOS, bump SDWebImage versions. ([#23858](https://github.com/expo/expo/pull/23858) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 1.4.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 1.4.0 — 2023-07-28
+
+### 🎉 New features
+
 - [Web] Add support for `tintColor` prop on web. ([#23434](https://github.com/expo/expo/pull/23434) by [@aleqsio](https://github.com/aleqsio))
 - [Web] Add support for static image responsiveness using `srcset` attributes. ([#22088](https://github.com/expo/expo/pull/22088) by [@aleqsio](https://github.com/aleqsio))
 
 ### 🐛 Bug fixes
+
+- Fixed placeholders aren't always replaced by full-size images on Android. ([#23705](https://github.com/expo/expo/pull/23705) by [@lukmccall](https://github.com/lukmccall))
+- Fixed the image components rendering incorrect assets when the Proguard is enabled on Android. ([#23704](https://github.com/expo/expo/pull/23704) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 

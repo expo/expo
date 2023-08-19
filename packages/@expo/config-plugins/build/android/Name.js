@@ -7,20 +7,6 @@ exports.applyNameSettingsGradle = applyNameSettingsGradle;
 exports.getName = getName;
 exports.sanitizeNameForGradle = sanitizeNameForGradle;
 exports.withNameSettingsGradle = exports.withName = void 0;
-function _androidPlugins() {
-  const data = require("../plugins/android-plugins");
-  _androidPlugins = function () {
-    return data;
-  };
-  return data;
-}
-function _warnings() {
-  const data = require("../utils/warnings");
-  _warnings = function () {
-    return data;
-  };
-  return data;
-}
 function _Resources() {
   const data = require("./Resources");
   _Resources = function () {
@@ -31,6 +17,20 @@ function _Resources() {
 function _Strings() {
   const data = require("./Strings");
   _Strings = function () {
+    return data;
+  };
+  return data;
+}
+function _androidPlugins() {
+  const data = require("../plugins/android-plugins");
+  _androidPlugins = function () {
+    return data;
+  };
+  return data;
+}
+function _warnings() {
+  const data = require("../utils/warnings");
+  _warnings = function () {
     return data;
   };
   return data;

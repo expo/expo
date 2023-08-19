@@ -14,6 +14,9 @@
 #include <jsi/jsi.h>
 #include <ReactCommon/CallInvokerHolder.h>
 #include <ReactCommon/CallInvoker.h>
+#if REACT_NATIVE_TARGET_VERSION >= 73
+#include <ReactCommon/NativeMethodCallInvokerHolder.h>
+#endif
 
 #include <memory>
 
@@ -22,6 +25,13 @@ namespace jsi = facebook::jsi;
 namespace react = facebook::react;
 
 namespace expo {
+
+#if REACT_NATIVE_TARGET_VERSION >= 73
+using NativeMethodCallInvokerHolderCompatible = react::NativeMethodCallInvokerHolder;
+#else
+using NativeMethodCallInvokerHolderCompatible = react::CallInvokerHolder;
+#endif
+
 /**
  * A JNI wrapper to initialize CPP part of modules and access all data from the module registry.
  */
@@ -42,7 +52,7 @@ public:
     jlong jsRuntimePointer,
     jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator,
     jni::alias_ref<react::CallInvokerHolder::javaobject> jsInvokerHolder,
-    jni::alias_ref<react::CallInvokerHolder::javaobject> nativeInvokerHolder
+    jni::alias_ref<NativeMethodCallInvokerHolderCompatible::javaobject> nativeInvokerHolder
   );
 
   /**
@@ -83,6 +93,11 @@ public:
   jni::local_ref<JavaScriptObject::javaobject> createObject();
 
   /**
+  * Gets a core module.
+  */
+  jni::local_ref<JavaScriptModuleObject::javaobject> getCoreModule() const;
+
+  /**
    * Adds a shared object to the internal registry
    * @param native part of the shared object
    * @param js part of the shared object
@@ -112,6 +127,8 @@ private:
   callGetJavaScriptModuleObjectMethod(const std::string &moduleName) const;
 
   inline jni::local_ref<jni::JArrayClass<jni::JString>> callGetJavaScriptModulesNames() const;
+
+  inline jni::local_ref<JavaScriptModuleObject::javaobject> callGetCoreModuleObject() const;
 
   inline bool callHasModule(const std::string &moduleName) const;
 };

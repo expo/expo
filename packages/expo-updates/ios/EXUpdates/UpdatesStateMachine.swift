@@ -51,7 +51,7 @@ internal protocol UpdatesStateEvent {
   var manifest: [String: Any]? { get }
   var message: String? { get }
   var isRollback: Bool { get }
-  var error: Error? { get }
+  var error: [String: String]? { get }
 }
 
 internal struct UpdatesStateEventCheck: UpdatesStateEvent {
@@ -59,7 +59,7 @@ internal struct UpdatesStateEventCheck: UpdatesStateEvent {
   let manifest: [String: Any]? = nil
   let message: String? = nil
   let isRollback: Bool = false
-  let error: Error? = nil
+  let error: [String: String]? = nil
 }
 
 internal struct UpdatesStateEventDownload: UpdatesStateEvent {
@@ -67,7 +67,7 @@ internal struct UpdatesStateEventDownload: UpdatesStateEvent {
   let manifest: [String: Any]? = nil
   let message: String? = nil
   let isRollback: Bool = false
-  let error: Error? = nil
+  let error: [String: String]? = nil
 }
 
 internal struct UpdatesStateEventRestart: UpdatesStateEvent {
@@ -75,7 +75,7 @@ internal struct UpdatesStateEventRestart: UpdatesStateEvent {
   let manifest: [String: Any]? = nil
   let message: String? = nil
   let isRollback: Bool = false
-  let error: Error? = nil
+  let error: [String: String]? = nil
 }
 
 internal struct UpdatesStateEventCheckError: UpdatesStateEvent {
@@ -83,8 +83,8 @@ internal struct UpdatesStateEventCheckError: UpdatesStateEvent {
   let manifest: [String: Any]? = nil
   let message: String?
   let isRollback: Bool = false
-  var error: Error? {
-    return (message != nil) ? UpdatesStateException(message ?? "") : nil
+  var error: [String: String]? {
+    return (message != nil) ? ["message": message ?? ""] : nil
   }
 }
 
@@ -93,8 +93,8 @@ internal struct UpdatesStateEventDownloadError: UpdatesStateEvent {
   let manifest: [String: Any]? = nil
   let message: String?
   let isRollback: Bool = false
-  var error: Error? {
-    return (message != nil) ? UpdatesStateException(message ?? "") : nil
+  var error: [String: String]? {
+    return (message != nil) ? ["message": message ?? ""] : nil
   }
 }
 
@@ -103,7 +103,7 @@ internal struct UpdatesStateEventCheckCompleteWithUpdate: UpdatesStateEvent {
   let manifest: [String: Any]?
   let message: String? = nil
   let isRollback: Bool = false
-  let error: Error? = nil
+  let error: [String: String]? = nil
 }
 
 internal struct UpdatesStateEventCheckCompleteWithRollback: UpdatesStateEvent {
@@ -111,7 +111,7 @@ internal struct UpdatesStateEventCheckCompleteWithRollback: UpdatesStateEvent {
   let manifest: [String: Any]? = nil
   let message: String? = nil
   let isRollback: Bool = true
-  let error: Error? = nil
+  let error: [String: String]? = nil
 }
 
 internal struct UpdatesStateEventCheckComplete: UpdatesStateEvent {
@@ -119,7 +119,7 @@ internal struct UpdatesStateEventCheckComplete: UpdatesStateEvent {
   let manifest: [String: Any]? = nil
   let message: String? = nil
   let isRollback: Bool = false
-  let error: Error? = nil
+  let error: [String: String]? = nil
 }
 
 internal struct UpdatesStateEventDownloadCompleteWithUpdate: UpdatesStateEvent {
@@ -127,7 +127,7 @@ internal struct UpdatesStateEventDownloadCompleteWithUpdate: UpdatesStateEvent {
   let manifest: [String: Any]?
   let message: String? = nil
   let isRollback: Bool = false
-  let error: Error? = nil
+  let error: [String: String]? = nil
 }
 
 internal struct UpdatesStateEventDownloadCompleteWithRollback: UpdatesStateEvent {
@@ -135,7 +135,7 @@ internal struct UpdatesStateEventDownloadCompleteWithRollback: UpdatesStateEvent
   let manifest: [String: Any]? = nil
   let message: String? = nil
   let isRollback: Bool = true
-  let error: Error? = nil
+  let error: [String: String]? = nil
 }
 
 internal struct UpdatesStateEventDownloadComplete: UpdatesStateEvent {
@@ -143,8 +143,13 @@ internal struct UpdatesStateEventDownloadComplete: UpdatesStateEvent {
   let manifest: [String: Any]? = nil
   let message: String? = nil
   let isRollback: Bool = false
-  let error: Error? = nil
+  let error: [String: String]? = nil
 }
+
+/**
+ Date formatter for the last check times sent in JS events
+ */
+let iso8601DateFormatter = ISO8601DateFormatter()
 
 /**
  The state machine context, with information that will be readable from JS.
@@ -158,8 +163,16 @@ internal struct UpdatesStateContext {
   let isRestarting: Bool
   let latestManifest: [String: Any]?
   let downloadedManifest: [String: Any]?
-  let checkError: Error?
-  let downloadError: Error?
+  let checkError: [String: String]?
+  let downloadError: [String: String]?
+  let lastCheckForUpdateTime: Date?
+
+  private var lastCheckForUpdateTimeDateString: String? {
+    guard let lastCheckForUpdateTime = lastCheckForUpdateTime else {
+      return nil
+    }
+    return iso8601DateFormatter.string(from: lastCheckForUpdateTime)
+  }
 
   var json: [String: Any?] {
     return [
@@ -172,7 +185,8 @@ internal struct UpdatesStateContext {
       "latestManifest": self.latestManifest,
       "downloadedManifest": self.downloadedManifest,
       "checkError": self.checkError,
-      "downloadError": self.downloadError
+      "downloadError": self.downloadError,
+      "lastCheckForUpdateTimeString": lastCheckForUpdateTimeDateString
     ] as [String: Any?]
   }
 }
@@ -189,6 +203,7 @@ extension UpdatesStateContext {
     self.downloadedManifest = nil
     self.checkError = nil
     self.downloadError = nil
+    self.lastCheckForUpdateTime = nil
   }
 
   // struct copy, lets you overwrite specific variables retaining the value of the rest
@@ -208,8 +223,9 @@ extension UpdatesStateContext {
     var isRestarting: Bool = false
     var latestManifest: [String: Any]?
     var downloadedManifest: [String: Any]?
-    var checkError: Error?
-    var downloadError: Error?
+    var checkError: [String: String]?
+    var downloadError: [String: String]?
+    var lastCheckForUpdateTime: Date?
 
     fileprivate init(original: UpdatesStateContext) {
       self.isUpdateAvailable = original.isUpdateAvailable
@@ -222,6 +238,7 @@ extension UpdatesStateContext {
       self.downloadedManifest = original.downloadedManifest
       self.checkError = original.checkError
       self.downloadError = original.downloadError
+      self.lastCheckForUpdateTime = original.lastCheckForUpdateTime
     }
 
     fileprivate func toContext() -> UpdatesStateContext {
@@ -235,7 +252,8 @@ extension UpdatesStateContext {
         latestManifest: latestManifest,
         downloadedManifest: downloadedManifest,
         checkError: checkError,
-        downloadError: downloadError
+        downloadError: downloadError,
+        lastCheckForUpdateTime: lastCheckForUpdateTime
       )
     }
   }
@@ -334,6 +352,7 @@ internal class UpdatesStateMachine {
         $0.latestManifest = nil
         $0.isUpdateAvailable = false
         $0.isRollback = false
+        $0.lastCheckForUpdateTime = Date()
       }
     case .checkCompleteAvailable:
       return context.copy {
@@ -342,11 +361,13 @@ internal class UpdatesStateMachine {
         $0.latestManifest = event.manifest
         $0.isRollback = event.isRollback
         $0.isUpdateAvailable = true
+        $0.lastCheckForUpdateTime = Date()
       }
     case .checkError:
       return context.copy {
         $0.isChecking = false
         $0.checkError = event.error
+        $0.lastCheckForUpdateTime = Date()
       }
     case .download:
       return context.copy {

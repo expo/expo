@@ -81,7 +81,7 @@ class Env {
   }
   /** Skip validating the manifest during `export`. */
   get EXPO_SKIP_MANIFEST_VALIDATION_TOKEN(): boolean {
-    return !!string('EXPO_SKIP_MANIFEST_VALIDATION_TOKEN');
+    return !!string('EXPO_SKIP_MANIFEST_VALIDATION_TOKEN', '');
   }
 
   /** Public folder path relative to the project root. Default to `public` */
@@ -150,6 +150,11 @@ class Env {
   /** Disable lazy bundling in Metro bundler. */
   get EXPO_NO_METRO_LAZY() {
     return boolish('EXPO_NO_METRO_LAZY', false);
+  }
+
+  /** Enable the unstable inverse dependency stack trace for Metro bundling errors. */
+  get EXPO_METRO_UNSTABLE_ERRORS() {
+    return boolish('EXPO_METRO_UNSTABLE_ERRORS', false);
   }
 }
 

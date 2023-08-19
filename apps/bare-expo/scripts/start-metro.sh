@@ -16,7 +16,7 @@ else
   commandFile=$(dirname "$0")/start.command
   cat > ${commandFile} << EOF
 cd "\$(dirname "\$0")/.."
-# Run 'react-native start --help' to get more parameters
+# Run 'npx expo start --help' to get more parameters
 yarn start --port ${port}
 EOF
   # execute the file in a new command line window

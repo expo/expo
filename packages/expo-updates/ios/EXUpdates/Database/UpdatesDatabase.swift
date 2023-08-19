@@ -591,19 +591,15 @@ public final class UpdatesDatabase: NSObject {
   }
 
   private func update(withRow row: [String: Any?], config: UpdatesConfig) -> Update {
-    let rowManifest = row["manifest"]
-    var manifest: [String: Any]?
-    if let rowManifest = rowManifest as? String {
-      manifest = (try? JSONSerialization.jsonObject(with: rowManifest.data(using: .utf8)!) as? [String: Any]).require("Update manifest should be a valid JSON object")
-    }
-
+    let rowManifest: String = row.requiredValue(forKey: "manifest")
+    let manifest = (try? JSONSerialization.jsonObject(with: rowManifest.data(using: .utf8)!) as? [String: Any]).require("Update manifest should be a valid JSON object")
     let keep: NSNumber = row.requiredValue(forKey: "keep")
     let status: NSNumber = row.requiredValue(forKey: "status")
     let successfulLaunchCount: NSNumber = row.requiredValue(forKey: "successful_launch_count")
     let failedLaunchCount: NSNumber = row.requiredValue(forKey: "failed_launch_count")
 
     let update = Update(
-      manifest: ManifestFactory.manifest(forManifestJSON: manifest ?? [:]),
+      manifest: ManifestFactory.manifest(forManifestJSON: manifest),
       config: config,
       database: self,
       updateId: row.requiredValue(forKey: "id"),

@@ -6,9 +6,32 @@
 
 ### 🎉 New features
 
+- Add support for React static rehydration on web. ([#23891](https://github.com/expo/expo/pull/23891) by [@EvanBacon](https://github.com/EvanBacon))
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- Add support for pnpm isolated modules. ([#23937](https://github.com/expo/expo/pull/23937) by [@byCedric](https://github.com/byCedric))
+
+### 💡 Others
+
+- Removed the environment validator. ([#23732](https://github.com/expo/expo/pull/23732) by [@tsapeta](https://github.com/tsapeta))
+- Removed the dependency on the `expo-constants` package. ([#23732](https://github.com/expo/expo/pull/23732) by [@tsapeta](https://github.com/tsapeta))
+- Fix `yarn tsc` in the repo. ([#23888](https://github.com/expo/expo/pull/23888) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 50.0.0-alpha.1 — 2023-08-02
+
+### 🛠 Breaking changes
+
+- Drop `Logs` module export. ([#18596](https://github.com/expo/expo/pull/18596) by [@EvanBacon](https://github.com/EvanBacon))
+- Drop support for `logUrl` endpoint (legacy `expo-cli` logging will no longer work). ([#18596](https://github.com/expo/expo/pull/18596) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 50.0.0-alpha.0 — 2023-07-28
+
 ### 🐛 Bug fixes
 
 - Move `pointerEvents` to `styles.pointerEvents`. ([#23446](https://github.com/expo/expo/pull/23446) by [@EvanBacon](https://github.com/EvanBacon))
+- [Android] Fixed splash screen is missing when using the `getDelayLoadAppHandler()` from expo-updates. ([#23747](https://github.com/expo/expo/pull/23747) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
