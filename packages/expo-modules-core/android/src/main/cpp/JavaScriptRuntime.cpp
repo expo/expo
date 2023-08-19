@@ -31,19 +31,49 @@ namespace jsi = facebook::jsi;
 
 namespace expo {
 
-void SyncCallInvoker::invokeAsync(std::function<void()> &&func) {
-  func();
-}
+namespace {
 
-void SyncCallInvoker::invokeSync(std::function<void()> &&func) {
-  func();
-}
+/**
+ * Dummy CallInvoker that invokes everything immediately.
+ * Used in the test environment to check the async flow.
+ */
+class SyncCallInvoker : public react::CallInvoker {
+public:
+  void invokeAsync(std::function<void()> &&func) override {
+    func();
+  }
+
+  void invokeSync(std::function<void()> &&func) override {
+    func();
+  }
+
+  ~SyncCallInvoker() override = default;
+};
+
+#if REACT_NATIVE_TARGET_VERSION >= 73
+class SyncNativeMethodCallInvoker : public react::NativeMethodCallInvoker {
+public:
+  void invokeAsync(const std::string &methodName, std::function<void()> &&func) override {
+    func();
+  }
+
+  void invokeSync(const std::string &methodName, std::function<void()> &&func) override {
+    func();
+  }
+
+  ~SyncNativeMethodCallInvoker() override = default;
+};
+#else
+using SyncNativeMethodCallInvoker = SyncCallInvoker;
+#endif // REACT_NATIVE_TARGET_VERSION >= 73
+
+} // namespace
 
 JavaScriptRuntime::JavaScriptRuntime(
   JSIInteropModuleRegistry *jsiInteropModuleRegistry
 )
   : jsInvoker(std::make_shared<SyncCallInvoker>()),
-    nativeInvoker(std::make_shared<SyncCallInvoker>()),
+    nativeInvoker(std::make_shared<SyncNativeMethodCallInvoker>()),
     jsiInteropModuleRegistry(jsiInteropModuleRegistry) {
 #if !UNIT_TEST
   throw std::logic_error(
@@ -108,7 +138,7 @@ JavaScriptRuntime::JavaScriptRuntime(
   JSIInteropModuleRegistry *jsiInteropModuleRegistry,
   jsi::Runtime *runtime,
   std::shared_ptr<react::CallInvoker> jsInvoker,
-  std::shared_ptr<react::CallInvoker> nativeInvoker
+  std::shared_ptr<NativeMethodCallInvokerCompatible> nativeInvoker
 ) : jsInvoker(std::move(jsInvoker)), nativeInvoker(std::move(nativeInvoker)),
     jsiInteropModuleRegistry(jsiInteropModuleRegistry) {
   // Creating a shared pointer that points to the runtime but doesn't own it, thus doesn't release it.

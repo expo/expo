@@ -64,7 +64,8 @@ def REACT_NATIVE_SO_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
 def reactProperties = new Properties()
 file("$REACT_NATIVE_DIR/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
 
-def BOOST_VERSION = reactProperties.getProperty("BOOST_VERSION")
+// TODO: Remove react-native < 0.71 support
+def BOOST_VERSION = reactProperties.getProperty("BOOST_VERSION") ?: "1_76_0"
 def REACT_NATIVE_VERSION = System.getenv("REACT_NATIVE_OVERRIDE_VERSION") ?: reactProperties.getProperty("VERSION_NAME")
 def REACT_NATIVE_TARGET_VERSION = REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
 
@@ -160,6 +161,18 @@ android {
         path "CMakeLists.txt"
       } else {
         path "legacy/CMakeLists.txt"
+      }
+    }
+  }
+
+  sourceSets {
+    main {
+      java {
+        if (REACT_NATIVE_TARGET_VERSION >= 73) {
+          srcDirs += "src/reactnative"
+        } else {
+          srcDirs += "src/reactnative72"
+        }
       }
     }
   }
