@@ -163,7 +163,7 @@ describe('static-rendering', () => {
       const indexHtml = await getPageHtml(outputDir, 'index.html');
       expect(indexHtml.querySelectorAll('html > head > style')?.length).toBe(
         // React Native and Expo resets
-        2
+        3
       );
       // The Expo style reset
       expect(indexHtml.querySelector('html > head > style#expo-reset')?.innerHTML).toEqual(
@@ -183,9 +183,12 @@ describe('static-rendering', () => {
       // Unfortunately, the CSS is injected in every page for now since we don't have bundle splitting.
       const indexHtml = await getPageHtml(outputDir, 'index.html');
 
-      const links = indexHtml.querySelectorAll('html > head > link');
+      const links = indexHtml.querySelectorAll('html > head > link').filter((link) => {
+        // Fonts are tested elsewhere
+        return link.attributes.as !== 'font';
+      });
       expect(links.length).toBe(
-        // Global CSS and CSS Module
+        // Global CSS, CSS Module
         4
       );
 
@@ -223,6 +226,43 @@ describe('static-rendering', () => {
       expect(
         styledHtml.querySelector('html > body div[data-testid="styled-text"]')?.attributes.class
       ).toMatch('HPV33q_text');
+    },
+    5 * 1000
+  );
+
+  it(
+    'statically extracts fonts',
+    async () => {
+      // <style id="expo-generated-fonts" type="text/css">@font-face{font-family:sweet;src:url(/assets/__e2e__/static-rendering/sweet.ttf?platform=web&hash=7c9263d3cffcda46ff7a4d9c00472c07);font-display:auto}</style><link rel="preload" href="/assets/__e2e__/static-rendering/sweet.ttf?platform=web&hash=7c9263d3cffcda46ff7a4d9c00472c07" as="font" crossorigin="" />
+      // Unfortunately, the CSS is injected in every page for now since we don't have bundle splitting.
+      const indexHtml = await getPageHtml(outputDir, 'index.html');
+
+      const links = indexHtml.querySelectorAll('html > head > link[as="font"]');
+      expect(links.length).toBe(1);
+      expect(links[0].attributes.href).toBe(
+        '/assets/__e2e__/static-rendering/sweet.ttf?platform=web&hash=7c9263d3cffcda46ff7a4d9c00472c07'
+      );
+
+      links.forEach((link) => {
+        // Linked to the expected static location
+        // expect(link.attributes.href).toMatch(/^\/_expo\/static\/css\/.*\.css$/);
+      });
+
+      expect(links[0].toString()).toMatch(
+        /<link rel="preload" href="\/assets\/__e2e__\/static-rendering\/sweet\.ttf\?platform=web&hash=[\d\w]+" as="font" crossorigin="" >/
+      );
+
+      expect(
+        fs.readFileSync(
+          path.join(outputDir, links[0].attributes.href.replace(/\?.*$/, '')),
+          'utf-8'
+        )
+      ).toBeDefined();
+
+      // Ensure the font is used
+      expect(indexHtml.querySelector('div[data-testid="index-text"]')?.attributes.style).toMatch(
+        'font-family:sweet'
+      );
     },
     5 * 1000
   );
@@ -445,7 +485,7 @@ describe('single-page', () => {
       const links = indexHtml.querySelectorAll('html > head > link');
       expect(links.length).toBe(
         // Global CSS and CSS Module
-        4
+        5
       );
 
       links.forEach((link) => {
