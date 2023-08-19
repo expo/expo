@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Add support for React static rehydration on web. ([#23891](https://github.com/expo/expo/pull/23891) by [@EvanBacon](https://github.com/EvanBacon))
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
