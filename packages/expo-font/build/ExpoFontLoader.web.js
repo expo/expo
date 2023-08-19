@@ -73,7 +73,7 @@ export default {
             sheet.deleteRule(item.index);
         }
     },
-    getHeadElements() {
+    getServerResources() {
         const elements = getHeadElements();
         return elements.map((element) => {
             switch (element.$$type) {

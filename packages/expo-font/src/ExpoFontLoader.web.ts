@@ -101,7 +101,7 @@ export default {
     }
   },
 
-  getHeadElements(): string[] {
+  getServerResources(): string[] {
     const elements = getHeadElements();
 
     return elements.map((element) => {

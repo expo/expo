@@ -6,7 +6,7 @@ import { getAssetForSource, loadSingleFontAsync } from './FontLoader';
  * @private
  */
 export function getServerResources() {
-    return ExpoFontLoader.getHeadElements();
+    return ExpoFontLoader.getServerResources();
 }
 /**
  * @returns clear the server resources from the global scope.
