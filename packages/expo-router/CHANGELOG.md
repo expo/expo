@@ -8,7 +8,7 @@
 
 ### 🎉 New features
 
-- Add static font extraction support with `expo-font`.
+- Add static font extraction support with `expo-font`. ([#24027](https://github.com/expo/expo/pull/24027) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
