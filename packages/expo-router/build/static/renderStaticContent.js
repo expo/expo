@@ -6,6 +6,7 @@
  */
 import '@expo/metro-runtime';
 import { ServerContainer } from '@react-navigation/native';
+import * as Font from 'expo-font';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { AppRegistry } from 'react-native-web';
@@ -64,6 +65,8 @@ export function getStaticContent(location) {
     const css = ReactDOMServer.renderToStaticMarkup(getStyleElement());
     let output = mixHeadComponentsWithStaticResults(headContext.helmet, html);
     output = output.replace('</head>', `${css}</head>`);
+    // Inject static fonts loaded with expo-font
+    output = output.replace('</head>', `${Font._getStaticResources().join('')}</head>`);
     return '<!DOCTYPE html>' + output;
 }
 function mixHeadComponentsWithStaticResults(helmet, html) {
