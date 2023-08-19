@@ -2,6 +2,7 @@ import { CodedError, Platform, UnavailabilityError } from 'expo-modules-core';
 import ExpoFontLoader from './ExpoFontLoader';
 import { FontDisplay } from './Font.types';
 import { getAssetForSource, loadSingleFontAsync, fontFamilyNeedsScoping, getNativeFontName, } from './FontLoader';
+import { registerStaticFont } from './server';
 const loaded = {};
 const loadPromises = {};
 // @needsAudit
@@ -172,19 +173,6 @@ async function unloadFontInNamespaceAsync(fontFamily, options) {
         throw new CodedError(`ERR_FONT_FAMILY`, `Cannot unload an empty name`);
     }
     await ExpoFontLoader.unloadAsync(nativeFontName, options);
-}
-export function registerStaticFont(fontFamily, source) {
-    if (!source) {
-        throw new CodedError(`ERR_FONT_SOURCE`, `Cannot load null or undefined font source: { "${fontFamily}": ${source} }. Expected asset of type \`FontSource\` for fontFamily of name: "${fontFamily}"`);
-    }
-    const asset = getAssetForSource(source);
-    loadSingleFontAsync(fontFamily, asset);
-}
-/**
- * @private
- */
-export function _getStaticResources() {
-    return ExpoFontLoader.getHeadElements();
 }
 export { FontDisplay };
 //# sourceMappingURL=Font.js.map

@@ -8,6 +8,7 @@ import {
   fontFamilyNeedsScoping,
   getNativeFontName,
 } from './FontLoader';
+import { registerStaticFont } from './server';
 
 const loaded: { [name: string]: boolean } = {};
 const loadPromises: { [name: string]: Promise<void> } = {};
@@ -232,25 +233,6 @@ async function unloadFontInNamespaceAsync(
   }
 
   await ExpoFontLoader.unloadAsync(nativeFontName, options);
-}
-
-export function registerStaticFont(fontFamily: string, source?: FontSource | null) {
-  if (!source) {
-    throw new CodedError(
-      `ERR_FONT_SOURCE`,
-      `Cannot load null or undefined font source: { "${fontFamily}": ${source} }. Expected asset of type \`FontSource\` for fontFamily of name: "${fontFamily}"`
-    );
-  }
-  const asset = getAssetForSource(source);
-
-  loadSingleFontAsync(fontFamily, asset);
-}
-
-/**
- * @private
- */
-export function _getStaticResources() {
-  return ExpoFontLoader.getHeadElements();
 }
 
 export { FontDisplay, FontSource, FontResource, UnloadFontOptions };
