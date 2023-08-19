@@ -35,6 +35,7 @@ const serverContext = new Set();
 function getHeadElements() {
     const css = [...serverContext.entries()].map(([{ css }]) => css).join('\n');
     const links = [...serverContext.entries()].map(([{ resourceId }]) => resourceId);
+    // TODO: Maybe return nothing if no fonts were loaded.
     return [
         {
             $$type: 'style',
