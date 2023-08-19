@@ -49,6 +49,9 @@ export function getStaticContent(location) {
     // the seemingly unused `RootTagContext.Provider` from being added.
     getStyleElement, } = AppRegistry.getApplication('App');
     const Root = getRootComponent();
+    // Clear any existing static resources from the global scope to attempt to prevent leaking between pages.
+    // This could break if pages are rendered in parallel or if fonts are loaded outside of the React tree
+    Font.resetServerContext();
     // This MUST be run before `ReactDOMServer.renderToString` to prevent
     // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
     resetReactNavigationContexts();
@@ -66,7 +69,7 @@ export function getStaticContent(location) {
     let output = mixHeadComponentsWithStaticResults(headContext.helmet, html);
     output = output.replace('</head>', `${css}</head>`);
     // Inject static fonts loaded with expo-font
-    output = output.replace('</head>', `${Font.getStaticResources().join('')}</head>`);
+    output = output.replace('</head>', `${Font.getServerResources().join('')}</head>`);
     return '<!DOCTYPE html>' + output;
 }
 function mixHeadComponentsWithStaticResults(helmet, html) {

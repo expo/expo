@@ -116,6 +116,10 @@ export default {
     });
   },
 
+  resetServerContext() {
+    serverContext.clear();
+  },
+
   isLoaded(fontFamilyName: string, resource: UnloadFontOptions = {}): boolean {
     if (typeof window === 'undefined') {
       return true;

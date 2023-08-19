@@ -71,13 +71,14 @@ export function loadAsync(fontFamilyOrFontMap, source) {
     // NOTE(EvanBacon): Static render pass on web must be synchronous to collect all fonts.
     // Because of this, `loadAsync` doesn't use the `async` keyword and deviates from the
     // standard Expo SDK style guide.
+    const isServer = Platform.OS === 'web' && typeof window === 'undefined';
     if (typeof fontFamilyOrFontMap === 'object') {
         if (source) {
             throw new CodedError(`ERR_FONT_API`, `No fontFamily can be used for the provided source: ${source}. The second argument of \`loadAsync()\` can only be used with a \`string\` value as the first argument.`);
         }
         const fontMap = fontFamilyOrFontMap;
         const names = Object.keys(fontMap);
-        if (Platform.OS === 'web' && typeof window !== 'undefined') {
+        if (isServer) {
             names.map((name) => registerStaticFont(name, fontMap[name]));
             return Promise.resolve();
         }
@@ -85,7 +86,7 @@ export function loadAsync(fontFamilyOrFontMap, source) {
             Promise.all(names.map((name) => loadFontInNamespaceAsync(name, fontMap[name])));
         })();
     }
-    if (Platform.OS === 'web' && typeof window !== 'undefined') {
+    if (isServer) {
         registerStaticFont(fontFamilyOrFontMap, source);
         return Promise.resolve();
     }

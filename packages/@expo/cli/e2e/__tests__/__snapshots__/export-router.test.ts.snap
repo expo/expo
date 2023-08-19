@@ -127,6 +127,7 @@ input::-webkit-search-cancel-button,input::-webkit-search-decoration,input::-web
 .r-1ewcgjf{box-shadow:0px 1px 3px rgba(0,0,0,0.5);}
 .r-1ff274t{text-align:right;}
 .r-1g80hic{opacity:0.8;}
+.r-1h0z5md{justify-content:flex-start;}
 .r-1habvwh{align-items:flex-start;}
 .r-1hfyk0a{padding-left:10px;}
 .r-1i10wst{font-size:18px;}
@@ -266,6 +267,7 @@ input::-webkit-search-cancel-button,input::-webkit-search-decoration,input::-web
 .r-yie26v{z-index:1001;}
 .r-z80fyv{height:20px;}
 .r-zchlnj{right:0px;}
+.r-zso239{margin-right:10px;}
 @-webkit-keyframes r-11cv4x{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
 @-webkit-keyframes r-1iq689l{0%{transform:translateY(0%);}100%{transform:translateY(100%);}}
 @-webkit-keyframes r-1pzkwqh{0%{transform:translateY(100%);}100%{transform:translateY(0%);}}

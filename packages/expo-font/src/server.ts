@@ -8,8 +8,16 @@ import { getAssetForSource, loadSingleFontAsync } from './FontLoader';
  * @returns the server resources that should be statically extracted.
  * @private
  */
-export function getStaticResources() {
+export function getServerResources() {
   return ExpoFontLoader.getHeadElements();
+}
+
+/**
+ * @returns clear the server resources from the global scope.
+ * @private
+ */
+export function resetServerContext() {
+  return ExpoFontLoader.resetServerContext();
 }
 
 export function registerStaticFont(fontFamily: string, source?: FontSource | null) {

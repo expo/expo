@@ -90,6 +90,7 @@ export function loadAsync(
   // NOTE(EvanBacon): Static render pass on web must be synchronous to collect all fonts.
   // Because of this, `loadAsync` doesn't use the `async` keyword and deviates from the
   // standard Expo SDK style guide.
+  const isServer = Platform.OS === 'web' && typeof window === 'undefined';
 
   if (typeof fontFamilyOrFontMap === 'object') {
     if (source) {
@@ -101,7 +102,7 @@ export function loadAsync(
     const fontMap = fontFamilyOrFontMap;
     const names = Object.keys(fontMap);
 
-    if (Platform.OS === 'web' && typeof window !== 'undefined') {
+    if (isServer) {
       names.map((name) => registerStaticFont(name, fontMap[name]));
       return Promise.resolve();
     }
@@ -111,7 +112,7 @@ export function loadAsync(
     })();
   }
 
-  if (Platform.OS === 'web' && typeof window !== 'undefined') {
+  if (isServer) {
     registerStaticFont(fontFamilyOrFontMap, source);
     return Promise.resolve();
   }

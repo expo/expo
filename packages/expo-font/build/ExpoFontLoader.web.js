@@ -86,6 +86,9 @@ export default {
             }
         });
     },
+    resetServerContext() {
+        serverContext.clear();
+    },
     isLoaded(fontFamilyName, resource = {}) {
         if (typeof window === 'undefined') {
             return true;
