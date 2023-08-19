@@ -263,6 +263,16 @@ describe('static-rendering', () => {
       expect(indexHtml.querySelector('div[data-testid="index-text"]')?.attributes.style).toMatch(
         'font-family:sweet'
       );
+
+      // Fonts have proper splitting due to how they're loaded during static rendering, we should test
+      // that certain fonts only show on the about page.
+      const aboutHtml = await getPageHtml(outputDir, 'about.html');
+
+      const aboutLinks = aboutHtml.querySelectorAll('html > head > link[as="font"]');
+      expect(aboutLinks.length).toBe(2);
+      expect(aboutLinks[1].attributes.href).toMatch(
+        /react-native-vector-icons\/Fonts\/EvilIcons\.ttf/
+      );
     },
     5 * 1000
   );

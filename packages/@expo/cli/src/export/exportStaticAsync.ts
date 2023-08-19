@@ -66,19 +66,19 @@ export async function getFilesToExportFromServerAsync(
   // name : contents
   const files = new Map<string, string>();
 
-  // await Promise.all(
-  for await (const outputPath of getHtmlFiles({ manifest })) {
-    const pathname = outputPath.replace(/(?:index)?\.html$/, '');
-    try {
-      files.set(outputPath, '');
-      const data = await renderAsync(pathname);
-      files.set(outputPath, data);
-    } catch (e: any) {
-      await logMetroErrorAsync({ error: e, projectRoot });
-      throw new Error('Failed to statically export route: ' + pathname);
-    }
-  }
-  // );
+  await Promise.all(
+    getHtmlFiles({ manifest }).map(async (outputPath) => {
+      const pathname = outputPath.replace(/(?:index)?\.html$/, '');
+      try {
+        files.set(outputPath, '');
+        const data = await renderAsync(pathname);
+        files.set(outputPath, data);
+      } catch (e: any) {
+        await logMetroErrorAsync({ error: e, projectRoot });
+        throw new Error('Failed to statically export route: ' + pathname);
+      }
+    })
+  );
 
   return files;
 }
