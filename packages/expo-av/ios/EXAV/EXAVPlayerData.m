@@ -377,20 +377,20 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
 
 - (NSArray<NSString *> *) _getSubtitlesFromHLSAsset
 {
-    NSMutableArray<NSString *> *subtitlesList = [NSMutableArray array];
-    
-    AVAsset *asset = _player.currentItem.asset;
-    AVMediaSelectionGroup *subtitleGroup = [asset mediaSelectionGroupForMediaCharacteristic:AVMediaCharacteristicLegible];
-    
-    NSArray<AVMediaSelectionOption *> *subtitleOptions = subtitleGroup.options;
-    for (AVMediaSelectionOption *option in subtitleOptions) {
-        NSString *title = option.commonMetadata.firstObject.stringValue;
-        if (title) {
-         [subtitlesList addObject:title];
-        }
+  NSMutableArray<NSString *> *subtitlesList = [NSMutableArray array];
+  
+  AVAsset *asset = _player.currentItem.asset;
+  AVMediaSelectionGroup *subtitleGroup = [asset mediaSelectionGroupForMediaCharacteristic:AVMediaCharacteristicLegible];
+  
+  NSArray<AVMediaSelectionOption *> *subtitleOptions = subtitleGroup.options;
+  for (AVMediaSelectionOption *option in subtitleOptions) {
+    NSString *title = option.commonMetadata.firstObject.stringValue;
+    if (title) {
+      [subtitlesList addObject:title];
     }
-    
-    return [subtitlesList copy];
+  }
+  
+  return [subtitlesList copy];
 }
 
 
