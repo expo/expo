@@ -35,9 +35,12 @@ buildscript {
   }
 }
 
-java {
-  sourceCompatibility = JavaVersion.VERSION_11
-  targetCompatibility = JavaVersion.VERSION_11
+def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
+if (agpVersion.tokenize('.')[0].toInteger() < 8) {
+  java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+  }
 }
 
 dependencies {
