@@ -18,6 +18,7 @@ import com.google.android.exoplayer2.PlaybackException;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.Tracks;
 import com.google.android.exoplayer2.source.LoadEventInfo;
 import com.google.android.exoplayer2.source.MediaLoadData;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -41,6 +42,7 @@ import com.google.android.exoplayer2.video.VideoSize;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import expo.modules.av.AVManagerInterface;
@@ -209,7 +211,7 @@ class SimpleExoPlayerData extends PlayerData
       getClippedIntegerForValue((int) mSimpleExoPlayer.getCurrentPosition(), 0, duration));
     map.putInt(STATUS_PLAYABLE_DURATION_MILLIS_KEY_PATH,
       getClippedIntegerForValue((int) mSimpleExoPlayer.getBufferedPosition(), 0, duration));
-    map.putStringArrayList("subtitles", buildSubtitlesList());
+    map.putStringArrayList(STATUS_SUBTITLES_KEY_PATH, buildSubtitlesList());
 
     map.putBoolean(STATUS_IS_PLAYING_KEY_PATH,
       mSimpleExoPlayer.getPlayWhenReady() && mSimpleExoPlayer.getPlaybackState() == Player.STATE_READY);
@@ -406,11 +408,13 @@ class SimpleExoPlayerData extends PlayerData
   private ArrayList<String> buildSubtitlesList() {
     ArrayList<String> subtitles = new ArrayList<>();
 
-    for(int i = 0; i < mSimpleExoPlayer.getCurrentTrackGroups().length; i++){
-      String format = mSimpleExoPlayer.getCurrentTrackGroups().get(i).getFormat(0).sampleMimeType;
+    List<Tracks.Group> groups = mSimpleExoPlayer.getCurrentTracks().getGroups();
+
+    for (Tracks.Group group : groups) {
+      String format = group.getTrackFormat(0).sampleMimeType;
 
       if (format != null && format.contains("text")) {
-        String id = mSimpleExoPlayer.getCurrentTrackGroups().get(i).getFormat(0).id;
+        String id = group.getTrackFormat(0).id;
 
         subtitles.add(id);
       }

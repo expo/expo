@@ -50,7 +50,7 @@ public abstract class PlayerData implements AudioEventHandler {
   static final String STATUS_IS_MUTED_KEY_PATH = "isMuted";
   static final String STATUS_IS_LOOPING_KEY_PATH = "isLooping";
   static final String STATUS_DID_JUST_FINISH_KEY_PATH = "didJustFinish";
-
+  static final String STATUS_SUBTITLES_KEY_PATH = "subtitles";
   @DoNotStrip
   private final HybridData mHybridData;
 
