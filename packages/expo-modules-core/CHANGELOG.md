@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed Fabric setup error on iOS. ([#24004](https://github.com/expo/expo/pull/24004) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 1.5.9 — 2023-07-29
