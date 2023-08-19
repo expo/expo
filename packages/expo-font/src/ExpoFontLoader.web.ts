@@ -46,7 +46,7 @@ function getFontFaceRulesMatchingResource(
   });
 }
 
-const serverContext: Set<{ css: string; resourceId: string }> = new Set();
+const serverContext: Set<{ name: string; css: string; resourceId: string }> = new Set();
 
 function getHeadElements(): {
   $$type: string;
@@ -58,8 +58,12 @@ function getHeadElements(): {
   id?: string;
   type?: string;
 }[] {
-  const css = [...serverContext.entries()].map(([{ css }]) => css).join('\n');
-  const links = [...serverContext.entries()].map(([{ resourceId }]) => resourceId);
+  const entries = [...serverContext.entries()];
+  if (!entries.length) {
+    return [];
+  }
+  const css = entries.map(([{ css }]) => css).join('\n');
+  const links = entries.map(([{ resourceId }]) => resourceId);
   // TODO: Maybe return nothing if no fonts were loaded.
   return [
     {
@@ -122,17 +126,20 @@ export default {
 
   isLoaded(fontFamilyName: string, resource: UnloadFontOptions = {}): boolean {
     if (typeof window === 'undefined') {
-      return true;
+      return !![...serverContext.values()].find((asset) => {
+        return asset.name === fontFamilyName;
+      });
     }
     return getFontFaceRulesMatchingResource(fontFamilyName, resource)?.length > 0;
   },
 
   // NOTE(EvanBacon): No async keyword! This cannot return a promise in Node environments.
   loadAsync(fontFamilyName: string, resource: FontResource): Promise<void> {
-    if (!Platform.isDOMAvailable) {
+    if (typeof window === 'undefined') {
       serverContext.add({
+        name: fontFamilyName,
         css: _createWebFontTemplate(fontFamilyName, resource),
-        // @ts-expect-error
+        // @ts-expect-error: typeof string
         resourceId: resource.uri!,
       });
       return Promise.resolve();
