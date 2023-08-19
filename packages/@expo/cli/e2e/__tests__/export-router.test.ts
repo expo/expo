@@ -243,11 +243,6 @@ describe('static-rendering', () => {
         '/assets/__e2e__/static-rendering/sweet.ttf?platform=web&hash=7c9263d3cffcda46ff7a4d9c00472c07'
       );
 
-      links.forEach((link) => {
-        // Linked to the expected static location
-        // expect(link.attributes.href).toMatch(/^\/_expo\/static\/css\/.*\.css$/);
-      });
-
       expect(links[0].toString()).toMatch(
         /<link rel="preload" href="\/assets\/__e2e__\/static-rendering\/sweet\.ttf\?platform=web&hash=[\d\w]+" as="font" crossorigin="" >/
       );
