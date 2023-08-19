@@ -485,7 +485,7 @@ describe('single-page', () => {
       const links = indexHtml.querySelectorAll('html > head > link');
       expect(links.length).toBe(
         // Global CSS and CSS Module
-        5
+        4
       );
 
       links.forEach((link) => {
