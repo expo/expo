@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <EXFileSystem/EXSessionResumableDownloadTaskDelegate.h>
+#import <ExpoFileSystem/EXSessionResumableDownloadTaskDelegate.h>
 
 @interface EXSessionResumableDownloadTaskDelegate ()
 
@@ -12,13 +12,13 @@
 
 @implementation EXSessionResumableDownloadTaskDelegate
 
-- (instancetype)initWithResolve:(EXPromiseResolveBlock)resolve
-                         reject:(EXPromiseRejectBlock)reject
-                       localUrl:(NSURL *)localUrl
-             shouldCalculateMd5:(BOOL)shouldCalculateMd5
-                onWriteCallback:(EXDownloadDelegateOnWriteCallback)onWriteCallback
-                resumableManager:(EXTaskHandlersManager *)manager
-                           uuid:(NSString *)uuid;
+- (nonnull instancetype)initWithResolve:(EXPromiseResolveBlock)resolve
+                                 reject:(EXPromiseRejectBlock)reject
+                               localUrl:(NSURL *)localUrl
+                     shouldCalculateMd5:(BOOL)shouldCalculateMd5
+                        onWriteCallback:(EXDownloadDelegateOnWriteCallback)onWriteCallback
+                       resumableManager:(EXTaskHandlersManager *)manager
+                                   uuid:(NSString *)uuid;
 {
   if (self = [super initWithResolve:resolve
                              reject:reject

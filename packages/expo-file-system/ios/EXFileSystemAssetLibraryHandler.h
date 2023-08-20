@@ -1,5 +1,5 @@
 
-#import <EXFileSystem/EXFileSystem.h>
+#import <ExpoFileSystem/EXFileSystem.h>
 
 @interface EXFileSystemAssetLibraryHandler : NSObject <EXFileSystemHandler>
 

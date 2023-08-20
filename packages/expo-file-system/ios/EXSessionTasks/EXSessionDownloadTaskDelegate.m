@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <EXFileSystem/EXSessionDownloadTaskDelegate.h>
-#import <EXFileSystem/NSData+EXFileSystem.h>
+#import <ExpoFileSystem/EXSessionDownloadTaskDelegate.h>
+#import <ExpoFileSystem/NSData+EXFileSystem.h>
 
 @interface EXSessionDownloadTaskDelegate ()
 
@@ -12,10 +12,10 @@
 
 @implementation EXSessionDownloadTaskDelegate
 
-- (instancetype)initWithResolve:(EXPromiseResolveBlock)resolve
-                         reject:(EXPromiseRejectBlock)reject
-                       localUrl:(NSURL *)localUrl
-             shouldCalculateMd5:(BOOL)shouldCalculateMd5
+- (nonnull instancetype)initWithResolve:(EXPromiseResolveBlock)resolve
+                                 reject:(EXPromiseRejectBlock)reject
+                               localUrl:(NSURL *)localUrl
+                     shouldCalculateMd5:(BOOL)shouldCalculateMd5
 {
   if (self = [super initWithResolve:resolve reject:reject])
   {
