@@ -53,13 +53,13 @@ describe('BunPackageManager', () => {
     it('logs executed command', async () => {
       const log = jest.fn();
       const bun = new BunPackageManager({ cwd: projectRoot, log });
-      await bun.runAsync(['install', '--some-flag']);
-      expect(log).toHaveBeenCalledWith('> bun install --some-flag');
+      await bun.runAsync(['add', '--some-flag']);
+      expect(log).toHaveBeenCalledWith('> bun add --some-flag');
     });
 
     it('inherits stdio output without silent', async () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
-      await bun.runAsync(['install']);
+      await bun.runAsync(['add']);
 
       expect(spawnAsync).toBeCalledWith(
         expect.anything(),
@@ -70,7 +70,7 @@ describe('BunPackageManager', () => {
 
     it('does not inherit stdio with silent', async () => {
       const bun = new BunPackageManager({ cwd: projectRoot, silent: true });
-      await bun.runAsync(['install']);
+      await bun.runAsync(['add']);
 
       expect(spawnAsync).toBeCalledWith(
         expect.anything(),
@@ -81,7 +81,7 @@ describe('BunPackageManager', () => {
 
     it('returns spawn promise with child', () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
-      expect(bun.runAsync(['install'])).toHaveProperty(
+      expect(bun.runAsync(['add'])).toHaveProperty(
         'child',
         expect.objectContaining(STUB_SPAWN_CHILD)
       );
@@ -209,8 +209,8 @@ describe('BunPackageManager', () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
       const pending = bun.addAsync(['expo']);
 
-      expect(pending).toHaveProperty('child', expect.any(Promise));
-      await expect(pending.child).resolves.toMatchObject(STUB_SPAWN_CHILD);
+      expect(pending).toHaveProperty('child', expect.any(Object));
+      expect(pending.child).toMatchObject(STUB_SPAWN_CHILD);
     });
 
     it('adds a single unversioned package to dependencies', async () => {
@@ -219,7 +219,7 @@ describe('BunPackageManager', () => {
 
       expect(spawnAsync).toBeCalledWith(
         'bun',
-        ['install', 'expo'],
+        ['add', 'expo'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
@@ -230,70 +230,7 @@ describe('BunPackageManager', () => {
 
       expect(spawnAsync).toBeCalledWith(
         'bun',
-        ['install', 'expo', 'react-native'],
-        expect.objectContaining({ cwd: projectRoot })
-      );
-    });
-
-    it('installs multiple versioned dependencies by updating package.json', async () => {
-      vol.fromJSON({ 'package.json': '{}' }, projectRoot);
-
-      const bun = new BunPackageManager({ cwd: projectRoot });
-      await bun.addAsync(['expo@^46', 'react-native@0.69.3']);
-
-      const packageFile = JSON.parse(
-        vol.readFileSync(path.join(projectRoot, 'package.json')).toString()
-      );
-
-      expect(packageFile).toHaveProperty(
-        'dependencies',
-        expect.objectContaining({ expo: '^46', 'react-native': '0.69.3' })
-      );
-      expect(spawnAsync).toBeCalledWith(
-        'bun',
-        ['install'],
-        expect.objectContaining({ cwd: projectRoot })
-      );
-    });
-
-    it('installs mixed dependencies with flags by updating package.json', async () => {
-      vol.fromJSON({ 'package.json': '{}' }, projectRoot);
-
-      const bun = new BunPackageManager({ cwd: projectRoot });
-      await bun.addAsync(['expo@^46', 'react-native@0.69.3', 'jest', '--ignore-scripts']);
-
-      const packageFile = JSON.parse(
-        vol.readFileSync(path.join(projectRoot, 'package.json')).toString()
-      );
-
-      expect(packageFile).toHaveProperty(
-        'dependencies',
-        expect.objectContaining({ expo: '^46', 'react-native': '0.69.3' })
-      );
-      expect(spawnAsync).toBeCalledWith(
-        'bun',
-        ['install', '--ignore-scripts', 'jest'],
-        expect.objectContaining({ cwd: projectRoot })
-      );
-    });
-
-    it('installs dist-tag versions with --save', async () => {
-      vol.fromJSON({ 'package.json': '{}' }, projectRoot);
-
-      const bun = new BunPackageManager({ cwd: projectRoot });
-      await bun.addAsync(['react-native@0.69.3', 'expo@next']);
-
-      const packageFile = JSON.parse(
-        vol.readFileSync(path.join(projectRoot, 'package.json')).toString()
-      );
-
-      expect(packageFile).toHaveProperty(
-        'dependencies',
-        expect.objectContaining({ 'react-native': '0.69.3' })
-      );
-      expect(spawnAsync).toBeCalledWith(
-        'bun',
-        ['install', 'expo@next'],
+        ['add', 'expo', 'react-native'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
@@ -311,12 +248,12 @@ describe('BunPackageManager', () => {
       );
     });
 
-    it('returns pending spawn promise with child', async () => {
+    it('returns pending spawn object with child', async () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
       const pending = bun.addDevAsync(['expo']);
 
-      expect(pending).toHaveProperty('child', expect.any(Promise));
-      await expect(pending.child).resolves.toMatchObject(STUB_SPAWN_CHILD);
+      expect(pending).toHaveProperty('child', expect.any(Object));
+      expect(pending.child).toMatchObject(STUB_SPAWN_CHILD);
     });
 
     it('adds a single unversioned package to dependencies', async () => {
@@ -325,7 +262,7 @@ describe('BunPackageManager', () => {
 
       expect(spawnAsync).toBeCalledWith(
         'bun',
-        ['install', '--save-dev', 'expo'],
+        ['add', '--dev', 'expo'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
@@ -336,70 +273,7 @@ describe('BunPackageManager', () => {
 
       expect(spawnAsync).toBeCalledWith(
         'bun',
-        ['install', '--save-dev', 'expo', 'react-native'],
-        expect.objectContaining({ cwd: projectRoot })
-      );
-    });
-
-    it('installs multiple versioned dependencies by updating package.json', async () => {
-      vol.fromJSON({ 'package.json': '{}' }, projectRoot);
-
-      const bun = new BunPackageManager({ cwd: projectRoot });
-      await bun.addDevAsync(['expo@^46', 'react-native@0.69.3']);
-
-      const packageFile = JSON.parse(
-        vol.readFileSync(path.join(projectRoot, 'package.json')).toString()
-      );
-
-      expect(packageFile).toHaveProperty(
-        'devDependencies',
-        expect.objectContaining({ expo: '^46', 'react-native': '0.69.3' })
-      );
-      expect(spawnAsync).toBeCalledWith(
-        'bun',
-        ['install'],
-        expect.objectContaining({ cwd: projectRoot })
-      );
-    });
-
-    it('installs mixed dependencies with flags by updating package.json', async () => {
-      vol.fromJSON({ 'package.json': '{}' }, projectRoot);
-
-      const bun = new BunPackageManager({ cwd: projectRoot });
-      await bun.addDevAsync(['expo@^46', 'react-native@0.69.3', 'jest', '--ignore-scripts']);
-
-      const packageFile = JSON.parse(
-        vol.readFileSync(path.join(projectRoot, 'package.json')).toString()
-      );
-
-      expect(packageFile).toHaveProperty(
-        'devDependencies',
-        expect.objectContaining({ expo: '^46', 'react-native': '0.69.3' })
-      );
-      expect(spawnAsync).toBeCalledWith(
-        'bun',
-        ['install', '--save-dev', '--ignore-scripts', 'jest'],
-        expect.objectContaining({ cwd: projectRoot })
-      );
-    });
-
-    it('installs dist-tag versions with --save', async () => {
-      vol.fromJSON({ 'package.json': '{}' }, projectRoot);
-
-      const bun = new BunPackageManager({ cwd: projectRoot });
-      await bun.addDevAsync(['react-native@0.69.3', 'expo@next']);
-
-      const packageFile = JSON.parse(
-        vol.readFileSync(path.join(projectRoot, 'package.json')).toString()
-      );
-
-      expect(packageFile).toHaveProperty(
-        'devDependencies',
-        expect.objectContaining({ 'react-native': '0.69.3' })
-      );
-      expect(spawnAsync).toBeCalledWith(
-        'bun',
-        ['install', '--save-dev', 'expo@next'],
+        ['add', '--dev', 'expo', 'react-native'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
@@ -423,7 +297,7 @@ describe('BunPackageManager', () => {
 
       expect(spawnAsync).toBeCalledWith(
         'bun',
-        ['install', '--global', 'expo-cli@^5'],
+        ['add', '--global', 'expo-cli@^5'],
         expect.anything()
       );
     });
@@ -434,7 +308,7 @@ describe('BunPackageManager', () => {
 
       expect(spawnAsync).toBeCalledWith(
         'bun',
-        ['install', '--global', 'expo-cli@^5', 'eas-cli'],
+        ['add', '--global', 'expo-cli@^5', 'eas-cli'],
         expect.anything()
       );
     });
@@ -447,7 +321,7 @@ describe('BunPackageManager', () => {
 
       expect(spawnAsync).toBeCalledWith(
         'bun',
-        ['uninstall', 'metro'],
+        ['remove', 'metro'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
@@ -458,7 +332,7 @@ describe('BunPackageManager', () => {
 
       expect(spawnAsync).toBeCalledWith(
         'bun',
-        ['uninstall', 'metro', 'jest-haste-map'],
+        ['remove', 'metro', 'jest-haste-map'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
@@ -471,7 +345,7 @@ describe('BunPackageManager', () => {
 
       expect(spawnAsync).toBeCalledWith(
         'bun',
-        ['uninstall', '--save-dev', 'metro'],
+        ['remove', '--dev', 'metro'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
@@ -482,7 +356,7 @@ describe('BunPackageManager', () => {
 
       expect(spawnAsync).toBeCalledWith(
         'bun',
-        ['uninstall', '--save-dev', 'metro', 'jest-haste-map'],
+        ['remove', '--dev', 'metro', 'jest-haste-map'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
@@ -495,7 +369,7 @@ describe('BunPackageManager', () => {
 
       expect(spawnAsync).toBeCalledWith(
         'bun',
-        ['uninstall', '--global', 'expo-cli'],
+        ['remove', '--global', 'expo-cli'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
@@ -506,7 +380,7 @@ describe('BunPackageManager', () => {
 
       expect(spawnAsync).toBeCalledWith(
         'bun',
-        ['uninstall', '--global', 'expo-cli', 'eas-cli'],
+        ['remove', '--global', 'expo-cli', 'eas-cli'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
