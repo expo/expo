@@ -39,7 +39,7 @@ export const CommandItemBase = ({
 
   return (
     <Command.Item
-      className={mergeClasses(className, 'relative')}
+      className={mergeClasses('relative', className)}
       value={value}
       data-nested={isNested ? true : undefined}
       onMouseUp={event => {
