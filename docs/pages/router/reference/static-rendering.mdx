@@ -283,6 +283,53 @@ export default function Page() {
 }
 ```
 
+## Fonts
+
+> Font optimization is available in SDK 50 and above.
+
+Expo Font has automatic static optimization for font loading in Expo Router. When you load a font with `expo-font`, Expo CLI will automatically extract the font resource and embed it in the page's HTML, enabling preloading, faster hydration, and reduced layout shift.
+
+The following snippet will load Inter into the namespace and statically optimize on web:
+
+```js app/home.js
+import { Text } from 'react-native';
+import { useFonts } from 'expo-font';
+
+export default function App() {
+  /* @info Expo CLI automatically finds and extracts this font during compilation. */
+  const [isLoaded] = useFonts({
+    /* @end */
+    inter: require('@/assets/inter.ttf'),
+  });
+
+  /* @info Always true on web with static rendering enabled. */
+  if (!isLoaded) {
+    /* @end */
+    return null;
+  }
+
+  return <Text style={{ fontFamily: 'inter' }}>Hello Universe</Text>;
+}
+```
+
+This generates the following static HTML:
+
+```html dist/home.html
+/* @info preload the font before the JavaScript loads. */
+<link rel="preload" href="/assets/inter.ttf" as="font" crossorigin />
+/* @end */
+<style id="expo-generated-fonts" type="text/css">
+  @font-face {
+    font-family: inter;
+    src: url(/assets/inter.ttf);
+    font-display: auto;
+  }
+</style>
+```
+
+- Static font optimization requires the font to be loaded syncronously. If the font isn't statically optimized, it could be because it was loaded inside a `useEffect`, deferred component, or async function.
+- Static optimization is only supported with `Font.loadAsync` and `Font.useFonts` from `expo-font`. Wrapper functions are supported as long as the wrappers are synchronous.
+
 ## FAQ
 
 ### How do I add a custom server?

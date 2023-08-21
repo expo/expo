@@ -5,23 +5,23 @@ import * as FontLoader from '../FontLoader';
 
 describe('loadSingleFontAsync', () => {
   it(`only excepts FontResource`, async () => {
-    await expect(FontLoader.loadSingleFontAsync('foo', 10 as any)).rejects.toThrow(
+    expect(() => FontLoader.loadSingleFontAsync('foo', 10 as any)).toThrow(
       'Expected font asset of type'
     );
-    await expect(FontLoader.loadSingleFontAsync('foo', { uri: 10 as any })).rejects.toThrow(
+    expect(() => FontLoader.loadSingleFontAsync('foo', { uri: 10 as any })).toThrow(
       'Expected font asset of type'
     );
-    await expect(FontLoader.loadSingleFontAsync('foo', Asset.fromURI('foo'))).rejects.toThrow(
+    expect(() => FontLoader.loadSingleFontAsync('foo', Asset.fromURI('foo'))).toThrow(
       'Expected font asset of type'
     );
   });
   it(`rejects expo-asset`, async () => {
-    await expect(FontLoader.loadSingleFontAsync('foo', Asset.fromURI('foo'))).rejects.toThrow(
+    expect(() => FontLoader.loadSingleFontAsync('foo', Asset.fromURI('foo'))).toThrow(
       'Expected font asset of type'
     );
-    await expect(
+    expect(() =>
       FontLoader.loadSingleFontAsync('foo', { uri: Asset.fromURI('foo') } as any)
-    ).rejects.toThrow('Expected font asset of type');
+    ).toThrow('Expected font asset of type');
   });
 });
 
