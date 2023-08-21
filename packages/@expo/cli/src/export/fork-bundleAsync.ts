@@ -10,8 +10,12 @@ import {
 } from '@expo/dev-server/build/metro/importMetroFromProject';
 import type { LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
-import Metro from 'metro';
+import { ConfigT } from 'metro-config';
+import Metro, { AssetData } from 'metro';
+import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
 import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
+// @ts-expect-error
+import getMetroAssets from 'metro/src/DeltaBundler/Serializers/getAssets';
 
 import { CSSAsset, getCssModulesFromBundler } from '../start/server/metro/getCssModulesFromBundler';
 import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
@@ -115,7 +119,8 @@ export async function bundleAsync(
     try {
       const { code, map } = await metroServer.build(bundleOptions);
       const [assets, css] = await Promise.all([
-        metroServer.getAssets(bundleOptions),
+        getAssets(metroServer, bundleOptions),
+        // metroServer.getAssets(bundleOptions),
         getCssModulesFromBundler(config, metroServer.getBundler(), bundleOptions),
       ]);
 
@@ -175,4 +180,32 @@ export async function bundleAsync(
   } finally {
     metroServer.end();
   }
+}
+
+// Forked out of Metro because the `this._getServerRootDir()` doesn't match the development
+// behavior.
+async function getAssets(
+  metro: Metro.Server,
+  options: MetroBundleOptions
+): Promise<readonly AssetData[]> {
+  const { entryFile, onProgress, resolverOptions, transformOptions } = splitBundleOptions(options);
+
+  // @ts-expect-error: _bundler isn't exposed on the type.
+  const dependencies = await metro._bundler.getDependencies(
+    [entryFile],
+    transformOptions,
+    resolverOptions,
+    { onProgress, shallow: false, lazy: false }
+  );
+
+  // @ts-expect-error
+  const _config = metro._config as ConfigT;
+
+  return await getMetroAssets(dependencies, {
+    processModuleFilter: _config.serializer.processModuleFilter,
+    assetPlugins: _config.transformer.assetPlugins,
+    platform: transformOptions.platform,
+    projectRoot: _config.projectRoot, // this._getServerRootDir(),
+    publicPath: _config.transformer.publicPath,
+  });
 }

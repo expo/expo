@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- Add static font extraction support with `expo-router`. ([#24027](https://github.com/expo/expo/pull/24027) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
