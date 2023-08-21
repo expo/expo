@@ -6,8 +6,7 @@ import { openLink } from '../utils';
 
 import { Tag } from '~/ui/components/Tag';
 
-type Props = {
-  children: React.ReactNode;
+type Props = PropsWithChildren<{
   url: string;
   onSelect?: () => void;
   isExternalLink?: boolean;
@@ -15,7 +14,7 @@ type Props = {
   // Props forwarded to Command.Item
   className?: string;
   value?: string;
-};
+}>;
 
 /**
  * Wrapper for Command.Item that adds copy link on right/ middle click + visual copy indicator.
