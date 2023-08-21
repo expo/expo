@@ -1,5 +1,7 @@
 import { useTheme } from '@expo/styleguide';
 
+import { DotGrid } from './DotGrid';
+
 type Props = {
   source: string;
   alt: string;
@@ -12,8 +14,9 @@ export const Diagram = ({ source, darkSource, alt }: Props) => {
 
   if (!source.match(/\.png$/)) {
     return (
-      <div className="border border-default rounded-md overflow-hidden my-6 max-w-[750px] m-auto">
-        <picture>
+      <div className="bg-default border relative border-default rounded-md overflow-hidden my-6 max-w-[750px] m-auto">
+        <DotGrid />
+        <picture className="relative">
           {isDark && darkSource && <source srcSet={darkSource} />}
           <img src={source} alt={alt} />
         </picture>
@@ -22,8 +25,9 @@ export const Diagram = ({ source, darkSource, alt }: Props) => {
   }
 
   return (
-    <div className="border border-default rounded-md overflow-hidden my-6 max-w-[750px] m-auto">
-      <picture>
+    <div className="bg-default border relative border-default rounded-md overflow-hidden my-6 max-w-[750px] m-auto">
+      <DotGrid />
+      <picture className="relative">
         {!isDark && <source srcSet={source.replace('.png', '.avif')} type="image/avif" />}
         {darkSource && isDark && (
           <source srcSet={darkSource.replace('.png', '.avif')} type="image/avif" />
