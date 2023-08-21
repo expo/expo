@@ -17,7 +17,9 @@ export function resolvePackageManagerOptions(args: any) {
   };
 
   if (
-    [managers.bun, managers.npm, managers.pnpm, managers.yarn, !!args['--no-install']].filter(Boolean).length > 1
+    [managers.bun, managers.npm, managers.pnpm, managers.yarn, !!args['--no-install']].filter(
+      Boolean
+    ).length > 1
   ) {
     throw new CommandError(
       'BAD_ARGS',
