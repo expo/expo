@@ -1,7 +1,6 @@
-import { Command } from 'cmdk';
-
 import type { AlgoliaItemType } from '../types';
-import { getContentHighlightHTML, getHighlightHTML, openLink } from '../utils';
+import { getContentHighlightHTML, getHighlightHTML } from '../utils';
+import { CommandItemBase } from './CommandItemBase';
 import { FootnoteSection } from './FootnoteSection';
 import { ExternalLinkIcon, ReactIcon } from './icons';
 
@@ -15,12 +14,11 @@ type Props = {
 export const RNDocsItem = ({ item, onSelect }: Props) => {
   const { lvl0, lvl1, lvl2, lvl3, lvl4 } = item.hierarchy;
   return (
-    <Command.Item
+    <CommandItemBase
       value={`rn-${item.objectID}`}
-      onSelect={() => {
-        openLink(item.url, true);
-        onSelect && onSelect();
-      }}>
+      url={item.url}
+      isExternalLink
+      onSelect={onSelect}>
       <div className="inline-flex gap-3 items-center">
         <ReactIcon className="shrink-0" />
         <div>
@@ -67,6 +65,6 @@ export const RNDocsItem = ({ item, onSelect }: Props) => {
         </div>
         <ExternalLinkIcon />
       </div>
-    </Command.Item>
+    </CommandItemBase>
   );
 };
