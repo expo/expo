@@ -1,12 +1,13 @@
 package versioned.host.exp.exponent
 
 import expo.modules.application.ApplicationPackage
+import expo.modules.av.AVModule
 import expo.modules.av.AVPackage
 import expo.modules.av.video.VideoViewModule
 import expo.modules.backgroundfetch.BackgroundFetchPackage
 import expo.modules.barcodescanner.BarCodeScannerModule
 import expo.modules.barcodescanner.BarCodeScannerPackage
-import expo.modules.battery.BatteryPackage
+import expo.modules.battery.BatteryModule
 import expo.modules.blur.BlurModule
 import expo.modules.brightness.BrightnessModule
 import expo.modules.calendar.CalendarPackage
@@ -34,6 +35,7 @@ import expo.modules.imageloader.ImageLoaderPackage
 import expo.modules.imagemanipulator.ImageManipulatorModule
 import expo.modules.imagepicker.ImagePickerModule
 import expo.modules.intentlauncher.IntentLauncherModule
+import expo.modules.keepawake.KeepAwakeModule
 import expo.modules.keepawake.KeepAwakePackage
 import expo.modules.kotlin.ModulesProvider
 import expo.modules.kotlin.modules.Module
@@ -53,9 +55,17 @@ import expo.modules.screencapture.ScreenCaptureModule
 import expo.modules.screenorientation.ScreenOrientationModule
 import expo.modules.securestore.SecureStorePackage
 import expo.modules.sensors.SensorsPackage
+import expo.modules.sensors.modules.AccelerometerModule
+import expo.modules.sensors.modules.BarometerModule
+import expo.modules.sensors.modules.DeviceMotionModule
+import expo.modules.sensors.modules.GyroscopeModule
+import expo.modules.sensors.modules.LightSensorModule
+import expo.modules.sensors.modules.MagnetometerModule
+import expo.modules.sensors.modules.MagnetometerUncalibratedModule
+import expo.modules.sensors.modules.PedometerModule
 import expo.modules.sharing.SharingModule
 import expo.modules.sms.SMSModule
-import expo.modules.speech.SpeechPackage
+import expo.modules.speech.SpeechModule
 import expo.modules.splashscreen.SplashScreenModule
 import expo.modules.splashscreen.SplashScreenPackage
 import expo.modules.sqlite.SQLiteModule
@@ -71,7 +81,6 @@ object ExperiencePackagePicker : ModulesProvider {
   private val EXPO_MODULES_PACKAGES = listOf(
     AVPackage(),
     ApplicationPackage(),
-    BatteryPackage(),
     BackgroundFetchPackage(),
     BarCodeScannerPackage(),
     CalendarPackage(),
@@ -90,7 +99,6 @@ object ExperiencePackagePicker : ModulesProvider {
     PermissionsPackage(),
     SecureStorePackage(),
     SensorsPackage(),
-    SpeechPackage(),
     SplashScreenPackage(),
     SystemUIPackage(),
     TaskManagerPackage(),
@@ -113,6 +121,18 @@ object ExperiencePackagePicker : ModulesProvider {
   }
 
   override fun getModulesList(): List<Class<out Module>> = listOf(
+    AVModule::class.java,
+    // Sensors
+    AccelerometerModule::class.java,
+    BarometerModule::class.java,
+    GyroscopeModule::class.java,
+    LightSensorModule::class.java,
+    DeviceMotionModule::class.java,
+    MagnetometerModule::class.java,
+    MagnetometerUncalibratedModule::class.java,
+    PedometerModule::class.java,
+    // End of Sensors
+    BatteryModule::class.java,
     BarCodeScannerModule::class.java,
     BlurModule::class.java,
     CameraViewModule::class.java,
@@ -131,6 +151,7 @@ object ExperiencePackagePicker : ModulesProvider {
     ImageManipulatorModule::class.java,
     ExpoImageModule::class.java,
     IntentLauncherModule::class.java,
+    KeepAwakeModule::class.java,
     LinearGradientModule::class.java,
     LocalizationModule::class.java,
     MailComposerModule::class.java,
@@ -141,6 +162,7 @@ object ExperiencePackagePicker : ModulesProvider {
     ScreenOrientationModule::class.java,
     SMSModule::class.java,
     SharingModule::class.java,
+    SpeechModule::class.java,
     SplashScreenModule::class.java,
     StoreReviewModule::class.java,
     SQLiteModule::class.java,

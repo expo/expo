@@ -6,9 +6,13 @@
 
 ### 🎉 New features
 
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- On iOS, bump SDWebImage versions. ([#23858](https://github.com/expo/expo/pull/23858) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 1.4.1 — 2023-08-02
 

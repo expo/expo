@@ -2,11 +2,11 @@ import * as ImagePicker from 'expo-image-picker';
 import React from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 
+import ImagePickerAssetsList from './ImagePickerAssetsList';
 import FunctionDemo, {
   FunctionDescription,
   FunctionParameter,
 } from '../../components/FunctionDemo';
-import ImagePickerAssetsList from './ImagePickerAssetsList';
 
 const LAUNCH_PICKER_PARAMETERS: FunctionParameter[] = [
   {

@@ -1,6 +1,6 @@
 import { ComponentType } from 'react';
-import { TextProps } from '../primitives/Text';
 import { BlockQuoteProps, QuoteProps, TimeProps } from './Text.types';
+import { TextProps } from '../primitives/Text';
 export declare const P: ComponentType<TextProps>;
 export declare const B: ComponentType<TextProps>;
 export declare const S: ComponentType<TextProps>;

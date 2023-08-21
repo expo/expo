@@ -1,3 +1,32 @@
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.LogBoxInspectorHeader = void 0;
 /**
  * Copyright (c) 650 Industries.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -5,30 +34,31 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import React from 'react';
-import { Image, Platform, StatusBar, StyleSheet, Text, View } from 'react-native';
-import { useLogs } from '../Data/LogContext';
-import { LogBoxButton } from '../UI/LogBoxButton';
-import * as LogBoxStyle from '../UI/LogBoxStyle';
-export function LogBoxInspectorHeader(props) {
-    const { selectedLogIndex: selectedIndex, logs } = useLogs();
+const react_1 = __importDefault(require("react"));
+const react_native_1 = require("react-native");
+const LogContext_1 = require("../Data/LogContext");
+const LogBoxButton_1 = require("../UI/LogBoxButton");
+const LogBoxStyle = __importStar(require("../UI/LogBoxStyle"));
+function LogBoxInspectorHeader(props) {
+    const { selectedLogIndex: selectedIndex, logs } = (0, LogContext_1.useLogs)();
     const total = logs.length;
     if (props.level === 'syntax') {
-        return (React.createElement(View, { style: [styles.safeArea, styles[props.level]] },
-            React.createElement(View, { style: styles.header },
-                React.createElement(View, { style: styles.title },
-                    React.createElement(Text, { style: styles.titleText }, "Failed to compile")))));
+        return (react_1.default.createElement(react_native_1.View, { style: [styles.safeArea, styles[props.level]] },
+            react_1.default.createElement(react_native_1.View, { style: styles.header },
+                react_1.default.createElement(react_native_1.View, { style: styles.title },
+                    react_1.default.createElement(react_native_1.Text, { style: styles.titleText }, "Failed to compile")))));
     }
     const prevIndex = selectedIndex - 1 < 0 ? total - 1 : selectedIndex - 1;
     const nextIndex = selectedIndex + 1 > total - 1 ? 0 : selectedIndex + 1;
     const titleText = `Log ${selectedIndex + 1} of ${total}`;
-    return (React.createElement(View, { style: [styles.safeArea, styles[props.level]] },
-        React.createElement(View, { style: styles.header },
-            React.createElement(LogBoxInspectorHeaderButton, { disabled: total <= 1, level: props.level, image: require('@expo/metro-runtime/assets/chevron-left.png'), onPress: () => props.onSelectIndex(prevIndex) }),
-            React.createElement(View, { style: styles.title },
-                React.createElement(Text, { style: styles.titleText }, titleText)),
-            React.createElement(LogBoxInspectorHeaderButton, { disabled: total <= 1, level: props.level, image: require('@expo/metro-runtime/assets/chevron-right.png'), onPress: () => props.onSelectIndex(nextIndex) }))));
+    return (react_1.default.createElement(react_native_1.View, { style: [styles.safeArea, styles[props.level]] },
+        react_1.default.createElement(react_native_1.View, { style: styles.header },
+            react_1.default.createElement(LogBoxInspectorHeaderButton, { disabled: total <= 1, level: props.level, image: require('@expo/metro-runtime/assets/chevron-left.png'), onPress: () => props.onSelectIndex(prevIndex) }),
+            react_1.default.createElement(react_native_1.View, { style: styles.title },
+                react_1.default.createElement(react_native_1.Text, { style: styles.titleText }, titleText)),
+            react_1.default.createElement(LogBoxInspectorHeaderButton, { disabled: total <= 1, level: props.level, image: require('@expo/metro-runtime/assets/chevron-right.png'), onPress: () => props.onSelectIndex(nextIndex) }))));
 }
+exports.LogBoxInspectorHeader = LogBoxInspectorHeader;
 const backgroundForLevel = (level) => ({
     warn: {
         default: 'transparent',
@@ -50,11 +80,11 @@ const backgroundForLevel = (level) => ({
         default: 'transparent',
         pressed: LogBoxStyle.getFatalDarkColor(),
     },
-}[level]);
+})[level];
 function LogBoxInspectorHeaderButton(props) {
-    return (React.createElement(LogBoxButton, { backgroundColor: backgroundForLevel(props.level), onPress: props.disabled ? undefined : props.onPress, style: headerStyles.button }, props.disabled ? null : (React.createElement(Image, { source: props.image, tintColor: LogBoxStyle.getTextColor(), style: headerStyles.buttonImage }))));
+    return (react_1.default.createElement(LogBoxButton_1.LogBoxButton, { backgroundColor: backgroundForLevel(props.level), onPress: props.disabled ? undefined : props.onPress, style: headerStyles.button }, props.disabled ? null : (react_1.default.createElement(react_native_1.Image, { source: props.image, tintColor: LogBoxStyle.getTextColor(), style: headerStyles.buttonImage }))));
 }
-const headerStyles = StyleSheet.create({
+const headerStyles = react_native_1.StyleSheet.create({
     button: {
         alignItems: 'center',
         justifyContent: 'center',
@@ -68,7 +98,7 @@ const headerStyles = StyleSheet.create({
         width: 8,
     },
 });
-const styles = StyleSheet.create({
+const styles = react_native_1.StyleSheet.create({
     syntax: {
         backgroundColor: LogBoxStyle.getFatalColor(),
     },
@@ -88,7 +118,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 8,
-        height: Platform.select({
+        height: react_native_1.Platform.select({
             default: 48,
             ios: 44,
         }),
@@ -106,7 +136,7 @@ const styles = StyleSheet.create({
         lineHeight: 20,
     },
     safeArea: {
-        paddingTop: Platform.OS !== 'ios' ? StatusBar.currentHeight : 40,
+        paddingTop: react_native_1.Platform.OS !== 'ios' ? react_native_1.StatusBar.currentHeight : 40,
     },
 });
 //# sourceMappingURL=LogBoxInspectorHeader.js.map

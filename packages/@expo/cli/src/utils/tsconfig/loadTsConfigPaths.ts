@@ -1,8 +1,8 @@
 import JsonFile from '@expo/json-file';
 import path from 'path';
 
-import { fileExistsAsync } from '../dir';
 import { evaluateTsConfig, importTypeScriptFromProjectOptionally } from './evaluateTsConfig';
+import { fileExistsAsync } from '../dir';
 
 export type TsConfigPaths = {
   paths?: Record<string, string[]>;
@@ -16,7 +16,7 @@ type ConfigReadResults = [
       baseUrl?: string;
       paths?: Record<string, string[]>;
     };
-  }
+  },
 ];
 
 const debug = require('debug')('expo:utils:tsconfig:load') as typeof console.log;

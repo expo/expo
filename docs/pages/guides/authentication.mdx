@@ -135,13 +135,12 @@ export default function App() {
   image={ASSETS.asgardeo}
 >
 
-| Website                       | Provider | PKCE      | Auto Discovery |
-| ----------------------------- | -------- | --------- | -------------- |
+| Website                                         | Provider | PKCE      | Auto Discovery |
+| ----------------------------------------------- | -------- | --------- | -------------- |
 | [Get Your Config](https://console.asgardeo.io/) | OpenID   | Supported | Available      |
 
-
 - Make sure to check `Public Client` option in the console.
-- Choose the intended grant in the  Allowed grant types  section.
+- Choose the intended grant in the Allowed grant types section.
 
 <Tabs tabs={["Auth Code", "Implicit Flow"]}>
 
@@ -1409,9 +1408,9 @@ export default function App() {
   image={ASSETS.keycloak}
 >
 
-| Website                  | Provider | PKCE     | Auto Discovery |
-| ------------------------ | -------- | -------- | -------------- |
-| - | OpenID   | Required | Available      |
+| Website | Provider | PKCE     | Auto Discovery |
+| ------- | -------- | -------- | -------------- |
+| -       | OpenID   | Required | Available      |
 
 {/* prettier-ignore */}
 ```tsx Keycloak Example
@@ -1426,7 +1425,7 @@ export default function App() {
   /* @info If the provider supports auto discovery then you can pass an issuer to the `useAutoDiscovery` hook to fetch the discovery document. */
   const discovery = useAutoDiscovery('https://YOUR_KEYCLOAK/realms/YOUR_REALM');
   /* @end */
-  
+
 // Create and load an auth request
   const [request, result, promptAsync] = useAuthRequest(
     {

@@ -1,10 +1,10 @@
 import chalk from 'chalk';
 import os from 'os';
 
+import { ADBServer } from './ADBServer';
 import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
 import { learnMore } from '../../../utils/link';
-import { ADBServer } from './ADBServer';
 
 const debug = require('debug')('expo:start:platforms:android:adb') as typeof console.log;
 

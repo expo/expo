@@ -1,8 +1,8 @@
 declare module 'path-browserify' {
-  interface path {
-    static join(...paths: string[]): string;
+  interface Path {
+    join(...paths: string[]): string;
   }
 
-  const path: path;
+  const path: Path;
   export = path;
 }

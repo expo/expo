@@ -21,7 +21,7 @@ export interface InspectorHandler {
 export type CdpMessage<
   Method extends string = string,
   Request extends object = object,
-  Response extends object = object
+  Response extends object = object,
 > = {
   id: number;
   method: Method;

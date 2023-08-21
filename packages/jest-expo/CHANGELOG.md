@@ -6,7 +6,11 @@
 
 ### 🎉 New features
 
+- Automatically generate `moduleNameMapping` from `tsconfig.json` when available. ([#23442](https://github.com/expo/expo/pull/23442) by [@byCedric](https://github.com/byCedric))
+
 ### 🐛 Bug fixes
+
+- Files under `/node_modules/react-native-reanimated/plugin/` are excluded from being transformed by Jest. This fixes a "Reentrant plugin detected" error that occurred when running tests that applied to multiple platforms, like `__tests__/example.native.js` (run for both Android and iOS tests). ([#23912](https://github.com/expo/expo/pull/23912) by [@ide](https://github.com/ide))
 
 ### 💡 Others
 

@@ -8,14 +8,18 @@ import { getConfig } from '@expo/config';
 import { prependMiddleware } from '@expo/dev-server';
 import * as runtimeEnv from '@expo/env';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
-import assert from 'assert';
 import chalk from 'chalk';
 import fetch from 'node-fetch';
 import path from 'path';
 
+import { instantiateMetroAsync } from './instantiateMetro';
+import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
+import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
+import { observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
+import { CommandError } from '../../../utils/errors';
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import { getStaticRenderFunctions } from '../getStaticRenderFunctions';
@@ -37,10 +41,16 @@ import {
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
-import { instantiateMetroAsync } from './instantiateMetro';
-import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
-import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
-import { observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
+
+class ForwardHtmlError extends CommandError {
+  constructor(
+    message: string,
+    public html: string,
+    public statusCode: number
+  ) {
+    super(message);
+  }
+}
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
@@ -69,18 +79,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           await getFreePortAsync(EXPO_GO_METRO_PORT));
 
     return port;
-  }
-
-  /** Get routes from Expo Router. */
-  async getRoutesAsync() {
-    const url = this.getDevServerUrl();
-    assert(url, 'Dev server must be started');
-    const { getManifest } = await getStaticRenderFunctions(this.projectRoot, url, {
-      // Ensure the API Routes are included
-      environment: 'node',
-    });
-
-    return getManifest({ fetchData: true });
   }
 
   async composeResourcesWithHtml({
@@ -114,14 +112,23 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }) {
     const url = this.getDevServerUrl()!;
 
-    const { getStaticContent } = await getStaticRenderFunctions(this.projectRoot, url, {
-      minify,
-      dev: mode !== 'production',
-      // Ensure the API Routes are included
-      environment: 'node',
-    });
-    return async (path: string) => {
-      return await getStaticContent(new URL(path, url));
+    const { getStaticContent, getManifest } = await getStaticRenderFunctions(
+      this.projectRoot,
+      url,
+      {
+        minify,
+        dev: mode !== 'production',
+        // Ensure the API Routes are included
+        environment: 'node',
+      }
+    );
+    return {
+      // Get routes from Expo Router.
+      manifest: await getManifest({ fetchData: true }),
+      // Get route generating function
+      async renderAsync(path: string) {
+        return await getStaticContent(new URL(path, url));
+      },
     };
   }
 
@@ -149,14 +156,25 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const txt = await results.text();
 
+    // console.log('STAT:', results.status, results.statusText);
     let data: any;
     try {
       data = JSON.parse(txt);
     } catch (error: any) {
+      debug(txt);
+
+      // Metro can throw this error when the initial module id cannot be resolved.
+      if (!results.ok && txt.startsWith('<!DOCTYPE html>')) {
+        throw new ForwardHtmlError(
+          `Metro failed to bundle the project. Check the console for more information.`,
+          txt,
+          results.status
+        );
+      }
+
       Log.error(
         'Failed to generate resources with Metro, the Metro config may not be using the correct serializer. Ensure the metro.config.js is extending the expo/metro-config and is not overriding the serializer.'
       );
-      debug(txt);
       throw error;
     }
 
@@ -372,9 +390,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
             res.setHeader('Content-Type', 'text/html');
             res.end(content);
-            return;
           } catch (error: any) {
             res.setHeader('Content-Type', 'text/html');
+            // Forward the Metro server response as-is. It won't be pretty, but at least it will be accurate.
+            if (error instanceof ForwardHtmlError) {
+              res.statusCode = error.statusCode;
+              res.end(error.html);
+              return;
+            }
             try {
               res.end(await this.renderStaticErrorAsync(error));
             } catch (staticError: any) {
@@ -474,8 +497,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }
 
   public async startTypeScriptServices() {
-    startTypescriptTypeGenerationAsync({
-      server: this.instance!.server,
+    return startTypescriptTypeGenerationAsync({
+      server: this.instance?.server,
       metro: this.metro,
       projectRoot: this.projectRoot,
     });

@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const LogBox = {
     install() {
         // Do nothing.
@@ -24,5 +26,5 @@ const LogBox = {
         // Do nothing.
     },
 };
-export default LogBox;
+exports.default = LogBox;
 //# sourceMappingURL=LogBox.js.map

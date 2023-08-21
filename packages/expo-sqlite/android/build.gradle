@@ -53,13 +53,16 @@ afterEvaluate {
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 33)
 
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_11
-    targetCompatibility JavaVersion.VERSION_11
-  }
+  def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
+  if (agpVersion.tokenize('.')[0].toInteger() < 8) {
+    compileOptions {
+      sourceCompatibility JavaVersion.VERSION_11
+      targetCompatibility JavaVersion.VERSION_11
+    }
 
-  kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_11.majorVersion
+    kotlinOptions {
+      jvmTarget = JavaVersion.VERSION_11.majorVersion
+    }
   }
 
   namespace "expo.modules.sqlite"
@@ -82,5 +85,7 @@ android {
 dependencies {
   implementation project(':expo-modules-core')
 
+  implementation 'com.github.requery:sqlite-android:3.39.2'
+  implementation "androidx.sqlite:sqlite-ktx:2.3.1"
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
 }

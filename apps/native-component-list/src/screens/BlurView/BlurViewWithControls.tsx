@@ -3,8 +3,8 @@ import React, { useCallback, memo, useEffect } from 'react';
 import { View, StyleSheet, Text, Image } from 'react-native';
 import Animated, { useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 
-import useResettingState from '../../utilities/useResettingState';
 import Slider from './Slider';
+import useResettingState from '../../utilities/useResettingState';
 
 const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 

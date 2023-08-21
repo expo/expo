@@ -1,13 +1,12 @@
 // Fork of @react-navigation/native Link.tsx with `href` and `replace` support added and
 // `to` / `action` support removed.
-import { Text } from '@bacons/react-views';
 import { Slot } from '@radix-ui/react-slot';
 import * as React from 'react';
-import { Platform } from 'react-native';
-import { useRouter } from '../hooks';
-import { useFocusEffect } from '../useFocusEffect';
+import { Text, Platform } from 'react-native';
 import { resolveHref } from './href';
 import useLinkToPathProps from './useLinkToPathProps';
+import { useRouter } from '../hooks';
+import { useFocusEffect } from '../useFocusEffect';
 /** Redirects to the href as soon as the component is mounted. */
 export function Redirect({ href }) {
     const router = useRouter();

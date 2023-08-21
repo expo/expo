@@ -6,9 +6,13 @@
 
 ### 🎉 New features
 
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Migrated Android codebase to use Expo modules API. ([#23906](https://github.com/expo/expo/pull/23906) by [@lukmccall](https://github.com/lukmccall))
 
 ## 12.4.1 — 2023-08-02
 

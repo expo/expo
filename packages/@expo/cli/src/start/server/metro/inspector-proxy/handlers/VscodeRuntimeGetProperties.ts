@@ -1,7 +1,7 @@
 import Protocol from 'devtools-protocol';
 
-import { ExpoDebuggerInfo } from '../device';
 import { CdpMessage, DebuggerRequest, DeviceResponse, InspectorHandler } from './types';
+import { ExpoDebuggerInfo } from '../device';
 
 /**
  * Vscode doesn't seem to work nicely with missing `description` fields on `RemoteObject` instances.

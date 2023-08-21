@@ -1,7 +1,7 @@
 import { CSSProperties, SyntheticEvent } from 'react';
 
-import { ImageContentPositionObject, ImageSource } from '../Image.types';
 import { SrcSetSource } from './useSourceSelection';
+import { ImageContentPositionObject, ImageSource } from '../Image.types';
 
 export type ImageWrapperEvents = {
   onLoad?: (((event: SyntheticEvent<HTMLImageElement, Event>) => void) | undefined | null)[];
