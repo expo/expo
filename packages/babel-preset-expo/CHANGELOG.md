@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+### 📚 3rd party library updates
+
+- Update `metro-react-native-babel-preset` to 0.76.8. ([#24044](https://github.com/expo/expo/pull/24044) by [@kudo](https://github.com/kudo))
+
 ## 9.5.1 — 2023-07-25
 
 ### 📚 3rd party library updates
