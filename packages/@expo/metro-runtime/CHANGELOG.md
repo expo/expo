@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix error overlay not being applied on web.
+- Fix error overlay not being applied on web. ([#24052](https://github.com/expo/expo/pull/24052) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
