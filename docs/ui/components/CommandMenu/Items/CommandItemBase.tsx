@@ -1,6 +1,6 @@
 import { mergeClasses } from '@expo/styleguide';
 import { Command } from 'cmdk';
-import { useState } from 'react';
+import { PropsWithChildren, useState } from 'react';
 
 import { openLink } from '../utils';
 
@@ -42,7 +42,7 @@ export const CommandItemBase = ({
       value={value}
       data-nested={isNested ? true : undefined}
       onMouseUp={event => {
-        // note(Keith): middle click (typical *nix copy shortcut) 
+        // note(Keith): middle click (typical *nix copy shortcut)
         // right click (works with Mac trackpads)
         // onAuxClick is not supported in Safari
         if (event.button === 1 || event.button === 2) {
