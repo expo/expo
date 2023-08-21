@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Automatically skip adding `react-native-reanimated/plugin` on web platforms.
+
 ### 💡 Others
 
 ## 9.6.1 — 2023-08-02

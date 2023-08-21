@@ -114,7 +114,9 @@ module.exports = function (api, options = {}) {
       require.resolve('@babel/plugin-proposal-export-namespace-from'),
 
       // Automatically add `react-native-reanimated/plugin` when the package is installed.
-      hasModule('react-native-reanimated') &&
+      // This isn't required on web platforms.
+      platform !== 'web' &&
+        hasModule('react-native-reanimated') &&
         reanimated !== false && [require.resolve('react-native-reanimated/plugin')],
     ].filter(Boolean),
   };
