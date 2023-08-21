@@ -1,3 +1,4 @@
+import { mergeClasses } from '@expo/styleguide';
 import { Command } from 'cmdk';
 import { useState } from 'react';
 
@@ -38,12 +39,14 @@ export const CommandItemBase = ({
 
   return (
     <Command.Item
-      className={className}
+      className={mergeClasses(className, 'relative')}
       value={value}
       data-nested={isNested ? true : undefined}
       onMouseUp={event => {
-        // middle click (typical *nix copy shortcut)
-        if (event.button === 1) {
+        // middle click (typical *nix copy shortcut) and
+        // right click (works with Mac trackpads)
+        // NOTE: onAuxClick is not supported in Safari
+        if (event.button === 1 || event.button === 2) {
           copyUrl();
         }
       }}
@@ -53,8 +56,7 @@ export const CommandItemBase = ({
       }}
       onContextMenu={event => {
         event.preventDefault();
-      }}
-      onAuxClick={copyUrl}>
+      }}>
       {children}
       {copyDone && (
         <Tag
