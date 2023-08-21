@@ -9,6 +9,7 @@ import expo.modules.kotlin.functions.AsyncFunction
 import expo.modules.kotlin.functions.AsyncFunctionBuilder
 import expo.modules.kotlin.functions.AsyncFunctionComponent
 import expo.modules.kotlin.functions.AsyncFunctionWithPromiseComponent
+import expo.modules.kotlin.functions.FunctionBuilder
 import expo.modules.kotlin.functions.SyncFunctionComponent
 import expo.modules.kotlin.jni.JavaScriptModuleObject
 import expo.modules.kotlin.modules.Module
@@ -32,9 +33,12 @@ open class ObjectDefinitionBuilder {
   internal var syncFunctions = mutableMapOf<String, SyncFunctionComponent>()
 
   @PublishedApi
+  internal var syncFunctionBuilder = mutableMapOf<String, FunctionBuilder>()
+
+  @PublishedApi
   internal var asyncFunctions = mutableMapOf<String, AsyncFunction>()
 
-  private var functionBuilders = mutableMapOf<String, AsyncFunctionBuilder>()
+  private var asyncFunctionBuilders = mutableMapOf<String, AsyncFunctionBuilder>()
 
   @PublishedApi
   internal var properties = mutableMapOf<String, PropertyComponentBuilder>()
@@ -54,8 +58,8 @@ open class ObjectDefinitionBuilder {
 
     return ObjectDefinitionData(
       constantsProvider,
-      syncFunctions,
-      asyncFunctions + functionBuilders.mapValues { (_, value) -> value.build() },
+      syncFunctions + syncFunctionBuilder.mapValues { (_, value) -> value.build() },
+      asyncFunctions + asyncFunctionBuilders.mapValues { (_, value) -> value.build() },
       eventsDefinition,
       properties.mapValues { (_, value) -> value.build() }
     )
@@ -64,7 +68,7 @@ open class ObjectDefinitionBuilder {
   private fun containsFunction(functionName: String): Boolean {
     return syncFunctions.containsKey(functionName) ||
       asyncFunctions.containsKey(functionName) ||
-      functionBuilders.containsKey(functionName)
+      asyncFunctionBuilders.containsKey(functionName)
   }
 
   /**
@@ -80,6 +84,10 @@ open class ObjectDefinitionBuilder {
   fun Constants(vararg constants: Pair<String, Any?>) {
     constantsProvider = { constants.toMap() }
   }
+
+  fun Function(
+    name: String
+  ) = FunctionBuilder(name).also { syncFunctionBuilder[name] = it }
 
   @JvmName("FunctionWithoutArgs")
   inline fun Function(
@@ -297,7 +305,7 @@ open class ObjectDefinitionBuilder {
 
   fun AsyncFunction(
     name: String
-  ) = AsyncFunctionBuilder(name).also { functionBuilders[name] = it }
+  ) = AsyncFunctionBuilder(name).also { asyncFunctionBuilders[name] = it }
 
   /**
    * Defines event names that this module can send to JavaScript.
