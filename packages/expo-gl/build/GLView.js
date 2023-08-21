@@ -1,9 +1,10 @@
-import { NativeModulesProxy, UnavailabilityError, requireNativeViewManager, CodedError, } from 'expo-modules-core';
+import { NativeModulesProxy, UnavailabilityError, requireNativeModule, requireNativeViewManager, CodedError, } from 'expo-modules-core';
 import * as React from 'react';
 import { Platform, View, findNodeHandle } from 'react-native';
 import { configureLogging } from './GLUtils';
 import { createWorkletContextManager } from './GLWorkletContextManager';
-const { ExponentGLObjectManager, ExponentGLViewManager } = NativeModulesProxy;
+const ExponentGLObjectManager = requireNativeModule('ExponentGLObjectManager');
+const { ExponentGLViewManager } = NativeModulesProxy;
 const NativeView = requireNativeViewManager('ExponentGLView');
 const workletContextManager = createWorkletContextManager();
 // @needsAudit
