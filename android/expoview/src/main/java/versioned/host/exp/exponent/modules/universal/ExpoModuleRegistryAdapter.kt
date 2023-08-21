@@ -4,7 +4,6 @@ import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import expo.modules.adapters.react.ModuleRegistryAdapter
 import expo.modules.adapters.react.ReactModuleRegistryProvider
-import expo.modules.core.interfaces.Consumer
 import expo.modules.core.interfaces.RegistryLifecycleListener
 import expo.modules.font.FontLoaderModule
 import expo.modules.kotlin.ModulesProvider
