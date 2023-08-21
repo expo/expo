@@ -5,7 +5,6 @@ import type {
   BareManifest,
   EASConfig,
   ExpoGoConfig,
-  LegacyManifest,
   NewManifest,
   // @ts-ignore -- optional interface, will gracefully degrade to `any` if not installed
 } from 'expo-manifests';
@@ -112,9 +111,9 @@ Object.defineProperties(constants, {
    * `expo-asset` uses it to prevent users from seeing mentioned warning.
    */
   __unsafeNoWarnManifest: {
-    get(): LegacyManifest | BareManifest | null {
+    get(): BareManifest | null {
       const maybeManifest = getManifest(true);
-      if (!maybeManifest || !isLegacyOrBareManifest(maybeManifest)) {
+      if (!maybeManifest || !isBareManifest(maybeManifest)) {
         return null;
       }
       return maybeManifest;
@@ -132,14 +131,14 @@ Object.defineProperties(constants, {
     enumerable: false,
   },
   manifest: {
-    get(): LegacyManifest | BareManifest | null {
+    get(): BareManifest | null {
       if (__DEV__ && !warnedAboutManifestField) {
         console.warn(`Constants.manifest has been deprecated in favor of Constants.expoConfig.`);
         warnedAboutManifestField = true;
       }
 
       const maybeManifest = getManifest();
-      if (!maybeManifest || !isLegacyOrBareManifest(maybeManifest)) {
+      if (!maybeManifest || !isBareManifest(maybeManifest)) {
         return null;
       }
       return maybeManifest;
@@ -178,7 +177,7 @@ Object.defineProperties(constants, {
 
       if (isManifest(maybeManifest)) {
         return maybeManifest.extra?.expoClient ?? null;
-      } else if (isLegacyOrBareManifest(maybeManifest)) {
+      } else if (isBareManifest(maybeManifest)) {
         return maybeManifest as any;
       }
 
@@ -195,7 +194,7 @@ Object.defineProperties(constants, {
 
       if (isManifest(maybeManifest)) {
         return maybeManifest.extra?.expoGo ?? null;
-      } else if (isLegacyOrBareManifest(maybeManifest)) {
+      } else if (isBareManifest(maybeManifest)) {
         return maybeManifest as any;
       }
 
@@ -212,7 +211,7 @@ Object.defineProperties(constants, {
 
       if (isManifest(maybeManifest)) {
         return maybeManifest.extra?.eas ?? null;
-      } else if (isLegacyOrBareManifest(maybeManifest)) {
+      } else if (isBareManifest(maybeManifest)) {
         return maybeManifest as any;
       }
 
@@ -231,7 +230,7 @@ Object.defineProperties(constants, {
   },
 });
 
-function isLegacyOrBareManifest(manifest: RawManifest): manifest is LegacyManifest | BareManifest {
+function isBareManifest(manifest: RawManifest): manifest is BareManifest {
   return !isManifest(manifest);
 }
 
