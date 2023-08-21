@@ -108,7 +108,7 @@ function ContactsView({ navigation }: Props) {
     }
 
     for (const contact of nextContacts) {
-      rawContacts[contact.id] = contact;
+      rawContacts[contact.id!] = contact;
     }
     setContacts(Object.values(rawContacts));
     setHasNextPage(payload.hasNextPage);
