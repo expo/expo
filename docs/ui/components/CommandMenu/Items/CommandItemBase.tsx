@@ -43,9 +43,9 @@ export const CommandItemBase = ({
       value={value}
       data-nested={isNested ? true : undefined}
       onMouseUp={event => {
-        // middle click (typical *nix copy shortcut) and
+        // note(Keith): middle click (typical *nix copy shortcut) 
         // right click (works with Mac trackpads)
-        // NOTE: onAuxClick is not supported in Safari
+        // onAuxClick is not supported in Safari
         if (event.button === 1 || event.button === 2) {
           copyUrl();
         }
