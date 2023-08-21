@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalStdlibApi::class)
-
 package expo.modules.kotlin.views
 
 import android.view.View
