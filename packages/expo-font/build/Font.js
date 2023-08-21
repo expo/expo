@@ -1,9 +1,9 @@
-import { CodedError, UnavailabilityError } from 'expo-modules-core';
+import { CodedError, Platform, UnavailabilityError } from 'expo-modules-core';
 import ExpoFontLoader from './ExpoFontLoader';
 import { FontDisplay } from './Font.types';
 import { getAssetForSource, loadSingleFontAsync, fontFamilyNeedsScoping, getNativeFontName, } from './FontLoader';
-const loaded = {};
-const loadPromises = {};
+import { loaded, loadPromises } from './memory';
+import { registerStaticFont } from './server';
 // @needsAudit
 // note(brentvatne): at some point we may want to warn if this is called outside of a managed app.
 /**
@@ -38,6 +38,9 @@ export function processFontFamily(fontFamily) {
  * @return Returns `true` if the font has fully loaded.
  */
 export function isLoaded(fontFamily) {
+    if (Platform.OS === 'web') {
+        return fontFamily in loaded || !!ExpoFontLoader.isLoaded(fontFamily);
+    }
     return fontFamily in loaded;
 }
 // @needsAudit
@@ -63,17 +66,28 @@ export function isLoading(fontFamily) {
  * @return Returns a promise that fulfils when the font has loaded. Often you may want to wrap the
  * method in a `try/catch/finally` to ensure the app continues if the font fails to load.
  */
-export async function loadAsync(fontFamilyOrFontMap, source) {
+export function loadAsync(fontFamilyOrFontMap, source) {
+    // NOTE(EvanBacon): Static render pass on web must be synchronous to collect all fonts.
+    // Because of this, `loadAsync` doesn't use the `async` keyword and deviates from the
+    // standard Expo SDK style guide.
+    const isServer = Platform.OS === 'web' && typeof window === 'undefined';
     if (typeof fontFamilyOrFontMap === 'object') {
         if (source) {
-            throw new CodedError(`ERR_FONT_API`, `No fontFamily can be used for the provided source: ${source}. The second argument of \`loadAsync()\` can only be used with a \`string\` value as the first argument.`);
+            return Promise.reject(new CodedError(`ERR_FONT_API`, `No fontFamily can be used for the provided source: ${source}. The second argument of \`loadAsync()\` can only be used with a \`string\` value as the first argument.`));
         }
         const fontMap = fontFamilyOrFontMap;
         const names = Object.keys(fontMap);
-        await Promise.all(names.map((name) => loadFontInNamespaceAsync(name, fontMap[name])));
-        return;
+        if (isServer) {
+            names.map((name) => registerStaticFont(name, fontMap[name]));
+            return Promise.resolve();
+        }
+        return Promise.all(names.map((name) => loadFontInNamespaceAsync(name, fontMap[name]))).then(() => { });
     }
-    return await loadFontInNamespaceAsync(fontFamilyOrFontMap, source);
+    if (isServer) {
+        registerStaticFont(fontFamilyOrFontMap, source);
+        return Promise.resolve();
+    }
+    return loadFontInNamespaceAsync(fontFamilyOrFontMap, source);
 }
 async function loadFontInNamespaceAsync(fontFamily, source) {
     if (!source) {

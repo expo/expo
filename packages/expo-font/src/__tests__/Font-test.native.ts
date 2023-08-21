@@ -1,6 +1,16 @@
+import { loaded, loadPromises } from '../memory';
+
 let Font;
 let NativeModulesProxy;
 
+function clearMemory() {
+  for (const key of Object.keys(loaded)) {
+    delete loaded[key];
+  }
+  for (const key of Object.keys(loadPromises)) {
+    delete loadPromises[key];
+  }
+}
 type MockAsset = { downloaded: boolean; downloadAsync: () => Promise<void>; localUri?: string };
 type MockAssetOptions = { localUri?: string; downloaded?: boolean; downloadAsync?: any };
 
@@ -25,7 +35,8 @@ beforeEach(() => {
   Font = require('expo-font');
 });
 
-afterEach(() => {
+afterEach(async () => {
+  clearMemory();
   jest.resetModules();
 });
 
@@ -39,11 +50,19 @@ describe('within Expo client', () => {
     }));
   });
 
+  afterEach(async () => {
+    clearMemory();
+  });
+
   afterAll(() => {
     jest.unmock('expo-constants');
   });
 
   describe('loadAsync', () => {
+    afterEach(async () => {
+      clearMemory();
+    });
+
     it(`completes after loading a font`, async () => {
       const NativeFontLoader = NativeModulesProxy.ExpoFontLoader;
 
@@ -249,6 +268,7 @@ describe('within Expo client', () => {
     });
 
     afterEach(() => {
+      clearMemory();
       console = originalConsole; // eslint-disable-line no-global-assign
     });
 
@@ -325,6 +345,9 @@ describe('in standalone app', () => {
   afterAll(() => {
     jest.unmock('expo-constants');
   });
+  afterEach(() => {
+    clearMemory();
+  });
 
   // NOTE(brentvatne): we need to disable scoping on native side on iOS
   // in standalone apps: https://github.com/expo/expo/issues/5118
@@ -346,6 +369,9 @@ describe('in bare workflow', () => {
       sessionId: 'testsession',
       systemFonts: ['Helvetica', 'Helvetica Neue'],
     }));
+  });
+  afterEach(() => {
+    clearMemory();
   });
 
   it(`does not scope font names`, async () => {
