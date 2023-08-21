@@ -198,6 +198,7 @@ const general = [
       makePage('router/reference/screen-tracking.mdx'),
       makePage('router/reference/src-directory.mdx'),
       makePage('router/reference/troubleshooting.mdx'),
+      makePage('router/reference/testing.mdx'),
       makePage('router/reference/faq.mdx'),
     ]),
     makeGroup('Migration', [makePage('router/migrate/from-react-navigation.mdx')]),
