@@ -430,7 +430,7 @@ In the table above, whenever `NotificationResponseReceivedListener` is triggered
 
 > **warning** Background event listeners are not supported in Expo Go.
 
-To handle notifications while the app is backgrounded on iOS, you _must_ add `remote-notification` to the `ios.infoPlist.UIBackgroundModes` key in your **app.json**,
+To handle notifications while the app is in the background on iOS, add `remote-notification` as a value to the array under `ios.infoPlist.UIBackgroundModes` key in your [app config](/versions/latest/config/app/),
 and add `"content-available": 1` to your push notification payload. Under normal circumstances, the "content-available" flag should launch your app if it isn't running
 and wasn't killed by the user, however, this is ultimately decided by the OS, so it might not always happen.
 
