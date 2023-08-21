@@ -31,9 +31,9 @@ def setup_hermes_ABI49_0_0!(react_native_path: "../node_modules/react-native", f
     hermestag = File.exist?(hermestag_file) ? File.read(hermestag_file).strip : ''
 
     if File.exist?("#{react_native_path}/sdks/hermes-engine/destroot")
-      pod 'ABI49_0_0hermes-engine', :path => "#{react_native_path}/sdks/hermes-engine", :project_name => 'ABI49_0_0', :tag => 'hermes-2023-03-20-RNv0.72.0-49794cfc7c81fb8f69fd60c3bbf85a7480cc5a77'
+      pod 'ABI49_0_0hermes-engine', :path => "#{react_native_path}/sdks/hermes-engine", :project_name => 'ABI49_0_0', :tag => 'hermes-2023-08-07-RNv0.72.4-813b2def12bc9df02654b3e3653ae4a68d0572e0'
     else
-      pod 'ABI49_0_0hermes-engine', :podspec => "#{react_native_path}/sdks/hermes-engine/ABI49_0_0hermes-engine.podspec", :project_name => 'ABI49_0_0', :tag => 'hermes-2023-03-20-RNv0.72.0-49794cfc7c81fb8f69fd60c3bbf85a7480cc5a77'
+      pod 'ABI49_0_0hermes-engine', :podspec => "#{react_native_path}/sdks/hermes-engine/ABI49_0_0hermes-engine.podspec", :project_name => 'ABI49_0_0', :tag => 'hermes-2023-08-07-RNv0.72.4-813b2def12bc9df02654b3e3653ae4a68d0572e0'
     end
     pod 'ABI49_0_0React-hermes', :path => "#{react_native_path}/ReactCommon/hermes", :project_name => 'ABI49_0_0'
     pod 'libevent', '~> 2.1.12'
