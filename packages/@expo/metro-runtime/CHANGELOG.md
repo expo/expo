@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix error overlay not being applied on web.
+
 ### 💡 Others
 
 - Transpile down to commonjs for running in Node.js. ([#23871](https://github.com/expo/expo/pull/23871) by [@EvanBacon](https://github.com/EvanBacon))
