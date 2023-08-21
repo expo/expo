@@ -390,7 +390,7 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
     }
   }
   
-  return [subtitlesList copy];
+  return subtitlesList;
 }
 
 
