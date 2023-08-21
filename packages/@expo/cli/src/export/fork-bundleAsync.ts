@@ -10,12 +10,12 @@ import {
 } from '@expo/dev-server/build/metro/importMetroFromProject';
 import type { LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
-import { ConfigT } from 'metro-config';
 import Metro, { AssetData } from 'metro';
+import getMetroAssets from 'metro/src/DeltaBundler/Serializers/getAssets';
 import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
 import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
 // @ts-expect-error
-import getMetroAssets from 'metro/src/DeltaBundler/Serializers/getAssets';
+import { ConfigT } from 'metro-config';
 
 import { CSSAsset, getCssModulesFromBundler } from '../start/server/metro/getCssModulesFromBundler';
 import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
