@@ -11,7 +11,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 [Next.js](https://nextjs.org/) is a React framework that provides simple page-based routing as well as server-side rendering. To use Next.js with the Expo SDK, we recommend using [`@expo/next-adapter`](https://github.com/expo/expo-cli/tree/main/packages/next-adapter) library to handle the configuration.
 
-Using Expo with Next.js means you can share some of your existing components and APIs across your mobile and web app. Next.js has its own CLI that you'll need to use when developing for the web platform, so **you'll need to start your web projects with the Next.js CLI and not with `npx expo start`.**
+Using Expo with Next.js means you can share some of your existing components and APIs across your mobile and web app. Next.js has its own CLI that you'll need to use when developing for the web platform, so **you'll need to start your web projects with the Next.js CLI and not with `npx expo start`**.
 
 > Next.js can only be used with Expo for web as there is no support for Server-Side Rendering (SSR) for native apps.
 
@@ -224,9 +224,7 @@ module.exports = withExpo({
 });
 ```
 
-## Guides
-
-### Deploy to Vercel
+## Deploy to Vercel
 
 This is Vercel's preferred method for deploying Next.js projects to production.
 
@@ -246,7 +244,7 @@ This is Vercel's preferred method for deploying Next.js projects to production.
 
   <Terminal cmd={['$ vercel']} />
 
-## Limitations or differences comparing to the default Expo for Web
+## Limitations or differences compared to the default Expo for Web
 
 Using Next.js for the web means you will be bundling with the Next.js webpack config. This will lead to some core differences in how you develop your app vs your website.
 
