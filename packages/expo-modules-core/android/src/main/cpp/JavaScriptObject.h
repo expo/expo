@@ -8,6 +8,7 @@
 #include "WeakRuntimeHolder.h"
 #include "JNIFunctionBody.h"
 #include "JNIDeallocator.h"
+#include "JSIUtils.h"
 
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
@@ -71,13 +72,6 @@ public:
 
   static jsi::Object preparePropertyDescriptor(jsi::Runtime &jsRuntime, int options);
 
-  static void defineProperty(
-    jsi::Runtime &runtime,
-    jsi::Object *jsthis,
-    const std::string &name,
-    jsi::Object descriptor
-  );
-
   void defineNativeDeallocator(
     jni::alias_ref<JNIFunctionBody::javaobject> deallocator
   );
@@ -139,7 +133,7 @@ private:
     auto cName = name->toStdString();
     jsi::Object descriptor = preparePropertyDescriptor(jsRuntime, options);
     descriptor.setProperty(jsRuntime, "value", jsi_type_converter<T>::convert(jsRuntime, value));
-    JavaScriptObject::defineProperty(jsRuntime, jsObject.get(), cName, std::move(descriptor));
+    common::definePropertyOnJSIObject(jsRuntime, jsObject.get(), cName.c_str(), std::move(descriptor));
   }
 };
 } // namespace expo

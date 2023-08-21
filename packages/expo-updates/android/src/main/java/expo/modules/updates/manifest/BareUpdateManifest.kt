@@ -28,7 +28,7 @@ class BareUpdateManifest private constructor(
   private val mAssets: JSONArray?
 ) : UpdateManifest {
   override val updateEntity: UpdateEntity by lazy {
-    UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey).apply {
+    UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey, this@BareUpdateManifest.manifest.getRawJson()).apply {
       status = UpdateStatus.EMBEDDED
     }
   }

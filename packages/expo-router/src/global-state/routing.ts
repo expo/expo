@@ -2,6 +2,7 @@ import { CommonActions, getActionFromState, StackActions } from '@react-navigati
 import { TabActions } from '@react-navigation/native';
 import * as Linking from 'expo-linking';
 
+import type { RouterStore } from './router-store';
 import { Href, resolveHref } from '../link/href';
 import { resolve } from '../link/path';
 import {
@@ -12,7 +13,6 @@ import {
   isMovingToSiblingRoute,
 } from '../link/stateOperations';
 import { hasUrlProtocolPrefix } from '../utils/url';
-import type { RouterStore } from './router-store';
 
 function assertIsReady(store: RouterStore) {
   if (!store.navigationRef.isReady()) {
@@ -36,7 +36,14 @@ export function goBack(this: RouterStore) {
 }
 
 export function canGoBack(this: RouterStore): boolean {
-  assertIsReady(this);
+  // Return a default value here if the navigation hasn't mounted yet.
+  // This can happen if the user calls `canGoBack` from the Root Layout route
+  // before mounting a navigator. This behavior exists due to React Navigation being dynamically
+  // constructed at runtime. We can get rid of this in the future if we use
+  // the static configuration internally.
+  if (!this.navigationRef.isReady()) {
+    return false;
+  }
   return this.navigationRef?.current?.canGoBack() ?? false;
 }
 
@@ -98,17 +105,24 @@ export function linkTo(this: RouterStore, href: string, event?: string) {
     // Can perform naive movements
     const knownOwnerState = getQualifiedStateForTopOfTargetState(rootState, state)!;
     const nextRoute = findTopRouteForTarget(state);
-
-    if (knownOwnerState.type === 'tab') {
+    // NOTE(EvanBacon): There's an issue where moving from "a -> b" is considered siblings:
+    // a. index (initialRouteName="index")
+    // b. stack/index
+    // However, the preservation approach doesn't work because it would be moving to a route with the same name.
+    // The next check will see if the current focused route has the same name as the next route, if so, then fallback on
+    // the default React Navigation logic.
+    if (
+      findTopRouteForTarget(
+        // @ts-expect-error: stale types don't matter here
+        rootState
+      )?.name !== nextRoute.name
+    ) {
       if (event === 'REPLACE') {
-        navigationRef.dispatch(TabActions.jumpTo(nextRoute.name, nextRoute.params));
-      } else {
-        navigationRef.dispatch(CommonActions.navigate(nextRoute.name, nextRoute.params));
-      }
-      return;
-    } else {
-      if (event === 'REPLACE') {
-        navigationRef.dispatch(StackActions.replace(nextRoute.name, nextRoute.params));
+        if (knownOwnerState.type === 'tab') {
+          navigationRef.dispatch(TabActions.jumpTo(nextRoute.name, nextRoute.params));
+        } else {
+          navigationRef.dispatch(StackActions.replace(nextRoute.name, nextRoute.params));
+        }
       } else {
         // NOTE: Not sure if we should pop or push here...
         navigationRef.dispatch(CommonActions.navigate(nextRoute.name, nextRoute.params));

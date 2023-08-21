@@ -1,5 +1,5 @@
-import { ImageTestGroup, ImageTestPropsFnInput } from '../types';
 import { tintColor } from './constants';
+import { ImageTestGroup, ImageTestPropsFnInput } from '../types';
 
 const backgroundColor = '#fff';
 

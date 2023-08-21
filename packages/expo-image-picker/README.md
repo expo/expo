@@ -62,7 +62,7 @@ This package automatically adds the `CAMERA`, `READ_EXTERNAL_STORAGE`, and `WRIT
 
 > This plugin is applied automatically in EAS Build, only add the config plugin if you want to pass in extra properties.
 
-After installing this npm package, add the [config plugin](https://docs.expo.dev/home/config-plugins/introduction) to the [`plugins`](https://docs.expo.io/versions/latest/config/app/#plugins) array of your `app.json` or `app.config.js`:
+After installing this npm package, add the [config plugin](https://docs.expo.dev/config-plugins/introduction) to the [`plugins`](https://docs.expo.io/versions/latest/config/app/#plugins) array of your `app.json` or `app.config.js`:
 
 ```json
 {

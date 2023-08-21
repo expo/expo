@@ -1,7 +1,7 @@
 import { Android, AndroidIntentFiltersData, ExpoConfig } from '@expo/config-types';
 
-import { createAndroidManifestPlugin } from '../plugins/android-plugins';
 import { AndroidManifest, getMainActivityOrThrow, ManifestIntentFilter } from './Manifest';
+import { createAndroidManifestPlugin } from '../plugins/android-plugins';
 
 type AndroidIntentFilters = NonNullable<Android['intentFilters']>;
 

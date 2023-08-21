@@ -1,7 +1,7 @@
 import { getActionFromState } from '@react-navigation/core';
+import type { RouterStore } from './router-store';
 import { Href } from '../link/href';
 import { NavigateAction } from '../link/stateOperations';
-import type { RouterStore } from './router-store';
 export declare function push(this: RouterStore, url: Href): any;
 export declare function replace(this: RouterStore, url: Href): any;
 export declare function goBack(this: RouterStore): void;

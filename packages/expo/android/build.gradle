@@ -83,13 +83,16 @@ afterEvaluate {
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 33)
 
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_11
-    targetCompatibility JavaVersion.VERSION_11
-  }
+  def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
+  if (agpVersion.tokenize('.')[0].toInteger() < 8) {
+    compileOptions {
+      sourceCompatibility JavaVersion.VERSION_11
+      targetCompatibility JavaVersion.VERSION_11
+    }
 
-  kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_11.majorVersion
+    kotlinOptions {
+      jvmTarget = JavaVersion.VERSION_11.majorVersion
+    }
   }
 
   namespace "expo.core"
@@ -148,6 +151,13 @@ dependencies { dependencyHandler ->
 
 // A task generating a package list of expo modules.
 task generateExpoModulesPackageList {
+  def modulesConfig = getModulesConfig()
+  def outputPath = getGenerateExpoModulesPackagesListPath()
+  if (modulesConfig) {
+    outputs.file(file(outputPath))
+    inputs.property("modulesConfig", modulesConfig)
+  }
+
   doLast {
     generateExpoModulesPackageList()
   }

@@ -1,10 +1,8 @@
 import { useIsFocused } from '@react-navigation/core';
-import { useLocalSearchParams, useUnstableGlobalHref, usePathname, useSegments,
-// @ts-ignore: hack
- } from 'expo-router';
 import React from 'react';
 import { ExpoHead } from './ExpoHeadModule';
 import { getStaticUrlFromExpoRouter } from './url';
+import { useLocalSearchParams, useUnstableGlobalHref, usePathname, useSegments } from '../hooks';
 function urlToId(url) {
     return url.replace(/[^a-zA-Z0-9]/g, '-');
 }

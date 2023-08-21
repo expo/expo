@@ -28,6 +28,13 @@ function _path() {
   };
   return data;
 }
+function _Xcodeproj() {
+  const data = require("./utils/Xcodeproj");
+  _Xcodeproj = function () {
+    return data;
+  };
+  return data;
+}
 function _iosPlugins() {
   const data = require("../plugins/ios-plugins");
   _iosPlugins = function () {
@@ -38,13 +45,6 @@ function _iosPlugins() {
 function _warnings() {
   const data = require("../utils/warnings");
   _warnings = function () {
-    return data;
-  };
-  return data;
-}
-function _Xcodeproj() {
-  const data = require("./utils/Xcodeproj");
-  _Xcodeproj = function () {
     return data;
   };
   return data;

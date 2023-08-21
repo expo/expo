@@ -1,53 +1,28 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 package expo.modules.sensors.modules
 
-import android.content.Context
 import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorManager
 import android.os.Bundle
-import expo.modules.interfaces.sensors.SensorServiceInterface
 import expo.modules.interfaces.sensors.services.LightSensorServiceInterface
-import expo.modules.core.Promise
-import expo.modules.core.interfaces.ExpoMethod
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.sensors.UseSensorProxy
+import expo.modules.sensors.createSensorProxy
 
-class LightSensorModule(reactContext: Context?) : BaseSensorModule(reactContext) {
-  override val eventName: String = "lightSensorDidUpdate"
+private const val EventName = "lightSensorDidUpdate"
 
-  override fun getName(): String = "ExpoLightSensor"
-
-  override fun getSensorService(): SensorServiceInterface {
-    return moduleRegistry.getModule(LightSensorServiceInterface::class.java)
-  }
-
-  override fun eventToMap(sensorEvent: SensorEvent): Bundle {
-    return Bundle().apply {
-      putDouble("illuminance", sensorEvent.values[0].toDouble())
+class LightSensorModule : Module() {
+  private val sensorProxy by lazy {
+    createSensorProxy<LightSensorServiceInterface>(EventName) { sensorEvent ->
+      Bundle().apply {
+        putDouble("illuminance", sensorEvent.values[0].toDouble())
+      }
     }
   }
 
-  @ExpoMethod
-  fun startObserving(promise: Promise) {
-    super.startObserving()
-    promise.resolve(null)
-  }
+  override fun definition() = ModuleDefinition {
+    Name("ExpoLightSensor")
 
-  @ExpoMethod
-  fun stopObserving(promise: Promise) {
-    super.stopObserving()
-    promise.resolve(null)
-  }
-
-  @ExpoMethod
-  fun setUpdateInterval(updateInterval: Int, promise: Promise) {
-    super.setUpdateInterval(updateInterval)
-    promise.resolve(null)
-  }
-
-  @ExpoMethod
-  fun isAvailableAsync(promise: Promise) {
-    val mSensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-    val isAvailable = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT) != null
-    promise.resolve(isAvailable)
+    UseSensorProxy(this@LightSensorModule, Sensor.TYPE_LIGHT, EventName) { sensorProxy }
   }
 }

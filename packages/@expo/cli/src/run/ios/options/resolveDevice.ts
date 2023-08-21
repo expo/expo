@@ -1,3 +1,4 @@
+import { promptDeviceAsync } from './promptDevice';
 import * as Log from '../../../log';
 import {
   AppleDeviceManager,
@@ -11,7 +12,6 @@ import { CommandError } from '../../../utils/errors';
 import { profile } from '../../../utils/profile';
 import { logDeviceArgument } from '../../hints';
 import * as AppleDevice from '../appleDevice/AppleDevice';
-import { promptDeviceAsync } from './promptDevice';
 
 type AnyDevice = SimControl.Device | AppleDevice.ConnectedDevice;
 

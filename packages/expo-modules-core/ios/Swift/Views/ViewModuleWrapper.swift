@@ -32,13 +32,15 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
 
   /**
    The designated initializer that is used by React Native to create module instances.
+   https://github.com/facebook/react-native/blob/540c41be9/packages/react-native/React/Views/RCTComponentData.m#L506-L507
+   It doesn't matter to return dummy class here. The wrapper will then to subclass dynamically.
    Must be called on a dynamic class to get access to underlying wrapped module. Throws fatal exception otherwise.
    */
   @objc
   public override init() {
     super.init()
     guard let module = (self as DynamicModuleWrapperProtocol).wrappedModule?() else {
-      fatalError("Something unexpected has happened. Only dynamically created `ViewModuleWrapper` can be initialized without params.")
+      return
     }
     self.wrappedModuleHolder = module.wrappedModuleHolder
   }

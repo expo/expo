@@ -8,12 +8,6 @@ import {
   Platform,
 } from 'expo-modules-core';
 
-import {
-  _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS,
-  AVPlaybackStatus,
-  AVPlaybackStatusToSet,
-} from '../AV';
-import ExponentAV from '../ExponentAV';
 import { isAudioEnabled, throwIfAudioIsDisabled } from './AudioAvailability';
 import {
   RecordingInput,
@@ -23,6 +17,12 @@ import {
 } from './Recording.types';
 import { RecordingOptionsPresets } from './RecordingConstants';
 import { Sound, SoundObject } from './Sound';
+import {
+  _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS,
+  AVPlaybackStatus,
+  AVPlaybackStatusToSet,
+} from '../AV';
+import ExponentAV from '../ExponentAV';
 
 let _recorderExists: boolean = false;
 const eventEmitter = Platform.OS === 'android' ? new EventEmitter(ExponentAV) : null;

@@ -39,13 +39,6 @@ function _xcode() {
   };
   return data;
 }
-function _withDangerousMod() {
-  const data = require("../plugins/withDangerousMod");
-  _withDangerousMod = function () {
-    return data;
-  };
-  return data;
-}
 function _Paths() {
   const data = require("./Paths");
   _Paths = function () {
@@ -70,6 +63,13 @@ function _Xcodeproj() {
 function _string() {
   const data = require("./utils/string");
   _string = function () {
+    return data;
+  };
+  return data;
+}
+function _withDangerousMod() {
+  const data = require("../plugins/withDangerousMod");
+  _withDangerousMod = function () {
     return data;
   };
   return data;

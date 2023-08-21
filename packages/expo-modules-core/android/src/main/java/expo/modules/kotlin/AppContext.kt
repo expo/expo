@@ -9,7 +9,6 @@ import android.view.View
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
 import com.facebook.react.uimanager.UIManagerHelper
 import expo.modules.adapters.react.NativeModulesProxy
 import expo.modules.core.errors.ContextDestroyedException
@@ -148,7 +147,7 @@ class AppContext(
               it,
               jniDeallocator,
               jsContextProvider.jsCallInvokerHolder,
-              catalystInstance.nativeCallInvokerHolder as CallInvokerHolderImpl
+              ReactNativeCompatibleHelper.getNativeMethodCallInvokerHolderImplCompatible(catalystInstance)
             )
             logger.info("✅ JSI interop was installed")
           }
@@ -283,7 +282,7 @@ class AppContext(
       return KEventEmitterWrapper(legacyEventEmitter, reactContextHolder)
     }
 
-  internal val errorManager: ErrorManagerModule?
+  val errorManager: ErrorManagerModule?
     get() = registry.getModule()
 
   internal fun onDestroy() = trace("AppContext.onDestroy") {

@@ -6,9 +6,17 @@
 
 ### 🎉 New features
 
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 15.4.3 - 2023-08-09
+
+### 🐛 Bug fixes
+
+- Fix regression in `copyAsync` on Android. ([#23892](https://github.com/expo/expo/pull/23892) by [@brentvatne](https://github.com/brentvatne))
 
 ## 15.5.1 — 2023-08-02
 

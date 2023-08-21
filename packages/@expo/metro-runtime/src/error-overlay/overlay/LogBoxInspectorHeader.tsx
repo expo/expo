@@ -84,7 +84,7 @@ const backgroundForLevel = (level: LogLevel) =>
       default: 'transparent',
       pressed: LogBoxStyle.getFatalDarkColor(),
     },
-  }[level]);
+  })[level];
 
 function LogBoxInspectorHeaderButton(props: {
   disabled: boolean;

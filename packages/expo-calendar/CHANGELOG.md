@@ -4,7 +4,11 @@
 
 ### 🛠 Breaking changes
 
+- Forbid passing an id to `createEventAsync` and `updateEventAsync`. ([#23810](https://github.com/expo/expo/pull/23810) by [@pierrezimmermannbam](https://github.com/pierrezimmermannbam))
+
 ### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
