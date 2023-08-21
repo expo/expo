@@ -100,7 +100,7 @@ export declare function getItemAsync(key: string, options?: SecureStoreOptions):
 /**
  * Stores a key–value pair.
  *
- * @param key The key to associate with the stored value. Keys may contain alphanumeric characters `.`, `-`, and `_`.
+ * @param key The key to associate with the stored value. Keys may contain alphanumeric characters, `.`, `-`, and `_`.
  * @param value The value to store. Size limit is 2048 bytes.
  * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
  *
@@ -109,9 +109,9 @@ export declare function getItemAsync(key: string, options?: SecureStoreOptions):
 export declare function setItemAsync(key: string, value: string, options?: SecureStoreOptions): Promise<void>;
 /**
  * Stores a key–value pair synchronously.
- * > **Note** This function blocks the JavaScript thread, so the application may not be interactive when the `requireAuthentication` option is set to `true` until the user authenticates.
+ * > **Note:** This function blocks the JavaScript thread, so the application may not be interactive when the `requireAuthentication` option is set to `true` until the user authenticates.
  *
- * @param key The key to associate with the stored value. Keys may contain alphanumeric characters `.`, `-`, and `_`.
+ * @param key The key to associate with the stored value. Keys may contain alphanumeric characters, `.`, `-`, and `_`.
  * @param value The value to store. Size limit is 2048 bytes.
  * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
  *
@@ -119,7 +119,7 @@ export declare function setItemAsync(key: string, value: string, options?: Secur
 export declare function setItem(key: string, value: string, options?: SecureStoreOptions): void;
 /**
  * Synchronously reads the stored value associated with the provided key.
- * > **Note** This function blocks the JavaScript thread, so the application may not be interactive when reading a value with `requireAuthentication`
+ * > **Note:** This function blocks the JavaScript thread, so the application may not be interactive when reading a value with `requireAuthentication`
  * > option set to `true` until the user authenticates.
  * @param key The key that was used to store the associated value.
  * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
