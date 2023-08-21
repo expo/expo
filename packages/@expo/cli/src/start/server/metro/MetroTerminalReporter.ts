@@ -3,8 +3,16 @@ import { Terminal } from 'metro-core';
 import path from 'path';
 
 import { logWarning, TerminalReporter } from './TerminalReporter';
-import { BuildPhase, BundleDetails, BundleProgress, SnippetError } from './TerminalReporter.types';
+import {
+  BuildPhase,
+  BundleDetails,
+  BundleProgress,
+  SnippetError,
+  TerminalReportableEvent,
+} from './TerminalReporter.types';
 import { NODE_STDLIB_MODULES } from './externals';
+import logToConsoleAsync from './logToConsole';
+import { Log } from '../../../log';
 import { learnMore } from '../../../utils/link';
 
 const MAX_PROGRESS_BAR_CHAR_WIDTH = 16;
@@ -26,6 +34,30 @@ export class MetroTerminalReporter extends TerminalReporter {
   _getElapsedTime(startTime: number): number {
     return Date.now() - startTime;
   }
+
+  _log(event: TerminalReportableEvent): void {
+    switch (event.type) {
+      case 'client_log':
+        if (this.shouldFilterClientLog(event)) {
+          return;
+        }
+
+        logToConsoleAsync(
+          this.projectRoot,
+          this.terminal,
+          event.level,
+          event.mode,
+          ...event.data
+        ).catch((error) => {
+          Log.debug('Failed to symbolicate message', error);
+          // Fallback on the default reporter
+          super._log(event);
+        });
+        return;
+    }
+    return super._log(event);
+  }
+
   /**
    * Extends the bundle progress to include the current platform that we're bundling.
    *

@@ -1,0 +1,45 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`symbolicates console.error stack traces 1`] = `
+"
+  33 |   headerHeight,
+  34 |   headerBackImageSource,
+> 35 |   headerBackButtonMenuEnabled,
+     |   ^
+  36 |   headerBackTitle,
+  37 |   headerBackTitleStyle,
+  38 |   headerBackTitleVisible = true,
+
+Call Stack
+  HeaderConfig (my-app/node_modules/@react-navigation/native-stack/src/views/HeaderConfig.tsx:35:3)
+  React.forwardRef$argument_0 (my-app/node_modules/react-native/Libraries/Animated/createAnimatedComponent.js:39:6)
+  ExpoRoot (my-app/node_modules/expo-router/src/ExpoRoot.tsx:55:11)
+  WithDevTools (my-app/node_modules/expo/build/launch/withDevTools.js:31:27)
+  React.forwardRef$argument_0 (my-app/node_modules/react-native/Libraries/Components/View/View.js:36:7)
+  React.forwardRef$argument_0 (my-app/node_modules/react-native/Libraries/Components/View/View.js:36:7)
+  AppContainer (my-app/node_modules/react-native/Libraries/ReactNative/AppContainer.js:40:19)
+  getCachedComponentWithDisplayName (my-app/node_modules/react-native/Libraries/ReactNative/getCachedComponentWithDebugName.js:28:80)
+"
+`;
+
+exports[`symbolicates warning stack traces 1`] = `
+"
+  33 |   headerHeight,
+  34 |   headerBackImageSource,
+> 35 |   headerBackButtonMenuEnabled,
+     |   ^
+  36 |   headerBackTitle,
+  37 |   headerBackTitleStyle,
+  38 |   headerBackTitleVisible = true,
+
+Call Stack
+  HeaderConfig (my-app/node_modules/@react-navigation/native-stack/src/views/HeaderConfig.tsx:35:3)
+  React.forwardRef$argument_0 (my-app/node_modules/react-native/Libraries/Animated/createAnimatedComponent.js:39:6)
+  ExpoRoot (my-app/node_modules/expo-router/src/ExpoRoot.tsx:55:11)
+  WithDevTools (my-app/node_modules/expo/build/launch/withDevTools.js:31:27)
+  React.forwardRef$argument_0 (my-app/node_modules/react-native/Libraries/Components/View/View.js:36:7)
+  React.forwardRef$argument_0 (my-app/node_modules/react-native/Libraries/Components/View/View.js:36:7)
+  AppContainer (my-app/node_modules/react-native/Libraries/ReactNative/AppContainer.js:40:19)
+  getCachedComponentWithDisplayName (my-app/node_modules/react-native/Libraries/ReactNative/getCachedComponentWithDebugName.js:28:80)
+"
+`;

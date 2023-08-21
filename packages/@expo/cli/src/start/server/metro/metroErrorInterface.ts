@@ -8,8 +8,10 @@ import chalk from 'chalk';
 import resolveFrom from 'resolve-from';
 import { StackFrame } from 'stacktrace-parser';
 import terminalLink from 'terminal-link';
+import { URL } from 'url';
 
 import { Log } from '../../../log';
+import { memoize } from '../../../utils/fn';
 import { createMetroEndpointAsync } from '../getStaticRenderFunctions';
 // import type { CodeFrame, MetroStackFrame } from '@expo/metro-runtime/symbolicate';
 
@@ -37,22 +39,40 @@ export async function logMetroErrorWithStack(
     error: Error;
   }
 ) {
+  Log.log();
+  Log.log(chalk.red('Metro error: ') + error.message);
+  Log.log();
+
+  Log.log(getMetroStackAsLogString(projectRoot, { stack, codeFrame, error }));
+}
+
+export function getMetroStackAsLogString(
+  projectRoot: string,
+  {
+    stack,
+    codeFrame,
+    error,
+  }: {
+    stack: MetroStackFrame[];
+    codeFrame: CodeFrame;
+    error?: Error;
+  }
+) {
   const { getStackFormattedLocation } = require(resolveFrom(
     projectRoot,
     '@expo/metro-runtime/symbolicate'
   ));
 
-  Log.log();
-  Log.log(chalk.red('Metro error: ') + error.message);
-  Log.log();
+  let str = '';
 
   if (codeFrame) {
-    Log.log(codeFrame.content);
+    str += codeFrame.content + '\n';
+    // Log.log(codeFrame.content);
   }
 
   if (stack?.length) {
-    Log.log();
-    Log.log(chalk.bold`Call Stack`);
+    str += '\n';
+    str += chalk.bold`Call Stack\n`;
 
     const stackProps = stack.map((frame) => {
       return {
@@ -62,6 +82,8 @@ export async function logMetroErrorWithStack(
       };
     });
 
+    const includeCollapsed = stackProps.every((frame) => frame.collapse);
+
     stackProps.forEach((frame) => {
       const position = terminalLink.isSupported
         ? terminalLink(frame.subtitle, frame.subtitle)
@@ -70,11 +92,83 @@ export async function logMetroErrorWithStack(
       if (frame.collapse) {
         lineItem = chalk.dim(lineItem);
       }
-      Log.log(lineItem);
+      if (includeCollapsed || !frame.collapse) {
+        str += lineItem + '\n';
+      }
     });
-  } else {
-    Log.log(chalk.gray(`  ${error.stack}`));
+  } else if (error) {
+    str += chalk.gray(`  ${error.stack}`);
   }
+  return str;
+}
+
+function getSymbolicateImport(projectRoot: string) {
+  return resolveFrom.silent(projectRoot, '@expo/metro-runtime/symbolicate');
+}
+
+const getSymbolicateImportMemo = memoize(getSymbolicateImport);
+
+export async function getSymbolicatedMetroStackAsync(
+  projectRoot: string,
+  errorFragment: { message: string; stack: string }
+): Promise<null | {
+  stack: MetroStackFrame[];
+  codeFrame: CodeFrame;
+}> {
+  const moduleId = getSymbolicateImportMemo(projectRoot);
+  if (!moduleId) {
+    return null;
+  }
+
+  const { LogBoxLog, parseErrorStack } = require(moduleId);
+
+  const stack = parseErrorStack(errorFragment.stack);
+
+  // Required for symbolication in `@expo/metro-runtime`:
+  if (!process.env.EXPO_DEV_SERVER_ORIGIN) {
+    // Find the first stack trace with a URL for the file.
+    const firstStack = stack.find((stack) => stack.file?.match(/^https?:\/\//));
+    if (firstStack) {
+      const baseUrl = new URL(firstStack.file);
+      // Set the URL so we can symbolicate from the server.
+      Log.debug('Setting base URL based on stack:', baseUrl.origin);
+      process.env.EXPO_DEV_SERVER_ORIGIN = baseUrl.origin;
+    }
+  }
+
+  const log = new LogBoxLog({
+    // TODO: Unclear if these could be more correct...
+    level: 'warn',
+    message: {
+      content: errorFragment.message,
+      substitutions: [],
+    },
+    isComponentError: true,
+    stack: [],
+    category: 'static',
+    componentStack: stack.map((frame) => {
+      return {
+        fileName: frame.file,
+        content: frame.methodName,
+        location: {
+          row: frame.lineNumber,
+          column: frame.column,
+        },
+      };
+    }),
+  });
+
+  await new Promise((res) => log.symbolicate('component', res));
+
+  if (log.symbolicated?.component?.error) {
+    Log.log('Failed to symbolicate Metro stack:', log.symbolicated?.component?.error);
+    return null;
+  }
+  console.log('f', stack, log.symbolicated?.component);
+  return {
+    stack: log.symbolicated?.component?.stack ?? [],
+    codeFrame: log.codeFrame,
+  };
 }
 
 export async function logMetroError(projectRoot: string, { error }: { error: Error }) {

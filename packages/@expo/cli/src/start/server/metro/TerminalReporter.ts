@@ -58,11 +58,6 @@ export class TerminalReporter extends XTerminalReporter implements TerminalRepor
         return this.transformCacheReset();
       case 'dep_graph_loading':
         return this.dependencyGraphLoading(event.hasReducedPerformance);
-      case 'client_log':
-        if (this.shouldFilterClientLog(event)) {
-          return;
-        }
-        break;
     }
     return super._log(event);
   }

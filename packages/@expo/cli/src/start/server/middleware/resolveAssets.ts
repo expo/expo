@@ -3,7 +3,6 @@ import { BundleAssetWithFileHashes } from '@expo/dev-server';
 import fs from 'fs/promises';
 import path from 'path';
 
-import { getAssetSchemasAsync } from '../../../api/getExpoSchema';
 import * as Log from '../../../log';
 import { fileExistsAsync } from '../../../utils/dir';
 import { CommandError } from '../../../utils/errors';
@@ -64,6 +63,8 @@ export async function resolveGoogleServicesFile(
  * @returns Asset fields that the user has set like ["icon", "splash.image", ...]
  */
 export async function getAssetFieldPathsForManifestAsync(manifest: ExpoConfig): Promise<string[]> {
+  const { getAssetSchemasAsync } = await import('../../../api/getExpoSchema');
+
   // String array like ["icon", "notification.icon", "loading.icon", "loading.backgroundImage", "ios.icon", ...]
   const sdkAssetFieldPaths = await getAssetSchemasAsync(manifest.sdkVersion);
   return sdkAssetFieldPaths.filter((assetSchema) => get(manifest, assetSchema));
