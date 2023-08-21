@@ -17,6 +17,7 @@ import abi49_0_0.com.facebook.react.ReactRootView
 import abi49_0_0.com.facebook.react.bridge.ReactContext
 import abi49_0_0.com.facebook.react.modules.core.PermissionListener
 import abi49_0_0.expo.modules.core.interfaces.ReactActivityLifecycleListener
+import abi49_0_0.expo.modules.kotlin.Utils
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -84,6 +85,9 @@ class ReactActivityDelegateWrapper(
       reactDelegate.loadApp(appKey)
       rootViewContainer.addView(reactDelegate.reactRootView, ViewGroup.LayoutParams.MATCH_PARENT)
       activity.setContentView(rootViewContainer)
+      reactActivityLifecycleListeners.forEach { listener ->
+        listener.onContentChanged(activity)
+      }
       return
     }
 
@@ -92,7 +96,11 @@ class ReactActivityDelegateWrapper(
       .firstOrNull()
     if (delayLoadAppHandler != null) {
       delayLoadAppHandler.whenReady {
+        Utils.assertMainThread()
         invokeDelegateMethod<Unit, String?>("loadApp", arrayOf(String::class.java), arrayOf(appKey))
+        reactActivityLifecycleListeners.forEach { listener ->
+          listener.onContentChanged(activity)
+        }
         if (shouldEmitPendingResume) {
           onResume()
         }
@@ -100,7 +108,10 @@ class ReactActivityDelegateWrapper(
       return
     }
 
-    return invokeDelegateMethod("loadApp", arrayOf(String::class.java), arrayOf(appKey))
+    invokeDelegateMethod<Unit, String?>("loadApp", arrayOf(String::class.java), arrayOf(appKey))
+    reactActivityLifecycleListeners.forEach { listener ->
+      listener.onContentChanged(activity)
+    }
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
