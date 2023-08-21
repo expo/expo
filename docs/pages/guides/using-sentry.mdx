@@ -12,7 +12,7 @@ import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 import { CODE } from '~/ui/components/Text';
 
-[Sentry](http://getsentry.com/) is a crash reporting platform that provides you with "real-time insight into production deployments with info to reproduce and fix crashes".
+[Sentry](http://getsentry.com/) is a crash reporting platform that provides you with **real-time insight into production deployments with info to reproduce and fix crashes**.
 
 It notifies you of exceptions or errors that your users run into while using your app, and organizes them for you on a web dashboard. Reported exceptions include stacktraces, device info, version, and other relevant context automatically; you can also provide additional context that is specific to your application, like the current route and user id.
 
@@ -29,7 +29,7 @@ It notifies you of exceptions or errors that your users run into while using you
 
 <PlatformsSection title="Platform compatibility" android emulator ios simulator web />
 
-## Installing and configuring Sentry
+## Install and configure Sentry
 
 <Step label="1">
 
@@ -126,11 +126,11 @@ try {
 
 ### App Configuration
 
-Configuring sentry-expo is done through the config plugin in your **app.json** or **app.config.js**.
+Configuring `sentry-expo` is done through the config plugin in your [app config](/workflow/configuration/).
 
 <ConfigReactNative>
 
-If you use bare workflow, **you should not use the `plugins` property in app.json**. Instead, use `yarn sentry-wizard -i reactNative -p ios android` to configure your native projects. This `sentry-wizard` command will add an extra:
+If you use bare workflow, **you should not use the `plugins` property in app config**. Instead, run `yarn sentry-wizard -i reactNative -p ios android` to configure your native projects. This `sentry-wizard` command will add an extra import statement and `Sentry.init` to your project's root file (usually **App.js**) as shown below. Make sure you remove it, however, keep the `sentry-expo` import and original `Sentry.init` call.
 
 ```js
 import * as Sentry from '@sentry/react-native';
@@ -139,8 +139,6 @@ Sentry.init({
   dsn: 'YOUR DSN',
 });
 ```
-
-to your root project file (usually **App.js**), so make sure you remove it (but keep the `sentry-expo` import and original `Sentry.init` call!)
 
 </ConfigReactNative>
 
@@ -180,11 +178,11 @@ Besides the auth token, you can also configure the following options through env
 
 In addition to the required config fields above, you can also provide these **optional** fields:
 
-- `setCommits` : boolean value indicating whether or not to tell Sentry about which commits are associated with a new release. This allows Sentry to pinpoint which commits likely caused an issue.
-- `deployEnv` : string indicating the deploy environment. This will automatically send an email to Sentry users who have committed to the release that is being deployed.
-- `distribution` : The name/value to give your distribution (you can think of this as a sub-release). Expo defaults to using your `version` from app.json. **If you provide a custom `distribution`, you must pass the same value to `dist` in your call to `Sentry.init()`, otherwise you will not see stacktraces in your error reports.**
-- `release` : The name you'd like to give your release (e.g. `release-feature-ABC`). This defaults to a unique `revisionId` of your JS bundle. **If you provide a custom `release`, you must pass in the same `release` value to `Sentry.init()`, otherwise you will not see stacktraces in your error reports.**
-- `url` : your Sentry URL, only necessary when self-hosting Sentry.
+- `setCommits`: boolean value indicating whether or not to tell Sentry about which commits are associated with a new release. This allows Sentry to pinpoint which commits likely caused an issue.
+- `deployEnv`: string indicating the deploy environment. This will automatically send an email to Sentry users who have committed to the release that is being deployed.
+- `distribution`: The name/value to give your distribution (you can think of this as a sub-release). Expo defaults to using your `version` from app.json. **If you provide a custom `distribution`, you must pass the same value to `dist` in your call to `Sentry.init()`, otherwise you will not see stacktraces in your error reports.**
+- `release`: The name you'd like to give your release (e.g. `release-feature-ABC`). This defaults to a unique `revisionId` of your JS bundle. **If you provide a custom `release`, you must pass in the same `release` value to `Sentry.init()`, otherwise you will not see stacktraces in your error reports.**
+- `url`: your Sentry URL, only necessary when self-hosting Sentry.
 
 > You can also use environment variables for your config, if you prefer:
 >
@@ -345,4 +343,4 @@ Sentry.init({
 
 ## Learn more about Sentry
 
-Sentry does more than just catch fatal errors, learn more about how to use Sentry from their [JavaScript usage docs](https://docs.sentry.io/platforms/javascript/).
+Sentry does more than just catch fatal errors, learn more about how to use Sentry from their [JavaScript usage](https://docs.sentry.io/platforms/javascript/) documentation.
