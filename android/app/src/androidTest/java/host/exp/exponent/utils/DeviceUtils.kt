@@ -21,7 +21,7 @@ object DeviceUtils {
 
     val context = InstrumentationRegistry.getContext()
     // Enable draw over other apps if necessary
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(context)) {
+    if (!Settings.canDrawOverlays(context)) {
       // Open settings
       val intent =
         Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:host.exp.exponent"))

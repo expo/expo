@@ -244,7 +244,6 @@ public class RNCWebViewClient extends WebViewClient {
         UIManagerHelper.getEventDispatcherForReactTag((ReactContext) webView.getContext(), reactTag).dispatchEvent(new TopLoadingErrorEvent(webView.getId(), eventData));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onReceivedHttpError(
             WebView webView,

@@ -134,11 +134,10 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
 
     // note(cedric): replace hardcoded system feature strings with constants from
     // PackageManager when dropping support for Android SDK 28
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      if (packageManager.hasSystemFeature("android.hardware.fingerprint")) {
-        results.add(AUTHENTICATION_TYPE_FINGERPRINT)
-      }
+    if (packageManager.hasSystemFeature("android.hardware.fingerprint")) {
+      results.add(AUTHENTICATION_TYPE_FINGERPRINT)
     }
+
     if (Build.VERSION.SDK_INT >= 29) {
       if (packageManager.hasSystemFeature("android.hardware.biometrics.face")) {
         results.add(AUTHENTICATION_TYPE_FACIAL_RECOGNITION)
@@ -183,10 +182,6 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
 
   @ExpoMethod
   fun authenticateAsync(options: Map<String?, Any?>, promise: Promise) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      promise.reject("E_NOT_SUPPORTED", "Cannot display biometric prompt on android versions below 6.0")
-      return
-    }
     if (currentActivity == null) {
       promise.reject("E_NOT_FOREGROUND", "Cannot display biometric prompt when the app is not in the foreground")
       return
@@ -378,19 +373,7 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
   // supported prior to API 30.
   // https://developer.android.com/reference/androidx/biometric/BiometricManager#canAuthenticate(int)
   private val isDeviceSecure: Boolean
-    get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      keyguardManager.isDeviceSecure
-    } else {
-      // NOTE: `KeyguardManager#isKeyguardSecure()` considers SIM locked state,
-      // but it will be ignored on falling-back to device credential on biometric authentication.
-      // That means, setting level to `SECURITY_LEVEL_SECRET` might be misleading for some users.
-      // But there is no equivalent APIs prior to M.
-      // `andriodx.biometric.BiometricManager#canAuthenticate(int)` looks like an alternative,
-      // but specifying `BiometricManager.Authenticators.DEVICE_CREDENTIAL` alone is not
-      // supported prior to API 30.
-      // https://developer.android.com/reference/androidx/biometric/BiometricManager#canAuthenticate(int)
-      keyguardManager.isKeyguardSecure
-    }
+    get() = keyguardManager.isDeviceSecure
 
   private val keyguardManager: KeyguardManager
     get() = context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager

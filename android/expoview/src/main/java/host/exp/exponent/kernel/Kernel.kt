@@ -877,11 +877,9 @@ class Kernel : KernelInterface() {
           task.finishAndRemoveTask()
           return
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-          if (taskInfo.numActivities == 1 && (taskInfo.topActivity!!.className == LauncherActivity::class.java.name)) {
-            task.finishAndRemoveTask()
-            return
-          }
+        if (taskInfo.numActivities == 1 && (taskInfo.topActivity!!.className == LauncherActivity::class.java.name)) {
+          task.finishAndRemoveTask()
+          return
         }
       }
     } catch (e: NoSuchFieldException) {

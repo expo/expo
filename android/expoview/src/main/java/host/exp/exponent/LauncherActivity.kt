@@ -26,14 +26,12 @@ class LauncherActivity : Activity() {
     if (BuildConfig.DEBUG) {
       // Need WRITE_EXTERNAL_STORAGE for method tracing
       if (Constants.DEBUG_METHOD_TRACING) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-          if (ContextCompat.checkSelfPermission(
-              this,
-              Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED
-          ) {
-            requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 123)
-          }
+        if (ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+          ) != PackageManager.PERMISSION_GRANTED
+        ) {
+          requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 123)
         }
       }
     }

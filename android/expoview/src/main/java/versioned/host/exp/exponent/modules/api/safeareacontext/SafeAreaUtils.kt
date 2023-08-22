@@ -24,7 +24,6 @@ private fun getRootWindowInsetsCompatR(rootView: View): EdgeInsets? {
       left = insets.left.toFloat())
 }
 
-@RequiresApi(Build.VERSION_CODES.M)
 @Suppress("DEPRECATION")
 private fun getRootWindowInsetsCompatM(rootView: View): EdgeInsets? {
   val insets = rootView.rootWindowInsets ?: return null
@@ -40,21 +39,11 @@ private fun getRootWindowInsetsCompatM(rootView: View): EdgeInsets? {
       left = insets.systemWindowInsetLeft.toFloat())
 }
 
-private fun getRootWindowInsetsCompatBase(rootView: View): EdgeInsets? {
-  val visibleRect = android.graphics.Rect()
-  rootView.getWindowVisibleDisplayFrame(visibleRect)
-  return EdgeInsets(
-      top = visibleRect.top.toFloat(),
-      right = (rootView.width - visibleRect.right).toFloat(),
-      bottom = (rootView.height - visibleRect.bottom).toFloat(),
-      left = visibleRect.left.toFloat())
-}
-
 private fun getRootWindowInsetsCompat(rootView: View): EdgeInsets? {
-  return when {
-    Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> getRootWindowInsetsCompatR(rootView)
-    Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> getRootWindowInsetsCompatM(rootView)
-    else -> getRootWindowInsetsCompatBase(rootView)
+  return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+    getRootWindowInsetsCompatR(rootView)
+  } else {
+    getRootWindowInsetsCompatM(rootView)
   }
 }
 

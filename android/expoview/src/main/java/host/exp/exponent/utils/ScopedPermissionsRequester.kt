@@ -65,16 +65,10 @@ class ScopedPermissionsRequester(private val experienceKey: ExperienceKey) {
     if (permissionsToRequestPerExperience.isNotEmpty()) {
       requestExperienceAndGlobalPermissions(permissionsToRequestPerExperience[permissionsAskedCount - 1])
     } else if (permissionsToRequestGlobally.isNotEmpty()) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        currentActivity.requestPermissions(
-          permissionsToRequestGlobally.toTypedArray(),
-          EXPONENT_PERMISSIONS_REQUEST
-        )
-      } else {
-        val result = IntArray(permissionsToRequestGlobally.size)
-        Arrays.fill(result, PackageManager.PERMISSION_DENIED)
-        onRequestPermissionsResult(permissionsToRequestGlobally.toTypedArray(), result)
-      }
+      currentActivity.requestPermissions(
+        permissionsToRequestGlobally.toTypedArray(),
+        EXPONENT_PERMISSIONS_REQUEST
+      )
     }
   }
 
@@ -174,7 +168,7 @@ class ScopedPermissionsRequester(private val experienceKey: ExperienceKey) {
 
       if (permissionsAskedCount > 0) {
         requestExperienceAndGlobalPermissions(permissionsToRequestPerExperience[permissionsAskedCount - 1])
-      } else if (permissionsToRequestGlobally.isNotEmpty() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      } else if (permissionsToRequestGlobally.isNotEmpty()) {
         Exponent.instance.currentActivity!!.requestPermissions(
           permissionsToRequestGlobally.toTypedArray(),
           EXPONENT_PERMISSIONS_REQUEST
