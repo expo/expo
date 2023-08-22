@@ -144,7 +144,9 @@ export declare function clearLogEntriesAsync(): Promise<void>;
  * storage. This method cannot be used in development mode, and the returned promise will be
  * rejected if you try to do so.
  *
- * > **Note:** If a new update is available, invoking this method without then calling [`reloadAsync()`](#updatesreloadasync) upon completion installs the update on the next app cold start.
+ > **Note:** [`reloadAsync()`](#updatesreloadasync) can be called after promise resolution to
+ * reload the app using the most recently downloaded version. Otherwise, the update will be applied
+ * on the next app cold start.
  *
  * @return A promise that fulfills with an [`UpdateFetchResult`](#updatefetchresult) object.
  *
