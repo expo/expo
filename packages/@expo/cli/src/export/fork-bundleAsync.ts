@@ -14,7 +14,6 @@ import Metro, { AssetData } from 'metro';
 import getMetroAssets from 'metro/src/DeltaBundler/Serializers/getAssets';
 import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
 import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
-// @ts-expect-error
 import { ConfigT } from 'metro-config';
 
 import { CSSAsset, getCssModulesFromBundler } from '../start/server/metro/getCssModulesFromBundler';
@@ -204,7 +203,7 @@ async function getAssets(
   return await getMetroAssets(dependencies, {
     processModuleFilter: _config.serializer.processModuleFilter,
     assetPlugins: _config.transformer.assetPlugins,
-    platform: transformOptions.platform,
+    platform: transformOptions.platform!,
     projectRoot: _config.projectRoot, // this._getServerRootDir(),
     publicPath: _config.transformer.publicPath,
   });
