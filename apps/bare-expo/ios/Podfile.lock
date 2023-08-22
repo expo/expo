@@ -48,9 +48,9 @@ PODS:
   - EXJSONUtils/Tests (0.7.1)
   - EXLocation (16.1.0):
     - ExpoModulesCore
-  - EXManifests (0.7.1):
+  - EXManifests (0.7.2):
     - ExpoModulesCore
-  - EXManifests/Tests (0.7.1):
+  - EXManifests/Tests (0.7.2):
     - ExpoModulesCore
     - ExpoModulesTestCore
   - EXMediaLibrary (15.4.1):
@@ -61,7 +61,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (14.2.1):
     - ExpoModulesCore
-  - Expo (49.0.7):
+  - Expo (49.0.8):
     - ExpoModulesCore
   - expo-dev-client (2.4.6):
     - EXManifests
@@ -69,9 +69,9 @@ PODS:
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (2.4.8):
+  - expo-dev-launcher (2.4.10):
     - EXManifests
-    - expo-dev-launcher/Main (= 2.4.8)
+    - expo-dev-launcher/Main (= 2.4.10)
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
@@ -79,7 +79,7 @@ PODS:
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-RCTAppDelegate
-  - expo-dev-launcher/Main (2.4.8):
+  - expo-dev-launcher/Main (2.4.10):
     - EXManifests
     - expo-dev-launcher/Unsafe
     - expo-dev-menu
@@ -89,7 +89,7 @@ PODS:
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-RCTAppDelegate
-  - expo-dev-launcher/Tests (2.4.8):
+  - expo-dev-launcher/Tests (2.4.10):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -103,7 +103,7 @@ PODS:
     - React-Core
     - React-CoreModules
     - React-RCTAppDelegate
-  - expo-dev-launcher/Unsafe (2.4.8):
+  - expo-dev-launcher/Unsafe (2.4.10):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -112,38 +112,38 @@ PODS:
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-RCTAppDelegate
-  - expo-dev-menu (3.1.8):
-    - expo-dev-menu/Main (= 3.1.8)
+  - expo-dev-menu (3.1.10):
+    - expo-dev-menu/Main (= 3.1.10)
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
   - expo-dev-menu-interface (1.3.0)
   - expo-dev-menu-interface/Tests (1.3.0):
     - Nimble
     - Quick
-  - expo-dev-menu/Main (3.1.8):
+  - expo-dev-menu/Main (3.1.10):
     - EXManifests
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
     - ExpoModulesCore
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
-  - expo-dev-menu/SafeAreaView (3.1.8):
+  - expo-dev-menu/SafeAreaView (3.1.10):
     - ExpoModulesCore
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
-  - expo-dev-menu/Tests (3.1.8):
+  - expo-dev-menu/Tests (3.1.10):
     - ExpoModulesTestCore
     - Nimble
     - Quick
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-CoreModules
-  - expo-dev-menu/UITests (3.1.8):
+  - expo-dev-menu/UITests (3.1.10):
     - RCT-Folly (= 2021.07.22.00)
     - React
     - React-Core
     - React-CoreModules
-  - expo-dev-menu/Vendored (3.1.8):
+  - expo-dev-menu/Vendored (3.1.10):
     - expo-dev-menu/SafeAreaView
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
@@ -201,13 +201,13 @@ PODS:
     - ExpoModulesCore
     - GoogleMaps (= 7.3.0)
     - GooglePlaces (= 7.3.0)
-  - ExpoModulesCore (1.5.9):
+  - ExpoModulesCore (1.5.10):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-NativeModulesApple
     - React-RCTAppDelegate
     - ReactCommon/turbomodule/core
-  - ExpoModulesCore/Tests (1.5.9):
+  - ExpoModulesCore/Tests (1.5.10):
     - ExpoModulesTestCore
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
@@ -1378,14 +1378,14 @@ SPEC CHECKSUMS:
   EXInAppPurchases: e55f38bce3cb6b70f57d361458c897b17196448d
   EXJSONUtils: 6802be4282d42b97c51682468ddc1026a06f8276
   EXLocation: a425ace19c0445e7ea9702982fc6b9a402791510
-  EXManifests: 8a4a480e3b58891d5657d3996a39229e5c96d912
+  EXManifests: cf66451b11b2c2f6464917528d792759f7fd6ce0
   EXMediaLibrary: 8ac14ce76f266026b10cac2ab049debe032d7ae7
   EXNotifications: 09394cbd7165f9a4a00a53328aa09bf874bae717
   EXPermissions: 4f80cf527001aa408a22eddf076e61465ea71d5a
-  Expo: d310f3b84bd30843324d41f23ea7cc5e4273abf1
+  Expo: 900dc423a0e2c7e822b2c683a89426e82695fb27
   expo-dev-client: 4f773679557bc150e44eea1a1e3a3fd65ab82a5a
-  expo-dev-launcher: de065738958421c704ee024f4fe1bf14b2d8a713
-  expo-dev-menu: 9b3792cc2241011b63747cc77d06b0dcbcc57780
+  expo-dev-launcher: 89ab677e6ebe586ab41725aea0255b9d2aac8256
+  expo-dev-menu: 3b7e413a52fca62d4a54a2f5da7ecb22c1e6268e
   expo-dev-menu-interface: bda969497e73dadc2663c479e0fa726ca79a306e
   ExpoAppleAuthentication: 7bdf1a2962ebfe9b00eb4183a17b78d736e57185
   ExpoBattery: e9d7a71960cbc40733d956a29f8ba240173feb08
@@ -1408,7 +1408,7 @@ SPEC CHECKSUMS:
   ExpoLocalization: be37fdd0b5930c6a49cd307b4542f4b426d6134c
   ExpoMailComposer: feaebd62095efad901ede864b95406f02bf61681
   ExpoMaps: 6c13da830da56dea669ec89c708f2d248e66f7b5
-  ExpoModulesCore: e4e437139259c5a73530a8895af69774ff8ec12d
+  ExpoModulesCore: e5a168deba84f74c0e558befa31dbaea06c00af0
   ExpoModulesTestCore: f116cd4cc4288e0e0005a1f910efc7cedf455659
   ExpoNetwork: 6ee4b3b6cfdba3bfb90b07f483d1111308a9c76a
   ExpoPrint: e1531d216196f51b431c7cc4d906e569f79f10e7

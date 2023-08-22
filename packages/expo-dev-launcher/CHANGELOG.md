@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 2.4.10 — 2023-08-22
+
+### 💡 Others
+
 - Added support for React Native 0.72.4. ([#24044](https://github.com/expo/expo/pull/24044) by [@kudo](https://github.com/kudo))
 
 ## 2.4.8 — 2023-07-12

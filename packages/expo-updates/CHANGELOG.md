@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fixed the `node` execution on Windows. ([#23983](https://github.com/expo/expo/pull/23983) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 0.18.12 — 2023-08-22
+
+### 🐛 Bug fixes
+
+- [Android] Fixed the `node` execution on Windows. ([#23983](https://github.com/expo/expo/pull/23983) by [@kudo](https://github.com/kudo))
 
 ## 0.18.11 — 2023-07-23
 

@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix error in handling nested array. ([#23562](https://github.com/expo/expo/pull/23562) by [@douglowder](https://github.com/douglowder))
-
 ### 💡 Others
+
+## 0.7.2 — 2023-08-22
+
+### 🐛 Bug fixes
+
+- [iOS] Fix error in handling nested array. ([#23562](https://github.com/expo/expo/pull/23562) by [@douglowder](https://github.com/douglowder))
 
 ## 0.7.1 — 2023-06-30
 
