@@ -57,11 +57,15 @@ export function getStaticContent(location: URL): string {
   const ref = React.createRef<ServerContainerRef>();
 
   const {
-    // Skipping the `element` that's returned to ensure the HTML
-    // matches what's used in the client -- this results in two extra Views and
+    // NOTE: The `element` that's returned adds two extra Views and
     // the seemingly unused `RootTagContext.Provider` from being added.
+    element,
     getStyleElement,
-  } = AppRegistry.getApplication('App');
+  } = AppRegistry.getApplication('App', {
+    initialProps: {
+      location,
+    },
+  });
 
   const Root = getRootComponent();
 
@@ -76,20 +80,9 @@ export function getStaticContent(location: URL): string {
   const html = ReactDOMServer.renderToString(
     <Head.Provider context={headContext}>
       <ServerContainer ref={ref}>
-        <App
-          location={location}
-          wrapper={({ children }) => {
-            return React.createElement(Root, {
-              children: React.createElement(
-                'div',
-                {
-                  id: 'root',
-                },
-                children
-              ),
-            });
-          }}
-        />
+        <Root>
+          <div id="root">{element}</div>
+        </Root>
       </ServerContainer>
     </Head.Provider>
   );
