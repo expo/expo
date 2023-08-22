@@ -12,7 +12,6 @@ import { SplashScreen } from './views/Splash';
 export type ExpoRootProps = {
   context: RequireContext;
   location?: URL;
-  wrapper?: FunctionComponent<{ children: ReactNode }>;
 };
 
 function getGestureHandlerRootView() {
@@ -49,31 +48,29 @@ const hasViewControllerBasedStatusBarAppearance =
   Platform.OS === 'ios' &&
   !!Constants.expoConfig?.ios?.infoPlist?.UIViewControllerBasedStatusBarAppearance;
 
-export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRootProps) {
+export function ExpoRoot({ ...props }: ExpoRootProps) {
   /*
    * Due to static rendering we need to wrap these top level views in second wrapper
    * View's like <GestureHandlerRootView /> generate a <div> so if the parent wrapper
    * is a HTML document, we need to ensure its inside the <body>
    */
-  const wrapper: ExpoRootProps['wrapper'] = ({ children }) => {
+  const wrapper = ({ children }) => {
     return (
-      <ParentWrapper>
-        <GestureHandlerRootView>
-          <SafeAreaProvider
-            testID="safe-area"
-            // SSR support
-            initialMetrics={INITIAL_METRICS}>
-            {children}
-
-            {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
-            {!hasViewControllerBasedStatusBarAppearance && <StatusBar style="auto" />}
-          </SafeAreaProvider>
-        </GestureHandlerRootView>
-      </ParentWrapper>
+      <GestureHandlerRootView>
+        {children}
+        {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
+        {!hasViewControllerBasedStatusBarAppearance && <StatusBar style="auto" />}
+      </GestureHandlerRootView>
     );
   };
 
-  return <ContextNavigator {...props} wrapper={wrapper} />;
+  return (
+    <SafeAreaProvider
+      // SSR support
+      initialMetrics={INITIAL_METRICS}>
+      <ContextNavigator {...props} wrapper={wrapper} />
+    </SafeAreaProvider>
+  );
 }
 
 const initialUrl =
@@ -85,7 +82,9 @@ function ContextNavigator({
   context,
   location: initialLocation = initialUrl,
   wrapper: WrapperComponent = Fragment,
-}: ExpoRootProps) {
+}: ExpoRootProps & {
+  wrapper?: FunctionComponent<{ children: ReactNode }>;
+}) {
   const store = useInitializeExpoRouter(context, initialLocation);
 
   if (store.shouldShowTutorial()) {

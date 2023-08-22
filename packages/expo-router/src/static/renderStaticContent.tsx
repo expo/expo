@@ -14,18 +14,13 @@ import { AppRegistry } from 'react-native-web';
 
 import { getRootComponent } from './getRootComponent';
 import { ctx } from '../../_ctx';
-import { ExpoRoot, ExpoRootProps } from '../ExpoRoot';
+import { ExpoRoot } from '../ExpoRoot';
 import { getNavigationConfig } from '../getLinkingConfig';
 import { getRoutes } from '../getRoutes';
 import { Head } from '../head';
 import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
 
-AppRegistry.registerComponent('App', () => App);
-
-// Must be exported or Fast Refresh won't update the context >:[
-function App(props: Omit<ExpoRootProps, 'context'>) {
-  return <ExpoRoot context={ctx} {...props} />;
-}
+AppRegistry.registerComponent('App', () => ExpoRoot);
 
 /** Get the linking manifest from a Node.js process. */
 async function getManifest(options: any) {
@@ -64,6 +59,7 @@ export function getStaticContent(location: URL): string {
   } = AppRegistry.getApplication('App', {
     initialProps: {
       location,
+      context: ctx,
     },
   });
 
