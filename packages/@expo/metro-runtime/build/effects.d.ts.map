@@ -1,1 +1,1 @@
-{"version":3,"file":"effects.d.ts","sourceRoot":"","sources":["../src/effects.ts"],"names":[],"mappings":"AAAA,OAAO,CAAC,IAAI,MAAM,EAAE;IAClB,OAAO,CAAC,EAAE,OAAO,CAAC;IAClB,aAAa,CAAC,EAAE,OAAO,CAAC;IACxB,uBAAuB,CAAC,EAAE,MAAM,CAAC;IACjC,uBAAuB,CAAC,EAAE,OAAO,CAAC;IAClC,SAAS,EAAE,GAAG,CAAC;CAChB,CAAC"}
+{"version":3,"file":"effects.d.ts","sourceRoot":"","sources":["../src/effects.ts"],"names":[],"mappings":""}

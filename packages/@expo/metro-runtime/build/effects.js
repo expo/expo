@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 if (
 // Only during development.
 process.env.NODE_ENV !== 'production' &&
