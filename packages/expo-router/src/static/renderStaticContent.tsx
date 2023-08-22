@@ -58,7 +58,7 @@ export function getStaticContent(location: URL): string {
 
   const {
     // NOTE: The `element` that's returned adds two extra Views and
-    // the seemingly unused `RootTagContext.Provider` from being added.
+    // the seemingly unused `RootTagContext.Provider`.
     element,
     getStyleElement,
   } = AppRegistry.getApplication('App', {
