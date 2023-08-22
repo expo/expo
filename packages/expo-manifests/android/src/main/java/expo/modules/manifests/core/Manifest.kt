@@ -244,9 +244,6 @@ abstract class Manifest(protected val json: JSONObject) {
   companion object {
     @JvmStatic fun fromManifestJson(manifestJson: JSONObject): Manifest {
       return when {
-        manifestJson.has("releaseId") -> {
-          LegacyManifest(manifestJson)
-        }
         manifestJson.has("metadata") -> {
           NewManifest(manifestJson)
         }
