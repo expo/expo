@@ -96,6 +96,23 @@ declare module 'metro/src/lib/createWebsocketServer' {
   module.exports = createWebsocketServer;
 }
 
+declare module 'metro/src/DeltaBundler/Serializers/getAssets' {
+  import { ConfigT } from 'metro-config';
+
+  function getMetroAssets(
+    dependencies: ReadOnlyDependencies,
+    options: {
+      processModuleFilter: ConfigT['serializer']['processModuleFilter'];
+      assetPlugins: ConfigT['transformer']['assetPlugins'];
+      platform: string;
+      projectRoot: string;
+      publicPath: string;
+    }
+  );
+
+  export default getMetroAssets;
+}
+
 declare module 'metro/src/lib/splitBundleOptions' {
   import type { SplitBundleOptions } from 'metro/src/shared/types';
 
