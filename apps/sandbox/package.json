@@ -5,8 +5,7 @@
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
-    "ios": "expo start --ios",
-    "eject": "expo eject"
+    "ios": "expo start --ios"
   },
   "dependencies": {
     "expo": "~50.0.0-alpha.0",
