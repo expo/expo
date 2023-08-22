@@ -161,5 +161,9 @@ export declare function clearUpdateCacheExperimentalAsync(_sdkVersion?: string):
 /**
  * @hidden
  */
+export declare function processedNativeStateMachineContext(originalNativeContext: any): any;
+/**
+ * @hidden
+ */
 export declare function getNativeStateMachineContextAsync(): Promise<UpdatesNativeStateMachineContext>;
 //# sourceMappingURL=Updates.d.ts.map

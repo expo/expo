@@ -220,7 +220,7 @@ class UpdatesModule(
                     return
                   }
 
-                  promise.resolveWithCheckForUpdateAsyncResult(CheckForUpdateAsyncResult.RollBackToEmbedded(), updatesServiceLocal)
+                  promise.resolveWithCheckForUpdateAsyncResult(CheckForUpdateAsyncResult.RollBackToEmbedded(updateDirective.commitTime), updatesServiceLocal)
                   return
                 }
               }
@@ -268,7 +268,7 @@ class UpdatesModule(
 
     class NoUpdateAvailable : CheckForUpdateAsyncResult(Status.NO_UPDATE_AVAILABLE)
     class UpdateAvailable(val updateManifest: UpdateManifest) : CheckForUpdateAsyncResult(Status.UPDATE_AVAILABLE)
-    class RollBackToEmbedded : CheckForUpdateAsyncResult(Status.ROLL_BACK_TO_EMBEDDED)
+    class RollBackToEmbedded(val commitTime: Date) : CheckForUpdateAsyncResult(Status.ROLL_BACK_TO_EMBEDDED)
   }
 
   private fun Promise.resolveWithCheckForUpdateAsyncResult(checkForUpdateAsyncResult: CheckForUpdateAsyncResult, updatesServiceLocal: UpdatesInterface) {
@@ -296,7 +296,7 @@ class UpdatesModule(
     updatesServiceLocal.stateMachine?.processEvent(
       when (checkForUpdateAsyncResult) {
         is CheckForUpdateAsyncResult.NoUpdateAvailable -> UpdatesStateEvent.CheckCompleteUnavailable()
-        is CheckForUpdateAsyncResult.RollBackToEmbedded -> UpdatesStateEvent.CheckCompleteWithRollback()
+        is CheckForUpdateAsyncResult.RollBackToEmbedded -> UpdatesStateEvent.CheckCompleteWithRollback(checkForUpdateAsyncResult.commitTime)
         is CheckForUpdateAsyncResult.UpdateAvailable -> UpdatesStateEvent.CheckCompleteWithUpdate(
           checkForUpdateAsyncResult.updateManifest.manifest.getRawJson()
         )

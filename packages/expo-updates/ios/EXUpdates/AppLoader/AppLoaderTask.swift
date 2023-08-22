@@ -33,7 +33,7 @@ public protocol AppLoaderTaskDelegate: AnyObject {
 public enum RemoteCheckResult {
   case noUpdateAvailable
   case updateAvailable(manifest: [String: Any])
-  case rollBackToEmbedded
+  case rollBackToEmbedded(commitTime: Date)
   case error(error: Error)
 }
 
@@ -363,7 +363,11 @@ public final class AppLoaderTask: NSObject {
 
           if let swiftDelegate = self.swiftDelegate {
             self.delegateQueue.async {
-              swiftDelegate.appLoaderTask(self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.rollBackToEmbedded)
+              swiftDelegate.appLoaderTask(
+                self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.rollBackToEmbedded(
+                  commitTime: RollBackToEmbeddedUpdateDirective.rollbackCommitTime(updateDirective)
+                )
+              )
             }
           }
 

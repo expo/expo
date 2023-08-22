@@ -113,7 +113,11 @@ public final class UpdatesUtils: NSObject {
             block([
               "isRollBackToEmbedded": true
             ])
-            sendStateEvent(UpdatesStateEventCheckCompleteWithRollback())
+            sendStateEvent(
+              UpdatesStateEventCheckCompleteWithRollback(
+                rollbackCommitTime: RollBackToEmbeddedUpdateDirective.rollbackCommitTime(updateDirective)
+              )
+            )
             return
           default:
             return handleCheckError(UpdatesUnsupportedDirectiveException(), block: block)

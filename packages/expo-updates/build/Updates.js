@@ -236,12 +236,8 @@ export function clearUpdateCacheExperimentalAsync(_sdkVersion) {
 /**
  * @hidden
  */
-export async function getNativeStateMachineContextAsync() {
-    // Return the current state machine context
-    if (!ExpoUpdates.getNativeStateMachineContextAsync) {
-        throw new UnavailabilityError('Updates', 'getNativeStateMachineContextAsync');
-    }
-    const nativeContext = await ExpoUpdates.getNativeStateMachineContextAsync();
+export function processedNativeStateMachineContext(originalNativeContext) {
+    const nativeContext = { ...originalNativeContext };
     if (nativeContext.latestManifestString) {
         nativeContext.latestManifest = JSON.parse(nativeContext.latestManifestString);
         delete nativeContext.latestManifestString;
@@ -254,6 +250,21 @@ export async function getNativeStateMachineContextAsync() {
         nativeContext.lastCheckForUpdateTime = new Date(nativeContext.lastCheckForUpdateTimeString);
         delete nativeContext.lastCheckForUpdateTimeString;
     }
+    if (nativeContext.rollbackString) {
+        nativeContext.rollback = JSON.parse(nativeContext.rollbackString);
+        delete nativeContext.rollbackString;
+    }
     return nativeContext;
+}
+/**
+ * @hidden
+ */
+export async function getNativeStateMachineContextAsync() {
+    // Return the current state machine context
+    if (!ExpoUpdates.getNativeStateMachineContextAsync) {
+        throw new UnavailabilityError('Updates', 'getNativeStateMachineContextAsync');
+    }
+    const nativeContext = await ExpoUpdates.getNativeStateMachineContextAsync();
+    return processedNativeStateMachineContext(nativeContext);
 }
 //# sourceMappingURL=Updates.js.map
