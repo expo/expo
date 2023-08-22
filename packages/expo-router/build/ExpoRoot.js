@@ -14,7 +14,7 @@ function getGestureHandlerRootView() {
         }
         // eslint-disable-next-line no-inner-declarations
         function GestureHandler(props) {
-            return React.createElement(GestureHandlerRootView, { testID: "gesture", style: styles.gesture, ...props });
+            return React.createElement(GestureHandlerRootView, { style: styles.gesture, ...props });
         }
         if (process.env.NODE_ENV === 'development') {
             // @ts-expect-error
