@@ -46,6 +46,8 @@ export function getStaticContent(location) {
         initialProps: {
             location,
             context: ctx,
+            wrapper: ({ children }) => (React.createElement(Root, null,
+                React.createElement("div", { id: "root" }, children))),
         },
     });
     const Root = getRootComponent();
@@ -56,9 +58,7 @@ export function getStaticContent(location) {
     // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
     resetReactNavigationContexts();
     const html = ReactDOMServer.renderToString(React.createElement(Head.Provider, { context: headContext },
-        React.createElement(ServerContainer, { ref: ref },
-            React.createElement(Root, null,
-                React.createElement("div", { id: "root" }, element)))));
+        React.createElement(ServerContainer, { ref: ref }, element)));
     // Eval the CSS after the HTML is rendered so that the CSS is in the same order
     const css = ReactDOMServer.renderToStaticMarkup(getStyleElement());
     let output = mixHeadComponentsWithStaticResults(headContext.helmet, html);

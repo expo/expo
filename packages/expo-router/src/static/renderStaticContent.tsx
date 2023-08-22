@@ -60,6 +60,11 @@ export function getStaticContent(location: URL): string {
     initialProps: {
       location,
       context: ctx,
+      wrapper: ({ children }) => (
+        <Root>
+          <div id="root">{children}</div>
+        </Root>
+      ),
     },
   });
 
@@ -75,11 +80,7 @@ export function getStaticContent(location: URL): string {
 
   const html = ReactDOMServer.renderToString(
     <Head.Provider context={headContext}>
-      <ServerContainer ref={ref}>
-        <Root>
-          <div id="root">{element}</div>
-        </Root>
-      </ServerContainer>
+      <ServerContainer ref={ref}>{element}</ServerContainer>
     </Head.Provider>
   );
 

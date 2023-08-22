@@ -33,23 +33,24 @@ const INITIAL_METRICS = {
 };
 const hasViewControllerBasedStatusBarAppearance = Platform.OS === 'ios' &&
     !!Constants.expoConfig?.ios?.infoPlist?.UIViewControllerBasedStatusBarAppearance;
-export function ExpoRoot({ ...props }) {
+export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }) {
     /*
      * Due to static rendering we need to wrap these top level views in second wrapper
      * View's like <GestureHandlerRootView /> generate a <div> so if the parent wrapper
      * is a HTML document, we need to ensure its inside the <body>
      */
     const wrapper = ({ children }) => {
-        return (React.createElement(GestureHandlerRootView, null,
-            children,
-            !hasViewControllerBasedStatusBarAppearance && React.createElement(StatusBar, { style: "auto" })));
+        return (React.createElement(ParentWrapper, null,
+            React.createElement(GestureHandlerRootView, null,
+                React.createElement(SafeAreaProvider
+                // SSR support
+                , { 
+                    // SSR support
+                    initialMetrics: INITIAL_METRICS },
+                    children,
+                    !hasViewControllerBasedStatusBarAppearance && React.createElement(StatusBar, { style: "auto" })))));
     };
-    return (React.createElement(SafeAreaProvider
-    // SSR support
-    , { 
-        // SSR support
-        initialMetrics: INITIAL_METRICS },
-        React.createElement(ContextNavigator, { ...props, wrapper: wrapper })));
+    return React.createElement(ContextNavigator, { ...props, wrapper: wrapper });
 }
 const initialUrl = Platform.OS === 'web' && typeof window !== 'undefined'
     ? new URL(window.location.href)
