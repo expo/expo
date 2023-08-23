@@ -26,7 +26,6 @@ import expo.modules.print.PrintModule
 import expo.modules.facedetector.FaceDetectorPackage
 import expo.modules.filesystem.FileSystemModule
 import expo.modules.filesystem.FileSystemPackage
-import expo.modules.font.FontLoaderPackage
 import expo.modules.gl.GLPackage
 import expo.modules.gl.GLViewModule
 import expo.modules.haptics.HapticsModule
@@ -88,7 +87,6 @@ object ExperiencePackagePicker : ModulesProvider {
     ContactsPackage(),
     FaceDetectorPackage(),
     FileSystemPackage(),
-    FontLoaderPackage(),
     GLPackage(),
     ImageLoaderPackage(),
     KeepAwakePackage(),

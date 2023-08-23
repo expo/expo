@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Migrated `FontLoaderModule` to use Expo Modules API. ([#24015](https://github.com/expo/expo/pull/24015) by [@lukmccall](https://github.com/lukmccall))
+
 ## 11.5.1 — 2023-08-02
 
 ### 💡 Others
