@@ -39,7 +39,7 @@ import expo.modules.keepawake.KeepAwakePackage
 import expo.modules.kotlin.ModulesProvider
 import expo.modules.kotlin.modules.Module
 import expo.modules.lineargradient.LinearGradientModule
-import expo.modules.localauthentication.LocalAuthenticationPackage
+import expo.modules.localauthentication.LocalAuthenticationModule
 import expo.modules.localization.LocalizationModule
 import expo.modules.location.LocationPackage
 import expo.modules.mailcomposer.MailComposerModule
@@ -90,7 +90,6 @@ object ExperiencePackagePicker : ModulesProvider {
     GLPackage(),
     ImageLoaderPackage(),
     KeepAwakePackage(),
-    LocalAuthenticationPackage(),
     LocationPackage(),
     NavigationBarPackage(),
     NotificationsPackage(),
@@ -151,6 +150,7 @@ object ExperiencePackagePicker : ModulesProvider {
     IntentLauncherModule::class.java,
     KeepAwakeModule::class.java,
     LinearGradientModule::class.java,
+    LocalAuthenticationModule::class.java,
     LocalizationModule::class.java,
     MailComposerModule::class.java,
     MediaLibraryModule::class.java,

@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [Android] Migrate to use Expo Modules API.
+
 ## 13.5.0 — 2023-08-02
 
 _This version does not introduce any user-facing changes._
