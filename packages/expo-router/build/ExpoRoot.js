@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
 import { StatusBar } from 'expo-status-bar';
 import React, { Fragment } from 'react';
-import { Platform } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import UpstreamNavigationContainer from './fork/NavigationContainer';
 import { useInitializeExpoRouter } from './global-state/router-store';
@@ -14,7 +14,7 @@ function getGestureHandlerRootView() {
         }
         // eslint-disable-next-line no-inner-declarations
         function GestureHandler(props) {
-            return React.createElement(GestureHandlerRootView, { style: { flex: 1 }, ...props });
+            return React.createElement(GestureHandlerRootView, { style: styles.gesture, ...props });
         }
         if (process.env.NODE_ENV === 'development') {
             // @ts-expect-error
@@ -76,4 +76,7 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
         React.createElement(WrapperComponent, null,
             React.createElement(Component, null))));
 }
+const styles = StyleSheet.create({
+    gesture: { flex: 1 },
+});
 //# sourceMappingURL=ExpoRoot.js.map
