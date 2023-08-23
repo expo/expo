@@ -67,7 +67,7 @@ Object.defineProperties(constants, {
     __unsafeNoWarnManifest: {
         get() {
             const maybeManifest = getManifest(true);
-            if (!maybeManifest || !isLegacyOrBareManifest(maybeManifest)) {
+            if (!maybeManifest || !isBareManifest(maybeManifest)) {
                 return null;
             }
             return maybeManifest;
@@ -91,7 +91,7 @@ Object.defineProperties(constants, {
                 warnedAboutManifestField = true;
             }
             const maybeManifest = getManifest();
-            if (!maybeManifest || !isLegacyOrBareManifest(maybeManifest)) {
+            if (!maybeManifest || !isBareManifest(maybeManifest)) {
                 return null;
             }
             return maybeManifest;
@@ -122,7 +122,7 @@ Object.defineProperties(constants, {
             if (isManifest(maybeManifest)) {
                 return maybeManifest.extra?.expoClient ?? null;
             }
-            else if (isLegacyOrBareManifest(maybeManifest)) {
+            else if (isBareManifest(maybeManifest)) {
                 return maybeManifest;
             }
             return null;
@@ -138,7 +138,7 @@ Object.defineProperties(constants, {
             if (isManifest(maybeManifest)) {
                 return maybeManifest.extra?.expoGo ?? null;
             }
-            else if (isLegacyOrBareManifest(maybeManifest)) {
+            else if (isBareManifest(maybeManifest)) {
                 return maybeManifest;
             }
             return null;
@@ -154,7 +154,7 @@ Object.defineProperties(constants, {
             if (isManifest(maybeManifest)) {
                 return maybeManifest.extra?.eas ?? null;
             }
-            else if (isLegacyOrBareManifest(maybeManifest)) {
+            else if (isBareManifest(maybeManifest)) {
                 return maybeManifest;
             }
             return null;
@@ -171,7 +171,7 @@ Object.defineProperties(constants, {
         enumerable: false,
     },
 });
-function isLegacyOrBareManifest(manifest) {
+function isBareManifest(manifest) {
     return !isManifest(manifest);
 }
 function isManifest(manifest) {
