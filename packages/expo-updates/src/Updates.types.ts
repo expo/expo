@@ -1,4 +1,6 @@
-import Constants from 'expo-constants';
+import { NewManifest, BareManifest, LegacyManifest } from 'expo-manifests';
+
+export type Manifest = NewManifest | BareManifest | LegacyManifest;
 
 /**
  * The types of update-related events.
@@ -19,21 +21,6 @@ export enum UpdateEventType {
    */
   ERROR = 'error',
 }
-
-// @docsMissing
-// TODO(eric): move source of truth for manifest type to this module
-/**
- * @hidden
- */
-export type ClassicManifest = typeof Constants.manifest;
-
-// @docsMissing
-/**
- * @hidden
- */
-export type Manifest = ClassicManifest | typeof Constants.manifest2;
-// modern manifest type is intentionally not exported, since the plan is to call it just "Manifest"
-// in the future
 
 type UpdateCheckResultRollBackToEmbedded = {
   /**

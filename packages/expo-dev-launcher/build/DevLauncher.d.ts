@@ -1,4 +1,6 @@
+import { NewManifest, LegacyManifest } from 'expo-manifests';
 import './setUpErrorHandler.fx';
+export type Manifest = NewManifest | LegacyManifest;
 export { disableErrorHandling } from './DevLauncherErrorManager';
 export declare function registerErrorHandlers(): void;
 export declare function isDevelopmentBuild(): boolean;

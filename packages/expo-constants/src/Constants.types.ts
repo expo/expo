@@ -1,4 +1,17 @@
 import { ExpoConfig } from '@expo/config-types';
+import type {
+  EASConfig as ManifestsEASConfig,
+  ExpoGoConfig as ManifestsExpoGoConfig,
+  NewManifest,
+  LegacyManifest,
+  BareManifest,
+  ManifestAsset as ManifestAssetForReExport,
+  ManifestExtra as ManifestExtraForReExport,
+  ClientScopingConfig as ClientScopingConfigForReExport,
+  ExpoGoPackagerOpts as ExpoGoPackagerOptsForReExport,
+  ExpoClientConfig as ExpoClientConfigForReExport,
+  // @ts-ignore -- optional interface, will gracefully degrade to `any` not installed
+} from 'expo-manifests';
 
 // @needsAudit
 export enum AppOwnership {
@@ -83,116 +96,17 @@ export interface WebManifest {
   [key: string]: any;
 }
 
-// @docsMissing
-export interface ManifestAsset {
-  url: string;
-}
+// type re-exports to prevent breaking change
 
-// @needsAudit @docsMissing
-/**
- * A modern manifest.
- */
-export type Manifest = {
-  id: string;
-  createdAt: string;
-  runtimeVersion: string;
-  launchAsset: ManifestAsset;
-  assets: ManifestAsset[];
-  metadata: object;
-  extra?: ManifestExtra;
-};
-
-// @docsMissing
-export type ManifestExtra = ClientScopingConfig & {
-  expoClient?: ExpoConfig & {
-    /**
-     * Only present during development using @expo/cli.
-     */
-    hostUri?: string;
-  };
-  expoGo?: ExpoGoConfig;
-  eas?: EASConfig;
-};
-
-// @needsAudit
-export type EASConfig = {
-  /**
-   * The ID for this project if it's using EAS. UUID. This value will not change when a project is
-   * transferred between accounts or renamed.
-   */
-  projectId?: string;
-};
-
-// @needsAudit
-export type ClientScopingConfig = {
-  /**
-   * An opaque unique string for scoping client-side data to this project. This value
-   * will not change when a project is transferred between accounts or renamed.
-   */
-  scopeKey?: string;
-};
-
-// @docsMissing
-export type ExpoGoConfig = {
-  mainModuleName?: string;
-  debuggerHost?: string;
-  developer?: {
-    tool?: string;
-    [key: string]: any;
-  };
-  packagerOpts?: ExpoGoPackagerOpts;
-};
-
-// @docsMissing
-export type ExpoGoPackagerOpts = {
-  hostType?: string;
-  dev?: boolean;
-  strict?: boolean;
-  minify?: boolean;
-  urlType?: string;
-  urlRandomness?: string;
-  lanType?: string;
-  [key: string]: any;
-};
-
-export type ExpoClientConfig = ExpoConfig & {
-  /**
-   * Published apps only.
-   */
-  releaseId?: string;
-  revisionId?: string;
-  releaseChannel?: string;
-  bundleUrl: string;
-  hostUri?: string;
-  publishedTime?: string;
-  /**
-   * The Expo account name and slug for this project.
-   * @deprecated Prefer `projectId` or `originalFullName` instead for identification and
-   * `scopeKey` for scoping due to immutability.
-   */
-  id?: string;
-  /**
-   * The original Expo account name and slug for this project. Formatted like `@username/slug`.
-   * When unauthenticated, the username is `@anonymous`. For published projects, this value
-   * will not change when a project is transferred between accounts or renamed.
-   */
-  originalFullName?: string;
-  /**
-   * The Expo account name and slug used for display purposes. Formatted like `@username/slug`.
-   * When unauthenticated, the username is `@anonymous`. For published projects, this value
-   * may change when a project is transferred between accounts or renamed.
-   */
-  currentFullName?: string;
-};
-
-/**
- * Represents an intersection of all possible Config types.
- */
-export type AppManifest = ExpoClientConfig &
-  ExpoGoConfig &
-  EASConfig &
-  ClientScopingConfig &
-  Record<string, any>;
+export type ManifestAsset = ManifestAssetForReExport;
+export type Manifest = NewManifest;
+export type ManifestExtra = ManifestExtraForReExport;
+export type EASConfig = ManifestsEASConfig;
+export type ClientScopingConfig = ClientScopingConfigForReExport;
+export type ExpoGoConfig = ManifestsExpoGoConfig;
+export type ExpoGoPackagerOpts = ExpoGoPackagerOptsForReExport;
+export type ExpoClientConfig = ExpoClientConfigForReExport;
+export type AppManifest = LegacyManifest;
 
 // @needsAudit @docsMissing
 export interface PlatformManifest {
@@ -275,13 +189,13 @@ export interface NativeConstants {
    * @deprecated Use `Constants.expoConfig` instead, which behaves more consistently across EAS Build
    * and EAS Update.
    */
-  manifest: AppManifest | null;
+  manifest: LegacyManifest | BareManifest | null;
   /**
    * Manifest for Expo apps using modern Expo Updates from a remote source, such as apps that
    * use EAS Update. Returns `null` in bare workflow and when `manifest` is non-null.
    * `Constants.expoConfig` should be used for accessing the Expo config object.
    */
-  manifest2: Manifest | null;
+  manifest2: NewManifest | null;
   /**
    * The standard Expo config object defined in `app.json` and `app.config.js` files. For both
    * classic and modern manifests, whether they are embedded or remote.
@@ -297,11 +211,11 @@ export interface NativeConstants {
   /**
    * The standard Expo Go config object populated when running in Expo Go.
    */
-  expoGoConfig: ExpoGoConfig | null;
+  expoGoConfig: ManifestsExpoGoConfig | null;
   /**
    * The standard EAS config object populated when using EAS.
    */
-  easConfig: EASConfig | null;
+  easConfig: ManifestsEASConfig | null;
   /**
    * A string that is unique to the current session of your app. It is different across apps and
    * across multiple launches of the same app.
@@ -339,7 +253,7 @@ export interface Constants extends NativeConstants {
    * In certain cases accessing manifest via this property
    * suppresses important warning about missing manifest.
    */
-  __unsafeNoWarnManifest?: AppManifest;
+  __unsafeNoWarnManifest?: LegacyManifest | BareManifest;
   /**
    * @hidden
    * @warning do not use this property. Use `manifest2` by default.
@@ -347,5 +261,5 @@ export interface Constants extends NativeConstants {
    * In certain cases accessing manifest via this property
    * suppresses important warning about missing manifest.
    */
-  __unsafeNoWarnManifest2?: Manifest;
+  __unsafeNoWarnManifest2?: NewManifest;
 }
