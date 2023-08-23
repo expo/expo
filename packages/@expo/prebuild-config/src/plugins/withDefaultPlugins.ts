@@ -135,17 +135,14 @@ const versionedExpoSDKPackages: string[] = [
   'expo-system-ui',
 ];
 
-export const withVersionedExpoSDKPlugins: ConfigPlugin<{ expoUsername: string | null }> = (
-  config,
-  { expoUsername }
-) => {
+export const withVersionedExpoSDKPlugins: ConfigPlugin = (config) => {
   return withPlugins(config, [
     withMaps,
     withAdMob,
     withAppleAuthentication,
     withContacts,
     withNotifications,
-    [withUpdates, { expoUsername }],
+    withUpdates,
     withBranch,
     withDocumentPicker,
     // System UI must come before splash screen as they overlap

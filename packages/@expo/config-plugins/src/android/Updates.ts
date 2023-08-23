@@ -46,17 +46,11 @@ export enum Config {
 // when making changes to this config plugin, ensure the same changes are also made in eas-cli and build-tools
 // Also ensure the docs are up-to-date: https://docs.expo.dev/bare/installing-updates/
 
-export const withUpdates: ConfigPlugin<{ expoUsername: string | null }> = (
-  config,
-  { expoUsername }
-) => {
-  return withPlugins(config, [[withUpdatesManifest, { expoUsername }], withRuntimeVersionResource]);
+export const withUpdates: ConfigPlugin = (config) => {
+  return withPlugins(config, [withUpdatesManifest, withRuntimeVersionResource]);
 };
 
-const withUpdatesManifest: ConfigPlugin<{ expoUsername: string | null }> = (
-  config,
-  { expoUsername }
-) => {
+const withUpdatesManifest: ConfigPlugin = (config) => {
   return withAndroidManifest(config, (config) => {
     const projectRoot = config.modRequest.projectRoot;
     const expoUpdatesPackageVersion = getExpoUpdatesPackageVersion(projectRoot);
@@ -64,7 +58,6 @@ const withUpdatesManifest: ConfigPlugin<{ expoUsername: string | null }> = (
       projectRoot,
       config,
       config.modResults,
-      expoUsername,
       expoUpdatesPackageVersion
     );
     return config;
@@ -94,7 +87,6 @@ export function setUpdatesConfig(
   projectRoot: string,
   config: ExpoConfigUpdates,
   androidManifest: AndroidManifest,
-  username: string | null,
   expoUpdatesPackageVersion?: string | null
 ): AndroidManifest {
   const mainApplication = getMainApplicationOrThrow(androidManifest);
@@ -102,7 +94,7 @@ export function setUpdatesConfig(
   addMetaDataItemToMainApplication(
     mainApplication,
     Config.ENABLED,
-    String(getUpdatesEnabled(config, username))
+    String(getUpdatesEnabled(config))
   );
   addMetaDataItemToMainApplication(
     mainApplication,
@@ -115,7 +107,7 @@ export function setUpdatesConfig(
     String(getUpdatesTimeout(config))
   );
 
-  const updateUrl = getUpdateUrl(config, username);
+  const updateUrl = getUpdateUrl(config);
   if (updateUrl) {
     addMetaDataItemToMainApplication(mainApplication, Config.UPDATE_URL, updateUrl);
   } else {
@@ -262,13 +254,11 @@ export function isMainApplicationMetaDataSet(androidManifest: AndroidManifest): 
 export function isMainApplicationMetaDataSynced(
   projectRoot: string,
   config: ExpoConfigUpdates,
-  androidManifest: AndroidManifest,
-  username: string | null
+  androidManifest: AndroidManifest
 ): boolean {
   return (
-    getUpdateUrl(config, username) ===
-      getMainApplicationMetaDataValue(androidManifest, Config.UPDATE_URL) &&
-    String(getUpdatesEnabled(config, username)) ===
+    getUpdateUrl(config) === getMainApplicationMetaDataValue(androidManifest, Config.UPDATE_URL) &&
+    String(getUpdatesEnabled(config)) ===
       getMainApplicationMetaDataValue(androidManifest, Config.ENABLED) &&
     String(getUpdatesTimeout(config)) ===
       getMainApplicationMetaDataValue(androidManifest, Config.LAUNCH_WAIT_MS) &&

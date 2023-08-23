@@ -60,25 +60,23 @@ exports.Config = Config;
   Config["CODE_SIGNING_CERTIFICATE"] = "EXUpdatesCodeSigningCertificate";
   Config["CODE_SIGNING_METADATA"] = "EXUpdatesCodeSigningMetadata";
 })(Config || (exports.Config = Config = {}));
-const withUpdates = (config, {
-  expoUsername
-}) => {
+const withUpdates = config => {
   return (0, _iosPlugins().withExpoPlist)(config, config => {
     const projectRoot = config.modRequest.projectRoot;
     const expoUpdatesPackageVersion = (0, _Updates().getExpoUpdatesPackageVersion)(projectRoot);
-    config.modResults = setUpdatesConfig(projectRoot, config, config.modResults, expoUsername, expoUpdatesPackageVersion);
+    config.modResults = setUpdatesConfig(projectRoot, config, config.modResults, expoUpdatesPackageVersion);
     return config;
   });
 };
 exports.withUpdates = withUpdates;
-function setUpdatesConfig(projectRoot, config, expoPlist, username, expoUpdatesPackageVersion) {
+function setUpdatesConfig(projectRoot, config, expoPlist, expoUpdatesPackageVersion) {
   const newExpoPlist = {
     ...expoPlist,
-    [Config.ENABLED]: (0, _Updates().getUpdatesEnabled)(config, username),
+    [Config.ENABLED]: (0, _Updates().getUpdatesEnabled)(config),
     [Config.CHECK_ON_LAUNCH]: (0, _Updates().getUpdatesCheckOnLaunch)(config, expoUpdatesPackageVersion),
     [Config.LAUNCH_WAIT_MS]: (0, _Updates().getUpdatesTimeout)(config)
   };
-  const updateUrl = (0, _Updates().getUpdateUrl)(config, username);
+  const updateUrl = (0, _Updates().getUpdateUrl)(config);
   if (updateUrl) {
     newExpoPlist[Config.UPDATE_URL] = updateUrl;
   } else {
@@ -166,8 +164,8 @@ function isShellScriptBuildPhaseConfigured(projectRoot, project) {
 function isPlistConfigurationSet(expoPlist) {
   return Boolean(expoPlist.EXUpdatesURL && (expoPlist.EXUpdatesSDKVersion || expoPlist.EXUpdatesRuntimeVersion));
 }
-function isPlistConfigurationSynced(projectRoot, config, expoPlist, username) {
-  return (0, _Updates().getUpdateUrl)(config, username) === expoPlist.EXUpdatesURL && (0, _Updates().getUpdatesEnabled)(config, username) === expoPlist.EXUpdatesEnabled && (0, _Updates().getUpdatesTimeout)(config) === expoPlist.EXUpdatesLaunchWaitMs && (0, _Updates().getUpdatesCheckOnLaunch)(config) === expoPlist.EXUpdatesCheckOnLaunch && (0, _Updates().getUpdatesCodeSigningCertificate)(projectRoot, config) === expoPlist.EXUpdatesCodeSigningCertificate && (0, _Updates().getUpdatesCodeSigningMetadata)(config) === expoPlist.EXUpdatesCodeSigningMetadata && isPlistVersionConfigurationSynced(config, expoPlist);
+function isPlistConfigurationSynced(projectRoot, config, expoPlist) {
+  return (0, _Updates().getUpdateUrl)(config) === expoPlist.EXUpdatesURL && (0, _Updates().getUpdatesEnabled)(config) === expoPlist.EXUpdatesEnabled && (0, _Updates().getUpdatesTimeout)(config) === expoPlist.EXUpdatesLaunchWaitMs && (0, _Updates().getUpdatesCheckOnLaunch)(config) === expoPlist.EXUpdatesCheckOnLaunch && (0, _Updates().getUpdatesCodeSigningCertificate)(projectRoot, config) === expoPlist.EXUpdatesCodeSigningCertificate && (0, _Updates().getUpdatesCodeSigningMetadata)(config) === expoPlist.EXUpdatesCodeSigningMetadata && isPlistVersionConfigurationSynced(config, expoPlist);
 }
 function isPlistVersionConfigurationSynced(config, expoPlist) {
   var _expoPlist$EXUpdatesR, _expoPlist$EXUpdatesS;
