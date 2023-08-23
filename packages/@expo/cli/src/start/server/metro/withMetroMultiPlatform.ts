@@ -343,7 +343,6 @@ export function withExtendedResolver(
             }
           )
         ) {
-          console.log('remap: ', result.filePath);
           // @ts-expect-error: `readonly` for some reason.
           result.filePath = reactNativeWebAppContainer;
         }
