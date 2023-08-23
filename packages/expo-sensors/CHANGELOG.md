@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix NullPointerException in PedometerModule. ([#24079](https://github.com/expo/expo/pull/24079) by [@jleprinc](https://github.com/jleprinc))
+
 ### 💡 Others
 
 - Migrated Android codebase to use Expo modules API. ([#23906](https://github.com/expo/expo/pull/23906) by [@lukmccall](https://github.com/lukmccall))
