@@ -83,8 +83,9 @@ const styles = StyleSheet.create({
     bottom: 6,
     left: 10,
     right: 10,
-    position: 'absolute',
     maxWidth: 320,
+    // @ts-expect-error
+    position: 'fixed',
   },
 });
 
