@@ -4,8 +4,8 @@ import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import expo.modules.adapters.react.ModuleRegistryAdapter
 import expo.modules.adapters.react.ReactModuleRegistryProvider
-import expo.modules.core.interfaces.Consumer
 import expo.modules.core.interfaces.RegistryLifecycleListener
+import expo.modules.font.FontLoaderModule
 import expo.modules.kotlin.ModulesProvider
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.utils.ScopedContext
@@ -82,13 +82,18 @@ open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistry
     }
     return getNativeModulesFromModuleRegistry(
       reactContext,
-      moduleRegistry,
-      Consumer { appContext ->
-        appContext.registry.register(
-          ExpoGoModule(manifest)
-        )
-      }
-    )
+      moduleRegistry
+    ) { appContext ->
+      appContext.registry.register(
+        ExpoGoModule(manifest)
+      )
+      appContext.registry.register(
+        object : FontLoaderModule() {
+          override val prefix: String
+            get() = "ExpoFont-"
+        }
+      )
+    }
   }
 
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {

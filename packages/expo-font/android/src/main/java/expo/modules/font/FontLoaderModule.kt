@@ -2,48 +2,32 @@
 
 package expo.modules.font
 
-import android.content.Context
 import android.graphics.Typeface
 import android.net.Uri
-
-import expo.modules.core.ExportedModule
-import expo.modules.core.ModuleRegistry
-import expo.modules.core.ModuleRegistryDelegate
-import expo.modules.core.interfaces.ExpoMethod
-import expo.modules.core.Promise
-
 import expo.modules.interfaces.font.FontManagerInterface
-import expo.modules.interfaces.constants.ConstantsInterface
-
+import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
 import java.io.File
-import java.lang.Exception
 
 private const val ASSET_SCHEME = "asset://"
-private const val EXPORTED_NAME = "ExpoFontLoader"
 
-class FontLoaderModule(context: Context) : ExportedModule(context) {
-  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
+private class FontManagerInterfaceNotFoundException :
+  CodedException("FontManagerInterface not found")
 
-  private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
+private class FileNotFoundException(uri: String) :
+  CodedException("File '$uri' doesn't exist")
 
-  override fun onCreate(moduleRegistry: ModuleRegistry) {
-    moduleRegistryDelegate.onCreate(moduleRegistry)
-  }
+open class FontLoaderModule : Module() {
+  @Suppress("MemberVisibilityCanBePrivate")
+  open val prefix = ""
 
-  override fun getName(): String {
-    return EXPORTED_NAME
-  }
+  override fun definition() = ModuleDefinition {
+    Name("ExpoFontLoader")
 
-  @ExpoMethod
-  fun loadAsync(fontFamilyName: String, localUri: String, promise: Promise) {
-    try {
-      // TODO: remove Expo references
-      // https://github.com/expo/expo/pull/4652#discussion_r296630843
-      val prefix = if (isScoped) {
-        "ExpoFont-"
-      } else {
-        ""
-      }
+    AsyncFunction("loadAsync") { fontFamilyName: String, localUri: String ->
+      val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
       // TODO(nikki): make sure path is in experience's scope
       val typeface: Typeface = if (localUri.startsWith(ASSET_SCHEME)) {
@@ -52,27 +36,16 @@ class FontLoaderModule(context: Context) : ExportedModule(context) {
           localUri.substring(ASSET_SCHEME.length + 1)
         )
       } else {
-        Typeface.createFromFile(File(Uri.parse(localUri).path))
+        val file = Uri.parse(localUri).path?.let { File(it) }
+          ?: throw FileNotFoundException(localUri)
+
+        Typeface.createFromFile(file)
       }
 
-      val fontManager: FontManagerInterface? by moduleRegistry()
-      if (fontManager == null) {
-        promise.reject("E_NO_FONT_MANAGER", "There is no FontManager in module registry. Are you sure all the dependencies of expo-font are installed and linked?")
-        return
-      }
+      val fontManager = appContext.legacyModule<FontManagerInterface>()
+        ?: throw FontManagerInterfaceNotFoundException()
 
-      fontManager!!.setTypeface(prefix + fontFamilyName, Typeface.NORMAL, typeface)
-      promise.resolve(null)
-    } catch (e: Exception) {
-      promise.reject("E_UNEXPECTED", "Font.loadAsync unexpected exception: " + e.message, e)
+      fontManager.setTypeface(prefix + fontFamilyName, Typeface.NORMAL, typeface)
     }
   }
-
-  // If there's no constants module, or app ownership isn't "expo", we're not in Expo Client.
-  private val isScoped: Boolean
-    get() {
-      val constantsModule: ConstantsInterface? by moduleRegistry()
-      // If there's no constants module, or app ownership isn't "expo", we're not in Expo Client.
-      return constantsModule != null && "expo" == constantsModule!!.appOwnership
-    }
 }
