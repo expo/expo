@@ -2,7 +2,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     CFPropertyList (3.0.3)
-    activesupport (7.0.4.3)
+    activesupport (7.0.7.2)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
@@ -199,7 +199,7 @@ GEM
     http-cookie (1.0.4)
       domain_name (~> 0.5)
     httpclient (2.8.3)
-    i18n (1.12.0)
+    i18n (1.14.1)
       concurrent-ruby (~> 1.0)
     jmespath (1.6.1)
     json (2.6.1)
@@ -207,7 +207,7 @@ GEM
     memoist (0.16.2)
     mini_magick (4.11.0)
     mini_mime (1.1.2)
-    minitest (5.18.0)
+    minitest (5.19.0)
     molinillo (0.8.0)
     multi_json (1.15.0)
     multipart-post (2.0.0)
