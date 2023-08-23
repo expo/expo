@@ -1,4 +1,4 @@
-import { ExpoConfig, getAccountUsername } from '@expo/config';
+import { ExpoConfig } from '@expo/config';
 import { compileModsAsync, ModPlatform } from '@expo/config-plugins';
 import { getPrebuildConfigAsync } from '@expo/prebuild-config';
 
@@ -33,9 +33,6 @@ export async function configureProjectAsync(
     platforms,
     packageName,
     bundleIdentifier,
-    expoUsername(config) {
-      return getAccountUsername(config);
-    },
   });
 
   // compile all plugins and mods

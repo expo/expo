@@ -183,7 +183,7 @@ function getLargeConfig(): ExportedConfig {
 
 function getPrebuildConfig() {
   let config = { ...getLargeConfig() };
-  config = withVersionedExpoSDKPlugins(config, { expoUsername: 'bacon' });
+  config = withVersionedExpoSDKPlugins(config);
 
   config = withIosExpoPlugins(config, {
     bundleIdentifier: 'com.bacon.todo',

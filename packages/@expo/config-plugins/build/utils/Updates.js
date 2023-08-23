@@ -77,24 +77,9 @@ function getExpoUpdatesPackageVersion(projectRoot) {
   const packageJson = JSON.parse(_fs().default.readFileSync(expoUpdatesPackageJsonPath, 'utf8'));
   return packageJson.version;
 }
-function shouldDefaultToClassicUpdates(config) {
-  var _config$updates;
-  return !!((_config$updates = config.updates) !== null && _config$updates !== void 0 && _config$updates.useClassicUpdates);
-}
-function getUpdateUrl(config, username) {
-  var _config$updates2;
-  if ((_config$updates2 = config.updates) !== null && _config$updates2 !== void 0 && _config$updates2.url) {
-    var _config$updates3;
-    return (_config$updates3 = config.updates) === null || _config$updates3 === void 0 ? void 0 : _config$updates3.url;
-  }
-  if (!shouldDefaultToClassicUpdates(config)) {
-    return null;
-  }
-  const user = typeof config.owner === 'string' ? config.owner : username;
-  if (!user) {
-    return null;
-  }
-  return `https://exp.host/@${user}/${config.slug}`;
+function getUpdateUrl(config) {
+  var _config$updates$url, _config$updates;
+  return (_config$updates$url = (_config$updates = config.updates) === null || _config$updates === void 0 ? void 0 : _config$updates.url) !== null && _config$updates$url !== void 0 ? _config$updates$url : null;
 }
 function getAppVersion(config) {
   var _config$version;
@@ -181,40 +166,38 @@ function getRuntimeVersion(config, platform) {
 function getSDKVersion(config) {
   return typeof config.sdkVersion === 'string' ? config.sdkVersion : null;
 }
-function getUpdatesEnabled(config, username) {
-  var _config$updates4;
+function getUpdatesEnabled(config) {
+  var _config$updates2;
   // allow override of enabled property
-  if (((_config$updates4 = config.updates) === null || _config$updates4 === void 0 ? void 0 : _config$updates4.enabled) !== undefined) {
+  if (((_config$updates2 = config.updates) === null || _config$updates2 === void 0 ? void 0 : _config$updates2.enabled) !== undefined) {
     return config.updates.enabled;
   }
-
-  // enable if URL is set (which respects shouldDefaultToClassicUpdates)
-  return getUpdateUrl(config, username) !== null;
+  return getUpdateUrl(config) !== null;
 }
 function getUpdatesTimeout(config) {
-  var _config$updates$fallb, _config$updates5;
-  return (_config$updates$fallb = (_config$updates5 = config.updates) === null || _config$updates5 === void 0 ? void 0 : _config$updates5.fallbackToCacheTimeout) !== null && _config$updates$fallb !== void 0 ? _config$updates$fallb : 0;
+  var _config$updates$fallb, _config$updates3;
+  return (_config$updates$fallb = (_config$updates3 = config.updates) === null || _config$updates3 === void 0 ? void 0 : _config$updates3.fallbackToCacheTimeout) !== null && _config$updates$fallb !== void 0 ? _config$updates$fallb : 0;
 }
 function getUpdatesCheckOnLaunch(config, expoUpdatesPackageVersion) {
-  var _config$updates6, _config$updates7, _config$updates8, _config$updates9;
-  if (((_config$updates6 = config.updates) === null || _config$updates6 === void 0 ? void 0 : _config$updates6.checkAutomatically) === 'ON_ERROR_RECOVERY') {
+  var _config$updates4, _config$updates5, _config$updates6, _config$updates7;
+  if (((_config$updates4 = config.updates) === null || _config$updates4 === void 0 ? void 0 : _config$updates4.checkAutomatically) === 'ON_ERROR_RECOVERY') {
     // native 'ERROR_RECOVERY_ONLY' option was only introduced in 0.11.x
     if (expoUpdatesPackageVersion && _semver().default.gte(expoUpdatesPackageVersion, '0.11.0')) {
       return 'ERROR_RECOVERY_ONLY';
     }
     return 'NEVER';
-  } else if (((_config$updates7 = config.updates) === null || _config$updates7 === void 0 ? void 0 : _config$updates7.checkAutomatically) === 'ON_LOAD') {
+  } else if (((_config$updates5 = config.updates) === null || _config$updates5 === void 0 ? void 0 : _config$updates5.checkAutomatically) === 'ON_LOAD') {
     return 'ALWAYS';
-  } else if (((_config$updates8 = config.updates) === null || _config$updates8 === void 0 ? void 0 : _config$updates8.checkAutomatically) === 'WIFI_ONLY') {
+  } else if (((_config$updates6 = config.updates) === null || _config$updates6 === void 0 ? void 0 : _config$updates6.checkAutomatically) === 'WIFI_ONLY') {
     return 'WIFI_ONLY';
-  } else if (((_config$updates9 = config.updates) === null || _config$updates9 === void 0 ? void 0 : _config$updates9.checkAutomatically) === 'NEVER') {
+  } else if (((_config$updates7 = config.updates) === null || _config$updates7 === void 0 ? void 0 : _config$updates7.checkAutomatically) === 'NEVER') {
     return 'NEVER';
   }
   return 'ALWAYS';
 }
 function getUpdatesCodeSigningCertificate(projectRoot, config) {
-  var _config$updates10;
-  const codeSigningCertificatePath = (_config$updates10 = config.updates) === null || _config$updates10 === void 0 ? void 0 : _config$updates10.codeSigningCertificate;
+  var _config$updates8;
+  const codeSigningCertificatePath = (_config$updates8 = config.updates) === null || _config$updates8 === void 0 ? void 0 : _config$updates8.codeSigningCertificate;
   if (!codeSigningCertificatePath) {
     return undefined;
   }
@@ -225,8 +208,8 @@ function getUpdatesCodeSigningCertificate(projectRoot, config) {
   return _fs().default.readFileSync(finalPath, 'utf8');
 }
 function getUpdatesCodeSigningMetadata(config) {
-  var _config$updates11;
-  return (_config$updates11 = config.updates) === null || _config$updates11 === void 0 ? void 0 : _config$updates11.codeSigningMetadata;
+  var _config$updates9;
+  return (_config$updates9 = config.updates) === null || _config$updates9 === void 0 ? void 0 : _config$updates9.codeSigningMetadata;
 }
 function getUpdatesCodeSigningMetadataStringified(config) {
   const metadata = getUpdatesCodeSigningMetadata(config);
@@ -236,8 +219,8 @@ function getUpdatesCodeSigningMetadataStringified(config) {
   return JSON.stringify(metadata);
 }
 function getUpdatesRequestHeaders(config) {
-  var _config$updates12;
-  return (_config$updates12 = config.updates) === null || _config$updates12 === void 0 ? void 0 : _config$updates12.requestHeaders;
+  var _config$updates10;
+  return (_config$updates10 = config.updates) === null || _config$updates10 === void 0 ? void 0 : _config$updates10.requestHeaders;
 }
 function getUpdatesRequestHeadersStringified(config) {
   const metadata = getUpdatesRequestHeaders(config);

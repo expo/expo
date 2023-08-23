@@ -36,8 +36,7 @@ function getPrebuildConfig(projectRoot, {
   platforms,
   bundleIdentifier,
   packageName,
-  autolinkedModules,
-  expoUsername
+  autolinkedModules
 }) {
   // let config: ExpoConfig;
   let {
@@ -53,14 +52,10 @@ function getPrebuildConfig(projectRoot, {
     }
     config._internal.autolinkedModules = autolinkedModules;
   }
-  const resolvedExpoUsername = typeof expoUsername === 'function' ? expoUsername(config) : // If the user didn't pass a username then fallback on the static cached username.
-  expoUsername !== null && expoUsername !== void 0 ? expoUsername : (0, _config().getAccountUsername)(config);
 
   // Add all built-in plugins first because they should take
   // priority over the unversioned plugins.
-  config = (0, _withDefaultPlugins().withVersionedExpoSDKPlugins)(config, {
-    expoUsername: resolvedExpoUsername
-  });
+  config = (0, _withDefaultPlugins().withVersionedExpoSDKPlugins)(config);
   config = (0, _withDefaultPlugins().withLegacyExpoPlugins)(config);
   if (platforms.includes('ios')) {
     var _ref;

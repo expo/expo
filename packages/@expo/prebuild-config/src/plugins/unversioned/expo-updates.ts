@@ -10,19 +10,19 @@ import {
 
 const packageName = 'expo-updates';
 
-export const withExpoUpdates: ConfigPlugin<{ expoUsername: string }> = (config, props) => {
+export const withExpoUpdates: ConfigPlugin = (config) => {
   return withStaticPlugin(config, {
     _isLegacyPlugin: true,
     // Pass props to the static plugin if it exists.
-    plugin: [packageName, props],
+    plugin: packageName,
     // If the static plugin isn't found, use the unversioned one.
-    fallback: createRunOncePlugin((config) => withUnversionedUpdates(config, props), packageName),
+    fallback: createRunOncePlugin((config) => withUnversionedUpdates(config), packageName),
   });
 };
 
-const withUnversionedUpdates: ConfigPlugin<{ expoUsername: string }> = (config, props) => {
-  config = AndroidConfig.Updates.withUpdates(config, props);
-  config = IOSConfig.Updates.withUpdates(config, props);
+const withUnversionedUpdates: ConfigPlugin = (config) => {
+  config = AndroidConfig.Updates.withUpdates(config);
+  config = IOSConfig.Updates.withUpdates(config);
   return config;
 };
 
