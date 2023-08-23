@@ -1,11 +1,13 @@
-import { ExpoAppManifest, getConfig } from '@expo/config';
+import { ExpoConfig, getConfig } from '@expo/config';
 
-import { getResolvedLocalesAsync } from './getResolvedLocales';
+import { LocaleMap, getResolvedLocalesAsync } from './getResolvedLocales';
 import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
 
 /** Get the public Expo manifest from the local project config. */
-export async function getPublicExpoManifestAsync(projectRoot: string): Promise<ExpoAppManifest> {
+export async function getPublicExpoManifestAsync(
+  projectRoot: string
+): Promise<ExpoConfig & { locales: LocaleMap; sdkVersion: string }> {
   // Read the config in public mode which strips the `hooks`.
   const { exp } = getConfig(projectRoot, {
     isPublicConfig: true,

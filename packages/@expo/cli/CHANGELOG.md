@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove classic manifest types. ([#24054](https://github.com/expo/expo/pull/24054) by [@wschurman](https://github.com/wschurman))
+
 ### 🎉 New features
 
 - Forward exact Metro server error during static rendering. ([#23909](https://github.com/expo/expo/pull/23909) by [@EvanBacon](https://github.com/EvanBacon))

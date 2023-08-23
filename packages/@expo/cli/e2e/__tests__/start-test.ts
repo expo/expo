@@ -85,7 +85,6 @@ it('runs `npx expo start --help`', async () => {
         --scheme <scheme>               Custom URI protocol to use when launching an app
         -p, --port <number>             Port to start the dev server on (does not apply to web or tunnel). Default: 8081
         
-        --force-manifest-type <string>  Override auto detection of manifest type. Options: expo-updates, classic
         --private-key-path <path>       Path to private key for code signing. Default: "private-key.pem" in the same directory as the certificate specified by the expo-updates configuration in app.json.
         -h, --help                      Usage info
     "

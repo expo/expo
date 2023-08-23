@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove classic manifest types. ([#24054](https://github.com/expo/expo/pull/24054) by [@wschurman](https://github.com/wschurman))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

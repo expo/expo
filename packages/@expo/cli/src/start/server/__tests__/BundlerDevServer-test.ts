@@ -331,14 +331,6 @@ describe('getNativeRuntimeUrl', () => {
 
 describe('getManifestMiddlewareAsync', () => {
   const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
-  it(`asserts invalid manifest type`, async () => {
-    await expect(
-      server['getManifestMiddlewareAsync']({
-        // @ts-expect-error
-        forceManifestType: 'foobar',
-      })
-    ).rejects.toThrow(/Manifest middleware for type 'foobar' not found/);
-  });
   it(`asserts server is not running`, async () => {
     await expect(server['getManifestMiddlewareAsync']()).rejects.toThrow(
       /Dev server instance not found/
