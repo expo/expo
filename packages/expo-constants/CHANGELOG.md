@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 - Change source of truth for constants types. ([#24049](https://github.com/expo/expo/pull/24049) by [@wschurman](https://github.com/wschurman))
+- Remove classic manifest types. ([#24053](https://github.com/expo/expo/pull/24053) by [@wschurman](https://github.com/wschurman))
 
 ### 🎉 New features
 
