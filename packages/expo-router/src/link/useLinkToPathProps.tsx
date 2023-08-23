@@ -49,7 +49,7 @@ export default function useLinkToPathProps(props: { href: string; replace?: bool
   return {
     // Ensure there's always a value for href
     href: stripGroupSegmentsFromPath(props.href) || '/',
-    accessibilityRole: 'link' as const,
+    role: 'link' as const,
     onPress,
   };
 }

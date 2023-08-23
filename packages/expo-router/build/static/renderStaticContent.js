@@ -17,11 +17,7 @@ import { getNavigationConfig } from '../getLinkingConfig';
 import { getRoutes } from '../getRoutes';
 import { Head } from '../head';
 import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
-AppRegistry.registerComponent('App', () => App);
-// Must be exported or Fast Refresh won't update the context >:[
-function App(props) {
-    return React.createElement(ExpoRoot, { context: ctx, ...props });
-}
+AppRegistry.registerComponent('App', () => ExpoRoot);
 /** Get the linking manifest from a Node.js process. */
 async function getManifest(options) {
     const routeTree = getRoutes(ctx, options);
@@ -44,10 +40,16 @@ export function getStaticContent(location) {
     const headContext = {};
     const ref = React.createRef();
     const { 
-    // Skipping the `element` that's returned to ensure the HTML
-    // matches what's used in the client -- this results in two extra Views and
-    // the seemingly unused `RootTagContext.Provider` from being added.
-    getStyleElement, } = AppRegistry.getApplication('App');
+    // NOTE: The `element` that's returned adds two extra Views and
+    // the seemingly unused `RootTagContext.Provider`.
+    element, getStyleElement, } = AppRegistry.getApplication('App', {
+        initialProps: {
+            location,
+            context: ctx,
+            wrapper: ({ children }) => (React.createElement(Root, null,
+                React.createElement("div", { id: "root" }, children))),
+        },
+    });
     const Root = getRootComponent();
     // Clear any existing static resources from the global scope to attempt to prevent leaking between pages.
     // This could break if pages are rendered in parallel or if fonts are loaded outside of the React tree
@@ -56,14 +58,7 @@ export function getStaticContent(location) {
     // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
     resetReactNavigationContexts();
     const html = ReactDOMServer.renderToString(React.createElement(Head.Provider, { context: headContext },
-        React.createElement(ServerContainer, { ref: ref },
-            React.createElement(App, { location: location, wrapper: ({ children }) => {
-                    return React.createElement(Root, {
-                        children: React.createElement('div', {
-                            id: 'root',
-                        }, children),
-                    });
-                } }))));
+        React.createElement(ServerContainer, { ref: ref }, element)));
     // Eval the CSS after the HTML is rendered so that the CSS is in the same order
     const css = ReactDOMServer.renderToStaticMarkup(getStyleElement());
     let output = mixHeadComponentsWithStaticResults(headContext.helmet, html);

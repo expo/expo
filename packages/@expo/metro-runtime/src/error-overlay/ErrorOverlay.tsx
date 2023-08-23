@@ -140,6 +140,11 @@ export function ErrorOverlayBodyContents({
     />
   );
 
+  // Hide useless React stack.
+  const needsStack = !log.message.content.match(
+    /(Expected server HTML to contain a matching|Text content did not match\.)/
+  );
+
   return (
     <>
       {collapsed && header}
@@ -147,11 +152,13 @@ export function ErrorOverlayBodyContents({
         {!collapsed && header}
 
         <LogBoxInspectorCodeFrame codeFrame={log.codeFrame} />
-        <LogBoxInspectorStackFrames
-          type="stack"
-          // eslint-disable-next-line react/jsx-no-bind
-          onRetry={onRetry.bind(onRetry, 'stack')}
-        />
+        {needsStack && (
+          <LogBoxInspectorStackFrames
+            type="stack"
+            // eslint-disable-next-line react/jsx-no-bind
+            onRetry={onRetry.bind(onRetry, 'stack')}
+          />
+        )}
         {!!log?.componentStack?.length && (
           <LogBoxInspectorStackFrames
             type="component"

@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
 import { StatusBar } from 'expo-status-bar';
 import React, { FunctionComponent, ReactNode, Fragment } from 'react';
-import { Platform } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import UpstreamNavigationContainer from './fork/NavigationContainer';
@@ -26,7 +26,7 @@ function getGestureHandlerRootView() {
 
     // eslint-disable-next-line no-inner-declarations
     function GestureHandler(props: any) {
-      return <GestureHandlerRootView style={{ flex: 1 }} {...props} />;
+      return <GestureHandlerRootView style={styles.gesture} {...props} />;
     }
     if (process.env.NODE_ENV === 'development') {
       // @ts-expect-error
@@ -55,7 +55,7 @@ export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRo
    * View's like <GestureHandlerRootView /> generate a <div> so if the parent wrapper
    * is a HTML document, we need to ensure its inside the <body>
    */
-  const wrapper: ExpoRootProps['wrapper'] = ({ children }) => {
+  const wrapper = ({ children }) => {
     return (
       <ParentWrapper>
         <GestureHandlerRootView>
@@ -63,7 +63,6 @@ export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRo
             // SSR support
             initialMetrics={INITIAL_METRICS}>
             {children}
-
             {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
             {!hasViewControllerBasedStatusBarAppearance && <StatusBar style="auto" />}
           </SafeAreaProvider>
@@ -118,3 +117,7 @@ function ContextNavigator({
     </UpstreamNavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  gesture: { flex: 1 },
+});

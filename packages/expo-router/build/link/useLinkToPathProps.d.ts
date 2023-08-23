@@ -5,7 +5,7 @@ export default function useLinkToPathProps(props: {
     replace?: boolean;
 }): {
     href: string;
-    accessibilityRole: "link";
+    role: "link";
     onPress: (e?: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent) => void;
 };
 //# sourceMappingURL=useLinkToPathProps.d.ts.map
