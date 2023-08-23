@@ -1,6 +1,6 @@
-import { NewManifest, BareManifest, LegacyManifest } from 'expo-manifests';
+import { NewManifest, BareManifest } from 'expo-manifests';
 
-export type Manifest = NewManifest | BareManifest | LegacyManifest;
+export type Manifest = NewManifest | BareManifest;
 
 /**
  * The types of update-related events.

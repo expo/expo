@@ -1,5 +1,5 @@
 import { ExpoConfig } from '@expo/config-types';
-import type { EASConfig as ManifestsEASConfig, ExpoGoConfig as ManifestsExpoGoConfig, NewManifest, LegacyManifest, BareManifest, ManifestAsset as ManifestAssetForReExport, ManifestExtra as ManifestExtraForReExport, ClientScopingConfig as ClientScopingConfigForReExport, ExpoGoPackagerOpts as ExpoGoPackagerOptsForReExport, ExpoClientConfig as ExpoClientConfigForReExport } from 'expo-manifests';
+import type { EASConfig as ManifestsEASConfig, ExpoGoConfig as ManifestsExpoGoConfig, NewManifest, BareManifest, ManifestAsset as ManifestAssetForReExport, ManifestExtra as ManifestExtraForReExport, ClientScopingConfig as ClientScopingConfigForReExport, ExpoGoPackagerOpts as ExpoGoPackagerOptsForReExport } from 'expo-manifests';
 export declare enum AppOwnership {
     /**
      * It is a [standalone app](/classic/building-standalone-apps#building-standalone-apps).
@@ -79,8 +79,6 @@ export type EASConfig = ManifestsEASConfig;
 export type ClientScopingConfig = ClientScopingConfigForReExport;
 export type ExpoGoConfig = ManifestsExpoGoConfig;
 export type ExpoGoPackagerOpts = ExpoGoPackagerOptsForReExport;
-export type ExpoClientConfig = ExpoClientConfigForReExport;
-export type AppManifest = LegacyManifest;
 export interface PlatformManifest {
     ios?: IOSManifest;
     android?: AndroidManifest;
@@ -158,7 +156,7 @@ export interface NativeConstants {
      * @deprecated Use `Constants.expoConfig` instead, which behaves more consistently across EAS Build
      * and EAS Update.
      */
-    manifest: LegacyManifest | BareManifest | null;
+    manifest: BareManifest | null;
     /**
      * Manifest for Expo apps using modern Expo Updates from a remote source, such as apps that
      * use EAS Update. Returns `null` in bare workflow and when `manifest` is non-null.
@@ -219,7 +217,7 @@ export interface Constants extends NativeConstants {
      * In certain cases accessing manifest via this property
      * suppresses important warning about missing manifest.
      */
-    __unsafeNoWarnManifest?: LegacyManifest | BareManifest;
+    __unsafeNoWarnManifest?: BareManifest;
     /**
      * @hidden
      * @warning do not use this property. Use `manifest2` by default.
