@@ -1,6 +1,7 @@
 import { getConfig } from '@expo/config';
 import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
+import { spawn } from 'child_process';
 
 import { checkPackagesAsync } from './checkPackages';
 import { Options } from './resolveOptions';
@@ -163,6 +164,21 @@ export async function fixPackagesAsync(
     nativeModulesCount: packages.length,
     sdkVersion,
   });
+
+  const expoDep = dependencies.find((dep) => dep.packageName === 'expo');
+  if (expoDep) {
+    Log.log(
+      chalk`\u203A Updating expo using {bold ${packageManager.name}} and then running fix under the new Expo version`
+    );
+    //packageManager.options.detached = true;
+    //packageManager.addAsync([...packageManagerArguments, `expo@${expoDep.expectedVersionOrRange}`]);
+    spawn(`yarn add expo@${expoDep.expectedVersionOrRange} && npx expo install --fix`, {
+      detached: true,
+      shell: true,
+      stdio: 'inherit',
+    });
+    return;
+  }
 
   Log.log(
     chalk`\u203A Installing ${

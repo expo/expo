@@ -18,7 +18,8 @@ function normalizeSdkVersionObject(version?: SDKVersion): Record<string, string>
   if (!version) {
     return {};
   }
-  const { relatedPackages, facebookReactVersion, facebookReactNativeVersion } = version;
+  const { relatedPackages, facebookReactVersion, facebookReactNativeVersion, expoVersion } =
+    version;
 
   const reactVersion = facebookReactVersion
     ? {
@@ -27,10 +28,14 @@ function normalizeSdkVersionObject(version?: SDKVersion): Record<string, string>
       }
     : undefined;
 
+  const expoVersionIfAvailable = expoVersion ? { expo: expoVersion } : undefined;
+
   return {
     ...relatedPackages,
     ...reactVersion,
+    ...expoVersionIfAvailable,
     'react-native': facebookReactNativeVersion,
+    expo: '49.0.8',
   };
 }
 

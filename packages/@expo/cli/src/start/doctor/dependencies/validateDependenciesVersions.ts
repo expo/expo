@@ -68,6 +68,12 @@ export function logIncorrectDependencies(incorrectDeps: IncorrectDependency[]) {
     'Your project may not work correctly until you install the correct versions of the packages.\n' +
       chalk`Fix with: {bold npx expo install --fix}`
   );
+
+  if (incorrectDeps.find((dep) => dep.packageName === 'expo')) {
+    Log.warn(
+      `To update the expo package, fix will first update the expo package and then run again to fix the remaining packages under the new version of expo.`
+    );
+  }
   return false;
 }
 
