@@ -5,7 +5,6 @@ import { AbortCommandError, CommandError } from '../utils/errors';
 import { resolvePortAsync } from '../utils/port';
 
 export type Options = {
-  forceManifestType: 'classic' | 'expo-updates';
   privateKeyPath: string | null;
   android: boolean;
   web: boolean;
@@ -24,10 +23,6 @@ export type Options = {
 };
 
 export async function resolveOptionsAsync(projectRoot: string, args: any): Promise<Options> {
-  const forceManifestType = args['--force-manifest-type'];
-  if (forceManifestType) {
-    assert.match(forceManifestType, /^(classic|expo-updates)$/);
-  }
   if (args['--dev-client'] && args['--go']) {
     throw new CommandError('BAD_ARGS', 'Cannot use both --dev-client and --go together.');
   }
@@ -59,7 +54,6 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
   });
 
   return {
-    forceManifestType,
     privateKeyPath: args['--private-key-path'] ?? null,
 
     android: !!args['--android'],
