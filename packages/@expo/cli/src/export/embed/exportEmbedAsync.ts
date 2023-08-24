@@ -9,6 +9,7 @@ import { Log } from '../../log';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
 import { importCliSaveAssetsFromProject } from '../../start/server/metro/resolveFromProject';
 import { setNodeEnv } from '../../utils/nodeEnv';
+import { getAssets } from '../fork-bundleAsync';
 
 export async function exportEmbedAsync(projectRoot: string, options: Options) {
   setNodeEnv(options.dev ? 'development' : 'production');
@@ -27,7 +28,8 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
     sourceMapUrl = path.basename(sourceMapUrl);
   }
 
-  const requestOpts = {
+  const bundleRequest = {
+    ...Server.DEFAULT_BUNDLE_OPTIONS,
     entryFile: options.entryFile,
     sourceMapUrl,
     dev: options.dev,
@@ -37,19 +39,24 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
       options.unstableTransformProfile as BundleOptions['unstable_transformProfile'],
   };
 
-  const server = new Server(config);
+  const server = new Server(config, {
+    watch: false,
+  });
 
   try {
-    const bundle = await output.build(server, requestOpts);
+    const bundle = await server.build({
+      ...bundleRequest,
+      bundleType: 'bundle',
+    });
 
     fs.mkdirSync(path.dirname(options.bundleOutput), { recursive: true, mode: 0o755 });
 
+    // Persist bundle and source maps.
     await output.save(bundle, options, Log.log);
 
     // Save the assets of the bundle
-    const outputAssets = await server.getAssets({
-      ...Server.DEFAULT_BUNDLE_OPTIONS,
-      ...requestOpts,
+    const outputAssets = await getAssets(server, {
+      ...bundleRequest,
       bundleType: 'todo',
     });
 
