@@ -28,6 +28,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
+- Fixed putting app to background stops non-mixable audio playback in other apps on iOS ([#20380](https://github.com/expo/expo/pull/20380) by [@de1acr0ix](https://github.com/de1acr0ix))
 - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ## 13.3.0 — 2023-05-08
