@@ -39,7 +39,7 @@ export function resolveOptions(
   const dev = parsed.args['--dev'] ?? true;
   assertIsBoolean(dev);
 
-  const minify = parsed.args['--minify'] ?? true;
+  const minify = parsed.args['--minify'] ?? !dev;
   assertIsBoolean(minify);
 
   const entryFile = args['--entry-file'];
