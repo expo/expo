@@ -31,7 +31,8 @@ export async function loadMetroConfigAsync(
   options: LoadOptions,
   {
     exp = getConfig(projectRoot, { skipSDKVersionRequirement: true, skipPlugins: true }).exp,
-  }: { exp?: ExpoConfig } = {}
+    isExporting,
+  }: { exp?: ExpoConfig; isExporting: boolean }
 ) {
   let reportEvent: ((event: any) => void) | undefined;
   const serverRoot = getMetroServerRoot(projectRoot);
@@ -50,6 +51,16 @@ export async function loadMetroConfigAsync(
 
   const ExpoMetroConfig = importExpoMetroConfig(projectRoot);
   let config = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
+
+  // TODO: Handle asset prefix.
+  if (isExporting) {
+    // This token will be used in the asset plugin to ensure the path is correct for writing locally.
+    // @ts-expect-error: typed as readonly.
+    config.transformer.publicPath = '/assets?export_path=/assets';
+  } else {
+    // @ts-expect-error
+    config.transformer.publicPath = '/assets?unstable_path=.';
+  }
 
   const platformBundlers = getPlatformBundlers(exp);
 
@@ -73,7 +84,8 @@ export async function loadMetroConfigAsync(
 /** The most generic possible setup for Metro bundler. */
 export async function instantiateMetroAsync(
   metroBundler: MetroBundlerDevServer,
-  options: Omit<MetroDevServerOptions, 'logger'>
+  options: Omit<MetroDevServerOptions, 'logger'>,
+  { isExporting }: { isExporting: boolean }
 ): Promise<{
   metro: Metro.Server;
   server: http.Server;
@@ -91,7 +103,7 @@ export async function instantiateMetroAsync(
   const { config: metroConfig, setEventReporter } = await loadMetroConfigAsync(
     projectRoot,
     options,
-    { exp }
+    { exp, isExporting }
   );
 
   const { middleware, websocketEndpoints, eventsSocketEndpoint, messageSocketEndpoint } =
