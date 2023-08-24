@@ -8,10 +8,15 @@ loadStyle();
 export const ExpoImageModule = {
     prefetch(urls) {
         const urlsArray = Array.isArray(urls) ? urls : [urls];
-        urlsArray.forEach((url) => {
-            const img = new Image();
-            img.src = url;
+        const promises = urlsArray.map((url) => {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.src = url;
+                img.onload = () => resolve(true);
+                img.onerror = () => resolve(false);
+            });
         });
+        return Promise.all(promises);
     },
     async clearMemoryCache() {
         return false;
