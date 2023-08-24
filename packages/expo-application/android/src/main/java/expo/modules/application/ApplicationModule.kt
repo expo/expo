@@ -50,7 +50,7 @@ class ApplicationModule : Module() {
       }
     }
 
-    AsyncFunction("getLastUpdateTimeAsync") {
+    AsyncFunction("getLastUpdateTimeAsync") { promise: Promise ->
       val packageManager = context.packageManager
       val packageName = context.packageName
       try {
@@ -82,16 +82,16 @@ class ApplicationModule : Module() {
               promise.resolve(installReferrer.toString())
             }
             InstallReferrerClient.InstallReferrerResponse.FEATURE_NOT_SUPPORTED -> // API not available in the current Play Store app
-              promise.reject("ERR_APPLICATION_INSTALL_REFERRER_UNAVAILABLE", "The current Play Store app doesn't provide the installation referrer API, or the Play Store may not be installed.")
+              promise.reject("ERR_APPLICATION_INSTALL_REFERRER_UNAVAILABLE", "The current Play Store app doesn't provide the installation referrer API, or the Play Store may not be installed.", null)
             InstallReferrerClient.InstallReferrerResponse.SERVICE_UNAVAILABLE -> // Connection could not be established
-              promise.reject("ERR_APPLICATION_INSTALL_REFERRER", "General error retrieving the install referrer: response code $responseCode")
-            else -> promise.reject(ApplicationInstallReferrerException(responseCode.toString()))
+              promise.reject("ERR_APPLICATION_INSTALL_REFERRER", "General error retrieving the install referrer: response code $responseCode", null)
+            else -> promise.reject("ERR_APPLICATION_INSTALL_REFERRER", "General error retrieving the install referrer: response code $responseCode", null)
           }
           referrerClient.endConnection()
         }
 
         override fun onInstallReferrerServiceDisconnected() {
-          promise.reject("ERR_APPLICATION_INSTALL_REFERRER_SERVICE_DISCONNECTED", "Connection to install referrer service was lost.")
+          promise.reject("ERR_APPLICATION_INSTALL_REFERRER_SERVICE_DISCONNECTED", "Connection to install referrer service was lost.", null)
         }
       })
     }
