@@ -84,19 +84,14 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
   });
 
   t.describe('prefetch', () => {
-    t.it('resolves successfully when given a valid image URL', async () => {
-      await Image.prefetch(REMOTE_SOURCE.uri);
+    t.it('resolves with true when given a valid image URL', async () => {
+      const result = await Image.prefetch(REMOTE_SOURCE.uri);
+      t.expect(result).toBe(true); // expecting a true result for valid URLs
     });
 
-    t.it('rejects when given an invalid image URL', async () => {
-      let errorOccurred = false;
-      try {
-        await Image.prefetch(NON_EXISTENT_SOURCE.uri);
-        // eslint-disable-next-line no-unused-vars
-      } catch (error) {
-        errorOccurred = true;
-      }
-      t.expect(errorOccurred).toBe(true);
+    t.it('resolves with false when given an invalid image URL', async () => {
+      const result = await Image.prefetch(NON_EXISTENT_SOURCE.uri);
+      t.expect(result).toBe(false); // expecting a false result for invalid URLs
     });
   });
 }

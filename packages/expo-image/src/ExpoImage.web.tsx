@@ -10,14 +10,14 @@ import useSourceSelection from './web/useSourceSelection';
 loadStyle();
 
 export const ExpoImageModule = {
-  prefetch(urls: string | string[]): Promise<void[]> {
+  prefetch(urls: string | string[]): Promise<boolean[]> {
     const urlsArray = Array.isArray(urls) ? urls : [urls];
     const promises = urlsArray.map((url) => {
-      return new Promise<void>((resolve, reject) => {
+      return new Promise<boolean>((resolve) => {
         const img = new Image();
         img.src = url;
-        img.onload = () => resolve(undefined);
-        img.onerror = () => reject(new Error(`Failed to load image from url: ${url}`));
+        img.onload = () => resolve(true);
+        img.onerror = () => resolve(false);
       });
     });
     return Promise.all(promises);
