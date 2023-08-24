@@ -1,11 +1,12 @@
 import { ExpoConfig, getConfig } from '@expo/config';
-import { MetroDevServerOptions } from '@expo/dev-server';
+import { MetroDevServerOptions, prependMiddleware } from '@expo/dev-server';
 import type { LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import http from 'http';
 import type Metro from 'metro';
 import { Terminal } from 'metro-core';
 import semver from 'semver';
+import { URL } from 'url';
 
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
@@ -21,6 +22,7 @@ import { env } from '../../../utils/env';
 import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
 import { createDevServerMiddleware } from '../middleware/createDevServerMiddleware';
 import { getPlatformBundlers } from '../platformBundlers';
+import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
@@ -80,8 +82,8 @@ export async function loadMetroConfigAsync(
       // @ts-expect-error: typed as readonly.
       config.transformer.publicPath = '/assets?export_path=/assets';
     } else {
-      // @ts-expect-error
-      config.transformer.publicPath = '/assets?unstable_path=.';
+      // @ts-expect-error: typed as readonly
+      config.transformer.publicPath = '/assets/?unstable_path=.';
     }
   }
 
@@ -151,6 +153,19 @@ export async function instantiateMetroAsync(
     // @ts-expect-error: Inconsistent `websocketEndpoints` type between metro and @react-native-community/cli-server-api
     websocketEndpoints,
     watch: isWatchEnabled(),
+  });
+
+  prependMiddleware(middleware, (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
+    // If the URL is a Metro asset request, then we need to skip all other middleware to prevent
+    // the community CLI's serve-static from hosting `/assets/index.html` in place of all assets if it exists.
+    // /assets/?unstable_path=.
+    if (req.url) {
+      const url = new URL(req.url!, 'http://localhost:8000');
+      if (url.pathname.match(/^\/assets\/?/) && url.searchParams.get('unstable_path') != null) {
+        return metro.processRequest(req, res, next);
+      }
+    }
+    return next();
   });
 
   setEventReporter(eventsSocketEndpoint.reportEvent);
