@@ -16,6 +16,7 @@ def maybe_generate_xcode_env_file!()
     Pod::UI.warn "Unable to generate `.xcode.env.local` for Node.js binary path: #{stderr}"
   else
     Pod::UI.info "Auto-generating `.xcode.env.local` with $NODE_BINARY=#{node_path}"
-    File.write(xcode_env_file, "export NODE_BINARY=\"#{node_path}\"\n")
+    File.write(xcode_env_file, "export NODE_BINARY=\"#{node_path}\"\nif [[ \"$EX_UPDATES_NATIVE_DEBUG\" = \"1\" ]]; then\n  export FORCE_BUNDLING=1\n  unset SKIP_BUNDLING\n  export RCT_NO_LAUNCH_PACKAGER=1\nfi\n")
   end
 end
+
