@@ -1,5 +1,14 @@
 class KotlinExpoModulesCorePlugin implements Plugin<Project> {
   void apply(Project project) {
+    // For compatibility reasons the plugin needs to declare that it provides the sdk versions
+    project.rootProject.ext.providesDefaultConfig = {
+      true
+    }
+
+    project.ext.safeExtGet = { prop, fallback ->
+      project.rootProject.ext.has(prop) ? project.rootProject.ext.get(prop) : fallback
+    }
+
     project.buildscript {
       project.ext.kotlinVersion = {
         project.rootProject.ext.has("kotlinVersion")
@@ -21,6 +30,22 @@ class KotlinExpoModulesCorePlugin implements Plugin<Project> {
           : kspVersionsMap.containsKey(project.ext.kotlinVersion())
           ? kspVersionsMap.get(project.ext.kotlinVersion())
           : "1.8.10-1.0.9"
+      }
+    }
+
+    // Setup build options that are common across all modules
+    if (project.plugins.hasPlugin('kotlin-android')) {
+      project.android {
+        compileSdkVersion project.ext.safeExtGet("compileSdkVersion", 33)
+
+        defaultConfig {
+          minSdkVersion project.ext.safeExtGet("minSdkVersion", 23)
+          targetSdkVersion project.ext.safeExtGet("targetSdkVersion", 33)
+        }
+
+        lintOptions {
+          abortOnError false
+        }
       }
     }
   }
