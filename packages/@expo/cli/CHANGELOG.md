@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- Support monorepo assets with `npx expo export:embed`.
 - Forward exact Metro server error during static rendering. ([#23909](https://github.com/expo/expo/pull/23909) by [@EvanBacon](https://github.com/EvanBacon))
 - Add **Server** tag when bundling for server environments. ([#23987](https://github.com/expo/expo/pull/23987) by [@EvanBacon](https://github.com/EvanBacon))
 
