@@ -5,6 +5,7 @@ export declare class PnpmPackageManager extends BasePackageManager {
     readonly lockFile = "pnpm-lock.yaml";
     workspaceRoot(): PnpmPackageManager | null;
     installAsync(namesOrFlags?: string[]): import("@expo/spawn-async").SpawnPromise<import("@expo/spawn-async").SpawnResult>;
+    getAddCommandOptions(namesOrFlags: string[]): string[];
     addAsync(namesOrFlags?: string[]): import("@expo/spawn-async").SpawnPromise<import("@expo/spawn-async").SpawnResult>;
     addDevAsync(namesOrFlags?: string[]): import("@expo/spawn-async").SpawnPromise<import("@expo/spawn-async").SpawnResult>;
     addGlobalAsync(namesOrFlags?: string[]): import("@expo/spawn-async").SpawnPromise<import("@expo/spawn-async").SpawnResult>;

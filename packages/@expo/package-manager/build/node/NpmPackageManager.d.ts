@@ -4,6 +4,7 @@ export declare class NpmPackageManager extends BasePackageManager {
     readonly bin = "npm";
     readonly lockFile = "package-lock.json";
     workspaceRoot(): NpmPackageManager | null;
+    getAddCommandOptions(namesOrFlags: string[]): string[];
     addAsync(namesOrFlags?: string[]): import("@expo/spawn-async").SpawnPromise<import("@expo/spawn-async").SpawnResult> | import("../utils/spawn").PendingSpawnPromise<import("@expo/spawn-async").SpawnResult>;
     addDevAsync(namesOrFlags?: string[]): import("@expo/spawn-async").SpawnPromise<import("@expo/spawn-async").SpawnResult> | import("../utils/spawn").PendingSpawnPromise<import("@expo/spawn-async").SpawnResult>;
     addGlobalAsync(namesOrFlags?: string[]): import("@expo/spawn-async").SpawnPromise<import("@expo/spawn-async").SpawnResult> | import("../utils/spawn").PendingSpawnPromise<import("@expo/spawn-async").SpawnResult>;
@@ -17,7 +18,7 @@ export declare class NpmPackageManager extends BasePackageManager {
     private parsePackageSpecs;
     /**
      * Older npm versions have issues with mismatched nested dependencies when adding exact versions.
-     * This propagates as issues like mismatched `@expo/config-pugins` versions.
+     * This propagates as issues like mismatched `@expo/config-plugins` versions.
      * As a workaround, we update the `package.json` directly and run `npm install`.
      */
     private updatePackageFileAsync;

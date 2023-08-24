@@ -25,19 +25,23 @@ export class NpmPackageManager extends BasePackageManager {
     return null;
   }
 
+  getAddCommandOptions(namesOrFlags: string[]) {
+    const { flags, unversioned } = this.parsePackageSpecs(namesOrFlags);
+    return !unversioned.length
+      ? ['install', ...flags]
+      : ['install', '--save', ...flags, ...unversioned.map((spec) => spec.raw)];
+  }
+
   addAsync(namesOrFlags: string[] = []) {
     if (!namesOrFlags.length) {
       return this.installAsync();
     }
 
-    const { flags, versioned, unversioned } = this.parsePackageSpecs(namesOrFlags);
+    const { versioned } = this.parsePackageSpecs(namesOrFlags);
 
     return createPendingSpawnAsync(
       () => this.updatePackageFileAsync(versioned, 'dependencies'),
-      () =>
-        !unversioned.length
-          ? this.runAsync(['install', ...flags])
-          : this.runAsync(['install', '--save', ...flags, ...unversioned.map((spec) => spec.raw)])
+      () => this.runAsync(this.getAddCommandOptions(namesOrFlags))
     );
   }
 
@@ -117,7 +121,7 @@ export class NpmPackageManager extends BasePackageManager {
 
   /**
    * Older npm versions have issues with mismatched nested dependencies when adding exact versions.
-   * This propagates as issues like mismatched `@expo/config-pugins` versions.
+   * This propagates as issues like mismatched `@expo/config-plugins` versions.
    * As a workaround, we update the `package.json` directly and run `npm install`.
    */
   private async updatePackageFileAsync(

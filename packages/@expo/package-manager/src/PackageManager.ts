@@ -42,6 +42,11 @@ export interface PackageManager {
   /** Uninstall all current dependencies by removing the folder containing the packages */
   uninstallAsync(): Promise<void>;
 
+  /** Get all options to add to the base "add" command, so it can be triggered by a spawn outside of the manager
+   * and get chained with other commands (such as when updating expo and then the rest of the dependencies)
+   */
+  getAddCommandOptions(namesOrFlags: string[]): string[];
+
   /** Add a normal dependency to the project */
   addAsync(namesOrFlags: string[]): SpawnPromise<SpawnResult> | PendingSpawnPromise<SpawnResult>;
   /** Add a development dependency to the project */

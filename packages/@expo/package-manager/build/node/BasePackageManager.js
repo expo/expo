@@ -35,7 +35,11 @@ class BasePackageManager {
     }
     runAsync(command) {
         this.log?.(`> ${this.name} ${command.join(' ')}`);
-        return (0, spawn_async_1.default)(this.bin, command, this.options);
+        const runSpawnParams = this.getRunSpawnParams(command);
+        return (0, spawn_async_1.default)(runSpawnParams.bin, runSpawnParams.command, runSpawnParams.options);
+    }
+    getRunSpawnParams(command) {
+        return { bin: this.bin, command, options: this.options };
     }
     async versionAsync() {
         return await this.runAsync(['--version']).then(({ stdout }) => stdout.trim());

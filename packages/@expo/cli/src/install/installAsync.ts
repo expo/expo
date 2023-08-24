@@ -170,13 +170,20 @@ export async function fixPackagesAsync(
     Log.log(
       chalk`\u203A Updating expo using {bold ${packageManager.name}} and then running fix under the new Expo version`
     );
-    //packageManager.options.detached = true;
-    //packageManager.addAsync([...packageManagerArguments, `expo@${expoDep.expectedVersionOrRange}`]);
-    spawn(`yarn add expo@${expoDep.expectedVersionOrRange} && npx expo install --fix`, {
-      detached: true,
-      shell: true,
-      stdio: 'inherit',
-    });
+
+    spawn(
+      `${packageManager.bin} ${packageManager
+        .getAddCommandOptions([
+          ...packageManagerArguments,
+          `expo@${expoDep.expectedVersionOrRange}`,
+        ])
+        .join(' ')} && npx expo install --fix`,
+      {
+        ...packageManager.options,
+        detached: true,
+        shell: true,
+      }
+    );
     return;
   }
 

@@ -31,11 +31,14 @@ class YarnPackageManager extends BasePackageManager_1.BasePackageManager {
     installAsync(flags = []) {
         return (0, spawn_1.createPendingSpawnAsync)(() => this.withOfflineFlagAsync(['install']), (args) => this.runAsync([...args, ...flags]));
     }
+    getAddCommandOptions(namesOrFlags) {
+        return ['add', ...namesOrFlags];
+    }
     addAsync(namesOrFlags = []) {
         if (!namesOrFlags.length) {
             return this.installAsync();
         }
-        return (0, spawn_1.createPendingSpawnAsync)(() => this.withOfflineFlagAsync(['add', ...namesOrFlags]), (args) => this.runAsync(args));
+        return (0, spawn_1.createPendingSpawnAsync)(() => this.withOfflineFlagAsync(this.getAddCommandOptions(namesOrFlags)), (args) => this.runAsync(args));
     }
     addDevAsync(namesOrFlags = []) {
         if (!namesOrFlags.length) {
