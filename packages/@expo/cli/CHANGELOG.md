@@ -18,6 +18,7 @@
 - Fix bug preventing non-standard xcode projects from running with `npx expo run:ios`. ([#23831](https://github.com/expo/expo/pull/23831) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix `EXPO_SKIP_MANIFEST_VALIDATION_TOKEN` usage. ([#23890](https://github.com/expo/expo/pull/23890) by [@EvanBacon](https://github.com/EvanBacon))
 - Prohibit dev client URLs containing `_` in protocol. ([#23519](https://github.com/expo/expo/pull/23519) by [@byCedric](https://github.com/byCedric))
+- Prevent writing unused bundles with static Metro web. ([#24092](https://github.com/expo/expo/pull/24092) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
