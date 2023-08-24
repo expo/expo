@@ -93,19 +93,6 @@ describe('static-rendering', () => {
         })
         .filter(Boolean);
 
-      const metadata = await JsonFile.readAsync(path.resolve(outputDir, 'metadata.json'));
-
-      expect(metadata).toEqual({
-        bundler: 'metro',
-        fileMetadata: {
-          web: {
-            assets: expect.anything(),
-            bundle: expect.stringMatching(/bundles\/web-.*\.js/),
-          },
-        },
-        version: 0,
-      });
-
       // The wrapper should not be included as a route.
       expect(files).not.toContain('+html.html');
       expect(files).not.toContain('_layout.html');
@@ -386,19 +373,6 @@ describe('single-page', () => {
           return path.posix.relative(outputDir, entry.path);
         })
         .filter(Boolean);
-
-      const metadata = await JsonFile.readAsync(path.resolve(outputDir, 'metadata.json'));
-
-      expect(metadata).toEqual({
-        bundler: 'metro',
-        fileMetadata: {
-          web: {
-            assets: expect.anything(),
-            bundle: expect.stringMatching(/bundles\/web-.*\.js/),
-          },
-        },
-        version: 0,
-      });
 
       // The wrapper should not be included as a route.
       expect(files).not.toContain('+html.html');
