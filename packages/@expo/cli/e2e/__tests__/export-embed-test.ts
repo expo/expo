@@ -38,7 +38,7 @@ it('loads expected modules by default', async () => {
   ]);
 });
 
-xit('runs `npx expo export:embed --help`', async () => {
+it('runs `npx expo export:embed --help`', async () => {
   const results = await execute('export:embed', '--help');
   expect(results.stdout).toMatchInlineSnapshot(`
     "
