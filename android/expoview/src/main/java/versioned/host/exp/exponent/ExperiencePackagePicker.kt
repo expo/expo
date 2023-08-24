@@ -1,5 +1,6 @@
 package versioned.host.exp.exponent
 
+import expo.modules.application.ApplicationModule
 import expo.modules.av.AVModule
 import expo.modules.application.ApplicationModule
 import expo.modules.av.AVPackage
