@@ -1,7 +1,15 @@
+import fs from 'fs';
+import Server from 'metro/src/Server';
+import output from 'metro/src/shared/output/bundle';
+import type { BundleOptions } from 'metro/src/shared/types';
+import path from 'path';
+
 import { Options } from './resolveOptions';
+import { Log } from '../../log';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
-import { importCliBuildBundleWithConfigFromProject } from '../../start/server/metro/resolveFromProject';
+import { importCliSaveAssetsFromProject } from '../../start/server/metro/resolveFromProject';
 import { setNodeEnv } from '../../utils/nodeEnv';
+import { getAssets } from '../fork-bundleAsync';
 
 export async function exportEmbedAsync(projectRoot: string, options: Options) {
   setNodeEnv(options.dev ? 'development' : 'production');
@@ -13,9 +21,47 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
     config: options.config,
   });
 
-  const buildBundleWithConfig = importCliBuildBundleWithConfigFromProject(projectRoot);
+  const saveAssets = importCliSaveAssetsFromProject(projectRoot);
 
-  // Import the internal `buildBundleWithConfig()` function from `react-native` for the purpose
-  // of exporting with `@expo/metro-config` and other defaults like a resolved project entry.
-  await buildBundleWithConfig(options, config);
+  let sourceMapUrl = options.sourcemapOutput;
+  if (sourceMapUrl && !options.sourcemapUseAbsolutePath) {
+    sourceMapUrl = path.basename(sourceMapUrl);
+  }
+
+  const bundleRequest = {
+    ...Server.DEFAULT_BUNDLE_OPTIONS,
+    entryFile: options.entryFile,
+    sourceMapUrl,
+    dev: options.dev,
+    minify: !!options.minify,
+    platform: options.platform,
+    unstable_transformProfile:
+      options.unstableTransformProfile as BundleOptions['unstable_transformProfile'],
+  };
+
+  const server = new Server(config, {
+    watch: false,
+  });
+
+  try {
+    const bundle = await server.build({
+      ...bundleRequest,
+      bundleType: 'bundle',
+    });
+
+    fs.mkdirSync(path.dirname(options.bundleOutput), { recursive: true, mode: 0o755 });
+
+    // Persist bundle and source maps.
+    await output.save(bundle, options, Log.log);
+
+    // Save the assets of the bundle
+    const outputAssets = await getAssets(server, {
+      ...bundleRequest,
+      bundleType: 'todo',
+    });
+
+    await saveAssets(outputAssets, options.platform, options.assetsDest, options.assetCatalogDest);
+  } finally {
+    server.end();
+  }
 }

@@ -183,7 +183,7 @@ export async function bundleAsync(
 
 // Forked out of Metro because the `this._getServerRootDir()` doesn't match the development
 // behavior.
-async function getAssets(
+export async function getAssets(
   metro: Metro.Server,
   options: MetroBundleOptions
 ): Promise<readonly AssetData[]> {
