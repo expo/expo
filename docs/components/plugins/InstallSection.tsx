@@ -1,6 +1,5 @@
-import { PropsWithChildren, useContext } from 'react';
+import { PropsWithChildren } from 'react';
 
-import { PageApiVersionContext } from '~/providers/page-api-version';
 import { usePageMetadata } from '~/providers/page-metadata';
 import { Terminal } from '~/ui/components/Snippet';
 import { A, P, DEMI } from '~/ui/components/Text';
@@ -24,24 +23,14 @@ const InstallSection = ({
   href = getPackageLink(packageName),
 }: InstallSectionProps) => {
   const { sourceCodeUrl } = usePageMetadata();
-  const { version } = useContext(PageApiVersionContext);
-
-  // Recommend just `expo install` for SDK 45.
-  // TODO: remove this when we drop SDK 45 from docs
-  if (version.startsWith('v45')) {
-    if (cmd[0] === getInstallCmd(packageName)) {
-      cmd[0] = cmd[0].replace('npx expo', 'expo');
-    }
-  }
 
   return (
     <>
       <Terminal cmd={cmd} />
       {hideBareInstructions ? null : (
         <P>
-          If you're installing this in a{' '}
-          <A href="/archive/managed-vs-bare/#bare-workflow">bare React Native app</A>, you should
-          also follow{' '}
+          If you're installing this in a <A href="/bare/overview/">bare React Native app</A>, you
+          should also follow{' '}
           <A href={sourceCodeUrl ?? href}>
             <DEMI>these additional installation instructions</DEMI>
           </A>

@@ -69,7 +69,6 @@ export type ExpoGoConfig = {
     mainModuleName: string;
     __flipperHack: 'React Native packager is running';
     debuggerHost: string;
-    logUrl: string;
     developer: {
         tool: string | null;
         projectRoot?: string;
@@ -83,26 +82,6 @@ export type EASConfig = {
 };
 export type ClientScopingConfig = {
     scopeKey?: string;
-};
-export type ExpoClientConfig = ExpoConfig & {
-    id?: string;
-    releaseId?: string;
-    revisionId?: string;
-    bundleUrl?: string;
-    hostUri?: string;
-    publishedTime?: string;
-};
-export type ExpoAppManifest = ExpoClientConfig & EASConfig & Partial<ExpoGoConfig> & {
-    sdkVersion: string;
-    bundledAssets?: string[];
-    isKernel?: boolean;
-    kernel?: {
-        androidManifestPath?: string;
-        iosManifestPath?: string;
-    };
-    assetUrlOverride?: string;
-    commitTime?: string;
-    env?: Record<string, any>;
 };
 export interface ExpoUpdatesManifestAsset {
     url: string;
@@ -120,7 +99,12 @@ export interface ExpoUpdatesManifest {
         [key: string]: string;
     };
     extra: ClientScopingConfig & {
-        expoClient?: ExpoClientConfig;
+        expoClient?: ExpoConfig & {
+            /**
+             * Only present during development using @expo/cli.
+             */
+            hostUri?: string;
+        };
         expoGo?: ExpoGoConfig;
         eas?: EASConfig;
     };

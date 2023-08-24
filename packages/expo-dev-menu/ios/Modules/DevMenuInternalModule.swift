@@ -56,8 +56,10 @@ public class DevMenuInternalModule: Module {
         return
       }
 
-      DispatchQueue.main.async {
-        rctDevMenu.show()
+      DevMenuManager.shared.closeMenu {
+        DispatchQueue.main.async {
+          rctDevMenu.show()
+        }
       }
     }
 

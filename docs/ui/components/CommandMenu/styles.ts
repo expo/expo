@@ -37,12 +37,12 @@ export const commandMenuStyles = css`
     z-index: 1001;
 
     @media screen and (max-width: ${breakpoints.medium}px) {
-      min-height: 100vh;
-      max-height: 100vh;
       width: 100vw;
       min-width: 100vw;
-      top: 50%;
-      border-radius: 0;
+      position: absolute;
+      min-height: 84vh;
+      max-height: 84vh;
+      margin-top: -16px;
     }
   }
 
@@ -98,13 +98,18 @@ export const commandMenuStyles = css`
     }
 
     & + [cmdk-item] {
-      margin-top: 4px;
+      margin-top: ${spacing[1]}px;
+    }
+
+    &[data-nested] + [cmdk-item] {
+      margin-top: ${spacing[2]}px;
     }
 
     mark {
       color: ${theme.palette.blue12};
       background: ${theme.palette.blue4};
       border-radius: 2px;
+      opacity: 0.85;
     }
   }
 
@@ -119,8 +124,8 @@ export const commandMenuStyles = css`
     margin: ${spacing[3]}px 0 0;
 
     @media screen and (max-width: ${breakpoints.medium}px) {
-      height: calc(100vh - 50px - 50px - 20px);
-      max-height: calc(100vh - 50px - 50px - 20px);
+      height: calc(84vh - 50px - 50px - 20px);
+      max-height: calc(84vh - 50px - 50px - 20px);
     }
   }
 
@@ -151,10 +156,12 @@ export const commandMenuStyles = css`
   }
 
   html.dark-theme {
-    [cmdk-item] mark {
-      background: ${theme.palette.blue5};
+    [cmdk-item] {
+      mark {
+        background: ${theme.palette.blue6};
+      }
 
-      &[aria-selected='true'] {
+      &[data-selected='true'] mark {
         background: ${theme.palette.blue7};
       }
     }

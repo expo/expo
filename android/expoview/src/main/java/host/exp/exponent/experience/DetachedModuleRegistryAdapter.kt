@@ -49,9 +49,6 @@ open class DetachedModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegi
     // Overriding ScopedUIManagerModuleWrapper from ReactAdapterPackage
     moduleRegistry.registerInternalModule(ScopedUIManagerModuleWrapper(reactContext))
 
-    // Overriding expo-file-system FileSystemModule
-    moduleRegistry.registerExportedModule(ScopedFileSystemModule(scopedContext))
-
     // Overriding expo-secure-store
     moduleRegistry.registerExportedModule(ScopedSecureStoreModule(scopedContext))
 
@@ -72,7 +69,7 @@ open class DetachedModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegi
       }
     }
     configureModuleRegistry(moduleRegistry, reactApplicationContext)
-    return getNativeModulesFromModuleRegistry(reactApplicationContext, moduleRegistry)
+    return getNativeModulesFromModuleRegistry(reactApplicationContext, moduleRegistry, null)
   }
 
   protected open fun configureModuleRegistry(

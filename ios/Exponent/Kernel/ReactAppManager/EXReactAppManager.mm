@@ -12,13 +12,20 @@
 #import "ExpoKit.h"
 #import "EXReactAppManager.h"
 #import "EXReactAppManager+Private.h"
-#import "EXVersionManager.h"
+#import "EXVersionManagerObjC.h"
 #import "EXVersions.h"
 #import "EXAppViewController.h"
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 #import <EXConstants/EXConstantsService.h>
 #import <EXSplashScreen/EXSplashScreenService.h>
+
+// When `use_frameworks!` is used, the generated Swift header is inside modules.
+// Otherwise, it's available only locally with double-quoted imports.
+#if __has_include(<EXManifests/EXManifests-Swift.h>)
 #import <EXManifests/EXManifests-Swift.h>
+#else
+#import "EXManifests-Swift.h"
+#endif
 
 #import <React/RCTBridge.h>
 #import <React/RCTCxxBridgeDelegate.h>
@@ -48,6 +55,18 @@
 @property (nonatomic, copy) RCTSourceLoadBlock loadCallback;
 @property (nonatomic, strong) NSDictionary *initialProps;
 @property (nonatomic, strong) NSTimer *viewTestTimer;
+
+@end
+
+@protocol EXVersionManagerProtocol
+
++ (instancetype)alloc;
+
+- (instancetype)initWithParams:(nonnull NSDictionary *)params
+                      manifest:(nonnull EXManifestsManifest *)manifest
+                  fatalHandler:(void (^)(NSError *))fatalHandler
+                   logFunction:(RCTLogFunction)logFunction
+                  logThreshold:(NSInteger)threshold;
 
 @end
 
@@ -107,7 +126,7 @@
 
 
   if ([self isReadyToLoad]) {
-    Class versionManagerClass = [self versionedClassFromString:@"EXVersionManager"];
+    Class<EXVersionManagerProtocol> versionManagerClass = [self versionedClassFromString:@"EXVersionManager"];
     Class bridgeClass = [self versionedClassFromString:@"RCTBridge"];
     Class rootViewClass = [self versionedClassFromString:@"RCTRootView"];
 
@@ -116,6 +135,7 @@
                                                      fatalHandler:handleFatalReactError
                                                       logFunction:[self logFunction]
                                                      logThreshold:[self logLevel]];
+
     _reactBridge = [[bridgeClass alloc] initWithDelegate:self launchOptions:[self launchOptionsForBridge]];
 
     if (!_isHeadless) {
@@ -478,7 +498,7 @@
 - (void)reloadBridge
 {
   if ([self enablesDeveloperTools]) {
-    [self.reactBridge reload];
+    [(RCTBridge *) self.reactBridge reload];
   }
 }
 

@@ -166,8 +166,8 @@ class NativeProxy : public jni::HybridClass<NativeProxy> {
   jni::global_ref<NativeProxy::javaobject> javaPart_;
   jsi::Runtime *runtime_;
   std::shared_ptr<facebook::react::CallInvoker> jsCallInvoker_;
-  std::shared_ptr<NativeReanimatedModule> _nativeReanimatedModule;
-  jni::global_ref<LayoutAnimations::javaobject> layoutAnimations;
+  std::shared_ptr<NativeReanimatedModule> nativeReanimatedModule_;
+  jni::global_ref<LayoutAnimations::javaobject> layoutAnimations_;
   std::shared_ptr<Scheduler> scheduler_;
 #ifdef RCT_NEW_ARCH_ENABLED
   std::shared_ptr<NewestShadowNodesRegistry> newestShadowNodesRegistry_;
@@ -188,22 +188,25 @@ class NativeProxy : public jni::HybridClass<NativeProxy> {
   void installJSIBindings(
       jni::alias_ref<JavaMessageQueueThread::javaobject> messageQueueThread);
 #endif
+  PlatformDepMethodsHolder getPlatformDependentMethods();
+  void setGlobalProperties(
+      jsi::Runtime &jsRuntime,
+      const std::shared_ptr<jsi::Runtime> &reanimatedRuntime);
+  void setupLayoutAnimations();
+
+  double getCurrentTime();
   bool isAnyHandlerWaitingForEvent(std::string);
   void performOperations();
-  void requestRender(std::function<void(double)> onRender);
-  void registerEventHandler(std::function<void(
-                                jni::alias_ref<JString>,
-                                jni::alias_ref<react::WritableMap>)> handler);
+  void requestRender(std::function<void(double)> onRender, jsi::Runtime &rt);
+  void registerEventHandler();
+  void maybeFlushUIUpdatesQueue();
   void setGestureState(int handlerTag, int newState);
   int registerSensor(
       int sensorType,
       int interval,
+      int iosReferenceFrame,
       std::function<void(double[], int)> setter);
   void unregisterSensor(int sensorId);
-  void configureProps(
-      jsi::Runtime &rt,
-      const jsi::Value &uiProps,
-      const jsi::Value &nativeProps);
   int subscribeForKeyboardEvents(
       std::function<void(int, int)> keyboardEventDataUpdater,
       bool isStatusBarTranslucent);
@@ -211,10 +214,49 @@ class NativeProxy : public jni::HybridClass<NativeProxy> {
 #ifdef RCT_NEW_ARCH_ENABLED
   // nothing
 #else
-  void updateProps(jsi::Runtime &rt, int viewTag, const jsi::Object &props);
+  jsi::Value
+  obtainProp(jsi::Runtime &rt, const int viewTag, const jsi::String &propName);
+  void configureProps(
+      jsi::Runtime &rt,
+      const jsi::Value &uiProps,
+      const jsi::Value &nativeProps);
+  void updateProps(
+      jsi::Runtime &rt,
+      int viewTag,
+      const jsi::Value &viewName,
+      const jsi::Object &props);
   void scrollTo(int viewTag, double x, double y, bool animated);
   std::vector<std::pair<std::string, double>> measure(int viewTag);
 #endif
+  void handleEvent(
+      jni::alias_ref<JString> eventKey,
+      jni::alias_ref<react::WritableMap> event);
+
+  void progressLayoutAnimation(
+      int tag,
+      const jsi::Object &newProps,
+      bool isSharedTransition);
+
+  /***
+   * Wraps a method of `NativeProxy` in a function object capturing `this`
+   * @tparam TReturn return type of passed method
+   * @tparam TParams paramater types of passed method
+   * @param methodPtr pointer to method to be wrapped
+   * @return a function object with the same signature as the method, calling
+   * that method on `this`
+   */
+  template <class TReturn, class... TParams>
+  std::function<TReturn(TParams...)> bindThis(
+      TReturn (NativeProxy::*methodPtr)(TParams...)) {
+    return [this, methodPtr](TParams &&...args) {
+      return (this->*methodPtr)(std::forward<TParams>(args)...);
+    };
+  }
+
+  template <class Signature>
+  JMethod<Signature> getJniMethod(std::string const &methodName) {
+    return javaPart_->getClass()->getMethod<Signature>(methodName.c_str());
+  }
 
   explicit NativeProxy(
       jni::alias_ref<NativeProxy::jhybridobject> jThis,

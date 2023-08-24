@@ -15,8 +15,8 @@
 #include "include/core/SkString.h"
 #include "include/core/SkTypeface.h"
 #include "include/core/SkTypes.h"
-#include "include/private/SkMutex.h"
-#include "include/private/SkTHash.h"
+#include "include/private/base/SkMutex.h"
+#include "src/core/SkTHash.h"
 
 #include <memory>
 
@@ -50,6 +50,18 @@ public:
      */
     virtual sk_sp<SkImage> getFrame(float t);
 
+    // Describes how the frame image is to be scaled to the animation-declared asset size.
+    enum class SizeFit {
+        // See SkMatrix::ScaleToFit
+        kFill   = SkMatrix::kFill_ScaleToFit,
+        kStart  = SkMatrix::kStart_ScaleToFit,
+        kCenter = SkMatrix::kCenter_ScaleToFit,
+        kEnd    = SkMatrix::kEnd_ScaleToFit,
+
+        // No scaling.
+        kNone,
+    };
+
     struct FrameData {
         // SkImage payload.
         sk_sp<SkImage>    image;
@@ -57,6 +69,8 @@ public:
         SkSamplingOptions sampling;
         // Additional image transform to be applied before AE scaling rules.
         SkMatrix          matrix = SkMatrix::I();
+        // Strategy for image size -> AE asset size scaling.
+        SizeFit           scaling = SizeFit::kCenter;
     };
 
     /**
@@ -227,8 +241,8 @@ private:
 
     sk_sp<ImageAsset> loadImageAsset(const char[], const char[], const char[]) const override;
 
-    mutable SkMutex                                 fMutex;
-    mutable SkTHashMap<SkString, sk_sp<ImageAsset>> fImageCache;
+    mutable SkMutex                                             fMutex;
+    mutable skia_private::THashMap<SkString, sk_sp<ImageAsset>> fImageCache;
 
     using INHERITED = ResourceProviderProxyBase;
 };

@@ -8,12 +8,14 @@ import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
+import com.facebook.react.bridge.JSIModulePackage
 import com.facebook.react.bridge.JavaScriptExecutorFactory
 import com.facebook.react.config.ReactFeatureFlags
+import com.facebook.react.defaults.DefaultJSIModulePackage
 import com.facebook.react.devsupport.DevMenuReactInternalSettings
 import com.facebook.react.devsupport.DevServerHelper
 import com.facebook.react.shell.MainReactPackage
-import devmenu.com.th3rdwave.safeareacontext.SafeAreaContextPackage
+import devmenu.com.th3rdwave.safeareacontext.SafeAreaProviderManager
 import expo.modules.adapters.react.ModuleRegistryAdapter
 import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.devmenu.modules.DevMenuInternalModule
@@ -38,12 +40,12 @@ class DevMenuHost(application: Application) : ReactNativeHost(application) {
           override fun getModulesList() =
             listOf(
               DevMenuInternalModule::class.java,
-              DevMenuPreferences::class.java
+              DevMenuPreferences::class.java,
+              SafeAreaProviderManager::class.java
             )
         }
       ),
       DevMenuPackage(),
-      SafeAreaContextPackage()
     )
 
     try {
@@ -120,4 +122,10 @@ class DevMenuHost(application: Application) : ReactNativeHost(application) {
     method.isAccessible = true
     return method.invoke(appHost) as ReactPackageTurboModuleManagerDelegate.Builder
   }
+  override fun getJSIModulePackage(): JSIModulePackage? =
+    if (ReactFeatureFlags.enableFabricRenderer) {
+      DefaultJSIModulePackage(this)
+    } else {
+      null
+    }
 }

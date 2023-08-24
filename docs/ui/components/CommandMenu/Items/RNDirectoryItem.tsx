@@ -1,12 +1,11 @@
 import { GithubIcon } from '@expo/styleguide-icons';
-import { Command } from 'cmdk';
 
 import type { RNDirectoryItemType } from '../types';
-import { addHighlight, openLink } from '../utils';
+import { addHighlight } from '../utils';
+import { CommandItemBase } from './CommandItemBase';
 import { ExternalLinkIcon } from './icons';
-import { footnoteStyle, itemStyle } from './styles';
 
-import { CALLOUT, FOOTNOTE } from '~/ui/components/Text';
+import { CALLOUT, CAPTION } from '~/ui/components/Text';
 
 type Props = {
   item: RNDirectoryItemType;
@@ -18,26 +17,25 @@ const numberFormat = new Intl.NumberFormat();
 
 export const RNDirectoryItem = ({ item, onSelect, query }: Props) => {
   return (
-    <Command.Item
+    <CommandItemBase
       value={`rnd-${item.npmPkg}`}
-      onSelect={() => {
-        openLink(item.githubUrl, true);
-        onSelect && onSelect();
-      }}>
-      <div css={itemStyle}>
+      url={item.githubUrl}
+      isExternalLink
+      onSelect={onSelect}>
+      <div className="inline-flex gap-3 items-center">
         <GithubIcon className="text-icon-secondary" />
         <div>
           <CALLOUT
             weight="medium"
             dangerouslySetInnerHTML={{ __html: addHighlight(item.npmPkg, query) }}
           />
-          <FOOTNOTE css={footnoteStyle}>
+          <CAPTION theme="quaternary">
             {numberFormat.format(item.github.stats.stars)} stars ·{' '}
             {numberFormat.format(item.npm.downloads)} downloads
-          </FOOTNOTE>
+          </CAPTION>
         </div>
         <ExternalLinkIcon />
       </div>
-    </Command.Item>
+    </CommandItemBase>
   );
 };

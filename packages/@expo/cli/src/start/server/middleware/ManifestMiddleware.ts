@@ -1,8 +1,14 @@
 import { ExpoConfig, ExpoGoConfig, getConfig, ProjectConfig } from '@expo/config';
 import findWorkspaceRoot from 'find-yarn-workspace-root';
 import path from 'path';
+import resolveFrom from 'resolve-from';
 import { resolve } from 'url';
 
+import { ExpoMiddleware } from './ExpoMiddleware';
+import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
+import { resolveAbsoluteEntryPoint } from './resolveEntryPoint';
+import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
+import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './server.types';
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
 import { stripExtension } from '../../../utils/url';
@@ -10,11 +16,6 @@ import * as ProjectDevices from '../../project/devices';
 import { UrlCreator } from '../UrlCreator';
 import { getPlatformBundlers } from '../platformBundlers';
 import { createTemplateHtmlFromExpoConfigAsync } from '../webTemplate';
-import { ExpoMiddleware } from './ExpoMiddleware';
-import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
-import { resolveAbsoluteEntryPoint } from './resolveEntryPoint';
-import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
-import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './server.types';
 
 const debug = require('debug')('expo:start:server:middleware:manifest') as typeof console.log;
 
@@ -62,18 +63,34 @@ export function resolveMainModuleName(
   return stripExtension(entryPoint, 'js');
 }
 
+export function shouldEnableAsyncImports(projectRoot: string): boolean {
+  if (env.EXPO_NO_METRO_LAZY) {
+    return false;
+  }
+
+  // `@expo/metro-runtime` includes support for the fetch + eval runtime code required
+  // to support async imports. If it's not installed, we can't support async imports.
+  // If it is installed, the user MUST import it somewhere in their project.
+  // Expo Router automatically pulls this in, so we can check for it.
+  return resolveFrom.silent(projectRoot, '@expo/metro-runtime') != null;
+}
+
 export function createBundleUrlPath({
   platform,
   mainModuleName,
   mode,
   minify = mode === 'production',
   environment,
+  serializerOutput,
+  lazy,
 }: {
   platform: string;
   mainModuleName: string;
   mode: string;
   minify?: boolean;
   environment?: string;
+  serializerOutput?: 'static';
+  lazy?: boolean;
 }): string {
   const queryParams = new URLSearchParams({
     platform: encodeURIComponent(platform),
@@ -82,12 +99,19 @@ export function createBundleUrlPath({
     hot: String(false),
   });
 
+  if (lazy) {
+    queryParams.append('lazy', String(lazy));
+  }
+
   if (minify) {
     queryParams.append('minify', String(minify));
   }
   if (environment) {
     queryParams.append('resolver.environment', environment);
     queryParams.append('transform.environment', environment);
+  }
+  if (serializerOutput) {
+    queryParams.append('serializer.output', serializerOutput);
   }
 
   return `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;
@@ -133,11 +157,14 @@ export type ManifestMiddlewareOptions = {
 
 /** Base middleware creator for serving the Expo manifest (like the index.html but for native runtimes). */
 export abstract class ManifestMiddleware<
-  TManifestRequestInfo extends ManifestRequestInfo
+  TManifestRequestInfo extends ManifestRequestInfo,
 > extends ExpoMiddleware {
   private initialProjectConfig: ProjectConfig;
 
-  constructor(protected projectRoot: string, protected options: ManifestMiddlewareOptions) {
+  constructor(
+    protected projectRoot: string,
+    protected options: ManifestMiddlewareOptions
+  ) {
     super(
       projectRoot,
       /**
@@ -231,6 +258,7 @@ export abstract class ManifestMiddleware<
       minify: this.options.minify,
       platform,
       mainModuleName,
+      lazy: shouldEnableAsyncImports(this.projectRoot),
     });
 
     return (
@@ -255,6 +283,9 @@ export abstract class ManifestMiddleware<
       // TODO: Is this still needed?
       hot: String(false),
     });
+    if (shouldEnableAsyncImports(this.projectRoot)) {
+      queryParams.append('lazy', String(true));
+    }
 
     if (this.options.minify) {
       queryParams.append('minify', String(this.options.minify));
@@ -281,11 +312,8 @@ export abstract class ManifestMiddleware<
     hostname?: string | null;
   }): ExpoGoConfig {
     return {
-      // localhost:19000
+      // localhost:8081
       debuggerHost: this.options.constructUrl({ scheme: '', hostname }),
-      // http://localhost:19000/logs -- used to send logs to the CLI for displaying in the terminal.
-      // This is deprecated in favor of the WebSocket connection setup in Metro.
-      logUrl: this.options.constructUrl({ scheme: 'http', hostname }) + '/logs',
       // Required for Expo Go to function.
       developer: {
         tool: DEVELOPER_TOOL,
@@ -299,8 +327,8 @@ export abstract class ManifestMiddleware<
       mainModuleName,
       // Add this string to make Flipper register React Native / Metro as "running".
       // Can be tested by running:
-      // `METRO_SERVER_PORT=19000 open -a flipper.app`
-      // Where 19000 is the port where the Expo project is being hosted.
+      // `METRO_SERVER_PORT=8081 open -a flipper.app`
+      // Where 8081 is the port where the Expo project is being hosted.
       __flipperHack: 'React Native packager is running',
     };
   }

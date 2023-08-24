@@ -1,9 +1,9 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
 
+import { ProjectList } from './ProjectList';
 import { useHome_AccountAppsQuery } from '../../graphql/types';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
-import { ProjectList } from './ProjectList';
 
 function useProjectsForAccountQuery({ accountName }: { accountName: string }) {
   const { data, fetchMore, loading, error, refetch } = useHome_AccountAppsQuery({

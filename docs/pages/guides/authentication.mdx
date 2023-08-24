@@ -23,6 +23,7 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
 
 <Grid>
   <GridItem title="IdentityServer 4" protocol={['OAuth 2', 'OpenID']} image={ASSETS.id4} />
+  <GridItem title="Asgardeo" protocol={['OAuth 2', 'OpenID']} image={ASSETS.asgardeo} />
   <GridItem title="Azure" protocol={['OAuth 2', 'OpenID']} image={ASSETS.azure} />
   <GridItem
     title="Apple"
@@ -59,6 +60,7 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
     image={ASSETS.google}
   />
   <GridItem title="Imgur" protocol={['OAuth 2']} image={ASSETS.imgur} />
+  <GridItem title="Keycloak" protocol={['OAuth 2', 'OpenID']} image={ASSETS.keycloak} />
   <GridItem title="Okta" protocol={['OAuth 2', 'OpenID']} image={ASSETS.okta} />
   <GridItem title="Reddit" protocol={['OAuth 2']} image={ASSETS.reddit} />
   <GridItem title="Slack" protocol={['OAuth 2']} image={ASSETS.slack} />
@@ -128,6 +130,217 @@ export default function App() {
 {/* End IdentityServer 4 */}
 
 <Box
+  name="Asgardeo"
+  createUrl="https://wso2.com/asgardeo/docs/guides/#developer-guide"
+  image={ASSETS.asgardeo}
+>
+
+| Website                                         | Provider | PKCE      | Auto Discovery |
+| ----------------------------------------------- | -------- | --------- | -------------- |
+| [Get Your Config](https://console.asgardeo.io/) | OpenID   | Supported | Available      |
+
+- Make sure to check `Public Client` option in the console.
+- Choose the intended grant in the Allowed grant types section.
+
+<Tabs tabs={["Auth Code", "Implicit Flow"]}>
+
+<Tab>
+
+{/* prettier-ignore */}
+```tsx
+import { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, Button, Alert } from 'react-native';
+import * as AuthSession from "expo-auth-session";
+import * as WebBrowser from "expo-web-browser";
+import jwtDecode from "jwt-decode";
+
+WebBrowser.maybeCompleteAuthSession();
+
+const useProxy = true;
+const redirectUri = AuthSession.makeRedirectUri({ useProxy });
+
+/* @info <strong>Client ID:</strong> This can be found on the protocol tab of Asgardeo Console */
+const CLIENT_ID = "YOUR_CLIENT_ID";
+/* @end */
+
+export default function App() {
+
+    /* @info <strong>Auto Discovery URL:</strong> This can be found on the info tab of Asgardeo Console. Copy the link under `Issuer` */
+    const discovery = AuthSession.useAutoDiscovery('https://api.asgardeo.io/t/<YOUR_ORG_NAME>/oauth2/token');
+    /* @end */
+    const [tokenResponse, setTokenResponse] = useState({});
+    const [decodedIdToken, setDecodedIdToken] = useState({});
+
+    const [request, result, promptAsync] = AuthSession.useAuthRequest(
+        {
+            redirectUri,
+            clientId: CLIENT_ID,
+            responseType: "code",
+            scopes: ["openid", "profile", "email"]
+        },
+        discovery
+    );
+
+    const getAccessToken = () => {
+      if (result?.params?.code) {
+        /* @info <strong>Token Endpoint:</strong> This can be found on the info tab of Asgardeo Console. Copy the link under `Token` */
+        fetch(
+        /* @end */
+        "https://api.asgardeo.io/t/iamapptesting/oauth2/token",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: `grant_type=authorization_code&code=${result?.params?.code}&redirect_uri=${redirectUri}&client_id=${CLIENT_ID}&code_verifier=${request?.codeVerifier}`
+          }).then((response) => {
+              return response.json();
+            }).then((data) => {
+              setTokenResponse(data);
+              setDecodedIdToken(jwtDecode(data.id_token));
+            }).catch((err) => {
+              console.log(err);
+            });
+        }
+    }
+
+    useEffect(() => {
+      (async function setResult() {
+        if (result) {
+          if (result.error) {
+            Alert.alert(
+              "Authentication error",
+              result.params.error_description || "something went wrong"
+            );
+            return;
+          }
+          if (result.type === "success") {
+            getAccessToken();
+          }
+        }
+      })();
+    }, [result]);
+
+
+    return (
+      <View style={styles.container}>
+        <Button title="Login" disabled={!request} onPress={() => promptAsync({ useProxy })} />
+        {decodedIdToken && <Text>Welcome {decodedIdToken.given_name || ""}!</Text>}
+        {decodedIdToken && <Text>{decodedIdToken.email}</Text>}
+        <View style={styles.accessTokenBlock}>
+          decodedToken && <Text>Access Token: {tokenResponse.access_token}</Text>
+        </View>
+      </View>
+    );
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    accessTokenBlock: {
+        width: 300,
+        height: 500,
+        overflow: "scroll"
+    }
+});
+```
+
+</Tab>
+
+<Tab>
+
+{/* prettier-ignore */}
+```tsx
+import { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, Button, Alert } from 'react-native';
+import * as AuthSession from "expo-auth-session";
+import * as WebBrowser from "expo-web-browser";
+import jwtDecode from "jwt-decode";
+
+WebBrowser.maybeCompleteAuthSession();
+
+const useProxy = true;
+const redirectUri = AuthSession.makeRedirectUri({ useProxy });
+
+/* @info <strong>Client ID:</strong> This can be found on the protocol tab of Asgardeo Console */
+const CLIENT_ID = "YOUR_CLIENT_ID";
+/* @end */
+
+export default function App() {
+
+  /* @info <strong>Auto Discovery URL:</strong> This can be found on the info tab of Asgardeo Console. Copy the link under `Issuer` */
+  const discovery = AuthSession.useAutoDiscovery('https://api.asgardeo.io/t/<YOUR_ORG_NAME>/oauth2/token');
+  /* @end */
+  const [decodedToken, setDecodedToken] = useState({});
+
+  const [request, result, promptAsync] = AuthSession.useAuthRequest(
+        {
+            redirectUri,
+            clientId: CLIENT_ID,
+            responseType: "token",
+            scopes: ["openid", "profile", "email"]
+        },
+        discovery
+    );
+
+  useEffect(() => {
+    (async function setResult() {
+      if (result) {
+        if (result.error) {
+          Alert.alert(
+            "Authentication error",
+            result.params.error_description || "something went wrong"
+          );
+          return;
+        }
+
+        if (result.type === "success") {
+          const jwtToken = result.params.access_token;
+          const decoded = jwtDecode(jwtToken);
+          setDecodedToken(decoded);
+        }
+      }
+    })();
+  }, [result]);
+
+  return (
+    <View style={styles.container}>
+      <Button title="Login" disabled={!request} onPress={() => promptAsync({ useProxy })} />
+      {decodedToken && <Text>Welcome {decodedToken.given_name || ""}!</Text>}
+      {decodedToken && <Text>{decodedToken.email}</Text>}
+      <View style={styles.accessTokenBlock}>
+        decodedToken && <Text>Access Token: {result?.params.access_token}</Text>
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    accessTokenBlock: {
+        width: 300,
+        height: 500,
+        overflow: "scroll"
+    }
+});
+```
+
+</Tab>
+
+</Tabs>
+</Box>
+{/* End Asgardeo */}
+
+<Box
   name="Azure"
   createUrl="https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-overview"
   image={ASSETS.azure}
@@ -143,8 +356,13 @@ export default function App() {
 ```tsx Azure Example
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
-import { Button } from 'react-native';
+import {
+  exchangeCodeAsync,
+  makeRedirectUri,
+  useAuthRequest,
+  useAutoDiscovery,
+} from 'expo-auth-session';
+import { Button, Text, SafeAreaView } from 'react-native';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
@@ -152,33 +370,67 @@ WebBrowser.maybeCompleteAuthSession();
 
 export default function App() {
   // Endpoint
-  const discovery = useAutoDiscovery('https://login.microsoftonline.com/<TENANT_ID>/v2.0');
+  const discovery = useAutoDiscovery(
+    'https://login.microsoftonline.com/<TENANT_ID>/v2.0',
+  );
+  const redirectUri = makeRedirectUri({
+    /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+    scheme: undefined,
+    /* @end */
+    /* @info Azure requires there to be a path in your redirect URI. */
+    path: 'auth',
+    /* @end */
+  });
+  const clientId = '<CLIENT_ID>';
+
+  // We store the JWT in here
+  const [token, setToken] = React.useState<string | null>(null);
+
   // Request
-  const [request, response, promptAsync] = useAuthRequest(
+  const [request, , promptAsync] = useAuthRequest(
     {
-      clientId: 'CLIENT_ID',
+      clientId,
       scopes: ['openid', 'profile', 'email', 'offline_access'],
-      redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
-        scheme: 'your.app'
-        /* @end */
-      }),
+      redirectUri,
     },
-    discovery
+    discovery,
   );
 
   return (
-    <Button
-      /* @info Disable the button until the request is loaded asynchronously. */
-      disabled={!request}
-      /* @end */
-      title="Login"
-      onPress={() => {
-        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync();
+    <SafeAreaView>
+      <Button
+        /* @info Disable the button until the request is loaded asynchronously. */
+        disabled={!request}
         /* @end */
-      }}
-    />
+        title="Login"
+        onPress={() => {
+          /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+          promptAsync().then((codeResponse) => {
+            /* @end */
+            if (request && codeResponse?.type === 'success' && discovery) {
+              /* @info Exchange the code to get the JWT. */
+              exchangeCodeAsync(
+                /* @end */
+                {
+                  clientId,
+                  code: codeResponse.params.code,
+                  /* @info Reuse the codeVerifier for PCKE */
+                  extraParams: request.codeVerifier
+                    ? { code_verifier: request.codeVerifier }
+                    : undefined,
+                  /* @end */
+                  redirectUri,
+                },
+                discovery,
+              ).then((res) => {
+                setToken(res.accessToken);
+              });
+            }
+          });
+        }}
+      />
+      <Text>{token}</Text>
+    </SafeAreaView>
   );
 }
 ```
@@ -460,7 +712,7 @@ export default function App() {
 - The `redirectUri` requires 2 slashes (`://`).
 - Scopes must be joined with ':' so just create one long string.
 - Setup redirect URIs: Your Project > Permitted Redirect URIs: (be sure to save after making changes).
-  - _Expo Go_: `exp://localhost:19000/--/`
+  - _Expo Go_: `exp://localhost:8081/--/`. For SDK 48 and lower, the port number is `19000`.
   - _Web dev_: `https://localhost:19006`
     - Run `expo start --web --https` to run with **https**, auth won't work otherwise.
     - Adding a slash to the end of the URL doesn't matter.
@@ -785,7 +1037,7 @@ export default function App() {
 [c-fitbit]: https://dev.fitbit.com/apps/new
 
 - Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
-  - Expo Go: `exp://localhost:19000/--/*`
+  - Expo Go: `exp://localhost:8081/--/*`. For SDK 48 and lower, the port number is `19000`.
   - Expo Go + Proxy: `https://auth.expo.io/@you/your-app`
   - Standalone or Bare: `com.your.app://*`
   - Web: `https://yourwebsite.com/*`
@@ -935,7 +1187,7 @@ export default function App() {
 [c-github]: https://github.com/settings/developers
 
 - Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
-  - Expo Go: `exp://localhost:19000/--/*`
+  - Expo Go: `exp://localhost:8081/--/*`. For SDK 48 and lower, the port number is `19000`.
   - Expo Go + Proxy: `https://auth.expo.io/@you/your-app`
   - Standalone or Bare: `com.your.app://*`
   - Web: `https://yourwebsite.com/*`
@@ -1152,6 +1404,55 @@ export default function App() {
 {/* End Imgur */}
 
 <Box
+  name="Keycloak"
+  image={ASSETS.keycloak}
+>
+
+| Website | Provider | PKCE     | Auto Discovery |
+| ------- | -------- | -------- | -------------- |
+| -       | OpenID   | Required | Available      |
+
+{/* prettier-ignore */}
+```tsx Keycloak Example
+import * as React from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
+import { Button, Text, View } from 'react-native';
+
+WebBrowser.maybeCompleteAuthSession();
+
+export default function App() {
+  /* @info If the provider supports auto discovery then you can pass an issuer to the `useAutoDiscovery` hook to fetch the discovery document. */
+  const discovery = useAutoDiscovery('https://YOUR_KEYCLOAK/realms/YOUR_REALM');
+  /* @end */
+
+// Create and load an auth request
+  const [request, result, promptAsync] = useAuthRequest(
+    {
+      clientId: 'YOUR_CLIENT_NAME',
+      /* @info After a user finishes authenticating, the server will redirect them to this URI. Learn more about <a href="../../guides/linking/">linking here</a>. */
+      redirectUri: makeRedirectUri({
+        scheme: 'YOUR_SCHEME'
+      }),
+      /* @end */
+      scopes: ['openid', 'profile'],
+    },
+    discovery
+  );
+
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Button title="Login!" disabled={!request} onPress={() => promptAsync()} />
+      {result && <Text>{JSON.stringify(result, null, 2)}</Text>}
+    </View>
+  );
+}
+```
+
+</Box>
+{/* End Keycloak */}
+
+<Box
   name="Okta"
   createUrl="https://developer.okta.com/signup"
   image={ASSETS.okta}
@@ -1248,7 +1549,7 @@ export default function App() {
 [c-reddit]: https://www.reddit.com/prefs/apps
 
 - Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
-  - Expo Go: `exp://localhost:19000/--/*`
+  - Expo Go: `exp://localhost:8081/--/*`. For SDK 48 and lower, the port number is `19000`.
   - Expo Go + Proxy: `https://auth.expo.io/@you/your-app`
   - Standalone or Bare: `com.your.app://*`
   - Web: `https://yourwebsite.com/*`
@@ -1483,7 +1784,7 @@ export default function App() {
 [c-spotify]: https://developer.spotify.com/dashboard/applications
 
 - Setup your redirect URIs: Your project > Edit Settings > Redirect URIs (be sure to save after making changes).
-  - _Expo Go_: `exp://localhost:19000/--/`
+  - _Expo Go_: `exp://localhost:8081/--/`. For SDK 48 and lower, the port number is `19000`.
   - _Web dev_: `https://localhost:19006`
     - Important: Ensure there's no slash at the end of the URL unless manually changed in the app code with `makeRedirectUri({ path: '/' })`.
     - Run `expo start --web --https` to run with **https**, auth won't work otherwise.
@@ -1893,7 +2194,7 @@ export default function App() {
 
 #### Expo Go
 
-You must use the proxy service in the Expo Go app because `exp://localhost:19000` cannot be added to your Twitter app as a redirect.
+You must use the proxy service in the Expo Go app because `exp://localhost:8081` cannot be added to your Twitter app as a redirect.
 
 <Tabs tabs={["Auth Code"]}>
 

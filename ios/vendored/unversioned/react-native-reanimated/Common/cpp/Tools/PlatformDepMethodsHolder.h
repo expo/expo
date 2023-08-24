@@ -68,6 +68,7 @@ using ConfigurePropsFunction = std::function<void(
 using KeyboardEventSubscribeFunction =
     std::function<int(std::function<void(int, int)>, bool)>;
 using KeyboardEventUnsubscribeFunction = std::function<void(int)>;
+using MaybeFlushUIUpdatesQueueFunction = std::function<void()>;
 
 struct PlatformDepMethodsHolder {
   RequestRender requestRender;
@@ -87,6 +88,7 @@ struct PlatformDepMethodsHolder {
   SetGestureStateFunction setGestureStateFunction;
   KeyboardEventSubscribeFunction subscribeForKeyboardEvents;
   KeyboardEventUnsubscribeFunction unsubscribeFromKeyboardEvents;
+  MaybeFlushUIUpdatesQueueFunction maybeFlushUIUpdatesQueueFunction;
 };
 
 } // namespace reanimated

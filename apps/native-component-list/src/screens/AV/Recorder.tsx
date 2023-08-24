@@ -11,9 +11,9 @@ import {
   ViewStyle,
 } from 'react-native';
 
+import AudioInputSelector from './AudioInputSelector';
 import Button from '../../components/Button';
 import Colors from '../../constants/Colors';
-import AudioInputSelector from './AudioInputSelector';
 
 interface State {
   options?: Audio.RecordingOptions;

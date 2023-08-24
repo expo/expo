@@ -33,7 +33,7 @@ def getRNVersion() {
 ensureDependeciesWereEvaluated(project)
 
 group = 'host.exp.exponent'
-version = '49.0.0-alpha.3'
+version = '50.0.0-alpha.1'
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -83,20 +83,24 @@ afterEvaluate {
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 33)
 
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_11
-    targetCompatibility JavaVersion.VERSION_11
+  def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
+  if (agpVersion.tokenize('.')[0].toInteger() < 8) {
+    compileOptions {
+      sourceCompatibility JavaVersion.VERSION_11
+      targetCompatibility JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+      jvmTarget = JavaVersion.VERSION_11.majorVersion
+    }
   }
 
-  kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_11.majorVersion
-  }
-
+  namespace "expo.core"
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 1
-    versionName "49.0.0-alpha.3"
+    versionName "50.0.0-alpha.1"
     consumerProguardFiles("proguard-rules.pro")
   }
   lintOptions {
@@ -147,6 +151,13 @@ dependencies { dependencyHandler ->
 
 // A task generating a package list of expo modules.
 task generateExpoModulesPackageList {
+  def modulesConfig = getModulesConfig()
+  def outputPath = getGenerateExpoModulesPackagesListPath()
+  if (modulesConfig) {
+    outputs.file(file(outputPath))
+    inputs.property("modulesConfig", modulesConfig)
+  }
+
   doLast {
     generateExpoModulesPackageList()
   }

@@ -1,5 +1,5 @@
 ---
-title: Using Flipper
+title: Use Flipper
 description: A guide on installing and configuring Flipper for debugging an Expo project.
 ---
 
@@ -110,7 +110,16 @@ To configure and install a development build, follow the instructions below:
 
 After installing the build, run the following command to start a development server:
 
-<Terminal cmd={['$ npx expo start --dev-client']} />
+<Terminal
+  cmd={[
+    '# For SDK 49 and higher',
+    '$ npx expo start',
+    '',
+    '# For SDK 48 and lower',
+    '$ npx expo start --dev-client',
+  ]}
+  cmdCopy="npx expo start"
+/>
 
 Once the development server is running, open the Flipper desktop app and select your device or simulator under **App Inspect**:
 
@@ -124,8 +133,8 @@ Once the development server is running, open the Flipper desktop app and select 
 
 ## Limitations
 
-In your project, if a third-party library uses `"useFrameworks": "static"` for iOS, integrating Flipper will not work since it is incompatible. For more information, see the [notice on the compatibility issue](https://github.com/jakobo/expo-community-flipper/issues/27) in the `expo-community-flipper` GitHub repository.
+If a third-party library uses `"useFrameworks": "static"` for iOS in your project, integrating Flipper will not work since it is incompatible. For more information, see the [notice on the compatibility issue](https://github.com/jakobo/expo-community-flipper/issues/27) in the `expo-community-flipper` GitHub repository.
 
 ## More
 
-- [Flipper](https://fbflipper.com/docs/features/react-native/)
+To learn more about the tool, see [React Native support in Flipper](https://fbflipper.com/docs/features/react-native/) documentation.

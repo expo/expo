@@ -17,14 +17,14 @@ concurrency:
 
 jobs:
   ios:
-    runs-on: macos-12
+    runs-on: macos-13
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
         with:
           submodules: true
-      - name: 🔨 Switch to Xcode 14.1
-        run: sudo xcode-select --switch /Applications/Xcode_14.1.app
+      - name: 🔨 Switch to Xcode 14.3
+        run: sudo xcode-select --switch /Applications/Xcode_14.3.app
       - name: 🔓 Decrypt secrets if possible
         uses: ./.github/actions/expo-git-decrypt
         with:
@@ -35,6 +35,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
+          ruby-version: 3.2.2
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches

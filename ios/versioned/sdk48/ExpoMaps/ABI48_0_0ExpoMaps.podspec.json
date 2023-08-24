@@ -18,10 +18,10 @@
   "requires_arc": true,
   "dependencies": {
     "GoogleMaps": [
-      "7.1.0"
+      "7.3.0"
     ],
     "GooglePlaces": [
-      "7.1.0"
+      "7.3.0"
     ],
     "ABI48_0_0ExpoModulesCore": []
   }

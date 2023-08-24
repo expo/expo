@@ -14,12 +14,15 @@
 #include "include/core/SkPath.h"
 #include "include/core/SkRect.h"
 #include "include/core/SkRefCnt.h"
+#include "include/core/SkTypeface.h"
 #include "include/core/SkTypes.h"
 
+#include <memory>
 #include <vector>
 
 class SkStream;
-class SkTypeface;
+class SkStreamAsset;
+struct SkFontArguments;
 
 class SK_API SkCustomTypefaceBuilder {
 public:
@@ -32,6 +35,9 @@ public:
     void setFontStyle(SkFontStyle);
 
     sk_sp<SkTypeface> detach();
+
+    static constexpr SkTypeface::FactoryId FactoryId = SkSetFourByteTag('u','s','e','r');
+    static sk_sp<SkTypeface> MakeFromStream(std::unique_ptr<SkStreamAsset>, const SkFontArguments&);
 
 private:
     struct GlyphRec {

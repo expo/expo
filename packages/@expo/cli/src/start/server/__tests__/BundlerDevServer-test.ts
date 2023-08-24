@@ -1,10 +1,11 @@
-import openBrowserAsync from 'better-opn';
 import { vol } from 'memfs';
 
+import { openBrowserAsync } from '../../../utils/open';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import { UrlCreator } from '../UrlCreator';
 import { getPlatformBundlers } from '../platformBundlers';
 
+jest.mock('../../../utils/open');
 jest.mock(`../../../log`);
 jest.mock('../AsyncNgrok');
 jest.mock('../DevelopmentSession');
@@ -330,14 +331,6 @@ describe('getNativeRuntimeUrl', () => {
 
 describe('getManifestMiddlewareAsync', () => {
   const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
-  it(`asserts invalid manifest type`, async () => {
-    await expect(
-      server['getManifestMiddlewareAsync']({
-        // @ts-expect-error
-        forceManifestType: 'foobar',
-      })
-    ).rejects.toThrow(/Manifest middleware for type 'foobar' not found/);
-  });
   it(`asserts server is not running`, async () => {
     await expect(server['getManifestMiddlewareAsync']()).rejects.toThrow(
       /Dev server instance not found/

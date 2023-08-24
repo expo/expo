@@ -4,7 +4,8 @@
 #include "JavaScriptValue.h"
 #include "JavaScriptObject.h"
 #include "Exceptions.h"
-#include "JavaScriptRuntime.h"
+#include "JSIInteropModuleRegistry.h"
+#include "JSIUtils.h"
 
 #if UNIT_TEST
 
@@ -30,19 +31,49 @@ namespace jsi = facebook::jsi;
 
 namespace expo {
 
-void SyncCallInvoker::invokeAsync(std::function<void()> &&func) {
-  func();
-}
+namespace {
 
-void SyncCallInvoker::invokeSync(std::function<void()> &&func) {
-  func();
-}
+/**
+ * Dummy CallInvoker that invokes everything immediately.
+ * Used in the test environment to check the async flow.
+ */
+class SyncCallInvoker : public react::CallInvoker {
+public:
+  void invokeAsync(std::function<void()> &&func) override {
+    func();
+  }
+
+  void invokeSync(std::function<void()> &&func) override {
+    func();
+  }
+
+  ~SyncCallInvoker() override = default;
+};
+
+#if REACT_NATIVE_TARGET_VERSION >= 73
+class SyncNativeMethodCallInvoker : public react::NativeMethodCallInvoker {
+public:
+  void invokeAsync(const std::string &methodName, std::function<void()> &&func) override {
+    func();
+  }
+
+  void invokeSync(const std::string &methodName, std::function<void()> &&func) override {
+    func();
+  }
+
+  ~SyncNativeMethodCallInvoker() override = default;
+};
+#else
+using SyncNativeMethodCallInvoker = SyncCallInvoker;
+#endif // REACT_NATIVE_TARGET_VERSION >= 73
+
+} // namespace
 
 JavaScriptRuntime::JavaScriptRuntime(
   JSIInteropModuleRegistry *jsiInteropModuleRegistry
 )
   : jsInvoker(std::make_shared<SyncCallInvoker>()),
-    nativeInvoker(std::make_shared<SyncCallInvoker>()),
+    nativeInvoker(std::make_shared<SyncNativeMethodCallInvoker>()),
     jsiInteropModuleRegistry(jsiInteropModuleRegistry) {
 #if !UNIT_TEST
   throw std::logic_error(
@@ -107,7 +138,7 @@ JavaScriptRuntime::JavaScriptRuntime(
   JSIInteropModuleRegistry *jsiInteropModuleRegistry,
   jsi::Runtime *runtime,
   std::shared_ptr<react::CallInvoker> jsInvoker,
-  std::shared_ptr<react::CallInvoker> nativeInvoker
+  std::shared_ptr<NativeMethodCallInvokerCompatible> nativeInvoker
 ) : jsInvoker(std::move(jsInvoker)), nativeInvoker(std::move(nativeInvoker)),
     jsiInteropModuleRegistry(jsiInteropModuleRegistry) {
   // Creating a shared pointer that points to the runtime but doesn't own it, thus doesn't release it.
@@ -125,7 +156,8 @@ jni::local_ref<JavaScriptValue::javaobject>
 JavaScriptRuntime::evaluateScript(const std::string &script) {
   auto scriptBuffer = std::make_shared<jsi::StringBuffer>(script);
   try {
-    return JavaScriptValue::newObjectCxxArgs(
+    return JavaScriptValue::newInstance(
+      jsiInteropModuleRegistry,
       weak_from_this(),
       std::make_shared<jsi::Value>(runtime->evaluateJavaScript(scriptBuffer, "<<evaluated>>"))
     );
@@ -148,12 +180,12 @@ JavaScriptRuntime::evaluateScript(const std::string &script) {
 
 jni::local_ref<JavaScriptObject::javaobject> JavaScriptRuntime::global() {
   auto global = std::make_shared<jsi::Object>(runtime->global());
-  return JavaScriptObject::newObjectCxxArgs(weak_from_this(), global);
+  return JavaScriptObject::newInstance(jsiInteropModuleRegistry, weak_from_this(), global);
 }
 
 jni::local_ref<JavaScriptObject::javaobject> JavaScriptRuntime::createObject() {
   auto newObject = std::make_shared<jsi::Object>(*runtime);
-  return JavaScriptObject::newObjectCxxArgs(weak_from_this(), newObject);
+  return JavaScriptObject::newInstance(jsiInteropModuleRegistry, weak_from_this(), newObject);
 }
 
 void JavaScriptRuntime::drainJSEventLoop() {
@@ -161,23 +193,22 @@ void JavaScriptRuntime::drainJSEventLoop() {
 }
 
 void JavaScriptRuntime::installMainObject() {
-  mainObject = std::make_shared<jsi::Object>(*runtime);
+  auto coreModule = jsiInteropModuleRegistry->getCoreModule();
+  coreModule->cthis()->jsiInteropModuleRegistry = jsiInteropModuleRegistry;
+  mainObject = coreModule->cthis()->getJSIObject(*runtime);
+
   auto global = runtime->global();
-  auto objectClass = global.getPropertyAsObject(*runtime, "Object");
-  jsi::Function definePropertyFunction = objectClass.getPropertyAsFunction(
-    *runtime,
-    "defineProperty"
-  );
 
   jsi::Object descriptor = JavaScriptObject::preparePropertyDescriptor(*runtime, 1 << 1);
 
   descriptor.setProperty(*runtime, "value", jsi::Value(*runtime, *mainObject));
 
-  definePropertyFunction.callWithThis(*runtime, objectClass, {
-    jsi::Value(*runtime, global),
-    jsi::String::createFromUtf8(*runtime, "expo"),
+  common::definePropertyOnJSIObject(
+    *runtime,
+    &global,
+    "expo",
     std::move(descriptor)
-  });
+  );
 }
 
 std::shared_ptr<jsi::Object> JavaScriptRuntime::getMainObject() {

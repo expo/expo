@@ -6,11 +6,41 @@
 
 ### 🎉 New features
 
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
-- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537) by [@kudo](https://github.com/kudo))
+### 💡 Others
+
+- Migrate to Expo CLI. ([#23806](https://github.com/expo/expo/pull/23806) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 3.0.0 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 2.4.7 — 2023-07-26
+
+### 🐛 Bug fixes
+
+- Fixed compatibility with the Reanimated 3.4.0 on iOS. ([#23726](https://github.com/expo/expo/pull/23726) by [@piaskowyk](https://github.com/piaskowyk))
+
+## 2.4.2 — 2023-06-28
+
+_This version does not introduce any user-facing changes._
+
+## 2.4.1 — 2023-06-23
+
+_This version does not introduce any user-facing changes._
+
+## 2.4.0 — 2023-06-21
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
+
+- Bump `babel-plugin-module-resolver` dev dependency. ([#22871](https://github.com/expo/expo/pull/22871) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 2.3.0 — 2023-05-08
 

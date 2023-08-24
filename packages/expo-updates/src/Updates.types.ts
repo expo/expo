@@ -1,4 +1,6 @@
-import Constants from 'expo-constants';
+import { NewManifest, BareManifest } from 'expo-manifests';
+
+export type Manifest = NewManifest | BareManifest;
 
 /**
  * The types of update-related events.
@@ -20,32 +22,17 @@ export enum UpdateEventType {
   ERROR = 'error',
 }
 
-// @docsMissing
-// TODO(eric): move source of truth for manifest type to this module
-/**
- * @hidden
- */
-export type ClassicManifest = typeof Constants.manifest;
-
-// @docsMissing
-/**
- * @hidden
- */
-export type Manifest = ClassicManifest | typeof Constants.manifest2;
-// modern manifest type is intentionally not exported, since the plan is to call it just "Manifest"
-// in the future
-
 type UpdateCheckResultRollBackToEmbedded = {
   /**
-   * This property is false for a roll back update.
+   * Whether an update is available. This property is false for a roll back update.
    */
   isAvailable: false;
   /**
-   * No manifest, since this is a roll back update.
+   * The manifest of the update when available.
    */
   manifest: undefined;
   /**
-   * Signifies that a roll back update is available.
+   * Whether a roll back to embedded update is available.
    */
   isRollBackToEmbedded: true;
 };
@@ -55,15 +42,15 @@ type UpdateCheckResultRollBackToEmbedded = {
  */
 export type UpdateCheckResultSuccess = {
   /**
-   * Signifies that an update is available.
+   * Whether an update is available. This property is false for a roll back update.
    */
   isAvailable: true;
   /**
-   * The manifest of the available update.
+   * The manifest of the update when available.
    */
   manifest: Manifest;
   /**
-   * This property is false for a new update.
+   * Whether a roll back to embedded update is available.
    */
   isRollBackToEmbedded: false;
 };
@@ -73,15 +60,15 @@ export type UpdateCheckResultSuccess = {
  */
 export type UpdateCheckResultFailure = {
   /**
-   * Signifies that the app is already running the latest available update.
+   * Whether an update is available. This property is false for a roll back update.
    */
   isAvailable: false;
   /**
-   * No manifest, since the app is already running the latest available version.
+   * The manifest of the update when available.
    */
   manifest: undefined;
   /**
-   * Signifies that no roll back update is available.
+   * Whether a roll back to embedded update is available.
    */
   isRollBackToEmbedded: false;
 };
@@ -99,14 +86,18 @@ export type UpdateCheckResult =
  */
 export type UpdateFetchResultSuccess = {
   /**
-   * Signifies that the fetched bundle is new (that is, a different version than what's currently
-   * running).
+   * Whether the fetched update is new (that is, a different version than what's currently running).
+   * False when roll back to embedded is true.
    */
   isNew: true;
   /**
-   * The manifest of the newly downloaded update.
+   * The manifest of the fetched update.
    */
   manifest: Manifest;
+  /**
+   * Whether the fetched update is a roll back to the embedded update.
+   */
+  isRollBackToEmbedded: false;
 };
 
 /**
@@ -114,21 +105,35 @@ export type UpdateFetchResultSuccess = {
  */
 export type UpdateFetchResultFailure = {
   /**
-   * Signifies that the fetched bundle is the same as version which is currently running.
+   * Whether the fetched update is new (that is, a different version than what's currently running).
+   * False when roll back to embedded is true.
    */
   isNew: false;
   /**
-   * No manifest, since there is no update.
+   * The manifest of the fetched update.
    */
   manifest: undefined;
+  /**
+   * Whether the fetched update is a roll back to the embedded update.
+   */
+  isRollBackToEmbedded: false;
 };
 
 /**
- * The rollback to embedded result of fetching a new update.
+ * The roll back to embedded result of fetching a new update.
  */
-type UpdateFetchResultRollbackToEmbedded = {
+type UpdateFetchResultRollBackToEmbedded = {
   /**
-   * Signifies that the update was a roll back to the embedded update.
+   * Whether the fetched update is new (that is, a different version than what's currently running).
+   * False when roll back to embedded is true.
+   */
+  isNew: false;
+  /**
+   * The manifest of the fetched update.
+   */
+  manifest: undefined;
+  /**
+   * Whether the fetched update is a roll back to the embedded update.
    */
   isRollBackToEmbedded: true;
 };
@@ -139,7 +144,7 @@ type UpdateFetchResultRollbackToEmbedded = {
 export type UpdateFetchResult =
   | UpdateFetchResultSuccess
   | UpdateFetchResultFailure
-  | UpdateFetchResultRollbackToEmbedded;
+  | UpdateFetchResultRollBackToEmbedded;
 
 /**
  * An object that is passed into each event listener when an auto-update check occurs.
@@ -250,3 +255,30 @@ export enum UpdatesCheckAutomaticallyValue {
  * @hidden
  */
 export type LocalAssets = Record<string, string>;
+
+/**
+ * @hidden
+ */
+export type UpdatesNativeStateMachineContext = {
+  // The native state machine context, either read directly from a native module method,
+  // or received in a state change event. Used internally by this module and not exported publicly.
+  isUpdateAvailable: boolean;
+  isUpdatePending: boolean;
+  isChecking: boolean;
+  isDownloading: boolean;
+  isRollback: boolean;
+  isRestarting: boolean;
+  latestManifest?: Manifest;
+  downloadedManifest?: Manifest;
+  checkError?: Error;
+  downloadError?: Error;
+  lastCheckForUpdateTime?: Date;
+};
+
+/**
+ * @hidden
+ */
+export type UpdatesNativeStateChangeEvent = {
+  // Change event emitted by native
+  context: UpdatesNativeStateMachineContext;
+};

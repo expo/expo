@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "JNIDeallocator.h"
+
 #include <fbjni/fbjni.h>
 #include <folly/dynamic.h>
 
@@ -12,18 +14,26 @@ namespace jni = facebook::jni;
 namespace react = facebook::react;
 
 namespace expo {
-class JavaCallback : public jni::HybridClass<JavaCallback> {
+class JSIInteropModuleRegistry;
+
+class JavaCallback : public jni::HybridClass<JavaCallback, Destructible> {
 public:
   static auto constexpr
     kJavaDescriptor = "Lexpo/modules/kotlin/jni/JavaCallback;";
   static auto constexpr TAG = "JavaCallback";
 
+  using Callback = std::function<void(folly::dynamic)>;
+
   static void registerNatives();
+
+  static jni::local_ref<JavaCallback::javaobject> newInstance(
+    JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+    Callback callback
+  );
 
 private:
   friend HybridBase;
 
-  using Callback = std::function<void(folly::dynamic)>;
 
   JavaCallback(Callback callback);
 

@@ -2,14 +2,17 @@ import { ExpoConfig, getConfig } from '@expo/config';
 import assert from 'assert';
 import chalk from 'chalk';
 
+import { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
+import { getPlatformBundlers } from './platformBundlers';
+import { Log } from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
 import { logEventAsync } from '../../utils/analytics/rudderstackClient';
 import { env } from '../../utils/env';
 import { ProjectPrerequisite } from '../doctor/Prerequisite';
 import { TypeScriptProjectPrerequisite } from '../doctor/typescript/TypeScriptProjectPrerequisite';
+import { printItem } from '../interface/commandsTable';
 import * as AndroidDebugBridge from '../platforms/android/adb';
-import { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
-import { getPlatformBundlers } from './platformBundlers';
+import { resolveSchemeAsync } from '../resolveOptions';
 
 const debug = require('debug')('expo:start:server:devServerManager') as typeof console.log;
 
@@ -127,6 +130,29 @@ export class DevServerManager {
     ]);
   }
 
+  /** Switch between Expo Go and Expo Dev Clients. */
+  async toggleRuntimeMode(isUsingDevClient: boolean = !this.options.devClient): Promise<boolean> {
+    const nextMode = isUsingDevClient ? '--dev-client' : '--go';
+    Log.log(printItem(chalk`Switching to {bold ${nextMode}}`));
+
+    const nextScheme = await resolveSchemeAsync(this.projectRoot, {
+      devClient: isUsingDevClient,
+      // NOTE: The custom `--scheme` argument is lost from this point on.
+    });
+
+    this.options.location.scheme = nextScheme;
+    this.options.devClient = isUsingDevClient;
+    for (const devServer of devServers) {
+      devServer.isDevClient = isUsingDevClient;
+      const urlCreator = devServer.getUrlCreator();
+      urlCreator.defaults ??= {};
+      urlCreator.defaults.scheme = nextScheme;
+    }
+
+    debug(`New runtime options (runtime: ${nextMode}):`, this.options);
+    return true;
+  }
+
   /** Start all dev servers. */
   async startAsync(startOptions: MultiBundlerStartOptions): Promise<ExpoConfig> {
     const { exp } = getConfig(this.projectRoot, { skipSDKVersionRequirement: true });
@@ -168,10 +194,11 @@ export class DevServerManager {
       return;
     }
 
+    // The dev server shouldn't wait for the typescript services
     if (!typescriptPrerequisite) {
       server.waitForTypeScriptAsync().then(async (success) => {
         if (success) {
-          await server.startTypeScriptServices();
+          server.startTypeScriptServices();
         }
       });
     } else {

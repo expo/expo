@@ -1,11 +1,11 @@
-import { ApolloClient, InMemoryCache } from '@apollo/client';
+import { ApolloClient, InMemoryCache, from } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { HttpLink } from '@apollo/client/link/http';
 import { offsetLimitPagination } from '@apollo/client/utilities';
 
-import Store from '../redux/Store';
 import Config from './Config';
 import Connectivity from './Connectivity';
+import Store from '../redux/Store';
 
 const httpLink = new HttpLink({
   uri: `${Config.api.origin}/--/graphql`,
@@ -18,24 +18,35 @@ const connectivityLink = setContext(async (): Promise<any> => {
   }
 });
 
-const authMiddlewareLink = setContext((): any => {
+const authMiddlewareLink = setContext((_request, previousContext): any => {
   const { sessionSecret } = Store.getState().session;
 
   if (sessionSecret) {
     return {
-      headers: { 'expo-session': sessionSecret },
+      ...previousContext,
+      headers: {
+        ...previousContext.headers,
+        'expo-session': sessionSecret,
+      },
     };
   }
+
+  return previousContext;
 });
 
-const link = connectivityLink.concat(authMiddlewareLink.concat(httpLink));
+const link = from([connectivityLink, authMiddlewareLink, httpLink]);
 
 const cache = new InMemoryCache({
   possibleTypes: {
-    ActivityTimelineProjectActivity: ['Build', 'BuildJob'],
+    AccountUsageMetadata: ['AccountUsageEASBuildMetadata'],
+    ActivityTimelineProjectActivity: ['Build', 'BuildJob', 'Submission', 'Update'],
+    Actor: ['Robot', 'SSOUser', 'User'],
     BuildOrBuildJob: ['Build', 'BuildJob'],
-    BaseSearchResult: ['UserSearchResult', 'AppSearchResult'],
+    EASBuildOrClassicBuildJob: ['Build', 'BuildJob'],
+    FcmSnippet: ['FcmSnippetLegacy', 'FcmSnippetV1'],
+    PlanEnablement: ['Concurrencies', 'EASTotalPlanEnablement'],
     Project: ['App', 'Snack'],
+    UserActor: ['SSOUser', 'User'],
   },
   addTypename: true,
   typePolicies: {

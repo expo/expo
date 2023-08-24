@@ -16,16 +16,16 @@
   "static_framework": true,
   "dependencies": {
     "SDWebImage": [
-      "~> 5.15.0"
+      "~> 5.17.0"
     ],
     "SDWebImageWebPCoder": [
-      "~> 0.9.1"
+      "~> 0.13.0"
     ],
     "SDWebImageAVIFCoder": [
-      "~> 0.10.0"
+      "~> 0.10.1"
     ],
     "SDWebImageSVGCoder": [
-      "~> 1.6.1"
+      "~> 1.7.0"
     ],
     "ABI48_0_0ExpoModulesCore": []
   },

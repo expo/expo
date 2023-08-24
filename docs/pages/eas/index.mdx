@@ -6,7 +6,13 @@ description: Learn about Expo Application Services (EAS) for Expo and React Nati
 ---
 
 import { BoxLink } from '~/ui/components/BoxLink';
-import { BuildIcon, EasSubmitIcon, EasMetadataIcon, LayersTwo02Icon } from '@expo/styleguide-icons';
+import {
+  BuildIcon,
+  EasSubmitIcon,
+  EasMetadataIcon,
+  LayersTwo02Icon,
+  DataIcon,
+} from '@expo/styleguide-icons';
 
 Expo Application Services (EAS) are deeply integrated cloud services for Expo and React Native apps, from the team behind Expo.
 
@@ -14,28 +20,35 @@ Read the full pitch at [expo.dev/eas](https://expo.dev/eas), or follow the links
 
 <BoxLink
   title="EAS Build"
-  description="Compile and sign Android/iOS apps with custom native code in the cloud. Learn more."
+  description="Compile and sign Android/iOS apps with custom native code in the cloud."
   href="/build/introduction"
   Icon={BuildIcon}
 />
 
 <BoxLink
   title="EAS Submit"
-  description="Upload your app to the Google Play Store or Apple App Store from the cloud with one CLI command. Learn more."
+  description="Upload your app to the Google Play Store or Apple App Store from the cloud with one CLI command."
   href="/submit/introduction"
   Icon={EasSubmitIcon}
 />
 
 <BoxLink
   title="EAS Update"
-  description="Address small bugs and push quick fixes directly to end-users. Learn more."
+  description="Address small bugs and push quick fixes directly to end-users."
   href="/eas-update/introduction"
   Icon={LayersTwo02Icon}
 />
 
 <BoxLink
   title="EAS Metadata (In Beta)"
-  description="Upload all app store information required to get your app published. Learn more."
+  description="Upload all app store information required to get your app published."
   href="/eas/metadata/"
   Icon={EasMetadataIcon}
+/>
+
+<BoxLink
+  title="EAS Insights (In Preview)"
+  description="View analytics about a project's performance, usage, and reach."
+  href="/eas-insights/introduction/"
+  Icon={DataIcon}
 />

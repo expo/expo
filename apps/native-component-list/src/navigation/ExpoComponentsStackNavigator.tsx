@@ -2,12 +2,12 @@ import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
 
+import getStackConfig from './StackConfig';
+import { optionalRequire } from './routeBuilder';
 import TabIcon from '../components/TabIcon';
 import { Layout } from '../constants';
 import ExpoComponents from '../screens/ExpoComponentsScreen';
 import { ImageScreens } from '../screens/Image/ImageScreen';
-import getStackConfig from './StackConfig';
-import { optionalRequire } from './routeBuilder';
 
 const Stack = createStackNavigator();
 
@@ -72,18 +72,6 @@ export const Screens = [
       return optionalRequire(() => require('../screens/TouchablesScreen'));
     },
     name: 'Touchables',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/ProgressViewIOSScreen'));
-    },
-    name: 'ProgressViewIOS',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/ProgressBarAndroidScreen'));
-    },
-    name: 'ProgressBarAndroid',
   },
   {
     getComponent() {
@@ -291,6 +279,14 @@ export const Screens = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/GL/GLViewOnBusyThread'));
+    },
+    name: 'GLViewOnBusyThread',
+    options: { title: 'Creating GLView when a thread is busy' },
+    route: 'gl/busythread',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/GestureHandlerPinchScreen'));
     },
     name: 'GestureHandlerPinch',
@@ -409,15 +405,15 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/SharedElementScreen'));
-    },
-    name: 'SharedElement',
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/FlashListScreen'));
     },
     name: 'FlashList',
+  },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/ClipboardPasteButtonScreen'));
+    },
+    name: 'ClipboardPasteButton',
   },
   ...ImageScreens,
 ];

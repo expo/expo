@@ -1,4 +1,11 @@
-# expo-clipboard
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/clipboard/">
+    <img
+      src="../../.github/resources/expo-clipboard.svg"
+      alt="expo-clipboard"
+      height="64" />
+  </a>
+</p>
 
 `expo-clipboard` provides an interface for getting and setting Clipboard content on Android, iOS, and Web.
 

@@ -2,8 +2,8 @@ import { Divider, View } from 'expo-dev-client-components';
 import React, { Fragment } from 'react';
 import { Linking } from 'react-native';
 
-import { HistoryList } from '../../types';
 import { RecentlyOpenedListItem } from './RecentlyOpenedListItem';
+import { HistoryList } from '../../types';
 
 type Props = {
   recentHistory: HistoryList;

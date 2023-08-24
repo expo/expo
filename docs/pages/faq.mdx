@@ -4,7 +4,12 @@ description: A list of common questions and limitations about Expo and related s
 ---
 
 import { BoxLink } from '~/ui/components/BoxLink';
-import { BuildIcon, EasMetadataIcon, LayersTwo02Icon, BellRinging04Icon } from '@expo/styleguide-icons';
+import {
+  BuildIcon,
+  EasMetadataIcon,
+  LayersTwo02Icon,
+  BellRinging04Icon,
+} from '@expo/styleguide-icons';
 
 This page lists some of the common questions and answers about Expo and related services. If you have a question that is not answered here, see [ Forums](https://forums.expo.io) for more common questions.
 
@@ -94,11 +99,11 @@ Regardless of which CLI you use, you can use any part of the [Expo SDK](/version
 
 ## Is Expo Go open source?
 
-Yes, the source for Expo Go can be found in the [expo/expo GitHub repository](https://github.com/expo/expo) in the `home`, `android`, and `ios` directories. The Expo Go app is also built with Expo and React Native.
+Yes, the source for Expo Go can be found in the [expo/expo GitHub repository](https://github.com/expo/expo) in the **home**, **android**, and **ios** directories. The Expo Go app is also built with Expo and React Native.
 
 ## Is Expo eject deprecated?
 
-Yes, Expo eject is a deprecated term and is no longer necessary. It was replaced by the [`npx expo prebuild`](/workflow/prebuild) command which continuously generates native projects for you based on the libraries in your project and the Expo config (**app.json**). Learn more in the [Expo Prebuild documentation](/workflow/prebuild).
+Yes, Expo eject is a deprecated term and is no longer necessary. It was replaced by the [`npx expo prebuild`](/workflow/prebuild) command which continuously generates native projects for you based on the libraries in your project and the app config (**app.json**). Learn more in the [Expo Prebuild documentation](/workflow/prebuild).
 
 Unlike the `expo eject` library, authors can configure their libraries to work with Expo Prebuild by creating a [config plugin](/config-plugins/introduction/). This means you can use any library with Expo Prebuild. You can also use any custom native code with Expo Prebuild by creating a [development build](/develop/development-builds/introduction/).
 
@@ -142,7 +147,7 @@ For more information on what current limitations exist with EAS, see the followi
 
 #### Bare workflow
 
-Similar to [development builds](/develop/development-builds/introduction/), the bare workflow also provides access to the underlying native projects and any native code. It's a "bare" native project where you can make direct changes to the project's native **android** and **ios** directories rather than continuously generating them on demand using the [Expo config and prebuild](/workflow/prebuild).
+Similar to [development builds](/develop/development-builds/introduction/), the bare workflow also provides access to the underlying native projects and any native code. It's a "bare" native project where you can make direct changes to the project's native **android** and **ios** directories rather than continuously generating them on demand using the [app config and prebuild](/workflow/prebuild).
 
 EAS Build is compatible with bare workflow projects if you check in the native directories, but no longer runs prebuild, as that could overwrite any manual customizations you've made to the native project files. You'll have to configure the native directories on your own with native tools such as Android Studio or Xcode.
 

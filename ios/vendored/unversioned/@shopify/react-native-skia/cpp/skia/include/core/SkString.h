@@ -11,15 +11,16 @@
 #include "include/core/SkRefCnt.h"
 #include "include/core/SkScalar.h"
 #include "include/core/SkTypes.h"
-#include "include/private/SkMalloc.h"
-#include "include/private/SkTArray.h"
-#include "include/private/SkTo.h"
+#include "include/private/base/SkTo.h"
+#include "include/private/base/SkTypeTraits.h"
 
-#include <stdarg.h>
-#include <string.h>
 #include <atomic>
+#include <cstdarg>
+#include <cstddef>
+#include <cstdint>
 #include <string>
 #include <string_view>
+#include <type_traits>
 
 /*  Some helper functions for C strings */
 static inline bool SkStrStartsWith(const char string[], const char prefixStr[]) {
@@ -128,6 +129,7 @@ public:
 
     bool        isEmpty() const { return 0 == fRec->fLength; }
     size_t      size() const { return (size_t) fRec->fLength; }
+    const char* data() const { return fRec->data(); }
     const char* c_str() const { return fRec->data(); }
     char operator[](size_t n) const { return this->c_str()[n]; }
 
@@ -173,8 +175,8 @@ public:
     SkString& operator=(SkString&&);
     SkString& operator=(const char text[]);
 
-    char* writable_str();
-    char& operator[](size_t n) { return this->writable_str()[n]; }
+    char* data();
+    char& operator[](size_t n) { return this->data()[n]; }
 
     void reset();
     /** String contents are preserved on resize. (For destructive resize, `set(nullptr, length)`.)
@@ -284,24 +286,6 @@ static inline SkString SkStringPrintf() { return SkString(); }
 
 static inline void swap(SkString& a, SkString& b) {
     a.swap(b);
-}
-
-enum SkStrSplitMode {
-    // Strictly return all results. If the input is ",," and the separator is ',' this will return
-    // an array of three empty strings.
-    kStrict_SkStrSplitMode,
-
-    // Only nonempty results will be added to the results. Multiple separators will be
-    // coalesced. Separators at the beginning and end of the input will be ignored.  If the input is
-    // ",," and the separator is ',', this will return an empty vector.
-    kCoalesce_SkStrSplitMode
-};
-
-// Split str on any characters in delimiters into out.  (Think, strtok with a sane API.)
-void SkStrSplit(const char* str, const char* delimiters, SkStrSplitMode splitMode,
-                SkTArray<SkString>* out);
-inline void SkStrSplit(const char* str, const char* delimiters, SkTArray<SkString>* out) {
-    SkStrSplit(str, delimiters, kCoalesce_SkStrSplitMode, out);
 }
 
 #endif

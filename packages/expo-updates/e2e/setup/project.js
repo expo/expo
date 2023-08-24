@@ -11,7 +11,7 @@ const expoDependencyNames = [
   '@expo/config-plugins',
   '@expo/config-types',
   '@expo/dev-server',
-  '@expo/use-updates',
+  '@expo/prebuild-config',
   'expo-application',
   'expo-constants',
   'expo-eas-client',
@@ -126,6 +126,7 @@ async function copyCommonFixturesToProject(projectRoot, appJsFileName, repoRoot)
       'eas-hooks',
       'e2e',
       'scripts',
+      'xcode.env.local',
     ],
     {
       cwd: projectFilesSourcePath,
@@ -384,6 +385,8 @@ async function configureUpdatesSigningAsync(projectRoot) {
     ],
     { cwd: projectRoot, stdio: 'inherit' }
   );
+  // Archive the keys so that they are not filtered out when uploading to EAS
+  await spawnAsync('tar', ['cf', 'keys.tar', 'keys'], { cwd: projectRoot, stdio: 'inherit' });
 }
 
 async function initAsync(
@@ -400,15 +403,41 @@ async function initAsync(
   const workingDir = path.dirname(projectRoot);
   const projectName = path.basename(projectRoot);
 
+  // pack typescript template
+  const localTSTemplatePath = path.join(repoRoot, 'templates', 'expo-template-blank-typescript');
+  await spawnAsync('npm', ['pack', '--pack-destination', repoRoot], {
+    cwd: localTSTemplatePath,
+    stdio: 'ignore',
+  });
+
+  const localTSTemplatePathName = glob.sync(
+    path.join(repoRoot, 'expo-template-blank-typescript-*.tgz')
+  )[0];
+
+  if (!localTSTemplatePathName) {
+    throw new Error(`Failed to locate packed template in ${repoRoot}`);
+  }
+
   // initialize project (do not do NPM install, we do that later)
   await spawnAsync(
     'yarn',
-    ['create', 'expo-app', projectName, '--yes', '--no-install', '--template', 'blank-typescript'],
+    [
+      'create',
+      'expo-app',
+      projectName,
+      '--yes',
+      '--no-install',
+      '--template',
+      localTSTemplatePathName,
+    ],
     {
       cwd: workingDir,
       stdio: 'inherit',
     }
   );
+
+  // We are done with template tarball
+  await fs.rm(localTSTemplatePathName);
 
   let cleanupLocalUpdatesModule;
   if (configureE2E) {
@@ -478,7 +507,7 @@ async function initAsync(
   // enable proguard on Android
   await fs.appendFile(
     path.join(projectRoot, 'android', 'gradle.properties'),
-    '\nandroid.enableProguardInReleaseBuilds=true',
+    '\nandroid.enableProguardInReleaseBuilds=true\nandroid.kotlinVersion=1.8.20',
     'utf-8'
   );
 
@@ -488,15 +517,6 @@ async function initAsync(
     '\n-keep class org.apache.commons.** { *; }\n',
     'utf-8'
   );
-
-  // Force bundling on iOS for debug builds
-  const iosProjectPath = glob.sync(
-    path.join(projectRoot, 'ios', '*.xcodeproj', 'project.pbxproj')
-  )[0];
-  const iosProject = await fs.readFile(iosProjectPath, 'utf-8');
-  const iosProjectEdited = iosProject.replace('SKIP', 'FORCE');
-  await fs.rm(iosProjectPath);
-  await fs.writeFile(iosProjectPath, iosProjectEdited, 'utf-8');
 
   // Cleanup local updates module if needed
   if (cleanupLocalUpdatesModule) {

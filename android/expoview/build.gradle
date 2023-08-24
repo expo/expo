@@ -6,18 +6,12 @@ apply plugin: 'kotlin-kapt'
 apply from: new File(rootDir, "versioning_linking.gradle")
 
 def reactProperties = new Properties()
-file("${project(':ReactAndroid').projectDir}/gradle.properties").withInputStream { reactProperties.load(it) }
+file("${project(':packages:react-native:ReactAndroid').projectDir}/gradle.properties").withInputStream { reactProperties.load(it) }
 
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 //maven repository info
 group = 'host.exp.exponent'
 version = '45.0.0'
-
-// Creating sources with comments
-task androidSourcesJar(type: Jar) {
-  classifier = 'sources'
-  from android.sourceSets.main.java.srcDirs
-}
 
 afterEvaluate {
   publishing {
@@ -25,8 +19,6 @@ afterEvaluate {
       // use `versionedRelease` configuration when publishing to maven
       versionedRelease(MavenPublication) {
         from components.versionedRelease
-        // Add additional sourcesJar to artifacts
-        artifact(androidSourcesJar)
       }
     }
     repositories {
@@ -40,7 +32,7 @@ afterEvaluate {
 
 def prebuiltHermesDir = findProperty("expo.prebuiltHermesDir") ?: file("${rootDir}/prebuiltHermes")
 def prebuiltHermesVersion = file("${prebuiltHermesDir}/.hermesversion").exists() ? file("${prebuiltHermesDir}/.hermesversion").text : null
-def currentHermesVersion = file("${project(':ReactAndroid').projectDir}/../sdks/.hermesversion").exists() ? file("${project(':ReactAndroid').projectDir}/../sdks/.hermesversion").text : null
+def currentHermesVersion = file("${project(':packages:react-native:ReactAndroid').projectDir}/../sdks/.hermesversion").exists() ? file("${project(':packages:react-native:ReactAndroid').projectDir}/../sdks/.hermesversion").text : null
 def buildHermesSource = currentHermesVersion != prebuiltHermesVersion
 logger.info(":expoview - buildHermesSource[${buildHermesSource}]")
 
@@ -77,13 +69,16 @@ android {
     ndkVersion rootProject.ext.ndkVersion
   }
 
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_11
-    targetCompatibility JavaVersion.VERSION_11
-  }
+  def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
+  if (agpVersion.tokenize('.')[0].toInteger() < 8) {
+    compileOptions {
+      sourceCompatibility JavaVersion.VERSION_11
+      targetCompatibility JavaVersion.VERSION_11
+    }
 
-  kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_11.majorVersion
+    kotlinOptions {
+      jvmTarget = JavaVersion.VERSION_11.majorVersion
+    }
   }
 
   buildFeatures {
@@ -132,6 +127,12 @@ android {
 
   // use `versionedRelease` configuration when publishing to maven
   defaultPublishConfig "versionedRelease"
+
+  publishing {
+    singleVariant("release") {
+      withSourcesJar()
+    }
+  }
 }
 
 // WHEN_VERSIONING_REMOVE_FROM_HERE
@@ -190,13 +191,13 @@ dependencies {
 
   api 'org.webkit:android-jsc:r250231' // needs to be before react-native
 
-  api project(':ReactAndroid')
+  api project(':packages:react-native:ReactAndroid')
 
   if (!buildHermesSource) {
     debugImplementation(files("${prebuiltHermesDir}/hermes-engine-debug.aar"))
     releaseImplementation(files("${prebuiltHermesDir}/hermes-engine-release.aar"))
   } else {
-    implementation(project(':ReactAndroid:hermes-engine')) {
+    implementation(project(':packages:react-native:ReactAndroid:hermes-engine')) {
       exclude(group:'com.facebook.fbjni', module: 'fbjni')
     }
   }
@@ -209,15 +210,15 @@ dependencies {
 
   // Versioned react native
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
+  // BEGIN_SDK_49
+  versionedApi 'host.exp:reactandroid-abi49_0_0:1.0.0'
+  // END_SDK_49
   // BEGIN_SDK_48
   versionedApi 'host.exp:reactandroid-abi48_0_0:1.0.0'
   // END_SDK_48
   // BEGIN_SDK_47
   versionedApi 'host.exp:reactandroid-abi47_0_0:1.0.0'
   // END_SDK_47
-  // BEGIN_SDK_46
-  versionedApi 'host.exp:reactandroid-abi46_0_0:1.0.0'
-  // END_SDK_46
   // WHEN_VERSIONING_REMOVE_TO_HERE
 
   // React native dependencies
@@ -271,6 +272,7 @@ dependencies {
   api "androidx.exifinterface:exifinterface:1.0.0"
   api "androidx.legacy:legacy-support-v4:1.0.0"
   api "androidx.browser:browser:1.0.0"
+  implementation "androidx.tracing:tracing-ktx:1.1.0"
 
   // expo-face-detector
   implementation 'com.google.mlkit:face-detection:16.1.5'
@@ -290,7 +292,7 @@ dependencies {
 
   api 'com.google.firebase:firebase-core:21.1.0'
   api 'com.google.firebase:firebase-messaging:22.0.0'
-  api 'com.google.maps.android:android-maps-utils:0.5'
+  api 'com.google.maps.android:android-maps-utils:3.4.0'
   // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
 
   // expo-file-system
@@ -303,6 +305,12 @@ dependencies {
 
   // expo-application
   api 'com.android.installreferrer:installreferrer:1.0'
+
+  // expo-blur
+  implementation 'com.github.Dimezis:BlurView:version-2.0.3'
+
+  // expo-modules-core android-annotation
+  api project(':expo-modules-core$android-annotation')
 
   // expo-store-review
   implementation "com.google.android.play:review:2.0.1"
@@ -327,8 +335,8 @@ dependencies {
   api 'com.github.troZee:ViewPager2:v1.0.6'
 
   // stripe-react-native
-  implementation('com.stripe:stripe-android:20.19.+')
-  implementation('com.stripe:financial-connections:20.19.+')
+  implementation('com.stripe:stripe-android:20.25.+')
+  implementation('com.stripe:financial-connections:20.25.+')
   compileOnly 'com.stripe:stripe-android-issuing-push-provisioning:1.1.0'
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0'
   implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
@@ -342,6 +350,22 @@ dependencies {
 
   // react-native-maps
   implementation "androidx.work:work-runtime:2.7.1"
+}
+
+project.afterEvaluate {
+  // Workaround for AGP 7 local lint aar task with errors from a library project owning other aars.
+  // In our case, it's the expoview (library project) owning hermes aar
+  // ```
+  // Error while evaluating property 'hasLocalAarDeps' of task ':expoview:bundleVersionedReleaseLocalLintAar'
+  //   > Direct local .aar file dependencies are not supported when building an AAR.
+  //     The resulting AAR would be broken because the classes and Android resources from any local .aar file dependencies would not be packaged in the resulting AAR.
+  //     Previous versions of the Android Gradle Plugin produce broken AARs in this case too (despite not throwing this error).
+  //     The following direct local .aar file dependencies of the :expoview project caused this error:
+  //     /home/runner/work/expo/expo/node_modules/hermes-engine/android/hermes-release.aar
+  // ```
+  // For the workaround, we just pretend we don't have local aar dependencies.
+  tasks.findByName("bundleVersionedReleaseLocalLintAar")?.localAarDeps?.setFrom([])
+  tasks.findByName("bundleUnversionedReleaseLocalLintAar")?.localAarDeps?.setFrom([])
 }
 
 useVendoredModulesForExpoView('unversioned')

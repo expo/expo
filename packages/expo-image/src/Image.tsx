@@ -20,8 +20,11 @@ export class Image extends React.PureComponent<ImageProps> {
 
   /**
    * Asynchronously clears all images stored in memory.
+   * @platform android
+   * @platform ios
    * @return A promise resolving to `true` when the operation succeeds.
    * It may resolve to `false` on Android when the activity is no longer available.
+   * Resolves to `false` on Web.
    */
   static async clearMemoryCache(): Promise<boolean> {
     return await ExpoImageModule.clearMemoryCache();
@@ -29,8 +32,11 @@ export class Image extends React.PureComponent<ImageProps> {
 
   /**
    * Asynchronously clears all images from the disk cache.
+   * @platform android
+   * @platform ios
    * @return A promise resolving to `true` when the operation succeeds.
    * It may resolve to `false` on Android when the activity is no longer available.
+   * Resolves to `false` on Web.
    */
   static async clearDiskCache(): Promise<boolean> {
     return await ExpoImageModule.clearDiskCache();

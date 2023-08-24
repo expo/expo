@@ -11,15 +11,6 @@ import { Resolution, ResolutionContext } from 'metro-resolver';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { Log } from '../../../log';
-import { FileNotifier } from '../../../utils/FileNotifier';
-import { env } from '../../../utils/env';
-import { installExitHooks } from '../../../utils/exit';
-import { learnMore } from '../../../utils/link';
-import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/loadTsConfigPaths';
-import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
-import { WebSupportProjectPrerequisite } from '../../doctor/web/WebSupportProjectPrerequisite';
-import { PlatformBundlers } from '../platformBundlers';
 import {
   EXTERNAL_REQUIRE_NATIVE_POLYFILL,
   EXTERNAL_REQUIRE_POLYFILL,
@@ -31,6 +22,18 @@ import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroE
 import { importMetroResolverFromProject } from './resolveFromProject';
 import { getAppRouterRelativeEntryPath } from './router';
 import { withMetroResolvers } from './withMetroResolvers';
+import { Log } from '../../../log';
+import { FileNotifier } from '../../../utils/FileNotifier';
+import { env } from '../../../utils/env';
+import { installExitHooks } from '../../../utils/exit';
+import { isInteractive } from '../../../utils/interactive';
+import { learnMore } from '../../../utils/link';
+import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/loadTsConfigPaths';
+import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
+import { WebSupportProjectPrerequisite } from '../../doctor/web/WebSupportProjectPrerequisite';
+import { PlatformBundlers } from '../platformBundlers';
+
+type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 
 const debug = require('debug')('expo:start:server:metro:multi-platform') as typeof console.log;
 
@@ -39,7 +42,7 @@ function withWebPolyfills(config: ConfigT, projectRoot: string): ConfigT {
     ? config.serializer.getPolyfills.bind(config.serializer)
     : () => [];
 
-  const getPolyfills = (ctx: { platform: string | null | undefined }): readonly string[] => {
+  const getPolyfills = (ctx: { platform: string | null }): readonly string[] => {
     if (ctx.platform === 'web') {
       return [
         // NOTE: We might need this for all platforms
@@ -64,6 +67,20 @@ function withWebPolyfills(config: ConfigT, projectRoot: string): ConfigT {
 
 function normalizeSlashes(p: string) {
   return p.replace(/\\/g, '/');
+}
+
+export function getNodejsExtensions(srcExts: readonly string[]): string[] {
+  const mjsExts = srcExts.filter((ext) => /mjs$/.test(ext));
+  const nodejsSourceExtensions = srcExts.filter((ext) => !/mjs$/.test(ext));
+  // find index of last `*.js` extension
+  const jsIndex = nodejsSourceExtensions.reduce((index, ext, i) => {
+    return /jsx?$/.test(ext) ? i : index;
+  }, -1);
+
+  // insert `*.mjs` extensions after `*.js` extensions
+  nodejsSourceExtensions.splice(jsIndex + 1, 0, ...mjsExts);
+
+  return nodejsSourceExtensions;
 }
 
 /**
@@ -97,6 +114,16 @@ export function withExtendedResolver(
     // path.resolve(resolveFrom(projectRoot, '@react-native/assets/registry.js'))
   );
 
+  let reactNativeWebAppContainer: string | null = null;
+  try {
+    reactNativeWebAppContainer = fs.realpathSync(
+      // This is the native asset registry alias for native.
+      path.resolve(resolveFrom(projectRoot, 'expo-router/build/fork/react-native-web-container'))
+      // NOTE(EvanBacon): This is the newer import but it doesn't work in the expo/expo monorepo.
+      // path.resolve(resolveFrom(projectRoot, '@react-native/assets/registry.js'))
+    );
+  } catch {}
+
   const isWebEnabled = platforms.includes('web');
 
   const { resolve } = importMetroResolverFromProject(projectRoot);
@@ -106,6 +133,7 @@ export function withExtendedResolver(
   const aliases: { [key: string]: Record<string, string> } = {
     web: {
       'react-native': 'react-native-web',
+      'react-native/index': 'react-native-web',
     },
   };
 
@@ -130,7 +158,7 @@ export function withExtendedResolver(
       })
     : null;
 
-  if (isTsconfigPathsEnabled && !env.CI) {
+  if (isTsconfigPathsEnabled && isInteractive()) {
     // TODO: We should track all the files that used imports and invalidate them
     // currently the user will need to save all the files that use imports to
     // use the new aliases.
@@ -159,12 +187,14 @@ export function withExtendedResolver(
     debug('Skipping tsconfig.json paths support');
   }
 
+  let nodejsSourceExtensions: string[] | null = null;
+
   return withMetroResolvers(config, projectRoot, [
     // Add a resolver to alias the web asset resolver.
     (immutableContext: ResolutionContext, moduleName: string, platform: string | null) => {
       let context = {
         ...immutableContext,
-      } as ResolutionContext & {
+      } as Mutable<ResolutionContext> & {
         mainFields: string[];
         customResolverOptions?: Record<string, string>;
       };
@@ -180,6 +210,12 @@ export function withExtendedResolver(
           moduleName = getNodeExternalModuleId(context.originModulePath, moduleId);
           debug(`Redirecting Node.js external "${moduleId}" to "${moduleName}"`);
         }
+
+        // Adjust nodejs source extensions to sort mjs after js, including platform variants.
+        if (nodejsSourceExtensions === null) {
+          nodejsSourceExtensions = getNodejsExtensions(context.sourceExts);
+        }
+        context.sourceExts = nodejsSourceExtensions;
       }
 
       // Conditionally remap `react-native` to `react-native-web` on web in
@@ -214,7 +250,7 @@ export function withExtendedResolver(
       if (isNode) {
         // Node.js runtimes should only be importing main at the moment.
         // This is a temporary fix until we can support the package.json exports.
-        mainFields = ['main'];
+        mainFields = ['main', 'module'];
       } else if (env.EXPO_METRO_NO_MAIN_FIELD_OVERRIDE) {
         mainFields = context.mainFields;
       } else if (platform && platform in preferredMainFields) {
@@ -224,14 +260,13 @@ export function withExtendedResolver(
         return resolve(
           {
             ...context,
-            preferNativePlatform: platform !== 'web',
             resolveRequest: undefined,
-
-            // @ts-expect-error
             mainFields,
+
             // Passing `mainFields` directly won't be considered (in certain version of Metro)
             // we need to extend the `getPackageMainPath` directly to
             // use platform specific `mainFields`.
+            // @ts-ignore
             getPackageMainPath(packageJsonPath) {
               // @ts-expect-error: mainFields is not on type
               const package_ = context.moduleCache.getPackage(packageJsonPath);
@@ -260,6 +295,17 @@ export function withExtendedResolver(
 
       let result: Resolution | null = null;
 
+      // React Native uses `event-target-shim` incorrectly and this causes the native runtime
+      // to fail to load. This is a temporary workaround until we can fix this upstream.
+      // https://github.com/facebook/react-native/pull/38628
+      if (
+        moduleName.includes('event-target-shim') &&
+        context.originModulePath.includes(path.sep + 'react-native' + path.sep)
+      ) {
+        context.sourceExts = context.sourceExts.filter((f) => !f.includes('mjs'));
+        debug('Skip mjs support for event-target-shim in:', context.originModulePath);
+      }
+
       if (tsConfigResolve) {
         result = tsConfigResolve(
           {
@@ -278,6 +324,27 @@ export function withExtendedResolver(
         if (shouldAliasAssetRegistryForWeb(platform, result)) {
           // @ts-expect-error: `readonly` for some reason.
           result.filePath = assetRegistryPath;
+        }
+
+        // React Native Web adds a couple extra divs for no reason, these
+        // make static rendering much harder as we expect the root element to be `<html>`.
+        // This resolution will alias to a simple in-out component to avoid React Native web.
+        if (
+          // Only apply the transform if expo-router is present.
+          reactNativeWebAppContainer &&
+          shouldAliasModule(
+            {
+              platform,
+              result,
+            },
+            {
+              platform: 'web',
+              output: 'react-native-web/dist/exports/AppRegistry/AppContainer.js',
+            }
+          )
+        ) {
+          // @ts-expect-error: `readonly` for some reason.
+          result.filePath = reactNativeWebAppContainer;
         }
       }
       return result;
@@ -299,6 +366,21 @@ export function shouldAliasAssetRegistryForWeb(
     )
   );
 }
+/** @returns `true` if the incoming resolution should be swapped. */
+export function shouldAliasModule(
+  input: {
+    platform: string | null;
+    result: Resolution;
+  },
+  alias: { platform: string; output: string }
+): boolean {
+  return (
+    input.platform === alias.platform &&
+    input.result?.type === 'sourceFile' &&
+    typeof input.result?.filePath === 'string' &&
+    normalizeSlashes(input.result.filePath).endsWith(alias.output)
+  );
+}
 
 /** Add support for `react-native-web` and the Web platform. */
 export async function withMetroMultiPlatformAsync(
@@ -308,15 +390,17 @@ export async function withMetroMultiPlatformAsync(
     platformBundlers,
     isTsconfigPathsEnabled,
     webOutput,
+    routerDirectory,
   }: {
     config: ConfigT;
     isTsconfigPathsEnabled: boolean;
     platformBundlers: PlatformBundlers;
     webOutput?: 'single' | 'static';
+    routerDirectory: string;
   }
 ) {
-  // Auto pick App entry: this is injected with a custom serializer.
-  process.env.EXPO_ROUTER_APP_ROOT = getAppRouterRelativeEntryPath(projectRoot);
+  // Auto pick app entry for router.
+  process.env.EXPO_ROUTER_APP_ROOT = getAppRouterRelativeEntryPath(projectRoot, routerDirectory);
 
   // Required for @expo/metro-runtime to format paths in the web LogBox.
   process.env.EXPO_PUBLIC_PROJECT_ROOT = process.env.EXPO_PUBLIC_PROJECT_ROOT ?? projectRoot;
@@ -326,11 +410,15 @@ export async function withMetroMultiPlatformAsync(
     process.env.EXPO_PUBLIC_USE_STATIC = '1';
   }
 
+  // Ensure the cache is invalidated if these values change.
+  // @ts-expect-error
+  config.transformer._expoRouterRootDirectory = process.env.EXPO_ROUTER_APP_ROOT;
+  // @ts-expect-error
+  config.transformer._expoRouterWebRendering = webOutput;
+  // TODO: import mode
+
   if (platformBundlers.web === 'metro') {
     await new WebSupportProjectPrerequisite(projectRoot).assertAsync();
-  } else if (!isTsconfigPathsEnabled) {
-    // Bail out early for performance enhancements if no special features are enabled.
-    return config;
   }
 
   let tsconfig: null | TsConfigPaths = null;

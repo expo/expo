@@ -7,7 +7,7 @@ import React
  but it also simplifies capturing the view config so we can omit some reflections that React Native executes.
  */
 @objc(EXComponentData)
-public final class ComponentData: RCTComponentData {
+public final class ComponentData: RCTComponentDataSwiftAdapter {
   /**
    Weak pointer to the holder of a module that the component data was created for.
    */

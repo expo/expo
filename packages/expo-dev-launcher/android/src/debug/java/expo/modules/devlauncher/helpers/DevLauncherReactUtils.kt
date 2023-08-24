@@ -9,6 +9,7 @@ import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.devsupport.DevLauncherInternalSettings
 import expo.interfaces.devmenu.annotations.ContainsDevMenuExtension
 import expo.modules.devlauncher.react.DevLauncherDevSupportManagerSwapper
+import expo.modules.devlauncher.rncompatibility.DevLauncherDevSupportManager
 import okhttp3.HttpUrl
 
 fun injectReactInterceptor(
@@ -37,11 +38,7 @@ fun injectReactInterceptor(
     debugServerHost,
     appBundleName
   )
-
-  // inspector connection will create right after ReactInstanceManager construction,
-  // we should reconnect here to use intercepted inspector server host.
-  reactNativeHost.reactInstanceManager.devSupportManager.stopInspector()
-  reactNativeHost.reactInstanceManager.devSupportManager.startInspector()
+  (reactNativeHost.reactInstanceManager.devSupportManager as? DevLauncherDevSupportManager)?.startInspectorWhenDevLauncherReady()
 
   return result
 }

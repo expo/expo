@@ -13,13 +13,13 @@ import { vol } from 'memfs';
 import * as path from 'path';
 import xcode from 'xcode';
 
+import rnFixture from './fixtures/react-native-project';
+import { getDirFromFS } from './getDirFromFS';
 import {
   withAndroidExpoPlugins,
   withIosExpoPlugins,
   withVersionedExpoSDKPlugins,
 } from '../withDefaultPlugins';
-import rnFixture from './fixtures/react-native-project';
-import { getDirFromFS } from './getDirFromFS';
 
 const { withOrientation } = IOSConfig.Orientation;
 
@@ -183,7 +183,7 @@ function getLargeConfig(): ExportedConfig {
 
 function getPrebuildConfig() {
   let config = { ...getLargeConfig() };
-  config = withVersionedExpoSDKPlugins(config, { expoUsername: 'bacon' });
+  config = withVersionedExpoSDKPlugins(config);
 
   config = withIosExpoPlugins(config, {
     bundleIdentifier: 'com.bacon.todo',
@@ -303,6 +303,7 @@ describe('built-in plugins', () => {
     await compileModsAsync(config, { introspect: true, projectRoot: '/app' });
 
     expect(modRequest).toStrictEqual({
+      ignoreExistingNativeFiles: false,
       introspect: true,
       modName: 'gradleProperties',
       platform: 'android',

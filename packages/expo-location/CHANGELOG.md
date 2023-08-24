@@ -2,19 +2,48 @@
 
 ## Unpublished
 
-### 📚 3rd party library updates
-
-- Updated `com.google.android.gms:play-services-location` to `21.0.1` and `io.nlopez.smartlocation:library` to `3.3.3`  ([#22468](https://github.com/expo/expo/pull/22468) by [@josephyanks](https://github.com/josephyanks))
-
 ### 🛠 Breaking changes
 
 ### 🎉 New features
 
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
-- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537) by [@kudo](https://github.com/kudo))
+### 💡 Others
+
+## 16.2.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 16.2.0 — 2023-07-28
+
+_This version does not introduce any user-facing changes._
+
+## 16.1.0 - 2023-07-13
+
+### 🐛 Bug fixes
+
+- Downgrade play-services-location to 20.0.0 to support react-native-maps. ([#23501](https://github.com/expo/expo/pull/23501) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 16.0.0 — 2023-06-21
+
+_This version does not introduce any user-facing changes._
+
+## 15.3.0 — 2023-06-13
+
+### 📚 3rd party library updates
+
+- Updated `com.google.android.gms:play-services-location` to `21.0.1` and `io.nlopez.smartlocation:library` to `3.3.3` ([#22468](https://github.com/expo/expo/pull/22468) by [@josephyanks](https://github.com/josephyanks))
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
+
+- On Android, removed use of deprecated `LocationRequest` constructor and replaced with `LocationRequest.Builder`. ([#22653](https://github.com/expo/expo/pull/22653) by [@alanjhughes](https://github.com/alanjhughes))
+- Removed the Geocoding API service. ([#22830](https://github.com/expo/expo/pull/22830) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 15.2.0 — 2023-05-08
 

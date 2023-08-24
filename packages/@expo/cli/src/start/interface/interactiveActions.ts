@@ -1,18 +1,18 @@
 import { openJsInspector, queryAllInspectorAppsAsync } from '@expo/dev-server';
 import assert from 'assert';
-import openBrowserAsync from 'better-opn';
 import chalk from 'chalk';
 
+import { BLT, printHelp, printItem, printQRCode, printUsage, StartOptions } from './commandsTable';
 import * as Log from '../../log';
 import { delayAsync } from '../../utils/delay';
 import { learnMore } from '../../utils/link';
+import { openBrowserAsync } from '../../utils/open';
 import { selectAsync } from '../../utils/prompts';
 import { DevServerManager } from '../server/DevServerManager';
 import {
   addReactDevToolsReloadListener,
   startReactDevToolsProxyAsync,
 } from '../server/ReactDevToolsProxy';
-import { BLT, printHelp, printItem, printQRCode, printUsage, StartOptions } from './commandsTable';
 
 const debug = require('debug')('expo:start:interface:interactiveActions') as typeof console.log;
 
@@ -40,9 +40,21 @@ export class DevServerManagerActions {
           );
         }
         Log.log(printItem(chalk`Metro waiting on {underline ${nativeRuntimeUrl}}`));
-        // TODO: if development build, change this message!
-        Log.log(printItem('Scan the QR code above with Expo Go (Android) or the Camera app (iOS)'));
+        if (options.devClient === false) {
+          // TODO: if development build, change this message!
+          Log.log(
+            printItem('Scan the QR code above with Expo Go (Android) or the Camera app (iOS)')
+          );
+        } else {
+          Log.log(
+            printItem(
+              'Scan the QR code above to open the project in a development build. ' +
+                learnMore('https://expo.fyi/start')
+            )
+          );
+        }
       } catch (error) {
+        console.log('err', error);
         // @ts-ignore: If there is no development build scheme, then skip the QR code.
         if (error.code !== 'NO_DEV_CLIENT_SCHEME') {
           throw error;

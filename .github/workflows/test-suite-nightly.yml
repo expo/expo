@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   ios:
-    runs-on: macos-12
+    runs-on: macos-13
     env:
       REACT_NATIVE_OVERRIDE_VERSION: 9999.9999.9999
     steps:
@@ -28,8 +28,8 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: true
-      - name: 🔨 Switch to Xcode 14.1
-        run: sudo xcode-select --switch /Applications/Xcode_14.1.app
+      - name: 🔨 Switch to Xcode 14.3
+        run: sudo xcode-select --switch /Applications/Xcode_14.3.app
       - name: 🍺 Install required tools
         run: |
           brew tap wix/brew
@@ -41,6 +41,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
+          ruby-version: 3.2.2
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
@@ -55,9 +56,7 @@ jobs:
         run: pod env
         working-directory: apps/bare-expo/ios
       - name: 🥥 Install pods in apps/bare-expo/ios
-        run: |
-          pod update hermes-engine --no-repo-update
-          pod install
+        run: npx pod-install
         working-directory: apps/bare-expo/ios
       - name: 🧹 Clean Detox
         run: yarn detox:clean
@@ -91,7 +90,7 @@ jobs:
           author_name: Test Suite Nightly (iOS)
 
   android-build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
       GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"
@@ -104,12 +103,12 @@ jobs:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 16
-      - name: 🔨 Use JDK 11
+          node-version: 18
+      - name: 🔨 Use JDK 17
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: '17'
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: ♻️ Restore caches
@@ -148,7 +147,7 @@ jobs:
 
   android-test:
     needs: android-build
-    runs-on: macos-12
+    runs-on: macos-13
     strategy:
       matrix:
         api-level: [33]

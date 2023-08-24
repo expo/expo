@@ -6,7 +6,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_CXX_STANDARD 17)
 set(PACKAGE_NAME "expo-modules-core")
 set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
-set(ignoreMe "${PROJECT_BUILD_DIR} ${REACT_ANDROID_BUILD_DIR} ${REACT_ANDROID_DIR} ${HERMES_HEADER_DIR} ${BOOST_VERSION}")
+set(ignoreMe "${PROJECT_BUILD_DIR} ${REACT_ANDROID_BUILD_DIR} ${REACT_ANDROID_DIR} ${BOOST_VERSION}")
 
 string(APPEND CMAKE_CXX_FLAGS " -DREACT_NATIVE_TARGET_VERSION=${REACT_NATIVE_TARGET_VERSION}")
 
@@ -78,7 +78,8 @@ endif ()
 
 if(${UNIT_TEST})
   if(${USE_HERMES})
-    set(JSEXECUTOR_LIB ReactAndroid::hermes_executor)
+    find_package(hermes-engine REQUIRED CONFIG)
+    set(JSEXECUTOR_LIB hermes-engine::libhermes)
   else()
     set(JSEXECUTOR_LIB ReactAndroid::jscexecutor)
   endif()

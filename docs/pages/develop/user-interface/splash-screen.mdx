@@ -8,6 +8,7 @@ import Video from '~/components/plugins/Video';
 import { Terminal } from '~/ui/components/Snippet';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { BoxLink } from '~/ui/components/BoxLink';
+import { BookOpen02Icon } from '@expo/styleguide-icons';
 
 A splash screen, also known as a launch screen, is the first screen a user sees when they open your app. It stays visible while the app is loading. You can also control the behavior of when a splash screen disappears by using the native [SplashScreen API](/versions/latest/sdk/splash-screen).
 
@@ -72,7 +73,7 @@ To resolve it, set the `splash.backgroundColor` to be the same as our splash ima
 
 <ImageSpotlight
   alt="Splash screen with background color"
-  src="/static/images/backgroundColor-noodles.png"
+  src="/static/images/splash-screen/backgroundColor-noodles.png"
 />
 
 ### `splash.resizeMode`
@@ -81,7 +82,7 @@ Any splash image you provide gets resized to maintain its aspect ratio and fit t
 
 You can use two strategies for resizing: `contain` (default) and `cover`. In both cases, the splash image is within the splash screen. These work similar to the [`resizeMode`](https://reactnative.dev/docs/image/#resizemode) in React Native `<Image>`, as demonstrated below:
 
-<ImageSpotlight alt="Splash screen resize mode" src="/static/images/resizeMode.png" />
+<ImageSpotlight alt="Splash screen resize mode" src="/static/images/splash-screen/resizeMode.png" />
 
 Applying this to an example and remove the `backgroundColor`:
 
@@ -100,7 +101,7 @@ Here is the result:
 
 <ImageSpotlight
   alt="Splash screen resize mode with logo"
-  src="/static/images/resizeMode-noodles.png"
+  src="/static/images/splash-screen/resizeMode-noodles.png"
 />
 
 In the above example, the image is stretched to fill the entire width while maintaining the aspect ratio. This is why the logo on the splash image ends up being larger than when `resizeMode` is set to `contain`.
@@ -161,4 +162,5 @@ See [Apple's guide on testing launch screens](https://developer.apple.com/docume
   title="App icons"
   description="An app's icon is what your app users see on their device's home screen and app stores. Learn about how to customize your app's icon and what are the different requirements for Android and iOS."
   href="/develop/user-interface/app-icons"
+  Icon={BookOpen02Icon}
 />

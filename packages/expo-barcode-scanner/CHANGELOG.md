@@ -6,11 +6,45 @@
 
 ### 🎉 New features
 
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
-- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537) by [@kudo](https://github.com/kudo))
+### 💡 Others
+
+## 12.6.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 12.6.0 — 2023-07-28
+
+_This version does not introduce any user-facing changes._
+
+## 12.5.3 - 2023-06-30
 
 ### 💡 Others
+
+- Update snapshots. ([#23238](https://github.com/expo/expo/pull/23238) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 12.5.2 — 2023-06-28
+
+_This version does not introduce any user-facing changes._
+
+## 12.5.1 — 2023-06-27
+
+### 🐛 Bug fixes
+
+- On Android, fixed an issue where certain text characters would not be recognised. ([#23094](https://github.com/expo/expo/pull/23094) by [@alanhughes](https://github.com/alanjhughes))
+
+## 12.5.0 — 2023-06-13
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- [Android] Replace dependency on deprecated `com.google.android.gms:play-services-vision` with `com.google.mlkit:barcode-scanning`. ([#22107](https://github.com/expo/expo/pull/22107) by [@toshiyuki-suzuki-yukashikado](https://github.com/toshiyuki-suzuki-yukashikado))
 
 ## 12.4.0 — 2023-05-08
 

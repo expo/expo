@@ -2,6 +2,7 @@ import * as path from 'path';
 import resolveFrom from 'resolve-from';
 import xcode from 'xcode';
 
+import { ExpoPlist } from './IosConfig.types';
 import { ConfigPlugin } from '../Plugin.types';
 import { withExpoPlist } from '../plugins/ios-plugins';
 import {
@@ -17,7 +18,6 @@ import {
   getUpdatesTimeout,
   getUpdateUrl,
 } from '../utils/Updates';
-import { ExpoPlist } from './IosConfig.types';
 
 const CREATE_MANIFEST_IOS_PATH = 'expo-updates/scripts/create-manifest-ios.sh';
 
@@ -34,10 +34,10 @@ export enum Config {
   CODE_SIGNING_METADATA = 'EXUpdatesCodeSigningMetadata',
 }
 
-export const withUpdates: ConfigPlugin<{ expoUsername: string | null }> = (
-  config,
-  { expoUsername }
-) => {
+// when making changes to this config plugin, ensure the same changes are also made in eas-cli and build-tools
+// Also ensure the docs are up-to-date: https://docs.expo.dev/bare/installing-updates/
+
+export const withUpdates: ConfigPlugin = (config) => {
   return withExpoPlist(config, (config) => {
     const projectRoot = config.modRequest.projectRoot;
     const expoUpdatesPackageVersion = getExpoUpdatesPackageVersion(projectRoot);
@@ -45,7 +45,6 @@ export const withUpdates: ConfigPlugin<{ expoUsername: string | null }> = (
       projectRoot,
       config,
       config.modResults,
-      expoUsername,
       expoUpdatesPackageVersion
     );
     return config;
@@ -56,17 +55,16 @@ export function setUpdatesConfig(
   projectRoot: string,
   config: ExpoConfigUpdates,
   expoPlist: ExpoPlist,
-  username: string | null,
   expoUpdatesPackageVersion?: string | null
 ): ExpoPlist {
   const newExpoPlist = {
     ...expoPlist,
-    [Config.ENABLED]: getUpdatesEnabled(config, username),
+    [Config.ENABLED]: getUpdatesEnabled(config),
     [Config.CHECK_ON_LAUNCH]: getUpdatesCheckOnLaunch(config, expoUpdatesPackageVersion),
     [Config.LAUNCH_WAIT_MS]: getUpdatesTimeout(config),
   };
 
-  const updateUrl = getUpdateUrl(config, username);
+  const updateUrl = getUpdateUrl(config);
   if (updateUrl) {
     newExpoPlist[Config.UPDATE_URL] = updateUrl;
   } else {
@@ -203,12 +201,11 @@ export function isPlistConfigurationSet(expoPlist: ExpoPlist): boolean {
 export function isPlistConfigurationSynced(
   projectRoot: string,
   config: ExpoConfigUpdates,
-  expoPlist: ExpoPlist,
-  username: string | null
+  expoPlist: ExpoPlist
 ): boolean {
   return (
-    getUpdateUrl(config, username) === expoPlist.EXUpdatesURL &&
-    getUpdatesEnabled(config, username) === expoPlist.EXUpdatesEnabled &&
+    getUpdateUrl(config) === expoPlist.EXUpdatesURL &&
+    getUpdatesEnabled(config) === expoPlist.EXUpdatesEnabled &&
     getUpdatesTimeout(config) === expoPlist.EXUpdatesLaunchWaitMs &&
     getUpdatesCheckOnLaunch(config) === expoPlist.EXUpdatesCheckOnLaunch &&
     getUpdatesCodeSigningCertificate(projectRoot, config) ===

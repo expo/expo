@@ -7,6 +7,13 @@ import resolveFrom from 'resolve-from';
 import type webpack from 'webpack';
 import type WebpackDevServer from 'webpack-dev-server';
 
+import { compileAsync } from './compile';
+import {
+  importExpoWebpackConfigFromProject,
+  importWebpackDevServerFromProject,
+  importWebpackFromProject,
+} from './resolveFromProject';
+import { ensureEnvironmentSupportsTLSAsync } from './tls';
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
@@ -16,13 +23,6 @@ import { choosePortAsync } from '../../../utils/port';
 import { createProgressBar } from '../../../utils/progress';
 import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
-import { compileAsync } from './compile';
-import {
-  importExpoWebpackConfigFromProject,
-  importWebpackDevServerFromProject,
-  importWebpackFromProject,
-} from './resolveFromProject';
-import { ensureEnvironmentSupportsTLSAsync } from './tls';
 
 const debug = require('debug')('expo:start:server:webpack:devServer') as typeof console.log;
 
@@ -46,6 +46,10 @@ function assertIsWebpackDevServer(value: any): asserts value is WebpackDevServer
 export class WebpackBundlerDevServer extends BundlerDevServer {
   get name(): string {
     return 'webpack';
+  }
+
+  public async startTypeScriptServices(): Promise<void> {
+    //  noop -- this feature is Metro-only.
   }
 
   // A custom message websocket broadcaster used to send messages to a React Native runtime.

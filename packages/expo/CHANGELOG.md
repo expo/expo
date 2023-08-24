@@ -2,21 +2,129 @@
 
 ## Unpublished
 
-### 📚 3rd party library updates
-
-- Updated `junit` to `4.13.2`.  ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
-
 ### 🛠 Breaking changes
 
 ### 🎉 New features
 
-- Added `ReactActivityHandler.getDelayLoadAppHandler` interface on Android. ([#20273](https://github.com/expo/expo/pull/20273) by [@kudo](https://github.com/kudo))
+- Add support for React static rehydration on web. ([#23891](https://github.com/expo/expo/pull/23891) by [@EvanBacon](https://github.com/EvanBacon))
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
-- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537) by [@kudo](https://github.com/kudo))
+- Add support for pnpm isolated modules. ([#23937](https://github.com/expo/expo/pull/23937) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
+
+- Removed the environment validator. ([#23732](https://github.com/expo/expo/pull/23732) by [@tsapeta](https://github.com/tsapeta))
+- Removed the dependency on the `expo-constants` package. ([#23732](https://github.com/expo/expo/pull/23732) by [@tsapeta](https://github.com/tsapeta))
+- Fix `yarn tsc` in the repo. ([#23888](https://github.com/expo/expo/pull/23888) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 50.0.0-alpha.1 — 2023-08-02
+
+### 🛠 Breaking changes
+
+- Drop `Logs` module export. ([#18596](https://github.com/expo/expo/pull/18596) by [@EvanBacon](https://github.com/EvanBacon))
+- Drop support for `logUrl` endpoint (legacy `expo-cli` logging will no longer work). ([#18596](https://github.com/expo/expo/pull/18596) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 50.0.0-alpha.0 — 2023-07-28
+
+### 🐛 Bug fixes
+
+- Move `pointerEvents` to `styles.pointerEvents`. ([#23446](https://github.com/expo/expo/pull/23446) by [@EvanBacon](https://github.com/EvanBacon))
+- [Android] Fixed splash screen is missing when using the `getDelayLoadAppHandler()` from expo-updates. ([#23747](https://github.com/expo/expo/pull/23747) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Fork `uuid@3.4.0` and move into `expo-modules-core`. Remove the original dependency. ([#23249](https://github.com/expo/expo/pull/23249) by [@alanhughes](https://github.com/alanjhughes))
+
+## 49.0.3 — 2023-07-12
+
+### 🎉 New features
+
+- Added support for React Native 0.72.3 ([#23502](https://github.com/expo/expo/pull/23502) by [@tsapeta](https://github.com/tsapeta))
+
+## 49.0.1 — 2023-07-10
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.1 — 2023-07-07
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.1 - 2023-07-07
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0 - 2023-07-05
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-beta.5 - 2023-07-04
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-beta.4 - 2023-07-02
+
+### 🐛 Bug fixes
+
+- Use node module resolution when invoking `@expo/cli` from `expo`. ([#23220](https://github.com/expo/expo/pull/23220) by [@byCedric](https://github.com/byCedric))
+- Added support for React Native 0.72.1. ([#23262](https://github.com/expo/expo/pull/23262) by [@kudo](https://github.com/kudo))
+
+## 49.0.0-beta.3 - 2023-06-30
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-beta.2 - 2023-06-30
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-beta.1 - 2023-06-29
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-beta.0 — 2023-06-28
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-alpha.10 — 2023-06-27
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-alpha.9 — 2023-06-24
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-alpha.8 — 2023-06-24
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-alpha.7 — 2023-06-23
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-alpha.6 — 2023-06-22
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-alpha.5 — 2023-06-21
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-alpha.4 — 2023-06-13
+
+### 📚 3rd party library updates
+
+- Updated `junit` to `4.13.2`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+
+### 🎉 New features
+
+- Added `ReactActivityHandler.getDelayLoadAppHandler` interface on Android. ([#20273](https://github.com/expo/expo/pull/20273) by [@kudo](https://github.com/kudo))
+- Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- Fixed build error when using Expo CLI on bare React Native projects without installing Expo Modules. ([#22649](https://github.com/expo/expo/pull/22649) by [@kudo](https://github.com/kudo))
 
 ## 49.0.0-alpha.3 — 2023-05-09
 

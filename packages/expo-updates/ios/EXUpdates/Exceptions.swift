@@ -33,3 +33,13 @@ internal final class UpdatesReloadException: Exception {
     "Could not reload application. Ensure you have set the `bridge` property of AppController."
   }
 }
+
+internal final class UpdatesUnsupportedDirectiveException: Exception {
+  override var code: String {
+    "ERR_UPDATES_UNSUPPORTED_DIRECTIVE"
+  }
+
+  override var reason: String {
+    "Updates service response included a directive that this client does not support."
+  }
+}

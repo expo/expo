@@ -1,7 +1,7 @@
 ---
 title: Expo CLI
 maxHeadingDepth: 4
-description: The Expo CLI is a command-line tool that is the primary interface between a developer and other Expo tools. Learn more about how to get started using Expo CLI.
+description: The Expo CLI is a command-line tool that is the primary interface between a developer and other Expo tools.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
@@ -62,18 +62,19 @@ Start a development server to work on your project by running:
 
 > You can also run `npx expo` as an alias to `npx expo start`.
 
-This command starts a server on `http://localhost:19000` that a client can use to interact with the bundler. The default bundler is [Metro](https://facebook.github.io/metro/).
+This command starts a server on `http://localhost:8081` (for SDK 48 and lower, the port number is `19000`) that a client can use to interact with the bundler. The default bundler is [Metro](https://facebook.github.io/metro/).
 
 The UI that shows up in the process is referred to as the **Terminal UI**. It contains a QR code (for the dev server URL) and a list of keyboard shortcuts you can press:
 
 | Keyboard shortcut               | Description                                                                                                                                                                              |
 | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <kbd>A</kbd>                    | Open the project in Expo Go on Android.                                                                                                                                                  |
+| <kbd>A</kbd>                    | Open the project on a connected Android device.                                                                                                                                          |
 | <kbd>Shift</kbd> + <kbd>A</kbd> | Select an Android device or emulator to open.                                                                                                                                            |
-| <kbd>I</kbd>                    | Open the project in Expo Go on iOS.                                                                                                                                                      |
+| <kbd>I</kbd>                    | Open the project in an iOS simulator.                                                                                                                                                    |
 | <kbd>Shift</kbd> + <kbd>I</kbd> | Select an iOS Simulator to open.                                                                                                                                                         |
 | <kbd>W</kbd>                    | Open the project in a web browser. This may require webpack to be installed in your project.                                                                                             |
 | <kbd>R</kbd>                    | Reload the app on any connected device.                                                                                                                                                  |
+| <kbd>S</kbd>                    | Switch the launch target between Expo Go and development builds.                                                                                                                         |
 | <kbd>M</kbd>                    | Open the dev menu on any connected native device (web not supported).                                                                                                                    |
 | <kbd>Shift</kbd> + <kbd>M</kbd> | Choose more commands to trigger on connected devices.<br/>This includes toggling the performance monitor, opening the element inspector, reloading the device, and opening the dev menu. |
 | <kbd>J</kbd>                    | Open Chrome Dev Tools for any connected device that is using Hermes as the JavaScript engine. [Learn more](/guides/using-hermes#javascript-inspector-for-hermes).                        |
@@ -81,18 +82,29 @@ The UI that shows up in the process is referred to as the **Terminal UI**. It co
 | <kbd>E</kbd>                    | Show the development server URL as a QR code in the terminal.                                                                                                                            |
 | <kbd>?</kbd>                    | Show all Terminal UI commands.                                                                                                                                                           |
 
+### Launch target
+
+The `npx expo start` command automatically launches the app in a development build if `expo-dev-client` is installed in the project. Otherwise, it launches the app in Expo Go.
+
+Alternatively, you can force the launch target by passing the following flags to the command:
+
+- `--dev-client`: Always launch the app in a development build.
+- `--go`: Always launch the app in Expo Go.
+
+You can also switch the launch target during runtime by pressing <kbd>S</kbd> in the **Terminal UI**. The `run` commands also use `--dev-client` after compiling the development build, by default.
+
 ### Server URL
 
 By default, the project is served over a LAN connection. You can change this behavior to localhost-only by using the flag `npx expo start --localhost`.
 
 Other available options are:
 
-- `--port`: Port to start the dev server on (does not apply to webpack or [tunnel URLs](#tunneling)). Default: **19000**.
+- `--port`: Port to start the dev server on (does not apply to webpack or [tunnel URLs](#tunneling)). Default: **8081**. For SDK 48 and lower, defaults to `19000`.
 - `--https`: Start the dev server using a secure origin. This is currently only supported on web.
 
 You can force the URL to be any value with the `EXPO_PACKAGER_PROXY_URL` environment variable. For example:
 
-<Terminal cmd={['export EXPO_PACKAGER_PROXY_URL=http://expo.dev', '$ npx expo start']} />
+<Terminal cmd={['$ export EXPO_PACKAGER_PROXY_URL=http://expo.dev', '$ npx expo start']} />
 
 Will open apps to: `exp://expo.dev:80` (the `:80` is a temporary workaround for Android WebSockets).
 
@@ -127,6 +139,15 @@ You can develop without a network connection by using the `--offline` flag:
 Offline will prevent the CLI from making network requests. If you don't use the flag and your computer has no internet connection, then offline support will automatically be enabled, it will just take a bit longer to verify the reachability.
 
 Expo CLI makes network requests to sign manifests with your user credentials to ensure sensitive information is sandboxed in reusable runtimes like Expo Go.
+
+### .expo directory
+
+When you start the development server in a project for the first time, a **.expo** directory is created at the root of that project. It contains two files:
+
+- **devices.json**: Contains information about devices that have opened this project recently.
+- **settings.json**: Contains information about server configuration that is used to serve the project's manifest.
+
+Both of these files have information that is specific to your local computer. This is the reason why **.expo** directory is included in the **.gitignore** file, by default, when a new project is created. It is not meant to be shared with other developers.
 
 ## Building
 
@@ -221,11 +242,12 @@ This is done automatically when using `eas update` or when compiling the native 
 
 The following options are provided:
 
-- `--platform <platform>`: Choose the platform to compile for: 'ios', 'android', 'all'. **Default: all**. 'web' is also available if configured in the Expo config. For more information, see [Customizing Metro](/guides/customizing-metro).
+- `--platform <platform>`: Choose the platform to compile for: 'ios', 'android', 'all'. **Default: all**. 'web' is also available if configured in the app config. For more information, see [Customizing Metro](/guides/customizing-metro).
 - `--dev`: Bundle for **development** environments without minifying code or stripping the `__DEV__` boolean.
 - `--output-dir <dir>`: The directory to export the static files to. **Default: dist**
 - `--max-workers <number>`: Maximum number of tasks to allow the bundler to spawn. Setting this to `0` will run all transpilation on the same process, meaning you can easily debug Babel transpilation.
 - `-c, --clear`: Clear the bundler cache before exporting.
+- `--no-minify`: Skip minifying JavaScript and CSS assets (SDK 49 and above).
 
 ### Exporting with webpack
 
@@ -248,7 +270,7 @@ Native source code must be generated before a native app can compile. Expo CLI p
 
 ## Config
 
-Evaluate the Expo config (**app.json**, or **app.config.js**) by running:
+Evaluate the app config (**app.json**, or **app.config.js**) by running:
 
 <Terminal cmd={['$ npx expo config']} />
 
@@ -258,7 +280,7 @@ Evaluate the Expo config (**app.json**, or **app.config.js**) by running:
 
 ### Config Type
 
-There are three different config types that are generated from the Expo config:
+There are three different config types that are generated from the app config:
 
 - `public`: The manifest file to use with OTA updates. Think of this like an `index.html` file's `<head />` element but for native apps.
 - `prebuild`: The config that is used for [Expo Prebuild](/workflow/prebuild) including async modifiers. This is the only time the config is not serializable.
@@ -314,6 +336,28 @@ The command `npx expo install expo-camera` and `npx expo install expo-camera --f
 
 <Terminal cmd={['$ npx expo install --fix']} />
 
+### Configuring dependency validation
+
+> Available in SDK 49 and above.
+
+There may be circumstances where you want to use a version of a package is different from the version recommended by `npx expo install`.
+
+For example, you are testing a new version of `react-native-reanimated` to verify that it works well in your app and fixes a bug that you encountered. Now you want to 1) not be warned by `npx expo start` or `npx expo-doctor` and 2) not have that package version changed when you run `npx expo install --fix`.
+
+You can exclude specific packages from the version checks while still allowing the `install` command to install, check, and fix any other dependencies. This configuration extends to the checking done by `npx expo-doctor`.
+
+To exclude packages from version checking, set the `expo.install` config object in your project's **package.json**:
+
+```json package.json
+{
+  "expo": {
+    "install": {
+      "exclude": ["expo-updates", "expo-splash-screen"]
+    }
+  }
+}
+```
+
 ### Install package managers
 
 `npx expo install` has support for `yarn`, `npm`, and `pnpm`.
@@ -353,11 +397,12 @@ From here, you can choose to generate basic project files like:
 | ----------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `HTTP_PROXY`                        | **string**  | HTTP/HTTPS proxy URL to connect for all network requests. Configures [https-proxy-agent](https://www.npmjs.com/package/https-proxy-agent).                                                                                                                                                                                                                                           |
 | `EXPO_NO_WEB_SETUP`                 | **boolean** | Prevents the CLI from forcing web dependencies (`react-dom`, `react-native-web`, `@expo/webpack-config`) to be installed before using web functionality.<br/>This is useful for cases where you wish to perform non-standard web development.                                                                                                                                        |
+| `EXPO_OFFLINE`                      | **boolean** | Skip all network requests when applicable. This leads to faster development in areas with poor network connection.                                                                                                                                                                                                                                                                   |
 | `EXPO_NO_TYPESCRIPT_SETUP`          | **boolean** | Prevents the CLI from forcing TypeScript to be configured on `npx expo start`.<br/>For more information, see [TypeScript guide](/guides/typescript/).                                                                                                                                                                                                                                |
 | `DEBUG=expo:*`                      | **string**  | Enables debug logs for the CLI, you can configure this using the [`debug` convention](https://github.com/debug-js/debug#conventions).                                                                                                                                                                                                                                                |
 | `EXPO_DEBUG`                        | **boolean** | An alias for `DEBUG=expo:*`.                                                                                                                                                                                                                                                                                                                                                         |
 | `EXPO_PROFILE`                      | **boolean** | Enable profiling stats for the CLI, this does not profile your application.                                                                                                                                                                                                                                                                                                          |
-| `EXPO_NO_CACHE`                     | **boolean** | Disable all global caching. By default, Expo config JSON schemas, Expo Go binaries for simulators and emulators, and project templates are cached in the global **.expo** folder on your machine.                                                                                                                                                                                    |
+| `EXPO_NO_CACHE`                     | **boolean** | Disable all global caching. By default, app config JSON schemas, Expo Go binaries for simulators and emulators, and project templates are cached in the global **.expo** folder on your machine.                                                                                                                                                                                     |
 | `CI`                                | **boolean** | When enabled, the CLI will disable interactive functionality, skip optional prompts, and fail on non-optional prompts.<br/>Example: `CI=1 npx expo install --check` will fail if any installed packages are outdated.                                                                                                                                                                |
 | `EXPO_NO_TELEMETRY`                 | **boolean** | Disables anonymous usage collection. [Learn more about telemetry](#telemetry).                                                                                                                                                                                                                                                                                                       |
 | `EXPO_NO_GIT_STATUS`                | **boolean** | Skips warning about git status during potentially dangerous actions like `npx expo prebuild --clean`.                                                                                                                                                                                                                                                                                |
@@ -368,10 +413,13 @@ From here, you can choose to generate basic project files like:
 | `EXPO_IMAGE_UTILS_NO_SHARP`         | **boolean** | Disable the usage of global Sharp CLI installation in favor of the slower Jimp package for image manipulation. This is used in places like `npx expo prebuild` for generating app icons.                                                                                                                                                                                             |
 | `EXPO_TUNNEL_SUBDOMAIN`             | **boolean** | <StatusTag status="experimental" /><br/>Disable using `exp.direct` as the hostname for `--tunnel` connections. This enables **https://** forwarding which can be used to test universal links on iOS. This may cause unexpected issues with `expo-linking` and Expo Go. Select the exact subdomain to use by passing a `string` value that is not one of: `true`, `false`, `1`, `0`. |
 | `EXPO_METRO_NO_MAIN_FIELD_OVERRIDE` | **boolean** | Force Expo CLI to use the [`resolver.resolverMainFields`](https://facebook.github.io/metro/docs/configuration/#resolvermainfields) from the project's **metro.config.js** for all platforms. By default, Expo CLI will use `['browser', 'module', 'main']`, which is the default for webpack, for the web and the user-defined main fields for other platforms.                      |
-| `EXPO_USE_PATH_ALIASES`             | **boolean** | <StatusTag status="experimental" note="SDK 49+" /><br/>Allow Metro to use the `compilerOptions.paths` and `compilerOptions.baseUrl` features from **tsconfig.json** or **jsconfig.json**) to enable import aliases and absolute imports.                                                                                                                                             |
-| `EXPO_USE_CUSTOM_INSPECTOR_PROXY`   | **boolean** | <StatusTag status="experimental" note="SDK 49+" /><br/>Use a customized inspector proxy with improved support for the Chrome DevTools protocol.<br/>This includes support for the network inspector.                                                                                                                                                                                 |
-| `EXPO_USE_TYPED_ROUTES`             | **boolean** | <StatusTag status="experimental" note="SDK 49+" /><br/>Generate TypeScript types for Expo Router.<br/>This includes support for the network inspector.                                                                                                                                                                                                                               |
-| `EXPO_NO_CLIENT_ENV_VARS`           | **boolean** | <StatusTag status="experimental" note="SDK 49+" /><br/>Prevent inlining `EXPO_PUBLIC_` environment variables in client bundles.                                                                                                                                                                                                                                                                            |
+| `EXPO_NO_INSPECTOR_PROXY`           | **boolean** | <StatusTag note="SDK 49+" /><br/>Disable the customized inspector proxy with improved support for the Chrome DevTools protocol.<br/>This includes support for the network inspector.                                                                                                                                                                                                 |
+| `EXPO_NO_CLIENT_ENV_VARS`           | **boolean** | <StatusTag note="SDK 49+" /><br/>Prevent inlining `EXPO_PUBLIC_` environment variables in client bundles.                                                                                                                                                                                                                                                                            |
+| `EXPO_NO_DOTENV`                    | **boolean** | <StatusTag note="SDK 49+" /><br/>Prevent all `.env` file loading across Expo CLI.                                                                                                                                                                                                                                                                                                    |
+| `EXPO_NO_METRO_LAZY`                | **boolean** | Prevent adding the `lazy=true` query parameter to Metro URLs (`metro@0.76.3` and greater). This disables `import()` support.                                                                                                                                                                                                                                                         |
+| `EXPO_USE_TYPED_ROUTES`             | **boolean** | Use `expo.experiments.typedRoutes` to enable statically typed routes in Expo Router.                                                                                                                                                                                                                                                                                                 |
+| `EXPO_METRO_UNSTABLE_ERRORS`        | **boolean** | <StatusTag status="experimental" /><br/>Enable unstable error message improvements in Metro bundler. The features behind this flag are subject to removal and may be upstreamed.                                                                                                                                                                                                     |
+| `EXPO_USE_METRO_WORKSPACE_ROOT`     | **boolean** | Enable auto server root detection for Metro. This will change the server root to the workspace root. Useful for monorepos.                                                                                                                                                                                                                                                           |
 
 ## Telemetry
 

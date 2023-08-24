@@ -105,7 +105,6 @@ abstract class Manifest(protected val json: JSONObject) {
 
   fun getDebuggerHost(): String = getExpoGoConfigRootObject()!!.require("debuggerHost")
   fun getMainModuleName(): String = getExpoGoConfigRootObject()!!.require("mainModuleName")
-  fun getLogUrl(): String? = getExpoGoConfigRootObject()?.getNullable("logUrl")
   fun getHostUri(): String? = getExpoClientConfigRootObject()?.getNullable("hostUri")
 
   fun isVerified(): Boolean = json.getNullable("isVerified") ?: false
@@ -230,6 +229,18 @@ abstract class Manifest(protected val json: JSONObject) {
   @Throws(JSONException::class)
   fun getFacebookAutoInitEnabled(): Boolean = getExpoClientConfigRootObject()!!.require("facebookAutoInitEnabled")
 
+  /**
+   * Queries the dedicated package properties in `plugins`
+   */
+  @Throws(JSONException::class, IllegalArgumentException::class)
+  fun getPluginProperties(packageName: String): Map<String, Any>? {
+    val pluginsRawValue = getExpoClientConfigRootObject()?.getNullable<JSONArray>("plugins") ?: return null
+    val plugins = PluginType.fromRawArrayValue(pluginsRawValue) ?: return null
+    return plugins.filterIsInstance<PluginType.WithProps>()
+      .firstOrNull { it.plugin.first == packageName }
+      ?.plugin?.second
+  }
+
   companion object {
     @JvmStatic fun fromManifestJson(manifestJson: JSONObject): Manifest {
       return when {
@@ -241,6 +252,51 @@ abstract class Manifest(protected val json: JSONObject) {
         }
         else -> {
           BareManifest(manifestJson)
+        }
+      }
+    }
+  }
+}
+
+internal typealias PluginWithProps = Pair<String, Map<String, Any>>
+internal typealias PluginWithoutProps = String
+internal sealed class PluginType {
+  data class WithProps(val plugin: PluginWithProps) : PluginType()
+  data class WithoutProps(val plugin: PluginWithoutProps) : PluginType()
+
+  companion object {
+    @Throws(IllegalArgumentException::class)
+    private fun fromRawValue(value: Any): PluginType? {
+      return when (value) {
+        is JSONArray -> {
+          if (value.length() == 0) {
+            throw IllegalArgumentException("Value for (key = plugins) has incorrect type")
+          }
+          val name = value.get(0) as? String ?: return null
+          when (value.length()) {
+            2 -> {
+              val props = value.get(1) as? JSONObject ?: return null
+              WithProps(name to props.toMap())
+            }
+            else -> {
+              WithoutProps(name)
+            }
+          }
+        }
+        is String -> {
+          WithoutProps(value)
+        }
+        else -> throw IllegalArgumentException("Value for (key = plugins) has incorrect type")
+      }
+    }
+
+    @Throws(IllegalArgumentException::class)
+    fun fromRawArrayValue(value: JSONArray): List<PluginType> {
+      return mutableListOf<PluginType>().apply {
+        for (i in 0 until value.length()) {
+          fromRawValue(value.get(i))?.let {
+            add(it)
+          }
         }
       }
     }

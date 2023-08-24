@@ -6,7 +6,9 @@ import com.facebook.react.uimanager.UIBlock
 import com.facebook.react.uimanager.UIManagerModule
 import com.google.common.truth.Truth
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.ModuleRegistry
+import expo.modules.kotlin.defaultmodules.CoreModule
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -20,21 +22,39 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import java.lang.ref.WeakReference
 
+internal fun defaultAppContextMock(
+  jniDeallocator: JNIDeallocator = JNIDeallocator(shouldCreateDestructorThread = false)
+): AppContext {
+  val appContextMock = mockk<AppContext>()
+  val coreModule = run {
+    val module = CoreModule()
+    module._appContext = appContextMock
+    ModuleHolder(module)
+  }
+  every { appContextMock.coreModule } answers { coreModule }
+  every { appContextMock.jniDeallocator } answers { jniDeallocator }
+  return appContextMock
+}
+
 /**
  * Sets up a test jsi environment with provided modules.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 internal inline fun withJSIInterop(
   vararg modules: Module,
-  block: JSIInteropModuleRegistry.(methodQueue: TestScope) -> Unit
+  block: JSIInteropModuleRegistry.(methodQueue: TestScope) -> Unit,
+  afterCleanup: (deallocator: JNIDeallocator) -> Unit
 ) {
-  val appContextMock = mockk<AppContext>()
+  val jniDeallocator = JNIDeallocator(
+    shouldCreateDestructorThread = false
+  )
+  val appContextMock = defaultAppContextMock(jniDeallocator)
   val methodQueue = TestScope()
 
   val uiManagerModuleMock = mockk<UIManagerModule>()
   val slot = slot<UIBlock>()
   every { uiManagerModuleMock.addUIBlock(capture(slot)) } answers {
-    methodQueue.launch() {
+    methodQueue.launch {
       slot.captured.execute(mockk())
     }
   }
@@ -64,14 +84,24 @@ internal inline fun withJSIInterop(
   every { appContextMock.sharedObjectRegistry } answers { sharedObjectRegistry }
 
   val jsiIterop = JSIInteropModuleRegistry(appContextMock).apply {
-    installJSIForTests()
+    installJSIForTests(jniDeallocator)
   }
+
+  every { appContextMock.jsiInterop } answers { jsiIterop }
 
   block(jsiIterop, methodQueue)
 
-  JNIDeallocator.deallocate()
+  jniDeallocator.deallocate()
   jsiIterop.deallocate()
+
+  afterCleanup(jniDeallocator)
 }
+
+@OptIn(ExperimentalCoroutinesApi::class)
+internal inline fun withJSIInterop(
+  vararg modules: Module,
+  block: JSIInteropModuleRegistry.(methodQueue: TestScope) -> Unit
+) = withJSIInterop(*modules, block = block, afterCleanup = {})
 
 /**
  * A syntax sugar that creates a new module from the definition block.

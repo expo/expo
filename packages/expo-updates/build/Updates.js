@@ -1,12 +1,9 @@
-import { RCTDeviceEventEmitter, CodedError, NativeModulesProxy, UnavailabilityError, } from 'expo-modules-core';
-import { EventEmitter } from 'fbemitter';
+import { CodedError, NativeModulesProxy, UnavailabilityError } from 'expo-modules-core';
 import ExpoUpdates from './ExpoUpdates';
-export * from './Updates.types';
 /**
- * The UUID that uniquely identifies the currently running update if `expo-updates` is enabled. The
+ * The UUID that uniquely identifies the currently running update. The
  * UUID is represented in its canonical string form (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`) and
- * will always use lowercase letters. In development mode, or any other environment in which
- * `expo-updates` is disabled, this value is `null`.
+ * will always use lowercase letters. This value is `null` when running in a local development environment or any other environment where `expo-updates` is disabled.
  */
 export const updateId = ExpoUpdates.updateId && typeof ExpoUpdates.updateId === 'string'
     ? ExpoUpdates.updateId.toLowerCase()
@@ -17,7 +14,9 @@ export const updateId = ExpoUpdates.updateId && typeof ExpoUpdates.updateId === 
  */
 export const releaseChannel = ExpoUpdates.releaseChannel ?? 'default';
 /**
- * The channel name of the current build, if configured for use with EAS Update. Null otherwise.
+ * The channel name of the current build, if configured for use with EAS Update. `null` otherwise.
+ *
+ * Expo Go and development builds are not set to a specific channel and can run any updates compatible with their native runtime. Therefore, this value will always be `null` when running an update on Expo Go or a development build.
  */
 export const channel = ExpoUpdates.channel ?? null;
 /**
@@ -159,14 +158,8 @@ export async function getExtraParamsAsync() {
 }
 /**
  * Sets an extra param if value is non-null, otherwise unsets the param.
- * Extra params are sent in a header of update requests.
- * The update server may use these params when evaluating logic to determine which update to serve.
- * EAS Update merges these params into the fields used to evaluate channel–branch mapping logic.
- *
- * @example An app may want to add a feature where users can opt-in to beta updates. In this instance,
- * extra params could be set to `{userType: 'beta'}`, and then the server can use this information
- * when deciding which update to serve. If using EAS Update, the channel-branch mapping can be set to
- * discriminate branches based on the `userType`.
+ * Extra params are sent as an [Expo Structured Field Value Dictionary](https://docs.expo.dev/technical-specs/expo-sfv-0/)
+ * in the `Expo-Extra-Params` header of update requests. A compliant update server may use these params when selecting an update to serve.
  */
 export async function setExtraParamAsync(key, value) {
     if (!ExpoUpdates.setExtraParamAsync) {
@@ -211,6 +204,10 @@ export async function clearLogEntriesAsync() {
  * storage. This method cannot be used in development mode, and the returned promise will be
  * rejected if you try to do so.
  *
+ > **Note:** [`reloadAsync()`](#updatesreloadasync) can be called after promise resolution to
+ * reload the app using the most recently downloaded version. Otherwise, the update will be applied
+ * on the next app cold start.
+ *
  * @return A promise that fulfills with an [`UpdateFetchResult`](#updatefetchresult) object.
  *
  * The promise rejects if the app is in development mode, or if there is an unexpected error or
@@ -236,40 +233,27 @@ export async function fetchUpdateAsync() {
 export function clearUpdateCacheExperimentalAsync(_sdkVersion) {
     console.warn("This method is no longer necessary. `expo-updates` now automatically deletes your app's old bundle files!");
 }
-let _emitter;
-function _getEmitter() {
-    if (!_emitter) {
-        _emitter = new EventEmitter();
-        RCTDeviceEventEmitter.addListener('Expo.nativeUpdatesEvent', _emitEvent);
-    }
-    return _emitter;
-}
-function _emitEvent(params) {
-    let newParams = { ...params };
-    if (typeof params === 'string') {
-        newParams = JSON.parse(params);
-    }
-    if (newParams.manifestString) {
-        newParams.manifest = JSON.parse(newParams.manifestString);
-        delete newParams.manifestString;
-    }
-    if (!_emitter) {
-        throw new Error(`EventEmitter must be initialized to use from its listener`);
-    }
-    _emitter.emit('Expo.updatesEvent', newParams);
-}
 /**
- * Adds a callback to be invoked when updates-related events occur (such as upon the initial app
- * load) due to auto-update settings chosen at build-time. See also the
- * [`useUpdateEvents`](#useupdateeventslistener) React hook.
- *
- * @param listener A function that will be invoked with an [`UpdateEvent`](#updateevent) instance
- * and should not return any value.
- * @return An `EventSubscription` object on which you can call `remove()` to unsubscribe the
- * listener.
+ * @hidden
  */
-export function addListener(listener) {
-    const emitter = _getEmitter();
-    return emitter.addListener('Expo.updatesEvent', listener);
+export async function getNativeStateMachineContextAsync() {
+    // Return the current state machine context
+    if (!ExpoUpdates.getNativeStateMachineContextAsync) {
+        throw new UnavailabilityError('Updates', 'getNativeStateMachineContextAsync');
+    }
+    const nativeContext = await ExpoUpdates.getNativeStateMachineContextAsync();
+    if (nativeContext.latestManifestString) {
+        nativeContext.latestManifest = JSON.parse(nativeContext.latestManifestString);
+        delete nativeContext.latestManifestString;
+    }
+    if (nativeContext.downloadedManifestString) {
+        nativeContext.downloadedManifest = JSON.parse(nativeContext.downloadedManifestString);
+        delete nativeContext.downloadedManifestString;
+    }
+    if (nativeContext.lastCheckForUpdateTimeString) {
+        nativeContext.lastCheckForUpdateTime = new Date(nativeContext.lastCheckForUpdateTimeString);
+        delete nativeContext.lastCheckForUpdateTimeString;
+    }
+    return nativeContext;
 }
 //# sourceMappingURL=Updates.js.map

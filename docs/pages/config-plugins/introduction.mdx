@@ -6,12 +6,13 @@ sidebar_title: Introduction
 
 import { Terminal } from '~/ui/components/Snippet';
 import { BoxLink } from '~/ui/components/BoxLink';
+import { BookOpen02Icon } from '@expo/styleguide-icons';
 
 An automatic setup for adding a native module to your project is possible. Sometimes, a module requires a more complex setup. A config plugin can be used to automatically configure your native project for a module and reduce the complexity by avoiding interaction with the native project.
 
 ## What is a config plugin
 
-Config plugin is a system for extending the [Expo config](/workflow/configuration) and customizing the prebuild process for your app. They can be used to add native modules that aren't included, by default, or to add any native code that needs to be configured further.
+Config plugin is a system for extending the [app config](/workflow/configuration) and customizing the prebuild process for your app. They can be used to add native modules that aren't included, by default, or to add any native code that needs to be configured further.
 
 Internally Expo CLI uses config plugins to generate and configure all the native code for a managed project. Plugins do things such as generate app icons, set the app name, and configure the **AndroidManifest.xml**, **Info.plist**, and so on.
 
@@ -23,7 +24,7 @@ Expo config plugins mostly come from Node.js modules. You can install them just 
 
 For example, `expo-camera` has a plugin that adds camera permissions to the **AndroidManifest.xml** and **Info.plist**. To install it in your project, run the following command:
 
-<Terminal cmd={['$ expo install expo-camera']} />
+<Terminal cmd={['$ npx expo install expo-camera']} />
 
 In your app's config (**app.json**, or **app.config.js**), you can add `expo-camera` to the list of plugins:
 
@@ -62,7 +63,8 @@ they will be applied during the prebuild phase on `eas build`**.
 ## Next step
 
 <BoxLink
-  title="Creating a plugin"
+  title="Create a plugin"
   description="Learn about how you can create a config plugin."
   href="/config-plugins/plugins-and-mods"
+  Icon={BookOpen02Icon}
 />

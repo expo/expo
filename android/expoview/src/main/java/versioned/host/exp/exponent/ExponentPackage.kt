@@ -3,6 +3,7 @@ package versioned.host.exp.exponent
 
 import android.content.Context
 import android.os.Looper
+import com.airbnb.android.react.lottie.LottiePackage
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
@@ -32,13 +33,10 @@ import org.json.JSONException
 import versioned.host.exp.exponent.modules.api.*
 import versioned.host.exp.exponent.modules.api.cognito.RNAWSCognitoModule
 import versioned.host.exp.exponent.modules.api.components.datetimepicker.RNDateTimePickerPackage
-import versioned.host.exp.exponent.modules.api.components.lottie.LottiePackage
 import versioned.host.exp.exponent.modules.api.components.maps.MapsPackage
 import versioned.host.exp.exponent.modules.api.components.maskedview.RNCMaskedViewPackage
 import versioned.host.exp.exponent.modules.api.components.picker.RNCPickerPackage
 import versioned.host.exp.exponent.modules.api.components.reactnativestripesdk.StripeSdkPackage
-import versioned.host.exp.exponent.modules.api.components.sharedelement.RNSharedElementModule
-import versioned.host.exp.exponent.modules.api.components.sharedelement.RNSharedElementPackage
 import versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewModule
 import versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewPackage
 import versioned.host.exp.exponent.modules.api.netinfo.NetInfoModule
@@ -65,12 +63,13 @@ class ExponentPackage : ReactPackage {
     experienceProperties: Map<String, Any?>,
     manifest: Manifest,
     expoPackages: List<Package>,
+    moduleProvider: ModulesProvider,
     singletonModules: List<SingletonModule>?
   ) {
     this.isKernel = isKernel
     this.experienceProperties = experienceProperties
     this.manifest = manifest
-    moduleRegistryAdapter = createDefaultModuleRegistryAdapterForPackages(expoPackages, singletonModules)
+    moduleRegistryAdapter = createDefaultModuleRegistryAdapterForPackages(expoPackages, singletonModules, moduleProvider)
   }
 
   constructor(
@@ -135,10 +134,9 @@ class ExponentPackage : ReactPackage {
         nativeModules.add(RNAWSCognitoModule(reactContext))
         nativeModules.add(RNCWebViewModule(reactContext))
         nativeModules.add(NetInfoModule(reactContext))
-        nativeModules.add(RNSharedElementModule(reactContext))
-        nativeModules.addAll(SvgPackage().createNativeModules(reactContext))
+        nativeModules.addAll(SvgPackage().getNativeModuleIterator(reactContext).map { it.module })
         nativeModules.addAll(MapsPackage().createNativeModules(reactContext))
-        nativeModules.addAll(RNDateTimePickerPackage().createNativeModules(reactContext))
+        nativeModules.addAll(RNDateTimePickerPackage().getNativeModuleIterator(reactContext).map { it.module })
         nativeModules.addAll(stripePackage.createNativeModules(reactContext))
         nativeModules.addAll(skiaPackage.createNativeModules(reactContext))
 
@@ -178,7 +176,6 @@ class ExponentPackage : ReactPackage {
         RNScreensPackage(),
         RNCWebViewPackage(),
         SafeAreaContextPackage(),
-        RNSharedElementPackage(),
         RNDateTimePickerPackage(),
         RNCMaskedViewPackage(),
         RNCPickerPackage(),
@@ -225,6 +222,7 @@ class ExponentPackage : ReactPackage {
       context: Context,
       manifest: Manifest,
       expoPackages: List<Package>,
+      modulesProvider: ModulesProvider,
       initialURL: String?
     ): ExponentPackage {
       val kernelExperienceProperties = mutableMapOf(
@@ -241,6 +239,7 @@ class ExponentPackage : ReactPackage {
         kernelExperienceProperties,
         manifest,
         expoPackages,
+        modulesProvider,
         singletonModules
       )
     }

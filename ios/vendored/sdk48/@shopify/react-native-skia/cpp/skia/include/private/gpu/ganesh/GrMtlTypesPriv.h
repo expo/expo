@@ -68,7 +68,7 @@ struct GrMtlTextureSpec {
 GrMtlSurfaceInfo GrMtlTextureSpecToSurfaceInfo(const GrMtlTextureSpec& mtlSpec,
                                                uint32_t sampleCount,
                                                uint32_t levelCount,
-                                               GrProtected isProtected);
+                                               skgpu::Protected isProtected);
 
 #endif  // __APPLE__
 

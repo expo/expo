@@ -8,7 +8,7 @@
 #ifndef skgpu_graphite_MtlBackendContext_DEFINED
 #define skgpu_graphite_MtlBackendContext_DEFINED
 
-#include "include/gpu/graphite/mtl/MtlTypes.h"
+#include "include/gpu/graphite/mtl/MtlGraphiteTypes.h"
 
 namespace skgpu::graphite {
 

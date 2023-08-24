@@ -135,9 +135,6 @@ function endsInNull(path: string) {
 const RENAMED_PAGES: Record<string, string> = {
   // Redirects after creating /home route
   '/next-steps/additional-resources/': '/additional-resources/',
-  // TODO: (@aman) Uncomment the two lines below when we've removed third-party libraries from Reference
-  // '/versions/latest/sdk/safe-area-context/': '/develop/user-interface/safe-areas',
-  // '/versions/latest/sdk/async-storage/': '/develop/user-interface/store-data/#async-storage',
   '/get-started/create-a-new-app/': '/get-started/create-a-project',
   '/guides/config-plugins/': '/config-plugins/introduction/',
   '/workflow/debugging/': '/debugging/runtime-issues/',
@@ -164,6 +161,16 @@ const RENAMED_PAGES: Record<string, string> = {
   '/workflow/glossary-of-terms/': '/more/glossary-of-terms/',
   '/development/installation/': '/develop/development-builds/installation/',
   '/get-started/errors/': '/debugging/errors-and-warnings/',
+
+  // Redirects after organizing docs in Guides
+  '/bare/hello-world/': '/bare/overview/',
+  '/guides/errors/': '/debugging/runtime-issues/',
+  '/guides/using-graphql/': '/guides/overview/',
+  '/guides/using-styled-components/': '/guides/overview/',
+  '/guides/using-bugsnag/': '/guides/overview/',
+  '/build/automating-submissions/': '/build/automate-submissions/',
+  '/guides/routing-and-navigation/': '/routing/introduction/',
+  '/workflow/run-on-device/': '/build/internal-distribution/',
 
   // Old redirects
   '/introduction/project-lifecycle/': '/archive/managed-vs-bare/',
@@ -204,7 +211,8 @@ const RENAMED_PAGES: Record<string, string> = {
   // Changes from redoing the getting started workflow, SDK35+
   '/workflow/up-and-running/': '/get-started/installation/',
   '/introduction/additional-resources/': '/next-steps/additional-resources/',
-  '/introduction/already-used-react-native/': '/workflow/already-used-react-native/',
+  '/introduction/already-used-react-native/':
+    '/faq/#what-is-the-difference-between-expo-and-react-native',
   '/introduction/community/': '/next-steps/community/',
   '/introduction/installation/': '/get-started/installation/',
   '/versions/latest/overview/': '/versions/latest/',
@@ -241,8 +249,8 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Fundamentals had too many things
   '/workflow/linking/': '/guides/linking/',
-  '/workflow/how-expo-works/': '/workflow/already-used-react-native/#how-does-expo-work',
-  '/guides/how-expo-works/': '/workflow/already-used-react-native/#how-does-expo-work',
+  '/workflow/how-expo-works/': '/faq/#what-is-the-difference-between-expo-and-react-native',
+  '/guides/how-expo-works/': '/faq/#what-is-the-difference-between-expo-and-react-native',
 
   // Archive unused pages
   '/guides/notification-channels/': '/archived/notification-channels/',
@@ -276,7 +284,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/offline-support/': '/archive/classic-updates/offline-support/',
   '/guides/preloading-and-caching-assets/':
     '/archive/classic-updates/preloading-and-caching-assets/',
-  '/eas-update/bare-react-native/': '/bare/updating-your-app/',
+  '/eas-update/bare-react-native/': '/eas-update/updating-your-app/',
   '/worfkflow/publishing/': '/archive/classic-updates/publishing/',
   '/classic/building-standalone-apps/': '/archive/classic-updates/building-standalone-apps/',
   '/classic/turtle-cli/': '/archive/classic-updates/turtle-cli/',
@@ -284,12 +292,13 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Redirect bare guides to unified workflow guides
   '/bare/using-libraries/': '/workflow/using-libraries/',
-  '/bare/exploring-bare-workflow/': '/bare/hello-world/',
+  '/bare/exploring-bare-workflow/': '/bare/overview/',
   '/bare/existing-apps/': '/bare/installing-expo-modules/',
   '/bare/installing-unimodules/': '/bare/installing-expo-modules/',
   '/bare/using-web/': '/workflow/web/',
   '/guides/running-in-the-browser/': '/workflow/web/',
-  '/bare/unimodules-full-list/': '/bare/hello-world/',
+  '/bare/unimodules-full-list/': '/bare/overview/',
+  '/bare/updating-your-app/': '/eas-update/updating-your-app/',
 
   // Consolidate distribution
   '/distribution/security/': '/app-signing/security/',
@@ -340,6 +349,26 @@ const RENAMED_PAGES: Record<string, string> = {
   '/distribution/app-icons/': '/develop/user-interface/app-icons/',
   '/guides/using-libraries/': '/workflow/using-libraries/',
   '/tutorial/': '/tutorial/introduction/',
+
+  // EAS Update
+  '/eas-update/developing-with-eas-update/': '/eas-update/develop-faster/',
+  '/eas-update/eas-update-with-local-build/': '/eas-update/build-locally/',
+  '/eas-update/eas-update-and-eas-cli/': '/eas-update/eas-cli/',
+  '/eas-update/debug-updates/': '/eas-update/debug/',
+  '/eas-update/how-eas-update-works/': '/eas-update/how-it-works/',
+  '/eas-update/migrate-to-eas-update/': '/eas-update/migrate-from-classic-updates/',
+
+  // Expo Router Advanced guides
+  '/router/advance/root-layout': '/router/advanced/root-layout/',
+  '/router/advance/stack': '/router/advanced/stack/',
+  '/router/advance/tabs': '/router/advanced/tabs/',
+  '/router/advance/drawer': '/router/advanced/drawer/',
+  '/router/advance/nesting-navigators': '/router/advanced/nesting-navigators/',
+  '/router/advance/modal': '/router/advanced/modals/',
+  '/router/advance/platform-specific-modules': '/router/advanced/platform-specific-modules/',
+  '/router/advance/shared-routes': '/router/advanced/shared-routes/',
+  '/router/advance/router-settings': '/router/advanced/router-settings/',
+
   // Note (@aman): The following redirect is temporary until Guides section has an overview
   '/guides/': '/workflow/customizing/',
   '/archive/workflow/customizing/': '/workflow/customizing/',

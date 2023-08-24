@@ -5,7 +5,6 @@ import { CodeChallengeMethod, ResponseType, } from './AuthRequest.types';
 import { AuthError } from './Errors';
 import * as PKCE from './PKCE';
 import * as QueryParams from './QueryParams';
-import sessionUrlProvider from './SessionUrlProvider';
 import { TokenResponse } from './TokenRequest';
 let _authLock = false;
 // @needsAudit @docsMissing
@@ -108,7 +107,7 @@ export class AuthRequest {
      * @param discovery
      * @param promptOptions
      */
-    async promptAsync(discovery, { url, proxyOptions, ...options } = {}) {
+    async promptAsync(discovery, { url, ...options } = {}) {
         if (!url) {
             if (!this.url) {
                 // Generate a new url
@@ -122,13 +121,8 @@ export class AuthRequest {
         }
         // Prevent accidentally starting to an empty url
         invariant(url, 'No authUrl provided to AuthSession.startAsync. An authUrl is required -- it points to the page where the user will be able to sign in.');
-        let startUrl = url;
-        let returnUrl = this.redirectUri;
-        if (options.useProxy) {
-            console.warn('The useProxy option is deprecated and will be removed in a future release, for more information check https://expo.fyi/auth-proxy-migration.');
-            returnUrl = sessionUrlProvider.getDefaultReturnUrl(proxyOptions?.path, proxyOptions);
-            startUrl = sessionUrlProvider.getStartUrl(url, returnUrl, options.projectNameForProxy);
-        }
+        const startUrl = url;
+        const returnUrl = this.redirectUri;
         // Prevent multiple sessions from running at the same time, WebBrowser doesn't
         // support it this makes the behavior predictable.
         if (_authLock) {
@@ -141,8 +135,7 @@ export class AuthRequest {
         _authLock = true;
         let result;
         try {
-            const { useProxy, ...openOptions } = options;
-            result = await WebBrowser.openAuthSessionAsync(startUrl, returnUrl, openOptions);
+            result = await WebBrowser.openAuthSessionAsync(startUrl, returnUrl, options);
         }
         finally {
             _authLock = false;

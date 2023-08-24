@@ -4,11 +4,31 @@
 
 ### 🛠 Breaking changes
 
+- Remove classic manifest types. ([#24054](https://github.com/expo/expo/pull/24054) by [@wschurman](https://github.com/wschurman))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 8.2.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 8.2.0 — 2023-07-28
+
+_This version does not introduce any user-facing changes._
+
+## 8.1.1 — 2023-06-27
+
+### 💡 Others
+
+- Upgrade `semver` lib. ([#23113](https://github.com/expo/expo/pull/23113) by [@felipemillhouse](https://github.com/felipemillhouse))
+
+## 8.1.0 — 2023-06-21
+
+_This version does not introduce any user-facing changes._
 
 ## 8.0.4 — 2023-05-08
 

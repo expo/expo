@@ -88,7 +88,6 @@ class EnumTypeConverter(
     parameterName: String
   ): Enum<*> {
     // To obtain the value of parameter, we have to find a property that is connected with this parameter.
-    @Suppress("UNCHECKED_CAST")
     val parameterProperty = enumClass
       .declaredMemberProperties
       .find { it.name == parameterName }

@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+## 3.1.0 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.12 — 2023-07-26
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.10 — 2023-06-22
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.9 — 2023-06-02
+
+### 🐛 Bug fixes
+
+- Fixed `npx` script failing when `yarn` is not installed. ([#22582](https://github.com/expo/expo/pull/22582) by [@tsapeta](https://github.com/tsapeta))
+
 ## 3.0.8 — 2023-05-08
 
 _This version does not introduce any user-facing changes._

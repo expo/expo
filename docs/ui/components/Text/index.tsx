@@ -142,7 +142,7 @@ export const kbdStyle = css({
 });
 
 const { h1, h2, h3, h4, h5 } = typography.headers.default;
-const codeInHeaderStyle = { '& code': { fontSize: 'inherit' } };
+const codeInHeaderStyle = { '& code': { fontSize: '95%' } };
 
 const h1Style = {
   ...h1,
@@ -157,6 +157,7 @@ const h2Style = {
   fontWeight: 600,
   marginTop: spacing[8],
   marginBottom: spacing[3.5],
+  '& a:focus-visible': { outlineOffset: spacing[1] },
   ...codeInHeaderStyle,
 };
 
@@ -165,6 +166,7 @@ const h3Style = {
   fontWeight: 600,
   marginTop: spacing[6],
   marginBottom: spacing[2.5],
+  '& a:focus-visible': { outlineOffset: spacing[1] },
   ...codeInHeaderStyle,
 };
 
@@ -210,6 +212,7 @@ export const LI = createTextComponent(TextElement.LI, css(typography.body.li));
 export const LABEL = createTextComponent(TextElement.SPAN, css(typography.body.label));
 export const HEADLINE = createTextComponent(TextElement.P, css(typography.body.headline));
 export const FOOTNOTE = createTextComponent(TextElement.P, css(typography.body.footnote));
+export const CAPTION = createTextComponent(TextElement.P, css(typography.body.caption));
 export const CALLOUT = createTextComponent(TextElement.P, css(typography.body.callout));
 export const BOLD = createTextComponent(TextElement.STRONG, css({ fontWeight: 600 }));
 export const DEMI = createTextComponent(TextElement.SPAN, css({ fontWeight: 500 }));

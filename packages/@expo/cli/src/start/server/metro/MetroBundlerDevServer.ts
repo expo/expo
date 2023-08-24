@@ -8,21 +8,31 @@ import { getConfig } from '@expo/config';
 import { prependMiddleware } from '@expo/dev-server';
 import * as runtimeEnv from '@expo/env';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
-import assert from 'assert';
 import chalk from 'chalk';
 import fetch from 'node-fetch';
 import path from 'path';
 
+import { instantiateMetroAsync } from './instantiateMetro';
+import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
+import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
+import { observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
+import { CommandError } from '../../../utils/errors';
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import { getStaticRenderFunctions } from '../getStaticRenderFunctions';
+import { ContextModuleSourceMapsMiddleware } from '../middleware/ContextModuleSourceMapsMiddleware';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
+import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
-import { createBundleUrlPath, resolveMainModuleName } from '../middleware/ManifestMiddleware';
+import {
+  createBundleUrlPath,
+  resolveMainModuleName,
+  shouldEnableAsyncImports,
+} from '../middleware/ManifestMiddleware';
 import { ReactDevToolsPageMiddleware } from '../middleware/ReactDevToolsPageMiddleware';
 import {
   DeepLinkHandler,
@@ -30,16 +40,22 @@ import {
 } from '../middleware/RuntimeRedirectMiddleware';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
-import { typescriptTypeGeneration } from '../type-generation';
-import { instantiateMetroAsync } from './instantiateMetro';
-import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
-import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
-import { observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
+import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
+
+class ForwardHtmlError extends CommandError {
+  constructor(
+    message: string,
+    public html: string,
+    public statusCode: number
+  ) {
+    super(message);
+  }
+}
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
 /** Default port to use for apps running in Expo Go. */
-const EXPO_GO_METRO_PORT = 19000;
+const EXPO_GO_METRO_PORT = 8081;
 
 /** Default port to use for apps that run in standard React Native projects or Expo Dev Clients. */
 const DEV_CLIENT_METRO_PORT = 8081;
@@ -59,22 +75,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       (options.devClient
         ? // Don't check if the port is busy if we're using the dev client since most clients are hardcoded to 8081.
           Number(process.env.RCT_METRO_PORT) || DEV_CLIENT_METRO_PORT
-        : // Otherwise (running in Expo Go) use a free port that falls back on the classic 19000 port.
+        : // Otherwise (running in Expo Go) use a free port that falls back on the classic 8081 port.
           await getFreePortAsync(EXPO_GO_METRO_PORT));
 
     return port;
-  }
-
-  /** Get routes from Expo Router. */
-  async getRoutesAsync() {
-    const url = this.getDevServerUrl();
-    assert(url, 'Dev server must be started');
-    const { getManifest } = await getStaticRenderFunctions(this.projectRoot, url, {
-      // Ensure the API Routes are included
-      environment: 'node',
-    });
-
-    return getManifest({ fetchData: true });
   }
 
   async composeResourcesWithHtml({
@@ -87,7 +91,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     resources: SerialAsset[];
     template: string;
     devBundleUrl?: string;
-  }) {
+  }): Promise<string> {
+    if (!resources) {
+      return '';
+    }
     const isDev = mode === 'development';
     return htmlFromSerialAssets(resources, {
       dev: isDev,
@@ -96,47 +103,110 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     });
   }
 
-  async getStaticRenderFunctionAsync({ mode }: { mode: 'development' | 'production' }) {
+  async getStaticRenderFunctionAsync({
+    mode,
+    minify = mode !== 'development',
+  }: {
+    mode: 'development' | 'production';
+    minify?: boolean;
+  }) {
     const url = this.getDevServerUrl()!;
 
-    const { getStaticContent } = await getStaticRenderFunctions(this.projectRoot, url, {
-      minify: mode === 'production',
-      dev: mode !== 'production',
-      // Ensure the API Routes are included
-      environment: 'node',
-    });
-    return async (path: string) => {
-      return await getStaticContent(new URL(path, url));
+    const { getStaticContent, getManifest } = await getStaticRenderFunctions(
+      this.projectRoot,
+      url,
+      {
+        minify,
+        dev: mode !== 'production',
+        // Ensure the API Routes are included
+        environment: 'node',
+      }
+    );
+    return {
+      // Get routes from Expo Router.
+      manifest: await getManifest({ fetchData: true }),
+      // Get route generating function
+      async renderAsync(path: string) {
+        return await getStaticContent(new URL(path, url));
+      },
     };
   }
 
-  async getStaticResourcesAsync({ mode }: { mode: string }): Promise<SerialAsset[]> {
-    const isDev = mode === 'development';
+  async getStaticResourcesAsync({
+    mode,
+    minify = mode !== 'development',
+  }: {
+    mode: string;
+    minify?: boolean;
+  }): Promise<SerialAsset[]> {
     const devBundleUrlPathname = createBundleUrlPath({
       platform: 'web',
       mode,
+      minify,
       environment: 'client',
+      serializerOutput: 'static',
       mainModuleName: resolveMainModuleName(this.projectRoot, getConfig(this.projectRoot), 'web'),
+      lazy: shouldEnableAsyncImports(this.projectRoot),
     });
 
     const bundleUrl = new URL(devBundleUrlPathname, this.getDevServerUrl()!);
-    bundleUrl.searchParams.set('platform', 'web');
-    bundleUrl.searchParams.set('dev', String(isDev));
-    bundleUrl.searchParams.set('minify', String(!isDev));
-    bundleUrl.searchParams.set('serializer.output', 'static');
 
     // Fetch the generated HTML from our custom Metro serializer
     const results = await fetch(bundleUrl.toString());
 
     const txt = await results.text();
 
+    // console.log('STAT:', results.status, results.statusText);
+    let data: any;
     try {
-      return JSON.parse(txt);
+      data = JSON.parse(txt);
     } catch (error: any) {
-      // console.log('txt', txt);
-      Log.exception(error);
+      debug(txt);
+
+      // Metro can throw this error when the initial module id cannot be resolved.
+      if (!results.ok && txt.startsWith('<!DOCTYPE html>')) {
+        throw new ForwardHtmlError(
+          `Metro failed to bundle the project. Check the console for more information.`,
+          txt,
+          results.status
+        );
+      }
+
+      Log.error(
+        'Failed to generate resources with Metro, the Metro config may not be using the correct serializer. Ensure the metro.config.js is extending the expo/metro-config and is not overriding the serializer.'
+      );
       throw error;
     }
+
+    // NOTE: This could potentially need more validation in the future.
+    if (Array.isArray(data)) {
+      return data;
+    }
+
+    if (data != null && (data.errors || data.type?.match(/.*Error$/))) {
+      // {
+      //   type: 'InternalError',
+      //   errors: [],
+      //   message: 'Metro has encountered an error: While trying to resolve module `stylis` from file `/Users/evanbacon/Documents/GitHub/lab/emotion-error-test/node_modules/@emotion/cache/dist/emotion-cache.browser.esm.js`, the package `/Users/evanbacon/Documents/GitHub/lab/emotion-error-test/node_modules/stylis/package.json` was successfully found. However, this package itself specifies a `main` module field that could not be resolved (`/Users/evanbacon/Documents/GitHub/lab/emotion-error-test/node_modules/stylis/dist/stylis.mjs`. Indeed, none of these files exist:\n' +
+      //     '\n' +
+      //     '  * /Users/evanbacon/Documents/GitHub/lab/emotion-error-test/node_modules/stylis/dist/stylis.mjs(.web.ts|.ts|.web.tsx|.tsx|.web.js|.js|.web.jsx|.jsx|.web.json|.json|.web.cjs|.cjs|.web.scss|.scss|.web.sass|.sass|.web.css|.css)\n' +
+      //     '  * /Users/evanbacon/Documents/GitHub/lab/emotion-error-test/node_modules/stylis/dist/stylis.mjs/index(.web.ts|.ts|.web.tsx|.tsx|.web.js|.js|.web.jsx|.jsx|.web.json|.json|.web.cjs|.cjs|.web.scss|.scss|.web.sass|.sass|.web.css|.css): /Users/evanbacon/Documents/GitHub/lab/emotion-error-test/node_modules/metro/src/node-haste/DependencyGraph.js (289:17)\n' +
+      //     '\n' +
+      //     '\x1B[0m \x1B[90m 287 |\x1B[39m         }\x1B[0m\n' +
+      //     '\x1B[0m \x1B[90m 288 |\x1B[39m         \x1B[36mif\x1B[39m (error \x1B[36minstanceof\x1B[39m \x1B[33mInvalidPackageError\x1B[39m) {\x1B[0m\n' +
+      //     '\x1B[0m\x1B[31m\x1B[1m>\x1B[22m\x1B[39m\x1B[90m 289 |\x1B[39m           \x1B[36mthrow\x1B[39m \x1B[36mnew\x1B[39m \x1B[33mPackageResolutionError\x1B[39m({\x1B[0m\n' +
+      //     '\x1B[0m \x1B[90m     |\x1B[39m                 \x1B[31m\x1B[1m^\x1B[22m\x1B[39m\x1B[0m\n' +
+      //     '\x1B[0m \x1B[90m 290 |\x1B[39m             packageError\x1B[33m:\x1B[39m error\x1B[33m,\x1B[39m\x1B[0m\n' +
+      //     '\x1B[0m \x1B[90m 291 |\x1B[39m             originModulePath\x1B[33m:\x1B[39m \x1B[36mfrom\x1B[39m\x1B[33m,\x1B[39m\x1B[0m\n' +
+      //     '\x1B[0m \x1B[90m 292 |\x1B[39m             targetModuleName\x1B[33m:\x1B[39m to\x1B[33m,\x1B[39m\x1B[0m'
+      // }
+      // The Metro logger already showed this error.
+      throw new Error(data.message);
+    }
+
+    throw new Error(
+      'Invalid resources returned from the Metro serializer. Expected array, found: ' + data
+    );
   }
 
   private async renderStaticErrorAsync(error: Error) {
@@ -150,47 +220,26 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     pathname: string,
     {
       mode,
+      minify = mode !== 'development',
     }: {
       mode: 'development' | 'production';
+      minify?: boolean;
     }
   ) {
-    const isDev = mode === 'development';
     const devBundleUrlPathname = createBundleUrlPath({
       platform: 'web',
       mode,
       environment: 'client',
       mainModuleName: resolveMainModuleName(this.projectRoot, getConfig(this.projectRoot), 'web'),
+      lazy: shouldEnableAsyncImports(this.projectRoot),
     });
-
-    const bundleResources = async () => {
-      const bundleUrl = new URL(devBundleUrlPathname, this.getDevServerUrl()!);
-      bundleUrl.searchParams.set('platform', 'web');
-      bundleUrl.searchParams.set('dev', String(isDev));
-      bundleUrl.searchParams.set('minify', String(!isDev));
-      bundleUrl.searchParams.set('serializer.output', 'static');
-
-      // Fetch the generated HTML from our custom Metro serializer
-      const results = await fetch(bundleUrl.toString());
-
-      const txt = await results.text();
-
-      try {
-        return JSON.parse(txt);
-      } catch (error) {
-        Log.error(
-          'Failed to generate resources with Metro, the Metro config may not be using the correct serializer. Ensure the metro.config.js is extending the expo/metro-config and is not overriding the serializer.'
-        );
-        debug(txt);
-        throw error;
-      }
-    };
 
     const bundleStaticHtml = async (): Promise<string> => {
       const { getStaticContent } = await getStaticRenderFunctions(
         this.projectRoot,
         this.getDevServerUrl()!,
         {
-          minify: mode === 'production',
+          minify: false,
           dev: mode !== 'production',
           // Ensure the API Routes are included
           environment: 'node',
@@ -201,7 +250,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       return await getStaticContent(location);
     };
 
-    const [resources, staticHtml] = await Promise.all([bundleResources(), bundleStaticHtml()]);
+    const [resources, staticHtml] = await Promise.all([
+      this.getStaticResourcesAsync({ mode, minify }),
+      bundleStaticHtml(),
+    ]);
     const content = await this.composeResourcesWithHtml({
       mode,
       resources,
@@ -271,13 +323,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const manifestMiddleware = await this.getManifestMiddlewareAsync(options);
 
+    // Important that we noop source maps for context modules as soon as possible.
+    prependMiddleware(middleware, new ContextModuleSourceMapsMiddleware().getHandler());
+
     // We need the manifest handler to be the first middleware to run so our
     // routes take precedence over static files. For example, the manifest is
     // served from '/' and if the user has an index.html file in their project
     // then the manifest handler will never run, the static middleware will run
     // and serve index.html instead of the manifest.
     // https://github.com/expo/expo/issues/13114
-
     prependMiddleware(middleware, manifestMiddleware.getHandler());
 
     middleware.use(
@@ -312,6 +366,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // This MUST be after the manifest middleware so it doesn't have a chance to serve the template `public/index.html`.
       middleware.use(new ServeStaticMiddleware(this.projectRoot).getHandler());
 
+      // This should come after the static middleware so it doesn't serve the favicon from `public/favicon.ico`.
+      middleware.use(new FaviconMiddleware(this.projectRoot).getHandler());
+
       if (useWebSSG) {
         middleware.use(async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
           if (!req?.url) {
@@ -333,10 +390,26 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
             res.setHeader('Content-Type', 'text/html');
             res.end(content);
-            return;
           } catch (error: any) {
             res.setHeader('Content-Type', 'text/html');
-            res.end(await this.renderStaticErrorAsync(error));
+            // Forward the Metro server response as-is. It won't be pretty, but at least it will be accurate.
+            if (error instanceof ForwardHtmlError) {
+              res.statusCode = error.statusCode;
+              res.end(error.html);
+              return;
+            }
+            try {
+              res.end(await this.renderStaticErrorAsync(error));
+            } catch (staticError: any) {
+              // Fallback error for when Expo Router is misconfigured in the project.
+              res.end(
+                '<span><h3>Internal Error:</h3><b>Project is not setup correctly for static rendering (check terminal for more info):</b><br/>' +
+                  error.message +
+                  '<br/><br/>' +
+                  staticError.message +
+                  '</span>'
+              );
+            }
           }
         });
       }
@@ -424,8 +497,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }
 
   public async startTypeScriptServices() {
-    typescriptTypeGeneration({
-      server: this.instance!.server,
+    return startTypescriptTypeGenerationAsync({
+      server: this.instance?.server,
       metro: this.metro,
       projectRoot: this.projectRoot,
     });

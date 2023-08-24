@@ -3,7 +3,7 @@
 set -euo pipefail
 
 scriptdir=$(dirname "${BASH_SOURCE[0]}")
-bucket="docs.expo.dev"
+bucket="$AWS_BUCKET"
 target="${1-$scriptdir/out}"
 
 if [ ! -d "$target" ]; then
@@ -165,6 +165,14 @@ redirects[tutorial/text]=tutorial/introduction/
 # Push notifications
 redirects[push-notifications/using-fcm/]=push-notifications/push-notifications-setup/
 
+# EAS Update
+redirects[eas-update/developing-with-eas-update/]=eas-update/develop-faster/
+redirects[eas-update/eas-update-with-local-build/]=eas-update/build-locally/
+redirects[eas-update/eas-update-and-eas-cli/]=eas-update/eas-cli/
+redirects[eas-update/debug-updates/]=eas-update/debug/
+redirects[eas-update/how-eas-update-works/]=eas-update/how-it-works/
+redirects[eas-update/migrate-to-eas-update/]=eas-update/migrate-from-classic-updates/
+
 # Removed API reference docs
 redirects[versions/latest/sdk/facebook]=guides/authentication/
 redirects[versions/latest/sdk/taskmanager]=versions/latest/sdk/task-manager/
@@ -207,6 +215,8 @@ done
 echo "::endgroup::"
 
 
-echo "::group::[6/6] Notify Google of sitemap changes"
-curl -m 15 "https://www.google.com/ping\?sitemap\=https%3A%2F%2F${bucket}%2Fsitemap.xml"
-echo "\n::endgroup::"
+if [ "$bucket" = "docs.expo.dev" ]; then
+  echo "::group::[6/6] Notify Google of sitemap changes"
+  curl -m 15 "https://www.google.com/ping\?sitemap\=https%3A%2F%2F${bucket}%2Fsitemap.xml"
+  echo "\n::endgroup::"
+fi

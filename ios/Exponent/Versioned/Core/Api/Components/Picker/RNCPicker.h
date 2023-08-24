@@ -15,6 +15,7 @@
 
 @property (nonatomic, copy) NSArray<NSDictionary *> *items;
 @property (nonatomic, assign) NSInteger selectedIndex;
+@property (nonatomic, assign) NSInteger selectionColor;
 
 @property (nonatomic, strong) UIColor *color;
 @property (nonatomic, strong) UIFont *font;

@@ -1,0 +1,1 @@
+{"version":3,"file":"parseHermesStack.js","sourceRoot":"","sources":["../../../../src/error-overlay/modules/parseErrorStack/parseHermesStack.ts"],"names":[],"mappings":";;;;;;AAAA,2GAAmF;AAE1E,0BAFF,yBAAe,CAEE","sourcesContent":["import parseErrorStack from 'react-native/Libraries/Core/Devtools/parseErrorStack';\n\nexport { parseErrorStack };\n"]}

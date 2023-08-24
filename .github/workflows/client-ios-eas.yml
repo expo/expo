@@ -25,12 +25,9 @@ on:
       - ios/**
       - tools/src/dynamic-macros/**
       - tools/src/commands/IosGenerateDynamicMacros.ts
-      - tools/src/client-build/**
-      - tools/src/commands/ClientBuild.ts
       - secrets/**
       - fastlane/**
       - Gemfile.lock
-      - .ruby-version
       - yarn.lock
   push:
     branches: [main, sdk-*]
@@ -40,12 +37,9 @@ on:
       - ios/**
       - tools/src/dynamic-macros/**
       - tools/src/commands/IosGenerateDynamicMacros.ts
-      - tools/src/client-build/**
-      - tools/src/commands/ClientBuild.ts
       - secrets/**
       - fastlane/**
       - Gemfile.lock
-      - .ruby-version
       - yarn.lock
 
 concurrency:
@@ -54,8 +48,8 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
-    if: ${{ github.actor != 'dependabot[bot]' }}
+    runs-on: ubuntu-22.04
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]' }}
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3

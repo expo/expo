@@ -12,9 +12,9 @@
 #import <React/RCTPointerEvents.h>
 #import <React/UIView+React.h>
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 #import <React/RCTViewComponentView.h>
-#endif // RN_FABRIC_ENABLED
+#endif // RCT_NEW_ARCH_ENABLED
 
 @class RNSVGGroup;
 
@@ -24,11 +24,11 @@
  */
 
 @interface RNSVGNode :
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
     RCTViewComponentView
 #else
     RNSVGView
-#endif // RN_FABRIC_ENABLED
+#endif // RCT_NEW_ARCH_ENABLED
 /*
  N[1/Sqrt[2], 36]
  The inverse of the square root of 2.

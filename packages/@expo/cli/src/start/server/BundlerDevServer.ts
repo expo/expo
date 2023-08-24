@@ -1,24 +1,22 @@
 import { MessageSocket } from '@expo/dev-server';
 import assert from 'assert';
-import openBrowserAsync from 'better-opn';
 import resolveFrom from 'resolve-from';
 
-import { APISettings } from '../../api/settings';
+import { AsyncNgrok } from './AsyncNgrok';
+import { DevelopmentSession } from './DevelopmentSession';
+import { CreateURLOptions, UrlCreator } from './UrlCreator';
+import { PlatformBundlers } from './platformBundlers';
 import * as Log from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
 import { resolveWithTimeout } from '../../utils/delay';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
+import { openBrowserAsync } from '../../utils/open';
 import {
   BaseOpenInCustomProps,
   BaseResolveDeviceProps,
   PlatformManager,
 } from '../platforms/PlatformManager';
-import { AsyncNgrok } from './AsyncNgrok';
-import { DevelopmentSession } from './DevelopmentSession';
-import { CreateURLOptions, UrlCreator } from './UrlCreator';
-import { PlatformBundlers } from './platformBundlers';
-import { typescriptTypeGeneration } from './type-generation';
 
 const debug = require('debug')('expo:start:server:devServer') as typeof console.log;
 
@@ -52,8 +50,6 @@ export interface BundlerStartOptions {
   devClient?: boolean;
   /** Should run dev servers with clean caches. */
   resetDevServer?: boolean;
-  /** Which manifest type to serve. */
-  forceManifestType?: 'expo-updates' | 'classic';
   /** Code signing private key path (defaults to same directory as certificate) */
   privateKeyPath?: string;
 
@@ -81,15 +77,6 @@ const PLATFORM_MANAGERS = {
   emulator: () =>
     require('../platforms/android/AndroidPlatformManager')
       .AndroidPlatformManager as typeof import('../platforms/android/AndroidPlatformManager').AndroidPlatformManager,
-};
-
-const MIDDLEWARES = {
-  classic: () =>
-    require('./middleware/ClassicManifestMiddleware')
-      .ClassicManifestMiddleware as typeof import('./middleware/ClassicManifestMiddleware').ClassicManifestMiddleware,
-  'expo-updates': () =>
-    require('./middleware/ExpoGoManifestHandlerMiddleware')
-      .ExpoGoManifestHandlerMiddleware as typeof import('./middleware/ExpoGoManifestHandlerMiddleware').ExpoGoManifestHandlerMiddleware,
 };
 
 export abstract class BundlerDevServer {
@@ -124,14 +111,10 @@ export abstract class BundlerDevServer {
 
   /** Get the manifest middleware function. */
   protected async getManifestMiddlewareAsync(
-    options: Pick<
-      BundlerStartOptions,
-      'minify' | 'mode' | 'forceManifestType' | 'privateKeyPath'
-    > = {}
+    options: Pick<BundlerStartOptions, 'minify' | 'mode' | 'privateKeyPath'> = {}
   ) {
-    const manifestType = options.forceManifestType || 'classic';
-    assert(manifestType in MIDDLEWARES, `Manifest middleware for type '${manifestType}' not found`);
-    const Middleware = MIDDLEWARES[manifestType]();
+    const Middleware = require('./middleware/ExpoGoManifestHandlerMiddleware')
+      .ExpoGoManifestHandlerMiddleware as typeof import('./middleware/ExpoGoManifestHandlerMiddleware').ExpoGoManifestHandlerMiddleware;
 
     const urlCreator = this.getUrlCreator();
     const middleware = new Middleware(this.projectRoot, {
@@ -168,12 +151,7 @@ export abstract class BundlerDevServer {
     return false;
   }
 
-  public async startTypeScriptServices(): Promise<void> {
-    return typescriptTypeGeneration({
-      server: this.instance!.server,
-      projectRoot: this.projectRoot,
-    });
-  }
+  public abstract startTypeScriptServices(): Promise<void>;
 
   public async watchEnvironmentVariables(): Promise<void> {
     // noop -- We've only implemented this functionality in Metro.
@@ -221,7 +199,7 @@ export abstract class BundlerDevServer {
   protected async postStartAsync(options: BundlerStartOptions) {
     if (
       options.location.hostType === 'tunnel' &&
-      !APISettings.isOffline &&
+      !env.EXPO_OFFLINE &&
       // This is a hack to prevent using tunnel on web since we block it upstream for some reason.
       this.isTargetingNative()
     ) {
@@ -352,7 +330,7 @@ export abstract class BundlerDevServer {
     );
   }
 
-  protected getUrlCreator(options: Partial<Pick<BundlerStartOptions, 'port' | 'location'>> = {}) {
+  public getUrlCreator(options: Partial<Pick<BundlerStartOptions, 'port' | 'location'>> = {}) {
     if (!this.urlCreator) {
       assert(options?.port, 'Dev server instance not found');
       this.urlCreator = new UrlCreator(options.location, {

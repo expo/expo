@@ -68,26 +68,12 @@ public:
     return JsiSkPath::toValue(runtime, getContext(), std::move(path));
   }
 
-  JSI_PROPERTY_GET(__typename__) {
-    return jsi::String::createFromUtf8(runtime, "ContourMeasure");
-  }
-
-  JSI_EXPORT_PROPERTY_GETTERS(JSI_EXPORT_PROP_GET(JsiSkContourMeasure,
-                                                  __typename__))
+  EXPORT_JSI_API_TYPENAME(JsiSkContourMeasure, "ContourMeasure")
 
   JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkContourMeasure, getPosTan),
                        JSI_EXPORT_FUNC(JsiSkContourMeasure, length),
                        JSI_EXPORT_FUNC(JsiSkContourMeasure, isClosed),
-                       JSI_EXPORT_FUNC(JsiSkContourMeasure, getSegment))
-
-  /**
-    Returns the underlying object from a host object of this type
-   */
-  static sk_sp<SkContourMeasure> fromValue(jsi::Runtime &runtime,
-                                           const jsi::Value &obj) {
-    return obj.asObject(runtime)
-        .asHostObject<JsiSkContourMeasure>(runtime)
-        ->getObject();
-  }
+                       JSI_EXPORT_FUNC(JsiSkContourMeasure, getSegment),
+                       JSI_EXPORT_FUNC(JsiSkContourMeasure, dispose))
 };
 } // namespace RNSkia

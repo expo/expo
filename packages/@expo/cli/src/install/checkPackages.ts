@@ -2,15 +2,17 @@ import { getConfig } from '@expo/config';
 import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
 
+import { fixPackagesAsync } from './installAsync';
+import { Options } from './resolveOptions';
 import * as Log from '../log';
 import {
   getVersionedDependenciesAsync,
   logIncorrectDependencies,
 } from '../start/doctor/dependencies/validateDependenciesVersions';
 import { isInteractive } from '../utils/interactive';
+import { learnMore } from '../utils/link';
 import { confirmAsync } from '../utils/prompts';
-import { fixPackagesAsync } from './installAsync';
-import { Options } from './resolveOptions';
+import { joinWithCommasAnd } from '../utils/strings';
 
 const debug = require('debug')('expo:install:check') as typeof console.log;
 
@@ -46,6 +48,16 @@ export async function checkPackagesAsync(
     // this wouldn't work unless we dangerously disable plugin serialization.
     skipPlugins: true,
   });
+
+  if (pkg.expo?.install?.exclude?.length) {
+    Log.log(
+      chalk`Skipped ${fix ? 'fixing' : 'checking'} dependencies: ${joinWithCommasAnd(
+        pkg.expo.install.exclude
+      )}. These dependencies are listed in {bold expo.install.exclude} in package.json. ${learnMore(
+        'https://expo.dev/more/expo-cli/#configuring-dependency-validation'
+      )}`
+    );
+  }
 
   const dependencies = await getVersionedDependenciesAsync(projectRoot, exp, pkg, packages);
 

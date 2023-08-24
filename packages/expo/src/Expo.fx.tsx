@@ -1,14 +1,11 @@
-import './environment/validate.fx';
-// load remote logging for compatibility with custom development clients
-import './environment/logging.fx';
 // load expo-asset immediately to set a custom `source` transformer in React Native
 import 'expo-asset';
 
-import Constants, { ExecutionEnvironment } from 'expo-constants';
 import * as Font from 'expo-font';
 import { NativeModulesProxy, Platform } from 'expo-modules-core';
 import { StyleSheet } from 'react-native';
 
+import { isRunningInExpoGo } from './environment/ExpoGo';
 import { createErrorHandler } from './errors/ExpoErrorManager';
 
 // If expo-font is installed and the style preprocessor is available, use it to parse fonts.
@@ -30,7 +27,7 @@ if (NativeModulesProxy.ExpoUpdates?.isMissingRuntimeVersion) {
   }
 }
 
-if (Constants.executionEnvironment === ExecutionEnvironment.StoreClient) {
+if (isRunningInExpoGo()) {
   // set up some improvements to commonly logged error messages stemming from react-native
   const globalHandler = ErrorUtils.getGlobalHandler();
   ErrorUtils.setGlobalHandler(createErrorHandler(globalHandler));

@@ -2,13 +2,13 @@ import { ExpoConfig, getConfig } from '@expo/config';
 import chalk from 'chalk';
 import wrapAnsi from 'wrap-ansi';
 
+import { getMissingPackagesAsync, ResolvedPackage } from './getMissingPackages';
 import { installAsync } from '../../../install/installAsync';
 import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
 import { isInteractive } from '../../../utils/interactive';
 import { logNewSection } from '../../../utils/ora';
 import { confirmAsync } from '../../../utils/prompts';
-import { getMissingPackagesAsync, ResolvedPackage } from './getMissingPackages';
 
 export async function ensureDependenciesAsync(
   projectRoot: string,

@@ -1,12 +1,31 @@
 import React from 'react';
+import { View } from 'react-native-web';
 
 import { ImageNativeProps, ImageSource, ImageLoadEventData } from './Image.types';
 import AnimationManager, { AnimationManagerNode } from './web/AnimationManager';
 import ImageWrapper from './web/ImageWrapper';
-import loadStyle from './web/style';
+import loadStyle from './web/imageStyles';
 import useSourceSelection from './web/useSourceSelection';
 
 loadStyle();
+
+export const ExpoImageModule = {
+  prefetch(urls: string | string[]): void {
+    const urlsArray = Array.isArray(urls) ? urls : [urls];
+    urlsArray.forEach((url) => {
+      const img = new Image();
+      img.src = url;
+    });
+  },
+
+  async clearMemoryCache(): Promise<boolean> {
+    return false;
+  },
+
+  async clearDiskCache(): Promise<boolean> {
+    return false;
+  },
+};
 
 function onLoadAdapter(onLoad?: (event: ImageLoadEventData) => void) {
   return (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
@@ -31,6 +50,7 @@ function onErrorAdapter(onError?: { (event: { error: string }): void }) {
   };
 }
 
+// Used for some transitions to mimic native animations
 const setCssVariables = (element: HTMLElement, size: DOMRect) => {
   element?.style.setProperty('--expo-image-width', `${size.width}px`);
   element?.style.setProperty('--expo-image-height', `${size.height}px`);
@@ -50,9 +70,9 @@ export default function ExpoImage({
   priority,
   blurRadius,
   recyclingKey,
+  style,
   ...props
 }: ImageNativeProps) {
-  const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
   const imagePlaceholderContentFit = placeholderContentFit || 'scale-down';
   const blurhashStyle = {
     objectFit: placeholderContentFit || contentFit,
@@ -70,25 +90,24 @@ export default function ExpoImage({
     ? [
         initialNodeAnimationKey,
         ({ onAnimationFinished }) =>
-          (className, style) =>
-            (
-              <ImageWrapper
-                {...props}
-                source={placeholder?.[0]}
-                style={{
-                  objectFit: imagePlaceholderContentFit,
-                  ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
-                  ...style,
-                }}
-                className={className}
-                events={{
-                  onTransitionEnd: [onAnimationFinished],
-                }}
-                contentPosition={{ left: '50%', top: '50%' }}
-                hashPlaceholderContentPosition={contentPosition}
-                hashPlaceholderStyle={blurhashStyle}
-              />
-            ),
+          (className, style) => (
+            <ImageWrapper
+              {...props}
+              source={placeholder?.[0]}
+              style={{
+                objectFit: imagePlaceholderContentFit,
+                ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
+                ...style,
+              }}
+              className={className}
+              events={{
+                onTransitionEnd: [onAnimationFinished],
+              }}
+              contentPosition={{ left: '50%', top: '50%' }}
+              hashPlaceholderContentPosition={contentPosition}
+              hashPlaceholderStyle={blurhashStyle}
+            />
+          ),
       ]
     : null;
 
@@ -100,48 +119,35 @@ export default function ExpoImage({
   const currentNode: AnimationManagerNode = [
     currentNodeAnimationKey,
     ({ onAnimationFinished, onReady, onMount, onError: onErrorInner }) =>
-      (className, style) =>
-        (
-          <ImageWrapper
-            {...props}
-            source={selectedSource || placeholder?.[0]}
-            events={{
-              onError: [onErrorAdapter(onError), onLoadEnd, onErrorInner],
-              onLoad: [onLoadAdapter(onLoad), onLoadEnd, onReady],
-              onMount: [onMount],
-              onTransitionEnd: [onAnimationFinished],
-            }}
-            style={{
-              objectFit: selectedSource ? contentFit : imagePlaceholderContentFit,
-              ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
-              ...style,
-            }}
-            className={className}
-            priority={priority}
-            contentPosition={selectedSource ? contentPosition : { top: '50%', left: '50%' }}
-            hashPlaceholderContentPosition={contentPosition}
-            hashPlaceholderStyle={blurhashStyle}
-            accessibilityLabel={props.accessibilityLabel}
-          />
-        ),
+      (className, style) => (
+        <ImageWrapper
+          {...props}
+          source={selectedSource || placeholder?.[0]}
+          events={{
+            onError: [onErrorAdapter(onError), onLoadEnd, onErrorInner],
+            onLoad: [onLoadAdapter(onLoad), onLoadEnd, onReady],
+            onMount: [onMount],
+            onTransitionEnd: [onAnimationFinished],
+          }}
+          style={{
+            objectFit: selectedSource ? contentFit : imagePlaceholderContentFit,
+            ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
+            ...style,
+          }}
+          className={className}
+          priority={priority}
+          contentPosition={selectedSource ? contentPosition : { top: '50%', left: '50%' }}
+          hashPlaceholderContentPosition={contentPosition}
+          hashPlaceholderStyle={blurhashStyle}
+          accessibilityLabel={props.accessibilityLabel}
+        />
+      ),
   ];
-
   return (
-    <div
-      ref={containerRef}
-      className="expo-image-container"
-      style={{
-        aspectRatio: String(aspectRatio),
-        backgroundColor: backgroundColor?.toString(),
-        transform: transform?.toString(),
-        borderColor: borderColor?.toString(),
-        ...style,
-        overflow: 'hidden',
-        position: 'relative',
-      }}>
+    <View ref={containerRef} dataSet={{ expoimage: true }} style={[{ overflow: 'hidden' }, style]}>
       <AnimationManager transition={transition} recyclingKey={recyclingKey} initial={initialNode}>
         {currentNode}
       </AnimationManager>
-    </div>
+    </View>
   );
 }

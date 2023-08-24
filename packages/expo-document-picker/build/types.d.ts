@@ -47,11 +47,6 @@ export type DocumentPickerAsset = {
      * @platform web
      */
     file?: File;
-    /**
-     * `FileList` object for the parity with web File API.
-     * @platform web
-     */
-    output?: FileList | null;
 };
 export type DocumentPickerResult = {
     /**
@@ -59,36 +54,10 @@ export type DocumentPickerResult = {
      * always be `false`.
      */
     canceled: boolean;
-    type?: string;
-    /**
-     * Document original name.
-     */
-    name?: string;
-    /**
-     * Document size in bytes.
-     */
-    size?: number;
     /**
      * An array of picked assets or `null` when the request was canceled.
      */
     assets: DocumentPickerAsset[] | null;
-    /**
-     * An URI to the local document file.
-     */
-    uri?: string;
-    /**
-     * Document MIME type.
-     */
-    mimeType?: string;
-    /**
-     * Timestamp of last document modification.
-     */
-    lastModified?: number;
-    /**
-     * `File` object for the parity with web File API.
-     * @platform web
-     */
-    file?: File;
     /**
      * `FileList` object for the parity with web File API.
      * @platform web

@@ -1,4 +1,11 @@
-# expo-splash-screen
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/splash-screen/">
+    <img
+      src="../../.github/resources/expo-splash-screen.svg"
+      alt="expo-splash-screen"
+      height="64" />
+  </a>
+</p>
 
 `expo-splash-screen` allows you to customize your app's splash screen, which is the initial screen users see when the app is launched, before it has loaded. Splash screens (sometimes called launch screens) provide a user's first experience with your application.
 
@@ -250,10 +257,6 @@ npx expo install expo-splash-screen
 
 Run `npx pod-install` after installing the package.
 
-### Automatic configuration
-
-The easiest way to configure the splash screen in bare React Native projects is with the expo-splash-screen command. See the [README](https://github.com/expo/expo-cli/tree/main/unlinked-packages/configure-splash-screen) for more information, or run `yarn expo-splash-screen --help` in your project.
-
 ### Manual Configuration
 
 To achieve native splash screen (in iOS ecosystem it's called `LaunchScreen`) behavior, you have to provide either a `SplashScreen.storyboard` file or a `SplashScreen.xib` file, and configure your Xcode project accordingly.
@@ -504,10 +507,6 @@ You might want to customize the StatusBar appearance during the time the SplashS
 
 To achieve fully-native splash screen behavior, `expo-splash-screen` needs to be hooked into the native view hierarchy and consume some resources that have to be placed under `/android/app/src/res` directory.
 
-### Automatic configuration
-
-The easiest way to configure the splash screen in bare React Native projects is with the expo-splash-screen command. See the [README](https://github.com/expo/expo-cli/tree/main/unlinked-packages/configure-splash-screen) for more information, or run `yarn expo-splash-screen --help` in your project.
-
 ### Manual Configuration
 
 1. [Configure `res/drawable/splashscreen_image.png`](#-configure-resdrawablesplashscreen_imagepng)
@@ -699,7 +698,6 @@ Create new color resource in your `res/values/colors.xml` (if your application s
 
 ```diff
   <resources>
-    <!-- Below line is handled by '@expo/configure-splash-screen' command and it's discouraged to modify it manually -->
     <color name="splashscreen_background">#D0D0C0</color>
 +   <color name="splashscreen_statusbar_color">#(AA)RRGGBB</color> <!-- #AARRGGBB or #RRGGBB format -->
   </resources>
@@ -777,7 +775,6 @@ We try to keep changes backward compatible, the code for `expo-splash-screen` wi
      setTheme(R.style.AppTheme);
      super.onCreate(null);
 -    // SplashScreen.show(...) has to be called after super.onCreate(...)
--    // Below line is handled by '@expo/configure-splash-screen' command and it's discouraged to modify it manually
 -    SplashScreen.show(this, SplashScreenImageResizeMode.CONTAIN, ReactRootView.class, false);
    }
 ```

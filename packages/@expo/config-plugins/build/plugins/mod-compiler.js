@@ -21,27 +21,6 @@ function _path() {
   };
   return data;
 }
-function _Xcodeproj() {
-  const data = require("../ios/utils/Xcodeproj");
-  _Xcodeproj = function () {
-    return data;
-  };
-  return data;
-}
-function _errors() {
-  const data = require("../utils/errors");
-  _errors = function () {
-    return data;
-  };
-  return data;
-}
-function Warnings() {
-  const data = _interopRequireWildcard(require("../utils/warnings"));
-  Warnings = function () {
-    return data;
-  };
-  return data;
-}
 function _createBaseMod() {
   const data = require("./createBaseMod");
   _createBaseMod = function () {
@@ -59,6 +38,27 @@ function _withAndroidBaseMods() {
 function _withIosBaseMods() {
   const data = require("./withIosBaseMods");
   _withIosBaseMods = function () {
+    return data;
+  };
+  return data;
+}
+function _Xcodeproj() {
+  const data = require("../ios/utils/Xcodeproj");
+  _Xcodeproj = function () {
+    return data;
+  };
+  return data;
+}
+function _errors() {
+  const data = require("../utils/errors");
+  _errors = function () {
+    return data;
+  };
+  return data;
+}
+function Warnings() {
+  const data = _interopRequireWildcard(require("../utils/warnings"));
+  Warnings = function () {
     return data;
   };
   return data;
@@ -160,11 +160,8 @@ async function evalModsAsync(config, {
   projectRoot,
   introspect,
   platforms,
-  /**
-   * Throw errors when mods are missing providers.
-   * @default true
-   */
-  assertMissingModProviders
+  assertMissingModProviders,
+  ignoreExistingNativeFiles = false
 }) {
   const modRawConfig = getRawClone(config);
   for (const [platformName, platform] of Object.entries((_config$mods = config.mods) !== null && _config$mods !== void 0 ? _config$mods : {})) {
@@ -188,7 +185,8 @@ async function evalModsAsync(config, {
           platformProjectRoot,
           platform: platformName,
           modName,
-          introspect: !!introspect
+          introspect: !!introspect,
+          ignoreExistingNativeFiles
         };
         if (!mod.isProvider) {
           // In strict mode, throw an error.

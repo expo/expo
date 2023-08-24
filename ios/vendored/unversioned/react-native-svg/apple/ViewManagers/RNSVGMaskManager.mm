@@ -30,6 +30,5 @@ RCT_CUSTOM_VIEW_PROPERTY(width, id, RNSVGMask)
 }
 RCT_EXPORT_VIEW_PROPERTY(maskUnits, RNSVGUnits)
 RCT_EXPORT_VIEW_PROPERTY(maskContentUnits, RNSVGUnits)
-RCT_EXPORT_VIEW_PROPERTY(maskTransform, CGAffineTransform)
 
 @end

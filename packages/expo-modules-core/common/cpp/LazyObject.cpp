@@ -37,7 +37,7 @@ std::vector<jsi::PropNameID> LazyObject::getPropertyNames(jsi::Runtime &runtime)
   }
   if (backedObject) {
     jsi::Array propertyNames = backedObject->getPropertyNames(runtime);
-    return jsiArrayToPropNameIdsVector(runtime, propertyNames);
+    return common::jsiArrayToPropNameIdsVector(runtime, propertyNames);
   }
   return {};
 }

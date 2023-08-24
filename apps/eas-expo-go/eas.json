@@ -11,9 +11,7 @@
       "android": {
         "image": "ubuntu-20.04-jdk-11-ndk-r21e",
         "cache": {
-          "customPaths": [
-            "../../android/prebuiltHermes"
-          ]
+          "customPaths": ["../../android/prebuiltHermes"]
         },
         "resourceClass": "large",
         "env": {
@@ -24,10 +22,8 @@
       },
       "ios": {
         "cache": {
-          "key": "sdk48-0.71.3",
-          "customPaths": [
-            "../../ios/Pods"
-          ]
+          "key": "sdk49-0.72.3",
+          "customPaths": ["../../ios/Pods"]
         },
         "resourceClass": "m-medium",
         "env": {
@@ -92,6 +88,28 @@
           "disabled": true
         },
         "simulator": false
+      }
+    },
+    "publish-client": {
+      "extends": "versioned-client",
+      "env": {
+        "EAS_BUILD_PROFILE": "publish-client"
+      },
+      "android": {
+        "autoIncrement": "versionCode",
+        "cache": {
+          "disabled": true
+        },
+        "withoutCredentials": false,
+        "gradleCommand": ":app:assembleVersionedRelease"
+      },
+      "ios": {
+        "resourceClass": "m-large",
+        "autoIncrement": "buildNumber",
+        "cache": {
+          "disabled": true
+        },
+        "simulator": true
       }
     }
   },

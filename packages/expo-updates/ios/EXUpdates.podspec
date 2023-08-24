@@ -24,6 +24,13 @@ Pod::Spec.new do |s|
   s.dependency 'ReachabilitySwift'
   s.dependency 'ASN1Decoder', '~> 1.8'
 
+  unless defined?(install_modules_dependencies)
+    # `install_modules_dependencies` is defined from react_native_pods.rb.
+    # when running with `pod ipc spec`, this method is not defined and we have to require manually.
+    require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
+  end
+  install_modules_dependencies(s)
+
   ex_updates_native_debug = ENV['EX_UPDATES_NATIVE_DEBUG'] == '1'
 
   other_c_flags = ex_updates_native_debug ? "$(inherited) -DEX_UPDATES_NATIVE_DEBUG=1" : "$(inherited)"
@@ -36,6 +43,9 @@ Pod::Spec.new do |s|
     'SWIFT_COMPILATION_MODE' => 'wholemodule',
     'OTHER_CFLAGS[config=Debug]' => other_c_flags,
     'OTHER_SWIFT_FLAGS[config=Debug]' => other_swift_flags
+  }
+  s.user_target_xcconfig = {
+    'HEADER_SEARCH_PATHS' => '"${PODS_CONFIGURATION_BUILD_DIR}/EXUpdates/Swift Compatibility Header"',
   }
 
   if !ex_updates_native_debug && !$ExpoUseSources&.include?(package['name']) && ENV['EXPO_USE_SOURCE'].to_i == 0 && File.exist?("#{s.name}.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')

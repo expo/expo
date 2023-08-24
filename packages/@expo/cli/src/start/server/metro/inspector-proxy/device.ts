@@ -2,24 +2,39 @@ import type { DebuggerInfo, Device as MetroDevice } from 'metro-inspector-proxy'
 import fetch from 'node-fetch';
 import type WS from 'ws';
 
-import { MetroBundlerDevServer } from '../MetroBundlerDevServer';
-import { DebuggerScriptSourceHandler } from './handlers/DebuggerScriptSource';
 import { NetworkResponseHandler } from './handlers/NetworkResponse';
 import { PageReloadHandler } from './handlers/PageReload';
-import { VscodeCompatHandler } from './handlers/VscodeCompat';
+import { VscodeDebuggerGetPossibleBreakpointsHandler } from './handlers/VscodeDebuggerGetPossibleBreakpoints';
+import { VscodeDebuggerScriptParsedHandler } from './handlers/VscodeDebuggerScriptParsed';
+import { VscodeDebuggerSetBreakpointByUrlHandler } from './handlers/VscodeDebuggerSetBreakpointByUrl';
+import { VscodeRuntimeGetPropertiesHandler } from './handlers/VscodeRuntimeGetProperties';
 import { DeviceRequest, InspectorHandler, DebuggerRequest } from './handlers/types';
+import { MetroBundlerDevServer } from '../MetroBundlerDevServer';
+
+/** Export the supported debugger types this inspector proxy can handle */
+export type DebuggerType = 'vscode' | 'generic';
+
+/** The debugger information being tracked by this device class */
+export type ExpoDebuggerInfo = DebuggerInfo & { debuggerType?: DebuggerType };
 
 export function createInspectorDeviceClass(
   metroBundler: MetroBundlerDevServer,
   MetroDeviceClass: typeof MetroDevice
 ) {
   return class ExpoInspectorDevice extends MetroDeviceClass implements InspectorHandler {
+    /** Stores information about currently connected debugger (if any). */
+    _debuggerConnection: ExpoDebuggerInfo | null = null;
+
     /** All handlers that should be used to intercept or reply to CDP events */
     public handlers: InspectorHandler[] = [
+      // Generic handlers
       new NetworkResponseHandler(),
-      new DebuggerScriptSourceHandler(this),
       new PageReloadHandler(metroBundler),
-      new VscodeCompatHandler(),
+      // Vscode-specific handlers
+      new VscodeDebuggerGetPossibleBreakpointsHandler(),
+      new VscodeDebuggerScriptParsedHandler(this),
+      new VscodeDebuggerSetBreakpointByUrlHandler(),
+      new VscodeRuntimeGetPropertiesHandler(),
     ];
 
     onDeviceMessage(message: any, info: DebuggerInfo): boolean {
@@ -28,6 +43,41 @@ export function createInspectorDeviceClass(
 
     onDebuggerMessage(message: any, info: DebuggerInfo): boolean {
       return this.handlers.some((handler) => handler.onDebuggerMessage?.(message, info) ?? false);
+    }
+
+    /**
+     * Handle a new device connection with the same device identifier.
+     * When the app and device name matches, we can reuse the debugger connection.
+     * Else, we have to shut the debugger connection down.
+     */
+    handleDuplicateDeviceConnection(newDevice: InstanceType<typeof MetroDeviceClass>) {
+      if (this._app !== newDevice._app || this._name !== newDevice._name) {
+        this._deviceSocket.close();
+        this._debuggerConnection?.socket.close();
+        return;
+      }
+
+      const oldDebugger = this._debuggerConnection;
+      this._debuggerConnection = null;
+
+      if (oldDebugger) {
+        oldDebugger.socket.removeAllListeners();
+        this._deviceSocket.close();
+        newDevice.handleDebuggerConnection(oldDebugger.socket, oldDebugger.pageId);
+      }
+    }
+
+    /**
+     * Handle a new debugger connection to this device.
+     * This adds the `debuggerType` property to the `DebuggerInfo` object.
+     * With that information, we can enable or disable debugger-specific handlers.
+     */
+    handleDebuggerConnectionWithType(socket: WS, pageId: string, debuggerType: DebuggerType): void {
+      this.handleDebuggerConnection(socket, pageId);
+
+      if (this._debuggerConnection) {
+        this._debuggerConnection.debuggerType = debuggerType;
+      }
     }
 
     /** Hook into the message life cycle to answer more complex CDP messages */

@@ -1,11 +1,13 @@
 ---
-title: Using expo-dev-client with EAS Update
-description: Learn how how to use the expo-dev-client library to preview a published EAS Update inside a development build.
+title: Use expo-dev-client with EAS Update
+sidebar_title: Use expo-dev-client
+description: Learn how to use the expo-dev-client library to preview a published EAS Update inside a development build.
 ---
 
 import { Step } from '~/ui/components/Step';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { GithubIcon } from '@expo/styleguide-icons';
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
 > **warning** This guide is likely to change as we continue to work on EAS Update.
 
@@ -31,9 +33,10 @@ Make non-native changes locally, then publish them using `eas update --branch ..
 
 After publishing an update, it's time to load the update in the development build. All development builds that have the `expo-updates` package installed include an Extensions tab where you can select an update:
 
-<img
+<ImageSpotlight
+  alt="Extensions tab in the Expo dev client."
   src="/static/images/dev-client/extensions-panel.png"
-  style={{ display: 'block', maxWidth: 300, margin: '12px auto' }}
+  style={{ maxWidth: 300 }}
 />
 
 Alternatively, you can construct a specific URL to open your EAS Update. The URL will look like this:

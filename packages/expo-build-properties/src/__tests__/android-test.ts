@@ -1,9 +1,9 @@
 import { ExpoConfig } from 'expo/config';
 import { withGradleProperties } from 'expo/config-plugins';
 
+import { compileMockModWithResultsAsync } from './mockMods';
 import { updateAndroidProguardRules, withAndroidFlipper } from '../android';
 import withBuildProperties from '../withBuildProperties';
-import { compileMockModWithResultsAsync } from './mockMods';
 
 type ExpoConfigWithMods = ExpoConfig & {
   mods?: Record<'ios' | 'android', Record<string, unknown[]>>;
@@ -118,12 +118,10 @@ describe(withAndroidFlipper, () => {
         modResults: [{ type: 'property', key: 'android.flipper', value: '0.999.0' }],
       }
     );
-    expect(androidModResults).toEqual([
-      {
-        type: 'property',
-        key: 'android.flipper',
-        value: '0.999.0',
-      },
-    ]);
+    expect(androidModResults).toContainEqual({
+      type: 'property',
+      key: 'android.flipper',
+      value: '0.999.0',
+    });
   });
 });

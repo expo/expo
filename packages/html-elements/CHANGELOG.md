@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+## 0.6.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 0.6.0 — 2023-07-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.5.1 - 2023-06-30
+
+### 💡 Others
+
+- Update snapshots. ([#23238](https://github.com/expo/expo/pull/23238) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.5.0 — 2023-06-21
+
+_This version does not introduce any user-facing changes._
+
 ## 0.4.3 — 2023-05-08
 
 ### 🐛 Bug fixes

@@ -7,7 +7,7 @@
 #import <React/RCTUIManagerUtils.h>
 #import <React/RCTViewManager.h>
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
 #import <React/RCTSurfacePresenter.h>
@@ -16,7 +16,7 @@
 #import <ReactCommon/RCTTurboModule.h>
 
 #import <react/renderer/uimanager/primitives.h>
-#endif // RN_FABRIC_ENABLED
+#endif // RCT_NEW_ARCH_ENABLED
 
 #import "RNGestureHandler.h"
 #import "RNGestureHandlerDirection.h"
@@ -26,12 +26,12 @@
 #import "RNGestureHandlerButton.h"
 #import "RNGestureHandlerStateManager.h"
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 using namespace facebook;
 using namespace react;
-#endif // RN_FABRIC_ENABLED
+#endif // RCT_NEW_ARCH_ENABLED
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 @interface RNGestureHandlerModule () <RCTSurfacePresenterObserver, RNGestureHandlerStateManager>
 
 @end
@@ -39,7 +39,7 @@ using namespace react;
 @interface RNGestureHandlerModule () <RCTUIManagerObserver, RNGestureHandlerStateManager>
 
 @end
-#endif // RN_FABRIC_ENABLED
+#endif // RCT_NEW_ARCH_ENABLED
 
 typedef void (^GestureHandlerOperation)(RNGestureHandlerManager *manager);
 
@@ -66,11 +66,11 @@ RCT_EXPORT_MODULE()
 
   _manager = nil;
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
   [self.bridge.surfacePresenter removeObserver:self];
 #else
   [self.bridge.uiManager.observerCoordinator removeObserver:self];
-#endif // RN_FABRIC_ENABLED
+#endif // RCT_NEW_ARCH_ENABLED
 }
 
 - (dispatch_queue_t)methodQueue
@@ -84,7 +84,7 @@ RCT_EXPORT_MODULE()
   return RCTGetUIManagerQueue();
 }
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 void decorateRuntime(jsi::Runtime &runtime)
 {
   auto isFormsStackingContext = jsi::Function::createFromHostFunction(
@@ -103,7 +103,7 @@ void decorateRuntime(jsi::Runtime &runtime)
       });
   runtime.global().setProperty(runtime, "isFormsStackingContext", std::move(isFormsStackingContext));
 }
-#endif // RN_FABRIC_ENABLED
+#endif // RCT_NEW_ARCH_ENABLED
 
 - (void)setBridge:(RCTBridge *)bridge
 {
@@ -113,14 +113,14 @@ void decorateRuntime(jsi::Runtime &runtime)
                                                 eventDispatcher:bridge.eventDispatcher];
   _operations = [NSMutableArray new];
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
   [bridge.surfacePresenter addObserver:self];
 #else
   [bridge.uiManager.observerCoordinator addObserver:self];
-#endif // RN_FABRIC_ENABLED
+#endif // RCT_NEW_ARCH_ENABLED
 }
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install)
 {
   RCTCxxBridge *cxxBridge = (RCTCxxBridge *)self.bridge;
@@ -128,7 +128,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install)
   decorateRuntime(*runtime);
   return @true;
 }
-#endif // RN_FABRIC_ENABLED
+#endif // RCT_NEW_ARCH_ENABLED
 
 RCT_EXPORT_METHOD(createGestureHandler
                   : (nonnull NSString *)handlerName tag
@@ -184,6 +184,9 @@ RCT_EXPORT_METHOD(handleClearJSResponder)
 
 RCT_EXPORT_METHOD(flushOperations)
 {
+  // On the new arch we rely on `flushOperations` for scheduling the operations on the UI thread.
+  // On the old arch we rely on `uiManagerWillPerformMounting`
+#ifdef RCT_NEW_ARCH_ENABLED
   if (_operations.count == 0) {
     return;
   }
@@ -197,6 +200,7 @@ RCT_EXPORT_METHOD(flushOperations)
           operation(self->_manager);
         }
       }];
+#endif // RCT_NEW_ARCH_ENABLED
 }
 
 - (void)setGestureState:(int)state forHandler:(int)handlerTag
@@ -239,7 +243,7 @@ RCT_EXPORT_METHOD(flushOperations)
 
 #pragma mark - RCTSurfacePresenterObserver
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 
 - (void)didMountComponentsWithRootTag:(NSInteger)rootTag
 {
@@ -282,7 +286,7 @@ RCT_EXPORT_METHOD(flushOperations)
   }];
 }
 
-#endif // RN_FABRIC_ENABLED
+#endif // RCT_NEW_ARCH_ENABLED
 
 #pragma mark Events
 

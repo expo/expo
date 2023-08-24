@@ -46,15 +46,19 @@ function throwInvalidSourceError(source: any): never {
   );
 }
 
-export async function loadSingleFontAsync(
-  name: string,
-  input: Asset | FontResource
-): Promise<void> {
+// NOTE(EvanBacon): No async keyword!
+export function loadSingleFontAsync(name: string, input: Asset | FontResource): Promise<void> {
   if (typeof input !== 'object' || typeof input.uri !== 'string' || (input as any).downloadAsync) {
     throwInvalidSourceError(input);
   }
 
-  await ExpoFontLoader.loadAsync(name, input);
+  try {
+    return ExpoFontLoader.loadAsync(name, input);
+  } catch {
+    // No-op.
+  }
+
+  return Promise.resolve();
 }
 
 export function getNativeFontName(name: string): string {

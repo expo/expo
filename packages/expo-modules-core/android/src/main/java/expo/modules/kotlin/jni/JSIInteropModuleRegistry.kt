@@ -5,6 +5,7 @@ import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
 import com.facebook.soloader.SoLoader
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.NativeMethodCallInvokerHolderImplCompatible
 import expo.modules.kotlin.exception.JavaScriptEvaluateException
 import expo.modules.kotlin.sharedobjects.SharedObject
 import java.lang.ref.WeakReference
@@ -31,14 +32,21 @@ class JSIInteropModuleRegistry(appContext: AppContext) : Destructible {
    */
   external fun installJSI(
     jsRuntimePointer: Long,
+    jniDeallocator: JNIDeallocator,
     jsInvokerHolder: CallInvokerHolderImpl,
-    nativeInvokerHolder: CallInvokerHolderImpl
+    nativeInvokerHolder: NativeMethodCallInvokerHolderImplCompatible
   )
 
   /**
    * Initializes the test runtime. Shouldn't be used in the production.
    */
-  external fun installJSIForTests()
+  external fun installJSIForTests(
+    jniDeallocator: JNIDeallocator,
+  )
+
+  fun installJSIForTests() = installJSIForTests(
+    appContextHolder.get()!!.jniDeallocator
+  )
 
   /**
    * Evaluates given JavaScript source code.
@@ -97,6 +105,12 @@ class JSIInteropModuleRegistry(appContext: AppContext) : Destructible {
       .get()
       ?.sharedObjectRegistry
       ?.add(native as SharedObject, js)
+  }
+
+  @Suppress("unused")
+  @DoNotStrip
+  fun getCoreModuleObject(): JavaScriptModuleObject? {
+    return appContextHolder.get()?.coreModule?.jsObject
   }
 
   @Throws(Throwable::class)

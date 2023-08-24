@@ -1,9 +1,9 @@
 import chalk from 'chalk';
 import freeportAsync from 'freeport-async';
 
-import * as Log from '../log';
 import { env } from './env';
 import { CommandError } from './errors';
+import * as Log from '../log';
 
 /** Get a free port or assert a CLI command error. */
 export async function getFreePortAsync(rangeStart: number): Promise<number> {
@@ -60,6 +60,8 @@ export async function choosePortAsync(
         message += ` running ${chalk.cyan(runningProcess.command)} in another window`;
       }
       message += '\n' + chalk.gray(`  ${runningProcess.directory} ${pidTag}`);
+    } else {
+      message += ' being used by another process';
     }
 
     Log.log(`\u203A ${message}`);

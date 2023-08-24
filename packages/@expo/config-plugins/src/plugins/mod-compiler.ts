@@ -1,13 +1,13 @@
 import Debug from 'debug';
 import path from 'path';
 
+import { assertModResults, ForwardedBaseModOptions } from './createBaseMod';
+import { withAndroidBaseMods } from './withAndroidBaseMods';
+import { withIosBaseMods } from './withIosBaseMods';
 import { ExportedConfig, Mod, ModConfig, ModPlatform } from '../Plugin.types';
 import { getHackyProjectName } from '../ios/utils/Xcodeproj';
 import { PluginError } from '../utils/errors';
 import * as Warnings from '../utils/warnings';
-import { assertModResults, ForwardedBaseModOptions } from './createBaseMod';
-import { withAndroidBaseMods } from './withAndroidBaseMods';
-import { withIosBaseMods } from './withIosBaseMods';
 
 const debug = Debug('expo:config-plugins:mod-compiler');
 
@@ -72,6 +72,7 @@ export async function compileModsAsync(
     platforms?: ModPlatform[];
     introspect?: boolean;
     assertMissingModProviders?: boolean;
+    ignoreExistingNativeFiles?: boolean;
   }
 ): Promise<ExportedConfig> {
   if (props.introspect === true) {
@@ -121,16 +122,19 @@ export async function evalModsAsync(
     projectRoot,
     introspect,
     platforms,
+    assertMissingModProviders,
+    ignoreExistingNativeFiles = false,
+  }: {
+    projectRoot: string;
+    introspect?: boolean;
+    platforms?: ModPlatform[];
     /**
      * Throw errors when mods are missing providers.
      * @default true
      */
-    assertMissingModProviders,
-  }: {
-    projectRoot: string;
-    introspect?: boolean;
     assertMissingModProviders?: boolean;
-    platforms?: ModPlatform[];
+    /** Ignore any existing native files, only use the generated prebuild results. */
+    ignoreExistingNativeFiles?: boolean;
   }
 ): Promise<ExportedConfig> {
   const modRawConfig = getRawClone(config);
@@ -157,6 +161,7 @@ export async function evalModsAsync(
           platform: platformName as ModPlatform,
           modName,
           introspect: !!introspect,
+          ignoreExistingNativeFiles,
         };
 
         if (!(mod as Mod).isProvider) {

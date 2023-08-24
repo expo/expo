@@ -34,8 +34,7 @@ class LegacyUpdateManifest private constructor(
   private val mAssets: JSONArray?
 ) : UpdateManifest {
   override val updateEntity: UpdateEntity by lazy {
-    UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey).apply {
-      manifest = this@LegacyUpdateManifest.manifest.getRawJson()
+    UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey, this@LegacyUpdateManifest.manifest.getRawJson()).apply {
       if (isDevelopmentMode) {
         status = UpdateStatus.DEVELOPMENT
       }
@@ -105,8 +104,8 @@ class LegacyUpdateManifest private constructor(
         commitTime = Date()
       } else {
         id = UUID.fromString(manifest.getReleaseId())
-        val commitTimeString = manifest.getCommitTime()
         commitTime = try {
+          val commitTimeString = manifest.getCommitTime() ?: throw JSONException("missing commitTime")
           UpdatesUtils.parseDateString(commitTimeString)
         } catch (e: ParseException) {
           Log.e(TAG, "Could not parse commitTime", e)

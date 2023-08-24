@@ -7,6 +7,7 @@
 #include "JSITypeConverter.h"
 #include "ObjectDeallocator.h"
 #include "JavaReferencesCache.h"
+#include "JSIInteropModuleRegistry.h"
 
 namespace expo {
 void JavaScriptObject::registerNatives() {
@@ -73,7 +74,11 @@ jni::local_ref<JavaScriptValue::javaobject> JavaScriptObject::jniGetProperty(
   jni::alias_ref<jstring> name
 ) {
   auto result = std::make_shared<jsi::Value>(getProperty(name->toStdString()));
-  return JavaScriptValue::newObjectCxxArgs(runtimeHolder, result);
+  return JavaScriptValue::newInstance(
+    runtimeHolder.getModuleRegistry(),
+    runtimeHolder,
+    result
+  );
 }
 
 std::vector<std::string> JavaScriptObject::getPropertyNames() {
@@ -107,7 +112,11 @@ jni::local_ref<jni::JArrayClass<jstring>> JavaScriptObject::jniGetPropertyNames(
 jni::local_ref<JavaScriptFunction::javaobject> JavaScriptObject::jniAsFunction() {
   auto &jsRuntime = runtimeHolder.getJSRuntime();
   auto jsFuncion = std::make_shared<jsi::Function>(jsObject->asFunction(jsRuntime));
-  return JavaScriptFunction::newObjectCxxArgs(runtimeHolder, jsFuncion);
+  return JavaScriptFunction::newInstance(
+    runtimeHolder.getModuleRegistry(),
+    runtimeHolder,
+    jsFuncion
+  );
 }
 
 void JavaScriptObject::setProperty(const std::string &name, jsi::Value value) {
@@ -138,25 +147,14 @@ jsi::Object JavaScriptObject::preparePropertyDescriptor(
   return descriptor;
 }
 
-void JavaScriptObject::defineProperty(
-  jsi::Runtime &runtime,
-  jsi::Object *jsthis,
-  const std::string &name,
-  jsi::Object descriptor
+jni::local_ref<JavaScriptObject::javaobject> JavaScriptObject::newInstance(
+  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+  std::weak_ptr<JavaScriptRuntime> runtime,
+  std::shared_ptr<jsi::Object> jsObject
 ) {
-  jsi::Object global = runtime.global();
-  jsi::Object objectClass = global.getPropertyAsObject(runtime, "Object");
-  jsi::Function definePropertyFunction = objectClass.getPropertyAsFunction(
-    runtime,
-    "defineProperty"
-  );
-
-  // This call is basically the same as `Object.defineProperty(object, name, descriptor)` in JS
-  definePropertyFunction.callWithThis(runtime, objectClass, {
-    jsi::Value(runtime, *jsthis),
-    jsi::String::createFromUtf8(runtime, name),
-    std::move(descriptor),
-  });
+  auto object = JavaScriptObject::newObjectCxxArgs(std::move(runtime), std::move(jsObject));
+  jsiInteropModuleRegistry->jniDeallocator->addReference(object);
+  return object;
 }
 
 void JavaScriptObject::defineNativeDeallocator(
@@ -164,7 +162,10 @@ void JavaScriptObject::defineNativeDeallocator(
 ) {
   auto &rt = runtimeHolder.getJSRuntime();
   jni::global_ref<JNIFunctionBody::javaobject> globalRef = jni::make_global(deallocator);
-  std::shared_ptr<ObjectDeallocator> nativeDeallocator = std::make_shared<ObjectDeallocator>(
+
+  common::setDeallocator(
+    rt,
+    jsObject,
     [globalRef = std::move(globalRef)]() mutable {
       auto args = jni::Environment::current()->NewObjectArray(
         0,
@@ -173,9 +174,8 @@ void JavaScriptObject::defineNativeDeallocator(
       );
       globalRef->invoke(args);
       globalRef.reset();
-    });
-  auto descriptor = JavaScriptObject::preparePropertyDescriptor(rt, 0);
-  descriptor.setProperty(rt, "value", jsi::Object::createFromHostObject(rt, nativeDeallocator));
-  jsObject->setProperty(rt, "__expo_shared_object_deallocator__", std::move(descriptor));
+    },
+    "__expo_shared_object_deallocator__"
+  );
 }
 } // namespace expo
