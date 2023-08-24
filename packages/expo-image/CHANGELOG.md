@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- Add Promise support to `prefetch` function. ([#24100](https://github.com/expo/expo/pull/24100) by [@lorenzpfei](https://github.com/lorenzpfei))
 
 ### 🐛 Bug fixes
 
