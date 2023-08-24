@@ -26,6 +26,6 @@ sealed class UpdatesStateEvent(val type: UpdatesStateEventType) {
   class CheckCompleteWithRollback(val commitTime: Date) : UpdatesStateEvent(UpdatesStateEventType.CheckCompleteAvailable)
   class DownloadComplete : UpdatesStateEvent(UpdatesStateEventType.DownloadComplete)
   class DownloadCompleteWithUpdate(val manifest: JSONObject) : UpdatesStateEvent(UpdatesStateEventType.DownloadComplete)
-  class DownloadCompleteWithRollback() : UpdatesStateEvent(UpdatesStateEventType.DownloadComplete)
+  class DownloadCompleteWithRollback : UpdatesStateEvent(UpdatesStateEventType.DownloadComplete)
   class Restart : UpdatesStateEvent(UpdatesStateEventType.Restart)
 }
