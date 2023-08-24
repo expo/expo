@@ -38,9 +38,11 @@ function createBundleHash(bundle: string | Uint8Array): string {
 export async function writeBundlesAsync({
   bundles,
   outputDir,
+  useWebSSG,
 }: {
   bundles: Partial<Record<Platform, Pick<BundleOutput, 'hermesBytecodeBundle' | 'code'>>>;
   outputDir: string;
+  useWebSSG?: boolean;
 }) {
   const hashes: Partial<Record<Platform, string>> = {};
   const fileNames: Partial<Record<Platform, string>> = {};
@@ -49,6 +51,10 @@ export async function writeBundlesAsync({
     Platform,
     Pick<BundleOutput, 'hermesBytecodeBundle' | 'code'>,
   ][]) {
+    // TODO: Move native to use the newer `_expo/...` bundle writing system.
+    if (platform === 'web' && useWebSSG) {
+      continue;
+    }
     const bundle = bundleOutput.hermesBytecodeBundle ?? bundleOutput.code;
     const hash = createBundleHash(bundle);
     const fileName = createBundleFileName({
