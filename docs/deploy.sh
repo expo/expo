@@ -65,7 +65,7 @@ echo "::endgroup::"
 declare -A redirects # associative array variable
 
 # usage:
-# redicts[requests/for/this/path]=are/redirected/to/this/one
+# redirects[requests/for/this/path]=are/redirected/to/this/one
 
 # Temporarily create a redirect for a page that Home links to
 redirects[versions/latest/introduction/installation.html]=versions/latest/introduction/installation/
@@ -166,6 +166,7 @@ redirects[tutorial/text]=tutorial/introduction/
 redirects[push-notifications/using-fcm/]=push-notifications/push-notifications-setup/
 
 # EAS Update
+redirects[technical-specs/expo-updates-0/]=archive/technical-specs/expo-updates-0/
 redirects[eas-update/developing-with-eas-update/]=eas-update/develop-faster/
 redirects[eas-update/eas-update-with-local-build/]=eas-update/build-locally/
 redirects[eas-update/eas-update-and-eas-cli/]=eas-update/eas-cli/
