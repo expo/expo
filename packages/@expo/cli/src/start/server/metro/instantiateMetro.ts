@@ -21,8 +21,8 @@ import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { env } from '../../../utils/env';
 import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
 import { createDevServerMiddleware } from '../middleware/createDevServerMiddleware';
-import { getPlatformBundlers } from '../platformBundlers';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
+import { getPlatformBundlers } from '../platformBundlers';
 
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
