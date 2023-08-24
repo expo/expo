@@ -237,12 +237,35 @@ class UpdatesModule(
                 return
               }
 
+              var shouldLaunch = false
               if (updatesServiceLocal.selectionPolicy.shouldLoadNewUpdate(
                   updateManifest.updateEntity,
                   launchedUpdate,
                   updateResponse.responseHeaderData?.manifestFilters
                 )
               ) {
+                // If "update" has failed to launch previously, then
+                // "launchedUpdate" will be an earlier update, and the test above
+                // will return true (incorrectly).
+                // We check to see if the new update is already in the DB, and if so,
+                // run the selection policy against that.
+                shouldLaunch = true
+                updateManifest.updateEntity?.let { updateEntity ->
+                  val storedUpdateEntity = updatesServiceLocal.databaseHolder.database.updateDao().loadUpdateWithId(
+                    updateEntity.id
+                  )
+                  updatesServiceLocal.databaseHolder.releaseDatabase()
+                  storedUpdateEntity?.let { storedUpdateEntity ->
+                    shouldLaunch = updatesServiceLocal.selectionPolicy.shouldLoadNewUpdate(
+                      updateEntity,
+                      storedUpdateEntity,
+                      updateResponse.responseHeaderData?.manifestFilters
+                    )
+                    logger.info("Stored update found: ID = ${updateEntity.id}, failureCount = ${storedUpdateEntity.failedLaunchCount}, shouldLaunch = $shouldLaunch")
+                  }
+                }
+              }
+              if (shouldLaunch) {
                 promise.resolveWithCheckForUpdateAsyncResult(CheckForUpdateAsyncResult.UpdateAvailable(updateManifest), updatesServiceLocal)
               } else {
                 promise.resolveWithCheckForUpdateAsyncResult(CheckForUpdateAsyncResult.NoUpdateAvailable(), updatesServiceLocal)
