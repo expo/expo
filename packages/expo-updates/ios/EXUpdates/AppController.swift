@@ -361,8 +361,8 @@ public class AppController: NSObject, AppLoaderTaskDelegate, AppLoaderTaskSwiftD
       event = UpdatesStateEventCheckComplete()
     case .updateAvailable(let manifest):
       event = UpdatesStateEventCheckCompleteWithUpdate(manifest: manifest)
-    case .rollBackToEmbedded:
-      event = UpdatesStateEventCheckCompleteWithRollback()
+    case .rollBackToEmbedded(let commitTime):
+      event = UpdatesStateEventCheckCompleteWithRollback(rollbackCommitTime: commitTime)
     case .error(let error):
       event = UpdatesStateEventCheckError(message: error.localizedDescription)
     }

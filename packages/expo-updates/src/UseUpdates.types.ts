@@ -65,12 +65,16 @@ export enum UpdateInfoType {
    * This is the type for new updates found on or downloaded from the update server, that are launchable on the device.
    */
   NEW = 'new',
+  /**
+   * This type is used when an update is a directive to roll back to the embedded bundle.
+   */
+  ROLLBACK = 'rollback',
 }
 
 /**
- * Structure representing an update. Currently, this is limited to updates of type `UpdateInfoType.NEW`.
+ * Structure representing a new update.
  */
-export type UpdateInfo = {
+type UpdateInfoNew = {
   /**
    * The type of update.
    */
@@ -93,6 +97,34 @@ export type UpdateInfo = {
    */
   manifest: Manifest;
 };
+
+/**
+ * Structure representing a rollback directive.
+ */
+type UpdateInfoRollback = {
+  /**
+   * The type of update.
+   */
+  type: UpdateInfoType.ROLLBACK;
+  /**
+   * For updates of type `UpdateInfoType.ROLLBACK`, this is undefined.
+   */
+  updateId: undefined;
+  /**
+   * For all types of updates, this is
+   * a `Date` object representing the creation time or commit time of the update.
+   */
+  createdAt: Date;
+  /**
+   * For updates of type `UpdateInfoType.ROLLBACK`, this is undefined.
+   */
+  manifest: undefined;
+};
+
+/**
+ * Combined structure representing any type of update.
+ */
+export type UpdateInfo = UpdateInfoNew | UpdateInfoRollback;
 
 /**
  * The structures and methods returned by `useUpdates()`.

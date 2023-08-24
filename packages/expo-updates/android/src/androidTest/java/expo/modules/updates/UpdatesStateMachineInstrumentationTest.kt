@@ -12,6 +12,7 @@ import org.json.JSONObject
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.util.Date
 
 @RunWith(AndroidJUnit4ClassRunner::class)
 class UpdatesStateMachineInstrumentationTest {
@@ -107,19 +108,19 @@ class UpdatesStateMachineInstrumentationTest {
   fun test_handleRollback() {
     val testStateChangeEventSender = TestStateChangeEventSender()
     val machine = UpdatesStateMachine(androidContext, testStateChangeEventSender)
-
+    val commitTime = Date()
     machine.processEvent(UpdatesStateEvent.Check())
 
     Assert.assertEquals(UpdatesStateValue.Checking, machine.state)
     Assert.assertEquals(UpdatesStateEventType.Check, testStateChangeEventSender.lastEventType)
 
-    machine.processEvent(UpdatesStateEvent.CheckCompleteWithRollback())
+    machine.processEvent(UpdatesStateEvent.CheckCompleteWithRollback(commitTime))
     Assert.assertEquals(UpdatesStateValue.Idle, machine.state)
     Assert.assertFalse(machine.context.isChecking)
     Assert.assertNull(machine.context.checkError)
     Assert.assertTrue(machine.context.isUpdateAvailable)
     Assert.assertFalse(machine.context.isUpdatePending)
-    Assert.assertTrue(machine.context.isRollback)
+    Assert.assertEquals(commitTime, machine.context.rollback?.commitTime)
   }
 
   @Test
@@ -140,7 +141,7 @@ class UpdatesStateMachineInstrumentationTest {
     Assert.assertNotNull(machine.context.checkError)
     Assert.assertFalse(machine.context.isUpdateAvailable)
     Assert.assertFalse(machine.context.isUpdatePending)
-    Assert.assertFalse(machine.context.isRollback)
+    Assert.assertNull(machine.context.rollback)
   }
 
   @Test

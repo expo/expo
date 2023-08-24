@@ -21,6 +21,7 @@ import expo.modules.updates.manifest.UpdateManifest
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import org.json.JSONObject
 import java.io.File
+import java.util.Date
 
 /**
  * Controlling class that handles the complex logic that needs to happen each time the app is cold
@@ -62,7 +63,7 @@ class LoaderTask(
 
     class NoUpdateAvailable : RemoteCheckResult(Status.NO_UPDATE_AVAILABLE)
     class UpdateAvailable(val manifest: JSONObject) : RemoteCheckResult(Status.UPDATE_AVAILABLE)
-    class RollBackToEmbedded : RemoteCheckResult(Status.ROLL_BACK_TO_EMBEDDED)
+    class RollBackToEmbedded(val commitTime: Date) : RemoteCheckResult(Status.ROLL_BACK_TO_EMBEDDED)
   }
 
   interface LoaderTaskCallback {
@@ -335,7 +336,7 @@ class LoaderTask(
               return when (updateDirective) {
                 is UpdateDirective.RollBackToEmbeddedUpdateDirective -> {
                   isUpToDate = true
-                  callback.onRemoteCheckForUpdateFinished(RemoteCheckResult.RollBackToEmbedded())
+                  callback.onRemoteCheckForUpdateFinished(RemoteCheckResult.RollBackToEmbedded(updateDirective.commitTime))
                   Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
                 }
                 is UpdateDirective.NoUpdateAvailableUpdateDirective -> {

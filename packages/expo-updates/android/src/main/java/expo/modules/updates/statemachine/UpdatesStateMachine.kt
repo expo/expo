@@ -106,24 +106,24 @@ class UpdatesStateMachine(
           isChecking = false,
           checkError = null,
           latestManifest = null,
+          rollback = null,
           isUpdateAvailable = false,
-          isRollback = false,
           lastCheckForUpdateTime = Date(),
         )
         is UpdatesStateEvent.CheckCompleteWithRollback -> context.copy(
           isChecking = false,
           checkError = null,
           latestManifest = null,
+          rollback = UpdatesStateContextRollback(event.commitTime),
           isUpdateAvailable = true,
-          isRollback = true,
           lastCheckForUpdateTime = Date()
         )
         is UpdatesStateEvent.CheckCompleteWithUpdate -> context.copy(
           isChecking = false,
           checkError = null,
           latestManifest = event.manifest,
+          rollback = null,
           isUpdateAvailable = true,
-          isRollback = false,
           lastCheckForUpdateTime = Date()
         )
         is UpdatesStateEvent.CheckError -> context.copy(
@@ -140,13 +140,14 @@ class UpdatesStateMachine(
         is UpdatesStateEvent.DownloadCompleteWithRollback -> context.copy(
           isDownloading = false,
           downloadError = null,
-          isUpdatePending = true,
+          isUpdatePending = true
         )
         is UpdatesStateEvent.DownloadCompleteWithUpdate -> context.copy(
           isDownloading = false,
           downloadError = null,
           latestManifest = event.manifest,
           downloadedManifest = event.manifest,
+          rollback = null,
           isUpdatePending = true,
           isUpdateAvailable = true
         )
