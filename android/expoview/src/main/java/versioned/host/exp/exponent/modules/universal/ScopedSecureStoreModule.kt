@@ -9,7 +9,7 @@ import host.exp.exponent.Constants
 
 private const val SHARED_PREFERENCES_NAME = "SecureStore"
 
-class ScopedSecureStoreModule(scopedContext: ScopedContext) : SecureStoreModule() {
+class ScopedSecureStoreModule(private val scopedContext: ScopedContext) : SecureStoreModule() {
   override var reactContext: Context = if (Constants.isStandaloneApp()) scopedContext.baseContext else scopedContext
 
   // In standalone apps on SDK 41 and below, SecureStore was initiated with scoped context,
@@ -32,7 +32,7 @@ class ScopedSecureStoreModule(scopedContext: ScopedContext) : SecureStoreModule(
   }
 
   private val scopedSharedPreferences: SharedPreferences
-    get() = reactContext.getSharedPreferences(
+    get() = scopedContext.getSharedPreferences(
       SHARED_PREFERENCES_NAME,
       Context.MODE_PRIVATE
     )
