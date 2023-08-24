@@ -5,6 +5,7 @@ import chalk from 'chalk';
 import http from 'http';
 import type Metro from 'metro';
 import { Terminal } from 'metro-core';
+import semver from 'semver';
 
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
@@ -25,6 +26,22 @@ import { getPlatformBundlers } from '../platformBundlers';
 type MessageSocket = {
   broadcast: (method: string, params?: Record<string, any> | undefined) => void;
 };
+
+function gteSdkVersion(exp: Pick<ExpoConfig, 'sdkVersion'>, sdkVersion: string): boolean {
+  if (!exp.sdkVersion) {
+    return false;
+  }
+
+  if (exp.sdkVersion === 'UNVERSIONED') {
+    return true;
+  }
+
+  try {
+    return semver.gte(exp.sdkVersion, sdkVersion);
+  } catch {
+    throw new Error(`${exp.sdkVersion} is not a valid version. Must be in the form of x.y.z`);
+  }
+}
 
 export async function loadMetroConfigAsync(
   projectRoot: string,
@@ -52,14 +69,20 @@ export async function loadMetroConfigAsync(
   const ExpoMetroConfig = importExpoMetroConfig(projectRoot);
   let config = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
 
-  // TODO: Handle asset prefix.
-  if (isExporting) {
-    // This token will be used in the asset plugin to ensure the path is correct for writing locally.
-    // @ts-expect-error: typed as readonly.
-    config.transformer.publicPath = '/assets?export_path=/assets';
-  } else {
-    // @ts-expect-error
-    config.transformer.publicPath = '/assets?unstable_path=.';
+  if (
+    // Requires SDK 50 for expo-assets hashAssetPlugin change.
+    !exp.sdkVersion ||
+    gteSdkVersion(exp, '50.0.0')
+  ) {
+    // TODO: Handle asset prefix.
+    if (isExporting) {
+      // This token will be used in the asset plugin to ensure the path is correct for writing locally.
+      // @ts-expect-error: typed as readonly.
+      config.transformer.publicPath = '/assets?export_path=/assets';
+    } else {
+      // @ts-expect-error
+      config.transformer.publicPath = '/assets?unstable_path=.';
+    }
   }
 
   const platformBundlers = getPlatformBundlers(exp);
