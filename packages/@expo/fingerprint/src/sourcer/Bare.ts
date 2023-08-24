@@ -1,4 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
+import assert from 'assert';
 import chalk from 'chalk';
 import path from 'path';
 import resolveFrom from 'resolve-from';
@@ -103,13 +104,14 @@ export async function getRncliAutolinkingSourcesAsync(
 }
 
 function getRncliPlatformData(dependency: any, root: string, platform: Platform): string {
+  assert(dependency.root);
   const platformData = dependency.platforms[platform];
   if (!platformData) {
     return '';
   }
   const json: Record<string, string> = {};
   for (const [key, value] of Object.entries<any>(platformData)) {
-    json[key] = value?.startsWith?.(root) ? path.relative(root, value) : value;
+    json[key] = value?.startsWith?.(dependency.root) ? path.relative(root, value) : value;
   }
   return JSON.stringify(json);
 }
