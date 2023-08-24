@@ -161,7 +161,7 @@ export declare function clearUpdateCacheExperimentalAsync(_sdkVersion?: string):
 /**
  * @hidden
  */
-export declare function processedNativeStateMachineContext(originalNativeContext: any): any;
+export declare function transformNativeStateMachineContext(originalNativeContext: any): any;
 /**
  * @hidden
  */

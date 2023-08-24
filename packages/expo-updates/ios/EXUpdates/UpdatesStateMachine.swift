@@ -157,12 +157,9 @@ let iso8601DateFormatter = ISO8601DateFormatter()
  Structure for a rollback. Only the commitTime is used for now.
  */
 internal struct UpdatesStateContextRollback {
-  let commitTime: Date?
+  let commitTime: Date
 
-  var json: [String: Any]? {
-    guard let commitTime = commitTime else {
-      return nil
-    }
+  var json: [String: Any] {
     return [
       "commitTime": iso8601DateFormatter.string(from: commitTime)
     ]
@@ -364,6 +361,13 @@ internal class UpdatesStateMachine {
    made by processing the event.
    */
   private func reducedContext(_ context: UpdatesStateContext, _ event: UpdatesStateEvent) -> UpdatesStateContext {
+    let rollback: UpdatesStateContextRollback?
+    if let rollbackCommitTime = event.rollbackCommitTime {
+      rollback = UpdatesStateContextRollback(commitTime: rollbackCommitTime)
+    } else {
+      rollback = nil
+    }
+
     switch event.type {
     case .check:
       return context.copy {
@@ -386,9 +390,7 @@ internal class UpdatesStateMachine {
         $0.latestManifest = event.manifest
         $0.isUpdateAvailable = true
         $0.lastCheckForUpdateTime = Date()
-        $0.rollback = event.rollbackCommitTime != nil ?
-          UpdatesStateContextRollback(commitTime: event.rollbackCommitTime) :
-          nil
+        $0.rollback = rollback
       }
     case .checkError:
       return context.copy {

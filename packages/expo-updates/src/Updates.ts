@@ -291,7 +291,7 @@ export function clearUpdateCacheExperimentalAsync(_sdkVersion?: string) {
 /**
  * @hidden
  */
-export function processedNativeStateMachineContext(originalNativeContext: any) {
+export function transformNativeStateMachineContext(originalNativeContext: any) {
   const nativeContext = { ...originalNativeContext };
   if (nativeContext.latestManifestString) {
     nativeContext.latestManifest = JSON.parse(nativeContext.latestManifestString);
@@ -321,5 +321,5 @@ export async function getNativeStateMachineContextAsync(): Promise<UpdatesNative
     throw new UnavailabilityError('Updates', 'getNativeStateMachineContextAsync');
   }
   const nativeContext = await ExpoUpdates.getNativeStateMachineContextAsync();
-  return processedNativeStateMachineContext(nativeContext);
+  return transformNativeStateMachineContext(nativeContext);
 }

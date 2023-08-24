@@ -358,14 +358,14 @@ public final class AppLoaderTask: NSObject {
             }
           }
           return false
-        case is RollBackToEmbeddedUpdateDirective:
+        case let rollBackUpdateDirective as RollBackToEmbeddedUpdateDirective:
           self.isUpToDate = false
 
           if let swiftDelegate = self.swiftDelegate {
             self.delegateQueue.async {
               swiftDelegate.appLoaderTask(
                 self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.rollBackToEmbedded(
-                  commitTime: RollBackToEmbeddedUpdateDirective.rollbackCommitTime(updateDirective)
+                  commitTime: RollBackToEmbeddedUpdateDirective.rollbackCommitTime(rollBackUpdateDirective)
                 )
               )
             }

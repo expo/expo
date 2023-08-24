@@ -1,7 +1,7 @@
 import { DeviceEventEmitter } from 'expo-modules-core';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 
-import { processedNativeStateMachineContext } from './Updates';
+import { transformNativeStateMachineContext } from './Updates';
 import type { UpdateEvent, UpdatesNativeStateChangeEvent } from './Updates.types';
 
 let _emitter: EventEmitter | null;
@@ -43,7 +43,7 @@ function _emitNativeStateChangeEvent(params: any) {
   if (typeof params === 'string') {
     newParams = JSON.parse(params);
   }
-  newParams.context = processedNativeStateMachineContext(newParams.context);
+  newParams.context = transformNativeStateMachineContext(newParams.context);
   _emitter.emit('Expo.updatesStateChangeEvent', newParams);
 }
 

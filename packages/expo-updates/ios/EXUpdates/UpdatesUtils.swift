@@ -115,7 +115,7 @@ public final class UpdatesUtils: NSObject {
             ])
             sendStateEvent(
               UpdatesStateEventCheckCompleteWithRollback(
-                rollbackCommitTime: RollBackToEmbeddedUpdateDirective.rollbackCommitTime(updateDirective)
+                rollbackCommitTime: RollBackToEmbeddedUpdateDirective.rollbackCommitTime(rollBackUpdateDirective)
               )
             )
             return

@@ -236,7 +236,7 @@ export function clearUpdateCacheExperimentalAsync(_sdkVersion) {
 /**
  * @hidden
  */
-export function processedNativeStateMachineContext(originalNativeContext) {
+export function transformNativeStateMachineContext(originalNativeContext) {
     const nativeContext = { ...originalNativeContext };
     if (nativeContext.latestManifestString) {
         nativeContext.latestManifest = JSON.parse(nativeContext.latestManifestString);
@@ -265,6 +265,6 @@ export async function getNativeStateMachineContextAsync() {
         throw new UnavailabilityError('Updates', 'getNativeStateMachineContextAsync');
     }
     const nativeContext = await ExpoUpdates.getNativeStateMachineContextAsync();
-    return processedNativeStateMachineContext(nativeContext);
+    return transformNativeStateMachineContext(nativeContext);
 }
 //# sourceMappingURL=Updates.js.map
