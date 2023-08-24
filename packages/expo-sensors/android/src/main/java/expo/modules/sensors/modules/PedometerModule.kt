@@ -23,7 +23,7 @@ class PedometerModule : Module() {
         stepsAtTheBeginning = sensorEvent.values[0].toInt() - 1
       }
       Bundle().apply {
-        putDouble("steps", (sensorEvent.values[0] - stepsAtTheBeginning!!).toDouble())
+        putDouble("steps", (sensorEvent.values[0] - (stepsAtTheBeginning ?: (sensorEvent.values[0].toInt() - 1))).toDouble())
       }
     }
   }
