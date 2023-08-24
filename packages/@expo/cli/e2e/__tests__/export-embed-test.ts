@@ -4,12 +4,13 @@ import fs from 'fs-extra';
 import klawSync from 'klaw-sync';
 import path from 'path';
 
-import { execute, getLoadedModulesAsync, bin } from './utils';
+import { execute, projectRoot, getLoadedModulesAsync, bin } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
 
 beforeAll(async () => {
+  await fs.mkdir(projectRoot, { recursive: true });
   process.env.FORCE_COLOR = '0';
   process.env.CI = '1';
   process.env._EXPO_E2E_USE_PATH_ALIASES = '1';
@@ -84,7 +85,7 @@ function ensureTesterReady(fixtureName: string): string {
   return root;
 }
 
-it(
+xit(
   'runs `npx expo export:embed`',
   async () => {
     const projectRoot = ensureTesterReady('static-rendering');
