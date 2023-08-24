@@ -38,14 +38,15 @@ class ApplicationModule : Module() {
       return@AsyncFunction Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
     }
 
-    AsyncFunction("getInstallationTimeAsync") {
+    AsyncFunction("getInstallationTimeAsync") { promise: Promise ->
       val packageManager = context.packageManager
       val packageName = context.packageName
       try {
         val info = packageManager.getPackageInfoCompat(packageName, 0)
         return@AsyncFunction info.firstInstallTime.toDouble()
       } catch (e: PackageManager.NameNotFoundException) {
-        throw UnableToGetInstallationTimeException(e)
+        Log.e(TAG, "Exception: ", e)
+        promise.reject("ERR_APPLICATION_PACKAGE_NAME_NOT_FOUND", "Unable to get install time of this application. Could not get package info or package name.", e)
       }
     }
 
@@ -56,7 +57,8 @@ class ApplicationModule : Module() {
         val info = packageManager.getPackageInfoCompat(packageName, 0)
         return@AsyncFunction info.lastUpdateTime.toDouble()
       } catch (e: PackageManager.NameNotFoundException) {
-        throw UnableToGetLastUpdateTimeException(e)
+        Log.e(TAG, "Exception: ", e)
+        promise.reject("ERR_APPLICATION_PACKAGE_NAME_NOT_FOUND", "Unable to get last update time of this application. Could not get package info or package name.", e)
       }
     }
 
@@ -75,21 +77,21 @@ class ApplicationModule : Module() {
                 installReferrer.append(response.installReferrer)
               } catch (e: RemoteException) {
                 Log.e(TAG, "Exception: ", e)
-                promise.reject(ApplicationInstallReferrerRemoteException(e))
+                promise.reject("ERR_APPLICATION_INSTALL_REFERRER_REMOTE_EXCEPTION", "RemoteException getting install referrer information. This may happen if the process hosting the remote object is no longer available.", e)
               }
               promise.resolve(installReferrer.toString())
             }
             InstallReferrerClient.InstallReferrerResponse.FEATURE_NOT_SUPPORTED -> // API not available in the current Play Store app
-              promise.reject(ApplicationInstallReferrerUnavailableException())
+              promise.reject("ERR_APPLICATION_INSTALL_REFERRER_UNAVAILABLE", "The current Play Store app doesn't provide the installation referrer API, or the Play Store may not be installed.")
             InstallReferrerClient.InstallReferrerResponse.SERVICE_UNAVAILABLE -> // Connection could not be established
-              promise.reject(ApplicationInstallReferrerConnectionException())
+              promise.reject("ERR_APPLICATION_INSTALL_REFERRER", "General error retrieving the install referrer: response code $responseCode")
             else -> promise.reject(ApplicationInstallReferrerException(responseCode.toString()))
           }
           referrerClient.endConnection()
         }
 
         override fun onInstallReferrerServiceDisconnected() {
-          promise.reject(ApplicationInstallReferrerServiceDisconnectedException())
+          promise.reject("ERR_APPLICATION_INSTALL_REFERRER_SERVICE_DISCONNECTED", "Connection to install referrer service was lost.")
         }
       })
     }

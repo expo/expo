@@ -1,6 +1,6 @@
 package versioned.host.exp.exponent
 
-import expo.modules.application.ApplicationPackage
+import expo.modules.application.ApplicationModule
 import expo.modules.av.AVPackage
 import expo.modules.av.video.VideoViewModule
 import expo.modules.backgroundfetch.BackgroundFetchPackage
@@ -67,7 +67,6 @@ import expo.modules.webbrowser.WebBrowserModule
 object ExperiencePackagePicker : ModulesProvider {
   private val EXPO_MODULES_PACKAGES = listOf(
     AVPackage(),
-    ApplicationPackage(),
     BatteryPackage(),
     BackgroundFetchPackage(),
     BarCodeScannerPackage(),
@@ -111,6 +110,7 @@ object ExperiencePackagePicker : ModulesProvider {
   }
 
   override fun getModulesList(): List<Class<out Module>> = listOf(
+    ApplicationModule::class.java,
     BarCodeScannerModule::class.java,
     CameraViewModule::class.java,
     CellularModule::class.java,
