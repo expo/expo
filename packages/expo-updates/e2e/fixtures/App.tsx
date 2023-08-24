@@ -58,8 +58,7 @@ export default function App() {
   // Get rollback state with this, until useUpdates() supports rollbacks
   React.useEffect(() => {
     const handleAsync = async () => {
-      const state = await Updates.getNativeStateMachineContextAsync();
-      setIsRollback(state.isRollback);
+      setIsRollback(availableUpdate?.type === Updates.UpdateInfoType.ROLLBACK);
     };
     if (isUpdateAvailable) {
       handleAsync();
@@ -182,9 +181,10 @@ export default function App() {
       <TestValue testID="state.isUpdatePending" value={`${isUpdatePending}`} />
       <TestValue testID="state.isRollback" value={`${isRollback}`} />
       <TestValue testID="state.checkError" value={`${checkError?.message ?? ''}`} />
-      {/*
-      <TestValue testID="state.isRollback" value={`${availableUpdate?.isRollback ?? false}`} />
-        */}
+      <TestValue
+        testID="state.rollbackCommitTime"
+        value={`${isRollback ? availableUpdate?.createdAt.toISOString() : ''}`}
+      />
       <TestValue
         testID="state.latestManifest.id"
         value={`${availableUpdate?.manifest?.id || ''}`}

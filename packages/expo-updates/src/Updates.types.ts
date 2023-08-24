@@ -259,6 +259,14 @@ export type LocalAssets = Record<string, string>;
 /**
  * @hidden
  */
+export type UpdatesNativeStateRollback = {
+  // ISO date string with the rollback commit time
+  commitTime: string;
+};
+
+/**
+ * @hidden
+ */
 export type UpdatesNativeStateMachineContext = {
   // The native state machine context, either read directly from a native module method,
   // or received in a state change event. Used internally by this module and not exported publicly.
@@ -266,10 +274,10 @@ export type UpdatesNativeStateMachineContext = {
   isUpdatePending: boolean;
   isChecking: boolean;
   isDownloading: boolean;
-  isRollback: boolean;
   isRestarting: boolean;
   latestManifest?: Manifest;
   downloadedManifest?: Manifest;
+  rollback?: UpdatesNativeStateRollback;
   checkError?: Error;
   downloadError?: Error;
   lastCheckForUpdateTime?: Date;
