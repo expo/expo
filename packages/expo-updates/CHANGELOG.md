@@ -10,6 +10,7 @@
 ### 🎉 New features
 
 - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- Add rollback support to useUpdates(). ([#24071](https://github.com/expo/expo/pull/24071) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 
