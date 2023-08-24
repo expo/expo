@@ -85,7 +85,7 @@ function ensureTesterReady(fixtureName: string): string {
   return root;
 }
 
-xit(
+it(
   'runs `npx expo export:embed`',
   async () => {
     const projectRoot = ensureTesterReady('static-rendering');
