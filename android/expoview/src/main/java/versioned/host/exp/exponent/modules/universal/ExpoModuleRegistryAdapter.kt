@@ -81,19 +81,19 @@ open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistry
       reactContext,
       moduleRegistry
     ) { appContext ->
-        appContext.registry.register(
-          ExpoGoModule(manifest)
-        )
-        appContext.registry.register(
-          ScopedSecureStoreModule(scopedContext)
-        )
-        appContext.registry.register(
-          object : FontLoaderModule() {
-            override val prefix: String
-              get() = "ExpoFont-"
-          }
-        )
-      }
+      appContext.registry.register(
+        ExpoGoModule(manifest)
+      )
+      appContext.registry.register(
+        ScopedSecureStoreModule(scopedContext)
+      )
+      appContext.registry.register(
+        object : FontLoaderModule() {
+          override val prefix: String
+            get() = "ExpoFont-"
+        }
+      )
+    }
   }
 
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
