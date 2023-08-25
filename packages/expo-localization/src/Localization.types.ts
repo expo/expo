@@ -116,7 +116,7 @@ export type Locale = {
 
   /**
    * The temperature unit used in the locale.
-   * Will return null if the region code is unknown.
+   * Returns `null` if the region code is unknown.
    */
   temperatureUnit: 'celsius' | 'fahrenheit' | null;
 };
