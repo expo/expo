@@ -75,7 +75,7 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
         }
 
         if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-          it.commandLine("cmd", "/c", args)
+          it.commandLine("cmd", "/c", *args.toTypedArray())
         } else {
           it.commandLine(args)
         }
@@ -89,7 +89,7 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
       project.exec {
         val args = listOf(*nodeExecutableAndArgs.get().toTypedArray(), "-e", "console.log(require('path').dirname(require.resolve('expo-updates/package.json')));")
         if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-          it.commandLine("cmd", "/c", args)
+          it.commandLine("cmd", "/c", *args.toTypedArray())
         } else {
           it.commandLine(args)
         }
