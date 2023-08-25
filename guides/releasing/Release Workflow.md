@@ -339,6 +339,7 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
   - `react-native-web`
   - `babel-preset-expo`
   - `@expo/config-plugins`
+  - `@expo/metro-config`
   - `@expo/webpack-config`
   - `@expo/prebuild-config`
   - `expo-modules-autolinking`
