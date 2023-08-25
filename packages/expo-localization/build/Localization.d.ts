@@ -89,7 +89,8 @@ export declare const region: string | null;
     "measurementSystem": "metric",
     "currencyCode": "PLN",
     "currencySymbol": "zł",
-    "regionCode": "PL"
+    "regionCode": "PL",
+    "temperatureUnit": "celsius"
   }]`
  */
 export declare const getLocales: () => import("./Localization.types").Locale[];
@@ -123,7 +124,8 @@ export declare const getCalendars: () => import("./Localization.types").Calendar
     "measurementSystem": "metric",
     "currencyCode": "PLN",
     "currencySymbol": "zł",
-    "regionCode": "PL"
+    "regionCode": "PL",
+    "temperatureUnit": "celsius"
   }]`
  */
 export declare function useLocales(): import("./Localization.types").Locale[];

@@ -117,7 +117,8 @@ export const region = ExpoLocalization.region;
     "measurementSystem": "metric",
     "currencyCode": "PLN",
     "currencySymbol": "zł",
-    "regionCode": "PL"
+    "regionCode": "PL",
+    "temperatureUnit": "celsius"
   }]`
  */
 export const getLocales = ExpoLocalization.getLocales;
@@ -153,7 +154,8 @@ export const getCalendars = ExpoLocalization.getCalendars;
     "measurementSystem": "metric",
     "currencyCode": "PLN",
     "currencySymbol": "zł",
-    "regionCode": "PL"
+    "regionCode": "PL",
+    "temperatureUnit": "celsius"
   }]`
  */
 export function useLocales() {

@@ -113,6 +113,12 @@ export type Locale = {
    * Ask for user preferences if possible.
    */
   measurementSystem: `metric` | `us` | `uk` | null;
+
+  /**
+   * The temperature unit used in the locale.
+   * Returns `null` if the region code is unknown.
+   */
+  temperatureUnit: 'celsius' | 'fahrenheit' | null;
 };
 
 /**
