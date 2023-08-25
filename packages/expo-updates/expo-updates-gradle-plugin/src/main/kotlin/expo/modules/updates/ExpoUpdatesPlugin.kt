@@ -75,7 +75,7 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
         }
 
         if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-          it.commandLine("cmd", "/c", args)
+          it.commandLine("cmd", "/c", *args.toTypedArray())
         } else {
           it.commandLine(args)
         }
