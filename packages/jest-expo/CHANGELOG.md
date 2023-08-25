@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Read mocks for native code from individual modules.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
