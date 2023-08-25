@@ -38,9 +38,7 @@ fun getCurrencyCode(locale: Locale): String? {
 
 fun getRegionCode(locale: Locale): String? {
   val miuiRegion = getSystemProperty("ro.miui.region")
-  return if (!TextUtils.isEmpty(miuiRegion)) {
-    miuiRegion
-  } else {
+  return miuiRegion.ifEmpty {
     getCountryCode(locale)
   }
 }
