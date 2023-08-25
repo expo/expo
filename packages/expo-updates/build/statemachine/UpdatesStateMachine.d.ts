@@ -26,7 +26,7 @@ export type UpdatesStateMachineEvent = {
     };
 };
 /**
- * The context structure (analogous to what is exposed in @expo/use-updates)
+ * The context structure
  */
 export interface UpdatesStateMachineContext {
     isUpdateAvailable: boolean;
