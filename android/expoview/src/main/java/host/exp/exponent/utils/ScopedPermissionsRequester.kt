@@ -8,7 +8,6 @@ import host.exp.exponent.experience.ReactNativeActivity
 import android.content.pm.PackageManager
 import android.app.AlertDialog
 import android.content.DialogInterface
-import android.os.Build
 import android.provider.Settings
 import com.facebook.react.modules.core.PermissionListener
 import host.exp.exponent.di.NativeModuleDepsProvider

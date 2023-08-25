@@ -2,7 +2,6 @@ package host.exp.exponent.utils
 
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.provider.Settings
 import android.widget.Switch
 import androidx.test.InstrumentationRegistry

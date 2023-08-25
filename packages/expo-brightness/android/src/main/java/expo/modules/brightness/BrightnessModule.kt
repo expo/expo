@@ -1,7 +1,6 @@
 package expo.modules.brightness
 
 import android.Manifest
-import android.os.Build
 import android.provider.Settings
 import android.view.WindowManager
 import expo.modules.core.errors.InvalidArgumentException

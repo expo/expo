@@ -1,6 +1,6 @@
 class KotlinExpoModulesCorePlugin implements Plugin<Project> {
   void apply(Project project) {
-    // For compatibility reasons the plugin needs to declare that it provides the sdk versions
+    // For compatibility reasons the plugin needs to declare that it provides the sdk version config
     project.rootProject.ext.providesDefaultConfig = {
       true
     }

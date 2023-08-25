@@ -4,7 +4,6 @@ import android.app.NotificationManager
 import android.content.Context
 import android.media.RingtoneManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Parcel
 import android.provider.Settings

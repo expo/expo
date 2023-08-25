@@ -55,15 +55,6 @@ public class RNDismissableDatePickerDialog extends DatePickerDialog {
     fixSpinner(context, year, monthOfYear, dayOfMonth, display);
   }
 
-  @Override
-  protected void onStop() {
-    // do *not* call super.onStop() on KitKat on lower, as that would erroneously call the
-    // OnDateSetListener when the dialog is dismissed, or call it twice when "OK" is pressed.
-    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-      super.onStop();
-    }
-  }
-
   private void fixSpinner(Context context, int year, int month, int dayOfMonth, RNDatePickerDisplay display) {
     if (Build.VERSION.SDK_INT == Build.VERSION_CODES.N && display == RNDatePickerDisplay.SPINNER) {
       try {
