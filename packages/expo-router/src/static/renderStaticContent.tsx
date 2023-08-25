@@ -7,24 +7,20 @@
 import '@expo/metro-runtime';
 
 import { ServerContainer, ServerContainerRef } from '@react-navigation/native';
+import * as Font from 'expo-font/build/server';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { AppRegistry } from 'react-native-web';
 
 import { getRootComponent } from './getRootComponent';
 import { ctx } from '../../_ctx';
-import { ExpoRoot, ExpoRootProps } from '../ExpoRoot';
+import { ExpoRoot } from '../ExpoRoot';
 import { getNavigationConfig } from '../getLinkingConfig';
 import { getRoutes } from '../getRoutes';
 import { Head } from '../head';
 import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
 
-AppRegistry.registerComponent('App', () => App);
-
-// Must be exported or Fast Refresh won't update the context >:[
-function App(props: Omit<ExpoRootProps, 'context'>) {
-  return <ExpoRoot context={ctx} {...props} />;
-}
+AppRegistry.registerComponent('App', () => ExpoRoot);
 
 /** Get the linking manifest from a Node.js process. */
 async function getManifest(options: any) {
@@ -56,13 +52,27 @@ export function getStaticContent(location: URL): string {
   const ref = React.createRef<ServerContainerRef>();
 
   const {
-    // Skipping the `element` that's returned to ensure the HTML
-    // matches what's used in the client -- this results in two extra Views and
-    // the seemingly unused `RootTagContext.Provider` from being added.
+    // NOTE: The `element` that's returned adds two extra Views and
+    // the seemingly unused `RootTagContext.Provider`.
+    element,
     getStyleElement,
-  } = AppRegistry.getApplication('App');
+  } = AppRegistry.getApplication('App', {
+    initialProps: {
+      location,
+      context: ctx,
+      wrapper: ({ children }) => (
+        <Root>
+          <div id="root">{children}</div>
+        </Root>
+      ),
+    },
+  });
 
   const Root = getRootComponent();
+
+  // Clear any existing static resources from the global scope to attempt to prevent leaking between pages.
+  // This could break if pages are rendered in parallel or if fonts are loaded outside of the React tree
+  Font.resetServerContext();
 
   // This MUST be run before `ReactDOMServer.renderToString` to prevent
   // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
@@ -70,22 +80,7 @@ export function getStaticContent(location: URL): string {
 
   const html = ReactDOMServer.renderToString(
     <Head.Provider context={headContext}>
-      <ServerContainer ref={ref}>
-        <App
-          location={location}
-          wrapper={({ children }) => {
-            return React.createElement(Root, {
-              children: React.createElement(
-                'div',
-                {
-                  id: 'root',
-                },
-                children
-              ),
-            });
-          }}
-        />
-      </ServerContainer>
+      <ServerContainer ref={ref}>{element}</ServerContainer>
     </Head.Provider>
   );
 
@@ -95,6 +90,9 @@ export function getStaticContent(location: URL): string {
   let output = mixHeadComponentsWithStaticResults(headContext.helmet, html);
 
   output = output.replace('</head>', `${css}</head>`);
+
+  // Inject static fonts loaded with expo-font
+  output = output.replace('</head>', `${Font.getServerResources().join('')}</head>`);
 
   return '<!DOCTYPE html>' + output;
 }

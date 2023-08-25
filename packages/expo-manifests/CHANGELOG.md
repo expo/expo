@@ -4,9 +4,12 @@
 
 ### 🛠 Breaking changes
 
+- Remove classic manifest types. ([#24053](https://github.com/expo/expo/pull/24053) by [@wschurman](https://github.com/wschurman))
+
 ### 🎉 New features
 
 - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- Make expo-manifests source of truth for manifest TS types. ([#24049](https://github.com/expo/expo/pull/24049) by [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 

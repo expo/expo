@@ -4,9 +4,13 @@
 
 ### 🛠 Breaking changes
 
+- Change source of truth for constants types. ([#24049](https://github.com/expo/expo/pull/24049) by [@wschurman](https://github.com/wschurman))
+- Remove classic manifest types and classic updates. ([#24053](https://github.com/expo/expo/pull/24053), [#24066](https://github.com/expo/expo/pull/24066) by [@wschurman](https://github.com/wschurman))
+
 ### 🎉 New features
 
 - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- Add rollback support to useUpdates(). ([#24071](https://github.com/expo/expo/pull/24071) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 
