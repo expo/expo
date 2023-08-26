@@ -75,7 +75,6 @@
     "is-root": "^2.1.0",
     "js-yaml": "^3.13.1",
     "json-schema-deref-sync": "^0.13.0",
-    "md5-file": "^3.2.3",
     "md5hex": "^1.0.0",
     "minipass": "3.1.6",
     "node-fetch": "^2.6.7",
