@@ -20,8 +20,8 @@ public final class FileSystemModule: Module {
 
     Constants {
       return [
-        "documentDirectory": documentDirectory,
-        "cacheDirectory": cacheDirectory,
+        "documentDirectory": documentDirectory?.absoluteString,
+        "cacheDirectory": cacheDirectory?.absoluteString,
         "bundleDirectory": Bundle.main.bundlePath
       ]
     }
@@ -57,6 +57,7 @@ public final class FileSystemModule: Module {
 
       if options.encoding == .base64 {
         try writeFileAsBase64(path: url.path, string: string)
+        return
       }
       do {
         try string.write(toFile: url.path, atomically: true, encoding: options.encoding.toStringEncoding() ?? .utf8)
@@ -277,7 +278,7 @@ func readFileAsBase64(path: String, options: ReadingOptions) throws -> String {
   guard let file else {
     throw FileNotExistsException(path)
   }
-  if let position = options.position {
+  if let position = options.position, position != 0 {
     // TODO: Handle these errors?
     try? file.seek(toOffset: UInt64(position))
   }

@@ -1,10 +1,10 @@
-import { NativeModulesProxy } from 'expo-modules-core';
+import { requireNativeModule } from 'expo-modules-core';
 import ExponentFileSystemShim from './ExponentFileSystemShim';
 let platformModule;
-if (NativeModulesProxy.ExponentFileSystem) {
-    platformModule = NativeModulesProxy.ExponentFileSystem;
+try {
+    platformModule = requireNativeModule('ExponentFileSystem');
 }
-else {
+catch {
     platformModule = ExponentFileSystemShim;
 }
 export default platformModule;
