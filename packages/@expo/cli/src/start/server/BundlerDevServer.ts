@@ -63,6 +63,9 @@ export interface BundlerStartOptions {
   /** Should instruct the bundler to create minified bundles. */
   minify?: boolean;
 
+  /** Will the bundler be used for exporting. NOTE: This is an odd option to pass to the dev server. */
+  isExporting?: boolean;
+
   // Webpack options
   /** Should modify and create PWA icons. */
   isImageEditingEnabled?: boolean;

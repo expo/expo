@@ -16,7 +16,6 @@
     "build",
     "ios",
     "scripts",
-    "tools",
     "AppEntry.js",
     "Expo.podspec",
     "bundledNativeModules.json",
@@ -69,8 +68,7 @@
     "expo-font": "~11.5.1",
     "expo-keep-awake": "~12.4.1",
     "expo-modules-autolinking": "1.5.0",
-    "expo-modules-core": "1.6.0",
-    "md5-file": "^3.2.3"
+    "expo-modules-core": "1.6.0"
   },
   "devDependencies": {
     "@types/react": "~18.0.14",

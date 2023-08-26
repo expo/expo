@@ -76,6 +76,7 @@ export async function bundleAsync(
 
   const { config, reporter } = await loadMetroConfigAsync(projectRoot, options, {
     exp: expoConfig,
+    isExporting: true,
   });
 
   const metroServer = await metro.runMetro(config, {
