@@ -249,6 +249,20 @@ The following options are provided:
 - `-c, --clear`: Clear the bundler cache before exporting.
 - `--no-minify`: Skip minifying JavaScript and CSS assets (SDK 49 and above).
 
+#### Asset Prefix
+
+You can configure the prefix for static assets by setting the `assetPrefix` field in your `app.json`:
+
+```json app.json
+{
+  "expo": {
+    "assetPrefix": "/my-root"
+  }
+}
+```
+
+This will export the website with all static assets prefixed with `/my-root`. For example, an image at `assets/image.png` will be expected to be hosted at `/my-root/assets/image.png`.
+
 ### Exporting with webpack
 
 > webpack is only supported for the Web platform.

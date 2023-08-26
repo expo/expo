@@ -8,6 +8,9 @@ module.exports = {
   icon: './assets/icon.png',
   scheme: 'router-e2e',
 
+  // Asset Prefix
+  assetPrefix: process.env._EXPO_ASSET_PREFIX || undefined,
+
   ios: {
     supportsTablet: true,
     bundleIdentifier: 'dev.expo.routere2e',

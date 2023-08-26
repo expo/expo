@@ -6,6 +6,7 @@ import { exportAssetsAsync, exportCssAssetsAsync } from './exportAssets';
 import { unstable_exportStaticAsync } from './exportStaticAsync';
 import { getVirtualFaviconAssetsAsync } from './favicon';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
+import { persistMetroAssetsAsync } from './persistMetroAssets';
 import { printBundleSizes } from './printBundleSizes';
 import { Options } from './resolveOptions';
 import {
@@ -16,7 +17,6 @@ import {
   writeSourceMapsAsync,
 } from './writeContents';
 import * as Log from '../log';
-import { importCliSaveAssetsFromProject } from '../start/server/metro/resolveFromProject';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { copyAsync, ensureDirectoryAsync } from '../utils/dir';
 import { env } from '../utils/env';
@@ -55,7 +55,7 @@ export async function exportAppAsync(
   const exp = await getPublicExpoManifestAsync(projectRoot);
 
   const useWebSSG = exp.web?.output === 'static';
-
+  const assetPrefix = exp.assetPrefix?.replace(/\/+$/, '') ?? '';
   const publicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);
 
   const outputPath = path.resolve(projectRoot, outputDir);
@@ -119,19 +119,24 @@ export async function exportAppAsync(
         outputDir: outputPath,
         // TODO: Expose
         minify,
+        assetPrefix,
       });
       Log.log('Finished saving static files');
     } else {
       const cssLinks = await exportCssAssetsAsync({
         outputDir,
         bundles,
+        assetPrefix,
       });
       let html = await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
-        scripts: [`/bundles/${fileNames.web}`],
+        scripts: [`${assetPrefix}/bundles/${fileNames.web}`],
         cssLinks,
       });
       // Add the favicon assets to the HTML.
-      const modifyHtml = await getVirtualFaviconAssetsAsync(projectRoot, outputDir);
+      const modifyHtml = await getVirtualFaviconAssetsAsync(projectRoot, {
+        outputDir,
+        assetPrefix,
+      });
       if (modifyHtml) {
         html = modifyHtml(html);
       }
@@ -143,12 +148,12 @@ export async function exportAppAsync(
     // TODO: Use a different mechanism for static web.
     if (bundles.web) {
       // Save assets like a typical bundler, preserving the file paths on web.
-      const saveAssets = importCliSaveAssetsFromProject(projectRoot);
-      await Promise.all(
-        Object.entries(bundles).map(([platform, bundle]) => {
-          return saveAssets(bundle.assets, platform, staticFolder, undefined);
-        })
-      );
+      // TODO: Update React Native Web to support loading files from asset hashes.
+      await persistMetroAssetsAsync(bundles.web.assets, {
+        platform: 'web',
+        outputDirectory: staticFolder,
+        assetPrefix,
+      });
     }
   }
 
