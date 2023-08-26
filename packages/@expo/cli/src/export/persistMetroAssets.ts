@@ -117,6 +117,8 @@ function getAssetLocalPath(
 }
 
 export function stripAssetPrefix(path: string, assetPrefix?: string) {
+  path = path.replace(/\/assets\?export_path=(.*)/, '$1');
+
   // TODO: Windows?
   if (assetPrefix) {
     return path.replace(/^\/+/g, '').replace(
