@@ -106,6 +106,7 @@ export async function exportFromServerAsync(
     devServer.getStaticRenderFunctionAsync({
       mode: 'production',
       minify,
+      assetPrefix,
     }),
   ]);
 

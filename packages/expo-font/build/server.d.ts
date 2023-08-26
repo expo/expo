@@ -3,7 +3,9 @@ import { FontSource } from './Font.types';
  * @returns the server resources that should be statically extracted.
  * @private
  */
-export declare function getServerResources(): any;
+export declare function getServerResources(options: {
+    assetPrefix: string;
+}): any;
 /**
  * @returns clear the server resources from the global scope.
  * @private

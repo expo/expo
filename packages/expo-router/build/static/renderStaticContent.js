@@ -36,7 +36,7 @@ function resetReactNavigationContexts() {
     const contexts = '__react_navigation__elements_contexts';
     global[contexts] = new Map();
 }
-export function getStaticContent(location) {
+export function getStaticContent(location, { assetPrefix }) {
     const headContext = {};
     const ref = React.createRef();
     const { 
@@ -64,7 +64,7 @@ export function getStaticContent(location) {
     let output = mixHeadComponentsWithStaticResults(headContext.helmet, html);
     output = output.replace('</head>', `${css}</head>`);
     // Inject static fonts loaded with expo-font
-    output = output.replace('</head>', `${Font.getServerResources().join('')}</head>`);
+    output = output.replace('</head>', `${Font.getServerResources({ assetPrefix }).join('')}</head>`);
     return '<!DOCTYPE html>' + output;
 }
 function mixHeadComponentsWithStaticResults(helmet, html) {
