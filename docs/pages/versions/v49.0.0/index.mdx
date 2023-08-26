@@ -24,9 +24,9 @@ import { Gyroscope } from 'expo-sensors';
 
 This allows you to write [`Contacts.getContactsAsync()`](/versions/latest/sdk/contacts#contactsgetcontactsasynccontactquery) and read the contacts from the device, read the gyroscope sensor to detect device movement, or start the phone's camera and take photos.
 
-## These packages work in bare React Native apps too
+## All Expo SDK packages work in any React Native app
 
-The easiest way to create a bare React Native app with support for the Expo SDK is by running the command:
+The easiest way to create a React Native app with support for Expo SDK packages is to use `create-expo-app`, but you can also add Expo SDK support to an existing React Native app with the `npx install-expo-modules` command.
 
 <Terminal
   cmd={['# Create a project named my-app', '$ npx create-expo-app my-app --template bare-minimum']}
@@ -34,12 +34,11 @@ The easiest way to create a bare React Native app with support for the Expo SDK 
 />
 
 <BoxLink
-  title="Existing apps"
+  title="Installing Expo SDK packages in existing React Native apps"
   href="/bare/installing-expo-modules"
   description={
     <>
-      Projects that were created with <CODE>npx react-native init</CODE> require additional setup to
-      use the Expo SDK.
+      Learn more about configuring projects created with <CODE>npx react-native init</CODE> to Expo SDK packages.
     </>
   }
 />
