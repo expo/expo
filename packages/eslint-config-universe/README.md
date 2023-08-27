@@ -18,7 +18,7 @@ yarn add --dev eslint prettier
 Import this config into your own ESLint configuration using the `extends` option. ESLint checks both `package.json` and `.eslintrc.*` files for its configuration:
 
 ### package.json
-```js
+```json
 {
   "eslintConfig": {
     // Choose from universe/native, universe/node, universe/web
@@ -43,7 +43,8 @@ If you would like to customize the Prettier settings, create a file named `.pret
   "printWidth": 100,
   "tabWidth": 2,
   "singleQuote": true,
-  "bracketSameLine": true
+  "bracketSameLine": true,
+  "trailingComma": "es5"
 }
 ```
 
