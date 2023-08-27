@@ -22,12 +22,8 @@ export function uuidv4<T extends OutputBuffer>(
 
   options = options || undefined;
 
-  let rnds: number[] = [];
-  if (options && 'random' in options) {
-    rnds = options.random as number[];
-  } else if (options && 'rng' in options) {
-    rnds = (options.rng || rng)() as number[];
-  }
+  // @ts-expect-error
+  const rnds: number[] = options?.random || (options?.rng || rng)();
 
   // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
   rnds[6] = (rnds[6] & 0x0f) | 0x40;
