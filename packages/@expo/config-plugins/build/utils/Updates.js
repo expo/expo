@@ -26,6 +26,13 @@ function _sdkRuntimeVersions() {
   };
   return data;
 }
+function _child_process() {
+  const data = _interopRequireDefault(require("child_process"));
+  _child_process = function () {
+    return data;
+  };
+  return data;
+}
 function _fs() {
   const data = _interopRequireDefault(require("fs"));
   _fs = function () {
@@ -110,9 +117,10 @@ function getNativeVersion(config, platform) {
  * @return an expoConfig with only string valued platform specific runtime versions.
  */
 const withRuntimeVersion = config => {
-  var _config$ios, _config$android;
+  var _config$_internal, _config$ios, _config$android;
+  const projectRoot = (_config$_internal = config._internal) === null || _config$_internal === void 0 ? void 0 : _config$_internal.projectRoot;
   if ((_config$ios = config.ios) !== null && _config$ios !== void 0 && _config$ios.runtimeVersion || config.runtimeVersion) {
-    const runtimeVersion = getRuntimeVersion(config, 'ios');
+    const runtimeVersion = getRuntimeVersion(projectRoot, config, 'ios');
     if (runtimeVersion) {
       config.ios = {
         ...config.ios,
@@ -121,7 +129,7 @@ const withRuntimeVersion = config => {
     }
   }
   if ((_config$android = config.android) !== null && _config$android !== void 0 && _config$android.runtimeVersion || config.runtimeVersion) {
-    const runtimeVersion = getRuntimeVersion(config, 'android');
+    const runtimeVersion = getRuntimeVersion(projectRoot, config, 'android');
     if (runtimeVersion) {
       config.android = {
         ...config.android,
@@ -133,9 +141,9 @@ const withRuntimeVersion = config => {
   return config;
 };
 exports.withRuntimeVersion = withRuntimeVersion;
-function getRuntimeVersionNullable(...[config, platform]) {
+function getRuntimeVersionNullable(...[projectRoot, config, platform]) {
   try {
-    return getRuntimeVersion(config, platform);
+    return getRuntimeVersion(projectRoot, config, platform);
   } catch (e) {
     if ((0, _getenv().boolish)('EXPO_DEBUG', false)) {
       console.log(e);
@@ -143,7 +151,16 @@ function getRuntimeVersionNullable(...[config, platform]) {
     return null;
   }
 }
-function getRuntimeVersion(config, platform) {
+function createFingerprint(projectRoot) {
+  const result = _child_process().default.execSync(`npx --yes @expo/fingerprint ${projectRoot}`, {
+    encoding: "utf-8"
+  });
+  const {
+    hash
+  } = JSON.parse(result);
+  return hash;
+}
+function getRuntimeVersion(projectRoot, config, platform) {
   var _config$platform$runt, _config$platform;
   const runtimeVersion = (_config$platform$runt = (_config$platform = config[platform]) === null || _config$platform === void 0 ? void 0 : _config$platform.runtimeVersion) !== null && _config$platform$runt !== void 0 ? _config$platform$runt : config.runtimeVersion;
   if (!runtimeVersion) {
@@ -160,8 +177,10 @@ function getRuntimeVersion(config, platform) {
       throw new Error("An SDK version must be defined when using the 'sdkVersion' runtime policy.");
     }
     return (0, _sdkRuntimeVersions().getRuntimeVersionForSDKVersion)(config.sdkVersion);
+  } else if (runtimeVersion.policy === 'fingerprint') {
+    return createFingerprint(projectRoot);
   }
-  throw new Error(`"${typeof runtimeVersion === 'object' ? JSON.stringify(runtimeVersion) : runtimeVersion}" is not a valid runtime version. getRuntimeVersion only supports a string, "sdkVersion", "appVersion", or "nativeVersion" policy.`);
+  throw new Error(`"${typeof runtimeVersion === 'object' ? JSON.stringify(runtimeVersion) : runtimeVersion}" is not a valid runtime version. getRuntimeVersion only supports a string, "sdkVersion", "appVersion", "nativeVersion" or "fingerprint" policy.`);
 }
 function getSDKVersion(config) {
   return typeof config.sdkVersion === 'string' ? config.sdkVersion : null;

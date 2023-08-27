@@ -181,17 +181,18 @@ describe(getNativeVersion, () => {
 describe(getRuntimeVersion, () => {
   it('works if the top level runtimeVersion is a string', () => {
     const runtimeVersion = '42';
-    expect(getRuntimeVersion({ runtimeVersion }, 'ios')).toBe(runtimeVersion);
+    expect(getRuntimeVersion('', { runtimeVersion }, 'ios')).toBe(runtimeVersion);
   });
   it('works if the platform specific runtimeVersion is a string', () => {
     const runtimeVersion = '42';
-    expect(getRuntimeVersion({ ios: { runtimeVersion } }, 'ios')).toBe(runtimeVersion);
+    expect(getRuntimeVersion('', { ios: { runtimeVersion } }, 'ios')).toBe(runtimeVersion);
   });
   it('works if the runtimeVersion is a nativeVersion policy', () => {
     const version = '1';
     const buildNumber = '2';
     expect(
       getRuntimeVersion(
+        '',
         { version, runtimeVersion: { policy: 'nativeVersion' }, ios: { buildNumber } },
         'ios'
       )
@@ -202,24 +203,25 @@ describe(getRuntimeVersion, () => {
     const buildNumber = '2';
     expect(
       getRuntimeVersion(
+        '',
         { version, runtimeVersion: { policy: 'appVersion' }, ios: { buildNumber } },
         'ios'
       )
     ).toBe(version);
   });
   it('returns null if no runtime version is supplied', () => {
-    expect(getRuntimeVersion({}, 'ios')).toEqual(null);
+    expect(getRuntimeVersion('', {}, 'ios')).toEqual(null);
   });
   it('throws if runtime version is not parseable', () => {
     expect(() => {
-      getRuntimeVersion({ runtimeVersion: 1 } as any, 'ios');
+      getRuntimeVersion('', { runtimeVersion: 1 } as any, 'ios');
     }).toThrow(
-      `"1" is not a valid runtime version. getRuntimeVersion only supports a string, "sdkVersion", "appVersion", or "nativeVersion" policy.`
+      `"1" is not a valid runtime version. getRuntimeVersion only supports a string, "sdkVersion", "appVersion", "nativeVersion" or "fingerprint" policy.`
     );
     expect(() => {
-      getRuntimeVersion({ runtimeVersion: { policy: 'unsupportedPlugin' } } as any, 'ios');
+      getRuntimeVersion('', { runtimeVersion: { policy: 'unsupportedPlugin' } } as any, 'ios');
     }).toThrow(
-      `"{"policy":"unsupportedPlugin"}" is not a valid runtime version. getRuntimeVersion only supports a string, "sdkVersion", "appVersion", or "nativeVersion" policy.`
+      `"{"policy":"unsupportedPlugin"}" is not a valid runtime version. getRuntimeVersion only supports a string, "sdkVersion", "appVersion", "nativeVersion" or "fingerprint" policy.`
     );
   });
 });

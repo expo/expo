@@ -16,7 +16,7 @@ export declare enum Config {
 }
 export declare const withUpdates: ConfigPlugin;
 export declare function setUpdatesConfig(projectRoot: string, config: ExpoConfigUpdates, expoPlist: ExpoPlist, expoUpdatesPackageVersion?: string | null): ExpoPlist;
-export declare function setVersionsConfig(config: ExpoConfigUpdates, expoPlist: ExpoPlist): ExpoPlist;
+export declare function setVersionsConfig(projectRoot: string, config: ExpoConfigUpdates, expoPlist: ExpoPlist): ExpoPlist;
 interface ShellScriptBuildPhase {
     isa: 'PBXShellScriptBuildPhase';
     name: string;
@@ -28,5 +28,5 @@ export declare function ensureBundleReactNativePhaseContainsConfigurationScript(
 export declare function isShellScriptBuildPhaseConfigured(projectRoot: string, project: xcode.XcodeProject): boolean;
 export declare function isPlistConfigurationSet(expoPlist: ExpoPlist): boolean;
 export declare function isPlistConfigurationSynced(projectRoot: string, config: ExpoConfigUpdates, expoPlist: ExpoPlist): boolean;
-export declare function isPlistVersionConfigurationSynced(config: Pick<ExpoConfigUpdates, 'sdkVersion' | 'runtimeVersion'>, expoPlist: ExpoPlist): boolean;
+export declare function isPlistVersionConfigurationSynced(projectRoot: string, config: Pick<ExpoConfigUpdates, 'sdkVersion' | 'runtimeVersion'>, expoPlist: ExpoPlist): boolean;
 export {};

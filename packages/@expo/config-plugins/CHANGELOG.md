@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add fingerprint runtime version policy.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

@@ -69,7 +69,7 @@ export class InterstitialPageMiddleware extends ExpoMiddleware {
 
     const { exp } = getConfig(this.projectRoot);
     const { appName } = getNameFromConfig(exp);
-    const runtimeVersion = getRuntimeVersionNullable(exp, platform);
+    const runtimeVersion = getRuntimeVersionNullable(this.projectRoot, exp, platform);
     const sdkVersion = exp.sdkVersion ?? null;
 
     return {

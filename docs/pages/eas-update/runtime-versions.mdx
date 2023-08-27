@@ -118,6 +118,26 @@ It's important to know that this policy does require the developer to manage the
 
 Also, if you select a different native version between iOS and Android, you'll end up with builds and updates with separate runtime versions. When you publish an update, EAS CLI will detect that two updates are needed, and it will create two updates with the required runtime versions and publish them separately.
 
+### `"fingerprint"` runtime version policy
+
+We provide the `"fingerprint"` runtime version policy for a project that has custom native code that may change between builds:
+
+```json
+{
+  "expo": {
+    "runtimeVersion": {
+      "policy": "fingerprint"
+    }
+  }
+}
+```
+
+This policy is great for projects that contain custom native code and want to use updates safely without native conflicts.
+
+Differently than "nativeVersion", this policy automatically checks the project native dependencies and update the runtimeVersion accordingly.
+
+It's important to notice that fingerprinting the project might take a while and it will slow down the build process.
+
 ### Custom `"runtimeVersion"`
 
 You can also set a custom runtime version that meets the [runtime version formatting requirements](/versions/latest/config/app/#runtimeversion):

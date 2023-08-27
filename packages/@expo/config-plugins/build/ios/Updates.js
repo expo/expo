@@ -100,13 +100,13 @@ function setUpdatesConfig(projectRoot, config, expoPlist, expoUpdatesPackageVers
   } else {
     delete newExpoPlist[Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY];
   }
-  return setVersionsConfig(config, newExpoPlist);
+  return setVersionsConfig(projectRoot, config, newExpoPlist);
 }
-function setVersionsConfig(config, expoPlist) {
+function setVersionsConfig(projectRoot, config, expoPlist) {
   const newExpoPlist = {
     ...expoPlist
   };
-  const runtimeVersion = (0, _Updates().getRuntimeVersionNullable)(config, 'ios');
+  const runtimeVersion = (0, _Updates().getRuntimeVersionNullable)(projectRoot, config, 'ios');
   if (!runtimeVersion && expoPlist[Config.RUNTIME_VERSION]) {
     throw new Error('A runtime version is set in your Expo.plist, but is missing from your app.json/app.config.js. Please either set runtimeVersion in your app.json/app.config.js or remove EXUpdatesRuntimeVersion from your Expo.plist.');
   }
@@ -165,11 +165,11 @@ function isPlistConfigurationSet(expoPlist) {
   return Boolean(expoPlist.EXUpdatesURL && (expoPlist.EXUpdatesSDKVersion || expoPlist.EXUpdatesRuntimeVersion));
 }
 function isPlistConfigurationSynced(projectRoot, config, expoPlist) {
-  return (0, _Updates().getUpdateUrl)(config) === expoPlist.EXUpdatesURL && (0, _Updates().getUpdatesEnabled)(config) === expoPlist.EXUpdatesEnabled && (0, _Updates().getUpdatesTimeout)(config) === expoPlist.EXUpdatesLaunchWaitMs && (0, _Updates().getUpdatesCheckOnLaunch)(config) === expoPlist.EXUpdatesCheckOnLaunch && (0, _Updates().getUpdatesCodeSigningCertificate)(projectRoot, config) === expoPlist.EXUpdatesCodeSigningCertificate && (0, _Updates().getUpdatesCodeSigningMetadata)(config) === expoPlist.EXUpdatesCodeSigningMetadata && isPlistVersionConfigurationSynced(config, expoPlist);
+  return (0, _Updates().getUpdateUrl)(config) === expoPlist.EXUpdatesURL && (0, _Updates().getUpdatesEnabled)(config) === expoPlist.EXUpdatesEnabled && (0, _Updates().getUpdatesTimeout)(config) === expoPlist.EXUpdatesLaunchWaitMs && (0, _Updates().getUpdatesCheckOnLaunch)(config) === expoPlist.EXUpdatesCheckOnLaunch && (0, _Updates().getUpdatesCodeSigningCertificate)(projectRoot, config) === expoPlist.EXUpdatesCodeSigningCertificate && (0, _Updates().getUpdatesCodeSigningMetadata)(config) === expoPlist.EXUpdatesCodeSigningMetadata && isPlistVersionConfigurationSynced(projectRoot, config, expoPlist);
 }
-function isPlistVersionConfigurationSynced(config, expoPlist) {
+function isPlistVersionConfigurationSynced(projectRoot, config, expoPlist) {
   var _expoPlist$EXUpdatesR, _expoPlist$EXUpdatesS;
-  const expectedRuntimeVersion = (0, _Updates().getRuntimeVersionNullable)(config, 'ios');
+  const expectedRuntimeVersion = (0, _Updates().getRuntimeVersionNullable)(projectRoot, config, 'ios');
   const expectedSdkVersion = (0, _Updates().getSDKVersion)(config);
   const currentRuntimeVersion = (_expoPlist$EXUpdatesR = expoPlist.EXUpdatesRuntimeVersion) !== null && _expoPlist$EXUpdatesR !== void 0 ? _expoPlist$EXUpdatesR : null;
   const currentSdkVersion = (_expoPlist$EXUpdatesS = expoPlist.EXUpdatesSDKVersion) !== null && _expoPlist$EXUpdatesS !== void 0 ? _expoPlist$EXUpdatesS : null;

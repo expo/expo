@@ -1,5 +1,6 @@
 import { Android, ExpoConfig, IOS } from '@expo/config-types';
 import { getRuntimeVersionForSDKVersion } from '@expo/sdk-runtime-versions';
+import child_process from 'child_process';
 import fs from 'fs';
 import { boolish } from 'getenv';
 import path from 'path';
@@ -60,8 +61,9 @@ export function getNativeVersion(
  * @return an expoConfig with only string valued platform specific runtime versions.
  */
 export const withRuntimeVersion: (config: ExpoConfig) => ExpoConfig = (config) => {
+  const projectRoot = config._internal?.projectRoot;
   if (config.ios?.runtimeVersion || config.runtimeVersion) {
-    const runtimeVersion = getRuntimeVersion(config, 'ios');
+    const runtimeVersion = getRuntimeVersion(projectRoot, config, 'ios');
     if (runtimeVersion) {
       config.ios = {
         ...config.ios,
@@ -70,7 +72,7 @@ export const withRuntimeVersion: (config: ExpoConfig) => ExpoConfig = (config) =
     }
   }
   if (config.android?.runtimeVersion || config.runtimeVersion) {
-    const runtimeVersion = getRuntimeVersion(config, 'android');
+    const runtimeVersion = getRuntimeVersion(projectRoot, config, 'android');
     if (runtimeVersion) {
       config.android = {
         ...config.android,
@@ -83,10 +85,10 @@ export const withRuntimeVersion: (config: ExpoConfig) => ExpoConfig = (config) =
 };
 
 export function getRuntimeVersionNullable(
-  ...[config, platform]: Parameters<typeof getRuntimeVersion>
+  ...[projectRoot, config, platform]: Parameters<typeof getRuntimeVersion>
 ): string | null {
   try {
-    return getRuntimeVersion(config, platform);
+    return getRuntimeVersion(projectRoot, config, platform);
   } catch (e) {
     if (boolish('EXPO_DEBUG', false)) {
       console.log(e);
@@ -95,7 +97,16 @@ export function getRuntimeVersionNullable(
   }
 }
 
+function createFingerprint(projectRoot: string): string | null {
+  const result = child_process.execSync(`npx --yes @expo/fingerprint ${projectRoot}`, {
+    encoding: 'utf-8',
+  });
+  const { hash } = JSON.parse(result);
+  return hash;
+}
+
 export function getRuntimeVersion(
+  projectRoot: string,
   config: Pick<ExpoConfig, 'version' | 'runtimeVersion' | 'sdkVersion'> & {
     android?: Pick<Android, 'versionCode' | 'runtimeVersion'>;
     ios?: Pick<IOS, 'buildNumber' | 'runtimeVersion'>;
@@ -118,12 +129,14 @@ export function getRuntimeVersion(
       throw new Error("An SDK version must be defined when using the 'sdkVersion' runtime policy.");
     }
     return getRuntimeVersionForSDKVersion(config.sdkVersion);
+  } else if (runtimeVersion.policy === 'fingerprint') {
+    return createFingerprint(projectRoot);
   }
 
   throw new Error(
     `"${
       typeof runtimeVersion === 'object' ? JSON.stringify(runtimeVersion) : runtimeVersion
-    }" is not a valid runtime version. getRuntimeVersion only supports a string, "sdkVersion", "appVersion", or "nativeVersion" policy.`
+    }" is not a valid runtime version. getRuntimeVersion only supports a string, "sdkVersion", "appVersion", "nativeVersion" or "fingerprint" policy.`
   );
 }
 

@@ -92,13 +92,17 @@ export function setUpdatesConfig(
     delete newExpoPlist[Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY];
   }
 
-  return setVersionsConfig(config, newExpoPlist);
+  return setVersionsConfig(projectRoot, config, newExpoPlist);
 }
 
-export function setVersionsConfig(config: ExpoConfigUpdates, expoPlist: ExpoPlist): ExpoPlist {
+export function setVersionsConfig(
+  projectRoot: string,
+  config: ExpoConfigUpdates,
+  expoPlist: ExpoPlist
+): ExpoPlist {
   const newExpoPlist = { ...expoPlist };
 
-  const runtimeVersion = getRuntimeVersionNullable(config, 'ios');
+  const runtimeVersion = getRuntimeVersionNullable(projectRoot, config, 'ios');
   if (!runtimeVersion && expoPlist[Config.RUNTIME_VERSION]) {
     throw new Error(
       'A runtime version is set in your Expo.plist, but is missing from your app.json/app.config.js. Please either set runtimeVersion in your app.json/app.config.js or remove EXUpdatesRuntimeVersion from your Expo.plist.'
@@ -211,15 +215,16 @@ export function isPlistConfigurationSynced(
     getUpdatesCodeSigningCertificate(projectRoot, config) ===
       expoPlist.EXUpdatesCodeSigningCertificate &&
     getUpdatesCodeSigningMetadata(config) === expoPlist.EXUpdatesCodeSigningMetadata &&
-    isPlistVersionConfigurationSynced(config, expoPlist)
+    isPlistVersionConfigurationSynced(projectRoot, config, expoPlist)
   );
 }
 
 export function isPlistVersionConfigurationSynced(
+  projectRoot: string,
   config: Pick<ExpoConfigUpdates, 'sdkVersion' | 'runtimeVersion'>,
   expoPlist: ExpoPlist
 ): boolean {
-  const expectedRuntimeVersion = getRuntimeVersionNullable(config, 'ios');
+  const expectedRuntimeVersion = getRuntimeVersionNullable(projectRoot, config, 'ios');
   const expectedSdkVersion = getSDKVersion(config);
 
   const currentRuntimeVersion = expoPlist.EXUpdatesRuntimeVersion ?? null;
