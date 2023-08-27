@@ -122,6 +122,13 @@ export function LoggedOutAccountView({ refetch }: Props) {
           },
         });
 
+        if (
+          viewerPrimaryAccountNameResult.errors &&
+          viewerPrimaryAccountNameResult.errors.length > 0
+        ) {
+          throw viewerPrimaryAccountNameResult.errors[0];
+        }
+
         const primaryAccountName =
           viewerPrimaryAccountNameResult.data.meUserActor?.primaryAccount.name;
         if (!primaryAccountName) {

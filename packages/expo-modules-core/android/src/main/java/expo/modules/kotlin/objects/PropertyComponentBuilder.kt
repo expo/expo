@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalStdlibApi::class)
-
 package expo.modules.kotlin.objects
 
 import expo.modules.kotlin.functions.SyncFunctionComponent

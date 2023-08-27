@@ -198,7 +198,8 @@ export type AssetsOptions = {
      */
     first?: number;
     /**
-     * Asset ID of the last item returned on the previous page.
+     * Asset ID of the last item returned on the previous page. To get the ID of the next page,
+     * pass [`endCursor`](#pagedinfo) as its value.
      */
     after?: AssetRef;
     /**

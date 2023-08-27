@@ -13,24 +13,16 @@ namespace jni = facebook::jni;
 namespace react = facebook::react;
 
 namespace expo {
+
 class JavaScriptValue;
-
 class JavaScriptObject;
-
 class JSIInteropModuleRegistry;
 
-/**
- * Dummy CallInvoker that invokes everything immediately.
- * Used in the test environment to check the async flow.
- */
-class SyncCallInvoker : public react::CallInvoker {
-public:
-  void invokeAsync(std::function<void()> &&func) override;
-
-  void invokeSync(std::function<void()> &&func) override;
-
-  ~SyncCallInvoker() override = default;
-};
+#if REACT_NATIVE_TARGET_VERSION >= 73
+using NativeMethodCallInvokerCompatible = react::NativeMethodCallInvoker;
+#else
+using NativeMethodCallInvokerCompatible = react::CallInvoker;
+#endif
 
 /**
  * A wrapper for the jsi::Runtime.
@@ -45,6 +37,7 @@ public:
   /**
    * Initializes a runtime that is independent from React Native and its runtime initialization.
    * This flow is mostly intended for tests. The JS call invoker is set to `SyncCallInvoker`.
+   * See **JavaScriptRuntime.cpp** for the `SyncCallInvoker` implementation.
    */
   JavaScriptRuntime(
     JSIInteropModuleRegistry *jsiInteropModuleRegistry
@@ -54,7 +47,7 @@ public:
     JSIInteropModuleRegistry *jsiInteropModuleRegistry,
     jsi::Runtime *runtime,
     std::shared_ptr<react::CallInvoker> jsInvoker,
-    std::shared_ptr<react::CallInvoker> nativeInvoker
+    std::shared_ptr<NativeMethodCallInvokerCompatible> nativeInvoker
   );
 
   /**
@@ -87,7 +80,7 @@ public:
   void drainJSEventLoop();
 
   std::shared_ptr<react::CallInvoker> jsInvoker;
-  std::shared_ptr<react::CallInvoker> nativeInvoker;
+  std::shared_ptr<NativeMethodCallInvokerCompatible> nativeInvoker;
 
   std::shared_ptr<jsi::Object> getMainObject();
 

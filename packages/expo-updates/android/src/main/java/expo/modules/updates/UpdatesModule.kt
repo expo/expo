@@ -80,8 +80,7 @@ class UpdatesModule(
         if (launchedUpdate != null) {
           constants["updateId"] = launchedUpdate.id.toString()
           constants["commitTime"] = launchedUpdate.commitTime.time
-          constants["manifestString"] =
-            if (launchedUpdate.manifest != null) launchedUpdate.manifest.toString() else "{}"
+          constants["manifestString"] = launchedUpdate.manifest.toString()
         }
         val localAssetFiles = updatesServiceLocal.localAssetFiles
         if (localAssetFiles != null) {
@@ -138,7 +137,7 @@ class UpdatesModule(
     }
   }
 
-  // Used internally by @expo/use-updates useUpdates() to get its initial state
+  // Used internally by useUpdates() to get its initial state
   @ExpoMethod
   fun getNativeStateMachineContextAsync(promise: Promise) {
     try {
@@ -221,7 +220,7 @@ class UpdatesModule(
                     return
                   }
 
-                  promise.resolveWithCheckForUpdateAsyncResult(CheckForUpdateAsyncResult.RollBackToEmbedded(), updatesServiceLocal)
+                  promise.resolveWithCheckForUpdateAsyncResult(CheckForUpdateAsyncResult.RollBackToEmbedded(updateDirective.commitTime), updatesServiceLocal)
                   return
                 }
               }
@@ -269,7 +268,7 @@ class UpdatesModule(
 
     class NoUpdateAvailable : CheckForUpdateAsyncResult(Status.NO_UPDATE_AVAILABLE)
     class UpdateAvailable(val updateManifest: UpdateManifest) : CheckForUpdateAsyncResult(Status.UPDATE_AVAILABLE)
-    class RollBackToEmbedded : CheckForUpdateAsyncResult(Status.ROLL_BACK_TO_EMBEDDED)
+    class RollBackToEmbedded(val commitTime: Date) : CheckForUpdateAsyncResult(Status.ROLL_BACK_TO_EMBEDDED)
   }
 
   private fun Promise.resolveWithCheckForUpdateAsyncResult(checkForUpdateAsyncResult: CheckForUpdateAsyncResult, updatesServiceLocal: UpdatesInterface) {
@@ -297,7 +296,7 @@ class UpdatesModule(
     updatesServiceLocal.stateMachine?.processEvent(
       when (checkForUpdateAsyncResult) {
         is CheckForUpdateAsyncResult.NoUpdateAvailable -> UpdatesStateEvent.CheckCompleteUnavailable()
-        is CheckForUpdateAsyncResult.RollBackToEmbedded -> UpdatesStateEvent.CheckCompleteWithRollback()
+        is CheckForUpdateAsyncResult.RollBackToEmbedded -> UpdatesStateEvent.CheckCompleteWithRollback(checkForUpdateAsyncResult.commitTime)
         is CheckForUpdateAsyncResult.UpdateAvailable -> UpdatesStateEvent.CheckCompleteWithUpdate(
           checkForUpdateAsyncResult.updateManifest.manifest.getRawJson()
         )
@@ -418,7 +417,7 @@ class UpdatesModule(
                         }
                       )
                       updatesServiceLocal.stateMachine?.processEvent(
-                        UpdatesStateEvent.DownloadCompleteWithUpdate(updateEntity.manifest!!)
+                        UpdatesStateEvent.DownloadCompleteWithUpdate(updateEntity.manifest)
                       )
                     }
                   }

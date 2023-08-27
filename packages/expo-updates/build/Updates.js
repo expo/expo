@@ -158,14 +158,8 @@ export async function getExtraParamsAsync() {
 }
 /**
  * Sets an extra param if value is non-null, otherwise unsets the param.
- * Extra params are sent in a header of update requests.
- * The update server may use these params when evaluating logic to determine which update to serve.
- * EAS Update merges these params into the fields used to evaluate channel–branch mapping logic.
- *
- * @example An app may want to add a feature where users can opt-in to beta updates. In this instance,
- * extra params could be set to `{userType: 'beta'}`, and then the server can use this information
- * when deciding which update to serve. If using EAS Update, the channel-branch mapping can be set to
- * discriminate branches based on the `userType`.
+ * Extra params are sent as an [Expo Structured Field Value Dictionary](https://docs.expo.dev/technical-specs/expo-sfv-0/)
+ * in the `Expo-Extra-Params` header of update requests. A compliant update server may use these params when selecting an update to serve.
  */
 export async function setExtraParamAsync(key, value) {
     if (!ExpoUpdates.setExtraParamAsync) {
@@ -210,6 +204,10 @@ export async function clearLogEntriesAsync() {
  * storage. This method cannot be used in development mode, and the returned promise will be
  * rejected if you try to do so.
  *
+ > **Note:** [`reloadAsync()`](#updatesreloadasync) can be called after promise resolution to
+ * reload the app using the most recently downloaded version. Otherwise, the update will be applied
+ * on the next app cold start.
+ *
  * @return A promise that fulfills with an [`UpdateFetchResult`](#updatefetchresult) object.
  *
  * The promise rejects if the app is in development mode, or if there is an unexpected error or
@@ -238,12 +236,8 @@ export function clearUpdateCacheExperimentalAsync(_sdkVersion) {
 /**
  * @hidden
  */
-export async function getNativeStateMachineContextAsync() {
-    // Return the current state machine context
-    if (!ExpoUpdates.getNativeStateMachineContextAsync) {
-        throw new UnavailabilityError('Updates', 'getNativeStateMachineContextAsync');
-    }
-    const nativeContext = await ExpoUpdates.getNativeStateMachineContextAsync();
+export function transformNativeStateMachineContext(originalNativeContext) {
+    const nativeContext = { ...originalNativeContext };
     if (nativeContext.latestManifestString) {
         nativeContext.latestManifest = JSON.parse(nativeContext.latestManifestString);
         delete nativeContext.latestManifestString;
@@ -256,6 +250,21 @@ export async function getNativeStateMachineContextAsync() {
         nativeContext.lastCheckForUpdateTime = new Date(nativeContext.lastCheckForUpdateTimeString);
         delete nativeContext.lastCheckForUpdateTimeString;
     }
+    if (nativeContext.rollbackString) {
+        nativeContext.rollback = JSON.parse(nativeContext.rollbackString);
+        delete nativeContext.rollbackString;
+    }
     return nativeContext;
+}
+/**
+ * @hidden
+ */
+export async function getNativeStateMachineContextAsync() {
+    // Return the current state machine context
+    if (!ExpoUpdates.getNativeStateMachineContextAsync) {
+        throw new UnavailabilityError('Updates', 'getNativeStateMachineContextAsync');
+    }
+    const nativeContext = await ExpoUpdates.getNativeStateMachineContextAsync();
+    return transformNativeStateMachineContext(nativeContext);
 }
 //# sourceMappingURL=Updates.js.map

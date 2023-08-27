@@ -10,7 +10,8 @@ internal final class UpdatesDatabaseMigrationRegistry {
       UpdatesDatabaseMigration5To6(),
       UpdatesDatabaseMigration6To7(),
       UpdatesDatabaseMigration7To8(),
-      UpdatesDatabaseMigration8To9()
+      UpdatesDatabaseMigration8To9(),
+      UpdatesDatabaseMigration9To10()
     ]
   }
 }

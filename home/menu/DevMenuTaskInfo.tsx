@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/build/Ionicons';
 import Constants from 'expo-constants';
 import { Row, View, Text, useExpoTheme } from 'expo-dev-client-components';
 import React from 'react';
-import { Image, Platform, StyleSheet } from 'react-native';
+import { Image, Linking, Platform, StyleSheet, TouchableOpacity } from 'react-native';
 
 type Props = {
   task: { manifestUrl: string; manifestString: string };
@@ -80,36 +80,39 @@ export function DevMenuTaskInfo({ task }: Props) {
             </Text>
           )}
           {!manifestInfo?.isVerified && (
-            <Row
-              bg="warning"
-              border="warning"
-              rounded="medium"
-              padding="0"
-              align="center"
-              style={{
-                alignSelf: 'flex-start',
-                marginTop: 3,
-              }}>
-              <Ionicons
-                name={Platform.select({ ios: 'ios-warning', default: 'md-warning' })}
-                size={14}
-                color={theme.text.warning}
-                lightColor={theme.text.warning}
-                darkColor={theme.text.warning}
+            <TouchableOpacity
+              onPress={() => Linking.openURL('https://expo.fyi/unverified-app-expo-go')}>
+              <Row
+                bg="warning"
+                border="warning"
+                rounded="medium"
+                padding="0"
+                align="center"
                 style={{
-                  marginHorizontal: 4,
-                }}
-              />
-              <Text
-                color="warning"
-                type="InterSemiBold"
-                size="small"
-                style={{
-                  marginRight: 4,
+                  alignSelf: 'flex-start',
+                  marginTop: 3,
                 }}>
-                Unverified
-              </Text>
-            </Row>
+                <Ionicons
+                  name={Platform.select({ ios: 'ios-warning', default: 'md-warning' })}
+                  size={14}
+                  color={theme.text.warning}
+                  lightColor={theme.text.warning}
+                  darkColor={theme.text.warning}
+                  style={{
+                    marginHorizontal: 4,
+                  }}
+                />
+                <Text
+                  color="warning"
+                  type="InterSemiBold"
+                  size="small"
+                  style={{
+                    marginRight: 4,
+                  }}>
+                  Unverified
+                </Text>
+              </Row>
+            </TouchableOpacity>
           )}
         </View>
       </Row>
