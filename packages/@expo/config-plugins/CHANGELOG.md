@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add fingerprint runtime version policy.
+- Add fingerprint runtime version policy. ([#24126](https://github.com/expo/expo/pull/24126) by [@mccraveiro](https://github.com/mccraveiro))
 
 ### 🐛 Bug fixes
 
