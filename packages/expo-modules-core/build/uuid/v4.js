@@ -8,13 +8,8 @@ export function uuidv4(options, buf, offset) {
         options = undefined;
     }
     options = options || undefined;
-    let rnds = [];
-    if (options && 'random' in options) {
-        rnds = options.random;
-    }
-    else if (options && 'rng' in options) {
-        rnds = (options.rng || rng)();
-    }
+    // @ts-expect-error
+    const rnds = options?.random || (options?.rng || rng)();
     // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
     rnds[6] = (rnds[6] & 0x0f) | 0x40;
     rnds[8] = (rnds[8] & 0x3f) | 0x80;
