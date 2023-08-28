@@ -3,7 +3,6 @@ message: "Consider using '%s' instead of '%s'"
 link: 'https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md#follow-external-product-casing'
 level: warning
 ignorecase: true
-# swap maps tokens in form of bad: good
 swap:
   '\b & \b': and
   amazon appstore: Amazon Appstore
