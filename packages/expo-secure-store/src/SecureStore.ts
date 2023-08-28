@@ -1,5 +1,3 @@
-import { UnavailabilityError } from 'expo-modules-core';
-
 import ExpoSecureStore from './ExpoSecureStore';
 
 export type KeychainAccessibilityConstant = number;
@@ -118,17 +116,14 @@ export async function deleteItemAsync(
   key: string,
   options: SecureStoreOptions = {}
 ): Promise<void> {
-  _ensureValidKey(key);
+  ensureValidKey(key);
 
-  if (!ExpoSecureStore.deleteValueWithKeyAsync) {
-    throw new UnavailabilityError('SecureStore', 'deleteItemAsync');
-  }
   await ExpoSecureStore.deleteValueWithKeyAsync(key, options);
 }
 
 // @needsAudit
 /**
- * Fetch the stored value associated with the provided key.
+ * Reads the stored value associated with the provided key.
  *
  * @param key The key that was used to store the associated value.
  * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
@@ -144,16 +139,15 @@ export async function getItemAsync(
   key: string,
   options: SecureStoreOptions = {}
 ): Promise<string | null> {
-  _ensureValidKey(key);
+  ensureValidKey(key);
   return await ExpoSecureStore.getValueWithKeyAsync(key, options);
 }
 
 // @needsAudit
 /**
- * Store a key–value pair.
+ * Stores a key–value pair.
  *
- * @param key The key to associate with the stored value. Keys may contain alphanumeric characters
- * `.`, `-`, and `_`.
+ * @param key The key to associate with the stored value. Keys may contain alphanumeric characters, `.`, `-`, and `_`.
  * @param value The value to store. Size limit is 2048 bytes.
  * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
  *
@@ -164,35 +158,67 @@ export async function setItemAsync(
   value: string,
   options: SecureStoreOptions = {}
 ): Promise<void> {
-  _ensureValidKey(key);
-  if (!_isValidValue(value)) {
+  ensureValidKey(key);
+  if (!isValidValue(value)) {
     throw new Error(
       `Invalid value provided to SecureStore. Values must be strings; consider JSON-encoding your values if they are serializable.`
     );
   }
-  if (!ExpoSecureStore.setValueWithKeyAsync) {
-    throw new UnavailabilityError('SecureStore', 'setItemAsync');
-  }
+
   await ExpoSecureStore.setValueWithKeyAsync(value, key, options);
 }
 
-function _ensureValidKey(key: string) {
-  if (!_isValidKey(key)) {
+/**
+ * Stores a key–value pair synchronously.
+ * > **Note:** This function blocks the JavaScript thread, so the application may not be interactive when the `requireAuthentication` option is set to `true` until the user authenticates.
+ *
+ * @param key The key to associate with the stored value. Keys may contain alphanumeric characters, `.`, `-`, and `_`.
+ * @param value The value to store. Size limit is 2048 bytes.
+ * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
+ *
+ */
+export function setItem(key: string, value: string, options: SecureStoreOptions = {}): void {
+  ensureValidKey(key);
+  if (!isValidValue(value)) {
+    throw new Error(
+      `Invalid value provided to SecureStore. Values must be strings; consider JSON-encoding your values if they are serializable.`
+    );
+  }
+
+  return ExpoSecureStore.setValueWithKeySync(value, key, options);
+}
+
+/**
+ * Synchronously reads the stored value associated with the provided key.
+ * > **Note:** This function blocks the JavaScript thread, so the application may not be interactive when reading a value with `requireAuthentication`
+ * > option set to `true` until the user authenticates.
+ * @param key The key that was used to store the associated value.
+ * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
+ *
+ * @return Previously stored value. It will return `null` if there is no entry for the given key or if the key has been invalidated.
+ */
+export function getItem(key: string, options: SecureStoreOptions = {}): string | null {
+  ensureValidKey(key);
+  return ExpoSecureStore.getValueWithKeySync(key, options);
+}
+
+function ensureValidKey(key: string) {
+  if (!isValidKey(key)) {
     throw new Error(
       `Invalid key provided to SecureStore. Keys must not be empty and contain only alphanumeric characters, ".", "-", and "_".`
     );
   }
 }
 
-function _isValidKey(key: string) {
+function isValidKey(key: string) {
   return typeof key === 'string' && /^[\w.-]+$/.test(key);
 }
 
-function _isValidValue(value: string) {
+function isValidValue(value: string) {
   if (typeof value !== 'string') {
     return false;
   }
-  if (_byteCount(value) > VALUE_BYTES_LIMIT) {
+  if (byteCount(value) > VALUE_BYTES_LIMIT) {
     console.warn(
       'Provided value to SecureStore is larger than 2048 bytes. An attempt to store such a value will throw an error in SDK 35.'
     );
@@ -201,7 +227,7 @@ function _isValidValue(value: string) {
 }
 
 // copy-pasted from https://stackoverflow.com/a/39488643
-function _byteCount(value: string) {
+function byteCount(value: string) {
   let bytes = 0;
 
   for (let i = 0; i < value.length; i++) {

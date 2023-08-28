@@ -49,9 +49,6 @@ open class DetachedModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegi
     // Overriding ScopedUIManagerModuleWrapper from ReactAdapterPackage
     moduleRegistry.registerInternalModule(ScopedUIManagerModuleWrapper(reactContext))
 
-    // Overriding expo-secure-store
-    moduleRegistry.registerExportedModule(ScopedSecureStoreModule(scopedContext))
-
     // Certain notifications classes should share `SharedPreferences` object with the notifications services, so we don't want to use scoped context.
     moduleRegistry.registerExportedModule(NotificationScheduler(scopedContext.baseContext))
     moduleRegistry.registerExportedModule(ExpoNotificationCategoriesModule(scopedContext.baseContext))
