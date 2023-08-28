@@ -1,6 +1,7 @@
 import {
   NativeModulesProxy,
   UnavailabilityError,
+  requireNativeModule,
   requireNativeViewManager,
   CodedError,
 } from 'expo-modules-core';
@@ -25,7 +26,8 @@ export type WebGLObject = {
 
 declare let global: any;
 
-const { ExponentGLObjectManager, ExponentGLViewManager } = NativeModulesProxy;
+const ExponentGLObjectManager = requireNativeModule('ExponentGLObjectManager');
+const { ExponentGLViewManager } = NativeModulesProxy;
 
 const NativeView = requireNativeViewManager('ExponentGLView');
 const workletContextManager = createWorkletContextManager();

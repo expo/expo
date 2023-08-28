@@ -28,12 +28,11 @@ import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.egl.EGLSurface;
 
 import expo.modules.core.ModuleRegistry;
-import expo.modules.core.Promise;
 import expo.modules.core.interfaces.JavaScriptContextProvider;
 import expo.modules.core.interfaces.RuntimeEnvironmentInterface;
 import expo.modules.core.interfaces.services.UIManager;
-import expo.modules.gl.cpp.EXGL;
 import expo.modules.gl.utils.FileSystemUtils;
+import expo.modules.kotlin.Promise;
 
 import static android.opengl.GLES30.*;
 import static expo.modules.gl.cpp.EXGL.*;
@@ -72,9 +71,9 @@ public class GLContext {
   }
 
   public void initialize(
-          SurfaceTexture surfaceTexture,
-          Boolean enableExperimentalWorkletSupport,
-          final Runnable completionCallback) {
+    SurfaceTexture surfaceTexture,
+    Boolean enableExperimentalWorkletSupport,
+    final Runnable completionCallback) {
     if (mGLThread != null) {
       return;
     }
@@ -85,7 +84,7 @@ public class GLContext {
 
     // On JS thread, get JavaScriptCore context, create EXGL context, call JS callback
     final GLContext glContext = this;
-    ModuleRegistry moduleRegistry = mManager.getModuleRegistry();
+    ModuleRegistry moduleRegistry = mManager.getAppContext().getLegacyModuleRegistry();
     final UIManager uiManager = moduleRegistry.getModule(UIManager.class);
     final JavaScriptContextProvider jsContextProvider = moduleRegistry.getModule(JavaScriptContextProvider.class);
     final RuntimeEnvironmentInterface environment = moduleRegistry.getModule(RuntimeEnvironmentInterface.class);
@@ -103,14 +102,14 @@ public class GLContext {
           uiManager.runOnUiQueueThread(new Runnable() {
             @Override
             public void run() {
-                EXGLContextPrepareWorklet(mEXGLCtxId);
-                mManager.saveContext(glContext);
-                completionCallback.run();
+              EXGLContextPrepareWorklet(mEXGLCtxId);
+              mManager.saveContext(glContext);
+              completionCallback.run();
             }
           });
         } else {
-            mManager.saveContext(glContext);
-            completionCallback.run();
+          mManager.saveContext(glContext);
+          completionCallback.run();
         }
       }
     });
@@ -150,9 +149,9 @@ public class GLContext {
     if (surfaceTexture == null) {
       // Some devices are crashing when pbuffer surface doesn't have EGL_WIDTH and EGL_HEIGHT attributes set
       int[] surfaceAttribs = {
-          EGL10.EGL_WIDTH, 1,
-          EGL10.EGL_HEIGHT, 1,
-          EGL10.EGL_NONE
+        EGL10.EGL_WIDTH, 1,
+        EGL10.EGL_HEIGHT, 1,
+        EGL10.EGL_NONE
       };
       return mEGL.eglCreatePbufferSurface(mEGLDisplay, eglConfig, surfaceAttribs);
     } else {
@@ -239,7 +238,7 @@ public class GLContext {
         glBindFramebuffer(GL_FRAMEBUFFER, prevFramebuffer[0]);
 
         new TakeSnapshot(context, width, height, flip, format, compressionQuality, dataArray, promise)
-            .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+          .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
       }
     });
   }
@@ -308,7 +307,7 @@ public class GLContext {
       Context context = mContext.get();
 
       if (context == null) {
-        mPromise.reject("E_GL_CONTEXT_DESTROYED", "Context has been garbage collected.");
+        mPromise.reject("E_GL_CONTEXT_DESTROYED", "Context has been garbage collected.", null);
         return null;
       }
 
@@ -322,7 +321,7 @@ public class GLContext {
 
       } catch (Exception e) {
         e.printStackTrace();
-        mPromise.reject("E_GL_CANT_SAVE_SNAPSHOT", e.getMessage());
+        mPromise.reject("E_GL_CANT_SAVE_SNAPSHOT", e.getMessage(), null);
       }
 
       if (output == null) {
@@ -392,10 +391,10 @@ public class GLContext {
       int[] configsCount = new int[1];
       EGLConfig[] configs = new EGLConfig[1];
       int[] configSpec = {
-          EGL10.EGL_RENDERABLE_TYPE, EGL14.EGL_OPENGL_ES2_BIT,
-          EGL10.EGL_RED_SIZE, 8, EGL10.EGL_GREEN_SIZE, 8, EGL10.EGL_BLUE_SIZE, 8,
-          EGL10.EGL_ALPHA_SIZE, 8, EGL10.EGL_DEPTH_SIZE, 16, EGL10.EGL_STENCIL_SIZE, 8,
-          EGL10.EGL_NONE,
+        EGL10.EGL_RENDERABLE_TYPE, EGL14.EGL_OPENGL_ES2_BIT,
+        EGL10.EGL_RED_SIZE, 8, EGL10.EGL_GREEN_SIZE, 8, EGL10.EGL_BLUE_SIZE, 8,
+        EGL10.EGL_ALPHA_SIZE, 8, EGL10.EGL_DEPTH_SIZE, 16, EGL10.EGL_STENCIL_SIZE, 8,
+        EGL10.EGL_NONE,
       };
       if (!mEGL.eglChooseConfig(mEGLDisplay, configSpec, configs, 1, configsCount)) {
         throw new IllegalArgumentException("eglChooseConfig failed " + GLUtils.getEGLErrorString(mEGL.eglGetError()));
@@ -425,7 +424,7 @@ public class GLContext {
 
       // Enable buffer preservation -- allows app to draw over previous frames without clearing
       EGL14.eglSurfaceAttrib(EGL14.eglGetCurrentDisplay(), EGL14.eglGetCurrentSurface(EGL14.EGL_DRAW),
-          EGL14.EGL_SWAP_BEHAVIOR, EGL14.EGL_BUFFER_PRESERVED);
+        EGL14.EGL_SWAP_BEHAVIOR, EGL14.EGL_BUFFER_PRESERVED);
       checkEGLError();
     }
 
@@ -441,7 +440,7 @@ public class GLContext {
 
     private void makeEGLContextCurrent() {
       if (!mEGLContext.equals(mEGL.eglGetCurrentContext()) ||
-          !mEGLSurface.equals(mEGL.eglGetCurrentSurface(EGL10.EGL_DRAW))) {
+        !mEGLSurface.equals(mEGL.eglGetCurrentSurface(EGL10.EGL_DRAW))) {
         checkEGLError();
         if (!makeCurrent(mEGLSurface)) {
           throw new RuntimeException("eglMakeCurrent failed " + GLUtils.getEGLErrorString(mEGL.eglGetError()));
