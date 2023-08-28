@@ -3,6 +3,7 @@ title: Testing
 description: Learn how to create integration tests for your app when using Expo Router.
 ---
 
+import { APIBox } from '~/components/plugins/APIBox';
 Expo Router relies on your file system, which can present challenges when setting up mocks for integration tests. Expo Router's submodule, `expo-router/testing-library`, is a set of testing utilities built on top of the popular [`@testing-library/react-native`](https://callstack.github.io/react-native-testing-library/) and allows you to quick create minimal in-memory Expo Router apps, pre-configured for testing.
 
 ## Configuration
@@ -65,7 +66,7 @@ For more intricate testing scenarios, `renderRouter` can leverage both directory
 
 The following matches have been added to `expect` and can be used to asset values on `screen`.
 
-### `toHavePathname()`
+<APIBox header="toHavePathname()">
 
 Assert the current pathname against a given string. The matcher uses the value of the [`usePathname` hook](/router/reference/hooks/#usepathname) on the current `screen`
 
@@ -73,7 +74,8 @@ Assert the current pathname against a given string. The matcher uses the value o
 expect(screen).toHavePathname('/my-router');
 ```
 
-### `toHaveSegments`
+</APIBox>
+<APIBox header="toHaveSegments()">
 
 Assert the current segments against an array of strings. The matcher uses the value of the [`useSegments` hook](/router/reference/hooks/#usesegments) on the current `screen`
 
@@ -81,7 +83,8 @@ Assert the current segments against an array of strings. The matcher uses the va
 expect(screen).toHaveSegments(['[id]']);
 ```
 
-### `useLocalSearchParams`
+</APIBox>
+<APIBox header="useLocalSearchParams">
 
 Assert the current local search parameters against an object. The matcher uses the value of the [`useLocalSearchParams` hook](/router/reference/hooks/#uselocalsearchparams) on the current `screen`
 
@@ -89,7 +92,8 @@ Assert the current local search parameters against an object. The matcher uses t
 expect(screen).useLocalSearchParams({ first: 'abc' });
 ```
 
-### `useGlobalSearchParams`
+</APIBox>
+<APIBox header="useGlobalSearchParams">
 
 Assert the current screen's pathname that matches a value. Compares using the value of [`useGlobalSearchParams`](/router/reference/hooks/#useglobalsearchparams) hook.
 
@@ -98,3 +102,5 @@ Assert the current global search parameters against an object. The matcher uses 
 ```tsx app.test.ts
 expect(screen).useGlobalSearchParams({ first: 'abc' });
 ```
+
+</APIBox>
