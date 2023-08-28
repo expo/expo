@@ -80,6 +80,7 @@ export async function loadMetroConfigAsync(
       // This token will be used in the asset plugin to ensure the path is correct for writing locally.
       // @ts-expect-error: typed as readonly.
       config.transformer.publicPath = `/assets?export_path=${
+        // @ts-expect-error: TODO
         (exp.experiments?.basePath ?? '') + '/assets'
       }`;
     } else {
