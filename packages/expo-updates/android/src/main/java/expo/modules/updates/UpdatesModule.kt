@@ -248,7 +248,7 @@ class UpdatesModule(
                 // "launchedUpdate" will be an earlier update, and the test above
                 // will return true (incorrectly).
                 // We check to see if the new update is already in the DB, and if so,
-                // run the selection policy against that.
+                // only allow the update if it has had no launch failures.
                 shouldLaunch = true
                 updateManifest.updateEntity?.let { updateEntity ->
                   val storedUpdateEntity = updatesServiceLocal.databaseHolder.database.updateDao().loadUpdateWithId(
@@ -256,12 +256,8 @@ class UpdatesModule(
                   )
                   updatesServiceLocal.databaseHolder.releaseDatabase()
                   storedUpdateEntity?.let { storedUpdateEntity ->
-                    shouldLaunch = updatesServiceLocal.selectionPolicy.shouldLoadNewUpdate(
-                      updateEntity,
-                      storedUpdateEntity,
-                      updateResponse.responseHeaderData?.manifestFilters
-                    )
-                    logger.info("Stored update found: ID = ${updateEntity.id}, failureCount = ${storedUpdateEntity.failedLaunchCount}, shouldLaunch = $shouldLaunch")
+                    shouldLaunch = storedUpdateEntity.failedLaunchCount == 0
+                    logger.info("Stored update found: ID = ${updateEntity.id}, failureCount = ${storedUpdateEntity.failedLaunchCount}")
                   }
                 }
               }

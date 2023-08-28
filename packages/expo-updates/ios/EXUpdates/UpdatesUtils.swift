@@ -151,17 +151,14 @@ public final class UpdatesUtils: NSObject {
           // "launchedUpdate" will be an earlier update, and the test above
           // will return true (incorrectly).
           // We check to see if the new update is already in the DB, and if so,
-          // run the selection policy against that.
+          // only allow the update if it has had no launch failures.
           shouldLaunch = true
           constants.database.databaseQueue.sync {
             do {
               let storedUpdate = try constants.database.update(withId: update.updateId, config: constants.config)
               if let storedUpdate = storedUpdate {
-                shouldLaunch = constants.selectionPolicy.shouldLoadNewUpdate(
-                  update,
-                  withLaunchedUpdate: storedUpdate,
-                  filters: manifestFilters)
-                AppController.sharedInstance.logger.info(message: "Stored update found: ID = \(update.updateId), failureCount = \(storedUpdate.failedLaunchCount), shouldLaunch = \(shouldLaunch)")
+                shouldLaunch = storedUpdate.failedLaunchCount == 0
+                AppController.sharedInstance.logger.info(message: "Stored update found: ID = \(update.updateId), failureCount = \(storedUpdate.failedLaunchCount)")
               }
             } catch {}
           }
