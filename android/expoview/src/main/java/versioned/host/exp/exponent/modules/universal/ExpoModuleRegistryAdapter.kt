@@ -61,9 +61,6 @@ open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistry
     moduleRegistry.registerInternalModule(ScopedNotificationsChannelsProvider(scopedContext, experienceKey))
     moduleRegistry.registerInternalModule(ScopedNotificationsCategoriesSerializer())
 
-    // Overriding expo-secure-stoore
-    moduleRegistry.registerExportedModule(ScopedSecureStoreModule(scopedContext))
-
     // ReactAdapterPackage requires ReactContext
     val reactContext = scopedContext.context as ReactApplicationContext
     for (internalModule in mReactAdapterPackage.createInternalModules(reactContext)) {
@@ -86,6 +83,9 @@ open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistry
     ) { appContext ->
       appContext.registry.register(
         ExpoGoModule(manifest)
+      )
+      appContext.registry.register(
+        ScopedSecureStoreModule(scopedContext)
       )
       appContext.registry.register(
         object : FontLoaderModule() {
