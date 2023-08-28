@@ -197,7 +197,7 @@ public final class UpdatesModule: Module {
       }
     }
 
-    // Getter used internally by @expo/use-updates useUpdates()
+    // Getter used internally by useUpdates()
     // to initialize its state
     AsyncFunction("getNativeStateMachineContextAsync") { (promise: Promise) in
       let maybeIsCheckForUpdateEnabled: Bool? = updatesService?.canCheckForUpdateAndFetchUpdate ?? true

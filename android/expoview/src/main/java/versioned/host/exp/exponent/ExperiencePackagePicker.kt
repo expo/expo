@@ -26,7 +26,7 @@ import expo.modules.print.PrintModule
 import expo.modules.facedetector.FaceDetectorPackage
 import expo.modules.filesystem.FileSystemModule
 import expo.modules.filesystem.FileSystemPackage
-import expo.modules.gl.GLPackage
+import expo.modules.gl.GLObjectManagerModule
 import expo.modules.gl.GLViewModule
 import expo.modules.haptics.HapticsModule
 import expo.modules.image.ExpoImageModule
@@ -52,7 +52,6 @@ import expo.modules.permissions.PermissionsPackage
 import expo.modules.random.RandomModule
 import expo.modules.screencapture.ScreenCaptureModule
 import expo.modules.screenorientation.ScreenOrientationModule
-import expo.modules.securestore.SecureStorePackage
 import expo.modules.sensors.SensorsPackage
 import expo.modules.sensors.modules.AccelerometerModule
 import expo.modules.sensors.modules.BarometerModule
@@ -87,7 +86,6 @@ object ExperiencePackagePicker : ModulesProvider {
     ContactsPackage(),
     FaceDetectorPackage(),
     FileSystemPackage(),
-    GLPackage(),
     ImageLoaderPackage(),
     KeepAwakePackage(),
     LocalAuthenticationPackage(),
@@ -95,7 +93,6 @@ object ExperiencePackagePicker : ModulesProvider {
     NavigationBarPackage(),
     NotificationsPackage(),
     PermissionsPackage(),
-    SecureStorePackage(),
     SensorsPackage(),
     SplashScreenPackage(),
     SystemUIPackage(),
@@ -144,6 +141,7 @@ object ExperiencePackagePicker : ModulesProvider {
     FileSystemModule::class.java,
     PrintModule::class.java,
     GLViewModule::class.java,
+    GLObjectManagerModule::class.java,
     HapticsModule::class.java,
     ImagePickerModule::class.java,
     ImageManipulatorModule::class.java,
@@ -158,6 +156,8 @@ object ExperiencePackagePicker : ModulesProvider {
     RandomModule::class.java,
     ScreenCaptureModule::class.java,
     ScreenOrientationModule::class.java,
+    // SecureStoreModule is not added here, instead it is added in ExpoModuleRegistryAdapter.kt,
+    // because it needs access to scopedContext for Expo Go support
     SMSModule::class.java,
     SharingModule::class.java,
     SpeechModule::class.java,

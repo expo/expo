@@ -1,10 +1,12 @@
 import { ExpoConfig, getConfig } from '@expo/config';
-import { MetroDevServerOptions } from '@expo/dev-server';
+import { MetroDevServerOptions, prependMiddleware } from '@expo/dev-server';
 import type { LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import http from 'http';
 import type Metro from 'metro';
 import { Terminal } from 'metro-core';
+import semver from 'semver';
+import { URL } from 'url';
 
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
@@ -19,6 +21,7 @@ import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { env } from '../../../utils/env';
 import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
 import { createDevServerMiddleware } from '../middleware/createDevServerMiddleware';
+import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { getPlatformBundlers } from '../platformBundlers';
 
 // From expo/dev-server but with ability to use custom logger.
@@ -26,12 +29,29 @@ type MessageSocket = {
   broadcast: (method: string, params?: Record<string, any> | undefined) => void;
 };
 
+function gteSdkVersion(exp: Pick<ExpoConfig, 'sdkVersion'>, sdkVersion: string): boolean {
+  if (!exp.sdkVersion) {
+    return false;
+  }
+
+  if (exp.sdkVersion === 'UNVERSIONED') {
+    return true;
+  }
+
+  try {
+    return semver.gte(exp.sdkVersion, sdkVersion);
+  } catch {
+    throw new Error(`${exp.sdkVersion} is not a valid version. Must be in the form of x.y.z`);
+  }
+}
+
 export async function loadMetroConfigAsync(
   projectRoot: string,
   options: LoadOptions,
   {
     exp = getConfig(projectRoot, { skipSDKVersionRequirement: true, skipPlugins: true }).exp,
-  }: { exp?: ExpoConfig } = {}
+    isExporting,
+  }: { exp?: ExpoConfig; isExporting: boolean }
 ) {
   let reportEvent: ((event: any) => void) | undefined;
   const serverRoot = getMetroServerRoot(projectRoot);
@@ -50,6 +70,22 @@ export async function loadMetroConfigAsync(
 
   const ExpoMetroConfig = importExpoMetroConfig(projectRoot);
   let config = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
+
+  if (
+    // Requires SDK 50 for expo-assets hashAssetPlugin change.
+    !exp.sdkVersion ||
+    gteSdkVersion(exp, '50.0.0')
+  ) {
+    // TODO: Handle asset prefix.
+    if (isExporting) {
+      // This token will be used in the asset plugin to ensure the path is correct for writing locally.
+      // @ts-expect-error: typed as readonly.
+      config.transformer.publicPath = '/assets?export_path=/assets';
+    } else {
+      // @ts-expect-error: typed as readonly
+      config.transformer.publicPath = '/assets/?unstable_path=.';
+    }
+  }
 
   const platformBundlers = getPlatformBundlers(exp);
 
@@ -73,7 +109,8 @@ export async function loadMetroConfigAsync(
 /** The most generic possible setup for Metro bundler. */
 export async function instantiateMetroAsync(
   metroBundler: MetroBundlerDevServer,
-  options: Omit<MetroDevServerOptions, 'logger'>
+  options: Omit<MetroDevServerOptions, 'logger'>,
+  { isExporting }: { isExporting: boolean }
 ): Promise<{
   metro: Metro.Server;
   server: http.Server;
@@ -91,7 +128,7 @@ export async function instantiateMetroAsync(
   const { config: metroConfig, setEventReporter } = await loadMetroConfigAsync(
     projectRoot,
     options,
-    { exp }
+    { exp, isExporting }
   );
 
   const { middleware, websocketEndpoints, eventsSocketEndpoint, messageSocketEndpoint } =
@@ -116,6 +153,19 @@ export async function instantiateMetroAsync(
     // @ts-expect-error: Inconsistent `websocketEndpoints` type between metro and @react-native-community/cli-server-api
     websocketEndpoints,
     watch: isWatchEnabled(),
+  });
+
+  prependMiddleware(middleware, (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
+    // If the URL is a Metro asset request, then we need to skip all other middleware to prevent
+    // the community CLI's serve-static from hosting `/assets/index.html` in place of all assets if it exists.
+    // /assets/?unstable_path=.
+    if (req.url) {
+      const url = new URL(req.url!, 'http://localhost:8000');
+      if (url.pathname.match(/^\/assets\/?/) && url.searchParams.get('unstable_path') != null) {
+        return metro.processRequest(req, res, next);
+      }
+    }
+    return next();
   });
 
   setEventReporter(eventsSocketEndpoint.reportEvent);

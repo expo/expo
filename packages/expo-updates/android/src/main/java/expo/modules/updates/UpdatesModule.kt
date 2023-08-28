@@ -137,7 +137,7 @@ class UpdatesModule(
     }
   }
 
-  // Used internally by @expo/use-updates useUpdates() to get its initial state
+  // Used internally by useUpdates() to get its initial state
   @ExpoMethod
   fun getNativeStateMachineContextAsync(promise: Promise) {
     try {
