@@ -50,6 +50,7 @@
 
 **How:**
 
+- `et update-versions --sdkVersion XX.X.X --key expoVersion --value <expo package version>`
 - `et update-versions --sdkVersion XX.X.X --key facebookReactVersion --value <react package version>`
 - `et update-versions --sdkVersion XX.X.X --key facebookReactNativeVersion --value <react-native package version>`
 - `et update-versions --sdkVersion XX.X.X --key expoReactNativeTag --value sdk-XX.X.X`
