@@ -69,11 +69,6 @@ export function logIncorrectDependencies(incorrectDeps: IncorrectDependency[]) {
       chalk`Fix with: {bold npx expo install --fix}`
   );
 
-  if (incorrectDeps.find((dep) => dep.packageName === 'expo')) {
-    Log.warn(
-      `To update the expo package, fix will first update the expo package and then run again to fix the remaining packages under the new version of expo.`
-    );
-  }
   return false;
 }
 
@@ -209,10 +204,7 @@ function findIncorrectDependencies(
   for (const packageName of packages) {
     const expectedVersionOrRange = bundledNativeModules[packageName];
     const actualVersion = packageVersions[packageName];
-    if (
-      typeof expectedVersionOrRange === 'string' &&
-      !semver.intersects(expectedVersionOrRange, actualVersion)
-    ) {
+    if (isDependencyVersionIncorrect(packageName, expectedVersionOrRange, actualVersion)) {
       incorrectDeps.push({
         packageName,
         packageType: findDependencyType(pkg, packageName),
@@ -222,6 +214,28 @@ function findIncorrectDependencies(
     }
   }
   return incorrectDeps;
+}
+
+function isDependencyVersionIncorrect(
+  packageName: string,
+  expectedVersionOrRange: string | undefined,
+  actualVersion: string
+) {
+  if (typeof expectedVersionOrRange !== 'string') {
+    return false;
+  }
+
+  // we never want to go backwards with the expo patch version
+  if (packageName === 'expo' && semver.lt(actualVersion, expectedVersionOrRange)) {
+    return true;
+  }
+
+  // all other packages: version range is based on Expo SDK version, so we always want to match range
+  if (!semver.intersects(expectedVersionOrRange, actualVersion)) {
+    return true;
+  }
+
+  return false;
 }
 
 function findDependencyType(
