@@ -64,7 +64,7 @@ export function getStaticContent(location, { basePath }) {
     const css = ReactDOMServer.renderToStaticMarkup(getStyleElement());
     let output = mixHeadComponentsWithStaticResults(headContext.helmet, html);
     output = output.replace('</head>', `${css}</head>`);
-    const fonts = Font.getServerResources({ basePath });
+    const fonts = Font.getServerResources({ basePath: '' });
     debug(`Pushing static fonts: (count: ${fonts.length})`, fonts);
     // debug('Push static fonts:', fonts)
     // Inject static fonts loaded with expo-font

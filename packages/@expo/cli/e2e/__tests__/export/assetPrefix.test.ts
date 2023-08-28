@@ -22,20 +22,16 @@ describe('static-rendering with asset prefix', () => {
 
   beforeAll(
     async () => {
-      // await execa(
-      //   'node',
-      //   [bin, 'export', '-p', 'web', '--output-dir',outputName],
-      //   {
-      //     cwd: projectRoot,
-      //     env: {
-      //       NODE_ENV: 'production',
-      //       EXPO_E2E_BASE_PATH: '/one/two',
-      //       EXPO_USE_STATIC: '1',
-      //       E2E_ROUTER_SRC: 'static-rendering',
-      //       E2E_ROUTER_ASYNC: 'development',
-      //     },
-      //   }
-      // );
+      await execa('node', [bin, 'export', '-p', 'web', '--output-dir', outputName], {
+        cwd: projectRoot,
+        env: {
+          NODE_ENV: 'production',
+          EXPO_E2E_BASE_PATH: '/one/two',
+          EXPO_USE_STATIC: '1',
+          E2E_ROUTER_SRC: 'static-rendering',
+          E2E_ROUTER_ASYNC: 'development',
+        },
+      });
     },
     // Could take 45s depending on how fast the bundler resolves
     560 * 1000
@@ -47,7 +43,6 @@ describe('static-rendering with asset prefix', () => {
       // List output files with sizes for snapshotting.
       // This is to make sure that any changes to the output are intentional.
       // Posix path formatting is used to make paths the same across OSes.
-      console.log('>', outputDir);
       const files = klawSync(outputDir)
         .map((entry) => {
           if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
