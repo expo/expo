@@ -105,7 +105,7 @@ export default {
     }
   },
 
-  getServerResources({ basePath }: { basePath: string }): string[] {
+  getServerResources(): string[] {
     const elements = getHeadElements();
 
     return elements
@@ -114,7 +114,7 @@ export default {
           case 'style':
             return `<style id="${element.id}" type="${element.type}">${element.children}</style>`;
           case 'link':
-            return `<link rel="${element.rel}" href="${basePath}${element.href}" as="${element.as}" crossorigin="${element.crossorigin}" />`;
+            return `<link rel="${element.rel}" href="${element.href}" as="${element.as}" crossorigin="${element.crossorigin}" />`;
           default:
             return '';
         }

@@ -110,11 +110,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   async getStaticRenderFunctionAsync({
     mode,
     minify = mode !== 'development',
-    basePath,
   }: {
     mode: 'development' | 'production';
     minify?: boolean;
-    basePath: string;
   }) {
     const url = this.getDevServerUrl()!;
 
@@ -133,7 +131,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       manifest: await getManifest({ fetchData: true }),
       // Get route generating function
       async renderAsync(path: string) {
-        return await getStaticContent(new URL(path, url), { basePath });
+        return await getStaticContent(new URL(path, url));
       },
     };
   }
@@ -255,7 +253,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       );
 
       const location = new URL(pathname, this.getDevServerUrl()!);
-      return await getStaticContent(location, { basePath });
+      return await getStaticContent(location);
     };
 
     const [resources, staticHtml] = await Promise.all([

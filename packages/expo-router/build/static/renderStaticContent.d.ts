@@ -10,8 +10,6 @@ declare function getManifest(options: any): Promise<{
     initialRouteName?: string | undefined;
     screens: Record<string, import("../getReactNavigationConfig").Screen>;
 }>;
-export declare function getStaticContent(location: URL, { basePath }: {
-    basePath: string;
-}): string;
+export declare function getStaticContent(location: URL): string;
 export { getManifest };
 //# sourceMappingURL=renderStaticContent.d.ts.map

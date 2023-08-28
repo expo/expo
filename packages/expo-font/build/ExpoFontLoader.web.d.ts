@@ -4,9 +4,7 @@ declare const _default: {
     readonly name: string;
     unloadAllAsync(): Promise<void>;
     unloadAsync(fontFamilyName: string, options?: UnloadFontOptions): Promise<void>;
-    getServerResources({ basePath }: {
-        basePath: string;
-    }): string[];
+    getServerResources(): string[];
     resetServerContext(): void;
     isLoaded(fontFamilyName: string, resource?: UnloadFontOptions): boolean;
     loadAsync(fontFamilyName: string, resource: FontResource): Promise<void>;

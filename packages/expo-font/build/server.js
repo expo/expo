@@ -5,8 +5,8 @@ import { getAssetForSource, loadSingleFontAsync } from './FontLoader';
  * @returns the server resources that should be statically extracted.
  * @private
  */
-export function getServerResources(options) {
-    return ExpoFontLoader.getServerResources(options);
+export function getServerResources() {
+    return ExpoFontLoader.getServerResources();
 }
 /**
  * @returns clear the server resources from the global scope.
