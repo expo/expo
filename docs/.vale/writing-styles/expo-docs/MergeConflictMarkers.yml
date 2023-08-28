@@ -1,0 +1,6 @@
+extends: existence
+message: 'Merge conflict marker "%s" found.'
+level: error
+scope: raw
+raw:
+  - '\n<<<<<<< .+\n|\n=======\n|\n>>>>>>> .+\n'
