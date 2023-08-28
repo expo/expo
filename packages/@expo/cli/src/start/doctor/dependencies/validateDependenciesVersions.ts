@@ -226,8 +226,11 @@ function isDependencyVersionIncorrect(
   }
 
   // we never want to go backwards with the expo patch version
-  if (packageName === 'expo' && semver.lt(actualVersion, expectedVersionOrRange)) {
-    return true;
+  if (packageName === 'expo') {
+    if (semver.ltr(actualVersion, expectedVersionOrRange)) {
+      return true;
+    }
+    return false;
   }
 
   // all other packages: version range is based on Expo SDK version, so we always want to match range
