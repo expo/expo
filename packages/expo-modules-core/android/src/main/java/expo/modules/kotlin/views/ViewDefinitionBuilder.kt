@@ -52,6 +52,7 @@ class ViewDefinitionBuilder<T : View>(
     asyncFunctions.forEach { (_, function) ->
       function.runOnQueue(Queues.MAIN)
       function.ownerType = viewType
+      function.canTakeOwner = true
     }
 
     return ViewManagerDefinition(
@@ -186,7 +187,6 @@ class ViewDefinitionBuilder<T : View>(
     } else {
       AsyncFunctionComponent(name, arrayOf({ typeOf<P0>() }.toAnyType<P0>())) { body(it[0] as P0) }
     }.also {
-      it.ownerType = viewType
       asyncFunctions[name] = it
     }
   }

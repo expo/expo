@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed owner type of view functions. ([#24135](https://github.com/expo/expo/pull/24135) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 1.5.10 — 2023-08-22
