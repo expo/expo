@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Dropped support for Android SDK 21 and 22. ([#24070](https://github.com/expo/expo/pull/24070) by [@behenate](https://github.com/behenate))
+
 ### 🎉 New features
 
 - Add support for React static rehydration on web. ([#23891](https://github.com/expo/expo/pull/23891) by [@EvanBacon](https://github.com/EvanBacon))

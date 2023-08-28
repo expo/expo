@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Dropped support for Android SDK 21 and 22. ([#24070](https://github.com/expo/expo/pull/24070) by [@behenate](https://github.com/behenate))
+
 ### 🎉 New features
 
 - [Android] Surfaced errorManager to allow throwing errors and warnings from modules. ([#23848](https://github.com/expo/expo/pull/23848) by [@aleqsio](https://github.com/aleqsio))

@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- Dropped support for Android SDK 21 and 22. ([#24070](https://github.com/expo/expo/pull/24070) by [@behenate](https://github.com/behenate))
 - Forbid passing an id to `createEventAsync` and `updateEventAsync`. ([#23810](https://github.com/expo/expo/pull/23810) by [@pierrezimmermannbam](https://github.com/pierrezimmermannbam))
 
 ### 🎉 New features
