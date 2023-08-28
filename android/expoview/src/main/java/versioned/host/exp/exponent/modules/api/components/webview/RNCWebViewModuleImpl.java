@@ -227,7 +227,7 @@ public class RNCWebViewModuleImpl implements ActivityEventListener {
         }
 
         // we have one file selected
-        if (data.getData() != null && resultCode == RESULT_OK) {
+        if (data.getData() != null && resultCode == RESULT_OK && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             return WebChromeClient.FileChooserParams.parseResult(resultCode, data);
         }
 

@@ -164,8 +164,15 @@ class MinuteIntervalSnappableTimePickerDialog extends TimePickerDialog {
 				}
             }
 			private void fixTime() {
-                view.setHour(hourOfDay);
-                view.setMinute(correctedMinutes);
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+					view.setHour(hourOfDay);
+					view.setMinute(correctedMinutes);
+				} else {
+					view.setCurrentHour(hourOfDay);
+					// we need to set minutes to 0 first for this to work on older android devices
+					view.setCurrentMinute(0);
+					view.setCurrentMinute(correctedMinutes);
+				}
 			}
 			private void moveCursorToEnd() {
 				View maybeTextInput = view.findFocus();

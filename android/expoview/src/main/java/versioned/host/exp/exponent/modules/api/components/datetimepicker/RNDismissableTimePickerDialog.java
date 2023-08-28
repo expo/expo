@@ -63,6 +63,13 @@ public class RNDismissableTimePickerDialog extends MinuteIntervalSnappableTimePi
     fixSpinner(context, hourOfDay, minute, is24HourView, display);
   }
 
+  @Override
+  protected void onStop() {
+    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+      super.onStop();
+    }
+  }
+
   private void fixSpinner(Context context, int hourOfDay, int minute, boolean is24HourView, RNTimePickerDisplay display) {
     if (Build.VERSION.SDK_INT == Build.VERSION_CODES.N && display == RNTimePickerDisplay.SPINNER) {
       try {
