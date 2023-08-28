@@ -105,19 +105,21 @@ export default {
     }
   },
 
-  getServerResources({ assetPrefix }: { assetPrefix: string ): string[] {
+  getServerResources({ assetPrefix }: { assetPrefix: string }): string[] {
     const elements = getHeadElements();
 
-    return elements.map((element) => {
-      switch (element.$$type) {
-        case 'style':
-          return `<style id="${element.id}" type="${element.type}">${element.children}</style>`;
-        case 'link':
-          return `<link rel="${element.rel}" href="${assetPrefix}${element.href}" as="${element.as}" crossorigin="${element.crossorigin}" />`;
-        default:
-          return '';
-      }
-    });
+    return elements
+      .map((element) => {
+        switch (element.$$type) {
+          case 'style':
+            return `<style id="${element.id}" type="${element.type}">${element.children}</style>`;
+          case 'link':
+            return `<link rel="${element.rel}" href="${assetPrefix}${element.href}" as="${element.as}" crossorigin="${element.crossorigin}" />`;
+          default:
+            return '';
+        }
+      })
+      .filter(Boolean);
   },
 
   resetServerContext() {

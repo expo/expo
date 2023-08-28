@@ -20,6 +20,8 @@ import { getRoutes } from '../getRoutes';
 import { Head } from '../head';
 import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
 
+const debug = require('debug')('expo:router:renderStaticContent');
+
 AppRegistry.registerComponent('App', () => ExpoRoot);
 
 /** Get the linking manifest from a Node.js process. */
@@ -91,8 +93,11 @@ export function getStaticContent(location: URL, { assetPrefix }: { assetPrefix: 
 
   output = output.replace('</head>', `${css}</head>`);
 
+  const fonts = Font.getServerResources({ assetPrefix });
+  debug(`Pushing static fonts: (count: ${fonts.length})`, fonts);
+  // debug('Push static fonts:', fonts)
   // Inject static fonts loaded with expo-font
-  output = output.replace('</head>', `${Font.getServerResources({ assetPrefix }).join('')}</head>`);
+  output = output.replace('</head>', `${fonts.join('')}</head>`);
 
   return '<!DOCTYPE html>' + output;
 }

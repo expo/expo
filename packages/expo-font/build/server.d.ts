@@ -5,7 +5,7 @@ import { FontSource } from './Font.types';
  */
 export declare function getServerResources(options: {
     assetPrefix: string;
-}): any;
+}): string[];
 /**
  * @returns clear the server resources from the global scope.
  * @private
