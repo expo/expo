@@ -3,10 +3,14 @@ package expo.modules.sqlite
 
 import android.content.Context
 import android.database.Cursor
-import io.requery.android.database.sqlite.SQLiteDatabase
+import android.os.Bundle
+import androidx.core.os.bundleOf
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import io.expo.android.database.sqlite.SQLiteCustomExtension
+import io.expo.android.database.sqlite.SQLiteDatabase
+import io.expo.android.database.sqlite.SQLiteDatabaseConfiguration
 import java.io.File
 import java.io.IOException
 import java.util.*
@@ -22,6 +26,8 @@ class SQLiteModule : Module() {
 
   override fun definition() = ModuleDefinition {
     Name("ExpoSQLite")
+
+    Events("onDatabaseChange")
 
     AsyncFunction("exec") { dbName: String, queries: List<Query>, readOnly: Boolean ->
       return@AsyncFunction execute(dbName, queries, readOnly)
@@ -245,10 +251,32 @@ class SQLiteModule : Module() {
     }
     if (database == null) {
       DATABASES.remove(name)
-      database = SQLiteDatabase.openOrCreateDatabase(path, null)
+      val config = createConfig(path)
+      database = SQLiteDatabase.openDatabase(config, null, null)
+      addUpdateListener(database)
       DATABASES[name] = database
     }
     return database!!
+  }
+
+  private fun createConfig(path: String): SQLiteDatabaseConfiguration {
+    val crsqliteExtension = SQLiteCustomExtension("libcrsqlite", "sqlite3_crsqlite_init")
+    return SQLiteDatabaseConfiguration(path, SQLiteDatabase.CREATE_IF_NECESSARY, emptyList(), emptyList(), listOf(crsqliteExtension))
+  }
+
+  private fun addUpdateListener(database: SQLiteDatabase?) {
+    database?.addUpdateListener { tableName: String, operationType: Int, rowID: Int ->
+      sendEvent("onDatabaseChange", bundleOf(
+        "tableName" to tableName,
+        "rowId" to rowID,
+        "typeId" to when(operationType) {
+          9 -> SqlAction.DELETE.value
+          18 -> SqlAction.INSERT.value
+          23 -> SqlAction.UPDATE.value
+          else -> SqlAction.UNKNOWN.value
+        }
+      ))
+    }
   }
 
   internal class SQLitePluginResult(
