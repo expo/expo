@@ -21,6 +21,8 @@
 
 ### 💡 Others
 
+- [Android] Add type converter for the `ReadableArguments` class to allow backward compatibility with older modules.
+
 ## 1.6.0 — 2023-07-28
 
 ### 🐛 Bug fixes
