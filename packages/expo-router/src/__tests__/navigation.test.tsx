@@ -7,6 +7,7 @@ import {
   useLocalSearchParams,
   Redirect,
   Slot,
+  Link,
 } from '../exports';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
@@ -314,4 +315,39 @@ it('can check goBack before navigation mounts', () => {
 
   // NOTE: This also tests that `canGoBack` does not throw.
   expect(router.canGoBack()).toBe(false);
+});
+
+it('does not render twice (??)', async () => {
+  // https://github.com/expo/router/issues/838
+  const AddressIndex = jest.fn(() => {
+    console.log('mount');
+    return <Text />;
+  });
+
+  renderRouter({
+    _layout: () => <Slot />,
+    '(a)/_layout': () => <Slot />,
+    '(a)/index': () => (
+      <Link testID="link" href="/address">
+        Address
+      </Link>
+    ),
+    'address/_layout': () => <Slot />,
+    'address/index': AddressIndex,
+  });
+
+  expect(screen).toHavePathname('/');
+
+  expect(AddressIndex).toBeCalledTimes(0);
+
+  const text = await screen.findByTestId('link');
+
+  act(() => {
+    fireEvent.press(text);
+  });
+
+  // act(() => router.push('/address'));
+
+  expect(screen).toHavePathname('/address');
+  expect(AddressIndex).toBeCalledTimes(1);
 });
