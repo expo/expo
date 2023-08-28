@@ -48,7 +48,7 @@ function resetReactNavigationContexts() {
   global[contexts] = new Map<string, React.Context<any>>();
 }
 
-export function getStaticContent(location: URL, { assetPrefix }: { assetPrefix: string }): string {
+export function getStaticContent(location: URL, { basePath }: { basePath: string }): string {
   const headContext: { helmet?: any } = {};
 
   const ref = React.createRef<ServerContainerRef>();
@@ -93,7 +93,7 @@ export function getStaticContent(location: URL, { assetPrefix }: { assetPrefix: 
 
   output = output.replace('</head>', `${css}</head>`);
 
-  const fonts = Font.getServerResources({ assetPrefix });
+  const fonts = Font.getServerResources({ basePath });
   debug(`Pushing static fonts: (count: ${fonts.length})`, fonts);
   // debug('Push static fonts:', fonts)
   // Inject static fonts loaded with expo-font

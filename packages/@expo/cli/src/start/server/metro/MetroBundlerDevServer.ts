@@ -86,13 +86,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     resources,
     template,
     devBundleUrl,
-    assetPrefix,
+    basePath,
   }: {
     mode: 'development' | 'production';
     resources: SerialAsset[];
     template: string;
     /** asset prefix used for deploying to non-standard origins like GitHub pages. */
-    assetPrefix: string;
+    basePath: string;
     devBundleUrl?: string;
   }): Promise<string> {
     if (!resources) {
@@ -102,7 +102,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return htmlFromSerialAssets(resources, {
       dev: isDev,
       template,
-      assetPrefix,
+      basePath,
       bundleUrl: isDev ? devBundleUrl : undefined,
     });
   }
@@ -110,11 +110,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   async getStaticRenderFunctionAsync({
     mode,
     minify = mode !== 'development',
-    assetPrefix,
+    basePath,
   }: {
     mode: 'development' | 'production';
     minify?: boolean;
-    assetPrefix: string;
+    basePath: string;
   }) {
     const url = this.getDevServerUrl()!;
 
@@ -133,7 +133,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       manifest: await getManifest({ fetchData: true }),
       // Get route generating function
       async renderAsync(path: string) {
-        return await getStaticContent(new URL(path, url), { assetPrefix });
+        return await getStaticContent(new URL(path, url), { basePath });
       },
     };
   }
@@ -227,11 +227,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     {
       mode,
       minify = mode !== 'development',
-      assetPrefix,
+      basePath,
     }: {
       mode: 'development' | 'production';
       minify?: boolean;
-      assetPrefix: string;
+      basePath: string;
     }
   ) {
     const devBundleUrlPathname = createBundleUrlPath({
@@ -255,7 +255,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       );
 
       const location = new URL(pathname, this.getDevServerUrl()!);
-      return await getStaticContent(location, { assetPrefix });
+      return await getStaticContent(location, { basePath });
     };
 
     const [resources, staticHtml] = await Promise.all([
@@ -267,7 +267,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       resources,
       template: staticHtml,
       devBundleUrl: devBundleUrlPathname,
-      assetPrefix,
+      basePath,
     });
     return {
       content,
@@ -399,7 +399,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             const { content } = await this.getStaticPageAsync(req.url, {
               mode: options.mode ?? 'development',
               // Asset prefix is not supported in development.
-              assetPrefix: '',
+              basePath: '',
             });
 
             res.setHeader('Content-Type', 'text/html');
@@ -539,12 +539,12 @@ function htmlFromSerialAssets(
   {
     dev,
     template,
-    assetPrefix,
+    basePath,
     bundleUrl,
   }: {
     dev: boolean;
     template: string;
-    assetPrefix: string;
+    basePath: string;
     /** This is dev-only. */
     bundleUrl?: string;
   }
@@ -557,8 +557,8 @@ function htmlFromSerialAssets(
         return `<style data-expo-css-hmr="${metadata.hmrId}">` + source + '\n</style>';
       } else {
         return [
-          `<link rel="preload" href="${assetPrefix}/${filename}" as="style">`,
-          `<link rel="stylesheet" href="${assetPrefix}/${filename}">`,
+          `<link rel="preload" href="${basePath}/${filename}" as="style">`,
+          `<link rel="stylesheet" href="${basePath}/${filename}">`,
         ].join('');
       }
     })
@@ -570,7 +570,7 @@ function htmlFromSerialAssets(
     ? `<script src="${bundleUrl}" defer></script>`
     : jsAssets
         .map(({ filename }) => {
-          return `<script src="${assetPrefix}/${filename}" defer></script>`;
+          return `<script src="${basePath}/${filename}" defer></script>`;
         })
         .join('');
 

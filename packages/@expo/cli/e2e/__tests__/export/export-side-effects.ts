@@ -10,7 +10,7 @@ declare const process: {
     EXPO_USE_PATH_ALIASES?: string;
     EXPO_USE_STATIC?: string;
     E2E_ROUTER_SRC?: string;
-    _EXPO_ASSET_PREFIX?: string;
+    EXPO_E2E_BASE_PATH?: string;
   };
   [key: string]: any;
 };
@@ -23,7 +23,7 @@ function clearEnv() {
   process.env.CI = '1';
   process.env.EXPO_USE_PATH_ALIASES = '1';
   delete process.env.EXPO_USE_STATIC;
-  delete process.env._EXPO_ASSET_PREFIX;
+  delete process.env.EXPO_E2E_BASE_PATH;
 }
 
 function restoreEnv() {

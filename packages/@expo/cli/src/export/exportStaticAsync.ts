@@ -20,7 +20,7 @@ import { learnMore } from '../utils/link';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
 
-type Options = { outputDir: string; minify: boolean; assetPrefix: string };
+type Options = { outputDir: string; minify: boolean; basePath: string };
 
 /** @private */
 export async function unstable_exportStaticAsync(projectRoot: string, options: Options) {
@@ -91,10 +91,10 @@ export async function getFilesToExportFromServerAsync(
 export async function exportFromServerAsync(
   projectRoot: string,
   devServerManager: DevServerManager,
-  { outputDir, assetPrefix, minify }: Options
+  { outputDir, basePath, minify }: Options
 ): Promise<void> {
   const injectFaviconTag = await getVirtualFaviconAssetsAsync(projectRoot, {
-    assetPrefix,
+    basePath,
     outputDir,
   });
 
@@ -106,7 +106,7 @@ export async function exportFromServerAsync(
     devServer.getStaticRenderFunctionAsync({
       mode: 'production',
       minify,
-      assetPrefix,
+      basePath,
     }),
   ]);
 
@@ -120,7 +120,7 @@ export async function exportFromServerAsync(
         mode: 'production',
         resources,
         template,
-        assetPrefix,
+        basePath,
       });
 
       if (injectFaviconTag) {

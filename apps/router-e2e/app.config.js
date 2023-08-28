@@ -9,7 +9,7 @@ module.exports = {
   scheme: 'router-e2e',
 
   // Asset Prefix
-  assetPrefix: process.env._EXPO_ASSET_PREFIX || undefined,
+  basePath: process.env.EXPO_E2E_BASE_PATH || undefined,
 
   ios: {
     supportsTablet: true,

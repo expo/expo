@@ -9,11 +9,11 @@ export function persistMetroAssetsAsync(
   {
     platform,
     outputDirectory,
-    assetPrefix,
+    basePath,
   }: {
     platform: string;
     outputDirectory: string;
-    assetPrefix?: string;
+    basePath?: string;
   }
 ) {
   const files = assets.reduce<Record<string, string>>((acc, asset) => {
@@ -24,7 +24,7 @@ export function persistMetroAssetsAsync(
         return;
       }
       const src = asset.files[idx];
-      const dest = path.join(outputDirectory, getAssetLocalPath(asset, { scale, assetPrefix }));
+      const dest = path.join(outputDirectory, getAssetLocalPath(asset, { scale, basePath }));
       acc[src] = dest;
     });
     return acc;
@@ -101,12 +101,12 @@ function filterPlatformAssetScales(platform: string, scales: readonly number[]):
 
 function getAssetLocalPath(
   asset: AssetDataWithoutFiles,
-  { assetPrefix, scale }: { assetPrefix?: string; scale: number }
+  { basePath, scale }: { basePath?: string; scale: number }
 ): string {
   const suffix = scale === 1 ? '' : `@${scale}x`;
   const fileName = `${asset.name + suffix}.${asset.type}`;
 
-  const adjustedHttpServerLocation = stripAssetPrefix(asset.httpServerLocation, assetPrefix);
+  const adjustedHttpServerLocation = stripAssetPrefix(asset.httpServerLocation, basePath);
   return path.join(
     // Assets can have relative paths outside of the project root.
     // Replace `../` with `_` to make sure they don't end up outside of
@@ -116,14 +116,14 @@ function getAssetLocalPath(
   );
 }
 
-export function stripAssetPrefix(path: string, assetPrefix?: string) {
+export function stripAssetPrefix(path: string, basePath?: string) {
   path = path.replace(/\/assets\?export_path=(.*)/, '$1');
 
   // TODO: Windows?
-  if (assetPrefix) {
+  if (basePath) {
     return path.replace(/^\/+/g, '').replace(
       new RegExp(
-        `^${assetPrefix
+        `^${basePath
           .replace(/^\/+/g, '')
           .replace(/[|\\{}()[\]^$+*?.]/g, '\\$&')
           .replace(/-/g, '\\x2d')}`,

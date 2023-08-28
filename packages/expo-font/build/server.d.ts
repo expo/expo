@@ -4,7 +4,7 @@ import { FontSource } from './Font.types';
  * @private
  */
 export declare function getServerResources(options: {
-    assetPrefix: string;
+    basePath: string;
 }): string[];
 /**
  * @returns clear the server resources from the global scope.

@@ -79,7 +79,9 @@ export async function loadMetroConfigAsync(
     if (isExporting) {
       // This token will be used in the asset plugin to ensure the path is correct for writing locally.
       // @ts-expect-error: typed as readonly.
-      config.transformer.publicPath = `/assets?export_path=${(exp.assetPrefix ?? '') + '/assets'}`;
+      config.transformer.publicPath = `/assets?export_path=${
+        (exp.experiments?.basePath ?? '') + '/assets'
+      }`;
     } else {
       // @ts-expect-error: typed as readonly
       config.transformer.publicPath = '/assets/?unstable_path=.';
@@ -88,7 +90,7 @@ export async function loadMetroConfigAsync(
     if (isExporting) {
       // This token will be used in the asset plugin to ensure the path is correct for writing locally.
       // @ts-expect-error: typed as readonly.
-      config.transformer.publicPath = exp.assetPrefix;
+      config.transformer.publicPath = exp.experiments?.basePath;
     }
   }
 

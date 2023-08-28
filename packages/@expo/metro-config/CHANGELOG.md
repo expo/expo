@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add `assetPrefix` support. ([#23911](https://github.com/expo/expo/pull/23911) by [@EvanBacon](https://github.com/EvanBacon))
+- Add `basePath` support. ([#23911](https://github.com/expo/expo/pull/23911) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 

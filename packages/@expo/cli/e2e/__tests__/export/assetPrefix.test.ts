@@ -29,7 +29,7 @@ describe('static-rendering with asset prefix', () => {
       //     cwd: projectRoot,
       //     env: {
       //       NODE_ENV: 'production',
-      //       _EXPO_ASSET_PREFIX: '/one/two',
+      //       EXPO_E2E_BASE_PATH: '/one/two',
       //       EXPO_USE_STATIC: '1',
       //       E2E_ROUTER_SRC: 'static-rendering',
       //       E2E_ROUTER_ASYNC: 'development',
