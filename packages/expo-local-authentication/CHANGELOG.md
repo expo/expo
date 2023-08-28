@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- [Android] Migrate to use Expo Modules API.
+- [Android] Migrate to use Expo Modules API. ([#24083](https://github.com/expo/expo/pull/24083) by [@lukmccall](https://github.com/lukmccall))
 
 ## 13.5.0 — 2023-08-02
 
