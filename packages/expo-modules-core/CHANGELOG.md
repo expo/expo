@@ -17,6 +17,7 @@
 - [Android] Fix nullability of parameter type in `List` and `Map` when converting from JS to native. ([#23942](https://github.com/expo/expo/pull/23942) by [@lukmccall](https://github.com/lukmccall))
 - Fixed Fabric setup error on iOS. ([#24004](https://github.com/expo/expo/pull/24004) by [@kudo](https://github.com/kudo))
 - Fixed uuid v4 generation. ([#24123](https://github.com/expo/expo/pull/24123) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Fixed owner type of view functions. ([#24135](https://github.com/expo/expo/pull/24135) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
