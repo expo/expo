@@ -252,9 +252,15 @@ The following options are provided:
 
 #### Hosting with sub-paths
 
-> Experimental functionality, first available in SDK 50.
+> Experimental functionality, first available in the upcoming SDK 50.
 
 <Tabs>
+
+<Tab label="SDK 49 and below">
+
+    Exporting for a sub-path is not supported in SDK 49 and below.
+
+</Tab>
 
 <Tab label="SDK 50 and above">
 
@@ -292,11 +298,29 @@ If you use `<a>`, React Navigation, or the `Linking` API directly, you'll need t
 
 The `basePath` functionality is production-only and must be set before exporting the website. If you change the value, you must re-export the website.
 
-</Tab>
+Images and other assets will work automatically if you `require` or `import` them. If you directly reference a resource URL then you will need to append the **basePath** manually.
 
-<Tab label="SDK 49 and below">
+```js app/index.tsx
+import { Image } from 'expo-image';
 
-    Exporting for a sub-path is not supported in SDK 49 and below.
+export default function Blog() {
+  return <Image source={require('@/assets/image.png')} />;
+}
+```
+
+This will **export** to the following:
+
+```html Output HTML
+<img src="/my-root/assets/assets/image.png" />
+```
+
+Manually passing a URL will need to be manually prefixed:
+
+```js app/index.tsx
+export default function Blog() {
+  return <img src="/my-root/assets/image.png" />;
+}
+```
 
 </Tab>
 
