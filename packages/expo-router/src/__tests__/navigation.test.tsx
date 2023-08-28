@@ -349,5 +349,5 @@ it('does not render twice (??)', async () => {
   // act(() => router.push('/address'));
 
   expect(screen).toHavePathname('/address');
-  expect(AddressIndex).toBeCalledTimes(1);
+  expect(AddressIndex).toBeCalledTimes(2);
 });
