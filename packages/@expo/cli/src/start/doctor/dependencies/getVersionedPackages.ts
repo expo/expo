@@ -35,7 +35,6 @@ function normalizeSdkVersionObject(version?: SDKVersion): Record<string, string>
     ...reactVersion,
     ...expoVersionIfAvailable,
     'react-native': facebookReactNativeVersion,
-    expo: '49.0.8',
   };
 }
 
