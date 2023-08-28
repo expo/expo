@@ -87,18 +87,18 @@ class UpdatesStateMachineSpec: ExpoSpec {
       it("should handle rollback") {
         let testStateChangeDelegate = TestStateChangeDelegate()
         let machine = UpdatesStateMachine(changeEventDelegate: testStateChangeDelegate)
-
+        let commitTime = Date()
         machine.processEvent(UpdatesStateEventCheck())
         expect(machine.state) == .checking
 
-        machine.processEvent(UpdatesStateEventCheckCompleteWithRollback())
+        machine.processEvent(UpdatesStateEventCheckCompleteWithRollback(rollbackCommitTime: commitTime))
         expect(machine.state) == .idle
         expect(machine.context.isChecking) == false
         expect(machine.context.checkError).to(beNil())
         expect(machine.context.latestManifest).to(beNil())
         expect(machine.context.isUpdateAvailable) == true
         expect(machine.context.isUpdatePending) == false
-        expect(machine.context.isRollback) == true
+        expect(machine.context.rollback?.commitTime) == commitTime
       }
 
       it("invalid transitions are handled as expected") {

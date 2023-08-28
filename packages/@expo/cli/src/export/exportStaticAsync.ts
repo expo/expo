@@ -38,6 +38,10 @@ export async function unstable_exportStaticAsync(projectRoot: string, options: O
   await devServerManager.startAsync([
     {
       type: 'metro',
+      options: {
+        location: {},
+        isExporting: true,
+      },
     },
   ]);
 

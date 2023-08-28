@@ -1,4 +1,4 @@
-import { ExpoAppManifest } from '@expo/config';
+import { ExpoConfig } from '@expo/config';
 import { ModPlatform } from '@expo/config-plugins';
 import fs from 'fs';
 import minimatch from 'minimatch';
@@ -17,11 +17,11 @@ const debug = require('debug')('expo:export:exportAssets') as typeof console.log
  *
  * @modifies {exp}
  */
-export async function resolveAssetBundlePatternsAsync(
+export async function resolveAssetBundlePatternsAsync<T extends ExpoConfig>(
   projectRoot: string,
-  exp: Pick<ExpoAppManifest, 'bundledAssets' | 'assetBundlePatterns'>,
+  exp: T,
   assets: Asset[]
-) {
+): Promise<Omit<T, 'assetBundlePatterns'> & { bundledAssets?: string[] }> {
   if (!exp.assetBundlePatterns?.length || !assets.length) {
     delete exp.assetBundlePatterns;
     return exp;
@@ -52,7 +52,7 @@ export async function resolveAssetBundlePatternsAsync(
 
   // The assets returned by the RN packager has duplicates so make sure we
   // only bundle each once.
-  exp.bundledAssets = [...new Set(allBundledAssets)];
+  (exp as any).bundledAssets = [...new Set(allBundledAssets)];
   delete exp.assetBundlePatterns;
 
   return exp;
@@ -81,7 +81,7 @@ export async function exportAssetsAsync(
     outputDir,
     bundles,
   }: {
-    exp: ExpoAppManifest;
+    exp: ExpoConfig;
     bundles: Partial<Record<ModPlatform, BundleOutput>>;
     outputDir: string;
   }

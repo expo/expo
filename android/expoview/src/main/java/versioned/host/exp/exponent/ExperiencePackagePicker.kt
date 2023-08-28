@@ -26,8 +26,7 @@ import expo.modules.print.PrintModule
 import expo.modules.facedetector.FaceDetectorPackage
 import expo.modules.filesystem.FileSystemModule
 import expo.modules.filesystem.FileSystemPackage
-import expo.modules.font.FontLoaderPackage
-import expo.modules.gl.GLPackage
+import expo.modules.gl.GLObjectManagerModule
 import expo.modules.gl.GLViewModule
 import expo.modules.haptics.HapticsModule
 import expo.modules.image.ExpoImageModule
@@ -40,7 +39,7 @@ import expo.modules.keepawake.KeepAwakePackage
 import expo.modules.kotlin.ModulesProvider
 import expo.modules.kotlin.modules.Module
 import expo.modules.lineargradient.LinearGradientModule
-import expo.modules.localauthentication.LocalAuthenticationPackage
+import expo.modules.localauthentication.LocalAuthenticationModule
 import expo.modules.localization.LocalizationModule
 import expo.modules.location.LocationPackage
 import expo.modules.mailcomposer.MailComposerModule
@@ -53,7 +52,6 @@ import expo.modules.permissions.PermissionsPackage
 import expo.modules.random.RandomModule
 import expo.modules.screencapture.ScreenCaptureModule
 import expo.modules.screenorientation.ScreenOrientationModule
-import expo.modules.securestore.SecureStorePackage
 import expo.modules.sensors.SensorsPackage
 import expo.modules.sensors.modules.AccelerometerModule
 import expo.modules.sensors.modules.BarometerModule
@@ -88,16 +86,12 @@ object ExperiencePackagePicker : ModulesProvider {
     ContactsPackage(),
     FaceDetectorPackage(),
     FileSystemPackage(),
-    FontLoaderPackage(),
-    GLPackage(),
     ImageLoaderPackage(),
     KeepAwakePackage(),
-    LocalAuthenticationPackage(),
     LocationPackage(),
     NavigationBarPackage(),
     NotificationsPackage(),
     PermissionsPackage(),
-    SecureStorePackage(),
     SensorsPackage(),
     SplashScreenPackage(),
     SystemUIPackage(),
@@ -146,6 +140,7 @@ object ExperiencePackagePicker : ModulesProvider {
     FileSystemModule::class.java,
     PrintModule::class.java,
     GLViewModule::class.java,
+    GLObjectManagerModule::class.java,
     HapticsModule::class.java,
     ImagePickerModule::class.java,
     ImageManipulatorModule::class.java,
@@ -153,6 +148,7 @@ object ExperiencePackagePicker : ModulesProvider {
     IntentLauncherModule::class.java,
     KeepAwakeModule::class.java,
     LinearGradientModule::class.java,
+    LocalAuthenticationModule::class.java,
     LocalizationModule::class.java,
     MailComposerModule::class.java,
     MediaLibraryModule::class.java,
@@ -160,6 +156,8 @@ object ExperiencePackagePicker : ModulesProvider {
     RandomModule::class.java,
     ScreenCaptureModule::class.java,
     ScreenOrientationModule::class.java,
+    // SecureStoreModule is not added here, instead it is added in ExpoModuleRegistryAdapter.kt,
+    // because it needs access to scopedContext for Expo Go support
     SMSModule::class.java,
     SharingModule::class.java,
     SpeechModule::class.java,

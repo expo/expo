@@ -14,15 +14,13 @@ export declare enum Config {
     CODE_SIGNING_CERTIFICATE = "expo.modules.updates.CODE_SIGNING_CERTIFICATE",
     CODE_SIGNING_METADATA = "expo.modules.updates.CODE_SIGNING_METADATA"
 }
-export declare const withUpdates: ConfigPlugin<{
-    expoUsername: string | null;
-}>;
+export declare const withUpdates: ConfigPlugin;
 export declare function applyRuntimeVersionFromConfig(config: Pick<ExpoConfigUpdates, 'sdkVersion' | 'runtimeVersion'>, stringsJSON: ResourceXML): ResourceXML;
-export declare function setUpdatesConfig(projectRoot: string, config: ExpoConfigUpdates, androidManifest: AndroidManifest, username: string | null, expoUpdatesPackageVersion?: string | null): AndroidManifest;
+export declare function setUpdatesConfig(projectRoot: string, config: ExpoConfigUpdates, androidManifest: AndroidManifest, expoUpdatesPackageVersion?: string | null): AndroidManifest;
 export declare function setVersionsConfig(config: Pick<ExpoConfigUpdates, 'sdkVersion' | 'runtimeVersion'>, androidManifest: AndroidManifest): AndroidManifest;
 export declare function ensureBuildGradleContainsConfigurationScript(projectRoot: string, buildGradleContents: string): string;
 export declare function formatApplyLineForBuildGradle(projectRoot: string): string;
 export declare function isBuildGradleConfigured(projectRoot: string, buildGradleContents: string): boolean;
 export declare function isMainApplicationMetaDataSet(androidManifest: AndroidManifest): boolean;
-export declare function isMainApplicationMetaDataSynced(projectRoot: string, config: ExpoConfigUpdates, androidManifest: AndroidManifest, username: string | null): boolean;
+export declare function isMainApplicationMetaDataSynced(projectRoot: string, config: ExpoConfigUpdates, androidManifest: AndroidManifest): boolean;
 export declare function areVersionsSynced(config: Pick<ExpoConfigUpdates, 'runtimeVersion' | 'sdkVersion'>, androidManifest: AndroidManifest): boolean;

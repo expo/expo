@@ -14,12 +14,12 @@ The state machine context, with information intended to be consumed by applicati
 data class UpdatesStateContext(
   val isUpdateAvailable: Boolean = false,
   val isUpdatePending: Boolean = false,
-  val isRollback: Boolean = false,
   val isChecking: Boolean = false,
   val isDownloading: Boolean = false,
   val isRestarting: Boolean = false,
   val latestManifest: JSONObject? = null,
   val downloadedManifest: JSONObject? = null,
+  val rollback: UpdatesStateContextRollback? = null,
   val checkError: UpdatesStateError? = null,
   val downloadError: UpdatesStateError? = null,
   val lastCheckForUpdateTime: Date? = null,
@@ -30,7 +30,6 @@ data class UpdatesStateContext(
       val map: MutableMap<String, Any> = mutableMapOf(
         "isUpdateAvailable" to isUpdateAvailable,
         "isUpdatePending" to isUpdatePending,
-        "isRollback" to isRollback,
         "isChecking" to isChecking,
         "isDownloading" to isDownloading,
         "isRestarting" to isRestarting
@@ -40,6 +39,9 @@ data class UpdatesStateContext(
       }
       if (downloadedManifest != null) {
         map["downloadedManifest"] = downloadedManifest
+      }
+      if (rollback != null) {
+        map["rollback"] = rollback.json
       }
       if (checkError != null) {
         map["checkError"] = checkError.json
@@ -71,7 +73,6 @@ data class UpdatesStateContext(
       return Bundle().apply {
         putBoolean("isUpdateAvailable", isUpdateAvailable)
         putBoolean("isUpdatePending", isUpdatePending)
-        putBoolean("isRollback", isRollback)
         putBoolean("isChecking", isChecking)
         putBoolean("isDownloading", isDownloading)
         putBoolean("isRestarting", isRestarting)
@@ -80,6 +81,14 @@ data class UpdatesStateContext(
         }
         if (downloadedManifest != null) {
           putString("downloadedManifestString", downloadedManifest.toString())
+        }
+        if (rollback != null) {
+          putBundle(
+            "rollback",
+            Bundle().apply {
+              putString("commitTime", rollback.commitTimeString)
+            }
+          )
         }
         if (checkError != null) {
           val errorMap = Bundle().apply {
