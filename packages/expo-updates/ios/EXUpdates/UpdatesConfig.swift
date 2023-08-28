@@ -29,6 +29,15 @@ public enum CheckAutomaticallyConfig: Int {
 public enum UpdatesConfigError: Int, Error {
   case ExpoUpdatesConfigPlistError
   case MissingUpdateUrl
+
+  var asString: String {
+    switch self {
+    case .ExpoUpdatesConfigPlistError:
+      return "ExpoUpdatesConfigPlistError"
+    case .MissingUpdateUrl:
+      return "MissingUpdateUrl"
+    }
+  }
 }
 
 /**
@@ -138,14 +147,22 @@ public final class UpdatesConfig: NSObject {
       dictionary = dictionary.merging(mergingOtherDictionary, uniquingKeysWith: { _, new in new })
     }
 
-    return UpdatesConfig.config(fromDictionary: dictionary)
+    return try UpdatesConfig.config(fromDictionary: dictionary)
   }
 
-  public static func config(fromDictionary config: [String: Any]) -> UpdatesConfig {
-    let expectsSignedManifest = config.optionalValue(forKey: EXUpdatesConfigExpectsSignedManifestKey) ?? false
-    let updateUrl: URL = URL(string: config.optionalValue(forKey: EXUpdatesConfigUpdateUrlKey).require("Missing EXUpdatesURL in configuration")).require("Invalid EXUpdatesURL configuration")
+  public static func updateUrlString(fromDictionary config: [String: Any]) -> String? {
+    return config.optionalValue(forKey: EXUpdatesConfigUpdateUrlKey)
+  }
 
-    var scopeKey: String = config.optionalValue(forKey: EXUpdatesConfigScopeKeyKey) ?? UpdatesConfig.normalizedURLOrigin(url: updateUrl)
+  public static func config(fromDictionary config: [String: Any]) throws -> UpdatesConfig {
+    let expectsSignedManifest = config.optionalValue(forKey: EXUpdatesConfigExpectsSignedManifestKey) ?? false
+
+    guard let updateUrlString = updateUrlString(fromDictionary: config),
+          let updateUrl = URL(string: updateUrlString) else {
+      throw UpdatesConfigError.MissingUpdateUrl
+    }
+
+    let scopeKey: String = config.optionalValue(forKey: EXUpdatesConfigScopeKeyKey) ?? UpdatesConfig.normalizedURLOrigin(url: updateUrl)
 
     let requestHeaders: [String: String] = config.optionalValue(forKey: EXUpdatesConfigRequestHeadersKey) ?? [:]
     let releaseChannel = config.optionalValue(forKey: EXUpdatesConfigReleaseChannelKey) ?? ReleaseChannelDefaultValue

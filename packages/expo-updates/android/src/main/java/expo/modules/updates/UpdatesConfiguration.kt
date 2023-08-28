@@ -130,15 +130,19 @@ data class UpdatesConfiguration(
     private const val UPDATES_CONFIGURATION_RELEASE_CHANNEL_DEFAULT_VALUE = "default"
     private const val UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_DEFAULT_VALUE = 0
 
+    fun Context.getUpdateUrl(): Uri? {
+      return getMetadataValue<String>("expo.modules.updates.EXPO_UPDATE_URL")?.let { Uri.parse(it) }
+    }
+
     private fun getUpdatesUrl(context: Context?, overrideMap: Map<String, Any>?): Uri {
       return overrideMap?.readValueCheckingType(UPDATES_CONFIGURATION_UPDATE_URL_KEY) ?:
-        context?.getMetadataValue<String>("expo.modules.updates.EXPO_UPDATE_URL")?.let { Uri.parse(it) } ?:
+        context?.getUpdateUrl() ?:
         throw InvalidArgumentException("Missing update URL. Ensure it is set up in your app configuration or AndroidManifest.xml. Or, if you don't wish to use expo-updates, remove the package.")
     }
   }
 }
 
-private inline fun <reified T : Any> Context.getMetadataValue(key: String): T? {
+inline fun <reified T : Any> Context.getMetadataValue(key: String): T? {
   val ai = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA).metaData
   if (!ai.containsKey(key)) {
     return null

@@ -27,7 +27,7 @@ def getBoolStringFromPropOrEnv(String name, Boolean defaultValue) {
 
 // If true, app will use bundled manifest and updates will be enabled, even for
 // debug builds. (default false)
-def exUpdatesNativeDebug = getBoolStringFromPropOrEnv("EX_UPDATES_NATIVE_DEBUG", false)
+def exUpdatesNativeDebug = getBoolStringFromPropOrEnv("EX_UPDATES_NATIVE_DEBUG", true)
 
 // If true, code will run that delays app loading until updates is initialized, to prevent ANR issues.
 // (default true)

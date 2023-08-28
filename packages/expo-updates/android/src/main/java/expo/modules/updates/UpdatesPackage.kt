@@ -13,6 +13,7 @@ import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.InternalModule
 import expo.modules.core.interfaces.ReactActivityHandler
 import expo.modules.core.interfaces.ReactNativeHostHandler
+import expo.modules.updates.UpdatesConfiguration.Companion.getUpdateUrl
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -111,9 +112,9 @@ class UpdatesPackage : Package {
   private fun shouldAutoSetup(context: Context): Boolean {
     if (mShouldAutoSetup == null) {
       mShouldAutoSetup = try {
-        val pm = context.packageManager
-        val ai = pm.getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
-        ai.metaData.getBoolean("expo.modules.updates.AUTO_SETUP", true)
+        val updateUrl = context.getUpdateUrl()
+        val autoSetup = context.getMetadataValue("expo.modules.updates.AUTO_SETUP") ?: true
+        updateUrl != null && autoSetup
       } catch (e: Exception) {
         Log.e(TAG, "Could not read expo-updates configuration data in AndroidManifest", e)
         true

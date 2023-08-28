@@ -61,7 +61,12 @@ export function setUpdatesConfig(
     [Config.LAUNCH_WAIT_MS]: getUpdatesTimeout(config),
   };
 
-  newExpoPlist[Config.UPDATE_URL] = getUpdateUrl(config);
+  const updateUrl = getUpdateUrl(config);
+  if (updateUrl) {
+    newExpoPlist[Config.UPDATE_URL] = updateUrl;
+  } else {
+    delete newExpoPlist[Config.UPDATE_URL];
+  }
 
   const codeSigningCertificate = getUpdatesCodeSigningCertificate(projectRoot, config);
   if (codeSigningCertificate) {

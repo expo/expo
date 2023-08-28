@@ -103,7 +103,12 @@ export function setUpdatesConfig(
     String(getUpdatesTimeout(config))
   );
 
-  addMetaDataItemToMainApplication(mainApplication, Config.UPDATE_URL, getUpdateUrl(config));
+  const updateUrl = getUpdateUrl(config);
+  if (updateUrl) {
+    addMetaDataItemToMainApplication(mainApplication, Config.UPDATE_URL, updateUrl);
+  } else {
+    removeMetaDataItemFromMainApplication(mainApplication, Config.UPDATE_URL);
+  }
 
   const codeSigningCertificate = getUpdatesCodeSigningCertificate(projectRoot, config);
   if (codeSigningCertificate) {

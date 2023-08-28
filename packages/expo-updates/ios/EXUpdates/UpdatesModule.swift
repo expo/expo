@@ -28,6 +28,12 @@ public final class UpdatesModule: Module {
     Name("ExpoUpdates")
 
     Constants {
+      guard let defaultConfig = try? UpdatesConfig.configWithExpoPlist(mergingOtherDictionary: nil) else {
+        return [
+          "isEnabled": false,
+        ]
+      }
+
       let releaseChannel = updatesService?.config?.releaseChannel
       let channel = updatesService?.config?.requestHeaders["expo-channel-name"] ?? ""
       let runtimeVersion = updatesService?.config?.runtimeVersion ?? ""

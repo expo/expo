@@ -117,7 +117,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, AppLoaderTaskSwiftD
     } catch {
       NSException(
         name: .internalInconsistencyException,
-        reason: "Cannot load configuration from Expo.plist. Please ensure you've followed the setup and installation instructions for expo-updates to create Expo.plist and add it to your Xcode project."
+        reason: "Cannot load configuration from Expo.plist. Please ensure you've followed the setup and installation instructions for expo-updates to create Expo.plist and add it to your Xcode project. (\((error as? UpdatesConfigError)?.asString ?? error.localizedDescription))"
       )
       .raise()
     }
