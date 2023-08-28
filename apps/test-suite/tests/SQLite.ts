@@ -6,7 +6,7 @@ import * as SQLite from 'expo-sqlite';
 export const name = 'SQLite';
 
 // The version here needs to be the same as both the podspec and build.gradle for expo-sqlite
-const VERSION = '3.39.2';
+const VERSION = '3.42.0';
 
 // TODO: Only tests successful cases, needs to test error cases like bad database name etc.
 export function test(t) {
@@ -77,6 +77,7 @@ export function test(t) {
       db.transaction((tx) => {
         tx.executeSql('SELECT sqlite_version()', [], (_, results) => {
           const queryVersion = results.rows._array[0]['sqlite_version()'];
+          console.log({ queryVersion });
           t.expect(queryVersion).toEqual(VERSION);
         });
       });

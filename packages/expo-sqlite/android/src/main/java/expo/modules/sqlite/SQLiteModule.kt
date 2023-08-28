@@ -3,7 +3,6 @@ package expo.modules.sqlite
 
 import android.content.Context
 import android.database.Cursor
-import android.os.Bundle
 import androidx.core.os.bundleOf
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
@@ -59,6 +58,12 @@ class SQLiteModule : Module() {
       }
       if (!dbFile.delete()) {
         throw DeleteDatabaseException(dbName)
+      }
+    }
+
+    OnDestroy {
+      DATABASES.values.forEach {
+        it?.rawQuery("SELECT crsql_finalize()", emptyArray())
       }
     }
   }
