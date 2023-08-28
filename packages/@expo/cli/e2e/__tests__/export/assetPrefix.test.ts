@@ -123,8 +123,7 @@ describe('static-rendering with asset prefix', () => {
     5 * 1000
   );
 
-  // TODO: Test that router respects the asset prefix.
-  xit(
+  it(
     'supports usePathname in +html files',
     async () => {
       const page = await fs.readFile(path.join(outputDir, 'index.html'), 'utf8');
