@@ -119,14 +119,14 @@ export async function exportAppAsync(
         outputDir: outputPath,
         // TODO: Expose
         minify,
-        basePath: basePath,
+        basePath,
       });
       Log.log('Finished saving static files');
     } else {
       const cssLinks = await exportCssAssetsAsync({
         outputDir,
         bundles,
-        basePath: basePath,
+        basePath,
       });
       let html = await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
         scripts: [`${basePath}/bundles/${fileNames.web}`],
@@ -135,7 +135,7 @@ export async function exportAppAsync(
       // Add the favicon assets to the HTML.
       const modifyHtml = await getVirtualFaviconAssetsAsync(projectRoot, {
         outputDir,
-        basePath: basePath,
+        basePath,
       });
       if (modifyHtml) {
         html = modifyHtml(html);
@@ -152,7 +152,7 @@ export async function exportAppAsync(
       await persistMetroAssetsAsync(bundles.web.assets, {
         platform: 'web',
         outputDirectory: staticFolder,
-        basePath: basePath,
+        basePath,
       });
     }
   }
