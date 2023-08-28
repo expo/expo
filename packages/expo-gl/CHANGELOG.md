@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- Migrated `GLObjectManagerModule` to use Expo Modules API.
+- Migrated `GLObjectManagerModule` to use Expo Modules API. ([#24017](https://github.com/expo/expo/pull/24017) by [@lukmccall](https://github.com/lukmccall))
 
 ## 13.1.0 — 2023-07-28
 
