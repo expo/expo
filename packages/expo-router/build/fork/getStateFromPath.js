@@ -1,18 +1,21 @@
 import escape from 'escape-string-regexp';
 import * as queryString from 'query-string';
+import Constants from 'expo-constants';
 import URL from 'url-parse';
 import { findFocusedRoute } from './findFocusedRoute';
 import validatePathConfig from './validatePathConfig';
 import { matchGroupName, stripGroupSegmentsFromPath } from '../matchers';
-export function getUrlWithReactNavigationConcessions(path) {
+export function getUrlWithReactNavigationConcessions(path, 
+// @ts-expect-error: pending https://github.com/expo/universe/pull/13294
+basePath = Constants.expoConfig?.experiments?.basePath) {
     const parsed = new URL(path, 'https://acme.com');
     const pathname = parsed.pathname;
     // Make sure there is a trailing slash
     return {
         // The slashes are at the end, not the beginning
-        nonstandardPathname: pathname.replace(/^\/+/g, '').replace(/\/+$/g, '') + '/',
+        nonstandardPathname: stripBasePath(pathname, basePath).replace(/^\/+/g, '').replace(/\/+$/g, '') + '/',
         // React Navigation doesn't support hashes, so here
-        inputPathnameWithoutHash: path.replace(/#.*$/, ''),
+        inputPathnameWithoutHash: stripBasePath(path, basePath).replace(/#.*$/, ''),
     };
 }
 /**
@@ -500,4 +503,12 @@ const parseQueryParams = (path, parseConfig) => {
     }
     return Object.keys(params).length ? params : undefined;
 };
+function stripBasePath(path, assetPrefix) {
+    if (process.env.NODE_ENV !== 'development') {
+        if (assetPrefix) {
+            return path.replace(/^\/+/g, '').replace(new RegExp(`^${escape(assetPrefix)}/`, 'g'), '');
+        }
+    }
+    return path;
+}
 //# sourceMappingURL=getStateFromPath.js.map

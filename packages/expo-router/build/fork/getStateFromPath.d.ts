@@ -13,7 +13,7 @@ type InitialRouteConfig = {
 export type ResultState = PartialState<NavigationState> & {
     state?: ResultState;
 };
-export declare function getUrlWithReactNavigationConcessions(path: string): {
+export declare function getUrlWithReactNavigationConcessions(path: string, basePath?: string | undefined): {
     nonstandardPathname: string;
     inputPathnameWithoutHash: string;
 };

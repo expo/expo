@@ -1,5 +1,6 @@
 import { validatePathConfig } from '@react-navigation/core';
 import * as queryString from 'query-string';
+import Constants from 'expo-constants';
 import { matchDeepDynamicRouteName, matchDynamicName, matchGroupName } from '../matchers';
 const DEFAULT_SCREENS = {};
 const getActiveRoute = (state) => {
@@ -280,7 +281,7 @@ function getPathFromResolvedState(state, configs, { preserveGroups, preserveDyna
             break;
         }
     }
-    return { path: basicSanitizePath(path), params: decodeParams(allParams) };
+    return { path: appendBasePath(basicSanitizePath(path)), params: decodeParams(allParams) };
 }
 function decodeParams(params) {
     const parsed = {};
@@ -416,4 +417,14 @@ const createConfigItem = (config, parentPattern) => {
     };
 };
 const createNormalizedConfigs = (options, pattern) => Object.fromEntries(Object.entries(options).map(([name, c]) => [name, createConfigItem(c, pattern)]));
+function appendBasePath(path, 
+// @ts-expect-error: pending https://github.com/expo/universe/pull/13294
+assetPrefix = Constants.expoConfig?.experiments?.basePath) {
+    if (process.env.NODE_ENV !== 'development') {
+        if (assetPrefix) {
+            return `/${assetPrefix.replace(/^\/+/, '').replace(/\/$/, '')}${path}`;
+        }
+    }
+    return path;
+}
 //# sourceMappingURL=getPathFromState.js.map

@@ -17,6 +17,19 @@ describe(getUrlWithReactNavigationConcessions, () => {
       expect(getUrlWithReactNavigationConcessions(url).nonstandardPathname).toBe(expected);
     });
   });
+
+  [
+    ['/gh-pages/', '/'],
+    ['https://acme.com/gh-pages/hello/world?foo=bar#123', 'hello/world/'],
+    ['https://acme.com/gh-pages/hello/world/?foo=bar#123', 'hello/world/'],
+  ].forEach(([url, expected]) => {
+    it(`returns the pathname for ${url}`, () => {
+      expect(getUrlWithReactNavigationConcessions(url, 'gh-pages').nonstandardPathname).toBe(
+        expected
+      );
+    });
+  });
+
   [
     ['', ''],
     ['https://acme.com/hello/world/?foo=bar#123', 'https://acme.com/hello/world/?foo=bar'],

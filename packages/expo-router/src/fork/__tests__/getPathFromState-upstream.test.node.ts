@@ -1,9 +1,21 @@
 // Ensure all the upstream tests from @react-navigation/core pass.
 
 import type { NavigationState, PartialState } from '@react-navigation/routers';
+import Constants from 'expo-constants';
 
 import getPathFromState from '../getPathFromState';
 import getStateFromPath from '../getStateFromPath';
+
+jest.mock('expo-constants', () => ({
+  __esModule: true,
+  default: {
+    expoConfig: {},
+  },
+}));
+
+afterEach(() => {
+  Constants.expoConfig.ios = undefined;
+});
 
 type State = PartialState<NavigationState>;
 
@@ -187,6 +199,39 @@ type State = PartialState<NavigationState>;
     // @ts-expect-error
     expect(getPathFromState(state, config)).toBe(expected);
   });
+});
+
+it('appends basePath', () => {
+  Constants.expoConfig = {
+    experiments: {
+      basePath: '/expo-prefix/',
+    },
+  };
+  const path = '/expo-prefix/bar';
+  const config = {
+    screens: {
+      Foo: {
+        path: '',
+        screens: {
+          Foe: 'foe',
+        },
+      },
+      Bar: 'bar',
+    },
+  };
+
+  const state = {
+    routes: [
+      {
+        name: 'Foo',
+        state: {
+          routes: [{ name: 'Bar' }],
+        },
+      },
+    ],
+  };
+
+  expect(getPathFromState<object>(state, config)).toBe(path);
 });
 
 it(`supports resolving nonexistent, nested synthetic states into paths that cannot be resolved`, () => {
