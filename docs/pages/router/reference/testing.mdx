@@ -68,7 +68,7 @@ The following matches have been added to `expect` and can be used to asset value
 
 <APIBox header="toHavePathname()">
 
-Assert the current pathname against a given string. The matcher uses the value of the [`usePathname` hook](/router/reference/hooks/#usepathname) on the current `screen`
+Assert the current pathname against a given string. The matcher uses the value of the [`usePathname`](/router/reference/hooks/#usepathname) hook on the current `screen`.
 
 ```tsx app.test.ts
 expect(screen).toHavePathname('/my-router');
@@ -77,7 +77,7 @@ expect(screen).toHavePathname('/my-router');
 </APIBox>
 <APIBox header="toHaveSegments()">
 
-Assert the current segments against an array of strings. The matcher uses the value of the [`useSegments` hook](/router/reference/hooks/#usesegments) on the current `screen`
+Assert the current segments against an array of strings. The matcher uses the value of the [`useSegments`](/router/reference/hooks/#usesegments) hook on the current `screen`.
 
 ```tsx app.test.ts
 expect(screen).toHaveSegments(['[id]']);
@@ -86,7 +86,7 @@ expect(screen).toHaveSegments(['[id]']);
 </APIBox>
 <APIBox header="useLocalSearchParams">
 
-Assert the current local search parameters against an object. The matcher uses the value of the [`useLocalSearchParams` hook](/router/reference/hooks/#uselocalsearchparams) on the current `screen`
+Assert the current local search parameters against an object. The matcher uses the value of the [`useLocalSearchParams`](/router/reference/hooks/#uselocalsearchparams) hook on the current `screen`.
 
 ```tsx app.test.ts
 expect(screen).useLocalSearchParams({ first: 'abc' });
@@ -97,7 +97,7 @@ expect(screen).useLocalSearchParams({ first: 'abc' });
 
 Assert the current screen's pathname that matches a value. Compares using the value of [`useGlobalSearchParams`](/router/reference/hooks/#useglobalsearchparams) hook.
 
-Assert the current global search parameters against an object. The matcher uses the value of the [`useGlobalSearchParams` hook](/router/reference/hooks/#useglobalsearchparams) on the current `screen`
+Assert the current global search parameters against an object. The matcher uses the value of the [`useGlobalSearchParams`](/router/reference/hooks/#useglobalsearchparams) hook on the current `screen`.
 
 ```tsx app.test.ts
 expect(screen).useGlobalSearchParams({ first: 'abc' });
