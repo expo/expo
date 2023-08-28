@@ -19,7 +19,7 @@ Before you proceed, ensure you've set up `jest-expo` according to the [Unit Test
 
 `renderRouter(mock: Record<string, ReactComponent>, options: RenderOptions)`
 
-`renderRouter` can provide inline-mocking of a file system by passing an object to this function as the first parameter. The keys of the object are the mock filesystem paths. Importantly, when defining these paths, do not use leading relative (`./`) or absolute (`/`) notation and exclude file extension.
+`renderRouter` can provide inline-mocking of a file system by passing an object to this function as the first parameter. The keys of the object are the mock filesystem paths. **Do not use leading relative (`./`) or absolute (`/`) notation when defining these paths and exclude file extension.**
 
 ```tsx app.test.tsx
 import { renderRouter, screen } from 'expo-router/testing-library';
