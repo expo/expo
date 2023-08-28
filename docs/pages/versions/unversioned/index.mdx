@@ -34,7 +34,7 @@ This allows you to write [`Contacts.getContactsAsync()`](/versions/latest/sdk/co
 />
 
 <BoxLink
-  title="Installing Expo SDK packages in existing React Native apps"
+  title="Install Expo SDK packages in existing React Native apps"
   href="/bare/installing-expo-modules"
   description={
     <>
@@ -51,7 +51,7 @@ This allows you to write [`Contacts.getContactsAsync()`](/versions/latest/sdk/co
 
 ## Using pre-release versions
 
-New Expo SDK versions are released three times each year. In between releases, we publish pre-release versions of the `expo` package and all of the Expo SDK packages. Pre-releases are not considered to be stable and should only be used if you are comfortable with the risk of encountering bugs or other issues.
+New Expo SDK versions are released three times each year. Between these releases, we publish pre-release versions of the `expo` package and all of the Expo SDK packages. Pre-releases are not considered stable and should only be used if you are comfortable with the risk of encountering bugs or other issues.
 
 Pre-release versions of the `expo` package are versioned with an `-alpha` suffix, such as `50.0.0-alpha.1`. To install, for example, SDK 50 alpha, you can run the following command:
 
@@ -60,7 +60,7 @@ Pre-release versions of the `expo` package are versioned with an `-alpha` suffix
   cmdCopy="npm install expo@50.0.0-alpha && npx expo install --fix"
 />
 
-You can often use pre-release versions of individual packages with stable releases of the Expo SDK, but there may occasionally be incompatibilities or other issues that arise in alpha-quality releases. You may want to [silence dependency validation warnings](https://docs.expo.dev/more/expo-cli/#configuring-dependency-validation) if opt in to alpha package, once you verify that it works well for your use cases.
+You can often use pre-release versions of individual packages with stable releases of the Expo SDK. There may occasionally be incompatibilities or other issues that arise in alpha-quality releases. You may want to [silence dependency validation warnings](/more/expo-cli/#configuring-dependency-validation) if you opt in to the alpha package and once you have verified that it works well for your use cases.
 
 ## Each Expo SDK version depends on a React Native version
 
