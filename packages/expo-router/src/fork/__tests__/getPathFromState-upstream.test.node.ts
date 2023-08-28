@@ -189,6 +189,58 @@ type State = PartialState<NavigationState>;
   });
 });
 
+it(`does not mutate incomplete state during invocation`, () => {
+  const inputState = {
+    stale: false,
+    type: 'stack',
+    key: 'stack-xxx',
+    index: 1,
+    routeNames: ['(tabs)', 'address'],
+    routes: [
+      {
+        name: '(tabs)',
+        state: {
+          stale: false,
+          type: 'stack',
+          key: 'stack-zzz',
+          index: 0,
+          routeNames: ['index'],
+          routes: [{ name: 'index', path: '', key: 'index-xxx' }],
+        },
+        key: '(tabs)-xxx',
+      },
+      {
+        key: 'address-xxx',
+        name: 'address',
+        params: { initial: true, screen: 'index', path: '/address' },
+      },
+    ],
+  };
+
+  const staticCopy = JSON.parse(JSON.stringify(inputState));
+  getPathFromState(
+    // @ts-expect-error
+    inputState,
+    {
+      screens: {
+        '(tabs)': { path: '(tabs)', screens: { index: '' } },
+        address: {
+          path: 'address',
+          screens: { index: '', other: 'other' },
+          initialRouteName: 'index',
+        },
+        _sitemap: '_sitemap',
+        '[...404]': '*404',
+      },
+      preserveDynamicRoutes: false,
+      preserveGroups: false,
+    }
+  );
+
+  expect(inputState).toEqual(staticCopy);
+  expect(JSON.stringify(inputState)).not.toMatch(/UNKNOWN/);
+});
+
 it(`supports resolving nonexistent, nested synthetic states into paths that cannot be resolved`, () => {
   expect(
     getPathFromState(

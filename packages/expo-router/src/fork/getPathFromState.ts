@@ -343,7 +343,11 @@ function getPathFromResolvedState(
   while (current) {
     path += '/';
 
-    const route = current.routes[current.index ?? 0] as CustomRoute;
+    // Make mutable copies to ensure we don't leak state outside of the function.
+    const route = {
+      ...(current.routes[current.index ?? 0] as CustomRoute),
+    };
+
     // NOTE(EvanBacon): Fill in current route using state that was passed as params.
     // if (isInvalidParams(route.params)) {
     if (!route.state && isInvalidParams(route.params)) {
