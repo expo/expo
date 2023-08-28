@@ -1,4 +1,5 @@
-import Constants from 'expo-constants';
+import { NewManifest, BareManifest } from 'expo-manifests';
+export type Manifest = NewManifest | BareManifest;
 /**
  * The types of update-related events.
  */
@@ -18,14 +19,6 @@ export declare enum UpdateEventType {
      */
     ERROR = "error"
 }
-/**
- * @hidden
- */
-export type ClassicManifest = typeof Constants.manifest;
-/**
- * @hidden
- */
-export type Manifest = ClassicManifest | typeof Constants.manifest2;
 type UpdateCheckResultRollBackToEmbedded = {
     /**
      * Whether an update is available. This property is false for a roll back update.
@@ -242,15 +235,21 @@ export type LocalAssets = Record<string, string>;
 /**
  * @hidden
  */
+export type UpdatesNativeStateRollback = {
+    commitTime: string;
+};
+/**
+ * @hidden
+ */
 export type UpdatesNativeStateMachineContext = {
     isUpdateAvailable: boolean;
     isUpdatePending: boolean;
     isChecking: boolean;
     isDownloading: boolean;
-    isRollback: boolean;
     isRestarting: boolean;
     latestManifest?: Manifest;
     downloadedManifest?: Manifest;
+    rollback?: UpdatesNativeStateRollback;
     checkError?: Error;
     downloadError?: Error;
     lastCheckForUpdateTime?: Date;

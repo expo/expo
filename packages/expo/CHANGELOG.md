@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 - Dropped support for Android SDK 21 and 22. ([#24070](https://github.com/expo/expo/pull/24070) by [@behenate](https://github.com/behenate))
+- Drop legacy `hashAssetFiles` (SDK 32) in favor of `expo-assets` version. ([#24090](https://github.com/expo/expo/pull/24090) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 

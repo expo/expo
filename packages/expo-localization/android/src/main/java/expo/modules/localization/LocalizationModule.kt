@@ -120,15 +120,6 @@ class LocalizationModule : Module() {
       }
     }
 
-  private fun getRegionCode(locale: Locale): String? {
-    val miuiRegion = getSystemProperty("ro.miui.region")
-    return if (!TextUtils.isEmpty(miuiRegion)) {
-      miuiRegion
-    } else {
-      getCountryCode(locale)
-    }
-  }
-
   private fun getMeasurementSystem(locale: Locale): String? {
     return if (VERSION.SDK_INT >= VERSION_CODES.P) {
       when (LocaleData.getMeasurementSystem(ULocale.forLocale(locale))) {
@@ -167,6 +158,7 @@ class LocalizationModule : Module() {
 
             // currency symbol can be localized to display locale (1st on the list) or to the locale for the currency (as done here).
             "currencySymbol" to Currency.getInstance(locale).getSymbol(locale),
+            "temperatureUnit" to getTemperatureUnit(locale),
           )
         )
       } catch (e: Exception) {

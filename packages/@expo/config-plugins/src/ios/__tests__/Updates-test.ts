@@ -49,7 +49,6 @@ describe('iOS Updates config', () => {
           },
         },
         {} as any,
-        'user',
         '0.11.0'
       )
     ).toMatchObject({
@@ -63,32 +62,6 @@ describe('iOS Updates config', () => {
       ),
       EXUpdatesCodeSigningMetadata: { alg: 'rsa-v1_5-sha256', keyid: 'test' },
       EXUpdatesRequestHeaders: { 'expo-channel-name': 'test', testheader: 'test' },
-    });
-  });
-
-  it('sets the correct values in Expo.plist for useClassicUpdates', () => {
-    vol.fromJSON({
-      '/app/hello': fsReal.readFileSync(sampleCodeSigningCertificatePath, 'utf-8'),
-    });
-
-    expect(
-      Updates.setUpdatesConfig(
-        '/app',
-        {
-          sdkVersion: '37.0.0',
-          slug: 'my-app',
-          owner: 'owner',
-          updates: {
-            useClassicUpdates: true,
-          },
-        },
-        {} as any,
-        'user',
-        '0.11.0'
-      )
-    ).toMatchObject({
-      EXUpdatesEnabled: true,
-      EXUpdatesURL: 'https://exp.host/@owner/my-app',
     });
   });
 

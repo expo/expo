@@ -123,14 +123,16 @@ function ErrorOverlayBodyContents({ log, onRetry, }) {
     }, [log]);
     const headerTitle = HEADER_TITLE_MAP[log.isComponentError ? 'component' : log.level] ?? log.type;
     const header = (react_1.default.createElement(LogBoxInspectorMessageHeader_1.LogBoxInspectorMessageHeader, { collapsed: collapsed, onPress: () => setCollapsed(!collapsed), message: log.message, level: log.level, title: headerTitle }));
+    // Hide useless React stack.
+    const needsStack = !log.message.content.match(/(Expected server HTML to contain a matching|Text content did not match\.)/);
     return (react_1.default.createElement(react_1.default.Fragment, null,
         collapsed && header,
         react_1.default.createElement(react_native_1.ScrollView, { style: styles.scrollBody },
             !collapsed && header,
             react_1.default.createElement(LogBoxInspectorCodeFrame_1.LogBoxInspectorCodeFrame, { codeFrame: log.codeFrame }),
-            react_1.default.createElement(LogBoxInspectorStackFrames_1.LogBoxInspectorStackFrames, { type: "stack", 
+            needsStack && (react_1.default.createElement(LogBoxInspectorStackFrames_1.LogBoxInspectorStackFrames, { type: "stack", 
                 // eslint-disable-next-line react/jsx-no-bind
-                onRetry: onRetry.bind(onRetry, 'stack') }),
+                onRetry: onRetry.bind(onRetry, 'stack') })),
             !!log?.componentStack?.length && (react_1.default.createElement(LogBoxInspectorStackFrames_1.LogBoxInspectorStackFrames, { type: "component", 
                 // eslint-disable-next-line react/jsx-no-bind
                 onRetry: onRetry.bind(onRetry, 'component') })))));
