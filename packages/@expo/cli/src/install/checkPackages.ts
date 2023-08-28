@@ -1,14 +1,17 @@
 import { getConfig } from '@expo/config';
 import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
+import { spawn } from 'child_process';
 
-import { fixPackagesAsync } from './installAsync';
+import { applyPluginsAsync } from './applyPlugins';
 import { Options } from './resolveOptions';
 import * as Log from '../log';
+import { getOperationLog } from '../start/doctor/dependencies/getVersionedPackages';
 import {
   getVersionedDependenciesAsync,
   logIncorrectDependencies,
 } from '../start/doctor/dependencies/validateDependenciesVersions';
+import { groupBy } from '../utils/array';
 import { isInteractive } from '../utils/interactive';
 import { learnMore } from '../utils/link';
 import { confirmAsync } from '../utils/prompts';
@@ -16,7 +19,12 @@ import { joinWithCommasAnd } from '../utils/strings';
 
 const debug = require('debug')('expo:install:check') as typeof console.log;
 
-// Exposed for testing.
+/**
+ * Handles `expo install --fix|check'.
+ * Checks installed dependencies against bundledNativeModules and versions endpoints to find any incompatibilities.
+ * If `--fix` is passed, it will install the correct versions of the dependencies.
+ * If `--check` is passed, it will prompt the user to install the correct versions of the dependencies (on interactive terminal).
+ */
 export async function checkPackagesAsync(
   projectRoot: string,
   {
@@ -85,4 +93,87 @@ export async function checkPackagesAsync(
   }
   // Exit with non-zero exit code if any of the dependencies are out of date.
   Log.exit(chalk.red('Found outdated dependencies'), 1);
+}
+
+/**
+ * Given a list of incompatible packages, installs the correct versions of the packages with the package manager used for the project.
+ */
+export async function fixPackagesAsync(
+  projectRoot: string,
+  {
+    packages,
+    packageManager,
+    sdkVersion,
+    packageManagerArguments,
+  }: {
+    packages: Awaited<ReturnType<typeof getVersionedDependenciesAsync>>;
+    /** Package manager to use when installing the versioned packages. */
+    packageManager: PackageManager.NodePackageManager;
+    /**
+     * SDK to version `packages` for.
+     * @example '44.0.0'
+     */
+    sdkVersion: string;
+    /**
+     * Extra parameters to pass to the `packageManager` when installing versioned packages.
+     * @example ['--no-save']
+     */
+    packageManagerArguments: string[];
+  }
+): Promise<void> {
+  if (!packages.length) {
+    return;
+  }
+
+  const { dependencies = [], devDependencies = [] } = groupBy(packages, (dep) => dep.packageType);
+  const versioningMessages = getOperationLog({
+    othersCount: 0, // All fixable packages are versioned
+    nativeModulesCount: packages.length,
+    sdkVersion,
+  });
+
+  const expoDep = dependencies.find((dep) => dep.packageName === 'expo');
+  if (expoDep) {
+    Log.log(
+      chalk`\u203A Updating expo using {bold ${packageManager.name}} and then running {bold npx expo install --fix} under the updated expo version.`
+    );
+
+    spawn(
+      `${packageManager.bin} ${packageManager
+        .getAddCommandOptions([
+          ...packageManagerArguments,
+          `expo@${expoDep.expectedVersionOrRange}`,
+        ])
+        .join(' ')} && npx expo install --fix`,
+      {
+        ...packageManager.options,
+        detached: true,
+        shell: true,
+      }
+    );
+    return;
+  }
+
+  Log.log(
+    chalk`\u203A Installing ${
+      versioningMessages.length ? versioningMessages.join(' and ') + ' ' : ''
+    }using {bold ${packageManager.name}}`
+  );
+
+  if (dependencies.length) {
+    const versionedPackages = dependencies.map(
+      (dep) => `${dep.packageName}@${dep.expectedVersionOrRange}`
+    );
+
+    await packageManager.addAsync([...packageManagerArguments, ...versionedPackages]);
+
+    await applyPluginsAsync(projectRoot, versionedPackages);
+  }
+
+  if (devDependencies.length) {
+    await packageManager.addDevAsync([
+      ...packageManagerArguments,
+      ...devDependencies.map((dep) => `${dep.packageName}@${dep.expectedVersionOrRange}`),
+    ]);
+  }
 }
