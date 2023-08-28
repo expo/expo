@@ -842,7 +842,7 @@ class CalendarModule : Module() {
   }
 
   private fun checkPermissions(promise: Promise): Boolean {
-    if (appContext.permissions?.hasGrantedPermissions(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR) == true) {
+    if (appContext.permissions?.hasGrantedPermissions(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR) != true) {
       promise.reject("E_MISSING_PERMISSIONS", "CALENDAR permission is required to do this operation.", null)
       return false
     }
