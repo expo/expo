@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed select queries with CTEs crashing on Android. ([#24132](https://github.com/expo/expo/pull/24132) by [@derekstavis](https://github.com/derekstavis))
+
 ### 💡 Others
 
 ## 11.3.2 — 2023-07-29
