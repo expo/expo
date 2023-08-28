@@ -21,8 +21,7 @@
     "remove-version": "node --unhandled-rejections=strict ./scripts/remove-version.js",
     "generate-static-resoures": "rimraf public/static/constants && node --unhandled-rejections=strict ./scripts/generate-static-resources.js",
     "postinstall": "node --async-stack-traces --unhandled-rejections=strict ./scripts/copy-latest.js && yarn generate-static-resoures",
-    "lint-prose": "vale .",
-    "lint-prose-test": "vale ./vale/"
+    "lint-prose": "vale ."
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",
