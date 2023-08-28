@@ -23,7 +23,6 @@ import {
   getUpdatesCodeSigningCertificate,
   getUpdatesCodeSigningMetadataStringified,
   getUpdatesRequestHeadersStringified,
-  getUpdatesEnabled,
   getUpdatesTimeout,
   getUpdateUrl,
 } from '../utils/Updates';
@@ -31,7 +30,6 @@ import {
 const CREATE_MANIFEST_ANDROID_PATH = 'expo-updates/scripts/create-manifest-android.gradle';
 
 export enum Config {
-  ENABLED = 'expo.modules.updates.ENABLED',
   CHECK_ON_LAUNCH = 'expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH',
   LAUNCH_WAIT_MS = 'expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS',
   SDK_VERSION = 'expo.modules.updates.EXPO_SDK_VERSION',
@@ -91,11 +89,9 @@ export function setUpdatesConfig(
 ): AndroidManifest {
   const mainApplication = getMainApplicationOrThrow(androidManifest);
 
-  addMetaDataItemToMainApplication(
-    mainApplication,
-    Config.ENABLED,
-    String(getUpdatesEnabled(config))
-  );
+  // remove legacy field
+  removeMetaDataItemFromMainApplication(mainApplication, 'expo.modules.updates.ENABLED');
+
   addMetaDataItemToMainApplication(
     mainApplication,
     Config.CHECK_ON_LAUNCH,
@@ -107,12 +103,7 @@ export function setUpdatesConfig(
     String(getUpdatesTimeout(config))
   );
 
-  const updateUrl = getUpdateUrl(config);
-  if (updateUrl) {
-    addMetaDataItemToMainApplication(mainApplication, Config.UPDATE_URL, updateUrl);
-  } else {
-    removeMetaDataItemFromMainApplication(mainApplication, Config.UPDATE_URL);
-  }
+  addMetaDataItemToMainApplication(mainApplication, Config.UPDATE_URL, getUpdateUrl(config));
 
   const codeSigningCertificate = getUpdatesCodeSigningCertificate(projectRoot, config);
   if (codeSigningCertificate) {
@@ -258,8 +249,6 @@ export function isMainApplicationMetaDataSynced(
 ): boolean {
   return (
     getUpdateUrl(config) === getMainApplicationMetaDataValue(androidManifest, Config.UPDATE_URL) &&
-    String(getUpdatesEnabled(config)) ===
-      getMainApplicationMetaDataValue(androidManifest, Config.ENABLED) &&
     String(getUpdatesTimeout(config)) ===
       getMainApplicationMetaDataValue(androidManifest, Config.LAUNCH_WAIT_MS) &&
     getUpdatesCheckOnLaunch(config) ===

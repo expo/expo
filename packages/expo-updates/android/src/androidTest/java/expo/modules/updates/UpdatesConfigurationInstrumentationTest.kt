@@ -84,7 +84,6 @@ class UpdatesConfigurationInstrumentationTest {
       every { packageManager } returns mockk {
         every { getApplicationInfo(testPackageName, PackageManager.GET_META_DATA) } returns mockk {
           metaData = Bundle().apply {
-            putBoolean("expo.modules.updates.ENABLED", false)
             putInt("expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS", 1000)
             putBoolean("expo.modules.updates.HAS_EMBEDDED_UPDATE", false)
             putBoolean("expo.modules.updates.CODE_SIGNING_INCLUDE_MANIFEST_RESPONSE_CERTIFICATE_CHAIN", true)
@@ -109,7 +108,6 @@ class UpdatesConfigurationInstrumentationTest {
       every { packageManager } returns mockk {
         every { getApplicationInfo(testPackageName, PackageManager.GET_META_DATA) } returns mockk {
           metaData = Bundle().apply {
-            putBoolean("expo.modules.updates.ENABLED", true)
             putString("expo.modules.updates.EXPO_SCOPE_KEY", "invalid")
             putString("expo.modules.updates.EXPO_UPDATE_URL", "http://invalid.com")
             putString("expo.modules.updates.EXPO_SDK_VERSION", "invalid")
@@ -129,7 +127,6 @@ class UpdatesConfigurationInstrumentationTest {
     val config = UpdatesConfiguration(
       context,
       mapOf(
-        UpdatesConfiguration.UPDATES_CONFIGURATION_ENABLED_KEY to false,
         UpdatesConfiguration.UPDATES_CONFIGURATION_SCOPE_KEY_KEY to "override",
         UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("http://override.com"),
         UpdatesConfiguration.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY to mapOf("test" to "override"),

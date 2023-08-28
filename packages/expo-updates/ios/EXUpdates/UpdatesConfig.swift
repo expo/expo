@@ -28,6 +28,7 @@ public enum CheckAutomaticallyConfig: Int {
 @objc(EXUpdatesConfigError)
 public enum UpdatesConfigError: Int, Error {
   case ExpoUpdatesConfigPlistError
+  case MissingUpdateUrl
 }
 
 /**
@@ -47,7 +48,6 @@ public final class UpdatesConfig: NSObject {
   public static let PlistName = "Expo"
 
   public static let EXUpdatesConfigEnableAutoSetupKey = "EXUpdatesAutoSetup"
-  public static let EXUpdatesConfigEnabledKey = "EXUpdatesEnabled"
   public static let EXUpdatesConfigScopeKeyKey = "EXUpdatesScopeKey"
   public static let EXUpdatesConfigUpdateUrlKey = "EXUpdatesURL"
   public static let EXUpdatesConfigRequestHeadersKey = "EXUpdatesRequestHeaders"
@@ -71,10 +71,9 @@ public final class UpdatesConfig: NSObject {
 
   private static let ReleaseChannelDefaultValue = "default"
 
-  public let isEnabled: Bool
   public let expectsSignedManifest: Bool
-  public let scopeKey: String?
-  public let updateUrl: URL?
+  public let scopeKey: String
+  public let updateUrl: URL
   public let requestHeaders: [String: String]
   public let releaseChannel: String
   public let launchWaitMs: Int
@@ -90,10 +89,9 @@ public final class UpdatesConfig: NSObject {
   public let hasEmbeddedUpdate: Bool
 
   internal required init(
-    isEnabled: Bool,
     expectsSignedManifest: Bool,
-    scopeKey: String?,
-    updateUrl: URL?,
+    scopeKey: String,
+    updateUrl: URL,
     requestHeaders: [String: String],
     releaseChannel: String,
     launchWaitMs: Int,
@@ -104,7 +102,6 @@ public final class UpdatesConfig: NSObject {
     hasEmbeddedUpdate: Bool,
     enableExpoUpdatesProtocolV0CompatibilityMode: Bool
   ) {
-    self.isEnabled = isEnabled
     self.expectsSignedManifest = expectsSignedManifest
     self.scopeKey = scopeKey
     self.updateUrl = updateUrl
@@ -145,17 +142,10 @@ public final class UpdatesConfig: NSObject {
   }
 
   public static func config(fromDictionary config: [String: Any]) -> UpdatesConfig {
-    let isEnabled = config.optionalValue(forKey: EXUpdatesConfigEnabledKey) ?? false
     let expectsSignedManifest = config.optionalValue(forKey: EXUpdatesConfigExpectsSignedManifestKey) ?? false
-    let updateUrl: URL? = config.optionalValue(forKey: EXUpdatesConfigUpdateUrlKey).let { it in
-      URL(string: it)
-    }
+    let updateUrl: URL = URL(string: config.optionalValue(forKey: EXUpdatesConfigUpdateUrlKey).require("Missing EXUpdatesURL in configuration")).require("Invalid EXUpdatesURL configuration")
 
-    var scopeKey: String? = config.optionalValue(forKey: EXUpdatesConfigScopeKeyKey)
-    if scopeKey == nil,
-      let updateUrl = updateUrl {
-      scopeKey = UpdatesConfig.normalizedURLOrigin(url: updateUrl)
-    }
+    var scopeKey: String = config.optionalValue(forKey: EXUpdatesConfigScopeKeyKey) ?? UpdatesConfig.normalizedURLOrigin(url: updateUrl)
 
     let requestHeaders: [String: String] = config.optionalValue(forKey: EXUpdatesConfigRequestHeadersKey) ?? [:]
     let releaseChannel = config.optionalValue(forKey: EXUpdatesConfigReleaseChannelKey) ?? ReleaseChannelDefaultValue
@@ -210,7 +200,6 @@ public final class UpdatesConfig: NSObject {
     let enableExpoUpdatesProtocolV0CompatibilityMode = config.optionalValue(forKey: EXUpdatesConfigEnableExpoUpdatesProtocolV0CompatibilityModeKey) ?? false
 
     return UpdatesConfig(
-      isEnabled: isEnabled,
       expectsSignedManifest: expectsSignedManifest,
       scopeKey: scopeKey,
       updateUrl: updateUrl,

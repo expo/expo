@@ -94,7 +94,7 @@ class BareUpdateManifest private constructor(
       return BareUpdateManifest(
         manifest,
         id,
-        configuration.scopeKey!!,
+        configuration.scopeKey,
         commitTime,
         runtimeVersion,
         assets

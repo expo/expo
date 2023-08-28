@@ -68,7 +68,6 @@ class UpdatesModule(
         constants["isEmbeddedLaunch"] = updatesServiceLocal.isEmbeddedLaunch
         constants["isMissingRuntimeVersion"] =
           updatesServiceLocal.configuration.isMissingRuntimeVersion
-        constants["isEnabled"] = updatesServiceLocal.configuration.isEnabled
         constants["releaseChannel"] = updatesServiceLocal.configuration.releaseChannel
         constants["isUsingEmbeddedAssets"] = updatesServiceLocal.isUsingEmbeddedAssets
         constants["runtimeVersion"] = updatesServiceLocal.configuration.runtimeVersion ?: ""
@@ -111,8 +110,8 @@ class UpdatesModule(
   @ExpoMethod
   fun reload(promise: Promise) {
     try {
-      val updatesServiceLocal = updatesService
-      if (!updatesServiceLocal!!.canRelaunch()) {
+      val updatesServiceLocal = updatesService!!
+      if (!updatesServiceLocal.canRelaunch()) {
         promise.reject(
           "ERR_UPDATES_DISABLED",
           "You cannot reload when expo-updates is not enabled."
@@ -141,15 +140,7 @@ class UpdatesModule(
   @ExpoMethod
   fun getNativeStateMachineContextAsync(promise: Promise) {
     try {
-      val updatesServiceLocal = updatesService
-      if (!updatesServiceLocal!!.configuration.isEnabled) {
-        promise.reject(
-          "ERR_UPDATES_DISABLED",
-          "You cannot check for updates when expo-updates is not enabled."
-        )
-        return
-      }
-      val context = updatesServiceLocal.stateMachine?.context ?: UpdatesStateContext()
+      val context = updatesService!!.stateMachine?.context ?: UpdatesStateContext()
       promise.resolve(context.bundle)
     } catch (e: IllegalStateException) {
       promise.reject(
@@ -162,14 +153,7 @@ class UpdatesModule(
   @ExpoMethod
   fun checkForUpdateAsync(promise: Promise) {
     try {
-      val updatesServiceLocal = updatesService
-      if (!updatesServiceLocal!!.configuration.isEnabled) {
-        promise.reject(
-          "ERR_UPDATES_DISABLED",
-          "You cannot check for updates when expo-updates is not enabled."
-        )
-        return
-      }
+      val updatesServiceLocal = updatesService!!
       updatesServiceLocal.stateMachine?.processEvent(UpdatesStateEvent.Check())
       AsyncTask.execute {
         val databaseHolder = updatesServiceLocal.databaseHolder
@@ -307,14 +291,7 @@ class UpdatesModule(
   @ExpoMethod
   fun fetchUpdateAsync(promise: Promise) {
     try {
-      val updatesServiceLocal = updatesService
-      if (!updatesServiceLocal!!.configuration.isEnabled) {
-        promise.reject(
-          "ERR_UPDATES_DISABLED",
-          "You cannot fetch updates when expo-updates is not enabled."
-        )
-        return
-      }
+      val updatesServiceLocal = updatesService!!
       updatesServiceLocal.stateMachine?.processEvent(UpdatesStateEvent.Download())
       AsyncTask.execute {
         val databaseHolder = updatesServiceLocal.databaseHolder
@@ -435,14 +412,7 @@ class UpdatesModule(
   @ExpoMethod
   fun getExtraParamsAsync(promise: Promise) {
     logger.debug("Called getExtraParamsAsync")
-    val updatesServiceLocal = updatesService
-    if (!updatesServiceLocal!!.configuration.isEnabled) {
-      promise.reject(
-        "ERR_UPDATES_DISABLED",
-        "You cannot get extra params when expo-updates is not enabled."
-      )
-      return
-    }
+    val updatesServiceLocal = updatesService!!
 
     AsyncTask.execute {
       val databaseHolder = updatesServiceLocal.databaseHolder
@@ -476,14 +446,7 @@ class UpdatesModule(
   @ExpoMethod
   fun setExtraParamAsync(key: String, value: String?, promise: Promise) {
     logger.debug("Called setExtraParamAsync with key = $key, value = $value")
-    val updatesServiceLocal = updatesService
-    if (!updatesServiceLocal!!.configuration.isEnabled) {
-      promise.reject(
-        "ERR_UPDATES_DISABLED",
-        "You cannot set extra client params when expo-updates is not enabled."
-      )
-      return
-    }
+    val updatesServiceLocal = updatesService!!
 
     AsyncTask.execute {
       val databaseHolder = updatesServiceLocal.databaseHolder

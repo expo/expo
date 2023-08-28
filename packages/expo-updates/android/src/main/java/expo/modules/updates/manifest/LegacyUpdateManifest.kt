@@ -118,9 +118,9 @@ class LegacyUpdateManifest private constructor(
       val bundledAssets = manifest.getBundledAssets()
       return LegacyUpdateManifest(
         manifest,
-        configuration.updateUrl!!,
+        configuration.updateUrl,
         id,
-        configuration.scopeKey!!,
+        configuration.scopeKey,
         commitTime,
         runtimeVersion,
         bundleUrl,

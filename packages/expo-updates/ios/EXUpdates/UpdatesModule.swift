@@ -68,7 +68,7 @@ public final class UpdatesModule: Module {
     }
 
     AsyncFunction("reload") { (promise: Promise) in
-      guard let updatesService = updatesService, let config = updatesService.config, config.isEnabled else {
+      guard let updatesService = updatesService, let config = updatesService.config else {
         throw UpdatesDisabledException()
       }
       guard updatesService.canRelaunch else {
@@ -119,14 +119,11 @@ public final class UpdatesModule: Module {
 
     AsyncFunction("getExtraParamsAsync") { (promise: Promise) in
       guard let updatesService = updatesService,
-        let config = updatesService.config,
-        config.isEnabled else {
+        let config = updatesService.config else {
         throw UpdatesDisabledException()
       }
 
-      guard let scopeKey = config.scopeKey else {
-        throw Exception(name: "ERR_UPDATES_SCOPE_KEY", description: "Muse have scopeKey in config")
-      }
+      let scopeKey = config.scopeKey
 
       updatesService.database.databaseQueue.async {
         do {
@@ -139,14 +136,11 @@ public final class UpdatesModule: Module {
 
     AsyncFunction("setExtraParamAsync") { (key: String, value: String?, promise: Promise) in
       guard let updatesService = updatesService,
-        let config = updatesService.config,
-        config.isEnabled else {
+        let config = updatesService.config else {
         throw UpdatesDisabledException()
       }
 
-      guard let scopeKey = config.scopeKey else {
-        throw Exception(name: "ERR_UPDATES_SCOPE_KEY", description: "Muse have scopeKey in config")
-      }
+      let scopeKey = config.scopeKey
 
       updatesService.database.databaseQueue.async {
         do {

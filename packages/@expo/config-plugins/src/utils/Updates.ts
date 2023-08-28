@@ -22,8 +22,22 @@ export function getExpoUpdatesPackageVersion(projectRoot: string): string | null
   return packageJson.version;
 }
 
-export function getUpdateUrl(config: Pick<ExpoConfigUpdates, 'updates'>): string | null {
-  return config.updates?.url ?? null;
+export function getUpdateUrl(config: Pick<ExpoConfigUpdates, 'updates'>): string {
+  const updateUrl = config.updates?.url;
+  if (!updateUrl) {
+    const hasEnabledConfigProperty = config.updates?.enabled !== undefined;
+    if (hasEnabledConfigProperty) {
+      throw new Error(
+        'The enabled setting has been removed from expo-updates. In the past, this was set to false by default. To fix this, either remove the expo-updates package from your project or configure expo-updates using EAS Update or your own configuration.'
+      );
+    } else {
+      throw new Error(
+        "The expo-updates library has not been configured, and must be configured before being built into a project. To fix this, either remove the expo-updates package from your project if you don't use it or configure expo-updates using EAS Update or your own configuration."
+      );
+    }
+  }
+
+  return updateUrl;
 }
 
 export function getAppVersion(config: Pick<ExpoConfig, 'version'>): string {
@@ -129,15 +143,6 @@ export function getRuntimeVersion(
 
 export function getSDKVersion(config: Pick<ExpoConfigUpdates, 'sdkVersion'>): string | null {
   return typeof config.sdkVersion === 'string' ? config.sdkVersion : null;
-}
-
-export function getUpdatesEnabled(config: Pick<ExpoConfigUpdates, 'updates'>): boolean {
-  // allow override of enabled property
-  if (config.updates?.enabled !== undefined) {
-    return config.updates.enabled;
-  }
-
-  return getUpdateUrl(config) !== null;
 }
 
 export function getUpdatesTimeout(config: Pick<ExpoConfigUpdates, 'updates'>): number {

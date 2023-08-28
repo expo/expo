@@ -214,39 +214,6 @@ public class AppController: NSObject, AppLoaderTaskDelegate, AppLoaderTaskSwiftD
   public func start() {
     precondition(!isStarted, "AppController:start should only be called once per instance")
 
-    if !config.isEnabled {
-      let launcherNoDatabase = AppLauncherNoDatabase()
-      launcher = launcherNoDatabase
-      launcherNoDatabase.launchUpdate(withConfig: config)
-
-      delegate.let { _ in
-        DispatchQueue.main.async { [weak self] in
-          if let strongSelf = self {
-            strongSelf.delegate?.appController(strongSelf, didStartWithSuccess: strongSelf.launchAssetUrl() != nil)
-            strongSelf.sendQueuedEventsToBridge()
-          }
-        }
-      }
-
-      return
-    }
-
-    if config.updateUrl == nil {
-      NSException(
-        name: .internalInconsistencyException,
-        reason: "expo-updates is enabled, but no valid URL is configured under EXUpdatesURL. If you are making a release build for the first time, make sure you have run `expo publish` at least once."
-      )
-      .raise()
-    }
-
-    if config.scopeKey == nil {
-      NSException(
-        name: .internalInconsistencyException,
-        reason: "expo-updates was configured with no scope key. Make sure a valid URL is configured under EXUpdatesURL."
-      )
-      .raise()
-    }
-
     isStarted = true
 
     purgeUpdatesLogsOlderThanOneDay()
@@ -638,7 +605,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, AppLoaderTaskSwiftD
       completionQueue: controllerQueue
     )
     remoteAppLoader.loadUpdate(
-      fromURL: config.updateUrl!
+      fromURL: config.updateUrl
     ) { updateResponse in
       if let updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective {
         switch updateDirective {

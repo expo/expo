@@ -25,10 +25,8 @@ public final class ReaperSelectionPolicyFilterAware: NSObject, ReaperSelectionPo
     var nextNewestUpdateMatchingFilters: Update?
 
     for update in updates {
-      guard let launchedUpdateScopeKey = launchedUpdate.scopeKey,
-        let updateScopeKey = update.scopeKey else {
-        continue
-      }
+      let launchedUpdateScopeKey = launchedUpdate.scopeKey
+      let updateScopeKey = update.scopeKey
 
       // ignore any updates whose scopeKey doesn't match that of the launched update
       if launchedUpdateScopeKey != updateScopeKey {
