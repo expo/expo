@@ -30,6 +30,11 @@ def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.ab
 if (expoModulesCorePlugin.exists()) {
   apply from: expoModulesCorePlugin
   applyKotlinExpoModulesCorePlugin()
+  // Remove this check, but keep the contents after SDK49 support is dropped
+  if (safeExtGet("providesDefaultConfig", false)) {
+    useExpoPublishing()
+    useCoreDependencies()
+  }
 }
 
 buildscript {
@@ -57,16 +62,19 @@ buildscript {
   }
 }
 
-afterEvaluate {
-  publishing {
-    publications {
-      release(MavenPublication) {
-        from components.release
+// Remove this if and it's contents, when support for SDK49 is dropped
+if (!safeExtGet("providesDefaultConfig", false)) {
+  afterEvaluate {
+    publishing {
+      publications {
+        release(MavenPublication) {
+          from components.release
+        }
       }
-    }
-    repositories {
-      maven {
-        url = mavenLocal().url
+      repositories {
+        maven {
+          url = mavenLocal().url
+        }
       }
     }
   }
@@ -80,6 +88,12 @@ android {
     defaultConfig {
       minSdkVersion safeExtGet("minSdkVersion", 23)
       targetSdkVersion safeExtGet("targetSdkVersion", 33)
+    }
+
+    publishing {
+      singleVariant("release") {
+        withSourcesJar()
+      }
     }
 
     lintOptions {
@@ -147,12 +161,6 @@ android {
     extractHeaders
     extractJNI
   }
-
-  publishing {
-    singleVariant("release") {
-      withSourcesJar()
-    }
-  }
 }
 
 repositories {
@@ -161,9 +169,10 @@ repositories {
 
 dependencies {
   compileOnly 'com.facebook.soloader:soloader:0.8.2'
-  implementation project(':expo-modules-core')
-
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
+  if (!safeExtGet("providesDefaultConfig", false)) {
+    implementation project(':expo-modules-core')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
+  }
 
   // Remove this when we drop SDK 47
   if (REACT_NATIVE_TARGET_VERSION >= 71) {

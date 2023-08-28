@@ -20,6 +20,11 @@ def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.ab
 if (expoModulesCorePlugin.exists()) {
   apply from: expoModulesCorePlugin
   applyKotlinExpoModulesCorePlugin()
+  // Remove this check, but keep the contents after SDK49 support is dropped
+  if (safeExtGet("providesDefaultConfig", false)) {
+    useExpoPublishing()
+    useCoreDependencies()
+  }
 }
 
 buildscript {
@@ -46,16 +51,19 @@ buildscript {
   }
 }
 
-afterEvaluate {
-  publishing {
-    publications {
-      release(MavenPublication) {
-        from components.release
+// Remove this if and it's contents, when support for SDK49 is dropped
+if (!safeExtGet("providesDefaultConfig", false)) {
+  afterEvaluate {
+    publishing {
+      publications {
+        release(MavenPublication) {
+          from components.release
+        }
       }
-    }
-    repositories {
-      maven {
-        url = mavenLocal().url
+      repositories {
+        maven {
+          url = mavenLocal().url
+        }
       }
     }
   }
@@ -69,6 +77,12 @@ android {
     defaultConfig {
       minSdkVersion safeExtGet("minSdkVersion", 23)
       targetSdkVersion safeExtGet("targetSdkVersion", 33)
+    }
+
+    publishing {
+      singleVariant("release") {
+        withSourcesJar()
+      }
     }
 
     lintOptions {
@@ -95,19 +109,17 @@ android {
 
     buildConfigField("String", "RNBRANCH_VERSION", "\"${getNpmVersion()}\"")
   }
-  publishing {
-    singleVariant("release") {
-      withSourcesJar()
-    }
-  }
+
 }
 
 dependencies {
-  implementation project(':expo-modules-core')
+  // Remove this if and it's contents, when support for SDK49 is dropped
+  if (!safeExtGet("providesDefaultConfig", false)) {
+    implementation project(':expo-modules-core')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
+  }
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'
   api 'io.branch.sdk.android:library:5.0.3'
   implementation "androidx.localbroadcastmanager:localbroadcastmanager:1.0.0"
-
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
 }

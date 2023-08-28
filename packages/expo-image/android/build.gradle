@@ -7,6 +7,10 @@ def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.ab
 if (expoModulesCorePlugin.exists()) {
   apply from: expoModulesCorePlugin
   applyKotlinExpoModulesCorePlugin()
+  // Remove this check, but keep the contents after SDK49 support is dropped
+  if (safeExtGet("providesDefaultConfig", false)) {
+    useCoreDependencies()
+  }
 }
 
 buildscript {
@@ -97,7 +101,10 @@ repositories {
 dependencies {
   def GLIDE_VERSION = "4.13.2"
 
-  implementation project(':expo-modules-core')
+  if (!safeExtGet("providesDefaultConfig", false)) {
+    implementation project(':expo-modules-core')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
+  }
 
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'  // From node_modules
@@ -114,6 +121,5 @@ dependencies {
   api "com.squareup.okhttp3:okhttp:${safeExtGet("okHttpVersion", '4.9.2')}"
 
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1'
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
   implementation "jp.wasabeef:glide-transformations:4.3.0"
 }
