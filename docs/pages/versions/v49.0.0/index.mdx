@@ -24,9 +24,9 @@ import { Gyroscope } from 'expo-sensors';
 
 This allows you to write [`Contacts.getContactsAsync()`](/versions/latest/sdk/contacts#contactsgetcontactsasynccontactquery) and read the contacts from the device, read the gyroscope sensor to detect device movement, or start the phone's camera and take photos.
 
-## These packages work in bare React Native apps too
+## All Expo SDK packages work in any React Native app
 
-The easiest way to create a bare React Native app with support for the Expo SDK is by running the command:
+Expo apps are React Native apps, so all Expo SDK packages work in any React Native app with the `expo` package installed and configured. The easiest way to create a React Native app with support for Expo SDK packages is to use `create-expo-app`. However, you can also add Expo SDK support to an existing React Native app with the `npx install-expo-modules` command.
 
 <Terminal
   cmd={['# Create a project named my-app', '$ npx create-expo-app my-app --template bare-minimum']}
@@ -34,12 +34,11 @@ The easiest way to create a bare React Native app with support for the Expo SDK 
 />
 
 <BoxLink
-  title="Existing apps"
+  title="Install Expo SDK packages in existing React Native apps"
   href="/bare/installing-expo-modules"
   description={
     <>
-      Projects that were created with <CODE>npx react-native init</CODE> require additional setup to
-      use the Expo SDK.
+      Learn more about configuring projects created with <CODE>npx react-native init</CODE> to Expo SDK packages.
     </>
   }
 />
@@ -49,6 +48,19 @@ The easiest way to create a bare React Native app with support for the Expo SDK 
   description="Learn how to install Expo SDK packages in your project."
   href="/workflow/using-libraries"
 />
+
+## Using pre-release versions
+
+New Expo SDK versions are released three times each year. Between these releases, we publish pre-release versions of the `expo` package and all of the Expo SDK packages. Pre-releases are not considered stable and should only be used if you are comfortable with the risk of encountering bugs or other issues.
+
+Pre-release versions of the `expo` package are versioned with an `-alpha` suffix, such as `50.0.0-alpha.1`. To install, for example, SDK 50 alpha, you can run the following command:
+
+<Terminal
+  cmd={['# Install the alpha version of expo and its related packages', '$ npm install expo@50.0.0-alpha && npx expo install --fix']}
+  cmdCopy="npm install expo@50.0.0-alpha && npx expo install --fix"
+/>
+
+You can often use pre-release versions of individual packages with stable releases of the Expo SDK. There may occasionally be incompatibilities or other issues that arise in alpha-quality releases. You may want to [silence dependency validation warnings](/more/expo-cli/#configuring-dependency-validation) if you opt in to the alpha package and once you have verified that it works well for your use cases.
 
 ## Each Expo SDK version depends on a React Native version
 
