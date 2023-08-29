@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- Favor remote versions endpoint over bundled versions for version validation in `expo install`, `start`, `prebuild`.
 - Remove classic manifest types and classic updates. ([#24054](https://github.com/expo/expo/pull/24054), [#24066](https://github.com/expo/expo/pull/24066) by [@wschurman](https://github.com/wschurman))
 
 ### 🎉 New features
