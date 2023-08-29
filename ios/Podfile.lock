@@ -4636,7 +4636,7 @@ SPEC CHECKSUMS:
   ABI47_0_0react-native-pager-view: 73b777af817cb59e405b524d64ed799eaf7c1e0d
   ABI47_0_0react-native-safe-area-context: fd7fe4aa020f08c12ac41fb223e73d73a51ddda6
   ABI47_0_0react-native-segmented-control: 70d475eb39ae1b142e147ec2f930c7e04ba648c6
-  ABI47_0_0react-native-skia: 0fd4fa47168efa44b7c5f1617553ce56adf23596
+  ABI47_0_0react-native-skia: 551a7e60fc52f2a44c1b382385b407857f54b00a
   ABI47_0_0react-native-slider: 03426a2c02e189942bd9d1ebe3660a7ce865abaa
   ABI47_0_0react-native-webview: fd74c03ab6c178600a7d92525d2e04cd918ab010
   ABI47_0_0React-perflogger: 9a52299ec70eb15e293db99da2286f6b5ba1981f
@@ -4744,7 +4744,7 @@ SPEC CHECKSUMS:
   ABI48_0_0react-native-pager-view: d305600a3bfed406e34eced45440aa49db7443ee
   ABI48_0_0react-native-safe-area-context: 20f8ba0ac5f1e77db9004646322ea28940571596
   ABI48_0_0react-native-segmented-control: 94be546da127ec3ba7700218365155097b71c691
-  ABI48_0_0react-native-skia: 00aa0bff90b2b9bc28e27af5b80ade57da03197c
+  ABI48_0_0react-native-skia: ccc0ed1f1546d760f4fdae670e9fb7e7aaa48b4f
   ABI48_0_0react-native-slider: 945bf10759c027ee55ab625ebc963f0d71c79a3e
   ABI48_0_0react-native-webview: 5865178c5798f4d992d530583f83a211c1f20024
   ABI48_0_0React-perflogger: 0d4574f2725620588415f8e407efa81f7623d4e0
@@ -4856,7 +4856,7 @@ SPEC CHECKSUMS:
   ABI49_0_0react-native-pager-view: 3085538cedbfd658da66107d636e09a6fa713574
   ABI49_0_0react-native-safe-area-context: 485f2482d15324f6570466b190bf4d8034ebb314
   ABI49_0_0react-native-segmented-control: af3039721178c2e16ba6ad97a519c3381bdd3436
-  ABI49_0_0react-native-skia: da4ee95ab6647b133da105fb38842eb68b3740f2
+  ABI49_0_0react-native-skia: d73265f61bc43159ccd6c1f85b2e90a8486814b0
   ABI49_0_0react-native-slider: f3d7912b17549c80ede3b9bc576446a63f4ce9bf
   ABI49_0_0react-native-webview: b1f4262ca5ded7143d619044d8fa589c3781cbe4
   ABI49_0_0React-NativeModulesApple: 8da2f858fb41cc6b3a069482ddb86ef4998676ac
