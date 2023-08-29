@@ -181,16 +181,8 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
     "type": "dir",
   },
   {
-    "contents": "{"sourceDir":"node_modules/expo/android","packageImportPath":"import expo.modules.ExpoModulesPackage;","packageInstance":"new ExpoModulesPackage()","buildTypes":[],"componentDescriptors":[],"androidMkPath":"node_modules/expo/android/build/generated/source/codegen/jni/Android.mk","cmakeListsPath":"node_modules/expo/android/build/generated/source/codegen/jni/CMakeLists.txt"}",
-    "id": "rncliAutolinkingConfig:expo:android",
-    "reasons": [
-      "bareRncliAutolinking",
-    ],
-    "type": "contents",
-  },
-  {
-    "contents": "{"podspecPath":"node_modules/expo/Expo.podspec","configurations":[],"scriptPhases":[]}",
-    "id": "rncliAutolinkingConfig:expo:ios",
+    "contents": "{"expo":{"root":"node_modules/expo","name":"expo","platforms":{"ios":{"podspecPath":"node_modules/expo/Expo.podspec","configurations":[],"scriptPhases":[]},"android":{"sourceDir":"node_modules/expo/android","packageImportPath":"import expo.modules.ExpoModulesPackage;","packageInstance":"new ExpoModulesPackage()","buildTypes":[],"componentDescriptors":[],"androidMkPath":"node_modules/expo/android/build/generated/source/codegen/jni/Android.mk","cmakeListsPath":"node_modules/expo/android/build/generated/source/codegen/jni/CMakeLists.txt"}}}}",
+    "id": "rncliAutolinkingConfig",
     "reasons": [
       "bareRncliAutolinking",
     ],

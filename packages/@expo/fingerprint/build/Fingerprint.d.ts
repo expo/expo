@@ -11,3 +11,7 @@ export declare function createProjectHashAsync(projectRoot: string, options?: Op
  * Differentiate given `fingerprint` with the current project fingerprint state
  */
 export declare function diffFingerprintChangesAsync(fingerprint: Fingerprint, projectRoot: string, options?: Options): Promise<FingerprintSource[]>;
+/**
+ * Differentiate two fingerprints
+ */
+export declare function diffFingerprints(fingerprint1: Fingerprint, fingerprint2: Fingerprint): FingerprintSource[];
