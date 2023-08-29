@@ -110,18 +110,9 @@ describe('managed project test', () => {
           "type": "dir",
         },
         {
-          "contents": "{"sourceDir":"node_modules/@react-native-community/netinfo/android","packageImportPath":"import com.reactnativecommunity.netinfo.NetInfoPackage;","packageInstance":"new NetInfoPackage()","buildTypes":[],"componentDescriptors":[],"cmakeListsPath":"node_modules/@react-native-community/netinfo/android/build/generated/source/codegen/jni/CMakeLists.txt"}",
-          "hash": "7612d745a76df00c1a8781735858c16030b3cc53",
-          "id": "rncliAutolinkingConfig:@react-native-community/netinfo:android",
-          "reasons": [
-            "bareRncliAutolinking",
-          ],
-          "type": "contents",
-        },
-        {
-          "contents": "{"podspecPath":"node_modules/@react-native-community/netinfo/react-native-netinfo.podspec","configurations":[],"scriptPhases":[]}",
-          "hash": "40eebce5caf94df11096238a5a2ca648ea9f242e",
-          "id": "rncliAutolinkingConfig:@react-native-community/netinfo:ios",
+          "contents": "{"@react-native-community/netinfo":{"root":"node_modules/@react-native-community/netinfo","name":"@react-native-community/netinfo","platforms":{"ios":{"podspecPath":"node_modules/@react-native-community/netinfo/react-native-netinfo.podspec","configurations":[],"scriptPhases":[]},"android":{"sourceDir":"node_modules/@react-native-community/netinfo/android","packageImportPath":"import com.reactnativecommunity.netinfo.NetInfoPackage;","packageInstance":"new NetInfoPackage()","buildTypes":[],"componentDescriptors":[],"cmakeListsPath":"node_modules/@react-native-community/netinfo/android/build/generated/source/codegen/jni/CMakeLists.txt"}}},"expo":{"root":"node_modules/expo","name":"expo","platforms":{"ios":{"podspecPath":"node_modules/expo/Expo.podspec","configurations":[],"scriptPhases":[]},"android":{"sourceDir":"node_modules/expo/android","packageImportPath":"import expo.modules.ExpoModulesPackage;","packageInstance":"new ExpoModulesPackage()","buildTypes":[],"componentDescriptors":[],"cmakeListsPath":"node_modules/expo/android/build/generated/source/codegen/jni/CMakeLists.txt"}}}}",
+          "hash": "ac75722bd87eb0189440be83faa2249079da5839",
+          "id": "rncliAutolinkingConfig",
           "reasons": [
             "bareRncliAutolinking",
           ],

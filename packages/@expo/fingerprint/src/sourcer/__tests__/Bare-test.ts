@@ -47,13 +47,36 @@ describe(getRncliAutolinkingSourcesAsync, () => {
       signal: null,
       output: [fixture, ''],
     });
-    const sources = await getRncliAutolinkingSourcesAsync('/app', normalizeOptions());
+    const sources = await getRncliAutolinkingSourcesAsync('/root/apps/demo', normalizeOptions());
     expect(sources).toContainEqual(
       expect.objectContaining({
         type: 'dir',
-        filePath: 'node_modules/react-native-reanimated',
+        filePath: '../../node_modules/react-native-reanimated',
       })
     );
     expect(sources).toMatchSnapshot();
+  });
+
+  it('should not contain absolute paths', async () => {
+    const mockSpawnAsync = spawnAsync as jest.MockedFunction<typeof spawnAsync>;
+    const fixture = fs.readFileSync(
+      path.join(__dirname, 'fixtures', 'RncliAutoLinking.json'),
+      'utf8'
+    );
+    mockSpawnAsync.mockResolvedValue({
+      stdout: fixture,
+      stderr: '',
+      status: 0,
+      signal: null,
+      output: [fixture, ''],
+    });
+    const sources = await getRncliAutolinkingSourcesAsync('/root/apps/demo', normalizeOptions());
+    for (const source of sources) {
+      if (source.type === 'dir' || source.type === 'file') {
+        expect(source.filePath).not.toMatch(/^\/root/);
+      } else {
+        expect(source.contents).not.toMatch(/"\/root\//);
+      }
+    }
   });
 });

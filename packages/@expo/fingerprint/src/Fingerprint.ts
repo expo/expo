@@ -42,10 +42,19 @@ export async function diffFingerprintChangesAsync(
   if (fingerprint.hash === newFingerprint.hash) {
     return [];
   }
-  const result: FingerprintSource[] = newFingerprint.sources.filter((newItem) => {
-    return !fingerprint.sources.find(
+  return diffFingerprints(fingerprint, newFingerprint);
+}
+
+/**
+ * Differentiate two fingerprints
+ */
+export function diffFingerprints(
+  fingerprint1: Fingerprint,
+  fingerprint2: Fingerprint
+): FingerprintSource[] {
+  return fingerprint2.sources.filter((newItem) => {
+    return !fingerprint1.sources.find(
       (item) => item.type === newItem.type && item.hash === newItem.hash
     );
   });
-  return result;
 }

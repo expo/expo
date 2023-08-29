@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.diffFingerprintChangesAsync = exports.createProjectHashAsync = exports.createFingerprintAsync = void 0;
+exports.diffFingerprints = exports.diffFingerprintChangesAsync = exports.createProjectHashAsync = exports.createFingerprintAsync = void 0;
 const Dedup_1 = require("./Dedup");
 const Options_1 = require("./Options");
 const Sort_1 = require("./Sort");
@@ -33,10 +33,16 @@ async function diffFingerprintChangesAsync(fingerprint, projectRoot, options) {
     if (fingerprint.hash === newFingerprint.hash) {
         return [];
     }
-    const result = newFingerprint.sources.filter((newItem) => {
-        return !fingerprint.sources.find((item) => item.type === newItem.type && item.hash === newItem.hash);
-    });
-    return result;
+    return diffFingerprints(fingerprint, newFingerprint);
 }
 exports.diffFingerprintChangesAsync = diffFingerprintChangesAsync;
+/**
+ * Differentiate two fingerprints
+ */
+function diffFingerprints(fingerprint1, fingerprint2) {
+    return fingerprint2.sources.filter((newItem) => {
+        return !fingerprint1.sources.find((item) => item.type === newItem.type && item.hash === newItem.hash);
+    });
+}
+exports.diffFingerprints = diffFingerprints;
 //# sourceMappingURL=Fingerprint.js.map
