@@ -8,6 +8,6 @@ import expo.modules.imagepicker.MediaType
  */
 internal sealed class ImagePickerContractResult private constructor() {
   class Success(val data: List<Pair<MediaType, Uri>>) : ImagePickerContractResult()
-  class Cancelled : ImagePickerContractResult()
-  class Error : ImagePickerContractResult()
+  object Cancelled : ImagePickerContractResult()
+  object Error : ImagePickerContractResult()
 }

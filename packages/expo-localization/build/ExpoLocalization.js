@@ -5,6 +5,23 @@ const getNavigatorLocales = () => {
     return Platform.isDOMAvailable ? navigator.languages || [navigator.language] : [];
 };
 const WEB_LANGUAGE_CHANGE_EVENT = 'languagechange';
+// https://wisevoter.com/country-rankings/countries-that-use-fahrenheit/
+const USES_FAHRENHEIT = [
+    'AG',
+    'BZ',
+    'VG',
+    'FM',
+    'MH',
+    'MS',
+    'KN',
+    'BS',
+    'CY',
+    'TC',
+    'US',
+    'LR',
+    'PW',
+    'KY',
+];
 export function addLocaleListener(listener) {
     addEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener);
     return {
@@ -99,6 +116,7 @@ export default {
             const digitGroupingSeparator = Array.from((10000).toLocaleString(languageTag)).filter((c) => c > '9' || c < '0')[0] ||
                 null; // using 1e5 instead of 1e4 since for some locales (like pl-PL) 1e4 does not use digit grouping
             const decimalSeparator = (1.1).toLocaleString(languageTag).substring(1, 2);
+            const temperatureUnit = region ? regionToTemperatureUnit(region) : null;
             return {
                 languageTag,
                 languageCode: language || languageTag.split('-')[0] || 'en',
@@ -109,6 +127,7 @@ export default {
                 currencyCode: null,
                 currencySymbol: null,
                 regionCode: region || null,
+                temperatureUnit,
             };
         });
     },
@@ -141,4 +160,7 @@ export default {
         };
     },
 };
+function regionToTemperatureUnit(region) {
+    return USES_FAHRENHEIT.includes(region) ? 'fahrenheit' : 'celsius';
+}
 //# sourceMappingURL=ExpoLocalization.js.map

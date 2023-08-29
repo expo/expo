@@ -114,6 +114,16 @@ export function withExtendedResolver(
     // path.resolve(resolveFrom(projectRoot, '@react-native/assets/registry.js'))
   );
 
+  let reactNativeWebAppContainer: string | null = null;
+  try {
+    reactNativeWebAppContainer = fs.realpathSync(
+      // This is the native asset registry alias for native.
+      path.resolve(resolveFrom(projectRoot, 'expo-router/build/fork/react-native-web-container'))
+      // NOTE(EvanBacon): This is the newer import but it doesn't work in the expo/expo monorepo.
+      // path.resolve(resolveFrom(projectRoot, '@react-native/assets/registry.js'))
+    );
+  } catch {}
+
   const isWebEnabled = platforms.includes('web');
 
   const { resolve } = importMetroResolverFromProject(projectRoot);
@@ -315,6 +325,27 @@ export function withExtendedResolver(
           // @ts-expect-error: `readonly` for some reason.
           result.filePath = assetRegistryPath;
         }
+
+        // React Native Web adds a couple extra divs for no reason, these
+        // make static rendering much harder as we expect the root element to be `<html>`.
+        // This resolution will alias to a simple in-out component to avoid React Native web.
+        if (
+          // Only apply the transform if expo-router is present.
+          reactNativeWebAppContainer &&
+          shouldAliasModule(
+            {
+              platform,
+              result,
+            },
+            {
+              platform: 'web',
+              output: 'react-native-web/dist/exports/AppRegistry/AppContainer.js',
+            }
+          )
+        ) {
+          // @ts-expect-error: `readonly` for some reason.
+          result.filePath = reactNativeWebAppContainer;
+        }
       }
       return result;
     },
@@ -333,6 +364,21 @@ export function shouldAliasAssetRegistryForWeb(
     normalizeSlashes(result.filePath).endsWith(
       'react-native-web/dist/modules/AssetRegistry/index.js'
     )
+  );
+}
+/** @returns `true` if the incoming resolution should be swapped. */
+export function shouldAliasModule(
+  input: {
+    platform: string | null;
+    result: Resolution;
+  },
+  alias: { platform: string; output: string }
+): boolean {
+  return (
+    input.platform === alias.platform &&
+    input.result?.type === 'sourceFile' &&
+    typeof input.result?.filePath === 'string' &&
+    normalizeSlashes(input.result.filePath).endsWith(alias.output)
   );
 }
 

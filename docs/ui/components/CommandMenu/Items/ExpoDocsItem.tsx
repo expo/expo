@@ -6,7 +6,6 @@ import {
   Home02Icon,
   Hash02Icon,
 } from '@expo/styleguide-icons';
-import { Command } from 'cmdk';
 
 import type { AlgoliaItemType } from '../types';
 import {
@@ -14,10 +13,10 @@ import {
   getHighlightHTML,
   isReferencePath,
   isEASPath,
-  openLink,
   isHomePath,
   isLearnPath,
 } from '../utils';
+import { CommandItemBase } from './CommandItemBase';
 import { FootnoteSection } from './FootnoteSection';
 import { FootnoteArrowIcon } from './icons';
 
@@ -103,15 +102,14 @@ export const ExpoDocsItem = ({ item, onSelect, isNested }: Props) => {
   const TitleElement = isNested ? FOOTNOTE : CALLOUT;
   const ContentElement = isNested ? CAPTION : FOOTNOTE;
   const titleWeight = isNested ? 'regular' : 'medium';
+
   return (
-    <Command.Item
+    <CommandItemBase
       className={mergeClasses(isNested && 'ml-8 !mt-0.5 !min-h-[32px]')}
       value={`expodocs-${item.objectID}`}
-      onSelect={() => {
-        openLink(transformUrl(item.url));
-        onSelect && onSelect();
-      }}
-      data-nested={isNested ? true : undefined}>
+      onSelect={onSelect}
+      url={transformUrl(item.url)}
+      isNested={isNested}>
       <div className={mergeClasses('inline-flex items-center gap-3 break-words')}>
         <ItemIcon url={item.url} isNested={isNested} className="shrink-0" />
         <div>
@@ -176,6 +174,6 @@ export const ExpoDocsItem = ({ item, onSelect, isNested }: Props) => {
           )}
         </div>
       </div>
-    </Command.Item>
+    </CommandItemBase>
   );
 };

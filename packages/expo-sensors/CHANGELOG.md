@@ -6,7 +6,11 @@
 
 ### 🎉 New features
 
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
+
+- Fix NullPointerException in PedometerModule. ([#24079](https://github.com/expo/expo/pull/24079) by [@jleprinc](https://github.com/jleprinc))
 
 ### 💡 Others
 

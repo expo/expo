@@ -34,7 +34,6 @@ describe('useUpdates()', () => {
       context: {
         isUpdateAvailable: false,
         isUpdatePending: false,
-        isRollback: false,
         isRestarting: false,
         isChecking: true,
         isDownloading: false,
@@ -45,7 +44,6 @@ describe('useUpdates()', () => {
       context: {
         isUpdateAvailable: true,
         isUpdatePending: false,
-        isRollback: false,
         isRestarting: false,
         isChecking: false,
         isDownloading: false,
@@ -57,7 +55,6 @@ describe('useUpdates()', () => {
       context: {
         isUpdateAvailable: false,
         isUpdatePending: false,
-        isRollback: false,
         isRestarting: false,
         isChecking: false,
         isDownloading: false,
@@ -68,7 +65,6 @@ describe('useUpdates()', () => {
       context: {
         isUpdateAvailable: false,
         isUpdatePending: false,
-        isRollback: false,
         isRestarting: false,
         isChecking: false,
         isDownloading: false,
@@ -80,7 +76,6 @@ describe('useUpdates()', () => {
       context: {
         isUpdateAvailable: false,
         isUpdatePending: false,
-        isRollback: false,
         isRestarting: false,
         isChecking: false,
         isDownloading: true,
@@ -91,7 +86,6 @@ describe('useUpdates()', () => {
       context: {
         isUpdateAvailable: true,
         isUpdatePending: true,
-        isRollback: false,
         isRestarting: false,
         isChecking: false,
         isDownloading: false,
@@ -104,11 +98,23 @@ describe('useUpdates()', () => {
       context: {
         isUpdateAvailable: false,
         isUpdatePending: false,
-        isRollback: false,
         isRestarting: false,
         isChecking: false,
         isDownloading: false,
         downloadError: mockError,
+        lastCheckForUpdateTimeString: mockDate.toISOString(),
+      },
+    };
+    const updateAvailableWithRollbackEvent: UpdatesNativeStateChangeTestEvent = {
+      context: {
+        isUpdateAvailable: true,
+        isUpdatePending: false,
+        isRestarting: false,
+        isChecking: false,
+        isDownloading: false,
+        rollback: {
+          commitTime: mockDate.toISOString(),
+        },
         lastCheckForUpdateTimeString: mockDate.toISOString(),
       },
     };
@@ -206,6 +212,27 @@ describe('useUpdates()', () => {
       expect(isUpdateAvailableView).toHaveTextContent('false');
       const isUpdatePendingView = await screen.findByTestId('isUpdatePending');
       expect(isUpdatePendingView).toHaveTextContent('false');
+    });
+
+    it('Handles rollback', async () => {
+      render(<UseUpdatesTestApp />);
+      await act(async () => {
+        emitStateChangeEvent(isCheckingEvent);
+      });
+      await act(async () => {
+        emitStateChangeEvent(updateAvailableWithRollbackEvent);
+      });
+      const isUpdateAvailableView = await screen.findByTestId('isUpdateAvailable');
+      expect(isUpdateAvailableView).toHaveTextContent('true');
+      const isUpdatePendingView = await screen.findByTestId('isUpdatePending');
+      expect(isUpdatePendingView).toHaveTextContent('false');
+      const isRollbackView = await screen.findByTestId('isRollback');
+      expect(isRollbackView).toHaveTextContent('true');
+      const rollbackTimeView = await screen.findByTestId('rollbackTime');
+      expect(rollbackTimeView).toHaveTextContent(
+        // truncate the fractional part of the seconds value in the time
+        mockDate.toISOString().substring(0, 19)
+      );
     });
 
     it('Handles error in initial read of native context', async () => {

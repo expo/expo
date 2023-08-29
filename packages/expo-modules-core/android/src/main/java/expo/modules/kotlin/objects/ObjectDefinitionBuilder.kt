@@ -1,15 +1,3 @@
-/**
- * We used a function from the experimental STD API - typeOf (see kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/type-of.html).
- * We shouldn't have any problem with that function, cause it's widely used in other libraries created by JetBrains like kotlinx-serializer.
- * This function is super handy if we want to receive a collection type.
- * For example, it's very hard to obtain the generic parameter type from the list class.
- * In plain Java, it's almost impossible. There is a trick to getting such information using something called TypeToken.
- * For instance, the Gson library uses this workaround. But there still will be a problem with nullability.
- * We didn't find a good solution to distinguish between List<Any?> and List<Any>.
- * Mainly because from the JVM perspective it's the same type.
- * That's why we used typeOf. It solves all problems described above.
- */
-@file:OptIn(ExperimentalStdlibApi::class)
 @file:Suppress("FunctionName")
 
 package expo.modules.kotlin.objects
@@ -21,6 +9,7 @@ import expo.modules.kotlin.functions.AsyncFunction
 import expo.modules.kotlin.functions.AsyncFunctionBuilder
 import expo.modules.kotlin.functions.AsyncFunctionComponent
 import expo.modules.kotlin.functions.AsyncFunctionWithPromiseComponent
+import expo.modules.kotlin.functions.FunctionBuilder
 import expo.modules.kotlin.functions.SyncFunctionComponent
 import expo.modules.kotlin.jni.JavaScriptModuleObject
 import expo.modules.kotlin.modules.Module
@@ -44,9 +33,12 @@ open class ObjectDefinitionBuilder {
   internal var syncFunctions = mutableMapOf<String, SyncFunctionComponent>()
 
   @PublishedApi
+  internal var syncFunctionBuilder = mutableMapOf<String, FunctionBuilder>()
+
+  @PublishedApi
   internal var asyncFunctions = mutableMapOf<String, AsyncFunction>()
 
-  private var functionBuilders = mutableMapOf<String, AsyncFunctionBuilder>()
+  private var asyncFunctionBuilders = mutableMapOf<String, AsyncFunctionBuilder>()
 
   @PublishedApi
   internal var properties = mutableMapOf<String, PropertyComponentBuilder>()
@@ -66,8 +58,8 @@ open class ObjectDefinitionBuilder {
 
     return ObjectDefinitionData(
       constantsProvider,
-      syncFunctions,
-      asyncFunctions + functionBuilders.mapValues { (_, value) -> value.build() },
+      syncFunctions + syncFunctionBuilder.mapValues { (_, value) -> value.build() },
+      asyncFunctions + asyncFunctionBuilders.mapValues { (_, value) -> value.build() },
       eventsDefinition,
       properties.mapValues { (_, value) -> value.build() }
     )
@@ -76,7 +68,7 @@ open class ObjectDefinitionBuilder {
   private fun containsFunction(functionName: String): Boolean {
     return syncFunctions.containsKey(functionName) ||
       asyncFunctions.containsKey(functionName) ||
-      functionBuilders.containsKey(functionName)
+      asyncFunctionBuilders.containsKey(functionName)
   }
 
   /**
@@ -92,6 +84,10 @@ open class ObjectDefinitionBuilder {
   fun Constants(vararg constants: Pair<String, Any?>) {
     constantsProvider = { constants.toMap() }
   }
+
+  fun Function(
+    name: String
+  ) = FunctionBuilder(name).also { syncFunctionBuilder[name] = it }
 
   @JvmName("FunctionWithoutArgs")
   inline fun Function(
@@ -309,7 +305,7 @@ open class ObjectDefinitionBuilder {
 
   fun AsyncFunction(
     name: String
-  ) = AsyncFunctionBuilder(name).also { functionBuilders[name] = it }
+  ) = AsyncFunctionBuilder(name).also { asyncFunctionBuilders[name] = it }
 
   /**
    * Defines event names that this module can send to JavaScript.

@@ -1,5 +1,9 @@
 import * as Updates from './Updates';
-import type { Manifest, UpdatesNativeStateMachineContext } from './Updates.types';
+import type {
+  Manifest,
+  UpdatesNativeStateMachineContext,
+  UpdatesNativeStateRollback,
+} from './Updates.types';
 import { UpdateInfoType, type CurrentlyRunningInfo, type UpdateInfo } from './UseUpdates.types';
 
 // The currently running info, constructed from Updates constants
@@ -36,14 +40,21 @@ export const updateFromManifest: (manifest: NonNullable<Manifest>) => UpdateInfo
     createdAt:
       manifest && 'createdAt' in manifest && manifest.createdAt
         ? new Date(manifest.createdAt)
-        : manifest && 'publishedTime' in manifest && manifest.publishedTime
-        ? new Date(manifest.publishedTime)
         : // We should never reach this if the manifest is valid and has a commit time,
           // but leave this in so that createdAt is always defined
           new Date(0),
     manifest,
   };
 };
+
+export const updateFromRollback: (rollback: UpdatesNativeStateRollback) => UpdateInfo = (
+  rollback
+) => ({
+  type: UpdateInfoType.ROLLBACK,
+  createdAt: new Date(rollback.commitTime),
+  manifest: undefined,
+  updateId: undefined,
+});
 
 // Default useUpdates() state
 export const defaultUseUpdatesState: UseUpdatesStateType = {
@@ -60,9 +71,13 @@ export const reduceUpdatesStateFromContext: (
 ) => UseUpdatesStateType = (updatesState, context) => {
   const availableUpdate = context?.latestManifest
     ? updateFromManifest(context?.latestManifest)
+    : context.rollback
+    ? updateFromRollback(context.rollback)
     : undefined;
   const downloadedUpdate = context?.downloadedManifest
     ? updateFromManifest(context?.downloadedManifest)
+    : context.rollback
+    ? updateFromRollback(context.rollback)
     : undefined;
   return {
     ...updatesState,
