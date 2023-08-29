@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.1.0 — 2023-08-29
+
+### 🛠 Breaking changes
+
 - The fingerprint result is changed since this version. ([24097](https://github.com/expo/expo/pull/24097) by [@kudo](https://github.com/kudo))
 
 ### 🎉 New features
@@ -13,5 +23,3 @@
 ### 🐛 Bug fixes
 
 - Fixed non-deterministic hash if packages hoisted from monorepo. ([24097](https://github.com/expo/expo/pull/24097) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
