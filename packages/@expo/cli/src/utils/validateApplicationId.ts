@@ -11,7 +11,7 @@ import { Log } from '../log';
 const debug = require('debug')('expo:utils:validateApplicationId') as typeof console.log;
 
 const IOS_BUNDLE_ID_REGEX = /^[a-zA-Z0-9-.]+$/;
-const ANDROID_PACKAGE_REGEX = /^(?!.*\bnative\b)[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)*$/;
+const ANDROID_PACKAGE_REGEX = /^(?!.*\bnative\b)[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)+$/;
 
 /** Validate an iOS bundle identifier. */
 export function validateBundleId(value: string): boolean {
