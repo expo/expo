@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for [Bun](https://bun.sh) package manager by [@colinhacks][https://github.com/colinhacks]
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
