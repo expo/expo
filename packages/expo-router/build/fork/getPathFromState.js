@@ -82,7 +82,7 @@ export function getPathDataFromState(state, _options = { screens: DEFAULT_SCREEN
     if (Object.is(options.screens, DEFAULT_SCREENS)) {
         throw Error("You must pass a 'screens' object to 'getPathFromState' to generate a path.");
     }
-    return getPathFromResolvedState(state, 
+    return getPathFromResolvedState(JSON.parse(JSON.stringify(state)), 
     // Create a normalized configs object which will be easier to use
     createNormalizedConfigs(options.screens), { preserveGroups, preserveDynamicRoutes });
 }
@@ -237,9 +237,7 @@ function getPathFromResolvedState(state, configs, { preserveGroups, preserveDyna
     while (current) {
         path += '/';
         // Make mutable copies to ensure we don't leak state outside of the function.
-        const route = {
-            ...current.routes[current.index ?? 0],
-        };
+        const route = current.routes[current.index ?? 0];
         // NOTE(EvanBacon): Fill in current route using state that was passed as params.
         // if (isInvalidParams(route.params)) {
         if (!route.state && isInvalidParams(route.params)) {
