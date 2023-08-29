@@ -1,7 +1,6 @@
 import { NavigationRouteContext } from '@react-navigation/native';
 import React from 'react';
 import { store, useStoreRootState, useStoreRouteInfo } from './global-state/router-store';
-import { useDeprecated } from './useDeprecated';
 export function useRootNavigationState() {
     return useStoreRootState();
 }
@@ -10,11 +9,6 @@ export function useRouteInfo() {
 }
 export function useRootNavigation() {
     return store.navigationRef.current;
-}
-// Wraps useLinkTo to provide an API which is similar to the Link component.
-export function useLink() {
-    useDeprecated('`useLink()` is deprecated in favor of `useRouter()`');
-    return useRouter();
 }
 export function useRouter() {
     return React.useMemo(() => ({
@@ -70,10 +64,6 @@ export function usePathname() {
  */
 export function useGlobalSearchParams() {
     return useStoreRouteInfo().params;
-}
-/** @deprecated renamed to `useGlobalSearchParams` */
-export function useSearchParams() {
-    return useGlobalSearchParams();
 }
 /**
  * Returns the URL search parameters for the contextually focused route. e.g. `/acme?foo=bar` -> `{ foo: "bar" }`.

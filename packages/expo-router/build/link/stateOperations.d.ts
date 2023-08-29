@@ -30,7 +30,7 @@ export declare function findTopRouteForTarget(state: ResultState): Omit<import("
         })[];
         type: string;
         stale: false;
-    }>, "stale" | "routes">> & {
+    }>, "routes" | "stale">> & {
         routes: (Omit<import("@react-navigation/native").Route<string, object | undefined>, "key"> & any)[];
     }> | undefined;
 };
@@ -52,7 +52,7 @@ export declare function getQualifiedStateForTopOfTargetState(rootState: InitialS
     })[];
     type: string;
     stale: false;
-}>, "stale" | "routes">> & {
+}>, "routes" | "stale">> & {
     routes: (Omit<import("@react-navigation/native").Route<string, object | undefined>, "key"> & {
         state?: Readonly<Partial<Omit<Readonly<{
             key: string;
@@ -70,7 +70,7 @@ export declare function getQualifiedStateForTopOfTargetState(rootState: InitialS
             })[];
             type: string;
             stale: false;
-        }>, "stale" | "routes">> & any> | undefined;
+        }>, "routes" | "stale">> & any> | undefined;
     })[];
 }>;
 export declare function getEarliestMismatchedRoute<T extends ParamListBase>(rootState: NavigationState<T> | undefined, actionParams: NavigateActionParams): {
