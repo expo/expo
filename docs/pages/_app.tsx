@@ -40,7 +40,7 @@ Sentry.init({
         /https:\/\/docs\.expo\.dev\/index\.html/,
       ],
   integrations: [new BrowserTracing()],
-  tracesSampleRate: 1.0,
+  tracesSampleRate: 0.001,
 });
 
 const rootMarkdownComponents = {
