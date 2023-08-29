@@ -1,6 +1,6 @@
 import escape from 'escape-string-regexp';
-import * as queryString from 'query-string';
 import Constants from 'expo-constants';
+import * as queryString from 'query-string';
 import URL from 'url-parse';
 import { findFocusedRoute } from './findFocusedRoute';
 import validatePathConfig from './validatePathConfig';

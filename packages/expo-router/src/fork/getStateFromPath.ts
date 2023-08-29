@@ -1,8 +1,8 @@
 import { PathConfigMap } from '@react-navigation/core';
 import type { InitialState, NavigationState, PartialState } from '@react-navigation/routers';
 import escape from 'escape-string-regexp';
-import * as queryString from 'query-string';
 import Constants from 'expo-constants';
+import * as queryString from 'query-string';
 import URL from 'url-parse';
 
 import { findFocusedRoute } from './findFocusedRoute';

@@ -1,6 +1,6 @@
 import { validatePathConfig } from '@react-navigation/core';
-import * as queryString from 'query-string';
 import Constants from 'expo-constants';
+import * as queryString from 'query-string';
 import { matchDeepDynamicRouteName, matchDynamicName, matchGroupName } from '../matchers';
 const DEFAULT_SCREENS = {};
 const getActiveRoute = (state) => {

@@ -1,8 +1,7 @@
 import { PathConfig, PathConfigMap, validatePathConfig } from '@react-navigation/core';
 import type { NavigationState, PartialState, Route } from '@react-navigation/routers';
-import * as queryString from 'query-string';
 import Constants from 'expo-constants';
-import { Platform } from 'react-native';
+import * as queryString from 'query-string';
 
 import { matchDeepDynamicRouteName, matchDynamicName, matchGroupName } from '../matchers';
 
