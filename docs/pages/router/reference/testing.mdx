@@ -4,19 +4,20 @@ description: Learn how to create integration tests for your app when using Expo 
 ---
 
 import { APIBox } from '~/components/plugins/APIBox';
-Expo Router relies on your file system, which can present challenges when setting up mocks for integration tests. Expo Router's submodule, `expo-router/testing-library`, is a set of testing utilities built on top of the popular [`@testing-library/react-native`](https://callstack.github.io/react-native-testing-library/) and allows you to quick create minimal in-memory Expo Router apps, pre-configured for testing.
+
+Expo Router relies on your file system, which can present challenges when setting up mocks for integration tests. Expo Router's submodule, `expo-router/testing-library`, is a set of testing utilities built on top of the popular [`@testing-library/react-native`](https://callstack.github.io/react-native-testing-library/) and allows you to quickly create in-memory Expo Router apps that are pre-configured for testing.
 
 ## Configuration
 
 Before you proceed, ensure you've set up `jest-expo` according to the [Unit Testing](/develop/testing) and [`@testing-library/react-native`](https://callstack.github.io/react-native-testing-library/docs/getting-started).
 
-## renderRouter
+## renderRouter()
 
 `renderRouter` extends the functionality of [`render`](https://callstack.github.io/react-native-testing-library/docs/api#render) to simplify testing with Expo Router. It returns the the same query object as [`render`](https://callstack.github.io/react-native-testing-library/docs/api#render), and is compatible with [`screen`](https://callstack.github.io/react-native-testing-library/docs/api#screen), allowing you to use the standard [query API](https://callstack.github.io/react-native-testing-library/docs/api-queries) to locate components.
 
 `renderRouter` accepts the same [options](https://callstack.github.io/react-native-testing-library/docs/api#render-options) as `render` and introduces an additional option `initialRoute`, which sets an initial route for simulating deep-linking.
 
-### Inline file-system mock
+<APIBox header="Inline file system">
 
 `renderRouter(mock: Record<string, ReactComponent>, options: RenderOptions)`
 
@@ -43,7 +44,9 @@ it('my-test', async () => {
 });
 ```
 
-### Path to a directory
+</APIBox>
+
+<APIBox header="Path to fixture">
 
 `renderRouter(fixturePath: string, options: RenderOptions)`
 
@@ -56,11 +59,27 @@ it('my-test', async () => {
 });
 ```
 
-### Path to a directory, with overrides
+</APIBox>
+
+<APIBox header="Path to fixture with overrides">
 
 `renderRouter({ appDir: string, overrides: Record<string, ReactComponent>}, options: RenderOptions)`
 
 For more intricate testing scenarios, `renderRouter` can leverage both directory path and inline-mocking methods simultaneously. The `appDir` parameter takes a string representing a pathname to a folder. The overrides parameter is an inline mock that can be used to override specific paths within the `appDir`. This combination allows for fine-tuned control over the mock environment.
+
+```tsx app.test.js
+it('my-test', async () => {
+  const MockAuthLayout = jest.fn(() => <View />);
+  renderRouter({
+    appDir: './my-test-fixture',
+    overrides: {
+      'folder/(auth)/_layout': MockAuthLayout,
+    },
+  });
+});
+```
+
+</APIBox>
 
 ## Jest matchers
 
