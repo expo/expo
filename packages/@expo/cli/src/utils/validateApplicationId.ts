@@ -11,7 +11,7 @@ import { Log } from '../log';
 const debug = require('debug')('expo:utils:validateApplicationId') as typeof console.log;
 
 const IOS_BUNDLE_ID_REGEX = /^[a-zA-Z0-9-.]+$/;
-const ANDROID_PACKAGE_REGEX = /^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)+$/;
+const ANDROID_PACKAGE_REGEX = /^(?!.*\bnative\b)[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)*$/;
 
 /** Validate an iOS bundle identifier. */
 export function validateBundleId(value: string): boolean {
@@ -110,7 +110,7 @@ export function assertValidBundleId(value: string) {
   assert.match(
     value,
     IOS_BUNDLE_ID_REGEX,
-    `The ios.bundleIdentifier defined in your Expo config is not formatted properly. Only alphanumeric characters, '.', '-', and '_' are allowed, and each '.' must be followed by a letter.`
+    `The ios.bundleIdentifier defined in your Expo config is not formatted properly. Only alphanumeric characters, '.', '-', and '_' are allowed, and each '.' must be followed by a letter. The Java keyword 'native' is also not allowed.`
   );
 }
 
