@@ -1,7 +1,7 @@
 // no relative imports
-import { ctx } from '../_ctx';
 import { getServerManifest } from './getMatchableManifest';
 import { getRoutes } from './getRoutes';
+import { ctx } from '../_ctx';
 export async function createRoutesManifest() {
     const routeTree = getRoutes(ctx, {
         preserveApiRoutes: true,
