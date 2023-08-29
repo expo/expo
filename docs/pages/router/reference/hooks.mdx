@@ -5,12 +5,13 @@ description: Learn how to interact with the in-app URL in Expo Router.
 
 import { FileTree } from '~/ui/components/FileTree';
 import { RouteUrlGroup, RouteUrl } from '~/ui/components/RouteUrl';
+import { APIBox } from '~/components/plugins/APIBox';
 
 <RouteUrlGroup>
 
 In Expo Router, there's always a valid URL that represents the currently focused route. Use hooks to observe changes and interact with the URL.
 
-## `usePathname`
+<APIBox header="usePathname">
 
 Returns the currently selected route location without search parameters. For example, `/acme?foo=bar` -> `/acme`. Segments will be normalized: `/[id]?id=normal` -> `/normal`
 
@@ -31,7 +32,9 @@ export default function Route() {
 }
 ```
 
-## `useLocalSearchParams`
+</APIBox>
+
+<APIBox header="useLocalSearchParams">
 
 Returns the URL search parameters for the contextually selected route. Refer to the [local vs. global search params](/router/reference/search-parameters/#local-vs-global-search-parameters) guide for more information.
 
@@ -55,7 +58,9 @@ export default function Route() {
 }
 ```
 
-## `useGlobalSearchParams`
+</APIBox>
+
+<APIBox header="useGlobalSearchParams">
 
 Returns the URL search parameters for the globally selected route. For example, `/acme?foo=bar` -> `{ foo: "bar" }`.
 
@@ -77,14 +82,18 @@ export default function Route() {
 }
 ```
 
-### `Href` type
+<APIBox header="Href">
 
 The `Href` type is a union of the following types:
 
 - **string**: A full path like `/profile/settings` or a relative path like `../settings`.
 - **object**: An object with a `pathname` and optional `params` object. The `pathname` can be a full path like `/profile/settings` or a relative path like `../settings`. The `params` can be an object of key/value pairs.
 
-## `useSegments`
+</APIBox>
+
+</APIBox>
+
+<APIBox header="useSegments">
 
 Returns a list of segments for the currently selected route. Segments are not normalized so that they will be the same as the file path. For example, `/[id]?id=normal` -> `["[id]"]`.
 
@@ -116,7 +125,9 @@ export default function Route() {
 }
 ```
 
-## `useNavigation`
+</APIBox>
+
+<APIBox header="useNavigation">
 
 Access the underlying React Navigation [`navigation` prop](https://reactnavigation.org/docs/navigation-prop) to imperatively access layout-specific functionality like `navigation.openDrawer()` in a Drawer layout. [Learn more](https://reactnavigation.org/docs/navigation-prop/#navigator-dependent-functions).
 
@@ -144,7 +155,9 @@ export default function Route() {
 }
 ```
 
-## `useFocusEffect`
+</APIBox>
+
+<APIBox header="useFocusEffect">
 
 Given a function, the `useFocusEffect` hook will invoke the function whenever the route is "focused".
 
@@ -164,4 +177,5 @@ export default function Route() {
 }
 ```
 
+</APIBox>
 </RouteUrlGroup>
