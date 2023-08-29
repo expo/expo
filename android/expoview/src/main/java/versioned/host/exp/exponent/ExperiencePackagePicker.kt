@@ -4,7 +4,7 @@ import expo.modules.application.ApplicationPackage
 import expo.modules.av.AVModule
 import expo.modules.av.AVPackage
 import expo.modules.av.video.VideoViewModule
-import expo.modules.backgroundfetch.BackgroundFetchPackage
+import expo.modules.backgroundfetch.BackgroundFetchModule
 import expo.modules.barcodescanner.BarCodeScannerModule
 import expo.modules.barcodescanner.BarCodeScannerPackage
 import expo.modules.battery.BatteryModule
@@ -22,7 +22,6 @@ import expo.modules.crypto.CryptoModule
 import expo.modules.device.DeviceModule
 import expo.modules.documentpicker.DocumentPickerModule
 import expo.modules.easclient.EASClientModule
-import expo.modules.print.PrintModule
 import expo.modules.facedetector.FaceDetectorPackage
 import expo.modules.filesystem.FileSystemModule
 import expo.modules.filesystem.FileSystemPackage
@@ -49,6 +48,7 @@ import expo.modules.navigationbar.NavigationBarPackage
 import expo.modules.network.NetworkModule
 import expo.modules.notifications.NotificationsPackage
 import expo.modules.permissions.PermissionsPackage
+import expo.modules.print.PrintModule
 import expo.modules.random.RandomModule
 import expo.modules.screencapture.ScreenCaptureModule
 import expo.modules.screenorientation.ScreenOrientationModule
@@ -79,7 +79,6 @@ object ExperiencePackagePicker : ModulesProvider {
   private val EXPO_MODULES_PACKAGES = listOf(
     AVPackage(),
     ApplicationPackage(),
-    BackgroundFetchPackage(),
     BarCodeScannerPackage(),
     CalendarPackage(),
     ConstantsPackage(),
@@ -127,6 +126,7 @@ object ExperiencePackagePicker : ModulesProvider {
     PedometerModule::class.java,
     // End of Sensors
     BatteryModule::class.java,
+    BackgroundFetchModule::class.java,
     BarCodeScannerModule::class.java,
     BlurModule::class.java,
     CameraViewModule::class.java,
