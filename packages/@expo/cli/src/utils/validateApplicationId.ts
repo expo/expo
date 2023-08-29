@@ -110,7 +110,7 @@ export function assertValidBundleId(value: string) {
   assert.match(
     value,
     IOS_BUNDLE_ID_REGEX,
-    `The ios.bundleIdentifier defined in your Expo config is not formatted properly. Only alphanumeric characters, '.', '-', and '_' are allowed, and each '.' must be followed by a letter. The Java keyword 'native' is also not allowed.`
+    `The ios.bundleIdentifier defined in your Expo config is not formatted properly. Only alphanumeric characters, '.', '-', and '_' are allowed, and each '.' must be followed by a letter.`
   );
 }
 
@@ -118,7 +118,7 @@ export function assertValidPackage(value: string) {
   assert.match(
     value,
     ANDROID_PACKAGE_REGEX,
-    `Invalid format of Android package name. Only alphanumeric characters, '.' and '_' are allowed, and each '.' must be followed by a letter.`
+    `Invalid format of Android package name. Only alphanumeric characters, '.' and '_' are allowed, and each '.' must be followed by a letter. The Java keyword 'native' is also not allowed.`
   );
 }
 
