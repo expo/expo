@@ -2203,15 +2203,15 @@ PODS:
     - React-Core
   - EXCalendar (11.3.0):
     - ExpoModulesCore
-  - EXCamera (13.4.2):
+  - EXCamera (13.4.3):
     - ExpoModulesCore
   - EXConstants (14.4.2):
     - ExpoModulesCore
   - EXContacts (12.2.0):
     - ExpoModulesCore
-  - EXFileSystem (15.4.3):
+  - EXFileSystem (15.4.4):
     - ExpoModulesCore
-  - EXFileSystem/Tests (15.4.3):
+  - EXFileSystem/Tests (15.4.4):
     - ExpoModulesCore
     - ExpoModulesTestCore
   - EXFont (11.4.0):
@@ -2236,7 +2236,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (14.2.1):
     - ExpoModulesCore
-  - Expo (49.0.8):
+  - Expo (49.0.9):
     - ExpoModulesCore
   - ExpoAppleAuthentication (6.1.0):
     - ExpoModulesCore
@@ -2285,13 +2285,13 @@ PODS:
     - ExpoModulesCore
   - ExpoMailComposer (12.3.0):
     - ExpoModulesCore
-  - ExpoModulesCore (1.5.10):
+  - ExpoModulesCore (1.5.11):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-NativeModulesApple
     - React-RCTAppDelegate
     - ReactCommon/turbomodule/core
-  - ExpoModulesCore/Tests (1.5.10):
+  - ExpoModulesCore/Tests (1.5.11):
     - ExpoModulesTestCore
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
@@ -4899,10 +4899,10 @@ SPEC CHECKSUMS:
   EXBarCodeScanner: 44783bf0be375ab18a838dcfef29dd648397000a
   EXBranch: c01fc99d0a5e4ac6402b81f3c61ed180e5d355b7
   EXCalendar: 6756a5cf09a5ad90d3abf40e2bbdfb5993ae0911
-  EXCamera: 0fbfa338a3776af2722d626a3437abe33f708aad
+  EXCamera: d2cc9da6383f9a91d5ba7ca5747e359cce516158
   EXConstants: ce5bbea779da8031ac818c36bea41b10e14d04e1
   EXContacts: 9e8626eefc90c428af3d61a9e2869ac413d2569b
-  EXFileSystem: 941b273758aee14be2ecc671dacb4f10dd28c833
+  EXFileSystem: 2b826a3bf1071a4b80a8457e97124783d1ac860e
   EXFont: 738c44c390953ebcbab075a4848bfbef025fd9ee
   EXImageLoader: 34b214f9387e98f3c73989f15d8d5b399c9ab3f7
   EXJSONUtils: 6802be4282d42b97c51682468ddc1026a06f8276
@@ -4911,7 +4911,7 @@ SPEC CHECKSUMS:
   EXMediaLibrary: 8ac14ce76f266026b10cac2ab049debe032d7ae7
   EXNotifications: 09394cbd7165f9a4a00a53328aa09bf874bae717
   EXPermissions: 4f80cf527001aa408a22eddf076e61465ea71d5a
-  Expo: 900dc423a0e2c7e822b2c683a89426e82695fb27
+  Expo: 1a9df000f727ec52651a51548c12ad66bca4b5dc
   ExpoAppleAuthentication: 7bdf1a2962ebfe9b00eb4183a17b78d736e57185
   ExpoBattery: e9d7a71960cbc40733d956a29f8ba240173feb08
   ExpoBlur: a2c90bdfa4ff9f459cdb0f83191bddf020e3e2db
@@ -4931,7 +4931,7 @@ SPEC CHECKSUMS:
   ExpoLocalAuthentication: bd9d9037a96a11ccc456e327ddb404df02da10ca
   ExpoLocalization: be37fdd0b5930c6a49cd307b4542f4b426d6134c
   ExpoMailComposer: feaebd62095efad901ede864b95406f02bf61681
-  ExpoModulesCore: e5a168deba84f74c0e558befa31dbaea06c00af0
+  ExpoModulesCore: 51cb2e7ab4c8da14be3f40b66d54c1781002e99d
   ExpoModulesTestCore: f116cd4cc4288e0e0005a1f910efc7cedf455659
   ExpoNetwork: 6ee4b3b6cfdba3bfb90b07f483d1111308a9c76a
   ExpoPrint: e1531d216196f51b431c7cc4d906e569f79f10e7

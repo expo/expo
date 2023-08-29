@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- On iOS, fix dead frames when starting a video recording. ([#23834](https://github.com/expo/expo/pull/23834) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 13.4.3 — 2023-08-29
+
+### 🐛 Bug fixes
+
+- On iOS, fix dead frames when starting a video recording. ([#23834](https://github.com/expo/expo/pull/23834) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 13.4.2 — 2023-07-04
 
