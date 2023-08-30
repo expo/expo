@@ -18,6 +18,7 @@
 
 ### 🐛 Bug fixes
 
+- Prevent additional logs from showing in `expo config --json`. ([#24192](https://github.com/expo/expo/pull/24192) by [@EvanBacon](https://github.com/EvanBacon))
 - Patch `react-native-web` for static rendering with Expo Router. ([#24093](https://github.com/expo/expo/pull/24093) by [@EvanBacon](https://github.com/EvanBacon))
 - Improve file formatting when `EXPO_USE_METRO_WORKSPACE_ROOT` is used. ([#23910](https://github.com/expo/expo/pull/23910) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix bug preventing non-standard xcode projects from running with `npx expo run:ios`. ([#23831](https://github.com/expo/expo/pull/23831) by [@EvanBacon](https://github.com/EvanBacon))
