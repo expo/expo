@@ -1,4 +1,6 @@
+import VideoScreen from 'native-component-list/src/screens/AV/VideoScreen';
 import React from 'react';
+import { View } from 'react-native';
 
 import MainNavigator, { optionalRequire } from './MainNavigator';
 import { createProxy, startAsync, addListener } from './relapse/client';
@@ -34,6 +36,12 @@ function useLoaded() {
 }
 
 export default function Main() {
+  return (
+    <View style={{ flex: 1, backgroundColor: 'white' }}>
+      <VideoScreen />
+    </View>
+  );
+
   // @ts-ignore
   if (global.DETOX) {
     React.useEffect(() => {

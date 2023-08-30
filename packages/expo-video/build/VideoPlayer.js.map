@@ -1,0 +1,1 @@
+{"version":3,"file":"VideoPlayer.js","sourceRoot":"","sources":["../src/VideoPlayer.ts"],"names":[],"mappings":"","sourcesContent":["export declare class VideoPlayer {\n  isPlaying: boolean;\n  play(): void;\n  pause(): void;\n  replace(source: string): void;\n}\n"]}

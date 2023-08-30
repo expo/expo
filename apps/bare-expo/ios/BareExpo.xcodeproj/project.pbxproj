@@ -23,7 +23,6 @@
 		B2C02654256BDB3E008FD925 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		B2C02655256BDB3E008FD925 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		B2C02656256BDB3E008FD925 /* notification.wav in Resources */ = {isa = PBXBuildFile; fileRef = 31B5C868245847DF0086F49B /* notification.wav */; };
-		BC7AD480BBBCE096A210A214 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 469027E32657212526A60DF7 /* ExpoModulesProvider.swift */; };
 		CD6B041323091F4B002044FF /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6B041223091F4B002044FF /* StoreKit.framework */; };
 		CDDB247C24802C4C00F6E7AC /* Dispatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDB247B24802C4C00F6E7AC /* Dispatch.swift */; };
 		D7A899C4C2519DF9680ACF4D /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4181CD42FEE5745FEE71F23C /* ExpoModulesProvider.swift */; };
@@ -63,7 +62,6 @@
 		332BD73A6A3EF9EF1F36CCF4 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-BareExpoMain-BareExpo/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		4181CD42FEE5745FEE71F23C /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-BareExpoMain-BareExpoDetox/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		432D8AB553128A7D2D7086F2 /* libPods-BareExpoMain-BareExpoTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BareExpoMain-BareExpoTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		469027E32657212526A60DF7 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-BareExpoTests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		70C90FD1B0DC892D98AB56FC /* Pods-BareExpoMain-BareExpo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BareExpoMain-BareExpo.release.xcconfig"; path = "Target Support Files/Pods-BareExpoMain-BareExpo/Pods-BareExpoMain-BareExpo.release.xcconfig"; sourceTree = "<group>"; };
 		7AE0764661EA2FD069C93AB0 /* Pods-BareExpoMain-BareExpoDetox.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BareExpoMain-BareExpoDetox.debug.xcconfig"; path = "Target Support Files/Pods-BareExpoMain-BareExpoDetox/Pods-BareExpoMain-BareExpoDetox.debug.xcconfig"; sourceTree = "<group>"; };
 		835C3EFE27CCACB90002A5A0 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = BareExpo/AppDelegate.h; sourceTree = "<group>"; };
@@ -177,7 +175,6 @@
 		5CCB4E431E8719D0AC68EA85 /* BareExpoTests */ = {
 			isa = PBXGroup;
 			children = (
-				469027E32657212526A60DF7 /* ExpoModulesProvider.swift */,
 				C6D510B8848C498B7759CC25 /* ExpoModulesProvider.swift */,
 			);
 			name = BareExpoTests;
@@ -793,7 +790,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BC7AD480BBBCE096A210A214 /* ExpoModulesProvider.swift in Sources */,
 				75B87163812FEC65DCE84915 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

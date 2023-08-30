@@ -1,27 +1,88 @@
-import React from 'react';
-import { PixelRatio, ScrollView, StyleSheet } from 'react-native';
+import { VideoView, useVideoPlayer } from '@expo/video';
+import React, { useCallback, useEffect, useRef } from 'react';
+import { PixelRatio, ScrollView, StyleSheet, View } from 'react-native';
 
-import VideoPlayer from './VideoPlayer';
-import HeadingText from '../../components/HeadingText';
+import Button from '../../components/Button';
 
 export default function VideoScreen() {
+  const ref = useRef<VideoView>(null);
+
+  const enterFullscreen = useCallback(() => {
+    ref.current?.enterFullscreen();
+  }, [ref]);
+
+  const player = useVideoPlayer(
+    'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
+  );
+
+  const togglePlayer = useCallback(() => {
+    if (player.isPlaying) {
+      player.pause();
+    } else {
+      player.play();
+    }
+  }, [player]);
+
+  const replaceItem = useCallback(() => {
+    player.replace(
+      'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4'
+    );
+  }, []);
+
+  const seekBy = useCallback(() => {
+    player.seekBy(10);
+  }, []);
+
+  const replay = useCallback(() => {
+    player.replay();
+  }, []);
+
+  const toggleMuted = useCallback(() => {
+    player.isMuted = !player.isMuted;
+  }, []);
+
+  useEffect(() => {
+    player.play();
+  }, []);
+
   return (
     <ScrollView contentContainerStyle={styles.contentContainer}>
-      <HeadingText>HTTP player</HeadingText>
-      <VideoPlayer
-        sources={[
-          { uri: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4' },
-          { uri: 'http://techslides.com/demos/sample-videos/small.mp4' },
-          { uri: 'http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8' },
-        ]}
+      <VideoView
+        nativeRef={ref}
+        style={styles.video}
+        player={player}
+        nativeControls={false}
+        contentFit="contain"
+        contentPosition={{ dx: 0, dy: 0 }}
+        allowsFullscreen
+        canControlPlayback
+        volumeControls={false}
+        showsTimecodes={false}
+        requiresLinearPlayback
       />
-      <HeadingText>Local asset player</HeadingText>
-      <VideoPlayer
-        sources={[
-          require('../../../assets/videos/ace.mp4'),
-          require('../../../assets/videos/star.mp4'),
-        ]}
+
+      <VideoView
+        nativeRef={ref}
+        style={styles.video}
+        player={player}
+        nativeControls
+        contentFit="contain"
+        contentPosition={{ dx: 0, dy: 0 }}
+        allowsFullscreen
+        canControlPlayback
+        volumeControls={false}
+        showsTimecodes={false}
+        requiresLinearPlayback
       />
+
+      <View style={styles.buttons}>
+        <Button style={styles.button} title="Toggle" onPress={togglePlayer} />
+        <Button style={styles.button} title="Replace" onPress={replaceItem} />
+        <Button style={styles.button} title="Seek by 10 seconds" onPress={seekBy} />
+        <Button style={styles.button} title="Replay" onPress={replay} />
+        <Button style={styles.button} title="Toggle mute" onPress={toggleMuted} />
+        <Button style={styles.button} title="Enter fullscreen" onPress={enterFullscreen} />
+      </View>
     </ScrollView>
   );
 }
@@ -32,9 +93,18 @@ VideoScreen.navigationOptions = {
 const styles = StyleSheet.create({
   contentContainer: {
     padding: 10,
+    alignItems: 'center',
   },
-  player: {
+  video: {
+    width: 400,
+    height: 300,
     borderBottomWidth: 1.0 / PixelRatio.get(),
     borderBottomColor: '#cccccc',
+  },
+  buttons: {
+    flexDirection: 'column',
+  },
+  button: {
+    margin: 5,
   },
 });
