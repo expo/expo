@@ -2,7 +2,7 @@
 
 ## Unpublished
 
-- Fix false positive redirect deprecation since version 2.0.1 when using `<Screen />`. ([#23932](https://github.com/expo/expo/pull/23932) by by [@sync](https://github.com/sync))
+- Fix false positive redirect deprecation since version 2.0.1 when using `<Screen />`. ([#23932](https://github.com/expo/expo/pull/23932) by [@sync](https://github.com/sync))
 
 ### 🛠 Breaking changes
 
