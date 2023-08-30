@@ -24,8 +24,6 @@ interface Manifest {
 // some files are absent on turtle builders and we don't want log errors there
 const isTurtle = !!process.env.TURTLE_WORKING_DIR_PATH;
 
-const dogfoodingHomeUrl = 'exp://exp.host/@expo-dogfooding/home';
-
 const EXPO_DIR = getExpoRepositoryRootDir();
 
 async function getManifestAsync(
@@ -135,20 +133,6 @@ export default {
       manifest = await getManifestAsync(savedDevHomeUrl, platform, sdkVersion);
     } catch (e) {
       const msg = `Unable to download manifest from ${savedDevHomeUrl}: ${e.message}`;
-      console[isTurtle ? 'debug' : 'error'](msg);
-      return '';
-    }
-
-    return kernelManifestObjectToJson(manifest);
-  },
-
-  async DOGFOODING_PUBLISHED_KERNEL_MANIFEST(platform) {
-    let manifest: Manifest;
-    try {
-      const sdkVersion = await this.TEMPORARY_SDK_VERSION();
-      manifest = await getManifestAsync(dogfoodingHomeUrl, platform, sdkVersion);
-    } catch (e) {
-      const msg = `Unable to download manifest from ${dogfoodingHomeUrl}: ${e.message}`;
       console[isTurtle ? 'debug' : 'error'](msg);
       return '';
     }
