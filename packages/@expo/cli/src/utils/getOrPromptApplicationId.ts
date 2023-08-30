@@ -11,6 +11,7 @@ import {
   getPackageNameWarningAsync,
   validateBundleId,
   validatePackage,
+  validatePackageWithWarning,
 } from './validateApplicationId';
 import * as Log from '../log';
 
@@ -164,7 +165,7 @@ async function promptForPackageAsync(projectRoot: string, exp: ExpoConfig): Prom
       name: 'packageName',
       initial: (await getRecommendedPackageNameAsync(exp)) ?? undefined,
       message: `What would you like your Android package name to be?`,
-      validate: validatePackage,
+      validate: validatePackageWithWarning,
     },
     {
       nonInteractiveHelp: NO_PACKAGE_MESSAGE,
