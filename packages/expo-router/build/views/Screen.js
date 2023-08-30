@@ -15,7 +15,7 @@ export function Screen({ name, redirect, options, }) {
     }, [navigation, options]);
     if (process.env.NODE_ENV === 'development') {
         // eslint-disable-next-line react-hooks/rules-of-hooks
-        useDeprecated('The `redirect` prop on <Screen /> is deprecated and will be removed. Please use `router.redirect` instead', redirect);
+        useDeprecated('The `redirect` prop on <Screen /> is deprecated and will be removed. Please use `router.redirect` instead', redirect != null);
     }
     if (process.env.NODE_ENV !== 'production') {
         // eslint-disable-next-line react-hooks/rules-of-hooks
