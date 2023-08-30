@@ -2317,6 +2317,8 @@ PODS:
     - React-Core
   - ExpoSecureStore (12.5.0):
     - ExpoModulesCore
+  - ExpoSensors (12.5.0):
+    - ExpoModulesCore
   - ExpoSharing (11.7.0):
     - ExpoModulesCore
   - ExpoSMS (11.5.0):
@@ -2337,8 +2339,6 @@ PODS:
   - ExpoWebBrowser (12.5.0):
     - ExpoModulesCore
   - EXScreenCapture (5.5.0):
-    - ExpoModulesCore
-  - EXSensors (12.5.0):
     - ExpoModulesCore
   - EXSplashScreen (0.22.0):
     - ExpoModulesCore
@@ -3501,6 +3501,7 @@ DEPENDENCIES:
   - ExpoRandom (from `../packages/expo-random/ios`)
   - ExpoScreenOrientation (from `../packages/expo-screen-orientation/ios`)
   - ExpoSecureStore (from `../packages/expo-secure-store/ios`)
+  - ExpoSensors (from `../packages/expo-sensors/ios`)
   - ExpoSharing (from `../packages/expo-sharing/ios`)
   - ExpoSMS (from `../packages/expo-sms/ios`)
   - ExpoSpeech (from `../packages/expo-speech/ios`)
@@ -3511,7 +3512,6 @@ DEPENDENCIES:
   - ExpoVideoThumbnails (from `../packages/expo-video-thumbnails/ios`)
   - ExpoWebBrowser (from `../packages/expo-web-browser/ios`)
   - EXScreenCapture (from `../packages/expo-screen-capture/ios`)
-  - EXSensors (from `../packages/expo-sensors/ios`)
   - EXSplashScreen (from `../packages/expo-splash-screen/ios`)
   - EXStructuredHeaders (from `../packages/expo-structured-headers/ios`)
   - EXStructuredHeaders/Tests (from `../packages/expo-structured-headers/ios`)
@@ -4409,6 +4409,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-screen-orientation/ios"
   ExpoSecureStore:
     :path: "../packages/expo-secure-store/ios"
+  ExpoSensors:
+    :path: "../packages/expo-sensors/ios"
   ExpoSharing:
     :path: "../packages/expo-sharing/ios"
   ExpoSMS:
@@ -4429,8 +4431,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-web-browser/ios"
   EXScreenCapture:
     :path: "../packages/expo-screen-capture/ios"
-  EXSensors:
-    :path: "../packages/expo-sensors/ios"
   EXSplashScreen:
     :path: "../packages/expo-splash-screen/ios"
   EXStructuredHeaders:
@@ -4952,6 +4952,7 @@ SPEC CHECKSUMS:
   ExpoRandom: ae54b3769440ee9dfefac777ce6263a9be10173b
   ExpoScreenOrientation: 0f0ebb2e4072c7cb2ec36e047f9d817bf428a812
   ExpoSecureStore: 5372610a4bbcf5e50fafbe6f38f8d9c22edf8253
+  ExpoSensors: 9cafd316a9e1ae5aabf70b35b12ef74cc6b1c99e
   ExpoSharing: 5366dab0e9a270a6da3acbb1e3471d5522044baf
   ExpoSMS: fbd73390bb7abf0388c8631d6b78186e1342049f
   ExpoSpeech: 8a73bb7e6e84a5b5b8dbaabd5b4f287bec39bf3b
@@ -4962,7 +4963,6 @@ SPEC CHECKSUMS:
   ExpoVideoThumbnails: d2ded9402b7f8ac10f148238e352eaa4026f2865
   ExpoWebBrowser: b6e56949734089d75f758f21cfe93fad02bd828c
   EXScreenCapture: 6ba7b396fd8afd19cb9a5e0ac8820188baf5415e
-  EXSensors: 4cc75cb16c97809bc055c64881d2e149c18e89c5
   EXSplashScreen: 5ed09ea490155ef603d007d9f194c9e04a4b7980
   EXStructuredHeaders: 41cf143da0aa1f93cc29c486103728cf37bc8710
   EXTaskManager: aae3b3c8144af1e0bfdbe8a3cc19fb116a01368d
