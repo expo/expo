@@ -3,6 +3,7 @@ import { getVersionsAsync } from '../../../../api/getVersions';
 import { Log } from '../../../../log';
 import { getVersionedNativeModulesAsync } from '../bundledNativeModules';
 import {
+  getCombinedKnownVersionsAsync,
   getOperationLog,
   getRemoteVersionsForSdkAsync,
   getVersionedPackagesAsync,
@@ -17,6 +18,34 @@ jest.mock('../../../../api/getVersions', () => ({
 jest.mock('../bundledNativeModules', () => ({
   getVersionedNativeModulesAsync: jest.fn(),
 }));
+
+describe(getCombinedKnownVersionsAsync, () => {
+  it(`should prioritize remote versions over bundled versions`, async () => {
+    // Remote versions
+    asMock(getVersionsAsync).mockResolvedValueOnce({
+      sdkVersions: {
+        '1.0.0': {
+          relatedPackages: {
+            shared: 'remote',
+            'remote-only': 'xxx',
+          },
+        },
+      },
+    } as any);
+
+    // Bundled versions
+    asMock(getVersionedNativeModulesAsync).mockResolvedValueOnce({
+      shared: 'bundled',
+      'local-only': 'xxx',
+    });
+
+    expect(await getCombinedKnownVersionsAsync({ projectRoot: '/', sdkVersion: '1.0.0' })).toEqual({
+      shared: 'remote',
+      'local-only': 'xxx',
+      'remote-only': 'xxx',
+    });
+  });
+});
 
 describe(getVersionedPackagesAsync, () => {
   it('should return versioned packages', async () => {
