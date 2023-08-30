@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix server rendering with Metro web.
+- Fix server rendering with Metro web. ([#24195](https://github.com/expo/expo/pull/24195) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
