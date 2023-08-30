@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- Add Ngrok status page to ngrok error message. ([#24188](https://github.com/expo/expo/pull/24188) by [@EvanBacon](https://github.com/EvanBacon))
 - Support monorepo assets with `npx expo export:embed`. ([#24095](https://github.com/expo/expo/pull/24095) by [@EvanBacon](https://github.com/EvanBacon))
 - Forward exact Metro server error during static rendering. ([#23909](https://github.com/expo/expo/pull/23909) by [@EvanBacon](https://github.com/EvanBacon))
 - Add **Server** tag when bundling for server environments. ([#23987](https://github.com/expo/expo/pull/23987) by [@EvanBacon](https://github.com/EvanBacon))

@@ -171,7 +171,7 @@ export class AsyncNgrok {
             Log.error(
               chalk.red(
                 'Tunnel connection has been closed. This is often related to intermittent connection problems with the Ngrok servers. Restart the dev server to try connecting to Ngrok again.'
-              )
+              ) + chalk.gray('\nCheck the Ngrok status page for outages: https://status.ngrok.com/')
             );
           } else if (status === 'connected') {
             Log.log('Tunnel connected.');
@@ -185,10 +185,20 @@ export class AsyncNgrok {
         if (isNgrokClientError(error)) {
           throw new CommandError(
             'NGROK_CONNECT',
-            [error.body.msg, error.body.details?.err].filter(Boolean).join('\n\n')
+            [
+              error.body.msg,
+              error.body.details?.err,
+              chalk.gray('Check the Ngrok status page for outages: https://status.ngrok.com/'),
+            ]
+              .filter(Boolean)
+              .join('\n\n')
           );
         }
-        throw new CommandError('NGROK_CONNECT', error.toString());
+        throw new CommandError(
+          'NGROK_CONNECT',
+          error.toString() +
+            chalk.gray('\nCheck the Ngrok status page for outages: https://status.ngrok.com/')
+        );
       };
 
       // Attempt to connect 3 times
