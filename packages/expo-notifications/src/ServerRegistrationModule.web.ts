@@ -28,9 +28,15 @@ export default {
     return installationId;
   },
   getRegistrationInfoAsync: async () => {
+    if (typeof localStorage === 'undefined') {
+      return null;
+    }
     return localStorage.getItem(REGISTRATION_INFO_KEY);
   },
   setRegistrationInfoAsync: async (registrationInfo: string | null) => {
+    if (typeof localStorage === 'undefined') {
+      return;
+    }
     try {
       if (registrationInfo) {
         localStorage.setItem(REGISTRATION_INFO_KEY, registrationInfo);
