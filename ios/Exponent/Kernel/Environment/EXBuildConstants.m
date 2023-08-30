@@ -45,9 +45,6 @@
   } else if (_kernelDevManifestSource == kEXKernelDevManifestSourcePublished) {
     // dev published kernel. use published manifest.
     _kernelManifestJsonString = config[@"DEV_PUBLISHED_KERNEL_MANIFEST"];
-  } else if (_kernelDevManifestSource == kEXKernelDevManifestSourceDogfooding) {
-    // dogfooding published kernel. use published dogfooding manifest.
-    _kernelManifestJsonString = config[@"DOGFOODING_PUBLISHED_KERNEL_MANIFEST"];
   }
   _apiServerEndpoint = [NSURL URLWithString:config[@"API_SERVER_ENDPOINT"]];
   _temporarySdkVersion = config[@"TEMPORARY_SDK_VERSION"];
@@ -66,8 +63,6 @@
     return kEXKernelDevManifestSourceLocal;
   } else if ([sourceString isEqualToString:@"PUBLISHED"]) {
     return kEXKernelDevManifestSourcePublished;
-  } else if ([sourceString isEqualToString:@"DOGFOODING"]) {
-    return kEXKernelDevManifestSourceDogfooding;
   }
   return kEXKernelDevManifestSourceNone;
 }

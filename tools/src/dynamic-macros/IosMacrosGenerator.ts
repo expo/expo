@@ -94,13 +94,6 @@ function validateBuildConstants(config, buildConfiguration) {
     if (DEV_KERNEL_SOURCE === 'PUBLISHED' && !config.DEV_PUBLISHED_KERNEL_MANIFEST) {
       throw new Error(`Error downloading DEV published kernel manifest.\n`);
     }
-
-    if (process.env.USE_DOGFOODING_PUBLISHED_KERNEL_MANIFEST) {
-      if (!config.DOGFOODING_PUBLISHED_KERNEL_MANIFEST) {
-        throw new Error(`Error downloading DOGFOODING published kernel manifest.\n`);
-      }
-      DEV_KERNEL_SOURCE = 'DOGFOODING';
-    }
   }
 
   config.IS_DEV_KERNEL = IS_DEV_KERNEL;

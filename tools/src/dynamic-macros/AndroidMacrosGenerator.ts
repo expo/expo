@@ -44,17 +44,13 @@ export async function generateAndroidBuildConstantsFromMacrosAsync(macros) {
     !macros.BUILD_MACHINE_KERNEL_MANIFEST || macros.BUILD_MACHINE_KERNEL_MANIFEST === '';
 
   let versionUsed = 'local';
-  if (process.env.USE_DOGFOODING_PUBLISHED_KERNEL_MANIFEST) {
-    macros.BUILD_MACHINE_KERNEL_MANIFEST = macros.DOGFOODING_PUBLISHED_KERNEL_MANIFEST;
-    versionUsed = 'doogfooding';
-  } else if (isLocalManifestEmpty) {
+  if (isLocalManifestEmpty) {
     macros.BUILD_MACHINE_KERNEL_MANIFEST = macros.DEV_PUBLISHED_KERNEL_MANIFEST;
     versionUsed = 'published dev';
   }
   console.log(`Using ${chalk.yellow(versionUsed)} version of Expo Home.`);
 
   delete macros['DEV_PUBLISHED_KERNEL_MANIFEST'];
-  delete macros['DOGFOODING_PUBLISHED_KERNEL_MANIFEST'];
 
   const definitions = Object.entries(macros).map(
     ([name, value]) =>
