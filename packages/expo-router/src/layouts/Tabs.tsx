@@ -1,7 +1,9 @@
 import {
+  BottomTabNavigationEventMap,
   BottomTabNavigationOptions,
   createBottomTabNavigator,
 } from '@react-navigation/bottom-tabs';
+import { ParamListBase, TabNavigationState } from '@react-navigation/native';
 import React from 'react';
 import { Pressable, Platform } from 'react-native';
 
@@ -14,7 +16,9 @@ const BottomTabNavigator = createBottomTabNavigator().Navigator;
 
 export const Tabs = withLayoutContext<
   BottomTabNavigationOptions & { href?: Href | null },
-  typeof BottomTabNavigator
+  typeof BottomTabNavigator,
+  TabNavigationState<ParamListBase>,
+  BottomTabNavigationEventMap
 >(BottomTabNavigator, (screens) => {
   // Support the `href` shortcut prop.
   return screens.map((screen) => {

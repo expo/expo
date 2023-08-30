@@ -1,4 +1,4 @@
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createDrawerNavigator, } from '@react-navigation/drawer';
 import { withLayoutContext } from './withLayoutContext';
 const DrawerNavigator = createDrawerNavigator().Navigator;
 export const Drawer = withLayoutContext(DrawerNavigator);
