@@ -21,7 +21,7 @@
 
 ### 💡 Others
 
-- [Android] Add type converter for the `ReadableArguments` class to allow backward compatibility with older modules.
+- [Android] Add type converter for the `ReadableArguments` class to allow backward compatibility with older modules. ([#24137](https://github.com/expo/expo/pull/24137) by [@lukmccall](https://github.com/lukmccall))
 
 ## 1.6.0 — 2023-07-28
 
