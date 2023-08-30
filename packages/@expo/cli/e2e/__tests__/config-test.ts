@@ -6,10 +6,12 @@ import path from 'path';
 import { execute, projectRoot, getRoot, getLoadedModulesAsync } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
+
 beforeAll(async () => {
   await fs.mkdir(projectRoot, { recursive: true });
   process.env.FORCE_COLOR = '0';
 });
+
 afterAll(() => {
   process.env.FORCE_COLOR = originalForceColor;
 });
@@ -59,6 +61,8 @@ it(
     // Create a fake package.json -- this is a terminal file that cannot be overwritten.
     await fs.writeFile(path.join(projectRoot, 'package.json'), '{ "version": "1.0.0" }');
     await fs.writeFile(path.join(projectRoot, 'app.json'), '{ "expo": { "name": "foobar" } }');
+    // Add an environment variable file to test that it's not included in the config.
+    await fs.writeFile(path.join(projectRoot, '.env'), 'FOOBAR=1');
 
     const results = await execute('config', projectName, '--json');
     // @ts-ignore
