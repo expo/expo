@@ -11,7 +11,15 @@ It's common to restrict certain routes to users who are not authenticated. This 
 
 Consider the following project:
 
-<FileTree files={['app/_layout.js', 'app/index.js', 'app/(auth)/sign-in.js']} />
+<FileTree
+  files={[
+    'app/_layout.js',
+    'app/index.js',
+    'app/(auth)/sign-in.js',
+    'app/(protected)/_layout.js',
+    'app/(protected)/protected-route.js',
+  ]}
+/>
 
 First, we'll setup a [React Context provider](https://react.dev/reference/react/createContext) that we can use to protect routes. This provider will use a mock implementation, you can replace it with your own [authentication provider](/guides/authentication/).
 
@@ -26,31 +34,8 @@ export function useAuth() {
   return React.useContext(AuthContext);
 }
 
-// This hook will protect the route access based on user authentication.
-function useProtectedRoute(user) {
-  const segments = useSegments();
-
-  React.useEffect(() => {
-    const inAuthGroup = segments[0] === '(auth)';
-
-    if (
-      // If the user is not signed in and the initial segment is not anything in the auth group.
-      !user &&
-      !inAuthGroup
-    ) {
-      // Redirect to the sign-in page.
-      router.replace('/sign-in');
-    } else if (user && inAuthGroup) {
-      // Redirect away from the sign-in page.
-      router.replace('/');
-    }
-  }, [user, segments]);
-}
-
 export function Provider(props) {
   const [user, setAuth] = React.useState(null);
-
-  useProtectedRoute(user);
 
   return (
     <AuthContext.Provider
@@ -62,6 +47,25 @@ export function Provider(props) {
       {props.children}
     </AuthContext.Provider>
   );
+}
+
+// This High Order Component (HOC) can be used to wrap routes or _layouts to ensure the user is authenticated.
+export function privateRoute<P extends {}, T>(
+  Component: ComponentType<P>,
+  redirectHref: Href<T>
+) {
+  return forwardRef<"ref" extends keyof P ? P["ref"] : unknown, P>(function (
+    props,
+    ref
+  ) {
+    const { user } = useAuth();
+
+    if (!user) {
+      return <Redirect href={redirectHref} />;
+    }
+
+    return <Component ref={ref} {...props} />;
+  });
 }
 ```
 
@@ -97,6 +101,28 @@ export default function SignIn() {
 }
 ```
 
+Now we can create our `(protected)` group which ensures the user is authenticated before rendering the component.
+
+```jsx app/(protected)/_layout.js
+import { Text, View } from 'react-native';
+import { Slot } from 'expo-router';
+import { protectedRoute } from '../../context/auth';
+
+export default protectedRoute(Slot, '/sign-in');
+```
+
+```jsx app/(protected)/private-route.js
+import { Text, View } from 'react-native';
+
+export default function PrivateRoute() {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>You must be authenticated to see this route</Text>
+    </View>
+  );
+}
+```
+
 And finally we'll implement an authenticated screen which can sign out.
 
 ```jsx app/index.js
@@ -115,5 +141,3 @@ export default function Index() {
 ```
 
 Now if the authentication state changes globally, the user will be redirected to the appropriate route.
-
-{/* TODO: Guide on using redirects and per-screen behavior */}
