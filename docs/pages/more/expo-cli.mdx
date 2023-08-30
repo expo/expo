@@ -130,6 +130,8 @@ This will serve your app from a public URL like: `http://xxxxxxx.bacon.19000.exp
 - Tunnel URLs are public and can be accessed by any device with a network connection. Expo CLI mitigates the risk of exposure by adding entropy to the beginning of the URL. Entropy can be reset by clearing the `.expo` directory in your project.
 - Tunnels require a network connection on both devices, meaning this feature cannot be used with the `--offline` flag.
 
+Tunneling requires a third-party hosting service, this means it may sometimes experience intermittent issues like `ngrok tunnel took too long to connect` or `Tunnel connection has been closed. This is often related to intermittent connection problems with the Ngrok servers...`. Be sure to check for [Ngrok outages](https://status.ngrok.com/) before reporting an issue. Some Windows users have also reported needing modify their antivirus settings to allow Ngrok to work.
+
 #### Offline
 
 You can develop without a network connection by using the `--offline` flag:
