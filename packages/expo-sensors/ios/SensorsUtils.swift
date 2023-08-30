@@ -13,14 +13,14 @@ internal func getDeviceOrientationRotation() -> Int {
   switch orientation {
   case .portrait:
     return 0
-    case .landscapeLeft:
-      return -90
-    case .landscapeRight:
-      return 90
-    case .portraitUpsideDown:
-      return 180
-    default:
-      return 0
+  case .landscapeLeft:
+    return -90
+  case .landscapeRight:
+    return 90
+  case .portraitUpsideDown:
+    return 180
+  default:
+    return 0
   }
 }
 
