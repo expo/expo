@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Bump `Glide` version to resolve `SecurityException` on Android 13.
+- Bump `Glide` version to resolve `SecurityException` on Android 13. ([#24196](https://github.com/expo/expo/pull/24196) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
