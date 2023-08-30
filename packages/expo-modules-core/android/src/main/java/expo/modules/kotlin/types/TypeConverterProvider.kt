@@ -7,6 +7,7 @@ import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import expo.modules.annotation.Config
+import expo.modules.core.arguments.ReadableArguments
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.MissingTypeConverter
 import expo.modules.kotlin.jni.CppType
@@ -286,6 +287,8 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       File::class to FileTypeConverter(isOptional),
 
       Any::class to AnyTypeConverter(isOptional),
+
+      ReadableArguments::class to ReadableArgumentsTypeConverter(isOptional),
     )
 
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
