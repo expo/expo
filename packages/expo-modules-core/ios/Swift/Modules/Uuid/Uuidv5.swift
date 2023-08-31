@@ -10,8 +10,8 @@ func uuidv5(name: String, namespace: UUID) -> UUID {
   data.append(contentsOf: name.utf8)
 
   // Compute SHA1 digest
-  var digest = [UInt8](repeating: 0, count:Int(CC_SHA1_DIGEST_LENGTH))
-  data.withUnsafeBytes { (ptr: UnsafeRawBufferPointer) -> Void in CC_SHA1(ptr.baseAddress, CC_LONG(data.count), &digest)}
+  var digest = [UInt8](repeating: 0, count: Int(CC_SHA1_DIGEST_LENGTH))
+  data.withUnsafeBytes { (ptr: UnsafeRawBufferPointer) -> Void in CC_SHA1(ptr.baseAddress, CC_LONG(data.count), &digest) }
 
   // Set version bits:
   digest[6] = digest[6] & 0x0F | UInt8(5) << 4
@@ -29,5 +29,3 @@ func uuidv5(name: String, namespace: UUID) -> UUID {
   // Convert digest to UUID and return
   return UUID.init(uuid: uuidTuple)
 }
-
-
