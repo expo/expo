@@ -75,7 +75,7 @@ class AppContext(
     ModuleHolder(module)
   }
 
-  internal val sharedObjectRegistry = SharedObjectRegistry()
+  val sharedObjectRegistry = SharedObjectRegistry()
 
   private val modulesQueueDispatcher = HandlerThread("expo.modules.AsyncFunctionQueue")
     .apply { start() }

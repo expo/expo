@@ -1,21 +1,38 @@
 package expo.modules.video
 
+import android.util.Log
 import androidx.media3.common.MediaItem
-import expo.modules.kotlin.jni.JavaScriptObject
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.sharedobjects.SharedObjectId
+import kotlinx.coroutines.launch
 
-class VideoModule: Module() {
+class VideoModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoVideo")
 
-    Class(VideoPlayerRef::class) {
-      Constructor{source: String ->
+    View(VideoView::class) {
+      Prop("player") { view: VideoView, playerId: Int ->
+        val player = appContext.sharedObjectRegistry.toNativeObject(SharedObjectId(playerId)) as? VideoPlayer
+          ?: return@Prop
+        Log.e("dupa", "$playerId $player ${player.player}")
+        player.preper()
+        view.player = player.player
+      }
+
+//      Prop("nativeControls") {}
+//
+//      Prop("contentFit") {}
+//
+//      Prop("contentPosition") {}
+    }
+
+    Class(VideoPlayer::class) {
+      Constructor { source: String ->
         val mediaItem = MediaItem.fromUri(source)
-        val context = appContext.reactContext!!
+        val context = appContext.currentActivity!!
 
-
-        VideoPlayerRef(context, mediaItem)
+        VideoPlayer(context.applicationContext, mediaItem)
       }
 
       Property("isPlaying") {} // TODO: Property requires some fixes @LukMcCall
@@ -24,11 +41,18 @@ class VideoModule: Module() {
 
       Property("currentTime") {}
 
-      Function("play") {ref: VideoPlayerRef ->
-        ref.player.play()
+      Function("play") { ref: VideoPlayer ->
+        appContext.mainQueue.launch {
+          ref.player.play()
+        }
+
       }
 
-      Function("pause") {}
+      Function("pause") { ref: VideoPlayer ->
+        appContext.mainQueue.launch {
+          ref.player.pause()
+        }
+      }
 
       Function("replace") {}
 
@@ -36,6 +60,5 @@ class VideoModule: Module() {
 
       Function("replay") {}
     }
-
   }
 }
