@@ -15,7 +15,7 @@ describe(modifyBundlesWithSourceMaps, () => {
       true
     );
     expect(res.split('\n')[1]).toBe(
-      '//# sourceMappingURL=/_expo/static/js/web/entry-3174c2a5c9b63f8dcf27c09b187bdc3c.map'
+      '//# sourceMappingURL=/_expo/static/js/web/entry-3174c2a5c9b63f8dcf27c09b187bdc3c.js.map'
     );
     expect(res.split('\n')[2]).toBe(
       '//# sourceURL=/_expo/static/js/web/entry-3174c2a5c9b63f8dcf27c09b187bdc3c.js'

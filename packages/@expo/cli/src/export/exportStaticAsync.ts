@@ -168,7 +168,7 @@ export function modifyBundlesWithSourceMaps(
         if (props[1] === 'sourceURL') {
           return `//# ${props[1]}=` + normalizedFilename;
         } else if (props[1] === 'sourceMappingURL') {
-          const mapName = normalizedFilename.replace(/\.js(?=\?|$)/, `.map`);
+          const mapName = normalizedFilename + '.map';
           return `//# ${props[1]}=` + mapName;
         }
       }
