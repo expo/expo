@@ -10,7 +10,7 @@ jest.mock('../../../../utils/prompts');
 
 it(`detects that xcrun is installed and is valid`, async () => {
   // Mock xcrun installed for CI
-  asMock(execSync).mockReset().mockReturnValueOnce(`xcrun version 60.`);
+  asMock(execSync).mockReset().mockReturnValueOnce(`xcrun version 64.`);
 
   // Ensure the confirmation is never called.
   asMock(confirmAsync)
@@ -30,7 +30,7 @@ it(`asserts that xcrun is not installed and installs it successfully`, async () 
     .mockImplementationOnce(() => {
       throw new Error('foobar');
     })
-    .mockReturnValueOnce(`xcrun version 60.`);
+    .mockReturnValueOnce(`xcrun version 64.`);
 
   asMock(confirmAsync)
     .mockReset()
@@ -53,7 +53,7 @@ it(`asserts that xcrun is not installed and the user cancels`, async () => {
     .mockImplementationOnce(() => {
       throw new Error('foobar');
     })
-    .mockReturnValueOnce(`xcrun version 60.`);
+    .mockReturnValueOnce(`xcrun version 64.`);
 
   asMock(confirmAsync)
     .mockReset()

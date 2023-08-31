@@ -9,8 +9,8 @@ jest.mock(`../../../../log`);
 jest.mock('../../../../utils/prompts');
 
 function mockXcodeInstalled() {
-  return asMock(execSync).mockReturnValue(`Xcode 13.1
-Build version 13A1030d`);
+  return asMock(execSync).mockReturnValue(`Xcode 14.3
+Build version 14E222b`);
 }
 
 describe(getXcodeVersionAsync, () => {
@@ -19,7 +19,7 @@ describe(getXcodeVersionAsync, () => {
   });
   it(`returns the xcode version`, () => {
     mockXcodeInstalled();
-    expect(getXcodeVersionAsync()).toEqual('13.1.0');
+    expect(getXcodeVersionAsync()).toEqual('14.3.0');
   });
   it(`logs an error when the xcode cli format is invalid`, () => {
     asMock(execSync).mockReturnValue(`foobar`);
