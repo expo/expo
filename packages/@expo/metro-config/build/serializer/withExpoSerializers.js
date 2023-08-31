@@ -162,7 +162,7 @@ function getDefaultSerializer(fallbackSerializer) {
           return value;
         });
         jsAssets.push({
-          filename: options.dev ? 'index.map' : `_expo/static/js/web/${jsFilename}.map`,
+          filename: options.dev ? 'index.map' : `_expo/static/js/web/${jsFilename}.js.map`,
           originFilename: 'index.map',
           type: 'map',
           metadata: {},

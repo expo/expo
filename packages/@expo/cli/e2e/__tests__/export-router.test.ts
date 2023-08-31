@@ -206,6 +206,11 @@ describe('static-rendering', () => {
         /^\/\/\# sourceMappingURL=\/_expo\/static\/js\/web\/index-.*\.map$/gm
       );
       expect(jsBundle).toMatch(/^\/\/\# sourceURL=\/_expo\/static\/js\/web\/index-.*\.js$/gm);
+      const mapFile = jsBundle.match(
+        /^\/\/\# sourceMappingURL=(\/_expo\/static\/js\/web\/index-.*\.map)$/m
+      )?.[1];
+
+      expect(fs.existsSync(path.join(outputDir, mapFile!))).toBe(true);
     }
   });
 
