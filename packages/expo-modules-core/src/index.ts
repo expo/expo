@@ -13,7 +13,7 @@ import './sweet/setUpErrorManager.fx';
 
 export { default as deprecate } from './deprecate';
 
-export { uuidv4, uuidv5 } from './uuid';
+export { uuidv4, uuidv5, Uuidv5Namespace } from './uuid';
 
 export {
   DeviceEventEmitter,

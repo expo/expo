@@ -1,4 +1,5 @@
 import NativeModulesProxy from './NativeModulesProxy';
+import { Uuidv5Namespace } from './uuid';
 
 type ExpoObject = {
   modules:
@@ -6,6 +7,7 @@ type ExpoObject = {
     | {
         [key: string]: any;
       };
+  getUuidv5: (name: string, namespace: Uuidv5Namespace | string) => string;
 };
 
 declare global {

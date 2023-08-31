@@ -1,7 +1,13 @@
 // The core module that describes the `global.expo` object.
 internal final class CoreModule: Module {
   internal func definition() -> ModuleDefinition {
-    // Nothing so far, but eventually we will expose some common classes
-    // and maybe even the `modules` host object.
+    // Expose some common classes and maybe even the `modules` host object in the future.
+    Function("getUuidv5") { (name: String, namespace:String) -> String in
+      guard let namespaceUuid = UUID(uuidString: namespace) else {
+        throw InvalidNamespaceException(namespace)
+      }
+
+      return uuidv5(name: name, namespace: namespaceUuid).uuidString.lowercased()
+    }
   }
 }
