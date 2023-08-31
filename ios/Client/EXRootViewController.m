@@ -74,7 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)createRootAppAndMakeVisible
 {
   EXHomeAppManager *homeAppManager = [[EXHomeAppManager alloc] init];
-  EXHomeLoader *homeAppLoader = [[EXHomeLoader alloc] initWithLocalManifest:[EXHomeAppManager bundledHomeManifest]];
+  EXHomeLoader *homeAppLoader = [[EXHomeLoader alloc] initWithManifestAndAssetRequestHeaders:[EXHomeAppManager bundledHomeManifestAndAssetRequestHeaders]];
   EXKernelAppRecord *homeAppRecord = [[EXKernelAppRecord alloc] initWithAppLoader:homeAppLoader appManager:homeAppManager];
   [[EXKernel sharedInstance].appRegistry registerHomeAppRecord:homeAppRecord];
   [self moveAppToVisible:homeAppRecord];
