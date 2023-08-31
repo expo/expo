@@ -2,10 +2,8 @@
 
 package expo.modules.kotlin.classcomponent
 
-import android.util.Property
 import expo.modules.kotlin.functions.SyncFunctionComponent
 import expo.modules.kotlin.objects.ObjectDefinitionBuilder
-import expo.modules.kotlin.objects.PropertyComponentBuilder
 import expo.modules.kotlin.objects.PropertyComponentBuilderWithThis
 import expo.modules.kotlin.types.toAnyType
 import kotlin.reflect.KClass
