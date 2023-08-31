@@ -361,7 +361,7 @@ open class ObjectDefinitionBuilder {
   /**
    * Creates the property with given name. The component is basically no-op if you don't call `.get()` or `.set()` on it.
    */
-  fun Property(name: String): PropertyComponentBuilder {
+  open fun Property(name: String): PropertyComponentBuilder {
     return PropertyComponentBuilder(name).also {
       properties[name] = it
     }
@@ -399,7 +399,7 @@ inline fun Module.Object(block: ObjectDefinitionBuilder.() -> Unit): JavaScriptM
       objectData
         .properties
         .forEach { (_, prop) ->
-          prop.attachToJSObject(this)
+          prop.attachToJSObject(appContext, this)
         }
     }
 }
