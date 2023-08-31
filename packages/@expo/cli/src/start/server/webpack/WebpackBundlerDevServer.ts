@@ -33,7 +33,7 @@ export type WebpackConfiguration = webpack.Configuration & {
 };
 
 function assertIsWebpackDevServer(value: any): asserts value is WebpackDevServer {
-  if (!value?.sockWrite) {
+  if (!value?.sockWrite && !value?.sendMessage) {
     throw new CommandError(
       'WEBPACK',
       value
@@ -78,7 +78,12 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
     // For now, just manually convert the value so our CLI interface can be unified.
     const hackyConvertedMessage = method === 'reload' ? 'content-changed' : method;
 
-    this.instance.server.sockWrite(this.instance.server.sockets, hackyConvertedMessage, params);
+    if ('sendMessage' in this.instance.server) {
+      // @ts-expect-error: https://github.com/expo/expo/issues/21994#issuecomment-1517122501
+      this.instance.server.sendMessage(this.instance.server.sockets, hackyConvertedMessage, params);
+    } else {
+      this.instance.server.sockWrite(this.instance.server.sockets, hackyConvertedMessage, params);
+    }
   }
 
   private async attachNativeDevServerMiddlewareToDevServer({
