@@ -24,14 +24,13 @@ A React component that blurs everything underneath the view. On iOS, it renders 
 <SnackInline label='Basic BlurView usage' dependencies={['expo-blur']}>
 
 ```jsx
-import React from 'react';
-import { Text, StyleSheet, View } from 'react-native';
+import { Text, StyleSheet, View, SafeAreaView } from 'react-native';
 import { BlurView } from 'expo-blur';
 
 export default function App() {
   const text = 'Hello, my container is blurring contents underneath!';
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.background}>
         {[...Array(20).keys()].map((i) => (
           <View
@@ -49,7 +48,7 @@ export default function App() {
       <BlurView intensity={90} tint="dark" style={styles.blurContainer}>
         <Text style={[styles.text, { color: '#fff' }]}>{text}</Text>
       </BlurView>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -61,7 +60,11 @@ const styles = StyleSheet.create({
   blurContainer: {
     flex: 1,
     padding: 20,
+    margin: 16,
+    textAlign: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
+    borderRadius: 20,
   },
   background: {
     flex: 1,
