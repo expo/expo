@@ -59,8 +59,8 @@ class NotificationPermissionsModule(context: Context?) : ExportedModule(context)
         val platformBundle = bundleOf(
           IMPORTANCE_KEY to managerCompat.importance,
         ).apply {
-          val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && notificationManager != null) {
+          val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
+          if (notificationManager != null) {
             putInt(INTERRUPTION_FILTER_KEY, notificationManager.currentInterruptionFilter)
           }
         }
@@ -96,8 +96,8 @@ class NotificationPermissionsModule(context: Context?) : ExportedModule(context)
     val platformBundle = bundleOf(
       IMPORTANCE_KEY to managerCompat.importance,
     ).apply {
-      val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && notificationManager != null) {
+      val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
+      if (notificationManager != null) {
         putInt(INTERRUPTION_FILTER_KEY, notificationManager.currentInterruptionFilter)
       }
     }

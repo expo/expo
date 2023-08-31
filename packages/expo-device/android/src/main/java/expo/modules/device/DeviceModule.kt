@@ -123,11 +123,7 @@ class DeviceModule : Module() {
 
   private val systemName: String
     get() {
-      return if (Build.VERSION.SDK_INT < 23) {
-        "Android"
-      } else {
-        Build.VERSION.BASE_OS.takeIf { it.isNotEmpty() } ?: "Android"
-      }
+      return Build.VERSION.BASE_OS.takeIf { it.isNotEmpty() } ?: "Android"
     }
 
   companion object {

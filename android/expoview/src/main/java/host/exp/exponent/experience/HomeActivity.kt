@@ -4,7 +4,6 @@ package host.exp.exponent.experience
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.os.Debug
 import android.view.View
@@ -108,16 +107,12 @@ open class HomeActivity : BaseExperienceActivity() {
   private fun tryInstallLeakCanary(shouldAskForPermissions: Boolean) {
     if (BuildConfig.DEBUG && Constants.ENABLE_LEAK_CANARY) {
       // Leak canary needs WRITE_EXTERNAL_STORAGE permission
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        if (shouldAskForPermissions && ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-          ) != PackageManager.PERMISSION_GRANTED
-        ) {
-          requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 1248919246)
-        } else {
-          LeakCanary.install(application)
-        }
+      if (shouldAskForPermissions && ContextCompat.checkSelfPermission(
+          this,
+          Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ) != PackageManager.PERMISSION_GRANTED
+      ) {
+        requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 1248919246)
       } else {
         LeakCanary.install(application)
       }
