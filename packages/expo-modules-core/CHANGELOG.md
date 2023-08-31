@@ -21,7 +21,7 @@
 
 ### 💡 Others
 
-- Use native UUIDv4 generation on `Android` and `iOS` 
+- Use native UUIDv4 generation on `Android` and `iOS` ([#24199](https://github.com/expo/expo/pull/24199) by [@behenate](https://github.com/behenate))
 
 ## 1.6.0 — 2023-07-28
 

@@ -1,8 +1,9 @@
 import bytesToUuid from './lib/bytesToUuid';
-import { OutputBuffer, V4Options } from './types/uuid.types';
 import uuidToBytes from './lib/uuidToBytes';
+import { OutputBuffer, V4Options } from './types/uuid.types';
 
 const nativeUuidv4 = globalThis?.expo?.getUuidv4;
+
 export function uuidv4(options?: V4Options): string;
 export function uuidv4<T extends OutputBuffer>(
   options: V4Options | null | undefined,
