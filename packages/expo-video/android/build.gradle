@@ -85,4 +85,7 @@ dependencies {
 
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1'
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
+  implementation "androidx.media3:media3-exoplayer:1.1.1"
+  implementation "androidx.media3:media3-exoplayer-dash:1.1.1"
+  implementation "androidx.media3:media3-ui:1.1.1"
 }
