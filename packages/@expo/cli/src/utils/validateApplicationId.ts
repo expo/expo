@@ -20,8 +20,91 @@ export function validateBundleId(value: string): boolean {
 
 /** Validate an Android package name. */
 export function validatePackage(value: string): boolean {
-  return ANDROID_PACKAGE_REGEX.test(value);
+  return validatePackageWithWarning(value) === true;
 }
+
+/** Validate an Android package name and return the reason if invalid. */
+export function validatePackageWithWarning(value: string): true | string {
+  const parts = value.split('.');
+  for (const segment of parts) {
+    if (RESERVED_ANDROID_PACKAGE_NAME_SEGMENTS.includes(segment)) {
+      return `"${segment}" is a reserved Java keyword.`;
+    }
+  }
+  if (parts.length < 2) {
+    return `Package name must contain more than one segment, separated by ".", e.g. com.${value}`;
+  }
+  if (!ANDROID_PACKAGE_REGEX.test(value)) {
+    return 'Invalid characters in Android package name. Only alphanumeric characters, "." and "_" are allowed, and each "." must be followed by a letter or number.';
+  }
+
+  return true;
+}
+
+// https://en.wikipedia.org/wiki/List_of_Java_keywords
+// Running the following in the console and pruning the "Reserved Identifiers" section:
+// [...document.querySelectorAll('dl > dt > code')].map(node => node.innerText)
+const RESERVED_ANDROID_PACKAGE_NAME_SEGMENTS = [
+  // List of Java keywords
+  '_',
+  'abstract',
+  'assert',
+  'boolean',
+  'break',
+  'byte',
+  'case',
+  'catch',
+  'char',
+  'class',
+  'const',
+  'continue',
+  'default',
+  'do',
+  'double',
+  'else',
+  'enum',
+  'extends',
+  'final',
+  'finally',
+  'float',
+  'for',
+  'goto',
+  'if',
+  'implements',
+  'import',
+  'instanceof',
+  'int',
+  'interface',
+  'long',
+  'native',
+  'new',
+  'package',
+  'private',
+  'protected',
+  'public',
+  'return',
+  'short',
+  'static',
+  'super',
+  'switch',
+  'synchronized',
+  'this',
+  'throw',
+  'throws',
+  'transient',
+  'try',
+  'void',
+  'volatile',
+  'while',
+  // Reserved words for literal values
+  'true',
+  'false',
+  'null',
+  // Unused
+  'const',
+  'goto',
+  'strictfp',
+];
 
 export function assertValidBundleId(value: string) {
   assert.match(

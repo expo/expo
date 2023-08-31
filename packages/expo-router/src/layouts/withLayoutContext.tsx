@@ -1,3 +1,4 @@
+import { EventMapBase, NavigationState } from '@react-navigation/native';
 import React from 'react';
 
 import { useContextKey } from '../Route';
@@ -61,14 +62,21 @@ export function useFilterScreenChildren(
 }
 
 /** Return a navigator that automatically injects matched routes and renders nothing when there are no children. Return type with children prop optional */
-export function withLayoutContext<TOptions extends object, T extends React.ComponentType<any>>(
+export function withLayoutContext<
+  TOptions extends object,
+  T extends React.ComponentType<any>,
+  State extends NavigationState,
+  EventMap extends EventMapBase,
+>(
   Nav: T,
-  processor?: (options: ScreenProps<TOptions>[]) => ScreenProps<TOptions>[]
+  processor?: (
+    options: ScreenProps<TOptions, State, EventMap>[]
+  ) => ScreenProps<TOptions, State, EventMap>[]
 ): React.ForwardRefExoticComponent<
   React.PropsWithoutRef<PickPartial<React.ComponentProps<T>, 'children'>> &
     React.RefAttributes<unknown>
 > & {
-  Screen: (props: ScreenProps<TOptions>) => null;
+  Screen: (props: ScreenProps<TOptions, State, EventMap>) => null;
 } {
   const Navigator = React.forwardRef(
     (
