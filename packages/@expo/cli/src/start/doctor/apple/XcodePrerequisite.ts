@@ -10,9 +10,9 @@ import { Prerequisite } from '../Prerequisite';
 
 const debug = require('debug')('expo:doctor:apple:xcode') as typeof console.log;
 
-// Based on the React Native docs (Aug 2023).
-// https://reactnative.dev/docs/environment-setup?platform=ios
-const MIN_XCODE_VERSION = '10.0';
+// Based on the Apple announcement (last updated: Aug 2023).
+// https://developer.apple.com/news/upcoming-requirements/?id=04252023a
+const MIN_XCODE_VERSION = '14.1';
 const APP_STORE_ID = '497799835';
 
 const SUGGESTED_XCODE_VERSION = `${MIN_XCODE_VERSION}.0`;
