@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- Removed 'No native splash screen registered' warning on iOS when opening and reloading the app.
+- Removed 'No native splash screen registered' warning on iOS when opening and reloading the app. ([#24210](https://github.com/expo/expo/pull/24210) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 0.21.1 — 2023-08-02
 
