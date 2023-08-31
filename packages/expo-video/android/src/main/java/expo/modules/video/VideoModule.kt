@@ -1,6 +1,5 @@
 package expo.modules.video
 
-import android.util.Log
 import androidx.media3.common.MediaItem
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -15,8 +14,7 @@ class VideoModule : Module() {
       Prop("player") { view: VideoView, playerId: Int ->
         val player = appContext.sharedObjectRegistry.toNativeObject(SharedObjectId(playerId)) as? VideoPlayer
           ?: return@Prop
-        Log.e("dupa", "$playerId $player ${player.player}")
-        player.preper()
+        player.prepare()
         view.player = player.player
       }
 
@@ -45,7 +43,6 @@ class VideoModule : Module() {
         appContext.mainQueue.launch {
           ref.player.play()
         }
-
       }
 
       Function("pause") { ref: VideoPlayer ->

@@ -7,7 +7,7 @@ import expo.modules.kotlin.sharedobjects.SharedObject
 
 class VideoPlayer(context: Context, val mediaItem: MediaItem): SharedObject() {
   val player = ExoPlayer.Builder(context).setLooper(context.mainLooper).build()
-  fun preper() {
+  fun prepare() {
     player.setMediaItem(mediaItem)
     player.prepare()
   }
