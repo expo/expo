@@ -19,16 +19,16 @@ exports.getUpdatesRequestHeaders = getUpdatesRequestHeaders;
 exports.getUpdatesRequestHeadersStringified = getUpdatesRequestHeadersStringified;
 exports.getUpdatesTimeout = getUpdatesTimeout;
 exports.withRuntimeVersion = void 0;
-function _sdkRuntimeVersions() {
-  const data = require("@expo/sdk-runtime-versions");
-  _sdkRuntimeVersions = function () {
+function Fingerprint() {
+  const data = _interopRequireWildcard(require("@expo/fingerprint"));
+  Fingerprint = function () {
     return data;
   };
   return data;
 }
-function _child_process() {
-  const data = _interopRequireDefault(require("child_process"));
-  _child_process = function () {
+function _sdkRuntimeVersions() {
+  const data = require("@expo/sdk-runtime-versions");
+  _sdkRuntimeVersions = function () {
     return data;
   };
   return data;
@@ -76,6 +76,8 @@ function _() {
   return data;
 }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 function getExpoUpdatesPackageVersion(projectRoot) {
   const expoUpdatesPackageJsonPath = _resolveFrom().default.silent(projectRoot, 'expo-updates/package.json');
   if (!expoUpdatesPackageJsonPath || !_fs().default.existsSync(expoUpdatesPackageJsonPath)) {
@@ -116,11 +118,11 @@ function getNativeVersion(config, platform) {
  * Compute runtime version policies.
  * @return an expoConfig with only string valued platform specific runtime versions.
  */
-const withRuntimeVersion = config => {
+const withRuntimeVersion = async config => {
   var _config$_internal, _config$ios, _config$android;
   const projectRoot = (_config$_internal = config._internal) === null || _config$_internal === void 0 ? void 0 : _config$_internal.projectRoot;
   if ((_config$ios = config.ios) !== null && _config$ios !== void 0 && _config$ios.runtimeVersion || config.runtimeVersion) {
-    const runtimeVersion = getRuntimeVersion(projectRoot, config, 'ios');
+    const runtimeVersion = await getRuntimeVersion(projectRoot, config, 'ios');
     if (runtimeVersion) {
       config.ios = {
         ...config.ios,
@@ -129,7 +131,7 @@ const withRuntimeVersion = config => {
     }
   }
   if ((_config$android = config.android) !== null && _config$android !== void 0 && _config$android.runtimeVersion || config.runtimeVersion) {
-    const runtimeVersion = getRuntimeVersion(projectRoot, config, 'android');
+    const runtimeVersion = await getRuntimeVersion(projectRoot, config, 'android');
     if (runtimeVersion) {
       config.android = {
         ...config.android,
@@ -141,9 +143,9 @@ const withRuntimeVersion = config => {
   return config;
 };
 exports.withRuntimeVersion = withRuntimeVersion;
-function getRuntimeVersionNullable(...[projectRoot, config, platform]) {
+async function getRuntimeVersionNullable(...[projectRoot, config, platform]) {
   try {
-    return getRuntimeVersion(projectRoot, config, platform);
+    return await getRuntimeVersion(projectRoot, config, platform);
   } catch (e) {
     if ((0, _getenv().boolish)('EXPO_DEBUG', false)) {
       console.log(e);
@@ -151,16 +153,7 @@ function getRuntimeVersionNullable(...[projectRoot, config, platform]) {
     return null;
   }
 }
-function createFingerprint(projectRoot) {
-  const result = _child_process().default.execSync(`npx --yes @expo/fingerprint ${projectRoot}`, {
-    encoding: "utf-8"
-  });
-  const {
-    hash
-  } = JSON.parse(result);
-  return hash;
-}
-function getRuntimeVersion(projectRoot, config, platform) {
+async function getRuntimeVersion(projectRoot, config, platform) {
   var _config$platform$runt, _config$platform;
   const runtimeVersion = (_config$platform$runt = (_config$platform = config[platform]) === null || _config$platform === void 0 ? void 0 : _config$platform.runtimeVersion) !== null && _config$platform$runt !== void 0 ? _config$platform$runt : config.runtimeVersion;
   if (!runtimeVersion) {
@@ -178,7 +171,8 @@ function getRuntimeVersion(projectRoot, config, platform) {
     }
     return (0, _sdkRuntimeVersions().getRuntimeVersionForSDKVersion)(config.sdkVersion);
   } else if (runtimeVersion.policy === 'fingerprint') {
-    return createFingerprint(projectRoot);
+    console.warn("Use of the experimental 'fingerprint' runtime policy may result in unexpected system behavior.");
+    return await Fingerprint().createProjectHashAsync(projectRoot);
   }
   throw new Error(`"${typeof runtimeVersion === 'object' ? JSON.stringify(runtimeVersion) : runtimeVersion}" is not a valid runtime version. getRuntimeVersion only supports a string, "sdkVersion", "appVersion", "nativeVersion" or "fingerprint" policy.`);
 }

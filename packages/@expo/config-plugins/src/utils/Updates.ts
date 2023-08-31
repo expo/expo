@@ -1,6 +1,6 @@
 import { Android, ExpoConfig, IOS } from '@expo/config-types';
+import * as Fingerprint from '@expo/fingerprint';
 import { getRuntimeVersionForSDKVersion } from '@expo/sdk-runtime-versions';
-import child_process from 'child_process';
 import fs from 'fs';
 import { boolish } from 'getenv';
 import path from 'path';
@@ -60,10 +60,10 @@ export function getNativeVersion(
  * Compute runtime version policies.
  * @return an expoConfig with only string valued platform specific runtime versions.
  */
-export const withRuntimeVersion: (config: ExpoConfig) => ExpoConfig = (config) => {
+export const withRuntimeVersion: (config: ExpoConfig) => Promise<ExpoConfig> = async (config) => {
   const projectRoot = config._internal?.projectRoot;
   if (config.ios?.runtimeVersion || config.runtimeVersion) {
-    const runtimeVersion = getRuntimeVersion(projectRoot, config, 'ios');
+    const runtimeVersion = await getRuntimeVersion(projectRoot, config, 'ios');
     if (runtimeVersion) {
       config.ios = {
         ...config.ios,
@@ -72,7 +72,7 @@ export const withRuntimeVersion: (config: ExpoConfig) => ExpoConfig = (config) =
     }
   }
   if (config.android?.runtimeVersion || config.runtimeVersion) {
-    const runtimeVersion = getRuntimeVersion(projectRoot, config, 'android');
+    const runtimeVersion = await getRuntimeVersion(projectRoot, config, 'android');
     if (runtimeVersion) {
       config.android = {
         ...config.android,
@@ -84,11 +84,11 @@ export const withRuntimeVersion: (config: ExpoConfig) => ExpoConfig = (config) =
   return config;
 };
 
-export function getRuntimeVersionNullable(
+export async function getRuntimeVersionNullable(
   ...[projectRoot, config, platform]: Parameters<typeof getRuntimeVersion>
-): string | null {
+): Promise<string | null> {
   try {
-    return getRuntimeVersion(projectRoot, config, platform);
+    return await getRuntimeVersion(projectRoot, config, platform);
   } catch (e) {
     if (boolish('EXPO_DEBUG', false)) {
       console.log(e);
@@ -97,22 +97,14 @@ export function getRuntimeVersionNullable(
   }
 }
 
-function createFingerprint(projectRoot: string): string | null {
-  const result = child_process.execSync(`npx --yes @expo/fingerprint ${projectRoot}`, {
-    encoding: 'utf-8',
-  });
-  const { hash } = JSON.parse(result);
-  return hash;
-}
-
-export function getRuntimeVersion(
+export async function getRuntimeVersion(
   projectRoot: string,
   config: Pick<ExpoConfig, 'version' | 'runtimeVersion' | 'sdkVersion'> & {
     android?: Pick<Android, 'versionCode' | 'runtimeVersion'>;
     ios?: Pick<IOS, 'buildNumber' | 'runtimeVersion'>;
   },
   platform: 'android' | 'ios'
-): string | null {
+): Promise<string | null> {
   const runtimeVersion = config[platform]?.runtimeVersion ?? config.runtimeVersion;
   if (!runtimeVersion) {
     return null;
@@ -130,7 +122,10 @@ export function getRuntimeVersion(
     }
     return getRuntimeVersionForSDKVersion(config.sdkVersion);
   } else if (runtimeVersion.policy === 'fingerprint') {
-    return createFingerprint(projectRoot);
+    console.warn(
+      "Use of the experimental 'fingerprint' runtime policy may result in unexpected system behavior."
+    );
+    return await Fingerprint.createProjectHashAsync(projectRoot);
   }
 
   throw new Error(

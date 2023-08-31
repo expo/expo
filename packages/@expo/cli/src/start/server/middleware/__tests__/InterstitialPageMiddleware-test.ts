@@ -59,7 +59,7 @@ describe('_shouldHandleRequest', () => {
 describe('_getProjectOptions', () => {
   it('returns the project settings from the config', async () => {
     asMock(getNameFromConfig).mockReturnValueOnce({ appName: 'my-app' });
-    asMock(getRuntimeVersionNullable).mockReturnValueOnce('123');
+    asMock(getRuntimeVersionNullable).mockResolvedValueOnce('123');
 
     const middleware = new InterstitialPageMiddleware('/');
 
@@ -78,7 +78,7 @@ describe('_getProjectOptions', () => {
   });
   it('returns the project settings from the config with SDK version', async () => {
     asMock(getNameFromConfig).mockReturnValueOnce({ appName: 'my-app' });
-    asMock(getRuntimeVersionNullable).mockReturnValueOnce(null);
+    asMock(getRuntimeVersionNullable).mockResolvedValueOnce(null);
 
     const middleware = new InterstitialPageMiddleware('/');
 
@@ -147,7 +147,7 @@ describe('handleRequestAsync', () => {
   it('returns the interstitial page with platform header', async () => {
     const middleware = new InterstitialPageMiddleware('/');
 
-    middleware._getProjectOptions = jest.fn(() => ({
+    middleware._getProjectOptions = jest.fn(() => Promise.resolve({
       appName: 'App',
       projectVersion: {
         type: 'runtime',
@@ -182,7 +182,7 @@ describe('handleRequestAsync', () => {
   it('returns the interstitial page with user-agent header', async () => {
     const middleware = new InterstitialPageMiddleware('/');
 
-    middleware._getProjectOptions = jest.fn(() => ({
+    middleware._getProjectOptions = jest.fn(() => Promise.resolve({
       appName: 'App',
       projectVersion: {
         type: 'runtime',

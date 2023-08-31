@@ -61,15 +61,15 @@ export class InterstitialPageMiddleware extends ExpoMiddleware {
   }
 
   /** Get settings for the page from the project config. */
-  _getProjectOptions(platform: RuntimePlatform): {
+  async _getProjectOptions(platform: RuntimePlatform): Promise<{
     appName: string;
     projectVersion: ProjectVersion;
-  } {
+  }> {
     assertRuntimePlatform(platform);
 
     const { exp } = getConfig(this.projectRoot);
     const { appName } = getNameFromConfig(exp);
-    const runtimeVersion = getRuntimeVersionNullable(this.projectRoot, exp, platform);
+    const runtimeVersion = await getRuntimeVersionNullable(this.projectRoot, exp, platform);
     const sdkVersion = exp.sdkVersion ?? null;
 
     return {
@@ -89,7 +89,7 @@ export class InterstitialPageMiddleware extends ExpoMiddleware {
     assertMissingRuntimePlatform(platform);
     assertRuntimePlatform(platform);
 
-    const { appName, projectVersion } = this._getProjectOptions(platform);
+    const { appName, projectVersion } = await this._getProjectOptions(platform);
     debug(
       `Create loading page. (platform: ${platform}, appName: ${appName}, projectVersion: ${projectVersion.version}, type: ${projectVersion.type})`
     );

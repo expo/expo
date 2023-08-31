@@ -11,12 +11,12 @@ export declare function getNativeVersion(config: Pick<ExpoConfig, 'version'> & {
  * Compute runtime version policies.
  * @return an expoConfig with only string valued platform specific runtime versions.
  */
-export declare const withRuntimeVersion: (config: ExpoConfig) => ExpoConfig;
-export declare function getRuntimeVersionNullable(...[projectRoot, config, platform]: Parameters<typeof getRuntimeVersion>): string | null;
+export declare const withRuntimeVersion: (config: ExpoConfig) => Promise<ExpoConfig>;
+export declare function getRuntimeVersionNullable(...[projectRoot, config, platform]: Parameters<typeof getRuntimeVersion>): Promise<string | null>;
 export declare function getRuntimeVersion(projectRoot: string, config: Pick<ExpoConfig, 'version' | 'runtimeVersion' | 'sdkVersion'> & {
     android?: Pick<Android, 'versionCode' | 'runtimeVersion'>;
     ios?: Pick<IOS, 'buildNumber' | 'runtimeVersion'>;
-}, platform: 'android' | 'ios'): string | null;
+}, platform: 'android' | 'ios'): Promise<string | null>;
 export declare function getSDKVersion(config: Pick<ExpoConfigUpdates, 'sdkVersion'>): string | null;
 export declare function getUpdatesEnabled(config: Pick<ExpoConfigUpdates, 'updates'>): boolean;
 export declare function getUpdatesTimeout(config: Pick<ExpoConfigUpdates, 'updates'>): number;
