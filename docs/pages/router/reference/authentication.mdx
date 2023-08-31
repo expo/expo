@@ -9,9 +9,9 @@ import { Lock01Icon, LockUnlocked01Icon } from '@expo/styleguide-icons';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { FileTree } from '~/ui/components/FileTree';
 
-In Expo Router, all routes are always defined and accessible. You can use runtime logic to redirect users and block access to certain screens based on **authorization**.
+With Expo Router, all routes are always defined and accessible. You can use runtime logic to redirect users away from certain screens based on **authorization**.
 
-There are a couple different techniques for protecting routes, we'll cover a basic example that favors how standard native apps work.
+There are a couple different techniques for authenticating users within routes. We'll cover a basic example that favors how standard native apps work.
 
 It's common to restrict certain routes to users who are not authenticated. This can be achieved in a very organized way by using React Context and Route Groups.
 
@@ -67,7 +67,7 @@ export function SessionProvider(props) {
     <AuthContext.Provider
       value={{
         signIn: () => {
-          // Perform sync-in logic here
+          // Perform sign-in logic here
           setSession('xxx');
         },
         signOut: () => {
@@ -91,22 +91,25 @@ import { Platform } from 'react-native';
 
 type UseStateHook<T> = [[boolean, T | null], (value?: T | null) => void];
 
-function useAsyncState<T>(initialValue?: [boolean, T | null]): UseStateHook<T> {
+function useAsyncState<T>(
+  initialValue: [boolean, T | null] = [true, undefined],
+): UseStateHook<T> {
   return React.useReducer(
-    (state: [boolean, T | null], action?: T | null) => [
-      false,
-      action === undefined ? null : action,
-    ],
-    initialValue ?? [true, undefined]
+    (state: [boolean, T | null], action: T | null = null) => [false, action],
+    initialValue
   ) as UseStateHook<T>;
 }
 
 export async function setStorageItemAsync(key: string, value: string | null) {
   if (Platform.OS === 'web') {
-    if (value == null) {
-      localStorage.removeItem(key);
-    } else {
-      localStorage.setItem(key, value);
+    try {
+      if (value === null) {
+        localStorage.removeItem(key);
+      } else {
+        localStorage.setItem(key, value);
+      }
+    } catch (e) {
+      console.error('Local storage is unavailable:', e);
     }
   } else {
     if (value == null) {
@@ -124,8 +127,12 @@ export function useStorageState(key: string): UseStateHook<string> {
   // Get
   React.useEffect(() => {
     if (Platform.OS === 'web') {
-      if (typeof localStorage !== 'undefined') {
-        setState(localStorage.getItem(key));
+      try {
+        if (typeof localStorage !== 'undefined') {
+          setState(localStorage.getItem(key));
+        }
+      } catch (e) {
+        console.error('Local storage is unavailable:', e);
       }
     } else {
       SecureStore.getItemAsync(key).then(value => {
@@ -157,7 +164,7 @@ import { Slot } from 'expo-router';
 import { SessionProvider } from '../ctx';
 
 export default function Root() {
-  // Setup the auth context and render our layout inside of it.
+  // Set up the auth context and render our layout inside of it.
   return (
     <SessionProvider>
       <Slot />
@@ -166,7 +173,7 @@ export default function Root() {
 }
 ```
 
-Next, we'll create a nested [Layout Route](/routing/layouts) which will be used to protect all of the children. This layout will be used to redirect users to the sign in screen if they are not authenticated.
+Next, we'll create a nested [Layout Route](/routing/layouts) which will check whether users are authenticated before rendering its child route components. This layout will redirect users to the sign-in screen if they are not authenticated.
 
 ```jsx app/(app)/_layout.js
 import { Link, Redirect, Stack } from 'expo-router';
@@ -177,12 +184,12 @@ import { useSession } from '../../ctx';
 export default function AppLayout() {
   const { session, isLoading } = useSession();
 
-  // You can keep the splash screen open, or render a loading screen.
+  // You can keep the splash screen open, or render a loading screen like we do here.
   if (isLoading) {
     return <Text>Loading...</Text>;
   }
 
-  // Only do authorization on the (app) group as users should always be able to access the (auth) group and sign-in again.
+  // Only require authentication within the (app) group's layout as users need to be able to access the (auth) group and sign in again.
   if (!session) {
     // On web, static rendering will stop here as the user is not authenticated in the headless Node process that the pages are rendered in.
     return <Redirect href="/sign-in" />;
@@ -193,7 +200,7 @@ export default function AppLayout() {
 }
 ```
 
-Now we can create our `/sign-in` page, which can toggle the authentication using `signIn()`. Because this screen is outside of the `(app)` group, it won't be protected by the layout.
+Now we can create our `/sign-in` page, which can toggle the authentication using `signIn()`. Because this screen is outside of the `(app)` group, the `(app)` group's layout and its authentication check are not run when rendering this screen. This lets logged-out users see this screen.
 
 ```jsx app/sign-in.js
 import { router } from 'expo-router';
@@ -219,7 +226,7 @@ export default function SignIn() {
 }
 ```
 
-And finally we'll implement an authenticated screen which can sign out.
+And finally we'll implement an authenticated screen that lets users sign out.
 
 ```jsx app/(app)/index.js
 import { Text, View } from 'react-native';
@@ -242,11 +249,11 @@ export default function Index() {
 }
 ```
 
-We now have an app that can present a loading state while it checks the initial authentication state, and redirect to the sign-in screen if the user is not authenticated. If a user deep links to any protect routes, they'll be redirect back to the sign-in screen.
+We now have an app that can present a loading state while it checks the initial authentication state, and redirect to the sign-in screen if the user is not authenticated. If a user visits a deep link to any routes with the authentication check, they'll be redirected back to the sign-in screen.
 
 ## Alternative loading states
 
-In Expo Router, something must be rendered to the screen during the loading of the initial auth state. In the example above, we render a loading state in the app layout. Alternatively, you can make the `index` route a loading state, and move the initial route to something like `/home`, this is akin to how Twitter works.
+With Expo Router, something must be rendered to the screen during the loading of the initial auth state. In the example above, we render a loading message in the app layout. Alternatively, you can make the `index` route a loading state, and move the initial route to something like `/home`; this is akin to how Twitter works.
 
 ## Modals and per-route authentication
 
@@ -297,7 +304,7 @@ If you encounter the following error:
 Error: Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.
 ```
 
-This can occur when the app attempts to perform navigation without a navigator mounted in the [root layout](/router/advanced/root-layout). You can fix this by adding a group and moving conditional logic up a level.
+This can occur when the app attempts to perform navigation without a navigator mounted in the [root layout](/router/advanced/root-layout). You can fix this by adding a group and moving conditional logic down a level.
 
 ### Before
 
@@ -310,7 +317,8 @@ export default function RootLayout() {
     router.push('/about');
   }, []);
 
-  // Avoid deferring the root layout, otherwise the navigation event will be triggered before the layout is mounted.
+  // This conditional statement creates a problem since the root layout's
+  // content (the Slot) must be mounted before any navigation events occur.
   if (isLoading) {
     return <Text>Loading...</Text>;
   }
@@ -342,7 +350,10 @@ export default function RootLayout() {
     router.push('/about');
   }, []);
 
-  // Avoid deferring the root layout, otherwise the navigation event will be triggered before the layout is mounted.
+  // It is OK to defer rendering this nested layout's content. We couldn't
+  // defer rendering the root layout's content since a navigation event (the
+  // redirect) would have been triggered before the root layout's content had
+  // been mounted.
   if (isLoading) {
     return <Text>Loading...</Text>;
   }
@@ -353,4 +364,4 @@ export default function RootLayout() {
 
 ## Middleware
 
-Traditionally, websites may leverage some form of server-side redirection to protect routes. As of Expo Router v2, Expo Router on web currently only supports build-time static generation and has no support for custom middleware or serving. This can be added in the future to provide a more optimal web experience, in the meantime, authentication can be implemented by using client-side redirects and a loading state.
+Traditionally, websites may leverage some form of server-side redirection to protect routes. As of Expo Router v2, Expo Router on web currently only supports build-time static generation and has no support for custom middleware or serving. This can be added in the future to provide a more optimal web experience and, in the meantime, authentication can be implemented by using client-side redirects and a loading state.
