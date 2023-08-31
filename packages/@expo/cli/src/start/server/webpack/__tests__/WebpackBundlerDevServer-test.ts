@@ -68,7 +68,7 @@ describe('startAsync', () => {
       server: {
         close: expect.any(Function),
         listen: expect.any(Function),
-        sockWrite: expect.any(Function),
+        sendMessage: expect.any(Function),
       },
     });
 
@@ -106,7 +106,7 @@ describe('broadcastMessage', () => {
 
     expect(
       // @ts-expect-error
-      devServer.getInstance().server.sockWrite
+      devServer.getInstance().server.sendMessage
     ).toBeCalledWith(undefined, 'content-changed', { foo: true });
   });
   it(`uses custom handler`, async () => {
@@ -116,7 +116,7 @@ describe('broadcastMessage', () => {
 
     expect(
       // @ts-expect-error
-      devServer.getInstance().server.sockWrite
+      devServer.getInstance().server.sendMessage
     ).not.toBeCalled();
 
     expect(devServer['customMessageSocketBroadcaster']).toBeCalledWith('reload', { foo: true });

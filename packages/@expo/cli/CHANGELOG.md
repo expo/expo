@@ -28,6 +28,7 @@
 - Prohibit dev client URLs containing `_` in protocol. ([#23519](https://github.com/expo/expo/pull/23519) by [@byCedric](https://github.com/byCedric))
 - Prevent writing unused bundles with static Metro web. ([#24092](https://github.com/expo/expo/pull/24092) by [@EvanBacon](https://github.com/EvanBacon))
 - Add missing dependencies to `@expo/cli`. ([#22941](https://github.com/expo/expo/pull/24092) by [@byCedric](https://github.com/byCedric))
+- Fix webpack dev server reload socket command. ([#24208](https://github.com/expo/expo/pull/24208) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
