@@ -32,6 +32,10 @@ type UpdateCheckResultRollBackToEmbedded = {
      * Whether a roll back to embedded update is available.
      */
     isRollBackToEmbedded: true;
+    /**
+     * If no new update was found, this contains an optional message with additional info.
+     */
+    message: undefined;
 };
 /**
  * The successful result of checking for a new update.
@@ -49,9 +53,13 @@ export type UpdateCheckResultSuccess = {
      * Whether a roll back to embedded update is available.
      */
     isRollBackToEmbedded: false;
+    /**
+     * If no new update was found, this contains an optional message with additional info.
+     */
+    message: undefined;
 };
 /**
- * The failed result of checking for a new update.
+ * The result if no new update was found.
  */
 export type UpdateCheckResultFailure = {
     /**
@@ -66,6 +74,10 @@ export type UpdateCheckResultFailure = {
      * Whether a roll back to embedded update is available.
      */
     isRollBackToEmbedded: false;
+    /**
+     * If no new update was found, this contains an optional message with additional info.
+     */
+    message?: string;
 };
 /**
  * The result of checking for a new update.
