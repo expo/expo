@@ -6,6 +6,7 @@ type ExpoObject = {
     | {
         [key: string]: any;
       };
+  getUuidv4: () => string;
 };
 
 declare global {

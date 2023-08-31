@@ -21,6 +21,8 @@
 
 ### 💡 Others
 
+- Use native UUIDv4 generation on `Android` and `iOS` 
+
 ## 1.6.0 — 2023-07-28
 
 ### 🐛 Bug fixes

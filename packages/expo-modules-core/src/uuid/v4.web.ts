@@ -1,19 +1,19 @@
 import bytesToUuid from './lib/bytesToUuid';
+import rng from './lib/rng';
 import { OutputBuffer, V4Options } from './types/uuid.types';
-import uuidToBytes from './lib/uuidToBytes';
 
-const nativeUuidv4 = globalThis?.expo?.getUuidv4;
+/**
+ * DO NOT USE this function in security-sensitive contexts.
+ */
 export function uuidv4(options?: V4Options): string;
 export function uuidv4<T extends OutputBuffer>(
-  options: V4Options | null | undefined,
+  options?: V4Options,
   buf?: T,
   offset?: number
-) {
-  if (!nativeUuidv4) {
-    throw Error("Native UUID type 4 generator implementation wasn't found in `expo-modules-core`");
-  }
+): T | string;
 
-  const i = buf && offset ? offset : 0;
+export function uuidv4<T extends OutputBuffer>(options?: V4Options, buf?: T, offset?: number) {
+  const i = (buf && offset) || 0;
 
   let buffer: number[] | null = null;
 
@@ -25,13 +25,7 @@ export function uuidv4<T extends OutputBuffer>(
   options = options || undefined;
 
   // @ts-expect-error
-  let rnds: number[] = options?.random || options?.rng();
-
-  if (!rnds && !buf) {
-    return nativeUuidv4();
-  } else if (!rnds && buf) {
-    rnds = uuidToBytes(nativeUuidv4());
-  }
+  const rnds: number[] = options?.random || (options?.rng || rng)();
 
   // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
   rnds[6] = (rnds[6] & 0x0f) | 0x40;
