@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Tree shake error symbolication code in production.
+
 ### 🐛 Bug fixes
 
 - Use `fixed` position for floating toast. ([#24074](https://github.com/expo/expo/pull/24074) by [@EvanBacon](https://github.com/EvanBacon))
