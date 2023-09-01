@@ -95,8 +95,14 @@ async function cloneTemplateAndCopyToProjectAsync({
   exp: Pick<ExpoConfig, 'name' | 'sdkVersion'>;
   platforms: ModPlatform[];
 }): Promise<string[]> {
+  const platformDirectories = unknownPlatforms
+    .map((platform) => `./${platform}`)
+    .reverse()
+    .join(' and ');
+
+  const pluralized = unknownPlatforms.length > 1 ? 'directories' : 'directory';
   const ora = logNewSection(
-    'Creating native project directories (./ios and ./android) and updating .gitignore'
+    `Creating native project ${pluralized} (${platformDirectories}) and updating .gitignore`
   );
 
   try {
