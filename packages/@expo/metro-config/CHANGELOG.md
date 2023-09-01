@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add source map support with static Metro web exports.
+- Add source map support with static Metro web exports. ([#24213](https://github.com/expo/expo/pull/24213) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
