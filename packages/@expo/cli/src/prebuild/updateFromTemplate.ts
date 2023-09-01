@@ -96,9 +96,7 @@ async function cloneTemplateAndCopyToProjectAsync({
   platforms: ModPlatform[];
 }): Promise<string[]> {
   const platformDirectories = unknownPlatforms
-    .map((platform) => {
-      return `./${platform}`;
-    })
+    .map((platform) => `./${platform}`)
     .reverse()
     .join(' and ');
 
