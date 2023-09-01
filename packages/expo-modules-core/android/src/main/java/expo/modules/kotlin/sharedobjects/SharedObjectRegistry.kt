@@ -1,9 +1,19 @@
 package expo.modules.kotlin.sharedobjects
 
+import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.jni.JavaScriptObject
 
 @JvmInline
-value class SharedObjectId(val value: Int)
+value class SharedObjectId(val value: Int) {
+  fun toNativeObject(appContext: AppContext): SharedObject? {
+    return appContext.sharedObjectRegistry.toNativeObject(this)
+  }
+
+  fun toJavaScriptObject(appContext: AppContext): JavaScriptObject? {
+    val nativeObject = toNativeObject(appContext) ?: return null
+    return appContext.sharedObjectRegistry.toJavaScriptObject(nativeObject)
+  }
+}
 
 // TODO(@lukmccall): use weak ref to hold js object
 typealias SharedObjectPair = Pair<SharedObject, JavaScriptObject>
@@ -56,7 +66,7 @@ class SharedObjectRegistry {
     return pairs[id]?.first
   }
 
-  internal fun toJavaScriptObjet(native: SharedObject): JavaScriptObject? {
+  internal fun toJavaScriptObject(native: SharedObject): JavaScriptObject? {
     return pairs[native.sharedObjectId]?.second
   }
 }
