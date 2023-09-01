@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Tree shake error symbolication code in production.
+- Tree shake error symbolication code in production. ([#24215](https://github.com/expo/expo/pull/24215) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
