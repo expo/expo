@@ -613,8 +613,7 @@ const createNormalizedConfigs = (
 
 function appendBasePath(
   path: string,
-  // @ts-expect-error: pending https://github.com/expo/universe/pull/13294
-  assetPrefix: string = Constants.expoConfig?.experiments?.basePath
+  assetPrefix: string | undefined = Constants.expoConfig?.experiments?.basePath
 ) {
   if (process.env.NODE_ENV !== 'development') {
     if (assetPrefix) {

@@ -418,9 +418,7 @@ const createConfigItem = (config, parentPattern) => {
     };
 };
 const createNormalizedConfigs = (options, pattern) => Object.fromEntries(Object.entries(options).map(([name, c]) => [name, createConfigItem(c, pattern)]));
-function appendBasePath(path, 
-// @ts-expect-error: pending https://github.com/expo/universe/pull/13294
-assetPrefix = Constants.expoConfig?.experiments?.basePath) {
+function appendBasePath(path, assetPrefix = Constants.expoConfig?.experiments?.basePath) {
     if (process.env.NODE_ENV !== 'development') {
         if (assetPrefix) {
             return `/${assetPrefix.replace(/^\/+/, '').replace(/\/$/, '')}${path}`;

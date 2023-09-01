@@ -55,7 +55,6 @@ export async function exportAppAsync(
   const exp = await getPublicExpoManifestAsync(projectRoot);
 
   const useWebSSG = exp.web?.output === 'static';
-  // @ts-expect-error: TODO
   const basePath = exp.experiments?.basePath?.replace(/\/+$/, '') ?? '';
   const publicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);
 

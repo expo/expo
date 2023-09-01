@@ -47,7 +47,6 @@ type ParsedRoute = {
 
 export function getUrlWithReactNavigationConcessions(
   path: string,
-  // @ts-expect-error: pending https://github.com/expo/universe/pull/13294
   basePath: string | undefined = Constants.expoConfig?.experiments?.basePath
 ) {
   const parsed = new URL(path, 'https://acme.com');
@@ -742,7 +741,7 @@ const parseQueryParams = (path: string, parseConfig?: Record<string, (value: str
   return Object.keys(params).length ? params : undefined;
 };
 
-function stripBasePath(path: string, assetPrefix: string) {
+function stripBasePath(path: string, assetPrefix?: string) {
   if (process.env.NODE_ENV !== 'development') {
     if (assetPrefix) {
       return path.replace(/^\/+/g, '').replace(new RegExp(`^${escape(assetPrefix)}/`, 'g'), '');

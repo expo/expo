@@ -5,9 +5,7 @@ import URL from 'url-parse';
 import { findFocusedRoute } from './findFocusedRoute';
 import validatePathConfig from './validatePathConfig';
 import { matchGroupName, stripGroupSegmentsFromPath } from '../matchers';
-export function getUrlWithReactNavigationConcessions(path, 
-// @ts-expect-error: pending https://github.com/expo/universe/pull/13294
-basePath = Constants.expoConfig?.experiments?.basePath) {
+export function getUrlWithReactNavigationConcessions(path, basePath = Constants.expoConfig?.experiments?.basePath) {
     const parsed = new URL(path, 'https://acme.com');
     const pathname = parsed.pathname;
     // Make sure there is a trailing slash
