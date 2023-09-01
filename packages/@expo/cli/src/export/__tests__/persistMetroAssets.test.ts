@@ -1,4 +1,4 @@
-import { persistMetroAssetsAsync, stripAssetPrefix } from '../persistMetroAssets';
+import { stripAssetPrefix } from '../persistMetroAssets';
 
 it(`strips asset prefix`, () => {
   expect(
