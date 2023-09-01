@@ -12,9 +12,11 @@ if (!global.setImmediate) {
         return setTimeout(fn, 0);
     };
 }
-if (process.env.NODE_ENV === 'development' && react_native_1.Platform.OS === 'web') {
-    // Stack traces are big with React Navigation
-    require('./LogBox').default.install();
+if (process.env.NODE_ENV === 'development') {
+    if (react_native_1.Platform.OS === 'web') {
+        // Stack traces are big with React Navigation
+        require('./LogBox').default.install();
+    }
 }
 function withErrorOverlay(Comp) {
     if (process.env.NODE_ENV === 'production') {
