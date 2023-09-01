@@ -47,6 +47,36 @@ There are some URL schemes for core functionality that exist on every platform. 
 | `tel`            | Open phone app, eg: `tel:+123456789`         |
 | `sms`            | Open SMS app, eg: `sms:+123456789`           |
 
+On newer Android versions, include the appropriate queries in the **AndroidManifest.xml** to open links. This can be done by [creating a config plugin](/config-plugins/plugins-and-mods/#create-a-plugin). For example, the config plugin below will enable linking to phone and email apps:
+
+```js my-plugin.js
+const { withAndroidManifest } = require("@expo/config-plugins");
+
+const withAndroidQueries = (config) => {
+  return withAndroidManifest(config, (config) => {
+    config.modResults.manifest.queries = [
+      {
+        intent: [
+          {
+            action: [{ $: { "android:name": "android.intent.action.SENDTO" } }],
+            data: [{ $: { "android:scheme": "mailto" } }],
+          },
+          {
+            action: [{ $: { "android:name": "android.intent.action.DIAL" } }],
+          },
+        ],
+      },
+    ];
+
+    return config;
+  });
+};
+
+module.exports = withAndroidQueries;
+```
+
+You can then [import the custom config plugin](/config-plugins/plugins-and-mods/#import-a-plugin) in your project's app config.
+
 ### Custom URL schemes
 
 If you know the custom scheme for another app you can link to it. Some services provide documentation for deep linking, for example the [Lyft deep linking documentation](https://developer.lyft.com/v1/docs/deeplinking) describes how to link directly to a specific pickup location and destination:
