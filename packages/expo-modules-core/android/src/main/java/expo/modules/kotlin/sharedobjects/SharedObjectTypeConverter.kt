@@ -23,7 +23,7 @@ class SharedObjectTypeConverter<T : SharedObject>(
     )
 
     val appContext = context.toStrongReference()
-    val result = appContext.sharedObjectRegistry.toNativeObject(id)
+    val result = id.toNativeObject(appContext)
       ?: throw InvalidSharedObjectException(type)
 
     return result as T
