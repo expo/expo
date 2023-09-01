@@ -215,7 +215,8 @@ std::shared_ptr<jsi::Object> JavaScriptModuleObject::getJSIObject(jsi::Runtime &
     auto descriptor = JavaScriptObject::preparePropertyDescriptor(runtime, 0);
     descriptor.setProperty(runtime, "value", jsi::Value(runtime, nativeConstructor));
 
-    common::definePropertyOnJSIObject(runtime, &prototype, nativeConstructorKey.c_str(), std::move(descriptor));
+    common::definePropertyOnJSIObject(runtime, &prototype, nativeConstructorKey.c_str(),
+                                      std::move(descriptor));
 
     moduleObject->setProperty(
       runtime,
@@ -320,29 +321,30 @@ void JavaScriptModuleObject::registerViewPrototype(
 
 void JavaScriptModuleObject::registerProperty(
   jni::alias_ref<jstring> name,
-  jni::alias_ref<ExpectedType> expectedArgType,
+  jboolean getterTakesOwner,
+  jni::alias_ref<jni::JArrayClass<ExpectedType>> getterExpectedArgsTypes,
   jni::alias_ref<JNIFunctionBody::javaobject> getter,
+  jboolean setterTakesOwner,
+  jni::alias_ref<jni::JArrayClass<ExpectedType>> setterExpectedArgsTypes,
   jni::alias_ref<JNIFunctionBody::javaobject> setter
 ) {
   auto cName = name->toStdString();
 
   auto getterMetadata = MethodMetadata(
     cName,
+    getterTakesOwner,
+    getterExpectedArgsTypes->size(),
     false,
-    0,
-    false,
-    std::vector<std::unique_ptr<AnyType>>(),
+    jni::make_local(getterExpectedArgsTypes),
     jni::make_global(getter)
   );
 
-  auto types = std::vector<std::unique_ptr<AnyType>>();
-  types.push_back(std::make_unique<AnyType>(jni::make_local(expectedArgType)));
   auto setterMetadata = MethodMetadata(
     cName,
+    setterTakesOwner,
+    setterExpectedArgsTypes->size(),
     false,
-    1,
-    false,
-    std::move(types),
+    jni::make_local(setterExpectedArgsTypes),
     jni::make_global(setter)
   );
 

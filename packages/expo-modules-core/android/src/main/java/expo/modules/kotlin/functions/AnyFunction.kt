@@ -24,6 +24,7 @@ abstract class AnyFunction(
 ) {
   internal val argsCount get() = desiredArgsTypes.size
 
+  @PublishedApi
   internal var canTakeOwner: Boolean = false
 
   @PublishedApi

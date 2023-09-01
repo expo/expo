@@ -134,7 +134,6 @@ jobjectArray MethodMetadata::convertJSIArgsToJNI(
     nullptr
   );
 
-  std::vector<jobject> result(count);
 
   const auto getCurrentArg = [&thisValue, args, takesOwner = takesOwner](
     size_t index
@@ -155,19 +154,19 @@ jobjectArray MethodMetadata::convertJSIArgsToJNI(
     if (arg.isNull() || arg.isUndefined()) {
       // If value is null or undefined, we just passes a null
       // Kotlin code will check if expected type is nullable.
-      result[argIndex] = nullptr;
+      continue;
+    }
+
+    if (type->converter->canConvert(rt, arg)) {
+      auto converterValue = type->converter->convert(rt, env, moduleRegistry, arg);
+      env->SetObjectArrayElement(argumentArray, argIndex, converterValue);
+      env->DeleteLocalRef(converterValue);
     } else {
-      if (type->converter->canConvert(rt, arg)) {
-        auto converterValue = type->converter->convert(rt, env, moduleRegistry, arg);
-        env->SetObjectArrayElement(argumentArray, argIndex, converterValue);
-        env->DeleteLocalRef(converterValue);
-      } else {
-        auto stringRepresentation = arg.toString(rt).utf8(rt);
-        throwNewJavaException(
-          UnexpectedException::create(
-            "Cannot convert '" + stringRepresentation + "' to a Kotlin type.").get()
-        );
-      }
+      auto stringRepresentation = arg.toString(rt).utf8(rt);
+      throwNewJavaException(
+        UnexpectedException::create(
+          "Cannot convert '" + stringRepresentation + "' to a Kotlin type.").get()
+      );
     }
   }
 
