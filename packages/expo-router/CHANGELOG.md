@@ -7,6 +7,8 @@
 ### 🛠 Breaking changes
 
 - Remove `@bacons/react-views` -> the undocumented `hoverStyle` property is no longer supported on `<Link />`. ([#23889](https://github.com/expo/expo/pull/23889) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove deprecated hooks `useSearchParams` and `useLink`
+- Remove deprecated `<Screen />` prop `redirect`
 
 ### 🎉 New features
 
