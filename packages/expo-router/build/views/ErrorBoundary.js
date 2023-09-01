@@ -1,38 +1,66 @@
-import { LogContext } from '@expo/metro-runtime/build/error-overlay/Data/LogContext';
-import { LogBoxInspectorStackFrames } from '@expo/metro-runtime/build/error-overlay/overlay/LogBoxInspectorStackFrames';
-import { LogBoxLog, parseErrorStack } from '@expo/metro-runtime/symbolicate';
 import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
 import React from 'react';
 import { StyleSheet, Text, View, Platform, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Pressable } from './Pressable';
 import { Link } from '../link/Link';
-function useMetroSymbolication(error) {
-    const [logBoxLog, setLogBoxLog] = React.useState(null);
-    React.useEffect(() => {
-        let isMounted = true;
-        const stack = parseErrorStack(error.stack);
-        const log = new LogBoxLog({
-            level: 'error',
-            message: {
-                content: error.message,
-                substitutions: [],
-            },
-            isComponentError: false,
-            stack,
-            category: error.message,
-            componentStack: [],
-        });
-        log.symbolicate('stack', (symbolicatedLog) => {
-            if (isMounted) {
-                setLogBoxLog(log);
-            }
-        });
-        return () => {
-            isMounted = false;
-        };
-    }, [error]);
-    return logBoxLog;
+let useMetroSymbolication;
+if (process.env.NODE_ENV === 'development') {
+    const { LogBoxLog, parseErrorStack } = require('@expo/metro-runtime/symbolicate');
+    useMetroSymbolication = function (error) {
+        const [logBoxLog, setLogBoxLog] = React.useState(null);
+        React.useEffect(() => {
+            let isMounted = true;
+            const stack = parseErrorStack(error.stack);
+            const log = new LogBoxLog({
+                level: 'error',
+                message: {
+                    content: error.message,
+                    substitutions: [],
+                },
+                isComponentError: false,
+                stack,
+                category: error.message,
+                componentStack: [],
+            });
+            log.symbolicate('stack', (symbolicatedLog) => {
+                if (isMounted) {
+                    setLogBoxLog(log);
+                }
+            });
+            return () => {
+                isMounted = false;
+            };
+        }, [error]);
+        return logBoxLog;
+    };
+}
+else {
+    useMetroSymbolication = function () {
+        return null;
+    };
+}
+let StackTrace;
+if (process.env.NODE_ENV === 'development') {
+    const { LogContext } = require('@expo/metro-runtime/build/error-overlay/Data/LogContext');
+    const { LogBoxInspectorStackFrames, } = require('@expo/metro-runtime/build/error-overlay/overlay/LogBoxInspectorStackFrames');
+    StackTrace = function ({ logData }) {
+        if (!logData?.symbolicated?.stack?.stack) {
+            return null;
+        }
+        return (React.createElement(ScrollView, { style: { flex: 1 } },
+            React.createElement(LogContext.Provider, { value: {
+                    isDisabled: false,
+                    logs: [logData],
+                    selectedLogIndex: 0,
+                } },
+                React.createElement(LogBoxInspectorStackFrames, { onRetry: function () { }, type: "stack" }))));
+    };
+}
+else {
+    StackTrace = function () {
+        return React.createElement(View, { style: { flex: 1 } });
+    };
 }
 export function ErrorBoundary({ error, retry }) {
     const logBoxLog = useMetroSymbolication(error);
@@ -42,12 +70,13 @@ export function ErrorBoundary({ error, retry }) {
         React.createElement(Wrapper, { style: { flex: 1, gap: 8, maxWidth: 720, marginHorizontal: 'auto' } },
             React.createElement(View, { style: {
                     marginBottom: 12,
-                    flexDirection: 'row',
+                    gap: 4,
                     flexWrap: 'wrap',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
                 } },
-                React.createElement(Text, { role: "heading", "aria-level": 1, style: styles.title }, "Something went wrong")),
+                React.createElement(Text, { role: "heading", "aria-level": 1, style: styles.title }, "Something went wrong"),
+                React.createElement(Text, { role: "heading", "aria-level": 2, style: styles.errorMessage },
+                    "Error: ",
+                    error.message)),
             React.createElement(StackTrace, { logData: logBoxLog }),
             process.env.NODE_ENV === 'development' && (React.createElement(Link, { href: "/_sitemap", style: styles.link }, "Sitemap")),
             React.createElement(Pressable, { onPress: retry }, ({ hovered, pressed }) => (React.createElement(View, { style: [styles.buttonInner, (hovered || pressed) && { backgroundColor: 'white' }] },
@@ -57,18 +86,6 @@ export function ErrorBoundary({ error, retry }) {
                             color: hovered || pressed ? 'black' : 'white',
                         },
                     ] }, "Retry")))))));
-}
-function StackTrace({ logData }) {
-    if (!logData?.symbolicated?.stack?.stack) {
-        return null;
-    }
-    return (React.createElement(ScrollView, { style: { flex: 1 } },
-        React.createElement(LogContext.Provider, { value: {
-                isDisabled: false,
-                logs: [logData],
-                selectedLogIndex: 0,
-            } },
-            React.createElement(LogBoxInspectorStackFrames, { onRetry: function () { }, type: "stack" }))));
 }
 const styles = StyleSheet.create({
     container: {
@@ -110,6 +127,10 @@ const styles = StyleSheet.create({
             android: 'monospace',
         }),
         fontWeight: '500',
+    },
+    errorMessage: {
+        color: 'white',
+        fontSize: 16,
     },
     subtitle: {
         color: 'white',
