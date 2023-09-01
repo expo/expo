@@ -130,6 +130,10 @@ export async function installPackagesAsync(
     );
   }
 
+  if (packages.find((pkg) => pkg === 'expo')) {
+    // TODO
+  }
+
   await packageManager.addAsync([...packageManagerArguments, ...versioning.packages]);
 
   await applyPluginsAsync(projectRoot, versioning.packages);
