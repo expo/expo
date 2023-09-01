@@ -10,7 +10,7 @@ import expo.modules.barcodescanner.BarCodeScannerPackage
 import expo.modules.battery.BatteryModule
 import expo.modules.blur.BlurModule
 import expo.modules.brightness.BrightnessModule
-import expo.modules.calendar.CalendarPackage
+import expo.modules.calendar.CalendarModule
 import expo.modules.camera.CameraViewModule
 import expo.modules.cellular.CellularModule
 import expo.modules.clipboard.ClipboardModule
@@ -80,7 +80,6 @@ object ExperiencePackagePicker : ModulesProvider {
     AVPackage(),
     ApplicationPackage(),
     BarCodeScannerPackage(),
-    CalendarPackage(),
     ConstantsPackage(),
     ContactsPackage(),
     FaceDetectorPackage(),
@@ -129,6 +128,7 @@ object ExperiencePackagePicker : ModulesProvider {
     BackgroundFetchModule::class.java,
     BarCodeScannerModule::class.java,
     BlurModule::class.java,
+    CalendarModule::class.java,
     CameraViewModule::class.java,
     CellularModule::class.java,
     ClipboardModule::class.java,
