@@ -4,7 +4,7 @@ import chalk from 'chalk';
 
 import { applyPluginsAsync } from './applyPlugins';
 import { checkPackagesAsync } from './checkPackages';
-import { installExpoPackage } from './installExpoPackage';
+import { installExpoPackageAsync } from './installExpoPackage';
 import { Options } from './resolveOptions';
 import * as Log from '../log';
 import { getVersionedPackagesAsync } from '../start/doctor/dependencies/getVersionedPackages';
@@ -135,7 +135,7 @@ export async function installPackagesAsync(
   if (packages.find((pkg) => pkg === 'expo')) {
     const packagesMinusExpo = packages.filter((pkg) => pkg !== 'expo');
 
-    installExpoPackage(projectRoot, {
+    installExpoPackageAsync(projectRoot, {
       packageManager,
       packageManagerArguments,
       expoPackageToInstall: versioning.packages.find((pkg) => pkg.startsWith('expo@'))!,
@@ -143,7 +143,6 @@ export async function installPackagesAsync(
         ? `npx expo install ${packagesMinusExpo.join(' ')}`
         : undefined,
     });
-    return;
   }
 
   await packageManager.addAsync([...packageManagerArguments, ...versioning.packages]);
