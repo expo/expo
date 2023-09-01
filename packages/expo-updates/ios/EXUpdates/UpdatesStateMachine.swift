@@ -117,7 +117,7 @@ internal struct UpdatesStateEventCheckCompleteWithRollback: UpdatesStateEvent {
 internal struct UpdatesStateEventCheckComplete: UpdatesStateEvent {
   let type: UpdatesStateEventType = .checkCompleteUnavailable
   let manifest: [String: Any]? = nil
-  let message: String? = nil
+  let message: String?
   let rollbackCommitTime: Date? = nil
   let error: [String: String]? = nil
 }

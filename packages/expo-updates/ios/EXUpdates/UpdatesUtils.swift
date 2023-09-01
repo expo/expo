@@ -3,6 +3,7 @@
 // swiftlint:disable force_unwrapping
 // swiftlint:disable closure_body_length
 // swiftlint:disable superfluous_else
+// swiftlint:disable line_length
 
 import Foundation
 import SystemConfiguration
@@ -95,18 +96,24 @@ public final class UpdatesUtils: NSObject {
           switch updateDirective {
           case is NoUpdateAvailableUpdateDirective:
             block([:])
-            sendStateEvent(UpdatesStateEventCheckComplete())
+            sendStateEvent(UpdatesStateEventCheckComplete(message: nil))
             return
           case let rollBackUpdateDirective as RollBackToEmbeddedUpdateDirective:
             if !constants.config.hasEmbeddedUpdate {
-              block([:])
-              sendStateEvent(UpdatesStateEventCheckComplete())
+              let message = "A rollback directive was received from the update server, but this app is not configured to have an embedded update."
+              block([
+                "noUpdateMessage": message
+              ])
+              sendStateEvent(UpdatesStateEventCheckComplete(message: message ))
               return
             }
 
             guard let embeddedManifest = EmbeddedAppLoader.embeddedManifest(withConfig: constants.config, database: constants.database) else {
-              block([:])
-              sendStateEvent(UpdatesStateEventCheckComplete())
+              let message = "A rollback directive was received from the update server, but no embedded manifest was found."
+              block([
+                "noUpdateMessage": message
+              ])
+              sendStateEvent(UpdatesStateEventCheckComplete(message: message))
               return
             }
 
@@ -116,8 +123,11 @@ public final class UpdatesUtils: NSObject {
               launchedUpdate: launchedUpdate,
               filters: manifestFilters
             ) {
-              block([:])
-              sendStateEvent(UpdatesStateEventCheckComplete())
+              let message = "A rollback directive was received from the update server, but it did not meet the app's selection policy for rollbacks."
+              block([
+                "noUpdateMessage": message
+              ])
+              sendStateEvent(UpdatesStateEventCheckComplete(message: message))
               return
             }
 
@@ -137,7 +147,7 @@ public final class UpdatesUtils: NSObject {
 
         guard let update = updateResponse.manifestUpdateResponsePart?.updateManifest else {
           block([:])
-          sendStateEvent(UpdatesStateEventCheckComplete())
+          sendStateEvent(UpdatesStateEventCheckComplete(message: nil))
           return
         }
 
@@ -157,7 +167,7 @@ public final class UpdatesUtils: NSObject {
             do {
               let storedUpdate = try constants.database.update(withId: update.updateId, config: constants.config)
               if let storedUpdate = storedUpdate {
-                shouldLaunch = storedUpdate.failedLaunchCount == 0
+                shouldLaunch = storedUpdate.failedLaunchCount == 0 || storedUpdate.successfulLaunchCount > 0
                 AppController.sharedInstance.logger.info(message: "Stored update found: ID = \(update.updateId), failureCount = \(storedUpdate.failedLaunchCount)")
               }
             } catch {}
@@ -169,8 +179,11 @@ public final class UpdatesUtils: NSObject {
           ])
           sendStateEvent(UpdatesStateEventCheckCompleteWithUpdate(manifest: update.manifest.rawManifestJSON()))
         } else {
-          block([:])
-          sendStateEvent(UpdatesStateEventCheckComplete())
+          let message = "An update manifest was received from the update server, but the update has been previously launched on this device and never successfully launched."
+          block([
+            "noUpdateMessage": message
+          ])
+          sendStateEvent(UpdatesStateEventCheckComplete(message: message))
         }
       } errorBlock: { error in
         return handleCheckError(error, block: block)
@@ -466,3 +479,4 @@ public final class UpdatesUtils: NSObject {
 // swiftlint:enable force_unwrapping
 // swiftlint:enable closure_body_length
 // swiftlint:enable superfluous_else
+// swiftlint:enable line_length

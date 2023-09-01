@@ -113,7 +113,18 @@ public final class UpdatesModule: Module {
           ])
           return
         }
-        promise.resolve(["isAvailable": false, "isRollBackToEmbedded": false])
+        if result["noUpdateMessage"] != nil {
+          promise.resolve([
+            "isAvailable": false,
+            "isRollBackToEmbedded": false,
+            "message": result["noUpdateMessage"]
+          ])
+          return
+        }
+        promise.resolve([
+          "isAvailable": false,
+          "isRollBackToEmbedded": false
+        ])
       }
     }
 

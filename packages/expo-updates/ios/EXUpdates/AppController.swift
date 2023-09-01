@@ -357,8 +357,8 @@ public class AppController: NSObject, AppLoaderTaskDelegate, AppLoaderTaskSwiftD
   public func appLoaderTask(_: AppLoaderTask, didFinishCheckingForRemoteUpdateWithRemoteCheckResult remoteCheckResult: RemoteCheckResult) {
     let event: UpdatesStateEvent
     switch remoteCheckResult {
-    case .noUpdateAvailable:
-      event = UpdatesStateEventCheckComplete()
+    case .noUpdateAvailable(let message):
+      event = UpdatesStateEventCheckComplete(message: message)
     case .updateAvailable(let manifest):
       event = UpdatesStateEventCheckCompleteWithUpdate(manifest: manifest)
     case .rollBackToEmbedded(let commitTime):
