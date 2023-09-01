@@ -10,6 +10,7 @@
 - [Android] Enums can now be used to define events. ([#23875](https://github.com/expo/expo/pull/23875) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Promises can now be resolved without arguments. ([#23907](https://github.com/expo/expo/pull/23907) by [@lukmccall](https://github.com/lukmccall))
 - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018), [#24019](https://github.com/expo/expo/pull/24019) by [@kudo](https://github.com/kudo))
+- [Android] `Property` component can now take the native shared object instance as the first argument. ([#24206](https://github.com/expo/expo/pull/24206) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
