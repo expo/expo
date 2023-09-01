@@ -62,8 +62,8 @@ Note the above solution only allows for one local configuration. That may not be
 
 ```js Config.js
 let Config = {
-  apiUrl: 'https://localhost:3000' || process.env.EXPO_PUBLIC_API_URL,
-  enableHiddenFeatures: true || process.env.EXPO_PUBLIC_ENABLE_HIDDEN_FEATURES,
+  apiUrl: process.env.EXPO_PUBLIC_API_URL || 'https://localhost:3000',
+  enableHiddenFeatures: process.env.EXPO_PUBLIC_ENABLE_HIDDEN_FEATURES || true,
 };
 
 // set variables based on channel...
