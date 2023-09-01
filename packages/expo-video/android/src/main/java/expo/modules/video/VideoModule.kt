@@ -33,12 +33,21 @@ class VideoModule : Module() {
 
         VideoPlayer(context.applicationContext, mediaItem)
       }
+      Property("isPlaying") { ref: VideoPlayer ->
+        ref.playerListener.isPlaying
+      }
 
-      Property("isPlaying") {} // TODO: Property requires some fixes @LukMcCall
+      Property("isLoading") { ref: VideoPlayer ->
+        ref.playerListener.isLoading
+      }
 
-      Property("isMuted") {}
+      Property("isMuted") {ref: VideoPlayer ->
+        ref.playerListener.isMuted
+      }
 
-      Property("currentTime") {}
+      Property("currentTime") {ref: VideoPlayer ->
+        ref.playerListener.timeline.periodCount
+      }
 
       AsyncFunction("getPlayerState") { ref: VideoPlayer ->
         appContext.mainQueue.launch {
@@ -52,7 +61,7 @@ class VideoModule : Module() {
         }
       }
 
-      Function("setPlaybackSpeed") {ref: VideoPlayer, speed: Float ->
+      Function("setPlaybackSpeed") { ref: VideoPlayer, speed: Float ->
         appContext.mainQueue.launch {
           ref.player.playbackParameters = PlaybackParameters(speed)
         }
@@ -64,7 +73,7 @@ class VideoModule : Module() {
         }
       }
 
-      Function("setVolume") {ref: VideoPlayer, volume: Float ->
+      Function("setVolume") { ref: VideoPlayer, volume: Float ->
         appContext.mainQueue.launch {
           ref.player.volume = volume
         }
@@ -82,7 +91,7 @@ class VideoModule : Module() {
         }
       }
 
-      Function("replace") {ref: VideoPlayer, source: String ->
+      Function("replace") { ref: VideoPlayer, source: String ->
         appContext.mainQueue.launch {
           val mediaItem = MediaItem.fromUri(source)
           ref.player.setMediaItem(mediaItem)
@@ -95,7 +104,7 @@ class VideoModule : Module() {
         }
       }
 
-      Function("seekBy") {ref: VideoPlayer, seekTime: Long ->
+      Function("seekBy") { ref: VideoPlayer, seekTime: Long ->
         appContext.mainQueue.launch {
           val seekPos = ref.player.currentPosition + (seekTime * 1000)
           ref.player.seekTo(seekPos)
@@ -108,5 +117,6 @@ class VideoModule : Module() {
           ref.player.play()
         }
       }
+    }
   }
 }
