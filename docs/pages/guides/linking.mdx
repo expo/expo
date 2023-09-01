@@ -47,21 +47,35 @@ There are some URL schemes for core functionality that exist on every platform. 
 | `tel`            | Open phone app, eg: `tel:+123456789`          |
 | `sms`            | Open SMS app, eg: `sms:+123456789`            |
 
-On newer Android versions, you may have to include the appropriate queries in your `AndroidManifest.xml` to open links (ideally via a config plugin). For example, the following:
+On newer Android versions, include the appropriate queries in the **AndroidManifest.xml** to open links. This can be done by [creating a config plugin](/config-plugins/plugins-and-mods/#create-a-plugin). For example:
 
-```xml
-<manifest>
-  <queries>
-    <intent>
-      <action android:name="android.intent.action.SENDTO"/>
-      <data android:scheme="mailto"/>
-    </intent>
-    <intent>
-      <action android:name="android.intent.action.DIAL"/>
-    </intent>
-  </queries>
-</manifest>
+```js my-plugin.js
+const { withAndroidManifest } = require("@expo/config-plugins");
+
+const withAndroidQueries = (config) => {
+  return withAndroidManifest(config, (config) => {
+    config.modResults.manifest.queries = [
+      {
+        intent: [
+          {
+            action: [{ $: { "android:name": "android.intent.action.SENDTO" } }],
+            data: [{ $: { "android:scheme": "mailto" } }],
+          },
+          {
+            action: [{ $: { "android:name": "android.intent.action.DIAL" } }],
+          },
+        ],
+      },
+    ];
+
+    return config;
+  });
+};
+
+module.exports = withAndroidQueries;
 ```
+
+You can then [import the custom config plugin](/config-plugins/plugins-and-mods/#import-a-plugin) in your project's app config. This example plugin will enable linking to phone and email apps.
 
 Enables linking to the phone and email app.
 
