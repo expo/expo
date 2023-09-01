@@ -1,16 +1,11 @@
 package expo.modules.kotlin.functions
 
-import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableArray
-import com.facebook.react.uimanager.UIManagerHelper
-import com.facebook.react.uimanager.UIManagerModule
-import com.facebook.react.uimanager.common.UIManagerType
 import expo.modules.BuildConfig
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
-import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.exception.FunctionCallException
 import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.exception.exceptionDecorator
@@ -98,14 +93,7 @@ abstract class AsyncFunction(
           // but the JavaScript code has already received the future tag of the view.
           // To avoid this issue, we have decided to temporarily utilize
           // the UIManagerModule for dispatching functions on the main thread.
-          val uiManager = UIManagerHelper.getUIManagerForReactTag(
-            appContext.reactContext as? ReactContext ?: throw Exceptions.ReactContextLost(),
-            UIManagerType.DEFAULT
-          ) as UIManagerModule
-
-          uiManager.addUIBlock {
-            functionBody()
-          }
+          appContext.dispatchOnMainUsingUIManager(functionBody)
           return@registerAsyncFunction
         }
 

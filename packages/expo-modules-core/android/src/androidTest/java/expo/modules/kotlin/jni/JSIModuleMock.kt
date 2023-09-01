@@ -1,5 +1,6 @@
 package expo.modules.kotlin.jni
 
+import android.view.View
 import com.facebook.react.bridge.CatalystInstance
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.uimanager.UIBlock
@@ -33,6 +34,7 @@ internal fun defaultAppContextMock(
   }
   every { appContextMock.coreModule } answers { coreModule }
   every { appContextMock.jniDeallocator } answers { jniDeallocator }
+  every { appContextMock.findView<View>(capture(slot())) } answers { mockk() }
   return appContextMock
 }
 
@@ -73,6 +75,12 @@ internal inline fun withJSIInterop(
   every { appContextMock.mainQueue } answers { methodQueue }
   every { appContextMock.backgroundCoroutineScope } answers { methodQueue }
   every { appContextMock.reactContext } answers { reactContextMock }
+  every { appContextMock.assertMainThread() } answers { }
+
+  val functionSlot = slot<() -> Unit>()
+  every { appContextMock.dispatchOnMainUsingUIManager(capture(functionSlot)) } answers {
+    functionSlot.captured.invoke()
+  }
 
   val registry = ModuleRegistry(WeakReference(appContextMock)).apply {
     modules.forEach {
