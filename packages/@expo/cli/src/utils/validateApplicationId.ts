@@ -118,7 +118,7 @@ export function assertValidPackage(value: string) {
   assert.match(
     value,
     ANDROID_PACKAGE_REGEX,
-    `Invalid format of Android package name. Only alphanumeric characters, '.' and '_' are allowed, and each '.' must be followed by a letter. The Java keyword 'native' is also not allowed.`
+    `Invalid format of Android package name. Only alphanumeric characters, '.' and '_' are allowed, and each '.' must be followed by a letter. The Java keyword 'native' is not allowed.`
   );
 }
 
