@@ -10,7 +10,7 @@ export default function Page() {
   return (
     <View style={styles.container}>
       <Image
-        source={{ uri: location.origin + '/snack.png' }}
+        source={{ uri: (typeof location !== 'undefined' ? location.origin : '') + '/snack.png' }}
         style={{ width: 250, height: 250, backgroundColor: 'blue' }}
       />
     </View>

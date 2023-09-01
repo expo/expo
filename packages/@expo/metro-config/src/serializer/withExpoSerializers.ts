@@ -5,10 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
-import { MixedOutput } from 'metro';
+import { Module, MixedOutput } from 'metro';
 import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
+// @ts-expect-error
+import sourceMapString from 'metro/src/DeltaBundler/Serializers/sourceMapString';
 import bundleToString from 'metro/src/lib/bundleToString';
 import { InputConfigT, SerializerConfigT } from 'metro-config';
+import path from 'path';
 
 import { environmentVariableSerializerPlugin } from './environmentVariableSerializerPlugin';
 import { fileNameFromContents, getCssSerialAssets } from './getCssDeps';
@@ -60,8 +63,9 @@ function getDefaultSerializer(fallbackSerializer?: Serializer | null): Serialize
   return async (
     ...props: SerializerParameters
   ): Promise<string | { code: string; map: string }> => {
-    const [, , graph, options] = props;
-    const jsCode = await defaultSerializer(...props);
+    const [entryPoint, preModules, graph, options] = props;
+
+    const jsCode = await defaultSerializer(entryPoint, preModules, graph, options);
 
     if (!options.sourceUrl) {
       return jsCode;
@@ -78,31 +82,96 @@ function getDefaultSerializer(fallbackSerializer?: Serializer | null): Serialize
       return jsCode;
     }
 
+    const includeSourceMaps = url.searchParams.get('serializer.map') === 'true';
+
     const cssDeps = getCssSerialAssets<MixedOutput>(graph.dependencies, {
       projectRoot: options.projectRoot,
       processModuleFilter: options.processModuleFilter,
     });
 
-    let jsAsset: SerialAsset | undefined;
+    const jsAssets: SerialAsset[] = [];
 
     if (jsCode) {
       const stringContents = typeof jsCode === 'string' ? jsCode : jsCode.code;
-      jsAsset = {
-        filename: options.dev
-          ? 'index.js'
-          : `_expo/static/js/web/${fileNameFromContents({
-              filepath: url.pathname,
-              src: stringContents,
-            })}.js`,
+      const jsFilename = fileNameFromContents({
+        filepath: url.pathname,
+        src: stringContents,
+      });
+      jsAssets.push({
+        filename: options.dev ? 'index.js' : `_expo/static/js/web/${jsFilename}.js`,
         originFilename: 'index.js',
         type: 'js',
         metadata: {},
         source: stringContents,
-      };
+      });
+
+      if (
+        // Only include the source map if the `options.sourceMapUrl` option is provided and we are exporting a static build.
+        includeSourceMaps &&
+        options.sourceMapUrl
+      ) {
+        const sourceMap = typeof jsCode === 'string' ? serializeToSourceMap(...props) : jsCode.map;
+
+        // Make all paths relative to the server root to prevent the entire user filesystem from being exposed.
+        const parsed = JSON.parse(sourceMap);
+        // TODO: Maybe we can do this earlier.
+        parsed.sources = parsed.sources.map(
+          // TODO: Maybe basePath support
+          (value: string) => {
+            if (value.startsWith('/')) {
+              return '/' + path.relative(options.serverRoot ?? options.projectRoot, value);
+            }
+            // Prevent `__prelude__` from being relative.
+            return value;
+          }
+        );
+
+        jsAssets.push({
+          filename: options.dev ? 'index.map' : `_expo/static/js/web/${jsFilename}.js.map`,
+          originFilename: 'index.map',
+          type: 'map',
+          metadata: {},
+          source: JSON.stringify(parsed),
+        });
+      }
     }
 
-    return JSON.stringify([jsAsset, ...cssDeps]);
+    return JSON.stringify([...jsAssets, ...cssDeps]);
   };
+}
+
+function getSortedModules(
+  graph: SerializerParameters[2],
+  {
+    createModuleId,
+  }: {
+    createModuleId: (path: string) => number;
+  }
+): readonly Module<any>[] {
+  const modules = [...graph.dependencies.values()];
+  // Assign IDs to modules in a consistent order
+  for (const module of modules) {
+    createModuleId(module.path);
+  }
+  // Sort by IDs
+  return modules.sort(
+    (a: Module<any>, b: Module<any>) => createModuleId(a.path) - createModuleId(b.path)
+  );
+}
+
+function serializeToSourceMap(...props: SerializerParameters): string {
+  const [, prepend, graph, options] = props;
+
+  const modules = [
+    ...prepend,
+    ...getSortedModules(graph, {
+      createModuleId: options.createModuleId,
+    }),
+  ];
+
+  return sourceMapString(modules, {
+    ...options,
+  });
 }
 
 export function createSerializerFromSerialProcessors(

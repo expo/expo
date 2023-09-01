@@ -26,9 +26,23 @@ function _baseJSBundle() {
   };
   return data;
 }
+function _sourceMapString() {
+  const data = _interopRequireDefault(require("metro/src/DeltaBundler/Serializers/sourceMapString"));
+  _sourceMapString = function () {
+    return data;
+  };
+  return data;
+}
 function _bundleToString() {
   const data = _interopRequireDefault(require("metro/src/lib/bundleToString"));
   _bundleToString = function () {
+    return data;
+  };
+  return data;
+}
+function _path() {
+  const data = _interopRequireDefault(require("path"));
+  _path = function () {
     return data;
   };
   return data;
@@ -69,6 +83,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * LICENSE file in the root directory of this source tree.
  */
 
+// @ts-expect-error
+
 function withExpoSerializers(config) {
   const processors = [];
   if (!_env().env.EXPO_NO_CLIENT_ENV_VARS) {
@@ -97,8 +113,8 @@ function getDefaultSerializer(fallbackSerializer) {
     return outputCode;
   };
   return async (...props) => {
-    const [,, graph, options] = props;
-    const jsCode = await defaultSerializer(...props);
+    const [entryPoint, preModules, graph, options] = props;
+    const jsCode = await defaultSerializer(entryPoint, preModules, graph, options);
     if (!options.sourceUrl) {
       return jsCode;
     }
@@ -108,26 +124,74 @@ function getDefaultSerializer(fallbackSerializer) {
       // Default behavior if `serializer.output=static` is not present in the URL.
       return jsCode;
     }
+    const includeSourceMaps = url.searchParams.get('serializer.map') === 'true';
     const cssDeps = (0, _getCssDeps().getCssSerialAssets)(graph.dependencies, {
       projectRoot: options.projectRoot,
       processModuleFilter: options.processModuleFilter
     });
-    let jsAsset;
+    const jsAssets = [];
     if (jsCode) {
       const stringContents = typeof jsCode === 'string' ? jsCode : jsCode.code;
-      jsAsset = {
-        filename: options.dev ? 'index.js' : `_expo/static/js/web/${(0, _getCssDeps().fileNameFromContents)({
-          filepath: url.pathname,
-          src: stringContents
-        })}.js`,
+      const jsFilename = (0, _getCssDeps().fileNameFromContents)({
+        filepath: url.pathname,
+        src: stringContents
+      });
+      jsAssets.push({
+        filename: options.dev ? 'index.js' : `_expo/static/js/web/${jsFilename}.js`,
         originFilename: 'index.js',
         type: 'js',
         metadata: {},
         source: stringContents
-      };
+      });
+      if (
+      // Only include the source map if the `options.sourceMapUrl` option is provided and we are exporting a static build.
+      includeSourceMaps && options.sourceMapUrl) {
+        const sourceMap = typeof jsCode === 'string' ? serializeToSourceMap(...props) : jsCode.map;
+
+        // Make all paths relative to the server root to prevent the entire user filesystem from being exposed.
+        const parsed = JSON.parse(sourceMap);
+        // TODO: Maybe we can do this earlier.
+        parsed.sources = parsed.sources.map(
+        // TODO: Maybe basePath support
+        value => {
+          if (value.startsWith('/')) {
+            var _options$serverRoot;
+            return '/' + _path().default.relative((_options$serverRoot = options.serverRoot) !== null && _options$serverRoot !== void 0 ? _options$serverRoot : options.projectRoot, value);
+          }
+          // Prevent `__prelude__` from being relative.
+          return value;
+        });
+        jsAssets.push({
+          filename: options.dev ? 'index.map' : `_expo/static/js/web/${jsFilename}.js.map`,
+          originFilename: 'index.map',
+          type: 'map',
+          metadata: {},
+          source: JSON.stringify(parsed)
+        });
+      }
     }
-    return JSON.stringify([jsAsset, ...cssDeps]);
+    return JSON.stringify([...jsAssets, ...cssDeps]);
   };
+}
+function getSortedModules(graph, {
+  createModuleId
+}) {
+  const modules = [...graph.dependencies.values()];
+  // Assign IDs to modules in a consistent order
+  for (const module of modules) {
+    createModuleId(module.path);
+  }
+  // Sort by IDs
+  return modules.sort((a, b) => createModuleId(a.path) - createModuleId(b.path));
+}
+function serializeToSourceMap(...props) {
+  const [, prepend, graph, options] = props;
+  const modules = [...prepend, ...getSortedModules(graph, {
+    createModuleId: options.createModuleId
+  })];
+  return (0, _sourceMapString().default)(modules, {
+    ...options
+  });
 }
 function createSerializerFromSerialProcessors(processors, originalSerializer) {
   const finalSerializer = getDefaultSerializer(originalSerializer);
