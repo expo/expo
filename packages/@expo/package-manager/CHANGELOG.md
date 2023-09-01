@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- `npx expo install --check|fix` now checks for and fixes an out-of-date `expo` package patch release ([#24142](https://github.com/expo/expo/pull/24142) by [@keith-kurak](https://github.com/keith-kurak))
+- Added ability to generate a package add command without actually running it ([#24142](https://github.com/expo/expo/pull/24142) by [@keith-kurak](https://github.com/keith-kurak))
 
 ### 🐛 Bug fixes
 
