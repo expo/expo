@@ -1,6 +1,7 @@
+import type { EventMapBase, NavigationState, ParamListBase, RouteProp, ScreenListeners } from '@react-navigation/native';
 import React from 'react';
 import { RouteNode } from './Route';
-export type ScreenProps<TOptions extends Record<string, any> = Record<string, any>> = {
+export type ScreenProps<TOptions extends Record<string, any> = Record<string, any>, State extends NavigationState = NavigationState, EventMap extends EventMapBase = EventMapBase> = {
     /** Name is required when used inside a Layout component. */
     name?: string;
     /**
@@ -12,7 +13,10 @@ export type ScreenProps<TOptions extends Record<string, any> = Record<string, an
         [key: string]: any;
     };
     options?: TOptions;
-    listeners?: any;
+    listeners?: ScreenListeners<State, EventMap> | ((prop: {
+        route: RouteProp<ParamListBase, string>;
+        navigation: any;
+    }) => ScreenListeners<State, EventMap>);
     getId?: ({ params }: {
         params?: Record<string, any> | undefined;
     }) => string | undefined;

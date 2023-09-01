@@ -24,8 +24,6 @@ interface Manifest {
 // some files are absent on turtle builders and we don't want log errors there
 const isTurtle = !!process.env.TURTLE_WORKING_DIR_PATH;
 
-const dogfoodingHomeUrl = 'exp://exp.host/@expo-dogfooding/home';
-
 const EXPO_DIR = getExpoRepositoryRootDir();
 
 async function getManifestAsync(
@@ -142,20 +140,6 @@ export default {
     return kernelManifestObjectToJson(manifest);
   },
 
-  async DOGFOODING_PUBLISHED_KERNEL_MANIFEST(platform) {
-    let manifest: Manifest;
-    try {
-      const sdkVersion = await this.TEMPORARY_SDK_VERSION();
-      manifest = await getManifestAsync(dogfoodingHomeUrl, platform, sdkVersion);
-    } catch (e) {
-      const msg = `Unable to download manifest from ${dogfoodingHomeUrl}: ${e.message}`;
-      console[isTurtle ? 'debug' : 'error'](msg);
-      return '';
-    }
-
-    return kernelManifestObjectToJson(manifest);
-  },
-
   async BUILD_MACHINE_KERNEL_MANIFEST(platform) {
     if (process.env.SHELL_APP_BUILDER) {
       return '';
@@ -172,7 +156,7 @@ export default {
     try {
       const manifest = await getManifestAsync(url, platform, null);
 
-      if (manifest.name !== 'expo-home') {
+      if (manifest.extra?.expoClient?.name !== 'expo-home') {
         console.log(
           `Manifest at ${url} is not expo-home; using published kernel manifest instead...`
         );
