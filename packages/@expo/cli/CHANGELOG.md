@@ -41,6 +41,7 @@
 - Fix lint. ([#23960](https://github.com/expo/expo/pull/23960) by [@EvanBacon](https://github.com/EvanBacon))
 - Enable static router tests. ([#23988](https://github.com/expo/expo/pull/23988) by [@EvanBacon](https://github.com/EvanBacon))
 - Reduce Metro bundles during `expo export` for Metro static web. ([#23987](https://github.com/expo/expo/pull/23987) by [@EvanBacon](https://github.com/EvanBacon))
+- Adjust build message when running prebuild to only output the directories that are actually being created. ([#24153](https://github.com/expo/expo/pull/24153) by [@alanhughes](https://github.com/alanjhughes))
 
 ## 0.11.1 — 2023-08-02
 
