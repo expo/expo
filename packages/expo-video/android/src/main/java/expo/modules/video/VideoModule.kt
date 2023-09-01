@@ -19,11 +19,13 @@ class VideoModule : Module() {
         view.player = player.player
       }
 
-//      Prop("nativeControls") {}
-//
-//      Prop("contentFit") {}
-//
-//      Prop("contentPosition") {}
+      AsyncFunction("enterFullscreen") { view: VideoView ->
+        view.enterFullScreen()
+      }
+
+      Prop("contentFit") {view: VideoView, contentFit: Any ->
+        view.setContentFit(contentFit)
+      }
     }
 
     Class(VideoPlayer::class) {
