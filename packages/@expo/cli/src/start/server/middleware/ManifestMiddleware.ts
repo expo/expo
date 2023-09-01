@@ -82,6 +82,7 @@ export function createBundleUrlPath({
   minify = mode === 'production',
   environment,
   serializerOutput,
+  serializerIncludeMaps,
   lazy,
 }: {
   platform: string;
@@ -90,6 +91,7 @@ export function createBundleUrlPath({
   minify?: boolean;
   environment?: string;
   serializerOutput?: 'static';
+  serializerIncludeMaps?: boolean;
   lazy?: boolean;
 }): string {
   const queryParams = new URLSearchParams({
@@ -112,6 +114,9 @@ export function createBundleUrlPath({
   }
   if (serializerOutput) {
     queryParams.append('serializer.output', serializerOutput);
+  }
+  if (serializerIncludeMaps) {
+    queryParams.append('serializer.map', String(serializerIncludeMaps));
   }
 
   return `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;
