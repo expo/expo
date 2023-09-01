@@ -51,11 +51,14 @@ class JavaScriptViewModule {
       }
     }
   ) { methodQueue ->
-    val result = waitForAsyncFunction(methodQueue, """
+    val result = waitForAsyncFunction(
+      methodQueue,
+      """
       const nativeView = { nativeTag: 1 };
       Object.assign(nativeView.__proto__, expo.modules.TestModule.ViewPrototype);
       nativeView.viewFunction()
-    """.trimIndent()).getInt()
+      """.trimIndent()
+    ).getInt()
     Truth.assertThat(result).isEqualTo(123)
   }
 }
