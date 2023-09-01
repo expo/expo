@@ -276,6 +276,123 @@ it('does not loop infinitely when pushing a screen with empty options to an inva
   expect(screen).toHavePathname('/main/welcome');
 });
 
+it('can push nested initial route name', () => {
+  renderRouter({
+    _layout: {
+      unstable_settings: {
+        // Should be able to push another stack even when this is set.
+        initialRouteName: 'index',
+      },
+      default: () => <Stack />,
+    },
+    index: () => <Text />,
+    'settings/_layout': () => <Slot />,
+    'settings/index': () => <Text />,
+  });
+
+  expect(screen).toHavePathname('/');
+  act(() => router.push('/settings'));
+  expect(screen).toHavePathname('/settings');
+});
+
+it('can replace nested initial route name', () => {
+  renderRouter({
+    _layout: {
+      unstable_settings: {
+        // Should be able to push another stack even when this is set.
+        initialRouteName: 'index',
+      },
+      default: () => <Stack />,
+    },
+    index: () => <Text />,
+    'settings/_layout': () => <Slot />,
+    'settings/index': () => <Text />,
+  });
+
+  expect(screen).toHavePathname('/');
+  act(() => router.replace('/settings'));
+  expect(screen).toHavePathname('/settings');
+});
+
+it('can check goBack before navigation mounts', () => {
+  renderRouter({
+    _layout: {
+      default() {
+        // No navigator mounted at the root, this should prevent navigation from working.
+        return <></>;
+      },
+    },
+    index: () => <Text />,
+  });
+
+  expect(screen).toHavePathname('/');
+
+  // NOTE: This also tests that `canGoBack` does not throw.
+  expect(router.canGoBack()).toBe(false);
+});
+
+it('can push back from a nested modal to a nested sibling', async () => {
+  renderRouter({
+    _layout: () => (
+      <Stack>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="slot" />
+        <Stack.Screen name="(group)" options={{ presentation: 'modal' }} />
+      </Stack>
+    ),
+
+    index: () => <Text />,
+
+    'slot/_layout': () => <Slot />,
+    'slot/index': () => <Text />,
+
+    '(group)/_layout': () => <Slot />,
+    '(group)/modal': () => <Text />,
+  });
+
+  expect(screen).toHavePathname('/');
+
+  act(() => router.push('/slot'));
+  expect(screen).toHavePathname('/slot');
+
+  act(() => router.push('/(group)/modal'));
+  expect(screen).toHavePathname('/modal');
+
+  act(() => router.push('/slot'));
+  expect(screen).toHavePathname('/slot');
+});
+
+it('can pop back from a nested modal to a nested sibling', async () => {
+  renderRouter({
+    _layout: () => (
+      <Stack>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="slot" />
+        <Stack.Screen name="(group)" options={{ presentation: 'modal' }} />
+      </Stack>
+    ),
+
+    index: () => <Text />,
+
+    'slot/_layout': () => <Slot />,
+    'slot/index': () => <Text />,
+
+    '(group)/_layout': () => <Slot />,
+    '(group)/modal': () => <Text />,
+  });
+
+  expect(screen).toHavePathname('/');
+
+  act(() => router.push('/slot'));
+  expect(screen).toHavePathname('/slot');
+
+  act(() => router.push('/(group)/modal'));
+  expect(screen).toHavePathname('/modal');
+
+  act(() => router.back());
+  expect(screen).toHavePathname('/slot');
+});
+
 it('can navigate to hoisted groups', () => {
   /** https://github.com/expo/router/issues/805 */
 
