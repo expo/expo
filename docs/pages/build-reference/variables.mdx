@@ -206,7 +206,7 @@ This may result in some duplication of variables between **.env** files and **ea
 ### How do I share environment variables between my local development environment, EAS Update, and EAS Build?
 Environment variables defined in **eas.json** are only available when running an EAS Build job. However, you may wish to change variables used within your application code based on the build profile while minimizing duplicating values you might keep in an **.env** file for local development or for when publishing to EAS Update.
 
-Our [Environment variables in EAS Update guide](eas-update/environment-variables/#sharing-environment-variables-between-local-development-eas-update-and-eas-build) describes a few approaches for sharing environment variables between all of these contexts.
+Our [Environment variables in EAS Update guide](/eas-update/environment-variables/#sharing-environment-variables-between-local-development-eas-update-and-eas-build) describes a few approaches for sharing environment variables between all of these contexts.
 
 ### How are naming collisions between secrets, the `env ` field in **eas.json**, and **.env** files handled?
 Environment variables are applied in the following order:
