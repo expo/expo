@@ -14,7 +14,7 @@ jest.mock('expo-constants', () => ({
 }));
 
 afterEach(() => {
-  Constants.expoConfig.ios = undefined;
+  Constants.expoConfig!.experiments = undefined;
 });
 
 type State = PartialState<NavigationState>;
