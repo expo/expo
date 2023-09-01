@@ -193,7 +193,7 @@ export const withCustomConfig: ConfigPlugin<string> = (config, id) => {
 ### Modify iOS Podfile
 
 The iOS **Podfile** is the config file for CocoaPods, the dependency manager on iOS. It is similar to **package.json** for iOS.
-The **Podfile** is a ruby file (application code), which means you **cannot** safely modify it from Expo config plugins and should opt for another approach, such as [Expo Autolinking](modules/autolinking) hooks.
+The **Podfile** is a ruby file (application code), which means you **cannot** safely modify it from Expo config plugins and should opt for another approach, such as [Expo Autolinking](/modules/autolinking) hooks.
 
 Currently, we do have a configuration that interacts with the CocoaPods file though.
 
