@@ -52,6 +52,8 @@ describe(validatePackage, () => {
   it(`validates`, () => {
     expect(validatePackage('bacon.com.hey')).toBe(true);
     expect(validatePackage('bacon')).toBe(false);
+    expect(validatePackage('com.native')).toBe(false);
+    expect(validatePackage('native.android')).toBe(false);
     expect(validatePackage('...b.a.-c.0.n...')).toBe(false);
     expect(validatePackage('.')).toBe(false);
     expect(validatePackage('. ..')).toBe(false);
