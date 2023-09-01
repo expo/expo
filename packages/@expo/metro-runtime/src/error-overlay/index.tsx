@@ -11,10 +11,12 @@ if (!global.setImmediate) {
   };
 }
 
-if (process.env.NODE_ENV === 'development' && Platform.OS === 'web') {
-  // Stack traces are big with React Navigation
+if (process.env.NODE_ENV === 'development') {
+  if (Platform.OS === 'web') {
+    // Stack traces are big with React Navigation
 
-  require('./LogBox').default.install();
+    require('./LogBox').default.install();
+  }
 }
 
 export function withErrorOverlay(Comp: React.ComponentType<any>) {

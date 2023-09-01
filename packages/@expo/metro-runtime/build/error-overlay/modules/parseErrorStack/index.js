@@ -8,10 +8,11 @@ function parseErrorStack(stack) {
     if (Array.isArray(stack)) {
         return stack;
     }
-    // Native support for parsing for non-standard Hermes stack traces.
-    if (global.HermesInternal) {
-        return require('./parseHermesStack').parseErrorStack(stack);
-    }
+    // This file seems to be web-only, so we can remove this.
+    // // Native support for parsing for non-standard Hermes stack traces.
+    // if (global.HermesInternal) {
+    //   return require('./parseHermesStack').parseErrorStack(stack);
+    // }
     return (0, stacktrace_parser_1.parse)(stack).map((frame) => {
         // frame.file will mostly look like `http://localhost:8081/index.bundle?platform=web&dev=true&hot=false`
         return {

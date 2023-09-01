@@ -1,4 +1,3 @@
-import { withErrorOverlay } from '@expo/metro-runtime/error-overlay';
 import { registerRootComponent } from 'expo';
 import React from 'react';
 import { Platform, View } from 'react-native';
@@ -59,6 +58,8 @@ export function renderRootComponent(Component: React.ComponentType<any>) {
     });
 
     if (process.env.NODE_ENV !== 'production') {
+      const { withErrorOverlay } =
+        require('@expo/metro-runtime/error-overlay') as typeof import('@expo/metro-runtime/error-overlay');
       registerRootComponent(withErrorOverlay(Component));
     } else {
       registerRootComponent(Component);
