@@ -14,7 +14,7 @@
 
 ### 💡 Others
 
-- Remove deprecation warnings on `ImagePickerResult`.
+- Remove deprecation warnings on `ImagePickerResult`. ([#24226](https://github.com/expo/expo/pull/24226) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 14.4.1 — 2023-08-02
 
