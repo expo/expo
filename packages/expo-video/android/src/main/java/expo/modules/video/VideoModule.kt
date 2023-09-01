@@ -45,16 +45,6 @@ class VideoModule : Module() {
         ref.playerListener.isMuted
       }
 
-      Property("currentTime") {ref: VideoPlayer ->
-        ref.playerListener.timeline.periodCount
-      }
-
-      AsyncFunction("getPlayerState") { ref: VideoPlayer ->
-        appContext.mainQueue.launch {
-          ref.player.isPlaying
-        }
-      }
-
       AsyncFunction("getPlaybackSpeed") { ref: VideoPlayer ->
         appContext.mainQueue.launch {
           ref.player.playbackParameters.speed
@@ -67,10 +57,8 @@ class VideoModule : Module() {
         }
       }
 
-      AsyncFunction("getVolume") { ref: VideoPlayer ->
-        appContext.mainQueue.launch {
-          ref.player.volume
-        }
+      Function("getVolume") { ref: VideoPlayer ->
+          ref.playerListener.volume
       }
 
       Function("setVolume") { ref: VideoPlayer, volume: Float ->
