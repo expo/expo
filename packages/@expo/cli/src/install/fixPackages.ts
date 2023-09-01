@@ -1,8 +1,8 @@
 import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
-import { spawn } from 'child_process';
 
 import { applyPluginsAsync } from './applyPlugins';
+import { installExpoPackage } from './installExpoPackage';
 import * as Log from '../log';
 import { getOperationLog } from '../start/doctor/dependencies/getVersionedPackages';
 import { getVersionedDependenciesAsync } from '../start/doctor/dependencies/validateDependenciesVersions';
@@ -55,19 +55,12 @@ export async function fixPackagesAsync(
   // if updating expo package, install this first, then run expo install --fix again under new version
   const expoDep = dependencies.find((dep) => dep.packageName === 'expo');
   if (expoDep) {
-    spawn(
-      `${packageManager.bin} ${packageManager
-        .getAddCommandOptions([
-          ...packageManagerArguments,
-          `expo@${expoDep.expectedVersionOrRange}`,
-        ])
-        .join(' ')} && npx expo install --fix`,
-      {
-        ...packageManager.options,
-        detached: true,
-        shell: true,
-      }
-    );
+    installExpoPackage(projectRoot, {
+      packageManager,
+      packageManagerArguments,
+      expoPackageToInstall: `expo@${expoDep.expectedVersionOrRange}`,
+      followUpCommand: `npx expo install --fix`,
+    });
     return;
   }
 
