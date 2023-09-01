@@ -47,7 +47,7 @@ There are some URL schemes for core functionality that exist on every platform. 
 | `tel`            | Open phone app, eg: `tel:+123456789`          |
 | `sms`            | Open SMS app, eg: `sms:+123456789`            |
 
-On newer Android versions, include the appropriate queries in the **AndroidManifest.xml** to open links. This can be done by [creating a config plugin](/config-plugins/plugins-and-mods/#create-a-plugin). For example:
+On newer Android versions, include the appropriate queries in the **AndroidManifest.xml** to open links. This can be done by [creating a config plugin](/config-plugins/plugins-and-mods/#create-a-plugin). For example, the config plugin below will enable linking to phone and email apps:
 
 ```js my-plugin.js
 const { withAndroidManifest } = require("@expo/config-plugins");
@@ -75,7 +75,7 @@ const withAndroidQueries = (config) => {
 module.exports = withAndroidQueries;
 ```
 
-You can then [import the custom config plugin](/config-plugins/plugins-and-mods/#import-a-plugin) in your project's app config. This example plugin will enable linking to phone and email apps.
+You can then [import the custom config plugin](/config-plugins/plugins-and-mods/#import-a-plugin) in your project's app config.
 
 ### Custom URL schemes
 
