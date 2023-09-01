@@ -1,6 +1,7 @@
 package expo.modules.video
 
 import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackParameters
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.sharedobjects.SharedObjectId
@@ -39,6 +40,36 @@ class VideoModule : Module() {
 
       Property("currentTime") {}
 
+      AsyncFunction("getPlayerState") { ref: VideoPlayer ->
+        appContext.mainQueue.launch {
+          ref.player.isPlaying
+        }
+      }
+
+      AsyncFunction("getPlaybackSpeed") { ref: VideoPlayer ->
+        appContext.mainQueue.launch {
+          ref.player.playbackParameters.speed
+        }
+      }
+
+      Function("setPlaybackSpeed") {ref: VideoPlayer, speed: Float ->
+        appContext.mainQueue.launch {
+          ref.player.playbackParameters = PlaybackParameters(speed)
+        }
+      }
+
+      AsyncFunction("getVolume") { ref: VideoPlayer ->
+        appContext.mainQueue.launch {
+          ref.player.volume
+        }
+      }
+
+      Function("setVolume") {ref: VideoPlayer, volume: Float ->
+        appContext.mainQueue.launch {
+          ref.player.volume = volume
+        }
+      }
+
       Function("play") { ref: VideoPlayer ->
         appContext.mainQueue.launch {
           ref.player.play()
@@ -51,11 +82,31 @@ class VideoModule : Module() {
         }
       }
 
-      Function("replace") {}
+      Function("replace") {ref: VideoPlayer, source: String ->
+        appContext.mainQueue.launch {
+          val mediaItem = MediaItem.fromUri(source)
+          ref.player.setMediaItem(mediaItem)
+        }
+      }
 
-      Function("seekBy") {}
+      AsyncFunction("getCurrentTime") { ref: VideoPlayer ->
+        appContext.mainQueue.launch {
+          ref.player.currentPosition
+        }
+      }
 
-      Function("replay") {}
-    }
+      Function("seekBy") {ref: VideoPlayer, seekTime: Long ->
+        appContext.mainQueue.launch {
+          val seekPos = ref.player.currentPosition + (seekTime * 1000)
+          ref.player.seekTo(seekPos)
+        }
+      }
+
+      Function("replay") { ref: VideoPlayer ->
+        appContext.mainQueue.launch {
+          ref.player.seekTo(0)
+          ref.player.play()
+        }
+      }
   }
 }
