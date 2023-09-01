@@ -45,12 +45,16 @@ export async function fixPackagesAsync(
     sdkVersion,
   });
 
+  // display all packages to update, including expo package
+  Log.log(
+    chalk`\u203A Installing ${
+      versioningMessages.length ? versioningMessages.join(' and ') + ' ' : ''
+    }using {bold ${packageManager.name}}`
+  );
+
+  // if updating expo package, install this first, then run expo install --fix again under new version
   const expoDep = dependencies.find((dep) => dep.packageName === 'expo');
   if (expoDep) {
-    Log.log(
-      chalk`\u203A Updating expo using {bold ${packageManager.name}} and then running {bold npx expo install --fix} under the updated expo version.`
-    );
-
     spawn(
       `${packageManager.bin} ${packageManager
         .getAddCommandOptions([
@@ -66,12 +70,6 @@ export async function fixPackagesAsync(
     );
     return;
   }
-
-  Log.log(
-    chalk`\u203A Installing ${
-      versioningMessages.length ? versioningMessages.join(' and ') + ' ' : ''
-    }using {bold ${packageManager.name}}`
-  );
 
   if (dependencies.length) {
     const versionedPackages = dependencies.map(
