@@ -21,11 +21,11 @@ class PropertyComponent(
    * Synchronous function that is called when the property is being set.
    */
   val setter: SyncFunctionComponent? = null
-) {
+) : AnyProperty {
   /**
    * Attaches property to the provided js object.
    */
-  fun attachToJSObject(appContext: AppContext, jsObject: JavaScriptModuleObject) {
+  override fun attachToJSObject(appContext: AppContext, jsObject: JavaScriptModuleObject) {
     val jniGetter = if (getter != null) {
       JNIFunctionBody { args ->
         val result = getter.call(args, appContext)

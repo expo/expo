@@ -30,18 +30,21 @@ open class ObjectDefinitionBuilder {
   internal var eventsDefinition: EventsDefinition? = null
 
   @PublishedApi
-  internal var syncFunctions = mutableMapOf<String, SyncFunctionComponent>()
+  internal val syncFunctions = mutableMapOf<String, SyncFunctionComponent>()
 
   @PublishedApi
-  internal var syncFunctionBuilder = mutableMapOf<String, FunctionBuilder>()
+  internal val syncFunctionBuilder = mutableMapOf<String, FunctionBuilder>()
 
   @PublishedApi
-  internal var asyncFunctions = mutableMapOf<String, AsyncFunction>()
+  internal val asyncFunctions = mutableMapOf<String, AsyncFunction>()
 
-  private var asyncFunctionBuilders = mutableMapOf<String, AsyncFunctionBuilder>()
+  private val asyncFunctionBuilders = mutableMapOf<String, AsyncFunctionBuilder>()
 
   @PublishedApi
-  internal var properties = mutableMapOf<String, PropertyComponentBuilder>()
+  internal val properties = mutableMapOf<String, PropertyComponentBuilder>()
+
+  @PublishedApi
+  internal val constProperties = mutableMapOf<String, AnyProperty>()
 
   fun buildObject(): ObjectDefinitionData {
     // Register stub functions to bypass react-native `NativeEventEmitter` warnings
@@ -61,7 +64,7 @@ open class ObjectDefinitionBuilder {
       syncFunctions + syncFunctionBuilder.mapValues { (_, value) -> value.build() },
       asyncFunctions + asyncFunctionBuilders.mapValues { (_, value) -> value.build() },
       eventsDefinition,
-      properties.mapValues { (_, value) -> value.build() }
+      properties.mapValues { (_, value) -> value.build() } + constProperties
     )
   }
 
@@ -358,6 +361,10 @@ open class ObjectDefinitionBuilder {
     AsyncFunction("stopObserving", body)
   }
 
+  fun <T : Any> Property(name: String, value: T) {
+    constProperties[name] = ConstPropertyComponent(name, value)
+  }
+
   /**
    * Creates the property with given name. The component is basically no-op if you don't call `.get()` or `.set()` on it.
    */
@@ -375,6 +382,33 @@ open class ObjectDefinitionBuilder {
       it.get(body)
       properties[name] = it
     }
+  }
+
+  inline fun ModuleDefinitionBuilder.Object(name: String, block: ObjectDefinitionBuilder.() -> Unit) {
+    val module = requireNotNull(module)
+    val appContext = module.appContext
+
+    val objectData = ObjectDefinitionBuilder().also(block).buildObject()
+    val jsObject = JavaScriptModuleObject(appContext.jniDeallocator, name)
+      .apply {
+        val constants = objectData.constantsProvider()
+        val convertedConstants = Arguments.makeNativeMap(constants)
+        exportConstants(convertedConstants)
+
+        objectData
+          .functions
+          .forEach { function ->
+            function.attachToJSObject(appContext, this)
+          }
+
+        objectData
+          .properties
+          .forEach { (_, prop) ->
+            prop.attachToJSObject(appContext, this)
+          }
+      }
+
+    constProperties[name] = ConstPropertyComponent(name, jsObject)
   }
 }
 

@@ -12,6 +12,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.uimanager.common.UIManagerType
+import com.facebook.soloader.SoLoader
 import expo.modules.adapters.react.NativeModulesProxy
 import expo.modules.core.errors.ContextDestroyedException
 import expo.modules.core.errors.ModuleNotFoundException
@@ -58,22 +59,13 @@ class AppContext(
   val legacyModuleRegistry: expo.modules.core.ModuleRegistry,
   private val reactContextHolder: WeakReference<ReactApplicationContext>
 ) : CurrentActivityProvider {
+  val jniDeallocator: JNIDeallocator = JNIDeallocator()
+
   val registry = ModuleRegistry(WeakReference(this))
   private val reactLifecycleDelegate = ReactLifecycleDelegate(this)
 
   // We postpone creating the `JSIInteropModuleRegistry` to not load so files in unit tests.
   internal lateinit var jsiInterop: JSIInteropModuleRegistry
-
-  /**
-   * The core module that defines the `expo` object in the global scope of the JS runtime.
-   *
-   * Note: in current implementation this module won't receive any events.
-   */
-  internal val coreModule = run {
-    val module = CoreModule()
-    module._appContext = this
-    ModuleHolder(module)
-  }
 
   internal val sharedObjectRegistry = SharedObjectRegistry()
 
@@ -106,12 +98,21 @@ class AppContext(
       CoroutineName("expo.modules.MainQueue")
   )
 
-  val jniDeallocator: JNIDeallocator = JNIDeallocator()
-
   internal var legacyModulesProxyHolder: WeakReference<NativeModulesProxy>? = null
 
   private val activityResultsManager = ActivityResultsManager(this)
   internal val appContextActivityResultCaller = DefaultAppContextActivityResultCaller(activityResultsManager)
+
+  /**
+   * The core module that defines the `expo` object in the global scope of the JS runtime.
+   *
+   * Note: in current implementation this module won't receive any events.
+   */
+  internal val coreModule = run {
+    val module = CoreModule()
+    module._appContext = this
+    ModuleHolder(module)
+  }
 
   init {
     requireNotNull(reactContextHolder.get()) {
@@ -383,4 +384,10 @@ class AppContext(
     }
 
 // endregion
+
+  companion object {
+    init {
+      SoLoader.loadLibrary("expo-modules-core")
+    }
+  }
 }

@@ -75,6 +75,11 @@ class JavaScriptModuleObject(
     setter: JNIFunctionBody?
   )
 
+  external fun registerConstProperty(
+    name: String,
+    value: Any
+  )
+
   external fun registerClass(name: String, classModule: JavaScriptModuleObject, takesOwner: Boolean, args: Int, desiredTypes: Array<ExpectedType>, body: JNIFunctionBody)
 
   external fun registerViewPrototype(viewPrototype: JavaScriptModuleObject)

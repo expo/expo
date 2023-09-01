@@ -10,7 +10,7 @@ class ObjectDefinitionData(
   val syncFunctions: Map<String, SyncFunctionComponent>,
   val asyncFunctions: Map<String, BaseAsyncFunctionComponent>,
   val eventsDefinition: EventsDefinition?,
-  val properties: Map<String, PropertyComponent>
+  val properties: Map<String, AnyProperty>
 ) {
   val functions
     get() = ConcatIterator(syncFunctions.values.iterator(), asyncFunctions.values.iterator())
