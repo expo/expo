@@ -69,6 +69,7 @@ export function createRouteHandlerMiddleware(
 
     let functionRoute: ExpoRouterServerManifestV1Route<RegExp> | null = null;
 
+    const notFoundManifest = manifest?.notFoundRoutes;
     const staticManifest = manifest?.staticRoutes;
     const dynamicManifest = manifest?.dynamicRoutes;
 
@@ -82,16 +83,16 @@ export function createRouteHandlerMiddleware(
     if (req.method === 'GET' || req.method === 'HEAD') {
       for (const route of staticManifest) {
         if (route.namedRegex.test(sanitizedPathname)) {
-          if (
-            // Skip the 404 page if there's a function
-            route.generated &&
-            // TODO: Add a proper 404 convention.
-            route.page.match(/^\.\/\[\.\.\.404]$/)
-          ) {
-            if (functionRoute) {
-              continue;
-            }
-          }
+          // if (
+          //   // Skip the 404 page if there's a function
+          //   route.generated &&
+          //   // TODO: Add a proper 404 convention.
+          //   route.page.match(/^\.\/\[\.\.\.404]$/)
+          // ) {
+          //   if (functionRoute) {
+          //     continue;
+          //   }
+          // }
 
           try {
             const { getStaticContent } = await getStaticRenderFunctions(projectRoot, devServerUrl, {
@@ -143,6 +144,62 @@ export function createRouteHandlerMiddleware(
     }
 
     if (!functionRoute) {
+      if (req.method === 'GET' || req.method === 'HEAD') {
+        for (const route of notFoundManifest) {
+          if (route.namedRegex.test(sanitizedPathname)) {
+            try {
+              const { getStaticContent } = await getStaticRenderFunctions(
+                projectRoot,
+                devServerUrl,
+                {
+                  minify: options.mode === 'production',
+                  dev: options.mode !== 'production',
+                  // Ensure the API Routes are included
+                  environment: 'node',
+                }
+              );
+
+              let content = await getStaticContent(location);
+
+              //TODO: Not this -- disable injection some other way
+              if (options.mode !== 'production') {
+                // Add scripts for rehydration
+                // TODO: bundle split
+                content = content.replace(
+                  '</body>',
+                  [`<script src="${options.getWebBundleUrl()}" defer></script>`].join('\n') +
+                    '</body>'
+                );
+              }
+
+              res.setHeader('Content-Type', 'text/html');
+              res.end(content);
+              return;
+            } catch (error: any) {
+              res.setHeader('Content-Type', 'text/html');
+              try {
+                res.end(
+                  await getErrorOverlayHtmlAsync({
+                    error,
+                    projectRoot,
+                  })
+                );
+              } catch (staticError: any) {
+                // Fallback error for when Expo Router is misconfigured in the project.
+                res.end(
+                  '<span><h3>Internal Error:</h3><b>Project is not setup correctly for static rendering (check terminal for more info):</b><br/>' +
+                    error.message +
+                    '<br/><br/>' +
+                    staticError.message +
+                    '</span>'
+                );
+              }
+            }
+            return;
+          }
+        }
+      }
+
       return next();
     }
 

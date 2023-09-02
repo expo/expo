@@ -20,6 +20,7 @@ export type ExpoRouterServerManifestV1<TRegex = string> = {
   staticHtmlPaths: string[];
   dynamicRoutes: ExpoRouterServerManifestV1Route<TRegex>[];
   staticRoutes: ExpoRouterServerManifestV1Route<TRegex>[];
+  notFoundRoutes: ExpoRouterServerManifestV1Route<TRegex>[];
 };
 
 export type LoadManifestResult<TRegex = string> = {
@@ -110,6 +111,12 @@ export function inflateManifest(json: any): ExpoRouterServerManifestV1<RegExp> {
     };
   });
   json.dynamicRoutes = json.dynamicRoutes?.map((value: any) => {
+    return {
+      ...value,
+      namedRegex: new RegExp(value.namedRegex),
+    };
+  });
+  json.notFoundRoutes = json.notFoundRoutes?.map((value: any) => {
     return {
       ...value,
       namedRegex: new RegExp(value.namedRegex),

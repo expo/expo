@@ -7,7 +7,8 @@
  *
  * Based on https://github.com/vercel/next.js/blob/1df2686bc9964f1a86c444701fa5cbf178669833/packages/next/src/shared/lib/router/utils/route-regex.ts
  */
-import { RouteNode, sortRoutes } from './Route';
+import type { RouteNode } from './Route';
+import { sortRoutes } from './sortRoutes';
 import { getContextKey } from './matchers';
 
 export interface Group {
@@ -46,6 +47,13 @@ export function getMatchableManifest(route: RouteNode) {
 function isApiRoute(route: RouteNode) {
   return !route.children.length && !!route.contextKey.match(/\+api\.[jt]sx?$/);
 }
+function isNotFoundRoute(route: RouteNode) {
+  if (route.route === '404') {
+    return true;
+  }
+  return route.dynamic?.length && route.dynamic[0].name === '404';
+  // return !route.children.length && !!route.contextKey.match(/\+api\.[jt]sx?$/);
+}
 // Given a nested route tree, return a flattened array of all routes that can be matched.
 export function getServerManifest(route: RouteNode) {
   function getFlatNodes(route: RouteNode): [string, RouteNode][] {
@@ -65,13 +73,18 @@ export function getServerManifest(route: RouteNode) {
 
   const apiRoutes = flat.filter(([, route]) => isApiRoute(route));
   const otherRoutes = flat.filter(([, route]) => !isApiRoute(route));
+  const standardRoutes = otherRoutes.filter(([, route]) => !isNotFoundRoute(route));
+  const notFoundRoutes = otherRoutes.filter(([, route]) => isNotFoundRoute(route));
 
   return {
     dynamicRoutes: getMatchableManifestForPaths(
       apiRoutes.map(([normalizedRoutePath, node]) => [normalizedRoutePath, node])
     ),
     staticRoutes: getMatchableManifestForPaths(
-      otherRoutes.map(([normalizedRoutePath, node]) => [normalizedRoutePath, node])
+      standardRoutes.map(([normalizedRoutePath, node]) => [normalizedRoutePath, node])
+    ),
+    notFoundRoutes: getMatchableManifestForPaths(
+      notFoundRoutes.map(([normalizedRoutePath, node]) => [normalizedRoutePath, node])
     ),
   };
 }
