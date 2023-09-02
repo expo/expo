@@ -15,7 +15,7 @@ public final class AccelerometerModule: Module {
     Events(EVENT_ACCELEROMETER_DID_UPDATE)
 
     AsyncFunction("isAvailableAsync") {
-      return motionManager.isAccelerometerActive
+      return motionManager.isAccelerometerAvailable
     }
 
     AsyncFunction("setUpdateInterval") { (intervalMs: Double) in
