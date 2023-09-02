@@ -75,9 +75,9 @@ public final class DeviceMotionModule: Module {
           "gamma": attitude.roll
         ],
         "rotationRate": [
-          "alpha": radiansToDegrees(rotationRate.x),
+          "alpha": radiansToDegrees(rotationRate.z),
           "beta": radiansToDegrees(rotationRate.y),
-          "gamma": radiansToDegrees(rotationRate.z)
+          "gamma": radiansToDegrees(rotationRate.x)
         ],
         "orientation": getDeviceOrientationRotation(),
         "interval": Double(self.motionManager.deviceMotionUpdateInterval)
