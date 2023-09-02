@@ -10,6 +10,7 @@
 
 ### 🎉 New features
 
+- Add types for the `unstable_styles` export of CSS Modules.
 - Tree shake error symbolication code in production. ([#24215](https://github.com/expo/expo/pull/24215) by [@EvanBacon](https://github.com/EvanBacon))
 - Add static font extraction support with `expo-font`. ([#24027](https://github.com/expo/expo/pull/24027) by [@EvanBacon](https://github.com/EvanBacon))
 
