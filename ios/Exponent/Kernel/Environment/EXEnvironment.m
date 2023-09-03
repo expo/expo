@@ -46,14 +46,9 @@ NSString * const kEXEmbeddedManifestResourceName = @"shell-app-manifest";
 
 - (void)_reset
 {
-  _standaloneManifestUrl = nil;
   _urlScheme = nil;
-  _areRemoteUpdatesEnabled = YES;
-  _updatesCheckAutomatically = YES;
-  _updatesFallbackToCacheTimeout = @(0);
   _allManifestUrls = @[];
   _isDebugXCodeScheme = NO;
-  _releaseChannel = @"default";
 }
 
 - (void)_loadDefaultConfig
@@ -119,26 +114,6 @@ NSString * const kEXEmbeddedManifestResourceName = @"shell-app-manifest";
   _allManifestUrls = allManifestUrls;
 }
 
-- (void)_loadProductionUrlFromConfig:(NSDictionary *)shellConfig
-{
-  _standaloneManifestUrl = shellConfig[@"manifestUrl"];
-  if ([ExpoKit sharedInstance].publishedManifestUrlOverride) {
-    _standaloneManifestUrl = [ExpoKit sharedInstance].publishedManifestUrlOverride;
-  }
-}
-
-- (void)_loadDetachedDevelopmentUrl:(NSString *)expoKitDevelopmentUrl
-{
-  if (expoKitDevelopmentUrl) {
-    _standaloneManifestUrl = expoKitDevelopmentUrl;
-  } else {
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                   reason:@"You are running a detached app from Xcode, but it hasn't been configured for local development yet. "
-                                           "You must run a packager for this Expo project before running it from XCode."
-                                 userInfo:nil];
-  }
-}
-
 - (void)_loadUrlSchemeFromInfoPlist:(NSDictionary *)infoPlist
 {
   if (infoPlist[@"CFBundleURLTypes"]) {
@@ -158,27 +133,6 @@ NSString * const kEXEmbeddedManifestResourceName = @"shell-app-manifest";
       }
     }
   }
-}
-
-- (void)_loadMiscPropertiesWithConfig:(NSDictionary *)shellConfig andInfoPlist:(NSDictionary *)infoPlist
-{
-  _isManifestVerificationBypassed = [shellConfig[@"isManifestVerificationBypassed"] boolValue];
-  _areRemoteUpdatesEnabled = (shellConfig[@"areRemoteUpdatesEnabled"] == nil)
-    ? YES
-    : [shellConfig[@"areRemoteUpdatesEnabled"] boolValue];
-  _updatesCheckAutomatically = (shellConfig[@"updatesCheckAutomatically"] == nil)
-    ? YES
-    : [shellConfig[@"updatesCheckAutomatically"] boolValue];
-  _updatesFallbackToCacheTimeout = (shellConfig[@"updatesFallbackToCacheTimeout"] &&
-                                    [shellConfig[@"updatesFallbackToCacheTimeout"] isKindOfClass:[NSNumber class]])
-    ? shellConfig[@"updatesFallbackToCacheTimeout"]
-    : @(0);
-  if (infoPlist[@"ExpoReleaseChannel"]) {
-    _releaseChannel = infoPlist[@"ExpoReleaseChannel"];
-  } else {
-    _releaseChannel = (shellConfig[@"releaseChannel"] == nil) ? @"default" : shellConfig[@"releaseChannel"];
-  }
-  // other shell config goes here
 }
 
 - (void)_loadEmbeddedBundleUrlWithManifest:(NSDictionary *)manifest

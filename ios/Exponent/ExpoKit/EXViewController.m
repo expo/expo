@@ -36,9 +36,8 @@
 
 - (void)createRootAppAndMakeVisible
 {
-  NSURL *standaloneAppUrl = [NSURL URLWithString:[EXEnvironment sharedEnvironment].standaloneManifestUrl];
   NSDictionary *initialProps = [[EXKernel sharedInstance] initialAppPropsFromLaunchOptions:[ExpoKit sharedInstance].launchOptions];
-  EXKernelAppRecord *appRecord = [[EXKernel sharedInstance] createNewAppWithUrl:standaloneAppUrl
+  EXKernelAppRecord *appRecord = [[EXKernel sharedInstance] createNewAppWithUrl:nil
                                                                    initialProps:initialProps];
 
   UIViewController *viewControllerToShow = (UIViewController *)appRecord.viewController;
