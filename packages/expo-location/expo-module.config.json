@@ -1,6 +1,17 @@
+<<<<<<< HEAD
 {
   "platforms": ["ios", "android"],
   "android": {
     "modules": ["expo.modules.location.LocationModule"]
   }
 }
+||||||| parent of 36e847edb8 (expo-module.config.json)
+=======
+{
+  "name": "expo-location",
+  "platforms": ["ios", "android"],
+  "ios": {
+    "modules": ["LocationModule"]
+  }
+}
+>>>>>>> 36e847edb8 (expo-module.config.json)
