@@ -63,7 +63,7 @@ describe('_getProjectOptionsAsync', () => {
 
     const middleware = new InterstitialPageMiddleware('/');
 
-    expect(middleware._getProjectOptionsAsync('ios')).toEqual({
+    expect(await middleware._getProjectOptionsAsync('ios')).toEqual({
       appName: 'my-app',
       projectVersion: {
         type: 'runtime',
@@ -82,7 +82,7 @@ describe('_getProjectOptionsAsync', () => {
 
     const middleware = new InterstitialPageMiddleware('/');
 
-    expect(middleware._getProjectOptionsAsync('ios')).toEqual({
+    expect(await middleware._getProjectOptionsAsync('ios')).toEqual({
       appName: 'my-app',
       projectVersion: {
         type: 'sdk',
