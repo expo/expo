@@ -59,7 +59,7 @@ describe('Android Updates config', () => {
         },
       },
     };
-    androidManifestJson = await Updates.setUpdatesConfig(
+    androidManifestJson = await Updates.setUpdatesConfigAsync(
       '/app',
       config,
       androidManifestJson,
@@ -212,7 +212,7 @@ describe('Android Updates config', () => {
           policy: 'appVersion',
         },
       };
-      androidManifestJson = await Updates.setUpdatesConfig(
+      androidManifestJson = await Updates.setUpdatesConfigAsync(
         '/app',
         config,
         androidManifestJson,
@@ -235,7 +235,7 @@ describe('Android Updates config', () => {
       const config = {
         runtimeVersion: '1.10',
       };
-      await Updates.applyRuntimeVersionFromConfig(config, stringsJSON);
+      await Updates.applyRuntimeVersionFromConfigAsync(config, stringsJSON);
       expect(format(stringsJSON)).toEqual(
         '<resources>\n  <string name="expo_runtime_version">1.10</string>\n</resources>'
       );
@@ -243,7 +243,7 @@ describe('Android Updates config', () => {
       const config2 = {
         sdkVersion: '1.10',
       };
-      await Updates.applyRuntimeVersionFromConfig(config2, stringsJSON);
+      await Updates.applyRuntimeVersionFromConfigAsync(config2, stringsJSON);
       expect(format(stringsJSON)).toEqual('<resources/>');
     });
 

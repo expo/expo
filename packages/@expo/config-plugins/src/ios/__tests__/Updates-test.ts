@@ -26,7 +26,7 @@ describe('iOS Updates config', () => {
       '/app/hello': fsReal.readFileSync(sampleCodeSigningCertificatePath, 'utf-8'),
     });
 
-    const config = await Updates.setUpdatesConfig(
+    const config = await Updates.setUpdatesConfigAsync(
       '/app',
       {
         sdkVersion: '37.0.0',

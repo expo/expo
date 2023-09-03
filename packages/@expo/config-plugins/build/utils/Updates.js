@@ -6,8 +6,8 @@ Object.defineProperty(exports, "__esModule", {
 exports.getAppVersion = getAppVersion;
 exports.getExpoUpdatesPackageVersion = getExpoUpdatesPackageVersion;
 exports.getNativeVersion = getNativeVersion;
-exports.getRuntimeVersion = getRuntimeVersion;
-exports.getRuntimeVersionNullable = getRuntimeVersionNullable;
+exports.getRuntimeVersionAsync = getRuntimeVersionAsync;
+exports.getRuntimeVersionNullableAsync = getRuntimeVersionNullableAsync;
 exports.getSDKVersion = getSDKVersion;
 exports.getUpdateUrl = getUpdateUrl;
 exports.getUpdatesCheckOnLaunch = getUpdatesCheckOnLaunch;
@@ -18,7 +18,7 @@ exports.getUpdatesEnabled = getUpdatesEnabled;
 exports.getUpdatesRequestHeaders = getUpdatesRequestHeaders;
 exports.getUpdatesRequestHeadersStringified = getUpdatesRequestHeadersStringified;
 exports.getUpdatesTimeout = getUpdatesTimeout;
-exports.withRuntimeVersion = void 0;
+exports.withRuntimeVersionAsync = void 0;
 function Fingerprint() {
   const data = _interopRequireWildcard(require("@expo/fingerprint"));
   Fingerprint = function () {
@@ -118,11 +118,11 @@ function getNativeVersion(config, platform) {
  * Compute runtime version policies.
  * @return an expoConfig with only string valued platform specific runtime versions.
  */
-const withRuntimeVersion = async config => {
+const withRuntimeVersionAsync = async config => {
   var _config$_internal, _config$ios, _config$android;
   const projectRoot = (_config$_internal = config._internal) === null || _config$_internal === void 0 ? void 0 : _config$_internal.projectRoot;
   if ((_config$ios = config.ios) !== null && _config$ios !== void 0 && _config$ios.runtimeVersion || config.runtimeVersion) {
-    const runtimeVersion = await getRuntimeVersion(projectRoot, config, 'ios');
+    const runtimeVersion = await getRuntimeVersionAsync(projectRoot, config, 'ios');
     if (runtimeVersion) {
       config.ios = {
         ...config.ios,
@@ -131,7 +131,7 @@ const withRuntimeVersion = async config => {
     }
   }
   if ((_config$android = config.android) !== null && _config$android !== void 0 && _config$android.runtimeVersion || config.runtimeVersion) {
-    const runtimeVersion = await getRuntimeVersion(projectRoot, config, 'android');
+    const runtimeVersion = await getRuntimeVersionAsync(projectRoot, config, 'android');
     if (runtimeVersion) {
       config.android = {
         ...config.android,
@@ -142,10 +142,10 @@ const withRuntimeVersion = async config => {
   delete config.runtimeVersion;
   return config;
 };
-exports.withRuntimeVersion = withRuntimeVersion;
-async function getRuntimeVersionNullable(...[projectRoot, config, platform]) {
+exports.withRuntimeVersionAsync = withRuntimeVersionAsync;
+async function getRuntimeVersionNullableAsync(...[projectRoot, config, platform]) {
   try {
-    return await getRuntimeVersion(projectRoot, config, platform);
+    return await getRuntimeVersionAsync(projectRoot, config, platform);
   } catch (e) {
     if ((0, _getenv().boolish)('EXPO_DEBUG', false)) {
       console.log(e);
@@ -153,7 +153,7 @@ async function getRuntimeVersionNullable(...[projectRoot, config, platform]) {
     return null;
   }
 }
-async function getRuntimeVersion(projectRoot, config, platform) {
+async function getRuntimeVersionAsync(projectRoot, config, platform) {
   var _config$platform$runt, _config$platform;
   const runtimeVersion = (_config$platform$runt = (_config$platform = config[platform]) === null || _config$platform === void 0 ? void 0 : _config$platform.runtimeVersion) !== null && _config$platform$runt !== void 0 ? _config$platform$runt : config.runtimeVersion;
   if (!runtimeVersion) {

@@ -60,10 +60,12 @@ export function getNativeVersion(
  * Compute runtime version policies.
  * @return an expoConfig with only string valued platform specific runtime versions.
  */
-export const withRuntimeVersion: (config: ExpoConfig) => Promise<ExpoConfig> = async (config) => {
+export const withRuntimeVersionAsync: (config: ExpoConfig) => Promise<ExpoConfig> = async (
+  config
+) => {
   const projectRoot = config._internal?.projectRoot;
   if (config.ios?.runtimeVersion || config.runtimeVersion) {
-    const runtimeVersion = await getRuntimeVersion(projectRoot, config, 'ios');
+    const runtimeVersion = await getRuntimeVersionAsync(projectRoot, config, 'ios');
     if (runtimeVersion) {
       config.ios = {
         ...config.ios,
@@ -72,7 +74,7 @@ export const withRuntimeVersion: (config: ExpoConfig) => Promise<ExpoConfig> = a
     }
   }
   if (config.android?.runtimeVersion || config.runtimeVersion) {
-    const runtimeVersion = await getRuntimeVersion(projectRoot, config, 'android');
+    const runtimeVersion = await getRuntimeVersionAsync(projectRoot, config, 'android');
     if (runtimeVersion) {
       config.android = {
         ...config.android,
@@ -84,11 +86,11 @@ export const withRuntimeVersion: (config: ExpoConfig) => Promise<ExpoConfig> = a
   return config;
 };
 
-export async function getRuntimeVersionNullable(
-  ...[projectRoot, config, platform]: Parameters<typeof getRuntimeVersion>
+export async function getRuntimeVersionNullableAsync(
+  ...[projectRoot, config, platform]: Parameters<typeof getRuntimeVersionAsync>
 ): Promise<string | null> {
   try {
-    return await getRuntimeVersion(projectRoot, config, platform);
+    return await getRuntimeVersionAsync(projectRoot, config, platform);
   } catch (e) {
     if (boolish('EXPO_DEBUG', false)) {
       console.log(e);
@@ -97,7 +99,7 @@ export async function getRuntimeVersionNullable(
   }
 }
 
-export async function getRuntimeVersion(
+export async function getRuntimeVersionAsync(
   projectRoot: string,
   config: Pick<ExpoConfig, 'version' | 'runtimeVersion' | 'sdkVersion'> & {
     android?: Pick<Android, 'versionCode' | 'runtimeVersion'>;

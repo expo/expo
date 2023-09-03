@@ -8,7 +8,7 @@ import { withExpoPlist } from '../plugins/ios-plugins';
 import {
   ExpoConfigUpdates,
   getExpoUpdatesPackageVersion,
-  getRuntimeVersionNullable,
+  getRuntimeVersionNullableAsync,
   getSDKVersion,
   getUpdatesCheckOnLaunch,
   getUpdatesCodeSigningCertificate,
@@ -41,7 +41,7 @@ export const withUpdates: ConfigPlugin = (config) => {
   return withExpoPlist(config, async (config) => {
     const projectRoot = config.modRequest.projectRoot;
     const expoUpdatesPackageVersion = getExpoUpdatesPackageVersion(projectRoot);
-    config.modResults = await setUpdatesConfig(
+    config.modResults = await setUpdatesConfigAsync(
       projectRoot,
       config,
       config.modResults,
@@ -51,7 +51,7 @@ export const withUpdates: ConfigPlugin = (config) => {
   });
 };
 
-export async function setUpdatesConfig(
+export async function setUpdatesConfigAsync(
   projectRoot: string,
   config: ExpoConfigUpdates,
   expoPlist: ExpoPlist,
@@ -92,17 +92,17 @@ export async function setUpdatesConfig(
     delete newExpoPlist[Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY];
   }
 
-  return await setVersionsConfig(projectRoot, config, newExpoPlist);
+  return await setVersionsConfigAsync(projectRoot, config, newExpoPlist);
 }
 
-export async function setVersionsConfig(
+export async function setVersionsConfigAsync(
   projectRoot: string,
   config: ExpoConfigUpdates,
   expoPlist: ExpoPlist
 ): Promise<ExpoPlist> {
   const newExpoPlist = { ...expoPlist };
 
-  const runtimeVersion = await getRuntimeVersionNullable(projectRoot, config, 'ios');
+  const runtimeVersion = await getRuntimeVersionNullableAsync(projectRoot, config, 'ios');
   if (!runtimeVersion && expoPlist[Config.RUNTIME_VERSION]) {
     throw new Error(
       'A runtime version is set in your Expo.plist, but is missing from your app.json/app.config.js. Please either set runtimeVersion in your app.json/app.config.js or remove EXUpdatesRuntimeVersion from your Expo.plist.'
@@ -202,7 +202,7 @@ export function isPlistConfigurationSet(expoPlist: ExpoPlist): boolean {
   );
 }
 
-export async function isPlistConfigurationSynced(
+export async function isPlistConfigurationSyncedAsync(
   projectRoot: string,
   config: ExpoConfigUpdates,
   expoPlist: ExpoPlist
@@ -215,16 +215,16 @@ export async function isPlistConfigurationSynced(
     getUpdatesCodeSigningCertificate(projectRoot, config) ===
       expoPlist.EXUpdatesCodeSigningCertificate &&
     getUpdatesCodeSigningMetadata(config) === expoPlist.EXUpdatesCodeSigningMetadata &&
-    (await isPlistVersionConfigurationSynced(projectRoot, config, expoPlist))
+    (await isPlistVersionConfigurationSyncedAsync(projectRoot, config, expoPlist))
   );
 }
 
-export async function isPlistVersionConfigurationSynced(
+export async function isPlistVersionConfigurationSyncedAsync(
   projectRoot: string,
   config: Pick<ExpoConfigUpdates, 'sdkVersion' | 'runtimeVersion'>,
   expoPlist: ExpoPlist
 ): Promise<boolean> {
-  const expectedRuntimeVersion = await getRuntimeVersionNullable(projectRoot, config, 'ios');
+  const expectedRuntimeVersion = await getRuntimeVersionNullableAsync(projectRoot, config, 'ios');
   const expectedSdkVersion = getSDKVersion(config);
 
   const currentRuntimeVersion = expoPlist.EXUpdatesRuntimeVersion ?? null;
