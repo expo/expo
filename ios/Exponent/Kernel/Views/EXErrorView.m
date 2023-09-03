@@ -141,7 +141,7 @@
 {
   EXKernelAppRecord *homeRecord = [EXKernel sharedInstance].appRegistry.homeAppRecord;
   _btnBack.hidden = (!homeRecord || _appRecord == homeRecord);
-  _lblUrl.hidden = (!homeRecord && ![self _isDevDetached]);
+  _lblUrl.hidden = !homeRecord;
   _lblUrl.text = _appRecord.appLoader.manifestUrl.absoluteString;
   // TODO: maybe hide retry (see BrowserErrorView)
   [self setNeedsLayout];
@@ -171,11 +171,6 @@
       [url rangeOfString:@"172."].length > 0
     )
   );
-}
-
-- (BOOL)_isDevDetached
-{
-  return [EXEnvironment sharedEnvironment].isDetached && [EXEnvironment sharedEnvironment].isDebugXCodeScheme;
 }
 
 // for creating a filled button background in iOS < 15

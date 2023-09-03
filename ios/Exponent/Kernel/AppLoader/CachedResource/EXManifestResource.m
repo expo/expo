@@ -34,16 +34,7 @@ NSString * const EXRuntimeErrorDomain = @"incompatible-runtime";
   _originalUrl = originalUrl;
   _canBeWrittenToCache = NO;
   
-  NSString *resourceName;
-  if ([EXEnvironment sharedEnvironment].isDetached && [originalUrl.absoluteString isEqual:[EXEnvironment sharedEnvironment].standaloneManifestUrl]) {
-    resourceName = kEXEmbeddedManifestResourceName;
-    if ([EXEnvironment sharedEnvironment].releaseChannel){
-      self.releaseChannel = [EXEnvironment sharedEnvironment].releaseChannel;
-    }
-    NSLog(@"EXManifestResource: Standalone manifest remote url is %@ (%@)", url, originalUrl);
-  } else {
-    resourceName = [EXKernelLinkingManager linkingUriForExperienceUri:url useLegacy:YES];
-  }
+  NSString *resourceName = [EXKernelLinkingManager linkingUriForExperienceUri:url useLegacy:YES];
   
   if (self = [super initWithResourceName:resourceName resourceType:@"json" remoteUrl:url cachePath:[[self class] cachePath]]) {
     self.shouldVersionCache = NO;
@@ -141,7 +132,7 @@ NSString * const EXRuntimeErrorDomain = @"incompatible-runtime";
     };
     
     if ([self _isManifestVerificationBypassed:manifestObj]) {
-      if ([self _isThirdPartyHosted] && ![EXEnvironment sharedEnvironment].isDetached){
+      if ([self _isThirdPartyHosted]) {
         // the manifest id determines the namespace/experience id an app is sandboxed with
         // if manifest is hosted by third parties, we sandbox it with the hostname to avoid clobbering exp.host namespaces
         // for https urls, sandboxed id is of form quinlanj.github.io/myProj-myApp

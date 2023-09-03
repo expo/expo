@@ -162,26 +162,22 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandl
 {
   if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
     NSURL *webpageURL = userActivity.webpageURL;
-    if ([EXEnvironment sharedEnvironment].isDetached) {
-      return [EXKernelLinkingManager application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
+    NSString *path = [webpageURL path];
+
+    // Filter out URLs that don't match experience URLs since the AASA pattern's grammar is not as
+    // expressive as we'd like and matches profile URLs too
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^/@[a-z0-9_-]+/.+$"
+                                                                           options:NSRegularExpressionCaseInsensitive
+                                                                             error:nil];
+    NSUInteger matchCount = [regex numberOfMatchesInString:path options:0 range:NSMakeRange(0, path.length)];
+
+    if (matchCount > 0) {
+      [EXKernelLinkingManager application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
+      return YES;
     } else {
-      NSString *path = [webpageURL path];
-      
-      // Filter out URLs that don't match experience URLs since the AASA pattern's grammar is not as
-      // expressive as we'd like and matches profile URLs too
-      NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^/@[a-z0-9_-]+/.+$"
-                                                                             options:NSRegularExpressionCaseInsensitive
-                                                                               error:nil];
-      NSUInteger matchCount = [regex numberOfMatchesInString:path options:0 range:NSMakeRange(0, path.length)];
-      
-      if (matchCount > 0) {
-        [EXKernelLinkingManager application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
+      if (![path isEqualToString:@"/expo-go"]) {
+        [application openURL:webpageURL options:@{} completionHandler:nil];
         return YES;
-      } else {
-        if (![path isEqualToString:@"/expo-go"]) {
-          [application openURL:webpageURL options:@{} completionHandler:nil];
-          return YES;
-        }
       }
     }
   }

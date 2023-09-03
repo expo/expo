@@ -239,10 +239,6 @@ typedef void(^EXRemoteNotificationAPNSTokenHandler)(NSData * _Nullable apnsToken
 
 - (BOOL)supportsCurrentRuntimeEnvironment
 {
-  if (![EXEnvironment sharedEnvironment].isDetached) {
-    return YES;
-  }
-
 #ifdef EX_DETACHED_SERVICE
   BOOL isBuiltByService = YES;
 #else

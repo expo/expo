@@ -20,10 +20,6 @@ static NSString * const scopedIdentifierSeparator = @":";
 
 - (EXPendingNotification *)initialNotification
 {
-  if ([EXEnvironment sharedEnvironment].isDetached) {
-    return _pendingNotification;
-  }
-
   return nil;
 }
 
@@ -31,17 +27,11 @@ static NSString * const scopedIdentifierSeparator = @":";
 
 - (NSString *)internalIdForIdentifier:(NSString *)identifier scopeKey:(nonnull NSString *)scopeKey
 {
-  if ([EXEnvironment sharedEnvironment].isDetached) {
-    return identifier;
-  }
   return [NSString stringWithFormat:@"%@%@%@", scopeKey, scopedIdentifierSeparator, identifier];
 }
 
 - (NSString *)exportedIdForInternalIdentifier:(NSString *)identifier
 {
-  if ([EXEnvironment sharedEnvironment].isDetached) {
-    return identifier;
-  }
   NSArray<NSString *> *components = [identifier componentsSeparatedByString:scopedIdentifierSeparator];
   return [[components subarrayWithRange:NSMakeRange(1, components.count - 1)] componentsJoinedByString:scopedIdentifierSeparator];
 }
@@ -51,9 +41,6 @@ static NSString * const scopedIdentifierSeparator = @":";
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler
 {
   EXPendingNotification *pendingNotification = [[EXPendingNotification alloc] initWithNotificationResponse:response identifiersManager:self];
-  if (![[EXKernel sharedInstance] sendNotification:pendingNotification] && [EXEnvironment sharedEnvironment].isDetached) {
-    _pendingNotification = pendingNotification;
-  }
   completionHandler();
 }
 
@@ -83,10 +70,6 @@ static NSString * const scopedIdentifierSeparator = @":";
   // If the app is active we do not show the alert, but we deliver the notification to the experience.
 
   EXPendingNotification *pendingNotification = [[EXPendingNotification alloc] initWithNotification:notification];
-  if (![[EXKernel sharedInstance] sendNotification:pendingNotification] && [EXEnvironment sharedEnvironment].isDetached) {
-    _pendingNotification = pendingNotification;
-  }
-
   completionHandler(UNNotificationPresentationOptionNone);
 }
 

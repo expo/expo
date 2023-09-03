@@ -212,8 +212,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 - (void)_beginRequestWithRemoteManifest
 {
   // if we're in dev mode, don't try loading cached manifest
-  if ([self.httpManifestUrl.host isEqualToString:@"localhost"]
-      || ([EXEnvironment sharedEnvironment].isDetached && [EXEnvironment sharedEnvironment].isDebugXCodeScheme)) {
+  if ([self.httpManifestUrl.host isEqualToString:@"localhost"]) {
     // we can't pre-detect if this person is using a developer tool, but using localhost is a pretty solid indicator.
     [self _startAppFetcher:[[EXAppFetcherDevelopmentMode alloc] initWithAppLoader:self]];
   } else {
@@ -270,9 +269,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   }
 
   // only support checkAutomatically: ON_ERROR_RECOVERY in detached apps
-  if (![EXEnvironment sharedEnvironment].isDetached) {
-    shouldCheckForUpdate = YES;
-  }
+  shouldCheckForUpdate = YES;
 
   // if this experience id encountered a loading error before,
   // we should always check for an update, even if the manifest says not to
@@ -282,8 +279,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
   // if remote updates are disabled, or we're using `reloadFromCache`, don't check for an update.
   // these checks need to be here because they need to happen after the dev mode check above.
-  if (self.shouldUseCacheOnly ||
-      ([EXEnvironment sharedEnvironment].isDetached && ![EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled)) {
+  if (self.shouldUseCacheOnly) {
     shouldCheckForUpdate = NO;
   }
 
@@ -452,14 +448,6 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
     success([EXManifestsManifestFactory manifestForManifestJSON:[NSDictionary dictionaryWithDictionary:mutableManifestJSON]]);
   } errorBlock:^(NSError * _Nonnull error) {
-#if DEBUG
-    if ([EXEnvironment sharedEnvironment].isDetached && error &&
-        (error.code == 404 || error.domain == EXNetworkErrorDomain)) {
-      NSString *message = error.localizedDescription;
-      message = [NSString stringWithFormat:@"Make sure you are serving your project with Expo CLI (%@)", message];
-      error = [NSError errorWithDomain:error.domain code:error.code userInfo:@{ NSLocalizedDescriptionKey: message }];
-    }
-#endif
     failure(error);
   }];
 }

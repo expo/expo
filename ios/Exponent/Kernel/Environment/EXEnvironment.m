@@ -46,7 +46,6 @@ NSString * const kEXEmbeddedManifestResourceName = @"shell-app-manifest";
 
 - (void)_reset
 {
-  _isDetached = NO;
   _standaloneManifestUrl = nil;
   _urlScheme = nil;
   _areRemoteUpdatesEnabled = YES;
@@ -82,9 +81,6 @@ NSString * const kEXEmbeddedManifestResourceName = @"shell-app-manifest";
   }
   
   BOOL isDetached = NO;
-#ifdef EX_DETACHED
-  isDetached = YES;
-#endif
   
   BOOL isDebugXCodeScheme = NO;
 #if DEBUG
@@ -102,7 +98,6 @@ NSString * const kEXEmbeddedManifestResourceName = @"shell-app-manifest";
            withInfoPlist:infoPlist
        withExpoKitDevUrl:expoKitDevelopmentUrl
     withEmbeddedManifest:embeddedManifest
-              isDetached:isDetached
       isDebugXCodeScheme:isDebugXCodeScheme
             isUserDetach:isUserDetach];
 }
@@ -111,45 +106,15 @@ NSString * const kEXEmbeddedManifestResourceName = @"shell-app-manifest";
            withInfoPlist:(NSDictionary *)infoPlist
        withExpoKitDevUrl:(NSString *)expoKitDevelopmentUrl
     withEmbeddedManifest:(NSDictionary *)embeddedManifest
-              isDetached:(BOOL)isDetached
       isDebugXCodeScheme:(BOOL)isDebugScheme
             isUserDetach:(BOOL)isUserDetach
 {
   [self _reset];
   NSMutableArray *allManifestUrls = [NSMutableArray array];
-  _isDetached = isDetached;
   _isDebugXCodeScheme = isDebugScheme;
 
   if (shellConfig) {
     _testEnvironment = [EXTest testEnvironmentFromString:shellConfig[@"testEnvironment"]];
-
-    if (_isDetached) {
-      // configure published shell url
-      [self _loadProductionUrlFromConfig:shellConfig];
-      if (_standaloneManifestUrl) {
-        [allManifestUrls addObject:_standaloneManifestUrl];
-      }
-      if (isDetached && isDebugScheme) {
-        // local detach development: point shell manifest url at local development url
-        [self _loadDetachedDevelopmentUrl:expoKitDevelopmentUrl];
-        if (_standaloneManifestUrl) {
-          [allManifestUrls addObject:_standaloneManifestUrl];
-        }
-      }
-      // load standalone url scheme
-      [self _loadUrlSchemeFromInfoPlist:infoPlist];
-      if (!_standaloneManifestUrl) {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                       reason:@"This app is configured to be a standalone app, but does not specify a standalone manifest url."
-                                     userInfo:nil];
-      }
-      
-      // load bundleUrl from embedded manifest
-      [self _loadEmbeddedBundleUrlWithManifest:embeddedManifest];
-
-      // load everything else from EXShell
-      [self _loadMiscPropertiesWithConfig:shellConfig andInfoPlist:infoPlist];
-    }
   }
   _allManifestUrls = allManifestUrls;
 }

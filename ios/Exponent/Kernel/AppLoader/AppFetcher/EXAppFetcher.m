@@ -44,12 +44,6 @@ NS_ASSUME_NONNULL_BEGIN
   jsResource.abiVersion = [[EXVersions sharedInstance] availableSdkVersionForManifest:manifest];
   jsResource.requestTimeoutInterval = timeoutInterval;
 
-  EXCachedResourceBehavior behavior = cacheBehavior;
-  // if we've disabled updates, ignore all other settings and only use the cache
-  if ([EXEnvironment sharedEnvironment].isDetached && ![EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled) {
-    behavior = EXCachedResourceOnlyCache;
-  }
-
   if ([self.dataSource appFetcherShouldInvalidateBundleCache:self]) {
     [jsResource removeCache];
   }
