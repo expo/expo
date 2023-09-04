@@ -59,7 +59,7 @@ export function createRequestHandler(
       return fs.readFileSync(filePath, 'utf-8');
     },
     getApiRoute = async (route) => {
-      const filePath = path.join(distFolder, route.page + '.js');
+      const filePath = path.join(distFolder, '_expo/functions', route.page + '.js');
 
       debug(`Handling API route: ${route.page}: ${filePath}`);
 
