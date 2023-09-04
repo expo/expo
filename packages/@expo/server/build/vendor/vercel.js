@@ -12,7 +12,7 @@ function createRequestHandler({ build }) {
     const handleRequest = (0, __1.createRequestHandler)(build);
     return async (req, res) => {
         const request = convertRequest(req, res);
-        const response = (await handleRequest(request));
+        const response = await handleRequest(request);
         await respond(res, response);
     };
 }

@@ -19,10 +19,16 @@ export type RequestHandler = (
 /**
  * Returns a request handler for Express that serves the response using Remix.
  */
-export function createRequestHandler({ build }: { build: string }): RequestHandler {
-  const handleRequest = createExpoHandler(build);
+export function createRequestHandler(
+  { build }: { build: string },
+  setup?: Parameters<typeof createExpoHandler>[1]
+): RequestHandler {
+  const handleRequest = createExpoHandler(build, setup);
 
   return async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    if (!req?.url || !req.method) {
+      return next();
+    }
     try {
       const request = convertRequest(req, res);
 

@@ -7,7 +7,7 @@
  *
  * Based on https://github.com/vercel/next.js/blob/1df2686bc9964f1a86c444701fa5cbf178669833/packages/next/src/shared/lib/router/utils/route-regex.ts
  */
-import { RouteNode } from './Route';
+import type { RouteNode } from './Route';
 export interface Group {
     pos: number;
     repeat: boolean;
@@ -37,6 +37,14 @@ export declare function getServerManifest(route: RouteNode): {
         };
     }[];
     staticRoutes: {
+        generated: boolean | undefined;
+        page: string;
+        namedRegex: string;
+        routeKeys: {
+            [named: string]: string;
+        };
+    }[];
+    notFoundRoutes: {
         generated: boolean | undefined;
         page: string;
         namedRegex: string;

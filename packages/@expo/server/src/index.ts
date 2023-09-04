@@ -1,12 +1,13 @@
 import '@expo/server/install';
 
 import { Response } from '@remix-run/node';
-import type { ExpoRoutesManifestV1 } from 'expo-router/build/routes-manifest';
+import type { ExpoRoutesManifestV1, RouteInfo } from 'expo-router/build/routes-manifest';
 import fs from 'fs';
 import path from 'path';
 import { URL } from 'url';
 
-import { ExpoRequest, ExpoResponse } from './environment';
+import { ExpoRequest, ExpoResponse, ExpoURL, NON_STANDARD_SYMBOL } from './environment';
+import { ExpoRouterServerManifestV1FunctionRoute } from './types';
 
 const debug = require('debug')('expo:server') as typeof console.log;
 
@@ -16,13 +17,19 @@ function getProcessedManifest(path: string): ExpoRoutesManifestV1<RegExp> {
 
   const parsed: ExpoRoutesManifestV1<RegExp> = {
     ...routesManifest,
-    functions: routesManifest.functions.map((value: any) => {
+    notFoundRoutes: routesManifest.notFoundRoutes.map((value: any) => {
       return {
         ...value,
         regex: new RegExp(value.regex),
       };
     }),
-    staticHtml: routesManifest.staticHtml.map((value: any) => {
+    dynamicRoutes: routesManifest.dynamicRoutes.map((value: any) => {
+      return {
+        ...value,
+        regex: new RegExp(value.regex),
+      };
+    }),
+    staticRoutes: routesManifest.staticRoutes.map((value: any) => {
       return {
         ...value,
         regex: new RegExp(value.regex),
@@ -33,48 +40,129 @@ function getProcessedManifest(path: string): ExpoRoutesManifestV1<RegExp> {
   return parsed;
 }
 
-// TODO: Reuse this for dev as well
-export function createRequestHandler(distFolder: string) {
-  const routesManifest = getProcessedManifest(path.join(distFolder, '_expo/routes.json'));
+export function getRoutesManifest(distFolder: string) {
+  return getProcessedManifest(path.join(distFolder, '_expo/routes.json'));
+}
 
-  const dynamicManifest = [...routesManifest.functions, ...routesManifest.staticHtml].filter(
-    (route: any) => route.type === 'dynamic' || route.dynamic
-  );
+// TODO: Reuse this for dev as well
+export function createRequestHandler(
+  distFolder: string,
+  {
+    getRoutesManifest: getInternalRotuesManifest,
+    getHtml = async (request, route) => {
+      // serve a static file
+      const filePath = path.join(distFolder, route.page + '.html');
+
+      if (!fs.existsSync(filePath)) {
+        return null;
+      }
+      return fs.readFileSync(filePath, 'utf-8');
+    },
+    getApiRoute = async (route) => {
+      const filePath = path.join(distFolder, route.page + '.js');
+
+      debug(`Handling API route: ${route.page}: ${filePath}`);
+
+      // TODO: What's the standard behavior for malformed projects?
+      if (!fs.existsSync(filePath)) {
+        return null;
+      }
+
+      return require(filePath);
+    },
+    logApiRouteExecutionError = (error: Error) => {
+      console.error(error);
+    },
+  }: {
+    getHtml?: (
+      request: ExpoRequest,
+      route: RouteInfo<RegExp>
+    ) => Promise<string | ExpoResponse | null>;
+    getRoutesManifest?: (distFolder: string) => Promise<ExpoRoutesManifestV1<RegExp> | null>;
+    getApiRoute?: (route: RouteInfo<RegExp>) => Promise<any>;
+    logApiRouteExecutionError?: (error: Error) => void;
+  } = {}
+) {
+  let routesManifest: ExpoRoutesManifestV1<RegExp> | undefined;
+
+  function updateRequestWithConfig(
+    request: ExpoRequest,
+    config: ExpoRouterServerManifestV1FunctionRoute
+  ) {
+    const url = request.url;
+    request[NON_STANDARD_SYMBOL] = {
+      url: config ? ExpoURL.from(url, config) : new ExpoURL(url),
+    };
+  }
 
   return async function handler(request: ExpoRequest): Promise<Response> {
+    if (getInternalRotuesManifest) {
+      const manifest = await getInternalRotuesManifest(distFolder);
+      if (manifest) {
+        routesManifest = manifest;
+      } else {
+        // Development error when Expo Router is not setup.
+        return new ExpoResponse('No routes manifest found', {
+          status: 404,
+          headers: {
+            'Content-Type': 'text/plain',
+          },
+        });
+      }
+    } else if (!routesManifest) {
+      routesManifest = getRoutesManifest(distFolder);
+    }
+
     const url = new URL(request.url, 'http://expo.dev');
 
     const sanitizedPathname = url.pathname.replace(/^\/+/, '').replace(/\/+$/, '') + '/';
 
-    for (const route of dynamicManifest) {
-      if (!route.regex.test(sanitizedPathname)) {
-        continue;
-      }
-
-      const params = getSearchParams(route.src, sanitizedPathname);
-
-      for (const [key, value] of Object.entries(params)) {
-        if (value) {
-          request.expoUrl.searchParams.set(key, value);
+    if (request.method === 'GET' || request.method === 'HEAD') {
+      // First test static routes
+      for (const route of routesManifest.staticRoutes) {
+        if (!route.namedRegex.test(sanitizedPathname)) {
+          continue;
         }
-      }
 
-      // Handle dynamic pages like `[foobar].tsx`
-      if (route.type === 'static') {
+        // // Mutate to add the expoUrl object.
+        updateRequestWithConfig(request, route);
+
         // serve a static file
-        const filePath = path.join(distFolder, route.file.replace(/\.[tj]sx?$/, '.html'));
-        return new ExpoResponse(fs.readFileSync(filePath, 'utf-8'), {
+        const contents = await getHtml(request, route);
+
+        // TODO: What's the standard behavior for malformed projects?
+        if (!contents) {
+          return new ExpoResponse('Not found', {
+            status: 404,
+            headers: {
+              'Content-Type': 'text/plain',
+            },
+          });
+        } else if (contents instanceof ExpoResponse) {
+          return contents;
+        }
+
+        return new ExpoResponse(contents, {
           status: 200,
           headers: {
             'Content-Type': 'text/html',
           },
         });
       }
+    }
 
-      const funcPath = path.join(distFolder, route.src);
-      debug(`Handling dynamic route: ${route.file}: ${funcPath}`);
+    // Next, test API routes
+    for (const route of routesManifest.dynamicRoutes) {
+      if (!route.namedRegex.test(sanitizedPathname)) {
+        continue;
+      }
 
-      const func = require(funcPath);
+      const func = await getApiRoute(route);
+
+      if (func instanceof ExpoResponse) {
+        return func;
+      }
+
       const routeHandler = func[request.method];
       if (!routeHandler) {
         return new ExpoResponse('Method not allowed', {
@@ -85,12 +173,19 @@ export function createRequestHandler(distFolder: string) {
         });
       }
 
+      // Mutate to add the expoUrl object.
+      updateRequestWithConfig(request, route);
+
       try {
         // TODO: Handle undefined
         return (await routeHandler(request)) as ExpoResponse;
       } catch (error) {
+        if (error instanceof Error) {
+          logApiRouteExecutionError(error);
+          //
+        }
         // TODO: Symbolicate error stack
-        console.error(error);
+        // console.error(error);
         // const res = ExpoResponse.error();
         // res.status = 500;
         // return res;
@@ -104,6 +199,38 @@ export function createRequestHandler(distFolder: string) {
       }
     }
 
+    // Finally, test 404 routes
+    for (const route of routesManifest.notFoundRoutes) {
+      if (!route.namedRegex.test(sanitizedPathname)) {
+        continue;
+      }
+
+      // // Mutate to add the expoUrl object.
+      updateRequestWithConfig(request, route);
+
+      // serve a static file
+      const contents = await getHtml(request, route);
+
+      // TODO: What's the standard behavior for malformed projects?
+      if (!contents) {
+        return new ExpoResponse('Not found', {
+          status: 404,
+          headers: {
+            'Content-Type': 'text/plain',
+          },
+        });
+      } else if (contents instanceof ExpoResponse) {
+        return contents;
+      }
+
+      return new ExpoResponse(contents, {
+        status: 404,
+        headers: {
+          'Content-Type': 'text/html',
+        },
+      });
+    }
+
     // 404
     const response = new ExpoResponse('Not found', {
       status: 404,
@@ -113,24 +240,6 @@ export function createRequestHandler(distFolder: string) {
     });
     return response;
   };
-}
-
-// Given a formatted URL like `/[foo]/bar/[baz].js` and a URL like `/hello/bar/world?other=1`
-// return the processed search params like `{ baz: 'world', foo: 'hello', other: '1' }`
-function getSearchParams(url: string, filePath: string) {
-  const params = new URLSearchParams(url.split('?')[1]);
-  const formattedParams = filePath.split('/').filter(Boolean);
-  const searchParams: Record<string, string | null> = {};
-
-  for (let i = 0; i < formattedParams.length; i++) {
-    const param = formattedParams[i];
-    if (param.startsWith('[')) {
-      const key = param.replace(/[\[\]]/g, '');
-      searchParams[key] = params.get(key);
-    }
-  }
-
-  return searchParams;
 }
 
 export { ExpoResponse, ExpoRequest };

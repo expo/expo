@@ -39,6 +39,6 @@ export declare function Route({ children, node }: {
     children: ReactNode;
     node: RouteNode;
 }): JSX.Element;
-export declare function sortRoutesWithInitial(initialRouteName?: string): (a: RouteNode, b: RouteNode) => number;
-export declare function sortRoutes(a: RouteNode, b: RouteNode): number;
+import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
+export { sortRoutesWithInitial, sortRoutes };
 //# sourceMappingURL=Route.d.ts.map

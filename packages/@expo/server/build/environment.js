@@ -56,7 +56,6 @@ class ExpoRequest extends node_1.Request {
     constructor(info, init, config) {
         super(info, init);
         const url = typeof info !== 'string' && 'url' in info ? info.url : String(info);
-        console.log('REX>', info, config);
         this[exports.NON_STANDARD_SYMBOL] = {
             url: config ? ExpoURL.from(url, config) : new ExpoURL(url),
         };

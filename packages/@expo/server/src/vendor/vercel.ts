@@ -32,7 +32,7 @@ export function createRequestHandler({ build }: { build: string }): RequestHandl
   return async (req, res) => {
     const request = convertRequest(req, res);
 
-    const response = (await handleRequest(request)) as NodeResponse;
+    const response = await handleRequest(request);
 
     await respond(res, response);
   };

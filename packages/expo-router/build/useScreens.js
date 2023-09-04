@@ -98,11 +98,13 @@ export function getQualifiedRouteComponent(value) {
             return fromLoadedRoute(res);
         });
         getLoadable = (props, ref) => (React.createElement(React.Suspense, { fallback: React.createElement(SuspenseFallback, { route: value }) },
-            React.createElement(AsyncComponent, { ...props,
-                ref,
-                // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
-                // the intention is to make it possible to deduce shared routes.
-                segment: value.route })));
+            React.createElement(AsyncComponent, { ...{
+                    ...props,
+                    ref,
+                    // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
+                    // the intention is to make it possible to deduce shared routes.
+                    segment: value.route,
+                } })));
     }
     else {
         const SyncComponent = React.forwardRef((props, ref) => {
@@ -110,11 +112,13 @@ export function getQualifiedRouteComponent(value) {
             const Component = fromImport(res).default;
             return React.createElement(Component, { ...props, ref: ref });
         });
-        getLoadable = (props, ref) => (React.createElement(SyncComponent, { ...props,
-            ref,
-            // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
-            // the intention is to make it possible to deduce shared routes.
-            segment: value.route }));
+        getLoadable = (props, ref) => (React.createElement(SyncComponent, { ...{
+                ...props,
+                ref,
+                // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
+                // the intention is to make it possible to deduce shared routes.
+                segment: value.route,
+            } }));
     }
     const QualifiedRoute = React.forwardRef(({ 
     // Remove these React Navigation props to

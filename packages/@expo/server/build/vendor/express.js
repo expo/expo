@@ -7,9 +7,12 @@ const environment_1 = require("../environment");
 /**
  * Returns a request handler for Express that serves the response using Remix.
  */
-function createRequestHandler({ build }) {
-    const handleRequest = (0, __1.createRequestHandler)(build);
+function createRequestHandler({ build }, setup) {
+    const handleRequest = (0, __1.createRequestHandler)(build, setup);
     return async (req, res, next) => {
+        if (!req?.url || !req.method) {
+            return next();
+        }
         try {
             const request = convertRequest(req, res);
             const response = await handleRequest(request);
