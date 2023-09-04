@@ -1,6 +1,6 @@
-import { Uuid } from './uuid.types';
 import sha1 from './lib/sha1';
 import v35 from './lib/v35';
+import { Uuid } from './uuid.types';
 
 const nativeUuidv4 = globalThis?.expo?.uuidv4;
 

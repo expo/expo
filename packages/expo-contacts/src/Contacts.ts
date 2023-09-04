@@ -1,5 +1,6 @@
 import { PermissionResponse, PermissionStatus, UnavailabilityError, uuid } from 'expo-modules-core';
 import { Platform, Share } from 'react-native';
+
 import ExpoContacts from './ExpoContacts';
 
 export type CalendarFormatType = CalendarFormats | `${CalendarFormats}`;
