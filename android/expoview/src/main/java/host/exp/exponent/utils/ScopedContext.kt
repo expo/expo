@@ -159,16 +159,6 @@ class ScopedContext @Throws(UnsupportedEncodingException::class) constructor(con
     cacheDir = File(baseContext.cacheDir.toString() + "/ExperienceData/" + scopeKey)
     noBackupDir = File(baseContext.noBackupFilesDir.toString() + "/ExperienceData/" + scopeKey)
 
-    if (Constants.isStandaloneApp()) {
-      val scopedFilesMigrationMarker = File(scopedFilesDir, ".expo-migration")
-      if (scopedFilesDir.exists() && !scopedFilesMigrationMarker.exists()) {
-        migrateAllFiles(scopedFilesDir, baseContext.filesDir)
-      }
-      filesDir = baseContext.filesDir
-      cacheDir = baseContext.cacheDir
-      noBackupDir = baseContext.noBackupFilesDir
-    }
-
     listOf(filesDir, cacheDir, noBackupDir).forEach {
       ensureDirExists(it)
     }

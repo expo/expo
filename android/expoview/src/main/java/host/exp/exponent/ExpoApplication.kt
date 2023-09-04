@@ -35,10 +35,6 @@ abstract class ExpoApplication : MultiDexApplication() {
       Debug.waitForDebugger()
     }
 
-    if (!Constants.isStandaloneApp()) {
-      KernelConstants.MAIN_ACTIVITY_CLASS = LauncherActivity::class.java
-    }
-
     KernelProvider.setFactory(object : KernelFactory {
       override fun create(): KernelInterface {
         return Kernel()

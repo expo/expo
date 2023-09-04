@@ -19,7 +19,6 @@ import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderCallback
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderStatus
 import host.exp.exponent.ExponentManifest
 import host.exp.exponent.RNObject
-import host.exp.exponent.experience.DetachedModuleRegistryAdapter
 import host.exp.exponent.kernel.ExponentUrls
 import host.exp.exponent.kernel.KernelConstants
 import host.exp.exponent.storage.ExponentDB
@@ -52,7 +51,6 @@ class InternalHeadlessAppLoader(private val context: Context) :
   private var manifest: Manifest? = null
   private var manifestUrl: String? = null
   private var sdkVersion: String? = null
-  private var detachSdkVersion: String? = null
   private var reactInstanceManager: RNObject? = RNObject("com.facebook.react.ReactInstanceManager")
   private val intentUri: String? = null
   private var isReadyForBundle = false
@@ -94,7 +92,12 @@ class InternalHeadlessAppLoader(private val context: Context) :
         override fun emitEvent(params: JSONObject) {}
         override fun updateStatus(status: AppLoaderStatus) {}
         override fun onError(e: Exception) {
-          Exponent.instance.runOnUiThread { this@InternalHeadlessAppLoader.callback!!.onComplete(false, Exception(e.message)) }
+          Exponent.instance.runOnUiThread {
+            this@InternalHeadlessAppLoader.callback!!.onComplete(
+              false,
+              Exception(e.message)
+            )
+          }
         }
       },
       true
@@ -116,8 +119,6 @@ class InternalHeadlessAppLoader(private val context: Context) :
     if (Constants.TEMPORARY_ABI_VERSION != null && Constants.TEMPORARY_ABI_VERSION == sdkVersion) {
       sdkVersion = RNObject.UNVERSIONED
     }
-
-    detachSdkVersion = if (Constants.isStandaloneApp()) RNObject.UNVERSIONED else sdkVersion
 
     if (RNObject.UNVERSIONED != sdkVersion) {
       var isValidVersion = false
@@ -173,35 +174,21 @@ class InternalHeadlessAppLoader(private val context: Context) :
     get() = manifest?.isDevelopmentMode() ?: false
 
   private fun soLoaderInit() {
-    if (detachSdkVersion != null) {
+    if (sdkVersion != null) {
       SoLoader.init(context, false)
     }
   }
 
   // Override
   private fun reactPackages(): List<ReactPackage?>? {
-    return if (!Constants.isStandaloneApp()) {
-      // Pass null if it's on Expo Go. In that case packages from ExperiencePackagePicker will be used instead.
-      null
-    } else try {
-      (context.applicationContext as AppLoaderPackagesProviderInterface<ReactPackage?>).packages
-    } catch (e: ClassCastException) {
-      e.printStackTrace()
-      null
-    }
+    // Pass null if it's on Expo Go. In that case packages from ExperiencePackagePicker will be used instead.
+    return null
   }
 
   // Override
   fun expoPackages(): List<Package>? {
-    return if (!Constants.isStandaloneApp()) {
-      // Pass null if it's on Expo Go. In that case packages from ExperiencePackagePicker will be used instead.
-      null
-    } else try {
-      (context.applicationContext as AppLoaderPackagesProviderInterface<*>).expoPackages
-    } catch (e: ClassCastException) {
-      e.printStackTrace()
-      null
-    }
+    // Pass null if it's on Expo Go. In that case packages from ExperiencePackagePicker will be used instead.
+    return null
   }
 
   //region StartReactInstanceDelegate
@@ -220,7 +207,7 @@ class InternalHeadlessAppLoader(private val context: Context) :
           reactInstanceManager = startReactInstance(
             this@InternalHeadlessAppLoader,
             intentUri,
-            detachSdkVersion,
+            sdkVersion,
             reactPackages(),
             expoPackages()
           )
@@ -252,7 +239,11 @@ class InternalHeadlessAppLoader(private val context: Context) :
       expoPackages = extraExpoPackages,
       exponentPackageDelegate = delegate.exponentPackageDelegate,
       manifest = manifest!!,
-      singletonModules = ExponentPackage.getOrCreateSingletonModules(context, manifest, extraExpoPackages),
+      singletonModules = ExponentPackage.getOrCreateSingletonModules(
+        context,
+        manifest,
+        extraExpoPackages
+      ),
     )
 
     val versionedUtils = RNObject("host.exp.exponent.VersionedUtils").loadVersion(mSDKVersion!!)
@@ -301,17 +292,15 @@ class InternalHeadlessAppLoader(private val context: Context) :
   // deprecated in favor of Expo.Linking.makeUrl
   // TODO: remove this
   private val linkingUri: String?
-    get() = if (Constants.SHELL_APP_SCHEME != null) {
-      Constants.SHELL_APP_SCHEME + "://"
-    } else {
+    get() {
       val uri = Uri.parse(manifestUrl)
       val host = uri.host
       if (host != null && (
-        host == "exp.host" || host == "expo.io" || host == "exp.direct" || host == "expo.test" ||
-          host.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(".exp.direct") || host.endsWith(
-            ".expo.test"
-          )
-        )
+                host == "exp.host" || host == "expo.io" || host == "exp.direct" || host == "expo.test" ||
+                        host.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(".exp.direct") || host.endsWith(
+                  ".expo.test"
+                )
+                )
       ) {
         val pathSegments = uri.pathSegments
         val builder = uri.buildUpon()
@@ -322,10 +311,10 @@ class InternalHeadlessAppLoader(private val context: Context) :
           }
           builder.appendEncodedPath(segment)
         }
-        builder.appendEncodedPath(ExponentManifest.DEEP_LINK_SEPARATOR_WITH_SLASH).build()
+        return builder.appendEncodedPath(ExponentManifest.DEEP_LINK_SEPARATOR_WITH_SLASH).build()
           .toString()
       } else {
-        manifestUrl
+        return manifestUrl
       }
     }
 
@@ -333,16 +322,7 @@ class InternalHeadlessAppLoader(private val context: Context) :
     packages: List<Package>,
     singletonModules: List<SingletonModule>
   ): ExpoModuleRegistryAdapter? {
-    return if (Constants.isStandaloneApp()) {
-      DetachedModuleRegistryAdapter(
-        ReactModuleRegistryProvider(
-          packages,
-          singletonModules
-        )
-      )
-    } else {
-      null
-    }
+    return null
   }
 
   companion object {

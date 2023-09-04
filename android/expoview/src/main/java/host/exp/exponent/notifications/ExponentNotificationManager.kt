@@ -25,11 +25,6 @@ class ExponentNotificationManager(private val context: Context) {
   lateinit var exponentSharedPreferences: ExponentSharedPreferences
 
   fun maybeCreateNotificationChannelGroup(manifest: Manifest) {
-    if (Constants.isStandaloneApp()) {
-      // currently we only support groups in the client, with one group per experience
-      return
-    }
-
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       try {
         val experienceScopeKey = manifest.getScopeKey()
@@ -62,14 +57,12 @@ class ExponentNotificationManager(private val context: Context) {
         description = context.getString(R.string.persistent_notification_channel_desc)
       }
 
-      if (!Constants.isStandaloneApp()) {
-        val group = NotificationChannelGroup(
-          NotificationConstants.NOTIFICATION_EXPERIENCE_CHANNEL_GROUP_ID,
-          context.getString(R.string.persistent_notification_channel_group)
-        )
-        manager.createNotificationChannelGroup(group)
-        channel.group = NotificationConstants.NOTIFICATION_EXPERIENCE_CHANNEL_GROUP_ID
-      }
+      val group = NotificationChannelGroup(
+        NotificationConstants.NOTIFICATION_EXPERIENCE_CHANNEL_GROUP_ID,
+        context.getString(R.string.persistent_notification_channel_group)
+      )
+      manager.createNotificationChannelGroup(group)
+      channel.group = NotificationConstants.NOTIFICATION_EXPERIENCE_CHANNEL_GROUP_ID
 
       manager.createNotificationChannel(channel)
 
@@ -79,10 +72,7 @@ class ExponentNotificationManager(private val context: Context) {
 
   fun createNotificationChannel(experienceKey: ExperienceKey, channel: NotificationChannel) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      if (!Constants.isStandaloneApp()) {
-        channel.group = experienceKey.scopeKey
-      }
-
+      channel.group = experienceKey.scopeKey
       context.getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
     }
   }
@@ -278,11 +268,7 @@ class ExponentNotificationManager(private val context: Context) {
     private var isExpoPersistentNotificationCreated = false
 
     fun getScopedChannelId(experienceKey: ExperienceKey, channelId: String): String {
-      return if (Constants.isStandaloneApp()) {
-        channelId
-      } else {
-        experienceKey.scopeKey + "/" + channelId
-      }
+      return experienceKey.scopeKey + "/" + channelId
     }
   }
 

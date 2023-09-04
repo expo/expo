@@ -75,7 +75,6 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
   private var nuxOverlayView: ReactUnthemedRootView? = null
   private var notification: ExponentNotification? = null
   private var tempNotification: ExponentNotification? = null
-  private var isShellApp = false
   protected var intentUri: String? = null
   private var isReadyForBundle = false
   private var notificationRemoteViews: RemoteViews? = null
@@ -234,7 +233,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
   }
 
   private fun soLoaderInit() {
-    if (detachSdkVersion != null) {
+    if (sdkVersion != null) {
       SoLoader.init(this, false)
     }
   }
@@ -308,20 +307,18 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
       loadingProgressPopupController.hide()
     }
 
-    if (!Constants.isStandaloneApp()) {
-      val appLoader = kernel.getAppLoaderForManifestUrl(manifestUrl)
-      if (appLoader != null && !appLoader.isUpToDate && appLoader.shouldShowAppLoaderStatus) {
-        AlertDialog.Builder(this@ExperienceActivity)
-          .setTitle("Using a cached project")
-          .setMessage("Expo was unable to fetch the latest update to this app. A previously downloaded version has been launched. If you did not intend to use a cached project, check your network connection and reload the app.")
-          .setPositiveButton("Use cache", null)
-          .setNegativeButton("Reload") { _, _ ->
-            kernel.reloadVisibleExperience(
-              manifestUrl!!, false
-            )
-          }
-          .show()
-      }
+    val appLoader = kernel.getAppLoaderForManifestUrl(manifestUrl)
+    if (appLoader != null && !appLoader.isUpToDate && appLoader.shouldShowAppLoaderStatus) {
+      AlertDialog.Builder(this@ExperienceActivity)
+        .setTitle("Using a cached project")
+        .setMessage("Expo was unable to fetch the latest update to this app. A previously downloaded version has been launched. If you did not intend to use a cached project, check your network connection and reload the app.")
+        .setPositiveButton("Use cache", null)
+        .setNegativeButton("Reload") { _, _ ->
+          kernel.reloadVisibleExperience(
+            manifestUrl!!, false
+          )
+        }
+        .show()
     }
   }
 
@@ -374,9 +371,6 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
   }
 
   fun setLoadingProgressStatusIfEnabled(status: AppLoaderStatus?) {
-    if (Constants.isStandaloneApp()) {
-      return
-    }
     if (status == null) {
       return
     }
@@ -444,16 +438,12 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     task.bundleUrl = bundleUrl
 
     sdkVersion = manifest.getExpoGoSDKVersion()
-    isShellApp = this.manifestUrl == Constants.INITIAL_URL
 
     // Sometime we want to release a new version without adding a new .aar. Use TEMPORARY_ABI_VERSION
     // to point to the unversioned code in ReactAndroid.
     if (Constants.TEMPORARY_ABI_VERSION != null && Constants.TEMPORARY_ABI_VERSION == sdkVersion) {
       sdkVersion = RNObject.UNVERSIONED
     }
-
-    // In detach/shell, we always use UNVERSIONED as the ABI.
-    detachSdkVersion = if (Constants.isStandaloneApp()) RNObject.UNVERSIONED else sdkVersion
 
     if (RNObject.UNVERSIONED != sdkVersion) {
       var isValidVersion = false
@@ -503,7 +493,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
       notificationObject = options.notificationObject
     }
 
-    BranchManager.handleLink(this, intentUri, detachSdkVersion)
+    BranchManager.handleLink(this, intentUri, sdkVersion)
 
     ExperienceRTLManager.setSupportsRTLFromManifest(this, manifest)
 
@@ -517,7 +507,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
       }
 
       reactRootView = RNObject("host.exp.exponent.ReactUnthemedRootView")
-      reactRootView.loadVersion(detachSdkVersion!!).construct(this@ExperienceActivity)
+      reactRootView.loadVersion(sdkVersion!!).construct(this@ExperienceActivity)
       setReactRootView((reactRootView.get() as View))
 
       if (isDebugModeEnabled) {
@@ -573,10 +563,10 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
       try {
         val rctDeviceEventEmitter =
           RNObject("com.facebook.react.modules.core.DeviceEventManagerModule\$RCTDeviceEventEmitter")
-        rctDeviceEventEmitter.loadVersion(detachSdkVersion!!)
+        rctDeviceEventEmitter.loadVersion(sdkVersion!!)
         reactInstanceManager.callRecursive("getCurrentReactContext")!!
           .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())!!
-          .call("emit", "Exponent.notification", event.toWriteableMap(detachSdkVersion, "received"))
+          .call("emit", "Exponent.notification", event.toWriteableMap(sdkVersion, "received"))
       } catch (e: Throwable) {
         EXL.e(TAG, e)
       }
@@ -590,22 +580,22 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
         handleUri(uri)
         val rctDeviceEventEmitter =
           RNObject("com.facebook.react.modules.core.DeviceEventManagerModule\$RCTDeviceEventEmitter")
-        rctDeviceEventEmitter.loadVersion(detachSdkVersion!!)
+        rctDeviceEventEmitter.loadVersion(sdkVersion!!)
         reactInstanceManager.callRecursive("getCurrentReactContext")!!
           .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())!!
           .call("emit", "Exponent.openUri", uri)
-        BranchManager.handleLink(this, uri, detachSdkVersion)
+        BranchManager.handleLink(this, uri, sdkVersion)
       }
-      if ((options.notification != null || options.notificationObject != null) && detachSdkVersion != null) {
+      if ((options.notification != null || options.notificationObject != null) && sdkVersion != null) {
         val rctDeviceEventEmitter =
           RNObject("com.facebook.react.modules.core.DeviceEventManagerModule\$RCTDeviceEventEmitter")
-        rctDeviceEventEmitter.loadVersion(detachSdkVersion!!)
+        rctDeviceEventEmitter.loadVersion(sdkVersion!!)
         reactInstanceManager.callRecursive("getCurrentReactContext")!!
           .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())!!
           .call(
             "emit",
             "Exponent.notification",
-            options.notificationObject!!.toWriteableMap(detachSdkVersion, "selected")
+            options.notificationObject!!.toWriteableMap(sdkVersion, "selected")
           )
       }
     } catch (e: Throwable) {
@@ -638,9 +628,8 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
             reactInstanceManager = startReactInstance(
               this@ExperienceActivity,
               intentUri,
-              detachSdkVersion,
+              sdkVersion,
               notification,
-              isShellApp,
               reactPackages(),
               expoPackages(),
               devBundleDownloadProgressListener
@@ -664,7 +653,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
    *
    */
   private fun addNotification() {
-    if (isShellApp || manifestUrl == null || manifest == null) {
+    if (manifestUrl == null || manifest == null) {
       return
     }
 

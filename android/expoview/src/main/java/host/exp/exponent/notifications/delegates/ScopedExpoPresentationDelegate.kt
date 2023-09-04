@@ -51,7 +51,7 @@ class ScopedExpoPresentationDelegate(context: Context) : ExpoPresentationDelegat
    * service, or a local notification.
    */
   override fun getNotifyId(request: NotificationRequest?): Int {
-    if (Constants.isStandaloneApp() || request == null) {
+    if (request == null) {
       return super.getNotifyId(request)
     }
     val experienceId = if (request.trigger is FirebaseNotificationTrigger) {

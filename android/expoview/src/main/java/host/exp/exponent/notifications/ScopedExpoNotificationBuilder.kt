@@ -63,7 +63,7 @@ open class ScopedExpoNotificationBuilder(
   }
 
   override fun getIcon(): Int {
-    return if (Constants.isStandaloneApp()) R.drawable.shell_notification_icon else R.drawable.notification_icon
+    return R.drawable.notification_icon
   }
 
   override fun getColor(): Number? {

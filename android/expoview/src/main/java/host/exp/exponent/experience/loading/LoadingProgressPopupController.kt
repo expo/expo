@@ -62,10 +62,6 @@ class LoadingProgressPopupController(activity: Activity) {
   }
 
   fun setLoadingProgressStatus(status: ExpoUpdatesAppLoader.AppLoaderStatus) {
-    if (Constants.isStandaloneApp()) {
-      return
-    }
-
     val text = when (status) {
       ExpoUpdatesAppLoader.AppLoaderStatus.CHECKING_FOR_UPDATE -> {
         "Checking for new update..."

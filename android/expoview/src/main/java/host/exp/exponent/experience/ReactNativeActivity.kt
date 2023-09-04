@@ -76,10 +76,6 @@ abstract class ReactNativeActivity :
   protected var sdkVersion: String? = null
   protected var activityId = 0
 
-  // In detach we want UNVERSIONED most places. We still need the numbered sdk version
-  // when creating cache keys.
-  protected var detachSdkVersion: String? = null
-
   protected lateinit var reactRootView: RNObject
   private lateinit var doubleTapReloadRecognizer: DoubleTapReloadRecognizer
   var isLoading = true
@@ -106,7 +102,7 @@ abstract class ReactNativeActivity :
   private val handler = Handler()
 
   protected open fun shouldCreateLoadingView(): Boolean {
-    return !Constants.isStandaloneApp() || Constants.SHOW_LOADING_VIEW_IN_SHELL_APP
+    return true
   }
 
   val rootView: View?
@@ -206,12 +202,6 @@ abstract class ReactNativeActivity :
    * Waits for JS side of React to be launched and then performs final launching actions.
    */
   private fun waitForReactAndFinishLoading() {
-    if (Constants.isStandaloneApp() && Constants.SHOW_LOADING_VIEW_IN_SHELL_APP) {
-      val layoutParams = containerView.layoutParams
-      layoutParams.height = FrameLayout.LayoutParams.MATCH_PARENT
-      containerView.layoutParams = layoutParams
-    }
-
     try {
       // NOTE(evanbacon): Use the same view as the `expo-system-ui` module.
       // Set before the application code runs to ensure immediate SystemUI calls overwrite the app.json value.
@@ -252,7 +242,6 @@ abstract class ReactNativeActivity :
     if (Constants.TEMPORARY_ABI_VERSION != null && Constants.TEMPORARY_ABI_VERSION == this.sdkVersion) {
       sdkVersion = RNObject.UNVERSIONED
     }
-    sdkVersion = if (Constants.isStandaloneApp()) RNObject.UNVERSIONED else sdkVersion
     return RNObject("com.facebook.react.ReactRootView").loadVersion(sdkVersion!!).rnClass() as Class<out ViewGroup>
   }
 
@@ -353,7 +342,6 @@ abstract class ReactNativeActivity :
     intentUri: String?,
     sdkVersion: String?,
     notification: ExponentNotification?,
-    isShellApp: Boolean,
     extraNativeModules: List<Any>?,
     extraExpoPackages: List<Package>?,
     progressListener: DevBundleDownloadProgressListener
@@ -432,7 +420,7 @@ abstract class ReactNativeActivity :
 
     try {
       exponentProps.put("manifestString", manifest.toString())
-      exponentProps.put("shell", isShellApp)
+      exponentProps.put("shell", false)
       exponentProps.put("initialUri", intentUri)
     } catch (e: JSONException) {
       EXL.e(TAG, e)
@@ -542,7 +530,7 @@ abstract class ReactNativeActivity :
     try {
       val rctDeviceEventEmitter =
         RNObject("com.facebook.react.modules.core.DeviceEventManagerModule\$RCTDeviceEventEmitter")
-      rctDeviceEventEmitter.loadVersion(detachSdkVersion!!)
+      rctDeviceEventEmitter.loadVersion(sdkVersion!!)
       val existingEmitter = reactInstanceManager.callRecursive("getCurrentReactContext")!!
         .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())
       if (existingEmitter != null) {
@@ -563,7 +551,7 @@ abstract class ReactNativeActivity :
     try {
       val nativeAppEventEmitter =
         RNObject("com.facebook.react.modules.core.RCTNativeAppEventEmitter")
-      nativeAppEventEmitter.loadVersion(detachSdkVersion!!)
+      nativeAppEventEmitter.loadVersion(sdkVersion!!)
       val emitter = reactInstanceManager.callRecursive("getCurrentReactContext")!!
         .callRecursive("getJSModule", nativeAppEventEmitter.rnClass())
       emitter?.call("emit", eventName, eventArgs)
@@ -579,7 +567,7 @@ abstract class ReactNativeActivity :
 
   override fun shouldShowRequestPermissionRationale(permission: String): Boolean {
     // in scoped application we don't have `don't ask again` button
-    return if (!Constants.isStandaloneApp() && checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED) {
+    return if (checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED) {
       true
     } else super.shouldShowRequestPermissionRationale(permission)
   }
@@ -634,9 +622,7 @@ abstract class ReactNativeActivity :
   // deprecated in favor of Expo.Linking.makeUrl
   // TODO: remove this
   private val linkingUri: String?
-    get() = if (Constants.SHELL_APP_SCHEME != null) {
-      Constants.SHELL_APP_SCHEME + "://"
-    } else {
+    get() {
       val uri = Uri.parse(manifestUrl)
       val host = uri.host
       if (host != null && (
@@ -655,10 +641,10 @@ abstract class ReactNativeActivity :
           }
           builder.appendEncodedPath(segment)
         }
-        builder.appendEncodedPath(ExponentManifest.DEEP_LINK_SEPARATOR_WITH_SLASH).build()
+        return builder.appendEncodedPath(ExponentManifest.DEEP_LINK_SEPARATOR_WITH_SLASH).build()
           .toString()
       } else {
-        manifestUrl
+        return manifestUrl
       }
     }
 

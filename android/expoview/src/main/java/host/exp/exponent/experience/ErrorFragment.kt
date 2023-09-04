@@ -55,13 +55,8 @@ class ErrorFragment : Fragment() {
 
     val manifestUrl = bundle.getString(ErrorActivity.MANIFEST_URL_KEY)
     val isHomeError = bundle.getBoolean(ErrorActivity.IS_HOME_KEY, false)
-    val isShellApp = manifestUrl != null && manifestUrl == Constants.INITIAL_URL
 
-    val userFacingErrorMessage = if (isShellApp) {
-      getString(R.string.error_default_shell)
-    } else {
-      getString(R.string.error_default_client)
-    }
+    val userFacingErrorMessage = getString(R.string.error_default_client)
     if (defaultErrorMessage == null || defaultErrorMessage.isEmpty()) {
       defaultErrorMessage = if (isDebugModeEnabled) {
         developerErrorMessage
@@ -70,7 +65,7 @@ class ErrorFragment : Fragment() {
       }
     }
 
-    if (isHomeError || manifestUrl == null || manifestUrl == Constants.INITIAL_URL) {
+    if (isHomeError || manifestUrl == null) {
       // Cannot go home in any of these cases
       binding.homeButton.visibility = View.GONE
     }

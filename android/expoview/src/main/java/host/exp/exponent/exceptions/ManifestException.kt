@@ -32,7 +32,6 @@ class ManifestException : ExponentException {
     }
 
     return when (manifestUrl) {
-      Constants.INITIAL_URL -> "Could not load app.$extraMessage"
       else -> {
         var formattedMessage = "Could not load $manifestUrl.$extraMessage"
         if (errorJSON != null) {

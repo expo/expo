@@ -43,7 +43,7 @@ class ErrorConsoleFragment : Fragment() {
     val bundle = arguments
     val manifestUrl = bundle!!.getString(ErrorActivity.MANIFEST_URL_KEY)
     val isHomeError = bundle.getBoolean(ErrorActivity.IS_HOME_KEY, false)
-    if (isHomeError || manifestUrl == null || manifestUrl == Constants.INITIAL_URL) {
+    if (isHomeError || manifestUrl == null) {
       // Cannot go home in any of these cases
       binding.consoleHomeButton.visibility = View.GONE
     }

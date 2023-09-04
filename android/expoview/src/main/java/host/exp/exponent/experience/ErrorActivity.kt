@@ -42,7 +42,7 @@ class ErrorActivity() : FragmentActivity() {
 
     ExperienceActivity.removeNotification(this)
 
-    manifestUrl = intent.extras!!.getString(MANIFEST_URL_KEY) ?: Constants.INITIAL_URL
+    manifestUrl = intent.extras!!.getString(MANIFEST_URL_KEY)
     pager.adapter = ViewPagerAdapter(supportFragmentManager)
   }
 
