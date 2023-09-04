@@ -1,0 +1,88 @@
+extends: capitalization
+message: "'%s' should be in sentence case"
+link: 'https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md#headings'
+level: warning
+scope:
+  - heading.h2
+  - heading.h3
+  - heading.h4
+  - heading.h5
+match: $sentence
+exceptions:
+  - app.config.js
+  - app.json
+  - app.plugin.js
+  - create-expo-app
+  - create-react-native-app
+  - iOS
+  - web
+  - API
+  - Android
+  - App
+  - Apple
+  - Autolinking
+  - AuthSession
+  - Babel
+  - Build
+  - CLI
+  - Client
+  - CocoaPods
+  - CodePush
+  - Config
+  - Continuous
+  - Debugger
+  - Debugging
+  - Development
+  - Dev
+  - Dynamic
+  - EAS
+  - EAS Build
+  - EAS Submit
+  - EAS Metadata
+  - EAS Update
+  - EAS Insights
+  - Emulator
+  - Expo
+  - Fastlane
+  - Files
+  - Flipper
+  - FYI
+  - Generation
+  - Go
+  - Google
+  - Gradle
+  - Hermes
+  - I
+  - JavaScript
+  - JavaScriptCore
+  - Jest
+  - Library
+  - Linking
+  - Meta
+  - Mods
+  - Module
+  - Modules
+  - Native
+  - Package
+  - Plugins
+  - Podfile
+  - Prebuild
+  - RTL
+  - React Native
+  - React Navigation
+  - Render
+  - Rendering
+  - Route
+  - Routes
+  - Router
+  - Router's
+  - Runtime
+  - Server-side
+  - Simulator
+  - Static
+  - Submit
+  - TypeScript
+  - Update
+  - Web
+  - Wix
+  - Xcode
