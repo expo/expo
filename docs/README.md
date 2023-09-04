@@ -92,14 +92,16 @@ We use [Vale](https://vale.sh/) to lint our docs for style and grammar based on 
 
 There are two ways you can use it:
 
-#### Use Vale in VSCode (Recommended)
+#### Use Vale in VS Code (Recommended)
 
 - [Install Vale on your system](https://vale.sh/docs/vale-cli/installation/)
-- [Install Vale's VSCode extension](https://marketplace.visualstudio.com/items?itemName=errata-ai.vale-server)
+- [Install Vale's VS Code extension](https://marketplace.visualstudio.com/items?itemName=errata-ai.vale-server)
+
+Open the doc file (`*.mdx`) that you are working on and you'll may see suggested lines (yellow squiggly) in VS Code editor.
 
 #### Run the `lint-prose` script
 
-Run the `yarn run lint-prose` script from **package.json**. This will run Vale on all markdown files in the **pages** directory.
+In a terminal window, run the `yarn run lint-prose` script from **package.json**. This will run Vale for all markdown files in the **pages** directory.
 
 ## Redirects
 
