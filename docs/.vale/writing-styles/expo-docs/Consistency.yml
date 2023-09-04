@@ -1,0 +1,39 @@
+extends: substitution
+message: "Consider using '%s' instead of '%s'"
+link: 'https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md#follow-external-product-casing'
+level: warning
+ignorecase: true
+swap:
+  '\b & \b': and
+  amazon appstore: Amazon Appstore
+  android emulator: Android Emulator
+  apple developer: Apple Developer
+  cancelation: cancelation
+  cancelled: canceled
+  cancelling: canceling
+  cocoapods: CocoaPods
+  eas build: EAS Build
+  eas cli: EAS CLI
+  eas metadata: EAS Metadata
+  eas submit: EAS Submit
+  eas update: EAS Update
+  expo cli: Expo CLI
+  expo go: Expo Go
+  expo sdk: Expo SDK
+  github: GitHub
+  Github: GitHub
+  ios simulator: iOS Simulator
+  IPhone: iPhone
+  javascript: JavaScript
+  javascript core: JavaScriptCore
+  linux: Linux
+  mac os: macOS
+  MacOS: macOS
+  NPM: npm
+  Nodejs: Node.js
+  objective c: Objective-C
+  react navigation: React Navigation
+  turtle cli: Turtle CLI
+  unix: Unix
+  windows: Windows
+  yarn: Yarn
