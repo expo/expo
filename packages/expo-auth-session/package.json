@@ -1,6 +1,6 @@
 {
   "name": "expo-auth-session",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "description": "Expo module for browser-based authentication",
   "main": "build/AuthSession.js",
   "types": "build/AuthSession.d.ts",
@@ -34,10 +34,10 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/auth-session",
   "dependencies": {
-    "expo-constants": "~14.5.0",
-    "expo-crypto": "~12.5.0",
+    "expo-constants": "~15.0.0",
+    "expo-crypto": "~12.6.0",
     "expo-linking": "~6.0.0",
-    "expo-web-browser": "~12.4.0",
+    "expo-web-browser": "~12.5.0",
     "invariant": "^2.2.4",
     "qs": "^6.11.0"
   },
