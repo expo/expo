@@ -7,13 +7,11 @@ export type ScreenProps<TOptions extends Record<string, any> = Record<string, an
      * @example `/(root)` maps to a layout route `/app/(root).tsx`.
      */
     name?: string;
-    /** Should redirect away from this screen. */
-    redirect?: boolean;
     initialParams?: {
         [key: string]: any;
     };
     options?: TOptions;
 };
 /** Component for setting the current screen's options dynamically. */
-export declare function Screen<TOptions extends object = object>({ name, redirect, options, }: ScreenProps<TOptions>): null;
+export declare function Screen<TOptions extends object = object>({ name, options }: ScreenProps<TOptions>): null;
 //# sourceMappingURL=Screen.d.ts.map

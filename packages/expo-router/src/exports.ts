@@ -7,7 +7,6 @@ export {
   usePathname,
   useGlobalSearchParams,
   useLocalSearchParams,
-  useSearchParams,
   useSegments,
   useRootNavigation,
   useRootNavigationState,
