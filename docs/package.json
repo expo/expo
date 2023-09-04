@@ -20,7 +20,8 @@
     "resource-specs-sync": "node --async-stack-traces --unhandled-rejections=strict ./scripts/resource-specs-sync.mjs",
     "remove-version": "node --unhandled-rejections=strict ./scripts/remove-version.js",
     "generate-static-resoures": "rimraf public/static/constants && node --unhandled-rejections=strict ./scripts/generate-static-resources.js",
-    "postinstall": "node --async-stack-traces --unhandled-rejections=strict ./scripts/copy-latest.js && yarn generate-static-resoures"
+    "postinstall": "node --async-stack-traces --unhandled-rejections=strict ./scripts/copy-latest.js && yarn generate-static-resoures",
+    "lint-prose": "vale ."
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",
@@ -61,11 +62,12 @@
   "devDependencies": {
     "@apidevtools/json-schema-ref-parser": "^9.0.9",
     "@emotion/jest": "^11.10.5",
+    "@ocular-d/vale-bin": "^2.28.2",
+    "@tailwindcss/typography": "^0.5.9",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
     "@testing-library/react-hooks": "^8.0.1",
     "@testing-library/user-event": "^14.4.3",
-    "@tailwindcss/typography": "^0.5.9",
     "@types/fs-extra": "^9.0.13",
     "@types/github-slugger": "^1.3.0",
     "@types/google.analytics": "^0.0.42",
