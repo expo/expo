@@ -1,7 +1,7 @@
 import { ExecutionEnvironment } from 'expo-constants';
 import { unmockAllProperties } from 'jest-expo';
 
-import { describeManifestTypes, mockConstants } from './ManifestTestUtils';
+import { describeManifest, mockConstants } from './ManifestTestUtils';
 
 beforeEach(() => {
   unmockAllProperties();
@@ -9,21 +9,15 @@ beforeEach(() => {
   jest.resetAllMocks();
 });
 
-describeManifestTypes(
-  {
-    id: '@example/abc',
-    originalFullName: '@example/abc',
-  },
-  {
-    extra: {
-      expoClient: {
-        name: 'wat',
-        slug: 'wat',
-        originalFullName: '@example/abc',
-      },
+describeManifest({
+  extra: {
+    expoClient: {
+      name: 'wat',
+      slug: 'wat',
+      originalFullName: '@example/abc',
     },
-  }
-)((manifestObj) => {
+  },
+})((manifestObj) => {
   beforeEach(() => {
     mockConstants(
       {
@@ -39,18 +33,12 @@ describeManifestTypes(
   });
 });
 
-describeManifestTypes(
-  {
-    id: '@anonymous/abc',
-    originalFullName: undefined,
-  },
-  {
-    extra: {
-      expoClient: {
-        name: 'wat',
-        slug: 'wat',
-        originalFullName: '@anonymous/abc',
-      },
+describeManifest({
+  extra: {
+    expoClient: {
+      name: 'wat',
+      slug: 'wat',
+      originalFullName: '@anonymous/abc',
     },
-  }
-);
+  },
+});

@@ -39,9 +39,7 @@ export class SessionUrlProvider {
                 return '';
             }
         }
-        const legacyExpoProjectFullName = options.projectNameForProxy ||
-            Constants.expoConfig?.originalFullName ||
-            Constants.__unsafeNoWarnManifest?.originalFullName;
+        const legacyExpoProjectFullName = options.projectNameForProxy || Constants.expoConfig?.originalFullName;
         if (!legacyExpoProjectFullName) {
             let nextSteps = '';
             if (__DEV__) {

@@ -1,6 +1,6 @@
 import { AppOwnership, ExecutionEnvironment } from 'expo-constants';
 
-import { describeManifestTypes, mockConstants } from './ManifestTestUtils';
+import { describeManifest, mockConstants } from './ManifestTestUtils';
 
 beforeEach(() => {
   jest.resetModules();
@@ -14,10 +14,7 @@ describe('bare', () => {
   });
   afterEach(() => (console.warn = originalWarn));
 
-  describeManifestTypes(
-    { id: 'test' },
-    { id: 'fake-uuid' }
-  )((manifestObj) => {
+  describeManifest({ id: 'fake-uuid' })((manifestObj) => {
     it(`uses native value`, () => {
       mockConstants({ executionEnvironment: ExecutionEnvironment.Bare }, manifestObj);
       const { makeRedirectUri } = require('../AuthSession');
@@ -29,21 +26,15 @@ describe('bare', () => {
 
 describe('Managed', () => {
   describe('Standalone', () => {
-    describeManifestTypes(
-      {
-        scheme: 'demo',
-        hostUri: 'exp.host/@test/test',
-      },
-      {
-        extra: {
-          expoClient: {
-            name: 'wat',
-            slug: 'wat',
-            scheme: 'demo',
-          },
+    describeManifest({
+      extra: {
+        expoClient: {
+          name: 'wat',
+          slug: 'wat',
+          scheme: 'demo',
         },
-      }
-    )((manifestObj) => {
+      },
+    })((manifestObj) => {
       it(`creates a redirect URL`, () => {
         mockConstants(
           {
@@ -58,20 +49,15 @@ describe('Managed', () => {
       });
     });
 
-    describeManifestTypes(
-      {
-        scheme: 'demo',
-      },
-      {
-        extra: {
-          expoClient: {
-            name: 'wat',
-            slug: 'wat',
-            scheme: 'demo',
-          },
+    describeManifest({
+      extra: {
+        expoClient: {
+          name: 'wat',
+          slug: 'wat',
+          scheme: 'demo',
         },
-      }
-    )((manifestObj) => {
+      },
+    })((manifestObj) => {
       it(`creates a redirect URL with a custom path`, () => {
         mockConstants(
           {
@@ -86,20 +72,15 @@ describe('Managed', () => {
       });
     });
 
-    describeManifestTypes(
-      {
-        scheme: 'demo',
-      },
-      {
-        extra: {
-          expoClient: {
-            name: 'wat',
-            slug: 'wat',
-            scheme: 'demo',
-          },
+    describeManifest({
+      extra: {
+        expoClient: {
+          name: 'wat',
+          slug: 'wat',
+          scheme: 'demo',
         },
-      }
-    )((manifestObj) => {
+      },
+    })((manifestObj) => {
       it(`uses native instead of generating a value`, () => {
         mockConstants(
           {
@@ -119,21 +100,15 @@ describe('Managed', () => {
     });
 
     describe('Production', () => {
-      describeManifestTypes(
-        {
-          scheme: 'demo',
-          hostUri: 'exp.host/@test/test',
-        },
-        {
-          extra: {
-            expoClient: {
-              name: 'wat',
-              slug: 'wat',
-              scheme: 'demo',
-            },
+      describeManifest({
+        extra: {
+          expoClient: {
+            name: 'wat',
+            slug: 'wat',
+            scheme: 'demo',
           },
-        }
-      )((manifestObj) => {
+        },
+      })((manifestObj) => {
         it(`creates a redirect URL`, () => {
           mockConstants(
             {
@@ -149,21 +124,15 @@ describe('Managed', () => {
         });
       });
 
-      describeManifestTypes(
-        {
-          scheme: 'demo',
-          hostUri: 'exp.host/@test/test',
-        },
-        {
-          extra: {
-            expoClient: {
-              name: 'wat',
-              slug: 'wat',
-              scheme: 'demo',
-            },
+      describeManifest({
+        extra: {
+          expoClient: {
+            name: 'wat',
+            slug: 'wat',
+            scheme: 'demo',
           },
-        }
-      )((manifestObj) => {
+        },
+      })((manifestObj) => {
         it(`creates a redirect URL with a custom path`, () => {
           mockConstants(
             {
@@ -182,32 +151,22 @@ describe('Managed', () => {
     });
 
     describe('Development', () => {
-      describeManifestTypes(
-        {
-          scheme: 'demo',
-          hostUri: '192.168.1.4:8081',
-          developer: {
-            projectRoot: '/Users/person/myapp',
-            tool: 'expo-cli',
+      describeManifest({
+        extra: {
+          expoClient: {
+            name: 'wat',
+            slug: 'wat',
+            scheme: 'demo',
+            hostUri: '192.168.1.4:8081',
+          },
+          expoGo: {
+            developer: {
+              projectRoot: '/Users/person/myapp',
+              tool: 'expo-cli',
+            },
           },
         },
-        {
-          extra: {
-            expoClient: {
-              name: 'wat',
-              slug: 'wat',
-              scheme: 'demo',
-              hostUri: '192.168.1.4:8081',
-            },
-            expoGo: {
-              developer: {
-                projectRoot: '/Users/person/myapp',
-                tool: 'expo-cli',
-              },
-            },
-          },
-        }
-      )((manifestObj) => {
+      })((manifestObj) => {
         const devConstants = {
           linkingUri: 'exp://192.168.1.4:8081/',
           experienceUrl: 'exp://192.168.1.4:8081',
