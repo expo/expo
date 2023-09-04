@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getServerManifest = exports.getManifest = exports.getStaticContent = void 0;
+exports.getManifest = exports.getStaticContent = void 0;
 /**
  * Copyright © 2023 650 Industries.
  *
@@ -43,8 +43,6 @@ const getRootComponent_1 = require("./getRootComponent");
 const _ctx_1 = require("../../_ctx");
 const ExpoRoot_1 = require("../ExpoRoot");
 const getLinkingConfig_1 = require("../getLinkingConfig");
-const getMatchableManifest_1 = require("../getMatchableManifest");
-Object.defineProperty(exports, "getServerManifest", { enumerable: true, get: function () { return getMatchableManifest_1.getServerManifest; } });
 const getRoutes_1 = require("../getRoutes");
 const head_1 = require("../head");
 const loadStaticParamsAsync_1 = require("../loadStaticParamsAsync");

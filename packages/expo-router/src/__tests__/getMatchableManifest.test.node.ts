@@ -44,6 +44,14 @@ it(`sorts`, () => {
   expect(a).toEqual(getMatchableManifest(getRoutesFor(['./a.tsx', './b/c.tsx'])));
   expect(a.map((r) => r.namedRegex)).toEqual(['^/b/c(?:/)?$', '^/a(?:/)?$']);
 });
+it(`sorts dynamic routes after normal routes`, () => {
+  const a = getMatchableManifest(
+    getRoutesFor(['./api/[dynamic]+api.ts', './api/externals+api.ts'])
+  );
+  expect(a.map((r) => r.namedRegex)).toEqual(['^/a(?:/)?$', '^/(?<a>[^/]+?)(?:/)?$']);
+  // const a = getMatchableManifest(getRoutesFor(['./[a]+api.tsx', './a+api.tsx']));
+  // expect(a.map((r) => r.namedRegex)).toEqual(['^/a(?:/)?$', '^/(?<a>[^/]+?)(?:/)?$']);
+});
 
 it(`supports groups`, () => {
   expect(getMatchableManifest(getRoutesFor(['./(a)/b.tsx']))).toEqual([

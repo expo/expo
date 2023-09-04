@@ -36,7 +36,7 @@ export function getMatchableManifest(route: RouteNode) {
 
   // TODO: Ensure routes are sorted
   const flat = getFlatNodes(route)
-    .sort(([, a], [, b]) => sortRoutes(a, b))
+    .sort(([, a], [, b]) => sortRoutes(b, a))
     .reverse();
 
   return getMatchableManifestForPaths(
@@ -68,7 +68,7 @@ export function getServerManifest(route: RouteNode) {
 
   // TODO: Ensure routes are sorted
   const flat = getFlatNodes(route)
-    .sort(([, a], [, b]) => sortRoutes(a, b))
+    .sort(([, a], [, b]) => sortRoutes(b, a))
     .reverse();
 
   const apiRoutes = flat.filter(([, route]) => isApiRoute(route));
