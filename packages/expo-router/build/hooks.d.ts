@@ -3,7 +3,6 @@ type SearchParams = Record<string, string | string[]>;
 export declare function useRootNavigationState(): import("./fork/getStateFromPath").ResultState;
 export declare function useRouteInfo(): import("./LocationProvider").UrlObject;
 export declare function useRootNavigation(): import("@react-navigation/native").NavigationContainerRef<ReactNavigation.RootParamList> | null;
-export declare function useLink(): Router;
 export declare function useRouter(): Router;
 /**
  * @private
@@ -42,8 +41,6 @@ export declare function usePathname(): string;
  * @see `useLocalSearchParams`
  */
 export declare function useGlobalSearchParams<TParams extends SearchParams = SearchParams>(): Partial<TParams>;
-/** @deprecated renamed to `useGlobalSearchParams` */
-export declare function useSearchParams<TParams extends SearchParams = SearchParams>(): Partial<TParams>;
 /**
  * Returns the URL search parameters for the contextually focused route. e.g. `/acme?foo=bar` -> `{ foo: "bar" }`.
  * This is useful for stacks where you may push a new screen that changes the query parameters.
