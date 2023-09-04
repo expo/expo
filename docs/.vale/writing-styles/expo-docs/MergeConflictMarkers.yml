@@ -1,5 +1,5 @@
 extends: existence
-message: 'Merge conflict marker "%s" found.'
+message: "Merge conflict marker '%s' found."
 level: error
 scope: raw
 raw:

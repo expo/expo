@@ -1,6 +1,6 @@
 extends: capitalization
 message: "'%s' should be in sentence case"
-link: https://github.com/cockroachdb/docs/blob/main/StyleGuide.md#capitalization-and-punctuation
+link: 'https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md#headings'
 level: warning
 scope:
   - heading.h2
