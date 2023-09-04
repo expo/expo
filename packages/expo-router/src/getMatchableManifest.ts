@@ -22,31 +22,10 @@ export interface RouteRegex {
   re: RegExp;
 }
 
-// Given a nested route tree, return a flattened array of all routes that can be matched.
-export function getMatchableManifest(route: RouteNode) {
-  function getFlatNodes(route: RouteNode): [string, RouteNode][] {
-    if (route.children.length) {
-      return route.children.map((child) => getFlatNodes(child)).flat();
-      // .sort(([, a], [, b]) => sortRoutes(a, b));
-    }
-
-    const key = getContextKey(route.contextKey).replace(/\/index$/, '') ?? '/';
-    return [[key, route]];
-  }
-
-  // TODO: Ensure routes are sorted
-  const flat = getFlatNodes(route)
-    .sort(([, a], [, b]) => sortRoutes(b, a))
-    .reverse();
-
-  return getMatchableManifestForPaths(
-    flat.map(([normalizedRoutePath, node]) => [normalizedRoutePath, node])
-  );
-}
-
 function isApiRoute(route: RouteNode) {
   return !route.children.length && !!route.contextKey.match(/\+api\.[jt]sx?$/);
 }
+
 function isNotFoundRoute(route: RouteNode) {
   if (route.route === '404') {
     return true;
@@ -54,6 +33,7 @@ function isNotFoundRoute(route: RouteNode) {
   return route.dynamic?.length && route.dynamic[0].name === '404';
   // return !route.children.length && !!route.contextKey.match(/\+api\.[jt]sx?$/);
 }
+
 // Given a nested route tree, return a flattened array of all routes that can be matched.
 export function getServerManifest(route: RouteNode) {
   function getFlatNodes(route: RouteNode): [string, RouteNode][] {

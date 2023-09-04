@@ -1,4 +1,4 @@
-import { getMatchableManifest, getServerManifest } from '../getMatchableManifest';
+import { getServerManifest } from '../getMatchableManifest';
 import { getExactRoutes } from '../getRoutes';
 import { RequireContext } from '../types';
 
@@ -34,27 +34,25 @@ it(`converts a server manifest`, () => {
 });
 
 xit(`converts single basic`, () => {
-  expect(getMatchableManifest(getRoutesFor(['./home.js']))).toEqual([
+  expect(getServerManifest(getRoutesFor(['./home.js']))).toEqual([
     { namedRegex: '^/home(?:/)?$', routeKeys: {} },
   ]);
 });
 
 it(`sorts`, () => {
-  const a = getMatchableManifest(getRoutesFor(['./b/c.tsx', './a.tsx']));
-  expect(a).toEqual(getMatchableManifest(getRoutesFor(['./a.tsx', './b/c.tsx'])));
+  const a = getServerManifest(getRoutesFor(['./b/c.tsx', './a.tsx']));
+  expect(a).toEqual(getServerManifest(getRoutesFor(['./a.tsx', './b/c.tsx'])));
   expect(a.map((r) => r.namedRegex)).toEqual(['^/b/c(?:/)?$', '^/a(?:/)?$']);
 });
 it(`sorts dynamic routes after normal routes`, () => {
-  const a = getMatchableManifest(
-    getRoutesFor(['./api/[dynamic]+api.ts', './api/externals+api.ts'])
-  );
+  const a = getServerManifest(getRoutesFor(['./api/[dynamic]+api.ts', './api/externals+api.ts']));
   expect(a.map((r) => r.namedRegex)).toEqual(['^/a(?:/)?$', '^/(?<a>[^/]+?)(?:/)?$']);
-  // const a = getMatchableManifest(getRoutesFor(['./[a]+api.tsx', './a+api.tsx']));
+  // const a = getServerManifest(getRoutesFor(['./[a]+api.tsx', './a+api.tsx']));
   // expect(a.map((r) => r.namedRegex)).toEqual(['^/a(?:/)?$', '^/(?<a>[^/]+?)(?:/)?$']);
 });
 
 it(`supports groups`, () => {
-  expect(getMatchableManifest(getRoutesFor(['./(a)/b.tsx']))).toEqual([
+  expect(getServerManifest(getRoutesFor(['./(a)/b.tsx']))).toEqual([
     {
       namedRegex: '^(?:/\\(a\\))?/b(?:/)?$',
       routeKeys: {},
@@ -64,7 +62,7 @@ it(`supports groups`, () => {
 
 it(`converts index routes`, () => {
   expect(
-    getMatchableManifest(getRoutesFor(['./index.tsx', './a/index/b.tsx', './a/index/index.js']))
+    getServerManifest(getRoutesFor(['./index.tsx', './a/index/b.tsx', './a/index/index.js']))
   ).toEqual([
     { namedRegex: '^/a/index(?:/)?$', routeKeys: {} },
     { namedRegex: '^/a/index/b(?:/)?$', routeKeys: {} },
@@ -73,7 +71,7 @@ it(`converts index routes`, () => {
 });
 
 function getNamedMatcher(fileName: string) {
-  return new RegExp(getMatchableManifest(getRoutesFor([fileName]))[0].namedRegex, '');
+  return new RegExp(getServerManifest(getRoutesFor([fileName]))[0].namedRegex, '');
 }
 
 it(`matches expected`, () => {
@@ -85,7 +83,7 @@ it(`matches expected`, () => {
 });
 
 it(`matches expected with safe name`, () => {
-  const matcher = getMatchableManifest(
+  const matcher = getServerManifest(
     getRoutesFor(['./[user name]/category/[CATEGORY]/post/[my_lil-id].tsx'])
   )[0];
 
@@ -105,7 +103,7 @@ it(`matches expected with safe name`, () => {
 });
 
 it(`matches expected with safe names that collide`, () => {
-  const matcher = getMatchableManifest(
+  const matcher = getServerManifest(
     getRoutesFor(['./[user name]/category/[my_lilid]/post/[my_lil-id].tsx'])
   )[0];
   console.log('matcher', matcher);
@@ -127,13 +125,13 @@ it(`matches expected with safe names that collide`, () => {
 
 // TODO: Maybe assert sooner?
 it(`asserts duplicate keys eventually`, () => {
-  const matcher = getMatchableManifest(getRoutesFor(['./[a]/b/[a].tsx']))[0];
+  const matcher = getServerManifest(getRoutesFor(['./[a]/b/[a].tsx']))[0];
   expect(() => new RegExp(matcher.namedRegex)).toThrowError();
 });
 
 it(`converts dynamic routes`, () => {
   expect(
-    getMatchableManifest(getRoutesFor(['./[a].tsx', './[...b].tsx', './c/[d]/e/[...f].js']))
+    getServerManifest(getRoutesFor(['./[a].tsx', './[...b].tsx', './c/[d]/e/[...f].js']))
   ).toEqual([
     {
       namedRegex: '^/(?<b>.+?)(?:/)?$',

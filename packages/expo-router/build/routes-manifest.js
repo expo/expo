@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createRoutesManifest = void 0;
+// This file runs in Node.js environments.
 // no relative imports
 const getMatchableManifest_1 = require("./getMatchableManifest");
 const getRoutes_1 = require("./getRoutes");
@@ -12,6 +13,7 @@ function createMockContextModule(map = []) {
     return contextModule;
 }
 function createRoutesManifest(paths) {
+    // TODO: Drop this part for Node.js
     const routeTree = (0, getRoutes_1.getRoutes)(createMockContextModule(paths), {
         preserveApiRoutes: true,
         ignoreRequireErrors: true,

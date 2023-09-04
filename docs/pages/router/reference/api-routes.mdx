@@ -6,6 +6,7 @@ description: Learn how to create universal serverless functions with Expo Router
 import { FileTree } from '~/ui/components/FileTree';
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
+import { Collapsible } from '~/ui/components/Collapsible';
 
 Expo Router supports enables you to write universal backend server code directly in your app.
 
@@ -95,7 +96,59 @@ This won't work by default on native as `/api/hello` does not provide an origin 
 
 </Step>
 
-## Capabilities
+## Requests
+
+Requests use the global `ExpoRequest` object. This object is a subclass of the standard [`Request`][wcg-request] object and provides additional functionality. Specifically the `expoUrl` object, which is a `URL` that has access to query parameters according to the Expo Router file convention.
+
+```ts app/blog/[post]+api.ts
+import { ExpoRequest, ExpoResponse } from 'expo-router/server';
+
+export async function GET(request: ExpoRequest) {
+  const postId = req.expoUrl.searchParams.get('post')
+  // fetch data for `postId`
+  return ExpoResponse.json({ ... });
+}
+```
+
+## Response
+
+Responses use the global `ExpoResponse` object. This object is a subclass of the standard [`Response`][wcg-response] object and provides additional functionality. Specifically the `ExpoResponse.json` initializer which will automatically stringify the response body and return status 200.
+
+```ts app/demo+api.ts
+import { ExpoRequest, ExpoResponse } from 'expo-router/server';
+
+export async function GET() {
+  return ExpoResponse.json({ hello: 'universe' });
+}
+```
+
+## Errors
+
+You can respond with server errors by using the `ExpoResponse` object.
+
+```ts app/blog/[post].ts
+import { ExpoRequest, ExpoResponse } from 'expo-router/server';
+
+export async function GET(request: ExpoRequest) {
+  const postId = req.expoUrl.searchParams.get('post')
+  if (!postId) {
+    return new ExpoResponse('No post found', {
+      status: 404,
+      headers: {
+        'Content-Type': 'text/plain',
+      },
+    });
+  }
+  // fetch data for `postId`
+  return ExpoResponse.json({ ... });
+}
+```
+
+Making requests with an undefined method will automatically return `405: Method not allowed`.
+
+If an error is thrown during the request, it will automatically return `500: Internal server error`.
+
+## Bundling
 
 API Routes are bundled with Metro, meaning they have access to all of the same bundling features as your client code.
 
@@ -116,14 +169,41 @@ Route handlers are executed in a sandboxed environment that is isolated from the
 - If your secret is in a `<...>+api.js` (Route Handler) file, it will not be included in the client bundle. This applies to all files that are imported in the route handler.
 - The secret stripping takes place in `expo/metro-config` and requires this be used in your `metro.config.js`!
 
-## Adapters
+## Deployment
+
+> This is experimental and subject to breaking changes. We have no continuous tests against this configuration.
 
 Every cloud hosting provider needs a custom adapter to support the Expo server runtime. The following providers have unofficial/experimental support from the Expo team.
 
+Before you deploy with third-parties, it's good to be familiar with the basics of the [`npx expo export`](/more/expo-cli#exporting) command. Specifically:
+
+- `/dist` is the default export directory for Expo CLI.
+- Files in `/public` will be copied to `/dist` on export.
+- The `@expo/server` package is included with `expo` and delegates requests to the server routes.
+- `@expo/server` does **not** inflate environment variables from `.env` files, these are expected to be loaded either by the hosting provider or the user.
+- Metro is not included in the server.
+
 ### Express
 
-- Bundle the server with `npx expo export`.
-- Host the server locally with `node server.js`:
+<Step label="1">
+
+Install the required dependencies:
+
+<Terminal cmd={['$ yarn add -D express compression morgan']} />
+
+</Step>
+
+<Step label="2">
+
+Export the website for production.
+
+<Terminal cmd={['$ yarn expo export -p web']} />
+
+</Step>
+
+<Step label="3">
+
+Write a server entry file that serves the static files and delegates requests to the server routes.
 
 ```js server.js
 #!/usr/bin/env node
@@ -171,14 +251,91 @@ app.listen(port, () => {
 });
 ```
 
-### http
+</Step>
 
-TODO
+<Step label="4">
+
+Start the server with `node`:
+
+<Terminal cmd={['$ node server.js']} />
+
+</Step>
 
 ### Netlify
 
-TODO
+> This is experimental and subject to breaking changes. We have no continuous tests against this configuration.
 
-### Vercel
+<Step label="1">
 
-TODO
+Create a server entry file, all requests will be delegated through this middleware. The exact file location is important.
+
+```js netlify/functions/server.js
+const { createRequestHandler } = require('@expo/server/build/vendor/netlify');
+
+const handler = createRequestHandler({
+  /* @info Points to the root `dist/` (output) folder */
+  build: require('path').join(__dirname, '../../dist'),
+  /* @end */
+  mode: process.env.NODE_ENV,
+});
+
+module.exports = { handler };
+```
+
+</Step>
+
+<Step label="2">
+
+Create a Netlify configuration file to redirect all requests to the server function.
+
+```toml netlify.toml
+[build]
+  command = "expo export -p web"
+  functions = "netlify/functions"
+  publish = "dist"
+
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/server"
+  status = 404
+
+[functions]
+  # Include everything to ensure dynamic routes can be used.
+  included_files = ["dist/**/*"]
+
+[[headers]]
+  for = "/dist/_expo/functions/*"
+  [headers.values]
+    # Set to 60 seconds as an example.
+    "Cache-Control" = "public, max-age=60, s-maxage=60"
+```
+
+</Step>
+
+<Step label="3">
+
+After you have created the configuration files, you can build the website and functions with Expo CLI:
+
+<Terminal cmd={['$ yarn expo export -p web']} />
+
+</Step>
+
+<Step label="4">
+
+Deploy to Netlify with the [Netlify CLI](https://docs.netlify.com/cli/get-started/).
+
+<Terminal
+  cmd={[
+    '# Install the Netlify CLI globally if needed.',
+    '$ npm install netlify-cli -g',
+    '# Deploy the website.',
+    '$ netlify deploy',
+  ]}
+/>
+
+You can now visit your website at the URL provided by Netlify CLI. Running `netlify deploy --prod` will publish to the production URL.
+
+</Step>
+
+[wcg-request]: https://fetch.spec.whatwg.org/#request
+[wcg-response]: https://fetch.spec.whatwg.org/#response

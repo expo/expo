@@ -19,14 +19,6 @@ export interface RouteRegex {
     };
     re: RegExp;
 }
-export declare function getMatchableManifest(route: RouteNode): {
-    generated: boolean | undefined;
-    page: string;
-    namedRegex: string;
-    routeKeys: {
-        [named: string]: string;
-    };
-}[];
 export declare function getServerManifest(route: RouteNode): {
     dynamicRoutes: {
         generated: boolean | undefined;

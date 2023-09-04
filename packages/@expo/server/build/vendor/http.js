@@ -29,7 +29,6 @@ exports.createRequestHandler = createRequestHandler;
 // Convert an http request to an expo request
 function convertRequest(req, res) {
     const url = new URL(req.url, `http://${req.headers.host}`);
-    // const url = new URL(`${req.protocol}://${req.get('host')}${req.url}`);
     // Abort action/loaders once we can no longer write a response
     const controller = new node_1.AbortController();
     res.on('close', () => controller.abort());

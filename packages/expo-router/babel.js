@@ -129,26 +129,26 @@ module.exports = function (api) {
     name: 'expo-router',
     visitor: {
       // Add support for Node.js __filename
-      Identifier(path, state) {
-        // Prevent converting object keys
-        if (path.parentPath.isObjectProperty()) {
-          return;
-        }
+      // Identifier(path, state) {
+      //   // Prevent converting object keys
+      //   if (path.parentPath.isObjectProperty()) {
+      //     return;
+      //   }
 
-        if (path.node.name === '__filename') {
-          path.replaceWith(
-            t.stringLiteral(
-              // `/index.js` is the value used by Webpack.
-              getRelPath(state)
-            )
-          );
-        }
-        // Add support for Node.js `__dirname`.
-        // This static value comes from Webpack somewhere.
-        if (path.node.name === '__dirname') {
-          path.replaceWith(t.stringLiteral('/'));
-        }
-      },
+      //   if (path.node.name === '__filename') {
+      //     path.replaceWith(
+      //       t.stringLiteral(
+      //         // `/index.js` is the value used by Webpack.
+      //         getRelPath(state)
+      //       )
+      //     );
+      //   }
+      //   // Add support for Node.js `__dirname`.
+      //   // This static value comes from Webpack somewhere.
+      //   if (path.node.name === '__dirname') {
+      //     path.replaceWith(t.stringLiteral('/'));
+      //   }
+      // },
 
       // Convert `process.env.EXPO_ROUTER_APP_ROOT` to a string literal
       MemberExpression(path, state) {

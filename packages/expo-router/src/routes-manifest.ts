@@ -1,7 +1,7 @@
+// This file runs in Node.js environments.
 // no relative imports
 import { getServerManifest } from './getMatchableManifest';
 import { getRoutes } from './getRoutes';
-// import { ctx } from '../_ctx';
 import { RequireContext } from './types';
 
 export type RouteInfo<TRegex = string> = {
@@ -27,6 +27,7 @@ function createMockContextModule(map: string[] = []) {
 }
 
 export function createRoutesManifest(paths: string[]): ExpoRoutesManifestV1 | null {
+  // TODO: Drop this part for Node.js
   const routeTree = getRoutes(createMockContextModule(paths), {
     preserveApiRoutes: true,
     ignoreRequireErrors: true,

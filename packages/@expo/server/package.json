@@ -29,6 +29,7 @@
     "install.js"
   ],
   "dependencies": {
+    "debug": "^4.3.4",
     "@remix-run/node": "^1.14.3",
     "abort-controller": "^3.0.0",
     "node-fetch": "^2",

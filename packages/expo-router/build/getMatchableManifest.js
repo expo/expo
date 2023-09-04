@@ -1,25 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getNamedRouteRegex = exports.getServerManifest = exports.getMatchableManifest = void 0;
+exports.getNamedRouteRegex = exports.getServerManifest = void 0;
 const sortRoutes_1 = require("./sortRoutes");
 const matchers_1 = require("./matchers");
-// Given a nested route tree, return a flattened array of all routes that can be matched.
-function getMatchableManifest(route) {
-    function getFlatNodes(route) {
-        if (route.children.length) {
-            return route.children.map((child) => getFlatNodes(child)).flat();
-            // .sort(([, a], [, b]) => sortRoutes(a, b));
-        }
-        const key = (0, matchers_1.getContextKey)(route.contextKey).replace(/\/index$/, '') ?? '/';
-        return [[key, route]];
-    }
-    // TODO: Ensure routes are sorted
-    const flat = getFlatNodes(route)
-        .sort(([, a], [, b]) => (0, sortRoutes_1.sortRoutes)(b, a))
-        .reverse();
-    return getMatchableManifestForPaths(flat.map(([normalizedRoutePath, node]) => [normalizedRoutePath, node]));
-}
-exports.getMatchableManifest = getMatchableManifest;
 function isApiRoute(route) {
     return !route.children.length && !!route.contextKey.match(/\+api\.[jt]sx?$/);
 }

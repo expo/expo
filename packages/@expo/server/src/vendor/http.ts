@@ -48,8 +48,6 @@ export function createRequestHandler(
 export function convertRequest(req: http.IncomingMessage, res: http.ServerResponse): ExpoRequest {
   const url = new URL(req.url!, `http://${req.headers.host}`);
 
-  // const url = new URL(`${req.protocol}://${req.get('host')}${req.url}`);
-
   // Abort action/loaders once we can no longer write a response
   const controller = new AbortController();
   res.on('close', () => controller.abort());

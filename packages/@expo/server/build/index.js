@@ -43,7 +43,7 @@ function getRoutesManifest(distFolder) {
 }
 exports.getRoutesManifest = getRoutesManifest;
 // TODO: Reuse this for dev as well
-function createRequestHandler(distFolder, { getRoutesManifest: getInternalRotuesManifest, getHtml = async (request, route) => {
+function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutesManifest, getHtml = async (request, route) => {
     // serve a static file
     const filePath = path_1.default.join(distFolder, route.page + '.html');
     if (!fs_1.default.existsSync(filePath)) {
@@ -69,8 +69,8 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRotues
         };
     }
     return async function handler(request) {
-        if (getInternalRotuesManifest) {
-            const manifest = await getInternalRotuesManifest(distFolder);
+        if (getInternalRoutesManifest) {
+            const manifest = await getInternalRoutesManifest(distFolder);
             if (manifest) {
                 routesManifest = manifest;
             }

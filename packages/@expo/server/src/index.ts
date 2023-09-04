@@ -4,11 +4,11 @@ import { Response } from '@remix-run/node';
 import fs from 'fs';
 import path from 'path';
 import { URL } from 'url';
+import type { ExpoRoutesManifestV1, RouteInfo } from 'expo-router/build/routes-manifest';
 
 import { ExpoRequest, ExpoResponse, ExpoURL, NON_STANDARD_SYMBOL } from './environment';
 import { ExpoRouterServerManifestV1FunctionRoute } from './types';
 
-import type { ExpoRoutesManifestV1, RouteInfo } from 'expo-router/build/routes-manifest';
 const debug = require('debug')('expo:server') as typeof console.log;
 
 function getProcessedManifest(path: string): ExpoRoutesManifestV1<RegExp> {
@@ -48,7 +48,7 @@ export function getRoutesManifest(distFolder: string) {
 export function createRequestHandler(
   distFolder: string,
   {
-    getRoutesManifest: getInternalRotuesManifest,
+    getRoutesManifest: getInternalRoutesManifest,
     getHtml = async (request, route) => {
       // serve a static file
       const filePath = path.join(distFolder, route.page + '.html');
@@ -96,8 +96,8 @@ export function createRequestHandler(
   }
 
   return async function handler(request: ExpoRequest): Promise<Response> {
-    if (getInternalRotuesManifest) {
-      const manifest = await getInternalRotuesManifest(distFolder);
+    if (getInternalRoutesManifest) {
+      const manifest = await getInternalRoutesManifest(distFolder);
       if (manifest) {
         routesManifest = manifest;
       } else {
