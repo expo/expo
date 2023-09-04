@@ -4,6 +4,7 @@ link: 'https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writ
 ignorecase: false
 level: warning
 nonword: true
+scope: sentence
 tokens:
   - (?:^|\s)I\s
   - (?:^|\s)I,\s
