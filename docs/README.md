@@ -86,6 +86,21 @@ yarn test
 yarn lint
 ```
 
+### Prose linter
+
+We use [Vale](https://vale.sh/) to lint our docs for style and grammar based on [Expo's writing style guide](https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md).
+
+There are two ways you can use it:
+
+#### Use Vale in VSCode
+
+- [Install Vale on your system](https://vale.sh/docs/vale-cli/installation/)
+- [Install Vale's VSCode extension](https://marketplace.visualstudio.com/items?itemName=errata-ai.vale-server)
+
+#### Run the `lint-prose` script
+
+Run the `yarn run lint-prose` script from **package.json**. This will run Vale on all markdown files in the **pages** directory.
+
 ## Redirects
 
 ### Server-side redirects
