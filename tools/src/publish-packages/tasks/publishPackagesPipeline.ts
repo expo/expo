@@ -7,7 +7,7 @@ import { addPublishedLabelToPullRequests } from './addPublishedLabelToPullReques
 import { checkEnvironmentTask } from './checkEnvironmentTask';
 import { checkPackagesIntegrity } from './checkPackagesIntegrity';
 import { checkRepositoryStatus } from './checkRepositoryStatus';
-import { commentOnIssuesTask } from './commentOnIssuesTask';
+// import { commentOnIssuesTask } from './commentOnIssuesTask';
 import { commitStagedChanges } from './commitStagedChanges';
 import { cutOffChangelogs } from './cutOffChangelogs';
 import { grantTeamAccessToPackages } from './grantTeamAccessToPackages';
@@ -48,7 +48,7 @@ export const publishPackagesPipeline = new Task<TaskArgs>(
       publishPackages,
       grantTeamAccessToPackages,
       addPublishedLabelToPullRequests,
-      commentOnIssuesTask,
+      // commentOnIssuesTask,
     ],
   },
   async (parcels: Parcel[], options: CommandOptions) => {
