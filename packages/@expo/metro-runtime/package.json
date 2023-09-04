@@ -1,6 +1,6 @@
 {
   "name": "@expo/metro-runtime",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Tools for making advanced Metro bundler features work",
   "main": "build",
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/metro-runtime",
