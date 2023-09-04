@@ -1,11 +1,5 @@
-import {
-  PermissionResponse,
-  PermissionStatus,
-  UnavailabilityError,
-  uuidv4,
-} from 'expo-modules-core';
+import { PermissionResponse, PermissionStatus, UnavailabilityError, uuid } from 'expo-modules-core';
 import { Platform, Share } from 'react-native';
-
 import ExpoContacts from './ExpoContacts';
 
 export type CalendarFormatType = CalendarFormats | `${CalendarFormats}`;
@@ -827,7 +821,7 @@ export async function createGroupAsync(name?: string, containerId?: string): Pro
     throw new UnavailabilityError('Contacts', 'createGroupAsync');
   }
 
-  name = name || uuidv4();
+  name = name || uuid.v4();
   if (!containerId) {
     containerId = await getDefaultContainerIdAsync();
   }

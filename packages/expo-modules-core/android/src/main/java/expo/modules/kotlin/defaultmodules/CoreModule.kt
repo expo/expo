@@ -7,7 +7,7 @@ import java.util.UUID
 class CoreModule : Module() {
   override fun definition() = ModuleDefinition {
     // Expose some common classes and maybe even the `modules` host object in the future.
-    Function("getUuidv4") {
+    Function("uuidv4") {
       return@Function UUID.randomUUID().toString()
     }
   }
