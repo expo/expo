@@ -30,8 +30,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateMocks = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-const typescript_1 = __importDefault(require("typescript"));
 const prettier = __importStar(require("prettier"));
+const typescript_1 = __importDefault(require("typescript"));
 const directoryPath = process.cwd();
 function maybeUnwrapSwiftArray(type) {
     const isArray = type.startsWith('[') && type.endsWith(']');
@@ -122,7 +122,7 @@ function getMockedTypes(types) {
 function getMockForModule(module) {
     return [].concat(getMockedTypes(getTypesToMock(module)), getMockedFunctions(module.functions), getMockedFunctions(module.asyncFunctions, true));
 }
-function generateMocks(modules) {
+async function generateMocks(modules) {
     const printer = typescript_1.default.createPrinter({ newLine: typescript_1.default.NewLineKind.LineFeed });
     for (const m of modules) {
         const resultFile = typescript_1.default.createSourceFile(m.name + '.ts', '', typescript_1.default.ScriptTarget.Latest, false, typescript_1.default.ScriptKind.TSX);
@@ -134,9 +134,12 @@ function generateMocks(modules) {
         const compiledJs = typescript_1.default.transpileModule(printedTs, {
             compilerOptions: { module: typescript_1.default.ModuleKind.ESNext, target: typescript_1.default.ScriptTarget.ESNext },
         }).outputText;
-        prettier
-            .format(compiledJs, { parser: 'babel', tabWidth: 2, singleQuote: true })
-            .then((prettyJs) => fs_1.default.writeFileSync(filePath, prettyJs));
+        const prettyJs = await prettier.format(compiledJs, {
+            parser: 'babel',
+            tabWidth: 2,
+            singleQuote: true,
+        });
+        fs_1.default.writeFileSync(filePath, prettyJs);
     }
 }
 exports.generateMocks = generateMocks;

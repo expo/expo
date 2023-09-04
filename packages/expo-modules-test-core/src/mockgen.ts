@@ -141,7 +141,7 @@ function getMockForModule(module: OutputModuleDefinition) {
   );
 }
 
-export function generateMocks(modules: OutputModuleDefinition[]) {
+export async function generateMocks(modules: OutputModuleDefinition[]) {
   const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
 
   for (const m of modules) {
@@ -160,8 +160,11 @@ export function generateMocks(modules: OutputModuleDefinition[]) {
     const compiledJs = ts.transpileModule(printedTs, {
       compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ESNext },
     }).outputText;
-    prettier
-      .format(compiledJs, { parser: 'babel', tabWidth: 2, singleQuote: true })
-      .then((prettyJs) => fs.writeFileSync(filePath, prettyJs));
+    const prettyJs = await prettier.format(compiledJs, {
+      parser: 'babel',
+      tabWidth: 2,
+      singleQuote: true,
+    });
+    fs.writeFileSync(filePath, prettyJs);
   }
 }
