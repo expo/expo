@@ -224,39 +224,7 @@ function evalMetro(src: string) {
   return profile(requireString, 'eval-metro-bundle')(src);
 }
 
-export async function getExpoRouteManifestBuilderAsync(
-  projectRoot: string,
-  {
-    devServerUrl,
-    minify,
-    dev,
-  }: {
-    devServerUrl: string;
-    minify: boolean;
-    dev: boolean;
-  }
-) {
-  const { createRoutesManifest } = require(resolveFrom(
-    projectRoot,
-    'expo-router/_routes-manifest'
-  ));
-  return createRoutesManifest;
-  // const matchNodePath = resolveFrom(projectRoot, 'expo-router/_routes-manifest');
-
-  // try {
-  //   const { createRoutesManifest } = await requireWithMetro<{
-  //     createRoutesManifest: (paths: string[]) => Promise<any>;
-  //   }>(projectRoot, devServerUrl, matchNodePath, {
-  //     minify,
-  //     dev,
-  //     // Ensure the API Routes are included
-  //     environment: 'node',
-  //   });
-  //   return createRoutesManifest;
-  // } catch (error) {
-  //   if (!(error instanceof SilentError)) {
-  //     throw error;
-  //   }
-  //   return null;
-  // }
+export function getExpoRouteManifestBuilderAsync(projectRoot: string) {
+  return require(resolveFrom(projectRoot, 'expo-router/_routes-manifest'))
+    .createRoutesManifest as typeof import('expo-router/build/routes-manifest').createRoutesManifest;
 }

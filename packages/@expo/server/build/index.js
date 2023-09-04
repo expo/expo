@@ -88,8 +88,8 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRotues
             routesManifest = getRoutesManifest(distFolder);
         }
         const url = new url_1.URL(request.url, 'http://expo.dev');
-        const sanitizedPathname = url.pathname; //.replace(/^\/+/, '/').replace(/\/+$/, '/');
-        console.log('test', sanitizedPathname);
+        const sanitizedPathname = url.pathname;
+        debug('Request', sanitizedPathname);
         if (request.method === 'GET' || request.method === 'HEAD') {
             // First test static routes
             for (const route of routesManifest.staticRoutes) {
@@ -147,13 +147,7 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRotues
             catch (error) {
                 if (error instanceof Error) {
                     logApiRouteExecutionError(error);
-                    //
                 }
-                // TODO: Symbolicate error stack
-                // console.error(error);
-                // const res = ExpoResponse.error();
-                // res.status = 500;
-                // return res;
                 return new environment_1.ExpoResponse('Internal server error', {
                     status: 500,
                     headers: {

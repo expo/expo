@@ -26,7 +26,7 @@ function createMockContextModule(map: string[] = []) {
   return contextModule as RequireContext;
 }
 
-export async function createRoutesManifest(paths: string[]): Promise<any> {
+export function createRoutesManifest(paths: string[]): ExpoRoutesManifestV1 | null {
   const routeTree = getRoutes(createMockContextModule(paths), {
     preserveApiRoutes: true,
     ignoreRequireErrors: true,

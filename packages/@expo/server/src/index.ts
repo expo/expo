@@ -1,7 +1,6 @@
 import '@expo/server/install';
 
 import { Response } from '@remix-run/node';
-import type { ExpoRoutesManifestV1, RouteInfo } from 'expo-router/build/routes-manifest';
 import fs from 'fs';
 import path from 'path';
 import { URL } from 'url';
@@ -9,6 +8,7 @@ import { URL } from 'url';
 import { ExpoRequest, ExpoResponse, ExpoURL, NON_STANDARD_SYMBOL } from './environment';
 import { ExpoRouterServerManifestV1FunctionRoute } from './types';
 
+import type { ExpoRoutesManifestV1, RouteInfo } from 'expo-router/build/routes-manifest';
 const debug = require('debug')('expo:server') as typeof console.log;
 
 function getProcessedManifest(path: string): ExpoRoutesManifestV1<RegExp> {
@@ -115,9 +115,10 @@ export function createRequestHandler(
 
     const url = new URL(request.url, 'http://expo.dev');
 
-    const sanitizedPathname = url.pathname; //.replace(/^\/+/, '/').replace(/\/+$/, '/');
+    const sanitizedPathname = url.pathname;
 
-    console.log('test', sanitizedPathname);
+    debug('Request', sanitizedPathname);
+
     if (request.method === 'GET' || request.method === 'HEAD') {
       // First test static routes
       for (const route of routesManifest.staticRoutes) {
@@ -183,13 +184,7 @@ export function createRequestHandler(
       } catch (error) {
         if (error instanceof Error) {
           logApiRouteExecutionError(error);
-          //
         }
-        // TODO: Symbolicate error stack
-        // console.error(error);
-        // const res = ExpoResponse.error();
-        // res.status = 500;
-        // return res;
 
         return new ExpoResponse('Internal server error', {
           status: 500,

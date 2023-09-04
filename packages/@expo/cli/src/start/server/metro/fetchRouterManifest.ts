@@ -44,6 +44,7 @@ export async function refetchManifest(
   return fetchManifest(projectRoot, options);
 }
 
+// TODO: Simplify this now that we use Node.js directly, no need for the Metro bundler caching layer.
 export async function fetchManifest<TRegex = string>(
   projectRoot: string,
   options: { mode?: string; port?: number; asJson?: boolean; appDir: string }
@@ -55,48 +56,24 @@ export async function fetchManifest<TRegex = string>(
     }
   }
 
-  const devServerUrl = `http://localhost:${options.port}`;
-
   async function bundleAsync(): Promise<LoadManifestResult<TRegex>> {
-    // TODO: Update eagerly when files change
-    const getManifest = await getExpoRouteManifestBuilderAsync(projectRoot, {
-      devServerUrl,
-      minify: options.mode === 'production',
-      dev: options.mode !== 'production',
-    });
-
-    if (!getManifest) {
-      return { manifest: null };
-    }
-
-    let results: any;
-    // try {
+    const getManifest = getExpoRouteManifestBuilderAsync(projectRoot);
     const paths = getRoutePaths(options.appDir);
-    console.log('Paths:', paths);
     // Get the serialized manifest
-    results = await getManifest(paths);
-    // } catch (error: any) {
-    //   console.log('ERR', error);
-    //   if (!(error instanceof SilentError)) {
-    //     // This can throw if there are any top-level errors in any files when bundling.
-    //     debug('Error while bundling manifest:', error);
-    //   }
-    //   return { error };
-    // }
+    const jsonManifest = getManifest(paths);
 
-    if (!results) {
+    if (!jsonManifest) {
       return { manifest: null };
     }
 
-    if (!results.staticRoutes || !results.dynamicRoutes) {
-      throw new Error('Routes manifest is malformed: ' + JSON.stringify(results, null, 2));
+    if (!jsonManifest.staticRoutes || !jsonManifest.dynamicRoutes) {
+      throw new Error('Routes manifest is malformed: ' + JSON.stringify(jsonManifest, null, 2));
     }
 
     if (!options.asJson) {
-      results = inflateManifest(results);
+      return { manifest: inflateManifest(jsonManifest) };
     }
-    // console.log('manifest', results);
-    return { manifest: results };
+    return { manifest: jsonManifest };
   }
 
   const manifest = bundleAsync();

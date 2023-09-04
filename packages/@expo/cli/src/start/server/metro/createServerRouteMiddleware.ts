@@ -115,7 +115,6 @@ export function createRouteHandlerMiddleware(
         logMetroError(projectRoot, { error });
       },
       async getApiRoute(route) {
-        console.log('getApiRoute', route);
         const resolvedFunctionPath = await resolveAsync(route.page, {
           extensions: ['.js', '.jsx', '.ts', '.tsx'],
           basedir: options.appDir,
