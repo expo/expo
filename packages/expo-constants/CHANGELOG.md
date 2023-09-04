@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Use dedicated `requireOptionalNativeModule` instead of try-catching `requireNativeModule`. ([#24262](https://github.com/expo/expo/pull/24262) by [@tsapeta](https://github.com/tsapeta))
+
 ## 15.0.0 — 2023-09-04
 
 ### 🛠 Breaking changes
