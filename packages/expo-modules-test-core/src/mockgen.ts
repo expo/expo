@@ -140,7 +140,7 @@ function getMockForModule(module: OutputModuleDefinition) {
   );
 }
 
-export function printModules(modules: OutputModuleDefinition[]) {
+export function generateMocks(modules: OutputModuleDefinition[]) {
   const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
 
   for (const m of modules) {

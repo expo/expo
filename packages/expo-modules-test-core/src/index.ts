@@ -1,12 +1,12 @@
 import { getAllExpoModulesInWorkingDirectory } from './getStructure';
-import { printModules } from './mockgen';
+import { generateMocks } from './mockgen';
 
 const command = process.argv[2];
 
-if (command === 'mockgen') {
+if (command === 'generate-js-mocks') {
   const modules = getAllExpoModulesInWorkingDirectory();
-  printModules(modules);
-} else if (command === 'getStucture') {
+  generateMocks(modules);
+} else if (command === 'get-mocks-structure') {
   const modules = getAllExpoModulesInWorkingDirectory();
   console.log(JSON.stringify(modules, null, 2));
 } else {
