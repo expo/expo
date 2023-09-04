@@ -30,7 +30,6 @@ export function createRequestHandler(
       return next();
     }
     try {
-      console.log('incoming:', req, res);
       const request = convertRequest(req, res);
 
       const response = await handleRequest(request);

@@ -38,7 +38,7 @@ import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
-import { fetchManifest, invalidateManifestCache, refetchManifest } from './fetchRouterManifest';
+import { fetchManifest, invalidateManifestCache } from './fetchRouterManifest';
 import { eagerBundleApiRoutes, rebundleApiRoute } from './fetchServerRoutes';
 import { instantiateMetroAsync } from './instantiateMetro';
 import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
@@ -92,16 +92,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     mode: 'development' | 'production';
     appDir: string;
   }) {
-    const { manifest, error } = await fetchManifest(this.projectRoot, {
+    const manifest = await fetchManifest(this.projectRoot, {
       port: this.getInstance()?.location.port,
       asJson: true,
       mode,
       appDir,
     });
 
-    if (error) {
-      throw error;
-    }
     if (!manifest) {
       throw new CommandError(
         'EXPO_ROUTER_SERVER_MANIFEST',
@@ -438,8 +435,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             const isApiRoute = isApiRouteConvention(filepath);
             if (op === 'delete') {
               // update manifest
-              debug('update manifest');
-              await refetchManifest(this.projectRoot, { ...options, appDir });
+              // debug('update manifest');
+              // await refetchManifest(this.projectRoot, { ...options, appDir });
             } else if (op === 'add' || (op === 'change' && !isApiRoute)) {
               debug('invalidate manifest');
               // The manifest won't be fresh instantly so we should just clear it to ensure the next request will get the latest.

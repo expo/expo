@@ -75,7 +75,9 @@ export async function exportAppAsync(
       platforms,
       minify,
       // TODO: Breaks asset exports
-      // platforms: useWebSSG ? platforms.filter((platform) => platform !== 'web') : platforms,
+      // platforms: useServerRendering
+      //   ? platforms.filter((platform) => platform !== 'web')
+      //   : platforms,
       dev,
       // TODO: Disable source map generation if we aren't outputting them.
     }
@@ -107,7 +109,7 @@ export async function exportAppAsync(
   // Write the JS bundles to disk, and get the bundle file names (this could change with async chunk loading support).
   const { hashes, fileNames } = await writeBundlesAsync({
     bundles,
-    useWebSSG,
+    useServerRendering,
     outputDir: bundlesPath,
   });
 

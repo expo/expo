@@ -20,19 +20,19 @@ function getProcessedManifest(path) {
         notFoundRoutes: routesManifest.notFoundRoutes.map((value) => {
             return {
                 ...value,
-                regex: new RegExp(value.regex),
+                namedRegex: new RegExp(value.namedRegex),
             };
         }),
         dynamicRoutes: routesManifest.dynamicRoutes.map((value) => {
             return {
                 ...value,
-                regex: new RegExp(value.regex),
+                namedRegex: new RegExp(value.namedRegex),
             };
         }),
         staticRoutes: routesManifest.staticRoutes.map((value) => {
             return {
                 ...value,
-                regex: new RegExp(value.regex),
+                namedRegex: new RegExp(value.namedRegex),
             };
         }),
     };
