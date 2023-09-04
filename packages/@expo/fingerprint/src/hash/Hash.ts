@@ -124,15 +124,26 @@ export async function createFileHashResultsAsync(
 }
 
 /**
- * Indicate the given `dirPath` should be excluded by `dirExcludes`
+ * Indicate the given `filePath` should be excluded by `ignores`
  */
-function isExcludedDir(dirPath: string, dirExcludes: string[]): boolean {
-  for (const exclude of dirExcludes) {
-    if (minimatch(dirPath, exclude)) {
-      return true;
+export function isIgnoredPath(
+  filePath: string,
+  ignores: string[],
+  minimatchOptions: minimatch.IOptions = { dot: true }
+): boolean {
+  const minimatchObjs = ignores.map((ignore) => new minimatch.Minimatch(ignore, minimatchOptions));
+
+  let result = false;
+  for (const minimatchObj of minimatchObjs) {
+    const currMatch = minimatchObj.match(filePath);
+    if (minimatchObj.negate && result && !currMatch) {
+      // Special handler for negate (!pattern).
+      // As long as previous match result is true and not matched from the current negate pattern, we should early return.
+      return false;
     }
+    result ||= currMatch;
   }
-  return false;
+  return result;
 }
 
 /**
@@ -146,7 +157,7 @@ export async function createDirHashResultsAsync(
   options: NormalizedOptions,
   depth: number = 0
 ): Promise<HashResult | null> {
-  if (isExcludedDir(dirPath, options.dirExcludes)) {
+  if (isIgnoredPath(dirPath, options.ignores)) {
     return null;
   }
   const dirents = (await fs.readdir(path.join(projectRoot, dirPath), { withFileTypes: true })).sort(

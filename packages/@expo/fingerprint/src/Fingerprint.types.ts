@@ -39,8 +39,20 @@ export interface Options {
   /**
    * Excludes directories from hashing. This supported pattern is as `glob()`.
    * Default is `['android/build', 'android/app/build', 'android/app/.cxx', 'ios/Pods']`.
+   * @deprecated Use `ignores` instead.
    */
   dirExcludes?: string[];
+
+  /**
+   * Ignore files and directories from hashing. This supported pattern is as `glob()`.
+   *
+   * Please note that the pattern matching is slightly different from gitignore. For example, we don't support partial matching where `build` does not match `android/build`. You should use `'**' + '/build'` instead.
+   * @see [minimatch implementations](https://github.com/isaacs/minimatch#comparisons-to-other-fnmatchglob-implementations) for more reference.
+   *
+   * Besides this `ignores`, fingerprint comes with implicit default ignores defined in `Options.DEFAULT_IGNORES`.
+   * If you want to override the default ignores, use `!` prefix.
+   */
+  ignores: string[];
 
   /**
    * Additional sources for hashing.
@@ -54,7 +66,7 @@ export interface NormalizedOptions extends Options {
   platforms: NonNullable<Options['platforms']>;
   concurrentIoLimit: NonNullable<Options['concurrentIoLimit']>;
   hashAlgorithm: NonNullable<Options['hashAlgorithm']>;
-  dirExcludes: NonNullable<Options['dirExcludes']>;
+  ignores: NonNullable<Options['ignores']>;
 }
 
 export interface HashSourceFile {
