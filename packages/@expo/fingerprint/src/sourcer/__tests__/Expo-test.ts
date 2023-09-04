@@ -5,7 +5,7 @@ import { vol, fs as volFS } from 'memfs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { normalizeOptions } from '../../Options';
+import { normalizeOptionsAsync } from '../../Options';
 import {
   getEasBuildSourcesAsync,
   getExpoAutolinkingAndroidSourcesAsync,
@@ -55,7 +55,7 @@ describe(getEasBuildSourcesAsync, () => {
 }`
     );
 
-    const sources = await getEasBuildSourcesAsync('/app', normalizeOptions());
+    const sources = await getEasBuildSourcesAsync('/app', await normalizeOptionsAsync('/app'));
     expect(sources).toContainEqual(
       expect.objectContaining({
         type: 'file',
@@ -97,7 +97,10 @@ describe('getExpoAutolinkingSourcesAsync', () => {
   });
 
   it('should contain expo autolinking projects', async () => {
-    let sources = await getExpoAutolinkingAndroidSourcesAsync('/app', normalizeOptions());
+    let sources = await getExpoAutolinkingAndroidSourcesAsync(
+      '/app',
+      await normalizeOptionsAsync('/app')
+    );
     expect(sources).toContainEqual(
       expect.objectContaining({
         type: 'dir',
@@ -106,7 +109,7 @@ describe('getExpoAutolinkingSourcesAsync', () => {
     );
     expect(sources).toMatchSnapshot();
 
-    sources = await getExpoAutolinkingIosSourcesAsync('/app', normalizeOptions());
+    sources = await getExpoAutolinkingIosSourcesAsync('/app', await normalizeOptionsAsync('/app'));
     expect(sources).toContainEqual(
       expect.objectContaining({ type: 'dir', filePath: 'node_modules/expo-modules-core' })
     );
@@ -114,14 +117,17 @@ describe('getExpoAutolinkingSourcesAsync', () => {
   });
 
   it('should not containt absolute path in contents', async () => {
-    let sources = await getExpoAutolinkingAndroidSourcesAsync('/app', normalizeOptions());
+    let sources = await getExpoAutolinkingAndroidSourcesAsync(
+      '/app',
+      await normalizeOptionsAsync('/app')
+    );
     for (const source of sources) {
       if (source.type === 'contents') {
         expect(source.contents.indexOf('/app/')).toBe(-1);
       }
     }
 
-    sources = await getExpoAutolinkingIosSourcesAsync('/app', normalizeOptions());
+    sources = await getExpoAutolinkingIosSourcesAsync('/app', await normalizeOptionsAsync('/app'));
     for (const source of sources) {
       if (source.type === 'contents') {
         expect(source.contents.indexOf('/app/')).toBe(-1);
@@ -147,13 +153,13 @@ describe(getExpoConfigSourcesAsync, () => {
       // To fake the case as no expo installed, trying to resolve as **nonexist/expo/config** module
       return actualResolver(fromDirectory, 'nonexist/expo/config');
     });
-    const sources = await getExpoConfigSourcesAsync('/app', normalizeOptions());
+    const sources = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
     expect(sources.length).toBe(0);
   });
 
   it('should contain app.json', async () => {
     vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
-    const sources = await getExpoConfigSourcesAsync('/app', normalizeOptions());
+    const sources = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
     expect(sources).toContainEqual(
       expect.objectContaining({
         type: 'file',
@@ -166,7 +172,7 @@ describe(getExpoConfigSourcesAsync, () => {
     vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
     vol.mkdirSync('/app/assets');
     vol.writeFileSync('/app/assets/icon.png', 'PNG data');
-    const sources = await getExpoConfigSourcesAsync('/app', normalizeOptions());
+    const sources = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
     expect(sources).toContainEqual(
       expect.objectContaining({
         type: 'file',
@@ -221,7 +227,7 @@ describe(`getExpoConfigSourcesAsync - config-plugins`, () => {
         },
       })
     );
-    const sources = await getExpoConfigSourcesAsync('/app', normalizeOptions());
+    const sources = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
     expect(sources).toContainEqual(
       expect.objectContaining({
         type: 'dir',
@@ -243,7 +249,7 @@ describe(`getExpoConfigSourcesAsync - config-plugins`, () => {
         },
       })
     );
-    const sources = await getExpoConfigSourcesAsync('/app', normalizeOptions());
+    const sources = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
     expect(sources).toContainEqual(
       expect.objectContaining({
         type: 'dir',
@@ -260,7 +266,7 @@ export default ({ config }) => {
   return config;
 };`
     );
-    const sources = await getExpoConfigSourcesAsync('/app', normalizeOptions());
+    const sources = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
 
     vol.writeFileSync(
       '/app/app.config.js',
@@ -272,7 +278,7 @@ export default ({ config }) => {
   return config;
 };`
     );
-    const sources2 = await getExpoConfigSourcesAsync('/app', normalizeOptions());
+    const sources2 = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
 
     expect(sources).toEqual(sources2);
   });
