@@ -92,7 +92,7 @@ We use [Vale](https://vale.sh/) to lint our docs for style and grammar based on 
 
 There are two ways you can use it:
 
-#### Use Vale in VSCode
+#### Use Vale in VSCode (**Recommended**)
 
 - [Install Vale on your system](https://vale.sh/docs/vale-cli/installation/)
 - [Install Vale's VSCode extension](https://marketplace.visualstudio.com/items?itemName=errata-ai.vale-server)
