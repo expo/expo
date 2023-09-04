@@ -93,9 +93,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     appDir: string;
   }) {
     const manifest = await fetchManifest(this.projectRoot, {
-      port: this.getInstance()?.location.port,
       asJson: true,
-      mode,
       appDir,
     });
 
