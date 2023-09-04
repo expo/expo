@@ -4,8 +4,6 @@
 
 ### 🛠 Breaking changes
 
-- Fix for breaking change in expo-constants to only support new manifests. ([#24267](https://github.com/expo/expo/pull/24267) by [@wschurman](https://github.com/wschurman))
-
 ### 🎉 New features
 
 - Added `extraHeaders` option to TokenRequest and RevokeTokenRequest. ([#22727](https://github.com/expo/expo/pull/22727)) by [@levizimmerman](https://github.com/levizimmerman)
@@ -13,6 +11,12 @@
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 5.2.0 — 2023-09-04
+
+### 🛠 Breaking changes
+
+- Fix for breaking change in expo-constants to only support new manifests. ([#24267](https://github.com/expo/expo/pull/24267) by [@wschurman](https://github.com/wschurman))
 
 ## 5.1.2 — 2023-09-04
 
