@@ -12,6 +12,7 @@ swap:
   cancelled: canceled
   cancelling: canceling
   cocoapods: CocoaPods
+  eas cli: EAS CLI
   expo cli: Expo CLI
   expo go: Expo Go
   expo sdk: Expo SDK
