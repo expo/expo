@@ -105,3 +105,7 @@ import { BlurView } from 'expo-blur';
 ```
 
 <APISection packageName="expo-blur" />
+
+## Using `borderRadius` with `BlurView`
+
+When using `BlurView` on Android and iOS, the `borderRadius` property is not applied when provided explicitly. To fix this, you can use the `overflow: 'hidden'` style since `BlurView` inherits props from `<View>`. See [Usage](#usage) for an example.
