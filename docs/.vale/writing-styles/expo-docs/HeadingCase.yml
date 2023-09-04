@@ -1,0 +1,68 @@
+extends: capitalization
+message: "'%s' should be in sentence case"
+link: https://github.com/cockroachdb/docs/blob/main/StyleGuide.md#capitalization-and-punctuation
+level: warning
+scope:
+  - heading.h2
+  - heading.h3
+  - heading.h4
+match: $sentence
+exceptions:
+  - Router
+  - Router's
+  - CLI
+  - Build
+  - EAS
+  - Update
+  - Submit
+  - EAS Build
+  - EAS Submit
+  - EAS Metadata
+  - EAS Update
+  - EAS Insights
+  - JavaScript
+  - Jest
+  - TypeScript
+  - React Navigation
+  - Wix
+  - Expo
+  - React Native
+  - I
+  - Debugger
+  - Debugging
+  - CodePush
+  - App
+  - Config
+  - Go
+  - app.config.js
+  - app.json
+  - app.plugin.js
+  - Podfile
+  - iOS
+  - CocoPods
+  - Android
+  - Web
+  - web
+  - Emulator
+  - Simulator
+  - Modules
+  - Module
+  - Library
+  - Package
+  - AuthSession
+  - Linking
+  - Route
+  - Routes
+  - Files
+  - Static
+  - Dynamic
+  - Server-side
+  - Render
+  - Rendering
+  - Prebuild
+  - Continuous
+  - Native
+  - Generation
+  - RTL
+  - Apple
+  - Google
