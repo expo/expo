@@ -1,1 +1,1 @@
-{"version":3,"file":"mockgen.d.ts","sourceRoot":"","sources":["../src/mockgen.ts"],"names":[],"mappings":";AAOA,OAAO,EAAyB,sBAAsB,EAAE,MAAM,SAAS,CAAC;AAuIxE,wBAAgB,YAAY,CAAC,OAAO,EAAE,sBAAsB,EAAE,QAqB7D"}
+{"version":3,"file":"mockgen.d.ts","sourceRoot":"","sources":["../src/mockgen.ts"],"names":[],"mappings":";AAQA,OAAO,EAAyB,sBAAsB,EAAE,MAAM,SAAS,CAAC;AAuIxE,wBAAgB,aAAa,CAAC,OAAO,EAAE,sBAAsB,EAAE,QAuB9D"}

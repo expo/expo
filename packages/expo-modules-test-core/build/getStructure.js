@@ -159,21 +159,6 @@ function findNamedDefinitionsOfType(type, moduleDefinition, file) {
         return { name, types };
     });
 }
-// Used for functions,async functions, all of shape Identifier(name, closure or function)
-function findUnnamedDefinitionsOfType(type, moduleDefinition, file) {
-    const definitionsOfType = moduleDefinition.filter((md) => md['key.name'] === type);
-    return definitionsOfType.map((d) => {
-        const definitionParams = d['key.substructure'];
-        let types = null;
-        if (hasSubstructure(definitionParams[0])) {
-            types = parseClosureTypes(definitionParams[0]);
-        }
-        else {
-            types = getTypeFromOffsetObject(definitionParams[0], file);
-        }
-        return { name: null, types };
-    });
-}
 // Used for events
 function findGroupedDefinitionsOfType(type, moduleDefinition, file) {
     const definitionsOfType = moduleDefinition.filter((md) => md['key.name'] === type);
@@ -214,7 +199,6 @@ function parseModuleDefinition(moduleDefinition, file) {
         events: findGroupedDefinitionsOfType('Events', moduleDefinition, file),
         properties: findNamedDefinitionsOfType('Property', moduleDefinition, file),
         props: omitViewFromClosureArguments(findNamedDefinitionsOfType('Prop', moduleDefinition, file)),
-        onCreate: findUnnamedDefinitionsOfType('OnCreate', moduleDefinition, file),
         view: findAndParseView(moduleDefinition, file),
     };
     return parsedDefinition;

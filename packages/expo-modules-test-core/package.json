@@ -30,6 +30,7 @@
   "dependencies": {
     "@types/node": "^20.5.7",
     "glob": "^10.3.4",
+    "prettier": "^3.0.3",
     "yaml": "^2.3.2"
   }
 }

@@ -1,13 +1,37 @@
 #!/usr/bin/env node
 'use strict';
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.printModules = void 0;
+exports.generateMocks = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const typescript_1 = __importDefault(require("typescript"));
+const prettier = __importStar(require("prettier"));
 const directoryPath = process.cwd();
 function maybeUnwrapSwiftArray(type) {
     const isArray = type.startsWith('[') && type.endsWith(']');
@@ -98,7 +122,7 @@ function getMockedTypes(types) {
 function getMockForModule(module) {
     return [].concat(getMockedTypes(getTypesToMock(module)), getMockedFunctions(module.functions), getMockedFunctions(module.asyncFunctions, true));
 }
-function printModules(modules) {
+function generateMocks(modules) {
     const printer = typescript_1.default.createPrinter({ newLine: typescript_1.default.NewLineKind.LineFeed });
     for (const m of modules) {
         const resultFile = typescript_1.default.createSourceFile(m.name + '.ts', '', typescript_1.default.ScriptTarget.Latest, false, typescript_1.default.ScriptKind.TSX);
@@ -110,8 +134,10 @@ function printModules(modules) {
         const compiledJs = typescript_1.default.transpileModule(printedTs, {
             compilerOptions: { module: typescript_1.default.ModuleKind.ESNext, target: typescript_1.default.ScriptTarget.ESNext },
         }).outputText;
-        fs_1.default.writeFileSync(filePath, compiledJs);
+        prettier
+            .format(compiledJs, { parser: 'babel', tabWidth: 2, singleQuote: true })
+            .then((prettyJs) => fs_1.default.writeFileSync(filePath, prettyJs));
     }
 }
-exports.printModules = printModules;
+exports.generateMocks = generateMocks;
 //# sourceMappingURL=mockgen.js.map

@@ -3,6 +3,7 @@
 
 import fs from 'fs';
 import path from 'path';
+import * as prettier from 'prettier';
 import ts from 'typescript';
 
 import { Closure, ClosureTypes, OutputModuleDefinition } from './types';
@@ -159,6 +160,8 @@ export function generateMocks(modules: OutputModuleDefinition[]) {
     const compiledJs = ts.transpileModule(printedTs, {
       compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ESNext },
     }).outputText;
-    fs.writeFileSync(filePath, compiledJs);
+    prettier
+      .format(compiledJs, { parser: 'babel', tabWidth: 2, singleQuote: true })
+      .then((prettyJs) => fs.writeFileSync(filePath, prettyJs));
   }
 }
