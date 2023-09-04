@@ -48,7 +48,7 @@ export async function transform(
       // TODO: Ensure this works with windows.
       (filename.match(new RegExp(`^app/\\+html(\\.${options.platform})?\\.([tj]sx?|[cm]js)?$`)) ||
         // Strip +api files.
-        filename.match(/\+api(\.(native|ios|android|web))?\.[tj]sx$/))
+        filename.match(/\+api(\.(native|ios|android|web))?\.[tj]sx?$/))
     ) {
       // Remove the server-only +html file and API Routes from the bundle when bundling for a client environment.
       return worker.transform(
@@ -69,7 +69,7 @@ export async function transform(
     if (
       environment !== 'node' &&
       !filename.match(/\/node_modules\//) &&
-      filename.match(/\+api(\.(native|ios|android|web))?\.[tj]sx$/)
+      filename.match(/\+api(\.(native|ios|android|web))?\.[tj]sx?$/)
     ) {
       // Clear the contents of +api files when bundling for the client.
       // This ensures that the client doesn't accidentally use the server-only +api files.

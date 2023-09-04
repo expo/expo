@@ -218,6 +218,7 @@ describe('CSS Modules', () => {
   });
 });
 
+// TODO: Test +api files to ensure all extensions work
 describe('Expo Router server files (+html, +api)', () => {
   it(`strips +html file from client bundles`, async () => {
     const matchable = /\+html file was removed from the client/;
