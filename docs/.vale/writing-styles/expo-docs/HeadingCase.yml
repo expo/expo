@@ -9,61 +9,80 @@ scope:
   - heading.h5
 match: $sentence
 exceptions:
-  - Router
-  - Router's
-  - CLI
+  - app.config.js
+  - app.json
+  - app.plugin.js
+  - create-expo-app
+  - create-react-native-app
+  - iOS
+  - web
+  - API
+  - Android
+  - App
+  - Apple
+  - Autolinking
+  - AuthSession
+  - Babel
   - Build
+  - CLI
+  - Client
+  - CocoaPods
+  - CodePush
+  - Config
+  - Continuous
+  - Debugger
+  - Debugging
+  - Development
+  - Dev
+  - Dynamic
   - EAS
-  - Update
-  - Submit
   - EAS Build
   - EAS Submit
   - EAS Metadata
   - EAS Update
   - EAS Insights
-  - JavaScript
-  - Jest
-  - TypeScript
-  - React Navigation
-  - Wix
-  - Expo
-  - React Native
-  - I
-  - Debugger
-  - Debugging
-  - CodePush
-  - App
-  - Config
-  - Go
-  - app.config.js
-  - app.json
-  - app.plugin.js
-  - Podfile
-  - iOS
-  - CocoPods
-  - Android
-  - Web
-  - web
   - Emulator
-  - Simulator
-  - Modules
-  - Module
-  - Library
-  - Package
-  - AuthSession
-  - Linking
-  - Route
-  - Routes
+  - Expo
+  - Fastlane
   - Files
-  - Static
-  - Dynamic
-  - Server-side
+  - Flipper
+  - FYI
+  - Generation
+  - Go
+  - Google
+  - Gradle
+  - Hermes
+  - I
+  - JavaScript
+  - JavaScriptCore
+  - Jest
+  - Library
+  - Linking
+  - Meta
+  - Mods
+  - Module
+  - Modules
+  - Native
+  - Package
+  - Plugins
+  - Podfile
+  - Prebuild
+  - RTL
+  - React Native
+  - React Navigation
   - Render
   - Rendering
-  - Prebuild
-  - Continuous
-  - Native
-  - Generation
-  - RTL
-  - Apple
-  - Google
+  - Route
+  - Routes
+  - Router
+  - Router's
+  - Runtime
+  - Server-side
+  - Simulator
+  - Static
+  - Submit
+  - TypeScript
+  - Update
+  - Web
+  - Wix
+  - Xcode
