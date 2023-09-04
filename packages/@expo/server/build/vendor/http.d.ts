@@ -1,5 +1,4 @@
 /// <reference types="node" />
-import '@expo/server/install';
 import { Headers } from '@remix-run/node';
 import * as http from 'http';
 import { ExpoRequest, ExpoResponse } from '../environment';

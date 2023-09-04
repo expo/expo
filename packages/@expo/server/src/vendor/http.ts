@@ -1,5 +1,3 @@
-import '@expo/server/install';
-
 import {
   AbortController,
   Headers,

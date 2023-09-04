@@ -39,8 +39,10 @@ export async function fetchManifest<TRegex = string>(
   }
 
   if (!options.asJson) {
+    // @ts-expect-error
     return inflateManifest(jsonManifest);
   }
+  // @ts-expect-error
   return jsonManifest;
 }
 

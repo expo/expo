@@ -53,11 +53,10 @@ exports.ExpoURL = ExpoURL;
 // Use named capture groups
 // Convert named capture groups to allow dashes
 class ExpoRequest extends node_1.Request {
-    constructor(info, init, config) {
+    constructor(info, init) {
         super(info, init);
-        const url = typeof info !== 'string' && 'url' in info ? info.url : String(info);
         this[exports.NON_STANDARD_SYMBOL] = {
-            url: config ? ExpoURL.from(url, config) : new ExpoURL(url),
+            url: new ExpoURL(typeof info !== 'string' && 'url' in info ? info.url : String(info)),
         };
     }
     get expoUrl() {

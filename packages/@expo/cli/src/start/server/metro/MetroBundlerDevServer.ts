@@ -38,7 +38,7 @@ import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
-import { fetchManifest, invalidateManifestCache } from './fetchRouterManifest';
+import { fetchManifest } from './fetchRouterManifest';
 import { eagerBundleApiRoutes, rebundleApiRoute } from './fetchServerRoutes';
 import { instantiateMetroAsync } from './instantiateMetro';
 import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
@@ -440,7 +440,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             } else if (op === 'add' || (op === 'change' && !isApiRoute)) {
               debug('invalidate manifest');
               // The manifest won't be fresh instantly so we should just clear it to ensure the next request will get the latest.
-              invalidateManifestCache();
             }
 
             if (isApiRoute) {

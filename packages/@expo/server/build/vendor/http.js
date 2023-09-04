@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.respond = exports.convertHeaders = exports.convertRequest = exports.createRequestHandler = void 0;
-require("@expo/server/install");
 const node_1 = require("@remix-run/node");
 const environment_1 = require("../environment");
 const __1 = require("..");

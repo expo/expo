@@ -14,6 +14,6 @@ export declare class ExpoRequest extends Request {
     [NON_STANDARD_SYMBOL]: {
         url: ExpoURL;
     };
-    constructor(info: RequestInfo, init?: RequestInit, config?: ExpoRouterServerManifestV1FunctionRoute);
+    constructor(info: RequestInfo, init?: RequestInit);
     get expoUrl(): ExpoURL;
 }
