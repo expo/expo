@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - Migrate to Expo CLI. ([#23806](https://github.com/expo/expo/pull/23806) by [@EvanBacon](https://github.com/EvanBacon))
+- Use dedicated `requireOptionalNativeModule` instead of try-catching `requireNativeModule`.
 
 ## 4.0.0 — 2023-08-02
 

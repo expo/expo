@@ -15,6 +15,8 @@
 
 ### 💡 Others
 
+- Use dedicated `requireOptionalNativeModule` instead of try-catching `requireNativeModule`.
+
 ## 14.5.1 — 2023-08-02
 
 ### 🛠 Breaking changes
