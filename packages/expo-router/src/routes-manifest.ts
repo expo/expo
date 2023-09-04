@@ -1,38 +1,33 @@
 // no relative imports
 import { getServerManifest } from './getMatchableManifest';
 import { getRoutes } from './getRoutes';
-import { ctx } from '../_ctx';
+// import { ctx } from '../_ctx';
+import { RequireContext } from './types';
 
 export type RouteInfo<TRegex = string> = {
-  // dynamic:
-  //   | {
-  //       name: string;
-  //       deep: boolean;
-  //     }[]
-  //   | null;
-  // generated: boolean | undefined;
-  // type: string;
-  // file: string;
-  // regex: TRegex;
-  // src: string;
-
   page: string;
   namedRegex: TRegex;
   routeKeys: { [named: string]: string };
 };
 
 export type ExpoRoutesManifestV1<TRegex = string> = {
-  // functions: RouteInfo<TRegex>[];
-  // staticHtml: RouteInfo<TRegex>[];
-  // staticHtmlPaths: string[];
-
   dynamicRoutes: RouteInfo<TRegex>[];
   staticRoutes: RouteInfo<TRegex>[];
   notFoundRoutes: RouteInfo<TRegex>[];
 };
 
-export async function createRoutesManifest(): Promise<any> {
-  const routeTree = getRoutes(ctx, {
+function createMockContextModule(map: string[] = []) {
+  const contextModule = (key) => ({ default: function () {} });
+
+  Object.defineProperty(contextModule, 'keys', {
+    value: () => map,
+  });
+
+  return contextModule as RequireContext;
+}
+
+export async function createRoutesManifest(paths: string[]): Promise<any> {
+  const routeTree = getRoutes(createMockContextModule(paths), {
     preserveApiRoutes: true,
     ignoreRequireErrors: true,
   });

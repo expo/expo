@@ -71,3 +71,14 @@ export function getApiRoutesForDirectory(cwd: string) {
     absolute: true,
   });
 }
+
+// Used to emulate a context module, but way faster. TODO: May need to adjust the extensions to stay in sync with Metro.
+export function getRoutePaths(cwd: string) {
+  return globSync('**/*.@(ts|tsx|js|jsx)', {
+    cwd,
+  }).map((p) => './' + normalizePaths(p));
+}
+
+function normalizePaths(p: string) {
+  return p.replace(/\\/g, '/');
+}

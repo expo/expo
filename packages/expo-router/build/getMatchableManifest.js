@@ -1,21 +1,25 @@
-import { sortRoutes } from './sortRoutes';
-import { getContextKey } from './matchers';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getNamedRouteRegex = exports.getServerManifest = exports.getMatchableManifest = void 0;
+const sortRoutes_1 = require("./sortRoutes");
+const matchers_1 = require("./matchers");
 // Given a nested route tree, return a flattened array of all routes that can be matched.
-export function getMatchableManifest(route) {
+function getMatchableManifest(route) {
     function getFlatNodes(route) {
         if (route.children.length) {
             return route.children.map((child) => getFlatNodes(child)).flat();
             // .sort(([, a], [, b]) => sortRoutes(a, b));
         }
-        const key = getContextKey(route.contextKey).replace(/\/index$/, '') ?? '/';
+        const key = (0, matchers_1.getContextKey)(route.contextKey).replace(/\/index$/, '') ?? '/';
         return [[key, route]];
     }
     // TODO: Ensure routes are sorted
     const flat = getFlatNodes(route)
-        .sort(([, a], [, b]) => sortRoutes(a, b))
+        .sort(([, a], [, b]) => (0, sortRoutes_1.sortRoutes)(a, b))
         .reverse();
     return getMatchableManifestForPaths(flat.map(([normalizedRoutePath, node]) => [normalizedRoutePath, node]));
 }
+exports.getMatchableManifest = getMatchableManifest;
 function isApiRoute(route) {
     return !route.children.length && !!route.contextKey.match(/\+api\.[jt]sx?$/);
 }
@@ -27,18 +31,18 @@ function isNotFoundRoute(route) {
     // return !route.children.length && !!route.contextKey.match(/\+api\.[jt]sx?$/);
 }
 // Given a nested route tree, return a flattened array of all routes that can be matched.
-export function getServerManifest(route) {
+function getServerManifest(route) {
     function getFlatNodes(route) {
         if (route.children.length) {
             return route.children.map((child) => getFlatNodes(child)).flat();
             // .sort(([, a], [, b]) => sortRoutes(a, b));
         }
-        const key = getContextKey(route.contextKey).replace(/\/index$/, '') ?? '/';
+        const key = (0, matchers_1.getContextKey)(route.contextKey).replace(/\/index$/, '') ?? '/';
         return [[key, route]];
     }
     // TODO: Ensure routes are sorted
     const flat = getFlatNodes(route)
-        .sort(([, a], [, b]) => sortRoutes(a, b))
+        .sort(([, a], [, b]) => (0, sortRoutes_1.sortRoutes)(a, b))
         .reverse();
     const apiRoutes = flat.filter(([, route]) => isApiRoute(route));
     const otherRoutes = flat.filter(([, route]) => !isApiRoute(route));
@@ -50,13 +54,14 @@ export function getServerManifest(route) {
         notFoundRoutes: getMatchableManifestForPaths(notFoundRoutes.map(([normalizedRoutePath, node]) => [normalizedRoutePath, node])),
     };
 }
+exports.getServerManifest = getServerManifest;
 function getMatchableManifestForPaths(paths) {
     return paths.map((normalizedRoutePath) => ({
         ...getNamedRouteRegex(normalizedRoutePath[0], normalizedRoutePath[1].contextKey),
         generated: normalizedRoutePath[1].generated,
     }));
 }
-export function getNamedRouteRegex(normalizedRoute, page) {
+function getNamedRouteRegex(normalizedRoute, page) {
     const result = getNamedParametrizedRoute(normalizedRoute);
     return {
         page: page.replace(/\.[jt]sx?$/, ''),
@@ -64,6 +69,7 @@ export function getNamedRouteRegex(normalizedRoute, page) {
         routeKeys: result.routeKeys,
     };
 }
+exports.getNamedRouteRegex = getNamedRouteRegex;
 /**
  * Builds a function to generate a minimal routeKey using only a-z and minimal
  * number of characters.

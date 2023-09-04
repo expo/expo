@@ -85,11 +85,18 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return port;
   }
 
-  async getExpoRouterRoutesManifestAsync({ mode }: { mode: 'development' | 'production' }) {
+  async getExpoRouterRoutesManifestAsync({
+    mode,
+    appDir,
+  }: {
+    mode: 'development' | 'production';
+    appDir: string;
+  }) {
     const { manifest, error } = await fetchManifest(this.projectRoot, {
       port: this.getInstance()?.location.port,
       asJson: true,
       mode,
+      appDir,
     });
 
     if (error) {
@@ -408,6 +415,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // This MUST be after the manifest middleware so it doesn't have a chance to serve the template `public/index.html`.
       middleware.use(new ServeStaticMiddleware(this.projectRoot).getHandler());
 
+      // @ts-expect-error: TODO
       if (exp.web?.output === 'dynamic') {
         const appDir = getRouterDirectoryWithManifest(this.projectRoot, exp);
         // Middleware for hosting middleware
@@ -431,7 +439,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             if (op === 'delete') {
               // update manifest
               debug('update manifest');
-              await refetchManifest(this.projectRoot, options);
+              await refetchManifest(this.projectRoot, { ...options, appDir });
             } else if (op === 'add' || (op === 'change' && !isApiRoute)) {
               debug('invalidate manifest');
               // The manifest won't be fresh instantly so we should just clear it to ensure the next request will get the latest.

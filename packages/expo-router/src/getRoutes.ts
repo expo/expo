@@ -421,9 +421,9 @@ function appendSitemapRoute(routes: RouteNode) {
   ) {
     return routes;
   }
-  const { Sitemap, getNavOptions } = require('./views/Sitemap');
   routes.children.push({
     loadRoute() {
+      const { Sitemap, getNavOptions } = require('./views/Sitemap');
       return { default: Sitemap, getNavOptions };
     },
     route: '_sitemap',

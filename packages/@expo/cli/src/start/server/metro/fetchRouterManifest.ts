@@ -6,6 +6,7 @@
  */
 import { SilentError } from '../../../utils/errors';
 import { getExpoRouteManifestBuilderAsync } from '../getStaticRenderFunctions';
+import { getRoutePaths } from './router';
 
 const debug = require('debug')('expo:routes-manifest') as typeof console.log;
 
@@ -36,7 +37,7 @@ export async function invalidateManifestCache() {
 
 export async function refetchManifest(
   projectRoot: string,
-  options: { mode?: string; port?: number }
+  options: { mode?: string; port?: number; appDir: string }
 ) {
   invalidateManifestCache();
 
@@ -45,7 +46,7 @@ export async function refetchManifest(
 
 export async function fetchManifest<TRegex = string>(
   projectRoot: string,
-  options: { mode?: string; port?: number; asJson?: boolean }
+  options: { mode?: string; port?: number; asJson?: boolean; appDir: string }
 ): Promise<LoadManifestResult<TRegex>> {
   if (manifestOperation.has('manifest')) {
     const manifest = await manifestOperation.get('manifest');
@@ -69,16 +70,19 @@ export async function fetchManifest<TRegex = string>(
     }
 
     let results: any;
-    try {
-      // Get the serialized manifest
-      results = await getManifest();
-    } catch (error: any) {
-      if (!(error instanceof SilentError)) {
-        // This can throw if there are any top-level errors in any files when bundling.
-        debug('Error while bundling manifest:', error);
-      }
-      return { error };
-    }
+    // try {
+    const paths = getRoutePaths(options.appDir);
+    console.log('Paths:', paths);
+    // Get the serialized manifest
+    results = await getManifest(paths);
+    // } catch (error: any) {
+    //   console.log('ERR', error);
+    //   if (!(error instanceof SilentError)) {
+    //     // This can throw if there are any top-level errors in any files when bundling.
+    //     debug('Error while bundling manifest:', error);
+    //   }
+    //   return { error };
+    // }
 
     if (!results) {
       return { manifest: null };

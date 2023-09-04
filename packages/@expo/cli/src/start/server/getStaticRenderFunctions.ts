@@ -236,22 +236,27 @@ export async function getExpoRouteManifestBuilderAsync(
     dev: boolean;
   }
 ) {
-  const matchNodePath = resolveFrom(projectRoot, 'expo-router/_routes-manifest');
+  const { createRoutesManifest } = require(resolveFrom(
+    projectRoot,
+    'expo-router/_routes-manifest'
+  ));
+  return createRoutesManifest;
+  // const matchNodePath = resolveFrom(projectRoot, 'expo-router/_routes-manifest');
 
-  try {
-    const { createRoutesManifest } = await requireWithMetro<{
-      createRoutesManifest: () => Promise<any>;
-    }>(projectRoot, devServerUrl, matchNodePath, {
-      minify,
-      dev,
-      // Ensure the API Routes are included
-      environment: 'node',
-    });
-    return createRoutesManifest;
-  } catch (error) {
-    if (!(error instanceof SilentError)) {
-      throw error;
-    }
-    return null;
-  }
+  // try {
+  //   const { createRoutesManifest } = await requireWithMetro<{
+  //     createRoutesManifest: (paths: string[]) => Promise<any>;
+  //   }>(projectRoot, devServerUrl, matchNodePath, {
+  //     minify,
+  //     dev,
+  //     // Ensure the API Routes are included
+  //     environment: 'node',
+  //   });
+  //   return createRoutesManifest;
+  // } catch (error) {
+  //   if (!(error instanceof SilentError)) {
+  //     throw error;
+  //   }
+  //   return null;
+  // }
 }

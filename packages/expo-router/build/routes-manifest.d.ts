@@ -10,5 +10,5 @@ export type ExpoRoutesManifestV1<TRegex = string> = {
     staticRoutes: RouteInfo<TRegex>[];
     notFoundRoutes: RouteInfo<TRegex>[];
 };
-export declare function createRoutesManifest(): Promise<any>;
+export declare function createRoutesManifest(paths: string[]): Promise<any>;
 //# sourceMappingURL=routes-manifest.d.ts.map
