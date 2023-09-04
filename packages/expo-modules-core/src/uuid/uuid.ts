@@ -1,12 +1,12 @@
 import bytesToUuid from './lib/bytesToUuid';
-import { Uuidv5Namespace } from './types/uuid.types';
+import { Uuid, Uuidv5Namespace } from './uuid.types';
 
-const nativeUuidv5 = globalThis?.expo?.getUuidv5;
+const nativeUuidv5 = globalThis?.expo?.uuidv5;
 export default function uuidv5(name: string, namespace: Uuidv5Namespace | string | number[]) {
   const parsedNamespace =
     Array.isArray(namespace) && namespace.length === 16 ? bytesToUuid(namespace) : namespace;
 
-  // If parsed namespace is still an array it means that it wasn't a valid
+  // If parsed namespace is still an array it means that it wasn't valid
   if (Array.isArray(parsedNamespace)) {
     throw new Error('`namespace` must be uuid string or an Array of 16 byte values');
   }
@@ -17,3 +17,8 @@ export default function uuidv5(name: string, namespace: Uuidv5Namespace | string
 
   return nativeUuidv5(name, parsedNamespace);
 }
+
+export const uuid: Uuid = {
+  v5: uuidv5,
+  namespace: Uuidv5Namespace,
+};

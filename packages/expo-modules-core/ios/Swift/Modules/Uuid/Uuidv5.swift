@@ -1,6 +1,7 @@
 import Foundation
 import CommonCrypto
 import CryptoKit
+
 func uuidv5(name: String, namespace: UUID) -> UUID {
   var spaceUID = namespace.uuid
   var data = withUnsafePointer(to: &spaceUID) { [count =  MemoryLayout.size(ofValue: spaceUID)] in

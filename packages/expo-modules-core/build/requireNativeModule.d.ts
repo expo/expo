@@ -1,9 +1,8 @@
-import { Uuidv5Namespace } from './uuid';
 type ExpoObject = {
     modules: undefined | {
         [key: string]: any;
     };
-    getUuidv5: (name: string, namespace: Uuidv5Namespace | string) => string;
+    uuidv5: (name: string, namespace: string) => string;
 };
 declare global {
     var expo: ExpoObject | undefined;

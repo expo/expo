@@ -2,7 +2,7 @@
 internal final class CoreModule: Module {
   internal func definition() -> ModuleDefinition {
     // Expose some common classes and maybe even the `modules` host object in the future.
-    Function("getUuidv5") { (name: String, namespace: String) -> String in
+    Function("uuidv5") { (name: String, namespace: String) -> String in
       guard let namespaceUuid = UUID(uuidString: namespace) else {
         throw InvalidNamespaceException(namespace)
       }

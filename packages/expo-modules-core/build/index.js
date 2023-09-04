@@ -8,7 +8,7 @@ import { CodedError } from './errors/CodedError';
 import { UnavailabilityError } from './errors/UnavailabilityError';
 import './sweet/setUpErrorManager.fx';
 export { default as deprecate } from './deprecate';
-export { uuidv4, uuidv5, Uuidv5Namespace } from './uuid';
+export { uuidv4, uuid } from './uuid';
 export { DeviceEventEmitter, EventEmitter, NativeModulesProxy, Platform, SyntheticPlatformEmitter, requireNativeViewManager, 
 // Errors
 CodedError, UnavailabilityError, };
