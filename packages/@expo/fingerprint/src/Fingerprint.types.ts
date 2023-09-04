@@ -52,7 +52,7 @@ export interface Options {
    * Besides this `ignores`, fingerprint comes with implicit default ignores defined in `Options.DEFAULT_IGNORES`.
    * If you want to override the default ignores, use `!` prefix.
    */
-  ignores: string[];
+  ignores?: string[];
 
   /**
    * Additional sources for hashing.

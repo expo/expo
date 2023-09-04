@@ -115,8 +115,21 @@ describe(createFileHashResultsAsync, () => {
     const result = await createFileHashResultsAsync(filePath, limiter, '/app', options);
 
     const expectHex = createHash(options.hashAlgorithm).update(contents).digest('hex');
-    expect(result.id).toEqual(filePath);
-    expect(result.hex).toEqual(expectHex);
+    expect(result?.id).toEqual(filePath);
+    expect(result?.hex).toEqual(expectHex);
+  });
+
+  it('should ignore file if it is in options.ignores', async () => {
+    const filePath = 'app.json';
+    const contents = '{}';
+    const limiter = pLimit(1);
+    const options = normalizeOptions();
+    options.ignores = ['*.json'];
+    vol.mkdirSync('/app');
+    vol.writeFileSync(path.join('/app', filePath), contents);
+
+    const result = await createFileHashResultsAsync(filePath, limiter, '/app', options);
+    expect(result).toBe(null);
   });
 });
 
@@ -139,6 +152,30 @@ describe(createDirHashResultsAsync, () => {
 
     expect(result?.id).toEqual('.');
     expect(result?.hex).not.toBe('');
+  });
+
+  it('should ignore dir if it is in options.ignores', async () => {
+    const limiter = pLimit(3);
+    const options = normalizeOptions();
+    options.ignores = ['ios/**/*', 'android/**/*'];
+    const volJSON = {
+      '/app/ios/Podfile': '...',
+      '/app/eas.json': '{}',
+      '/app/app.json': '{}',
+      '/app/android/build.gradle': '...',
+    };
+    vol.fromJSON(volJSON);
+
+    const fingerprint1 = await createDirHashResultsAsync('.', limiter, '/app', options);
+
+    vol.reset();
+    const volJSONIgnoreNativeProjects = {
+      '/app/eas.json': '{}',
+      '/app/app.json': '{}',
+    };
+    vol.fromJSON(volJSONIgnoreNativeProjects);
+    const fingerprint2 = await createDirHashResultsAsync('.', limiter, '/app', options);
+    expect(fingerprint1).toEqual(fingerprint2);
   });
 
   it('should return stable result from sorted files', async () => {
