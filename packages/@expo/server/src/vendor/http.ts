@@ -9,14 +9,45 @@ import {
 import * as http from 'http';
 
 import { ExpoRequest, ExpoResponse } from '../environment';
-import { ExpoRouterServerManifestV1FunctionRoute } from '../types';
+import { createRequestHandler as createExpoHandler } from '..';
 
-// Convert an http request to an expo request
-export function convertRequest(
+type NextFunction = (err?: any) => void;
+
+export type RequestHandler = (
   req: http.IncomingMessage,
   res: http.ServerResponse,
-  routeConfig: ExpoRouterServerManifestV1FunctionRoute
-): ExpoRequest {
+  next: NextFunction
+) => Promise<void>;
+
+/**
+ * Returns a request handler for Express that serves the response using Remix.
+ */
+export function createRequestHandler(
+  { build }: { build: string },
+  setup?: Parameters<typeof createExpoHandler>[1]
+): RequestHandler {
+  const handleRequest = createExpoHandler(build, setup);
+
+  return async (req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) => {
+    if (!req?.url || !req.method) {
+      return next();
+    }
+    try {
+      const request = convertRequest(req, res);
+
+      const response = await handleRequest(request);
+
+      await respond(res, response);
+    } catch (error: unknown) {
+      // Express doesn't support async functions, so we have to pass along the
+      // error manually using next().
+      next(error);
+    }
+  };
+}
+
+// Convert an http request to an expo request
+export function convertRequest(req: http.IncomingMessage, res: http.ServerResponse): ExpoRequest {
   const url = new URL(req.url!, `http://${req.headers.host}`);
 
   // const url = new URL(`${req.protocol}://${req.get('host')}${req.url}`);
@@ -37,7 +68,7 @@ export function convertRequest(
     init.body = req;
   }
 
-  return new ExpoRequest(url.href, init, routeConfig);
+  return new ExpoRequest(url.href, init);
 }
 
 export function convertHeaders(requestHeaders: http.IncomingHttpHeaders): Headers {

@@ -12,7 +12,6 @@ import path from 'path';
 import prettyBytes from 'pretty-bytes';
 import { inspect } from 'util';
 
-import { getVirtualFaviconAssetsAsync } from './favicon';
 import { Log } from '../log';
 import { DevServerManager } from '../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';

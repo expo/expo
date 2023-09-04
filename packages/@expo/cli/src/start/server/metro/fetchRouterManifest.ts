@@ -56,7 +56,7 @@ export async function fetchManifest<TRegex = string>(
 
   const devServerUrl = `http://localhost:${options.port}`;
 
-  async function bundleAsync(): Promise<LoadManifestResult> {
+  async function bundleAsync(): Promise<LoadManifestResult<TRegex>> {
     // TODO: Update eagerly when files change
     const getManifest = await getExpoRouteManifestBuilderAsync(projectRoot, {
       devServerUrl,

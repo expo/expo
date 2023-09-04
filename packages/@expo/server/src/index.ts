@@ -115,8 +115,9 @@ export function createRequestHandler(
 
     const url = new URL(request.url, 'http://expo.dev');
 
-    const sanitizedPathname = url.pathname.replace(/^\/+/, '').replace(/\/+$/, '') + '/';
+    const sanitizedPathname = url.pathname; //.replace(/^\/+/, '/').replace(/\/+$/, '/');
 
+    console.log('test', sanitizedPathname);
     if (request.method === 'GET' || request.method === 'HEAD') {
       // First test static routes
       for (const route of routesManifest.staticRoutes) {

@@ -8,10 +8,6 @@ import { Terminal } from 'metro-core';
 import semver from 'semver';
 import { URL } from 'url';
 
-import { MetroBundlerDevServer } from './MetroBundlerDevServer';
-import { MetroTerminalReporter } from './MetroTerminalReporter';
-import { importExpoMetroConfig } from './resolveFromProject';
-import { getRouterDirectory } from './router';
 import { runServer } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 import { Log } from '../../../log';
@@ -26,9 +22,7 @@ import { getPlatformBundlers } from '../platformBundlers';
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { importExpoMetroConfig } from './resolveFromProject';
-import { getRouterDirectory, getRouterDirectoryModuleIdWithManifest } from './router';
-import { runServer } from './runServer-fork';
-import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
+import { getRouterDirectoryModuleIdWithManifest } from './router';
 
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {

@@ -1,11 +1,34 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.respond = exports.convertHeaders = exports.convertRequest = void 0;
+exports.respond = exports.convertHeaders = exports.convertRequest = exports.createRequestHandler = void 0;
 require("@expo/server/install");
 const node_1 = require("@remix-run/node");
 const environment_1 = require("../environment");
+const __1 = require("..");
+/**
+ * Returns a request handler for Express that serves the response using Remix.
+ */
+function createRequestHandler({ build }, setup) {
+    const handleRequest = (0, __1.createRequestHandler)(build, setup);
+    return async (req, res, next) => {
+        if (!req?.url || !req.method) {
+            return next();
+        }
+        try {
+            const request = convertRequest(req, res);
+            const response = await handleRequest(request);
+            await respond(res, response);
+        }
+        catch (error) {
+            // Express doesn't support async functions, so we have to pass along the
+            // error manually using next().
+            next(error);
+        }
+    };
+}
+exports.createRequestHandler = createRequestHandler;
 // Convert an http request to an expo request
-function convertRequest(req, res, routeConfig) {
+function convertRequest(req, res) {
     const url = new URL(req.url, `http://${req.headers.host}`);
     // const url = new URL(`${req.protocol}://${req.get('host')}${req.url}`);
     // Abort action/loaders once we can no longer write a response
@@ -21,7 +44,7 @@ function convertRequest(req, res, routeConfig) {
     if (req.method !== 'GET' && req.method !== 'HEAD') {
         init.body = req;
     }
-    return new environment_1.ExpoRequest(url.href, init, routeConfig);
+    return new environment_1.ExpoRequest(url.href, init);
 }
 exports.convertRequest = convertRequest;
 function convertHeaders(requestHeaders) {

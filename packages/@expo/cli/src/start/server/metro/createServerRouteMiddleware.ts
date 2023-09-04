@@ -27,7 +27,7 @@ const resolveAsync = promisify(resolve) as any as (
   opts: resolve.AsyncOpts
 ) => Promise<string | null>;
 
-import { createRequestHandler } from '@expo/server/build/vendor/express';
+import { createRequestHandler } from '@expo/server/build/vendor/http';
 import { ExpoResponse } from '@expo/server/build';
 
 export function createRouteHandlerMiddleware(
@@ -42,16 +42,19 @@ export function createRouteHandlerMiddleware(
   eagerBundleApiRoutes(projectRoot, options);
   refetchManifest(projectRoot, options);
 
+  console.log('setup');
+
   return createRequestHandler(
     { build: '' },
     {
-      async getRoutesManifest(distFolder) {
+      async getRoutesManifest() {
         const { manifest } = await fetchManifest<RegExp>(projectRoot, options);
         if (!manifest) {
           // NOTE: no app dir
           // TODO: Redirect to 404 page
           return null;
         }
+        console.log('manifest', manifest);
         return manifest;
       },
       async getHtml(request, route) {
@@ -112,6 +115,7 @@ export function createRouteHandlerMiddleware(
         logMetroError(projectRoot, { error });
       },
       async getApiRoute(route) {
+        console.log('getApiRoute', route);
         const resolvedFunctionPath = await resolveAsync(route.page, {
           extensions: ['.js', '.jsx', '.ts', '.tsx'],
           basedir: options.appDir,
