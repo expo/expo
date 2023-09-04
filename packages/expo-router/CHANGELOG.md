@@ -33,6 +33,7 @@
 - Prevent throwing in `canGoBack` before the navigation has mounted. ([#23959](https://github.com/expo/expo/pull/23959) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix error overlay not being applied on web. ([#24052](https://github.com/expo/expo/pull/24052) by [@EvanBacon](https://github.com/EvanBacon))
 - Add missing `listener` types. ([#24174](https://github.com/expo/expo/pull/24174) by [@muneebahmedayub](https://github.com/muneebahmedayub))
+- Fix drawer layout initial position. ([#24197](https://github.com/expo/expo/pull/24197) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
