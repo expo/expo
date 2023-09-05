@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Reduce size on web.
+
 ### 💡 Others
 
 ## 50.0.0-alpha.2 — 2023-09-04

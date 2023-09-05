@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Reduce size on web.
+
 ## 3.0.1 — 2023-09-04
 
 ### 🎉 New features
