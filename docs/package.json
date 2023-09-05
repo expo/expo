@@ -12,16 +12,15 @@
     "test-links": "node --async-stack-traces --unhandled-rejections=strict ./scripts/test-links.js",
     "prettier": "prettier --write **/*.{md,mdx}",
     "lint": "tsc --noEmit && eslint .",
-    "lint-case": "case-police 'pages/**/*.mdx' -p brands,general,products,softwares -d expo-dict.json",
     "lint-links": "remark -u validate-links ./pages",
+    "lint-prose": "vale .",
     "watch": "tsc --noEmit -w",
     "test": "yarn generate-static-resoures && node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "schema-sync": "node --async-stack-traces --unhandled-rejections=strict ./scripts/schema-sync.cjs",
     "resource-specs-sync": "node --async-stack-traces --unhandled-rejections=strict ./scripts/resource-specs-sync.mjs",
     "remove-version": "node --unhandled-rejections=strict ./scripts/remove-version.js",
     "generate-static-resoures": "rimraf public/static/constants && node --unhandled-rejections=strict ./scripts/generate-static-resources.js",
-    "postinstall": "node --async-stack-traces --unhandled-rejections=strict ./scripts/copy-latest.js && yarn generate-static-resoures",
-    "lint-prose": "vale ."
+    "postinstall": "node --async-stack-traces --unhandled-rejections=strict ./scripts/copy-latest.js && yarn generate-static-resoures"
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",
@@ -80,7 +79,6 @@
     "acorn": "^8.8.1",
     "autoprefixer": "^10.4.13",
     "axios": "^0.27.2",
-    "case-police": "^0.5.10",
     "danger": "^11.2.0",
     "eslint": "^8.44.0",
     "eslint-config-next": "^13.4.9",
