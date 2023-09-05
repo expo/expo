@@ -106,16 +106,16 @@ public class CalendarModule: Module {
     AsyncFunction("getEventsAsync") { (startDateStr: String, endDateStr: String, calendarIds: [String]) -> [[String: Any?]] in
       try checkCalendarPermissions()
       guard let startDate = parse(date: startDateStr),
-            let endDate = parse(date: endDateStr) else {
+        let endDate = parse(date: endDateStr) else {
         throw InvalidDateFormatException()
       }
 
       var eventCalendars = [EKCalendar]()
       if !calendarIds.isEmpty {
         let deviceCalendars = eventStore.calendars(for: .event)
-
+        
         for calendar in deviceCalendars where calendarIds.contains(calendar.calendarIdentifier) {
-            eventCalendars.append(calendar)
+          eventCalendars.append(calendar)
         }
       }
 
@@ -284,9 +284,8 @@ public class CalendarModule: Module {
 
       if let reminder {
         return serialize(reminder: reminder)
-      } else {
-        throw ReminderNotFoundException(reminderId)
       }
+      throw ReminderNotFoundException(reminderId)
     }
 
     AsyncFunction("saveReminderAsync") { (details: Reminder) -> String  in
@@ -296,7 +295,7 @@ public class CalendarModule: Module {
       let dueDate = parse(date: details.dueDate)
       let completionDate = parse(date: details.completionDate)
 
-      let currentCalendar = NSCalendar.current
+      let currentCalendar = Calendar.current
 
       if let reminderId = details.id {
         guard let reminderWithId =  eventStore.calendarItem(withIdentifier: reminderId) as? EKReminder else {
