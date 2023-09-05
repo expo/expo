@@ -1,5 +1,5 @@
 export function isRunningInExpoGo() {
-  return false
+  return false;
 }
 
 export function getExpoGoProjectConfig() {

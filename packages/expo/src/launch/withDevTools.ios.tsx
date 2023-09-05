@@ -1,7 +1,12 @@
 import * as React from 'react';
 
-// Keep the screen awake on Android, we don't use the Fast Refresh overlay here.
-// The default behavior here is to skip the custom Fast Refresh indicator.
+import DevLoadingView from '../environment/DevLoadingView';
+import { isRunningInExpoGo } from '../environment/ExpoGo';
+
+/**
+ * Append the Expo Fast Refresh view and optionally
+ * keep the screen awake if `expo-keep-awake` is installed.
+ */
 export function withDevTools<TComponent extends React.ComponentType<any>>(
   AppRootComponent: TComponent
 ): React.ComponentType<React.ComponentProps<TComponent>> {
@@ -16,8 +21,20 @@ export function withDevTools<TComponent extends React.ComponentType<any>>(
     return () => {};
   })();
 
+  const shouldUseExpoFastRefreshView = isRunningInExpoGo();
+
   function WithDevTools(props: React.ComponentProps<TComponent>) {
     useOptionalKeepAwake();
+
+    if (shouldUseExpoFastRefreshView) {
+      return (
+        <>
+          <AppRootComponent {...props} />
+          <DevLoadingView />
+        </>
+      );
+    }
+
     return <AppRootComponent {...props} />;
   }
 
