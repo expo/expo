@@ -39,7 +39,7 @@ const Collapsible: React.FC<CollapsibleProps> = withHeadingManager(
     React.useEffect(() => {
       const splitUrl = asPath.split('#');
       const hash = splitUrl.length ? splitUrl[1] : undefined;
-      if (hash && hash === '#' + heading.current.slug) {
+      if (hash && hash === heading.current.slug) {
         setOpen(true);
       }
     }, [asPath]);
@@ -57,7 +57,7 @@ const Collapsible: React.FC<CollapsibleProps> = withHeadingManager(
 
     return (
       <details
-        id={`details-${heading.current.slug}`}
+        id={heading.current.slug}
         onClick={onToggle}
         css={detailsStyle}
         open={open}
