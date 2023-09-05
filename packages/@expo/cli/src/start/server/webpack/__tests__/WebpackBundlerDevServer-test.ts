@@ -64,7 +64,7 @@ describe('startAsync', () => {
       messageSocket: {
         broadcast: expect.any(Function),
       },
-      middleware: undefined,
+      middleware: null,
       server: {
         close: expect.any(Function),
         listen: expect.any(Function),

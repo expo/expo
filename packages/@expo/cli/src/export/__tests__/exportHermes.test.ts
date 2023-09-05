@@ -8,6 +8,8 @@ import {
   parseGradleProperties,
 } from '../exportHermes';
 
+jest.unmock('fs');
+
 describe('parseGradleProperties', () => {
   it('should return array of key-value tuple', () => {
     const content = `
