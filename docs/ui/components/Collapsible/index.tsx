@@ -1,9 +1,16 @@
 import { css } from '@emotion/react';
-import { shadows, theme } from '@expo/styleguide';
+import { LinkBase, shadows, theme } from '@expo/styleguide';
 import { borderRadius, spacing } from '@expo/styleguide-base';
 import { TriangleDownIcon } from '@expo/styleguide-icons';
+import { useRouter } from 'next/router';
 import type { PropsWithChildren, ReactNode } from 'react';
+import React from 'react';
+import tippy from 'tippy.js';
 
+import PermalinkIcon from '~/components/icons/Permalink';
+import withHeadingManager, {
+  HeadingManagerProps,
+} from '~/components/page-higher-order/withHeadingManager';
 import { DEMI } from '~/ui/components/Text';
 
 type CollapsibleProps = PropsWithChildren<{
@@ -18,19 +25,89 @@ type CollapsibleProps = PropsWithChildren<{
   testID?: string;
 }>;
 
-export function Collapsible({ summary, open, testID, children }: CollapsibleProps) {
-  return (
-    <details css={detailsStyle} open={open} data-testid={testID}>
-      <summary css={summaryStyle}>
-        <div css={markerWrapperStyle}>
-          <TriangleDownIcon className="icon-sm text-icon-default" css={markerStyle} />
-        </div>
-        <DEMI>{summary}</DEMI>
-      </summary>
-      <div css={contentStyle}>{children}</div>
-    </details>
-  );
-}
+const Collapsible: React.FC<CollapsibleProps> = withHeadingManager(
+  (props: CollapsibleProps & HeadingManagerProps) => {
+    const { summary, testID, children } = props;
+
+    const { asPath } = useRouter();
+
+    React.useEffect(() => {
+      tippy('#docs-anchor-permalink-' + heading.current.slug);
+    }, []);
+
+    // expand collapsible if the current hash matches the heading
+    React.useEffect(() => {
+      const splitUrl = asPath.split('#');
+      const hash = splitUrl.length ? splitUrl[1] : undefined;
+      if (hash && hash === '#' + heading.current.slug) {
+        setOpen(true);
+      }
+    }, [asPath]);
+
+    // track open state so we can collapse header if it is set to open by the URL hash
+    const [open, setOpen] = React.useState<boolean>(props.open ?? false);
+
+    const onToggle = (event: { preventDefault: () => void }) => {
+      event.preventDefault();
+      setOpen(!open);
+    };
+
+    // will keep incrementing the number on any matching tags if this isn't a ref
+    const heading = React.useRef(props.headingManager.addHeading(summary, 1, undefined));
+
+    return (
+      <details
+        id={`details-${heading.current.slug}`}
+        onClick={onToggle}
+        css={detailsStyle}
+        open={open}
+        data-testid={testID}>
+        <summary css={summaryStyle}>
+          <div css={markerWrapperStyle}>
+            <TriangleDownIcon className="icon-sm text-icon-default" css={markerStyle} />
+          </div>
+          <LinkBase href={'#' + heading.current.slug} ref={heading.current.ref}>
+            <DEMI>{summary}</DEMI>
+            <span
+              id={'docs-anchor-permalink-' + heading.current.slug}
+              data-tippy-content="Click to copy anchor link"
+              onClick={e => {
+                e.preventDefault();
+                const url = window.location.href.replace(/#.*/, '') + '#' + heading.current.slug;
+                navigator.clipboard?.writeText(url);
+              }}
+              css={STYLES_PERMALINK_ICON}>
+              <PermalinkIcon />
+            </span>
+          </LinkBase>
+        </summary>
+        <div css={contentStyle}>{children}</div>
+      </details>
+    );
+  }
+);
+
+export { Collapsible };
+
+const STYLES_PERMALINK_ICON = css`
+  cursor: pointer;
+  vertical-align: middle;
+  display: inline-block;
+  width: 1.2em;
+  height: 1em;
+  padding: 0 0.2em;
+  visibility: hidden;
+
+  a:hover &,
+  a:focus-visible & {
+    visibility: visible;
+  }
+
+  svg {
+    width: 100%;
+    height: auto;
+  }
+`;
 
 const detailsStyle = css({
   overflow: 'hidden',
