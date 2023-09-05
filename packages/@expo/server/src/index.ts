@@ -89,10 +89,23 @@ export function createRequestHandler(
     request: ExpoRequest,
     config: ExpoRouterServerManifestV1FunctionRoute
   ) {
+    const params: Record<string, string> = {};
     const url = request.url;
+
+    const expoUrl = new ExpoURL(url);
+    const match = config.namedRegex.exec(expoUrl.pathname);
+    if (match?.groups) {
+      for (const [key, value] of Object.entries(match.groups)) {
+        const namedKey = config.routeKeys[key];
+        expoUrl.searchParams.set(namedKey, value);
+        params[namedKey] = value;
+      }
+    }
+
     request[NON_STANDARD_SYMBOL] = {
-      url: config ? ExpoURL.from(url, config) : new ExpoURL(url),
+      url: expoUrl,
     };
+    return params;
   }
 
   return async function handler(request: ExpoRequest): Promise<Response> {
@@ -176,11 +189,11 @@ export function createRequestHandler(
       }
 
       // Mutate to add the expoUrl object.
-      updateRequestWithConfig(request, route);
+      const params = updateRequestWithConfig(request, route);
 
       try {
         // TODO: Handle undefined
-        return (await routeHandler(request)) as ExpoResponse;
+        return (await routeHandler(request, params)) as ExpoResponse;
       } catch (error) {
         if (error instanceof Error) {
           logApiRouteExecutionError(error);

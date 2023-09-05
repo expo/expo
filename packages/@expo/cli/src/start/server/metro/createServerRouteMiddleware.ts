@@ -8,7 +8,7 @@ import { ExpoResponse } from '@expo/server/build';
 import { createRequestHandler } from '@expo/server/build/vendor/http';
 import requireString from 'require-from-string';
 import resolve from 'resolve';
-import resolveFrom from 'resolve-from';
+// import resolveFrom from 'resolve-from';
 import { promisify } from 'util';
 
 import { Log } from '../../../log';
@@ -29,7 +29,7 @@ export function createRouteHandlerMiddleware(
   options: { mode?: string; appDir: string; port?: number; getWebBundleUrl: () => string }
 ) {
   // Install Node.js browser polyfills and source map support
-  require(resolveFrom(projectRoot, '@expo/server/install'));
+  // require(resolveFrom(projectRoot, '@expo/server/install'));
   const devServerUrl = `http://localhost:${options.port}`;
 
   return createRequestHandler(

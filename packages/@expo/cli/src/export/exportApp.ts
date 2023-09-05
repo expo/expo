@@ -54,7 +54,7 @@ export async function exportAppAsync(
 
   const exp = await getPublicExpoManifestAsync(projectRoot);
 
-  const useServerRendering = ['static', 'dynamic'].includes(exp.web?.output ?? '');
+  const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
 
   const publicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);
 
@@ -121,8 +121,8 @@ export async function exportAppAsync(
         outputDir: outputPath,
         // TODO: Expose
         minify,
-        // @ts-expect-error: output dynamic is not on the type yet.
-        exportServer: exp.web?.output === 'dynamic',
+        // @ts-expect-error: output server is not on the type yet.
+        exportServer: exp.web?.output === 'server',
       });
       Log.log('Finished saving static files');
     } else {

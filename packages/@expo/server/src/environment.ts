@@ -64,10 +64,6 @@ export class ExpoURL extends URL {
   }
 }
 
-// TODO: Flip regex to start with slash and end without slash
-// Use named capture groups
-// Convert named capture groups to allow dashes
-
 export class ExpoRequest extends Request {
   [NON_STANDARD_SYMBOL]: {
     url: ExpoURL;

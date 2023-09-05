@@ -288,7 +288,7 @@ function warnPossibleInvalidExportType(appDir: string) {
   if (apiRoutes.length) {
     // TODO: Allow API Routes for native-only.
     Log.warn(
-      chalk.yellow`Skipping export for API routes because \`web.output\` is not "dynamic". You may want to remove the routes: ${apiRoutes
+      chalk.yellow`Skipping export for API routes because \`web.output\` is not "server". You may want to remove the routes: ${apiRoutes
         .map((v) => path.relative(appDir, v))
         .join(', ')}`
     );

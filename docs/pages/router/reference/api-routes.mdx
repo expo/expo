@@ -16,7 +16,7 @@ Expo Router supports enables you to write universal backend server code directly
     "web": {
       "bundler": "metro",
       /* @info Output a dynamic server. */
-      "output": "dynamic"
+      "output": "server"
       /* @end */
     }
   }
@@ -103,9 +103,23 @@ Requests use the global `ExpoRequest` object. This object is a subclass of the s
 ```ts app/blog/[post]+api.ts
 import { ExpoRequest, ExpoResponse } from 'expo-router/server';
 
-export async function GET(request: ExpoRequest) {
-  const postId = req.expoUrl.searchParams.get('post')
-  // fetch data for `postId`
+export async function GET(request: ExpoRequest, { post }: Record<string, string>) {
+  // const postId = request.expoUrl.searchParams.get('post')
+  // fetch data for `post`
+  return ExpoResponse.json({ ... });
+}
+```
+
+### Request body
+
+Use the `request.json()` function to access the request body. This function will automatically parse the body and return the result.
+
+```ts app/validate+api.ts
+import { ExpoRequest, ExpoResponse } from 'expo-router/server';
+
+export async function POST(request: ExpoRequest) {
+  const body = await request.json();
+
   return ExpoResponse.json({ ... });
 }
 ```
@@ -129,9 +143,8 @@ You can respond with server errors by using the `ExpoResponse` object.
 ```ts app/blog/[post].ts
 import { ExpoRequest, ExpoResponse } from 'expo-router/server';
 
-export async function GET(request: ExpoRequest) {
-  const postId = req.expoUrl.searchParams.get('post')
-  if (!postId) {
+export async function GET(request: ExpoRequest, { post }: Record<string, string>) {
+  if (!post) {
     return new ExpoResponse('No post found', {
       status: 404,
       headers: {
@@ -139,7 +152,7 @@ export async function GET(request: ExpoRequest) {
       },
     });
   }
-  // fetch data for `postId`
+  // fetch data for `post`
   return ExpoResponse.json({ ... });
 }
 ```

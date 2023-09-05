@@ -63,10 +63,21 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
 }, } = {}) {
     let routesManifest;
     function updateRequestWithConfig(request, config) {
+        const params = {};
         const url = request.url;
+        const expoUrl = new environment_1.ExpoURL(url);
+        const match = config.namedRegex.exec(expoUrl.pathname);
+        if (match?.groups) {
+            for (const [key, value] of Object.entries(match.groups)) {
+                const namedKey = config.routeKeys[key];
+                expoUrl.searchParams.set(namedKey, value);
+                params[namedKey] = value;
+            }
+        }
         request[environment_1.NON_STANDARD_SYMBOL] = {
-            url: config ? environment_1.ExpoURL.from(url, config) : new environment_1.ExpoURL(url),
+            url: expoUrl,
         };
+        return params;
     }
     return async function handler(request) {
         if (getInternalRoutesManifest) {
@@ -139,10 +150,10 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
                 });
             }
             // Mutate to add the expoUrl object.
-            updateRequestWithConfig(request, route);
+            const params = updateRequestWithConfig(request, route);
             try {
                 // TODO: Handle undefined
-                return (await routeHandler(request));
+                return (await routeHandler(request, params));
             }
             catch (error) {
                 if (error instanceof Error) {

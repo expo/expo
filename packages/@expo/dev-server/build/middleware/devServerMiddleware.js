@@ -4,20 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.createDevServerMiddleware = createDevServerMiddleware;
-function _bodyParser() {
-  const data = _interopRequireDefault(require("body-parser"));
-  _bodyParser = function () {
-    return data;
-  };
-  return data;
-}
-function _clientLogsMiddleware() {
-  const data = _interopRequireDefault(require("./clientLogsMiddleware"));
-  _clientLogsMiddleware = function () {
-    return data;
-  };
-  return data;
-}
 function _createJsInspectorMiddleware() {
   const data = _interopRequireDefault(require("./createJsInspectorMiddleware"));
   _createJsInspectorMiddleware = function () {
@@ -105,8 +91,9 @@ function createDevServerMiddleware(projectRoot, {
   (0, _middlwareMutations().replaceMiddlewareWith)(middleware, securityHeadersMiddleware, _remoteDevtoolsSecurityHeadersMiddleware().remoteDevtoolsSecurityHeadersMiddleware);
   middleware.use(_remoteDevtoolsCorsMiddleware().remoteDevtoolsCorsMiddleware);
   (0, _middlwareMutations().prependMiddleware)(middleware, _suppressErrorMiddleware().suppressRemoteDebuggingErrorMiddleware);
-  middleware.use(_bodyParser().default.json());
-  middleware.use('/logs', (0, _clientLogsMiddleware().default)(logger));
+
+  // middleware.use(bodyParser.json());
+  // middleware.use('/logs', clientLogsMiddleware(logger));
   middleware.use('/inspector', (0, _createJsInspectorMiddleware().default)());
   return {
     logger,

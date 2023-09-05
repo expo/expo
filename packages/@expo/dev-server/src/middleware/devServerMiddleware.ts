@@ -65,8 +65,8 @@ export function createDevServerMiddleware(
   middleware.use(remoteDevtoolsCorsMiddleware);
   prependMiddleware(middleware, suppressRemoteDebuggingErrorMiddleware);
 
-  middleware.use(bodyParser.json());
-  middleware.use('/logs', clientLogsMiddleware(logger));
+  // middleware.use(bodyParser.json());
+  // middleware.use('/logs', clientLogsMiddleware(logger));
   middleware.use('/inspector', createJsInspectorMiddleware());
 
   return {

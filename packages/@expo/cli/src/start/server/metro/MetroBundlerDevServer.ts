@@ -378,6 +378,17 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     // https://github.com/expo/expo/issues/13114
     prependMiddleware(middleware, manifestMiddleware.getHandler());
 
+    // middleware.use(
+    //   createRouteHandlerMiddleware(this.projectRoot, {
+    //     ...options,
+    //     appDir: getRouterDirectoryWithManifest(
+    //       this.projectRoot,
+    //       getConfig(this.projectRoot, { skipSDKVersionRequirement: true }).exp
+    //     ),
+    //     getWebBundleUrl: manifestMiddleware.getWebBundleUrl.bind(manifestMiddleware),
+    //   })
+    // );
+
     middleware.use(
       new InterstitialPageMiddleware(this.projectRoot, {
         // TODO: Prevent this from becoming stale.
@@ -405,15 +416,18 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     // Append support for redirecting unhandled requests to the index.html page on web.
     if (this.isTargetingWeb()) {
       const { exp } = getConfig(this.projectRoot, { skipSDKVersionRequirement: true });
-      const useServerRendering = ['static', 'dynamic'].includes(exp.web?.output ?? '');
+      const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
 
       // This MUST be after the manifest middleware so it doesn't have a chance to serve the template `public/index.html`.
       middleware.use(new ServeStaticMiddleware(this.projectRoot).getHandler());
 
+      // This should come after the static middleware so it doesn't serve the favicon from `public/favicon.ico`.
+      middleware.use(new FaviconMiddleware(this.projectRoot).getHandler());
+
       // @ts-expect-error: TODO
-      if (exp.web?.output === 'dynamic') {
+      if (exp.web?.output === 'server') {
         const appDir = getRouterDirectoryWithManifest(this.projectRoot, exp);
-        // Middleware for hosting middleware
+
         middleware.use(
           createRouteHandlerMiddleware(this.projectRoot, {
             ...options,
@@ -421,6 +435,31 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             getWebBundleUrl: manifestMiddleware.getWebBundleUrl.bind(manifestMiddleware),
           })
         );
+        // jsonParser
+
+        // Add middleware at index 3
+        // middleware.stack.push(middleware.stack.pop());
+        // middleware.stack.splice(22, 0, middleware.stack.pop());
+
+        console.log(middleware.stack, middleware.stack.length); //.unshift(app.stack.pop()!);
+
+        // Middleware for hosting middleware
+        // prependMiddleware(
+        //   middleware,
+        //   createRouteHandlerMiddleware(this.projectRoot, {
+        //     ...options,
+        //     appDir,
+        //     getWebBundleUrl: manifestMiddleware.getWebBundleUrl.bind(manifestMiddleware),
+        //   })
+        // );
+
+        // middleware.use(
+        //   createRouteHandlerMiddleware(this.projectRoot, {
+        //     ...options,
+        //     appDir,
+        //     getWebBundleUrl: manifestMiddleware.getWebBundleUrl.bind(manifestMiddleware),
+        //   })
+        // );
 
         // Cache observation for API Routes...
         observeApiRouteChanges(
@@ -455,54 +494,52 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             }
           }
         );
-      }
-
-      // This should come after the static middleware so it doesn't serve the favicon from `public/favicon.ico`.
-      middleware.use(new FaviconMiddleware(this.projectRoot).getHandler());
-
-      if (useServerRendering) {
-        middleware.use(async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
-          if (!req?.url) {
-            return next();
-          }
-
-          // TODO: Formal manifest for allowed paths
-          if (req.url.endsWith('.ico')) {
-            return next();
-          }
-          if (req.url.includes('serializer.output=static')) {
-            return next();
-          }
-
-          try {
-            const { content } = await this.getStaticPageAsync(req.url, {
-              mode: options.mode ?? 'development',
-            });
-
-            res.setHeader('Content-Type', 'text/html');
-            res.end(content);
-          } catch (error: any) {
-            res.setHeader('Content-Type', 'text/html');
-            // Forward the Metro server response as-is. It won't be pretty, but at least it will be accurate.
-            if (error instanceof ForwardHtmlError) {
-              res.statusCode = error.statusCode;
-              res.end(error.html);
-              return;
+      } else {
+        // TODO: Combine with server API
+        if (useServerRendering) {
+          middleware.use(async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
+            if (!req?.url) {
+              return next();
             }
+
+            // TODO: Formal manifest for allowed paths
+            if (req.url.endsWith('.ico')) {
+              return next();
+            }
+            if (req.url.includes('serializer.output=static')) {
+              return next();
+            }
+
             try {
-              res.end(await this.renderStaticErrorAsync(error));
-            } catch (staticError: any) {
-              // Fallback error for when Expo Router is misconfigured in the project.
-              res.end(
-                '<span><h3>Internal Error:</h3><b>Project is not setup correctly for static rendering (check terminal for more info):</b><br/>' +
-                  error.message +
-                  '<br/><br/>' +
-                  staticError.message +
-                  '</span>'
-              );
+              const { content } = await this.getStaticPageAsync(req.url, {
+                mode: options.mode ?? 'development',
+              });
+
+              res.setHeader('Content-Type', 'text/html');
+              res.end(content);
+            } catch (error: any) {
+              res.setHeader('Content-Type', 'text/html');
+              // Forward the Metro server response as-is. It won't be pretty, but at least it will be accurate.
+              if (error instanceof ForwardHtmlError) {
+                res.statusCode = error.statusCode;
+                res.end(error.html);
+                return;
+              }
+              try {
+                res.end(await this.renderStaticErrorAsync(error));
+              } catch (staticError: any) {
+                // Fallback error for when Expo Router is misconfigured in the project.
+                res.end(
+                  '<span><h3>Internal Error:</h3><b>Project is not setup correctly for static rendering (check terminal for more info):</b><br/>' +
+                    error.message +
+                    '<br/><br/>' +
+                    staticError.message +
+                    '</span>'
+                );
+              }
             }
-          }
-        });
+          });
+        }
       }
 
       // This MUST run last since it's the fallback.

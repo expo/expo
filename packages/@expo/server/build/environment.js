@@ -49,9 +49,6 @@ class ExpoURL extends node_url_1.URL {
     }
 }
 exports.ExpoURL = ExpoURL;
-// TODO: Flip regex to start with slash and end without slash
-// Use named capture groups
-// Convert named capture groups to allow dashes
 class ExpoRequest extends node_1.Request {
     constructor(info, init) {
         super(info, init);

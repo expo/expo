@@ -23,7 +23,7 @@
     },
     "web": {
       "bundler": "metro",
-      "output": "dynamic"
+      "output": "server"
     }
   }
 }
