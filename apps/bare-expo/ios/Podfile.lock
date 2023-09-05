@@ -1444,7 +1444,14 @@ DEPENDENCIES:
   - EXApplication (from `../../../packages/expo-application/ios`)
   - EXAV (from `../../../packages/expo-av/ios`)
   - EXBarCodeScanner (from `../../../packages/expo-barcode-scanner/ios`)
+<<<<<<< HEAD
   - EXCalendar (from `../../../packages/expo-calendar/ios`)
+||||||| parent of 0e62d9bbe9 ([ios][calendar] Migrate to Expo Modules API)
+  - EXCalendar (from `../../../packages/expo-calendar/ios`)
+  - EXCamera (from `../../../packages/expo-camera/ios`)
+=======
+  - EXCamera (from `../../../packages/expo-camera/ios`)
+>>>>>>> 0e62d9bbe9 ([ios][calendar] Migrate to Expo Modules API)
   - EXConstants (from `../../../packages/expo-constants/ios`)
   - EXContacts (from `../../../packages/expo-contacts/ios`)
   - EXFont (from `../../../packages/expo-font/ios`)
@@ -1470,7 +1477,12 @@ DEPENDENCIES:
   - ExpoBattery (from `../../../packages/expo-battery/ios`)
   - ExpoBlur (from `../../../packages/expo-blur/ios`)
   - ExpoBrightness (from `../../../packages/expo-brightness/ios`)
+<<<<<<< HEAD
   - ExpoCamera (from `../../../packages/expo-camera/ios`)
+||||||| parent of 0e62d9bbe9 ([ios][calendar] Migrate to Expo Modules API)
+=======
+  - ExpoCalendar (from `../../../packages/expo-calendar/ios`)
+>>>>>>> 0e62d9bbe9 ([ios][calendar] Migrate to Expo Modules API)
   - ExpoCellular (from `../../../packages/expo-cellular/ios`)
   - ExpoClipboard (from `../../../packages/expo-clipboard/ios`)
   - ExpoClipboard/Tests (from `../../../packages/expo-clipboard/ios`)
@@ -1621,9 +1633,22 @@ EXTERNAL SOURCES:
   EXBarCodeScanner:
     inhibit_warnings: false
     :path: "../../../packages/expo-barcode-scanner/ios"
+<<<<<<< HEAD
   EXCalendar:
     inhibit_warnings: false
     :path: "../../../packages/expo-calendar/ios"
+||||||| parent of 0e62d9bbe9 ([ios][calendar] Migrate to Expo Modules API)
+  EXCalendar:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-calendar/ios"
+  EXCamera:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-camera/ios"
+=======
+  EXCamera:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-camera/ios"
+>>>>>>> 0e62d9bbe9 ([ios][calendar] Migrate to Expo Modules API)
   EXConstants:
     inhibit_warnings: false
     :path: "../../../packages/expo-constants/ios"
@@ -1680,9 +1705,16 @@ EXTERNAL SOURCES:
   ExpoBrightness:
     inhibit_warnings: false
     :path: "../../../packages/expo-brightness/ios"
+<<<<<<< HEAD
   ExpoCamera:
     inhibit_warnings: false
     :path: "../../../packages/expo-camera/ios"
+||||||| parent of 0e62d9bbe9 ([ios][calendar] Migrate to Expo Modules API)
+=======
+  ExpoCalendar:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-calendar/ios"
+>>>>>>> 0e62d9bbe9 ([ios][calendar] Migrate to Expo Modules API)
   ExpoCellular:
     inhibit_warnings: false
     :path: "../../../packages/expo-cellular/ios"

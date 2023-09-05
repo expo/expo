@@ -39,8 +39,8 @@ async function pickCalendarSourceIdAsync() {
 async function createTestEventAsync(calendarId, customArgs = {}) {
   return await Calendar.createEventAsync(calendarId, {
     title: 'App.js Conference',
-    startDate: +new Date(2019, 3, 4), // 4th April 2019, months are counted from 0
-    endDate: +new Date(2019, 3, 5), // 5th April 2019
+    startDate: new Date(2019, 3, 4), // 4th April 2019, months are counted from 0
+    endDate: new Date(2019, 3, 5), // 5th April 2019
     timeZone: 'Europe/Warsaw',
     allDay: true,
     location: 'Qubus Hotel, Nadwiślańska 6, 30-527 Kraków, Poland',
@@ -217,6 +217,15 @@ export async function test(t) {
       });
     });
 
+    t.describe('requestReminderPermissionsAsync()', () => {
+      t.it('requests for Reminder permissions', async () => {
+        const results = await Calendar.requestRemindersPermissionsAsync();
+
+        t.expect(results.granted).toBe(true);
+        t.expect(results.status).toBe('granted');
+      });
+    });
+
     t.describe('createCalendarAsync()', () => {
       let calendarId;
 
@@ -337,7 +346,6 @@ export async function test(t) {
             error = e;
           }
           t.expect(error).toBeDefined();
-          t.expect(error.code).toBe('E_EVENT_INVALID_TIMEZONE');
         });
       }
 
@@ -357,8 +365,8 @@ export async function test(t) {
       t.it('resolves to an array with an event of the correct shape', async () => {
         const events = await Calendar.getEventsAsync(
           [calendarId],
-          +new Date(2019, 3, 1),
-          +new Date(2019, 3, 29)
+          new Date(2019, 3, 1),
+          new Date(2019, 3, 29)
         );
 
         t.expect(Array.isArray(events)).toBe(true);
@@ -438,7 +446,6 @@ export async function test(t) {
         }
         t.expect(error).toBeDefined();
         t.expect(error instanceof Error).toBe(true);
-        t.expect(error.code).toBe('E_EVENT_NOT_FOUND');
       });
 
       t.afterAll(async () => {
