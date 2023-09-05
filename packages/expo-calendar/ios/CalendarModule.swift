@@ -115,9 +115,7 @@ public class CalendarModule: Module {
         let deviceCalendars = eventStore.calendars(for: .event)
 
         for calendar in deviceCalendars {
-          if calendarIds.contains(where: { id in
-            id == calendar.calendarIdentifier
-          }) {
+          if calendarIds.contains(calendar.calendarIdentifier) {
             eventCalendars.append(calendar)
           }
         }
@@ -140,9 +138,8 @@ public class CalendarModule: Module {
 
       if let calendarEvent {
         return serializeCalendar(event: calendarEvent)
-      } else {
-        throw CalendarEventNotFoundException(eventId)
       }
+      throw CalendarEventNotFoundException(eventId)
     }
 
     AsyncFunction("saveEventAsync") { (details: Event, options: RecurringEventOptions) -> String? in
@@ -241,9 +238,8 @@ public class CalendarModule: Module {
         } else {
           return []
         }
-      } else {
-        throw CalendarEventNotFoundException(id)
       }
+      throw CalendarEventNotFoundException(id)
     }
 
     AsyncFunction("getRemindersAsync") { (startDateStr: String, endDateStr: String, calendars: [CalendarRecord], status: String?, promise: Promise) in
