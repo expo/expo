@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Drop `/logs` and remove `@expo/dev-server` package.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
