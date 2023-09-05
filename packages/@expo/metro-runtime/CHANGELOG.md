@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Enable async code loading in production for web. ([#24291](https://github.com/expo/expo/pull/24291) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
