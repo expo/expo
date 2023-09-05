@@ -6,7 +6,7 @@ import {
   queryInspectorAppAsync,
 } from '../JsInspector';
 import { launchBrowserAsync } from '../LaunchBrowser';
-import { METRO_INSPECTOR_RESPONSE_FIXTURE } from '../__tests__/fixtures/metroInspectorResponse';
+import { METRO_INSPECTOR_RESPONSE_FIXTURE } from './fixtures/metroInspectorResponse';
 
 jest.mock('fs-extra');
 jest.mock('node-fetch');

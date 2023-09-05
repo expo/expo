@@ -12,10 +12,10 @@ import { getMetroProperties } from '../../../utils/analytics/getMetroProperties'
 import { createDebuggerTelemetryMiddleware } from '../../../utils/analytics/metroDebuggerMiddleware';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { env } from '../../../utils/env';
-import createJsInspectorMiddleware from '../middleware/dev-server/middleware/createJsInspectorMiddleware';
-import { remoteDevtoolsCorsMiddleware } from '../middleware/dev-server/middleware/remoteDevtoolsCorsMiddleware';
-import { remoteDevtoolsSecurityHeadersMiddleware } from '../middleware/dev-server/middleware/remoteDevtoolsSecurityHeadersMiddleware';
-import { suppressRemoteDebuggingErrorMiddleware } from '../middleware/dev-server/middleware/suppressErrorMiddleware';
+import createJsInspectorMiddleware from '../middleware/inspector/createJsInspectorMiddleware';
+import { remoteDevtoolsCorsMiddleware } from '../middleware/remoteDevtoolsCorsMiddleware';
+import { remoteDevtoolsSecurityHeadersMiddleware } from '../middleware/remoteDevtoolsSecurityHeadersMiddleware';
+import { suppressRemoteDebuggingErrorMiddleware } from '../middleware/suppressErrorMiddleware';
 import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
 import { prependMiddleware, replaceMiddlewareWith } from '../middleware/mutations';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';

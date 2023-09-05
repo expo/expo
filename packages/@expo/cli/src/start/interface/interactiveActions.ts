@@ -15,7 +15,7 @@ import {
 import {
   openJsInspector,
   queryAllInspectorAppsAsync,
-} from '../server/middleware/dev-server/JsInspector';
+} from '../server/middleware/inspector/JsInspector';
 
 const debug = require('debug')('expo:start:interface:interactiveActions') as typeof console.log;
 
