@@ -98,7 +98,6 @@ export async function runMetroDevServerAsync(
   } = createDevServerMiddleware(projectRoot, {
     port: metroConfig.server.port,
     watchFolders: metroConfig.watchFolders,
-    logger: options.logger,
   });
 
   const customEnhanceMiddleware = metroConfig.server.enhanceMiddleware;
@@ -254,40 +253,6 @@ export async function bundleAsync(
   } finally {
     metroServer.end();
   }
-}
-
-/**
- * Attach the inspector proxy to a development server.
- * Inspector proxy is used for viewing the JS context in a browser.
- * This must be attached after the server is listening.
- * Attaching consists of pushing custom middleware and appending WebSockets to the server.
- *
- *
- * @param projectRoot
- * @param props.server dev server to add WebSockets to
- * @param props.middleware dev server middleware to add extra middleware to
- */
-export function attachInspectorProxy(
-  projectRoot: string,
-  { server, middleware }: { server: http.Server; middleware: ConnectServer }
-) {
-  const { InspectorProxy } = importInspectorProxyServerFromProject(projectRoot);
-  const inspectorProxy = new InspectorProxy(projectRoot);
-  if ('addWebSocketListener' in inspectorProxy) {
-    // metro@0.59.0
-    inspectorProxy.addWebSocketListener(server);
-  } else if ('createWebSocketListeners' in inspectorProxy) {
-    // metro@0.66.0
-    // TODO: This isn't properly support without a ws router.
-    inspectorProxy.createWebSocketListeners(server);
-  }
-  // TODO(hypuk): Refactor inspectorProxy.processRequest into separate request handlers
-  // so that we could provide routes (/json/list and /json/version) here.
-  // Currently this causes Metro to give warning about T31407894.
-  // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-  middleware.use(inspectorProxy.processRequest.bind(inspectorProxy));
-
-  return { inspectorProxy };
 }
 
 export { LogReporter, createDevServerMiddleware };

@@ -51,12 +51,6 @@ export function importCliServerApiFromProject(
   return importFromProject(projectRoot, '@react-native-community/cli-server-api');
 }
 
-export function importInspectorProxyServerFromProject(projectRoot: string): {
-  InspectorProxy: any;
-} {
-  return importFromProject(projectRoot, 'metro-inspector-proxy');
-}
-
 export function importExpoMetroConfigFromProject(
   projectRoot: string
 ): typeof import('@expo/metro-config') {
