@@ -7,7 +7,7 @@ import type { PropsWithChildren, ReactNode } from 'react';
 import React from 'react';
 import tippy from 'tippy.js';
 
-import PermalinkIcon from '~/components/icons/Permalink';
+import { PermalinkCopyIcon } from '~/components/Permalink';
 import withHeadingManager, {
   HeadingManagerProps,
 } from '~/components/page-higher-order/withHeadingManager';
@@ -68,17 +68,7 @@ const Collapsible: React.FC<CollapsibleProps> = withHeadingManager(
           </div>
           <LinkBase href={'#' + heading.current.slug} ref={heading.current.ref}>
             <DEMI>{summary}</DEMI>
-            <span
-              id={'docs-anchor-permalink-' + heading.current.slug}
-              data-tippy-content="Click to copy anchor link"
-              onClick={e => {
-                e.preventDefault();
-                const url = window.location.href.replace(/#.*/, '') + '#' + heading.current.slug;
-                navigator.clipboard?.writeText(url);
-              }}
-              css={STYLES_PERMALINK_ICON}>
-              <PermalinkIcon />
-            </span>
+            <PermalinkCopyIcon slug={heading.current.slug} />
           </LinkBase>
         </summary>
         <div css={contentStyle}>{children}</div>
@@ -88,26 +78,6 @@ const Collapsible: React.FC<CollapsibleProps> = withHeadingManager(
 );
 
 export { Collapsible };
-
-const STYLES_PERMALINK_ICON = css`
-  cursor: pointer;
-  vertical-align: middle;
-  display: inline-block;
-  width: 1.2em;
-  height: 1em;
-  padding: 0 0.2em;
-  visibility: hidden;
-
-  a:hover &,
-  a:focus-visible & {
-    visibility: visible;
-  }
-
-  svg {
-    width: 100%;
-    height: auto;
-  }
-`;
 
 const detailsStyle = css({
   overflow: 'hidden',

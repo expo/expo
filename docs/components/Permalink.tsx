@@ -74,12 +74,31 @@ const PermalinkBase = ({ component, children, className, ...rest }: BaseProps) =
     children
   );
 
+const PermalinkCopyIcon = ({ slug }: { slug: string }) => {
+  React.useEffect(() => {
+    tippy('#docs-anchor-permalink-' + slug, {
+      content: 'Click to copy anchor link',
+    });
+  }, []);
+
+  return (
+    <span
+      id={'docs-anchor-permalink-' + slug}
+      onClick={event => {
+        event.preventDefault();
+        const url = window.location.href.replace(/#.*/, '') + '#' + slug;
+        navigator.clipboard?.writeText(url);
+      }}
+      css={STYLES_PERMALINK_ICON}>
+      <PermalinkIcon />
+    </span>
+  );
+};
+
+export { PermalinkCopyIcon };
+
 const Permalink: React.FC<EnhancedProps> = withHeadingManager(
   (props: EnhancedProps & HeadingManagerProps) => {
-    React.useEffect(() => {
-      tippy('#docs-anchor-permalink-' + heading.slug);
-    }, []);
-
     // NOTE(jim): Not the greatest way to generate permalinks.
     // for now I've shortened the length of permalinks.
     const component = props.children as JSX.Element;
@@ -101,16 +120,7 @@ const Permalink: React.FC<EnhancedProps> = withHeadingManager(
         <LinkBase css={STYLES_PERMALINK_LINK} href={'#' + heading.slug} ref={heading.ref}>
           <span css={STYLES_PERMALINK_TARGET} id={heading.slug} />
           <span css={STYLED_PERMALINK_CONTENT}>{children}</span>
-          <span
-            id={'docs-anchor-permalink-' + heading.slug}
-            data-tippy-content="Click to copy anchor link"
-            onClick={() => {
-              const url = window.location.href.replace(/#.*/, '') + '#' + heading.slug;
-              navigator.clipboard?.writeText(url);
-            }}
-            css={STYLES_PERMALINK_ICON}>
-            <PermalinkIcon />
-          </span>
+          <PermalinkCopyIcon slug={heading.slug} />
         </LinkBase>
       </PermalinkBase>
     );
