@@ -1,30 +1,34 @@
 import { ExpoConfig, getConfig } from '@expo/config';
-import type { LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
+import { Server as ConnectServer } from 'connect';
 import http from 'http';
-import type Metro from 'metro';
 import { Terminal } from 'metro-core';
 import semver from 'semver';
 import { URL } from 'url';
 
-import { MetroBundlerDevServer } from './MetroBundlerDevServer';
-import { MetroTerminalReporter } from './MetroTerminalReporter';
-import { importExpoMetroConfig } from './resolveFromProject';
-import { getRouterDirectory } from './router';
-import { runServer } from './runServer-fork';
-import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
+import { MetroDevServerOptions } from '../../../export/fork-bundleAsync';
 import { Log } from '../../../log';
 import { getMetroProperties } from '../../../utils/analytics/getMetroProperties';
 import { createDebuggerTelemetryMiddleware } from '../../../utils/analytics/metroDebuggerMiddleware';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { env } from '../../../utils/env';
+import createJsInspectorMiddleware from '../middleware/dev-server/middleware/createJsInspectorMiddleware';
+import { remoteDevtoolsCorsMiddleware } from '../middleware/dev-server/middleware/remoteDevtoolsCorsMiddleware';
+import { remoteDevtoolsSecurityHeadersMiddleware } from '../middleware/dev-server/middleware/remoteDevtoolsSecurityHeadersMiddleware';
+import { suppressRemoteDebuggingErrorMiddleware } from '../middleware/dev-server/middleware/suppressErrorMiddleware';
 import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
-import { createDevServerMiddleware } from '../middleware/dev-server/middleware/devServerMiddleware';
+import { prependMiddleware, replaceMiddlewareWith } from '../middleware/mutations';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { getPlatformBundlers } from '../platformBundlers';
-import { prependMiddleware } from '../middleware/mutations';
-import { MetroDevServerOptions } from '../../../export/fork-bundleAsync';
+import { MetroBundlerDevServer } from './MetroBundlerDevServer';
+import { MetroTerminalReporter } from './MetroTerminalReporter';
+import { importCliServerApiFromProject, importExpoMetroConfig } from './resolveFromProject';
+import { getRouterDirectory } from './router';
+import { runServer } from './runServer-fork';
+import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 
+import type { LoadOptions } from '@expo/metro-config';
+import type Metro from 'metro';
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
   broadcast: (method: string, params?: Record<string, any> | undefined) => void;
@@ -191,4 +195,62 @@ export function isWatchEnabled() {
   }
 
   return !env.CI;
+}
+
+/**
+ * Extends the default `createDevServerMiddleware` and adds some Expo CLI-specific dev middleware
+ * with exception for the manifest middleware which is currently in `xdl`.
+ *
+ * Adds:
+ * - `/inspector`: launch hermes inspector proxy in chrome.
+ * - CORS support for remote devtools
+ * - body parser middleware
+ *
+ * @param props.watchFolders array of directory paths to use with watchman
+ * @param props.port port that the dev server will run on
+ *
+ * @returns
+ */
+function createDevServerMiddleware(
+  projectRoot: string,
+  {
+    watchFolders,
+    port,
+  }: {
+    watchFolders: readonly string[];
+    port: number;
+  }
+) {
+  const { createDevServerMiddleware, securityHeadersMiddleware } =
+    importCliServerApiFromProject(projectRoot);
+  const {
+    middleware,
+    debuggerProxyEndpoint,
+    messageSocketEndpoint,
+    eventsSocketEndpoint,
+    websocketEndpoints,
+  } = createDevServerMiddleware({
+    port,
+    watchFolders,
+  });
+
+  // securityHeadersMiddleware does not support cross-origin requests for remote devtools to get the sourcemap.
+  // We replace with the enhanced version.
+  replaceMiddlewareWith(
+    middleware as ConnectServer,
+    securityHeadersMiddleware,
+    remoteDevtoolsSecurityHeadersMiddleware
+  );
+  middleware.use(remoteDevtoolsCorsMiddleware);
+  prependMiddleware(middleware, suppressRemoteDebuggingErrorMiddleware);
+
+  middleware.use('/inspector', createJsInspectorMiddleware());
+
+  return {
+    middleware,
+    debuggerProxyEndpoint,
+    messageSocketEndpoint,
+    eventsSocketEndpoint,
+    websocketEndpoints,
+  };
 }
