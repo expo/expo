@@ -1,3 +1,4 @@
+import type { ExpoConfig, Platform } from '@expo/config';
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs-extra';
 import os from 'os';
@@ -8,8 +9,6 @@ import {
   importMetroSourceMapComposeSourceMapsFromProject,
   resolveFromProject,
 } from '../start/server/metro/resolveFromProject';
-
-import type { ExpoConfig, Platform } from '@expo/config';
 
 export function importHermesCommandFromProject(projectRoot: string): string {
   const platformExecutable = getHermesCommandPlatform();

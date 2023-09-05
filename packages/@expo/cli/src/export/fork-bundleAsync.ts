@@ -1,5 +1,4 @@
 import { ExpoConfig, getConfigFilePaths, Platform } from '@expo/config';
-
 import type { LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import Metro, { AssetData } from 'metro';
@@ -8,17 +7,17 @@ import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
 import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
 import { ConfigT } from 'metro-config';
 
+import {
+  buildHermesBundleAsync,
+  isEnableHermesManaged,
+  maybeThrowFromInconsistentEngineAsync,
+} from './exportHermes';
 import { CSSAsset, getCssModulesFromBundler } from '../start/server/metro/getCssModulesFromBundler';
 import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
 import {
   importMetroFromProject,
   importMetroServerFromProject,
 } from '../start/server/metro/resolveFromProject';
-import {
-  buildHermesBundleAsync,
-  isEnableHermesManaged,
-  maybeThrowFromInconsistentEngineAsync,
-} from './exportHermes';
 
 export type MetroDevServerOptions = LoadOptions & {
   quiet?: boolean;
