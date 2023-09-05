@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Suppress "Operation cancelled by user during sending the request" error when the load request is canceled (interrupted) by a new one.
+
 ### 💡 Others
 
 ## 1.5.0 — 2023-09-04
