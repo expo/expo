@@ -159,6 +159,7 @@ export async function instantiateMetroAsync(
 
   middleware.use('/inspector', createJsInspectorMiddleware());
 
+  // TODO: We can probably drop this now.
   const customEnhanceMiddleware = metroConfig.server.enhanceMiddleware;
   // @ts-expect-error: can't mutate readonly config
   metroConfig.server.enhanceMiddleware = (metroMiddleware: any, server: Metro.Server) => {
