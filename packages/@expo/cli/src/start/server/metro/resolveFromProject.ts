@@ -16,6 +16,12 @@ class MetroImportError extends Error {
   }
 }
 
+export function importCliServerApiFromProject(
+  projectRoot: string
+): typeof import('@react-native-community/cli-server-api') {
+  return importFromProject(projectRoot, '@react-native-community/cli-server-api');
+}
+
 export function importMetroSourceMapComposeSourceMapsFromProject(
   projectRoot: string
 ): typeof import('metro-source-map').composeSourceMaps {

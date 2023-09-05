@@ -21,7 +21,6 @@ import {
 } from './exportHermes';
 
 export type MetroDevServerOptions = LoadOptions & {
-  logger: import('@expo/bunyan');
   quiet?: boolean;
 };
 export type BundleOptions = {
@@ -44,8 +43,6 @@ export type BundleOutput = {
 };
 
 let nextBuildID = 0;
-
-// Fork of @expo/dev-server bundleAsync to add Metro logging back.
 
 async function assertEngineMismatchAsync(projectRoot: string, exp: ExpoConfig, platform: Platform) {
   const isHermesManaged = isEnableHermesManaged(exp, platform);

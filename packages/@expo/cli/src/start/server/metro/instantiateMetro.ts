@@ -19,7 +19,7 @@ import { createDebuggerTelemetryMiddleware } from '../../../utils/analytics/metr
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { env } from '../../../utils/env';
 import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
-import { createDevServerMiddleware } from '../middleware/createDevServerMiddleware';
+import { createDevServerMiddleware } from '../middleware/dev-server/middleware/devServerMiddleware';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { getPlatformBundlers } from '../platformBundlers';
 import { prependMiddleware } from '../middleware/mutations';
