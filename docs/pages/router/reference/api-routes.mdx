@@ -1,43 +1,41 @@
 ---
 title: API Routes
-description: Learn how to create universal serverless functions with Expo Router.
+description: Learn how to create server functions with Expo Router.
 ---
+
+> **info** This feature is still experimental. Available from Expo SDK 50 and Expo Router v3.
 
 import { FileTree } from '~/ui/components/FileTree';
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 import { Collapsible } from '~/ui/components/Collapsible';
 
-Expo Router supports enables you to write universal backend server code directly in your app.
+Expo Router enables you to write server code for all platforms, right in your **app** directory.
 
 ```json app.json
 {
-  "expo": {
-    "web": {
-      "bundler": "metro",
-      /* @info Output a dynamic server. */
-      "output": "server"
-      /* @end */
-    }
+  "web": {
+    "bundler": "metro",
+    /* @info Output a dynamic server. */
+    "output": "server"
+    /* @end */
   }
 }
 ```
 
-Server features require a custom Node.js server to work. Most hosting providers support Node.js, including [Netlify](https://netlify.com), [Vercel](https://vercel.com), and [Heroku](https://heroku.com).
+Server features require a custom Node.js server. Most hosting providers support Node.js, including [Netlify](#netlify), [Cloudflare](https://www.cloudflare.com/), and [Vercel](https://vercel.com).
 
-## Usage
+## API Routes
 
-> While in beta, server code may leak into the client bundle. This won't happen in the stable release.
+API Routes are functions that are executed when a route is matched. They can be used to securely handle sensitive data, such as API keys, or to implement custom server logic. API Routes should be executed in a [WinterCG](https://wintercg.org/)-compliant environment.
 
-Server Routes are functions that are executed when a route is matched. They can be used to securely handle sensitive data, such as API keys, or to implement custom server logic. Server Routes should be executed in a [WinterCG](https://wintercg.org/) environment.
+API Routes are defined by creating files in the `app` directory with the `+api.js` extension. For example, the following route handler will be executed when the route `/hello` is matched.
 
-Server Routes are defined by creating files in the `app` directory with the `+api.js` extension. For example, the following route handler will be executed when the route `/hello` is matched.
-
-<FileTree files={['app/index.js', ['app/hello+api.ts', 'Server Route']]} />
+<FileTree files={['app/index.js', ['app/hello+api.ts', 'API Route']]} />
 
 <Step label="1">
 
-Create a server route in the `app` directory.
+Create an API route in the `app` directory. The following route handler will be executed when the route `/hello` is matched.
 
 ```js app/hello+api.ts
 import { ExpoRequest, ExpoResponse } from 'expo-router/server';
@@ -47,44 +45,54 @@ export function GET(request: ExpoRequest) {
 }
 ```
 
-You can export any of the following functions `GET, POST, PUT, PATCH, DELETE, HEAD, and OPTIONS` from a server route. The function will be executed when the corresponding HTTP method is matched.
+You can export any of the following functions `GET, POST, PUT, PATCH, DELETE, HEAD, and OPTIONS` from a server route. The function will be executed when the corresponding HTTP method is matched. Unsupported methods will automatically return `405: Method not allowed`.
 
 </Step>
 
 <Step label="2">
 
-Start the development server.
+Start the development server with Expo CLI:
 
-<Terminal cmd={['$ npx expo start']} />
+<Terminal cmd={['$ npx expo']} />
 
 </Step>
 
 <Step label="3">
 
-To access the data, you can make a network request to the route. For example, the following code will make a request to the route handler above.
+To access the data, you can make a network request to the route. You can run the following in the terminal to quickly test the route:
 
-```js
+<Terminal cmd={['$ curl http://localhost:8081/hello']} />
+
+You can also make a request from the client code:
+
+```js app/index.js
+import { Button } from 'react-native';
+
 async function fetchHello() {
   const response = await fetch('/hello');
   const data = await response.json();
-  console.log(data);
+  alert('Hello ' + data.hello);
+}
+
+export default function App() {
+  return <Button onPress={() => fetchHello()} title="Fetch hello" />;
 }
 ```
 
-This won't work by default on native as `/api/hello` does not provide an origin URL. Follow the setup guide in [`window.location`](/docs/lab/runtime-location) to polyfill the `window.location` API.
+This won't work by default on native as `/hello` does not provide an origin URL. You can configure the origin URL in `app.json`, this can be a mock URL in development:
 
 ```json app.json
 {
-  "expo": {
-    "plugins": [
-      [
-        "expo-router",
-        {
-          "origin": "https://example.com"
-        }
-      ]
+  "plugins": [
+    [
+      "expo-router",
+      {
+        /* @info The URL where the API routes are hosted at. */
+        "origin": "https://mywebsite.netlify.app/"
+        /* @end */
+      }
     ]
-  }
+  ]
 }
 ```
 
@@ -92,7 +100,7 @@ This won't work by default on native as `/api/hello` does not provide an origin 
 
 <Step label="4">
 
-    Deploy the website to a [hosting provider](/distribution/publishing-websites) in order to access the routes in production on both web and native.
+    Deploy the website and server to a [hosting provider](#deployment) in order to access the routes in production on both web and native.
 
 </Step>
 
@@ -131,7 +139,7 @@ Responses use the global `ExpoResponse` object. This object is a subclass of the
 ```ts app/demo+api.ts
 import { ExpoRequest, ExpoResponse } from 'expo-router/server';
 
-export async function GET() {
+export function GET() {
   return ExpoResponse.json({ hello: 'universe' });
 }
 ```
@@ -163,7 +171,7 @@ If an error is thrown during the request, it will automatically return `500: Int
 
 ## Bundling
 
-API Routes are bundled with Metro, meaning they have access to all of the same bundling features as your client code.
+API Routes are bundled with Expo CLI and [Metro bundler](/guides/customizing-metro), meaning they have access to all of the same language features as your client code.
 
 - [TypeScript](/guides/typescript) –– types and [`tsconfig.json` paths](/guides/typescript#path-aliases).
 - [Environment variables](/guides/environment-variables) –– server routes have access to all environment variables, not just the ones prefixed with `EXPO_PUBLIC_`.
@@ -301,7 +309,7 @@ module.exports = { handler };
 
 Create a Netlify configuration file to redirect all requests to the server function.
 
-```toml netlify.toml
+```yaml netlify.toml
 [build]
   command = "expo export -p web"
   functions = "netlify/functions"
@@ -350,5 +358,217 @@ You can now visit your website at the URL provided by Netlify CLI. Running `netl
 
 </Step>
 
+<Step label="5">
+
+If you're using any environment variables or `.env` files, you'll need to add them to Netlify. You can do this by going to the "Site settings" page and adding them to the "Build & deploy" section.
+
+</Step>
+
 [wcg-request]: https://fetch.spec.whatwg.org/#request
 [wcg-response]: https://fetch.spec.whatwg.org/#response
+
+## Open AI Example
+
+> This guide is subject to move
+
+<FileTree
+  files={[
+    ['app/index.tsx', 'User interface'],
+    ['app/generate+api.ts', 'API route'],
+    ['.env.local', 'Secret keys'],
+  ]}
+/>
+
+<Step label="1">
+
+First, create a new Open AI API key. You can do this by visiting the [Open AI dashboard](https://platform.openai.com/). Then add the key to your `.env.local` file.
+
+```sh .env.local
+OPENAI_API_KEY=sk-xxxxxx
+```
+
+This key should only ever be used in the server code. If you accidentally push it to the client, you can revoke it in the Open AI dashboard. You can manually validate the output by running `npx expo export` and searching for the key in the `/dist` folder.
+
+</Step>
+
+<Step label="2">
+
+Create a new API route in the `app` directory, this route should be available at `/generate`:
+
+```ts app/generate+api.ts
+import { ExpoRequest, ExpoResponse } from 'expo-router/server';
+
+export async function POST(req: ExpoRequest): Promise<ExpoResponse> {
+  const { prompt } = await req.json();
+
+  const payload = {
+    prompt,
+    max_tokens: 100, // You can customize this
+  };
+
+  const json = await fetch('https://api.openai.com/v1/engines/text-davinci-003/completions', {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${process.env.OPENAI_API_KEY ?? ''}`,
+    },
+    method: 'POST',
+    body: JSON.stringify(payload),
+  }).then(res => res.json());
+
+  return ExpoResponse.json(json);
+}
+```
+
+You can test the API route by running the following terminal command (assuming you're hosting the app on the default port):
+
+<Terminal
+  cmd={[
+    '$ curl -X POST -H "Content-Type: application/json" -d \'{"prompt":"Hello, my name is"}\' http://localhost:8081/generate',
+  ]}
+/>
+
+</Step>
+
+<Step label="3">
+
+Finally, we'll create a simple UI with a text input and a submit button to generate the bios.
+
+<Collapsible summary="Application code">
+
+```js app/index.tsx
+import React from 'react';
+import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
+
+export { ErrorBoundary } from 'expo-router';
+
+export default function Page() {
+  const [loading, setLoading] = React.useState(false);
+  const [value, setValue] = React.useState('');
+  const [generatedBios, setGeneratedBios] = React.useState('');
+
+  const generateBio = async () => {
+    setGeneratedBios('');
+    setLoading(true);
+
+    const prompt = `Generate 2 twitter bios with no hashtags and clearly labeled "1." and "2.". Make sure each generated bio is at max 20 words and base it on this context: ${value}${
+      value.slice(-1) === '.' ? '' : '.'
+    }`;
+
+    // Simply send the prompt to the API route.
+    const response = await fetch('/generate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        prompt,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(response.statusText);
+    }
+
+    const answer = await response.json();
+    setGeneratedBios(answer.choices[0].text);
+    setLoading(false);
+  };
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.main}>
+        <Text style={styles.title}>Twitter Bio AI</Text>
+
+        <TextInput
+          value={value}
+          style={{ minHeight: 120, borderWidth: 1 }}
+          onChange={e => setValue(e.nativeEvent.text)}
+          rows={4}
+          placeholderTextColor="#9CA3AF"
+          placeholder="e.g. Expo Router enthusiast."
+        />
+
+        <Button
+          disabled={loading}
+          onPress={() => generateBio()}
+          title={loading ? 'Loading...' : 'Generate your bio!'}
+        />
+
+        {generatedBios != null && (
+          <>
+            <Text style={styles.subtitle}>Generated Bios:</Text>
+            {generatedBios
+              .substring(generatedBios?.indexOf('1') + 2)
+              .split('2.')
+              .map((generatedBio, index) => (
+                <Text key={String(index)}>{generatedBio}</Text>
+              ))}
+          </>
+        )}
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    padding: 24,
+  },
+  main: {
+    flex: 1,
+    gap: 8,
+    justifyContent: 'center',
+    maxWidth: 960,
+    marginHorizontal: 'auto',
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+  },
+  subtitle: {
+    fontSize: 36,
+    color: '#38434D',
+  },
+});
+```
+
+</Collapsible>
+
+</Step>
+
+<Step label="4">
+
+If you want to use the app on native, you'll need to configure the URL polyfill so the app knows what to preprend before `/generate`. The URL can be a placeholder in development, but it must be updated to the location where the API routes are hosted in production for the app to work outside of development.
+
+```json app.json
+{
+  "plugins": [
+    [
+      "expo-router",
+      {
+        /* @info The URL where the API routes are hosted at. */
+        "origin": "https://mywebsite.netlify.app/"
+        /* @end */
+      }
+    ]
+  ],
+  "web": {
+    "bundler": "metro",
+    "output": "server"
+  }
+}
+```
+
+</Step>
+
+<Step label="5">
+
+Start the dev server to host the app.
+
+<Terminal cmd={['$ npx expo']} />
+
+You can now use the app on any device and start generating prompts!
+
+</Step>

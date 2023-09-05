@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import { theme, typography } from '@expo/styleguide';
 import { borderRadius, spacing } from '@expo/styleguide-base';
-import { FileCode01Icon, LayoutAlt01Icon } from '@expo/styleguide-icons';
+import { FileCode01Icon, LayoutAlt01Icon, Server03Icon } from '@expo/styleguide-icons';
 import { Language, Prism } from 'prism-react-renderer';
 import * as React from 'react';
 import tippy, { roundArrow } from 'tippy.js';
@@ -281,6 +281,9 @@ export const CodeBlock = ({ children, inline = false }: CodeBlockProps) => {
 function getIconForFile(filename: string) {
   if (/_layout\.[jt]sx?$/.test(filename)) {
     return LayoutAlt01Icon;
+  }
+  if (/\+api\.[jt]sx?$/.test(filename)) {
+    return Server03Icon;
   }
   return FileCode01Icon;
 }
