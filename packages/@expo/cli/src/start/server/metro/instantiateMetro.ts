@@ -136,11 +136,28 @@ export async function instantiateMetroAsync(
     { exp, isExporting }
   );
 
-  const { middleware, websocketEndpoints, eventsSocketEndpoint, messageSocketEndpoint } =
-    createDevServerMiddleware(projectRoot, {
+  const { createDevServerMiddleware, securityHeadersMiddleware } =
+    importCliServerApiFromProject(projectRoot);
+
+  const { middleware, messageSocketEndpoint, eventsSocketEndpoint, websocketEndpoints } =
+    createDevServerMiddleware({
       port: metroConfig.server.port,
       watchFolders: metroConfig.watchFolders,
     });
+
+  // securityHeadersMiddleware does not support cross-origin requests for remote devtools to get the sourcemap.
+  // We replace with the enhanced version.
+  replaceMiddlewareWith(
+    middleware as ConnectServer,
+    securityHeadersMiddleware,
+    remoteDevtoolsSecurityHeadersMiddleware
+  );
+
+  middleware.use(remoteDevtoolsCorsMiddleware);
+
+  prependMiddleware(middleware, suppressRemoteDebuggingErrorMiddleware);
+
+  middleware.use('/inspector', createJsInspectorMiddleware());
 
   const customEnhanceMiddleware = metroConfig.server.enhanceMiddleware;
   // @ts-expect-error: can't mutate readonly config
@@ -195,62 +212,4 @@ export function isWatchEnabled() {
   }
 
   return !env.CI;
-}
-
-/**
- * Extends the default `createDevServerMiddleware` and adds some Expo CLI-specific dev middleware
- * with exception for the manifest middleware which is currently in `xdl`.
- *
- * Adds:
- * - `/inspector`: launch hermes inspector proxy in chrome.
- * - CORS support for remote devtools
- * - body parser middleware
- *
- * @param props.watchFolders array of directory paths to use with watchman
- * @param props.port port that the dev server will run on
- *
- * @returns
- */
-function createDevServerMiddleware(
-  projectRoot: string,
-  {
-    watchFolders,
-    port,
-  }: {
-    watchFolders: readonly string[];
-    port: number;
-  }
-) {
-  const { createDevServerMiddleware, securityHeadersMiddleware } =
-    importCliServerApiFromProject(projectRoot);
-  const {
-    middleware,
-    debuggerProxyEndpoint,
-    messageSocketEndpoint,
-    eventsSocketEndpoint,
-    websocketEndpoints,
-  } = createDevServerMiddleware({
-    port,
-    watchFolders,
-  });
-
-  // securityHeadersMiddleware does not support cross-origin requests for remote devtools to get the sourcemap.
-  // We replace with the enhanced version.
-  replaceMiddlewareWith(
-    middleware as ConnectServer,
-    securityHeadersMiddleware,
-    remoteDevtoolsSecurityHeadersMiddleware
-  );
-  middleware.use(remoteDevtoolsCorsMiddleware);
-  prependMiddleware(middleware, suppressRemoteDebuggingErrorMiddleware);
-
-  middleware.use('/inspector', createJsInspectorMiddleware());
-
-  return {
-    middleware,
-    debuggerProxyEndpoint,
-    messageSocketEndpoint,
-    eventsSocketEndpoint,
-    websocketEndpoints,
-  };
 }
