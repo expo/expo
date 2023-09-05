@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Drop `/logs` and remove `@expo/dev-server` package.
+- Drop `/logs` and remove `@expo/dev-server` package. ([#24272](https://github.com/expo/expo/pull/24272) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
