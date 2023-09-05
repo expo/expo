@@ -1,9 +1,8 @@
-import { Platform } from 'expo-modules-core';
 import qs from 'qs';
 
 const getDevServer = () => {
   // Disable for SSR
-  if (!Platform.isDOMAvailable) {
+  if (typeof window === 'undefined') {
     return {
       bundleLoadedFromServer: true,
       fullBundleUrl: '',
@@ -25,10 +24,7 @@ const getDevServer = () => {
       const query = qs.parse(url);
 
       return (
-        location.origin +
-        location.pathname +
-        '?' +
-        qs.stringify({ ...query, platform: Platform.OS })
+        location.origin + location.pathname + '?' + qs.stringify({ ...query, platform: 'web' })
       );
     },
     url: location.origin + location.pathname,
