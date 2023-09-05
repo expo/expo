@@ -1,5 +1,4 @@
 import { ExpoConfig, getConfig } from '@expo/config';
-import { MetroDevServerOptions } from '@expo/dev-server';
 import type { LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import http from 'http';
@@ -24,6 +23,7 @@ import { createDevServerMiddleware } from '../middleware/createDevServerMiddlewa
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { getPlatformBundlers } from '../platformBundlers';
 import { prependMiddleware } from '../middleware/mutations';
+import { MetroDevServerOptions } from '../../../export/fork-bundleAsync';
 
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {

@@ -1,5 +1,4 @@
 import { ExpoConfig } from '@expo/config';
-import { BundleAssetWithFileHashes } from '@expo/dev-server';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -9,6 +8,7 @@ import { fileExistsAsync } from '../../../utils/dir';
 import { CommandError } from '../../../utils/errors';
 import { get, set } from '../../../utils/obj';
 import { validateUrl } from '../../../utils/url';
+import { BundleAssetWithFileHashes } from '../../../export/fork-bundleAsync';
 
 type ManifestAsset = { fileHashes: string[]; files: string[]; hash: string };
 

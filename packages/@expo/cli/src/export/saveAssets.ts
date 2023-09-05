@@ -1,9 +1,9 @@
-import { BundleAssetWithFileHashes } from '@expo/dev-server';
 import path from 'path';
 
 import * as Log from '../log';
 import { chunk } from '../utils/array';
 import { copyAsync } from '../utils/dir';
+import { BundleAssetWithFileHashes } from './fork-bundleAsync';
 
 const debug = require('debug')('expo:export:saveAssets') as typeof console.log;
 
