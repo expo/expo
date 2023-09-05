@@ -261,9 +261,17 @@ public class CalendarModule: Module {
       let predicate: NSPredicate = {
         if let status {
           if status == "incomplete" {
-            return eventStore.predicateForIncompleteReminders(withDueDateStarting: startDate, ending: endDate, calendars: reminderCalendars)
+            return eventStore.predicateForIncompleteReminders(
+              withDueDateStarting: startDate,
+              ending: endDate,
+              calendars: reminderCalendars
+            )
           } else if status == "completed" {
-            return eventStore.predicateForCompletedReminders(withCompletionDateStarting: startDate, ending: endDate, calendars: reminderCalendars)
+            return eventStore.predicateForCompletedReminders(
+              withCompletionDateStarting: startDate,
+              ending: endDate,
+              calendars: reminderCalendars
+            )
           }
         }
         return eventStore.predicateForReminders(in: reminderCalendars)
@@ -347,12 +355,18 @@ public class CalendarModule: Module {
       }
 
       if let startDate {
-        let startDateComponents = currentCalendar.dateComponents([.year, .month, .day, .hour, .minute, . second], from: startDate)
+        let startDateComponents = currentCalendar.dateComponents(
+          [.year, .month, .day, .hour, .minute, . second],
+          from: startDate
+        )
         reminder.startDateComponents = startDateComponents
       }
 
       if let dueDate {
-        let dueDateComponents = currentCalendar.dateComponents([.year, .month, .day, .hour, .minute, . second], from: dueDate)
+        let dueDateComponents = currentCalendar.dateComponents(
+          [.year, .month, .day, .hour, .minute, . second],
+          from: dueDate
+        )
         reminder.dueDateComponents = dueDateComponents
       }
 
@@ -559,8 +573,10 @@ public class CalendarModule: Module {
       return firstEvent
     }
 
-    let endDate = startDate.addingTimeInterval(2592000)
-    let events = eventStore.events(matching: eventStore.predicateForEvents(withStart: startDate, end: endDate, calendars: [calendar]))
+    let endDate = startDate.addingTimeInterval(2_592_000)
+    let events = eventStore.events(
+      matching: eventStore.predicateForEvents(withStart: startDate, end: endDate, calendars: [calendar])
+    )
 
     for event in events {
       if event.calendarItemIdentifier != id {
@@ -595,24 +611,26 @@ public class CalendarModule: Module {
     var daysOfTheWeek: [EKRecurrenceDayOfWeek]?
 
     let daysOfTheMonth = rule.daysOfTheMonth?.map {
-      NSNumber(integerLiteral: $0)
+      NSNumber(value: $0)
     }
     let monthsOfTheYear = rule.monthsOfTheYear?.map {
-      NSNumber(integerLiteral: $0.rawValue)
+      NSNumber(value: $0.rawValue)
     }
     let weeksOfTheYear = rule.weeksOfTheYear?.map {
-      NSNumber(integerLiteral: $0)
+      NSNumber(value: $0)
     }
     let daysOfTheYear = rule.daysOfTheYear?.map {
-      NSNumber(integerLiteral: $0)
+      NSNumber(value: $0)
     }
     let setPositions = rule.setPositions?.map {
-      NSNumber(integerLiteral: $0)
+      NSNumber(value: $0)
     }
 
     if let days = rule.daysOfTheWeek {
       for item in days {
-        daysOfTheWeek?.append(EKRecurrenceDayOfWeek(item.dayOfTheWeek.toEKType(), weekNumber: item.weekNumber))
+        daysOfTheWeek?.append(
+          EKRecurrenceDayOfWeek(item.dayOfTheWeek.toEKType(), weekNumber: item.weekNumber)
+        )
       }
     }
 
@@ -629,7 +647,17 @@ public class CalendarModule: Module {
       recurrenceInterval = interval
     }
 
-    let recurrenceRule = EKRecurrenceRule(recurrenceWith: recurrenceFrequency(name: rule.frequency), interval: recurrenceInterval, daysOfTheWeek: daysOfTheWeek, daysOfTheMonth: daysOfTheMonth, monthsOfTheYear: monthsOfTheYear, weeksOfTheYear: weeksOfTheYear, daysOfTheYear: daysOfTheYear, setPositions: setPositions, end: recurrenceEnd)
+    let recurrenceRule = EKRecurrenceRule(
+      recurrenceWith: recurrenceFrequency(name: rule.frequency),
+      interval: recurrenceInterval,
+      daysOfTheWeek: daysOfTheWeek,
+      daysOfTheMonth: daysOfTheMonth,
+      monthsOfTheYear: monthsOfTheYear,
+      weeksOfTheYear: weeksOfTheYear,
+      daysOfTheYear: daysOfTheYear,
+      setPositions: setPositions,
+      end: recurrenceEnd
+    )
 
     return recurrenceRule
   }
