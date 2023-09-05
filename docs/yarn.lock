@@ -2501,11 +2501,6 @@ caniuse-lite@^1.0.30001426, caniuse-lite@^1.0.30001449:
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001460.tgz#31d2e26f0a2309860ed3eff154e03890d9d851a7"
   integrity sha512-Bud7abqjvEjipUkpLs4D7gR0l8hBYBHoa+tGtKJHvT2AYzLp1z7EmVkUT4ERpVUfca8S2HGIVs883D8pUH1ZzQ==
 
-case-police@^0.5.10:
-  version "0.5.10"
-  resolved "https://registry.yarnpkg.com/case-police/-/case-police-0.5.10.tgz#defd8d9aa6b4e45056c845dbabb72479aaeafe2f"
-  integrity sha512-TCfzHZhQ4n6mfDIfN7si8US5KWilP7onSs8Y7Y0ki5h82ery9q9TJhfXYk6rIynr5kLuyCXCC13TWM0Qu0RtUw==
-
 caw@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/caw/-/caw-2.0.1.tgz#6c3ca071fc194720883c2dc5da9b074bfc7e9e95"
