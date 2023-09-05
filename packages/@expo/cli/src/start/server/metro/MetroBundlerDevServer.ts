@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { getConfig } from '@expo/config';
-import { prependMiddleware } from '@expo/dev-server';
 import * as runtimeEnv from '@expo/env';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import chalk from 'chalk';
@@ -41,6 +40,7 @@ import {
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
+import { prependMiddleware } from '../middleware/mutations';
 
 class ForwardHtmlError extends CommandError {
   constructor(

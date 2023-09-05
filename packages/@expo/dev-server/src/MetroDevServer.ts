@@ -2,7 +2,6 @@ import type Log from '@expo/bunyan';
 import { ExpoConfig, getConfigFilePaths } from '@expo/config';
 import type { LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
-import type { Server as ConnectServer } from 'connect';
 import http from 'http';
 import type Metro from 'metro';
 import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
@@ -15,7 +14,6 @@ import {
 import LogReporter from './LogReporter';
 import {
   importExpoMetroConfigFromProject,
-  importInspectorProxyServerFromProject,
   importMetroFromProject,
   importMetroServerFromProject,
 } from './metro/importMetroFromProject';
@@ -68,74 +66,6 @@ function getExpoMetroConfig(
   );
 
   return require('@expo/metro-config');
-}
-
-/** @deprecated */
-export async function runMetroDevServerAsync(
-  projectRoot: string,
-  options: MetroDevServerOptions
-): Promise<{
-  server: http.Server;
-  middleware: any;
-  messageSocket: MessageSocket;
-}> {
-  const Metro = importMetroFromProject(projectRoot);
-
-  const reporter = new LogReporter(options.logger);
-
-  const ExpoMetroConfig = getExpoMetroConfig(projectRoot, options);
-
-  const metroConfig = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
-
-  const {
-    middleware,
-    attachToServer,
-
-    // RN +68 -- Expo SDK +45
-    messageSocketEndpoint,
-    eventsSocketEndpoint,
-    websocketEndpoints,
-  } = createDevServerMiddleware(projectRoot, {
-    port: metroConfig.server.port,
-    watchFolders: metroConfig.watchFolders,
-  });
-
-  const customEnhanceMiddleware = metroConfig.server.enhanceMiddleware;
-  // @ts-ignore can't mutate readonly config
-  metroConfig.server.enhanceMiddleware = (metroMiddleware: any, server: Metro.Server) => {
-    if (customEnhanceMiddleware) {
-      metroMiddleware = customEnhanceMiddleware(metroMiddleware, server);
-    }
-    return middleware.use(metroMiddleware);
-  };
-
-  const server = await Metro.runServer(metroConfig, {
-    hmrEnabled: true,
-    // @ts-expect-error: Inconsistent `websocketEndpoints` type between metro and @react-native-community/cli-server-api
-    websocketEndpoints,
-  });
-
-  if (attachToServer) {
-    // Expo SDK 44 and lower
-    const { messageSocket, eventsSocket } = attachToServer(server);
-    reporter.reportEvent = eventsSocket.reportEvent;
-
-    return {
-      server,
-      middleware,
-      messageSocket,
-    };
-  } else {
-    // RN +68 -- Expo SDK +45
-    reporter.reportEvent = eventsSocketEndpoint.reportEvent;
-
-    return {
-      server,
-      middleware,
-      messageSocket: messageSocketEndpoint,
-      // debuggerProxyEndpoint,
-    };
-  }
 }
 
 let nextBuildID = 0;

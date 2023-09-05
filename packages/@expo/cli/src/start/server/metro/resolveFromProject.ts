@@ -32,6 +32,9 @@ function importFromProject(projectRoot: string, moduleId: string) {
 export function importMetroFromProject(projectRoot: string): typeof import('metro') {
   return importFromProject(projectRoot, 'metro');
 }
+export function importMetroServerFromProject(projectRoot: string): typeof import('metro').Server {
+  return importFromProject(projectRoot, 'metro/src/Server');
+}
 export function importMetroCreateWebsocketServerFromProject(
   projectRoot: string
 ): typeof import('metro/src/lib/createWebsocketServer').createWebsocketServer {
