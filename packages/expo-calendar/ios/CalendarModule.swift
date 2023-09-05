@@ -114,10 +114,8 @@ public class CalendarModule: Module {
       if !calendarIds.isEmpty {
         let deviceCalendars = eventStore.calendars(for: .event)
 
-        for calendar in deviceCalendars {
-          if calendarIds.contains(calendar.calendarIdentifier) {
+        for calendar in deviceCalendars where calendarIds.contains(calendar.calendarIdentifier) {
             eventCalendars.append(calendar)
-          }
         }
       }
 
@@ -233,31 +231,27 @@ public class CalendarModule: Module {
       let item = getEvent(with: id, startDate: instanceStartDate)
 
       if let item {
-        if item.hasAttendees {
-          return serialize(attendees: item.attendees!)
-        } else {
-          return []
+        if let attendees = item.attendees {
+          return serialize(attendees: attendees)
         }
       }
-      throw CalendarEventNotFoundException(id)
+      return []
     }
 
-    AsyncFunction("getRemindersAsync") { (startDateStr: String, endDateStr: String, calendars: [CalendarRecord], status: String?, promise: Promise) in
+    AsyncFunction("getRemindersAsync") { (startDateStr: String, endDateStr: String, calendarIds: [CalendarRecord], status: String?, promise: Promise) in
       try checkRemindersPermissions()
       var reminderCalendars: [EKCalendar]?
       let startDate = parse(date: startDateStr)
       let endDate = parse(date: endDateStr)
 
-      if !calendars.isEmpty {
+      if !calendarIds.isEmpty {
         reminderCalendars = []
         let deviceCalendars = eventStore.calendars(for: .reminder)
 
-        for calendar in deviceCalendars {
-          if calendars.contains(where: { cal in
-            cal.id == calendar.calendarIdentifier
-          }) {
-            reminderCalendars?.append(calendar)
-          }
+        for calendar in deviceCalendars where calendarIds.contains(where: {
+          $0.id == calendar.calendarIdentifier
+        }) {
+          reminderCalendars?.append(calendar)
         }
       } else {
         promise.reject(CalendarMissingParameterException())
