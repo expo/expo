@@ -113,7 +113,7 @@ public class CalendarModule: Module {
       var eventCalendars = [EKCalendar]()
       if !calendarIds.isEmpty {
         let deviceCalendars = eventStore.calendars(for: .event)
-        
+
         for calendar in deviceCalendars where calendarIds.contains(calendar.calendarIdentifier) {
           eventCalendars.append(calendar)
         }
@@ -298,7 +298,7 @@ public class CalendarModule: Module {
       let currentCalendar = Calendar.current
 
       if let reminderId = details.id {
-        guard let reminderWithId =  eventStore.calendarItem(withIdentifier: reminderId) as? EKReminder else {
+        guard let reminderWithId = eventStore.calendarItem(withIdentifier: reminderId) as? EKReminder else {
           throw ReminderNotFoundException(reminderId)
         }
         reminder = reminderWithId
@@ -392,19 +392,34 @@ public class CalendarModule: Module {
     }
 
     AsyncFunction("getCalendarPermissionsAsync") { (promise: Promise) in
-      appContext?.permissions?.getPermissionUsingRequesterClass(CalendarPermissionsRequester.self, resolve: promise.resolver, reject: promise.legacyRejecter)
+      appContext?.permissions?.getPermissionUsingRequesterClass(
+        CalendarPermissionsRequester.self,
+        resolve: promise.resolver,
+        reject: promise.legacyRejecter
+      )
     }
 
     AsyncFunction("requestCalendarPermissionsAsync") { (promise: Promise) in
-      appContext?.permissions?.askForPermission(usingRequesterClass: CalendarPermissionsRequester.self, resolve: promise.resolver, reject: promise.legacyRejecter)
+      appContext?.permissions?.askForPermission(
+        usingRequesterClass: CalendarPermissionsRequester.self,
+        resolve: promise.resolver,
+        reject: promise.legacyRejecter
+      )
     }
 
     AsyncFunction("getRemindersPermissionsAsync") { (promise: Promise) in
-      appContext?.permissions?.getPermissionUsingRequesterClass(RemindersPermissionRequester.self, resolve: promise.resolver, reject: promise.legacyRejecter)
+      appContext?.permissions?.getPermissionUsingRequesterClass(
+        RemindersPermissionRequester.self,
+        resolve: promise.resolver,
+        reject: promise.legacyRejecter
+      )
     }
 
     AsyncFunction("requestRemindersPermissionsAsync") { (promise: Promise) in
-      appContext?.permissions?.askForPermission(usingRequesterClass: RemindersPermissionRequester.self, resolve: promise.resolver, reject: promise.legacyRejecter)
+      appContext?.permissions?.askForPermission(
+        usingRequesterClass: RemindersPermissionRequester.self,
+        resolve: promise.resolver,
+        reject: promise.legacyRejecter)
     }
   }
 
