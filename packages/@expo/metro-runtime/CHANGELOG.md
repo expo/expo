@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Enable async code loading in production for web.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
