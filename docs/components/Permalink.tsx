@@ -1,6 +1,7 @@
 import { css } from '@emotion/react';
 import { LinkBase } from '@expo/styleguide';
 import * as React from 'react';
+import tippy from 'tippy.js';
 
 import { AdditionalProps } from '~/common/headingManager';
 import PermalinkIcon from '~/components/icons/Permalink';
@@ -75,6 +76,10 @@ const PermalinkBase = ({ component, children, className, ...rest }: BaseProps) =
 
 const Permalink: React.FC<EnhancedProps> = withHeadingManager(
   (props: EnhancedProps & HeadingManagerProps) => {
+    React.useEffect(() => {
+      tippy('#docs-anchor-permalink-' + heading.slug);
+    }, []);
+
     // NOTE(jim): Not the greatest way to generate permalinks.
     // for now I've shortened the length of permalinks.
     const component = props.children as JSX.Element;
@@ -96,7 +101,14 @@ const Permalink: React.FC<EnhancedProps> = withHeadingManager(
         <LinkBase css={STYLES_PERMALINK_LINK} href={'#' + heading.slug} ref={heading.ref}>
           <span css={STYLES_PERMALINK_TARGET} id={heading.slug} />
           <span css={STYLED_PERMALINK_CONTENT}>{children}</span>
-          <span css={STYLES_PERMALINK_ICON}>
+          <span
+            id={'docs-anchor-permalink-' + heading.slug}
+            data-tippy-content="Click to copy anchor link"
+            onClick={() => {
+              const url = window.location.href.replace(/#.*/, '') + '#' + heading.slug;
+              navigator.clipboard?.writeText(url);
+            }}
+            css={STYLES_PERMALINK_ICON}>
             <PermalinkIcon />
           </span>
         </LinkBase>
