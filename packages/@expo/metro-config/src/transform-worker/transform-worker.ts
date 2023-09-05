@@ -44,7 +44,7 @@ export async function transform(
     const environment = options.customTransformOptions?.environment;
 
     if (
-      environment === 'client' &&
+      environment !== 'node' &&
       // TODO: Ensure this works with windows.
       (filename.match(new RegExp(`^app/\\+html(\\.${options.platform})?\\.([tj]sx?|[cm]js)?$`)) ||
         // Strip +api files.

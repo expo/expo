@@ -4,6 +4,7 @@
     "slug": "sandbox",
     "privacy": "public",
     "sdkVersion": "UNVERSIONED",
+    "scheme": "sandbox",
 
     "version": "1.0.0",
     "orientation": "portrait",
@@ -21,6 +22,14 @@
     "ios": {
       "supportsTablet": true
     },
+    "plugins": [
+      [
+        "expo-router",
+        {
+          "origin": "https://uniloop.netlify.app/"
+        }
+      ]
+    ],
     "web": {
       "bundler": "metro",
       "output": "server"

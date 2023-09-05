@@ -50,7 +50,7 @@ async function transform(config, projectRoot, filename, data, options) {
   if (!isCss) {
     var _options$customTransf;
     const environment = (_options$customTransf = options.customTransformOptions) === null || _options$customTransf === void 0 ? void 0 : _options$customTransf.environment;
-    if (environment === 'client' && (
+    if (environment !== 'node' && (
     // TODO: Ensure this works with windows.
     filename.match(new RegExp(`^app/\\+html(\\.${options.platform})?\\.([tj]sx?|[cm]js)?$`)) ||
     // Strip +api files.
