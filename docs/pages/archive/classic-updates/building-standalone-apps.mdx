@@ -10,7 +10,7 @@ Classic Build service allows you to create standalone binaries for the Expo app 
 
 An Apple Developer account is required to build a standalone iOS app, but a Google Play Developer account is not required to build the standalone Android app. To submit to either app store, you need a developer account on that store.
 
-> We recommend that you read the best practices about [Deploying to App Stores](/distribution/app-stores) to ensure your app gets accepted into the Apple and Google stores. Once you've created an amazing app, EAS Build can help you build it and then submit it to the app stores.
+> We recommend that you read the [best practices about app stores](/distribution/app-stores) to ensure your app gets accepted into the Apple and Google stores. Once you've created an amazing app, EAS Build can help you build it and then submit it to the app stores.
 
 ## 1. Install Expo CLI
 
@@ -54,7 +54,7 @@ Here are the required fields that you have to pay attention to when configuring 
 - The `slug` should be a URL safe value. The slug will be included in the URL that your app's JavaScript is published to. For example: `expo.dev/@community/native-component-list`, where `community` is the username and `native-component-list` is the slug.
 - The `ios.buildNumber` and `android.versionCode` distinguish different binaries of your app. Make sure to increment these for each build you upload to the App Store or Google Play Store.
 
-There are other options you can add to **app.json**. For example, some developers like to configure their own build number, linking scheme, etc. We recommend you to go through [Configuration with app.json/app.config.js](/workflow/configuration) for the full specification. At this step, also check [Deploying to App Stores](/distribution/app-stores) documentation. It provides details on what types of metadata are required for the app stores.
+There are other options you can add to **app.json**. For example, some developers like to configure their own build number, linking scheme, etc. We recommend you go through [Configuration with app.json/app.config.js](/workflow/configuration) for the full specification. At this step, also check [App stores best practices](/distribution/app-stores). It provides details on what types of metadata are required for the app stores.
 
 ## 3. Start the build
 
