@@ -16,7 +16,13 @@ class MetroImportError extends Error {
   }
 }
 
-function resolveFromProject(projectRoot: string, moduleId: string) {
+export function importMetroSourceMapComposeSourceMapsFromProject(
+  projectRoot: string
+): typeof import('metro-source-map').composeSourceMaps {
+  return importFromProject(projectRoot, 'metro-source-map/src/composeSourceMaps');
+}
+
+export function resolveFromProject(projectRoot: string, moduleId: string) {
   const resolvedPath = resolveFrom.silent(projectRoot, moduleId);
   if (!resolvedPath) {
     throw new MetroImportError(projectRoot, moduleId);
