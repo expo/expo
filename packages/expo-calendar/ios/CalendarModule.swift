@@ -45,12 +45,11 @@ public class CalendarModule: Module {
 
       if let defaultcalendar {
         return serializeCalendar(calendar: defaultcalendar)
-      } else {
-        throw DefaultCalendarsNotFoundException()
       }
+      throw DefaultCalendarsNotFoundException()
     }
 
-    AsyncFunction("saveCalendarAsync") { (details: Calendar) -> String in
+    AsyncFunction("saveCalendarAsync") { (details: CalendarRecord) -> String in
       try checkCalendarPermissions()
       var calendar: EKCalendar?
 
@@ -79,7 +78,7 @@ public class CalendarModule: Module {
       }
 
       calendar?.title = details.title
-      calendar?.cgColor = EXUtilities.uiColor(details.color)?.cgColor ?? nil
+      calendar?.cgColor = EXUtilities.uiColor(details.color)?.cgColor
 
       if let calendar {
         do {
@@ -88,9 +87,9 @@ public class CalendarModule: Module {
         } catch {
           throw CalendarNotSavedException((details.title, error.localizedDescription))
         }
-      } else {
-        throw CalendarIdNotFoundException(details.id!)
       }
+
+      throw CalendarIdNotFoundException(details.id ?? "")
     }
 
     AsyncFunction("deleteCalendarAsync") { (calendarId: String) in
@@ -150,7 +149,7 @@ public class CalendarModule: Module {
       try checkCalendarPermissions()
       var calendarEvent: EKEvent?
       let span: EKSpan = options.futureEvents == true ? .futureEvents : .thisEvent
-      
+
       if let id = details.id {
         if let instanceStartDate = options.instanceStartDate, let date = parse(date: instanceStartDate) {
           guard let event = getEvent(with: id, startDate: date) else {
@@ -174,11 +173,11 @@ public class CalendarModule: Module {
         calendarEvent = EKEvent(eventStore: eventStore)
         calendarEvent?.calendar = calendar
       }
-  
+
       calendarEvent?.title = details.title
       calendarEvent?.location = details.location
       calendarEvent?.notes = details.notes
- 
+
       if let timeZone = details.timeZone {
         if let tz = TimeZone(identifier: timeZone) {
           calendarEvent?.timeZone = tz
@@ -186,7 +185,7 @@ public class CalendarModule: Module {
           throw InvalidTimeZoneException()
         }
       }
-   
+
       calendarEvent?.alarms = createCalendarEventAlarms(alarms: details.alarms)
       if let rule = details.recurrenceRule {
         let newRule = createRecurrenceRule(rule: rule)
@@ -247,7 +246,7 @@ public class CalendarModule: Module {
       }
     }
 
-    AsyncFunction("getRemindersAsync") { (startDateStr: String, endDateStr: String, calendars: [Calendar], status: String?, promise: Promise) in
+    AsyncFunction("getRemindersAsync") { (startDateStr: String, endDateStr: String, calendars: [CalendarRecord], status: String?, promise: Promise) in
       try checkRemindersPermissions()
       var reminderCalendars: [EKCalendar]?
       let startDate = parse(date: startDateStr)

@@ -31,7 +31,7 @@ func calendarType(type: EKCalendarType) -> String {
 
 func entity(type: EKEntityMask) -> String? {
   let allowsEvents = type.contains(.event)
-   let allowsReminders = type.contains(.reminder)
+  let allowsReminders = type.contains(.reminder)
 
   if allowsEvents && allowsReminders {
     return "both"
@@ -143,22 +143,22 @@ func participant(status: EKParticipantStatus) -> String {
 }
 
 func calendarSupportedAvailabilities(fromMask types: EKCalendarEventAvailabilityMask) -> [String] {
-    var availabilitiesStrings = [String]()
+  var availabilitiesStrings = [String]()
 
-    if types.contains(.busy) {
-        availabilitiesStrings.append("busy")
-    }
-    if types.contains(.free) {
-        availabilitiesStrings.append("free")
-    }
-    if types.contains(.tentative) {
-        availabilitiesStrings.append("tentative")
-    }
-    if types.contains(.unavailable) {
-        availabilitiesStrings.append("unavailable")
-    }
+  if types.contains(.busy) {
+    availabilitiesStrings.append("busy")
+  }
+  if types.contains(.free) {
+    availabilitiesStrings.append("free")
+  }
+  if types.contains(.tentative) {
+    availabilitiesStrings.append("tentative")
+  }
+  if types.contains(.unavailable) {
+    availabilitiesStrings.append("unavailable")
+  }
 
-    return availabilitiesStrings
+  return availabilitiesStrings
 }
 
 func serialize(ekSource: EKSource) -> [String: Any?] {
@@ -311,7 +311,7 @@ func serialize(reminder: EKReminder) -> [String: Any?] {
   formatter.timeZone = timeZone
   formatter.locale = Locale(identifier: "en_US_POSIX")
   formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z"
-  let currentCalendar = NSCalendar.current
+  let currentCalendar = Calendar.current
 
   var serializedReminder = serializeCalendar(item: reminder, with: formatter)
 

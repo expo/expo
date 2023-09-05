@@ -4,7 +4,7 @@ enum CalendarEntity: String, Enumerable {
   case event, reminder
 }
 
-struct Calendar: Record {
+struct CalendarRecord: Record {
   @Field
   var id: String?
   @Field
