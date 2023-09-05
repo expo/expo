@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update E2E test.
+
 ## 0.20.0 — 2023-09-04
 
 ### 🛠 Breaking changes
