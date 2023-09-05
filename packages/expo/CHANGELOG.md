@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Reduce size on web.
+- Reduce size on web. ([#24294](https://github.com/expo/expo/pull/24294) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
