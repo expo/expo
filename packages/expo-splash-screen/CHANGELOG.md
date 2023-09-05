@@ -6,11 +6,19 @@
 
 ### 🎉 New features
 
-- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.22.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Removed 'No native splash screen registered' warning on iOS when opening and reloading the app. ([#24210](https://github.com/expo/expo/pull/24210) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 0.21.1 — 2023-08-02
 

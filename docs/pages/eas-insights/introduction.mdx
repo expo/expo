@@ -7,7 +7,7 @@ description: An introduction to EAS Insights which is a preview service for proj
 
 import { Terminal } from '~/ui/components/Snippet';
 
-> **warning** EAS Insights is in preview and subject to breaking changes.
+> **warning** EAS Insights is in preview and subject to breaking changes. While in preview, it is free to use.
 
 **EAS Insights** is a service that will offer a view into a project's performance, usage, and reach. We are currently offering a preview of Insights that is available to all developers, and we will continue to roll out new features and functionality based on user feedback and suggestions.
 
@@ -27,14 +27,16 @@ Developers can add the `expo-insights` library to their projects and gain more p
 
 To use the `expo-insights`, make sure your app is linked to your EAS project in **app.json** / **app.config.js** by running `eas init`, then install the library.
 
-<Terminal cmd={[
-  '# Install EAS CLI if you have not already',
-  '$ npm i -g eas-cli',
-  '# Initialize your project EAS if you have not already ',
-  '$ eas init',
-  '',
-  '# Install the library',
-  '$ npx expo install expo-insights'
-  ]} />
+<Terminal
+  cmd={[
+    '# Install EAS CLI if you have not already',
+    '$ npm i -g eas-cli',
+    '# Initialize your project EAS if you have not already ',
+    '$ eas init',
+    '',
+    '# Install the library',
+    '$ npx expo install expo-insights',
+  ]}
+/>
 
 After installing the library, [create a new build](/workflow/customizing/). That's it! The module will automatically send events to EAS Insights when the app is launched.

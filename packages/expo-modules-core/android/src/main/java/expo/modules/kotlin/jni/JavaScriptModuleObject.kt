@@ -44,7 +44,7 @@ class JavaScriptModuleObject(
     definition
       .properties
       .forEach { (_, prop) ->
-        prop.attachToJSObject(this)
+        prop.attachToJSObject(appContext, this)
       }
   }
 
@@ -65,7 +65,15 @@ class JavaScriptModuleObject(
    */
   external fun registerAsyncFunction(name: String, takesOwner: Boolean, args: Int, desiredTypes: Array<ExpectedType>, body: JNIAsyncFunctionBody)
 
-  external fun registerProperty(name: String, desiredType: ExpectedType, getter: JNIFunctionBody?, setter: JNIFunctionBody?)
+  external fun registerProperty(
+    name: String,
+    getterTakesOwner: Boolean,
+    getterExpectedType: Array<ExpectedType>,
+    getter: JNIFunctionBody?,
+    setterTakesOwner: Boolean,
+    setterExpectedType: Array<ExpectedType>,
+    setter: JNIFunctionBody?
+  )
 
   external fun registerClass(name: String, classModule: JavaScriptModuleObject, takesOwner: Boolean, args: Int, desiredTypes: Array<ExpectedType>, body: JNIFunctionBody)
 
