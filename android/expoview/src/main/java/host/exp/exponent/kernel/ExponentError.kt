@@ -8,6 +8,7 @@ import java.util.*
 
 class ExponentError(
   val errorMessage: ExponentErrorMessage,
+  val errorHeader: String?,
   val stack: Array<Bundle>,
   val exceptionId: Int,
   val isFatal: Boolean
@@ -17,6 +18,7 @@ class ExponentError(
   fun toJSONObject(): JSONObject? {
     return try {
       JSONObject().apply {
+        put("errorHeader", errorHeader)
         put("errorMessage", errorMessage.developerErrorMessage())
         put("exceptionId", exceptionId)
         put("isFatal", isFatal)

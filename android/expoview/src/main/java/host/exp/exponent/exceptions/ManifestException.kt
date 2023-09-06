@@ -10,6 +10,18 @@ import java.lang.Exception
 class ManifestException : ExponentException {
   private val manifestUrl: String
   private var errorJSON: JSONObject? = null
+  val errorHeader: String?
+    get() = errorJSON?.let {
+      try {
+        when (it.getString("errorCode")) {
+          "EXPERIENCE_SDK_VERSION_OUTDATED" -> "Project is incompatible with this version of Expo Go"
+          "EXPERIENCE_SDK_VERSION_TOO_NEW" -> "Project is incompatible with this version of Expo Go"
+          else -> null
+        }
+      } catch (e: JSONException) {
+        null
+      }
+    }
 
   constructor(originalException: Exception?, manifestUrl: String) : super(originalException) {
     this.manifestUrl = manifestUrl
@@ -48,12 +60,23 @@ class ManifestException : ExponentException {
               "EXPERIENCE_SDK_VERSION_OUTDATED" -> {
                 val metadata = errorJSON!!.getJSONObject("metadata")
                 val availableSDKVersions = metadata.getJSONArray("availableSDKVersions")
-                val sdkVersionRequired = availableSDKVersions.getString(0)
+                val sdkVersionRequired = availableSDKVersions.getString(0).let {
+                  it.substring(0, it.indexOf('.'))
+                }
+                val supportedSdks = Constants.SDK_VERSIONS_LIST.map {
+                  it.substring(0, it.indexOf('.')).toInt()
+                }.sorted().joinToString(", ")
+
                 formattedMessage =
-                  "This project uses SDK " + sdkVersionRequired + " , but this version of Expo Go only supports the following SDKs: " + Constants.SDK_VERSIONS_LIST.joinToString() + ". To load the project, it must be updated to a supported SDK version or an older version of Expo Go must be used."
+                  "This project was set to use SDK $sdkVersionRequired, but this version of Expo Go supports only SDKs $supportedSdks.<br><br>" +
+                    "To successfully open this project you can:<br>" +
+                    "• Update it to a version that's compatible with your Expo Go<br>" +
+                    "• Install an older version of Expo Go that supports the project's SDK version.<br><br>" +
+                    "If you are unsure how to update the project or install a suitable version of Expo Go, check out the <a href='https://docs.expo.dev/get-started/expo-go/#sdk-versions'>SDK Versions Guide</a>."
               }
               "NO_SDK_VERSION_SPECIFIED" -> {
-                formattedMessage = "Incompatible SDK version or no SDK version specified. This version of Expo Go only supports the following SDKs (runtimes): " + Constants.SDK_VERSIONS_LIST.joinToString() + ". A development build must be used to load other runtimes."
+                formattedMessage =
+                  "Incompatible SDK version or no SDK version specified. This version of Expo Go only supports the following SDKs (runtimes): " + Constants.SDK_VERSIONS_LIST.joinToString() + ". A development build must be used to load other runtimes."
               }
               "EXPERIENCE_SDK_VERSION_TOO_NEW" ->
                 formattedMessage =
