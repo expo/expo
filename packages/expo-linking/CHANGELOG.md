@@ -4,11 +4,17 @@
 
 ### 🛠 Breaking changes
 
+- Remove deprecated `makeUrl` function.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+- Fix parsing web URLs with `+` symbols in the pathname.
+
 ### 💡 Others
+
+- Reduce bundle size on web.
 
 ## 6.0.0 — 2023-08-02
 
