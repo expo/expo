@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Fix build. ([#24309](https://github.com/expo/expo/pull/24309) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 3.1.0 — 2023-09-04
 
 - Fix false positive redirect deprecation since version 2.0.1 when using `<Screen />`. ([#23932](https://github.com/expo/expo/pull/23932) by [@sync](https://github.com/sync))
