@@ -5,7 +5,7 @@ import net from 'net';
 import { TLSSocket } from 'tls';
 import { URL } from 'url';
 
-import { openJsInspector, queryInspectorAppAsync } from '../JsInspector';
+import { openJsInspector, queryInspectorAppAsync } from './JsInspector';
 
 export default function createJsInspectorMiddleware(): NextHandleFunction {
   return async function (req: IncomingMessage, res: ServerResponse, next: (err?: Error) => void) {

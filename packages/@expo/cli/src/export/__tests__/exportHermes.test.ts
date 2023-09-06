@@ -1,12 +1,14 @@
 import type { ExpoConfig } from '@expo/config';
-import path from 'path';
+import * as path from 'node:path';
 
 import {
   getHermesBytecodeBundleVersionAsync,
   isEnableHermesManaged,
   isHermesBytecodeBundleAsync,
   parseGradleProperties,
-} from '../HermesBundler';
+} from '../exportHermes';
+
+jest.unmock('fs');
 
 describe('parseGradleProperties', () => {
   it('should return array of key-value tuple', () => {
@@ -111,14 +113,14 @@ describe('maybeThrowFromInconsistentEngineAsync - common', () => {
   // we dynamically require `maybeThrowFromInconsistentEngineAsync`,
   // so that fs-extra inside HermesBundler could honor our mock logic.
   let fs = require('fs-extra');
-  let { maybeThrowFromInconsistentEngineAsync } = require('../HermesBundler');
+  let { maybeThrowFromInconsistentEngineAsync } = require('../exportHermes');
 
   beforeAll(() => {
     jest.resetModules();
     jest.doMock('fs-extra');
     fs = require('fs-extra');
     maybeThrowFromInconsistentEngineAsync =
-      require('../HermesBundler').maybeThrowFromInconsistentEngineAsync;
+      require('../exportHermes').maybeThrowFromInconsistentEngineAsync;
   });
   afterAll(() => {
     jest.dontMock('fs-extra');
@@ -144,14 +146,14 @@ describe('maybeThrowFromInconsistentEngineAsync - android', () => {
   // we dynamically require `maybeThrowFromInconsistentEngineAsync`,
   // so that fs-extra inside HermesBundler could honor our mock logic.
   let fs = require('fs-extra');
-  let { maybeThrowFromInconsistentEngineAsync } = require('../HermesBundler');
+  let { maybeThrowFromInconsistentEngineAsync } = require('../exportHermes');
 
   beforeAll(() => {
     jest.resetModules();
     jest.doMock('fs-extra');
     fs = require('fs-extra');
     maybeThrowFromInconsistentEngineAsync =
-      require('../HermesBundler').maybeThrowFromInconsistentEngineAsync;
+      require('../exportHermes').maybeThrowFromInconsistentEngineAsync;
   });
   afterAll(() => {
     jest.dontMock('fs-extra');
@@ -228,7 +230,7 @@ describe('maybeThrowFromInconsistentEngineAsync - ios', () => {
   // we dynamically require `maybeThrowFromInconsistentEngineAsync`,
   // so that fs-extra inside HermesBundler could honor our mock logic.
   let fs = require('fs-extra');
-  let { maybeThrowFromInconsistentEngineAsync } = require('../HermesBundler');
+  let { maybeThrowFromInconsistentEngineAsync } = require('../exportHermes');
 
   function addMockedFiles(fileContentMap: Record<string, string>) {
     // add mock for `fs.existsSync`
@@ -254,7 +256,7 @@ describe('maybeThrowFromInconsistentEngineAsync - ios', () => {
     jest.doMock('fs-extra');
     fs = require('fs-extra');
     maybeThrowFromInconsistentEngineAsync =
-      require('../HermesBundler').maybeThrowFromInconsistentEngineAsync;
+      require('../exportHermes').maybeThrowFromInconsistentEngineAsync;
   });
   afterAll(() => {
     jest.dontMock('fs-extra');

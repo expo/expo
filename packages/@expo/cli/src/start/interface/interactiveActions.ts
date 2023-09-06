@@ -1,4 +1,3 @@
-import { openJsInspector, queryAllInspectorAppsAsync } from '@expo/dev-server';
 import assert from 'assert';
 import chalk from 'chalk';
 
@@ -13,6 +12,10 @@ import {
   addReactDevToolsReloadListener,
   startReactDevToolsProxyAsync,
 } from '../server/ReactDevToolsProxy';
+import {
+  openJsInspector,
+  queryAllInspectorAppsAsync,
+} from '../server/middleware/inspector/JsInspector';
 
 const debug = require('debug')('expo:start:interface:interactiveActions') as typeof console.log;
 

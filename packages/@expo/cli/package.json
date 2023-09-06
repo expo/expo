@@ -41,7 +41,6 @@
     "@expo/code-signing-certificates": "0.0.5",
     "@expo/config": "~8.3.0",
     "@expo/config-plugins": "~7.4.0",
-    "@expo/dev-server": "0.7.0",
     "@expo/devcert": "^1.0.0",
     "@expo/env": "~0.1.0",
     "@expo/json-file": "^8.2.37",
@@ -100,7 +99,12 @@
     "text-table": "^0.2.0",
     "url-join": "4.0.0",
     "wrap-ansi": "^7.0.0",
-    "ws": "^8.12.1"
+    "ws": "^8.12.1",
+    "connect": "^3.7.0",
+    "is-docker": "^2.0.0",
+    "is-wsl": "^2.1.1",
+    "open": "^8.3.0",
+    "temp-dir": "^2.0.0"
   },
   "taskr": {
     "requires": [
@@ -121,6 +125,7 @@
     "@tsconfig/node14": "^1.0.1",
     "@types/accepts": "^1.3.5",
     "@types/cacache": "^15.0.1",
+    "@types/connect": "^3.4.33",
     "@types/debug": "^4.1.7",
     "@types/execa": "^0.9.0",
     "@types/form-data": "^2.2.0",

@@ -6,9 +6,48 @@ import path from 'path';
 import process from 'process';
 
 import {
-  importHermesCommandFromProject,
   importMetroSourceMapComposeSourceMapsFromProject,
-} from './metro/importMetroFromProject';
+  resolveFromProject,
+} from '../start/server/metro/resolveFromProject';
+
+export function importHermesCommandFromProject(projectRoot: string): string {
+  const platformExecutable = getHermesCommandPlatform();
+  const hermescLocations = [
+    // Override hermesc dir by environment variables
+    process.env['REACT_NATIVE_OVERRIDE_HERMES_DIR']
+      ? `${process.env['REACT_NATIVE_OVERRIDE_HERMES_DIR']}/build/bin/hermesc`
+      : '',
+
+    // Building hermes from source
+    'react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc',
+
+    // Prebuilt hermesc in official react-native 0.69+
+    `react-native/sdks/hermesc/${platformExecutable}`,
+
+    // Legacy hermes-engine package
+    `hermes-engine/${platformExecutable}`,
+  ];
+
+  for (const location of hermescLocations) {
+    try {
+      return resolveFromProject(projectRoot, location);
+    } catch {}
+  }
+  throw new Error('Cannot find the hermesc executable.');
+}
+
+function getHermesCommandPlatform(): string {
+  switch (os.platform()) {
+    case 'darwin':
+      return 'osx-bin/hermesc';
+    case 'linux':
+      return 'linux64-bin/hermesc';
+    case 'win32':
+      return 'win64-bin/hermesc.exe';
+    default:
+      throw new Error(`Unsupported host platform for Hermes compiler: ${os.platform()}`);
+  }
+}
 
 export function isEnableHermesManaged(expoConfig: ExpoConfig, platform: Platform): boolean {
   switch (platform) {
