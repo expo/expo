@@ -763,7 +763,7 @@ SPEC CHECKSUMS:
   ExpoModulesCore: 51cb2e7ab4c8da14be3f40b66d54c1781002e99d
   ExpoModulesTestCore: 09dadbc11c1aed4d656bf7558a20a358c19cdf68
   EXStructuredHeaders: 324cc3130571d2696357fafd8be7fd9a0b5fdf6e
-  EXUpdates: cb91ace49039962d915748c3371355b9ffca0dde
+  EXUpdates: 061b9fa7ded88188c01375579baf6d81298c3929
   EXUpdatesInterface: 82ed48d417cdcd376c12ca1c2ce390d35500bed6
   FBLazyVector: 5d4a3b7f411219a45a6d952f77d2c0a6c9989da5
   FBReactNativeSpec: 7762714de10ac425d891b9aabee21dbfeb083b7e
