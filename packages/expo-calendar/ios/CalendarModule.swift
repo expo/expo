@@ -52,10 +52,10 @@ public class CalendarModule: Module {
     AsyncFunction("saveCalendarAsync") { (details: CalendarRecord) -> String in
       try checkCalendarPermissions()
       let calendar = try getCalendar(from: details)
-    
+
       calendar.title = details.title
       calendar.cgColor = EXUtilities.uiColor(details.color)?.cgColor
-        
+
       try eventStore.saveCalendar(calendar, commit: true)
       return calendar.calendarIdentifier
     }
@@ -70,9 +70,9 @@ public class CalendarModule: Module {
       try eventStore.removeCalendar(calendar, commit: true)
     }
 
-    AsyncFunction("getEventsAsync") { (startDateStr:  Either<String, Double>, endDateStr: Either<String, Double>, calendarIds: [String]) -> [[String: Any?]] in
+    AsyncFunction("getEventsAsync") { (startDateStr: Either<String, Double>, endDateStr: Either<String, Double>, calendarIds: [String]) -> [[String: Any?]] in
       try checkCalendarPermissions()
-      
+
       guard let startDate = parse(date: startDateStr),
         let endDate = parse(date: endDateStr) else {
         throw InvalidDateFormatException()
@@ -88,7 +88,7 @@ public class CalendarModule: Module {
       }
 
       let predicate = eventStore.predicateForEvents(withStart: startDate, end: endDate, calendars: eventCalendars)
-      
+
       let calendarEvents = eventStore.events(matching: predicate).sorted {
         $0.startDate.compare($1.startDate) == .orderedAscending
       }
@@ -112,7 +112,7 @@ public class CalendarModule: Module {
       try checkCalendarPermissions()
       let calendarEvent = try getCalendar(from: event)
       let span: EKSpan = options.futureEvents == true ? .futureEvents : .thisEvent
-      
+
       calendarEvent.title = event.title
       calendarEvent.location = event.location
       calendarEvent.notes = event.notes
@@ -141,14 +141,14 @@ public class CalendarModule: Module {
       if let startDate = event.startDate {
         calendarEvent.startDate = parse(date: startDate)
       }
-      
+
       if let endDate = event.startDate {
         calendarEvent.endDate = parse(date: endDate)
       }
 
       calendarEvent.isAllDay = event.allDay
       calendarEvent.availability = getAvailability(availability: event.availability)
-      
+
       try eventStore.save(calendarEvent, span: span, commit: true)
       return calendarEvent.calendarItemIdentifier
     }
@@ -181,7 +181,7 @@ public class CalendarModule: Module {
       guard let item, let attendees = item.attendees else {
         return []
       }
-      
+
       return serialize(attendees: attendees)
     }
 
@@ -190,17 +190,17 @@ public class CalendarModule: Module {
       var reminderCalendars = [EKCalendar]()
       let startDate = parse(date: startDateStr)
       let endDate = parse(date: endDateStr)
-      
+
       if calendarIds.isEmpty {
         promise.reject(MissingParameterException())
         return
       }
-      
+
       let deviceCalendars = eventStore.calendars(for: .reminder)
       for calendar in deviceCalendars where calendarIds.contains(calendar.calendarIdentifier) {
         reminderCalendars.append(calendar)
       }
-    
+
       let predicate = try createPredicate(for: reminderCalendars, start: startDate, end: endDate, status: status)
       eventStore.fetchReminders(matching: predicate) { [promise] reminders in
         if let reminders {
@@ -232,7 +232,7 @@ public class CalendarModule: Module {
       reminder.title = details.title
       reminder.location = details.location
       reminder.notes = details.notes
-      
+
       if let timeZone = details.timeZone {
         let eventTimeZone = TimeZone(identifier: timeZone)
         if let eventTimeZone {
@@ -258,7 +258,7 @@ public class CalendarModule: Module {
       }
 
       let dateComponents: Set<Calendar.Component> = [.year, .month, .day, .hour, .minute, .second]
-      
+
       if let startDate {
         let startDateComponents = currentCalendar.dateComponents(
           dateComponents,
@@ -396,7 +396,7 @@ public class CalendarModule: Module {
     eventStore.reset()
     permittedEntities.insert(entity == .event ? .event : .reminder)
   }
-  
+
   private func getReminder(from details: Reminder) throws -> EKReminder {
     if let reminderId = details.id {
       guard let reminderWithId = eventStore.calendarItem(withIdentifier: reminderId) as? EKReminder else {
@@ -406,7 +406,7 @@ public class CalendarModule: Module {
     } else {
       let reminder = EKReminder(eventStore: eventStore)
       reminder.calendar = eventStore.defaultCalendarForNewReminders()
-      
+
       if let calendarId = details.calendarId {
         let calendar = eventStore.calendar(withIdentifier: calendarId)
         if let calendar {
@@ -421,7 +421,7 @@ public class CalendarModule: Module {
       return reminder
     }
   }
-  
+
   private func getCalendar(from record: CalendarRecord) throws -> EKCalendar {
     if let id = record.id {
       guard let calendar = eventStore.calendar(withIdentifier: id) else {
@@ -449,11 +449,11 @@ public class CalendarModule: Module {
         eventStore.defaultCalendarForNewEvents?.source :
         eventStore.defaultCalendarForNewReminders()?.source
       }
-      
+
       return calendar
     }
   }
-  
+
   private func getCalendar(from event: Event) throws -> EKEvent {
     if let id = event.id {
       guard let event = getEvent(with: id, startDate: parse(date: event.instanceStartDate)) else {
@@ -475,7 +475,7 @@ public class CalendarModule: Module {
 
       let calendarEvent = EKEvent(eventStore: eventStore)
       calendarEvent.calendar = calendar
-      
+
       return calendarEvent
     }
   }
@@ -484,15 +484,15 @@ public class CalendarModule: Module {
     guard let firstEvent = eventStore.calendarItem(withIdentifier: id) as? EKEvent else {
       return nil
     }
-    
+
     guard let startDate else {
       return firstEvent
     }
-  
+
     guard let firstEventStart = firstEvent.startDate, firstEventStart.compare(startDate) == .orderedSame else {
       return firstEvent
     }
-    
+
     let endDate = startDate.addingTimeInterval(2_592_000)
     let events = eventStore.events(
       matching: eventStore.predicateForEvents(withStart: startDate, end: endDate, calendars: [firstEvent.calendar])
@@ -508,7 +508,7 @@ public class CalendarModule: Module {
     }
     return nil
   }
-  
+
   private func createPredicate(for calendars: [EKCalendar], start startDate: Date?, end endDate: Date?, status: String?) throws -> NSPredicate {
     guard let status else {
       return eventStore.predicateForReminders(in: calendars)

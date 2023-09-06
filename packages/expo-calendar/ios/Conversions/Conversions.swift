@@ -41,7 +41,7 @@ func calendarSupportedAvailabilities(fromMask types: EKCalendarEventAvailability
   if types.contains(.unavailable) {
     availabilitiesStrings.append("unavailable")
   }
-  
+
   return availabilitiesStrings
 }
 

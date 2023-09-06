@@ -13,15 +13,15 @@ func parse(date: Either<String, Double>?) -> Date? {
   guard let date else {
     return nil
   }
-  
+
   if let date: Double = date.get() {
     return Date(timeIntervalSince1970: TimeInterval(date / 1000.0))
   }
-  
+
   if let date: String = date.get() {
     return formatter.date(from: date)
   }
-  
+
   return nil
 }
 
@@ -31,7 +31,6 @@ func parse(date: String?) -> Date? {
   }
   return formatter.date(from: date)
 }
-
 
 func createRecurrenceRule(rule: RecurrenceRule) -> EKRecurrenceRule? {
   guard ["daily", "weekly", "monthly", "yearly"].contains(rule.frequency) else {
