@@ -41,6 +41,7 @@ export interface ProjectConfig {
      * Returns null if no dynamic config file exists.
      */
     dynamicConfigObjectType: string | null;
+    hasUnusedStaticConfig: boolean;
 }
 export type AppJSONConfig = {
     expo: ExpoConfig;

@@ -36,6 +36,15 @@ export function getDynamicConfig(configPath: string, request: ConfigContext): Dy
 export function getStaticConfig(configPath: string): AppJSONConfig | ExpoConfig {
   const config = JsonFile.read(configPath, { json5: true });
   if (config) {
+    // We check _hasBaseStaticConfig later when reading the dynamic config to see if
+    // there is a static config that is not inherited from the dynamic config.
+    if (config.expo) {
+      // @ts-ignore
+      config.expo._hasBaseStaticConfig = true;
+    } else {
+      // @ts-ignore
+      config._hasBaseStaticConfig = true;
+    }
     return config as any;
   }
   throw new ConfigError(`Failed to read config at: ${configPath}`, 'INVALID_CONFIG');

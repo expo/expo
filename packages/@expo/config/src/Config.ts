@@ -112,6 +112,8 @@ export function getConfig(projectRoot: string, options: GetConfigOptions = {}): 
       rootConfig,
       dynamicConfigPath: paths.dynamicConfigPath,
       staticConfigPath: paths.staticConfigPath,
+      hasUnusedStaticConfig:
+        !!paths.staticConfigPath && !!paths.dynamicConfigPath && !config.expo._hasBaseStaticConfig,
     };
 
     if (options.isModdedConfig) {

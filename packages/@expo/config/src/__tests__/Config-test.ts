@@ -206,3 +206,107 @@ describe('readConfigJson', () => {
     });
   });
 });
+
+describe('getConfig with a static config only', () => {
+  beforeAll(() => {
+    const packageJson = JSON.stringify(
+      {
+        name: 'testing123',
+        version: '0.1.0',
+        description: 'fake description',
+        main: 'index.js',
+      },
+      null,
+      2
+    );
+
+    const appJson = {
+      name: 'testing 123',
+      version: '0.1.0',
+      slug: 'testing-123',
+      sdkVersion: '100.0.0',
+    };
+
+    const expoPackageJson = JSON.stringify({
+      name: 'expo',
+      version: '650.x.x',
+    });
+
+    vol.fromJSON({
+      '/static-config/package.json': packageJson,
+      '/static-config/app.json': JSON.stringify({ expo: appJson }),
+      '/static-config/node_modules/expo/package.json': expoPackageJson,
+    });
+  });
+  afterAll(() => vol.reset());
+
+  it('sets hasUnusedStaticConfig to false', () => {
+    const { hasUnusedStaticConfig } = getConfig('/static-config');
+    expect(hasUnusedStaticConfig).toBe(false);
+  });
+});
+
+describe('getConfig with a dynamic and static config', () => {
+  beforeAll(() => {
+    const packageJson = JSON.stringify(
+      {
+        name: 'testing123',
+        version: '0.1.0',
+        description: 'fake description',
+        main: 'index.js',
+      },
+      null,
+      2
+    );
+
+    const appJson = {
+      name: 'testing 123',
+      version: '0.1.0',
+      slug: 'testing-123',
+      sdkVersion: '100.0.0',
+    };
+
+    const expoPackageJson = JSON.stringify({
+      name: 'expo',
+      version: '650.x.x',
+    });
+
+    const appConfigJsThatInherits = `
+      module.exports = ({ config }) => {
+        return {
+          ...config,
+        };
+      };
+    `;
+
+    const appConfigJsThatDoesntInherit = `
+      module.exports = ({ config }) => {
+        return {
+          ...config,
+        };
+      };
+    `;
+
+    vol.fromJSON({
+      '/dynamic-inherits/package.json': packageJson,
+      '/dynamic-inherits/app.json': JSON.stringify({ expo: appJson }),
+      '/dynamic-inherits/app.config.js': appConfigJsThatInherits,
+      '/dynamic-inherits/node_modules/expo/package.json': expoPackageJson,
+      '/dynamic-no-inherits/package.json': packageJson,
+      '/dynamic-no-inherits/app.json': JSON.stringify({ expo: appJson }),
+      '/dynamic-no-inherits/app.config.js': appConfigJsThatDoesntInherit,
+      '/dynamic-no-inherits/node_modules/expo/package.json': expoPackageJson,
+    });
+  });
+  afterAll(() => vol.reset());
+
+  it('sets hasUnusedStaticConfig to false when inheriting from static', () => {
+    const { hasUnusedStaticConfig } = getConfig('/dynamic-inherits');
+    expect(hasUnusedStaticConfig).toBe(false);
+  });
+
+  it('sets hasUnusedStaticConfig to true when not inheriting from static', () => {
+    const { hasUnusedStaticConfig } = getConfig('/dynamic-no-inherits');
+    expect(hasUnusedStaticConfig).toBe(false);
+  });
+});
