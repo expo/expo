@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Forward the project root path to `getRuntimeVersionAsync` and `getRuntimeVersionNullableAsync`. ([#24126](https://github.com/expo/expo/pull/24126) by [@mccraveiro](https://github.com/mccraveiro))
+
 ## 0.12.0 — 2023-09-04
 
 ### 🛠 Breaking changes
