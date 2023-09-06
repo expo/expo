@@ -61,7 +61,7 @@ class LoaderTask(
       ROLL_BACK_TO_EMBEDDED
     }
 
-    class NoUpdateAvailable : RemoteCheckResult(Status.NO_UPDATE_AVAILABLE)
+    class NoUpdateAvailable(val message: String?) : RemoteCheckResult(Status.NO_UPDATE_AVAILABLE)
     class UpdateAvailable(val manifest: JSONObject) : RemoteCheckResult(Status.UPDATE_AVAILABLE)
     class RollBackToEmbedded(val commitTime: Date) : RemoteCheckResult(Status.ROLL_BACK_TO_EMBEDDED)
   }
@@ -341,7 +341,7 @@ class LoaderTask(
                 }
                 is UpdateDirective.NoUpdateAvailableUpdateDirective -> {
                   isUpToDate = true
-                  callback.onRemoteCheckForUpdateFinished(RemoteCheckResult.NoUpdateAvailable())
+                  callback.onRemoteCheckForUpdateFinished(RemoteCheckResult.NoUpdateAvailable(null))
                   Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
                 }
               }
@@ -350,7 +350,7 @@ class LoaderTask(
             val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
             if (updateManifest == null) {
               isUpToDate = true
-              callback.onRemoteCheckForUpdateFinished(RemoteCheckResult.NoUpdateAvailable())
+              callback.onRemoteCheckForUpdateFinished(RemoteCheckResult.NoUpdateAvailable(null))
               return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
             }
 
@@ -367,7 +367,11 @@ class LoaderTask(
               Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
             } else {
               isUpToDate = true
-              callback.onRemoteCheckForUpdateFinished(RemoteCheckResult.NoUpdateAvailable())
+              callback.onRemoteCheckForUpdateFinished(
+                RemoteCheckResult.NoUpdateAvailable(
+                  "An update manifest was received from the update server, but the update is not launchable, or does not pass the configured selection policy"
+                )
+              )
               Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
             }
           }

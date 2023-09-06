@@ -199,13 +199,23 @@ class UpdatesModule(
               if (updateDirective != null) {
                 if (updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) {
                   if (!updatesServiceLocal.configuration.hasEmbeddedUpdate) {
-                    promise.resolveWithCheckForUpdateAsyncResult(CheckForUpdateAsyncResult.NoUpdateAvailable(), updatesServiceLocal)
+                    promise.resolveWithCheckForUpdateAsyncResult(
+                      CheckForUpdateAsyncResult.NoUpdateAvailable(
+                        "A rollback directive was received from the update server, but this app is not configured to have an embedded update."
+                      ),
+                      updatesServiceLocal
+                    )
                     return
                   }
 
                   val embeddedUpdate = EmbeddedManifest.get(context, updatesServiceLocal.configuration)!!.updateEntity
                   if (embeddedUpdate == null) {
-                    promise.resolveWithCheckForUpdateAsyncResult(CheckForUpdateAsyncResult.NoUpdateAvailable(), updatesServiceLocal)
+                    promise.resolveWithCheckForUpdateAsyncResult(
+                      CheckForUpdateAsyncResult.NoUpdateAvailable(
+                        "A rollback directive was received from the update server, but no embedded manifest was found."
+                      ),
+                      updatesServiceLocal
+                    )
                     return
                   }
 
@@ -216,7 +226,12 @@ class UpdatesModule(
                       updateResponse.responseHeaderData?.manifestFilters
                     )
                   ) {
-                    promise.resolveWithCheckForUpdateAsyncResult(CheckForUpdateAsyncResult.NoUpdateAvailable(), updatesServiceLocal)
+                    promise.resolveWithCheckForUpdateAsyncResult(
+                      CheckForUpdateAsyncResult.NoUpdateAvailable(
+                        "A rollback directive was received from the update server, but it did not meet the app's selection policy for rollbacks."
+                      ),
+                      updatesServiceLocal
+                    )
                     return
                   }
 
@@ -226,7 +241,7 @@ class UpdatesModule(
               }
 
               if (updateManifest == null) {
-                promise.resolveWithCheckForUpdateAsyncResult(CheckForUpdateAsyncResult.NoUpdateAvailable(), updatesServiceLocal)
+                promise.resolveWithCheckForUpdateAsyncResult(CheckForUpdateAsyncResult.NoUpdateAvailable(null), updatesServiceLocal)
                 return
               }
 
@@ -264,7 +279,12 @@ class UpdatesModule(
               if (shouldLaunch) {
                 promise.resolveWithCheckForUpdateAsyncResult(CheckForUpdateAsyncResult.UpdateAvailable(updateManifest), updatesServiceLocal)
               } else {
-                promise.resolveWithCheckForUpdateAsyncResult(CheckForUpdateAsyncResult.NoUpdateAvailable(), updatesServiceLocal)
+                promise.resolveWithCheckForUpdateAsyncResult(
+                  CheckForUpdateAsyncResult.NoUpdateAvailable(
+                    "An update manifest was received from the update server, but the update has been previously launched on this device and never successfully launched."
+                  ),
+                  updatesServiceLocal
+                )
               }
             }
           }
@@ -285,7 +305,7 @@ class UpdatesModule(
       ROLL_BACK_TO_EMBEDDED
     }
 
-    class NoUpdateAvailable : CheckForUpdateAsyncResult(Status.NO_UPDATE_AVAILABLE)
+    class NoUpdateAvailable(val message: String?) : CheckForUpdateAsyncResult(Status.NO_UPDATE_AVAILABLE)
     class UpdateAvailable(val updateManifest: UpdateManifest) : CheckForUpdateAsyncResult(Status.UPDATE_AVAILABLE)
     class RollBackToEmbedded(val commitTime: Date) : CheckForUpdateAsyncResult(Status.ROLL_BACK_TO_EMBEDDED)
   }
@@ -297,6 +317,9 @@ class UpdatesModule(
           is CheckForUpdateAsyncResult.NoUpdateAvailable -> {
             putBoolean("isRollBackToEmbedded", false)
             putBoolean("isAvailable", false)
+            if (checkForUpdateAsyncResult.message != null) {
+              putString("message", checkForUpdateAsyncResult.message)
+            }
           }
 
           is CheckForUpdateAsyncResult.RollBackToEmbedded -> {
@@ -314,7 +337,7 @@ class UpdatesModule(
     )
     updatesServiceLocal.stateMachine?.processEvent(
       when (checkForUpdateAsyncResult) {
-        is CheckForUpdateAsyncResult.NoUpdateAvailable -> UpdatesStateEvent.CheckCompleteUnavailable()
+        is CheckForUpdateAsyncResult.NoUpdateAvailable -> UpdatesStateEvent.CheckCompleteUnavailable(checkForUpdateAsyncResult.message)
         is CheckForUpdateAsyncResult.RollBackToEmbedded -> UpdatesStateEvent.CheckCompleteWithRollback(checkForUpdateAsyncResult.commitTime)
         is CheckForUpdateAsyncResult.UpdateAvailable -> UpdatesStateEvent.CheckCompleteWithUpdate(
           checkForUpdateAsyncResult.updateManifest.manifest.getRawJson()

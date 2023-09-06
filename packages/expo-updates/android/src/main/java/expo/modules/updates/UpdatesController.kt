@@ -287,7 +287,7 @@ class UpdatesController private constructor(
 
         override fun onRemoteCheckForUpdateFinished(result: LoaderTask.RemoteCheckResult) {
           val event = when (result) {
-            is LoaderTask.RemoteCheckResult.NoUpdateAvailable -> UpdatesStateEvent.CheckCompleteUnavailable()
+            is LoaderTask.RemoteCheckResult.NoUpdateAvailable -> UpdatesStateEvent.CheckCompleteUnavailable(result.message)
             is LoaderTask.RemoteCheckResult.UpdateAvailable -> UpdatesStateEvent.CheckCompleteWithUpdate(result.manifest)
             is LoaderTask.RemoteCheckResult.RollBackToEmbedded -> UpdatesStateEvent.CheckCompleteWithRollback(result.commitTime)
           }
