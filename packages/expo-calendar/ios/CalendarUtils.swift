@@ -59,7 +59,7 @@ func createRecurrenceRule(rule: RecurrenceRule) -> EKRecurrenceRule? {
     NSNumber(value: $0)
   }
   // swiftlint:enable legacy_objc_type
-  
+
   var recurrenceEnd: EKRecurrenceEnd?
   var recurrenceInterval = 1
 
