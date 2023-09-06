@@ -2,11 +2,11 @@ import type { IncomingMessage, ServerResponse } from 'http';
 import type { Socket } from 'net';
 import { URL } from 'url';
 
-import * as JsInspector from '../../JsInspector';
-import { METRO_INSPECTOR_RESPONSE_FIXTURE } from '../../__tests__/fixtures/metroInspectorResponse';
+import { METRO_INSPECTOR_RESPONSE_FIXTURE } from './fixtures/metroInspectorResponse';
+import * as JsInspector from '../JsInspector';
 import createJsInspectorMiddleware from '../createJsInspectorMiddleware';
 
-jest.mock('../../JsInspector');
+jest.mock('../JsInspector');
 
 describe('createJsInspectorMiddleware', () => {
   it('should return specific app entity for GET request with given applicationId', async () => {

@@ -1,4 +1,3 @@
-import { MessageSocket } from '@expo/dev-server';
 import assert from 'assert';
 import resolveFrom from 'resolve-from';
 
@@ -19,6 +18,10 @@ import {
 } from '../platforms/PlatformManager';
 
 const debug = require('debug')('expo:start:server:devServer') as typeof console.log;
+
+export type MessageSocket = {
+  broadcast: (method: string, params?: Record<string, any> | undefined) => void;
+};
 
 export type ServerLike = {
   close(callback?: (err?: Error) => void): void;
