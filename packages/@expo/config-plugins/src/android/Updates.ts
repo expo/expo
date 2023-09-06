@@ -1,7 +1,7 @@
-import type { ExpoConfig } from '@expo/config';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
+import { Resources } from '.';
 import {
   addMetaDataItemToMainApplication,
   AndroidManifest,
@@ -12,7 +12,7 @@ import {
 } from './Manifest';
 import { buildResourceItem, ResourceXML } from './Resources';
 import { removeStringItem, setStringItem } from './Strings';
-import { ConfigPlugin } from '../Plugin.types';
+import { ConfigPlugin, ExportedConfigWithProps } from '../Plugin.types';
 import { createStringsXmlPlugin, withAndroidManifest } from '../plugins/android-plugins';
 import { withPlugins } from '../plugins/withPlugins';
 import {
@@ -71,14 +71,11 @@ const withRuntimeVersionResource = createStringsXmlPlugin(
 );
 
 export async function applyRuntimeVersionFromConfigAsync(
-  config: Pick<ExpoConfig, 'sdkVersion' | 'runtimeVersion' | '_internal'>,
+  config: ExportedConfigWithProps<Resources.ResourceXML>,
   stringsJSON: ResourceXML
 ): Promise<ResourceXML> {
-  const runtimeVersion = await getRuntimeVersionNullableAsync(
-    config._internal?.projectRoot,
-    config,
-    'android'
-  );
+  const projectRoot = config.modRequest.projectRoot;
+  const runtimeVersion = await getRuntimeVersionNullableAsync(projectRoot, config, 'android');
   if (runtimeVersion) {
     return setStringItem(
       [buildResourceItem({ name: 'expo_runtime_version', value: runtimeVersion })],

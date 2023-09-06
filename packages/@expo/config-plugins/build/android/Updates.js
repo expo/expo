@@ -101,8 +101,8 @@ const withUpdatesManifest = config => {
 };
 const withRuntimeVersionResource = (0, _androidPlugins().createStringsXmlPlugin)(applyRuntimeVersionFromConfigAsync, 'withRuntimeVersionResource');
 async function applyRuntimeVersionFromConfigAsync(config, stringsJSON) {
-  var _config$_internal;
-  const runtimeVersion = await (0, _Updates().getRuntimeVersionNullableAsync)((_config$_internal = config._internal) === null || _config$_internal === void 0 ? void 0 : _config$_internal.projectRoot, config, 'android');
+  const projectRoot = config.modRequest.projectRoot;
+  const runtimeVersion = await (0, _Updates().getRuntimeVersionNullableAsync)(projectRoot, config, 'android');
   if (runtimeVersion) {
     return (0, _Strings().setStringItem)([(0, _Resources().buildResourceItem)({
       name: 'expo_runtime_version',

@@ -1,7 +1,7 @@
-import { ExpoConfig } from '@expo/config';
+import { Resources } from '.';
 import { AndroidManifest } from './Manifest';
 import { ResourceXML } from './Resources';
-import { ConfigPlugin } from '../Plugin.types';
+import { ConfigPlugin, ExportedConfigWithProps } from '../Plugin.types';
 import { ExpoConfigUpdates } from '../utils/Updates';
 export declare enum Config {
     ENABLED = "expo.modules.updates.ENABLED",
@@ -16,7 +16,7 @@ export declare enum Config {
     CODE_SIGNING_METADATA = "expo.modules.updates.CODE_SIGNING_METADATA"
 }
 export declare const withUpdates: ConfigPlugin;
-export declare function applyRuntimeVersionFromConfigAsync(config: Pick<ExpoConfig, 'sdkVersion' | 'runtimeVersion' | '_internal'>, stringsJSON: ResourceXML): Promise<ResourceXML>;
+export declare function applyRuntimeVersionFromConfigAsync(config: ExportedConfigWithProps<Resources.ResourceXML>, stringsJSON: ResourceXML): Promise<ResourceXML>;
 export declare function setUpdatesConfigAsync(projectRoot: string, config: ExpoConfigUpdates, androidManifest: AndroidManifest, expoUpdatesPackageVersion?: string | null): Promise<AndroidManifest>;
 export declare function setVersionsConfigAsync(projectRoot: string, config: Pick<ExpoConfigUpdates, 'sdkVersion' | 'runtimeVersion'>, androidManifest: AndroidManifest): Promise<AndroidManifest>;
 export declare function ensureBuildGradleContainsConfigurationScript(projectRoot: string, buildGradleContents: string): string;
