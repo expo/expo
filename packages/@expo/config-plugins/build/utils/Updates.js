@@ -174,7 +174,7 @@ async function getRuntimeVersionAsync(projectRoot, config, platform) {
     console.warn("Use of the experimental 'fingerprint' runtime policy may result in unexpected system behavior.");
     return await Fingerprint().createProjectHashAsync(projectRoot);
   }
-  throw new Error(`"${typeof runtimeVersion === 'object' ? JSON.stringify(runtimeVersion) : runtimeVersion}" is not a valid runtime version. getRuntimeVersion only supports a string, "sdkVersion", "appVersion", "nativeVersion" or "fingerprint" policy.`);
+  throw new Error(`"${typeof runtimeVersion === 'object' ? JSON.stringify(runtimeVersion) : runtimeVersion}" is not a valid runtime version. getRuntimeVersionAsync only supports a string, "sdkVersion", "appVersion", "nativeVersion" or "fingerprint" policy.`);
 }
 function getSDKVersion(config) {
   return typeof config.sdkVersion === 'string' ? config.sdkVersion : null;

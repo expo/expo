@@ -133,7 +133,7 @@ export async function getRuntimeVersionAsync(
   throw new Error(
     `"${
       typeof runtimeVersion === 'object' ? JSON.stringify(runtimeVersion) : runtimeVersion
-    }" is not a valid runtime version. getRuntimeVersion only supports a string, "sdkVersion", "appVersion", "nativeVersion" or "fingerprint" policy.`
+    }" is not a valid runtime version. getRuntimeVersionAsync only supports a string, "sdkVersion", "appVersion", "nativeVersion" or "fingerprint" policy.`
   );
 }
 
