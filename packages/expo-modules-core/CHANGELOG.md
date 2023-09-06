@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Introduced an AppContext config to provide things like documents and caches directories for the modules. ([#24292](https://github.com/expo/expo/pull/24292) by [@tsapeta](https://github.com/tsapeta))
+
 ## 1.7.0 — 2023-09-04
 
 ### 🎉 New features
