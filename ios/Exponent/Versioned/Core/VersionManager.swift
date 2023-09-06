@@ -55,7 +55,8 @@ final class VersionManager: EXVersionManagerObjC {
     // that would work well for us (especially properly invalidating existing app context on reload).
     let legacyModuleRegistry = createLegacyModuleRegistry(params: params, manifest: manifest)
     let legacyModulesProxy = LegacyNativeModulesProxy(customModuleRegistry: legacyModuleRegistry)
-    let appContext = AppContext(legacyModulesProxy: legacyModulesProxy, legacyModuleRegistry: legacyModuleRegistry)
+    let config = createAppContextConfig()
+    let appContext = AppContext(legacyModulesProxy: legacyModulesProxy, legacyModuleRegistry: legacyModuleRegistry, config: config)
 
     self.appContext = appContext
     self.legacyModuleRegistry = legacyModuleRegistry
@@ -92,6 +93,22 @@ final class VersionManager: EXVersionManagerObjC {
       return
     }
     appContext.moduleRegistry.register(module: ExpoGoModule(appContext: appContext, manifest: manifest))
+  }
+
+  private func createAppContextConfig() -> AppContextConfig {
+    guard let fileSystemDirectories = params["fileSystemDirectories"] as? [AnyHashable: Any] else {
+      fatalError("Missing file system directories in the params")
+    }
+    guard let documentDirectory = fileSystemDirectories["documentDirectory"] as? String else {
+      fatalError("Missing document directory param")
+    }
+    guard let cacheDirectory = fileSystemDirectories["cachesDirectory"] as? String else {
+      fatalError("Missing caches directory param")
+    }
+    return AppContextConfig(
+      documentDirectory: URL(fileURLWithPath: documentDirectory),
+      cacheDirectory: URL(fileURLWithPath: cacheDirectory)
+    )
   }
 }
 

@@ -13,6 +13,11 @@ public final class AppContext: NSObject {
   }
 
   /**
+   The app context configuration.
+   */
+  public let config: AppContextConfig
+
+  /**
    The module registry for the app context.
    */
   public private(set) lazy var moduleRegistry: ModuleRegistry = {
@@ -78,12 +83,14 @@ public final class AppContext: NSObject {
   /**
    Designated initializer without modules provider.
    */
-  public override init() {
+  public init(config: AppContextConfig = .default) {
+    self.config = config
+
     super.init()
     listenToClientAppNotifications()
   }
 
-  public convenience init(legacyModulesProxy: Any, legacyModuleRegistry: Any) {
+  public convenience init(legacyModulesProxy: Any, legacyModuleRegistry: Any, config: AppContextConfig = .default) {
     self.init()
     self.legacyModulesProxy = legacyModulesProxy as? LegacyNativeModulesProxy
     self.legacyModuleRegistry = legacyModuleRegistry as? EXModuleRegistry
