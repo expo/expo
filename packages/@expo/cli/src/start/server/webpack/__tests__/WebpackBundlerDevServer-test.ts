@@ -64,7 +64,7 @@ describe('startAsync', () => {
       messageSocket: {
         broadcast: expect.any(Function),
       },
-      middleware: undefined,
+      middleware: null,
       server: {
         close: expect.any(Function),
         listen: expect.any(Function),
@@ -108,17 +108,5 @@ describe('broadcastMessage', () => {
       // @ts-expect-error
       devServer.getInstance().server.sendMessage
     ).toBeCalledWith(undefined, 'content-changed', { foo: true });
-  });
-  it(`uses custom handler`, async () => {
-    const devServer = await getStartedDevServer();
-    devServer['customMessageSocketBroadcaster'] = jest.fn();
-    devServer.broadcastMessage('reload', { foo: true });
-
-    expect(
-      // @ts-expect-error
-      devServer.getInstance().server.sendMessage
-    ).not.toBeCalled();
-
-    expect(devServer['customMessageSocketBroadcaster']).toBeCalledWith('reload', { foo: true });
   });
 });

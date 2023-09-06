@@ -1,12 +1,12 @@
 import fetch from 'node-fetch';
 
+import { METRO_INSPECTOR_RESPONSE_FIXTURE } from './fixtures/metroInspectorResponse';
 import {
   openJsInspector,
   queryAllInspectorAppsAsync,
   queryInspectorAppAsync,
 } from '../JsInspector';
 import { launchBrowserAsync } from '../LaunchBrowser';
-import { METRO_INSPECTOR_RESPONSE_FIXTURE } from '../__tests__/fixtures/metroInspectorResponse';
 
 jest.mock('fs-extra');
 jest.mock('node-fetch');

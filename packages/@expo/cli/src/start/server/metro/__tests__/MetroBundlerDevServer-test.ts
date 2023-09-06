@@ -23,6 +23,8 @@ jest.mock('../instantiateMetro', () => ({
     server: { listen: jest.fn(), close: jest.fn() },
   })),
 }));
+
+jest.mock('../../middleware/mutations');
 jest.mock('../../../../log');
 jest.mock('../../../../utils/analytics/getDevClientProperties', () => jest.fn(() => ({})));
 jest.mock('../../../../utils/analytics/rudderstackClient');

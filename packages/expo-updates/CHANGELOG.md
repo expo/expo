@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update E2E test. ([#24272](https://github.com/expo/expo/pull/24272) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.20.0 — 2023-09-04
 
 ### 🛠 Breaking changes

@@ -1,13 +1,4 @@
 import { ExpoConfig, getConfigFilePaths, Platform } from '@expo/config';
-import {
-  buildHermesBundleAsync,
-  isEnableHermesManaged,
-  maybeThrowFromInconsistentEngineAsync,
-} from '@expo/dev-server/build/HermesBundler';
-import {
-  importMetroFromProject,
-  importMetroServerFromProject,
-} from '@expo/dev-server/build/metro/importMetroFromProject';
 import type { LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import Metro, { AssetData } from 'metro';
@@ -16,11 +7,19 @@ import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
 import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
 import { ConfigT } from 'metro-config';
 
+import {
+  buildHermesBundleAsync,
+  isEnableHermesManaged,
+  maybeThrowFromInconsistentEngineAsync,
+} from './exportHermes';
 import { CSSAsset, getCssModulesFromBundler } from '../start/server/metro/getCssModulesFromBundler';
 import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
+import {
+  importMetroFromProject,
+  importMetroServerFromProject,
+} from '../start/server/metro/resolveFromProject';
 
 export type MetroDevServerOptions = LoadOptions & {
-  logger: import('@expo/bunyan');
   quiet?: boolean;
 };
 export type BundleOptions = {
@@ -43,8 +42,6 @@ export type BundleOutput = {
 };
 
 let nextBuildID = 0;
-
-// Fork of @expo/dev-server bundleAsync to add Metro logging back.
 
 async function assertEngineMismatchAsync(projectRoot: string, exp: ExpoConfig, platform: Platform) {
   const isHermesManaged = isEnableHermesManaged(exp, platform);
