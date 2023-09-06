@@ -4,11 +4,16 @@
 
 ### 🛠 Breaking changes
 
+- Remove deprecated `RCTDeviceEventEmitter`.
+- Remove `deprecate` utility function.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Deprecate `SyntheticPlatformEmitter` in favor of `DeviceEventEmitter`.
 
 ## 1.7.0 — 2023-09-04
 
