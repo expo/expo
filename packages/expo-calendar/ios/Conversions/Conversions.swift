@@ -1,33 +1,13 @@
 import ExpoModulesCore
 import EventKit
 
-func recurrence(frequency: EKRecurrenceFrequency) -> String {
-  switch frequency {
-  case .daily:
-    return "daily"
-  case .weekly:
-    return "weekly"
-  case .monthly:
-    return "monthly"
-  case .yearly:
-    return "yearly"
-  }
-}
-
-func calendarType(type: EKCalendarType) -> String {
-  switch type {
-  case .local:
-    return "local"
-  case .calDAV:
-    return "caldav"
-  case .exchange:
-    return "exchange"
-  case .subscription:
-    return "subscribed"
-  case .birthday:
-    return "birthdays"
-  }
-}
+private let dateFormatter: DateFormatter = {
+  let df = DateFormatter()
+  df.timeZone = TimeZone(identifier: "UTC")
+  df.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
+  df.locale = Locale(identifier: "en_US_POSIX")
+  return df
+}()
 
 func entity(type: EKEntityMask) -> String? {
   let allowsEvents = type.contains(.event)
@@ -46,102 +26,6 @@ func entity(type: EKEntityMask) -> String? {
   return nil
 }
 
-func eventAvailability(_ availability: EKEventAvailability) -> String {
-  switch availability {
-  case .notSupported:
-    return "notSupported"
-  case .busy:
-    return "busy"
-  case .free:
-    return "free"
-  case .tentative:
-    return "tentative"
-  case .unavailable:
-    return "unavailable"
-  }
-}
-
-func eventStatus(_ status: EKEventStatus) -> String {
-  switch status {
-  case .none:
-    return "none"
-  case .confirmed:
-    return "confirmed"
-  case .tentative:
-    return "tentative"
-  case .canceled:
-    return "cancelled"
-  }
-}
-
-func source(type: EKSourceType) -> String {
-  switch type {
-  case .local:
-    return "local"
-  case .exchange:
-    return "exchange"
-  case .calDAV:
-    return "caldav"
-  case .mobileMe:
-    return "mobileme"
-  case .subscribed:
-    return "subscribed"
-  case .birthdays:
-    return "birthdays"
-  }
-}
-
-func participant(role: EKParticipantRole) -> String {
-  switch role {
-  case .unknown:
-    return "unknown"
-  case .required:
-    return "required"
-  case .optional:
-    return "optional"
-  case .chair:
-    return "chair"
-  case .nonParticipant:
-    return "notParticipant"
-  }
-}
-
-func participant(type: EKParticipantType) -> String {
-  switch type {
-  case .unknown:
-    return "unknown"
-  case .person:
-    return "person"
-  case .room:
-    return "room"
-  case .group:
-    return "group"
-  case .resource:
-    return "resource"
-  }
-}
-
-func participant(status: EKParticipantStatus) -> String {
-  switch status {
-  case .unknown:
-    return "unknown"
-  case .pending:
-    return "pending"
-  case .accepted:
-    return "accepted"
-  case .declined:
-    return "declined"
-  case .tentative:
-    return "tentative"
-  case .delegated:
-    return "delegated"
-  case .completed:
-    return "completed"
-  case .inProcess:
-    return "inProcess"
-  }
-}
-
 func calendarSupportedAvailabilities(fromMask types: EKCalendarEventAvailabilityMask) -> [String] {
   var availabilitiesStrings = [String]()
 
@@ -157,7 +41,7 @@ func calendarSupportedAvailabilities(fromMask types: EKCalendarEventAvailability
   if types.contains(.unavailable) {
     availabilitiesStrings.append("unavailable")
   }
-
+  
   return availabilitiesStrings
 }
 
@@ -195,14 +79,10 @@ func serializeCalendar(events: [EKEvent]) -> [[String: Any?]] {
 }
 
 func serializeCalendar(event: EKEvent) -> [String: Any?] {
-  let dateFormatter = DateFormatter()
-  let timeZone = TimeZone(identifier: "UTC")
-  dateFormatter.timeZone = timeZone
-  dateFormatter.locale = Locale(identifier: "en_US_POSIX")
-
   var serializedCalendarEvent = serializeCalendar(item: event, with: dateFormatter)
 
   if let startDate = event.startDate {
+    print("StartDate \(dateFormatter.string(from: startDate))")
     serializedCalendarEvent["startDate"] = dateFormatter.string(from: startDate)
   }
 
@@ -266,15 +146,12 @@ func serializeCalendar(item: EKCalendarItem, with formatter: DateFormatter) -> [
       recurrenceRule["occurrence"] = rule.recurrenceEnd?.occurrenceCount
 
       if let daysOfTheWeek = rule.daysOfTheWeek {
-        var days = [[String: Any?]]()
-
-        for day in daysOfTheWeek {
-          days.append([
+        recurrenceRule["daysOfTheWeek"] = daysOfTheWeek.map({ day in
+          [
             "dayOfTheWeek": day.dayOfTheWeek,
             "weekNumber": day.weekNumber
-          ])
-        }
-        recurrenceRule["daysOfTheWeek"] = days
+          ]
+        })
       }
 
       if let daysOfTheMonth = rule.daysOfTheMonth {
@@ -306,31 +183,25 @@ func serialize(reminders: [EKReminder]) -> [[String: Any?]] {
 }
 
 func serialize(reminder: EKReminder) -> [String: Any?] {
-  let formatter = DateFormatter()
-  let timeZone = TimeZone(identifier: "UTC")
-  formatter.timeZone = timeZone
-  formatter.locale = Locale(identifier: "en_US_POSIX")
-  formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z"
   let currentCalendar = Calendar.current
-
-  var serializedReminder = serializeCalendar(item: reminder, with: formatter)
+  var serializedReminder = serializeCalendar(item: reminder, with: dateFormatter)
 
   if let startDateComponents = reminder.startDateComponents {
     if let startDate = currentCalendar.date(from: startDateComponents) {
-      serializedReminder["startDate"] = formatter.string(from: startDate)
+      serializedReminder["startDate"] = dateFormatter.string(from: startDate)
     }
   }
 
   if let dueDateComponents = reminder.dueDateComponents {
     if let dueDate = currentCalendar.date(from: dueDateComponents) {
-      serializedReminder["dueDate"] = formatter.string(from: dueDate)
+      serializedReminder["dueDate"] = dateFormatter.string(from: dueDate)
     }
   }
 
   serializedReminder["completed"] = reminder.isCompleted
 
   if let completionDate = reminder.completionDate {
-    serializedReminder["completionDate"] = formatter.string(from: completionDate)
+    serializedReminder["completionDate"] = dateFormatter.string(from: completionDate)
   }
 
   return serializedReminder

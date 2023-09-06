@@ -5,6 +5,13 @@ import EventKit
 public class CalendarModule: Module {
   private var permittedEntities: EKEntityMask = .event
   private var eventStore = EKEventStore()
+  private lazy var formatter: DateFormatter = {
+    let df = DateFormatter()
+    df.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
+    df.locale = Locale(identifier: "en_US_POSIX")
+    df.timeZone = TimeZone(identifier: "UTC")
+    return df
+  }()
 
   public func definition() -> ModuleDefinition {
     Name("ExpoCalendar")
@@ -137,23 +144,21 @@ public class CalendarModule: Module {
       if let calendarEvent {
         return serializeCalendar(event: calendarEvent)
       }
-      throw CalendarEventNotFoundException(eventId)
+      throw EventNotFoundException(eventId)
     }
 
-    AsyncFunction("saveEventAsync") { (details: Event, options: RecurringEventOptions) -> String? in
+    AsyncFunction("saveEventAsync") { (event: Event, options: RecurringEventOptions) -> String? in
       try checkCalendarPermissions()
       var calendarEvent: EKEvent?
       let span: EKSpan = options.futureEvents == true ? .futureEvents : .thisEvent
 
-      if let id = details.id {
-        if let instanceStartDate = options.instanceStartDate, let date = parse(date: instanceStartDate) {
-          guard let event = getEvent(with: id, startDate: date) else {
-            throw CalendarEventNotFoundException(id)
-          }
-          calendarEvent = event
+      if let id = event.id {
+        guard let event = getEvent(with: id, startDate: parse(date: event.instanceStartDate)) else {
+          throw EventNotFoundException(id)
         }
+        calendarEvent = event
       } else {
-        guard let calendarId = details.calendarId else {
+        guard let calendarId = event.calendarId else {
           throw CalendarIdRequiredException()
         }
         let calendar = eventStore.calendar(withIdentifier: calendarId)
@@ -162,18 +167,18 @@ public class CalendarModule: Module {
         }
 
         if calendar.allowedEntityTypes.isDisjoint(with: [.event]) {
-          throw InvalidCalendarType((calendarId, "event"))
+          throw InvalidCalendarTypeException((calendarId, "event"))
         }
 
         calendarEvent = EKEvent(eventStore: eventStore)
         calendarEvent?.calendar = calendar
       }
 
-      calendarEvent?.title = details.title
-      calendarEvent?.location = details.location
-      calendarEvent?.notes = details.notes
+      calendarEvent?.title = event.title
+      calendarEvent?.location = event.location
+      calendarEvent?.notes = event.notes
 
-      if let timeZone = details.timeZone {
+      if let timeZone = event.timeZone {
         if let tz = TimeZone(identifier: timeZone) {
           calendarEvent?.timeZone = tz
         } else {
@@ -181,8 +186,8 @@ public class CalendarModule: Module {
         }
       }
 
-      calendarEvent?.alarms = createCalendarEventAlarms(alarms: details.alarms)
-      if let rule = details.recurrenceRule {
+      calendarEvent?.alarms = createCalendarEventAlarms(alarms: event.alarms)
+      if let rule = event.recurrenceRule {
         let newRule = createRecurrenceRule(rule: rule)
 
         if let newRule {
@@ -190,14 +195,14 @@ public class CalendarModule: Module {
         }
       }
 
-      if let urlString = details.url?.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed), let url = URL(string: urlString) {
+      if let urlString = event.url?.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed), let url = URL(string: urlString) {
         calendarEvent?.url = url
       }
 
-      calendarEvent?.startDate = parse(date: details.startDate)
-      calendarEvent?.endDate = parse(date: details.endDate)
-      calendarEvent?.isAllDay = details.allDay
-      calendarEvent?.availability = getAvailability(availability: details.availability)
+      calendarEvent?.startDate = parse(date: event.startDate)
+      calendarEvent?.endDate = parse(date: event.endDate)
+      calendarEvent?.isAllDay = event.allDay
+      calendarEvent?.availability = getAvailability(availability: event.availability)
 
       if let calendarEvent {
         try eventStore.save(calendarEvent, span: span, commit: true)
@@ -209,7 +214,7 @@ public class CalendarModule: Module {
     AsyncFunction("deleteEventAsync") { (event: Event, options: RecurringEventOptions) in
       try checkCalendarPermissions()
       guard let id = event.id else {
-        throw EventIdRequired()
+        throw EventIdRequiredException()
       }
       let span: EKSpan = options.futureEvents == true ? .futureEvents : .thisEvent
 
@@ -224,7 +229,7 @@ public class CalendarModule: Module {
     AsyncFunction("getAttendeesForEventAsync") { (event: Event) -> [[String: Any?]] in
       try checkCalendarPermissions()
       guard let id = event.id else {
-        throw EventIdRequired()
+        throw EventIdRequiredException()
       }
       let instanceStartDate = parse(date: event.instanceStartDate)
 
@@ -238,7 +243,7 @@ public class CalendarModule: Module {
       return []
     }
 
-    AsyncFunction("getRemindersAsync") { (startDateStr: String, endDateStr: String, calendarIds: [CalendarRecord], status: String?, promise: Promise) in
+    AsyncFunction("getRemindersAsync") { (startDateStr: String, endDateStr: String, calendarIds: [String], status: String?, promise: Promise) in
       try checkRemindersPermissions()
       var reminderCalendars: [EKCalendar]?
       let startDate = parse(date: startDateStr)
@@ -248,13 +253,11 @@ public class CalendarModule: Module {
         reminderCalendars = []
         let deviceCalendars = eventStore.calendars(for: .reminder)
 
-        for calendar in deviceCalendars where calendarIds.contains(where: {
-          $0.id == calendar.calendarIdentifier
-        }) {
+        for calendar in deviceCalendars where calendarIds.contains(calendar.calendarIdentifier) {
           reminderCalendars?.append(calendar)
         }
       } else {
-        promise.reject(CalendarMissingParameterException())
+        promise.reject(MissingParameterException())
         return
       }
 
@@ -317,7 +320,7 @@ public class CalendarModule: Module {
           let calendar = eventStore.calendar(withIdentifier: calendarId)
           if let calendar {
             if calendar.allowedEntityTypes.isDisjoint(with: .reminder) {
-              throw InvalidCalendarType((calendarId, "reminder"))
+              throw InvalidCalendarTypeException((calendarId, "reminder"))
             }
           } else {
             throw CalendarIdNotFoundException(calendarId)
@@ -380,13 +383,10 @@ public class CalendarModule: Module {
 
     AsyncFunction("deleteReminderAsync") { (reminderId: String) in
       try checkRemindersPermissions()
-
-      let reminder = eventStore.calendarItem(withIdentifier: reminderId)
-      if let reminder = reminder as? EKReminder {
-        try eventStore.remove(reminder, commit: true)
-      } else {
+      guard let reminder = eventStore.calendarItem(withIdentifier: reminderId) as? EKReminder else {
         throw ReminderNotFoundException(reminderId)
       }
+      try eventStore.remove(reminder, commit: true)
     }
 
     AsyncFunction("getSourcesAsync") {
@@ -480,7 +480,7 @@ public class CalendarModule: Module {
 
     resetEventStoreIfPermissionWasChanged(entity: entity)
   }
-
+  
   func getAvailability(availability: String) -> EKEventAvailability {
     switch availability {
     case "busy":
@@ -497,6 +497,7 @@ public class CalendarModule: Module {
   }
 
   func resetEventStoreIfPermissionWasChanged(entity: EKEntityType) {
+    // looks redundant but these are different types.
     if entity == .event {
       if permittedEntities.contains(.event) {
         return
@@ -565,17 +566,17 @@ public class CalendarModule: Module {
       return nil
     }
 
-    guard let startDate, let calendar = firstEvent.calendar else {
+    guard let startDate else {
       return firstEvent
     }
-
-    if let firstEventStart = firstEvent.startDate, firstEventStart.compare(startDate) == .orderedSame {
+  
+    guard let firstEventStart = firstEvent.startDate, firstEventStart.compare(startDate) == .orderedSame else {
       return firstEvent
     }
-
+    
     let endDate = startDate.addingTimeInterval(2_592_000)
     let events = eventStore.events(
-      matching: eventStore.predicateForEvents(withStart: startDate, end: endDate, calendars: [calendar])
+      matching: eventStore.predicateForEvents(withStart: startDate, end: endDate, calendars: [firstEvent.calendar])
     )
 
     for event in events {
@@ -590,25 +591,26 @@ public class CalendarModule: Module {
   }
 
   private func parse(date: String?) -> Date? {
-    let formatter = DateFormatter()
-    formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
-    formatter.locale = Locale(identifier: "en_US_POSIX")
-    formatter.timeZone = TimeZone(identifier: "UTC")
-
     guard let date else {
       return nil
     }
+    
+    if let date = Int(date) {
+      return Date(timeIntervalSince1970: TimeInterval(date))
+    }
+    
     return formatter.date(from: date)
   }
 
   private func createRecurrenceRule(rule: RecurrenceRule) -> EKRecurrenceRule? {
-    let validFrequencyTypes = ["daily", "weekly", "monthly", "yearly"]
-    guard !validFrequencyTypes.contains(rule.frequency) else {
+    guard ["daily", "weekly", "monthly", "yearly"].contains(rule.frequency) else {
       return nil
     }
     var endDate = parse(date: rule.endDate)
 
-    var daysOfTheWeek: [EKRecurrenceDayOfWeek]?
+    let daysOfTheWeek = rule.daysOfTheWeek?.map { day in
+      EKRecurrenceDayOfWeek(day.dayOfTheWeek.toEKType(), weekNumber: day.weekNumber)
+    }
 
     let daysOfTheMonth = rule.daysOfTheMonth?.map {
       NSNumber(value: $0)
@@ -626,14 +628,6 @@ public class CalendarModule: Module {
       NSNumber(value: $0)
     }
 
-    if let days = rule.daysOfTheWeek {
-      for item in days {
-        daysOfTheWeek?.append(
-          EKRecurrenceDayOfWeek(item.dayOfTheWeek.toEKType(), weekNumber: item.weekNumber)
-        )
-      }
-    }
-
     var recurrenceEnd: EKRecurrenceEnd?
     var recurrenceInterval = 1
 
@@ -647,7 +641,7 @@ public class CalendarModule: Module {
       recurrenceInterval = interval
     }
 
-    let recurrenceRule = EKRecurrenceRule(
+    return EKRecurrenceRule(
       recurrenceWith: recurrenceFrequency(name: rule.frequency),
       interval: recurrenceInterval,
       daysOfTheWeek: daysOfTheWeek,
@@ -658,8 +652,6 @@ public class CalendarModule: Module {
       setPositions: setPositions,
       end: recurrenceEnd
     )
-
-    return recurrenceRule
   }
 
   private func recurrenceFrequency(name: String) -> EKRecurrenceFrequency {

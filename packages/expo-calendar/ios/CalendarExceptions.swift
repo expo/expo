@@ -30,25 +30,19 @@ internal class CalendarIdNotFoundException: GenericException<String> {
   }
 }
 
-internal class CalendarEventNotFoundException: GenericException<String> {
+internal class EventNotFoundException: GenericException<String> {
   override var reason: String {
     "Event with id \(param) could not be found"
   }
 }
 
-internal class CalendarEventNotUpdatedException: GenericException<String> {
-  override var reason: String {
-    "Event with id \(param) could not be updated because it doesn't exist"
-  }
-}
-
-internal class InvalidCalendarType: GenericException<(String, String)> {
+internal class InvalidCalendarTypeException: GenericException<(String, String)> {
   override var reason: String {
     "Calendar with id \(param.0) is not of type `\(param.1)`"
   }
 }
 
-internal class CalendarMissingParameterException: Exception {
+internal class MissingParameterException: Exception {
   override var reason: String {
     "`Calendar.getRemindersAsync` needs at least one calendar ID"
   }
@@ -96,7 +90,7 @@ internal class CalendarIdRequiredException: Exception {
   }
 }
 
-internal class EventIdRequired: Exception {
+internal class EventIdRequiredException: Exception {
   override var reason: String {
     "Event Id is required"
   }
