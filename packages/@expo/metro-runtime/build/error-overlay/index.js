@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.withErrorOverlay = void 0;
 const react_1 = __importDefault(require("react"));
+// TODO: This will break tree shaking due to how we transpile this package.
 const react_native_1 = require("react-native");
 const ErrorToastContainer_1 = __importDefault(require("./toast/ErrorToastContainer"));
 if (!global.setImmediate) {

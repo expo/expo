@@ -39,7 +39,8 @@ export const INTERNAL_CALLSITES_REGEX = new RegExp(
     // Hide react-dom (web)
     'node_modules/react-dom/.+\\.js$',
     // Block expo's metro-runtime
-    '@expo/metro-runtime/build/.+\\.js$',
+    '@expo/metro-runtime/.+\\.js$',
+    '@expo/metro-runtime/.+\\.ts',
     // Block upstream metro-runtime
     '/metro-runtime/.+\\.js$',
   ].join('|')

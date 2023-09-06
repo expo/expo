@@ -1,4 +1,5 @@
-import { EventEmitter } from 'expo-modules-core';
+// Prevent pulling in all of expo-modules-core on web
+import { EventEmitter } from 'expo-modules-core/build/EventEmitter';
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { Animated, StyleSheet, Text, Platform, View } from 'react-native';
 
