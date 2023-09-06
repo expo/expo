@@ -1,0 +1,3 @@
+export declare const preventAutoHideAsync: () => Promise<boolean>;
+export declare const hideAsync: () => Promise<boolean>;
+//# sourceMappingURL=index.native.d.ts.map

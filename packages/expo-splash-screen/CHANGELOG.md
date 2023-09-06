@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Delete deprecated `hide` and `preventAutoHide` methods.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
