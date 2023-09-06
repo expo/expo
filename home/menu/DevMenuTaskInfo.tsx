@@ -35,12 +35,13 @@ function getInfoFromManifest(
       isVerified: (manifest as any).isVerified,
     };
   } else {
+    // no properties for bare manifests
     return {
-      iconUrl: manifest.iconUrl,
-      taskName: manifest.name,
-      sdkVersion: manifest.sdkVersion,
-      runtimeVersion: stringOrUndefined(manifest.runtimeVersion),
-      isVerified: manifest.isVerified,
+      iconUrl: undefined,
+      taskName: undefined,
+      sdkVersion: undefined,
+      runtimeVersion: undefined,
+      isVerified: undefined,
     };
   }
 }
