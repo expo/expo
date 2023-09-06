@@ -3274,6 +3274,7 @@
 					"\"$(PODS_ROOT)/RCT-Folly\"",
 				);
 				TARGETED_DEVICE_FAMILY = "1,2";
+				WARNING_CFLAGS = "-Werror=protocol";
 			};
 			name = Debug;
 		};
@@ -3340,6 +3341,7 @@
 					"\"$(PODS_ROOT)/RCT-Folly\"",
 				);
 				TARGETED_DEVICE_FAMILY = "1,2";
+				WARNING_CFLAGS = "-Werror=protocol";
 			};
 			name = Release;
 		};
@@ -3518,6 +3520,7 @@
 					"\"$(PODS_ROOT)/RCT-Folly\"",
 				);
 				TARGETED_DEVICE_FAMILY = "1,2";
+				WARNING_CFLAGS = "-Werror=protocol";
 			};
 			name = Debug;
 		};
@@ -3586,6 +3589,7 @@
 					"\"$(PODS_ROOT)/RCT-Folly\"",
 				);
 				TARGETED_DEVICE_FAMILY = "1,2";
+				WARNING_CFLAGS = "-Werror=protocol";
 			};
 			name = Release;
 		};
