@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] remove force unwrap in download handler. ([#24299](https://github.com/expo/expo/pull/24299) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 ## 0.18.12 — 2023-08-22
