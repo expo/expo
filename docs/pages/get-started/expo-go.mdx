@@ -49,7 +49,37 @@ The manifest is similar to an **index.html** on the web. It is served from the r
 
 Expo Go uses **SDK versions** that map to a major release of the `expo` and the Expo Go app. You can see the supported SDK versions in the Expo Go app by navigating to the settings page.
 
+When running a project in Expo Go, which was created for an unsupported SDK version, you will see the following error: `"Project is incompatible with this version of Expo Go"`. If this happens, it is highly recommended to upgrade your project to a supported SDK version. If you want to learn how to do it see [Upgrading Your Project to a New SDK Version](#upgrading-your-project-to-a-new-sdk-version).
+
 We release a new SDK version approximately every quarter. Find out which [versions of React Native map to which versions of the Expo SDK](/versions/latest/#each-expo-sdk-version-depends-on-a-react-native-version).
+
+#### Upgrading Your Project to a New SDK Version
+
+> **Info** We recommend upgrading SDK versions incrementally, one at a time. Doing so will help you pinpoint breakages and issues that arise during the upgrade process.
+
+To upgrade your project, you should:
+- Update to the latest version of the EAS CLI (if you use it):\
+`npm i -g eas-cli`
+- Install the new version of the Expo package:\
+`npm install expo@^<sdk_version>` or `yarn add expo@^<sdk_version>` (e.g. `yarn add expo@^49.0.0`)
+- Upgrade all dependencies to match the new SDK:\
+`npx expo install --fix`
+- Check for any possible issues in your project dependencies:\
+`npx expo-doctor@latest`
+
+If you encounter any issues while upgrading, refer to the [blog post](/workflow/upgrading-expo-sdk-walkthrough/) about your new SDK. Release blog posts contain more details about the update process for each SDK version. Also, blog posts include information on any breaking changes introduced in particular release.
+
+#### Running an Unsupported Project Using an Older Version of Expo Go
+
+If you can't upgrade your project to a newer SDK version, you can still run it using an older version of Expo Go:
+- If installed, remove Expo Go from your device/simulator.
+- Start the development server using `yarn start` or `npx expo start` and wait for it to load.
+- Press `i` or `a` to run your app on `iOS` or `Android` respectively.
+- Compatible Expo Go will be automatically installed on your device/simulator and your project will open.
+
+> Note: This method will not work for physical iOS devices. If you are trying to use this method on a physical Android device, you should plug it in with a USB cable and have `USB Debugging` turned on. If you want to learn more about the Android Emulator and iOS Simulator, read the [Login into Expo Go section](#login-into-expo-go).
+
+If you need to run your project on a physical iOS device, you should consider creating a [development build](https://docs.expo.dev/develop/development-builds/introduction/).
 
 ## Login into Expo Go
 
