@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Fix build.
+
 ## 0.12.0 — 2023-09-04
 
 ### 🎉 New features
