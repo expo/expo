@@ -1,7 +1,7 @@
 import ExpoModulesCore
 import EventKit
 
-private let dateFormatter: DateFormatter = {
+let dateFormatter: DateFormatter = {
   let df = DateFormatter()
   df.timeZone = TimeZone(identifier: "UTC")
   df.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"

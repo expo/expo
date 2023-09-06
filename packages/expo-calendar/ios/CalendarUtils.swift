@@ -1,14 +1,6 @@
 import ExpoModulesCore
 import EventKit
 
-private var formatter: DateFormatter = {
-  let df = DateFormatter()
-  df.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
-  df.locale = Locale(identifier: "en_US_POSIX")
-  df.timeZone = TimeZone(identifier: "UTC")
-  return df
-}()
-
 func parse(date: Either<String, Double>?) -> Date? {
   guard let date else {
     return nil
@@ -19,7 +11,7 @@ func parse(date: Either<String, Double>?) -> Date? {
   }
 
   if let date: String = date.get() {
-    return formatter.date(from: date)
+    return dateFormatter.date(from: date)
   }
 
   return nil
@@ -29,7 +21,7 @@ func parse(date: String?) -> Date? {
   guard let date else {
     return nil
   }
-  return formatter.date(from: date)
+  return dateFormatter.date(from: date)
 }
 
 func createRecurrenceRule(rule: RecurrenceRule) -> EKRecurrenceRule? {
