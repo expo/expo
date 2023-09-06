@@ -135,6 +135,16 @@ func createCalendarEventAlarm(alarm: Alarm) -> EKAlarm? {
   return calendarEventAlarm
 }
 
+func createDateComponents(for date: Date) -> DateComponents {
+  let currentCalendar = Calendar.current
+  let dateComponents: Set<Calendar.Component> = [.year, .month, .day, .hour, .minute, .second]
+
+  return currentCalendar.dateComponents(
+    dateComponents,
+    from: date
+  )
+}
+
 func getAvailability(availability: String) -> EKEventAvailability {
   switch availability {
   case "busy":

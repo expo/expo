@@ -112,7 +112,6 @@ public class CalendarModule: Module {
       try checkCalendarPermissions()
       let calendarEvent = try getCalendar(from: event)
       let span: EKSpan = options.futureEvents == true ? .futureEvents : .thisEvent
-
       calendarEvent.title = event.title
       calendarEvent.location = event.location
       calendarEvent.notes = event.notes
@@ -128,7 +127,6 @@ public class CalendarModule: Module {
       calendarEvent.alarms = createCalendarEventAlarms(alarms: event.alarms)
       if let rule = event.recurrenceRule {
         let newRule = createRecurrenceRule(rule: rule)
-
         if let newRule {
           calendarEvent.recurrenceRules = [newRule]
         }
@@ -141,14 +139,12 @@ public class CalendarModule: Module {
       if let startDate = event.startDate {
         calendarEvent.startDate = parse(date: startDate)
       }
-
       if let endDate = event.startDate {
         calendarEvent.endDate = parse(date: endDate)
       }
 
       calendarEvent.isAllDay = event.allDay
       calendarEvent.availability = getAvailability(availability: event.availability)
-
       try eventStore.save(calendarEvent, span: span, commit: true)
       return calendarEvent.calendarItemIdentifier
     }
@@ -228,7 +224,6 @@ public class CalendarModule: Module {
       let dueDate = parse(date: details.dueDate)
       let completionDate = parse(date: details.completionDate)
 
-      let currentCalendar = Calendar.current
       reminder.title = details.title
       reminder.location = details.location
       reminder.notes = details.notes
@@ -257,22 +252,12 @@ public class CalendarModule: Module {
         reminder.url = url
       }
 
-      let dateComponents: Set<Calendar.Component> = [.year, .month, .day, .hour, .minute, .second]
-
       if let startDate {
-        let startDateComponents = currentCalendar.dateComponents(
-          dateComponents,
-          from: startDate
-        )
-        reminder.startDateComponents = startDateComponents
+        reminder.startDateComponents = createDateComponents(for: startDate)
       }
 
       if let dueDate {
-        let dueDateComponents = currentCalendar.dateComponents(
-          dateComponents,
-          from: dueDate
-        )
-        reminder.dueDateComponents = dueDateComponents
+        reminder.dueDateComponents = createDateComponents(for: dueDate)
       }
 
       if let completionDate {
