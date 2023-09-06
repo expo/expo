@@ -18,7 +18,6 @@ exports.getUpdatesEnabled = getUpdatesEnabled;
 exports.getUpdatesRequestHeaders = getUpdatesRequestHeaders;
 exports.getUpdatesRequestHeadersStringified = getUpdatesRequestHeadersStringified;
 exports.getUpdatesTimeout = getUpdatesTimeout;
-exports.withRuntimeVersionAsync = void 0;
 function Fingerprint() {
   const data = _interopRequireWildcard(require("@expo/fingerprint"));
   Fingerprint = function () {
@@ -113,36 +112,6 @@ function getNativeVersion(config, platform) {
       }
   }
 }
-
-/**
- * Compute runtime version policies.
- * @return an expoConfig with only string valued platform specific runtime versions.
- */
-const withRuntimeVersionAsync = async config => {
-  var _config$_internal, _config$ios, _config$android;
-  const projectRoot = (_config$_internal = config._internal) === null || _config$_internal === void 0 ? void 0 : _config$_internal.projectRoot;
-  if ((_config$ios = config.ios) !== null && _config$ios !== void 0 && _config$ios.runtimeVersion || config.runtimeVersion) {
-    const runtimeVersion = await getRuntimeVersionAsync(projectRoot, config, 'ios');
-    if (runtimeVersion) {
-      config.ios = {
-        ...config.ios,
-        runtimeVersion
-      };
-    }
-  }
-  if ((_config$android = config.android) !== null && _config$android !== void 0 && _config$android.runtimeVersion || config.runtimeVersion) {
-    const runtimeVersion = await getRuntimeVersionAsync(projectRoot, config, 'android');
-    if (runtimeVersion) {
-      config.android = {
-        ...config.android,
-        runtimeVersion
-      };
-    }
-  }
-  delete config.runtimeVersion;
-  return config;
-};
-exports.withRuntimeVersionAsync = withRuntimeVersionAsync;
 async function getRuntimeVersionNullableAsync(...[projectRoot, config, platform]) {
   try {
     return await getRuntimeVersionAsync(projectRoot, config, platform);

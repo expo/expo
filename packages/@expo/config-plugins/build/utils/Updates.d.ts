@@ -7,11 +7,6 @@ export declare function getNativeVersion(config: Pick<ExpoConfig, 'version'> & {
     android?: Pick<Android, 'versionCode'>;
     ios?: Pick<IOS, 'buildNumber'>;
 }, platform: 'android' | 'ios'): string;
-/**
- * Compute runtime version policies.
- * @return an expoConfig with only string valued platform specific runtime versions.
- */
-export declare const withRuntimeVersionAsync: (config: ExpoConfig) => Promise<ExpoConfig>;
 export declare function getRuntimeVersionNullableAsync(...[projectRoot, config, platform]: Parameters<typeof getRuntimeVersionAsync>): Promise<string | null>;
 export declare function getRuntimeVersionAsync(projectRoot: string, config: Pick<ExpoConfig, 'version' | 'runtimeVersion' | 'sdkVersion'> & {
     android?: Pick<Android, 'versionCode' | 'runtimeVersion'>;

@@ -56,36 +56,6 @@ export function getNativeVersion(
   }
 }
 
-/**
- * Compute runtime version policies.
- * @return an expoConfig with only string valued platform specific runtime versions.
- */
-export const withRuntimeVersionAsync: (config: ExpoConfig) => Promise<ExpoConfig> = async (
-  config
-) => {
-  const projectRoot = config._internal?.projectRoot;
-  if (config.ios?.runtimeVersion || config.runtimeVersion) {
-    const runtimeVersion = await getRuntimeVersionAsync(projectRoot, config, 'ios');
-    if (runtimeVersion) {
-      config.ios = {
-        ...config.ios,
-        runtimeVersion,
-      };
-    }
-  }
-  if (config.android?.runtimeVersion || config.runtimeVersion) {
-    const runtimeVersion = await getRuntimeVersionAsync(projectRoot, config, 'android');
-    if (runtimeVersion) {
-      config.android = {
-        ...config.android,
-        runtimeVersion,
-      };
-    }
-  }
-  delete config.runtimeVersion;
-  return config;
-};
-
 export async function getRuntimeVersionNullableAsync(
   ...[projectRoot, config, platform]: Parameters<typeof getRuntimeVersionAsync>
 ): Promise<string | null> {
