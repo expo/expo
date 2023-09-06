@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Reduce size on web. ([#24294](https://github.com/expo/expo/pull/24294) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 3.0.1 — 2023-09-04
 
 ### 🎉 New features

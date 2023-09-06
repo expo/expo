@@ -6,8 +6,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { Platform } from 'react-native';
-
 import { IgnorePattern, LogData } from './Data/LogBoxData';
 import { ExtendedExceptionData } from './Data/parseLogBoxLog';
 
@@ -64,7 +62,7 @@ if (__DEV__) {
 
       consoleErrorImpl = registerError;
 
-      if (Platform.isTesting) {
+      if (process.env.NODE_ENV === 'test') {
         LogBoxData.setDisabled(true);
       }
     },

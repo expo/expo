@@ -14,7 +14,7 @@ export function fetchThenEvalAsync(
   }: { scriptType?: string; nonce?: string; crossOrigin?: string } = {}
 ): Promise<void> {
   if (typeof document === 'undefined') {
-    return require('./fetchThenEval.js').fetchThenEvalAsync(url);
+    return require('./fetchThenEvalJs').fetchThenEvalAsync(url);
   }
   return new Promise<void>((resolve, reject) => {
     const script = document.createElement('script');

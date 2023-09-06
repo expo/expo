@@ -1,4 +1,5 @@
 import React from 'react';
+// TODO: This will break tree shaking due to how we transpile this package.
 import { Platform } from 'react-native';
 
 import ErrorToastContainer from './toast/ErrorToastContainer';
