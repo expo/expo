@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Delete deprecated `hide` and `preventAutoHide` methods.
+- Delete deprecated `hide` and `preventAutoHide` methods. ([#24296](https://github.com/expo/expo/pull/24296) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
