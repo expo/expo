@@ -403,23 +403,22 @@ public class CalendarModule: Module {
         throw ReminderNotFoundException(reminderId)
       }
       return reminderWithId
-    } else {
-      let reminder = EKReminder(eventStore: eventStore)
-      reminder.calendar = eventStore.defaultCalendarForNewReminders()
-
-      if let calendarId = details.calendarId {
-        let calendar = eventStore.calendar(withIdentifier: calendarId)
-        if let calendar {
-          if calendar.allowedEntityTypes.isDisjoint(with: .reminder) {
-            throw InvalidCalendarTypeException((calendarId, "reminder"))
-          }
-        } else {
-          throw CalendarIdNotFoundException(calendarId)
-        }
-        reminder.calendar = calendar
-      }
-      return reminder
     }
+    let reminder = EKReminder(eventStore: eventStore)
+    reminder.calendar = eventStore.defaultCalendarForNewReminders()
+
+    if let calendarId = details.calendarId {
+      let calendar = eventStore.calendar(withIdentifier: calendarId)
+      if let calendar {
+        if calendar.allowedEntityTypes.isDisjoint(with: .reminder) {
+          throw InvalidCalendarTypeException((calendarId, "reminder"))
+        }
+      } else {
+        throw CalendarIdNotFoundException(calendarId)
+      }
+      reminder.calendar = calendar
+    }
+    return reminder
   }
 
   private func getCalendar(from record: CalendarRecord) throws -> EKCalendar {
@@ -432,26 +431,25 @@ public class CalendarModule: Module {
         throw CalendarNotSavedException((record.title, ""))
       }
       return calendar
-    } else {
-      var calendar: EKCalendar
-      if record.entityType == .event {
-        calendar = .init(for: .event, eventStore: eventStore)
-      } else if record.entityType == .reminder {
-        calendar = .init(for: .reminder, eventStore: eventStore)
-      } else {
-        throw EntityNotSupportedException(record.entityType?.rawValue)
-      }
-
-      if let sourceId = record.sourceId {
-        calendar.source = eventStore.source(withIdentifier: sourceId)
-      } else {
-        calendar.source = record.entityType == .event ?
-        eventStore.defaultCalendarForNewEvents?.source :
-        eventStore.defaultCalendarForNewReminders()?.source
-      }
-
-      return calendar
     }
+    let calendar: EKCalendar
+    if record.entityType == .event {
+      calendar = .init(for: .event, eventStore: eventStore)
+    } else if record.entityType == .reminder {
+      calendar = .init(for: .reminder, eventStore: eventStore)
+    } else {
+      throw EntityNotSupportedException(record.entityType?.rawValue)
+    }
+
+    if let sourceId = record.sourceId {
+      calendar.source = eventStore.source(withIdentifier: sourceId)
+    } else {
+      calendar.source = record.entityType == .event ?
+      eventStore.defaultCalendarForNewEvents?.source :
+      eventStore.defaultCalendarForNewReminders()?.source
+    }
+
+    return calendar
   }
 
   private func getCalendar(from event: Event) throws -> EKEvent {
@@ -460,24 +458,23 @@ public class CalendarModule: Module {
         throw EventNotFoundException(id)
       }
       return event
-    } else {
-      guard let calendarId = event.calendarId else {
-        throw CalendarIdRequiredException()
-      }
-      let calendar = eventStore.calendar(withIdentifier: calendarId)
-      guard let calendar else {
-        throw CalendarIdNotFoundException(calendarId)
-      }
-
-      if calendar.allowedEntityTypes.isDisjoint(with: [.event]) {
-        throw InvalidCalendarTypeException((calendarId, "event"))
-      }
-
-      let calendarEvent = EKEvent(eventStore: eventStore)
-      calendarEvent.calendar = calendar
-
-      return calendarEvent
     }
+    guard let calendarId = event.calendarId else {
+      throw CalendarIdRequiredException()
+    }
+    let calendar = eventStore.calendar(withIdentifier: calendarId)
+    guard let calendar else {
+      throw CalendarIdNotFoundException(calendarId)
+    }
+
+    if calendar.allowedEntityTypes.isDisjoint(with: [.event]) {
+      throw InvalidCalendarTypeException((calendarId, "event"))
+    }
+
+    let calendarEvent = EKEvent(eventStore: eventStore)
+    calendarEvent.calendar = calendar
+
+    return calendarEvent
   }
 
   private func getEvent(with id: String, startDate: Date?) -> EKEvent? {
