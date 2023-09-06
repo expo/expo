@@ -3,7 +3,6 @@ import { CreateURLOptions, ParsedURL } from './Linking.types';
 export function createURL(path: string, { queryParams = {} }: CreateURLOptions = {}): string {
   if (typeof window === 'undefined') return '';
   const url = new URL(path, window.location.origin);
-  // push params
   Object.entries(queryParams).forEach(([key, value]) => {
     if (typeof value === 'string') {
       url.searchParams.set(key, encodeURIComponent(value));
@@ -52,6 +51,3 @@ export function parse(url: string): ParsedURL {
     scheme: parsed.protocol.replace(/:$/, ''),
   };
 }
-
-// "http://localhost/some/path?lotsOfSlashes=%252F%252F%252F%252F%252F"
-// Received: "http://localhost/some/path?lotsOfSlashes=%2F%2F%2F%2F%2F"
