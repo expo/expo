@@ -175,7 +175,7 @@ class UpdatesModule(
                   updateInfo.putBoolean("isAvailable", false)
                   promise.resolve(updateInfo)
                   updatesServiceLocal.stateMachine?.processEvent(
-                    UpdatesStateEvent.CheckCompleteWithRollback()
+                    UpdatesStateEvent.CheckCompleteWithRollback(updateDirective.commitTime)
                   )
                   return
                 }
