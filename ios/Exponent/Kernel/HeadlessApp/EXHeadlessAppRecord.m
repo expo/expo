@@ -76,6 +76,9 @@
 - (void)reactAppManagerDidInvalidate:(EXReactAppManager *)appManager {}
 - (void)reactAppManagerFinishedLoadingJavaScript:(EXReactAppManager *)appManager {}
 - (void)reactAppManagerStartedLoadingJavaScript:(EXReactAppManager *)appManager {}
+- (void)reactAppManagerAppContentDidAppear:(EXReactAppManager *)appManager {}
+- (void)reactAppManagerAppContentWillReload:(EXReactAppManager *)appManager {}
+
 
 # pragma mark - EXAppLoaderDelegate
 
