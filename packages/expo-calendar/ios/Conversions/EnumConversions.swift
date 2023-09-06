@@ -61,6 +61,19 @@ func participant(role: EKParticipantRole) -> String {
   }
 }
 
+func recurrenceFrequency(name: String) -> EKRecurrenceFrequency {
+  switch name {
+  case "weekly":
+    return .weekly
+  case "monthly":
+    return .monthly
+  case "yearly":
+    return .yearly
+  default:
+    return .daily
+  }
+}
+
 func participant(type: EKParticipantType) -> String {
   switch type {
   case .unknown:

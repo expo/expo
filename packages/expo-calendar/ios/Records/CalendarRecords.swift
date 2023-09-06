@@ -47,9 +47,9 @@ struct Event: Record {
   @Field
   var location: String
   @Field
-  var creationDate: String?
+  var creationDate: Either<String, Double>?
   @Field
-  var lastModifiedDate: String?
+  var lastModifiedDate: Either<String, Double>?
   @Field
   var timeZone: String?
   @Field
@@ -61,15 +61,15 @@ struct Event: Record {
   @Field
   var recurrenceRule: RecurrenceRule?
   @Field
-  var startDate: String
+  var startDate: Either<String, Double>?
   @Field
-  var endDate: String
+  var endDate: Either<String, Double>?
   @Field
   var originalStartDate: String?
   @Field
   var isDetached: Bool?
   @Field
-  var instanceStartDate: String?
+  var instanceStartDate: Either<String, Double>?
   @Field
   var allDay: Bool
   @Field
@@ -95,9 +95,9 @@ struct Reminder: Record {
   @Field
   var location: String?
   @Field
-  var creationDate: String?
+  var creationDate: Either<String, Double>?
   @Field
-  var lastModifiedDate: String?
+  var lastModifiedDate: Either<String, Double>?
   @Field
   var timeZone: String?
   @Field
@@ -109,11 +109,11 @@ struct Reminder: Record {
   @Field
   var recurrenceRule: RecurrenceRule?
   @Field
-  var startDate: String?
+  var startDate: Either<String, Double>?
   @Field
-  var dueDate: String?
+  var dueDate: Either<String, Double>?
   @Field
   var completed: Bool?
   @Field
-  var completionDate: String?
+  var completionDate: Either<String, Double>?
 }

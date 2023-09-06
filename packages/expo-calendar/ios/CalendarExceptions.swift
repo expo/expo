@@ -95,3 +95,9 @@ internal class EventIdRequiredException: Exception {
     "Event Id is required"
   }
 }
+
+internal class InvalidStatusExceptions: GenericException<String> {
+  override var reason: String {
+    "`\(param)` is not a valid reminder status"
+  }
+}

@@ -7,7 +7,7 @@ struct RecurrenceRule: Record {
   @Field
   var interval: Int?
   @Field
-  var endDate: String?
+  var endDate: Either<String, Double>?
   @Field
   var occurrence: Int?
   @Field

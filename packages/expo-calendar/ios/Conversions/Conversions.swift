@@ -178,11 +178,11 @@ func serializeCalendar(item: EKCalendarItem, with formatter: DateFormatter) -> [
 
 func serialize(reminders: [EKReminder]) -> [[String: Any?]] {
   reminders.map { reminder in
-    serialize(reminder: reminder)
+    serialize(reminder)
   }
 }
 
-func serialize(reminder: EKReminder) -> [String: Any?] {
+func serialize(_ reminder: EKReminder) -> [String: Any?] {
   let currentCalendar = Calendar.current
   var serializedReminder = serializeCalendar(item: reminder, with: dateFormatter)
 
