@@ -132,46 +132,44 @@ func serializeCalendar(item: EKCalendarItem, with formatter: DateFormatter) -> [
     serailizedItem["alarms"] = serialize(alarms: alarms, with: formatter)
   }
 
-  if item.hasRecurrenceRules {
-    if let rule = item.recurrenceRules?.first {
-      let frequencyType = recurrence(frequency: rule.frequency)
-      var recurrenceRule: [String: Any?] = ["frequency": frequencyType]
-
-      recurrenceRule["interval"] = rule.interval
-
-      if let endDate = rule.recurrenceEnd?.endDate {
-        recurrenceRule["endDate"] = formatter.string(from: endDate)
-      }
-
-      recurrenceRule["occurrence"] = rule.recurrenceEnd?.occurrenceCount
-
-      if let daysOfTheWeek = rule.daysOfTheWeek {
-        recurrenceRule["daysOfTheWeek"] = daysOfTheWeek.map({ day in
-          [
-            "dayOfTheWeek": day.dayOfTheWeek,
-            "weekNumber": day.weekNumber
-          ]
-        })
-      }
-
-      if let daysOfTheMonth = rule.daysOfTheMonth {
-        recurrenceRule["daysOfTheMonth"] = daysOfTheMonth
-      }
-
-      if let daysOfTheYear = rule.daysOfTheYear {
-        recurrenceRule["daysOfTheYear"] = daysOfTheYear
-      }
-
-      if let monthsOfTheYear = rule.monthsOfTheYear {
-        recurrenceRule["monthsOfTheYear"] = monthsOfTheYear
-      }
-
-      if let setPositions = rule.setPositions {
-        recurrenceRule["setPositions"] = setPositions
-      }
-
-      serailizedItem["recurrenceRule"] = recurrenceRule
+  if let rule = item.recurrenceRules?.first {
+    let frequencyType = recurrence(frequency: rule.frequency)
+    var recurrenceRule: [String: Any?] = ["frequency": frequencyType]
+    
+    recurrenceRule["interval"] = rule.interval
+    
+    if let endDate = rule.recurrenceEnd?.endDate {
+      recurrenceRule["endDate"] = formatter.string(from: endDate)
     }
+    
+    recurrenceRule["occurrence"] = rule.recurrenceEnd?.occurrenceCount
+    
+    if let daysOfTheWeek = rule.daysOfTheWeek {
+      recurrenceRule["daysOfTheWeek"] = daysOfTheWeek.map({ day in
+        [
+          "dayOfTheWeek": day.dayOfTheWeek,
+          "weekNumber": day.weekNumber
+        ]
+      })
+    }
+    
+    if let daysOfTheMonth = rule.daysOfTheMonth {
+      recurrenceRule["daysOfTheMonth"] = daysOfTheMonth
+    }
+    
+    if let daysOfTheYear = rule.daysOfTheYear {
+      recurrenceRule["daysOfTheYear"] = daysOfTheYear
+    }
+    
+    if let monthsOfTheYear = rule.monthsOfTheYear {
+      recurrenceRule["monthsOfTheYear"] = monthsOfTheYear
+    }
+    
+    if let setPositions = rule.setPositions {
+      recurrenceRule["setPositions"] = setPositions
+    }
+    
+    serailizedItem["recurrenceRule"] = recurrenceRule
   }
   return serailizedItem
 }

@@ -42,6 +42,7 @@ func createRecurrenceRule(rule: RecurrenceRule) -> EKRecurrenceRule? {
     EKRecurrenceDayOfWeek(day.dayOfTheWeek.toEKType(), weekNumber: day.weekNumber)
   }
 
+  // swiftlint:disable legacy_objc_type
   let daysOfTheMonth = rule.daysOfTheMonth?.map {
     NSNumber(value: $0)
   }
@@ -57,7 +58,8 @@ func createRecurrenceRule(rule: RecurrenceRule) -> EKRecurrenceRule? {
   let setPositions = rule.setPositions?.map {
     NSNumber(value: $0)
   }
-
+  // swiftlint:enable legacy_objc_type
+  
   var recurrenceEnd: EKRecurrenceEnd?
   var recurrenceInterval = 1
 
