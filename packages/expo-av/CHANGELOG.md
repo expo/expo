@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [ios] Fixed the `LOW_QUALITY` preset producing large audio files.
+
 ### 💡 Others
 
 ## 13.6.0 — 2023-09-04

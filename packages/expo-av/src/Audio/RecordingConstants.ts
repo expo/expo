@@ -127,9 +127,10 @@ const LOW_QUALITY: RecordingOptions = {
   ios: {
     extension: '.caf',
     audioQuality: IOSAudioQuality.MIN,
+    outputFormat: IOSOutputFormat.MPEG4AAC,
     sampleRate: 44100,
     numberOfChannels: 2,
-    bitRate: 128000,
+    bitRate: 64000,
     linearPCMBitDepth: 16,
     linearPCMIsBigEndian: false,
     linearPCMIsFloat: false,
