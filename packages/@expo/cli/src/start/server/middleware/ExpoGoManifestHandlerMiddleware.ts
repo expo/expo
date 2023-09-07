@@ -104,7 +104,7 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
     );
 
     const runtimeVersion = await Updates.getRuntimeVersionAsync(
-      exp._internal?.projectRoot,
+      this.projectRoot,
       { ...exp, runtimeVersion: exp.runtimeVersion ?? { policy: 'sdkVersion' } },
       requestOptions.platform
     );
