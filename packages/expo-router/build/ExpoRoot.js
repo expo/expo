@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
 import { StatusBar } from 'expo-status-bar';
 import React, { Fragment } from 'react';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import UpstreamNavigationContainer from './fork/NavigationContainer';
 import { useInitializeExpoRouter } from './global-state/router-store';
@@ -18,7 +18,7 @@ const hasViewControllerBasedStatusBarAppearance = Platform.OS === 'ios' &&
 export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }) {
     /*
      * Due to static rendering we need to wrap these top level views in second wrapper
-     * View's like <GestureHandlerRootView /> generate a <div> so if the parent wrapper
+     * View's like <SafeAreaProvider /> generate a <div> so if the parent wrapper
      * is a HTML document, we need to ensure its inside the <body>
      */
     const wrapper = ({ children }) => {
@@ -57,7 +57,4 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
         React.createElement(WrapperComponent, null,
             React.createElement(Component, null))));
 }
-const styles = StyleSheet.create({
-    gesture: { flex: 1 },
-});
 //# sourceMappingURL=ExpoRoot.js.map
