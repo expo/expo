@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for running raw queries on Android.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

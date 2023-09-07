@@ -340,6 +340,50 @@ export function test(t) {
       });
     }
 
+    t.it('should support the `RETURNING` clause using raw queries', async () => {
+      const db = SQLite.openDatabase('test.db');
+      await new Promise((resolve, reject) => {
+        db.transaction(
+          (tx) => {
+            const nop = () => {};
+            const onError = (_, error) => {
+              reject(error);
+              return false;
+            };
+
+            tx.executeSql('DROP TABLE IF EXISTS customers;', [], nop, onError);
+            tx.executeSql(
+              'CREATE TABLE customers (id PRIMARY KEY NOT NULL, name VARCHAR(255),email VARCHAR(255));',
+              [],
+              nop,
+              onError
+            );
+          },
+          reject,
+          () => {
+            resolve(null);
+          }
+        );
+      });
+
+      db.execRawQuery(
+        [
+          {
+            // Unsupprted on Android using the `exec` function
+            sql: "INSERT INTO customers (name, email) VALUES ('John Doe', 'john@example.com') RETURNING name, email",
+            args: [],
+          },
+        ],
+        false,
+        (tx, results) => {
+          // @ts-expect-error
+          t.expect(results.rows[0].email).toBe('john@example.com');
+          // @ts-expect-error
+          t.expect(results.rows[0].name).toBe('John Doe');
+        }
+      );
+    });
+
     t.it('should return correct rowsAffected value', async () => {
       const db = SQLite.openDatabase('test.db');
       await new Promise((resolve, reject) => {
