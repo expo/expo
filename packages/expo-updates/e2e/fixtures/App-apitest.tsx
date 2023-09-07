@@ -31,12 +31,12 @@ export default function App() {
 function UpdatesStatusView(props: { index: number }) {
   const [updateMessage, setUpdateMessage] = React.useState('');
   const [isRollback, setIsRollback] = React.useState(false);
-  const [noUpdateMessage, setNoUpdateMessage] = React.useState('');
+  const [noUpdateReason, setNoUpdateReason] = React.useState('');
 
   // Displays a message showing whether or not the app is running
   // a downloaded update
   const runTypeMessage =
-    `isEmbeddedLaunch = ${Updates.isEmbeddedLaunch}\n` + `noUpdateMessage = ${noUpdateMessage}`;
+    `isEmbeddedLaunch = ${Updates.isEmbeddedLaunch}\n` + `noUpdateReason = ${noUpdateReason}`;
 
   const checkAutomaticallyMessage = `Automatic check setting = ${Updates.checkAutomatically}`;
 
@@ -112,7 +112,7 @@ function UpdatesStatusView(props: { index: number }) {
   const handleCheckButtonPress = () => {
     Updates.checkForUpdateAsync().then((result) => {
       if (result.isAvailable === false) {
-        setNoUpdateMessage(result.message ?? '');
+        setNoUpdateReason(result.reason ?? '');
       }
     });
   };
