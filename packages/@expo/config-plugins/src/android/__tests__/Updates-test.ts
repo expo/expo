@@ -234,6 +234,9 @@ describe('Android Updates config', () => {
       const stringsJSON = await readResourcesXMLAsync({ path: stringsPath });
       const config = {
         runtimeVersion: '1.10',
+        modRequest: {
+          projectRoot: '/',
+        },
       };
       await Updates.applyRuntimeVersionFromConfigAsync(config, stringsJSON);
       expect(format(stringsJSON)).toEqual(
@@ -242,6 +245,9 @@ describe('Android Updates config', () => {
 
       const config2 = {
         sdkVersion: '1.10',
+        modRequest: {
+          projectRoot: '/',
+        },
       };
       await Updates.applyRuntimeVersionFromConfigAsync(config2, stringsJSON);
       expect(format(stringsJSON)).toEqual('<resources/>');
