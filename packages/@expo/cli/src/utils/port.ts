@@ -15,6 +15,51 @@ export async function getFreePortAsync(rangeStart: number): Promise<number> {
   return port;
 }
 
+/** @return `true` if the port can still be used to start the dev server, `false` if the dev server should be skipped, and asserts if the port is now taken. */
+export async function ensurePortAvailabilityAsync(projectRoot: string, { port }: { port: number }) {
+  const freePort = await freeportAsync(port, { hostnames: [null] });
+  // Check if port has become busy during the build.
+  if (freePort !== port) {
+    const isBusy = await isBusyPortRunningSameProcessAsync(projectRoot, { port });
+    if (!isBusy) {
+      throw new CommandError(
+        `Port "${port}" became busy running another process while the app was compiling. Re-run command to use a new port.`
+      );
+    }
+
+    // Log that the dev server will not be started and that the logs will appear in another window.
+    Log.log(
+      '› The dev server for this app is already running in another window. Logs will appear there.'
+    );
+    return false;
+  }
+
+  return true;
+}
+
+async function isRestrictedPortAsync(port: number) {
+  if (process.platform !== 'win32' && port < 1024) {
+    const isRoot = await import('is-root');
+    return !isRoot.default();
+  }
+  return false;
+}
+
+async function isBusyPortRunningSameProcessAsync(projectRoot: string, { port }: { port: number }) {
+  const { getRunningProcess } = await import('./getRunningProcess');
+
+  const runningProcess = (await isRestrictedPortAsync(port)) ? null : getRunningProcess(port);
+  if (runningProcess) {
+    if (runningProcess.directory === projectRoot) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  return null;
+}
+
 // TODO(Bacon): Revisit after all start and run code is merged.
 export async function choosePortAsync(
   projectRoot: string,
@@ -28,11 +73,9 @@ export async function choosePortAsync(
     reuseExistingPort?: boolean;
   }
 ): Promise<number | null> {
-  const [{ getRunningProcess }, { confirmAsync }, isRoot, Log] = await Promise.all([
+  const [{ getRunningProcess }, { confirmAsync }] = await Promise.all([
     import('./getRunningProcess'),
     import('./prompts'),
-    import('is-root'),
-    import('../log'),
   ]);
 
   try {
@@ -41,7 +84,7 @@ export async function choosePortAsync(
       return port;
     }
 
-    const isRestricted = process.platform !== 'win32' && defaultPort < 1024 && !isRoot.default();
+    const isRestricted = await isRestrictedPortAsync(port);
 
     let message = isRestricted
       ? `Admin permissions are required to run a server on a port below 1024`

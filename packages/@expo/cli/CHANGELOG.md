@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Add additional port check after build to ensure port is still available.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
