@@ -54,7 +54,7 @@ object ExceptionUtils {
     }
   }
 
-  fun exceptionToErrorHeader(exception: Exception) : String? {
+  fun exceptionToErrorHeader(exception: Exception): String? {
     if (exception is ManifestException) {
       return exception.errorHeader
     }

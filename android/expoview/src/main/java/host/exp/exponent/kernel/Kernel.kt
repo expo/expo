@@ -932,7 +932,7 @@ class Kernel : KernelInterface() {
   }
 
   override fun handleError(errorMessage: String) {
-    handleReactNativeError(developerErrorMessage(errorMessage),  null, -1, true)
+    handleReactNativeError(developerErrorMessage(errorMessage), null, -1, true)
   }
 
   override fun handleError(exception: Exception) {
@@ -1085,7 +1085,7 @@ class Kernel : KernelInterface() {
       exceptionId: Int?,
       isFatal: Boolean,
       errorHeader: String? = null,
-      ) {
+    ) {
       val stackList = ArrayList<Bundle>()
       if (detailsUnversioned != null) {
         val details = RNObject.wrap(detailsUnversioned)

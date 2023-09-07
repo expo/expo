@@ -69,10 +69,10 @@ class ManifestException : ExponentException {
 
                 formattedMessage =
                   "This project was set to use SDK $sdkVersionRequired, but this version of Expo Go supports only SDKs $supportedSdks.<br><br>" +
-                    "To successfully open this project you can:<br>" +
-                    "• Update it to a version that's compatible with your Expo Go<br>" +
-                    "• Install an older version of Expo Go that supports the project's SDK version.<br><br>" +
-                    "If you are unsure how to update the project or install a suitable version of Expo Go, check out the <a href='https://docs.expo.dev/get-started/expo-go/#sdk-versions'>SDK Versions Guide</a>."
+                  "To successfully open this project you can:<br>" +
+                  "• Update it to a version that's compatible with your Expo Go<br>" +
+                  "• Install an older version of Expo Go that supports the project's SDK version.<br><br>" +
+                  "If you are unsure how to update the project or install a suitable version of Expo Go, check out the <a href='https://docs.expo.dev/get-started/expo-go/#sdk-versions'>SDK Versions Guide</a>."
               }
               "NO_SDK_VERSION_SPECIFIED" -> {
                 formattedMessage =
