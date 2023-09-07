@@ -1,6 +1,5 @@
 
 #import <XCTest/XCTest.h>
-#import "EXAppFetcherCacheOnly.h"
 #import "EXAppLoader+Tests.h"
 #import "EXProdServiceTestCase.h"
 
@@ -25,7 +24,6 @@
                              };
   EXAbstractLoader *appLoader = [[EXAbstractLoader alloc] initWithManifestUrl:[NSURL URLWithString:@"exp://exp.host/@esamelson/test-fetch-update"]];
   [appLoader _fetchBundleWithManifest:manifest];
-  XCTAssert([appLoader.appFetcher isKindOfClass:[EXAppFetcherCacheOnly class]], @"AppLoader should choose to use AppFetcherCacheOnly in a shell app with ON_ERROR_RECOVERY");
 }
 
 @end

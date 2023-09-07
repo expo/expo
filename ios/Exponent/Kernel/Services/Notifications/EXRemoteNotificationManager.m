@@ -85,28 +85,6 @@ typedef void(^EXRemoteNotificationAPNSTokenHandler)(NSData * _Nullable apnsToken
   }];
 }
 
-- (void)registerAPNSToken:(nullable NSData *)token registrationError:(nullable NSError *)error
-{
-  dispatch_assert_queue(_queue);
-
-  BOOL tokenDidChange = (token != _currentAPNSToken) && ![token isEqualToData:_currentAPNSToken];
-  if (tokenDidChange) {
-    _currentAPNSToken = token;
-    _isPostingCurrentToken = NO;
-  }
-
-  // Invoke the blocks waiting for the new APNS token
-  NSArray<EXRemoteNotificationAPNSTokenHandler> *apnsTokenHandlers = [_apnsTokenHandlers copy];
-  [_apnsTokenHandlers removeAllObjects];
-  [apnsTokenHandlers enumerateObjectsUsingBlock:^(EXRemoteNotificationAPNSTokenHandler handler,
-                                                  NSUInteger idx,
-                                                  BOOL *stop) {
-    handler(token, error);
-  }];
-
-  [self _synchronizeCurrentAPNSToken:token];
-}
-
 #pragma mark - scoped module delegate
 
 - (void)getApnsTokenForScopedModule:(id)scopedModule
@@ -192,35 +170,6 @@ typedef void(^EXRemoteNotificationAPNSTokenHandler)(NSData * _Nullable apnsToken
 }
 
 #pragma mark - Internal
-
-- (void)_synchronizeCurrentAPNSToken:(NSData *)currentToken
-{
-  if (!currentToken) {
-    [NSUserDefaults.standardUserDefaults removeObjectForKey:kEXCurrentAPNSTokenDefaultsKey];
-    return;
-  }
-
-  NSData *postedToken = [NSUserDefaults.standardUserDefaults objectForKey:kEXCurrentAPNSTokenDefaultsKey];
-  if ([currentToken isEqualToData:postedToken] || _isPostingCurrentToken) {
-    return;
-  }
-
-  _isPostingCurrentToken = YES;
-  [[EXApiV2Client sharedClient] updateDeviceToken:currentToken completionHandler:^(NSError * _Nullable error) {
-    dispatch_async(self->_queue, ^{
-      if (error) {
-        DDLogWarn(@"Failed to send the APNS token to the Expo server: %@", error);
-      }
-
-      if ([currentToken isEqualToData:self->_currentAPNSToken]) {
-        self->_isPostingCurrentToken = NO;
-        if (!error) {
-          [NSUserDefaults.standardUserDefaults setObject:currentToken forKey:kEXCurrentAPNSTokenDefaultsKey];
-        }
-      }
-    });
-  }];
-}
 
 - (void)_canRegisterForRemoteNotificationsWithCompletionHandler:(void (^)(BOOL can))handler
 {
