@@ -1,7 +1,3 @@
-import { requireNativeModule } from 'expo-modules-core';
+import { requireOptionalNativeModule } from 'expo-modules-core';
 
-let ExponentConstants;
-try {
-  ExponentConstants = requireNativeModule('ExponentConstants');
-} catch {}
-export default ExponentConstants;
+export default requireOptionalNativeModule('ExponentConstants');

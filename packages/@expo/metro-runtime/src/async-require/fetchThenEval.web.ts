@@ -14,7 +14,7 @@ export function fetchThenEvalAsync(
   }: { scriptType?: string; nonce?: string; crossOrigin?: string } = {}
 ): Promise<void> {
   if (typeof document === 'undefined') {
-    throw new Error('Cannot use fetchThenEvalAsync in a non-browser environment.');
+    return require('./fetchThenEvalJs').fetchThenEvalAsync(url);
   }
   return new Promise<void>((resolve, reject) => {
     const script = document.createElement('script');
