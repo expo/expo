@@ -24,47 +24,11 @@ class SQLiteModule : Module() {
     Name("ExpoSQLite")
 
     AsyncFunction("exec") { dbName: String, queries: List<Query>, readOnly: Boolean ->
-      val db = getDatabase(dbName)
-      val results = queries.map { sqlQuery ->
-        val sql = sqlQuery.sql
-        val bindArgs = convertParamsToStringArray(sqlQuery.args)
-        try {
-          if (isSelect(sql)) {
-            doSelectInBackgroundAndPossiblyThrow(sql, bindArgs, db)
-          } else { // update/insert/delete
-            if (readOnly) {
-              SQLitePluginResult(EMPTY_ROWS, EMPTY_COLUMNS, 0, 0, ReadOnlyException())
-            } else {
-              doUpdateInBackgroundAndPossiblyThrow(sql, bindArgs, db)
-            }
-          }
-        } catch (e: Throwable) {
-          SQLitePluginResult(EMPTY_ROWS, EMPTY_COLUMNS, 0, 0, e)
-        }
-      }
-      return@AsyncFunction pluginResultsToPrimitiveData(results)
+      return@AsyncFunction execute(dbName, queries, readOnly)
     }
 
     AsyncFunction("execRawQuery") { dbName: String, queries: List<Query>, readOnly: Boolean ->
-      val db = getDatabase(dbName)
-      val results = queries.map { sqlQuery ->
-        val sql = sqlQuery.sql
-        val bindArgs = convertParamsToStringArray(sqlQuery.args)
-        try {
-          if (isSelect(sql)) {
-            doSelectInBackgroundAndPossiblyThrow(sql, bindArgs, db)
-          } else { // update/insert/delete
-            if (readOnly) {
-              SQLitePluginResult(EMPTY_ROWS, EMPTY_COLUMNS, 0, 0, ReadOnlyException())
-            } else {
-              doRawUpdate(sql, bindArgs, db)
-            }
-          }
-        } catch (e: Throwable) {
-          SQLitePluginResult(EMPTY_ROWS, EMPTY_COLUMNS, 0, 0, e)
-        }
-      }
-      return@AsyncFunction pluginResultsToPrimitiveData(results)
+      return@AsyncFunction execute(dbName, queries, readOnly, raw = true)
     }
 
     AsyncFunction("close") { dbName: String ->
@@ -91,6 +55,32 @@ class SQLiteModule : Module() {
         throw DeleteDatabaseException(dbName)
       }
     }
+  }
+
+  private fun execute(dbName: String, queries: List<Query>, readOnly: Boolean, raw: Boolean = false): List<Any> {
+    val db = getDatabase(dbName)
+    val results = queries.map { sqlQuery ->
+      val sql = sqlQuery.sql
+      val bindArgs = convertParamsToStringArray(sqlQuery.args)
+      try {
+        if (isSelect(sql)) {
+          doSelectInBackgroundAndPossiblyThrow(sql, bindArgs, db)
+        } else { // update/insert/delete
+          if (readOnly) {
+            SQLitePluginResult(EMPTY_ROWS, EMPTY_COLUMNS, 0, 0, ReadOnlyException())
+          } else {
+            if (raw) {
+              doRawUpdate(sql, bindArgs, db)
+            } else {
+              doUpdateInBackgroundAndPossiblyThrow(sql, bindArgs, db)
+            }
+          }
+        }
+      } catch (e: Throwable) {
+        SQLitePluginResult(EMPTY_ROWS, EMPTY_COLUMNS, 0, 0, e)
+      }
+    }
+    return pluginResultsToPrimitiveData(results)
   }
 
   // do a update/delete/insert operation
