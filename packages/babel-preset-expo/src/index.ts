@@ -1,4 +1,4 @@
-const lazyImportsBlacklist = require('./lazy-imports-blacklist');
+const lazyImportsBlacklist = require('babel-preset-expo/lazy-imports-blacklist');
 
 let hasWarnedJsxRename = false;
 
@@ -110,7 +110,6 @@ module.exports = function (api, options = {}) {
       getAliasPlugin(),
       [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
       platform === 'web' && [require.resolve('babel-plugin-react-native-web')],
-      isWebpack && platform !== 'web' && [require.resolve('./plugins/disable-ambiguous-requires')],
       require.resolve('@babel/plugin-proposal-export-namespace-from'),
 
       // Automatically add `react-native-reanimated/plugin` when the package is installed.

@@ -4,11 +4,15 @@
 
 ### 🛠 Breaking changes
 
+- Remove experimental native Webpack support.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Re-write in TypeScript.
 
 ## 9.6.2 — 2023-09-04
 
