@@ -12,6 +12,7 @@
 
 ### 💡 Others
 
+- Drop warning for invalid property `useTransformReactJsxExperimental`.
 - Re-write in TypeScript.
 
 ## 9.6.2 — 2023-09-04

@@ -3,8 +3,6 @@
 // @ts-ignore
 import lazyImportsBlacklist from 'babel-preset-expo/lazy-imports-blacklist';
 
-let hasWarnedJsxRename = false;
-
 import { ConfigAPI, PluginItem, TransformOptions } from '@babel/core';
 
 type BabelPresetExpoPlatformOptions = {
@@ -46,7 +44,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
       ? {
           // Only disable import/export transform when Webpack is used because
           // Metro does not support tree-shaking.
-          disableImportExportTransform: !!isWebpack,
+          disableImportExportTransform: isWebpack,
           ...web,
         }
       : { disableImportExportTransform: false, ...native };
@@ -55,15 +53,12 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   // `metro-react-native-babel-preset` will handle it.
   const lazyImportsOption = options?.lazyImports;
 
-  const extraPlugins: PluginItem[] = [getObjectRestSpreadPlugin()];
-
-  if ('useTransformReactJsxExperimental' in platformOptions && !hasWarnedJsxRename) {
-    // https://github.com/expo/expo/pull/13945#pullrequestreview-724327024
-    hasWarnedJsxRename = true;
-    console.warn(
-      'Warning: useTransformReactJsxExperimental has been renamed to useTransformReactJSXExperimental (capitalized JSX) in react-native@0.64.0'
-    );
-  }
+  const extraPlugins: PluginItem[] = [
+    // `metro-react-native-babel-preset` configures this plugin with `{ loose: true }`, which breaks all
+    // getters and setters in spread objects. We need to add this plugin ourself without that option.
+    // @see https://github.com/expo/expo/pull/11960#issuecomment-887796455
+    [require.resolve('@babel/plugin-proposal-object-rest-spread'), { loose: false }],
+  ];
 
   // Set true to disable `@babel/plugin-transform-react-jsx`
   // we override this logic outside of the metro preset so we can add support for
@@ -141,9 +136,9 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     ],
     plugins: [
       ...extraPlugins,
+      // TODO: Remove
       [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
       require.resolve('@babel/plugin-proposal-export-namespace-from'),
-
       // Automatically add `react-native-reanimated/plugin` when the package is installed.
       // TODO: Move to be a customTransformOption.
       hasModule('react-native-reanimated') &&
@@ -166,15 +161,6 @@ function getAliasPlugin(): PluginItem | null {
   ];
 }
 
-/**
- * `metro-react-native-babel-preset` configures this plugin with `{ loose: true }`, which breaks all
- * getters and setters in spread objects. We need to add this plugin ourself without that option.
- * @see https://github.com/expo/expo/pull/11960#issuecomment-887796455
- */
-function getObjectRestSpreadPlugin(): PluginItem {
-  return [require.resolve('@babel/plugin-proposal-object-rest-spread'), { loose: false }];
-}
-
 function hasModule(name: string): boolean {
   try {
     return !!require.resolve(name);
@@ -190,11 +176,9 @@ function hasModule(name: string): boolean {
 function getBundler(caller: any) {
   if (!caller) return null;
   if (caller.bundler) return caller.bundler;
-  if (caller.name === 'next-babel-turbo-loader') {
-    // NextJS 11
-    return 'webpack';
-  } else if (caller.name === 'babel-loader') {
+  if (caller.name === 'next-babel-turbo-loader' || caller.name === 'babel-loader') {
     // expo/webpack-config, gatsby, storybook, and next.js <10
+    // NextJS 11
     return 'webpack';
   }
 
