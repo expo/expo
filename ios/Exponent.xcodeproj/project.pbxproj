@@ -247,7 +247,6 @@
 		F14218C6262CB68600BB97E6 /* EXHomeAppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B56C65C4204768F2002B2424 /* EXHomeAppManager.m */; };
 		F14218C9262CB68600BB97E6 /* EXUpdatesBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 07C6733024D220A4003F3F5C /* EXUpdatesBinding.m */; };
 		F14218CB262CB68600BB97E6 /* EXDevMenuMotionInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F108698A2448B11D00B7DC04 /* EXDevMenuMotionInterceptor.m */; };
-		F14218CC262CB68600BB97E6 /* EXUtilService.m in Sources */ = {isa = PBXBuildFile; fileRef = F167C43A209C7EE600F01382 /* EXUtilService.m */; };
 		F14218CE262CB68600BB97E6 /* EXUpdatesDatabaseManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0761342324DB63AC001375B6 /* EXUpdatesDatabaseManager.m */; };
 		F14218D2262CB68600BB97E6 /* EXReactAppExceptionHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B5D0D671204F4C0400DDFC99 /* EXReactAppExceptionHandler.m */; };
 		F14218DC262CB68600BB97E6 /* EXApiUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B5D0D661204F4C0400DDFC99 /* EXApiUtil.m */; };
@@ -276,7 +275,6 @@
 		F142191E262CB68600BB97E6 /* ExpoNotificationServiceExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = FCF6D36D25B34BC200808BF5 /* ExpoNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F151B1122A5C6881001BB70F /* VersionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F151B1112A5C6880001BB70F /* VersionManager.swift */; };
 		F156867823E19E3D0029DF16 /* EXKernelDevKeyCommands.m in Sources */ = {isa = PBXBuildFile; fileRef = F156867723E19E3C0029DF16 /* EXKernelDevKeyCommands.m */; };
-		F167C43B209C7EE600F01382 /* EXUtilService.m in Sources */ = {isa = PBXBuildFile; fileRef = F167C43A209C7EE600F01382 /* EXUtilService.m */; };
 		F1C3E81E2A5F0E3C0037BC7A /* EXVersionUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = F11AEFE52A5EE20C00D49170 /* EXVersionUtils.mm */; };
 		F1D6AF61244714C100AC1C74 /* EXDevMenuGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = F1D6AF60244714C100AC1C74 /* EXDevMenuGestureRecognizer.m */; };
 		F1D6AF64244720E100AC1C74 /* EXDevMenuManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F1D6AF63244720E100AC1C74 /* EXDevMenuManager.m */; };
@@ -623,8 +621,6 @@
 		F151B1112A5C6880001BB70F /* VersionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VersionManager.swift; sourceTree = "<group>"; };
 		F156867623E19E3C0029DF16 /* EXKernelDevKeyCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelDevKeyCommands.h; sourceTree = "<group>"; };
 		F156867723E19E3C0029DF16 /* EXKernelDevKeyCommands.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernelDevKeyCommands.m; sourceTree = "<group>"; };
-		F167C439209C7EE600F01382 /* EXUtilService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXUtilService.h; sourceTree = "<group>"; };
-		F167C43A209C7EE600F01382 /* EXUtilService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXUtilService.m; sourceTree = "<group>"; };
 		F1D6AF5F244714C100AC1C74 /* EXDevMenuGestureRecognizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXDevMenuGestureRecognizer.h; sourceTree = "<group>"; };
 		F1D6AF60244714C100AC1C74 /* EXDevMenuGestureRecognizer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXDevMenuGestureRecognizer.m; sourceTree = "<group>"; };
 		F1D6AF62244720E100AC1C74 /* EXDevMenuManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXDevMenuManager.h; sourceTree = "<group>"; };
@@ -1179,8 +1175,6 @@
 				0761342324DB63AC001375B6 /* EXUpdatesDatabaseManager.m */,
 				07295CD720559E6200ED42D4 /* EXUpdatesManager.h */,
 				07295CD820559E7300ED42D4 /* EXUpdatesManager.m */,
-				F167C439209C7EE600F01382 /* EXUtilService.h */,
-				F167C43A209C7EE600F01382 /* EXUtilService.m */,
 				31361A5F2261C65A00662769 /* EXPermissionsManager.h */,
 				31361A602261C65A00662769 /* EXPermissionsManager.m */,
 			);
@@ -2162,7 +2156,6 @@
 				B2E2CCCA2AA7DAD400E2260C /* ManifestAndAssetRequestHeaders.swift in Sources */,
 				F108698B2448B11D00B7DC04 /* EXDevMenuMotionInterceptor.m in Sources */,
 				B2E2CCD02AA7DF9C00E2260C /* HomeAppLoaderTask.swift in Sources */,
-				F167C43B209C7EE600F01382 /* EXUtilService.m in Sources */,
 				F138E0D32A5F1AE9002E15BC /* EXVersionUtils.mm in Sources */,
 				0761342424DB63AC001375B6 /* EXUpdatesDatabaseManager.m in Sources */,
 				B5D0D67A204F4C0400DDFC99 /* EXReactAppExceptionHandler.m in Sources */,
@@ -2315,7 +2308,6 @@
 				F14218C6262CB68600BB97E6 /* EXHomeAppManager.m in Sources */,
 				F14218C9262CB68600BB97E6 /* EXUpdatesBinding.m in Sources */,
 				F14218CB262CB68600BB97E6 /* EXDevMenuMotionInterceptor.m in Sources */,
-				F14218CC262CB68600BB97E6 /* EXUtilService.m in Sources */,
 				F14218CE262CB68600BB97E6 /* EXUpdatesDatabaseManager.m in Sources */,
 				F14218D2262CB68600BB97E6 /* EXReactAppExceptionHandler.m in Sources */,
 				B2E2CCC82AA7D33E00E2260C /* HomeAppLoader.swift in Sources */,
