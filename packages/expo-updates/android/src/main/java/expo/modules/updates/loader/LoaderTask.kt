@@ -54,6 +54,33 @@ class LoaderTask(
     ERROR, NO_UPDATE_AVAILABLE, UPDATE_AVAILABLE
   }
 
+  enum class RemoteCheckResultNotAvailableReason(val value: String) {
+    /**
+     * No update manifest or rollback directive received from the update server.
+     */
+    UPDATE_NOT_AVAILABLE_ON_SERVER("updateNotAvailableOnServer"),
+    /**
+     * An update manifest was received from the update server, but the update is not launchable, or does not pass the configured selection policy.
+     */
+    UPDATE_REJECTED_BY_SELECTION_POLICY("updateRejectedBySelectionPolicy"),
+    /**
+     * An update manifest was received from the update server, but the update has been previously launched on this device and never successfully launched.
+     */
+    UPDATE_PREVIOUSLY_FAILED("updatePreviouslyFailed"),
+    /**
+     * An update manifest was received from the update server, but the update is not launchable, or does not pass the configured selection policy.
+     */
+    ROLLBACK_REJECTED_BY_SELECTION_POLICY("rollbackRejectedBySelectionPolicy"),
+    /**
+     * A rollback directive was received from the update server, but this app is not configured to have an embedded update.
+     */
+    ROLLBACK_NO_EMBEDDED_CONFIGURATION("rollbackNoEmbeddedConfiguration"),
+    /**
+     * A rollback directive was received from the update server, but no embedded manifest was found.
+     */
+    ROLLBACK_NO_EMBEDDED_MANIFEST_FOUND("rollbackNoEmbeddedManifestFound")
+  }
+
   sealed class RemoteCheckResult(private val status: Status) {
     private enum class Status {
       NO_UPDATE_AVAILABLE,
@@ -61,7 +88,7 @@ class LoaderTask(
       ROLL_BACK_TO_EMBEDDED
     }
 
-    class NoUpdateAvailable(val message: String?) : RemoteCheckResult(Status.NO_UPDATE_AVAILABLE)
+    class NoUpdateAvailable(val reason: RemoteCheckResultNotAvailableReason) : RemoteCheckResult(Status.NO_UPDATE_AVAILABLE)
     class UpdateAvailable(val manifest: JSONObject) : RemoteCheckResult(Status.UPDATE_AVAILABLE)
     class RollBackToEmbedded(val commitTime: Date) : RemoteCheckResult(Status.ROLL_BACK_TO_EMBEDDED)
   }
@@ -341,7 +368,7 @@ class LoaderTask(
                 }
                 is UpdateDirective.NoUpdateAvailableUpdateDirective -> {
                   isUpToDate = true
-                  callback.onRemoteCheckForUpdateFinished(RemoteCheckResult.NoUpdateAvailable(null))
+                  callback.onRemoteCheckForUpdateFinished(RemoteCheckResult.NoUpdateAvailable(RemoteCheckResultNotAvailableReason.UPDATE_NOT_AVAILABLE_ON_SERVER))
                   Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
                 }
               }
@@ -350,7 +377,7 @@ class LoaderTask(
             val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
             if (updateManifest == null) {
               isUpToDate = true
-              callback.onRemoteCheckForUpdateFinished(RemoteCheckResult.NoUpdateAvailable(null))
+              callback.onRemoteCheckForUpdateFinished(RemoteCheckResult.NoUpdateAvailable(RemoteCheckResultNotAvailableReason.UPDATE_NOT_AVAILABLE_ON_SERVER))
               return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
             }
 
@@ -369,7 +396,7 @@ class LoaderTask(
               isUpToDate = true
               callback.onRemoteCheckForUpdateFinished(
                 RemoteCheckResult.NoUpdateAvailable(
-                  "An update manifest was received from the update server, but the update is not launchable, or does not pass the configured selection policy"
+                  RemoteCheckResultNotAvailableReason.UPDATE_REJECTED_BY_SELECTION_POLICY
                 )
               )
               Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
