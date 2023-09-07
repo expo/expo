@@ -23,6 +23,7 @@
 ### 🎉 New features
 
 - Add support for running raw queries on Android. ([#24320](https://github.com/expo/expo/pull/24320) by [@alanjhughes](https://github.com/alanjhughes))
+- On Android, add support for `CRSQLite`.
 
 ### 🐛 Bug fixes
 
