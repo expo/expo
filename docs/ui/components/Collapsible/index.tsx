@@ -2,10 +2,9 @@ import { css } from '@emotion/react';
 import { LinkBase, shadows, theme } from '@expo/styleguide';
 import { borderRadius, spacing } from '@expo/styleguide-base';
 import { TriangleDownIcon } from '@expo/styleguide-icons';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/compat/router';
 import type { PropsWithChildren, ReactNode } from 'react';
 import React from 'react';
-import tippy from 'tippy.js';
 
 import { PermalinkCopyIcon } from '~/components/Permalink';
 import withHeadingManager, {
@@ -29,18 +28,17 @@ const Collapsible: React.FC<CollapsibleProps> = withHeadingManager(
   (props: CollapsibleProps & HeadingManagerProps) => {
     const { summary, testID, children } = props;
 
-    const { asPath } = useRouter();
-
-    React.useEffect(() => {
-      tippy('#docs-anchor-permalink-' + heading.current.slug);
-    }, []);
+    const router = useRouter();
+    const { asPath } = router || {};
 
     // expand collapsible if the current hash matches the heading
     React.useEffect(() => {
-      const splitUrl = asPath.split('#');
-      const hash = splitUrl.length ? splitUrl[1] : undefined;
-      if (hash && hash === heading.current.slug) {
-        setOpen(true);
+      if (asPath) {
+        const splitUrl = asPath.split('#');
+        const hash = splitUrl.length ? splitUrl[1] : undefined;
+        if (hash && hash === heading.current.slug) {
+          setOpen(true);
+        }
       }
     }, [asPath]);
 

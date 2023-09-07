@@ -74,9 +74,13 @@ const PermalinkBase = ({ component, children, className, ...rest }: BaseProps) =
     children
   );
 
+// @ts-ignore Jest ESM issue https://github.com/facebook/jest/issues/9430
+const { default: testTippy } = tippy;
+
 const PermalinkCopyIcon = ({ slug }: { slug: string }) => {
+  const tippyFunc = testTippy || tippy;
   React.useEffect(() => {
-    tippy('#docs-anchor-permalink-' + slug, {
+    tippyFunc('#docs-anchor-permalink-' + slug, {
       content: 'Click to copy anchor link',
     });
   }, []);
