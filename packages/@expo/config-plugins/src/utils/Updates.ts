@@ -93,9 +93,9 @@ export async function getRuntimeVersionAsync(
       throw new Error("An SDK version must be defined when using the 'sdkVersion' runtime policy.");
     }
     return getRuntimeVersionForSDKVersion(config.sdkVersion);
-  } else if (runtimeVersion.policy === 'fingerprint') {
+  } else if (runtimeVersion.policy === 'fingerprintExperimental') {
     console.warn(
-      "Use of the experimental 'fingerprint' runtime policy may result in unexpected system behavior."
+      "Use of the experimental 'fingerprintExperimental' runtime policy may result in unexpected system behavior."
     );
     return await Fingerprint.createProjectHashAsync(projectRoot);
   }
@@ -103,7 +103,7 @@ export async function getRuntimeVersionAsync(
   throw new Error(
     `"${
       typeof runtimeVersion === 'object' ? JSON.stringify(runtimeVersion) : runtimeVersion
-    }" is not a valid runtime version. getRuntimeVersionAsync only supports a string, "sdkVersion", "appVersion", "nativeVersion" or "fingerprint" policy.`
+    }" is not a valid runtime version. getRuntimeVersionAsync only supports a string, "sdkVersion", "appVersion", "nativeVersion" or "fingerprintExperimental" policy.`
   );
 }
 
