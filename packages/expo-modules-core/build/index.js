@@ -3,13 +3,11 @@ import { EventEmitter } from './EventEmitter';
 import NativeModulesProxy from './NativeModulesProxy';
 import { requireNativeViewManager } from './NativeViewManagerAdapter';
 import Platform from './Platform';
-import SyntheticPlatformEmitter from './SyntheticPlatformEmitter';
 import { CodedError } from './errors/CodedError';
 import { UnavailabilityError } from './errors/UnavailabilityError';
 import './sweet/setUpErrorManager.fx';
-export { default as deprecate } from './deprecate';
 export { uuidv4, uuidv5 } from './uuid';
-export { DeviceEventEmitter, EventEmitter, NativeModulesProxy, Platform, SyntheticPlatformEmitter, requireNativeViewManager, 
+export { DeviceEventEmitter, EventEmitter, NativeModulesProxy, Platform, requireNativeViewManager, 
 // Errors
 CodedError, UnavailabilityError, };
 export * from './requireNativeModule';
@@ -17,7 +15,7 @@ export * from './TypedArrays.types';
 /**
  * @deprecated renamed to `DeviceEventEmitter`
  */
-export const RCTDeviceEventEmitter = DeviceEventEmitter;
+export const SyntheticPlatformEmitter = DeviceEventEmitter;
 export * from './PermissionsInterface';
 export * from './PermissionsHook';
 //# sourceMappingURL=index.js.map
