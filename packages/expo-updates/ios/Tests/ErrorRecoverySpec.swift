@@ -87,7 +87,7 @@ class ErrorRecoverySpec : ExpoSpec {
       it("NewWorkingUpdateAlreadyLoaded") {
         let (testQueue, errorRecovery) = setUp()
         let mockDelegate = MockErrorRecoveryDelegate(
-          config: UpdatesConfig.config(fromDictionary: [:]),
+          config: try UpdatesConfig.config(fromDictionary: [UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "http://example.com"]),
           relaunchCompletionParams: (nil, true)
         )
         mockDelegate.remoteLoadStatus = .NewUpdateLoaded
@@ -106,7 +106,7 @@ class ErrorRecoverySpec : ExpoSpec {
       it("NewWorkingUpdateAlreadyLoaded_RCTContentDidAppear") {
         let (testQueue, errorRecovery) = setUp()
         let mockDelegate = MockErrorRecoveryDelegate(
-          config: UpdatesConfig.config(fromDictionary: [:]),
+          config: try UpdatesConfig.config(fromDictionary: [UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "http://example.com"]),
           relaunchCompletionParams: (nil, true)
         )
         mockDelegate.remoteLoadStatus = .NewUpdateLoaded
@@ -129,7 +129,7 @@ class ErrorRecoverySpec : ExpoSpec {
       it("NewUpdateLoaded_RelaunchFails") {
         let (testQueue, errorRecovery) = setUp()
         let mockDelegate = MockErrorRecoveryDelegate(
-          config: UpdatesConfig.config(fromDictionary: [:]),
+          config: try UpdatesConfig.config(fromDictionary: [UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "http://example.com"]),
           relaunchCompletionParams: (NSError(domain: "huh", code: 123), false)
         )
         mockDelegate.remoteLoadStatus = .NewUpdateLoaded
@@ -150,7 +150,7 @@ class ErrorRecoverySpec : ExpoSpec {
       xit("NewWorkingUpdateLoading") {
         let (testQueue, errorRecovery) = setUp()
         let mockDelegate = MockErrorRecoveryDelegate(
-          config: UpdatesConfig.config(fromDictionary: [:]),
+          config: try UpdatesConfig.config(fromDictionary: [UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "http://example.com"]),
           relaunchCompletionParams: (nil, true)
         )
         mockDelegate.remoteLoadStatus = .Loading
@@ -174,7 +174,7 @@ class ErrorRecoverySpec : ExpoSpec {
         let (testQueue, errorRecovery) = setUp()
         // should wait a short window for new update to load, then crash
         let mockDelegate = MockErrorRecoveryDelegate(
-          config: UpdatesConfig.config(fromDictionary: [:]),
+          config: try UpdatesConfig.config(fromDictionary: [UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "http://example.com"]),
           relaunchCompletionParams: (nil, true)
         )
         mockDelegate.remoteLoadStatus = .Loading
@@ -204,7 +204,7 @@ class ErrorRecoverySpec : ExpoSpec {
       it("NewBrokenUpdateLoaded_WorkingUpdateCached") {
         let (testQueue, errorRecovery) = setUp()
         let mockDelegate = MockErrorRecoveryDelegate(
-          config: UpdatesConfig.config(fromDictionary: [:]),
+          config: try UpdatesConfig.config(fromDictionary: [UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "http://example.com"]),
           relaunchCompletionParams: (nil, true)
         )
         mockDelegate.remoteLoadStatus = .NewUpdateLoaded
@@ -231,7 +231,7 @@ class ErrorRecoverySpec : ExpoSpec {
         let (testQueue, errorRecovery) = setUp()
         // if an update has already been launched successfully, we don't want to fall back to an older update
         
-        let config = UpdatesConfig.config(fromDictionary: [:])
+        let config = try UpdatesConfig.config(fromDictionary: [UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "http://example.com"])
         let database = UpdatesDatabase()
         let mockDelegate = MockErrorRecoveryDelegate(
           config: config,
@@ -278,7 +278,7 @@ class ErrorRecoverySpec : ExpoSpec {
       xit("RemoteLoadTimesOut") {
         let (testQueue, errorRecovery) = setUp()
         let mockDelegate = MockErrorRecoveryDelegate(
-          config: UpdatesConfig.config(fromDictionary: [:]),
+          config: try UpdatesConfig.config(fromDictionary: [UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "http://example.com"]),
           relaunchCompletionParams: (nil, true)
         )
         mockDelegate.remoteLoadStatus = .Loading
@@ -300,7 +300,7 @@ class ErrorRecoverySpec : ExpoSpec {
       xit("RemoteLoadTimesOut_UpdateAlreadyLaunchedSuccessfully") {
         let (testQueue, errorRecovery) = setUp()
         // if an update has already been launched successfully, we don't want to fall back to an older update
-        let config = UpdatesConfig.config(fromDictionary: [:])
+        let config = try UpdatesConfig.config(fromDictionary: [UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "http://example.com"])
         let database = UpdatesDatabase()
         let mockDelegate = MockErrorRecoveryDelegate(
           config: config,
@@ -343,7 +343,7 @@ class ErrorRecoverySpec : ExpoSpec {
       xit("RemoteLoadTimesOut_RCTContentDidAppear") {
         let (testQueue, errorRecovery) = setUp()
         let mockDelegate = MockErrorRecoveryDelegate(
-          config: UpdatesConfig.config(fromDictionary: [:]),
+          config: try UpdatesConfig.config(fromDictionary: [UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "http://example.com"]),
           relaunchCompletionParams: (nil, true)
         )
         mockDelegate.remoteLoadStatus = .Loading
@@ -370,7 +370,7 @@ class ErrorRecoverySpec : ExpoSpec {
       it("NoRemoteUpdate") {
         let (testQueue, errorRecovery) = setUp()
         let mockDelegate = MockErrorRecoveryDelegate(
-          config: UpdatesConfig.config(fromDictionary: [:]),
+          config: try UpdatesConfig.config(fromDictionary: [UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "http://example.com"]),
           relaunchCompletionParams: (nil, true)
         )
         mockDelegate.remoteLoadStatus = .Idle
@@ -393,7 +393,7 @@ class ErrorRecoverySpec : ExpoSpec {
       it("NoRemoteUpdate_RCTContentDidAppear") {
         let (testQueue, errorRecovery) = setUp()
         let mockDelegate = MockErrorRecoveryDelegate(
-          config: UpdatesConfig.config(fromDictionary: [:]),
+          config: try UpdatesConfig.config(fromDictionary: [UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "http://example.com"]),
           relaunchCompletionParams: (nil, true)
         )
         mockDelegate.remoteLoadStatus = .Idle
@@ -418,7 +418,8 @@ class ErrorRecoverySpec : ExpoSpec {
       
       it("CheckAutomaticallyNever") {
         let (testQueue, errorRecovery) = setUp()
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try UpdatesConfig.config(fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "http://example.com",
           UpdatesConfig.EXUpdatesConfigCheckOnLaunchKey: UpdatesConfig.EXUpdatesConfigCheckOnLaunchValueNever
         ])
         let mockDelegate = MockErrorRecoveryDelegate(
@@ -438,7 +439,8 @@ class ErrorRecoverySpec : ExpoSpec {
       
       it("CheckAutomaticallyNever_RCTContentDidAppear") {
         let (testQueue, errorRecovery) = setUp()
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try UpdatesConfig.config(fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "http://example.com",
           UpdatesConfig.EXUpdatesConfigCheckOnLaunchKey: UpdatesConfig.EXUpdatesConfigCheckOnLaunchValueNever
         ])
         let mockDelegate = MockErrorRecoveryDelegate(
@@ -464,7 +466,7 @@ class ErrorRecoverySpec : ExpoSpec {
       it("handles two errors") {
         let (testQueue, errorRecovery) = setUp()
         let mockDelegate = MockErrorRecoveryDelegate(
-          config: UpdatesConfig.config(fromDictionary: [:]),
+          config: try UpdatesConfig.config(fromDictionary: [UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "http://example.com"]),
           relaunchCompletionParams: (nil, true)
         )
         mockDelegate.remoteLoadStatus = .Idle
@@ -484,7 +486,7 @@ class ErrorRecoverySpec : ExpoSpec {
       it("handles exceptions") {
         let (testQueue, errorRecovery) = setUp()
         let mockDelegate = MockErrorRecoveryDelegate(
-          config: UpdatesConfig.config(fromDictionary: [:]),
+          config: try UpdatesConfig.config(fromDictionary: [UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "http://example.com"]),
           relaunchCompletionParams: (nil, true)
         )
         mockDelegate.remoteLoadStatus = .NewUpdateLoaded

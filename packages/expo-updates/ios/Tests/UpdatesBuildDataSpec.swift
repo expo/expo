@@ -49,28 +49,28 @@ class UpdatesBuildDataSpec : ExpoSpec {
         UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
         UpdatesConfig.EXUpdatesConfigRequestHeadersKey: ["expo-channel-name":"test"]
       ]
-      configChannelTest = UpdatesConfig.config(fromDictionary: configChannelTestDictionary)
+      configChannelTest = try! UpdatesConfig.config(fromDictionary: configChannelTestDictionary)
       
       configChannelTestTwoDictionary = [
         UpdatesConfig.EXUpdatesConfigScopeKeyKey: scopeKey,
         UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
         UpdatesConfig.EXUpdatesConfigRequestHeadersKey: ["expo-channel-name":"testTwo"]
       ]
-      configChannelTestTwo = UpdatesConfig.config(fromDictionary: configChannelTestTwoDictionary)
+      configChannelTestTwo = try! UpdatesConfig.config(fromDictionary: configChannelTestTwoDictionary)
 
       configReleaseChannelTestDictionary = [
         UpdatesConfig.EXUpdatesConfigScopeKeyKey: scopeKey,
         UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
         UpdatesConfig.EXUpdatesConfigReleaseChannelKey: "test",
       ]
-      configReleaseChannelTest = UpdatesConfig.config(fromDictionary: configReleaseChannelTestDictionary)
+      configReleaseChannelTest = try! UpdatesConfig.config(fromDictionary: configReleaseChannelTestDictionary)
       
       configReleaseChannelTestTwoDictionary = [
         UpdatesConfig.EXUpdatesConfigScopeKeyKey: scopeKey,
         UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
         UpdatesConfig.EXUpdatesConfigReleaseChannelKey: "testTwo",
       ]
-      configReleaseChannelTestTwo = UpdatesConfig.config(fromDictionary: configReleaseChannelTestTwoDictionary)
+      configReleaseChannelTestTwo = try! UpdatesConfig.config(fromDictionary: configReleaseChannelTestTwoDictionary)
       
       // start every test with an update
       db.databaseQueue.sync {
@@ -126,7 +126,7 @@ class UpdatesBuildDataSpec : ExpoSpec {
       it("no updates are cleared and build data is not set when build data is consistent with channel") {
         db.databaseQueue.sync {
           expect(try! db.allUpdates(withConfig: configChannelTest).count) == 1
-          try! db.setStaticBuildData(UpdatesBuildData.getBuildDataFromConfig(configChannelTest), withScopeKey: configChannelTest.scopeKey!)
+          try! db.setStaticBuildData(UpdatesBuildData.getBuildDataFromConfig(configChannelTest), withScopeKey: configChannelTest.scopeKey)
         }
         
         UpdatesBuildData.ensureBuildDataIsConsistentAsync(database: db, config: configChannelTest)
@@ -143,7 +143,7 @@ class UpdatesBuildDataSpec : ExpoSpec {
       it("works when build data is consistent with releaseChannel") {
         db.databaseQueue.sync {
           expect(try! db.allUpdates(withConfig: configReleaseChannelTest).count) == 1
-          try! db.setStaticBuildData(UpdatesBuildData.getBuildDataFromConfig(configReleaseChannelTest), withScopeKey: configReleaseChannelTest.scopeKey!)
+          try! db.setStaticBuildData(UpdatesBuildData.getBuildDataFromConfig(configReleaseChannelTest), withScopeKey: configReleaseChannelTest.scopeKey)
         }
         
         UpdatesBuildData.ensureBuildDataIsConsistentAsync(database: db, config: configReleaseChannelTest)
@@ -160,7 +160,7 @@ class UpdatesBuildDataSpec : ExpoSpec {
       it("updates are cleared and build data is set when build data is inconsistent with channel") {
         db.databaseQueue.sync {
           expect(try! db.allUpdates(withConfig: configChannelTest).count) == 1
-          try! db.setStaticBuildData(UpdatesBuildData.getBuildDataFromConfig(configChannelTest), withScopeKey: configChannelTest.scopeKey!)
+          try! db.setStaticBuildData(UpdatesBuildData.getBuildDataFromConfig(configChannelTest), withScopeKey: configChannelTest.scopeKey)
         }
         
         UpdatesBuildData.ensureBuildDataIsConsistentAsync(database: db, config: configChannelTestTwo)
@@ -177,7 +177,7 @@ class UpdatesBuildDataSpec : ExpoSpec {
       it("works build data is inconsistent release channel") {
         db.databaseQueue.sync {
           expect(try! db.allUpdates(withConfig: configReleaseChannelTest).count) == 1
-          try! db.setStaticBuildData(UpdatesBuildData.getBuildDataFromConfig(configReleaseChannelTest), withScopeKey: configChannelTest.scopeKey!)
+          try! db.setStaticBuildData(UpdatesBuildData.getBuildDataFromConfig(configReleaseChannelTest), withScopeKey: configChannelTest.scopeKey)
         }
         
         UpdatesBuildData.ensureBuildDataIsConsistentAsync(database: db, config: configReleaseChannelTestTwo)

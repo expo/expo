@@ -18,7 +18,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
     
     describe("manifest parsing") {
       it("JSON body") {
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
         ])
         let downloader = FileDownloader(config: config)
@@ -46,7 +46,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
       }
       
       it("multipart body") {
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
         ])
         let downloader = FileDownloader(config: config)
@@ -87,7 +87,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
       }
       
       it("multipart body only directive") {
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
         ])
         let downloader = FileDownloader(config: config)
@@ -128,7 +128,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
       }
       
       it("multipart body only directive v0 compatibility mode") {
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
           UpdatesConfig.EXUpdatesConfigEnableExpoUpdatesProtocolV0CompatibilityModeKey: true
         ])
@@ -165,7 +165,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
       }
       
       it("multipart body no relevant parts") {
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
         ])
         let downloader = FileDownloader(config: config)
@@ -205,7 +205,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
       }
 
       it("multipart body empty") {
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
         ])
         let downloader = FileDownloader(config: config)
@@ -237,7 +237,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
       }
 
       it("nil body protocol 1") {
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
         ])
         let downloader = FileDownloader(config: config)
@@ -269,7 +269,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
       }
 
       it("204 response protocol 1") {
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
         ])
         let downloader = FileDownloader(config: config)
@@ -299,7 +299,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
       }
 
       it("204 response no protocol") {
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
         ])
         let downloader = FileDownloader(config: config)
@@ -326,7 +326,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
       }
       
       it("json body signed") {
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
           UpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey: getTestCertificate(.test),
           UpdatesConfig.EXUpdatesConfigCodeSigningMetadataKey: [:],
@@ -361,7 +361,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
       }
       
       it("multipart body signed") {
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
           UpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey: getTestCertificate(.test),
           UpdatesConfig.EXUpdatesConfigCodeSigningMetadataKey: [:],
@@ -409,7 +409,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
       }
       
       it("json body expects signed receives unsigned") {
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
           UpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey: getTestCertificate(.test),
           UpdatesConfig.EXUpdatesConfigCodeSigningMetadataKey: [:],
@@ -442,7 +442,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
       }
       
       it("multipart body signed certificate particular experience") {
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
           UpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey: getTestCertificate(.chainRoot),
           UpdatesConfig.EXUpdatesConfigCodeSigningMetadataKey: [
@@ -491,7 +491,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
       }
       
       it("multipart body signed certificate particular experience incorrect experience in manifest") {
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
           UpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey: getTestCertificate(.chainRoot),
           UpdatesConfig.EXUpdatesConfigCodeSigningMetadataKey: [
@@ -536,7 +536,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
       }
       
       it("multipart body signed certificate particular experience incorrect experience in directive") {
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
           UpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey: getTestCertificate(.chainRoot),
           UpdatesConfig.EXUpdatesConfigCodeSigningMetadataKey: [
@@ -581,7 +581,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
       }
       
       it("json body signed unsigned request manifest signature optional") {
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
           UpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey: getTestCertificate(.test),
           UpdatesConfig.EXUpdatesConfigCodeSigningMetadataKey: [:],

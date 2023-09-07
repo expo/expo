@@ -19,10 +19,9 @@ import expo.modules.updates.codesigning.CodeSigningConfiguration
  * class may be created over the lifetime of the app, but only one should be active at a time.
  */
 data class UpdatesConfiguration(
-  val isEnabled: Boolean,
   val expectsSignedManifest: Boolean,
-  val scopeKey: String?,
-  val updateUrl: Uri?,
+  val scopeKey: String,
+  val updateUrl: Uri,
   val sdkVersion: String?,
   val runtimeVersion: String?,
   val releaseChannel: String,
@@ -55,13 +54,12 @@ data class UpdatesConfiguration(
   }
 
   constructor(context: Context?, overrideMap: Map<String, Any>?) : this(
-    isEnabled = overrideMap?.readValueCheckingType<Boolean>(UPDATES_CONFIGURATION_ENABLED_KEY) ?: context?.getMetadataValue("expo.modules.updates.ENABLED") ?: true,
     expectsSignedManifest = overrideMap?.readValueCheckingType(UPDATES_CONFIGURATION_EXPECTS_EXPO_SIGNED_MANIFEST) ?: false,
     scopeKey = maybeGetDefaultScopeKey(
       overrideMap?.readValueCheckingType<String>(UPDATES_CONFIGURATION_SCOPE_KEY_KEY) ?: context?.getMetadataValue("expo.modules.updates.EXPO_SCOPE_KEY"),
-      updateUrl = overrideMap?.readValueCheckingType<Uri>(UPDATES_CONFIGURATION_UPDATE_URL_KEY) ?: context?.getMetadataValue<String>("expo.modules.updates.EXPO_UPDATE_URL")?.let { Uri.parse(it) },
+      updateUrl = getUpdatesUrl(context, overrideMap),
     ),
-    updateUrl = overrideMap?.readValueCheckingType<Uri>(UPDATES_CONFIGURATION_UPDATE_URL_KEY) ?: context?.getMetadataValue<String>("expo.modules.updates.EXPO_UPDATE_URL")?.let { Uri.parse(it) },
+    updateUrl = getUpdatesUrl(context, overrideMap),
     sdkVersion = overrideMap?.readValueCheckingType<String>(UPDATES_CONFIGURATION_SDK_VERSION_KEY) ?: context?.getMetadataValue("expo.modules.updates.EXPO_SDK_VERSION"),
     runtimeVersion = overrideMap?.readValueCheckingType<String>(UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY) ?: context?.getMetadataValue<Any>("expo.modules.updates.EXPO_RUNTIME_VERSION")?.toString()?.replaceFirst("^string:".toRegex(), ""),
     releaseChannel = overrideMap?.readValueCheckingType<String>(UPDATES_CONFIGURATION_RELEASE_CHANNEL_KEY) ?: context?.getMetadataValue("expo.modules.updates.EXPO_RELEASE_CHANNEL") ?: UPDATES_CONFIGURATION_RELEASE_CHANNEL_DEFAULT_VALUE,
@@ -101,8 +99,7 @@ data class UpdatesConfiguration(
   )
 
   val isMissingRuntimeVersion: Boolean
-    get() = (runtimeVersion == null || runtimeVersion.isEmpty()) &&
-      (sdkVersion == null || sdkVersion.isEmpty())
+    get() = runtimeVersion.isNullOrEmpty() && sdkVersion.isNullOrEmpty()
 
   val codeSigningConfiguration: CodeSigningConfiguration? by lazy {
     codeSigningCertificate?.let {
@@ -113,7 +110,6 @@ data class UpdatesConfiguration(
   companion object {
     private val TAG = UpdatesConfiguration::class.java.simpleName
 
-    const val UPDATES_CONFIGURATION_ENABLED_KEY = "enabled"
     const val UPDATES_CONFIGURATION_SCOPE_KEY_KEY = "scopeKey"
     const val UPDATES_CONFIGURATION_UPDATE_URL_KEY = "updateUrl"
     const val UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY = "requestHeaders"
@@ -133,6 +129,37 @@ data class UpdatesConfiguration(
 
     private const val UPDATES_CONFIGURATION_RELEASE_CHANNEL_DEFAULT_VALUE = "default"
     private const val UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_DEFAULT_VALUE = 0
+
+    private fun getUpdatesUrl(context: Context?, overrideMap: Map<String, Any>?): Uri {
+      // warn about the deprecated expo.modules.updates.ENABLED setting. this can be removed in a few releases
+      val isEnabledConfigSetting = overrideMap?.readValueCheckingType<Boolean>("enabled") ?: context?.getMetadataValue("expo.modules.updates.ENABLED")
+      val updatesUrl = overrideMap?.readValueCheckingType(UPDATES_CONFIGURATION_UPDATE_URL_KEY) ?: context?.getMetadataValue<String>("expo.modules.updates.EXPO_UPDATE_URL")?.let { Uri.parse(it) }
+
+      // The "enabled" config setting is deprecated. We want to tell people how to fix their setup if they were relying upon it.
+      // After this long set of checks, updateUrl is guaranteed to be non-null.
+      // These warnings can be removed in a few releases and replaced with a warning simply on the presence of updateUrl.
+      if (isEnabledConfigSetting == true) {
+        if (updatesUrl == null) {
+          throw InvalidArgumentException("Missing update URL. Ensure it is set up in your app configuration or AndroidManifest.xml. Or, if you don't wish to use expo-updates, remove the package from your project.")
+        } else {
+          // this case is ok since it was already enabled (both the enabled setting and updateUrl were truthy)
+        }
+      } else if (isEnabledConfigSetting == false) {
+        if (updatesUrl == null) {
+          throw InvalidArgumentException("The \"enabled\" configuration has been deprecated. To fix this, remove the expo-updates package from your project. Or, if you wish to enable updates, ensure the update URL is set in your app configuration or AndroidManifest.xml.")
+        } else {
+          throw InvalidArgumentException("The \"enabled\" configuration has been deprecated. To disable updates, remove the expo-updates package from your project. Or, if you wish to enable updates, remove the deprecated configuration.")
+        }
+      } else /* isEnabledConfigSetting == null */ {
+        if (updatesUrl == null) {
+          throw InvalidArgumentException("Missing update URL. Ensure it is set up in your app configuration or AndroidManifest.xml. Or, if you don't wish to use expo-updates, remove the package.")
+        } else {
+          // this case is ok since it was already enabled (updateUrl was truthy and thus enabled defaulted to true)
+        }
+      }
+
+      return updatesUrl
+    }
   }
 }
 
@@ -181,12 +208,7 @@ internal fun getNormalizedUrlOrigin(url: Uri): String {
   return if (port > -1) "$scheme://${url.host}:$port" else "$scheme://${url.host}"
 }
 
-private fun maybeGetDefaultScopeKey(scopeKey: String?, updateUrl: Uri?): String? {
+private fun maybeGetDefaultScopeKey(scopeKey: String?, updateUrl: Uri): String {
   // set updateUrl as the default value if none is provided
-  if (scopeKey == null) {
-    if (updateUrl != null) {
-      return getNormalizedUrlOrigin(updateUrl)
-    }
-  }
-  return scopeKey
+  return scopeKey ?: getNormalizedUrlOrigin(updateUrl)
 }

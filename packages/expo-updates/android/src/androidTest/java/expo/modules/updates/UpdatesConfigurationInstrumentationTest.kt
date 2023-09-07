@@ -23,6 +23,7 @@ class UpdatesConfigurationInstrumentationTest {
       every { packageManager } returns mockk {
         every { getApplicationInfo(testPackageName, PackageManager.GET_META_DATA) } returns mockk {
           metaData = Bundle().apply {
+            putString("expo.modules.updates.EXPO_UPDATE_URL", "http://example.com")
             putString(
               "expo.modules.updates.EXPO_RUNTIME_VERSION",
               String.format("string:%s", testRuntimeVersion)
@@ -45,6 +46,7 @@ class UpdatesConfigurationInstrumentationTest {
       every { packageManager } returns mockk {
         every { getApplicationInfo(testPackageName, PackageManager.GET_META_DATA) } returns mockk {
           metaData = Bundle().apply {
+            putString("expo.modules.updates.EXPO_UPDATE_URL", "http://example.com")
             putString("expo.modules.updates.EXPO_RUNTIME_VERSION", testRuntimeVersion)
           }
         }
@@ -61,13 +63,14 @@ class UpdatesConfigurationInstrumentationTest {
       every { packageName } returns testPackageName
       every { packageManager } returns mockk {
         every { getApplicationInfo(testPackageName, PackageManager.GET_META_DATA) } returns mockk {
-          metaData = Bundle()
+          metaData = Bundle().apply {
+            putString("expo.modules.updates.EXPO_UPDATE_URL", "http://example.com")
+          }
         }
       }
     }
 
     val config = UpdatesConfiguration(context, null)
-    Assert.assertEquals(true, config.isEnabled)
     Assert.assertEquals(false, config.expectsSignedManifest)
     Assert.assertEquals("default", config.releaseChannel)
     Assert.assertEquals(0, config.launchWaitMs)
@@ -84,7 +87,7 @@ class UpdatesConfigurationInstrumentationTest {
       every { packageManager } returns mockk {
         every { getApplicationInfo(testPackageName, PackageManager.GET_META_DATA) } returns mockk {
           metaData = Bundle().apply {
-            putBoolean("expo.modules.updates.ENABLED", false)
+            putString("expo.modules.updates.EXPO_UPDATE_URL", "http://example.com")
             putInt("expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS", 1000)
             putBoolean("expo.modules.updates.HAS_EMBEDDED_UPDATE", false)
             putBoolean("expo.modules.updates.CODE_SIGNING_INCLUDE_MANIFEST_RESPONSE_CERTIFICATE_CHAIN", true)
@@ -94,7 +97,6 @@ class UpdatesConfigurationInstrumentationTest {
     }
 
     val config = UpdatesConfiguration(context, null)
-    Assert.assertEquals(false, config.isEnabled)
     Assert.assertEquals(1000, config.launchWaitMs)
     Assert.assertEquals(false, config.hasEmbeddedUpdate)
     Assert.assertEquals(true, config.codeSigningIncludeManifestResponseCertificateChain)
@@ -109,7 +111,6 @@ class UpdatesConfigurationInstrumentationTest {
       every { packageManager } returns mockk {
         every { getApplicationInfo(testPackageName, PackageManager.GET_META_DATA) } returns mockk {
           metaData = Bundle().apply {
-            putBoolean("expo.modules.updates.ENABLED", true)
             putString("expo.modules.updates.EXPO_SCOPE_KEY", "invalid")
             putString("expo.modules.updates.EXPO_UPDATE_URL", "http://invalid.com")
             putString("expo.modules.updates.EXPO_SDK_VERSION", "invalid")
@@ -129,7 +130,6 @@ class UpdatesConfigurationInstrumentationTest {
     val config = UpdatesConfiguration(
       context,
       mapOf(
-        UpdatesConfiguration.UPDATES_CONFIGURATION_ENABLED_KEY to false,
         UpdatesConfiguration.UPDATES_CONFIGURATION_SCOPE_KEY_KEY to "override",
         UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("http://override.com"),
         UpdatesConfiguration.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY to mapOf("test" to "override"),
@@ -145,7 +145,6 @@ class UpdatesConfigurationInstrumentationTest {
       )
     )
 
-    Assert.assertEquals(false, config.isEnabled)
     Assert.assertEquals(false, config.expectsSignedManifest)
     Assert.assertEquals("override", config.scopeKey)
     Assert.assertEquals(Uri.parse("http://override.com"), config.updateUrl)

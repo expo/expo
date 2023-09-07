@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Deprecate "enabled" configuration setting. ([#24330](https://github.com/expo/expo/pull/24330) by [@wschurman](https://github.com/wschurman))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

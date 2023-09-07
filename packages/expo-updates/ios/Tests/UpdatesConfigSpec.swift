@@ -15,10 +15,9 @@ class UpdatesConfigSpec : ExpoSpec {
         let bundle = Bundle(for: UpdatesConfigSpecForBundle.self)
         let configPlistPath = bundle.path(forResource: "TestConfig", ofType: "plist")!
         let config = try UpdatesConfig.configWithExpoPlist(configPlistPath: configPlistPath, mergingOtherDictionary: nil)
-        expect(config.isEnabled) == true
         expect(config.expectsSignedManifest) == true
         expect(config.scopeKey) == "blah"
-        expect(config.updateUrl?.absoluteString) == "http://example.com"
+        expect(config.updateUrl.absoluteString) == "http://example.com"
         expect(config.requestHeaders) == ["Hello": "World"]
         expect(config.releaseChannel) == "test"
         expect(config.launchWaitMs) == 2
@@ -36,7 +35,6 @@ class UpdatesConfigSpec : ExpoSpec {
 
         // test overriding various keys
         let otherDictionary = [
-          UpdatesConfig.EXUpdatesConfigEnabledKey: false,
           UpdatesConfig.EXUpdatesConfigScopeKeyKey: "overridden",
           UpdatesConfig.EXUpdatesConfigExpectsSignedManifestKey: false,
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "http://google.com",
@@ -44,10 +42,9 @@ class UpdatesConfigSpec : ExpoSpec {
         ]
 
         let config = try UpdatesConfig.configWithExpoPlist(configPlistPath: configPlistPath, mergingOtherDictionary: otherDictionary)
-        expect(config.isEnabled) == false
         expect(config.expectsSignedManifest) == false
         expect(config.scopeKey) == "overridden"
-        expect(config.updateUrl?.absoluteString) == "http://google.com"
+        expect(config.updateUrl.absoluteString) == "http://google.com"
         expect(config.requestHeaders) == ["Foo": "Bar"]
         expect(config.releaseChannel) == "test"
         expect(config.launchWaitMs) == 2
@@ -62,7 +59,8 @@ class UpdatesConfigSpec : ExpoSpec {
 
     describe("getRuntimeVersion") {
       it("returns sdk version when only sdk version") {
-        let sdkOnlyConfig = UpdatesConfig.config(fromDictionary: [
+        let sdkOnlyConfig = try UpdatesConfig.config(fromDictionary: [
+          "EXUpdatesURL": "http://example.com",
           "EXUpdatesScopeKey": "test",
           "EXUpdatesSDKVersion": "38.0.0"
         ])
@@ -70,7 +68,8 @@ class UpdatesConfigSpec : ExpoSpec {
       }
 
       it("returns runtime version when only runtime version") {
-        let runtimeOnlyConfig = UpdatesConfig.config(fromDictionary: [
+        let runtimeOnlyConfig = try UpdatesConfig.config(fromDictionary: [
+          "EXUpdatesURL": "http://example.com",
           "EXUpdatesScopeKey": "test",
           "EXUpdatesRuntimeVersion": "1.0"
         ])
@@ -78,7 +77,8 @@ class UpdatesConfigSpec : ExpoSpec {
       }
 
       it("returns runtime version when both sdk and runtime version") {
-        let bothConfig = UpdatesConfig.config(fromDictionary: [
+        let bothConfig = try UpdatesConfig.config(fromDictionary: [
+          "EXUpdatesURL": "http://example.com",
           "EXUpdatesScopeKey": "test",
           "EXUpdatesSDKVersion": "38.0.0",
           "EXUpdatesRuntimeVersion": "1.0"

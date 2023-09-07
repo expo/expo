@@ -20,7 +20,8 @@ class ReaperSelectionPolicyFilterAwareSpec : ExpoSpec {
     beforeEach {
       let runtimeVersion = "1.0"
       let scopeKey = "dummyScope"
-      config = UpdatesConfig.config(fromDictionary: [
+      config = try! UpdatesConfig.config(fromDictionary: [
+        UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "http://example.com",
         UpdatesConfig.EXUpdatesConfigScopeKeyKey: "scope1"
       ])
       database = UpdatesDatabase()
@@ -119,7 +120,8 @@ class ReaperSelectionPolicyFilterAwareSpec : ExpoSpec {
       }
       
       it("updates to delete - different scope key") {
-        let configDifferentScope = UpdatesConfig.config(fromDictionary: [
+        let configDifferentScope = try UpdatesConfig.config(fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "http://example.com",
           UpdatesConfig.EXUpdatesConfigScopeKeyKey: "differentScopeKey"
         ])
         let update4DifferentScope = Update(

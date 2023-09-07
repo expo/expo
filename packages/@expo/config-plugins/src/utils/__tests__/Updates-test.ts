@@ -12,7 +12,6 @@ import {
   getUpdatesCodeSigningMetadataStringified,
   getUpdatesRequestHeaders,
   getUpdatesRequestHeadersStringified,
-  getUpdatesEnabled,
   getUpdatesTimeout,
   getUpdateUrl,
 } from '../Updates';
@@ -42,9 +41,6 @@ describe('shared config getters', () => {
     expect(getUpdatesCodeSigningCertificate('/app', {})).toBe(undefined);
     expect(getUpdatesCodeSigningMetadata({})).toBe(undefined);
     expect(getUpdatesRequestHeaders({})).toBe(undefined);
-
-    expect(getUpdatesEnabled({})).toBe(false);
-    expect(getUpdatesEnabled({ updates: {} })).toBe(false);
   });
 
   it(`returns correct value from all getters if value provided`, () => {
@@ -68,7 +64,6 @@ describe('shared config getters', () => {
     );
     expect(getUpdatesCheckOnLaunch({ updates: { checkAutomatically: 'NEVER' } })).toBe('NEVER');
     expect(getUpdatesCheckOnLaunch({ updates: {} })).toBe('ALWAYS');
-    expect(getUpdatesEnabled({ updates: { enabled: false } })).toBe(false);
     expect(getUpdatesTimeout({ updates: { fallbackToCacheTimeout: 2000 } })).toBe(2000);
     expect(
       getUpdatesCodeSigningCertificate('/app', {
@@ -142,8 +137,64 @@ describe(getUpdateUrl, () => {
     expect(getUpdateUrl({ updates: { url } })).toBe(url);
   });
 
-  it(`returns correct legacy urls if 'updates.url' is not provided, but 'slug' and ('username'|'owner') are provided and useClassicUpdates is false.`, () => {
-    expect(getUpdateUrl({})).toBe(null);
+  describe('enabled Config Setting', () => {
+    describe('true', () => {
+      describe('url', () => {
+        describe('nullish', () => {
+          it('throws', () => {
+            expect(() => getUpdateUrl({ updates: { enabled: true, url: undefined } })).toThrowError(
+              `The expo-updates library has not been configured, and must be configured before being built into a project. To fix this, either remove the expo-updates package from your project if you don't use it or configure expo-updates using EAS Update or your own configuration.`
+            );
+          });
+        });
+
+        describe('non-nullish', () => {
+          it('succeeds', () => {
+            expect(getUpdateUrl({ updates: { enabled: true, url: 'http://example.com' } })).toBe(
+              'http://example.com'
+            );
+          });
+        });
+      });
+    });
+
+    describe('false', () => {
+      describe('nullish', () => {
+        it('throws', () => {
+          expect(() => getUpdateUrl({ updates: { enabled: false, url: undefined } })).toThrowError(
+            `The updates.enabled config setting has been deprecated. To fix this, remove the expo-updates package from your project. Or, if you wish to enable updates, configure expo-updates using EAS Update or your own configuration.`
+          );
+        });
+      });
+
+      describe('non-nullish', () => {
+        it('throws', () => {
+          expect(() =>
+            getUpdateUrl({ updates: { enabled: false, url: 'http://example.com' } })
+          ).toThrowError(
+            'The updates.enabled config setting has been deprecated. To disable updates, remove the expo-updates package from your project. Or, if you wish to enable updates, remove the deprecated config setting.'
+          );
+        });
+      });
+    });
+
+    describe('undefined', () => {
+      describe('nullish', () => {
+        it('throws', () => {
+          expect(() => getUpdateUrl({ updates: { url: undefined } })).toThrowError(
+            `The expo-updates library has not been configured, and must be configured before being built into a project. To fix this, configure expo-updates using EAS Update or your own configuration.`
+          );
+        });
+      });
+
+      describe('non-nullish', () => {
+        it('succeeds', () => {
+          expect(getUpdateUrl({ updates: { url: 'http://example.com' } })).toBe(
+            'http://example.com'
+          );
+        });
+      });
+    });
   });
 });
 

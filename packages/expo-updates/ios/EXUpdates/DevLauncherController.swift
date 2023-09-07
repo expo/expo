@@ -82,7 +82,7 @@ public final class DevLauncherController: NSObject, UpdatesExternalInterface {
       completionQueue: controller.controllerQueue
     )
     loader.loadUpdate(
-      fromURL: updatesConfiguration.updateUrl!
+      fromURL: updatesConfiguration.updateUrl
     ) { updateResponse in
       if let updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective {
         switch updateDirective {
@@ -155,17 +155,6 @@ public final class DevLauncherController: NSObject, UpdatesExternalInterface {
         userInfo: [
           // swiftlint:disable:next line_length
           NSLocalizedDescriptionKey: "Cannot load configuration from Expo.plist. Please ensure you've followed the setup and installation instructions for expo-updates to create Expo.plist and add it to your Xcode project."
-        ]
-      ))
-      return nil
-    }
-
-    guard updatesConfiguration.updateUrl != nil && updatesConfiguration.scopeKey != nil else {
-      errorBlock(NSError(
-        domain: DevLauncherController.ErrorDomain,
-        code: ErrorCode.invalidUpdateURL.rawValue,
-        userInfo: [
-          NSLocalizedDescriptionKey: "Failed to read stored updates: configuration object must include a valid update URL"
         ]
       ))
       return nil

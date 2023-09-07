@@ -358,7 +358,6 @@ NS_ASSUME_NONNULL_BEGIN
     EXUpdatesConfig.EXUpdatesConfigScopeKeyKey: httpManifestUrl.absoluteString,
     EXUpdatesConfig.EXUpdatesConfigReleaseChannelKey: releaseChannel,
     EXUpdatesConfig.EXUpdatesConfigHasEmbeddedUpdateKey: @([EXEnvironment sharedEnvironment].isDetached),
-    EXUpdatesConfig.EXUpdatesConfigEnabledKey: @([EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled),
     EXUpdatesConfig.EXUpdatesConfigLaunchWaitMsKey: launchWaitMs,
     EXUpdatesConfig.EXUpdatesConfigCheckOnLaunchKey: shouldCheckOnLaunch ? EXUpdatesConfig.EXUpdatesConfigCheckOnLaunchValueAlways : EXUpdatesConfig.EXUpdatesConfigCheckOnLaunchValueNever,
     EXUpdatesConfig.EXUpdatesConfigExpectsSignedManifestKey: @YES,
@@ -400,7 +399,13 @@ NS_ASSUME_NONNULL_BEGIN
     updatesConfig[EXUpdatesConfig.EXUpdatesConfigEnableExpoUpdatesProtocolV0CompatibilityModeKey] = @YES;
   }
 
-  _config = [EXUpdatesConfig configFromDictionary:updatesConfig];
+  NSError *error;
+  _config = [EXUpdatesConfig configFromDictionary:updatesConfig error:&error];
+  if (error) {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:@"Invalid expo-updates configs"
+                                 userInfo:nil];
+  }
 
   if (![EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled) {
     [self _launchWithNoDatabaseAndError:nil];

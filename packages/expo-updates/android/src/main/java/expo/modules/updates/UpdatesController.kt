@@ -1,7 +1,6 @@
 package expo.modules.updates
 
 import android.content.Context
-import android.net.Uri
 import android.os.AsyncTask
 import android.os.Handler
 import android.os.HandlerThread
@@ -120,7 +119,7 @@ class UpdatesController private constructor(
     private set
 
   fun onDidCreateReactInstanceManager(reactInstanceManager: ReactInstanceManager) {
-    if (isEmergencyLaunch || !updatesConfiguration.isEnabled) {
+    if (isEmergencyLaunch) {
       return
     }
     errorRecovery.startMonitoring(reactInstanceManager)
@@ -189,9 +188,6 @@ class UpdatesController private constructor(
     databaseHolder.releaseDatabase()
   }
 
-  val updateUrl: Uri?
-    get() = updatesConfiguration.updateUrl
-
   val launchedUpdate: UpdateEntity?
     get() = launcher?.launchedUpdate
 
@@ -239,14 +235,6 @@ class UpdatesController private constructor(
     }
     isStarted = true
 
-    if (!updatesConfiguration.isEnabled) {
-      launcher = NoDatabaseLauncher(context, updatesConfiguration)
-      notifyController()
-      return
-    }
-    if (updatesConfiguration.updateUrl == null || updatesConfiguration.scopeKey == null) {
-      throw AssertionError("expo-updates is enabled, but no valid URL is configured in AndroidManifest.xml. If you are making a release build for the first time, make sure you have run `expo publish` at least once.")
-    }
     if (updatesDirectory == null) {
       launcher = NoDatabaseLauncher(context, updatesConfiguration, updatesDirectoryException)
       isEmergencyLaunch = true

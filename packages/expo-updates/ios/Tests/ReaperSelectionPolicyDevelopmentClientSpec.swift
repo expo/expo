@@ -22,7 +22,8 @@ class ReaperSelectionPolicyDevelopmentClientSpec : ExpoSpec {
       // test updates with different scopes to ensure this policy ignores scopes
       update1 = Update(
         manifest: ManifestFactory.manifest(forManifestJSON: [:]),
-        config: UpdatesConfig.config(fromDictionary: [
+        config: try! UpdatesConfig.config(fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "http://example.com",
           UpdatesConfig.EXUpdatesConfigScopeKeyKey: "scope1"
         ]),
         database: database,
@@ -37,7 +38,8 @@ class ReaperSelectionPolicyDevelopmentClientSpec : ExpoSpec {
       )
       update2 = Update(
         manifest: ManifestFactory.manifest(forManifestJSON: [:]),
-        config: UpdatesConfig.config(fromDictionary: [
+        config: try! UpdatesConfig.config(fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "http://example.com",
           UpdatesConfig.EXUpdatesConfigScopeKeyKey: "scope2"
         ]),
         database: database,
@@ -52,7 +54,8 @@ class ReaperSelectionPolicyDevelopmentClientSpec : ExpoSpec {
       )
       update3 = Update(
         manifest: ManifestFactory.manifest(forManifestJSON: [:]),
-        config: UpdatesConfig.config(fromDictionary: [
+        config: try! UpdatesConfig.config(fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "http://example.com",
           UpdatesConfig.EXUpdatesConfigScopeKeyKey: "scope3"
         ]),
         database: database,
@@ -67,7 +70,8 @@ class ReaperSelectionPolicyDevelopmentClientSpec : ExpoSpec {
       )
       update4 = Update(
         manifest: ManifestFactory.manifest(forManifestJSON: [:]),
-        config: UpdatesConfig.config(fromDictionary: [
+        config: try! UpdatesConfig.config(fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "http://example.com",
           UpdatesConfig.EXUpdatesConfigScopeKeyKey: "scope4"
         ]),
         database: database,
@@ -82,7 +86,8 @@ class ReaperSelectionPolicyDevelopmentClientSpec : ExpoSpec {
       )
       update5 = Update(
         manifest: ManifestFactory.manifest(forManifestJSON: [:]),
-        config: UpdatesConfig.config(fromDictionary: [
+        config: try! UpdatesConfig.config(fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "http://example.com",
           UpdatesConfig.EXUpdatesConfigScopeKeyKey: "scope5"
         ]),
         database: database,

@@ -44,10 +44,6 @@ class UpdatesDevLauncherController : UpdatesInterface {
   ) {
     val controller = UpdatesController.instance
     val updatesConfiguration = UpdatesConfiguration(context, configuration)
-    if (updatesConfiguration.updateUrl == null || updatesConfiguration.scopeKey == null) {
-      callback.onFailure(Exception("Failed to load update: UpdatesConfiguration object must include a valid update URL"))
-      return
-    }
     if (controller.updatesDirectory == null) {
       callback.onFailure(controller.updatesDirectoryException)
       return
@@ -170,10 +166,6 @@ class UpdatesDevLauncherController : UpdatesInterface {
   override fun storedUpdateIdsWithConfiguration(configuration: HashMap<String, Any>, context: Context, callback: QueryCallback) {
     val controller = UpdatesController.instance
     val updatesConfiguration = UpdatesConfiguration(context, configuration)
-    if (updatesConfiguration.updateUrl == null || updatesConfiguration.scopeKey == null) {
-      callback.onFailure(Exception("Failed to load update: UpdatesConfiguration object must include a valid update URL"))
-      return
-    }
     val updatesDirectory = controller.updatesDirectory
     if (updatesDirectory == null) {
       callback.onFailure(controller.updatesDirectoryException)

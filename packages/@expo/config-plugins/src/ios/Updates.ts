@@ -14,7 +14,6 @@ import {
   getUpdatesCodeSigningCertificate,
   getUpdatesCodeSigningMetadata,
   getUpdatesRequestHeaders,
-  getUpdatesEnabled,
   getUpdatesTimeout,
   getUpdateUrl,
 } from '../utils/Updates';
@@ -22,7 +21,9 @@ import {
 const CREATE_MANIFEST_IOS_PATH = 'expo-updates/scripts/create-manifest-ios.sh';
 
 export enum Config {
+  // deprecated, remove in a few releases
   ENABLED = 'EXUpdatesEnabled',
+
   CHECK_ON_LAUNCH = 'EXUpdatesCheckOnLaunch',
   LAUNCH_WAIT_MS = 'EXUpdatesLaunchWaitMs',
   RUNTIME_VERSION = 'EXUpdatesRuntimeVersion',
@@ -59,17 +60,12 @@ export function setUpdatesConfig(
 ): ExpoPlist {
   const newExpoPlist = {
     ...expoPlist,
-    [Config.ENABLED]: getUpdatesEnabled(config),
+    [Config.UPDATE_URL]: getUpdateUrl(config),
     [Config.CHECK_ON_LAUNCH]: getUpdatesCheckOnLaunch(config, expoUpdatesPackageVersion),
     [Config.LAUNCH_WAIT_MS]: getUpdatesTimeout(config),
   };
 
-  const updateUrl = getUpdateUrl(config);
-  if (updateUrl) {
-    newExpoPlist[Config.UPDATE_URL] = updateUrl;
-  } else {
-    delete newExpoPlist[Config.UPDATE_URL];
-  }
+  delete newExpoPlist[Config.ENABLED];
 
   const codeSigningCertificate = getUpdatesCodeSigningCertificate(projectRoot, config);
   if (codeSigningCertificate) {
@@ -204,8 +200,8 @@ export function isPlistConfigurationSynced(
   expoPlist: ExpoPlist
 ): boolean {
   return (
+    expoPlist.EXUpdatesEnabled === undefined &&
     getUpdateUrl(config) === expoPlist.EXUpdatesURL &&
-    getUpdatesEnabled(config) === expoPlist.EXUpdatesEnabled &&
     getUpdatesTimeout(config) === expoPlist.EXUpdatesLaunchWaitMs &&
     getUpdatesCheckOnLaunch(config) === expoPlist.EXUpdatesCheckOnLaunch &&
     getUpdatesCodeSigningCertificate(projectRoot, config) ===

@@ -72,16 +72,11 @@ exports.withUpdates = withUpdates;
 function setUpdatesConfig(projectRoot, config, expoPlist, expoUpdatesPackageVersion) {
   const newExpoPlist = {
     ...expoPlist,
-    [Config.ENABLED]: (0, _Updates().getUpdatesEnabled)(config),
+    [Config.UPDATE_URL]: (0, _Updates().getUpdateUrl)(config),
     [Config.CHECK_ON_LAUNCH]: (0, _Updates().getUpdatesCheckOnLaunch)(config, expoUpdatesPackageVersion),
     [Config.LAUNCH_WAIT_MS]: (0, _Updates().getUpdatesTimeout)(config)
   };
-  const updateUrl = (0, _Updates().getUpdateUrl)(config);
-  if (updateUrl) {
-    newExpoPlist[Config.UPDATE_URL] = updateUrl;
-  } else {
-    delete newExpoPlist[Config.UPDATE_URL];
-  }
+  delete newExpoPlist[Config.ENABLED];
   const codeSigningCertificate = (0, _Updates().getUpdatesCodeSigningCertificate)(projectRoot, config);
   if (codeSigningCertificate) {
     newExpoPlist[Config.CODE_SIGNING_CERTIFICATE] = codeSigningCertificate;
@@ -165,7 +160,7 @@ function isPlistConfigurationSet(expoPlist) {
   return Boolean(expoPlist.EXUpdatesURL && (expoPlist.EXUpdatesSDKVersion || expoPlist.EXUpdatesRuntimeVersion));
 }
 function isPlistConfigurationSynced(projectRoot, config, expoPlist) {
-  return (0, _Updates().getUpdateUrl)(config) === expoPlist.EXUpdatesURL && (0, _Updates().getUpdatesEnabled)(config) === expoPlist.EXUpdatesEnabled && (0, _Updates().getUpdatesTimeout)(config) === expoPlist.EXUpdatesLaunchWaitMs && (0, _Updates().getUpdatesCheckOnLaunch)(config) === expoPlist.EXUpdatesCheckOnLaunch && (0, _Updates().getUpdatesCodeSigningCertificate)(projectRoot, config) === expoPlist.EXUpdatesCodeSigningCertificate && (0, _Updates().getUpdatesCodeSigningMetadata)(config) === expoPlist.EXUpdatesCodeSigningMetadata && isPlistVersionConfigurationSynced(config, expoPlist);
+  return expoPlist.EXUpdatesEnabled === undefined && (0, _Updates().getUpdateUrl)(config) === expoPlist.EXUpdatesURL && (0, _Updates().getUpdatesTimeout)(config) === expoPlist.EXUpdatesLaunchWaitMs && (0, _Updates().getUpdatesCheckOnLaunch)(config) === expoPlist.EXUpdatesCheckOnLaunch && (0, _Updates().getUpdatesCodeSigningCertificate)(projectRoot, config) === expoPlist.EXUpdatesCodeSigningCertificate && (0, _Updates().getUpdatesCodeSigningMetadata)(config) === expoPlist.EXUpdatesCodeSigningMetadata && isPlistVersionConfigurationSynced(config, expoPlist);
 }
 function isPlistVersionConfigurationSynced(config, expoPlist) {
   var _expoPlist$EXUpdatesR, _expoPlist$EXUpdatesS;

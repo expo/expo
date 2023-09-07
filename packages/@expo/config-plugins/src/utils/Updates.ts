@@ -22,8 +22,42 @@ export function getExpoUpdatesPackageVersion(projectRoot: string): string | null
   return packageJson.version;
 }
 
-export function getUpdateUrl(config: Pick<ExpoConfigUpdates, 'updates'>): string | null {
-  return config.updates?.url ?? null;
+export function getUpdateUrl(config: Pick<ExpoConfigUpdates, 'updates'>): string {
+  const updateUrl = config.updates?.url;
+
+  // The "enabled" config setting is deprecated. We want to tell people how to fix their setup if they were relying upon it.
+  // After this long set of checks, updateUrl is guaranteed to be non-null.
+  // These warnings can be removed in a few releases and replaced with a warning simply on the presence of updateUrl.
+  const enabledConfigSetting = config.updates?.enabled;
+  if (enabledConfigSetting === true) {
+    if (!updateUrl) {
+      throw new Error(
+        `The expo-updates library has not been configured, and must be configured before being built into a project. To fix this, either remove the expo-updates package from your project if you don't use it or configure expo-updates using EAS Update or your own configuration.`
+      );
+    } else {
+      // this case is ok since it was already enabled (both the enabled setting and updateUrl were truthy)
+    }
+  } else if (enabledConfigSetting === false) {
+    if (!updateUrl) {
+      throw new Error(
+        `The updates.enabled config setting has been deprecated. To fix this, remove the expo-updates package from your project. Or, if you wish to enable updates, configure expo-updates using EAS Update or your own configuration.`
+      );
+    } else {
+      throw new Error(
+        'The updates.enabled config setting has been deprecated. To disable updates, remove the expo-updates package from your project. Or, if you wish to enable updates, remove the deprecated config setting.'
+      );
+    }
+  } /* enabledConfigSetting === undefined */ else {
+    if (!updateUrl) {
+      throw new Error(
+        `The expo-updates library has not been configured, and must be configured before being built into a project. To fix this, configure expo-updates using EAS Update or your own configuration.`
+      );
+    } else {
+      // this case is ok since it was already enabled (updateUrl was truthy and thus enabled defaulted to true)
+    }
+  }
+
+  return updateUrl;
 }
 
 export function getAppVersion(config: Pick<ExpoConfig, 'version'>): string {
@@ -129,15 +163,6 @@ export function getRuntimeVersion(
 
 export function getSDKVersion(config: Pick<ExpoConfigUpdates, 'sdkVersion'>): string | null {
   return typeof config.sdkVersion === 'string' ? config.sdkVersion : null;
-}
-
-export function getUpdatesEnabled(config: Pick<ExpoConfigUpdates, 'updates'>): boolean {
-  // allow override of enabled property
-  if (config.updates?.enabled !== undefined) {
-    return config.updates.enabled;
-  }
-
-  return getUpdateUrl(config) !== null;
 }
 
 export function getUpdatesTimeout(config: Pick<ExpoConfigUpdates, 'updates'>): number {

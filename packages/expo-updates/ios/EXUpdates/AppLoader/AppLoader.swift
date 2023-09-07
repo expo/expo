@@ -150,12 +150,9 @@ public class AppLoader: NSObject {
       // if something has gone wrong on the server and we have two updates with the same id
       // but different scope keys, we should try to launch something rather than show a cryptic
       // error to the user.
-      if let existingUpdate = existingUpdate,
-        let existingUpdateScopeKey = existingUpdate.scopeKey,
-        let updateManifestScopeKey = updateManifest.scopeKey,
-        existingUpdateScopeKey != updateManifestScopeKey {
+      if let existingUpdate = existingUpdate, existingUpdate.scopeKey != updateManifest.scopeKey {
         do {
-          try self.database.setScopeKey(updateManifestScopeKey, onUpdate: existingUpdate)
+          try self.database.setScopeKey(updateManifest.scopeKey, onUpdate: existingUpdate)
         } catch {
           self.finish(withError: error)
           return

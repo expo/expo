@@ -46,7 +46,7 @@ open class UpdatesService(protected var context: Context) : InternalModule, Upda
     get() = UpdatesController.instance.isUsingEmbeddedAssets
 
   override fun canRelaunch(): Boolean {
-    return configuration.isEnabled && launchedUpdate != null
+    return launchedUpdate != null
   }
 
   override val embeddedUpdate: UpdateEntity?

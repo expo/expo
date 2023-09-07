@@ -1,6 +1,7 @@
 package expo.modules.updates.launcher
 
 import android.content.Context
+import android.net.Uri
 import android.text.format.DateUtils
 import androidx.room.Room
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
@@ -45,7 +46,7 @@ class DatabaseLauncherTest {
   @Test
   fun testGetUpdateIds_EmptyDB() {
     val launcher = DatabaseLauncher(
-      UpdatesConfiguration(null, null),
+      UpdatesConfiguration(null, mapOf(UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("http://example.com"))),
       File("test"),
       FileDownloader(context),
       SelectionPolicy(
@@ -66,7 +67,7 @@ class DatabaseLauncherTest {
     db.updateDao().insertUpdate(testUpdate)
 
     val launcher = DatabaseLauncher(
-      UpdatesConfiguration(null, null),
+      UpdatesConfiguration(null, mapOf(UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("http://example.com"))),
       File("test"),
       FileDownloader(context),
       SelectionPolicy(
@@ -92,7 +93,7 @@ class DatabaseLauncherTest {
     db.updateDao().insertUpdate(testUpdate2)
 
     val launcher = DatabaseLauncher(
-      UpdatesConfiguration(null, null),
+      UpdatesConfiguration(null, mapOf(UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("http://example.com"))),
       File("test"),
       FileDownloader(context),
       SelectionPolicy(
@@ -118,7 +119,7 @@ class DatabaseLauncherTest {
     db.assetDao().insertAssets(listOf(testAsset), testUpdate)
 
     val launcher = DatabaseLauncher(
-      UpdatesConfiguration(null, null),
+      UpdatesConfiguration(null, mapOf(UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("http://example.com"))),
       File("test"),
       FileDownloader(context),
       SelectionPolicy(

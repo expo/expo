@@ -138,7 +138,6 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_SDK_VERSION_KEY] = Constants.SDK_VERSIONS
     configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_RELEASE_CHANNEL_KEY] = releaseChannel
     configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY] = Constants.isStandaloneApp()
-    configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_ENABLED_KEY] = Constants.ARE_REMOTE_UPDATES_ENABLED
     if (useCacheOnly) {
       configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY] = "NEVER"
       configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY] = 0
@@ -196,10 +195,6 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     updatesConfiguration = configuration
     updatesDirectory = directory
     this.selectionPolicy = selectionPolicy
-    if (!configuration.isEnabled) {
-      launchWithNoDatabase(context, null)
-      return
-    }
     LoaderTask(
       configuration,
       databaseHolder,

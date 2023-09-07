@@ -62,7 +62,7 @@ class UpdatesModule(
         constants["isEmbeddedLaunch"] = updatesServiceLocal.isEmbeddedLaunch
         constants["isMissingRuntimeVersion"] =
           updatesServiceLocal.configuration.isMissingRuntimeVersion
-        constants["isEnabled"] = updatesServiceLocal.configuration.isEnabled
+        constants["isEnabled"] = true
         constants["releaseChannel"] = updatesServiceLocal.configuration.releaseChannel
         constants["isUsingEmbeddedAssets"] = updatesServiceLocal.isUsingEmbeddedAssets
         constants["runtimeVersion"] = updatesServiceLocal.configuration.runtimeVersion ?: ""
@@ -132,14 +132,7 @@ class UpdatesModule(
   @ExpoMethod
   fun checkForUpdateAsync(promise: Promise) {
     try {
-      val updatesServiceLocal = updatesService
-      if (!updatesServiceLocal!!.configuration.isEnabled) {
-        promise.reject(
-          "ERR_UPDATES_DISABLED",
-          "You cannot check for updates when expo-updates is not enabled."
-        )
-        return
-      }
+      val updatesServiceLocal = updatesService!!
       val databaseHolder = updatesServiceLocal.databaseHolder
       val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(
         databaseHolder.database,
@@ -206,14 +199,7 @@ class UpdatesModule(
   @ExpoMethod
   fun fetchUpdateAsync(promise: Promise) {
     try {
-      val updatesServiceLocal = updatesService
-      if (!updatesServiceLocal!!.configuration.isEnabled) {
-        promise.reject(
-          "ERR_UPDATES_DISABLED",
-          "You cannot fetch updates when expo-updates is not enabled."
-        )
-        return
-      }
+      val updatesServiceLocal = updatesService!!
       AsyncTask.execute {
         val databaseHolder = updatesServiceLocal.databaseHolder
         RemoteLoader(

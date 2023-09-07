@@ -45,7 +45,7 @@ describe('Android Updates config', () => {
       slug: 'my-app',
       owner: 'owner',
       updates: {
-        enabled: false,
+        url: 'http://example.com',
         fallbackToCacheTimeout: 2000,
         checkAutomatically: 'ON_ERROR_RECOVERY',
         codeSigningCertificate: 'hello',
@@ -69,7 +69,8 @@ describe('Android Updates config', () => {
     const updateUrl = mainApplication['meta-data'].filter(
       (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_UPDATE_URL'
     );
-    expect(updateUrl).toHaveLength(0);
+    expect(updateUrl).toHaveLength(1);
+    expect(updateUrl[0].$['android:value']).toMatch('http://example.com');
 
     const sdkVersion = mainApplication['meta-data'].filter(
       (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_SDK_VERSION'
@@ -80,8 +81,7 @@ describe('Android Updates config', () => {
     const enabled = mainApplication['meta-data'].filter(
       (e) => e.$['android:name'] === 'expo.modules.updates.ENABLED'
     );
-    expect(enabled).toHaveLength(1);
-    expect(enabled[0].$['android:value']).toMatch('false');
+    expect(enabled).toHaveLength(0);
 
     const checkOnLaunch = mainApplication['meta-data'].filter(
       (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH'
@@ -205,6 +205,9 @@ describe('Android Updates config', () => {
         owner: 'owner',
         runtimeVersion: {
           policy: 'appVersion',
+        },
+        updates: {
+          url: 'http://example.com',
         },
       };
       androidManifestJson = Updates.setUpdatesConfig('/app', config, androidManifestJson, '0.11.0');

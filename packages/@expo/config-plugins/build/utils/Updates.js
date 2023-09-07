@@ -14,7 +14,6 @@ exports.getUpdatesCheckOnLaunch = getUpdatesCheckOnLaunch;
 exports.getUpdatesCodeSigningCertificate = getUpdatesCodeSigningCertificate;
 exports.getUpdatesCodeSigningMetadata = getUpdatesCodeSigningMetadata;
 exports.getUpdatesCodeSigningMetadataStringified = getUpdatesCodeSigningMetadataStringified;
-exports.getUpdatesEnabled = getUpdatesEnabled;
 exports.getUpdatesRequestHeaders = getUpdatesRequestHeaders;
 exports.getUpdatesRequestHeadersStringified = getUpdatesRequestHeadersStringified;
 exports.getUpdatesTimeout = getUpdatesTimeout;
@@ -78,8 +77,33 @@ function getExpoUpdatesPackageVersion(projectRoot) {
   return packageJson.version;
 }
 function getUpdateUrl(config) {
-  var _config$updates$url, _config$updates;
-  return (_config$updates$url = (_config$updates = config.updates) === null || _config$updates === void 0 ? void 0 : _config$updates.url) !== null && _config$updates$url !== void 0 ? _config$updates$url : null;
+  var _config$updates, _config$updates2;
+  const updateUrl = (_config$updates = config.updates) === null || _config$updates === void 0 ? void 0 : _config$updates.url;
+
+  // The "enabled" config setting is deprecated. We want to tell people how to fix their setup if they were relying upon it.
+  // After this long set of checks, updateUrl is guaranteed to be non-null.
+  // These warnings can be removed in a few releases and replaced with a warning simply on the presence of updateUrl.
+  const enabledConfigSetting = (_config$updates2 = config.updates) === null || _config$updates2 === void 0 ? void 0 : _config$updates2.enabled;
+  if (enabledConfigSetting === true) {
+    if (!updateUrl) {
+      throw new Error(`The expo-updates library has not been configured, and must be configured before being built into a project. To fix this, either remove the expo-updates package from your project if you don't use it or configure expo-updates using EAS Update or your own configuration.`);
+    } else {
+      // this case is ok since it was already enabled (both the enabled setting and updateUrl were truthy)
+    }
+  } else if (enabledConfigSetting === false) {
+    if (!updateUrl) {
+      throw new Error(`The updates.enabled config setting has been deprecated. To fix this, remove the expo-updates package from your project. Or, if you wish to enable updates, configure expo-updates using EAS Update or your own configuration.`);
+    } else {
+      throw new Error('The updates.enabled config setting has been deprecated. To disable updates, remove the expo-updates package from your project. Or, if you wish to enable updates, remove the deprecated config setting.');
+    }
+  } /* enabledConfigSetting === undefined */else {
+    if (!updateUrl) {
+      throw new Error(`The expo-updates library has not been configured, and must be configured before being built into a project. To fix this, configure expo-updates using EAS Update or your own configuration.`);
+    } else {
+      // this case is ok since it was already enabled (updateUrl was truthy and thus enabled defaulted to true)
+    }
+  }
+  return updateUrl;
 }
 function getAppVersion(config) {
   var _config$version;
@@ -165,14 +189,6 @@ function getRuntimeVersion(config, platform) {
 }
 function getSDKVersion(config) {
   return typeof config.sdkVersion === 'string' ? config.sdkVersion : null;
-}
-function getUpdatesEnabled(config) {
-  var _config$updates2;
-  // allow override of enabled property
-  if (((_config$updates2 = config.updates) === null || _config$updates2 === void 0 ? void 0 : _config$updates2.enabled) !== undefined) {
-    return config.updates.enabled;
-  }
-  return getUpdateUrl(config) !== null;
 }
 function getUpdatesTimeout(config) {
   var _config$updates$fallb, _config$updates3;

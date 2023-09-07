@@ -73,7 +73,7 @@ public final class UpdatesUtils: NSObject {
 
       let fileDownloader = FileDownloader(config: constants.config)
       fileDownloader.downloadRemoteUpdate(
-        fromURL: constants.config.updateUrl!,
+        fromURL: constants.config.updateUrl,
         withDatabase: constants.database,
         extraHeaders: extraHeaders
       ) { updateResponse in
@@ -167,7 +167,7 @@ public final class UpdatesUtils: NSObject {
         completionQueue: methodQueue
       )
       remoteAppLoader.loadUpdate(
-        fromURL: constants.config.updateUrl!
+        fromURL: constants.config.updateUrl
       ) { updateResponse in
         if let updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective {
           switch updateDirective {
@@ -414,9 +414,7 @@ public final class UpdatesUtils: NSObject {
     let maybeIsStarted: Bool? = AppController.sharedInstance.isStarted
 
     guard let config = maybeConfig,
-      let selectionPolicy = maybeSelectionPolicy,
-      config.isEnabled
-    else {
+      let selectionPolicy = maybeSelectionPolicy else {
       throw UpdatesDisabledException()
     }
     guard maybeIsStarted ?? false else {

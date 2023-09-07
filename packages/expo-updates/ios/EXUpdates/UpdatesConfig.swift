@@ -28,6 +28,24 @@ public enum CheckAutomaticallyConfig: Int {
 @objc(EXUpdatesConfigError)
 public enum UpdatesConfigError: Int, Error {
   case ExpoUpdatesConfigPlistError
+  case MissingUpdateUrl
+  case DeprecatedEnabledConfigurationEnabledFalseNilUpdatesUrl
+  case DeprecatedEnabledConfigurationEnabledFalseNonNilUpdatesUrl
+
+  // swiftlint:disable line_length
+  var humanReadableDescription: String {
+    switch self {
+    case .ExpoUpdatesConfigPlistError:
+      return "Expo.plist not found, not readable, or incorrect format"
+    case .MissingUpdateUrl:
+      return "Missing update URL. Ensure it is set up in your app configuration or AndroidManifest.xml. Or, if you don't wish to use expo-updates, remove the package from your project."
+    case .DeprecatedEnabledConfigurationEnabledFalseNilUpdatesUrl:
+      return "The \"EXUpdatesEnabled\" configuration has been deprecated. To fix this, remove the expo-updates package from your project. Or, if you wish to enable updates, ensure the update URL is set in your app configuration or Expo.plist."
+    case .DeprecatedEnabledConfigurationEnabledFalseNonNilUpdatesUrl:
+      return "The \"EXUpdatesEnabled\" configuration has been deprecated. To disable updates, remove the expo-updates package from your project. Or, if you wish to enable updates, remove the deprecated configuration."
+    }
+  }
+  // swiftlint:enable line_length
 }
 
 /**
@@ -47,7 +65,6 @@ public final class UpdatesConfig: NSObject {
   public static let PlistName = "Expo"
 
   public static let EXUpdatesConfigEnableAutoSetupKey = "EXUpdatesAutoSetup"
-  public static let EXUpdatesConfigEnabledKey = "EXUpdatesEnabled"
   public static let EXUpdatesConfigScopeKeyKey = "EXUpdatesScopeKey"
   public static let EXUpdatesConfigUpdateUrlKey = "EXUpdatesURL"
   public static let EXUpdatesConfigRequestHeadersKey = "EXUpdatesRequestHeaders"
@@ -71,10 +88,9 @@ public final class UpdatesConfig: NSObject {
 
   private static let ReleaseChannelDefaultValue = "default"
 
-  public let isEnabled: Bool
   public let expectsSignedManifest: Bool
-  public let scopeKey: String?
-  public let updateUrl: URL?
+  public let scopeKey: String
+  public let updateUrl: URL
   public let requestHeaders: [String: String]
   public let releaseChannel: String
   public let launchWaitMs: Int
@@ -90,10 +106,9 @@ public final class UpdatesConfig: NSObject {
   public let hasEmbeddedUpdate: Bool
 
   internal required init(
-    isEnabled: Bool,
     expectsSignedManifest: Bool,
-    scopeKey: String?,
-    updateUrl: URL?,
+    scopeKey: String,
+    updateUrl: URL,
     requestHeaders: [String: String],
     releaseChannel: String,
     launchWaitMs: Int,
@@ -104,7 +119,6 @@ public final class UpdatesConfig: NSObject {
     hasEmbeddedUpdate: Bool,
     enableExpoUpdatesProtocolV0CompatibilityMode: Bool
   ) {
-    self.isEnabled = isEnabled
     self.expectsSignedManifest = expectsSignedManifest
     self.scopeKey = scopeKey
     self.updateUrl = updateUrl
@@ -141,21 +155,45 @@ public final class UpdatesConfig: NSObject {
       dictionary = dictionary.merging(mergingOtherDictionary, uniquingKeysWith: { _, new in new })
     }
 
-    return UpdatesConfig.config(fromDictionary: dictionary)
+    return try UpdatesConfig.config(fromDictionary: dictionary)
   }
 
-  public static func config(fromDictionary config: [String: Any]) -> UpdatesConfig {
-    let isEnabled = config.optionalValue(forKey: EXUpdatesConfigEnabledKey) ?? true
-    let expectsSignedManifest = config.optionalValue(forKey: EXUpdatesConfigExpectsSignedManifestKey) ?? false
+  public static func config(fromDictionary config: [String: Any]) throws -> UpdatesConfig {
+    // warn about the deprecated EXUpdatesEnabled setting. this can be removed in a few releases
+    let isEnabledConfigSetting: Bool? = config.optionalValue(forKey: "EXUpdatesEnabled")
     let updateUrl: URL? = config.optionalValue(forKey: EXUpdatesConfigUpdateUrlKey).let { it in
       URL(string: it)
     }
 
-    var scopeKey: String? = config.optionalValue(forKey: EXUpdatesConfigScopeKeyKey)
-    if scopeKey == nil,
-      let updateUrl = updateUrl {
-      scopeKey = UpdatesConfig.normalizedURLOrigin(url: updateUrl)
+    // The "enabled" config setting is deprecated. We want to tell people how to fix their setup if they were relying upon it.
+    // After this long set of checks, updateUrl is guaranteed to be non-null.
+    // These warnings can be removed in a few releases and replaced with a warning simply on the presence of updateUrl.
+    if isEnabledConfigSetting == true {
+      if updateUrl == nil {
+        throw UpdatesConfigError.MissingUpdateUrl
+      } else {
+        // this case is ok since it was already enabled (both the enabled setting and updateUrl were truthy)
+      }
+    } else if isEnabledConfigSetting == false {
+      if updateUrl == nil {
+        throw UpdatesConfigError.DeprecatedEnabledConfigurationEnabledFalseNilUpdatesUrl
+      } else {
+        throw UpdatesConfigError.DeprecatedEnabledConfigurationEnabledFalseNonNilUpdatesUrl
+      }
+    } else /* isEnabledConfigSetting == null */ {
+      if updateUrl == nil {
+        throw UpdatesConfigError.MissingUpdateUrl
+      } else {
+        // this case is ok since it was already enabled (updateUrl was truthy and thus enabled defaulted to true)
+      }
     }
+
+    guard let updateUrl = updateUrl else {
+      throw UpdatesConfigError.MissingUpdateUrl
+    }
+
+    let expectsSignedManifest = config.optionalValue(forKey: EXUpdatesConfigExpectsSignedManifestKey) ?? false
+    var scopeKey = config.optionalValue(forKey: EXUpdatesConfigScopeKeyKey) ?? UpdatesConfig.normalizedURLOrigin(url: updateUrl)
 
     let requestHeaders: [String: String] = config.optionalValue(forKey: EXUpdatesConfigRequestHeadersKey) ?? [:]
     let releaseChannel = config.optionalValue(forKey: EXUpdatesConfigReleaseChannelKey) ?? ReleaseChannelDefaultValue
@@ -210,7 +248,6 @@ public final class UpdatesConfig: NSObject {
     let enableExpoUpdatesProtocolV0CompatibilityMode = config.optionalValue(forKey: EXUpdatesConfigEnableExpoUpdatesProtocolV0CompatibilityModeKey) ?? false
 
     return UpdatesConfig(
-      isEnabled: isEnabled,
       expectsSignedManifest: expectsSignedManifest,
       scopeKey: scopeKey,
       updateUrl: updateUrl,

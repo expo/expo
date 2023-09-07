@@ -23,7 +23,6 @@ import {
   getUpdatesCodeSigningCertificate,
   getUpdatesCodeSigningMetadataStringified,
   getUpdatesRequestHeadersStringified,
-  getUpdatesEnabled,
   getUpdatesTimeout,
   getUpdateUrl,
 } from '../utils/Updates';
@@ -31,7 +30,9 @@ import {
 const CREATE_MANIFEST_ANDROID_PATH = 'expo-updates/scripts/create-manifest-android.gradle';
 
 export enum Config {
+  // deprecated, remove in a few releases
   ENABLED = 'expo.modules.updates.ENABLED',
+
   CHECK_ON_LAUNCH = 'expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH',
   LAUNCH_WAIT_MS = 'expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS',
   SDK_VERSION = 'expo.modules.updates.EXPO_SDK_VERSION',
@@ -93,11 +94,6 @@ export function setUpdatesConfig(
 
   addMetaDataItemToMainApplication(
     mainApplication,
-    Config.ENABLED,
-    String(getUpdatesEnabled(config))
-  );
-  addMetaDataItemToMainApplication(
-    mainApplication,
     Config.CHECK_ON_LAUNCH,
     getUpdatesCheckOnLaunch(config, expoUpdatesPackageVersion)
   );
@@ -107,12 +103,11 @@ export function setUpdatesConfig(
     String(getUpdatesTimeout(config))
   );
 
-  const updateUrl = getUpdateUrl(config);
-  if (updateUrl) {
-    addMetaDataItemToMainApplication(mainApplication, Config.UPDATE_URL, updateUrl);
-  } else {
-    removeMetaDataItemFromMainApplication(mainApplication, Config.UPDATE_URL);
-  }
+  // always remove the native enabled setting so that runtime warnings aren't logged.
+  // this can be removed in a few releases.
+  removeMetaDataItemFromMainApplication(mainApplication, Config.ENABLED);
+
+  addMetaDataItemToMainApplication(mainApplication, Config.UPDATE_URL, getUpdateUrl(config));
 
   const codeSigningCertificate = getUpdatesCodeSigningCertificate(projectRoot, config);
   if (codeSigningCertificate) {
@@ -257,9 +252,8 @@ export function isMainApplicationMetaDataSynced(
   androidManifest: AndroidManifest
 ): boolean {
   return (
+    getMainApplicationMetaDataValue(androidManifest, Config.ENABLED) == null &&
     getUpdateUrl(config) === getMainApplicationMetaDataValue(androidManifest, Config.UPDATE_URL) &&
-    String(getUpdatesEnabled(config)) ===
-      getMainApplicationMetaDataValue(androidManifest, Config.ENABLED) &&
     String(getUpdatesTimeout(config)) ===
       getMainApplicationMetaDataValue(androidManifest, Config.LAUNCH_WAIT_MS) &&
     getUpdatesCheckOnLaunch(config) ===

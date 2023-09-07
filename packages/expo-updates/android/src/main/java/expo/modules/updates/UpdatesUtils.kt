@@ -211,9 +211,6 @@ object UpdatesUtils {
     updatesConfiguration: UpdatesConfiguration,
     context: Context
   ): Boolean {
-    if (updatesConfiguration.updateUrl == null) {
-      return false
-    }
     return when (updatesConfiguration.checkOnLaunch) {
       CheckAutomaticallyConfiguration.NEVER -> false
       // check will happen later on if there's an error

@@ -34,7 +34,7 @@ describe('iOS Updates config', () => {
           slug: 'my-app',
           owner: 'owner',
           updates: {
-            enabled: false,
+            url: 'http://example.com',
             fallbackToCacheTimeout: 2000,
             checkAutomatically: 'ON_ERROR_RECOVERY',
             codeSigningCertificate: 'hello',
@@ -52,7 +52,7 @@ describe('iOS Updates config', () => {
         '0.11.0'
       )
     ).toMatchObject({
-      EXUpdatesEnabled: false,
+      EXUpdatesURL: 'http://example.com',
       EXUpdatesCheckOnLaunch: 'ERROR_RECOVERY_ONLY',
       EXUpdatesLaunchWaitMs: 2000,
       EXUpdatesSDKVersion: '37.0.0',

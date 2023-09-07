@@ -7,7 +7,7 @@ import ExpoModulesTestCore
 import EXManifests
 
 class NewUpdateSpec : ExpoSpec {
-  let config = UpdatesConfig.config(fromDictionary: [
+  let config = try! UpdatesConfig.config(fromDictionary: [
     UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test"
   ])
   let database = UpdatesDatabase()
