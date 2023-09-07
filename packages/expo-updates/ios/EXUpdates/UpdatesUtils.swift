@@ -3,7 +3,6 @@
 // swiftlint:disable force_unwrapping
 // swiftlint:disable closure_body_length
 // swiftlint:disable superfluous_else
-// swiftlint:disable line_length
 
 import Foundation
 import SystemConfiguration
@@ -96,24 +95,24 @@ public final class UpdatesUtils: NSObject {
           switch updateDirective {
           case is NoUpdateAvailableUpdateDirective:
             block([:])
-            sendStateEvent(UpdatesStateEventCheckComplete(message: nil))
+            sendStateEvent(UpdatesStateEventCheckComplete())
             return
           case let rollBackUpdateDirective as RollBackToEmbeddedUpdateDirective:
             if !constants.config.hasEmbeddedUpdate {
-              let message = "A rollback directive was received from the update server, but this app is not configured to have an embedded update."
+              let reason = RemoteCheckResultNotAvailableReason.rollbackNoEmbeddedConfiguration
               block([
-                "noUpdateMessage": message
+                "reason": "\(reason)"
               ])
-              sendStateEvent(UpdatesStateEventCheckComplete(message: message ))
+              sendStateEvent(UpdatesStateEventCheckComplete())
               return
             }
 
             guard let embeddedManifest = EmbeddedAppLoader.embeddedManifest(withConfig: constants.config, database: constants.database) else {
-              let message = "A rollback directive was received from the update server, but no embedded manifest was found."
+              let reason = RemoteCheckResultNotAvailableReason.rollbackNoEmbeddedManifestFound
               block([
-                "noUpdateMessage": message
+                "reason": "\(reason)"
               ])
-              sendStateEvent(UpdatesStateEventCheckComplete(message: message))
+              sendStateEvent(UpdatesStateEventCheckComplete())
               return
             }
 
@@ -123,11 +122,11 @@ public final class UpdatesUtils: NSObject {
               launchedUpdate: launchedUpdate,
               filters: manifestFilters
             ) {
-              let message = "A rollback directive was received from the update server, but it did not meet the app's selection policy for rollbacks."
+              let reason = RemoteCheckResultNotAvailableReason.rollbackRejectedBySelectionPolicy
               block([
-                "noUpdateMessage": message
+                "reason": "\(reason)"
               ])
-              sendStateEvent(UpdatesStateEventCheckComplete(message: message))
+              sendStateEvent(UpdatesStateEventCheckComplete())
               return
             }
 
@@ -146,8 +145,11 @@ public final class UpdatesUtils: NSObject {
         }
 
         guard let update = updateResponse.manifestUpdateResponsePart?.updateManifest else {
-          block([:])
-          sendStateEvent(UpdatesStateEventCheckComplete(message: nil))
+          let reason = RemoteCheckResultNotAvailableReason.updateNotAvailableOnServer
+          block([
+            "reason": "\(reason)"
+          ])
+          sendStateEvent(UpdatesStateEventCheckComplete())
           return
         }
 
@@ -179,11 +181,11 @@ public final class UpdatesUtils: NSObject {
           ])
           sendStateEvent(UpdatesStateEventCheckCompleteWithUpdate(manifest: update.manifest.rawManifestJSON()))
         } else {
-          let message = "An update manifest was received from the update server, but the update has been previously launched on this device and never successfully launched."
+          let reason = RemoteCheckResultNotAvailableReason.updatePreviouslyFailed
           block([
-            "noUpdateMessage": message
+            "reason": "\(reason)"
           ])
-          sendStateEvent(UpdatesStateEventCheckComplete(message: message))
+          sendStateEvent(UpdatesStateEventCheckComplete())
         }
       } errorBlock: { error in
         return handleCheckError(error, block: block)
@@ -479,4 +481,3 @@ public final class UpdatesUtils: NSObject {
 // swiftlint:enable force_unwrapping
 // swiftlint:enable closure_body_length
 // swiftlint:enable superfluous_else
-// swiftlint:enable line_length

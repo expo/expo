@@ -31,8 +31,35 @@ public protocol AppLoaderTaskDelegate: AnyObject {
   )
 }
 
+public enum RemoteCheckResultNotAvailableReason {
+  /**
+   * No update manifest or rollback directive received from the update server.
+   */
+  case updateNotAvailableOnServer
+  /**
+   * An update manifest was received from the update server, but the update is not launchable, or does not pass the configured selection policy.
+   */
+  case updateRejectedBySelectionPolicy
+  /**
+   * An update manifest was received from the update server, but the update has been previously launched on this device and never successfully launched.
+   */
+  case updatePreviouslyFailed
+  /**
+   * An update manifest was received from the update server, but the update is not launchable, or does not pass the configured selection policy.
+   */
+  case rollbackRejectedBySelectionPolicy
+  /**
+   * A rollback directive was received from the update server, but this app is not configured to have an embedded update.
+   */
+  case rollbackNoEmbeddedConfiguration
+  /**
+   * A rollback directive was received from the update server, but no embedded manifest was found.
+   */
+  case rollbackNoEmbeddedManifestFound
+}
+
 public enum RemoteCheckResult {
-  case noUpdateAvailable(message: String?)
+  case noUpdateAvailable(reason: RemoteCheckResultNotAvailableReason)
   case updateAvailable(manifest: [String: Any])
   case rollBackToEmbedded(commitTime: Date)
   case error(error: Error)
@@ -353,7 +380,7 @@ public final class AppLoaderTask: NSObject {
           self.isUpToDate = true
           if let swiftDelegate = self.swiftDelegate {
             self.delegateQueue.async {
-              swiftDelegate.appLoaderTask(self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.noUpdateAvailable(message: nil))
+              swiftDelegate.appLoaderTask(self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.noUpdateAvailable(reason: .updateNotAvailableOnServer))
             }
           }
           return false
@@ -387,7 +414,7 @@ public final class AppLoaderTask: NSObject {
         self.isUpToDate = true
         if let swiftDelegate = self.swiftDelegate {
           self.delegateQueue.async {
-            swiftDelegate.appLoaderTask(self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.noUpdateAvailable(message: nil))
+            swiftDelegate.appLoaderTask(self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.noUpdateAvailable(reason: .updateNotAvailableOnServer))
           }
         }
         return false
@@ -422,7 +449,7 @@ public final class AppLoaderTask: NSObject {
         self.isUpToDate = true
         if let swiftDelegate = self.swiftDelegate {
           self.delegateQueue.async {
-            swiftDelegate.appLoaderTask(self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.noUpdateAvailable(message: "An update manifest was received from the update server, but the update is not launchable, or does not pass the configured selection policy"))
+            swiftDelegate.appLoaderTask(self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.noUpdateAvailable(reason: .updateRejectedBySelectionPolicy))
           }
         }
         return false
