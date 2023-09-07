@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Move Metro and web TypeScript types from Expo Router to `expo`.
+
 ## 50.0.0-alpha.2 — 2023-09-04
 
 ### 🛠 Breaking changes

@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Use Metro and web TypeScript types from `expo` instead of `expo-router`.
+
 ## 0.12.0 — 2023-09-04
 
 ### 🛠 Breaking changes
