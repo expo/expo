@@ -16,7 +16,10 @@ export async function getFreePortAsync(rangeStart: number): Promise<number> {
 }
 
 /** @return `true` if the port can still be used to start the dev server, `false` if the dev server should be skipped, and asserts if the port is now taken. */
-export async function ensurePortAvailabilityAsync(projectRoot: string, { port }: { port: number }) {
+export async function ensurePortAvailabilityAsync(
+  projectRoot: string,
+  { port }: { port: number }
+): Promise<boolean> {
   const freePort = await freeportAsync(port, { hostnames: [null] });
   // Check if port has become busy during the build.
   if (freePort === port) {
