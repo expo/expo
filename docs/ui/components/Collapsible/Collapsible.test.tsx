@@ -1,6 +1,13 @@
+import { jest } from '@jest/globals';
 import { fireEvent, render, screen } from '@testing-library/react';
 
 import { Collapsible } from '.';
+
+jest.mock('~/components/page-higher-order/withHeadingManager', () => ({
+  __esModule: true,
+  default: (Component: React.FC) => (props: any) =>
+    <Component headingManager={{ addHeading: jest.fn() }} {...props} />,
+}));
 
 describe(Collapsible, () => {
   it('hides content by default', () => {
