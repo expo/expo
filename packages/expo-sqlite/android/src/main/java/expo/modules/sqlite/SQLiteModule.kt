@@ -159,7 +159,7 @@ class SQLiteModule : Module() {
           it.first.close()
           it.second
         }
-        return SQLitePluginResult(rows, columnNames, rowsAffected, insertId, null)
+        SQLitePluginResult(rows, columnNames, rowsAffected, insertId, null)
       } else if (isDelete(sql) || isUpdate(sql)) {
         val rowsAffected = getRowsAffected(db).let {
           it.first.close()

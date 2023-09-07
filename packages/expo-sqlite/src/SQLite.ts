@@ -66,6 +66,7 @@ export class SQLiteDatabase {
 
     ExpoSQLite.execRawQuery(this._name, queries.map(_serializeQuery), readOnly).then(
       (nativeResultSets) => {
+        console.log(nativeResultSets);
         callback(null, nativeResultSets.map(_deserializeResultSet));
       },
       (error) => {

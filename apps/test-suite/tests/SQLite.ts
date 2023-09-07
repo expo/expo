@@ -370,7 +370,7 @@ export function test(t) {
         [
           {
             // Unsupprted on Android using the `exec` function
-            sql: "INSERT INTO customers (name, email) VALUES ('John Doe', 'john@example.com') RETURNING name, email",
+            sql: "INSERT INTO customers (id, name, email) VALUES (1, 'John Doe', 'john@example.com') RETURNING name, email;",
             args: [],
           },
         ],
@@ -380,6 +380,39 @@ export function test(t) {
           t.expect(results.rows[0].email).toBe('john@example.com');
           // @ts-expect-error
           t.expect(results.rows[0].name).toBe('John Doe');
+        }
+      );
+
+      db.execRawQuery(
+        [
+          {
+            sql: "UPDATE customers SET name='Jane Doe', email='jane@example.com' WHERE id=1 RETURNING name, email;",
+            args: [],
+          },
+        ],
+        false,
+        (tx, results) => {
+          // @ts-expect-error
+          t.expect(results.rows[0].email).toBe('jane@example.com');
+          // @ts-expect-error
+          t.expect(results.rows[0].name).toBe('Jane Doe');
+        }
+      );
+
+      db.execRawQuery(
+        [
+          {
+            // Unsupprted on Android using the `exec` function
+            sql: 'DELETE from customers WHERE id=1 RETURNING name, email;',
+            args: [],
+          },
+        ],
+        false,
+        (tx, results) => {
+          // @ts-expect-error
+          t.expect(results.rows[0].email).toBe('jane@example.com');
+          // @ts-expect-error
+          t.expect(results.rows[0].name).toBe('Jane Doe');
         }
       );
     });
