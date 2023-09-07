@@ -1,13 +1,39 @@
-const lazyImportsBlacklist = require('babel-preset-expo/lazy-imports-blacklist');
+/* eslint-env node */
+
+// @ts-ignore
+import lazyImportsBlacklist from 'babel-preset-expo/lazy-imports-blacklist';
 
 let hasWarnedJsxRename = false;
 
-module.exports = function (api, options = {}) {
+import { ConfigAPI, PluginItem, TransformOptions } from '@babel/core';
+
+type BabelPresetExpoPlatformOptions = {
+  useTransformReactJSXExperimental?: boolean;
+  disableImportExportTransform?: boolean;
+  // Defaults to undefined, set to something truthy to disable `@babel/plugin-transform-react-jsx-self` and `@babel/plugin-transform-react-jsx-source`.
+  withDevTools?: boolean;
+  // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
+  disableFlowStripTypesTransform?: boolean;
+  // Defaults to undefined, set to `false` to disable `@babel/plugin-transform-runtime`
+  enableBabelRuntime?: boolean;
+  // Defaults to `'default'`, can also use `'hermes-canary'`
+  unstable_transformProfile?: 'default' | 'hermes-canary';
+};
+type BabelPresetExpoOptions = {
+  lazyImports?: boolean;
+  reanimated?: boolean;
+  jsxRuntime?: 'classic' | 'automatic';
+  jsxImportSource?: string;
+  web?: BabelPresetExpoPlatformOptions;
+  native?: BabelPresetExpoPlatformOptions;
+};
+
+function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): TransformOptions {
   const { web = {}, native = {}, reanimated } = options;
 
   const bundler = api.caller(getBundler);
   const isWebpack = bundler === 'webpack';
-  let platform = api.caller(getPlatform);
+  let platform = api.caller((caller) => (caller as any)?.platform);
 
   // If the `platform` prop is not defined then this must be a custom config that isn't
   // defining a platform in the babel-loader. Currently this may happen with Next.js + Expo web.
@@ -15,7 +41,7 @@ module.exports = function (api, options = {}) {
     platform = 'web';
   }
 
-  const platformOptions =
+  const platformOptions: BabelPresetExpoPlatformOptions =
     platform === 'web'
       ? {
           // Only disable import/export transform when Webpack is used because
@@ -27,9 +53,9 @@ module.exports = function (api, options = {}) {
 
   // Note that if `options.lazyImports` is not set (i.e., `null` or `undefined`),
   // `metro-react-native-babel-preset` will handle it.
-  const lazyImportsOption = options && options.lazyImports;
+  const lazyImportsOption = options?.lazyImports;
 
-  const extraPlugins = [];
+  const extraPlugins: PluginItem[] = [getObjectRestSpreadPlugin()];
 
   if ('useTransformReactJsxExperimental' in platformOptions && !hasWarnedJsxRename) {
     // https://github.com/expo/expo/pull/13945#pullrequestreview-724327024
@@ -61,6 +87,15 @@ module.exports = function (api, options = {}) {
     // back to the preset.
   }
 
+  const aliasPlugin = getAliasPlugin();
+  if (aliasPlugin) {
+    extraPlugins.push(aliasPlugin);
+  }
+
+  if (platform === 'web') {
+    extraPlugins.push(require.resolve('babel-plugin-react-native-web'));
+  }
+
   return {
     presets: [
       [
@@ -90,7 +125,7 @@ module.exports = function (api, options = {}) {
           disableImportExportTransform: platformOptions.disableImportExportTransform,
           lazyImportExportTransform:
             lazyImportsOption === true
-              ? (importModuleSpecifier) => {
+              ? (importModuleSpecifier: string) => {
                   // Do not lazy-initialize packages that are local imports (similar to `lazy: true`
                   // behavior) or are in the blacklist.
                   return !(
@@ -105,51 +140,45 @@ module.exports = function (api, options = {}) {
       ],
     ],
     plugins: [
-      getObjectRestSpreadPlugin(),
       ...extraPlugins,
-      getAliasPlugin(),
       [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
-      platform === 'web' && [require.resolve('babel-plugin-react-native-web')],
       require.resolve('@babel/plugin-proposal-export-namespace-from'),
 
       // Automatically add `react-native-reanimated/plugin` when the package is installed.
+      // TODO: Move to be a customTransformOption.
       hasModule('react-native-reanimated') &&
         reanimated !== false && [require.resolve('react-native-reanimated/plugin')],
-    ].filter(Boolean),
+    ].filter(Boolean) as PluginItem[],
   };
-};
+}
 
-function getAliasPlugin() {
-  const aliases = {};
-
-  if (hasModule('@expo/vector-icons')) {
-    aliases['react-native-vector-icons'] = '@expo/vector-icons';
+function getAliasPlugin(): PluginItem | null {
+  if (!hasModule('@expo/vector-icons')) {
+    return null;
   }
-
-  if (Object.keys(aliases).length) {
-    return [
-      require.resolve('babel-plugin-module-resolver'),
-      {
-        alias: aliases,
+  return [
+    require.resolve('babel-plugin-module-resolver'),
+    {
+      alias: {
+        'react-native-vector-icons': '@expo/vector-icons',
       },
-    ];
-  }
-  return null;
+    },
+  ];
 }
 
 /**
- * metro-react-native-babel-preset configures this plugin with `{ loose: true }`, which breaks all
+ * `metro-react-native-babel-preset` configures this plugin with `{ loose: true }`, which breaks all
  * getters and setters in spread objects. We need to add this plugin ourself without that option.
  * @see https://github.com/expo/expo/pull/11960#issuecomment-887796455
  */
-function getObjectRestSpreadPlugin() {
+function getObjectRestSpreadPlugin(): PluginItem {
   return [require.resolve('@babel/plugin-proposal-object-rest-spread'), { loose: false }];
 }
 
-function hasModule(name) {
+function hasModule(name: string): boolean {
   try {
     return !!require.resolve(name);
-  } catch (error) {
+  } catch (error: any) {
     if (error.code === 'MODULE_NOT_FOUND' && error.message.includes(name)) {
       return false;
     }
@@ -157,32 +186,20 @@ function hasModule(name) {
   }
 }
 
-function getPlatform(caller) {
-  return caller && caller.platform;
-}
-
-/**
- * Get the name of the `bundler`.
- *
- * @param {*} caller
- */
-function getBundler(caller) {
+/** Determine which bundler is being used. */
+function getBundler(caller: any) {
   if (!caller) return null;
-
-  const { bundler, name } = caller;
-
-  if (!bundler) {
-    if (name === 'metro') {
-      // This is a hack to determine if metro is being used.
-      return 'metro';
-    } else if (name === 'next-babel-turbo-loader') {
-      // NextJS 11
-      return 'webpack';
-    } else if (name === 'babel-loader') {
-      // expo/webpack-config, gatsby, storybook, and next.js <10
-      return 'webpack';
-    }
+  if (caller.bundler) return caller.bundler;
+  if (caller.name === 'next-babel-turbo-loader') {
+    // NextJS 11
+    return 'webpack';
+  } else if (caller.name === 'babel-loader') {
+    // expo/webpack-config, gatsby, storybook, and next.js <10
+    return 'webpack';
   }
-  // Perhaps we should add a check to log once when an unexpected bundler is being used.
-  return bundler || null;
+
+  // This is a hack to determine if metro is being used.
+  return 'metro';
 }
+
+module.exports = babelPresetExpo;

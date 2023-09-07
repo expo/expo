@@ -1,24 +1,9 @@
 {
-  "extends": "@tsconfig/node14/tsconfig.json",
+  "extends": "../../tsconfig.node",
   "include": ["./src"],
   "exclude": ["**/__mocks__/*", "**/__tests__/*"],
   "compilerOptions": {
     "outDir": "./build",
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "types": [],
-    "typeRoots": ["./ts-declarations", "node_modules/@types"],
-
-    "sourceMap": true,
-    "declaration": false,
-    "inlineSources": true,
-    "strictNullChecks": true,
-    "strictPropertyInitialization": true,
-    "strictFunctionTypes": true,
-    "skipLibCheck": true,
-    "noImplicitAny": false,
-    "noImplicitThis": true,
-    "noImplicitReturns": true,
-    "allowSyntheticDefaultImports": true
+    "typeRoots": ["../@expo/cli/ts-declarations"]
   }
 }
