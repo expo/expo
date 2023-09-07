@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Infinite renders when using ErrorBoundary in a nested layout.
+- Infinite renders when using ErrorBoundary in a nested layout. ([#24317](https://github.com/expo/expo/pull/24317) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
