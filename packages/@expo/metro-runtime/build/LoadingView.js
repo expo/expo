@@ -5,19 +5,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const SyntheticPlatformEmitter_1 = __importDefault(require("expo-modules-core/build/SyntheticPlatformEmitter"));
+const react_native_web_1 = require("react-native-web");
 // Ensure events are sent so custom Fast Refresh views are shown.
 function showMessage(message, type) {
-    SyntheticPlatformEmitter_1.default.emit('devLoadingView:showMessage', {
+    react_native_web_1.DeviceEventEmitter.emit('devLoadingView:showMessage', {
         message,
     });
 }
 function hide() {
-    SyntheticPlatformEmitter_1.default.emit('devLoadingView:hide', {});
+    react_native_web_1.DeviceEventEmitter.emit('devLoadingView:hide', {});
 }
 exports.default = {
     showMessage,

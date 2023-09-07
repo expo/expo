@@ -5,17 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import SyntheticPlatformEmitter from 'expo-modules-core/build/SyntheticPlatformEmitter';
+import { DeviceEventEmitter } from 'react-native-web';
 
 // Ensure events are sent so custom Fast Refresh views are shown.
 function showMessage(message: string, type: 'load' | 'refresh') {
-  SyntheticPlatformEmitter.emit('devLoadingView:showMessage', {
+  DeviceEventEmitter.emit('devLoadingView:showMessage', {
     message,
   });
 }
 
 function hide() {
-  SyntheticPlatformEmitter.emit('devLoadingView:hide', {});
+  DeviceEventEmitter.emit('devLoadingView:hide', {});
 }
 
 export default {
