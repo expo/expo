@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- Use Metro and web TypeScript types from `expo` instead of `expo-router`.
+- Use Metro and web TypeScript types from `expo` instead of `expo-router`. ([#24255](https://github.com/expo/expo/pull/24255) by [@marklawlor](https://github.com/marklawlor))
 
 ## 0.12.0 — 2023-09-04
 
