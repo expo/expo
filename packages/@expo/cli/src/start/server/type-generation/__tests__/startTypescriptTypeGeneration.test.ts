@@ -47,8 +47,6 @@ it(`sets up typed routes`, async () => {
   ]);
 
   expect(fs.readFileSync('/expo-env.d.ts', 'utf8')).toMatch(`/// <reference types="expo/types" />
-/// <reference types="@expo/metro-config/types" />
-
 
 // NOTE: This file should not be edited and should be in your git ignore`);
   expect(fs.readFileSync('/.gitignore', 'utf8')).toMatch('expo-env.d.ts');
