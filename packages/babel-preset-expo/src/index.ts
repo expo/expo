@@ -134,6 +134,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
         },
       ],
     ],
+
     plugins: [
       ...extraPlugins,
       // TODO: Remove
