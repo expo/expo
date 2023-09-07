@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Expo Router no longer automatically injects `react-native-gesture-handler`. Users must now add this in layout routes.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

@@ -15,36 +15,10 @@ export type ExpoRootProps = {
   wrapper?: FunctionComponent<{ children: ReactNode }>;
 };
 
-function getGestureHandlerRootView() {
-  try {
-    const { GestureHandlerRootView } =
-      require('react-native-gesture-handler') as typeof import('react-native-gesture-handler');
-
-    if (!GestureHandlerRootView) {
-      return React.Fragment;
-    }
-
-    // eslint-disable-next-line no-inner-declarations
-    function GestureHandler(props: any) {
-      return <GestureHandlerRootView style={styles.gesture} {...props} />;
-    }
-    if (process.env.NODE_ENV === 'development') {
-      // @ts-expect-error
-      GestureHandler.displayName = 'GestureHandlerRootView';
-    }
-    return GestureHandler;
-  } catch {
-    return React.Fragment;
-  }
-}
-
-const GestureHandlerRootView = getGestureHandlerRootView();
-
-const isSSR = Platform.OS === 'web' && typeof window === 'undefined';
 const isTestEnv = process.env.NODE_ENV === 'test';
 
 const INITIAL_METRICS =
-  isSSR || isTestEnv
+  Platform.OS === 'web' || isTestEnv
     ? {
         frame: { x: 0, y: 0, width: 0, height: 0 },
         insets: { top: 0, left: 0, right: 0, bottom: 0 },
@@ -64,15 +38,15 @@ export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRo
   const wrapper = ({ children }) => {
     return (
       <ParentWrapper>
-        <GestureHandlerRootView>
-          <SafeAreaProvider
-            // SSR support
-            initialMetrics={INITIAL_METRICS}>
-            {children}
-            {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
-            {!hasViewControllerBasedStatusBarAppearance && <StatusBar style="auto" />}
-          </SafeAreaProvider>
-        </GestureHandlerRootView>
+        {/* <GestureHandlerRootView> */}
+        <SafeAreaProvider
+          // SSR support
+          initialMetrics={INITIAL_METRICS}>
+          {children}
+          {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
+          {!hasViewControllerBasedStatusBarAppearance && <StatusBar style="auto" />}
+        </SafeAreaProvider>
+        {/* </GestureHandlerRootView> */}
       </ParentWrapper>
     );
   };

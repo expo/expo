@@ -6,30 +6,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import UpstreamNavigationContainer from './fork/NavigationContainer';
 import { useInitializeExpoRouter } from './global-state/router-store';
 import { SplashScreen } from './views/Splash';
-function getGestureHandlerRootView() {
-    try {
-        const { GestureHandlerRootView } = require('react-native-gesture-handler');
-        if (!GestureHandlerRootView) {
-            return React.Fragment;
-        }
-        // eslint-disable-next-line no-inner-declarations
-        function GestureHandler(props) {
-            return React.createElement(GestureHandlerRootView, { style: styles.gesture, ...props });
-        }
-        if (process.env.NODE_ENV === 'development') {
-            // @ts-expect-error
-            GestureHandler.displayName = 'GestureHandlerRootView';
-        }
-        return GestureHandler;
-    }
-    catch {
-        return React.Fragment;
-    }
-}
-const GestureHandlerRootView = getGestureHandlerRootView();
-const isSSR = Platform.OS === 'web' && typeof window === 'undefined';
 const isTestEnv = process.env.NODE_ENV === 'test';
-const INITIAL_METRICS = isSSR || isTestEnv
+const INITIAL_METRICS = Platform.OS === 'web' || isTestEnv
     ? {
         frame: { x: 0, y: 0, width: 0, height: 0 },
         insets: { top: 0, left: 0, right: 0, bottom: 0 },
@@ -45,14 +23,13 @@ export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }) {
      */
     const wrapper = ({ children }) => {
         return (React.createElement(ParentWrapper, null,
-            React.createElement(GestureHandlerRootView, null,
-                React.createElement(SafeAreaProvider
+            React.createElement(SafeAreaProvider
+            // SSR support
+            , { 
                 // SSR support
-                , { 
-                    // SSR support
-                    initialMetrics: INITIAL_METRICS },
-                    children,
-                    !hasViewControllerBasedStatusBarAppearance && React.createElement(StatusBar, { style: "auto" })))));
+                initialMetrics: INITIAL_METRICS },
+                children,
+                !hasViewControllerBasedStatusBarAppearance && React.createElement(StatusBar, { style: "auto" }))));
     };
     return React.createElement(ContextNavigator, { ...props, wrapper: wrapper });
 }
