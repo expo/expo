@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- Move Metro and web TypeScript types from Expo Router to `expo`.
+- Move Metro and web TypeScript types from Expo Router to `expo`. ([#24255](https://github.com/expo/expo/pull/24255) by [@marklawlor](https://github.com/marklawlor))
 
 ## 50.0.0-alpha.2 — 2023-09-04
 
