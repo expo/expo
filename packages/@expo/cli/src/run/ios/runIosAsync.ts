@@ -7,6 +7,7 @@ import { resolveOptionsAsync } from './options/resolveOptions';
 import * as Log from '../../log';
 import { maybePromptToSyncPodsAsync } from '../../utils/cocoapods';
 import { setNodeEnv } from '../../utils/nodeEnv';
+import { ensurePortAvailabilityAsync } from '../../utils/port';
 import { profile } from '../../utils/profile';
 import { getSchemesForIosAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
@@ -34,6 +35,11 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   // Find the path to the built app binary, this will be used to install the binary
   // on a device.
   const binaryPath = await profile(XcodeBuild.getAppBinaryPath)(buildOutput);
+
+  // Ensure the port hasn't become busy during the build.
+  if (props.shouldStartBundler && !(await ensurePortAvailabilityAsync(projectRoot, props))) {
+    props.shouldStartBundler = false;
+  }
 
   // Start the dev server which creates all of the required info for
   // launching the app on a simulator.
