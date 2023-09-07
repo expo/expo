@@ -271,16 +271,19 @@ class SQLiteModule : Module() {
 
   private fun addUpdateListener(database: SQLiteDatabase?) {
     database?.addUpdateListener { tableName: String, operationType: Int, rowID: Int ->
-      sendEvent("onDatabaseChange", bundleOf(
-        "tableName" to tableName,
-        "rowId" to rowID,
-        "typeId" to when(operationType) {
-          9 -> SqlAction.DELETE.value
-          18 -> SqlAction.INSERT.value
-          23 -> SqlAction.UPDATE.value
-          else -> SqlAction.UNKNOWN.value
-        }
-      ))
+      sendEvent(
+        "onDatabaseChange",
+        bundleOf(
+          "tableName" to tableName,
+          "rowId" to rowID,
+          "typeId" to when (operationType) {
+            9 -> SqlAction.DELETE.value
+            18 -> SqlAction.INSERT.value
+            23 -> SqlAction.UPDATE.value
+            else -> SqlAction.UNKNOWN.value
+          }
+        )
+      )
     }
   }
 

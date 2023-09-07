@@ -11,7 +11,7 @@ data class Query(
   val args: List<Any?>
 ) : Record
 
-enum class SqlAction(val value: String): Enumerable {
+enum class SqlAction(val value: String) : Enumerable {
   INSERT("insert"),
   UPDATE("update"),
   DELETE("delete"),
