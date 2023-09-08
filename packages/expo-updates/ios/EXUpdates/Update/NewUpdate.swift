@@ -3,13 +3,13 @@
 import Foundation
 import EXManifests
 
-internal final class NewUpdate: Update {
+public final class NewUpdate: Update {
   /**
    * Method for initializing updates with modern format manifests that conform to the Expo Updates
    * specification (https://docs.expo.dev/technical-specs/expo-updates-1/). This is used by EAS
    * Update.
    */
-  static func update(
+  public static func update(
     withNewManifest: NewManifest,
     extensions: [String: Any],
     config: UpdatesConfig,

@@ -1,76 +1,63 @@
-// Copyright 2015-present 650 Industries. All rights reserved.
+// Copyright 2020-present 650 Industries. All rights reserved.
 
+#import "EXAppFetcher.h"
+#import "EXHomeLoader.h"
+#import "EXClientReleaseType.h"
 #import "EXEnvironment.h"
 #import "EXErrorRecoveryManager.h"
 #import "EXFileDownloader.h"
 #import "EXKernel.h"
-#import "EXAppFetcher.h"
-#import "EXAppFetcherDevelopmentMode.h"
-#import "EXAppFetcherCacheOnly.h"
-#import "EXAppFetcherWithTimeout.h"
-#import "EXHomeLoader.h"
-#import "EXKernelAppRecord.h"
-#import "EXKernelAppRegistry.h"
 #import "EXKernelLinkingManager.h"
 #import "EXManifestResource.h"
+#import "EXSession.h"
+#import "EXUpdatesDatabaseManager.h"
+#import "EXVersions.h"
+
+#if defined(EX_DETACHED)
+#import "ExpoKit-Swift.h"
+#else
+#import "Expo_Go-Swift.h"
+#endif // defined(EX_DETACHED)
 
 #import <React/RCTUtils.h>
+#import <sys/utsname.h>
 
 @import EXManifests;
+@import EXUpdates;
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSTimeInterval const kEXAppLoaderDefaultTimeout = 30;
-NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
+@interface EXHomeLoader ()
 
-@interface EXHomeLoader()
+@property (nonatomic, strong, nullable) EXManifestAndAssetRequestHeaders *manifestAndAssetRequestHeaders;
 
-@property (nonatomic, strong) NSURL * _Nullable manifestUrl;
-@property (nonatomic, strong) EXManifestsManifest * _Nullable localManifest; // used by Home. TODO: ben: clean up
-@property (nonatomic, strong) NSURL * _Nullable httpManifestUrl;
-
-@property (nonatomic, strong) EXManifestsManifest * _Nullable confirmedManifest; // manifest that is actually being used
-@property (nonatomic, strong) EXManifestsManifest * _Nullable cachedManifest; // manifest that is cached and we definitely have, may fall back to it
-@property (nonatomic, strong) EXManifestResource * _Nullable manifestResource;
-
-@property (nonatomic, strong) EXAppFetcher * _Nullable appFetcher;
-@property (nonatomic, strong) EXAppFetcher * _Nullable previousAppFetcherWaitingForBundle;
-@property (nonatomic, strong) NSError * _Nullable error;
-
-@property (nonatomic, assign) BOOL hasFinished;
-@property (nonatomic, assign) BOOL shouldUseCacheOnly;
-
-@property (nonatomic, assign) BOOL shouldShowRemoteUpdateStatus;
+@property (nonatomic, strong, nullable) EXManifestsManifest *confirmedManifest;
+@property (nonatomic, strong, nullable) EXManifestsManifest *optimisticManifest;
+@property (nonatomic, strong, nullable) NSData *bundle;
 @property (nonatomic, assign) BOOL isUpToDate;
+
+/**
+ * Stateful variable to let us prevent multiple simultaneous fetches from the development server.
+ * This can happen when reloading a bundle with remote debugging enabled;
+ * RN requests the bundle multiple times for some reason.
+ */
+@property (nonatomic, assign) BOOL isLoadingDevelopmentJavaScriptResource;
+
+@property (nonatomic, strong, nullable) NSError *error;
+
+@property (nonatomic, strong) dispatch_queue_t appLoaderQueue;
 
 @end
 
 @implementation EXHomeLoader
 
-@synthesize manifestUrl;
-@synthesize cachedManifest;
-@synthesize shouldShowRemoteUpdateStatus;
-@synthesize isUpToDate;
+@synthesize bundle = _bundle;
+@synthesize isUpToDate = _isUpToDate;
 
-- (instancetype)initWithManifestUrl:(NSURL *)url
-{
-// ENG-7047: no home updates or remote manifests in release builds
-#if DEBUG
+- (instancetype)initWithManifestAndAssetRequestHeaders:(EXManifestAndAssetRequestHeaders *)manifestAndAssetRequestHeaders {
   if (self = [super init]) {
-    self.manifestUrl = url;
-    self.httpManifestUrl = [EXHomeLoader _httpUrlFromManifestUrl:self.manifestUrl];
-  }
-  return self;
-#else
-  [self doesNotRecognizeSelector:_cmd];
-  return self;
-#endif
-}
-
-- (instancetype)initWithLocalManifest:(EXManifestsManifest *)manifest
-{
-  if (self = [super init]) {
-    self.localManifest = manifest;
+    _manifestAndAssetRequestHeaders = manifestAndAssetRequestHeaders;
+    _appLoaderQueue = dispatch_queue_create("host.exp.exponent.LoaderQueue", DISPATCH_QUEUE_SERIAL);
   }
   return self;
 }
@@ -79,49 +66,41 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
 - (void)_reset
 {
-  self.confirmedManifest = nil;
-  self.cachedManifest = nil;
-  self.error = nil;
-  self.appFetcher = nil;
-  self.previousAppFetcherWaitingForBundle = nil;
-  self.hasFinished = NO;
-  self.shouldUseCacheOnly = NO;
-  self.manifestResource = nil;
-  self.shouldShowRemoteUpdateStatus = NO;
-  self.isUpToDate = YES;
+  _confirmedManifest = nil;
+  _optimisticManifest = nil;
+  _bundle = nil;
+  _error = nil;
+  _isUpToDate = NO;
+  _isLoadingDevelopmentJavaScriptResource = NO;
 }
 
 - (EXAppLoaderStatus)status
 {
-  if (self.error || (self.appFetcher && self.appFetcher.error)) {
+  if (_error) {
     return kEXAppLoaderStatusError;
-  } else if (self.appFetcher && self.appFetcher.bundle && self.confirmedManifest) {
+  } else if (_bundle) {
     return kEXAppLoaderStatusHasManifestAndBundle;
-  } else if (self.cachedManifest || (self.appFetcher && self.appFetcher.manifest)) {
+  } else if (_optimisticManifest) {
     return kEXAppLoaderStatusHasManifest;
   }
   return kEXAppLoaderStatusNew;
 }
 
-- (EXManifestsManifest * _Nullable)manifest
+- (nullable EXManifestsManifest *)manifest
 {
-  if (self.confirmedManifest) {
-    return self.confirmedManifest;
+  if (_confirmedManifest) {
+    return _confirmedManifest;
   }
-  // remote manifest
-  if (self.appFetcher && self.appFetcher.manifest) {
-    return self.appFetcher.manifest;
-  }
-  if (self.cachedManifest) {
-    return self.cachedManifest;
+  if (_optimisticManifest) {
+    return _optimisticManifest;
   }
   return nil;
 }
 
-- (NSData * _Nullable)bundle
+- (nullable NSData *)bundle
 {
-  if (self.appFetcher) {
-    return self.appFetcher.bundle;
+  if (_bundle) {
+    return _bundle;
   }
   return nil;
 }
@@ -133,13 +112,23 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
                                    reason:@"Tried to load a bundle from an AppLoader with no manifest."
                                  userInfo:@{}];
   }
-  RCTAssert([self supportsBundleReload], @"Tried to force a bundle reload on a non-development bundle");
-  [(EXAppFetcherDevelopmentMode *)self.appFetcher forceBundleReload];
+  NSAssert([self supportsBundleReload], @"Tried to force a bundle reload on a non-development bundle");
+  if (self.isLoadingDevelopmentJavaScriptResource) {
+    // prevent multiple simultaneous fetches from the development server.
+    // this can happen when reloading a bundle with remote debugging enabled;
+    // RN requests the bundle multiple times for some reason.
+    // TODO: fix inside of RN
+    return;
+  }
+  [self _loadDevelopmentJavaScriptResource];
 }
 
 - (BOOL)supportsBundleReload
 {
-  return (self.appFetcher && [self.appFetcher isKindOfClass:[EXAppFetcherDevelopmentMode class]]);
+  if (_optimisticManifest) {
+    return _optimisticManifest.isUsingDeveloperTool;
+  }
+  return NO;
 }
 
 #pragma mark - public
@@ -147,321 +136,210 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 - (void)request
 {
   [self _reset];
-  if (self.localManifest) {
-    [self _beginRequestWithLocalManifest];
-// ENG-7047: no home updates or remote manifests in release builds
-#if DEBUG
-  } else if (self.manifestUrl) {
-    [self _beginRequestWithRemoteManifest];
-#endif
-  } else {
-    [self _finishWithError:RCTErrorWithMessage(@"Can't load app with no remote url nor local manifest.")];
-  }
+  [self _beginRequest];
 }
 
 - (void)requestFromCache
 {
-  [self _reset];
-  self.shouldUseCacheOnly = YES;
-  if (self.localManifest) {
-    [self _beginRequestWithLocalManifest];
-// ENG-7047: no home updates or remote manifests in release builds
-#if DEBUG
-  } else if (self.manifestUrl) {
-    [self _beginRequestWithRemoteManifest];
-#endif
-  } else {
-    [self _finishWithError:RCTErrorWithMessage(@"Can't load app with no remote url nor local manifest.")];
+  [self request];
+}
+
+#pragma mark - EXHomeAppLoaderTaskDelegate
+
+- (void)homeAppLoaderTask:(EXHomeAppLoaderTask *)appLoaderTask didFinishWithLauncher:(id<EXUpdatesAppLauncher>)launcher
+{
+  if (_error) {
+    return;
+  }
+
+  if (!_optimisticManifest) {
+    [self _setOptimisticManifest:launcher.launchedUpdate.manifest];
+  }
+
+  // HomeAppLoaderTask always sets this to true
+  _isUpToDate = true;
+
+  if (launcher.launchedUpdate.manifest.isUsingDeveloperTool) {
+    // in dev mode, we need to set an optimistic manifest but nothing else
+    return;
+  }
+  _confirmedManifest = launcher.launchedUpdate.manifest;
+  if (_confirmedManifest == nil) {
+    return;
+  }
+  _bundle = [NSData dataWithContentsOfURL:launcher.launchAssetUrl];
+
+  if (self.delegate) {
+    [self.delegate appLoader:self didFinishLoadingManifest:_confirmedManifest bundle:_bundle];
   }
 }
 
-- (void)writeManifestToCache
+- (void)homeAppLoaderTask:(EXHomeAppLoaderTask *)appLoaderTask didFinishWithError:(NSError *)error
 {
-  if (self.manifestResource) {
-    [self.manifestResource writeToCache];
-    self.manifestResource = nil;
+  _error = error;
+
+  if (self.delegate) {
+    [self.delegate appLoader:self didFailWithError:_error];
   }
 }
 
 #pragma mark - internal
 
-+ (NSURL *)_httpUrlFromManifestUrl:(NSURL *)url
+- (BOOL)_initializeDatabase
 {
-  NSURLComponents *components = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:YES];
-  // if scheme is exps or https, use https. Else default to http
-  if (components.scheme && ([components.scheme isEqualToString:@"exps"] || [components.scheme isEqualToString:@"https"])){
-    components.scheme = @"https";
-  } else {
-    components.scheme = @"http";
+  EXUpdatesDatabaseManager *updatesDatabaseManager = [EXKernel sharedInstance].serviceRegistry.updatesDatabaseManager;
+  BOOL success = updatesDatabaseManager.isDatabaseOpen;
+  if (!updatesDatabaseManager.isDatabaseOpen) {
+    success = [updatesDatabaseManager openDatabase];
   }
-  NSMutableString *path = [((components.path) ? components.path : @"") mutableCopy];
-  path = [[EXKernelLinkingManager stringByRemovingDeepLink:path] mutableCopy];
-  components.path = path;
-  return [components URL];
-}
 
-- (void)_beginRequestWithLocalManifest
-{
-  self.confirmedManifest = self.localManifest;
-  self.cachedManifest = self.localManifest;
-  [self _fetchCachedManifest];
-}
-
-// ENG-7047: no home updates or remote manifests in release builds
-#if DEBUG
-- (void)_beginRequestWithRemoteManifest
-{
-  // if we're in dev mode, don't try loading cached manifest
-  if ([self.httpManifestUrl.host isEqualToString:@"localhost"]
-      || ([EXEnvironment sharedEnvironment].isDetached && [EXEnvironment sharedEnvironment].isDebugXCodeScheme)) {
-    // we can't pre-detect if this person is using a developer tool, but using localhost is a pretty solid indicator.
-    [self _startAppFetcher:[[EXAppFetcherDevelopmentMode alloc] initWithAppLoader:self]];
+  if (!success) {
+    _error = updatesDatabaseManager.error;
+    if (self.delegate) {
+      [self.delegate appLoader:self didFailWithError:_error];
+    }
+    return NO;
   } else {
-    [self _fetchCachedManifest];
+    return YES;
   }
 }
-#endif
 
-- (void)_fetchCachedManifest
+- (void)_beginRequest
 {
-  [self fetchManifestWithCacheBehavior:EXManifestOnlyCache success:^(EXManifestsManifest * cachedManifest) {
-    self.cachedManifest = cachedManifest;
-    [self _fetchBundleWithManifest:cachedManifest];
-  } failure:^(NSError * error) {
-    [self _startAppFetcher:[[EXAppFetcherWithTimeout alloc] initWithAppLoader:self timeout:kEXAppLoaderDefaultTimeout]];
+  if (![self _initializeDatabase]) {
+    return;
+  }
+  [self _startLoaderTask];
+}
+
+- (void)_startLoaderTask
+{
+  EXUpdatesConfig *config = [EXUpdatesConfig configFromDictionary:@{
+    EXUpdatesConfig.EXUpdatesConfigHasEmbeddedUpdateKey: @NO,
+    EXUpdatesConfig.EXUpdatesConfigSDKVersionKey: [self _sdkVersions],
+    EXUpdatesConfig.EXUpdatesConfigScopeKeyKey: self.manifestAndAssetRequestHeaders.manifest.scopeKey,
+    EXUpdatesConfig.EXUpdatesConfigExpectsSignedManifestKey: @YES,
+    EXUpdatesConfig.EXUpdatesConfigRequestHeadersKey: [self _requestHeaders]
+  }];
+
+  EXUpdatesDatabaseManager *updatesDatabaseManager = [EXKernel sharedInstance].serviceRegistry.updatesDatabaseManager;
+
+  NSMutableArray *sdkVersions = [[EXVersions sharedInstance].versions[@"sdkVersions"] ?: @[[EXVersions sharedInstance].temporarySdkVersion] mutableCopy];
+  [sdkVersions addObject:@"UNVERSIONED"];
+
+  NSMutableArray *sdkVersionRuntimeVersions = [[NSMutableArray alloc] initWithCapacity:sdkVersions.count];
+  for (NSString *sdkVersion in sdkVersions) {
+    [sdkVersionRuntimeVersions addObject:[NSString stringWithFormat:@"exposdk:%@", sdkVersion]];
+  }
+  [sdkVersionRuntimeVersions addObject:@"exposdk:UNVERSIONED"];
+  [sdkVersions addObjectsFromArray:sdkVersionRuntimeVersions];
+
+  EXUpdatesSelectionPolicy *selectionPolicy = [[EXUpdatesSelectionPolicy alloc]
+                                               initWithLauncherSelectionPolicy:[[EXExpoGoLauncherSelectionPolicyFilterAware alloc] initWithSdkVersions:sdkVersions]
+                                               loaderSelectionPolicy:[EXUpdatesLoaderSelectionPolicyFilterAware new]
+                                               reaperSelectionPolicy:[EXUpdatesReaperSelectionPolicyDevelopmentClient new]];
+
+  EXHomeAppLoaderTask *loaderTask = [[EXHomeAppLoaderTask alloc] initWithManifestAndAssetRequestHeaders:self.manifestAndAssetRequestHeaders
+                                                                                                 config:config
+                                                                                               database:updatesDatabaseManager.database
+                                                                                              directory:updatesDatabaseManager.updatesDirectory
+                                                                                        selectionPolicy:selectionPolicy
+                                                                                          delegateQueue:_appLoaderQueue];
+  loaderTask.delegate = self;
+  [loaderTask start];
+}
+
+- (void)_setOptimisticManifest:(EXManifestsManifest *)manifest
+{
+  _optimisticManifest = manifest;
+  if (self.delegate) {
+    [self.delegate appLoader:self didLoadOptimisticManifest:_optimisticManifest];
+  }
+}
+
+- (void)_loadDevelopmentJavaScriptResource
+{
+  _isLoadingDevelopmentJavaScriptResource = YES;
+  EXAppFetcher *appFetcher = [[EXAppFetcher alloc] initWithAppLoader:self];
+  [appFetcher fetchJSBundleWithManifest:self.optimisticManifest cacheBehavior:EXCachedResourceNoCache timeoutInterval:kEXJSBundleTimeout progress:^(EXLoadingProgress *progress) {
+    if (self.delegate) {
+      [self.delegate appLoader:self didLoadBundleWithProgress:progress];
+    }
+  } success:^(NSData *bundle) {
+    self.isUpToDate = YES;
+    self.bundle = bundle;
+    self.isLoadingDevelopmentJavaScriptResource = NO;
+    if (self.delegate) {
+      [self.delegate appLoader:self didFinishLoadingManifest:self.optimisticManifest bundle:self.bundle];
+    }
+  } error:^(NSError *error) {
+    self.error = error;
+    self.isLoadingDevelopmentJavaScriptResource = NO;
+    if (self.delegate) {
+      [self.delegate appLoader:self didFailWithError:error];
+    }
   }];
 }
 
-- (void)_fetchBundleWithManifest:(EXManifestsManifest *)manifest
+#pragma mark - headers
+
+- (NSDictionary *)_requestHeaders
 {
-  BOOL shouldCheckForUpdate = YES;
-  NSTimeInterval fallbackToCacheTimeout = kEXAppLoaderDefaultTimeout;
+  NSDictionary *requestHeaders = @{
+      @"Exponent-SDK-Version": [self _sdkVersions],
+      @"Exponent-Accept-Signature": @"true",
+      @"Exponent-Platform": @"ios",
+      @"Exponent-Version": [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"],
+      @"Expo-Client-Environment": [self _clientEnvironment],
+      @"Expo-Updates-Environment": [self _clientEnvironment],
+      @"User-Agent": [self _userAgentString],
+      @"Expo-Client-Release-Type": [EXClientReleaseType clientReleaseType]
+  };
 
-// ENG-7047: no home updates or remote manifests in release builds
-#if DEBUG
-
-  // in case check for dev mode failed before, check again
-  if (manifest.isUsingDeveloperTool) {
-    [self _startAppFetcher:[[EXAppFetcherDevelopmentMode alloc] initWithAppLoader:self]];
-    return;
+  NSString *sessionSecret = [[EXSession sharedInstance] sessionSecret];
+  if (sessionSecret) {
+    NSMutableDictionary *requestHeadersMutable = [requestHeaders mutableCopy];
+    requestHeadersMutable[@"Expo-Session"] = sessionSecret;
+    requestHeaders = requestHeadersMutable;
   }
 
-  id updates = manifest.updatesInfo;
-  id ios = manifest.iosConfig;
-  if (updates && [updates isKindOfClass:[NSDictionary class]]) {
-    NSDictionary *updatesDict = (NSDictionary *)updates;
-    id checkAutomaticallyVal = updatesDict[@"checkAutomatically"];
-    if (checkAutomaticallyVal && [checkAutomaticallyVal isKindOfClass:[NSString class]] && [(NSString *)checkAutomaticallyVal isEqualToString:@"ON_ERROR_RECOVERY"]) {
-      shouldCheckForUpdate = NO;
-    }
+  return requestHeaders;
+}
 
-    id fallbackToCacheTimeoutVal = updatesDict[@"fallbackToCacheTimeout"];
-    if (fallbackToCacheTimeoutVal && [fallbackToCacheTimeoutVal isKindOfClass:[NSNumber class]]) {
-      fallbackToCacheTimeout = [(NSNumber *)fallbackToCacheTimeoutVal intValue] / 1000.0f;
-    }
-  } else if (ios && [ios isKindOfClass:[NSDictionary class]]) {
-    NSDictionary *iosDict = (NSDictionary *)ios;
-    // map loadJSInBackgroundExperimental internally to
-    // checkAutomatically: ON_LOAD and fallbackToCacheTimeout: 0
-    if (iosDict[@"loadJSInBackgroundExperimental"]) {
-      shouldCheckForUpdate = YES;
-      fallbackToCacheTimeout = 0;
-    }
-  }
+- (NSString *)_userAgentString
+{
+  struct utsname systemInfo;
+  uname(&systemInfo);
+  NSString *deviceModel = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
+  return [NSString stringWithFormat:@"Exponent/%@ (%@; %@ %@; Scale/%.2f; %@)",
+          [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"],
+          deviceModel,
+          [UIDevice currentDevice].systemName,
+          [UIDevice currentDevice].systemVersion,
+          [UIScreen mainScreen].scale,
+          [NSLocale autoupdatingCurrentLocale].localeIdentifier];
+}
 
-  // only support checkAutomatically: ON_ERROR_RECOVERY in detached apps
-  if (![EXEnvironment sharedEnvironment].isDetached) {
-    shouldCheckForUpdate = YES;
-  }
-
-  // if this experience id encountered a loading error before,
-  // we should always check for an update, even if the manifest says not to
-  if ([[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager scopeKeyIsRecoveringFromError:manifest.scopeKey]) {
-    shouldCheckForUpdate = YES;
-  }
-
-  // if remote updates are disabled, or we're using `reloadFromCache`, don't check for an update.
-  // these checks need to be here because they need to happen after the dev mode check above.
-  if (self.shouldUseCacheOnly ||
-      ([EXEnvironment sharedEnvironment].isDetached && ![EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled)) {
-    shouldCheckForUpdate = NO;
-  }
-
-// ENG-7047: no home updates or remote manifests in release builds
-#else
-  shouldCheckForUpdate = NO;
-#endif // DEBUG
-
-  if (shouldCheckForUpdate) {
-    [self _startAppFetcher:[[EXAppFetcherWithTimeout alloc] initWithAppLoader:self timeout:fallbackToCacheTimeout]];
+- (NSString *)_clientEnvironment
+{
+  if ([EXEnvironment sharedEnvironment].isDetached) {
+    return @"STANDALONE";
   } else {
-    [self _startAppFetcher:[[EXAppFetcherCacheOnly alloc] initWithAppLoader:self manifest:manifest]];
-  }
-}
-
-- (void)_startAppFetcher:(EXAppFetcher *)appFetcher
-{
-  self.appFetcher = appFetcher;
-  self.appFetcher.delegate = self;
-  self.appFetcher.dataSource = self.dataSource;
-  self.appFetcher.cacheDataSource = self;
-  if ([self.appFetcher isKindOfClass:[EXAppFetcherDevelopmentMode class]]) {
-    ((EXAppFetcherDevelopmentMode *)self.appFetcher).developmentModeDelegate = self;
-  } else if ([self.appFetcher isKindOfClass:[EXAppFetcherWithTimeout class]]) {
-    ((EXAppFetcherWithTimeout *)self.appFetcher).withTimeoutDelegate = self;
-  }
-  [self.appFetcher start];
-}
-
-- (void)_finishWithError:(NSError * _Nullable)err
-{
-  self.error = err;
-  if (self.delegate) {
-    [self.delegate appLoader:self didFailWithError:err];
-  }
-}
-
-#pragma mark - EXAppFetcherCacheDataSource
-
-- (BOOL)isCacheUpToDateWithAppFetcher:(EXAppFetcher *)appFetcher
-{
-  if (self.localManifest) {
-    // local manifest won't give us sufficient information to tell
-    return NO;
-  }
-  if (!self.cachedManifest || !appFetcher.manifest) {
-    // if either of these don't exist, we don't have enough information to tell
-    return NO;
-  }
-  return appFetcher.manifest.revisionId
-  ? [appFetcher.manifest.revisionId isEqualToString:self.cachedManifest.revisionId]
-  : NO;
-}
-
-#pragma mark - EXAppFetcherDelegate
-
-- (void)appFetcher:(EXAppFetcher *)appFetcher didSwitchToAppFetcher:(EXAppFetcher *)newAppFetcher retainingCurrent:(BOOL)shouldRetain
-{
-  if (shouldRetain) {
-    self.previousAppFetcherWaitingForBundle = appFetcher;
-  }
-  [self _startAppFetcher:newAppFetcher];
-}
-
-- (void)appFetcher:(EXAppFetcher *)appFetcher didLoadOptimisticManifest:(EXManifestsManifest *)manifest
-{
-  if (self.delegate) {
-    [self.delegate appLoader:self didLoadOptimisticManifest:manifest];
-  }
-}
-
-- (void)appFetcher:(EXAppFetcher *)appFetcher didFinishLoadingManifest:(EXManifestsManifest *)manifest bundle:(NSData *)bundle
-{
-  self.confirmedManifest = manifest;
-  if (self.delegate) {
-    [self.delegate appLoader:self didFinishLoadingManifest:manifest bundle:bundle];
-  }
-}
-
-- (void)appFetcher:(EXAppFetcher *)appFetcher didFailWithError:(NSError *)error
-{
-  // don't nullify appFetcher - we need to use its state to record the circumstances of the error
-  self.error = error;
-  if (self.delegate) {
-    [self.delegate appLoader:self didFailWithError:error];
-  }
-  if (appFetcher == self.previousAppFetcherWaitingForBundle) {
-    // previous app fetcher errored while trying to fetch a new bundle
-    // so we can deallocate it now
-    self.previousAppFetcherWaitingForBundle = nil;
-  }
-}
-
-#pragma mark - EXAppFetcherDevelopmentModeDelegate
-
-- (void)appFetcher:(EXAppFetcher *)appFetcher didLoadBundleWithProgress:(EXLoadingProgress *)progress
-{
-  if (self.delegate) {
-    [self.delegate appLoader:self didLoadBundleWithProgress:progress];
-  }
-}
-
-#pragma mark - EXAppFetcherWithTimeoutDelegate
-
-- (void)appFetcher:(EXAppFetcher *)appFetcher didResolveUpdatedBundleWithManifest:(EXManifestsManifest * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error
-{
-  if (self.delegate) {
-    [self.delegate appLoader:self didResolveUpdatedBundleWithManifest:manifest isFromCache:isFromCache error:error];
-  }
-  if (appFetcher == self.previousAppFetcherWaitingForBundle) {
-    // we no longer need to retain the previous app fetcher
-    // as the only reason to retain is to wait for it to finish downloading the new bundle
-    self.previousAppFetcherWaitingForBundle = nil;
-  }
-}
-
-#pragma mark - helper methods for fetching
-
-- (void)fetchManifestWithCacheBehavior:(EXManifestCacheBehavior)manifestCacheBehavior success:(void (^)(EXManifestsManifest *))success failure:(void (^)(NSError *))failure
-{
-  // if we're using a localManifest, just return it immediately
-  if (self.localManifest) {
-    success(self.localManifest);
-    return;
-  }
-
-  if (!([self.httpManifestUrl.scheme isEqualToString:@"http"] || [self.httpManifestUrl.scheme isEqualToString:@"https"])) {
-    NSURLComponents *components = [NSURLComponents componentsWithURL:self.httpManifestUrl resolvingAgainstBaseURL:NO];
-    components.scheme = @"http";
-    self.httpManifestUrl = [components URL];
-  }
-
-  EXManifestResource *manifestResource = [[EXManifestResource alloc] initWithManifestUrl:self.httpManifestUrl originalUrl:self.manifestUrl];
-
-  EXCachedResourceBehavior cachedResourceBehavior = EXCachedResourceNoCache;
-  if (manifestCacheBehavior == EXManifestOnlyCache) {
-    cachedResourceBehavior = EXCachedResourceOnlyCache;
-  } else if (manifestCacheBehavior == EXManifestPrepareToCache) {
-    // in this case, we don't want to use the cache but will prepare to write the resulting manifest
-    // to the cache later, after the bundle is finished downloading, so we save the reference
-    self.manifestResource = manifestResource;
-  }
-  [manifestResource loadResourceWithBehavior:cachedResourceBehavior progressBlock:nil successBlock:^(NSData * _Nonnull data) {
-    NSError *error;
-    id manifestJSON = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
-    if (!manifestJSON) {
-      failure(error);
-      return;
-    }
-    if (![manifestJSON isKindOfClass:[NSDictionary class]]) {
-      NSDictionary *errorInfo = @{
-                                  NSLocalizedDescriptionKey: @"Cannot parse manifest",
-                                  NSLocalizedFailureReasonErrorKey: @"Tried to load a manifest which was not in the proper format",
-                                  };
-      failure([NSError errorWithDomain:EXNetworkErrorDomain code:-1 userInfo:errorInfo]);
-      return;
-    }
-
-    // insert loadedFromCache: boolean key into manifest
-    NSMutableDictionary *mutableManifestJSON = [(NSDictionary *)manifestJSON mutableCopy];
-    BOOL loadedFromCache = YES;
-    if (cachedResourceBehavior == EXCachedResourceNoCache) {
-      loadedFromCache = NO;
-    }
-    mutableManifestJSON[@"loadedFromCache"] = @(loadedFromCache);
-
-    success([EXManifestsManifestFactory manifestForManifestJSON:[NSDictionary dictionaryWithDictionary:mutableManifestJSON]]);
-  } errorBlock:^(NSError * _Nonnull error) {
-#if DEBUG
-    if ([EXEnvironment sharedEnvironment].isDetached && error &&
-        (error.code == 404 || error.domain == EXNetworkErrorDomain)) {
-      NSString *message = error.localizedDescription;
-      message = [NSString stringWithFormat:@"Make sure you are serving your project with Expo CLI (%@)", message];
-      error = [NSError errorWithDomain:error.domain code:error.code userInfo:@{ NSLocalizedDescriptionKey: message }];
-    }
+    return @"EXPO_DEVICE";
+#if TARGET_IPHONE_SIMULATOR
+    return @"EXPO_SIMULATOR";
 #endif
-    failure(error);
-  }];
+  }
+}
+
+- (NSString *)_sdkVersions
+{
+  NSArray *versionsAvailable = [EXVersions sharedInstance].versions[@"sdkVersions"];
+  if (versionsAvailable) {
+    return [versionsAvailable componentsJoinedByString:@","];
+  } else {
+    return [EXVersions sharedInstance].temporarySdkVersion;
+  }
 }
 
 @end

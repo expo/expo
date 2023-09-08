@@ -11,11 +11,10 @@ import semver from 'semver';
 import * as ExpoCLI from '../ExpoCLI';
 import { getNewestSDKVersionAsync } from '../ProjectVersions';
 import { deepCloneObject } from '../Utils';
-import { Directories, XDL } from '../expotools';
+import { Directories, EASUpdate } from '../expotools';
 import AppConfig from '../typings/AppConfig';
 
 type ActionOptions = {
-  dry: boolean;
   sdkVersion?: string;
 };
 
@@ -32,7 +31,7 @@ const { EXPO_HOME_DEV_ACCOUNT_USERNAME, EXPO_HOME_DEV_ACCOUNT_PASSWORD } = proce
  * Finds target SDK version for home app based on the newest SDK versions of all supported platforms.
  * If multiple different versions have been found then the highest one is used.
  */
-export async function findTargetSdkVersionAsync(): Promise<string> {
+async function findTargetSdkVersionAsync(): Promise<string> {
   const iosSdkVersion = await getNewestSDKVersionAsync('ios');
   const androidSdkVersion = await getNewestSDKVersionAsync('android');
 
@@ -47,7 +46,7 @@ export async function findTargetSdkVersionAsync(): Promise<string> {
 /**
  * Sets `sdkVersion` and `version` fields in app configuration if needed.
  */
-export async function maybeUpdateHomeSdkVersionAsync(
+async function maybeUpdateHomeSdkVersionAsync(
   appJson: AppConfig,
   explicitSdkVersion?: string | null
 ): Promise<void> {
@@ -88,7 +87,7 @@ async function setExpoCliStateAsync(newState: object): Promise<void> {
 /**
  * Deletes kernel fields that needs to be removed from published manifest.
  */
-export function deleteKernelFields(appJson: AppConfig): void {
+function deleteKernelFields(appJson: AppConfig): void {
   console.log(`Deleting kernel-related fields...`);
 
   // @tsapeta: Using `delete` keyword here would change the order of keys in app.json.
@@ -101,7 +100,7 @@ export function deleteKernelFields(appJson: AppConfig): void {
 /**
  * Restores kernel fields that have been removed in previous steps - we don't want them to be present in published manifest.
  */
-export function restoreKernelFields(appJson: AppConfig, appJsonBackup: AppConfig): void {
+function restoreKernelFields(appJson: AppConfig, appJsonBackup: AppConfig): void {
   console.log('Restoring kernel-related fields...');
 
   appJson.expo.kernel = appJsonBackup.expo.kernel;
@@ -111,19 +110,32 @@ export function restoreKernelFields(appJson: AppConfig, appJsonBackup: AppConfig
 }
 
 /**
- * Publishes dev home app.
+ * Publishes dev home app on EAS Update.
  */
-async function publishAppAsync(slug: string, url: string): Promise<void> {
+async function publishAppAsync({
+  slug,
+  message,
+}: {
+  slug: string;
+  message: string;
+}): Promise<{ createdUpdateGroupId: string }> {
   console.log(`Publishing ${chalk.green(slug)}...`);
 
-  await XDL.publishProjectWithExpoCliAsync(EXPO_HOME_PATH, {
+  const result = await EASUpdate.publishProjectWithEasCliAsync(EXPO_HOME_PATH, {
     userpass: {
       username: EXPO_HOME_DEV_ACCOUNT_USERNAME!,
       password: EXPO_HOME_DEV_ACCOUNT_PASSWORD!,
     },
+    message,
   });
 
-  console.log(`Done publishing ${chalk.green(slug)}. New home's app url is: ${chalk.blue(url)}`);
+  console.log(
+    `Done publishing ${chalk.green(slug)}. Update Group ID is: ${chalk.blue(
+      result.createdUpdateGroupId
+    )}`
+  );
+
+  return result;
 }
 
 /**
@@ -157,10 +169,14 @@ async function action(options: ActionOptions): Promise<void> {
     folders: { exclude: ['.expo', 'node_modules'] },
   });
   const appJsonFilePath = path.join(EXPO_HOME_PATH, 'app.json');
-  const slug = `expo-home-dev-${expoHomeHashNode.hash}`;
-  const url = `exp://exp.host/@${EXPO_HOME_DEV_ACCOUNT_USERNAME!}/${slug}`;
+  const slug = `home`;
   const appJsonFile = new JsonFile<AppConfig>(appJsonFilePath);
   const appJson = await appJsonFile.readAsync();
+
+  const projectId = appJson.expo.extra?.eas?.projectId;
+  if (!projectId) {
+    throw new Error('No configured EAS project ID in app.json');
+  }
 
   console.log(`Creating backup of ${chalk.magenta('app.json')} file...`);
   const appJsonBackup = deepCloneObject<AppConfig>(appJson);
@@ -182,17 +198,13 @@ async function action(options: ActionOptions): Promise<void> {
 
   if (cliUsername) {
     console.log(`Logging out from ${chalk.green(cliUsername)} account...`);
-    // TODO: rework this to use EAS update instead of expo publish
-    await ExpoCLI.runLegacyExpoCliAsync('logout', [], {
+    await ExpoCLI.runExpoCliAsync('logout', [], {
       stdio: 'ignore',
     });
   }
 
-  if (!options.dry) {
-    await publishAppAsync(slug, url);
-  } else {
-    console.log(`Skipped publishing because of ${chalk.gray('--dry')} flag.`);
-  }
+  const createdUpdateGroupId = (await publishAppAsync({ slug, message: expoHomeHashNode.hash }))
+    .createdUpdateGroupId;
 
   restoreKernelFields(appJson, appJsonBackup);
 
@@ -210,6 +222,7 @@ async function action(options: ActionOptions): Promise<void> {
   console.log(`Updating ${chalk.magenta('app.json')} file...`);
   await appJsonFile.writeAsync(appJson);
 
+  const url = `exps://u.expo.dev/${projectId}/group/${createdUpdateGroupId}`;
   await updateDevHomeConfigAsync(url);
 
   console.log(
@@ -226,14 +239,9 @@ export default (program: Command) => {
     .command('publish-dev-home')
     .alias('pdh')
     .description(
-      `Automatically logs in your expo-cli to ${chalk.magenta(
+      `Automatically logs in your eas-cli to ${chalk.magenta(
         EXPO_HOME_DEV_ACCOUNT_USERNAME!
-      )} account, publishes home app for development and logs back to your account.`
-    )
-    .option(
-      '-d, --dry',
-      'Whether to skip `expo publish` command. Despite this, some files might be changed after running this script.',
-      false
+      )} account, publishes home app for development on EAS Update and logs back to your account.`
     )
     .option(
       '-s, --sdkVersion [string]',

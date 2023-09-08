@@ -40,11 +40,11 @@
   _isDevKernel = [config[@"IS_DEV_KERNEL"] boolValue];
   _kernelDevManifestSource = [[self class] _kernelManifestSourceFromString:config[@"DEV_KERNEL_SOURCE"]];
   if (_kernelDevManifestSource == kEXKernelDevManifestSourceLocal) {
-    // local kernel. use manifest from local server.
-    _kernelManifestJsonString = config[@"BUILD_MACHINE_KERNEL_MANIFEST"];
+    // local kernel. use manifest and assetRequestHeaders from local server.
+    _kernelManifestAndAssetRequestHeadersJsonString = config[@"BUILD_MACHINE_KERNEL_MANIFEST"];
   } else if (_kernelDevManifestSource == kEXKernelDevManifestSourcePublished) {
-    // dev published kernel. use published manifest.
-    _kernelManifestJsonString = config[@"DEV_PUBLISHED_KERNEL_MANIFEST"];
+    // dev published kernel. use published manifest and assetRequestHeaders.
+    _kernelManifestAndAssetRequestHeadersJsonString = config[@"DEV_PUBLISHED_KERNEL_MANIFEST"];
   }
   _apiServerEndpoint = [NSURL URLWithString:config[@"API_SERVER_ENDPOINT"]];
   _temporarySdkVersion = config[@"TEMPORARY_SDK_VERSION"];

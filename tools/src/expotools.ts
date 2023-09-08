@@ -7,3 +7,4 @@ export * as Packages from './Packages';
 export * as ProjectVersions from './ProjectVersions';
 export * as TestSuite from './TestSuite';
 export * as XDL from './XDL';
+export * as EASUpdate from './EASUpdate';

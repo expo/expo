@@ -13,9 +13,9 @@
 import Foundation
 import EASClient
 
-internal typealias SuccessBlock = (_ data: Data?, _ urlResponse: URLResponse) -> Void
-internal typealias ErrorBlock = (_ error: Error) -> Void
-internal typealias HashSuccessBlock = (_ data: Data, _ urlResponse: URLResponse, _ base64URLEncodedSHA256Hash: String) -> Void
+public typealias SuccessBlock = (_ data: Data?, _ urlResponse: URLResponse) -> Void
+public typealias ErrorBlock = (_ error: Error) -> Void
+public typealias HashSuccessBlock = (_ data: Data, _ urlResponse: URLResponse, _ base64URLEncodedSHA256Hash: String) -> Void
 
 internal typealias RemoteUpdateDownloadSuccessBlock = (_ updateResponse: UpdateResponse) -> Void
 internal typealias RemoteUpdateDownloadErrorBlock = (_ error: Error) -> Void
@@ -77,7 +77,7 @@ private extension Dictionary where Iterator.Element == (key: String, value: Any)
  * Utility class that holds all the logic for downloading data and files, such as update manifests
  * and assets, using NSURLSession.
  */
-internal final class FileDownloader: NSObject, URLSessionDataDelegate {
+public final class FileDownloader: NSObject, URLSessionDataDelegate {
   private static let DefaultTimeoutInterval: TimeInterval = 60
   private static let MultipartManifestPartName = "manifest"
   private static let MultipartDirectivePartName = "directive"
@@ -93,7 +93,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
   private var config: UpdatesConfig!
   private var logger: UpdatesLogger!
 
-  convenience init(config: UpdatesConfig) {
+  public convenience init(config: UpdatesConfig) {
     self.init(config: config, urlSessionConfiguration: URLSessionConfiguration.default)
   }
 
@@ -109,9 +109,9 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
     self.session.finishTasksAndInvalidate()
   }
 
-  static let assetFilesQueue: DispatchQueue = DispatchQueue(label: "expo.controller.AssetFilesQueue")
+  public static let assetFilesQueue: DispatchQueue = DispatchQueue(label: "expo.controller.AssetFilesQueue")
 
-  func downloadFile(
+  public func downloadFile(
     fromURL url: URL,
     verifyingHash expectedBase64URLEncodedSHA256Hash: String?,
     toPath destinationPath: String,
@@ -1052,7 +1052,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
 
   // MARK: - NSURLSessionTaskDelegate
 
-  func urlSession(
+  public func urlSession(
     _ session: URLSession,
     task: URLSessionTask,
     willPerformHTTPRedirection response: HTTPURLResponse,
@@ -1064,7 +1064,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
 
   // MARK: - URLSessionDataDelegate
 
-  func urlSession(
+  public func urlSession(
     _ session: URLSession,
     dataTask: URLSessionDataTask,
     willCacheResponse proposedResponse: CachedURLResponse,

@@ -161,7 +161,7 @@ public final class EmbeddedAppLoader: AppLoader {
     }
   }
 
-  override internal func loadUpdate(
+  override public func loadUpdate(
     fromURL url: URL,
     onUpdateResponse updateResponseBlock: @escaping AppLoaderUpdateResponseBlock,
     asset assetBlock: @escaping AppLoaderAssetBlock,

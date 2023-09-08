@@ -62,7 +62,7 @@ open class HomeActivity : BaseExperienceActivity() {
     NativeModuleDepsProvider.instance.inject(HomeActivity::class.java, this)
 
     sdkVersion = RNObject.UNVERSIONED
-    manifest = exponentManifest.getKernelManifest()
+    manifest = exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest
     experienceKey = try {
       ExperienceKey.fromManifest(manifest!!)
     } catch (e: JSONException) {
@@ -74,7 +74,7 @@ open class HomeActivity : BaseExperienceActivity() {
     // is disabled in Home as of end of 2020, to fix some issues with dev menu, see:
     // https://github.com/expo/expo/blob/eb9bd274472e646a730fd535a4bcf360039cbd49/android/expoview/src/main/java/versioned/host/exp/exponent/ExponentPackage.java#L200-L207
     // ExperienceActivityUtils.overrideUiMode(mExponentManifest.getKernelManifest(), this);
-    ExperienceActivityUtils.configureStatusBar(exponentManifest.getKernelManifest(), this)
+    ExperienceActivityUtils.configureStatusBar(exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest, this)
 
     EventBus.getDefault().registerSticky(this)
     kernel.startJSKernel(this)

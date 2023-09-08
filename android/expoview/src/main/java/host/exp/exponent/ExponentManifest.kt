@@ -28,6 +28,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.max
 
+data class ManifestAndAssetRequestHeaders(val manifest: Manifest, val assetRequestHeaders: JSONObject)
+
 @Singleton
 class ExponentManifest @Inject constructor(
   var context: Context,
@@ -149,10 +151,12 @@ class ExponentManifest @Inject constructor(
     }
   }
 
-  private fun getLocalKernelManifest(): Manifest = try {
-    val manifest = JSONObject(ExponentBuildConstants.BUILD_MACHINE_KERNEL_MANIFEST)
+  private fun getLocalKernelManifestAndAssetRequestHeaders(): ManifestAndAssetRequestHeaders = try {
+    val manifestAndAssetRequestHeaders = JSONObject(ExponentBuildConstants.getBuildMachineKernelManifestAndAssetRequestHeaders())
+    val manifest = manifestAndAssetRequestHeaders.getJSONObject("manifest")
+    val assetRequestHeaders = manifestAndAssetRequestHeaders.getJSONObject("assetRequestHeaders")
     manifest.put(MANIFEST_IS_VERIFIED_KEY, true)
-    Manifest.fromManifestJson(manifest)
+    ManifestAndAssetRequestHeaders(Manifest.fromManifestJson(manifest), assetRequestHeaders)
   } catch (e: JSONException) {
     throw RuntimeException("Can't get local manifest: $e")
   }
@@ -168,21 +172,21 @@ class ExponentManifest @Inject constructor(
     null
   }
 
-  fun getKernelManifest(): Manifest {
-    val manifest: Manifest?
+  fun getKernelManifestAndAssetRequestHeaders(): ManifestAndAssetRequestHeaders {
+    val manifestAndAssetRequestHeaders: ManifestAndAssetRequestHeaders
     val log: String
     if (exponentSharedPreferences.shouldUseInternetKernel()) {
       log = "Using remote Expo kernel manifest"
-      manifest = getRemoteKernelManifest()
+      manifestAndAssetRequestHeaders = ManifestAndAssetRequestHeaders(getRemoteKernelManifest()!!, JSONObject())
     } else {
       log = "Using local Expo kernel manifest"
-      manifest = getLocalKernelManifest()
+      manifestAndAssetRequestHeaders = getLocalKernelManifestAndAssetRequestHeaders()
     }
     if (!hasShownKernelManifestLog) {
       hasShownKernelManifestLog = true
-      EXL.d(TAG, log + ": " + manifest.toString())
+      EXL.d(TAG, log + ": " + manifestAndAssetRequestHeaders.manifest.toString())
     }
-    return manifest!!
+    return manifestAndAssetRequestHeaders
   }
 
   companion object {

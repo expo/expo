@@ -12,10 +12,10 @@
 
 import Foundation
 
-typealias AppLoaderUpdateResponseBlock = (_ updateResponse: UpdateResponse) -> Bool
-typealias AppLoaderAssetBlock = (_ asset: UpdateAsset, _ successfulAssetCount: Int, _ failedAssetCount: Int, _ totalAssetCount: Int) -> Void
-typealias AppLoaderSuccessBlock = (_ updateResponse: UpdateResponse?) -> Void
-typealias AppLoaderErrorBlock = (_ error: Error) -> Void
+public typealias AppLoaderUpdateResponseBlock = (_ updateResponse: UpdateResponse) -> Bool
+public typealias AppLoaderAssetBlock = (_ asset: UpdateAsset, _ successfulAssetCount: Int, _ failedAssetCount: Int, _ totalAssetCount: Int) -> Void
+public typealias AppLoaderSuccessBlock = (_ updateResponse: UpdateResponse?) -> Void
+public typealias AppLoaderErrorBlock = (_ error: Error) -> Void
 
 /**
  * Responsible for loading an update's manifest, enumerating the assets required for it to launch,
@@ -26,20 +26,20 @@ typealias AppLoaderErrorBlock = (_ error: Error) -> Void
  */
 @objc(EXUpdatesAppLoader)
 @objcMembers
-public class AppLoader: NSObject {
+open class AppLoader: NSObject {
   private static let ErrorDomain = "EXUpdatesAppLoader"
 
-  internal let config: UpdatesConfig
-  internal let database: UpdatesDatabase
-  internal let directory: URL
-  internal let launchedUpdate: Update?
+  public let config: UpdatesConfig
+  public let database: UpdatesDatabase
+  public let directory: URL
+  public let launchedUpdate: Update?
 
   private var updateResponseContainingManifest: UpdateResponse?
 
-  internal var updateResponseBlock: AppLoaderUpdateResponseBlock?
-  internal var assetBlock: AppLoaderAssetBlock?
-  internal var successBlock: AppLoaderSuccessBlock?
-  internal var errorBlock: AppLoaderErrorBlock?
+  public var updateResponseBlock: AppLoaderUpdateResponseBlock?
+  public var assetBlock: AppLoaderAssetBlock?
+  public var successBlock: AppLoaderSuccessBlock?
+  public var errorBlock: AppLoaderErrorBlock?
 
   private var assetsToLoad: [UpdateAsset] = []
   private var erroredAssets: [UpdateAsset] = []
@@ -49,7 +49,7 @@ public class AppLoader: NSObject {
   private let arrayLock: NSLock = NSLock()
   private let completionQueue: DispatchQueue
 
-  public required init(config: UpdatesConfig, database: UpdatesDatabase, directory: URL, launchedUpdate: Update?, completionQueue: DispatchQueue) {
+  public init(config: UpdatesConfig, database: UpdatesDatabase, directory: URL, launchedUpdate: Update?, completionQueue: DispatchQueue) {
     self.config = config
     self.database = database
     self.directory = directory
@@ -82,7 +82,7 @@ public class AppLoader: NSObject {
    * The `asset` block is called when an asset has either been successfully downloaded
    * or failed to download.
    */
-  internal func loadUpdate(
+  open func loadUpdate(
     fromURL url: URL,
     onUpdateResponse updateResponseBlock: @escaping AppLoaderUpdateResponseBlock,
     asset assetBlock: @escaping AppLoaderAssetBlock,
@@ -92,13 +92,13 @@ public class AppLoader: NSObject {
     preconditionFailure("Must override in concrete class")
   }
 
-  public func downloadAsset(_ asset: UpdateAsset) {
+  open func downloadAsset(_ asset: UpdateAsset) {
     preconditionFailure("Must override in concrete class")
   }
 
   // MARK: - loading and database logic
 
-  internal func startLoading(fromUpdateResponse updateResponse: UpdateResponse) {
+  public func startLoading(fromUpdateResponse updateResponse: UpdateResponse) {
     guard shouldStartLoadingUpdate(updateResponse) else {
       successBlock.let { it in
         completionQueue.async {
@@ -234,7 +234,7 @@ public class AppLoader: NSObject {
     }
   }
 
-  internal func handleAssetDownloadAlreadyExists(_ asset: UpdateAsset) {
+  public func handleAssetDownloadAlreadyExists(_ asset: UpdateAsset) {
     arrayLock.lock()
     assetsToLoad.remove(asset)
     existingAssets.append(asset)
@@ -245,7 +245,7 @@ public class AppLoader: NSObject {
     arrayLock.unlock()
   }
 
-  internal func handleAssetDownload(withError error: Error, asset: UpdateAsset) {
+  public func handleAssetDownload(withError error: Error, asset: UpdateAsset) {
     // TODO: retry. for now log an error
     NSLog("error loading asset \(asset.key ?? "nil key"): \(error.localizedDescription)")
     arrayLock.lock()
@@ -258,7 +258,7 @@ public class AppLoader: NSObject {
     arrayLock.unlock()
   }
 
-  internal func handleAssetDownload(withData data: Data, response: URLResponse?, asset: UpdateAsset) {
+  public func handleAssetDownload(withData data: Data, response: URLResponse?, asset: UpdateAsset) {
     arrayLock.lock()
     assetsToLoad.remove(asset)
 
