@@ -32,6 +32,7 @@ const Head = ({ title, description, children }: HeadProps) => (
       content={description === '' ? BASE_DESCRIPTION : description}
     />
     <meta property="twitter:image" content="https://docs.expo.dev/static/images/twitter.png" />
+    <meta name="google-site-verification" content="izrqNurn_EXfYbNIFgVIhEXkkZk9DleELH4UouM8s3k" />
 
     {children}
   </NextHead>
