@@ -664,8 +664,8 @@ export function test(t) {
           await tx.executeSqlAsync('DROP TABLE IF EXISTS foo;', []);
           await tx.executeSqlAsync('create table foo (a primary key, b);', []);
           await tx.executeSqlAsync('select crsql_as_crr("foo");', []);
-          await tx.executeSqlAsync('insert into foo (a,b) values (1,2);', []);
-          await tx.executeSqlAsync('insert into foo (a,b) values (1,2);', []);
+          await tx.executeSqlAsync('insert into foo (a,b) values (?, ?);', [1, 2]);
+          await tx.executeSqlAsync('insert into foo (a,b) values (?, ?);', [3, 4]);
           const result = await tx.executeSqlAsync('select * from crsql_changes;', []);
           const table = result.rows[0].table;
           const value = result.rows[0].val;
