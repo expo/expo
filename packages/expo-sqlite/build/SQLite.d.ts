@@ -10,6 +10,12 @@ export declare class SQLiteDatabase {
      */
     exec(queries: Query[], readOnly: boolean, callback: SQLiteCallback): void;
     /**
+     * Due to limitations on `Android` this function is provided to allow raw SQL queries to be
+     * executed on the database. This will be less efficient than using the `exec` function, please use
+     * only when necessary.
+     */
+    execRawQuery(queries: Query[], readOnly: boolean, callback: SQLiteCallback): void;
+    /**
      * Executes the SQL statement and returns a Promise resolving with the result.
      */
     execAsync(queries: Query[], readOnly: boolean): Promise<(ResultSetError | ResultSet)[]>;
