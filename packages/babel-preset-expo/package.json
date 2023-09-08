@@ -5,9 +5,7 @@
   "main": "build/index.js",
   "files": [
     "build",
-    "lazy-imports-blacklist.js",
-    "!__tests__",
-    "!/.*/"
+    "lazy-imports-blacklist.js"
   ],
   
   "scripts": {

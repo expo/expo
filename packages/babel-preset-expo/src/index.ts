@@ -1,9 +1,8 @@
 /* eslint-env node */
 
-// @ts-ignore
-import lazyImportsBlacklist from 'babel-preset-expo/lazy-imports-blacklist';
-
 import { ConfigAPI, PluginItem, TransformOptions } from '@babel/core';
+
+import { lazyImports } from './lazyImports';
 
 type BabelPresetExpoPlatformOptions = {
   useTransformReactJSXExperimental?: boolean;
@@ -124,8 +123,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
                   // Do not lazy-initialize packages that are local imports (similar to `lazy: true`
                   // behavior) or are in the blacklist.
                   return !(
-                    importModuleSpecifier.includes('./') ||
-                    lazyImportsBlacklist.has(importModuleSpecifier)
+                    importModuleSpecifier.includes('./') || lazyImports.has(importModuleSpecifier)
                   );
                 }
               : // Pass the option directly to `metro-react-native-babel-preset`, which in turn
