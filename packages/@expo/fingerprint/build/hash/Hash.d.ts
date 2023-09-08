@@ -15,9 +15,9 @@ export declare function createFingerprintSourceAsync(source: HashSource, limiter
  */
 export declare function createFileHashResultsAsync(filePath: string, limiter: pLimit.Limit, projectRoot: string, options: NormalizedOptions): Promise<HashResult | null>;
 /**
- * Indicate the given `filePath` should be excluded by `ignores`
+ * Indicate the given `filePath` should be excluded by `ignorePaths`
  */
-export declare function isIgnoredPath(filePath: string, ignores: string[], minimatchOptions?: minimatch.IOptions): boolean;
+export declare function isIgnoredPath(filePath: string, ignorePaths: string[], minimatchOptions?: minimatch.IOptions): boolean;
 /**
  * Create `HashResult` for a dir.
  * If the dir is excluded, returns null rather than a HashResult

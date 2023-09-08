@@ -60,7 +60,7 @@ async function createFileHashResultsAsync(filePath, limiter, projectRoot, option
     // Backup code for faster hashing
     /*
     return limiter(async () => {
-      if (isIgnoredPath(filePath, options.ignores)) {
+      if (isIgnoredPath(filePath, options.ignorePaths)) {
         return null;
       }
   
@@ -80,7 +80,7 @@ async function createFileHashResultsAsync(filePath, limiter, projectRoot, option
     */
     return limiter(() => {
         return new Promise((resolve, reject) => {
-            if (isIgnoredPath(filePath, options.ignores)) {
+            if (isIgnoredPath(filePath, options.ignorePaths)) {
                 return resolve(null);
             }
             let resolved = false;
@@ -104,10 +104,10 @@ async function createFileHashResultsAsync(filePath, limiter, projectRoot, option
 }
 exports.createFileHashResultsAsync = createFileHashResultsAsync;
 /**
- * Indicate the given `filePath` should be excluded by `ignores`
+ * Indicate the given `filePath` should be excluded by `ignorePaths`
  */
-function isIgnoredPath(filePath, ignores, minimatchOptions = { dot: true }) {
-    const minimatchObjs = ignores.map((ignore) => new minimatch_1.default.Minimatch(ignore, minimatchOptions));
+function isIgnoredPath(filePath, ignorePaths, minimatchOptions = { dot: true }) {
+    const minimatchObjs = ignorePaths.map((ignorePath) => new minimatch_1.default.Minimatch(ignorePath, minimatchOptions));
     let result = false;
     for (const minimatchObj of minimatchObjs) {
         const currMatch = minimatchObj.match(filePath);
@@ -126,7 +126,7 @@ exports.isIgnoredPath = isIgnoredPath;
  * If the dir is excluded, returns null rather than a HashResult
  */
 async function createDirHashResultsAsync(dirPath, limiter, projectRoot, options, depth = 0) {
-    if (isIgnoredPath(dirPath, options.ignores)) {
+    if (isIgnoredPath(dirPath, options.ignorePaths)) {
         return null;
     }
     const dirents = (await promises_1.default.readdir(path_1.default.join(projectRoot, dirPath), { withFileTypes: true })).sort((a, b) => a.name.localeCompare(b.name));
