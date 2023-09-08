@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed the return type from `executeSqlAsync` to only successful `ResultSet`. ([#24336](https://github.com/expo/expo/pull/24336) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 11.6.0 — 2023-09-04
