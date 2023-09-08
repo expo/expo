@@ -507,10 +507,10 @@ abstract class ReactNativeActivity :
       // This is the same on iOS.
       return true
     }
-    val errorRecoveryManager = ErrorRecoveryManager.getInstance(experienceKey!!)
-    errorRecoveryManager.markErrored()
 
-    if (!errorRecoveryManager.shouldReloadOnError()) {
+    val errorRecoveryManager = experienceKey?.let { ErrorRecoveryManager.getInstance(it) }
+    errorRecoveryManager?.markErrored()
+    if (errorRecoveryManager?.shouldReloadOnError() != true) {
       return true
     }
 
