@@ -42,7 +42,6 @@ export class SQLiteDatabase {
             return this.exec(queries, readOnly, callback);
         }
         ExpoSQLite.execRawQuery(this._name, queries.map(_serializeQuery), readOnly).then((nativeResultSets) => {
-            console.log(nativeResultSets);
             callback(null, nativeResultSets.map(_deserializeResultSet));
         }, (error) => {
             callback(error instanceof Error ? error : new Error(error));
