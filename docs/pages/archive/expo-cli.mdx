@@ -70,14 +70,14 @@ You will find a list of all commands derived from the latest version of Expo CLI
 
 Alias: `expo i`
 
-| Option                  | Description                                                                                                                                                                      |
-| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `-t, --template [name]` | Specify which template to use. Valid options are "blank", "tabs", "bare-minimum" or a package on npm (e.g. "expo-template-bare-minimum") that includes an Expo project template. |
-| `--npm`                 | Use npm to install dependencies. (default when Yarn is not installed)                                                                                                            |
-| `--yarn`                | Use Yarn to install dependencies. (default when Yarn is installed)                                                                                                               |
-| `--no-install`          | Skip installing npm packages or CocoaPods.                                                                                                                                       |
-| `--name [name]`         | The name of your app visible on the home screen.                                                                                                                                 |
-| `--yes`                 | Use default options. Same as "expo init . --template blank                                                                                                                       |
+| Option                  | Description                                                                                                                                                                              |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-t, --template [name]` | Specify which template to use. Valid options are "blank", "tabs", "bare-minimum" or a package on npm (for example, "expo-template-bare-minimum") that includes an Expo project template. |
+| `--npm`                 | Use npm to install dependencies. (default when Yarn is not installed)                                                                                                                    |
+| `--yarn`                | Use Yarn to install dependencies. (default when Yarn is installed)                                                                                                                       |
+| `--no-install`          | Skip installing npm packages or CocoaPods.                                                                                                                                               |
+| `--name [name]`         | The name of your app visible on the home screen.                                                                                                                                         |
+| `--yes`                 | Use default options. Same as "expo init . --template blank                                                                                                                               |
 
 </Collapsible>
 
@@ -391,7 +391,7 @@ Alias: `expo ph`
 | `-c, --release-channel [name]`  | Filter by release channel. If this flag is not included, the most recent publications will be shown. |
 | `--count [number-of-logs]`      | Number of logs to view, maximum 100, default 5.                                                      |
 | `-p, --platform [android\|ios]` | Filter by platform, android or ios. Defaults to both platforms.                                      |
-| `-s, --sdk-version [version]`   | Filter by SDK version e.g. 35.0.0                                                                    |
+| `-s, --sdk-version [version]`   | Filter by SDK version. For example, 35.0.0                                                           |
 | `-r, --raw`                     | Produce some raw output.                                                                             |
 | `--config [file]`               | Deprecated: Use app.config.js to switch config files instead.                                        |
 
@@ -776,7 +776,7 @@ In Expo SDK 46, we migrated to a new suite of tooling that is versioned in the `
 - Dropped the deprecated `--config` argument across all commands. Use `app.config.js` instead.
 - No longer shipping `adb` in the CLI. Users must manually install `adb` to interact with connected Android devices.
 - Experimental `$EXPO_USE_APPLE_DEVICE` feature (`expo run:ios -d`) is now the default behavior. Global `ios-deploy` package is no longer required.
-- `npx expo export` works like `expo export --experimental-bundle`, i.e. exports for `eas update` and not `expo publish`. [PR](https://github.com/expo/expo/pull/17034).
+- `npx expo export` works like `expo export --experimental-bundle` which is exports for `eas update` and not `expo publish`. [PR](https://github.com/expo/expo/pull/17034).
   - Dropped arguments: `--public-url`, `--asset-url`, `--merge-src-url`, `--merge-src-dir`, `-t, --target`, `--experimental-bundle`, `--config`, `-q, --quiet`
   - Dropped aliases for `--dump-assetmap` (`-d`) and `--dump-sourcemap` (`-s`).
   - Dropped warning about clearing `dist` folder that is shown between runs, this is akin to all other bundler commands across web tooling.
