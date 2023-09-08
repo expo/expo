@@ -46,9 +46,6 @@ afterEvaluate {
       maven {
         url = mavenLocal().url
       }
-      maven {
-        url = 'https://jitpack.io'
-      }
     }
   }
 }

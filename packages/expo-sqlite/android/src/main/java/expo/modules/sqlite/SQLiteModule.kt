@@ -152,20 +152,11 @@ class SQLiteModule : Module() {
       }
 
       if (isInsert(sql)) {
-        val rowsAffected = getRowsAffected(db).let {
-          it.first.close()
-          it.second
-        }
-        val insertId = getInsertId(db).let {
-          it.first.close()
-          it.second
-        }
+        val rowsAffected = getRowsAffected(db)
+        val insertId = getInsertId(db)
         SQLitePluginResult(rows, columnNames, rowsAffected, insertId, null)
       } else if (isDelete(sql) || isUpdate(sql)) {
-        val rowsAffected = getRowsAffected(db).let {
-          it.first.close()
-          it.second
-        }
+        val rowsAffected = getRowsAffected(db)
         SQLitePluginResult(rows, columnNames, rowsAffected, 0, null)
       } else {
         EMPTY_RESULT
@@ -175,7 +166,7 @@ class SQLiteModule : Module() {
 
   private fun getRowsAffected(
     db: SQLiteDatabase,
-  ): Pair<Cursor, Int> {
+  ): Int {
     val cursor = db.rawQuery("SELECT changes() AS numRowsAffected", null)
     val rowsAffected = if (cursor.moveToFirst()) {
       val index = cursor.getColumnIndex("numRowsAffected")
@@ -183,12 +174,13 @@ class SQLiteModule : Module() {
     } else {
       -1
     }
-    return Pair(cursor, rowsAffected)
+    cursor.close()
+    return rowsAffected
   }
 
   private fun getInsertId(
     db: SQLiteDatabase,
-  ): Pair<Cursor, Long> {
+  ): Long {
     val cursor = db.rawQuery("SELECT last_insert_rowid() AS insertId", null)
     val insertId = if (cursor.moveToFirst()) {
       val index = cursor.getColumnIndex("insertId")
@@ -196,7 +188,8 @@ class SQLiteModule : Module() {
     } else {
       -1
     }
-    return Pair(cursor, insertId)
+    cursor.close()
+    return insertId
   }
 
   // do a select operation
