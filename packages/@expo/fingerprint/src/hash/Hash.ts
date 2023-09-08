@@ -86,7 +86,7 @@ export async function createFileHashResultsAsync(
   // Backup code for faster hashing
   /*
   return limiter(async () => {
-    if (isIgnoredPath(filePath, options.ignores)) {
+    if (isIgnoredPath(filePath, options.ignorePaths)) {
       return null;
     }
 
@@ -107,7 +107,7 @@ export async function createFileHashResultsAsync(
 
   return limiter(() => {
     return new Promise<HashResult | null>((resolve, reject) => {
-      if (isIgnoredPath(filePath, options.ignores)) {
+      if (isIgnoredPath(filePath, options.ignorePaths)) {
         return resolve(null);
       }
 
@@ -132,14 +132,16 @@ export async function createFileHashResultsAsync(
 }
 
 /**
- * Indicate the given `filePath` should be excluded by `ignores`
+ * Indicate the given `filePath` should be excluded by `ignorePaths`
  */
 export function isIgnoredPath(
   filePath: string,
-  ignores: string[],
+  ignorePaths: string[],
   minimatchOptions: minimatch.IOptions = { dot: true }
 ): boolean {
-  const minimatchObjs = ignores.map((ignore) => new minimatch.Minimatch(ignore, minimatchOptions));
+  const minimatchObjs = ignorePaths.map(
+    (ignorePath) => new minimatch.Minimatch(ignorePath, minimatchOptions)
+  );
 
   let result = false;
   for (const minimatchObj of minimatchObjs) {
@@ -165,7 +167,7 @@ export async function createDirHashResultsAsync(
   options: NormalizedOptions,
   depth: number = 0
 ): Promise<HashResult | null> {
-  if (isIgnoredPath(dirPath, options.ignores)) {
+  if (isIgnoredPath(dirPath, options.ignorePaths)) {
     return null;
   }
   const dirents = (await fs.readdir(path.join(projectRoot, dirPath), { withFileTypes: true })).sort(

@@ -6,7 +6,7 @@ import type { NormalizedOptions, Options } from './Fingerprint.types';
 
 export const FINGERPRINT_IGNORE_FILENAME = '.fingerprintignore';
 
-export const DEFAULT_IGNORES = [
+export const DEFAULT_IGNORE_PATHS = [
   FINGERPRINT_IGNORE_FILENAME,
   '**/android/build/**/*',
   '**/android/app/build/**/*',
@@ -23,14 +23,14 @@ export async function normalizeOptionsAsync(
     platforms: options?.platforms ?? ['android', 'ios'],
     concurrentIoLimit: options?.concurrentIoLimit ?? os.cpus().length,
     hashAlgorithm: options?.hashAlgorithm ?? 'sha1',
-    ignores: await collectIgnoresAsync(projectRoot, options),
+    ignorePaths: await collectIgnorePathsAsync(projectRoot, options),
   };
 }
 
-async function collectIgnoresAsync(projectRoot: string, options?: Options): Promise<string[]> {
-  const ignores = [
-    ...DEFAULT_IGNORES,
-    ...(options?.ignores ?? []),
+async function collectIgnorePathsAsync(projectRoot: string, options?: Options): Promise<string[]> {
+  const ignorePaths = [
+    ...DEFAULT_IGNORE_PATHS,
+    ...(options?.ignorePaths ?? []),
     ...(options?.dirExcludes?.map((dirExclude) => `${dirExclude}/**/*`) ?? []),
   ];
 
@@ -41,10 +41,10 @@ async function collectIgnoresAsync(projectRoot: string, options?: Options): Prom
     for (const line of fingerprintIgnoreLines) {
       const trimmedLine = line.trim();
       if (trimmedLine) {
-        ignores.push(trimmedLine);
+        ignorePaths.push(trimmedLine);
       }
     }
   } catch {}
 
-  return ignores;
+  return ignorePaths;
 }

@@ -125,12 +125,12 @@ describe(createFileHashResultsAsync, () => {
     expect(result?.hex).toEqual(expectHex);
   });
 
-  it('should ignore file if it is in options.ignores', async () => {
+  it('should ignore file if it is in options.ignorePaths', async () => {
     const filePath = 'app.json';
     const contents = '{}';
     const limiter = pLimit(1);
     const options = await normalizeOptionsAsync('/app');
-    options.ignores = ['*.json'];
+    options.ignorePaths = ['*.json'];
     vol.mkdirSync('/app');
     vol.writeFileSync(path.join('/app', filePath), contents);
 
@@ -160,10 +160,10 @@ describe(createDirHashResultsAsync, () => {
     expect(result?.hex).not.toBe('');
   });
 
-  it('should ignore dir if it is in options.ignores', async () => {
+  it('should ignore dir if it is in options.ignorePaths', async () => {
     const limiter = pLimit(3);
     const options = await normalizeOptionsAsync('/app');
-    options.ignores = ['ios/**/*', 'android/**/*'];
+    options.ignorePaths = ['ios/**/*', 'android/**/*'];
     const volJSON = {
       '/app/ios/Podfile': '...',
       '/app/eas.json': '{}',
@@ -263,9 +263,9 @@ describe(isIgnoredPath, () => {
     expect(isIgnoredPath('/dir/app.ts', ['**/*'])).toBe(true);
   });
 
-  it('should use `!` to override default ignores', () => {
-    const ignores = ['**/ios/**/*', '!**/ios/Podfile', '**/android/**/*'];
-    expect(isIgnoredPath('/app/ios/Podfile', ignores)).toBe(false);
-    expect(isIgnoredPath('/app/ios/Podfile.lock', ignores)).toBe(true);
+  it('should use `!` to override default ignorePaths', () => {
+    const ignorePaths = ['**/ios/**/*', '!**/ios/Podfile', '**/android/**/*'];
+    expect(isIgnoredPath('/app/ios/Podfile', ignorePaths)).toBe(false);
+    expect(isIgnoredPath('/app/ios/Podfile.lock', ignorePaths)).toBe(true);
   });
 });
