@@ -24,7 +24,8 @@
     "node",
     "yarn",
     "yarnpkg",
-    "pnpm"
+    "pnpm",
+    "bun"
   ],
   "license": "MIT",
   "bugs": {
