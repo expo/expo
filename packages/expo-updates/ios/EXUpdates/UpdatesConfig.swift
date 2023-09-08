@@ -145,7 +145,7 @@ public final class UpdatesConfig: NSObject {
   }
 
   public static func config(fromDictionary config: [String: Any]) -> UpdatesConfig {
-    let isEnabled = config.optionalValue(forKey: EXUpdatesConfigEnabledKey) ?? false
+    let isEnabled = config.optionalValue(forKey: EXUpdatesConfigEnabledKey) ?? true
     let expectsSignedManifest = config.optionalValue(forKey: EXUpdatesConfigExpectsSignedManifestKey) ?? false
     let updateUrl: URL? = config.optionalValue(forKey: EXUpdatesConfigUpdateUrlKey).let { it in
       URL(string: it)
