@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix build files.
+
 ### 💡 Others
 
 ## 1.0.3 — 2023-09-04
