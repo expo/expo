@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] remove force unwrap in download handler. ([#24299](https://github.com/expo/expo/pull/24299) by [@douglowder](https://github.com/douglowder))
+- Fix updates enabled defaulting on iOS. ([#24327](https://github.com/expo/expo/pull/24327) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 
