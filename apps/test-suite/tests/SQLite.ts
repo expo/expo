@@ -1,4 +1,3 @@
-import assert from 'assert';
 import { Asset } from 'expo-asset';
 import * as FS from 'expo-file-system';
 import { Platform } from 'expo-modules-core';
