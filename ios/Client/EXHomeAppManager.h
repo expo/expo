@@ -1,13 +1,13 @@
 #import "EXReactAppManager.h"
 
-@class EXManifestsManifest;
+@class EXManifestAndAssetRequestHeaders;
 
 FOUNDATION_EXPORT NSString *kEXHomeBundleResourceName;
 FOUNDATION_EXPORT NSString *kEXHomeManifestResourceName;
 
 @interface EXHomeAppManager : EXReactAppManager
 
-+ (EXManifestsManifest *)bundledHomeManifest;
++ (EXManifestAndAssetRequestHeaders *)bundledHomeManifestAndAssetRequestHeaders;
 
 #pragma mark - interfacing with home JS
 

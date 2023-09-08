@@ -2,6 +2,7 @@
   "expo": {
     "name": "expo-home",
     "description": "",
+    "owner": "expo-home-dev",
     "slug": "home",
     "privacy": "unlisted",
     "sdkVersion": "49.0.0",
@@ -14,9 +15,9 @@
     "primaryColor": "#cccccc",
     "icon": "https://s3.amazonaws.com/exp-brand-assets/ExponentEmptyManifest_192.png",
     "updates": {
-      "useClassicUpdates": true,
-      "checkAutomatically": "ON_LOAD",
-      "fallbackToCacheTimeout": 0
+      "checkAutomatically": "NEVER",
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/e3ec11de-308d-48c3-9f4c-c07d90733495"
     },
     "userInterfaceStyle": "automatic",
     "ios": {
@@ -37,6 +38,14 @@
       "iosManifestPath": "../ios/Exponent/Supporting/kernel-manifest.json",
       "androidManifestPath": "../android/app/src/main/assets/kernel-manifest.json"
     },
-    "jsEngine": "hermes"
+    "jsEngine": "hermes",
+    "extra": {
+      "eas": {
+        "projectId": "e3ec11de-308d-48c3-9f4c-c07d90733495"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    }
   }
 }

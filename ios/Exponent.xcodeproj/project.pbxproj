@@ -153,6 +153,12 @@
 		B287BB2427DD909C008DA282 /* expo-root.pem in Resources */ = {isa = PBXBuildFile; fileRef = B287BB2327DD909B008DA282 /* expo-root.pem */; };
 		B287BB2627DD90AF008DA282 /* expo-root.pem in Resources */ = {isa = PBXBuildFile; fileRef = B287BB2527DD90AF008DA282 /* expo-root.pem */; };
 		B2B492172462F5EF001576D8 /* EXScopedNotificationsEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B2B492162462F5EF001576D8 /* EXScopedNotificationsEmitter.m */; };
+		B2E2CCC72AA7D33E00E2260C /* HomeAppLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E2CCC62AA7D33E00E2260C /* HomeAppLoader.swift */; };
+		B2E2CCC82AA7D33E00E2260C /* HomeAppLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E2CCC62AA7D33E00E2260C /* HomeAppLoader.swift */; };
+		B2E2CCCA2AA7DAD400E2260C /* ManifestAndAssetRequestHeaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E2CCC92AA7DAD400E2260C /* ManifestAndAssetRequestHeaders.swift */; };
+		B2E2CCCB2AA7DAD400E2260C /* ManifestAndAssetRequestHeaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E2CCC92AA7DAD400E2260C /* ManifestAndAssetRequestHeaders.swift */; };
+		B2E2CCD02AA7DF9C00E2260C /* HomeAppLoaderTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E2CCCF2AA7DF9C00E2260C /* HomeAppLoaderTask.swift */; };
+		B2E2CCD12AA7DF9C00E2260C /* HomeAppLoaderTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E2CCCF2AA7DF9C00E2260C /* HomeAppLoaderTask.swift */; };
 		B2F7C02B246B09890060EE06 /* EXScopedNotificationsHandlerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B2F7C02A246B09890060EE06 /* EXScopedNotificationsHandlerModule.m */; };
 		B2F7C02E246B09AE0060EE06 /* EXScopedNotificationsUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = B2F7C02D246B09AE0060EE06 /* EXScopedNotificationsUtils.m */; };
 		B505BA2020CAF80D0046ACFB /* EXEnvironmentMocks.m in Sources */ = {isa = PBXBuildFile; fileRef = B505BA1A20CAF80D0046ACFB /* EXEnvironmentMocks.m */; };
@@ -768,6 +774,9 @@
 		B287BB2527DD90AF008DA282 /* expo-root.pem */ = {isa = PBXFileReference; lastKnownFileType = text; name = "expo-root.pem"; path = "Exponent/Supporting/expo-root.pem"; sourceTree = "<group>"; };
 		B2B492152462F5EF001576D8 /* EXScopedNotificationsEmitter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationsEmitter.h; sourceTree = "<group>"; };
 		B2B492162462F5EF001576D8 /* EXScopedNotificationsEmitter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationsEmitter.m; sourceTree = "<group>"; };
+		B2E2CCC62AA7D33E00E2260C /* HomeAppLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeAppLoader.swift; sourceTree = "<group>"; };
+		B2E2CCC92AA7DAD400E2260C /* ManifestAndAssetRequestHeaders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManifestAndAssetRequestHeaders.swift; sourceTree = "<group>"; };
+		B2E2CCCF2AA7DF9C00E2260C /* HomeAppLoaderTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeAppLoaderTask.swift; sourceTree = "<group>"; };
 		B2F7C029246B09890060EE06 /* EXScopedNotificationsHandlerModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationsHandlerModule.h; sourceTree = "<group>"; };
 		B2F7C02A246B09890060EE06 /* EXScopedNotificationsHandlerModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationsHandlerModule.m; sourceTree = "<group>"; };
 		B2F7C02C246B09AE0060EE06 /* EXScopedNotificationsUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationsUtils.h; sourceTree = "<group>"; };
@@ -1373,6 +1382,9 @@
 				B56C65C0204768F2002B2424 /* EXRootViewController.h */,
 				B56C65C1204768F2002B2424 /* EXRootViewController.m */,
 				B56C65C9204769B6002B2424 /* Menu */,
+				B2E2CCC62AA7D33E00E2260C /* HomeAppLoader.swift */,
+				B2E2CCC92AA7DAD400E2260C /* ManifestAndAssetRequestHeaders.swift */,
+				B2E2CCCF2AA7DF9C00E2260C /* HomeAppLoaderTask.swift */,
 			);
 			path = Client;
 			sourceTree = "<group>";
@@ -2812,8 +2824,10 @@
 				B56C65C8204768F3002B2424 /* EXHomeAppManager.m in Sources */,
 				31AD9A3E2285B53100F19090 /* AIRMapCoordinate.m in Sources */,
 				07C6733224D220A5003F3F5C /* EXUpdatesBinding.m in Sources */,
+				B2E2CCCA2AA7DAD400E2260C /* ManifestAndAssetRequestHeaders.swift in Sources */,
 				31AD99EB2285B51100F19090 /* AIRGoogleMapMarker.m in Sources */,
 				F108698B2448B11D00B7DC04 /* EXDevMenuMotionInterceptor.m in Sources */,
+				B2E2CCD02AA7DF9C00E2260C /* HomeAppLoaderTask.swift in Sources */,
 				F167C43B209C7EE600F01382 /* EXUtilService.m in Sources */,
 				F138E0D32A5F1AE9002E15BC /* EXVersionUtils.mm in Sources */,
 				31AD99DC2285B51100F19090 /* AIRGoogleMapPolygon.m in Sources */,
@@ -2827,6 +2841,7 @@
 				31AD9A462285B53100F19090 /* AIRMapCalloutSubview.m in Sources */,
 				8767F97324D17CB2009F9372 /* EXManagedAppSplashScreenViewProvider.m in Sources */,
 				31AD99DF2285B51100F19090 /* AIRGoogleMapCalloutSubview.m in Sources */,
+				B2E2CCC72AA7D33E00E2260C /* HomeAppLoader.swift in Sources */,
 				B5AC39B11E95A90B00540AA7 /* EXRemoteNotificationManager.m in Sources */,
 				2D5265EB294998B5001BB2BB /* EXHomeLoader.m in Sources */,
 				07295CD920559E7300ED42D4 /* EXUpdatesManager.m in Sources */,
@@ -3043,8 +3058,10 @@
 				F14218BB262CB68600BB97E6 /* EXScopedBranch.m in Sources */,
 				F14218BD262CB68600BB97E6 /* EXUserNotificationCenter.m in Sources */,
 				F14218BF262CB68600BB97E6 /* EXEnvironment.m in Sources */,
+				B2E2CCCB2AA7DAD400E2260C /* ManifestAndAssetRequestHeaders.swift in Sources */,
 				F14218C0262CB68600BB97E6 /* EXScopedFacebook.m in Sources */,
 				F14218C1262CB68600BB97E6 /* EXVersions.m in Sources */,
+				B2E2CCD12AA7DF9C00E2260C /* HomeAppLoaderTask.swift in Sources */,
 				F14218C2262CB68600BB97E6 /* EXAppFetcherDevelopmentMode.m in Sources */,
 				F14218C4262CB68600BB97E6 /* AIRGoogleMapUrlTile.m in Sources */,
 				F14218C6262CB68600BB97E6 /* EXHomeAppManager.m in Sources */,
@@ -3058,6 +3075,7 @@
 				F14218CE262CB68600BB97E6 /* EXUpdatesDatabaseManager.m in Sources */,
 				F14218D0262CB68600BB97E6 /* AIRGoogleMapPolylineManager.m in Sources */,
 				F14218D2262CB68600BB97E6 /* EXReactAppExceptionHandler.m in Sources */,
+				B2E2CCC82AA7D33E00E2260C /* HomeAppLoader.swift in Sources */,
 				F14218D4262CB68600BB97E6 /* EXImageUtils.m in Sources */,
 				F14218D9262CB68600BB97E6 /* AIRMapWMSTileManager.m in Sources */,
 				F14218DA262CB68600BB97E6 /* AIRMapLocalTileManager.m in Sources */,

@@ -128,7 +128,7 @@ public class Update: NSObject {
     self.isDevelopmentMode = isDevelopmentMode
   }
 
-  internal static func update(
+  public static func update(
     withManifest: [String: Any],
     responseHeaderData: ResponseHeaderData,
     extensions: [String: Any],

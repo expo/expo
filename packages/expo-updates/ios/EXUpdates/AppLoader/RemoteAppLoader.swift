@@ -8,14 +8,14 @@ import Foundation
 /**
  * Subclass of AppLoader which handles downloading updates from a remote server.
  */
-internal final class RemoteAppLoader: AppLoader {
+public final class RemoteAppLoader: AppLoader {
   private static let ErrorDomain = "EXUpdatesRemoteAppLoader"
 
   private let downloader: FileDownloader
   private var remoteUpdateResponse: UpdateResponse?
   private let completionQueue: DispatchQueue
 
-  required init(
+  public required override init(
     config: UpdatesConfig,
     database: UpdatesDatabase,
     directory: URL,
@@ -27,7 +27,7 @@ internal final class RemoteAppLoader: AppLoader {
     super.init(config: config, database: database, directory: directory, launchedUpdate: launchedUpdate, completionQueue: completionQueue)
   }
 
-  override func loadUpdate(
+  override public func loadUpdate(
     fromURL url: URL,
     onUpdateResponse updateResponseBlockArg: @escaping AppLoaderUpdateResponseBlock,
     asset assetBlockArg: @escaping AppLoaderAssetBlock,
@@ -85,7 +85,7 @@ internal final class RemoteAppLoader: AppLoader {
     }
   }
 
-  override func downloadAsset(_ asset: UpdateAsset) {
+  override public func downloadAsset(_ asset: UpdateAsset) {
     let urlOnDisk = self.directory.appendingPathComponent(asset.filename)
 
     FileDownloader.assetFilesQueue.async {

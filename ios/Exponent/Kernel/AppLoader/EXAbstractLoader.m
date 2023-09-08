@@ -20,6 +20,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSTimeInterval const kEXAppLoaderDefaultTimeout = 30;
+NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
+
 @implementation EXAbstractLoader
 
 - (instancetype)initWithManifestUrl:(NSURL *)url
