@@ -40,7 +40,7 @@ android {
     targetSdkVersion safeExtGet("targetSdkVersion", 33)
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 218
+    versionCode 220
     versionName '2.29.7'
     // END VERSIONS
 
