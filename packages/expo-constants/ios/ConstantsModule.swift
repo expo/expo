@@ -15,7 +15,7 @@ public class ConstantsModule: Module {
 
     AsyncFunction("getWebViewUserAgentAsync") { () -> String? in
 #if os(tvOS)
-      return ""
+      return nil
 #else
       let webView = WKWebView()
       return webView.value(forKey: "userAgent") as? String
