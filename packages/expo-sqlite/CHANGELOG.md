@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fixed select queries with CTEs crashing on Android. ([#24132](https://github.com/expo/expo/pull/24132) by [@derekstavis](https://github.com/derekstavis))
+- Fixed the return type from `executeSqlAsync` to only successful `ResultSet`. ([#24336](https://github.com/expo/expo/pull/24336) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
