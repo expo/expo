@@ -8,7 +8,7 @@ import {
   createProjectHashAsync,
   diffFingerprintChangesAsync,
 } from '../../src/Fingerprint';
-import { normalizeOptions } from '../../src/Options';
+import { normalizeOptionsAsync } from '../../src/Options';
 import { getHashSourcesAsync } from '../../src/sourcer/Sourcer';
 
 describe('managed project test', () => {
@@ -147,7 +147,10 @@ describe(`getHashSourcesAsync - managed project`, () => {
   });
 
   it('should match snapshot', async () => {
-    const sources = await getHashSourcesAsync(projectRoot, normalizeOptions());
+    const sources = await getHashSourcesAsync(
+      projectRoot,
+      await normalizeOptionsAsync(projectRoot)
+    );
     expect(sources).toMatchSnapshot();
   });
 });
