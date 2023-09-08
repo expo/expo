@@ -24,19 +24,21 @@ describe(createFingerprintFromSourcesAsync, () => {
   });
 
   it('snapshot', async () => {
+    const filePath = 'assets/icon.png';
     vol.mkdirSync('/app');
-    vol.writeFileSync(path.join('/app', 'app.json'), '{}');
+    vol.mkdirSync('/app/assets');
+    vol.writeFileSync(path.join('/app', filePath), '{}');
 
     const sources: HashSource[] = [
       { type: 'contents', id: 'foo', contents: 'HelloWorld', reasons: ['foo'] },
-      { type: 'file', filePath: 'app.json', reasons: ['expoConfig'] },
+      { type: 'file', filePath, reasons: ['icon'] },
     ];
 
     expect(
       await createFingerprintFromSourcesAsync(sources, '/app', await normalizeOptionsAsync('/app'))
     ).toMatchInlineSnapshot(`
       {
-        "hash": "ec7d81780f735d5e289b27cdcc04a6c99d2621dc",
+        "hash": "ca7d58cd60289daa5cddcf99fcaa1d339bfc2c1a",
         "sources": [
           {
             "contents": "HelloWorld",
@@ -48,10 +50,10 @@ describe(createFingerprintFromSourcesAsync, () => {
             "type": "contents",
           },
           {
-            "filePath": "app.json",
+            "filePath": "assets/icon.png",
             "hash": "bf21a9e8fbc5a3846fb05b4fa0859e0917b2202f",
             "reasons": [
-              "expoConfig",
+              "icon",
             ],
             "type": "file",
           },
@@ -111,11 +113,12 @@ describe(createFileHashResultsAsync, () => {
   });
 
   it('should return {id, hex} result', async () => {
-    const filePath = 'app.json';
+    const filePath = 'assets/icon.png';
     const contents = '{}';
     const limiter = pLimit(1);
     const options = await normalizeOptionsAsync('/app');
     vol.mkdirSync('/app');
+    vol.mkdirSync('/app/assets');
     vol.writeFileSync(path.join('/app', filePath), contents);
 
     const result = await createFileHashResultsAsync(filePath, limiter, '/app', options);

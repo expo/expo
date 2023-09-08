@@ -5,6 +5,7 @@ import { vol, fs as volFS } from 'memfs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
+import { HashSourceContents } from '../../Fingerprint.types';
 import { normalizeOptionsAsync } from '../../Options';
 import {
   getEasBuildSourcesAsync,
@@ -157,15 +158,56 @@ describe(getExpoConfigSourcesAsync, () => {
     expect(sources.length).toBe(0);
   });
 
-  it('should contain app.json', async () => {
+  it('should contain expo config', async () => {
+    vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
+    const appJson = JSON.parse(vol.readFileSync('/app/app.json', 'utf8').toString());
+    const sources = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
+    const expoConfigSource = sources.find<HashSourceContents>(
+      (source): source is HashSourceContents =>
+        source.type === 'contents' && source.id === 'expoConfig'
+    );
+    const expoConfig = JSON.parse(expoConfigSource?.contents?.toString() ?? 'null');
+    expect(expoConfig).not.toBeNull();
+    expect(expoConfig.name).toEqual(appJson.expo.name);
+  });
+
+  it('should not contain runtimeVersion in expo config', async () => {
+    vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
+    vol.writeFileSync(
+      '/app/app.config.js',
+      `\
+export default ({ config }) => {
+  config.runtimeVersion = '1.0.0';
+  return config;
+};`
+    );
+    const sources = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
+    const expoConfigSource = sources.find<HashSourceContents>(
+      (source): source is HashSourceContents =>
+        source.type === 'contents' && source.id === 'expoConfig'
+    );
+    const expoConfig = JSON.parse(expoConfigSource?.contents?.toString() ?? 'null');
+    expect(expoConfig).not.toBeNull();
+    expect(expoConfig.runtimeVersion).toBeUndefined();
+  });
+
+  it('should keep expo config contents in deterministic order', async () => {
     vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
     const sources = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
-    expect(sources).toContainEqual(
-      expect.objectContaining({
-        type: 'file',
-        filePath: 'app.json',
-      })
-    );
+
+    const appJsonContents = vol.readFileSync('/app/app.json', 'utf8').toString();
+    const appJson = JSON.parse(appJsonContents);
+    const { name } = appJson.expo;
+    // Re-insert name to change the object order
+    delete appJson.expo.name;
+    appJson.expo.name = name;
+    const newAppJsonContents = JSON.stringify(appJson);
+    expect(newAppJsonContents).not.toEqual(appJsonContents);
+    vol.writeFileSync('/app/app.json', newAppJsonContents);
+
+    // Even new app.json contents changed its order, the source contents should be the same.
+    const sources2 = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
+    expect(sources).toEqual(sources2);
   });
 
   it('should contain external icon file in app.json', async () => {
@@ -280,7 +322,14 @@ export default ({ config }) => {
     );
     const sources2 = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
 
-    expect(sources).toEqual(sources2);
+    // sources2 will contain the plugins from expo config, but sources will not.
+    const sourcesWithoutExpoConfig = sources.filter(
+      (item) => item.type !== 'contents' || item.id !== 'expoConfig'
+    );
+    const sources2WithoutExpoConfig = sources2.filter(
+      (item) => item.type !== 'contents' || item.id !== 'expoConfig'
+    );
+    expect(sourcesWithoutExpoConfig).toEqual(sources2WithoutExpoConfig);
   });
 });
 
