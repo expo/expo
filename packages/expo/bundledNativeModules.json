@@ -72,7 +72,7 @@
   "expo-sms": "~11.4.0",
   "expo-speech": "~11.3.0",
   "expo-splash-screen": "~0.20.5",
-  "expo-sqlite": "~11.3.2",
+  "expo-sqlite": "~11.3.3",
   "expo-status-bar": "~1.6.0",
   "expo-store-review": "~6.4.0",
   "expo-system-ui": "~2.4.0",
