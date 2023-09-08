@@ -13,26 +13,22 @@ const resolve_from_1 = __importDefault(require("resolve-from"));
 const Utils_1 = require("./Utils");
 const debug = require('debug')('expo:fingerprint:sourcer:Expo');
 async function getExpoConfigSourcesAsync(projectRoot, options) {
+    const results = [];
     let config;
     try {
         const { getConfig } = require((0, resolve_from_1.default)(path_1.default.resolve(projectRoot), 'expo/config'));
         config = await getConfig(projectRoot, { skipSDKVersionRequirement: true });
+        results.push({
+            type: 'contents',
+            id: 'expoConfig',
+            contents: normalizeExpoConfig(config.exp),
+            reasons: ['expoConfig'],
+        });
     }
     catch (e) {
         debug('Cannot get Expo config: ' + e);
         return [];
     }
-    const results = [];
-    // app config files
-    const configFiles = ['app.config.ts', 'app.config.js', 'app.config.json', 'app.json'];
-    const configFileSources = (await Promise.all(configFiles.map(async (file) => {
-        const result = await (0, Utils_1.getFileBasedHashSourceAsync)(projectRoot, file, 'expoConfig');
-        if (result != null) {
-            debug(`Adding config file - ${chalk_1.default.dim(file)}`);
-        }
-        return result;
-    }))).filter(Boolean);
-    results.push(...configFileSources);
     // external files in config
     const isAndroid = options.platforms.includes('android');
     const isIos = options.platforms.includes('ios');
@@ -77,6 +73,13 @@ function findUpPluginRoot(entryFile) {
     const packageJson = find_up_1.default.sync('package.json', { cwd: path_1.default.dirname(entryFile) });
     (0, assert_1.default)(packageJson, `No package.json found for module "${entryRoot}"`);
     return path_1.default.dirname(packageJson);
+}
+function normalizeExpoConfig(config) {
+    // Deep clone by JSON.parse/stringify that assumes the config is serializable.
+    const normalizedConfig = JSON.parse(JSON.stringify(config));
+    delete normalizedConfig.runtimeVersion;
+    delete normalizedConfig._internal;
+    return (0, Utils_1.stringifyJsonSorted)(normalizedConfig);
 }
 function getConfigPluginSourcesAsync(projectRoot, plugins) {
     if (plugins == null) {

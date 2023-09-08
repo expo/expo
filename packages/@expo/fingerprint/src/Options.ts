@@ -12,6 +12,12 @@ export const DEFAULT_IGNORE_PATHS = [
   '**/android/app/build/**/*',
   '**/android/app/.cxx/**/*',
   '**/ios/Pods/**/*',
+
+  // Ignore all expo configs because we will read expo config in a HashSourceContents already
+  'app.config.ts',
+  'app.config.js',
+  'app.config.json',
+  'app.json',
 ];
 
 export async function normalizeOptionsAsync(

@@ -65,7 +65,7 @@ describe('managed project test', () => {
 
     const configPath = path.join(projectRoot, 'app.json');
     const config = JSON.parse(await fs.readFile(configPath, 'utf8'));
-    config.jsEngine = 'hermes';
+    config.expo.jsEngine = 'hermes';
     await fs.writeFile(configPath, JSON.stringify(config, null, 2));
 
     const hash2 = await createProjectHashAsync(projectRoot);
