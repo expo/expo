@@ -39,12 +39,13 @@ describe(diffFingerprintChangesAsync, () => {
     expect(diff).toMatchInlineSnapshot(`
       [
         {
-          "filePath": "app.json",
-          "hash": "1fd2d92d50dc1da96b41795046b9ea4e30dd2b48",
+          "contents": "{"android":{"adaptiveIcon":{"backgroundColor":"#FFFFFF","foregroundImage":"./assets/adaptive-icon.png"}},"assetBundlePatterns":["**/*"],"icon":"./assets/icon.png","ios":{"supportsTablet":true},"name":"sdk47","orientation":"portrait","platforms":["android","ios","web"],"slug":"sdk47","splash":{"backgroundColor":"#ffffff","image":"./assets/splash.png","resizeMode":"contain"},"updates":{"fallbackToCacheTimeout":0},"userInterfaceStyle":"light","version":"1.0.0","web":{"favicon":"./assets/favicon.png"}}",
+          "hash": "33b2b95de3b0b474810630e51527a2c0a6e5de9c",
+          "id": "expoConfig",
           "reasons": [
             "expoConfig",
           ],
-          "type": "file",
+          "type": "contents",
         },
       ]
     `);
@@ -105,12 +106,13 @@ describe(diffFingerprintChangesAsync, () => {
     expect(diff).toMatchInlineSnapshot(`
       [
         {
-          "filePath": "app.json",
-          "hash": "9ff1b51ca9b9435e8b849bcc82e3900d70f0feee",
+          "contents": "{"android":{"adaptiveIcon":{"backgroundColor":"#FFFFFF","foregroundImage":"./assets/adaptive-icon.png"}},"assetBundlePatterns":["**/*"],"icon":"./assets/icon.png","ios":{"supportsTablet":true},"jsEngine":"jsc","name":"sdk47","orientation":"portrait","platforms":["android","ios","web"],"slug":"sdk47","splash":{"backgroundColor":"#ffffff","image":"./assets/splash.png","resizeMode":"contain"},"updates":{"fallbackToCacheTimeout":0},"userInterfaceStyle":"light","version":"1.0.0","web":{"favicon":"./assets/favicon.png"}}",
+          "hash": "7068a4234e7312c6ac54b776ea4dfad0ac789b2a",
+          "id": "expoConfig",
           "reasons": [
             "expoConfig",
           ],
-          "type": "file",
+          "type": "contents",
         },
       ]
     `);

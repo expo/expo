@@ -6,7 +6,7 @@ import findUp from 'find-up';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { getFileBasedHashSourceAsync } from './Utils';
+import { getFileBasedHashSourceAsync, stringifyJsonSorted } from './Utils';
 import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
 
 const debug = require('debug')('expo:fingerprint:sourcer:Expo');
@@ -15,31 +15,22 @@ export async function getExpoConfigSourcesAsync(
   projectRoot: string,
   options: NormalizedOptions
 ): Promise<HashSource[]> {
+  const results: HashSource[] = [];
+
   let config: ProjectConfig;
   try {
     const { getConfig } = require(resolveFrom(path.resolve(projectRoot), 'expo/config'));
     config = await getConfig(projectRoot, { skipSDKVersionRequirement: true });
+    results.push({
+      type: 'contents',
+      id: 'expoConfig',
+      contents: normalizeExpoConfig(config.exp),
+      reasons: ['expoConfig'],
+    });
   } catch (e: unknown) {
     debug('Cannot get Expo config: ' + e);
     return [];
   }
-
-  const results: HashSource[] = [];
-
-  // app config files
-  const configFiles = ['app.config.ts', 'app.config.js', 'app.config.json', 'app.json'];
-  const configFileSources = (
-    await Promise.all(
-      configFiles.map(async (file) => {
-        const result = await getFileBasedHashSourceAsync(projectRoot, file, 'expoConfig');
-        if (result != null) {
-          debug(`Adding config file - ${chalk.dim(file)}`);
-        }
-        return result;
-      })
-    )
-  ).filter(Boolean) as HashSource[];
-  results.push(...configFileSources);
 
   // external files in config
   const isAndroid = options.platforms.includes('android');
@@ -97,6 +88,14 @@ function findUpPluginRoot(entryFile: string): string {
   const packageJson = findUp.sync('package.json', { cwd: path.dirname(entryFile) });
   assert(packageJson, `No package.json found for module "${entryRoot}"`);
   return path.dirname(packageJson);
+}
+
+function normalizeExpoConfig(config: ExpoConfig): string {
+  // Deep clone by JSON.parse/stringify that assumes the config is serializable.
+  const normalizedConfig: ExpoConfig = JSON.parse(JSON.stringify(config));
+  delete normalizedConfig.runtimeVersion;
+  delete normalizedConfig._internal;
+  return stringifyJsonSorted(normalizedConfig);
 }
 
 function getConfigPluginSourcesAsync(
