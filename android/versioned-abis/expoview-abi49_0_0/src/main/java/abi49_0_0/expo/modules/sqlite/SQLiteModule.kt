@@ -24,25 +24,11 @@ class SQLiteModule : Module() {
     Name("ExpoSQLite")
 
     AsyncFunction("exec") { dbName: String, queries: List<Query>, readOnly: Boolean ->
-      val db = getDatabase(dbName)
-      val results = queries.map { sqlQuery ->
-        val sql = sqlQuery.sql
-        val bindArgs = convertParamsToStringArray(sqlQuery.args)
-        try {
-          if (isSelect(sql)) {
-            doSelectInBackgroundAndPossiblyThrow(sql, bindArgs, db)
-          } else { // update/insert/delete
-            if (readOnly) {
-              SQLitePluginResult(EMPTY_ROWS, EMPTY_COLUMNS, 0, 0, ReadOnlyException())
-            } else {
-              doUpdateInBackgroundAndPossiblyThrow(sql, bindArgs, db)
-            }
-          }
-        } catch (e: Throwable) {
-          SQLitePluginResult(EMPTY_ROWS, EMPTY_COLUMNS, 0, 0, e)
-        }
-      }
-      return@AsyncFunction pluginResultsToPrimitiveData(results)
+      return@AsyncFunction execute(dbName, queries, readOnly)
+    }
+
+    AsyncFunction("execRawQuery") { dbName: String, queries: List<Query>, readOnly: Boolean ->
+      return@AsyncFunction execute(dbName, queries, readOnly, raw = true)
     }
 
     AsyncFunction("close") { dbName: String ->
@@ -63,6 +49,32 @@ class SQLiteModule : Module() {
         throw DeleteDatabaseException(dbName)
       }
     }
+  }
+
+  private fun execute(dbName: String, queries: List<Query>, readOnly: Boolean, raw: Boolean = false): List<Any> {
+    val db = getDatabase(dbName)
+    val results = queries.map { sqlQuery ->
+      val sql = sqlQuery.sql
+      val bindArgs = convertParamsToStringArray(sqlQuery.args)
+      try {
+        if (isSelect(sql)) {
+          doSelectInBackgroundAndPossiblyThrow(sql, bindArgs, db)
+        } else { // update/insert/delete
+          if (readOnly) {
+            SQLitePluginResult(EMPTY_ROWS, EMPTY_COLUMNS, 0, 0, ReadOnlyException())
+          } else {
+            if (raw) {
+              doRawUpdate(sql, bindArgs, db)
+            } else {
+              doUpdateInBackgroundAndPossiblyThrow(sql, bindArgs, db)
+            }
+          }
+        }
+      } catch (e: Throwable) {
+        SQLitePluginResult(EMPTY_ROWS, EMPTY_COLUMNS, 0, 0, e)
+      }
+    }
+    return pluginResultsToPrimitiveData(results)
   }
 
   // do a update/delete/insert operation
@@ -95,6 +107,78 @@ class SQLiteModule : Module() {
         EMPTY_RESULT
       }
     }
+  }
+
+  private fun doRawUpdate(
+    sql: String,
+    bindArgs: Array<String?>,
+    db: SQLiteDatabase
+  ): SQLitePluginResult {
+    return db.rawQuery(sql, bindArgs).use { cursor ->
+      val numRows = cursor.count
+      if (numRows == 0) {
+        return EMPTY_RESULT
+      }
+
+      val numColumns = cursor.columnCount
+      val columnNames = cursor.columnNames
+      val rows: Array<Array<Any?>> = Array(numRows) { arrayOfNulls(numColumns) }
+      var i = 0
+      while (cursor.moveToNext()) {
+        val row = rows[i]
+        for (j in 0 until numColumns) {
+          row[j] = getValueFromCursor(cursor, j, cursor.getType(j))
+        }
+        rows[i] = row
+        i++
+      }
+
+      if (isInsert(sql)) {
+        val rowsAffected = getRowsAffected(db).let {
+          it.first.close()
+          it.second
+        }
+        val insertId = getInsertId(db).let {
+          it.first.close()
+          it.second
+        }
+        SQLitePluginResult(rows, columnNames, rowsAffected, insertId, null)
+      } else if (isDelete(sql) || isUpdate(sql)) {
+        val rowsAffected = getRowsAffected(db).let {
+          it.first.close()
+          it.second
+        }
+        SQLitePluginResult(rows, columnNames, rowsAffected, 0, null)
+      } else {
+        EMPTY_RESULT
+      }
+    }
+  }
+
+  private fun getRowsAffected(
+    db: SQLiteDatabase,
+  ): Pair<Cursor, Int> {
+    val cursor = db.rawQuery("SELECT changes() AS numRowsAffected", null)
+    val rowsAffected = if (cursor.moveToFirst()) {
+      val index = cursor.getColumnIndex("numRowsAffected")
+      cursor.getInt(index)
+    } else {
+      -1
+    }
+    return Pair(cursor, rowsAffected)
+  }
+
+  private fun getInsertId(
+    db: SQLiteDatabase,
+  ): Pair<Cursor, Long> {
+    val cursor = db.rawQuery("SELECT last_insert_rowid() AS insertId", null)
+    val insertId = if (cursor.moveToFirst()) {
+      val index = cursor.getColumnIndex("insertId")
+      cursor.getLong(index)
+    } else {
+      -1
+    }
+    return Pair(cursor, insertId)
   }
 
   // do a select operation
