@@ -1,3 +1,4 @@
+// swiftlint:disable all
 //
 //  ASN1DistinguishedNames.swift
 //
@@ -110,3 +111,4 @@ public class ASN1DistinguishedNameFormatter {
         }
     }
 }
+// swiftlint:enable all

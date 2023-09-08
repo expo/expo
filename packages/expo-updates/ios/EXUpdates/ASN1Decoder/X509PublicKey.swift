@@ -1,3 +1,4 @@
+// swiftlint:disable all
 //
 //  X509PublicKey.swift
 //
@@ -73,3 +74,4 @@ public class X509PublicKey {
         }
     }
 }
+// swiftlint:enable all

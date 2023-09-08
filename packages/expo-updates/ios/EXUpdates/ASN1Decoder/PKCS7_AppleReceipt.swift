@@ -1,3 +1,4 @@
+// swiftlint:disable all
 //
 //  PKCS7_AppleReceipt.swift
 //
@@ -206,3 +207,4 @@ private enum ReceiptDateFormatter {
         return dateFormatter
     }()
 }
+// swiftlint:enable all

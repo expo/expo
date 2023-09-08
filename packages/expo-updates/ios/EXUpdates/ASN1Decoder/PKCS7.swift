@@ -1,3 +1,4 @@
+// swiftlint:disable all
 //
 //  PKCS7.swift
 //
@@ -94,3 +95,4 @@ enum PKCS7Error: Error {
     case notSupported
     case parseError
 }
+// swiftlint:enable all

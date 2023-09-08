@@ -1,3 +1,4 @@
+// swiftlint:disable all
 //
 //  ASN1Object.swift
 //
@@ -103,3 +104,4 @@ public class ASN1Object: CustomStringConvertible {
         return output
     }
 }
+// swiftlint:enable all

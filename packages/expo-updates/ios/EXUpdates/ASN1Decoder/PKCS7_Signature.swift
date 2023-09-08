@@ -1,3 +1,4 @@
+// swiftlint:disable all
 //
 //  PKCS7_Signature.swift
 //  
@@ -104,3 +105,4 @@ public class SignatureInfo {
         }
     }
 }
+// swiftlint:enable all

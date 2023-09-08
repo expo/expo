@@ -1,3 +1,4 @@
+// swiftlint:disable all
 //
 //  ASN1Identifier.swift
 //
@@ -98,3 +99,4 @@ public class ASN1Identifier: CustomStringConvertible {
         }
     }
 }
+// swiftlint:enable all

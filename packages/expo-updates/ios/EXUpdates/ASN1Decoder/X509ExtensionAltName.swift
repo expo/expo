@@ -1,3 +1,4 @@
+// swiftlint:disable all
 //
 //  X509ExtensionAltName.swift
 //
@@ -82,3 +83,4 @@ extension X509Extension {
         return nil
     }
 }
+// swiftlint:enable all

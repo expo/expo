@@ -1,3 +1,4 @@
+// swiftlint:disable all
 //
 //  X509Extension.swift
 //
@@ -67,3 +68,4 @@ public class X509Extension {
         return result
     }
 }
+// swiftlint:enable all

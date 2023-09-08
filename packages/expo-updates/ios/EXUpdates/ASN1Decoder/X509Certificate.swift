@@ -1,3 +1,4 @@
+// swiftlint:disable all
 //
 //  X509Certificate.swift
 //
@@ -357,3 +358,4 @@ extension ASN1Object {
         }
     }
 }
+// swiftlint:enable all

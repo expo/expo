@@ -1,3 +1,4 @@
+// swiftlint:disable all
 //
 //  ASN1Encoder.swift
 //  ASN1Decoder
@@ -56,3 +57,4 @@ extension Data {
         return ASN1DEREncoder.encodeSequence(content: self)
     }
 }
+// swiftlint:enable all

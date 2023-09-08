@@ -1,3 +1,4 @@
+// swiftlint:disable all
 //
 //  OID.swift
 //  ASN1Decoder
@@ -93,3 +94,4 @@ public enum OID: String {
         return "\(oid)"
     }
 }
+// swiftlint:enable all

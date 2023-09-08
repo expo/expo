@@ -1,3 +1,4 @@
+// swiftlint:disable all
 //
 //  X509ExtensionClasses.swift
 //
@@ -179,3 +180,4 @@ extension X509Certificate {
         }
     }
 }
+// swiftlint:enable all
