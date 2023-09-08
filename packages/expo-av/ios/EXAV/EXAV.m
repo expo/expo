@@ -877,7 +877,7 @@ EX_EXPORT_METHOD_AS(getPermissionsAsync,
                     rejecter:(EXPromiseRejectBlock)reject)
 {
 #if TARGET_OS_TV
-  reject(@"E_MISSING_PERMISSION", @"Not available on TV", nil);
+  reject(@"E_UNSUPPORTED_PLATFORM", @"Not available on TV", nil);
 #else
   [EXPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
                                                       withRequester:[EXAudioRecordingPermissionRequester class]
@@ -891,7 +891,7 @@ EX_EXPORT_METHOD_AS(requestPermissionsAsync,
                     rejecter:(EXPromiseRejectBlock)reject)
 {
 #if TARGET_OS_TV
-  reject(@"E_MISSING_PERMISSION", @"Not available on TV", nil);
+  reject(@"E_UNSUPPORTED_PLATFORM", @"Not available on TV", nil);
 #else
   [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                          withRequester:[EXAudioRecordingPermissionRequester class]
@@ -906,7 +906,7 @@ EX_EXPORT_METHOD_AS(prepareAudioRecorder,
                     rejecter:(EXPromiseRejectBlock)reject)
 {
 #if TARGET_OS_TV
-  reject(@"E_MISSING_PERMISSION", @"Not available on TV", nil);
+  reject(@"E_UNSUPPORTED_PLATFORM", @"Not available on TV", nil);
 #else
   _mediaServicesDidReset = false;
   if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXAudioRecordingPermissionRequester class]]) {
@@ -956,7 +956,7 @@ EX_EXPORT_METHOD_AS(startAudioRecording,
                     rejecter:(EXPromiseRejectBlock)reject)
 {
 #if TARGET_OS_TV
-  reject(@"E_MISSING_PERMISSION", @"Not available on TV", nil);
+  reject(@"E_UNSUPPORTED_PLATFORM", @"Not available on TV", nil);
 #else
   if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXAudioRecordingPermissionRequester class]]) {
     reject(@"E_MISSING_PERMISSION", @"Missing audio recording permission.", nil);
@@ -991,7 +991,7 @@ EX_EXPORT_METHOD_AS(pauseAudioRecording,
                     rejecter:(EXPromiseRejectBlock)reject)
 {
 #if TARGET_OS_TV
-  reject(@"E_MISSING_PERMISSION", @"Not available on TV", nil);
+  reject(@"E_UNSUPPORTED_PLATFORM", @"Not available on TV", nil);
 #else
   if ([self _checkAudioRecorderExistsOrReject:reject]) {
     if (_audioRecorder.recording) {
@@ -1011,7 +1011,7 @@ EX_EXPORT_METHOD_AS(stopAudioRecording,
                     rejecter:(EXPromiseRejectBlock)reject)
 {
 #if TARGET_OS_TV
-  reject(@"E_MISSING_PERMISSION", @"Not available on TV", nil);
+  reject(@"E_UNSUPPORTED_PLATFORM", @"Not available on TV", nil);
 #else
   if ([self _checkAudioRecorderExistsOrReject:reject]) {
     _audioRecorderDurationMillis = [self _getDurationMillisOfRecordingAudioRecorder];
@@ -1032,7 +1032,7 @@ EX_EXPORT_METHOD_AS(getAudioRecordingStatus,
                     rejecter:(EXPromiseRejectBlock)reject)
 {
 #if TARGET_OS_TV
-  reject(@"E_MISSING_PERMISSION", @"Not available on TV", nil);
+  reject(@"E_UNSUPPORTED_PLATFORM", @"Not available on TV", nil);
 #else
   if ([self _checkAudioRecorderExistsOrReject:reject]) {
     resolve([self _getAudioRecorderStatus]);
@@ -1045,7 +1045,7 @@ EX_EXPORT_METHOD_AS(unloadAudioRecorder,
                     rejecter:(EXPromiseRejectBlock)reject)
 {
 #if TARGET_OS_TV
-  reject(@"E_MISSING_PERMISSION", @"Not available on TV", nil);
+  reject(@"E_UNSUPPORTED_PLATFORM", @"Not available on TV", nil);
 #else
   if ([self _checkAudioRecorderExistsOrReject:reject]) {
     [self _removeAudioRecorder:YES];
@@ -1059,7 +1059,7 @@ EX_EXPORT_METHOD_AS(getAvailableInputs,
                     rejecter:(UMPromiseRejectBlock)reject)
 {
 #if TARGET_OS_TV
-  reject(@"E_MISSING_PERMISSION", @"Not available on TV", nil);
+  reject(@"E_UNSUPPORTED_PLATFORM", @"Not available on TV", nil);
 #else
   NSMutableArray *inputs = [NSMutableArray new];
   for (AVAudioSessionPortDescription *desc in [_kernelAudioSessionManagerDelegate availableInputs]){
@@ -1078,7 +1078,7 @@ EX_EXPORT_METHOD_AS(getCurrentInput,
                     rejecter:(UMPromiseRejectBlock)reject)
 {
 #if TARGET_OS_TV
-  reject(@"E_MISSING_PERMISSION", @"Not available on TV", nil);
+  reject(@"E_UNSUPPORTED_PLATFORM", @"Not available on TV", nil);
 #else
   AVAudioSessionPortDescription *desc = [_kernelAudioSessionManagerDelegate activeInput];
   if (desc) {
@@ -1099,7 +1099,7 @@ EX_EXPORT_METHOD_AS(setInput,
                     rejecter:(UMPromiseRejectBlock)reject)
 {
 #if TARGET_OS_TV
-  reject(@"E_MISSING_PERMISSION", @"Not available on TV", nil);
+  reject(@"E_UNSUPPORTED_PLATFORM", @"Not available on TV", nil);
 #else
   AVAudioSessionPortDescription* preferredInput = nil;
   for (AVAudioSessionPortDescription *desc in [_kernelAudioSessionManagerDelegate availableInputs]){
