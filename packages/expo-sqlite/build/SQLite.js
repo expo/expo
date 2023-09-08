@@ -189,7 +189,14 @@ export class ExpoSQLTransactionAsync {
     }
     async executeSqlAsync(sqlStatement, args) {
         const resultSets = await this.db.execAsync([{ sql: sqlStatement, args: args ?? [] }], this.readOnly);
-        return resultSets[0];
+        const result = resultSets[0];
+        if (isResultSetError(result)) {
+            throw result.error;
+        }
+        return result;
     }
+}
+function isResultSetError(result) {
+    return 'error' in result;
 }
 //# sourceMappingURL=SQLite.js.map

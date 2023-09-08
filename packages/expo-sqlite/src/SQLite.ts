@@ -264,14 +264,19 @@ export class ExpoSQLTransactionAsync implements SQLTransactionAsync {
     private readonly readOnly: boolean
   ) {}
 
-  async executeSqlAsync(
-    sqlStatement: string,
-    args?: (number | string)[]
-  ): Promise<ResultSetError | ResultSet> {
+  async executeSqlAsync(sqlStatement: string, args?: (number | string)[]): Promise<ResultSet> {
     const resultSets = await this.db.execAsync(
       [{ sql: sqlStatement, args: args ?? [] }],
       this.readOnly
     );
-    return resultSets[0];
+    const result = resultSets[0];
+    if (isResultSetError(result)) {
+      throw result.error;
+    }
+    return result;
   }
+}
+
+function isResultSetError(result: ResultSet | ResultSetError): result is ResultSetError {
+  return 'error' in result;
 }

@@ -1,4 +1,3 @@
-import assert from 'assert';
 import { Asset } from 'expo-asset';
 import * as FS from 'expo-file-system';
 import { Platform } from 'expo-modules-core';
@@ -652,7 +651,6 @@ export function test(t) {
         await db.transactionAsync(async (tx) => {
           await tx.executeSqlAsync('INSERT INTO Users (name) VALUES (?)', [userName]);
           const result = await tx.executeSqlAsync('SELECT * FROM Users LIMIT 1');
-          assert(!isResultSetError(result));
           const currentUser = result.rows[0].name;
           t.expect(currentUser).toEqual('Tim Duncan');
         });
@@ -664,10 +662,9 @@ export function test(t) {
           await tx.executeSqlAsync('DROP TABLE IF EXISTS foo;', []);
           await tx.executeSqlAsync('create table foo (a primary key, b);', []);
           await tx.executeSqlAsync('select crsql_as_crr("foo");', []);
-          await tx.executeSqlAsync('insert into foo (a,b) values (1,2);', []);
-          await tx.executeSqlAsync('insert into foo (a,b) values (1,2);', []);
+          await tx.executeSqlAsync('insert into foo (a,b) values (?, ?);', [1, 2]);
+          await tx.executeSqlAsync('insert into foo (a,b) values (?, ?);', [3, 4]);
           const result = await tx.executeSqlAsync('select * from crsql_changes;', []);
-          assert(!isResultSetError(result));
           const table = result.rows[0].table;
           const value = result.rows[0].val;
           t.expect(table).toEqual('foo');
@@ -695,7 +692,6 @@ export function test(t) {
           ]);
 
           const result = await tx.executeSqlAsync('SELECT COUNT(*) FROM Users');
-          assert(!isResultSetError(result));
           const recordCount = result.rows[0]['COUNT(*)'];
           t.expect(recordCount).toEqual(3);
         });
@@ -708,10 +704,16 @@ export function test(t) {
 
           // create table in readOnly transaction
           await db.transactionAsync(async (tx) => {
-            const result = await tx.executeSqlAsync('DROP TABLE IF EXISTS Users;', []);
-            assert(isResultSetError(result));
-            t.expect(result.error).toBeDefined();
-            t.expect(result.error.message).toContain('could not prepare ');
+            let error: Error | null = null;
+            try {
+              await tx.executeSqlAsync('DROP TABLE IF EXISTS Users;', []);
+            } catch (e: unknown) {
+              if (e instanceof Error) {
+                error = e;
+              }
+            }
+            t.expect(error).toBeDefined();
+            t.expect(error.message).toContain('could not prepare ');
           }, true);
         }
       );
@@ -732,7 +734,6 @@ export function test(t) {
         });
         await db.transactionAsync(async (tx) => {
           const result = await tx.executeSqlAsync('SELECT COUNT(*) FROM Users');
-          assert(!isResultSetError(result));
           const recordCount = result.rows[0]['COUNT(*)'];
           t.expect(recordCount).toEqual(1);
         }, true);
@@ -748,7 +749,6 @@ export function test(t) {
 
         await db.transactionAsync(async (tx) => {
           const result = await tx.executeSqlAsync('SELECT COUNT(*) FROM Users');
-          assert(!isResultSetError(result));
           const recordCount = result.rows[0]['COUNT(*)'];
           t.expect(recordCount).toEqual(1);
         }, true);
@@ -764,7 +764,6 @@ export function test(t) {
           );
           // a result-returning pragma
           let result = await tx.executeSqlAsync('PRAGMA table_info(SomeTable);', []);
-          assert(!isResultSetError(result));
           t.expect(result.rows.length).toEqual(2);
           t.expect(result.rows[0].name).toEqual('id');
           t.expect(result.rows[1].name).toEqual('name');
@@ -773,17 +772,10 @@ export function test(t) {
           // a setter/getter pragma
           await tx.executeSqlAsync('PRAGMA user_version = 123;', []);
           result = await tx.executeSqlAsync('PRAGMA user_version;', []);
-          assert(!isResultSetError(result));
           t.expect(result.rows.length).toEqual(1);
           t.expect(result.rows[0].user_version).toEqual(123);
         });
       });
     }); // t.describe('SQLiteAsync')
   }
-}
-
-function isResultSetError(
-  result: SQLite.ResultSet | SQLite.ResultSetError
-): result is SQLite.ResultSetError {
-  return 'error' in result;
 }

@@ -125,7 +125,7 @@ export type SQLiteCallback = (error?: Error | null, resultSet?: (ResultSetError 
 /** A transaction object to perform SQL statements in async mode. */
 export interface SQLTransactionAsync {
     /** Executes a SQL statement in async mode. */
-    executeSqlAsync(sqlStatement: string, args?: (number | string)[]): Promise<ResultSetError | ResultSet>;
+    executeSqlAsync(sqlStatement: string, args?: (number | string)[]): Promise<ResultSet>;
 }
 /** A transaction callback with given `SQLTransactionAsync` object to perform SQL statements in async mode. */
 export type SQLTransactionAsyncCallback = (transaction: SQLTransactionAsync) => Promise<void>;
