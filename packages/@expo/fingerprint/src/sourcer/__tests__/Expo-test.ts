@@ -171,7 +171,7 @@ describe(getExpoConfigSourcesAsync, () => {
     expect(expoConfig.name).toEqual(appJson.expo.name);
   });
 
-  it('should contain not contain runtimeVersion in expo config', async () => {
+  it('should not contain runtimeVersion in expo config', async () => {
     vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
     vol.writeFileSync(
       '/app/app.config.js',
