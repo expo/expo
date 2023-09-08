@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `options.ignorePaths` and **.fingerprintignore** to support. ([#24265](https://github.com/expo/expo/pull/24265) by [@Kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

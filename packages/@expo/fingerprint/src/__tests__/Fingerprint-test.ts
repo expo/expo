@@ -2,7 +2,7 @@ import { vol } from 'memfs';
 
 import { createFingerprintAsync, diffFingerprintChangesAsync } from '../Fingerprint';
 import type { Fingerprint } from '../Fingerprint.types';
-import { normalizeOptions } from '../Options';
+import { normalizeOptionsAsync } from '../Options';
 
 jest.mock('fs');
 jest.mock('fs/promises');
@@ -15,8 +15,12 @@ describe(diffFingerprintChangesAsync, () => {
 
   it('should return empty array when fingerprint matched', async () => {
     vol.fromJSON(require('../sourcer/__tests__/fixtures/ExpoManaged47Project.json'));
-    const fingerprint = await createFingerprintAsync('/app', normalizeOptions());
-    const diff = await diffFingerprintChangesAsync(fingerprint, '/app', normalizeOptions());
+    const fingerprint = await createFingerprintAsync('/app', await normalizeOptionsAsync('/app'));
+    const diff = await diffFingerprintChangesAsync(
+      fingerprint,
+      '/app',
+      await normalizeOptionsAsync('/app')
+    );
     expect(diff.length).toBe(0);
   });
 
@@ -27,7 +31,11 @@ describe(diffFingerprintChangesAsync, () => {
       hash: '',
     };
 
-    const diff = await diffFingerprintChangesAsync(fingerprint, '/app', normalizeOptions());
+    const diff = await diffFingerprintChangesAsync(
+      fingerprint,
+      '/app',
+      await normalizeOptionsAsync('/app')
+    );
     expect(diff).toMatchInlineSnapshot(`
       [
         {
@@ -46,19 +54,27 @@ describe(diffFingerprintChangesAsync, () => {
     vol.fromJSON(require('../sourcer/__tests__/fixtures/ExpoManaged47Project.json'));
     const packageJson = JSON.parse(vol.readFileSync('/app/package.json', 'utf8').toString());
     jest.doMock('/app/package.json', () => packageJson, { virtual: true });
-    const fingerprint = await createFingerprintAsync('/app', normalizeOptions());
+    const fingerprint = await createFingerprintAsync('/app', await normalizeOptionsAsync('/app'));
 
     // first round for bumping package version which should not cause changes
     packageJson.version = '111.111.111';
     jest.doMock('/app/package.json', () => packageJson, { virtual: true });
-    let diff = await diffFingerprintChangesAsync(fingerprint, '/app', normalizeOptions());
+    let diff = await diffFingerprintChangesAsync(
+      fingerprint,
+      '/app',
+      await normalizeOptionsAsync('/app')
+    );
     expect(diff.length).toBe(0);
 
     // second round to update scripts section and it should cause changes
     packageJson.scripts ||= {};
     packageJson.scripts.postinstall = 'echo "hello"';
     jest.doMock('/app/package.json', () => packageJson, { virtual: true });
-    diff = await diffFingerprintChangesAsync(fingerprint, '/app', normalizeOptions());
+    diff = await diffFingerprintChangesAsync(
+      fingerprint,
+      '/app',
+      await normalizeOptionsAsync('/app')
+    );
     jest.dontMock('/app/package.json');
     expect(diff).toMatchInlineSnapshot(`
       [
@@ -77,11 +93,15 @@ describe(diffFingerprintChangesAsync, () => {
 
   it('should return diff from file changes', async () => {
     vol.fromJSON(require('../sourcer/__tests__/fixtures/ExpoManaged47Project.json'));
-    const fingerprint = await createFingerprintAsync('/app', normalizeOptions());
+    const fingerprint = await createFingerprintAsync('/app', await normalizeOptionsAsync('/app'));
     const config = JSON.parse(vol.readFileSync('/app/app.json', 'utf8').toString());
     config.expo.jsEngine = 'jsc';
     vol.writeFileSync('/app/app.json', JSON.stringify(config, null, 2));
-    const diff = await diffFingerprintChangesAsync(fingerprint, '/app', normalizeOptions());
+    const diff = await diffFingerprintChangesAsync(
+      fingerprint,
+      '/app',
+      await normalizeOptionsAsync('/app')
+    );
     expect(diff).toMatchInlineSnapshot(`
       [
         {
@@ -98,9 +118,13 @@ describe(diffFingerprintChangesAsync, () => {
 
   it('should return diff from dir changes', async () => {
     vol.fromJSON(require('../sourcer/__tests__/fixtures/BareReactNative70Project.json'));
-    const fingerprint = await createFingerprintAsync('/app', normalizeOptions());
+    const fingerprint = await createFingerprintAsync('/app', await normalizeOptionsAsync('/app'));
     vol.writeFileSync('/app/ios/README.md', '# Adding new file in ios dir');
-    const diff = await diffFingerprintChangesAsync(fingerprint, '/app', normalizeOptions());
+    const diff = await diffFingerprintChangesAsync(
+      fingerprint,
+      '/app',
+      await normalizeOptionsAsync('/app')
+    );
     expect(diff).toMatchInlineSnapshot(`
       [
         {

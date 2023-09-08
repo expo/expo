@@ -4,7 +4,7 @@ import pLimit from 'p-limit';
 import path from 'path';
 
 import { HashSource } from '../../Fingerprint.types';
-import { normalizeOptions } from '../../Options';
+import { normalizeOptionsAsync } from '../../Options';
 import {
   createContentsHashResultsAsync,
   createDirHashResultsAsync,
@@ -12,6 +12,7 @@ import {
   createFingerprintFromSourcesAsync,
   createFingerprintSourceAsync,
   createSourceId,
+  isIgnoredPath,
 } from '../Hash';
 
 jest.mock('fs');
@@ -31,8 +32,9 @@ describe(createFingerprintFromSourcesAsync, () => {
       { type: 'file', filePath: 'app.json', reasons: ['expoConfig'] },
     ];
 
-    expect(await createFingerprintFromSourcesAsync(sources, '/app', normalizeOptions()))
-      .toMatchInlineSnapshot(`
+    expect(
+      await createFingerprintFromSourcesAsync(sources, '/app', await normalizeOptionsAsync('/app'))
+    ).toMatchInlineSnapshot(`
       {
         "hash": "ec7d81780f735d5e289b27cdcc04a6c99d2621dc",
         "sources": [
@@ -72,7 +74,12 @@ describe(createFingerprintSourceAsync, () => {
       hash: 'db8ac1c259eb89d4a131b253bacfca5f319d54f2',
     };
     expect(
-      await createFingerprintSourceAsync(source, pLimit(1), '/app', normalizeOptions())
+      await createFingerprintSourceAsync(
+        source,
+        pLimit(1),
+        '/app',
+        await normalizeOptionsAsync('/app')
+      )
     ).toEqual(expectedResult);
   });
 });
@@ -81,7 +88,7 @@ describe(createContentsHashResultsAsync, () => {
   it('should return {id, hex} result', async () => {
     const id = 'foo';
     const contents = '{}';
-    const options = normalizeOptions();
+    const options = await normalizeOptionsAsync('/app');
     const result = await createContentsHashResultsAsync(
       {
         type: 'contents',
@@ -107,15 +114,28 @@ describe(createFileHashResultsAsync, () => {
     const filePath = 'app.json';
     const contents = '{}';
     const limiter = pLimit(1);
-    const options = normalizeOptions();
+    const options = await normalizeOptionsAsync('/app');
     vol.mkdirSync('/app');
     vol.writeFileSync(path.join('/app', filePath), contents);
 
     const result = await createFileHashResultsAsync(filePath, limiter, '/app', options);
 
     const expectHex = createHash(options.hashAlgorithm).update(contents).digest('hex');
-    expect(result.id).toEqual(filePath);
-    expect(result.hex).toEqual(expectHex);
+    expect(result?.id).toEqual(filePath);
+    expect(result?.hex).toEqual(expectHex);
+  });
+
+  it('should ignore file if it is in options.ignorePaths', async () => {
+    const filePath = 'app.json';
+    const contents = '{}';
+    const limiter = pLimit(1);
+    const options = await normalizeOptionsAsync('/app');
+    options.ignorePaths = ['*.json'];
+    vol.mkdirSync('/app');
+    vol.writeFileSync(path.join('/app', filePath), contents);
+
+    const result = await createFileHashResultsAsync(filePath, limiter, '/app', options);
+    expect(result).toBe(null);
   });
 });
 
@@ -126,7 +146,7 @@ describe(createDirHashResultsAsync, () => {
 
   it('should return {id, hex} result', async () => {
     const limiter = pLimit(3);
-    const options = normalizeOptions();
+    const options = await normalizeOptionsAsync('/app');
     const volJSON = {
       '/app/ios/Podfile': '...',
       '/app/eas.json': '{}',
@@ -140,9 +160,33 @@ describe(createDirHashResultsAsync, () => {
     expect(result?.hex).not.toBe('');
   });
 
+  it('should ignore dir if it is in options.ignorePaths', async () => {
+    const limiter = pLimit(3);
+    const options = await normalizeOptionsAsync('/app');
+    options.ignorePaths = ['ios/**/*', 'android/**/*'];
+    const volJSON = {
+      '/app/ios/Podfile': '...',
+      '/app/eas.json': '{}',
+      '/app/app.json': '{}',
+      '/app/android/build.gradle': '...',
+    };
+    vol.fromJSON(volJSON);
+
+    const fingerprint1 = await createDirHashResultsAsync('.', limiter, '/app', options);
+
+    vol.reset();
+    const volJSONIgnoreNativeProjects = {
+      '/app/eas.json': '{}',
+      '/app/app.json': '{}',
+    };
+    vol.fromJSON(volJSONIgnoreNativeProjects);
+    const fingerprint2 = await createDirHashResultsAsync('.', limiter, '/app', options);
+    expect(fingerprint1).toEqual(fingerprint2);
+  });
+
   it('should return stable result from sorted files', async () => {
     const limiter = pLimit(3);
-    const options = normalizeOptions();
+    const options = await normalizeOptionsAsync('/app');
     const volJSON = {
       '/app/ios/Podfile': '...',
       '/app/eas.json': '{}',
@@ -188,5 +232,40 @@ describe(createSourceId, () => {
       reasons: ['foo'],
     };
     expect(createSourceId(source)).toBe('foo');
+  });
+});
+
+describe(isIgnoredPath, () => {
+  it('should support file pattern', () => {
+    expect(isIgnoredPath('app.json', ['app.json'])).toBe(true);
+    expect(isIgnoredPath('app.ts', ['*.{js,ts}'])).toBe(true);
+    expect(isIgnoredPath('/dir/app.json', ['/dir/*.json'])).toBe(true);
+  });
+
+  it('should support directory pattern', () => {
+    expect(isIgnoredPath('/app/ios/Podfile', ['**/ios/**/*'])).toBe(true);
+  });
+
+  it('case sensitive by design', () => {
+    expect(isIgnoredPath('app.json', ['APP.JSON'])).toBe(false);
+  });
+
+  it('should include dot files from wildcard pattern', () => {
+    expect(isIgnoredPath('.bashrc', ['*'])).toBe(true);
+  });
+
+  it('no `matchBase` and `partial` by design', () => {
+    expect(isIgnoredPath('/dir/app.json', ['app.json'])).toBe(false);
+  });
+
+  it('match a file inside a dir should use a globstar', () => {
+    expect(isIgnoredPath('/dir/app.ts', ['*'])).toBe(false);
+    expect(isIgnoredPath('/dir/app.ts', ['**/*'])).toBe(true);
+  });
+
+  it('should use `!` to override default ignorePaths', () => {
+    const ignorePaths = ['**/ios/**/*', '!**/ios/Podfile', '**/android/**/*'];
+    expect(isIgnoredPath('/app/ios/Podfile', ignorePaths)).toBe(false);
+    expect(isIgnoredPath('/app/ios/Podfile.lock', ignorePaths)).toBe(true);
   });
 });

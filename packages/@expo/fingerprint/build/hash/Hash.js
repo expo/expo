@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createSourceId = exports.createContentsHashResultsAsync = exports.createDirHashResultsAsync = exports.createFileHashResultsAsync = exports.createFingerprintSourceAsync = exports.createFingerprintFromSourcesAsync = void 0;
+exports.createSourceId = exports.createContentsHashResultsAsync = exports.createDirHashResultsAsync = exports.isIgnoredPath = exports.createFileHashResultsAsync = exports.createFingerprintSourceAsync = exports.createFingerprintFromSourcesAsync = void 0;
 const crypto_1 = require("crypto");
 const fs_1 = require("fs");
 const promises_1 = __importDefault(require("fs/promises"));
@@ -60,6 +60,10 @@ async function createFileHashResultsAsync(filePath, limiter, projectRoot, option
     // Backup code for faster hashing
     /*
     return limiter(async () => {
+      if (isIgnoredPath(filePath, options.ignorePaths)) {
+        return null;
+      }
+  
       const hasher = createHash(options.hashAlgorithm);
   
       const stat = await fs.stat(filePath);
@@ -76,6 +80,9 @@ async function createFileHashResultsAsync(filePath, limiter, projectRoot, option
     */
     return limiter(() => {
         return new Promise((resolve, reject) => {
+            if (isIgnoredPath(filePath, options.ignorePaths)) {
+                return resolve(null);
+            }
             let resolved = false;
             const hasher = (0, crypto_1.createHash)(options.hashAlgorithm);
             const stream = (0, fs_1.createReadStream)(path_1.default.join(projectRoot, filePath));
@@ -97,22 +104,29 @@ async function createFileHashResultsAsync(filePath, limiter, projectRoot, option
 }
 exports.createFileHashResultsAsync = createFileHashResultsAsync;
 /**
- * Indicate the given `dirPath` should be excluded by `dirExcludes`
+ * Indicate the given `filePath` should be excluded by `ignorePaths`
  */
-function isExcludedDir(dirPath, dirExcludes) {
-    for (const exclude of dirExcludes) {
-        if ((0, minimatch_1.default)(dirPath, exclude)) {
-            return true;
+function isIgnoredPath(filePath, ignorePaths, minimatchOptions = { dot: true }) {
+    const minimatchObjs = ignorePaths.map((ignorePath) => new minimatch_1.default.Minimatch(ignorePath, minimatchOptions));
+    let result = false;
+    for (const minimatchObj of minimatchObjs) {
+        const currMatch = minimatchObj.match(filePath);
+        if (minimatchObj.negate && result && !currMatch) {
+            // Special handler for negate (!pattern).
+            // As long as previous match result is true and not matched from the current negate pattern, we should early return.
+            return false;
         }
+        result || (result = currMatch);
     }
-    return false;
+    return result;
 }
+exports.isIgnoredPath = isIgnoredPath;
 /**
  * Create `HashResult` for a dir.
  * If the dir is excluded, returns null rather than a HashResult
  */
 async function createDirHashResultsAsync(dirPath, limiter, projectRoot, options, depth = 0) {
-    if (isExcludedDir(dirPath, options.dirExcludes)) {
+    if (isIgnoredPath(dirPath, options.ignorePaths)) {
         return null;
     }
     const dirents = (await promises_1.default.readdir(path_1.default.join(projectRoot, dirPath), { withFileTypes: true })).sort((a, b) => a.name.localeCompare(b.name));
@@ -128,12 +142,13 @@ async function createDirHashResultsAsync(dirPath, limiter, projectRoot, options,
         }
     }
     const hasher = (0, crypto_1.createHash)(options.hashAlgorithm);
-    const results = await Promise.all(promises);
+    const results = (await Promise.all(promises)).filter((result) => result != null);
+    if (results.length === 0) {
+        return null;
+    }
     for (const result of results) {
-        if (result != null) {
-            hasher.update(result.id);
-            hasher.update(result.hex);
-        }
+        hasher.update(result.id);
+        hasher.update(result.hex);
     }
     const hex = hasher.digest('hex');
     return { id: dirPath, hex };
