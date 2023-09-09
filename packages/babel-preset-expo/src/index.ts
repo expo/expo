@@ -16,7 +16,8 @@ type BabelPresetExpoPlatformOptions = {
   // Defaults to `'default'`, can also use `'hermes-canary'`
   unstable_transformProfile?: 'default' | 'hermes-canary';
 };
-type BabelPresetExpoOptions = {
+
+export type BabelPresetExpoOptions = {
   lazyImports?: boolean;
   reanimated?: boolean;
   jsxRuntime?: 'classic' | 'automatic';
@@ -185,4 +186,5 @@ function getBundler(caller: any) {
   return 'metro';
 }
 
+export default babelPresetExpo;
 module.exports = babelPresetExpo;
