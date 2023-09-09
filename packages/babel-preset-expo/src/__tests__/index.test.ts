@@ -224,13 +224,13 @@ describe('"lazyImports" option', () => {
       babelrc: false,
       presets: [preset],
     };
-    const { codeDefault } = babel.transformFileSync(testFilename, optionsDefault);
+    const { code: codeDefault } = babel.transformFileSync(testFilename, optionsDefault);
 
     const optionsNull = {
       babelrc: false,
       presets: [[preset, { lazyImports: null }]],
     };
-    const { codeNull } = babel.transformFileSync(testFilename, optionsNull);
+    const { code: codeNull } = babel.transformFileSync(testFilename, optionsNull);
 
     expect(codeDefault).toEqual(codeNull);
   });
