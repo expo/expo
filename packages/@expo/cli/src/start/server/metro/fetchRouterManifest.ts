@@ -4,7 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { getExpoRouteManifestBuilderAsync } from '../getStaticRenderFunctions';
+import resolveFrom from 'resolve-from';
+
 import { getRoutePaths } from './router';
 
 export type ExpoRouterServerManifestV1Route<TRegex = string> = {
@@ -19,6 +20,11 @@ export type ExpoRouterServerManifestV1<TRegex = string> = {
   staticRoutes: ExpoRouterServerManifestV1Route<TRegex>[];
   notFoundRoutes: ExpoRouterServerManifestV1Route<TRegex>[];
 };
+
+function getExpoRouteManifestBuilderAsync(projectRoot: string) {
+  return require(resolveFrom(projectRoot, 'expo-router/build/routes-manifest'))
+    .createRoutesManifest as typeof import('expo-router/build/routes-manifest').createRoutesManifest;
+}
 
 // TODO: Simplify this now that we use Node.js directly, no need for the Metro bundler caching layer.
 export async function fetchManifest<TRegex = string>(

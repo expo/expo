@@ -223,8 +223,3 @@ export function evalMetroAndWrapFunctions<T = Record<string, (...args: any[]) =>
 function evalMetro(src: string) {
   return profile(requireString, 'eval-metro-bundle')(src);
 }
-
-export function getExpoRouteManifestBuilderAsync(projectRoot: string) {
-  return require(resolveFrom(projectRoot, 'expo-router/_routes-manifest'))
-    .createRoutesManifest as typeof import('expo-router/build/routes-manifest').createRoutesManifest;
-}
