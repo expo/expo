@@ -27,7 +27,6 @@ import expo.modules.updates.manifest.UpdateManifest
 
 // these unused imports must stay because of versioning
 /* ktlint-disable no-unused-imports */
-import expo.modules.updates.UpdatesConfiguration
 
 /* ktlint-enable no-unused-imports */
 
@@ -201,7 +200,7 @@ class UpdatesModule(
                   if (!updatesServiceLocal.configuration.hasEmbeddedUpdate) {
                     promise.resolveWithCheckForUpdateAsyncResult(
                       CheckForUpdateAsyncResult.NoUpdateAvailable(
-                        LoaderTask.RemoteCheckResultNotAvailableReason.ROLLBACK_NO_EMBEDDED_CONFIGURATION
+                        LoaderTask.RemoteCheckResultNotAvailableReason.ROLLBACK_NO_EMBEDDED
                       ),
                       updatesServiceLocal
                     )
@@ -212,7 +211,7 @@ class UpdatesModule(
                   if (embeddedUpdate == null) {
                     promise.resolveWithCheckForUpdateAsyncResult(
                       CheckForUpdateAsyncResult.NoUpdateAvailable(
-                        LoaderTask.RemoteCheckResultNotAvailableReason.ROLLBACK_NO_EMBEDDED_MANIFEST_FOUND
+                        LoaderTask.RemoteCheckResultNotAvailableReason.ROLLBACK_NO_EMBEDDED
                       ),
                       updatesServiceLocal
                     )
@@ -243,7 +242,7 @@ class UpdatesModule(
               if (updateManifest == null) {
                 promise.resolveWithCheckForUpdateAsyncResult(
                   CheckForUpdateAsyncResult.NoUpdateAvailable(
-                    LoaderTask.RemoteCheckResultNotAvailableReason.UPDATE_NOT_AVAILABLE_ON_SERVER
+                    LoaderTask.RemoteCheckResultNotAvailableReason.NO_UPDATE_AVAILABLE_ON_SERVER
                   ),
                   updatesServiceLocal
                 )

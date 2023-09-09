@@ -23,27 +23,26 @@ var UpdateCheckResultNotAvailableReason;
     /**
      * No update manifest or rollback directive received from the update server.
      */
-    UpdateCheckResultNotAvailableReason["UPDATE_NOT_AVAILABLE_ON_SERVER"] = "updateNotAvailableOnServer";
+    UpdateCheckResultNotAvailableReason["NO_UPDATE_AVAILABLE_ON_SERVER"] = "noUpdateAvailableOnServer";
     /**
-     * An update manifest was received from the update server, but the update is not launchable, or does not pass the configured selection policy.
+     * An update manifest was received from the update server, but the update is not launchable,
+     * or does not pass the configured selection policy.
      */
     UpdateCheckResultNotAvailableReason["UPDATE_REJECTED_BY_SELECTION_POLICY"] = "updateRejectedBySelectionPolicy";
     /**
-     * An update manifest was received from the update server, but the update has been previously launched on this device and never successfully launched.
+     * An update manifest was received from the update server, but the update has been previously
+     * launched on this device and never successfully launched.
      */
     UpdateCheckResultNotAvailableReason["UPDATE_PREVIOUSLY_FAILED"] = "updatePreviouslyFailed";
     /**
-     * An update manifest was received from the update server, but the update is not launchable, or does not pass the configured selection policy.
+     * A rollback directive was received from the update server, but the directive does not pass
+     * the configured selection policy.
      */
     UpdateCheckResultNotAvailableReason["ROLLBACK_REJECTED_BY_SELECTION_POLICY"] = "rollbackRejectedBySelectionPolicy";
     /**
-     * A rollback directive was received from the update server, but this app is not configured to have an embedded update.
+     * A rollback directive was received from the update server, but this app has no embedded update.
      */
-    UpdateCheckResultNotAvailableReason["ROLLBACK_NO_EMBEDDED_CONFIGURATION"] = "rollbackNoEmbeddedConfiguration";
-    /**
-     * A rollback directive was received from the update server, but no embedded manifest was found.
-     */
-    UpdateCheckResultNotAvailableReason["ROLLBACK_NO_EMBEDDED_MANIFEST_FOUND"] = "rollbackNoEmbeddedManifestFound";
+    UpdateCheckResultNotAvailableReason["ROLLBACK_NO_EMBEDDED"] = "rollbackNoEmbeddedConfiguration";
 })(UpdateCheckResultNotAvailableReason || (UpdateCheckResultNotAvailableReason = {}));
 /**
  * The possible code values for expo-updates log entries

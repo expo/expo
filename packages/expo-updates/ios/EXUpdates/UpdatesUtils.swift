@@ -99,7 +99,7 @@ public final class UpdatesUtils: NSObject {
             return
           case let rollBackUpdateDirective as RollBackToEmbeddedUpdateDirective:
             if !constants.config.hasEmbeddedUpdate {
-              let reason = RemoteCheckResultNotAvailableReason.rollbackNoEmbeddedConfiguration
+              let reason = RemoteCheckResultNotAvailableReason.rollbackNoEmbedded
               block([
                 "reason": "\(reason)"
               ])
@@ -108,7 +108,7 @@ public final class UpdatesUtils: NSObject {
             }
 
             guard let embeddedManifest = EmbeddedAppLoader.embeddedManifest(withConfig: constants.config, database: constants.database) else {
-              let reason = RemoteCheckResultNotAvailableReason.rollbackNoEmbeddedManifestFound
+              let reason = RemoteCheckResultNotAvailableReason.rollbackNoEmbedded
               block([
                 "reason": "\(reason)"
               ])
@@ -145,7 +145,7 @@ public final class UpdatesUtils: NSObject {
         }
 
         guard let update = updateResponse.manifestUpdateResponsePart?.updateManifest else {
-          let reason = RemoteCheckResultNotAvailableReason.updateNotAvailableOnServer
+          let reason = RemoteCheckResultNotAvailableReason.noUpdateAvailableOnServer
           block([
             "reason": "\(reason)"
           ])

@@ -35,27 +35,26 @@ public enum RemoteCheckResultNotAvailableReason {
   /**
    * No update manifest or rollback directive received from the update server.
    */
-  case updateNotAvailableOnServer
+  case noUpdateAvailableOnServer
   /**
-   * An update manifest was received from the update server, but the update is not launchable, or does not pass the configured selection policy.
+   * An update manifest was received from the update server, but the update is not
+   * launchable, or does not pass the configured selection policy.
    */
   case updateRejectedBySelectionPolicy
   /**
-   * An update manifest was received from the update server, but the update has been previously launched on this device and never successfully launched.
+   * An update manifest was received from the update server, but the update has been
+   * previously launched on this device and never successfully launched.
    */
   case updatePreviouslyFailed
   /**
-   * An update manifest was received from the update server, but the update is not launchable, or does not pass the configured selection policy.
+   * A rollback directive was received from the update server, but the directive
+   * does not pass the configured selection policy.
    */
   case rollbackRejectedBySelectionPolicy
   /**
-   * A rollback directive was received from the update server, but this app is not configured to have an embedded update.
+   * A rollback directive was received from the update server, but this app has no embedded update.
    */
-  case rollbackNoEmbeddedConfiguration
-  /**
-   * A rollback directive was received from the update server, but no embedded manifest was found.
-   */
-  case rollbackNoEmbeddedManifestFound
+  case rollbackNoEmbedded
 }
 
 public enum RemoteCheckResult {
@@ -380,7 +379,7 @@ public final class AppLoaderTask: NSObject {
           self.isUpToDate = true
           if let swiftDelegate = self.swiftDelegate {
             self.delegateQueue.async {
-              swiftDelegate.appLoaderTask(self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.noUpdateAvailable(reason: .updateNotAvailableOnServer))
+              swiftDelegate.appLoaderTask(self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.noUpdateAvailable(reason: .noUpdateAvailableOnServer))
             }
           }
           return false
@@ -414,7 +413,7 @@ public final class AppLoaderTask: NSObject {
         self.isUpToDate = true
         if let swiftDelegate = self.swiftDelegate {
           self.delegateQueue.async {
-            swiftDelegate.appLoaderTask(self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.noUpdateAvailable(reason: .updateNotAvailableOnServer))
+            swiftDelegate.appLoaderTask(self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.noUpdateAvailable(reason: .noUpdateAvailableOnServer))
           }
         }
         return false
