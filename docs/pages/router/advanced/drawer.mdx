@@ -32,7 +32,7 @@ module.exports = {
 };
 ```
 
-> After changing your `babel.config.js`, once run `npx expo start --clear` to start the development server and clear the babel cache.
+> After changing your **babel.config.js**, run `npx expo start --clear` once to start the development server and clear the babel cache.
 
 <Tabs>
 <Tab label="SDK 49 and lower">
@@ -51,7 +51,7 @@ export default function Layout() {
 
 <Tab label="SDK 50 and greater">
 
-Now you can use the `Drawer` layout to create a drawer navigator. You'll also need to wrap the `<Drawer />` in a `<GestureHandlerRootView />` to enable gestures, this is required as of Expo Router v3 and greater. You only need one `<GestureHandlerRootView />` in your component tree, so any nested routes will not need to be wrapped.
+Now you can use the `Drawer` layout to create a drawer navigator. You'll need to wrap the `<Drawer />` in a `<GestureHandlerRootView>` to enable gestures. It is required as of Expo Router v3 and greater. You only need one `<GestureHandlerRootView>` in your component tree. Any nested routes are not required to be wrapped individually.
 
 ```jsx app/_layout.js
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -66,11 +66,11 @@ export default function Layout() {
 }
 ```
 
-Be careful about using `react-native-gesture-handler` on web as it can increase the JavaScript bundle size significantly. Learn more in [platform-specific modules](/router/advanced/platform-specific-modules/).
+> **Note:** Be careful when using `react-native-gesture-handler` on the web. It can increase the JavaScript bundle size significantly. Learn more about using [platform-specific modules](/router/advanced/platform-specific-modules/).
 
 </Tab>
 
-<Tabs>
+</Tabs>
 
 ## Next steps
 
