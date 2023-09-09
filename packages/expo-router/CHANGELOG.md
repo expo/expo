@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Drop client-side mocking for `__dirname` and `__filename`.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
