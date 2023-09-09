@@ -34,7 +34,6 @@ import {
   RuntimeRedirectMiddleware,
 } from '../middleware/RuntimeRedirectMiddleware';
 import { prependMiddleware } from '../middleware/mutations';
-import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
@@ -46,7 +45,7 @@ import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import { getRouterDirectoryWithManifest, isApiRouteConvention } from './router';
 import { observeApiRouteChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 
-class ForwardHtmlError extends CommandError {
+export class ForwardHtmlError extends CommandError {
   constructor(
     message: string,
     public html: string,
@@ -85,13 +84,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return port;
   }
 
-  async getExpoRouterRoutesManifestAsync({
-    mode,
-    appDir,
-  }: {
-    mode: 'development' | 'production';
-    appDir: string;
-  }) {
+  async getExpoRouterRoutesManifestAsync({ appDir }: { appDir: string }) {
     const manifest = await fetchManifest(this.projectRoot, {
       asJson: true,
       appDir,
@@ -416,18 +409,18 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // This should come after the static middleware so it doesn't serve the favicon from `public/favicon.ico`.
       middleware.use(new FaviconMiddleware(this.projectRoot).getHandler());
 
+      const appDir = getRouterDirectoryWithManifest(this.projectRoot, exp);
+
+      middleware.use(
+        createRouteHandlerMiddleware(this.projectRoot, {
+          ...options,
+          appDir,
+          getWebBundleUrl: manifestMiddleware.getWebBundleUrl.bind(manifestMiddleware),
+        })
+      );
+
       // @ts-expect-error: TODO
       if (exp.web?.output === 'server') {
-        const appDir = getRouterDirectoryWithManifest(this.projectRoot, exp);
-
-        middleware.use(
-          createRouteHandlerMiddleware(this.projectRoot, {
-            ...options,
-            appDir,
-            getWebBundleUrl: manifestMiddleware.getWebBundleUrl.bind(manifestMiddleware),
-          })
-        );
-
         // Cache observation for API Routes...
         observeApiRouteChanges(
           this.projectRoot,
@@ -436,17 +429,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             server,
           },
           async (filepath, op) => {
-            const isApiRoute = isApiRouteConvention(filepath);
-            if (op === 'delete') {
-              // update manifest
-              // debug('update manifest');
-              // await refetchManifest(this.projectRoot, { ...options, appDir });
-            } else if (op === 'add' || (op === 'change' && !isApiRoute)) {
-              debug('invalidate manifest');
-              // The manifest won't be fresh instantly so we should just clear it to ensure the next request will get the latest.
-            }
-
-            if (isApiRoute) {
+            if (isApiRouteConvention(filepath)) {
               debug(`[expo-cli] ${op} ${filepath}`);
               if (op === 'change' || op === 'add') {
                 rebundleApiRoute(this.projectRoot, filepath, {
@@ -461,52 +444,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             }
           }
         );
-      } else {
-        // TODO: Combine with server API
-        if (useServerRendering) {
-          middleware.use(async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
-            if (!req?.url) {
-              return next();
-            }
-
-            // TODO: Formal manifest for allowed paths
-            if (req.url.endsWith('.ico')) {
-              return next();
-            }
-            if (req.url.includes('serializer.output=static')) {
-              return next();
-            }
-
-            try {
-              const { content } = await this.getStaticPageAsync(req.url, {
-                mode: options.mode ?? 'development',
-              });
-
-              res.setHeader('Content-Type', 'text/html');
-              res.end(content);
-            } catch (error: any) {
-              res.setHeader('Content-Type', 'text/html');
-              // Forward the Metro server response as-is. It won't be pretty, but at least it will be accurate.
-              if (error instanceof ForwardHtmlError) {
-                res.statusCode = error.statusCode;
-                res.end(error.html);
-                return;
-              }
-              try {
-                res.end(await this.renderStaticErrorAsync(error));
-              } catch (staticError: any) {
-                // Fallback error for when Expo Router is misconfigured in the project.
-                res.end(
-                  '<span><h3>Internal Error:</h3><b>Project is not setup correctly for static rendering (check terminal for more info):</b><br/>' +
-                    error.message +
-                    '<br/><br/>' +
-                    staticError.message +
-                    '</span>'
-                );
-              }
-            }
-          });
-        }
       }
 
       // This MUST run last since it's the fallback.

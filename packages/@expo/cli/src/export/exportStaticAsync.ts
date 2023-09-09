@@ -289,7 +289,6 @@ async function exportApiRoutesAsync({
 
   const [manifest, files] = await Promise.all([
     server.getExpoRouterRoutesManifestAsync({
-      mode: 'production',
       appDir,
     }),
     server

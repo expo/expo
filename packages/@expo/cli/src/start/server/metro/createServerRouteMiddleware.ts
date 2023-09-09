@@ -15,6 +15,7 @@ import { getStaticRenderFunctions } from '../getStaticRenderFunctions';
 import { fetchManifest } from './fetchRouterManifest';
 import { bundleApiRoute } from './fetchServerRoutes';
 import { getErrorOverlayHtmlAsync, logMetroError, logMetroErrorAsync } from './metroErrorInterface';
+import { ForwardHtmlError } from './MetroBundlerDevServer';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
@@ -65,6 +66,16 @@ export function createRouteHandlerMiddleware(
 
           return content;
         } catch (error: any) {
+          // Forward the Metro server response as-is. It won't be pretty, but at least it will be accurate.
+          if (error instanceof ForwardHtmlError) {
+            return new ExpoResponse(error.html, {
+              status: error.statusCode,
+              headers: {
+                'Content-Type': 'text/html',
+              },
+            });
+          }
+
           try {
             return new ExpoResponse(
               await getErrorOverlayHtmlAsync({
