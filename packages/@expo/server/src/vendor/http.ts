@@ -18,7 +18,7 @@ export type RequestHandler = (
 ) => Promise<void>;
 
 /**
- * Returns a request handler for Express that serves the response using Remix.
+ * Returns a request handler for http that serves the response using Remix.
  */
 export function createRequestHandler(
   { build }: { build: string },
@@ -37,7 +37,7 @@ export function createRequestHandler(
 
       await respond(res, response);
     } catch (error: unknown) {
-      // Express doesn't support async functions, so we have to pass along the
+      // http doesn't support async functions, so we have to pass along the
       // error manually using next().
       next(error);
     }
