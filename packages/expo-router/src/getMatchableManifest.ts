@@ -31,7 +31,6 @@ function isNotFoundRoute(route: RouteNode) {
     return true;
   }
   return route.dynamic?.length && route.dynamic[0].name === '404';
-  // return !route.children.length && !!route.contextKey.match(/\+api\.[jt]sx?$/);
 }
 
 // Given a nested route tree, return a flattened array of all routes that can be matched.
@@ -39,14 +38,12 @@ export function getServerManifest(route: RouteNode) {
   function getFlatNodes(route: RouteNode): [string, RouteNode][] {
     if (route.children.length) {
       return route.children.map((child) => getFlatNodes(child)).flat();
-      // .sort(([, a], [, b]) => sortRoutes(a, b));
     }
 
     const key = getContextKey(route.contextKey).replace(/\/index$/, '') ?? '/';
     return [[key, route]];
   }
 
-  // TODO: Ensure routes are sorted
   const flat = getFlatNodes(route)
     .sort(([, a], [, b]) => sortRoutes(b, a))
     .reverse();
