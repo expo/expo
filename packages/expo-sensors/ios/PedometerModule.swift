@@ -29,7 +29,7 @@ public final class PedometerModule: Module {
           promise.reject(PedometerQueryException().causedBy(error))
         } else {
           promise.resolve([
-            "steps": data?.numberOfSteps
+            "steps": data?.numberOfSteps ?? 0
           ])
         }
       }
