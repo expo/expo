@@ -1,4 +1,4 @@
-import { HandlerEvent, HandlerResponse } from '@netlify/functions';
+import type { HandlerEvent, HandlerResponse } from '@netlify/functions';
 import { Headers, readableStreamToString, RequestInit } from '@remix-run/node';
 import { AbortController } from 'abort-controller';
 
