@@ -145,4 +145,5 @@ function getBundler(caller) {
     // This is a hack to determine if metro is being used.
     return 'metro';
 }
+exports.default = babelPresetExpo;
 module.exports = babelPresetExpo;
