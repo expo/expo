@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix build files. ([#24344](https://github.com/expo/expo/pull/24344) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 1.0.2 — 2023-05-08
