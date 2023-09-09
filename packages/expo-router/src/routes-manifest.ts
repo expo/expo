@@ -17,7 +17,7 @@ export type ExpoRoutesManifestV1<TRegex = string> = {
 };
 
 function createMockContextModule(map: string[] = []) {
-  const contextModule = (key) => ({ default: function () {} });
+  const contextModule = (key) => ({ default() {} });
 
   Object.defineProperty(contextModule, 'keys', {
     value: () => map,

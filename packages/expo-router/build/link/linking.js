@@ -1,19 +1,50 @@
-import Constants, { ExecutionEnvironment } from 'expo-constants';
-import * as Linking from 'expo-linking';
-import { Platform } from 'react-native';
-import { adjustPathname } from '../fork/extractPathFromURL';
-import getPathFromState from '../fork/getPathFromState';
-import getStateFromPath from '../fork/getStateFromPath';
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getPathFromState = exports.getStateFromPath = exports.addEventListener = exports.getRootURL = exports.getInitialURL = void 0;
+const expo_constants_1 = __importStar(require("expo-constants"));
+const Linking = __importStar(require("expo-linking"));
+const react_native_1 = require("react-native");
+const extractPathFromURL_1 = require("../fork/extractPathFromURL");
+const getPathFromState_1 = __importDefault(require("../fork/getPathFromState"));
+exports.getPathFromState = getPathFromState_1.default;
+const getStateFromPath_1 = __importDefault(require("../fork/getStateFromPath"));
+exports.getStateFromPath = getStateFromPath_1.default;
 // A custom getInitialURL is used on native to ensure the app always starts at
 // the root path if it's launched from something other than a deep link.
 // This helps keep the native functionality working like the web functionality.
 // For example, if you had a root navigator where the first screen was `/settings` and the second was `/index`
 // then `/index` would be used on web and `/settings` would be used on native.
-export function getInitialURL() {
+function getInitialURL() {
     if (process.env.NODE_ENV === 'test') {
         return Linking.getInitialURL() ?? getRootURL();
     }
-    if (Platform.OS === 'web') {
+    if (react_native_1.Platform.OS === 'web') {
         if (typeof window === 'undefined') {
             return '';
         }
@@ -27,12 +58,12 @@ export function getInitialURL() {
             // NOTE(EvanBacon): This could probably be wrapped with the development boundary
             // since Expo Go is mostly just used in development.
             // Expo Go is weird and requires the root path to be `/--/`
-            if (url && Constants.executionEnvironment === ExecutionEnvironment.StoreClient) {
+            if (url && expo_constants_1.default.executionEnvironment === expo_constants_1.ExecutionEnvironment.StoreClient) {
                 const parsed = Linking.parse(url);
                 // If the URL is defined (default in Expo Go dev apps) and the URL has no path:
                 // `exp://192.168.87.39:19000/` then use the default `exp://192.168.87.39:19000/--/`
                 if (parsed.path === null ||
-                    ['', '/'].includes(adjustPathname({
+                    ['', '/'].includes((0, extractPathFromURL_1.adjustPathname)({
                         hostname: parsed.hostname,
                         pathname: parsed.path,
                     }))) {
@@ -49,23 +80,25 @@ export function getInitialURL() {
         setTimeout(() => resolve(getRootURL()), 150)),
     ]);
 }
+exports.getInitialURL = getInitialURL;
 let _rootURL;
-export function getRootURL() {
+function getRootURL() {
     if (_rootURL === undefined) {
         _rootURL = Linking.createURL('/');
     }
     return _rootURL;
 }
-export function addEventListener(listener) {
+exports.getRootURL = getRootURL;
+function addEventListener(listener) {
     let callback = undefined;
-    if (Constants.executionEnvironment === ExecutionEnvironment.StoreClient) {
+    if (expo_constants_1.default.executionEnvironment === expo_constants_1.ExecutionEnvironment.StoreClient) {
         // This extra work is only done in the Expo Go app.
         callback = ({ url }) => {
             const parsed = Linking.parse(url);
             // If the URL is defined (default in Expo Go dev apps) and the URL has no path:
             // `exp://192.168.87.39:19000/` then use the default `exp://192.168.87.39:19000/--/`
             if (parsed.path === null ||
-                ['', '/'].includes(adjustPathname({ hostname: parsed.hostname, pathname: parsed.path }))) {
+                ['', '/'].includes((0, extractPathFromURL_1.adjustPathname)({ hostname: parsed.hostname, pathname: parsed.path }))) {
                 listener(getRootURL());
             }
             else {
@@ -82,5 +115,5 @@ export function addEventListener(listener) {
         subscription?.remove?.();
     };
 }
-export { getStateFromPath, getPathFromState };
+exports.addEventListener = addEventListener;
 //# sourceMappingURL=linking.js.map

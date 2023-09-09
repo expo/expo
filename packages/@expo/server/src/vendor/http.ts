@@ -6,8 +6,8 @@ import {
 } from '@remix-run/node';
 import * as http from 'http';
 
-import { ExpoRequest, ExpoResponse } from '../environment';
 import { createRequestHandler as createExpoHandler } from '..';
+import { ExpoRequest, ExpoResponse } from '../environment';
 
 type NextFunction = (err?: any) => void;
 

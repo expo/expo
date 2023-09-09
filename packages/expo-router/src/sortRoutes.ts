@@ -1,5 +1,5 @@
-import { matchGroupName } from './matchers';
 import { RouteNode } from './Route';
+import { matchGroupName } from './matchers';
 
 export function sortRoutes(a: RouteNode, b: RouteNode): number {
   if (a.dynamic && !b.dynamic) {

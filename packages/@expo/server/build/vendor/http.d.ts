@@ -1,8 +1,8 @@
 /// <reference types="node" />
 import { Headers } from '@remix-run/node';
 import * as http from 'http';
-import { ExpoRequest, ExpoResponse } from '../environment';
 import { createRequestHandler as createExpoHandler } from '..';
+import { ExpoRequest, ExpoResponse } from '../environment';
 type NextFunction = (err?: any) => void;
 export type RequestHandler = (req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) => Promise<void>;
 /**

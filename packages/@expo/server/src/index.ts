@@ -1,10 +1,10 @@
 import '@expo/server/install';
 
 import { Response } from '@remix-run/node';
+import type { ExpoRoutesManifestV1, RouteInfo } from 'expo-router/build/routes-manifest';
 import fs from 'fs';
 import path from 'path';
 import { URL } from 'url';
-import type { ExpoRoutesManifestV1, RouteInfo } from 'expo-router/build/routes-manifest';
 
 import { ExpoRequest, ExpoResponse, ExpoURL, NON_STANDARD_SYMBOL } from './environment';
 import { ExpoRouterServerManifestV1FunctionRoute } from './types';

@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.respond = exports.convertHeaders = exports.convertRequest = exports.createRequestHandler = void 0;
 const node_1 = require("@remix-run/node");
-const environment_1 = require("../environment");
 const __1 = require("..");
+const environment_1 = require("../environment");
 /**
  * Returns a request handler for Express that serves the response using Remix.
  */

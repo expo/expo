@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getNamedRouteRegex = exports.getServerManifest = void 0;
-const sortRoutes_1 = require("./sortRoutes");
 const matchers_1 = require("./matchers");
+const sortRoutes_1 = require("./sortRoutes");
 function isApiRoute(route) {
     return !route.children.length && !!route.contextKey.match(/\+api\.[jt]sx?$/);
 }

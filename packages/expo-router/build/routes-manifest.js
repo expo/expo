@@ -6,7 +6,7 @@ exports.createRoutesManifest = void 0;
 const getMatchableManifest_1 = require("./getMatchableManifest");
 const getRoutes_1 = require("./getRoutes");
 function createMockContextModule(map = []) {
-    const contextModule = (key) => ({ default: function () { } });
+    const contextModule = (key) => ({ default() { } });
     Object.defineProperty(contextModule, 'keys', {
         value: () => map,
     });

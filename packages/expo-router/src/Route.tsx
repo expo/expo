@@ -2,6 +2,7 @@ import React, { ReactNode, useContext } from 'react';
 
 import type { ErrorBoundaryProps } from './exports';
 import { getContextKey } from './matchers';
+import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
 
 export type DynamicConvention = { name: string; deep: boolean };
 
@@ -57,7 +58,5 @@ export function useContextKey(): string {
 export function Route({ children, node }: { children: ReactNode; node: RouteNode }) {
   return <CurrentRouteContext.Provider value={node}>{children}</CurrentRouteContext.Provider>;
 }
-
-import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
 
 export { sortRoutesWithInitial, sortRoutes };
