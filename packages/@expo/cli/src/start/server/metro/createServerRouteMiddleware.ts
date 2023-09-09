@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { ExpoResponse } from '@expo/server/build';
+import { ExpoResponse } from '@expo/server';
 import { createRequestHandler } from '@expo/server/build/vendor/http';
 import requireString from 'require-from-string';
 import resolve from 'resolve';
@@ -35,12 +35,9 @@ export function createRouteHandlerMiddleware(
     {
       async getRoutesManifest() {
         const manifest = await fetchManifest<RegExp>(projectRoot, options);
-        if (!manifest) {
-          // NOTE: no app dir
-          // TODO: Redirect to 404 page
-          return null;
-        }
         debug('manifest', manifest);
+        // NOTE: no app dir if null
+        // TODO: Redirect to 404 page
         return manifest;
       },
       async getHtml(request, route) {
