@@ -21,9 +21,9 @@ async function findModulesAsync(providedOptions) {
     const results = new Map();
     const nativeModuleNames = new Set();
     // custom native modules should be resolved first so that they can override other modules
-    const searchPaths = options.nativeModulesDir && fs_extra_1.default.existsSync(options.nativeModulesDir)
+    const searchPaths = new Set(options.nativeModulesDir && fs_extra_1.default.existsSync(options.nativeModulesDir)
         ? [options.nativeModulesDir, ...options.searchPaths]
-        : options.searchPaths;
+        : options.searchPaths);
     // `searchPaths` can be mutated to discover all "isolated modules groups", when using isolated modules
     for (const searchPath of searchPaths) {
         const isNativeModulesDir = searchPath === options.nativeModulesDir;
@@ -37,16 +37,16 @@ async function findModulesAsync(providedOptions) {
             // Check if the project is using isolated modules, by checking
             // if the parent dir of `packagePath` is a `node_modules` folder.
             // Isolated modules installs dependencies in small groups such as:
+            //   - /.pnpm/expo@50.x.x(...)/node_modules/@expo/cli
             //   - /.pnpm/expo@50.x.x(...)/node_modules/expo
             //   - /.pnpm/expo@50.x.x(...)/node_modules/expo-application
-            //   - /.pnpm/expo@50.x.x(...)/node_modules/@expo/cli
             // When isolated modules are detected, expand the `searchPaths`
             // to include possible nested dependencies.
-            const maybeIsolatedModulesPath = path_1.default.join(packagePath, name.startsWith('@') ? '../..' : '..');
+            const maybeIsolatedModulesPath = path_1.default.join(packagePath, name.startsWith('@') && name.includes('/') ? '../..' : '..' // scoped packages are nested deeper
+            );
             const isIsolatedModulesPath = path_1.default.basename(maybeIsolatedModulesPath) === 'node_modules';
-            //
-            if (isIsolatedModulesPath && !searchPaths.includes(maybeIsolatedModulesPath)) {
-                searchPaths.push(maybeIsolatedModulesPath);
+            if (isIsolatedModulesPath && !searchPaths.has(maybeIsolatedModulesPath)) {
+                searchPaths.add(maybeIsolatedModulesPath);
             }
             // we ignore the `exclude` option for custom native modules
             if ((!isNativeModulesDir && options.exclude?.includes(name)) ||
