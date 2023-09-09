@@ -13,9 +13,7 @@
 #import <EXAV/EXAV.h>
 #import <EXAV/EXAVPlayerData.h>
 #import <EXAV/EXVideoView.h>
-#if !TARGET_OS_TV
 #import <EXAV/EXAudioRecordingPermissionRequester.h>
-#endif
 #import <EXAV/EXAV+AudioSampleCallback.h>
 
 NSString *const EXAudioRecordingOptionsIsMeteringEnabledKey = @"isMeteringEnabled";
@@ -60,9 +58,7 @@ NSString *const EXDidUpdateMetadataEventName = @"didUpdateMetadata";
 
 @property (nonatomic, strong) NSString *audioRecorderFilename;
 @property (nonatomic, strong) NSDictionary *audioRecorderSettings;
-#if !TARGET_OS_TV
 @property (nonatomic, strong) AVAudioRecorder *audioRecorder;
-#endif
 @property (nonatomic, assign) BOOL audioRecorderIsPreparing;
 @property (nonatomic, assign) BOOL audioRecorderShouldBeginRecording;
 
@@ -104,9 +100,7 @@ EX_EXPORT_MODULE(ExponentAV);
     
     _audioRecorderFilename = nil;
     _audioRecorderSettings = nil;
-#if !TARGET_OS_TV
     _audioRecorder = nil;
-#endif
     _audioRecorderIsPreparing = false;
     _audioRecorderShouldBeginRecording = false;
     _audioRecorderDurationMillis = 0;
@@ -157,9 +151,7 @@ EX_EXPORT_MODULE(ExponentAV);
   }
   [[_expoModuleRegistry getModuleImplementingProtocol:@protocol(EXAppLifecycleService)] registerAppLifecycleListener:self];
   _permissionsManager = [_expoModuleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
-#if !TARGET_OS_TV
   [EXPermissionsMethodsDelegate registerRequesters:@[[EXAudioRecordingPermissionRequester new]] withPermissionsManager:_permissionsManager];
-#endif
 }
 
 - (void)onAppForegrounded
@@ -275,15 +267,11 @@ EX_EXPORT_MODULE(ExponentAV);
   } else if (!playsInSilentMode && shouldPlayInBackground) {
     return EXErrorWithMessage(@"Impossible audio mode: playsInSilentMode == false and staysActiveInBackground == true cannot be set on iOS.");
   } else {
-#if TARGET_OS_TV
-    allowsRecording = NO;
-#else
     if (!allowsRecording) {
       if (_audioRecorder && [_audioRecorder isRecording]) {
         [_audioRecorder pause];
       }
     }
-#endif
     
     _playsInSilentMode = playsInSilentMode;
     _audioInterruptionMode = interruptionMode;
@@ -330,12 +318,10 @@ EX_EXPORT_MODULE(ExponentAV);
     return nil;
   }
     
-#if !TARGET_OS_TV
   if (_allowsAudioRecording) {
     // Bluetooth input is only available when recording is allowed
     requiredAudioCategoryOptions = requiredAudioCategoryOptions | AVAudioSessionCategoryOptionAllowBluetooth;
   }
-#endif
   
   return [_kernelAudioSessionManagerDelegate setCategory:requiredAudioCategory withOptions:requiredAudioCategoryOptions forModule:self];
 }
@@ -351,7 +337,6 @@ EX_EXPORT_MODULE(ExponentAV);
     }
   }];
   
-#if !TARGET_OS_TV
   if (_audioRecorder) {
     if (_audioRecorderShouldBeginRecording || [_audioRecorder isRecording]) {
       audioSessionModeRequired = EXAVAudioSessionModeActive;
@@ -359,7 +344,6 @@ EX_EXPORT_MODULE(ExponentAV);
       audioSessionModeRequired = EXAVAudioSessionModeActiveMuted;
     }
   }
-#endif
   
   return audioSessionModeRequired;
 }
@@ -405,11 +389,9 @@ EX_EXPORT_MODULE(ExponentAV);
   [self _runBlockForAllAVObjects:^(NSObject<EXAVObject> *exAVObject) {
     [exAVObject pauseImmediately];
   }];
-#if !TARGET_OS_TV
   if (_audioRecorder && [_audioRecorder isRecording]) {
     [_audioRecorder pause];
   }
-#endif
   
   NSError *error = [_kernelAudioSessionManagerDelegate setActive:NO forModule:self];
   
@@ -589,7 +571,6 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
   _audioRecorderSettings = recorderSettings;
 }
 
-#if !TARGET_OS_TV
 - (NSError *)_createNewAudioRecorder
 {
   if (_audioRecorder) {
@@ -672,7 +653,6 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
     _audioRecorderDurationMillis = 0;
   }
 }
-#endif
 
 - (NSArray<NSString *> *)supportedEvents
 {
@@ -876,28 +856,20 @@ EX_EXPORT_METHOD_AS(getPermissionsAsync,
                     getPermissionsAsync:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-#if TARGET_OS_TV
-  reject(@"E_UNSUPPORTED_PLATFORM", @"Not available on TV", nil);
-#else
   [EXPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
                                                       withRequester:[EXAudioRecordingPermissionRequester class]
                                                             resolve:resolve
                                                              reject:reject];
-#endif
 }
 
 EX_EXPORT_METHOD_AS(requestPermissionsAsync,
                     requestPermissionsAsync:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-#if TARGET_OS_TV
-  reject(@"E_UNSUPPORTED_PLATFORM", @"Not available on TV", nil);
-#else
   [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                          withRequester:[EXAudioRecordingPermissionRequester class]
                                                                resolve:resolve
                                                                 reject:reject];
-#endif
 }
 
 EX_EXPORT_METHOD_AS(prepareAudioRecorder,
@@ -905,9 +877,6 @@ EX_EXPORT_METHOD_AS(prepareAudioRecorder,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-#if TARGET_OS_TV
-  reject(@"E_UNSUPPORTED_PLATFORM", @"Not available on TV", nil);
-#else
   _mediaServicesDidReset = false;
   if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXAudioRecordingPermissionRequester class]]) {
     reject(@"E_MISSING_PERMISSION", @"Missing audio recording permission.", nil);
@@ -948,16 +917,12 @@ EX_EXPORT_METHOD_AS(prepareAudioRecorder,
   } else {
     reject(@"E_AUDIO_RECORDERNOTCREATED", [NSString stringWithFormat:@"Prepare encountered an error: %@", error.description], error);
   }
-#endif
 }
 
 EX_EXPORT_METHOD_AS(startAudioRecording,
                     startAudioRecording:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-#if TARGET_OS_TV
-  reject(@"E_UNSUPPORTED_PLATFORM", @"Not available on TV", nil);
-#else
   if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXAudioRecordingPermissionRequester class]]) {
     reject(@"E_MISSING_PERMISSION", @"Missing audio recording permission.", nil);
     return;
@@ -983,16 +948,12 @@ EX_EXPORT_METHOD_AS(startAudioRecording,
     }
   }
   _audioRecorderShouldBeginRecording = false;
-#endif
 }
 
 EX_EXPORT_METHOD_AS(pauseAudioRecording,
                     pauseAudioRecording:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-#if TARGET_OS_TV
-  reject(@"E_UNSUPPORTED_PLATFORM", @"Not available on TV", nil);
-#else
   if ([self _checkAudioRecorderExistsOrReject:reject]) {
     if (_audioRecorder.recording) {
       [_audioRecorder pause];
@@ -1003,16 +964,12 @@ EX_EXPORT_METHOD_AS(pauseAudioRecording,
     }
     resolve([self _getAudioRecorderStatus]);
   }
-#endif
 }
 
 EX_EXPORT_METHOD_AS(stopAudioRecording,
                     stopAudioRecording:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-#if TARGET_OS_TV
-  reject(@"E_UNSUPPORTED_PLATFORM", @"Not available on TV", nil);
-#else
   if ([self _checkAudioRecorderExistsOrReject:reject]) {
     _audioRecorderDurationMillis = [self _getDurationMillisOfRecordingAudioRecorder];
     if (_audioRecorder.recording) {
@@ -1024,43 +981,31 @@ EX_EXPORT_METHOD_AS(stopAudioRecording,
 
     resolve([self _getAudioRecorderStatus]);
   }
-#endif
 }
 
 EX_EXPORT_METHOD_AS(getAudioRecordingStatus,
                     getAudioRecordingStatus:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-#if TARGET_OS_TV
-  reject(@"E_UNSUPPORTED_PLATFORM", @"Not available on TV", nil);
-#else
   if ([self _checkAudioRecorderExistsOrReject:reject]) {
     resolve([self _getAudioRecorderStatus]);
   }
-#endif
 }
 
 EX_EXPORT_METHOD_AS(unloadAudioRecorder,
                     unloadAudioRecorder:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-#if TARGET_OS_TV
-  reject(@"E_UNSUPPORTED_PLATFORM", @"Not available on TV", nil);
-#else
   if ([self _checkAudioRecorderExistsOrReject:reject]) {
     [self _removeAudioRecorder:YES];
     resolve(nil);
   }
-#endif
 }
 
 EX_EXPORT_METHOD_AS(getAvailableInputs,
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-#if TARGET_OS_TV
-  reject(@"E_UNSUPPORTED_PLATFORM", @"Not available on TV", nil);
-#else
   NSMutableArray *inputs = [NSMutableArray new];
   for (AVAudioSessionPortDescription *desc in [_kernelAudioSessionManagerDelegate availableInputs]){
     [inputs addObject: @{
@@ -1070,16 +1015,12 @@ EX_EXPORT_METHOD_AS(getAvailableInputs,
     }];
   }
   resolve(inputs);
-#endif
 }
 
 EX_EXPORT_METHOD_AS(getCurrentInput,
                     getCurrentInput:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-#if TARGET_OS_TV
-  reject(@"E_UNSUPPORTED_PLATFORM", @"Not available on TV", nil);
-#else
   AVAudioSessionPortDescription *desc = [_kernelAudioSessionManagerDelegate activeInput];
   if (desc) {
     resolve(@{
@@ -1090,7 +1031,6 @@ EX_EXPORT_METHOD_AS(getCurrentInput,
   } else {
     reject(@"E_AUDIO_GETCURRENTINPUT", @"No input port found.", nil);
   }
-#endif
 }
 
 EX_EXPORT_METHOD_AS(setInput,
@@ -1098,9 +1038,6 @@ EX_EXPORT_METHOD_AS(setInput,
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-#if TARGET_OS_TV
-  reject(@"E_UNSUPPORTED_PLATFORM", @"Not available on TV", nil);
-#else
   AVAudioSessionPortDescription* preferredInput = nil;
   for (AVAudioSessionPortDescription *desc in [_kernelAudioSessionManagerDelegate availableInputs]){
     if ([desc.UID isEqualToString:input]) {
@@ -1113,7 +1050,6 @@ EX_EXPORT_METHOD_AS(setInput,
   } else {
     reject(@"E_AUDIO_SETINPUT_FAIL", [NSString stringWithFormat:@"Preferred input '%@' not found!", input], nil);
   }
-#endif
 }
 
 - (dispatch_queue_t)methodQueue
@@ -1135,9 +1071,7 @@ EX_EXPORT_METHOD_AS(setInput,
     [video pauseImmediately];
     [_videoSet removeObject:video];
   }
-#if !TARGET_OS_TV
   [self _removeAudioRecorder:YES];
-#endif
   for (NSNumber *key in [_soundDictionary allKeys]) {
     [self _removeSoundForKey:key];
   }

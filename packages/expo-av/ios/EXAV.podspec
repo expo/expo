@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platforms      = { :ios => '13.0', :tvos => '13.0' }
+  s.platform       = :ios, '13.0'
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
 
@@ -28,6 +28,5 @@ Pod::Spec.new do |s|
     s.vendored_frameworks = "#{s.name}.xcframework"
   else
     s.source_files = "#{s.name}/**/*.{h,m,mm,swift}"
-    s.tvos.exclude_files = "#{s.name}/**/EXAudioRecordingPermissionRequester.{h,m}"
   end
 end
