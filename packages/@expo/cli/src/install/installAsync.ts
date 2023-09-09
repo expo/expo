@@ -31,6 +31,7 @@ export async function installAsync(
   const packageManager = PackageManager.createForProject(projectRoot, {
     npm: options.npm,
     yarn: options.yarn,
+    bun: options.bun,
     pnpm: options.pnpm,
     silent: options.silent,
     log: Log.log,

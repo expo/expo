@@ -2,7 +2,7 @@ import spawnAsync from '@expo/spawn-async';
 import { vol } from 'memfs';
 import path from 'path';
 
-import { mockSpawnPromise, mockedSpawnAsync, STUB_SPAWN_CHILD } from '../../__tests__/spawn-utils';
+import { mockSpawnPromise, mockedSpawnAsync } from '../../__tests__/spawn-utils';
 import { BunPackageManager } from '../BunPackageManager';
 
 jest.mock('@expo/spawn-async');
