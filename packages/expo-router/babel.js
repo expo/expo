@@ -122,29 +122,11 @@ function getExpoRouterAbsoluteAppRoot(projectRoot) {
 
 module.exports = function (api) {
   const { types: t } = api;
-  const getRelPath = (state) => './' + nodePath.relative(state.file.opts.root, state.filename);
 
   const platform = api.caller((caller) => caller?.platform);
   return {
     name: 'expo-router',
     visitor: {
-      // Add support for Node.js __filename
-      Identifier(path, state) {
-        if (path.node.name === '__filename') {
-          path.replaceWith(
-            t.stringLiteral(
-              // `/index.js` is the value used by Webpack.
-              getRelPath(state)
-            )
-          );
-        }
-        // Add support for Node.js `__dirname`.
-        // This static value comes from Webpack somewhere.
-        if (path.node.name === '__dirname') {
-          path.replaceWith(t.stringLiteral('/'));
-        }
-      },
-
       // Convert `process.env.EXPO_ROUTER_APP_ROOT` to a string literal
       MemberExpression(path, state) {
         if (
