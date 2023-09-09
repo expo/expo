@@ -1,50 +1,32 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.useLocalSearchParams = exports.useSearchParams = exports.useGlobalSearchParams = exports.usePathname = exports.useSegments = exports.useUnstableGlobalHref = exports.useRouter = exports.useLink = exports.useRootNavigation = exports.useRouteInfo = exports.useRootNavigationState = void 0;
-const native_1 = require("@react-navigation/native");
-const react_1 = __importDefault(require("react"));
-const router_store_1 = require("./global-state/router-store");
-const useDeprecated_1 = require("./useDeprecated");
-function useRootNavigationState() {
-    return (0, router_store_1.useStoreRootState)();
+import { NavigationRouteContext } from '@react-navigation/native';
+import React from 'react';
+import { store, useStoreRootState, useStoreRouteInfo } from './global-state/router-store';
+export function useRootNavigationState() {
+    return useStoreRootState();
 }
-exports.useRootNavigationState = useRootNavigationState;
-function useRouteInfo() {
-    return (0, router_store_1.useStoreRouteInfo)();
+export function useRouteInfo() {
+    return useStoreRouteInfo();
 }
-exports.useRouteInfo = useRouteInfo;
-function useRootNavigation() {
-    return router_store_1.store.navigationRef.current;
+export function useRootNavigation() {
+    return store.navigationRef.current;
 }
-exports.useRootNavigation = useRootNavigation;
-// Wraps useLinkTo to provide an API which is similar to the Link component.
-function useLink() {
-    (0, useDeprecated_1.useDeprecated)('`useLink()` is deprecated in favor of `useRouter()`');
-    return useRouter();
-}
-exports.useLink = useLink;
-function useRouter() {
-    return react_1.default.useMemo(() => ({
-        push: router_store_1.store.push,
-        back: router_store_1.store.goBack,
-        replace: router_store_1.store.replace,
-        setParams: router_store_1.store.setParams,
-        canGoBack: router_store_1.store.canGoBack,
+export function useRouter() {
+    return React.useMemo(() => ({
+        push: store.push,
+        back: store.goBack,
+        replace: store.replace,
+        setParams: store.setParams,
+        canGoBack: store.canGoBack,
         // TODO(EvanBacon): add `reload`
     }), []);
 }
-exports.useRouter = useRouter;
 /**
  * @private
  * @returns the current global pathname with query params attached. This may change in the future to include the hostname from a predefined universal link, i.e. `/foobar?hey=world` becomes `https://acme.dev/foobar?hey=world`
  */
-function useUnstableGlobalHref() {
-    return (0, router_store_1.useStoreRouteInfo)().unstable_globalHref;
+export function useUnstableGlobalHref() {
+    return useStoreRouteInfo().unstable_globalHref;
 }
-exports.useUnstableGlobalHref = useUnstableGlobalHref;
 /**
  * Get a list of selected file segments for the currently selected route. Segments are not normalized, so they will be the same as the file path. e.g. /[id]?id=normal -> ["[id]"]
  *
@@ -64,15 +46,13 @@ exports.useUnstableGlobalHref = useUnstableGlobalHref;
  * const [first, second] = useSegments<['settings'] | ['[user]'] | ['[user]', 'followers']>()
  * ```
  */
-function useSegments() {
-    return (0, router_store_1.useStoreRouteInfo)().segments;
+export function useSegments() {
+    return useStoreRouteInfo().segments;
 }
-exports.useSegments = useSegments;
 /** @returns global selected pathname without query parameters. */
-function usePathname() {
-    return (0, router_store_1.useStoreRouteInfo)().pathname;
+export function usePathname() {
+    return useStoreRouteInfo().pathname;
 }
-exports.usePathname = usePathname;
 /**
  * Get the globally selected query parameters, including dynamic path segments. This function will update even when the route is not focused.
  * Useful for analytics or other background operations that don't draw to the screen.
@@ -82,27 +62,20 @@ exports.usePathname = usePathname;
  *
  * @see `useLocalSearchParams`
  */
-function useGlobalSearchParams() {
-    return (0, router_store_1.useStoreRouteInfo)().params;
+export function useGlobalSearchParams() {
+    return useStoreRouteInfo().params;
 }
-exports.useGlobalSearchParams = useGlobalSearchParams;
-/** @deprecated renamed to `useGlobalSearchParams` */
-function useSearchParams() {
-    return useGlobalSearchParams();
-}
-exports.useSearchParams = useSearchParams;
 /**
  * Returns the URL search parameters for the contextually focused route. e.g. `/acme?foo=bar` -> `{ foo: "bar" }`.
  * This is useful for stacks where you may push a new screen that changes the query parameters.
  *
  * To observe updates even when the invoking route is not focused, use `useGlobalSearchParams()`.
  */
-function useLocalSearchParams() {
+export function useLocalSearchParams() {
     return (useOptionalLocalRoute()?.params ?? {});
 }
-exports.useLocalSearchParams = useLocalSearchParams;
 function useOptionalLocalRoute() {
-    const route = react_1.default.useContext(native_1.NavigationRouteContext);
+    const route = React.useContext(NavigationRouteContext);
     return route;
 }
 //# sourceMappingURL=hooks.js.map

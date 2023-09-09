@@ -6,6 +6,18 @@
 
 ### 🎉 New features
 
+- Add support for running raw queries on Android. ([#24320](https://github.com/expo/expo/pull/24320) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- Fixed the return type from `executeSqlAsync` to only successful `ResultSet`. ([#24336](https://github.com/expo/expo/pull/24336) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+## 11.6.0 — 2023-09-04
+
+### 🎉 New features
+
 - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes

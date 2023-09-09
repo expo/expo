@@ -1,28 +1,21 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.stripInvisibleSegmentsFromPath = exports.stripGroupSegmentsFromPath = exports.removeFileSystemDots = exports.removeSupportedExtensions = exports.getContextKey = exports.getNameFromFilePath = exports.matchGroupName = exports.matchDeepDynamicRouteName = exports.matchDynamicName = void 0;
 /** Match `[page]` -> `page` */
-function matchDynamicName(name) {
+export function matchDynamicName(name) {
     // Don't match `...` or `[` or `]` inside the brackets
     // eslint-disable-next-line no-useless-escape
     return name.match(/^\[([^[\](?:\.\.\.)]+?)\]$/)?.[1];
 }
-exports.matchDynamicName = matchDynamicName;
 /** Match `[...page]` -> `page` */
-function matchDeepDynamicRouteName(name) {
+export function matchDeepDynamicRouteName(name) {
     return name.match(/^\[\.\.\.([^/]+?)\]$/)?.[1];
 }
-exports.matchDeepDynamicRouteName = matchDeepDynamicRouteName;
 /** Match `(page)` -> `page` */
-function matchGroupName(name) {
+export function matchGroupName(name) {
     return name.match(/^\(([^/]+?)\)$/)?.[1];
 }
-exports.matchGroupName = matchGroupName;
-function getNameFromFilePath(name) {
+export function getNameFromFilePath(name) {
     return removeSupportedExtensions(removeFileSystemDots(name));
 }
-exports.getNameFromFilePath = getNameFromFilePath;
-function getContextKey(name) {
+export function getContextKey(name) {
     // The root path is `` (empty string) so always prepend `/` to ensure
     // there is some value.
     const normal = '/' + getNameFromFilePath(name);
@@ -31,18 +24,15 @@ function getContextKey(name) {
     }
     return normal.replace(/\/?_layout$/, '');
 }
-exports.getContextKey = getContextKey;
 /** Remove `.js`, `.ts`, `.jsx`, `.tsx` */
-function removeSupportedExtensions(name) {
-    return name.replace(/(\+api)?\.[jt]sx?$/g, '');
+export function removeSupportedExtensions(name) {
+    return name.replace(/\.[jt]sx?$/g, '');
 }
-exports.removeSupportedExtensions = removeSupportedExtensions;
 // Remove any amount of `./` and `../` from the start of the string
-function removeFileSystemDots(filePath) {
+export function removeFileSystemDots(filePath) {
     return filePath.replace(/^(?:\.\.?\/)+/g, '');
 }
-exports.removeFileSystemDots = removeFileSystemDots;
-function stripGroupSegmentsFromPath(path) {
+export function stripGroupSegmentsFromPath(path) {
     return path
         .split('/')
         .reduce((acc, v) => {
@@ -53,9 +43,7 @@ function stripGroupSegmentsFromPath(path) {
     }, [])
         .join('/');
 }
-exports.stripGroupSegmentsFromPath = stripGroupSegmentsFromPath;
-function stripInvisibleSegmentsFromPath(path) {
+export function stripInvisibleSegmentsFromPath(path) {
     return stripGroupSegmentsFromPath(path).replace(/\/?index$/, '');
 }
-exports.stripInvisibleSegmentsFromPath = stripInvisibleSegmentsFromPath;
 //# sourceMappingURL=matchers.js.map

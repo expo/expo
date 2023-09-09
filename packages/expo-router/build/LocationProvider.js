@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getNormalizedStatePath = exports.getRouteInfoFromState = void 0;
-function getRouteInfoFromState(getPathFromState, state) {
+export function getRouteInfoFromState(getPathFromState, state) {
     const { path } = getPathFromState(state, false);
     const qualified = getPathFromState(state, true);
     return {
@@ -11,9 +8,8 @@ function getRouteInfoFromState(getPathFromState, state) {
         ...getNormalizedStatePath(qualified),
     };
 }
-exports.getRouteInfoFromState = getRouteInfoFromState;
 // TODO: Split up getPathFromState to return all this info at once.
-function getNormalizedStatePath({ path: statePath, params, }) {
+export function getNormalizedStatePath({ path: statePath, params, }) {
     const [pathname] = statePath.split('?');
     return {
         // Strip empty path at the start
@@ -31,5 +27,4 @@ function getNormalizedStatePath({ path: statePath, params, }) {
         }, {}),
     };
 }
-exports.getNormalizedStatePath = getNormalizedStatePath;
 //# sourceMappingURL=LocationProvider.js.map

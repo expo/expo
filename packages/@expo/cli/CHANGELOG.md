@@ -4,10 +4,31 @@
 
 ### 🛠 Breaking changes
 
+- Drop `/logs` and remove `@expo/dev-server` package. ([#24272](https://github.com/expo/expo/pull/24272) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🎉 New features
+
+- Add additional port check after build to ensure port is still available. ([#24315](https://github.com/expo/expo/pull/24315) by [@EvanBacon](https://github.com/EvanBacon))
+- Add support for bun as a package manager. ([#24344](https://github.com/expo/expo/pull/24344) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.12.0 — 2023-09-04
+
+### 🛠 Breaking changes
+
+- Bump minimum required Xcode version. ([#24205](https://github.com/expo/expo/pull/24205) by [@EvanBacon](https://github.com/EvanBacon))
+- Favor remote versions endpoint over bundled versions for version validation in `expo install`, `start`, `prebuild`. ([#24162](https://github.com/expo/expo/pull/24162) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove classic manifest types and classic updates. ([#24054](https://github.com/expo/expo/pull/24054), [#24066](https://github.com/expo/expo/pull/24066) by [@wschurman](https://github.com/wschurman))
 
 ### 🎉 New features
 
+- Add source map support with static Metro web exports. ([#24213](https://github.com/expo/expo/pull/24213) by [@EvanBacon](https://github.com/EvanBacon))
+- Validate android package name ahead of time. ([#24194](https://github.com/expo/expo/pull/24194) by [@EvanBacon](https://github.com/EvanBacon))
+- Improve the Xcode setup instructions. ([#24191](https://github.com/expo/expo/pull/24191) by [@EvanBacon](https://github.com/EvanBacon))
+- Add Ngrok status page to ngrok error message. ([#24188](https://github.com/expo/expo/pull/24188) by [@EvanBacon](https://github.com/EvanBacon))
 - Support monorepo assets with `npx expo export:embed`. ([#24095](https://github.com/expo/expo/pull/24095) by [@EvanBacon](https://github.com/EvanBacon))
 - Forward exact Metro server error during static rendering. ([#23909](https://github.com/expo/expo/pull/23909) by [@EvanBacon](https://github.com/EvanBacon))
 - Add **Server** tag when bundling for server environments. ([#23987](https://github.com/expo/expo/pull/23987) by [@EvanBacon](https://github.com/EvanBacon))
@@ -15,12 +36,15 @@
 
 ### 🐛 Bug fixes
 
+- Prevent additional logs from showing in `expo config --json`. ([#24192](https://github.com/expo/expo/pull/24192) by [@EvanBacon](https://github.com/EvanBacon))
 - Patch `react-native-web` for static rendering with Expo Router. ([#24093](https://github.com/expo/expo/pull/24093) by [@EvanBacon](https://github.com/EvanBacon))
 - Improve file formatting when `EXPO_USE_METRO_WORKSPACE_ROOT` is used. ([#23910](https://github.com/expo/expo/pull/23910) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix bug preventing non-standard xcode projects from running with `npx expo run:ios`. ([#23831](https://github.com/expo/expo/pull/23831) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix `EXPO_SKIP_MANIFEST_VALIDATION_TOKEN` usage. ([#23890](https://github.com/expo/expo/pull/23890) by [@EvanBacon](https://github.com/EvanBacon))
 - Prohibit dev client URLs containing `_` in protocol. ([#23519](https://github.com/expo/expo/pull/23519) by [@byCedric](https://github.com/byCedric))
 - Prevent writing unused bundles with static Metro web. ([#24092](https://github.com/expo/expo/pull/24092) by [@EvanBacon](https://github.com/EvanBacon))
+- Add missing dependencies to `@expo/cli`. ([#22941](https://github.com/expo/expo/pull/24092) by [@byCedric](https://github.com/byCedric))
+- Fix webpack dev server reload socket command. ([#24208](https://github.com/expo/expo/pull/24208) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
@@ -32,6 +56,8 @@
 - Fix lint. ([#23960](https://github.com/expo/expo/pull/23960) by [@EvanBacon](https://github.com/EvanBacon))
 - Enable static router tests. ([#23988](https://github.com/expo/expo/pull/23988) by [@EvanBacon](https://github.com/EvanBacon))
 - Reduce Metro bundles during `expo export` for Metro static web. ([#23987](https://github.com/expo/expo/pull/23987) by [@EvanBacon](https://github.com/EvanBacon))
+- Adjust build message when running prebuild to only output the directories that are actually being created. ([#24153](https://github.com/expo/expo/pull/24153) by [@alanhughes](https://github.com/alanjhughes))
+- Extend `Android` package name validation to disallow the `Java` keyword `native`. ([#24155](https://github.com/expo/expo/pull/24155) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 0.11.1 — 2023-08-02
 

@@ -8,6 +8,7 @@ import {
   getPackageNameWarningInternalAsync,
   validateBundleId,
   validatePackage,
+  validatePackageWithWarning,
 } from '../validateApplicationId';
 
 jest.mock('node-fetch');
@@ -34,15 +35,34 @@ describe(validateBundleId, () => {
   });
 });
 
+describe(validatePackageWithWarning, () => {
+  it(`validates with warnings`, () => {
+    expect(validatePackageWithWarning('bacon.native')).toEqual(
+      `"native" is a reserved Java keyword.`
+    );
+    expect(validatePackageWithWarning('bacon')).toEqual(
+      'Package name must contain more than one segment, separated by ".", e.g. com.bacon'
+    );
+    expect(validatePackageWithWarning(',')).toEqual(
+      `Package name must contain more than one segment, separated by ".", e.g. com.,`
+    );
+  });
+});
 describe(validatePackage, () => {
   it(`validates`, () => {
     expect(validatePackage('bacon.com.hey')).toBe(true);
     expect(validatePackage('bacon')).toBe(false);
+    expect(validatePackage('com.native')).toBe(false);
+    expect(validatePackage('native.android')).toBe(false);
     expect(validatePackage('...b.a.-c.0.n...')).toBe(false);
     expect(validatePackage('.')).toBe(false);
     expect(validatePackage('. ..')).toBe(false);
     expect(validatePackage('_')).toBe(false);
     expect(validatePackage(',')).toBe(false);
+  });
+  it(`prevents using reserved java keywords`, () => {
+    expect(validatePackage('bacon.native.com')).toBe(false);
+    expect(validatePackage('byte')).toBe(false);
   });
 });
 

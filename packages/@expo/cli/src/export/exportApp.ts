@@ -123,6 +123,7 @@ export async function exportAppAsync(
         minify,
         // @ts-expect-error: output server is not on the type yet.
         exportServer: exp.web?.output === 'server',
+        includeMaps: dumpSourcemap,
       });
       Log.log('Finished saving static files');
     } else {

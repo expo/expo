@@ -136,8 +136,6 @@ it(
     // If this changes then everything else probably changed as well.
     expect(files).toEqual([
       'assets/__e2e__/static-rendering/sweet.ttf',
-      'assets/__packages/@expo/metro-runtime/assets/alert-triangle.png',
-      'assets/__packages/@expo/metro-runtime/assets/loader.png',
       'assets/__packages/expo-router/assets/error.png',
       'assets/__packages/expo-router/assets/file.png',
       'assets/__packages/expo-router/assets/forward.png',

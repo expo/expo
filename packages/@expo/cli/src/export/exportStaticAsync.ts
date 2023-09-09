@@ -25,7 +25,7 @@ import { learnMore } from '../utils/link';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
 
-type Options = { outputDir: string; minify: boolean; exportServer: boolean };
+type Options = { outputDir: string; minify: boolean; exportServer: boolean; includeMaps: boolean };
 
 /** @private */
 export async function unstable_exportStaticAsync(projectRoot: string, options: Options) {
@@ -96,7 +96,7 @@ export async function getFilesToExportFromServerAsync(
 export async function exportFromServerAsync(
   projectRoot: string,
   devServerManager: DevServerManager,
-  { outputDir, minify, exportServer }: Options
+  { outputDir, minify, exportServer, includeMaps }: Options
 ): Promise<void> {
   const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
   const appDir = getRouterDirectoryWithManifest(projectRoot, exp);
@@ -107,7 +107,7 @@ export async function exportFromServerAsync(
   assert(devServer instanceof MetroBundlerDevServer);
 
   const [resources, { manifest, renderAsync }] = await Promise.all([
-    devServer.getStaticResourcesAsync({ mode: 'production', minify }),
+    devServer.getStaticResourcesAsync({ mode: 'production', minify, includeMaps }),
     devServer.getStaticRenderFunctionAsync({
       mode: 'production',
       minify,
@@ -135,7 +135,10 @@ export async function exportFromServerAsync(
   });
 
   resources.forEach((resource) => {
-    files.set(resource.filename, resource.source);
+    files.set(
+      resource.filename,
+      modifyBundlesWithSourceMaps(resource.filename, resource.source, includeMaps)
+    );
   });
 
   if (exportServer) {
@@ -165,6 +168,33 @@ export async function exportFromServerAsync(
       })
   );
   Log.log('');
+}
+
+export function modifyBundlesWithSourceMaps(
+  filename: string,
+  source: string,
+  includeMaps: boolean
+): string {
+  if (filename.endsWith('.js')) {
+    // If the bundle ends with source map URLs then update them to point to the correct location.
+
+    // TODO: basePath support
+    const normalizedFilename = '/' + filename.replace(/^\/+/, '');
+    //# sourceMappingURL=//localhost:8085/index.map?platform=web&dev=false&hot=false&lazy=true&minify=true&resolver.environment=client&transform.environment=client&serializer.output=static
+    //# sourceURL=http://localhost:8085/index.bundle//&platform=web&dev=false&hot=false&lazy=true&minify=true&resolver.environment=client&transform.environment=client&serializer.output=static
+    return source.replace(/^\/\/# (sourceMappingURL|sourceURL)=.*$/gm, (...props) => {
+      if (includeMaps) {
+        if (props[1] === 'sourceURL') {
+          return `//# ${props[1]}=` + normalizedFilename;
+        } else if (props[1] === 'sourceMappingURL') {
+          const mapName = normalizedFilename + '.map';
+          return `//# ${props[1]}=` + mapName;
+        }
+      }
+      return '';
+    });
+  }
+  return source;
 }
 
 export function getHtmlFiles({ manifest }: { manifest: any }): string[] {

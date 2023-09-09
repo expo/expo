@@ -1,4 +1,2 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = 'sync';
+export default 'sync';
 //# sourceMappingURL=index.js.map

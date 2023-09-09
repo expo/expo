@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "50.0.0-alpha.1",
+  "version": "50.0.0-alpha.2",
   "description": "The Expo SDK",
   "main": "build/Expo.js",
   "module": "build/Expo.js",
@@ -57,18 +57,18 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
   "dependencies": {
     "@babel/runtime": "^7.20.0",
-    "@expo/cli": "0.11.1",
-    "@expo/config": "8.2.1",
-    "@expo/config-plugins": "7.3.1",
+    "@expo/cli": "0.12.0",
+    "@expo/config": "8.3.0",
+    "@expo/config-plugins": "7.4.0",
     "@expo/vector-icons": "^13.0.0",
-    "babel-preset-expo": "~9.6.1",
-    "expo-application": "~5.3.1",
-    "expo-asset": "~8.11.0",
-    "expo-file-system": "~15.5.1",
-    "expo-font": "~11.5.1",
-    "expo-keep-awake": "~12.4.1",
-    "expo-modules-autolinking": "1.5.0",
-    "expo-modules-core": "1.6.0"
+    "babel-preset-expo": "~9.6.2",
+    "expo-application": "~5.4.0",
+    "expo-asset": "~8.12.0",
+    "expo-file-system": "~15.6.0",
+    "expo-font": "~11.6.0",
+    "expo-keep-awake": "~12.5.0",
+    "expo-modules-autolinking": "1.5.2",
+    "expo-modules-core": "1.7.0"
   },
   "devDependencies": {
     "@types/react": "~18.0.14",

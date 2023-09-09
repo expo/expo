@@ -1,32 +1,6 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.deepEqual = exports.getPathDataFromState = void 0;
-const core_1 = require("@react-navigation/core");
-const queryString = __importStar(require("query-string"));
-const matchers_1 = require("../matchers");
+import { validatePathConfig } from '@react-navigation/core';
+import * as queryString from 'query-string';
+import { matchDeepDynamicRouteName, matchDynamicName, matchGroupName } from '../matchers';
 const DEFAULT_SCREENS = {};
 const getActiveRoute = (state) => {
     const route = typeof state.index === 'number'
@@ -59,9 +33,9 @@ function createFakeState(params) {
 }
 function segmentMatchesConvention(segment) {
     return (segment === 'index' ||
-        (0, matchers_1.matchDynamicName)(segment) != null ||
-        (0, matchers_1.matchGroupName)(segment) != null ||
-        (0, matchers_1.matchDeepDynamicRouteName)(segment) != null);
+        matchDynamicName(segment) != null ||
+        matchGroupName(segment) != null ||
+        matchDeepDynamicRouteName(segment) != null);
 }
 function encodeURIComponentPreservingBrackets(str) {
     return encodeURIComponent(str).replace(/%5B/g, '[').replace(/%5D/g, ']');
@@ -95,16 +69,15 @@ function encodeURIComponentPreservingBrackets(str) {
  * @param options Extra options to fine-tune how to serialize the path.
  * @returns Path representing the state, e.g. /foo/bar?count=42.
  */
-function getPathFromState(state, _options) {
+export default function getPathFromState(state, _options) {
     return getPathDataFromState(state, _options).path;
 }
-exports.default = getPathFromState;
-function getPathDataFromState(state, _options = { screens: DEFAULT_SCREENS }) {
+export function getPathDataFromState(state, _options = { screens: DEFAULT_SCREENS }) {
     if (state == null) {
         throw Error("Got 'undefined' for the navigation state. You must pass a valid state object.");
     }
     const { preserveGroups, preserveDynamicRoutes, ...options } = _options;
-    (0, core_1.validatePathConfig)(options);
+    validatePathConfig(options);
     // Expo Router disallows usage without a linking config.
     if (Object.is(options.screens, DEFAULT_SCREENS)) {
         throw Error("You must pass a 'screens' object to 'getPathFromState' to generate a path.");
@@ -113,7 +86,6 @@ function getPathDataFromState(state, _options = { screens: DEFAULT_SCREENS }) {
     // Create a normalized configs object which will be easier to use
     createNormalizedConfigs(options.screens), { preserveGroups, preserveDynamicRoutes });
 }
-exports.getPathDataFromState = getPathDataFromState;
 function processParamsWithUserSettings(configItem, params) {
     const stringify = configItem?.stringify;
     return Object.fromEntries(Object.entries(params).map(([key, value]) => [
@@ -127,7 +99,7 @@ function processParamsWithUserSettings(configItem, params) {
                     : String(value),
     ]));
 }
-function deepEqual(a, b) {
+export function deepEqual(a, b) {
     if (a === b) {
         return true;
     }
@@ -157,7 +129,6 @@ function deepEqual(a, b) {
     }
     return false;
 }
-exports.deepEqual = deepEqual;
 function walkConfigItems(route, focusedRoute, configs, { preserveDynamicRoutes, }) {
     // NOTE(EvanBacon): Fill in current route using state that was passed as params.
     if (!route.state && isInvalidParams(route.params)) {
@@ -332,10 +303,7 @@ function getPathWithConventionsCollapsed({ pattern, routePath, params, preserveG
                 return `[...${name}]`;
             }
             if (params[name]) {
-                if (Array.isArray(params[name])) {
-                    return params[name].join('/');
-                }
-                return params[name];
+                return params[name].join('/');
             }
             if (i === 0) {
                 // This can occur when a wildcard matches all routes and the given path was `/`.
@@ -357,7 +325,7 @@ function getPathWithConventionsCollapsed({ pattern, routePath, params, preserveG
             // Optional params without value assigned in route.params should be ignored
             return params[name];
         }
-        if (!preserveGroups && (0, matchers_1.matchGroupName)(p) != null) {
+        if (!preserveGroups && matchGroupName(p) != null) {
             // When the last part is a group it could be a shared URL
             // if the route has an initialRouteName defined, then we should
             // use that as the component path as we can assume it will be shown.
@@ -393,7 +361,7 @@ function getParamsWithConventionsCollapsed({ pattern, routeName, params, }) {
     // Deep Dynamic Routes
     if (segments.some((segment) => segment.startsWith('*'))) {
         // NOTE(EvanBacon): Drop the param name matching the wildcard route name -- this is specific to Expo Router.
-        const name = (0, matchers_1.matchDeepDynamicRouteName)(routeName) ?? routeName;
+        const name = matchDeepDynamicRouteName(routeName) ?? routeName;
         delete processedParams[name];
     }
     return processedParams;

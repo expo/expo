@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { getConfig } from '@expo/config';
-import { prependMiddleware } from '@expo/dev-server';
 import * as runtimeEnv from '@expo/env';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import chalk from 'chalk';
@@ -34,6 +33,7 @@ import {
   DeepLinkHandler,
   RuntimeRedirectMiddleware,
 } from '../middleware/RuntimeRedirectMiddleware';
+import { prependMiddleware } from '../middleware/mutations';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
@@ -176,9 +176,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   async getStaticResourcesAsync({
     mode,
     minify = mode !== 'development',
+    includeMaps,
   }: {
     mode: string;
     minify?: boolean;
+    includeMaps?: boolean;
   }): Promise<SerialAsset[]> {
     const devBundleUrlPathname = createBundleUrlPath({
       platform: 'web',
@@ -186,6 +188,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       minify,
       environment: 'client',
       serializerOutput: 'static',
+      serializerIncludeMaps: includeMaps,
       mainModuleName: resolveMainModuleName(this.projectRoot, getConfig(this.projectRoot), 'web'),
       lazy: shouldEnableAsyncImports(this.projectRoot),
     });

@@ -79,13 +79,13 @@ class AddToWalletButtonView(private val context: ThemedReactContext, private val
       requestManager
         .load(sourceToLoad)
         .addListener(object : RequestListener<Drawable> {
-          override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
+          override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>, isFirstResource: Boolean): Boolean {
             dispatchEvent(
               createError("Failed", "Failed to load the source from $sourceToLoad")
             )
             return true
           }
-          override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+          override fun onResourceReady(resource: Drawable, model: Any, target: Target<Drawable>?, dataSource: DataSource, isFirstResource: Boolean): Boolean {
             setImageDrawable(
               RippleDrawable(
                 ColorStateList.valueOf(Color.parseColor("#e0e0e0")),

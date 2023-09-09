@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.initialUrlRef = void 0;
-require("@testing-library/jest-native/extend-expect");
+import '@testing-library/jest-native/extend-expect';
 // include this section and the NativeAnimatedHelper section for mocking react-native-reanimated
 jest.mock('react-native-reanimated', () => {
     const Reanimated = require('react-native-reanimated/mock');
@@ -12,7 +9,7 @@ jest.mock('react-native-reanimated', () => {
 });
 // Silence the warning: Animated: `useNativeDriver` is not supported because the native animated module is missing
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
-exports.initialUrlRef = {
+export const initialUrlRef = {
     value: '',
 };
 jest.mock('expo-linking', () => {
@@ -28,7 +25,7 @@ jest.mock('expo-linking', () => {
             return { remove() { } };
         },
         async getInitialURL() {
-            return exports.initialUrlRef.value;
+            return initialUrlRef.value;
         },
     };
     return module;

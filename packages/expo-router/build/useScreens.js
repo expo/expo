@@ -1,20 +1,14 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.createGetIdForRoute = exports.getQualifiedRouteComponent = exports.useSortedScreens = void 0;
-const react_1 = __importDefault(require("react"));
-const Route_1 = require("./Route");
-const import_mode_1 = __importDefault(require("./import-mode"));
-const primitives_1 = require("./primitives");
-const EmptyRoute_1 = require("./views/EmptyRoute");
-const SuspenseFallback_1 = require("./views/SuspenseFallback");
-const Try_1 = require("./views/Try");
+import React from 'react';
+import { Route, sortRoutesWithInitial, useRouteNode, } from './Route';
+import EXPO_ROUTER_IMPORT_MODE from './import-mode';
+import { Screen } from './primitives';
+import { EmptyRoute } from './views/EmptyRoute';
+import { SuspenseFallback } from './views/SuspenseFallback';
+import { Try } from './views/Try';
 function getSortedChildren(children, order, initialRouteName) {
     if (!order?.length) {
         return children
-            .sort((0, Route_1.sortRoutesWithInitial)(initialRouteName))
+            .sort(sortRoutesWithInitial(initialRouteName))
             .map((route) => ({ route, props: {} }));
     }
     const entries = [...children];
@@ -48,29 +42,28 @@ function getSortedChildren(children, order, initialRouteName) {
     })
         .filter(Boolean);
     // Add any remaining children
-    ordered.push(...entries.sort((0, Route_1.sortRoutesWithInitial)(initialRouteName)).map((route) => ({ route, props: {} })));
+    ordered.push(...entries.sort(sortRoutesWithInitial(initialRouteName)).map((route) => ({ route, props: {} })));
     return ordered;
 }
 /**
  * @returns React Navigation screens sorted by the `route` property.
  */
-function useSortedScreens(order) {
-    const node = (0, Route_1.useRouteNode)();
+export function useSortedScreens(order) {
+    const node = useRouteNode();
     const sorted = node?.children?.length
         ? getSortedChildren(node.children, order, node.initialRouteName)
         : [];
-    return react_1.default.useMemo(() => sorted.map((value) => routeToScreen(value.route, value.props)), [sorted]);
+    return React.useMemo(() => sorted.map((value) => routeToScreen(value.route, value.props)), [sorted]);
 }
-exports.useSortedScreens = useSortedScreens;
 function fromImport({ ErrorBoundary, ...component }) {
     if (ErrorBoundary) {
         return {
-            default: react_1.default.forwardRef((props, ref) => {
-                const children = react_1.default.createElement(component.default || EmptyRoute_1.EmptyRoute, {
+            default: React.forwardRef((props, ref) => {
+                const children = React.createElement(component.default || EmptyRoute, {
                     ...props,
                     ref,
                 });
-                return react_1.default.createElement(Try_1.Try, { catch: ErrorBoundary }, children);
+                return React.createElement(Try, { catch: ErrorBoundary }, children);
             }),
         };
     }
@@ -78,10 +71,10 @@ function fromImport({ ErrorBoundary, ...component }) {
         if (typeof component.default === 'object' &&
             component.default &&
             Object.keys(component.default).length === 0) {
-            return { default: EmptyRoute_1.EmptyRoute };
+            return { default: EmptyRoute };
         }
     }
-    return { default: component.default || EmptyRoute_1.EmptyRoute };
+    return { default: component.default || EmptyRoute };
 }
 function fromLoadedRoute(res) {
     if (!(res instanceof Promise)) {
@@ -93,56 +86,51 @@ function fromLoadedRoute(res) {
 // Without this store, the process enters a recursive loop.
 const qualifiedStore = new WeakMap();
 /** Wrap the component with various enhancements and add access to child routes. */
-function getQualifiedRouteComponent(value) {
+export function getQualifiedRouteComponent(value) {
     if (qualifiedStore.has(value)) {
         return qualifiedStore.get(value);
     }
     let getLoadable;
     // TODO: This ensures sync doesn't use React.lazy, but it's not ideal.
-    if (import_mode_1.default === 'lazy') {
-        const AsyncComponent = react_1.default.lazy(async () => {
+    if (EXPO_ROUTER_IMPORT_MODE === 'lazy') {
+        const AsyncComponent = React.lazy(async () => {
             const res = value.loadRoute();
             return fromLoadedRoute(res);
         });
-        getLoadable = (props, ref) => (react_1.default.createElement(react_1.default.Suspense, { fallback: react_1.default.createElement(SuspenseFallback_1.SuspenseFallback, { route: value }) },
-            react_1.default.createElement(AsyncComponent, { ...{
-                    ...props,
-                    ref,
-                    // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
-                    // the intention is to make it possible to deduce shared routes.
-                    segment: value.route,
-                } })));
-    }
-    else {
-        const SyncComponent = react_1.default.forwardRef((props, ref) => {
-            const res = value.loadRoute();
-            const Component = fromImport(res).default;
-            return react_1.default.createElement(Component, { ...props, ref: ref });
-        });
-        getLoadable = (props, ref) => (react_1.default.createElement(SyncComponent, { ...{
-                ...props,
+        getLoadable = (props, ref) => (React.createElement(React.Suspense, { fallback: React.createElement(SuspenseFallback, { route: value }) },
+            React.createElement(AsyncComponent, { ...props,
                 ref,
                 // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
                 // the intention is to make it possible to deduce shared routes.
-                segment: value.route,
-            } }));
+                segment: value.route })));
     }
-    const QualifiedRoute = react_1.default.forwardRef(({ 
+    else {
+        const SyncComponent = React.forwardRef((props, ref) => {
+            const res = value.loadRoute();
+            const Component = fromImport(res).default;
+            return React.createElement(Component, { ...props, ref: ref });
+        });
+        getLoadable = (props, ref) => (React.createElement(SyncComponent, { ...props,
+            ref,
+            // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
+            // the intention is to make it possible to deduce shared routes.
+            segment: value.route }));
+    }
+    const QualifiedRoute = React.forwardRef(({ 
     // Remove these React Navigation props to
     // enforce usage of expo-router hooks (where the query params are correct).
     route, navigation, 
     // Pass all other props to the component
     ...props }, ref) => {
         const loadable = getLoadable(props, ref);
-        return react_1.default.createElement(Route_1.Route, { node: value }, loadable);
+        return React.createElement(Route, { node: value }, loadable);
     });
     QualifiedRoute.displayName = `Route(${value.route})`;
     qualifiedStore.set(value, QualifiedRoute);
     return QualifiedRoute;
 }
-exports.getQualifiedRouteComponent = getQualifiedRouteComponent;
 /** @returns a function which provides a screen id that matches the dynamic route name in params. */
-function createGetIdForRoute(route) {
+export function createGetIdForRoute(route) {
     if (!route.dynamic?.length) {
         return undefined;
     }
@@ -169,9 +157,8 @@ function createGetIdForRoute(route) {
         return route.dynamic?.map((segment) => getPreferredId(segment)).join('/');
     };
 }
-exports.createGetIdForRoute = createGetIdForRoute;
 function routeToScreen(route, { options, ...props } = {}) {
-    return (react_1.default.createElement(primitives_1.Screen
+    return (React.createElement(Screen
     // Users can override the screen getId function.
     , { 
         // Users can override the screen getId function.

@@ -6,10 +6,25 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- Remove deprecated `RCTDeviceEventEmitter`. ([#24298](https://github.com/expo/expo/pull/24298) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove `deprecate` utility function. ([#24298](https://github.com/expo/expo/pull/24298) by [@EvanBacon](https://github.com/EvanBacon))
+- Deprecate `SyntheticPlatformEmitter` in favor of `DeviceEventEmitter`. ([#24298](https://github.com/expo/expo/pull/24298) by [@EvanBacon](https://github.com/EvanBacon))
+- Introduced an AppContext config to provide things like documents and caches directories for the modules. ([#24292](https://github.com/expo/expo/pull/24292) by [@tsapeta](https://github.com/tsapeta))
+
+## 1.7.0 — 2023-09-04
+
+### 🎉 New features
+
 - [Android] Surfaced errorManager to allow throwing errors and warnings from modules. ([#23848](https://github.com/expo/expo/pull/23848) by [@aleqsio](https://github.com/aleqsio))
 - [Android] Enums can now be used to define events. ([#23875](https://github.com/expo/expo/pull/23875) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Promises can now be resolved without arguments. ([#23907](https://github.com/expo/expo/pull/23907) by [@lukmccall](https://github.com/lukmccall))
 - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018), [#24019](https://github.com/expo/expo/pull/24019) by [@kudo](https://github.com/kudo))
+- [Android] `Property` component can now take the native shared object instance as the first argument. ([#24206](https://github.com/expo/expo/pull/24206) by [@lukmccall](https://github.com/lukmccall))
+- Introduced `requireOptionalNativeModule` that returns `null` when the module cannot be found instead of throwing an error. ([#24262](https://github.com/expo/expo/pull/24262) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
@@ -18,8 +33,13 @@
 - Fixed Fabric setup error on iOS. ([#24004](https://github.com/expo/expo/pull/24004) by [@kudo](https://github.com/kudo))
 - Fixed uuid v4 generation. ([#24123](https://github.com/expo/expo/pull/24123) by [@tsapeta](https://github.com/tsapeta))
 - [Android] Fixed owner type of view functions. ([#24135](https://github.com/expo/expo/pull/24135) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixed IOException `No space left on device` when saving persistent log. ([#24247](https://github.com/expo/expo/pull/24247) by [@RodolfoGS](https://github.com/RodolfoGS))
 
 ### 💡 Others
+
+- [Android] Add type converter for the `ReadableArguments` class to allow backward compatibility with older modules. ([#24137](https://github.com/expo/expo/pull/24137) by [@lukmccall](https://github.com/lukmccall))
+- [Android] `SharedObjectTypeConverter` now can work with the `Dynamic` class. ([#24207](https://github.com/expo/expo/pull/24207) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Expose a conversion between id and shared objects. ([#24220](https://github.com/expo/expo/pull/24220) by [@lukmccall](https://github.com/lukmccall))
 
 ## 1.6.0 — 2023-07-28
 
