@@ -197,7 +197,13 @@ public final class ImageView: ExpoView {
     _ imageUrl: URL?
   ) {
     if let error = error {
-      onError(["error": error.localizedDescription])
+      let code = (error as NSError).code
+
+      // SDWebImage throws an error when loading operation is canceled (interrupted) by another load request.
+      // We do want to ignore that one and wait for the new request to load.
+      if code != SDWebImageError.cancelled.rawValue {
+        onError(["error": error.localizedDescription])
+      }
       return
     }
     guard finished else {
