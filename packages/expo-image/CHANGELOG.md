@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Suppress "Operation cancelled by user during sending the request" error when the load request is canceled (interrupted) by a new one.
+- Suppress "Operation cancelled by user during sending the request" error when the load request is canceled (interrupted) by a new one. ([#24279](https://github.com/expo/expo/pull/24279) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
