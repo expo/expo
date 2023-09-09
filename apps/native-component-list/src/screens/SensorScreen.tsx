@@ -28,11 +28,15 @@ export default class SensorScreen extends React.Component {
 
 type State<Measurement> = {
   data: Measurement;
+  isListening: boolean;
   isAvailable?: boolean;
 };
 
 abstract class SensorBlock<Measurement> extends React.Component<object, State<Measurement>> {
-  readonly state: State<Measurement> = { data: {} as Measurement };
+  readonly state: State<Measurement> = {
+    data: {} as Measurement,
+    isListening: false,
+  };
 
   _subscription?: Subscription;
 
@@ -55,8 +59,10 @@ abstract class SensorBlock<Measurement> extends React.Component<object, State<Me
   _toggle = () => {
     if (this._subscription) {
       this._unsubscribe();
+      this.setState({ isListening: false });
     } else {
       this._subscribe();
+      this.setState({ isListening: true });
     }
   };
 
@@ -84,8 +90,11 @@ abstract class SensorBlock<Measurement> extends React.Component<object, State<Me
       this.state.data && (
         <Text>
           {Object.entries(this.state.data)
+            .sort(([keyA], [keyB]) => {
+              return keyA.localeCompare(keyB);
+            })
             .map(([key, value]) => `${key}: ${typeof value === 'number' ? round(value) : 0}`)
-            .join(' ')}
+            .join('\n')}
         </Text>
       )
     );
@@ -101,7 +110,7 @@ abstract class SensorBlock<Measurement> extends React.Component<object, State<Me
         {this.renderData()}
         <View style={styles.buttonContainer}>
           <TouchableOpacity onPress={this._toggle} style={styles.button}>
-            <Text>Toggle</Text>
+            <Text>{this.state.isListening ? 'Stop' : 'Start'}</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={this._slow} style={[styles.button, styles.middleButton]}>
             <Text>Slow</Text>

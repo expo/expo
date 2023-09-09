@@ -1,6 +1,6 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
-#import <EXSensors/EXMotionPermissionRequester.h>
+#import <ExpoSensors/EXMotionPermissionRequester.h>
 #import <CoreMotion/CoreMotion.h>
 #import <ExpoModulesCore/EXDefines.h>
 #import <ExpoModulesCore/EXUtilities.h>
