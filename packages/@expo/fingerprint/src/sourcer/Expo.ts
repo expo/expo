@@ -1,13 +1,17 @@
 import spawnAsync from '@expo/spawn-async';
-import assert from 'assert';
 import chalk from 'chalk';
 import type { ExpoConfig, ProjectConfig } from 'expo/config';
-import findUp from 'find-up';
 import path from 'path';
 import resolveFrom from 'resolve-from';
+import validateNpmPackageName from 'validate-npm-package-name';
 
 import { getFileBasedHashSourceAsync, stringifyJsonSorted } from './Utils';
+import {
+  findLocalDependenciesFromFileRecursiveAsync,
+  getAbsoluteModulePath,
+} from './findDependencies';
 import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
+import { profile } from '../utils/Profile';
 
 const debug = require('debug')('expo:fingerprint:sourcer:Expo');
 
@@ -77,17 +81,10 @@ export async function getExpoConfigSourcesAsync(
   results.push(...externalFileSources);
 
   // config plugins
-  const configPluginSources = getConfigPluginSourcesAsync(projectRoot, config.exp.plugins);
+  const configPluginSources = await getConfigPluginSourcesAsync(projectRoot, config.exp.plugins);
   results.push(...configPluginSources);
 
   return results;
-}
-
-function findUpPluginRoot(entryFile: string): string {
-  const entryRoot = path.dirname(entryFile);
-  const packageJson = findUp.sync('package.json', { cwd: path.dirname(entryFile) });
-  assert(packageJson, `No package.json found for module "${entryRoot}"`);
-  return path.dirname(packageJson);
 }
 
 function normalizeExpoConfig(config: ExpoConfig): string {
@@ -98,30 +95,76 @@ function normalizeExpoConfig(config: ExpoConfig): string {
   return stringifyJsonSorted(normalizedConfig);
 }
 
-function getConfigPluginSourcesAsync(
+async function getConfigPluginSourcesAsync(
   projectRoot: string,
   plugins: ExpoConfig['plugins']
-): HashSource[] {
-  if (plugins == null) {
+): Promise<HashSource[]> {
+  return (
+    await Promise.all(
+      (plugins ?? []).map((plugin) => resolveConfigPluginSourceAsync(projectRoot, plugin))
+    )
+  ).flat();
+}
+
+async function resolveConfigPluginSourceAsync(
+  projectRoot: string,
+  plugin: NonNullable<ExpoConfig['plugins']>[number]
+): Promise<HashSource[]> {
+  const pluginPackageName = Array.isArray(plugin) ? plugin[0] : plugin;
+  if (!pluginPackageName) {
+    return [];
+  }
+  const modulePath = resolveFrom.silent(projectRoot, pluginPackageName);
+  if (!modulePath) {
+    debug(`Cannot resolve static config-plugin: ${pluginPackageName}`);
     return [];
   }
 
-  const reasons = ['expoConfigPlugins'];
-  const nullableResults: (HashSource | null)[] = plugins.map((plugin) => {
-    const pluginPackageName = Array.isArray(plugin) ? plugin[0] : plugin;
-    if (typeof pluginPackageName === 'string') {
-      const pluginPackageEntryFile = resolveFrom.silent(projectRoot, pluginPackageName);
-      const pluginPackageRoot = pluginPackageEntryFile
-        ? findUpPluginRoot(pluginPackageEntryFile)
-        : null;
-      if (pluginPackageRoot) {
-        debug(`Adding config-plugin root - ${chalk.dim(pluginPackageRoot)}`);
-        return { type: 'dir', filePath: path.relative(projectRoot, pluginPackageRoot), reasons };
-      }
-    }
-    return null;
-  });
-  const results = nullableResults.filter(Boolean) as HashSource[];
+  // Try to resolve the plugin as a node package
+  if (validateNpmPackageName(pluginPackageName).validForNewPackages) {
+    const nodePackageRoot = path.dirname(modulePath);
+    debug(`Adding config-plugin node package root - ${chalk.dim(nodePackageRoot)}`);
+    return [
+      {
+        type: 'dir',
+        filePath: path.relative(projectRoot, nodePackageRoot),
+        reasons: ['expoConfigPlugin:nodePackage'],
+      },
+    ];
+  }
+
+  // Try to resolve the plugin as a local config-plugin
+  const reasons = ['expoConfigPlugin:local'];
+  const localPluginPath = path.relative(
+    projectRoot,
+    getAbsoluteModulePath(projectRoot, modulePath)
+  );
+  debug(`Adding local config-plugin file - ${chalk.dim(localPluginPath)}`);
+  const results: HashSource[] = [
+    {
+      type: 'file',
+      filePath: localPluginPath,
+      reasons,
+    },
+  ];
+  try {
+    const localDependencies = await profile(
+      findLocalDependenciesFromFileRecursiveAsync,
+      `findLocalDependenciesFromFileRecursiveAsync(${localPluginPath})`
+    )(projectRoot, localPluginPath);
+    results.push(
+      ...localDependencies.map<HashSource>((dep) => {
+        debug(`Adding local config-plugin dependency file - ${chalk.dim(dep)}`);
+        return {
+          type: 'file',
+          filePath: dep,
+          reasons,
+        };
+      })
+    );
+  } catch (e: unknown) {
+    debug('Error resolving local dependencies from local config-plugins', e);
+  }
   return results;
 }
 

@@ -300,6 +300,58 @@ describe(`getExpoConfigSourcesAsync - config-plugins`, () => {
     );
   });
 
+  it('should contain local config-plugin file', async () => {
+    const mockResolveFrom = resolveFrom.silent as jest.MockedFunction<typeof resolveFrom.silent>;
+    jest.mock('/app/withMyInfoPlistPlugin', () => ({ default: (config: any) => config }), {
+      virtual: true,
+    });
+    mockResolveFrom.mockImplementation((fromDirectory: string, moduleId: string) =>
+      path.resolve(fromDirectory, moduleId)
+    );
+
+    vol.writeFileSync(
+      '/app/app.json',
+      JSON.stringify({
+        ...baseAppJson,
+        expo: {
+          ...baseAppJson.expo,
+          plugins: ['./withMyInfoPlistPlugin'],
+        },
+      })
+    );
+    vol.writeFileSync(
+      '/app/withMyInfoPlistPlugin.js',
+      `\
+const { withInfoPlist } = require('expo/config-plugins');
+const withAnotherLocalPlugin = require('./plugins/withAnotherLocalPlugin');
+
+const withMyInfoPlistPlugin = (config) => {
+  return withInfoPlist(config, (config) => {
+    config.modResults.NSLocationWhenInUseUsageDescription = 'Allow $(PRODUCT_NAME) to use your location';
+    return config;
+  });
+};
+module.exports = withMyInfoPlistPlugin;
+`
+    );
+    vol.mkdirSync('/app/plugins');
+    vol.writeFileSync('/app/plugins/withAnotherLocalPlugin.js', '');
+
+    const sources = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
+    expect(sources).toContainEqual(
+      expect.objectContaining({
+        type: 'file',
+        filePath: 'withMyInfoPlistPlugin.js',
+      })
+    );
+    expect(sources).toContainEqual(
+      expect.objectContaining({
+        type: 'file',
+        filePath: 'plugins/withAnotherLocalPlugin.js',
+      })
+    );
+  });
+
   it('should not contain external config-plugin dir from raw function plugins', async () => {
     vol.writeFileSync(
       '/app/app.config.js',

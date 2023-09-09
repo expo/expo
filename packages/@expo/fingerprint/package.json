@@ -41,10 +41,12 @@
     "find-up": "^5.0.0",
     "minimatch": "^3.0.4",
     "p-limit": "^3.1.0",
-    "resolve-from": "^5.0.0"
+    "resolve-from": "^5.0.0",
+    "validate-npm-package-name": "^5.0.0"
   },
   "devDependencies": {
     "@types/find-up": "^4.0.0",
+    "@types/validate-npm-package-name": "^4.0.0",
     "glob": "^7.1.7",
     "temp-dir": "^2.0.0"
   }
