@@ -154,6 +154,7 @@ public final class UpdatesUtils: NSObject {
         }
 
         var shouldLaunch = false
+        var failedPreviously = false
         if constants.selectionPolicy.shouldLoadNewUpdate(
           update,
           withLaunchedUpdate: launchedUpdate,
@@ -170,6 +171,7 @@ public final class UpdatesUtils: NSObject {
               let storedUpdate = try constants.database.update(withId: update.updateId, config: constants.config)
               if let storedUpdate = storedUpdate {
                 shouldLaunch = storedUpdate.failedLaunchCount == 0 || storedUpdate.successfulLaunchCount > 0
+                failedPreviously = !shouldLaunch
                 AppController.sharedInstance.logger.info(message: "Stored update found: ID = \(update.updateId), failureCount = \(storedUpdate.failedLaunchCount)")
               }
             } catch {}
@@ -181,7 +183,9 @@ public final class UpdatesUtils: NSObject {
           ])
           sendStateEvent(UpdatesStateEventCheckCompleteWithUpdate(manifest: update.manifest.rawManifestJSON()))
         } else {
-          let reason = RemoteCheckResultNotAvailableReason.updatePreviouslyFailed
+          let reason = failedPreviously ?
+            RemoteCheckResultNotAvailableReason.updatePreviouslyFailed :
+            RemoteCheckResultNotAvailableReason.updateRejectedBySelectionPolicy
           block([
             "reason": "\(reason)"
           ])

@@ -258,6 +258,7 @@ class UpdatesModule(
               }
 
               var shouldLaunch = false
+              var failedPreviously = false
               if (updatesServiceLocal.selectionPolicy.shouldLoadNewUpdate(
                   updateManifest.updateEntity,
                   launchedUpdate,
@@ -278,16 +279,19 @@ class UpdatesModule(
                   storedUpdateEntity?.let { storedUpdateEntity ->
                     shouldLaunch = storedUpdateEntity.failedLaunchCount == 0
                     logger.info("Stored update found: ID = ${updateEntity.id}, failureCount = ${storedUpdateEntity.failedLaunchCount}")
+                    failedPreviously = !shouldLaunch
                   }
                 }
               }
               if (shouldLaunch) {
                 promise.resolveWithCheckForUpdateAsyncResult(CheckForUpdateAsyncResult.UpdateAvailable(updateManifest), updatesServiceLocal)
               } else {
+                val reason = when (failedPreviously) {
+                  true -> LoaderTask.RemoteCheckResultNotAvailableReason.UPDATE_PREVIOUSLY_FAILED
+                  else -> LoaderTask.RemoteCheckResultNotAvailableReason.UPDATE_REJECTED_BY_SELECTION_POLICY
+                }
                 promise.resolveWithCheckForUpdateAsyncResult(
-                  CheckForUpdateAsyncResult.NoUpdateAvailable(
-                    LoaderTask.RemoteCheckResultNotAvailableReason.UPDATE_PREVIOUSLY_FAILED
-                  ),
+                  CheckForUpdateAsyncResult.NoUpdateAvailable(reason),
                   updatesServiceLocal
                 )
               }
