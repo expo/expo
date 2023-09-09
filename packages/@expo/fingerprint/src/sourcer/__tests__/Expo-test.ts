@@ -383,6 +383,27 @@ export default ({ config }) => {
     );
     expect(sourcesWithoutExpoConfig).toEqual(sources2WithoutExpoConfig);
   });
+
+  it('should contain only function names in config from raw function plugins', async () => {
+    vol.writeFileSync(
+      '/app/app.config.js',
+      `\
+export default ({ config }) => {
+  config.plugins ||= [];
+  const withNoopPlugin = (config: any) => config;
+  config.plugins.push(withNoopPlugin);
+  config.plugins.push((config: any) => config);
+  return config;
+};`
+    );
+    const sources = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
+    const expoConfigSource = sources.find<HashSourceContents>(
+      (source): source is HashSourceContents =>
+        source.type === 'contents' && source.id === 'expoConfig'
+    );
+    const expoConfig = JSON.parse(expoConfigSource?.contents?.toString() ?? 'null');
+    expect(expoConfig.plugins).toEqual(['withAnonymous', 'withNoopPlugin']);
+  });
 });
 
 describe('sortExpoAutolinkingConfig', () => {

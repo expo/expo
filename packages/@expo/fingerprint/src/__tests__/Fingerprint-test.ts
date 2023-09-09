@@ -1,12 +1,101 @@
 import { vol } from 'memfs';
 
-import { createFingerprintAsync, diffFingerprintChangesAsync } from '../Fingerprint';
+import {
+  createFingerprintAsync,
+  diffFingerprints,
+  diffFingerprintChangesAsync,
+} from '../Fingerprint';
 import type { Fingerprint } from '../Fingerprint.types';
 import { normalizeOptionsAsync } from '../Options';
 
 jest.mock('fs');
 jest.mock('fs/promises');
 jest.mock('resolve-from');
+
+describe('LIMITATIONS', () => {
+  afterEach(() => {
+    vol.reset();
+  });
+
+  it.failing('updating existing raw config-plugin functions DOES NOT cause changes', async () => {
+    vol.fromJSON(require('../sourcer/__tests__/fixtures/ExpoManaged47Project.json'));
+    vol.writeFileSync(
+      '/app/app.config.js',
+      `\
+const withMyPlugin = (config) => config;
+
+export default ({ config }) => {
+  config.plugins ||= [];
+  config.plugins.push(withMyPlugin);
+  return config;
+};`
+    );
+
+    const fingerprint = await createFingerprintAsync('/app', await normalizeOptionsAsync('/app'));
+
+    // Now, updating the raw function config-plugin to add Info.plist changes
+    vol.writeFileSync(
+      '/app/app.config.js',
+      `\
+const withInfoPlist = (config) => config;
+// const { withInfoPlist } = require('expo/config-plugins');
+// for testing without mocking require chain, assuming this is imported from 'expo/config-plugins'.
+
+const withMyPlugin = (config) => {
+  return withInfoPlist(config, (config) => {
+    config.modResults.NSLocationWhenInUseUsageDescription = 'Allow $(PRODUCT_NAME) to use your location';
+    return config;
+  });
+};
+
+export default ({ config }) => {
+  config.plugins ||= [];
+  config.plugins.push(withMyPlugin);
+  return config;
+};`
+    );
+    const fingerprint2 = await createFingerprintAsync('/app', await normalizeOptionsAsync('/app'));
+
+    const diff = await diffFingerprints(fingerprint, fingerprint2);
+    expect(diff.length).toBeGreaterThan(0);
+  });
+
+  it('though adding, removing or changing raw config-plugin function names are still supported', async () => {
+    vol.fromJSON(require('../sourcer/__tests__/fixtures/ExpoManaged47Project.json'));
+    vol.writeFileSync(
+      '/app/app.config.js',
+      `\
+const withMyPlugin = (config) => config;
+
+export default ({ config }) => {
+  config.plugins ||= [];
+  config.plugins.push(withMyPlugin);
+  return config;
+};`
+    );
+
+    const fingerprint = await createFingerprintAsync('/app', await normalizeOptionsAsync('/app'));
+
+    // Now, adding new raw config-plugin function
+    vol.writeFileSync(
+      '/app/app.config.js',
+      `\
+const withMyPlugin = (config) => config;
+const withMyPlugin2 = (config) => config;
+
+export default ({ config }) => {
+  config.plugins ||= [];
+  config.plugins.push(withMyPlugin, withMyPlugin2);
+  return config;
+};`
+    );
+
+    const fingerprint2 = await createFingerprintAsync('/app', await normalizeOptionsAsync('/app'));
+
+    const diff = await diffFingerprints(fingerprint, fingerprint2);
+    expect(diff.length).toBeGreaterThan(0);
+  });
+});
 
 describe(diffFingerprintChangesAsync, () => {
   afterEach(() => {
