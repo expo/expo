@@ -378,17 +378,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     // https://github.com/expo/expo/issues/13114
     prependMiddleware(middleware, manifestMiddleware.getHandler());
 
-    // middleware.use(
-    //   createRouteHandlerMiddleware(this.projectRoot, {
-    //     ...options,
-    //     appDir: getRouterDirectoryWithManifest(
-    //       this.projectRoot,
-    //       getConfig(this.projectRoot, { skipSDKVersionRequirement: true }).exp
-    //     ),
-    //     getWebBundleUrl: manifestMiddleware.getWebBundleUrl.bind(manifestMiddleware),
-    //   })
-    // );
-
     middleware.use(
       new InterstitialPageMiddleware(this.projectRoot, {
         // TODO: Prevent this from becoming stale.
@@ -435,31 +424,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             getWebBundleUrl: manifestMiddleware.getWebBundleUrl.bind(manifestMiddleware),
           })
         );
-        // jsonParser
-
-        // Add middleware at index 3
-        // middleware.stack.push(middleware.stack.pop());
-        // middleware.stack.splice(22, 0, middleware.stack.pop());
-
-        console.log(middleware.stack, middleware.stack.length); //.unshift(app.stack.pop()!);
-
-        // Middleware for hosting middleware
-        // prependMiddleware(
-        //   middleware,
-        //   createRouteHandlerMiddleware(this.projectRoot, {
-        //     ...options,
-        //     appDir,
-        //     getWebBundleUrl: manifestMiddleware.getWebBundleUrl.bind(manifestMiddleware),
-        //   })
-        // );
-
-        // middleware.use(
-        //   createRouteHandlerMiddleware(this.projectRoot, {
-        //     ...options,
-        //     appDir,
-        //     getWebBundleUrl: manifestMiddleware.getWebBundleUrl.bind(manifestMiddleware),
-        //   })
-        // );
 
         // Cache observation for API Routes...
         observeApiRouteChanges(
