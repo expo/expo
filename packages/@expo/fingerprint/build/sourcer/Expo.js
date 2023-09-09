@@ -5,12 +5,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sortExpoAutolinkingAndroidConfig = exports.getExpoAutolinkingIosSourcesAsync = exports.getExpoAutolinkingAndroidSourcesAsync = exports.getEasBuildSourcesAsync = exports.getExpoConfigSourcesAsync = void 0;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
-const assert_1 = __importDefault(require("assert"));
 const chalk_1 = __importDefault(require("chalk"));
-const find_up_1 = __importDefault(require("find-up"));
 const path_1 = __importDefault(require("path"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
+const validate_npm_package_name_1 = __importDefault(require("validate-npm-package-name"));
 const Utils_1 = require("./Utils");
+const findDependencies_1 = require("./findDependencies");
+const Profile_1 = require("../utils/Profile");
 const debug = require('debug')('expo:fingerprint:sourcer:Expo');
 async function getExpoConfigSourcesAsync(projectRoot, options) {
     const results = [];
@@ -63,17 +64,11 @@ async function getExpoConfigSourcesAsync(projectRoot, options) {
     }))).filter(Boolean);
     results.push(...externalFileSources);
     // config plugins
-    const configPluginSources = getConfigPluginSourcesAsync(projectRoot, config.exp.plugins);
+    const configPluginSources = await getConfigPluginSourcesAsync(projectRoot, config.exp.plugins);
     results.push(...configPluginSources);
     return results;
 }
 exports.getExpoConfigSourcesAsync = getExpoConfigSourcesAsync;
-function findUpPluginRoot(entryFile) {
-    const entryRoot = path_1.default.dirname(entryFile);
-    const packageJson = find_up_1.default.sync('package.json', { cwd: path_1.default.dirname(entryFile) });
-    (0, assert_1.default)(packageJson, `No package.json found for module "${entryRoot}"`);
-    return path_1.default.dirname(packageJson);
-}
 function normalizeExpoConfig(config) {
     // Deep clone by JSON.parse/stringify that assumes the config is serializable.
     const normalizedConfig = JSON.parse(JSON.stringify(config));
@@ -81,26 +76,56 @@ function normalizeExpoConfig(config) {
     delete normalizedConfig._internal;
     return (0, Utils_1.stringifyJsonSorted)(normalizedConfig);
 }
-function getConfigPluginSourcesAsync(projectRoot, plugins) {
-    if (plugins == null) {
+async function getConfigPluginSourcesAsync(projectRoot, plugins) {
+    return (await Promise.all((plugins ?? []).map((plugin) => resolveConfigPluginSourceAsync(projectRoot, plugin)))).flat();
+}
+async function resolveConfigPluginSourceAsync(projectRoot, plugin) {
+    const pluginPackageName = Array.isArray(plugin) ? plugin[0] : plugin;
+    if (!pluginPackageName) {
         return [];
     }
-    const reasons = ['expoConfigPlugins'];
-    const nullableResults = plugins.map((plugin) => {
-        const pluginPackageName = Array.isArray(plugin) ? plugin[0] : plugin;
-        if (typeof pluginPackageName === 'string') {
-            const pluginPackageEntryFile = resolve_from_1.default.silent(projectRoot, pluginPackageName);
-            const pluginPackageRoot = pluginPackageEntryFile
-                ? findUpPluginRoot(pluginPackageEntryFile)
-                : null;
-            if (pluginPackageRoot) {
-                debug(`Adding config-plugin root - ${chalk_1.default.dim(pluginPackageRoot)}`);
-                return { type: 'dir', filePath: path_1.default.relative(projectRoot, pluginPackageRoot), reasons };
-            }
-        }
-        return null;
-    });
-    const results = nullableResults.filter(Boolean);
+    const modulePath = resolve_from_1.default.silent(projectRoot, pluginPackageName);
+    if (!modulePath) {
+        debug(`Cannot resolve static config-plugin: ${pluginPackageName}`);
+        return [];
+    }
+    // Try to resolve the plugin as a node package
+    if ((0, validate_npm_package_name_1.default)(pluginPackageName).validForNewPackages) {
+        const nodePackageRoot = path_1.default.dirname(modulePath);
+        debug(`Adding config-plugin node package root - ${chalk_1.default.dim(nodePackageRoot)}`);
+        return [
+            {
+                type: 'dir',
+                filePath: path_1.default.relative(projectRoot, nodePackageRoot),
+                reasons: ['expoConfigPlugin:nodePackage'],
+            },
+        ];
+    }
+    // Try to resolve the plugin as a local config-plugin
+    const reasons = ['expoConfigPlugin:local'];
+    const localPluginPath = path_1.default.relative(projectRoot, (0, findDependencies_1.getAbsoluteModulePath)(projectRoot, modulePath));
+    debug(`Adding local config-plugin file - ${chalk_1.default.dim(localPluginPath)}`);
+    const results = [
+        {
+            type: 'file',
+            filePath: localPluginPath,
+            reasons,
+        },
+    ];
+    try {
+        const localDependencies = await (0, Profile_1.profile)(findDependencies_1.findLocalDependenciesFromFileRecursiveAsync, `findLocalDependenciesFromFileRecursiveAsync(${localPluginPath})`)(projectRoot, localPluginPath);
+        results.push(...localDependencies.map((dep) => {
+            debug(`Adding local config-plugin dependency file - ${chalk_1.default.dim(dep)}`);
+            return {
+                type: 'file',
+                filePath: dep,
+                reasons,
+            };
+        }));
+    }
+    catch (e) {
+        debug('Error resolving local dependencies from local config-plugins', e);
+    }
     return results;
 }
 async function getEasBuildSourcesAsync(projectRoot, options) {
