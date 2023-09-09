@@ -53,6 +53,7 @@ export async function prebuildAsync(
       npm?: boolean;
       yarn?: boolean;
       pnpm?: boolean;
+      bun?: boolean;
     };
     /** List of node modules to skip updating. */
     skipDependencyUpdate?: string[];
@@ -104,6 +105,7 @@ export async function prebuildAsync(
       npm: !!options.packageManager?.npm,
       yarn: !!options.packageManager?.yarn,
       pnpm: !!options.packageManager?.pnpm,
+      bun: !!options.packageManager?.bun,
       silent: !(env.EXPO_DEBUG || env.CI),
     });
   }
