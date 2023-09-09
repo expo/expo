@@ -22,6 +22,8 @@ Pod::Spec.new do |s|
   s.dependency 'EXManifests'
   s.dependency 'EASClient'
   s.dependency 'ReachabilitySwift'
+  s.dependency 'ASN1Decoder', '~> 1.8'
+  s.dependency 'sqlite3', '3.42.0'
 
   unless defined?(install_modules_dependencies)
     # `install_modules_dependencies` is defined from react_native_pods.rb.

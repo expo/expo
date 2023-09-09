@@ -6,7 +6,7 @@
 // swiftlint:disable force_unwrapping
 
 import Foundation
-import SQLite3
+import sqlite3
 
 enum UpdatesDatabaseInitializationError: Error {
   case migrateAndRemoveOldDatabaseFailure

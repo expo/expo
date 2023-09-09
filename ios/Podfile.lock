@@ -2327,7 +2327,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSQLite (11.7.0):
     - ExpoModulesCore
-    - sqlite3 (= 3.39.2)
+    - sqlite3 (= 3.42.0)
   - ExpoStoreReview (6.6.0):
     - ExpoModulesCore
   - ExpoSystemUI (2.6.0):
@@ -3054,9 +3054,9 @@ PODS:
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
   - SocketRocket (0.6.1)
-  - sqlite3 (3.39.2):
-    - sqlite3/common (= 3.39.2)
-  - sqlite3/common (3.39.2)
+  - sqlite3 (3.42.0):
+    - sqlite3/common (= 3.42.0)
+  - sqlite3/common (3.42.0)
   - Stripe (23.8.0):
     - StripeApplePay (= 23.8.0)
     - StripeCore (= 23.8.0)
@@ -4964,8 +4964,24 @@ SPEC CHECKSUMS:
   EXSplashScreen: f464b6f673272b7e427d3816dd7ec07e943095b3
   EXStructuredHeaders: b0591d7da7218124a950335b746366f0b2a90178
   EXTaskManager: aae3b3c8144af1e0bfdbe8a3cc19fb116a01368d
+<<<<<<< HEAD
   EXUpdates: f9a40063a208e21682ee174272b8d56defae6327
   EXUpdatesInterface: 98f69982f4b429eb62a1d99259bc980038240f27
+||||||| parent of c70391aaee ([ios][updates] bump sqlite version)
+  EXUpdates: 2a2b560639dbc2424bc13f4010b7212c82a2b63f
+  EXUpdatesInterface: 376edcf7e762dcf8f55552804944dac004fa3349
+=======
+<<<<<<< HEAD
+  EXUpdates: 2a2b560639dbc2424bc13f4010b7212c82a2b63f
+  EXUpdatesInterface: 376edcf7e762dcf8f55552804944dac004fa3349
+||||||| parent of b3a73bc072 ([ios][updates] bump sqlite version)
+  EXUpdates: 30c6c1eb2bb6fca39450260c4aeae9024c080c08
+  EXUpdatesInterface: 1f9cdd9e1e1026de7488ac537e9c40bc6b6fb872
+=======
+  EXUpdates: 1d195e9306940cca4d95faa2bf205f9a94a80052
+  EXUpdatesInterface: 1f9cdd9e1e1026de7488ac537e9c40bc6b6fb872
+>>>>>>> b3a73bc072 ([ios][updates] bump sqlite version)
+>>>>>>> c70391aaee ([ios][updates] bump sqlite version)
   FBAEMKit: af2972f39bb0f3f7c45998f435b007833c32ffb2
   FBAudienceNetwork: 03e273f66b70756be7d060927111af97b7641b06
   FBLazyVector: 5d4a3b7f411219a45a6d952f77d2c0a6c9989da5
@@ -5057,7 +5073,7 @@ SPEC CHECKSUMS:
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: af09429398d99d524cae2fe00f6f0f6e491ed102
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
-  sqlite3: d115522c740c457b805c018b0296b5ba003da280
+  sqlite3: f163dbbb7aa3339ad8fc622782c2d9d7b72f7e9c
   Stripe: 5432fbab660595a3bee937235dd71a99028ac68c
   stripe-react-native: 096d83ad94da350f08f5cd48275e7f9645dde297
   StripeApplePay: 5e686f50ee07c439b79b907dffeb144135e601c9
