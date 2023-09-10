@@ -82,6 +82,7 @@ const home = [
         makePage('routing/layouts.mdx'),
         makePage('routing/appearance.mdx'),
         makePage('routing/error-handling.mdx'),
+        makePage('routing/next-steps.mdx'),
       ],
       { expanded: false }
     ),
