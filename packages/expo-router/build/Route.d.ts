@@ -1,6 +1,5 @@
 import React, { ReactNode } from 'react';
 import type { ErrorBoundaryProps } from './exports';
-import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
 export type DynamicConvention = {
     name: string;
     deep: boolean;
@@ -40,5 +39,6 @@ export declare function Route({ children, node }: {
     children: ReactNode;
     node: RouteNode;
 }): JSX.Element;
-export { sortRoutesWithInitial, sortRoutes };
+export declare function sortRoutesWithInitial(initialRouteName?: string): (a: RouteNode, b: RouteNode) => number;
+export declare function sortRoutes(a: RouteNode, b: RouteNode): number;
 //# sourceMappingURL=Route.d.ts.map

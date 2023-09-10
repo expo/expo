@@ -13,8 +13,6 @@ type TreeNode = {
 };
 type Options = {
     ignore?: RegExp[];
-    preserveApiRoutes?: boolean;
-    ignoreRequireErrors?: boolean;
 };
 /** Convert a flat map of file nodes into a nested tree of files. */
 export declare function getRecursiveTree(files: FileNode[]): TreeNode;

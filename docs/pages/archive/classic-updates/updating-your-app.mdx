@@ -15,7 +15,7 @@ If possible, we highly recommend starting with a boilerplate project that has th
 
 To install the `expo-updates` module in an existing bare workflow app, follow the [installation instructions in the package README](https://github.com/expo/expo/tree/main/packages/expo-updates/README.mdx#installation).
 
-Additionally, you'll need to host your updates and their respective assets (JavaScript bundles, images, fonts, etc.) on a server somewhere that deployed client apps can access. `expo-cli` provides a couple of easy options for this: (1) `expo export` creates prebuilt update packages that you can upload to any static hosting site (e.g. GitHub Pages), and (2) `expo publish` packages and deploys your updates to Expo's updates service, which is part of the services we offer.
+Additionally, you'll need to host your updates and their respective assets (JavaScript bundles, images, fonts, and so on) on a server somewhere that deployed client apps can access. `expo-cli` provides a couple of easy options for this: (1) `expo export` creates prebuilt update packages that you can upload to any static hosting site (for example, GitHub Pages), and (2) `expo publish` packages and deploys your updates to Expo's updates service, which is part of the services we offer.
 
 You can also run your own server to host your updates, provided it conforms to the protocol `expo-updates` expects. You can read more about these requirements below.
 
@@ -51,7 +51,7 @@ If you use `expo export` to create a prebuilt package of your update, the manife
 
 ## Update Compatibility
 
-A critical consideration with updates is compatibility between the JavaScript bundle and the native runtime (i.e. the native modules present in a given binary and the methods they export). To illustrate, consider the following example:
+A critical consideration with updates is compatibility between the JavaScript bundle and the native runtime (the native modules present in a given binary and the methods they export). To illustrate, consider the following example:
 
 Say you have an existing build, build A, of your app running in production. Build A runs JavaScript bundle version 1 and everything works smoothly. In the next version of your app, you need some new functionality, so in development you install a new native module like `expo-media-library`, and use some of its functions. You create build B of your app which includes the `MediaLibrary` native module. Build B runs JavaScript bundle version 2 which calls `MediaLibrary.getAlbumsAsync()`, and this works.
 
@@ -161,7 +161,7 @@ If you want this automatic update behavior to occur only when your users are on 
 
 ### Manual Updates
 
-It's also possible to turn off these automatic updates, and to instead control updates entirely within your JS code. This is desirable if you want some custom logic around fetching updates (e.g. only when users take a specific action in your UI).
+It's also possible to turn off these automatic updates, and to instead control updates entirely within your JS code. This is desirable if you want some custom logic around fetching updates (for example, only when users take a specific action in your UI).
 
 Setting `checkOnLaunch` to `NEVER` will prevent `expo-updates` from automatically fetching the latest update every time your app is launched. Only the most recent cached version of your bundle will be loaded.
 

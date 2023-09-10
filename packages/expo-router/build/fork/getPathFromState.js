@@ -332,10 +332,7 @@ function getPathWithConventionsCollapsed({ pattern, routePath, params, preserveG
                 return `[...${name}]`;
             }
             if (params[name]) {
-                if (Array.isArray(params[name])) {
-                    return params[name].join('/');
-                }
-                return params[name];
+                return params[name].join('/');
             }
             if (i === 0) {
                 // This can occur when a wildcard matches all routes and the given path was `/`.
