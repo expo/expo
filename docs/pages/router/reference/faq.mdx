@@ -13,7 +13,7 @@ export const unstable_settings = {
 };
 ```
 
-## Expo Router vs. Expo vs. React Native CLI
+## Expo Router versus Expo versus React Native CLI
 
 Historically, React Native has been non prescriptive about how apps should be built, this is similar to using React without a modern web framework. Expo Router is an opinionated framework for React Native, similar to how Remix and Next.js are opinionated frameworks for web-only React.
 
@@ -30,7 +30,7 @@ Yes, Expo Router is the framework for universal React Native apps. Due to the de
 3. Refactoring is easier to do because you can move files around without having to update any imports or routing components.
 4. Expo Router has the ability to statically type routes automatically. This ensures you can only link to valid routes and that you can't link to a route that doesn't exist. Typed Routes also improve refactoring as you'll get type errors if links are broken.
 5. Async Routes (bundle splitting) improve development speed, especially in larger projects. They also make upgrades easier as errors are isolated to a single route, meaning you can incrementally update or refactor your app page-by-page rather than all at once (traditional React Native).
-6. Deep links always work, for every page. This makes it possible to share links to any content in the app, which is great for promoting your app, collecting bug reports, E2E testing, automating screenshots, etc.
+6. Deep links always work, for every page. This makes it possible to share links to any content in the app, which is great for promoting your app, collecting bug reports, E2E testing, automating screenshots, and so on.
 7. Expo Head uses automatic links to enable deep-native integration. Features like Quick Notes, Handoff, Siri context, and universal links only require configuration setup, no code changes. This enables perfect vertical integration with the entire ecosystem of smart devices that a user has, leading to the types of user experiences that are only possible with universal apps (web ⇄ native).
 8. Expo Router has the ability to statically render each page automatically on web, enabling real SEO and full discoverability of your app's content. This is only possible because the file-based convention.
 9. **Expo CLI** can infer a lot of information about your application when it follows a known convention. For example, we could implement automatic bundle splitting per route, or automatically generate a sitemap for your website. This is not possible when your app only has a single entry point.

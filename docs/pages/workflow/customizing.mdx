@@ -5,7 +5,7 @@ description: Learn how to add custom native code to your Expo project.
 
 import { Terminal } from '~/ui/components/Snippet';
 
-The Expo Go app is a great tool to get started &mdash; it exists to help developers quickly get projects off the ground, experiment with ideas (such as on [Snack](https://snack.expo.dev/)) and share their work with minimal friction. Expo Go makes this possible by including a feature-rich native runtime made up of every module in the [Expo SDK](/versions/latest/), so all you need to do to use a module is install the package and reload your app.
+The Expo Go app is a great tool to get started &mdash. It exists to help developers quickly get projects off the ground, experiment with ideas (such as on [Snack](https://snack.expo.dev/)) and share their work with minimal friction. Expo Go makes this possible by including a feature-rich native runtime made up of every module in the [Expo SDK](/versions/latest/), so all you need to do to use a module is install the package and reload your app.
 
 The tradeoff is that Expo Go does not allow you to add custom native code, you can only use native modules built into the Expo SDK. There are many great libraries available outside of the Expo SDK, and you may even want to build your own native library. You can leverage these libraries with development builds, or by using prebuild to generate the native projects, or both. You can also continue using [EAS Build](/build/introduction) to release your app, no changes are required.
 
@@ -17,7 +17,7 @@ Learn how to start using custom native code in your app by switching from Expo G
 
 ## Generate native projects with prebuild
 
-If you would like to move from a JavaScript based project and take ownership over the iOS and Android native projects, you can generate them by running `npx expo prebuild`, or `npx expo run:[ios|android]` (which will run `prebuild` automatically). You can also use development builds in this context - the easiest way to do this is to run `npx expo install expo-dev-client` before `prebuild` or `run`, and it's also possible to [add the library at any later time](/develop/development-builds/installation/).
+If you would like to move from a JavaScript based project and take ownership over the Android and iOS native projects, you can generate them by running `npx expo prebuild`, or `npx expo run:[android|iOS]` (which will run `prebuild` automatically). You can also use development builds in this context - the easiest way to do this is to run `npx expo install expo-dev-client` before `prebuild` or `run`, and it's also possible to [add the library at any later time](/develop/development-builds/installation/).
 
 <Terminal
   cmd={[
@@ -47,7 +47,7 @@ If you want to make static changes to your native project files like the iOS **A
 
 ### Reverting changes from `npx expo run:[android|ios]`
 
-If you've decided that you want to roll your app back to being fully managed (no iOS and Android projects in your project directory), you can check out your most recent commit before executing `npx expo run:[android|ios]`, then run `npm install` again to restore the state of your **node_modules** directory.
+If you've decided that you want to roll your app back to being fully managed (no Android and iOS projects in your project directory), you can check out your most recent commit before executing `npx expo run:[android|ios]`, then run `npm install` again to restore the state of your **node_modules** directory.
 
 ### Developing apps with custom native code
 

@@ -54,7 +54,7 @@ Here are the required fields that you have to pay attention to when configuring 
 - The `slug` should be a URL safe value. The slug will be included in the URL that your app's JavaScript is published to. For example: `expo.dev/@community/native-component-list`, where `community` is the username and `native-component-list` is the slug.
 - The `ios.buildNumber` and `android.versionCode` distinguish different binaries of your app. Make sure to increment these for each build you upload to the App Store or Google Play Store.
 
-There are other options you can add to **app.json**. For example, some developers like to configure their own build number, linking scheme, etc. We recommend you go through [Configuration with app.json/app.config.js](/workflow/configuration) for the full specification. At this step, also check [App stores best practices](/distribution/app-stores). It provides details on what types of metadata are required for the app stores.
+There are other options you can add to **app.json**. For example, some developers like to configure their own build number, linking scheme, and so on. We recommend you go through [Configuration with app.json/app.config.js](/workflow/configuration) for the full specification. At this step, also check [App stores best practices](/distribution/app-stores). It provides details on what types of metadata are required for the app stores.
 
 ## 3. Start the build
 
@@ -230,4 +230,4 @@ There are a couple of reasons why you might want to rebuild and resubmit the nat
 
 You have to update the app's `versionCode` and `buildNumber` in **app.json**. Read the [Versioning Your app documentation](/distribution/app-stores#versioning-your-app) for more details.
 
-We also recommend you go through [**app.json** documentation](/workflow/configuration) to get an idea of all the properties you can change. Such as the icons, deep linking URL scheme, add or remove handset/tablet support, etc.
+We also recommend you go through [**app.json** documentation](/workflow/configuration) to get an idea of all the properties you can change. Such as the icons, deep linking URL scheme, add or remove handset/tablet support, and so on.

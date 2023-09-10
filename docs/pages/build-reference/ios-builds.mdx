@@ -18,7 +18,7 @@ The first phase happens on your computer. EAS CLI is in charge of completing the
 
    - Depending on the value of `builds.ios.PROFILE_NAME.credentialsSource`, the credentials are obtained from either the local **credentials.json** file or from the EAS servers. If the `remote` mode is selected but no credentials exist yet, you're offered to generate them.
 
-1. **Bare** projects require an additional step: check whether the Xcode project is configured to be buildable on the EAS servers (i.e. ensure the correct bundle identifier and Apple Team ID are set).
+1. **Bare** projects require an additional step: check whether the Xcode project is configured to be buildable on the EAS servers (to ensure the correct bundle identifier and Apple Team ID are set).
 1. Create the tarball containing a copy of the repository. Actual behavior depends on the [VCS workflow](https://expo.fyi/eas-vcs-workflow) you are using.
 1. Upload the project tarball to a private AWS S3 bucket and send the build request to EAS Build.
 
