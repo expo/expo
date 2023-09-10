@@ -6,7 +6,7 @@ description: Learn how to install multiple variants of an app on the same device
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
-When creating [development, preview, and production builds](/build/eas-json/#common-use-cases), installing each build variant on the same device is common. This allows working in development, previewing the next version of the app, and running the production version on the same device without needing to uninstall and reinstall the app.
+When creating [development, preview, and production builds](/build/eas-json/#common-use-cases), installing these build variants simultaneously on the same device is common. This allows working in development, previewing the next version of the app, and running the production version on a device without needing to uninstall and reinstall the app.
 
 This guide provides the steps required to configure multiple (development and production) variants to install and use them on the same device.
 
@@ -16,9 +16,8 @@ To have multiple variants of an app installed on your device, each variant must 
 
 ## Configure development and production variants
 
-### In managed project
 
-Let's say you want to create a development build and a production build of a managed Expo project. The configuration in the **app.json** may look as shown below:
+You've created a project using Expo tooling, and now you want to create a development and a production build. Your project's **app.json** may have the following configuration:
 
 ```json app.json
 {
@@ -35,7 +34,7 @@ Let's say you want to create a development build and a production build of a man
 }
 ```
 
-If your project has EAS Build configured, your project's **eas.json** has a similar configuration:
+If your project has EAS Build configured, the **eas.json** also has a similar configuration as shown below:
 
 ```json eas.json
 {
@@ -48,7 +47,7 @@ If your project has EAS Build configured, your project's **eas.json** has a simi
 }
 ```
 
-#### Convert app.json to app.config.js
+### Convert app.json to app.config.js
 
 To have multiple variants of the app installed on the same device, rename the **app.json** to **app.config.js** and export the configuration as shown below:
 
@@ -89,7 +88,7 @@ In the above example, the environment variable `IS_DEV` is used to differentiate
 
 > **Note**: If you are using any libraries that require you to register your application identifier with an external service to use the SDK, such as Google Maps, you'll need to have a separate configuration for that API for the `android.package` and `ios.bundleIdentifier`. You can also swap this configuration using the same approach as above.
 
-#### Configuration for EAS Build
+### Configuration for EAS Build
 
 In **eas.json**, set the `APP_VARIANT` environment variable to run builds with the **development** profile by using the `env` property:
 
@@ -109,7 +108,7 @@ In **eas.json**, set the `APP_VARIANT` environment variable to run builds with t
 
 Now, when you run `eas build --profile development`, the environment variable `APP_VARIANT` is set to `development` when evaluating **app.config.js** both locally and on the EAS Build builder.
 
-#### Using the development server
+### Using the development server
 
 When you start your development server, you'll need to run `APP_VARIANT=development npx expo start` (or the platform equivalent if you use Windows).
 
@@ -123,7 +122,7 @@ A shortcut for this is to add the following script to your **package.json**:
 }
 ```
 
-#### Using production variant
+### Using production variant
 
 When you run `eas build --profile production` the `APP_VARIANT` variable environment is not set, and the build runs as the production variant.
 
