@@ -184,7 +184,7 @@ function treeNodeToRouteNode(tree) {
     }
     return folderNodeToRouteNode(tree);
 }
-function contextModuleToFileNodes(contextModule, files = contextModule.keys()) {
+function contextModuleToFileNodes(contextModule, options = {}, files = contextModule.keys()) {
     const nodes = files.map((key) => {
         // In development, check if the file exports a default component
         // this helps keep things snappy when creating files. In production we load all screens lazily.
@@ -193,14 +193,25 @@ function contextModuleToFileNodes(contextModule, files = contextModule.keys()) {
                 // If the user has set the `EXPO_ROUTER_IMPORT_MODE` to `sync` then we should
                 // filter the missing routes.
                 if (import_mode_1.default === 'sync') {
-                    if (!contextModule(key)?.default) {
+                    const isApi = key.match(/\+api\.[jt]sx?$/);
+                    if (!isApi && !contextModule(key)?.default) {
                         return null;
                     }
                 }
             }
             const node = {
                 loadRoute() {
-                    return contextModule(key);
+                    if (options.ignoreRequireErrors) {
+                        try {
+                            return contextModule(key);
+                        }
+                        catch {
+                            return {};
+                        }
+                    }
+                    else {
+                        return contextModule(key);
+                    }
                 },
                 normalizedName: (0, matchers_1.getNameFromFilePath)(key),
                 contextKey: key,
@@ -283,6 +294,9 @@ async function getRoutesAsync(contextModule, options) {
 exports.getRoutesAsync = getRoutesAsync;
 function getIgnoreList(options) {
     const ignore = [/^\.\/\+html\.[tj]sx?$/, ...(options?.ignore ?? [])];
+    if (options?.preserveApiRoutes !== true) {
+        ignore.push(/\+api\.[tj]sx?$/);
+    }
     return ignore;
 }
 /** Get routes without unmatched or sitemap. */
@@ -298,7 +312,7 @@ function contextModuleToTree(contextModule, options) {
         ignore: getIgnoreList(options),
     });
     assertDuplicateRoutes(allowed);
-    const files = contextModuleToFileNodes(contextModule, allowed);
+    const files = contextModuleToFileNodes(contextModule, options, allowed);
     return getRecursiveTree(files);
 }
 async function getExactRoutesAsync(contextModule, options) {
@@ -313,9 +327,9 @@ function appendSitemapRoute(routes) {
         routes.children.some((route) => route.route === '_sitemap')) {
         return routes;
     }
-    const { Sitemap, getNavOptions } = require('./views/Sitemap');
     routes.children.push({
         loadRoute() {
+            const { Sitemap, getNavOptions } = require('./views/Sitemap');
             return { default: Sitemap, getNavOptions };
         },
         route: '_sitemap',
