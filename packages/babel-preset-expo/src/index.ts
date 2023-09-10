@@ -174,9 +174,12 @@ function hasModule(name: string): boolean {
 function getBundler(caller: any) {
   if (!caller) return null;
   if (caller.bundler) return caller.bundler;
-  if (caller.name === 'next-babel-turbo-loader' || caller.name === 'babel-loader') {
-    // expo/webpack-config, gatsby, storybook, and next.js <10
-    // NextJS 11
+  if (
+    // Known tools that use `webpack`-mode via `babel-loader`: `@expo/webpack-config`, Next.js <10
+    caller.name === 'babel-loader' ||
+    // NextJS 11 uses this custom caller name.
+    caller.name === 'next-babel-turbo-loader'
+  ) {
     return 'webpack';
   }
 
