@@ -5,7 +5,7 @@ const node_1 = require("@remix-run/node");
 const __1 = require("..");
 const environment_1 = require("../environment");
 /**
- * Returns a request handler for Express that serves the response using Remix.
+ * Returns a request handler for http that serves the response using Remix.
  */
 function createRequestHandler({ build }, setup) {
     const handleRequest = (0, __1.createRequestHandler)(build, setup);
@@ -19,7 +19,7 @@ function createRequestHandler({ build }, setup) {
             await respond(res, response);
         }
         catch (error) {
-            // Express doesn't support async functions, so we have to pass along the
+            // http doesn't support async functions, so we have to pass along the
             // error manually using next().
             next(error);
         }

@@ -1,4 +1,4 @@
-import { HandlerEvent, HandlerResponse } from '@netlify/functions';
+import type { HandlerEvent, HandlerResponse } from '@netlify/functions';
 import { Headers } from '@remix-run/node';
 import { ExpoRequest, ExpoResponse } from '../environment';
 export declare function createRequestHandler({ build }: {

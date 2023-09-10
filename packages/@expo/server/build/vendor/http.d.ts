@@ -6,7 +6,7 @@ import { ExpoRequest, ExpoResponse } from '../environment';
 type NextFunction = (err?: any) => void;
 export type RequestHandler = (req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) => Promise<void>;
 /**
- * Returns a request handler for Express that serves the response using Remix.
+ * Returns a request handler for http that serves the response using Remix.
  */
 export declare function createRequestHandler({ build }: {
     build: string;
