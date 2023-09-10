@@ -270,20 +270,20 @@ describe(findModulesAsync, () => {
   it('should link pacakges which are installed in isolated stores', async () => {
     const modulesRoot = path.join(expoRoot, 'isolation', 'node_modules');
 
-    // Keep track of all glob paths that need to return `<pkg>/expo-module.config.json`
-    const globMockedPaths: Record<string, string[]> = {};
-
     // Create the isolated store paths
     const expoModulesDir = path.join(modulesRoot, '.pnpm', `expo@1.0.0`, 'node_modules');
     const devModulesDir = path.join(modulesRoot, '.pnpm', `expo-dev-client@1.0.0`, 'node_modules');
 
+    // Keep track of all glob paths that need to return `<pkg>/expo-module.config.json`
+    const globPaths: Record<string, string[]> = {
+      [modulesRoot]: [],
+      [expoModulesDir]: [],
+      [devModulesDir]: [],
+    };
+
     // Generate isolated `expo` package and its (nested) dependencies
     for (const pkgName of ['expo', '@expo/cli', 'expo-application']) {
-      globMockedPaths[expoModulesDir] = [
-        ...(globMockedPaths[expoModulesDir] || []),
-        `${pkgName}/expo-module.config.json`,
-      ];
-
+      globPaths[expoModulesDir].push(`${pkgName}/expo-module.config.json`);
       addMockedModule(pkgName, {
         globCwd: expoModulesDir,
         nodeModulesRoot: expoModulesDir,
@@ -293,11 +293,7 @@ describe(findModulesAsync, () => {
 
     // Generate isolated `expo-dev-client` package and its (nested) dependencies
     for (const pkgName of ['expo-dev-client', 'expo-dev-launcher']) {
-      globMockedPaths[devModulesDir] = [
-        ...(globMockedPaths[devModulesDir] || []),
-        `${pkgName}/expo-module.config.json`,
-      ];
-
+      globPaths[devModulesDir].push(`${pkgName}/expo-module.config.json`);
       addMockedModule(pkgName, {
         globCwd: devModulesDir,
         nodeModulesRoot: devModulesDir,
@@ -307,11 +303,7 @@ describe(findModulesAsync, () => {
 
     // Generate the project root `node_modules` dependencies
     for (const pkgName of ['expo', 'expo-dev-client']) {
-      globMockedPaths[modulesRoot] = [
-        ...(globMockedPaths[modulesRoot] || []),
-        `${pkgName}/expo-module.config.json`,
-      ];
-
+      globPaths[modulesRoot].push(`${pkgName}/expo-module.config.json`);
       addMockedModule(pkgName, {
         globCwd: modulesRoot,
         nodeModulesRoot: modulesRoot,
@@ -320,7 +312,7 @@ describe(findModulesAsync, () => {
     }
 
     // Create a single glob mock that handles all separate isolated stores
-    registerMultiGlobMock(glob, globMockedPaths);
+    registerMultiGlobMock(glob, globPaths);
 
     // Mock `fs.realpath` to "fake" `expo` and `expo-dev-client` being linked from the isolated store
     const fsSpy = jest.spyOn(fs, 'realpath').mockImplementation(async (filePath) => {
@@ -348,6 +340,101 @@ describe(findModulesAsync, () => {
     // Validate `expo-dev-client` and nested dependencies are linked
     expect(result['expo-dev-client']).not.toBeUndefined();
     expect(result['expo-dev-launcher']).not.toBeUndefined();
+
+    fsSpy.mockRestore();
+  });
+
+  /**
+   * /app/node_modules
+   *   ├── /expo → /.pnpm/expo@x.x.x+.../node_modules/expo
+   *   ├── /expo-application → /.pnpm/expo-application@0.9.9+.../node_modules/expo-application
+   *   └── /.pnpm
+   *         ├── /expo@x.x.x+.../node_modules
+   *         │    ├── /expo
+   *         │    └── /expo-application (v1.0.0)
+   *         └── /expo-application@0.9.9+.../node_modules
+   *              └── /expo-application (v0.9.9)
+   */
+  it('should prefer project dependencies over nested isolated dependencies', async () => {
+    const modulesRoot = path.join(expoRoot, 'isolation', 'node_modules');
+
+    // Create the isolated store paths
+    const expoModulesDir = path.join(modulesRoot, '.pnpm', `expo@1.0.0`, 'node_modules');
+    const appModulesDir = path.join(modulesRoot, '.pnpm', `expo-application@0.9.9`, 'node_modules');
+
+    // Keep track of all glob paths that need to return `<pkg>/expo-module.config.json`
+    const globPaths: Record<string, string[]> = {
+      [modulesRoot]: [],
+      [expoModulesDir]: [],
+      [appModulesDir]: [],
+    };
+
+    // Generate isolated `expo` package and its (nested) dependencies
+    for (const pkgName of ['expo', 'expo-application']) {
+      globPaths[expoModulesDir].push(`${pkgName}/expo-module.config.json`);
+
+      addMockedModule(pkgName, {
+        globCwd: expoModulesDir,
+        nodeModulesRoot: expoModulesDir,
+        pkgVersion: '1.0.0',
+      });
+    }
+
+    // Generate isolated `expo-application` package
+    globPaths[appModulesDir].push('expo-application/expo-module.config.json');
+    addMockedModule('expo-application', {
+      globCwd: appModulesDir,
+      nodeModulesRoot: appModulesDir,
+      pkgVersion: '0.9.9',
+    });
+
+    // Generate the project root `node_modules` dependencies
+    globPaths[modulesRoot].push('expo/expo-module.config.json');
+    addMockedModule('expo', {
+      globCwd: modulesRoot,
+      nodeModulesRoot: modulesRoot,
+      pkgVersion: '1.0.0',
+    });
+    globPaths[modulesRoot].push('expo-application/expo-module.config.json');
+    addMockedModule('expo-application', {
+      globCwd: modulesRoot,
+      nodeModulesRoot: modulesRoot,
+      pkgVersion: '0.9.9', // This is a conflicting `expo-application` version, which should take presedence
+    });
+
+    // Create a single glob mock that handles all separate isolated stores
+    registerMultiGlobMock(glob, globPaths);
+
+    // Mock `fs.realpath` to "fake" `expo` and `expo-application` being linked from the isolated store
+    const fsSpy = jest.spyOn(fs, 'realpath').mockImplementation(async (filePath) => {
+      const linkedModules = {
+        [path.join(modulesRoot, 'expo')]: path.join(expoModulesDir, 'expo'),
+        [path.join(modulesRoot, 'expo-application')]: path.join(appModulesDir, 'expo-application'),
+      };
+
+      // Either return the linked path, or the original path
+      return linkedModules[filePath.toString()]
+        ? linkedModules[filePath.toString()]
+        : filePath.toString();
+    });
+
+    const result = await findModulesAsync({
+      searchPaths: [modulesRoot],
+      platform: 'ios',
+    });
+
+    // Validate both `expo` and `expo-application` are linked
+    expect(result.expo).not.toBeUndefined();
+    expect(result['expo-application']).not.toBeUndefined();
+
+    // Validate that the project version is linked, but nested is detected as duplicate
+    expect(result['expo-application'].version).toEqual('0.9.9');
+    expect(result['expo-application'].duplicates).toEqual([
+      expect.objectContaining({
+        version: '1.0.0',
+        path: path.join(expoModulesDir, 'expo-application'),
+      }),
+    ]);
 
     fsSpy.mockRestore();
   });
