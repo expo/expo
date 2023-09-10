@@ -25,6 +25,7 @@ import host.exp.exponent.*
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.kernel.ExponentUrls
+import host.exp.exponent.kernel.ExponentUrls.addHeadersFromJSONObject
 import host.exp.exponent.kernel.KernelConstants
 import host.exp.exponent.kernel.KernelNetworkInterceptor
 import host.exp.exponent.network.ExpoResponse
@@ -39,6 +40,7 @@ import org.apache.commons.io.IOUtils
 import org.apache.commons.io.output.ByteArrayOutputStream
 import org.apache.commons.io.output.TeeOutputStream
 import org.json.JSONArray
+import org.json.JSONObject
 import versioned.host.exp.exponent.ExponentPackageDelegate
 import java.io.*
 import java.net.URLEncoder
@@ -116,6 +118,7 @@ class Exponent private constructor(val context: Context, val application: Applic
   fun loadJSBundle(
     manifest: Manifest?,
     urlString: String,
+    requestHeaders: JSONObject,
     id: String,
     abiVersion: String,
     bundleListener: BundleListener,
@@ -147,9 +150,9 @@ class Exponent private constructor(val context: Context, val application: Applic
     try {
       val requestBuilder = if (KernelConstants.KERNEL_BUNDLE_ID == id) {
         // TODO(eric): remove once home bundle is loaded normally
-        ExponentUrls.addExponentHeadersToUrl(urlString)
+        ExponentUrls.addExponentHeadersToUrl(urlString).addHeadersFromJSONObject(requestHeaders)
       } else {
-        Request.Builder().url(urlString)
+        Request.Builder().url(urlString).addHeadersFromJSONObject(requestHeaders)
       }
       if (shouldForceNetwork) {
         requestBuilder.cacheControl(CacheControl.FORCE_NETWORK)

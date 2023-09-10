@@ -6,7 +6,11 @@
 
 ### 🎉 New features
 
+- Add support for [Bun](https://bun.sh) package manager by [@colinhacks][https://github.com/colinhacks] ([#24168](https://github.com/expo/expo/pull/24168) by [@colinhacks](https://github.com/colinhacks))
+
 ### 🐛 Bug fixes
+
+- Fix build files. ([#24344](https://github.com/expo/expo/pull/24344) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
