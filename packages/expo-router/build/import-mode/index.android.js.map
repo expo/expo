@@ -1,1 +1,1 @@
-{"version":3,"file":"index.android.js","sourceRoot":"","sources":["../../src/import-mode/index.android.ts"],"names":[],"mappings":"AAAA,eAAe,OAAO,CAAC,GAAG,CAAC,+BAA+B,CAAC","sourcesContent":["export default process.env.EXPO_ROUTER_IMPORT_MODE_ANDROID;\n"]}
+{"version":3,"file":"index.android.js","sourceRoot":"","sources":["../../src/import-mode/index.android.ts"],"names":[],"mappings":";;AAAA,kBAAe,OAAO,CAAC,GAAG,CAAC,+BAA+B,CAAC","sourcesContent":["export default process.env.EXPO_ROUTER_IMPORT_MODE_ANDROID;\n"]}

@@ -1,3 +1,4 @@
+"use strict";
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -18,6 +19,8 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.resolve = void 0;
 // https://github.com/browserify/path-browserify/blob/master/index.js
 function assertPath(path) {
     if (typeof path !== 'string') {
@@ -102,7 +105,7 @@ function normalizeStringPosix(path, allowAboveRoot) {
     return res;
 }
 // path.resolve([from ...], to)
-export function resolve(...segments) {
+function resolve(...segments) {
     let resolvedPath = '';
     let resolvedAbsolute = false;
     for (let i = segments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
@@ -140,4 +143,5 @@ export function resolve(...segments) {
         return '.';
     }
 }
+exports.resolve = resolve;
 //# sourceMappingURL=path.js.map

@@ -1,7 +1,13 @@
-import { registerRootComponent } from 'expo';
-import React from 'react';
-import { Platform, View } from 'react-native';
-import { SplashScreen, _internal_preventAutoHideAsync } from './views/Splash';
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.renderRootComponent = void 0;
+const expo_1 = require("expo");
+const react_1 = __importDefault(require("react"));
+const react_native_1 = require("react-native");
+const Splash_1 = require("./views/Splash");
 function isBaseObject(obj) {
     if (Object.prototype.toString.call(obj) !== '[object Object]') {
         return false;
@@ -40,31 +46,31 @@ function convertError(error) {
  * Register and mount the root component using the predefined rendering
  * method. This function ensures the Splash Screen and errors are handled correctly.
  */
-export function renderRootComponent(Component) {
+function renderRootComponent(Component) {
     try {
         // This must be delayed so the user has a chance to call it first.
         setTimeout(() => {
-            _internal_preventAutoHideAsync();
+            (0, Splash_1._internal_preventAutoHideAsync)();
         });
         if (process.env.NODE_ENV !== 'production') {
             const { withErrorOverlay } = require('@expo/metro-runtime/error-overlay');
-            registerRootComponent(withErrorOverlay(Component));
+            (0, expo_1.registerRootComponent)(withErrorOverlay(Component));
         }
         else {
-            registerRootComponent(Component);
+            (0, expo_1.registerRootComponent)(Component);
         }
     }
     catch (e) {
         // Hide the splash screen if there was an error so the user can see it.
-        SplashScreen.hideAsync();
+        Splash_1.SplashScreen.hideAsync();
         const error = convertError(e);
         // Prevent the app from throwing confusing:
         //  ERROR  Invariant Violation: "main" has not been registered. This can happen if:
         // * Metro (the local dev server) is run from the wrong folder. Check if Metro is running, stop it and restart it in the current project.
         // * A module failed to load due to an error and `AppRegistry.registerComponent` wasn't called.
-        registerRootComponent(() => React.createElement(View, null));
+        (0, expo_1.registerRootComponent)(() => react_1.default.createElement(react_native_1.View, null));
         // Console is pretty useless on native, on web you get interactive stack traces.
-        if (Platform.OS === 'web') {
+        if (react_native_1.Platform.OS === 'web') {
             console.error(error);
             console.error(`A runtime error has occurred while rendering the root component.`);
         }
@@ -75,4 +81,5 @@ export function renderRootComponent(Component) {
         // TODO: Render a production-only error screen.
     }
 }
+exports.renderRootComponent = renderRootComponent;
 //# sourceMappingURL=renderRootComponent.js.map

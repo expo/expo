@@ -1,12 +1,18 @@
-import React from 'react';
-import { useContextKey } from '../Route';
-import { useSortedScreens } from '../useScreens';
-import { Screen } from '../views/Screen';
-export function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = {}) {
-    return React.useMemo(() => {
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.withLayoutContext = exports.useFilterScreenChildren = void 0;
+const react_1 = __importDefault(require("react"));
+const Route_1 = require("../Route");
+const useScreens_1 = require("../useScreens");
+const Screen_1 = require("../views/Screen");
+function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = {}) {
+    return react_1.default.useMemo(() => {
         const customChildren = [];
-        const screens = React.Children.map(children, (child) => {
-            if (React.isValidElement(child) && child && child.type === Screen) {
+        const screens = react_1.default.Children.map(children, (child) => {
+            if (react_1.default.isValidElement(child) && child && child.type === Screen_1.Screen) {
                 if (!child.props.name) {
                     throw new Error(`<Screen /> component in \`default export\` at \`app${contextKey}/_layout\` must have a \`name\` prop when used as a child of a Layout Route.`);
                 }
@@ -40,26 +46,28 @@ export function useFilterScreenChildren(children, { isCustomNavigator, contextKe
         };
     }, [children]);
 }
+exports.useFilterScreenChildren = useFilterScreenChildren;
 /** Return a navigator that automatically injects matched routes and renders nothing when there are no children. Return type with children prop optional */
-export function withLayoutContext(Nav, processor) {
-    const Navigator = React.forwardRef(({ children: userDefinedChildren, ...props }, ref) => {
-        const contextKey = useContextKey();
+function withLayoutContext(Nav, processor) {
+    const Navigator = react_1.default.forwardRef(({ children: userDefinedChildren, ...props }, ref) => {
+        const contextKey = (0, Route_1.useContextKey)();
         const { screens } = useFilterScreenChildren(userDefinedChildren, {
             contextKey,
         });
         const processed = processor ? processor(screens ?? []) : screens;
-        const sorted = useSortedScreens(processed ?? []);
+        const sorted = (0, useScreens_1.useSortedScreens)(processed ?? []);
         // Prevent throwing an error when there are no screens.
         if (!sorted.length) {
             return null;
         }
         return (
         // @ts-expect-error
-        React.createElement(Nav, { ...props, id: contextKey, ref: ref, children: sorted }));
+        react_1.default.createElement(Nav, { ...props, id: contextKey, ref: ref, children: sorted }));
     });
     // @ts-expect-error
-    Navigator.Screen = Screen;
+    Navigator.Screen = Screen_1.Screen;
     // @ts-expect-error
     return Navigator;
 }
+exports.withLayoutContext = withLayoutContext;
 //# sourceMappingURL=withLayoutContext.js.map

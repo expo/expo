@@ -1,25 +1,54 @@
-import React, { useContext } from 'react';
-import { getContextKey, matchGroupName } from './matchers';
-const CurrentRouteContext = React.createContext(null);
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.sortRoutes = exports.sortRoutesWithInitial = exports.Route = exports.useContextKey = exports.useRouteNode = void 0;
+const react_1 = __importStar(require("react"));
+const matchers_1 = require("./matchers");
+const CurrentRouteContext = react_1.default.createContext(null);
 if (process.env.NODE_ENV !== 'production') {
     CurrentRouteContext.displayName = 'RouteNode';
 }
 /** Return the RouteNode at the current contextual boundary. */
-export function useRouteNode() {
-    return useContext(CurrentRouteContext);
+function useRouteNode() {
+    return (0, react_1.useContext)(CurrentRouteContext);
 }
-export function useContextKey() {
+exports.useRouteNode = useRouteNode;
+function useContextKey() {
     const node = useRouteNode();
     if (node == null) {
         throw new Error('No filename found. This is likely a bug in expo-router.');
     }
-    return getContextKey(node.contextKey);
+    return (0, matchers_1.getContextKey)(node.contextKey);
 }
+exports.useContextKey = useContextKey;
 /** Provides the matching routes and filename to the children. */
-export function Route({ children, node }) {
-    return React.createElement(CurrentRouteContext.Provider, { value: node }, children);
+function Route({ children, node }) {
+    return react_1.default.createElement(CurrentRouteContext.Provider, { value: node }, children);
 }
-export function sortRoutesWithInitial(initialRouteName) {
+exports.Route = Route;
+function sortRoutesWithInitial(initialRouteName) {
     return (a, b) => {
         if (initialRouteName) {
             if (a.route === initialRouteName) {
@@ -32,7 +61,8 @@ export function sortRoutesWithInitial(initialRouteName) {
         return sortRoutes(a, b);
     };
 }
-export function sortRoutes(a, b) {
+exports.sortRoutesWithInitial = sortRoutesWithInitial;
+function sortRoutes(a, b) {
     if (a.dynamic && !b.dynamic) {
         return 1;
     }
@@ -55,8 +85,8 @@ export function sortRoutes(a, b) {
         }
         return 0;
     }
-    const aIndex = a.route === 'index' || matchGroupName(a.route) != null;
-    const bIndex = b.route === 'index' || matchGroupName(b.route) != null;
+    const aIndex = a.route === 'index' || (0, matchers_1.matchGroupName)(a.route) != null;
+    const bIndex = b.route === 'index' || (0, matchers_1.matchGroupName)(b.route) != null;
     if (aIndex && !bIndex) {
         return -1;
     }
@@ -65,4 +95,5 @@ export function sortRoutes(a, b) {
     }
     return a.route.length - b.route.length;
 }
+exports.sortRoutes = sortRoutes;
 //# sourceMappingURL=Route.js.map
