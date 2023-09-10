@@ -1,5 +1,3 @@
-/* eslint-env node */
-
 import { ConfigAPI, PluginItem, TransformOptions } from '@babel/core';
 
 import { lazyImports } from './lazyImports';
@@ -182,7 +180,7 @@ function getBundler(caller: any) {
     return 'webpack';
   }
 
-  // This is a hack to determine if metro is being used.
+  // Assume anything else is Metro.
   return 'metro';
 }
 
