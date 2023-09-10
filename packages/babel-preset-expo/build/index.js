@@ -1,5 +1,4 @@
 "use strict";
-/* eslint-env node */
 Object.defineProperty(exports, "__esModule", { value: true });
 const lazyImports_1 = require("./lazyImports");
 function babelPresetExpo(api, options = {}) {
@@ -137,12 +136,14 @@ function getBundler(caller) {
         return null;
     if (caller.bundler)
         return caller.bundler;
-    if (caller.name === 'next-babel-turbo-loader' || caller.name === 'babel-loader') {
-        // expo/webpack-config, gatsby, storybook, and next.js <10
-        // NextJS 11
+    if (
+    // Known tools that use `webpack`-mode via `babel-loader`: `@expo/webpack-config`, Next.js <10
+    caller.name === 'babel-loader' ||
+        // NextJS 11 uses this custom caller name.
+        caller.name === 'next-babel-turbo-loader') {
         return 'webpack';
     }
-    // This is a hack to determine if metro is being used.
+    // Assume anything else is Metro.
     return 'metro';
 }
 exports.default = babelPresetExpo;
