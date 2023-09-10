@@ -12,6 +12,7 @@
 
 ### 💡 Others
 
+- Compile to cjs to support running directly in Node.js. ([#24349](https://github.com/expo/expo/pull/24349) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix build. ([#24309](https://github.com/expo/expo/pull/24309) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.1.0 — 2023-09-04
