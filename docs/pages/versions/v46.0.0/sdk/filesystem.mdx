@@ -215,7 +215,7 @@ These values can be used to define how sessions work on iOS.
 
   > **Note**: The background session doesn't fail if the server or your connection is down. Rather, it continues retrying until the task succeeds or is canceled manually.
 
-- **FileSystem.FileSystemSessionType.FOREGROUND** -- Using this mode means that downloading/uploading session on the native side will be terminated once the application becomes inactive (e.g. when it goes to background). Bringing the application to foreground again would trigger Promise rejection.
+- **FileSystem.FileSystemSessionType.FOREGROUND** -- Using this mode means that downloading/uploading session on the native side will be terminated once the application becomes inactive (for example, when it goes to background). Bringing the application to foreground again would trigger Promise rejection.
 
 ### `FileSystem.FileSystemUploadType`
 

@@ -37,7 +37,7 @@ function Post() {
 }
 ```
 
-When you run `npx expo start`, `process.env.EXPO_PUBLIC_API_URL` will be replaced with `https://staging.example.com` in your app bundle. Variables can be updated as you edit your code without restarting the Expo CLI or clearing the cache. You will need to perform a full reload (e.g., shake gesture and then Reload in Expo Go or your development build) to see the updated value.
+When you run `npx expo start`, `process.env.EXPO_PUBLIC_API_URL` will be replaced with `https://staging.example.com` in your app bundle. Variables can be updated as you edit your code without restarting the Expo CLI or clearing the cache. You will need to perform a full reload (for example, shake gesture and then Reload in Expo Go or your development build) to see the updated value.
 
 > **warning** Do not store sensitive info, such as private keys, in `EXPO_PUBLIC_` variables. These variables will be visible in plain-text in your compiled application.
 
@@ -49,7 +49,7 @@ Every variable must be referenced as a static property in order for it to be inl
 
 ### Using multiple .env files to define separate environments
 
-You can define any of the [standard .env files](https://github.com/bkeepers/dotenv/blob/c6e583a/README.md#what-other-env-files-can-i-use), so it is possible to have separate **.env**, **.env.local**, **.env.production**, etc. files and they will load according to the standard priority.
+You can define any of the [standard .env files](https://github.com/bkeepers/dotenv/blob/c6e583a/README.md#what-other-env-files-can-i-use), so it is possible to have separate **.env**, **.env.local**, **.env.production** and so on, files and they will load according to the standard priority.
 
 You may choose to commit the default **.env** file or other standard configurations to version control, but generally **.env.local** files should be added to your **.gitignore**:
 
@@ -91,7 +91,7 @@ Update your **.env** files to prefix any variables used within your JavaScript c
 + EXPO_PUBLIC_API_URL=https://myapi.com
 ```
 
-> If you have any non-standard **.env** files (e.g., **.env.staging**), you will need to migrate those to one of the [standard .env files](https://github.com/bkeepers/dotenv/blob/c6e583a/README.md#what-other-env-files-can-i-use).
+> If you have any non-standard **.env** files (for example, **.env.staging**), you will need to migrate those to one of the [standard .env files](https://github.com/bkeepers/dotenv/blob/c6e583a/README.md#what-other-env-files-can-i-use).
 
 Then update your code to use `process.env.EXPO_PUBLIC_[VARNAME]`:
 

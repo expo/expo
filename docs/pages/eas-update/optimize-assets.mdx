@@ -17,7 +17,7 @@ Many users running Android and iOS apps are using mobile connections that are no
 
 When publishing an update, EAS CLI runs Expo CLI to bundle the project into an update. The update will appear in our project's **./dist** folder.
 
-In **./dist/bundles**, we can see the size of the **index.ios.js** and **index.android.js** files that will be part of the iOS and Android updates, respectively. Note that these are uncompressed file sizes; EAS Update uses Brotli and gzip compression, which can significantly reduce download sizes. Nevertheless, these files will be downloaded to a user's device when getting the new update if the device has not downloaded them before. Making these file sizes as small as possible helps end-users download updates quickly.
+In **./dist/bundles**, we can see the size of the **index.ios.js** and **index.android.js** files that will be part of the Android and iOS updates, respectively. Note that these are uncompressed file sizes; EAS Update uses Brotli and gzip compression, which can significantly reduce download sizes. Nevertheless, these files will be downloaded to a user's device when getting the new update if the device has not downloaded them before. Making these file sizes as small as possible helps end-users download updates quickly.
 
 ## Image assets
 

@@ -71,7 +71,7 @@ For a project that has the following in its app config:
 }
 ```
 
-The `"appVersion"` policy will set the runtime version to the project's current `"version"` property. The runtime version for the iOS and Android builds and any updates would be in this case `"1.0.0"`.
+The `"appVersion"` policy will set the runtime version to the project's current `"version"` property. The runtime version for the Android and iOS builds and any updates would be in this case `"1.0.0"`.
 
 This policy is great for projects that contain custom native code and that update the `"version"` field after every public release. To submit an app, the app stores require an updated native version number for each submitted build, which makes this policy convenient if you want to be sure that every version installed on user devices has a different runtime version.
 
@@ -110,13 +110,13 @@ The `"nativeVersion"` policy will set the runtime version to the project's curre
 }
 ```
 
-The runtime version for the iOS and Android builds and any updates would be the combination of `"[version]([buildNumber|versionCode])"`, which in this case would be `"1.0.0(1)"`.
+The runtime version for the Android and iOS builds and any updates would be the combination of `"[version]([buildNumber|versionCode])"`, which in this case would be `"1.0.0(1)"`.
 
-This policy is great for projects that contain custom native code and that update the native version numbers (`"buildNumber"` for iOS and `"versionCode"` for Android) for each build. To submit an app, the app stores require an updated native version number for each submitted build, which makes this policy convenient if you want to be sure that every app uploaded to Play Store's Internal Test Track and the App Store's TestFlight distribution tools has a different `runtimeVersion`.
+This policy is great for projects that contain custom native code and that update the native version numbers (`"buildNumber"` for iOS and `"versionCode"` for Android) for each build. To submit an app, the app stores require an updated native version number for each submitted build, which makes this policy convenient if you want to be sure that every app uploaded to the Play Store's Internal Test Track and the App Store's TestFlight distribution tools has a different `runtimeVersion`.
 
 It's important to know that this policy does require the developer to manage the native version numbers manually between each build.
 
-Also, if you select a different native version between iOS and Android, you'll end up with builds and updates with separate runtime versions. When you publish an update, EAS CLI will detect that two updates are needed, and it will create two updates with the required runtime versions and publish them separately.
+Also, if you select a different native version between Android and iOS, you'll end up with builds and updates with separate runtime versions. When you publish an update, EAS CLI will detect that two updates are needed, and it will create two updates with the required runtime versions and publish them separately.
 
 ### Custom `"runtimeVersion"`
 
