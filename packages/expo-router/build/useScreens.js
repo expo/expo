@@ -105,13 +105,11 @@ function getQualifiedRouteComponent(value) {
             return fromLoadedRoute(res);
         });
         getLoadable = (props, ref) => (react_1.default.createElement(react_1.default.Suspense, { fallback: react_1.default.createElement(SuspenseFallback_1.SuspenseFallback, { route: value }) },
-            react_1.default.createElement(AsyncComponent, { ...{
-                    ...props,
-                    ref,
-                    // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
-                    // the intention is to make it possible to deduce shared routes.
-                    segment: value.route,
-                } })));
+            react_1.default.createElement(AsyncComponent, { ...props,
+                ref,
+                // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
+                // the intention is to make it possible to deduce shared routes.
+                segment: value.route })));
     }
     else {
         const SyncComponent = react_1.default.forwardRef((props, ref) => {
@@ -119,13 +117,11 @@ function getQualifiedRouteComponent(value) {
             const Component = fromImport(res).default;
             return react_1.default.createElement(Component, { ...props, ref: ref });
         });
-        getLoadable = (props, ref) => (react_1.default.createElement(SyncComponent, { ...{
-                ...props,
-                ref,
-                // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
-                // the intention is to make it possible to deduce shared routes.
-                segment: value.route,
-            } }));
+        getLoadable = (props, ref) => (react_1.default.createElement(SyncComponent, { ...props,
+            ref,
+            // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
+            // the intention is to make it possible to deduce shared routes.
+            segment: value.route }));
     }
     const QualifiedRoute = react_1.default.forwardRef(({ 
     // Remove these React Navigation props to
