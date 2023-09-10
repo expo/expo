@@ -14,5 +14,7 @@
   <string>FMWK</string>
   <key>CFBundleSignature</key>
   <string>????</string>
+  <key>MinimumOSVersion</key>
+  <string>8.0</string>
 </dict>
 </plist>
