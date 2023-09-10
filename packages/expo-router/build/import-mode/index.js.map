@@ -1,1 +1,1 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../../src/import-mode/index.ts"],"names":[],"mappings":"AAAA,eAAe,MAAyB,CAAC","sourcesContent":["export default 'sync' as 'sync' | 'lazy';\n"]}
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../../src/import-mode/index.ts"],"names":[],"mappings":";;AAAA,kBAAe,MAAyB,CAAC","sourcesContent":["export default 'sync' as 'sync' | 'lazy';\n"]}

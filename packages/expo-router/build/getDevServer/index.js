@@ -1,8 +1,14 @@
-import { Platform } from 'expo-modules-core';
-import qs from 'qs';
-export const getDevServer = () => {
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getDevServer = void 0;
+const expo_modules_core_1 = require("expo-modules-core");
+const qs_1 = __importDefault(require("qs"));
+const getDevServer = () => {
     // Disable for SSR
-    if (!Platform.isDOMAvailable) {
+    if (!expo_modules_core_1.Platform.isDOMAvailable) {
         return {
             bundleLoadedFromServer: true,
             fullBundleUrl: '',
@@ -18,13 +24,14 @@ export const getDevServer = () => {
                 return document.currentScript.src;
             }
             const url = window.location.toString();
-            const query = qs.parse(url);
+            const query = qs_1.default.parse(url);
             return (location.origin +
                 location.pathname +
                 '?' +
-                qs.stringify({ ...query, platform: Platform.OS }));
+                qs_1.default.stringify({ ...query, platform: expo_modules_core_1.Platform.OS }));
         },
         url: location.origin + '/',
     };
 };
+exports.getDevServer = getDevServer;
 //# sourceMappingURL=index.js.map

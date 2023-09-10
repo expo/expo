@@ -1,12 +1,16 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.loadStaticParamsAsync = void 0;
 async function recurseAndFlattenNodes(nodes, props, func) {
     const tarr = await Promise.all(nodes.map((node) => func(node, props)).flat());
     return tarr.filter(Boolean);
 }
-export async function loadStaticParamsAsync(route) {
+async function loadStaticParamsAsync(route) {
     const processed = (await Promise.all(route.children.map((route) => loadStaticParamsRecursive(route, { parentParams: {} })))).flat();
     route.children = processed;
     return route;
 }
+exports.loadStaticParamsAsync = loadStaticParamsAsync;
 function assertStaticParams(route, params) {
     const matches = route.dynamic.every((dynamic) => {
         const value = params[dynamic.name];

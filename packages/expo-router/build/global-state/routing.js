@@ -1,26 +1,55 @@
-import { CommonActions, getActionFromState, StackActions } from '@react-navigation/core';
-import { TabActions } from '@react-navigation/native';
-import * as Linking from 'expo-linking';
-import { resolveHref } from '../link/href';
-import { resolve } from '../link/path';
-import { findTopRouteForTarget, getEarliestMismatchedRoute, getQualifiedStateForTopOfTargetState, isMovingToSiblingRoute, } from '../link/stateOperations';
-import { hasUrlProtocolPrefix } from '../utils/url';
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.isAbsoluteInitialRoute = exports.linkTo = exports.setParams = exports.canGoBack = exports.goBack = exports.replace = exports.push = void 0;
+const core_1 = require("@react-navigation/core");
+const native_1 = require("@react-navigation/native");
+const Linking = __importStar(require("expo-linking"));
+const href_1 = require("../link/href");
+const path_1 = require("../link/path");
+const stateOperations_1 = require("../link/stateOperations");
+const url_1 = require("../utils/url");
 function assertIsReady(store) {
     if (!store.navigationRef.isReady()) {
         throw new Error('Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.');
     }
 }
-export function push(url) {
-    return this.linkTo(resolveHref(url));
+function push(url) {
+    return this.linkTo((0, href_1.resolveHref)(url));
 }
-export function replace(url) {
-    return this.linkTo(resolveHref(url), 'REPLACE');
+exports.push = push;
+function replace(url) {
+    return this.linkTo((0, href_1.resolveHref)(url), 'REPLACE');
 }
-export function goBack() {
+exports.replace = replace;
+function goBack() {
     assertIsReady(this);
     this.navigationRef?.current?.goBack();
 }
-export function canGoBack() {
+exports.goBack = goBack;
+function canGoBack() {
     // Return a default value here if the navigation hasn't mounted yet.
     // This can happen if the user calls `canGoBack` from the Root Layout route
     // before mounting a navigator. This behavior exists due to React Navigation being dynamically
@@ -31,12 +60,14 @@ export function canGoBack() {
     }
     return this.navigationRef?.current?.canGoBack() ?? false;
 }
-export function setParams(params = {}) {
+exports.canGoBack = canGoBack;
+function setParams(params = {}) {
     assertIsReady(this);
     return (this.navigationRef?.current?.setParams)(params);
 }
-export function linkTo(href, event) {
-    if (hasUrlProtocolPrefix(href)) {
+exports.setParams = setParams;
+function linkTo(href, event) {
+    if ((0, url_1.hasUrlProtocolPrefix)(href)) {
         Linking.openURL(href);
         return;
     }
@@ -60,7 +91,7 @@ export function linkTo(href, event) {
         if (base && !base.endsWith('/')) {
             base += '/..';
         }
-        href = resolve(base, href);
+        href = (0, path_1.resolve)(base, href);
     }
     const state = this.linking.getStateFromPath(href, this.linking.config);
     if (!state) {
@@ -71,36 +102,36 @@ export function linkTo(href, event) {
     // Ensure simple operations are used when moving between siblings
     // in the same navigator. This ensures that the state is not reset.
     // TODO: We may need to apply this at a larger scale in the future.
-    if (isMovingToSiblingRoute(rootState, state)) {
+    if ((0, stateOperations_1.isMovingToSiblingRoute)(rootState, state)) {
         // Can perform naive movements
-        const knownOwnerState = getQualifiedStateForTopOfTargetState(rootState, state);
-        const nextRoute = findTopRouteForTarget(state);
+        const knownOwnerState = (0, stateOperations_1.getQualifiedStateForTopOfTargetState)(rootState, state);
+        const nextRoute = (0, stateOperations_1.findTopRouteForTarget)(state);
         // NOTE(EvanBacon): There's an issue where moving from "a -> b" is considered siblings:
         // a. index (initialRouteName="index")
         // b. stack/index
         // However, the preservation approach doesn't work because it would be moving to a route with the same name.
         // The next check will see if the current focused route has the same name as the next route, if so, then fallback on
         // the default React Navigation logic.
-        if (findTopRouteForTarget(
+        if ((0, stateOperations_1.findTopRouteForTarget)(
         // @ts-expect-error: stale types don't matter here
         rootState)?.name !== nextRoute.name) {
             if (event === 'REPLACE') {
                 if (knownOwnerState.type === 'tab') {
-                    navigationRef.dispatch(TabActions.jumpTo(nextRoute.name, nextRoute.params));
+                    navigationRef.dispatch(native_1.TabActions.jumpTo(nextRoute.name, nextRoute.params));
                 }
                 else {
-                    navigationRef.dispatch(StackActions.replace(nextRoute.name, nextRoute.params));
+                    navigationRef.dispatch(core_1.StackActions.replace(nextRoute.name, nextRoute.params));
                 }
             }
             else {
                 // NOTE: Not sure if we should pop or push here...
-                navigationRef.dispatch(CommonActions.navigate(nextRoute.name, nextRoute.params));
+                navigationRef.dispatch(core_1.CommonActions.navigate(nextRoute.name, nextRoute.params));
             }
             return;
         }
     }
     // TODO: Advanced movements across multiple navigators
-    const action = getActionFromState(state, this.linking.config);
+    const action = (0, core_1.getActionFromState)(state, this.linking.config);
     if (action) {
         // Here we have a navigation action to a nested screen, where we should ideally replace.
         // This request can only be fulfilled if the target is an initial route.
@@ -109,13 +140,13 @@ export function linkTo(href, event) {
         // Finally, use the correct navigator-based action to replace the nested screens.
         // NOTE(EvanBacon): A future version of this will involve splitting the navigation request so we replace as much as possible, then push the remaining screens to fulfill the request.
         if (event === 'REPLACE' && isAbsoluteInitialRoute(action)) {
-            const earliest = getEarliestMismatchedRoute(rootState, action.payload);
+            const earliest = (0, stateOperations_1.getEarliestMismatchedRoute)(rootState, action.payload);
             if (earliest) {
                 if (earliest.type === 'stack') {
-                    navigationRef.dispatch(StackActions.replace(earliest.name, earliest.params));
+                    navigationRef.dispatch(core_1.StackActions.replace(earliest.name, earliest.params));
                 }
                 else {
-                    navigationRef.dispatch(TabActions.jumpTo(earliest.name, earliest.params));
+                    navigationRef.dispatch(native_1.TabActions.jumpTo(earliest.name, earliest.params));
                 }
                 return;
             }
@@ -132,8 +163,9 @@ export function linkTo(href, event) {
         navigationRef.reset(state);
     }
 }
+exports.linkTo = linkTo;
 /** @returns `true` if the action is moving to the first screen of all the navigators in the action. */
-export function isAbsoluteInitialRoute(action) {
+function isAbsoluteInitialRoute(action) {
     if (action?.type !== 'NAVIGATE') {
         return false;
     }
@@ -154,6 +186,7 @@ export function isAbsoluteInitialRoute(action) {
     }
     return true;
 }
+exports.isAbsoluteInitialRoute = isAbsoluteInitialRoute;
 function isNavigationState(obj) {
     return 'initial' in obj;
 }

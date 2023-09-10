@@ -1,11 +1,17 @@
-import { createBottomTabNavigator, } from '@react-navigation/bottom-tabs';
-import React from 'react';
-import { Pressable, Platform } from 'react-native';
-import { withLayoutContext } from './withLayoutContext';
-import { Link } from '../link/Link';
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Tabs = void 0;
+const bottom_tabs_1 = require("@react-navigation/bottom-tabs");
+const react_1 = __importDefault(require("react"));
+const react_native_1 = require("react-native");
+const withLayoutContext_1 = require("./withLayoutContext");
+const Link_1 = require("../link/Link");
 // This is the only way to access the navigator.
-const BottomTabNavigator = createBottomTabNavigator().Navigator;
-export const Tabs = withLayoutContext(BottomTabNavigator, (screens) => {
+const BottomTabNavigator = (0, bottom_tabs_1.createBottomTabNavigator)().Navigator;
+exports.Tabs = (0, withLayoutContext_1.withLayoutContext)(BottomTabNavigator, (screens) => {
     // Support the `href` shortcut prop.
     return screens.map((screen) => {
         if (typeof screen.options !== 'function' && screen.options?.href !== undefined) {
@@ -21,8 +27,8 @@ export const Tabs = withLayoutContext(BottomTabNavigator, (screens) => {
                         if (href == null) {
                             return null;
                         }
-                        const children = Platform.OS === 'web' ? props.children : React.createElement(Pressable, null, props.children);
-                        return (React.createElement(Link, { ...props, style: [{ display: 'flex' }, props.style], href: href, asChild: Platform.OS !== 'web', children: children }));
+                        const children = react_native_1.Platform.OS === 'web' ? props.children : react_1.default.createElement(react_native_1.Pressable, null, props.children);
+                        return (react_1.default.createElement(Link_1.Link, { ...props, style: [{ display: 'flex' }, props.style], href: href, asChild: react_native_1.Platform.OS !== 'web', children: children }));
                     },
                 },
             };
@@ -30,5 +36,5 @@ export const Tabs = withLayoutContext(BottomTabNavigator, (screens) => {
         return screen;
     });
 });
-export default Tabs;
+exports.default = exports.Tabs;
 //# sourceMappingURL=Tabs.js.map

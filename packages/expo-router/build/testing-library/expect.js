@@ -1,14 +1,19 @@
-import matchers from 'expect/build/matchers';
-matchers.customTesters = [];
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const matchers_1 = __importDefault(require("expect/build/matchers"));
+matchers_1.default.customTesters = [];
 expect.extend({
     toHavePathname(screen, expected) {
-        return matchers.toEqual(screen.getPathname(), expected);
+        return matchers_1.default.toEqual(screen.getPathname(), expected);
     },
     toHaveSegments(screen, expected) {
-        return matchers.toEqual(screen.getSegments(), expected);
+        return matchers_1.default.toEqual(screen.getSegments(), expected);
     },
     toHaveSearchParams(screen, expected) {
-        return matchers.toEqual(screen.getSearchParams(), expected);
+        return matchers_1.default.toEqual(screen.getSearchParams(), expected);
     },
 });
 //# sourceMappingURL=expect.js.map

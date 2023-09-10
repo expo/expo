@@ -1,13 +1,17 @@
-import { getNavigationConfig } from '../getLinkingConfig';
-import { getExactRoutes } from '../getRoutes';
-export function createMockContextModule(map = {}) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.configFromFs = exports.createMockContextModule = void 0;
+const getLinkingConfig_1 = require("../getLinkingConfig");
+const getRoutes_1 = require("../getRoutes");
+function createMockContextModule(map = {}) {
     const contextModule = jest.fn((key) => map[key]);
     Object.defineProperty(contextModule, 'keys', {
         value: () => Object.keys(map),
     });
     return contextModule;
 }
-export function configFromFs(map = []) {
+exports.createMockContextModule = createMockContextModule;
+function configFromFs(map = []) {
     const ctx = map.reduce((acc, value) => {
         if (typeof value === 'string') {
             acc[value] = { default: () => { } };
@@ -19,6 +23,7 @@ export function configFromFs(map = []) {
         };
         return acc;
     }, {});
-    return getNavigationConfig(getExactRoutes(createMockContextModule(ctx)));
+    return (0, getLinkingConfig_1.getNavigationConfig)((0, getRoutes_1.getExactRoutes)(createMockContextModule(ctx)));
 }
+exports.configFromFs = configFromFs;
 //# sourceMappingURL=mockState.js.map

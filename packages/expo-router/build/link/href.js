@@ -1,7 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.resolveHref = void 0;
 /** Resolve an href object into a fully qualified, relative href. */
-export const resolveHref = (href) => {
+const resolveHref = (href) => {
     if (typeof href === 'string') {
-        return resolveHref({ pathname: href ?? '' });
+        return (0, exports.resolveHref)({ pathname: href ?? '' });
     }
     const path = href.pathname ?? '';
     if (!href?.params) {
@@ -13,6 +16,7 @@ export const resolveHref = (href) => {
     const paramsString = createQueryParams(params);
     return pathname + (paramsString ? `?${paramsString}` : '');
 };
+exports.resolveHref = resolveHref;
 function createQualifiedPathname(pathname, params) {
     for (const [key, value = ''] of Object.entries(params)) {
         const dynamicKey = `[${key}]`;
