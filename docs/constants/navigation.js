@@ -94,7 +94,6 @@ const home = [
         makePage('develop/development-builds/create-a-build.mdx'),
         makePage('develop/development-builds/use-development-builds.mdx'),
         makePage('develop/development-builds/share-with-your-team.mdx'),
-        makePage('develop/development-builds/parallel-installation.mdx'),
         makePage('develop/development-builds/development-workflows.mdx'),
         makePage('develop/development-builds/next-steps.mdx'),
       ],
