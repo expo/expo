@@ -1468,10 +1468,10 @@
     "@expo/spawn-async" "^1.5.0"
     exec-async "^2.2.0"
 
-"@expo/package-manager@1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@expo/package-manager/-/package-manager-1.1.0.tgz#13424a6568d56de3779904dab5e562508cc76121"
-  integrity sha512-QTZbac0SJcnzQSQHNM05gIvx5jU/GUHKRbwxheznsbgU2ZurM5n9xRkX+Gr7uN43W/SJhCfUHECkhrnP/MUlTw==
+"@expo/package-manager@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@expo/package-manager/-/package-manager-1.1.1.tgz#065326c5684c2acfbfdc290d93eabb7a36225507"
+  integrity sha512-NxtfIA25iEiNwMT+s8PEmdKzjyfWd2qkCLJkf6jKZGaH9c06YXyOAi2jvCyM8XuSzJz4pcEH8kz1HkJAInjB7Q==
   dependencies:
     "@expo/json-file" "^8.2.37"
     "@expo/spawn-async" "^1.5.0"
@@ -4177,7 +4177,7 @@
   resolved "https://registry.yarnpkg.com/@types/minimist/-/minimist-1.2.2.tgz#ee771e2ba4b3dc5b372935d549fd9617bf345b8c"
   integrity sha512-jhuKLIRrhvCPLqwPcx6INqmKeiA5EWrsCOPhrlFSrbrmU4ZMPjj5Ul/oLCMDO98XRUIwVm78xICz4EPCektzeQ==
 
-"@types/minipass@*", "@types/minipass@^3.1.2", "@types/minipass@^3.3.5":
+"@types/minipass@^3.1.2", "@types/minipass@^3.3.5":
   version "3.3.5"
   resolved "https://registry.yarnpkg.com/@types/minipass/-/minipass-3.3.5.tgz#ba65aaae3fe7318520bd4a40bc71c53fc8826e45"
   integrity sha512-M2BLHQdEmDmH671h0GIlOQQJrgezd1vNqq7PVj1VOsHZ2uQQb4iPiQIl0SlMdhxZPUsLIfEklmeEHXg8DJRewA==
