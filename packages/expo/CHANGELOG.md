@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
+
 ### 🐛 Bug fixes
 
 - Reduce size on web. ([#24294](https://github.com/expo/expo/pull/24294) by [@EvanBacon](https://github.com/EvanBacon))
@@ -13,6 +15,10 @@
 ### 💡 Others
 
 - Move Metro and web TypeScript types from Expo Router to `expo`. ([#24255](https://github.com/expo/expo/pull/24255) by [@marklawlor](https://github.com/marklawlor))
+
+## 49.0.10 — 2023-09-11
+
+_This version does not introduce any user-facing changes._
 
 ## 50.0.0-alpha.2 — 2023-09-04
 

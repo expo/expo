@@ -6,9 +6,13 @@
 
 ### 🎉 New features
 
+- Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Delete deprecated `hide` and `preventAutoHide` methods. ([#24296](https://github.com/expo/expo/pull/24296) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.22.0 — 2023-09-04
 

@@ -9,6 +9,7 @@ export const NPM_LOCK_FILE = 'package-lock.json';
 export const YARN_LOCK_FILE = 'yarn.lock';
 export const PNPM_LOCK_FILE = 'pnpm-lock.yaml';
 export const PNPM_WORKSPACE_FILE = 'pnpm-workspace.yaml';
+export const BUN_LOCK_FILE = 'bun.lockb';
 
 /** Wraps `find-yarn-workspace-root` and guards against having an empty `package.json` file in an upper directory. */
 export function findYarnOrNpmWorkspaceRoot(projectRoot: string): string | null {
