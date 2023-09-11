@@ -58,7 +58,7 @@ jest.mock('../../../../api/getExpoGoIntermediateCertificate', () => ({
 }));
 jest.mock('@expo/config-plugins', () => ({
   Updates: {
-    getRuntimeVersion: jest.fn(() => '45.0.0'),
+    getRuntimeVersionAsync: jest.fn(() => Promise.resolve('45.0.0')),
   },
 }));
 jest.mock('../resolveAssets', () => ({

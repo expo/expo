@@ -1,4 +1,5 @@
 import { Android, ExpoConfig, IOS } from '@expo/config-types';
+import * as Fingerprint from '@expo/fingerprint';
 import { getRuntimeVersionForSDKVersion } from '@expo/sdk-runtime-versions';
 import fs from 'fs';
 import { boolish } from 'getenv';
@@ -55,38 +56,11 @@ export function getNativeVersion(
   }
 }
 
-/**
- * Compute runtime version policies.
- * @return an expoConfig with only string valued platform specific runtime versions.
- */
-export const withRuntimeVersion: (config: ExpoConfig) => ExpoConfig = (config) => {
-  if (config.ios?.runtimeVersion || config.runtimeVersion) {
-    const runtimeVersion = getRuntimeVersion(config, 'ios');
-    if (runtimeVersion) {
-      config.ios = {
-        ...config.ios,
-        runtimeVersion,
-      };
-    }
-  }
-  if (config.android?.runtimeVersion || config.runtimeVersion) {
-    const runtimeVersion = getRuntimeVersion(config, 'android');
-    if (runtimeVersion) {
-      config.android = {
-        ...config.android,
-        runtimeVersion,
-      };
-    }
-  }
-  delete config.runtimeVersion;
-  return config;
-};
-
-export function getRuntimeVersionNullable(
-  ...[config, platform]: Parameters<typeof getRuntimeVersion>
-): string | null {
+export async function getRuntimeVersionNullableAsync(
+  ...[projectRoot, config, platform]: Parameters<typeof getRuntimeVersionAsync>
+): Promise<string | null> {
   try {
-    return getRuntimeVersion(config, platform);
+    return await getRuntimeVersionAsync(projectRoot, config, platform);
   } catch (e) {
     if (boolish('EXPO_DEBUG', false)) {
       console.log(e);
@@ -95,13 +69,14 @@ export function getRuntimeVersionNullable(
   }
 }
 
-export function getRuntimeVersion(
+export async function getRuntimeVersionAsync(
+  projectRoot: string,
   config: Pick<ExpoConfig, 'version' | 'runtimeVersion' | 'sdkVersion'> & {
     android?: Pick<Android, 'versionCode' | 'runtimeVersion'>;
     ios?: Pick<IOS, 'buildNumber' | 'runtimeVersion'>;
   },
   platform: 'android' | 'ios'
-): string | null {
+): Promise<string | null> {
   const runtimeVersion = config[platform]?.runtimeVersion ?? config.runtimeVersion;
   if (!runtimeVersion) {
     return null;
@@ -118,12 +93,17 @@ export function getRuntimeVersion(
       throw new Error("An SDK version must be defined when using the 'sdkVersion' runtime policy.");
     }
     return getRuntimeVersionForSDKVersion(config.sdkVersion);
+  } else if (runtimeVersion.policy === 'fingerprintExperimental') {
+    console.warn(
+      "Use of the experimental 'fingerprintExperimental' runtime policy may result in unexpected system behavior."
+    );
+    return await Fingerprint.createProjectHashAsync(projectRoot);
   }
 
   throw new Error(
     `"${
       typeof runtimeVersion === 'object' ? JSON.stringify(runtimeVersion) : runtimeVersion
-    }" is not a valid runtime version. getRuntimeVersion only supports a string, "sdkVersion", "appVersion", or "nativeVersion" policy.`
+    }" is not a valid runtime version. getRuntimeVersionAsync only supports a string, "sdkVersion", "appVersion", "nativeVersion" or "fingerprintExperimental" policy.`
   );
 }
 
