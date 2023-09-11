@@ -4965,6 +4965,7 @@ SPEC CHECKSUMS:
   EXStructuredHeaders: b0591d7da7218124a950335b746366f0b2a90178
   EXTaskManager: aae3b3c8144af1e0bfdbe8a3cc19fb116a01368d
 <<<<<<< HEAD
+<<<<<<< HEAD
   EXUpdates: f9a40063a208e21682ee174272b8d56defae6327
   EXUpdatesInterface: 98f69982f4b429eb62a1d99259bc980038240f27
 ||||||| parent of c70391aaee ([ios][updates] bump sqlite version)
@@ -4973,7 +4974,14 @@ SPEC CHECKSUMS:
 =======
 <<<<<<< HEAD
   EXUpdates: 2a2b560639dbc2424bc13f4010b7212c82a2b63f
+||||||| parent of 6101e3b405 ([ios][updates] fix podfile.lock)
+<<<<<<< HEAD
+  EXUpdates: 2a2b560639dbc2424bc13f4010b7212c82a2b63f
+=======
+  EXUpdates: 79bd417be2d521e99771df018258f9e76e030fd9
+>>>>>>> 6101e3b405 ([ios][updates] fix podfile.lock)
   EXUpdatesInterface: 376edcf7e762dcf8f55552804944dac004fa3349
+<<<<<<< HEAD
 ||||||| parent of b3a73bc072 ([ios][updates] bump sqlite version)
   EXUpdates: 30c6c1eb2bb6fca39450260c4aeae9024c080c08
   EXUpdatesInterface: 1f9cdd9e1e1026de7488ac537e9c40bc6b6fb872
@@ -4982,6 +4990,16 @@ SPEC CHECKSUMS:
   EXUpdatesInterface: 1f9cdd9e1e1026de7488ac537e9c40bc6b6fb872
 >>>>>>> b3a73bc072 ([ios][updates] bump sqlite version)
 >>>>>>> c70391aaee ([ios][updates] bump sqlite version)
+||||||| parent of 6101e3b405 ([ios][updates] fix podfile.lock)
+||||||| parent of b3a73bc072 ([ios][updates] bump sqlite version)
+  EXUpdates: 30c6c1eb2bb6fca39450260c4aeae9024c080c08
+  EXUpdatesInterface: 1f9cdd9e1e1026de7488ac537e9c40bc6b6fb872
+=======
+  EXUpdates: 1d195e9306940cca4d95faa2bf205f9a94a80052
+  EXUpdatesInterface: 1f9cdd9e1e1026de7488ac537e9c40bc6b6fb872
+>>>>>>> b3a73bc072 ([ios][updates] bump sqlite version)
+=======
+>>>>>>> 6101e3b405 ([ios][updates] fix podfile.lock)
   FBAEMKit: af2972f39bb0f3f7c45998f435b007833c32ffb2
   FBAudienceNetwork: 03e273f66b70756be7d060927111af97b7641b06
   FBLazyVector: 5d4a3b7f411219a45a6d952f77d2c0a6c9989da5
