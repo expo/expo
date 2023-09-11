@@ -7,6 +7,7 @@ import { Href, resolveHref } from '../link/href';
 import { resolve } from '../link/path';
 import {
   NavigateAction,
+  findKeyForPath,
   findTopRouteForTarget,
   getEarliestMismatchedRoute,
   getQualifiedStateForTopOfTargetState,
@@ -105,18 +106,23 @@ export function linkTo(this: RouterStore, href: string, event?: string) {
     // Can perform naive movements
     const knownOwnerState = getQualifiedStateForTopOfTargetState(rootState, state)!;
     const nextRoute = findTopRouteForTarget(state);
+    const nextRouteKey = findKeyForPath(rootState, nextRoute.path ?? `/${nextRoute.name}`);
     // NOTE(EvanBacon): There's an issue where moving from "a -> b" is considered siblings:
     // a. index (initialRouteName="index")
     // b. stack/index
-    // However, the preservation approach doesn't work because it would be moving to a route with the same name.
-    // The next check will see if the current focused route has the same name as the next route, if so, then fallback on
-    // the default React Navigation logic.
-    if (
-      findTopRouteForTarget(
-        // @ts-expect-error: stale types don't matter here
-        rootState
-      )?.name !== nextRoute.name
-    ) {
+    // In this case, we use the route key instead of the name
+    if (nextRouteKey) {
+      const navOptions: any = { key: nextRouteKey, params: nextRoute.params };
+      if (event === 'REPLACE') {
+        if (knownOwnerState.type === 'tab') {
+          navigationRef.dispatch(TabActions.jumpTo(navOptions));
+        } else {
+          navigationRef.dispatch(StackActions.replace(navOptions));
+        }
+      } else {
+        navigationRef.dispatch(CommonActions.navigate(navOptions));
+      }
+    } else {
       if (event === 'REPLACE') {
         if (knownOwnerState.type === 'tab') {
           navigationRef.dispatch(TabActions.jumpTo(nextRoute.name, nextRoute.params));
@@ -127,8 +133,8 @@ export function linkTo(this: RouterStore, href: string, event?: string) {
         // NOTE: Not sure if we should pop or push here...
         navigationRef.dispatch(CommonActions.navigate(nextRoute.name, nextRoute.params));
       }
-      return;
     }
+    return;
   }
 
   // TODO: Advanced movements across multiple navigators

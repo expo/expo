@@ -377,3 +377,32 @@ it('can pop back from a nested modal to a nested sibling', async () => {
   act(() => router.back());
   expect(screen).toHavePathname('/slot');
 });
+
+it('asdf', async () => {
+  renderRouter({
+    _layout: () => (
+      <Tabs>
+        <Tabs.Screen name="one" />
+        <Tabs.Screen name="two" />
+      </Tabs>
+    ),
+    'one/_layout': () => <Stack />,
+    'one/screen': () => <Text testID="one/screen" />,
+    'two/_layout': () => <Stack />,
+    'two/screen': () => <Text testID="two/screen" />,
+  });
+
+  expect(screen).toHavePathname('/');
+
+  act(() => router.push('/two/screen'));
+  expect(screen).toHavePathname('/two/screen');
+  expect(screen.getByTestId('two/screen')).toBeTruthy();
+
+  act(() => router.push('/one/screen'));
+  expect(screen).toHavePathname('/one/screen');
+  expect(screen.getByTestId('one/screen')).toBeTruthy();
+
+  act(() => router.push('/two/screen'));
+  expect(screen).toHavePathname('/two/screen');
+  expect(screen.getByTestId('two/screen')).toBeTruthy();
+});

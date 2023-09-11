@@ -42,6 +42,21 @@ function findTopStateForTarget(state: ResultState) {
   return current;
 }
 
+export function findKeyForPath(currentState: NavigationState | ResultState, path: string) {
+  for (const route of currentState.routes) {
+    const name = `/${route.name}`;
+    if (path.startsWith(name)) {
+      if (route.state) {
+        return findKeyForPath(route.state, path.replace(name, ''));
+      } else {
+        return route.key;
+      }
+    }
+  }
+
+  return undefined;
+}
+
 /** Return the absolute last route to move to. */
 export function findTopRouteForTarget(state: ResultState) {
   const nextState = findTopStateForTarget(state)!;
