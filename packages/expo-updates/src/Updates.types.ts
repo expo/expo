@@ -65,7 +65,7 @@ export type UpdateCheckResultRollBack = {
    */
   isRollBackToEmbedded: true;
   /**
-   * If no new update was found, this contains one of a set of enum values indicating the reason.
+   * If no new update is found, this contains one of several enum values indicating the reason.
    */
   reason: undefined;
 };
@@ -87,7 +87,7 @@ export type UpdateCheckResultAvailable = {
    */
   isRollBackToEmbedded: false;
   /**
-   * If no new update was found, this contains one of a set of enum values indicating the reason.
+   * If no new update is found, this contains one of several enum values indicating the reason.
    */
   reason: undefined;
 };
@@ -109,7 +109,7 @@ export type UpdateCheckResultNotAvailable = {
    */
   isRollBackToEmbedded: false;
   /**
-   * If no new update was found, this contains one of a set of enum values indicating the reason.
+   * If no new update is found, this contains one of several enum values indicating the reason.
    */
   reason: UpdateCheckResultNotAvailableReason;
 };
