@@ -1,5 +1,5 @@
 {
-  "name": "create-expo",
+  "name": "create-expo-app",
   "version": "2.1.1",
   "bin": "./build/index.js",
   "main": "build",
