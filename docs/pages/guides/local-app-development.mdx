@@ -14,8 +14,8 @@ To build your project into an app locally using your machine, you have to manual
 
 To follow the steps described in this guide, you need the following installed on your local machine:
 
-- Android Studio to build for Android
-- Xcode on macOS to build for iOS
+- [Android Studio](/workflow/android-studio-emulator/) to build for Android
+- [Xcode](/workflow/ios-simulator/) on macOS to build for iOS
 
 ## Local app compilation
 
@@ -32,7 +32,7 @@ To build your project locally you can use compile commands from Expo CLI which g
 
 The above commands compile your project into an app locally. You can also add the `--device` flag to create a debug build of your project and run it on a connected device. These compilation commands initially run `npx expo prebuild` to generate native directories (**android** and **ios**) before building.
 
-After building your project for the first time you can make modifications to your project's configuration or native code. However, it is recommended to make these modifications using app config or by creating a config plugin.
+After building your project for the first time you can make modifications to your project's configuration or native code. However, it is recommended to make these modifications using [app config](/workflow/configuration/) or by creating a [config plugin](/config-plugins/introduction/).
 
 Generating native directories will help with the app development in scenarios where you need to add custom native code to your app.
 
@@ -76,8 +76,8 @@ You can run the same build process that EAS Build uses locally on your machine w
 ## Next steps
 
 <BoxLink
-  title="Run builds on your infrastructure"
-  description="Learn how to run EAS Build on your custom infrastructure or locally."
-  href="/build-reference/local-builds"
+  title="Production builds"
+  description="Learn how to create a production build for your app that is ready to be submitted to app stores."
+  href="/deploy/build-project/"
   Icon={DocsLogo}
 />
