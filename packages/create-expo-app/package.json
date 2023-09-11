@@ -22,14 +22,16 @@
     "template"
   ],
   "scripts": {
-    "prepare": "yarn run clean && yarn run build:prod",
-    "lint": "eslint .",
-    "test": "jest",
-    "test:e2e": "cross-env E2E=1 jest",
-    "watch": "yarn run build -w",
     "build": "ncc build ./src/index.ts -o build/",
     "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
-    "clean": "git clean -xdf ./build"
+    "prepare": "yarn run clean && yarn run build:prod",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "typecheck": "expo-module typecheck",
+    "test": "expo-module test",
+    "test:e2e": "cross-env E2E=1 jest",
+    "watch": "yarn run build -w",
+    "prepublishOnly": "expo-module prepublishOnly"
   },
   "devDependencies": {
     "@expo/json-file": "8.2.37",
@@ -46,6 +48,7 @@
     "arg": "^5.0.2",
     "chalk": "^4.0.0",
     "debug": "^4.3.4",
+    "expo-module-scripts": "^3.0.0",
     "getenv": "^1.0.0",
     "minipass": "^3.3.4",
     "node-fetch": "^2.6.7",
