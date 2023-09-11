@@ -9,36 +9,6 @@
 
 @implementation EXApiV2Client (EXRemoteNotifications)
 
-- (NSURLSessionTask *)updateDeviceToken:(NSData *)deviceToken completionHandler:(void (^)(NSError * _Nullable))handler
-{
-  NSMutableDictionary *arguments = [NSMutableDictionary dictionaryWithDictionary:@{
-    @"deviceId": [EXKernel deviceInstallationUUID],
-    @"appId": NSBundle.mainBundle.bundleIdentifier,
-    @"deviceToken": deviceToken.apnsTokenString,
-    @"type": @"apns",
-  }];
-  // Presence of this file is assured in Expo Go
-  // and in ejected projects Expo Push Notifications don't work anyway
-  // so this codepath shouldn't be executed at all.
-#if __has_include(<EXApplication/EXProvisioningProfile.h>)
-  NSString *environment = [[EXProvisioningProfile mainProvisioningProfile] notificationServiceEnvironment];
-  if (!environment) {
-    DDLogWarn(@"aps-environment is missing from the entitlements; ensure that the provisioning profile enables push notifications");
-  } else if ([environment isEqualToString:@"development"]) {
-    arguments[@"development"] = @YES;
-  }
-#endif
-
-  
-  return [self callRemoteMethod:@"push/updateDeviceToken"
-                      arguments:arguments
-                     httpMethod:@"POST"
-              completionHandler:^(EXApiV2Result * _Nullable response, NSError * _Nullable error) {
-                handler(error);
-              }];
-}
-
-
 - (void)getExpoPushTokenForEASProject:(nullable NSString *)easProjectId
              experienceStableLegacyId:(nullable NSString *)experienceStableLegacyId
                           deviceToken:(NSData *)deviceToken
