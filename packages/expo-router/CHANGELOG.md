@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Infinite renders when using ErrorBoundary in a nested layout.
+
 ### 💡 Others
 
 - Compile to cjs to support running directly in Node.js. ([#24349](https://github.com/expo/expo/pull/24349) by [@EvanBacon](https://github.com/EvanBacon))
