@@ -110,7 +110,7 @@ async function createTemplateAsync(inputPath: string, props: Options): Promise<v
     {
       pending: chalk.bold('Locating project files.'),
       success: 'Downloaded and extracted project files.',
-      error: error =>
+      error: (error) =>
         `Something went wrong in downloading and extracting the project files: ${error.message}`,
     }
   );
@@ -157,7 +157,7 @@ async function createExampleAsync(inputPath: string, props: Options): Promise<vo
   await withSectionLog(() => downloadAndExtractExampleAsync(projectRoot, resolvedExample), {
     pending: chalk.bold('Locating example files...'),
     success: 'Downloaded and extracted example files.',
-    error: error =>
+    error: (error) =>
       `Something went wrong in downloading and extracting the example files: ${error.message}`,
   });
 

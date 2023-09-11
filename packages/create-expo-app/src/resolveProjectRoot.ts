@@ -44,7 +44,7 @@ export async function resolveProjectRootAsync(input: string): Promise<string> {
       name: 'answer',
       message: 'What is your app named?',
       initial: 'my-app',
-      validate: name => {
+      validate: (name) => {
         const validation = Template.validateName(path.basename(path.resolve(name)));
         if (typeof validation === 'string') {
           return 'Invalid project name: ' + validation;
