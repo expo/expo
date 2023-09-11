@@ -1,14 +1,20 @@
 "use strict";
+/**
+ * Copyright © 2023 650 Industries.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
-const expo_modules_core_1 = require("expo-modules-core");
+const react_native_web_1 = require("react-native-web");
 // Ensure events are sent so custom Fast Refresh views are shown.
 function showMessage(message, type) {
-    expo_modules_core_1.SyntheticPlatformEmitter.emit('devLoadingView:showMessage', {
+    react_native_web_1.DeviceEventEmitter.emit('devLoadingView:showMessage', {
         message,
     });
 }
 function hide() {
-    expo_modules_core_1.SyntheticPlatformEmitter.emit('devLoadingView:hide', {});
+    react_native_web_1.DeviceEventEmitter.emit('devLoadingView:hide', {});
 }
 exports.default = {
     showMessage,

@@ -1,33 +1,63 @@
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getManifest = exports.getStaticContent = void 0;
 /**
  * Copyright © 2023 650 Industries.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import '@expo/metro-runtime';
-import { ServerContainer } from '@react-navigation/native';
-import * as Font from 'expo-font/build/server';
-import React from 'react';
-import ReactDOMServer from 'react-dom/server';
-import { AppRegistry } from 'react-native-web';
-import { getRootComponent } from './getRootComponent';
-import { ctx } from '../../_ctx';
-import { ExpoRoot } from '../ExpoRoot';
-import { getNavigationConfig } from '../getLinkingConfig';
-import { getRoutes } from '../getRoutes';
-import { Head } from '../head';
-import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
-AppRegistry.registerComponent('App', () => ExpoRoot);
+require("@expo/metro-runtime");
+const native_1 = require("@react-navigation/native");
+const Font = __importStar(require("expo-font/build/server"));
+const react_1 = __importDefault(require("react"));
+const server_1 = __importDefault(require("react-dom/server"));
+const react_native_web_1 = require("react-native-web");
+const getRootComponent_1 = require("./getRootComponent");
+const _ctx_1 = require("../../_ctx");
+const ExpoRoot_1 = require("../ExpoRoot");
+const getLinkingConfig_1 = require("../getLinkingConfig");
+const getRoutes_1 = require("../getRoutes");
+const head_1 = require("../head");
+const loadStaticParamsAsync_1 = require("../loadStaticParamsAsync");
+react_native_web_1.AppRegistry.registerComponent('App', () => ExpoRoot_1.ExpoRoot);
 /** Get the linking manifest from a Node.js process. */
 async function getManifest(options) {
-    const routeTree = getRoutes(ctx, options);
+    const routeTree = (0, getRoutes_1.getRoutes)(_ctx_1.ctx, options);
     if (!routeTree) {
         throw new Error('No routes found');
     }
     // Evaluate all static params
-    await loadStaticParamsAsync(routeTree);
-    return getNavigationConfig(routeTree);
+    await (0, loadStaticParamsAsync_1.loadStaticParamsAsync)(routeTree);
+    return (0, getLinkingConfig_1.getNavigationConfig)(routeTree);
 }
+exports.getManifest = getManifest;
 function resetReactNavigationContexts() {
     // https://github.com/expo/router/discussions/588
     // https://github.com/react-navigation/react-navigation/blob/9fe34b445fcb86e5666f61e144007d7540f014fa/packages/elements/src/getNamedContext.tsx#LL3C1-L4C1
@@ -36,37 +66,38 @@ function resetReactNavigationContexts() {
     const contexts = '__react_navigation__elements_contexts';
     global[contexts] = new Map();
 }
-export function getStaticContent(location) {
+function getStaticContent(location) {
     const headContext = {};
-    const ref = React.createRef();
+    const ref = react_1.default.createRef();
     const { 
     // NOTE: The `element` that's returned adds two extra Views and
     // the seemingly unused `RootTagContext.Provider`.
-    element, getStyleElement, } = AppRegistry.getApplication('App', {
+    element, getStyleElement, } = react_native_web_1.AppRegistry.getApplication('App', {
         initialProps: {
             location,
-            context: ctx,
-            wrapper: ({ children }) => (React.createElement(Root, null,
-                React.createElement("div", { id: "root" }, children))),
+            context: _ctx_1.ctx,
+            wrapper: ({ children }) => (react_1.default.createElement(Root, null,
+                react_1.default.createElement("div", { id: "root" }, children))),
         },
     });
-    const Root = getRootComponent();
+    const Root = (0, getRootComponent_1.getRootComponent)();
     // Clear any existing static resources from the global scope to attempt to prevent leaking between pages.
     // This could break if pages are rendered in parallel or if fonts are loaded outside of the React tree
     Font.resetServerContext();
     // This MUST be run before `ReactDOMServer.renderToString` to prevent
     // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
     resetReactNavigationContexts();
-    const html = ReactDOMServer.renderToString(React.createElement(Head.Provider, { context: headContext },
-        React.createElement(ServerContainer, { ref: ref }, element)));
+    const html = server_1.default.renderToString(react_1.default.createElement(head_1.Head.Provider, { context: headContext },
+        react_1.default.createElement(native_1.ServerContainer, { ref: ref }, element)));
     // Eval the CSS after the HTML is rendered so that the CSS is in the same order
-    const css = ReactDOMServer.renderToStaticMarkup(getStyleElement());
+    const css = server_1.default.renderToStaticMarkup(getStyleElement());
     let output = mixHeadComponentsWithStaticResults(headContext.helmet, html);
     output = output.replace('</head>', `${css}</head>`);
     // Inject static fonts loaded with expo-font
     output = output.replace('</head>', `${Font.getServerResources().join('')}</head>`);
     return '<!DOCTYPE html>' + output;
 }
+exports.getStaticContent = getStaticContent;
 function mixHeadComponentsWithStaticResults(helmet, html) {
     // Head components
     for (const key of ['title', 'priority', 'meta', 'link', 'script', 'style'].reverse()) {
@@ -80,6 +111,4 @@ function mixHeadComponentsWithStaticResults(helmet, html) {
     html = html.replace('<body ', `<body ${helmet?.bodyAttributes.toString()} `);
     return html;
 }
-// Re-export for use in server
-export { getManifest };
 //# sourceMappingURL=renderStaticContent.js.map

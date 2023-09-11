@@ -1,6 +1,6 @@
-import { BundleAssetWithFileHashes } from '@expo/dev-server';
 import path from 'path';
 
+import { BundleAssetWithFileHashes } from './fork-bundleAsync';
 import * as Log from '../log';
 import { chunk } from '../utils/array';
 import { copyAsync } from '../utils/dir';

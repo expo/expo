@@ -7,8 +7,24 @@
 ### 🎉 New features
 
 - Added ability to generate a package add command without actually running it ([#24142](https://github.com/expo/expo/pull/24142) by [@keith-kurak](https://github.com/keith-kurak))
+- Add support for [Bun](https://bun.sh) package manager by [@colinhacks][https://github.com/colinhacks] ([#24168](https://github.com/expo/expo/pull/24168) by [@colinhacks](https://github.com/colinhacks))
 
 ### 🐛 Bug fixes
+
+- Fix build files. ([#24344](https://github.com/expo/expo/pull/24344) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove console log. ([#24355](https://github.com/expo/expo/pull/24355) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 1.1.1 — 2023-09-11
+
+### 🐛 Bug fixes
+
+- Remove console log. ([#24355](https://github.com/expo/expo/pull/24355) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 1.1.0 — 2023-09-11
+
+### 🎉 New features
+
+- Add support for [Bun](https://bun.sh) package manager by [@colinhacks][https://github.com/colinhacks] ([#24168](https://github.com/expo/expo/pull/24168) by [@colinhacks](https://github.com/colinhacks))
 
 ### 💡 Others
 

@@ -80,7 +80,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-sharing': ['Sharing.ts'],
   'expo-sms': ['SMS.ts'],
   'expo-speech': ['Speech/Speech.ts'],
-  'expo-splash-screen': ['SplashScreen.ts'],
+  'expo-splash-screen': ['index.ts'],
   'expo-sqlite': ['index.ts'],
   'expo-status-bar': ['StatusBar.ts'],
   'expo-store-review': ['StoreReview.ts'],
