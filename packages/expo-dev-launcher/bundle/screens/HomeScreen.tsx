@@ -38,11 +38,12 @@ import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
 import { DevSession } from '../types';
 
 export type HomeScreenProps = {
+  pollInterval?: number;
   pollAmount?: number;
   navigation?: any;
 };
 
-export function HomeScreen({ pollAmount = 5, navigation }: HomeScreenProps) {
+export function HomeScreen({ pollInterval = 1000, pollAmount = 5, navigation }: HomeScreenProps) {
   const modalStack = useModalStack();
   const [inputValue, setInputValue] = React.useState('');
   const [loadingUrl, setLoadingUrl] = React.useState('');
@@ -57,9 +58,9 @@ export function HomeScreen({ pollAmount = 5, navigation }: HomeScreenProps) {
   useFocusEffect(
     React.useCallback(() => {
       if (!hasDevSessions) {
-        pollAsync({ pollAmount });
+        pollAsync({ pollAmount, pollInterval });
       }
-    }, [hasDevSessions, pollAmount])
+    }, [hasDevSessions, pollAmount, pollInterval])
   );
 
   const onLoadUrl = async (url: string) => {
@@ -82,7 +83,7 @@ export function HomeScreen({ pollAmount = 5, navigation }: HomeScreenProps) {
   };
 
   const onRefetchPress = () => {
-    pollAsync({ pollAmount });
+    pollAsync({ pollAmount, pollInterval });
   };
 
   const onRecentAppPress = async (app: RecentApp) => {
@@ -136,7 +137,7 @@ export function HomeScreen({ pollAmount = 5, navigation }: HomeScreenProps) {
 
                 <Spacer.Horizontal />
 
-                {devSessions.length > 0 && (
+                {devSessions?.length > 0 && (
                   <Button.FadeOnPressContainer
                     bg="ghost"
                     rounded="full"
@@ -152,7 +153,7 @@ export function HomeScreen({ pollAmount = 5, navigation }: HomeScreenProps) {
 
               <View px="medium">
                 <View>
-                  {devSessions.length === 0 && (
+                  {devSessions?.length === 0 && (
                     <>
                       <View padding="medium" bg="default" roundedTop="large">
                         <Text>Start a local development server with:</Text>
