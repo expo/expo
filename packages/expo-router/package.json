@@ -72,7 +72,6 @@
     "expo-linking": "*",
     "expo-status-bar": "*",
     "metro": "~0.76.7",
-    "react-native-gesture-handler": "*",
     "react-native-reanimated": "*",
     "react-native-safe-area-context": "*",
     "react-native-screens": "*"
