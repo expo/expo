@@ -10,16 +10,10 @@
 #import "EXReactAppExceptionHandler.h"
 #import "EXRemoteNotificationManager.h"
 
-#if __has_include(<EXNotifications/EXNotificationCenterDelegate.h>)
-#import <EXNotifications/EXNotificationCenterDelegate.h>
-#endif
-
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
 #import <GoogleMaps/GoogleMaps.h>
 
-NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"kEXAppDidRegisterForRemoteNotificationsNotification";
-NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"kEXAppDidRegisterUserNotificationSettingsNotification";
 
 @interface ExpoKit ()
 {
@@ -101,92 +95,6 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"kEXApp
   }
 
   _launchOptions = launchOptions;
-}
-
-#pragma mark - misc AppDelegate hooks
-
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
-#if __has_include(<EXNotifications/EXNotificationCenterDelegate.h>)
-  if (![UNUserNotificationCenter currentNotificationCenter].delegate) {
-    EXLogWarn(@"UNUserNotificationCenter delegates should be set by EXNotificationCenterDelegate.");
-  }
-
-  // Register EXUserNotificationManager as a delegate of EXNotificationCenterDelegate
-  id<EXNotificationCenterDelegate> notificationCenterDelegate = (id<EXNotificationCenterDelegate>) [EXModuleRegistryProvider getSingletonModuleForClass:[EXNotificationCenterDelegate class]];
-  [notificationCenterDelegate addDelegate:(id<EXNotificationsDelegate>)[EXKernel sharedInstance].serviceRegistry.notificationsManager];
-#else
-  [[UNUserNotificationCenter currentNotificationCenter] setDelegate:(id<UNUserNotificationCenterDelegate>) [EXKernel sharedInstance].serviceRegistry.notificationsManager];
-  // This is safe to call; if the app doesn't have permission to display user-facing notifications
-  // then registering for a push token is a no-op
-  [[EXKernel sharedInstance].serviceRegistry.remoteNotificationManager registerForRemoteNotifications];
-#endif
-
-  return YES;
-}
-
-
-#pragma mark - APNS hooks
-
-- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)token
-{
-  [[EXKernel sharedInstance].serviceRegistry.remoteNotificationManager registerAPNSToken:token registrationError:nil];
-  [[NSNotificationCenter defaultCenter] postNotificationName:EXAppDidRegisterForRemoteNotificationsNotification object:nil userInfo:@{ @"token": token }];
-}
-
-- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)err
-{
-  DDLogWarn(@"Failed to register for remote notifs: %@", err);
-  [[EXKernel sharedInstance].serviceRegistry.remoteNotificationManager registerAPNSToken:nil registrationError:err];
-
-  // Post this even in the failure case -- up to subscribers to subsequently read the system permission state
-  [[NSNotificationCenter defaultCenter] postNotificationName:EXAppDidRegisterForRemoteNotificationsNotification object:nil];
-}
-
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
-fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
-
-  // Here background task execution should go.
-
-  completionHandler(UIBackgroundFetchResultNoData);
-}
-
-#pragma mark - deep linking hooks
-
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(nullable NSString *)sourceApplication annotation:(id)annotation
-{
-  return [EXKernelLinkingManager application:application openURL:url sourceApplication:sourceApplication annotation:annotation];
-}
-
-- (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:(nonnull void (^)(NSArray * _Nullable))restorationHandler
-{
-  if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
-    NSURL *webpageURL = userActivity.webpageURL;
-    if ([EXEnvironment sharedEnvironment].isDetached) {
-      return [EXKernelLinkingManager application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
-    } else {
-      NSString *path = [webpageURL path];
-      
-      // Filter out URLs that don't match experience URLs since the AASA pattern's grammar is not as
-      // expressive as we'd like and matches profile URLs too
-      NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^/@[a-z0-9_-]+/.+$"
-                                                                             options:NSRegularExpressionCaseInsensitive
-                                                                               error:nil];
-      NSUInteger matchCount = [regex numberOfMatchesInString:path options:0 range:NSMakeRange(0, path.length)];
-      
-      if (matchCount > 0) {
-        [EXKernelLinkingManager application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
-        return YES;
-      } else {
-        if (![path isEqualToString:@"/expo-go"]) {
-          [application openURL:webpageURL options:@{} completionHandler:nil];
-          return YES;
-        }
-      }
-    }
-  }
-  
-  return NO;
 }
 
 #pragma mark - internal

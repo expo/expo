@@ -157,9 +157,6 @@ NSString * const kEXEmbeddedManifestResourceName = @"shell-app-manifest";
 - (void)_loadProductionUrlFromConfig:(NSDictionary *)shellConfig
 {
   _standaloneManifestUrl = shellConfig[@"manifestUrl"];
-  if ([ExpoKit sharedInstance].publishedManifestUrlOverride) {
-    _standaloneManifestUrl = [ExpoKit sharedInstance].publishedManifestUrlOverride;
-  }
 }
 
 - (void)_loadDetachedDevelopmentUrl:(NSString *)expoKitDevelopmentUrl

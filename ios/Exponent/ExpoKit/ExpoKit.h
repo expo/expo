@@ -4,9 +4,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-FOUNDATION_EXPORT NSString * const EXAppDidRegisterForRemoteNotificationsNotification;
-FOUNDATION_EXPORT NSString * const EXAppDidRegisterUserNotificationSettingsNotification;
-
 @class EXViewController;
 
 @interface ExpoKit : NSObject
@@ -43,28 +40,6 @@ FOUNDATION_EXPORT NSString * const EXAppDidRegisterUserNotificationSettingsNotif
 @property (nonatomic, readonly) NSDictionary *launchOptions;
 
 @property (nonatomic, weak) Class moduleRegistryDelegateClass;
-
-#pragma mark - remote JS loading hooks
-
-/**
- *  If specified, use this url instead of the one configured in `EXShell.plist`.
- *  Must be set prior to loading the RN application.
- */
-@property (nonatomic, strong, nullable) NSString *publishedManifestUrlOverride;
-
-#pragma mark - misc AppDelegate hooks
-
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(nullable NSDictionary *)launchOptions;
-
-#pragma mark - APNS hooks
-
-- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)token;
-- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)err;
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler;
-
-#pragma mark - deep linking hooks
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(nullable NSString *)sourceApplication annotation:(id)annotation;
-- (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:(nonnull void (^)(NSArray * _Nullable))restorationHandler;
 
 @end
 

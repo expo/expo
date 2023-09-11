@@ -2,8 +2,6 @@
 
 #import <Foundation/Foundation.h>
 #import "EXAppFetcher.h"
-#import "EXAppFetcherDevelopmentMode.h"
-#import "EXAppFetcherWithTimeout.h"
 #import "EXCachedResource.h"
 
 @class EXKernelAppRecord;
@@ -42,7 +40,7 @@ typedef enum EXAppLoaderRemoteUpdateStatus {
  It has two subclasses: EXHomeLoader (for loading the home app), and
  EXAppLoaderExpoUpdates (for loading and displaying apps in the home UI)
  */
-@interface EXAbstractLoader : NSObject <EXAppFetcherDelegate, EXAppFetcherDevelopmentModeDelegate, EXAppFetcherWithTimeoutDelegate, EXAppFetcherCacheDataSource>
+@interface EXAbstractLoader : NSObject <EXAppFetcherDelegate, EXAppFetcherCacheDataSource>
 
 @property (nonatomic, readonly) NSURL *manifestUrl;
 @property (nonatomic, readonly) EXManifestsManifest * _Nullable manifest; // possibly optimistic

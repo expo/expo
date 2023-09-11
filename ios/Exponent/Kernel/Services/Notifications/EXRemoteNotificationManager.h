@@ -9,7 +9,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithUserNotificationCenter:(EXUserNotificationCenter *)userNotificationCenter;
 - (void)registerForRemoteNotifications;
-- (void)registerAPNSToken:(nullable NSData *)token registrationError:(nullable NSError *)error;
 - (BOOL)supportsCurrentRuntimeEnvironment;
 @end
 
