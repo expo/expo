@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Maintain hierarchical order when linking isolated modules ([#24351](https://github.com/expo/expo/pull/24351) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 1.5.2 — 2023-09-04
