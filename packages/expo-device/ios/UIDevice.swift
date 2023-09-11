@@ -11,22 +11,20 @@ public extension UIDevice {
     var systemInfo = utsname()
     uname(&systemInfo)
     let machineMirror = Mirror(reflecting: systemInfo.machine)
-    let identifier = machineMirror.children.reduce("") { identifier, element in
+    return machineMirror.children.reduce("") { identifier, element in
       guard let value = element.value as? Int8, value != 0 else {
         return identifier
       }
       return identifier + String(UnicodeScalar(UInt8(value)))
     }
-
-    return identifier
   }()
 
-  // swiftlint:disable function_body_length closure_body_length
+  // swiftlint:disable closure_body_length
   static internal let DeviceMap: ExpoDeviceType = {
     func mapToDevice(identifier: String) -> ExpoDeviceType {
       let currentYear = Calendar(identifier: .gregorian).dateComponents([.year], from: Date()).year
 
-      #if os(iOS)
+#if os(iOS)
       switch identifier {
       case "iPod7,1":
         return ExpoDeviceType(modelName: "iPod touch (6th generation)", deviceYearClass: 2015)
@@ -153,7 +151,7 @@ public extension UIDevice {
       default:
         return ExpoDeviceType(modelName: identifier, deviceYearClass: currentYear)
       }
-      #elseif os(tvOS)
+#elseif os(tvOS)
       switch identifier {
       case "AppleTV5,3":
         return ExpoDeviceType(modelName: "Apple TV HD (4th Generation, Siri)", deviceYearClass: 2015)
@@ -164,12 +162,12 @@ public extension UIDevice {
       default:
         return identifier
       }
-      #endif
+#endif
     }
 
     return mapToDevice(identifier: modelIdentifier)
   }()
-  // swiftlint:enable function_body_length closure_body_length
+  // swiftlint:enable closure_body_length
 
   // Credit: https://github.com/developerinsider/isJailBroken/blob/master/IsJailBroken/Extension/UIDevice%2BJailBroken.swift
   var isSimulator: Bool {
@@ -181,10 +179,8 @@ public extension UIDevice {
       return false
     }
 
-    let jailbroken = JailbreakHelper.hasCydiaInstalled() || JailbreakHelper.doesContainSuspiciousApps() ||
+    return JailbreakHelper.hasCydiaInstalled() || JailbreakHelper.doesContainSuspiciousApps() ||
     JailbreakHelper.doesSuspiciousSystemPathExist() || JailbreakHelper.canEditSystemFiles()
-
-    return jailbroken
   }
 }
 

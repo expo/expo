@@ -4,7 +4,6 @@ import Foundation
 import OSLog
 
 import ExpoModulesCore
-import SafariServices
 
 /**
  Class to read expo-updates logs using OSLogReader
