@@ -108,9 +108,10 @@ export function resolveConfigExport(
 ) {
   // add key to static config that we'll check for after the dynamic is evaluated
   // to see if the static config was used in determining the dynamic
+  const hasBaseStaticConfig = Symbol();
   if (request?.config) {
     // @ts-ignore
-    request.config._hasBaseStaticConfig = true;
+    request.config[hasBaseStaticConfig] = true;
   }
   if (result.default != null) {
     result = result.default;
@@ -131,13 +132,22 @@ export function resolveConfigExport(
     result = serializeSkippingMods(result);
   }
 
+  // demo that spreading the original config is carrying over the symbol...
+  console.log(
+    'request?.config?.[hasBaseStaticConfig]',
+    // @ts-ignore
+    { ...request?.config }[hasBaseStaticConfig]
+  );
+  // ... but the dynamic config output is not
+  console.log('result?.[hasBaseStaticConfig]', result?.[hasBaseStaticConfig]);
+
   // If the key is not added, it suggests that the static config was not used as the base for the dynamic.
   // note(Keith): This is the most common way to use static and dynamic config together, but not the only way.
   // Hence, this is only output from getConfig() for informational purposes for use by tools like Expo Doctor
   // to suggest that there *may* be a problem.
   const mayHaveUnusedStaticConfig =
     // @ts-ignore
-    request?.config?._hasBaseStaticConfig && !result?._hasBaseStaticConfig;
+    request?.config?.[hasBaseStaticConfig] && !result?.[hasBaseStaticConfig];
   if (result) {
     delete result._hasBaseStaticConfig;
   }
