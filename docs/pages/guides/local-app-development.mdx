@@ -1,0 +1,83 @@
+---
+title: Local app development
+description: Learn how to compile and build your app locally when using Expo.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { DocsLogo } from '@expo/styleguide';
+import { CODE } from '~/ui/components/Text';
+
+To build your project into an app locally using your machine, you have to manually generate native code before you can test the debug build or create a production build for it to submit to the app store. There are two ways you can build your app locally. This guide provides a brief introduction to both methods and references to other guides that are necessary to create this workflow.
+
+## Prerequisites
+
+To follow the steps described in this guide, you need the following installed on your local machine:
+
+- Android Studio to build for Android
+- Xcode on macOS to build for iOS
+
+## Local app compilation
+
+To build your project locally you can use compile commands from Expo CLI which generates the **android** and **ios** directories:
+
+<Terminal
+  cmd={[
+    '# Build native Android project',
+    '$ npx expo run:android',
+    '# Build native iOS project',
+    '$ npx expo run:iOS',
+  ]}
+/>
+
+The above commands compile your project into an app locally. You can also add the `--device` flag to create a debug build of your project and run it on a connected device. These compilation commands initially run `npx expo prebuild` to generate native directories (**android** and **ios**) before building.
+
+After building your project for the first time you can make modifications to your project's configuration or native code. However, it is recommended to make these modifications using app config or by creating a config plugin.
+
+Generating native directories will help with the app development in scenarios where you need to add custom native code to your app.
+
+To learn more about how compilation and prebuild works, see the following guides:
+
+<BoxLink
+  title="Compiling with Expo CLI"
+  description={
+    <>
+      Learn how Expo CLI uses <CODE>run</CODE> commands to compile your app locally, arguments you
+      can pass to the CLI and more.
+    </>
+  }
+  href="/more/expo-cli/#compiling"
+  Icon={DocsLogo}
+/>
+
+<BoxLink
+  title="Prebuild"
+  description="Learn how Expo CLI generates native code of your project before compiling it."
+  href="/workflow/prebuild"
+  Icon={DocsLogo}
+/>
+
+## Local builds with EAS
+
+You can run the same build process that EAS Build uses locally on your machine with the `--local` flag.
+
+<BoxLink
+  title="Run builds on your infrastructure"
+  description={
+    <>
+      Learn how to run EAS Build on your custom infrastructure or locally on your machine with the{' '}
+      <CODE>--local</CODE> flag.
+    </>
+  }
+  href="/build-reference/local-builds"
+  Icon={DocsLogo}
+/>
+
+## Next steps
+
+<BoxLink
+  title="Run builds on your infrastructure"
+  description="Learn how to run EAS Build on your custom infrastructure or locally."
+  href="/build-reference/local-builds"
+  Icon={DocsLogo}
+/>
