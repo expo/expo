@@ -1,9 +1,12 @@
-import { store } from './global-state/router-store';
-export const router = {
-    push: (href) => store.push(href),
-    replace: (href) => store.replace(href),
-    back: () => store.goBack(),
-    canGoBack: () => store.canGoBack(),
-    setParams: (params) => store.setParams(params),
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.router = void 0;
+const router_store_1 = require("./global-state/router-store");
+exports.router = {
+    push: (href) => router_store_1.store.push(href),
+    replace: (href) => router_store_1.store.replace(href),
+    back: () => router_store_1.store.goBack(),
+    canGoBack: () => router_store_1.store.canGoBack(),
+    setParams: (params) => router_store_1.store.setParams(params),
 };
 //# sourceMappingURL=imperative-api.js.map

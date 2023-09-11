@@ -3,7 +3,6 @@ import React from 'react';
 
 import { store, useStoreRootState, useStoreRouteInfo } from './global-state/router-store';
 import { Router } from './types';
-import { useDeprecated } from './useDeprecated';
 
 type SearchParams = Record<string, string | string[]>;
 
@@ -17,12 +16,6 @@ export function useRouteInfo() {
 
 export function useRootNavigation() {
   return store.navigationRef.current;
-}
-
-// Wraps useLinkTo to provide an API which is similar to the Link component.
-export function useLink() {
-  useDeprecated('`useLink()` is deprecated in favor of `useRouter()`');
-  return useRouter();
 }
 
 export function useRouter(): Router {
@@ -88,11 +81,6 @@ export function useGlobalSearchParams<
   TParams extends SearchParams = SearchParams,
 >(): Partial<TParams> {
   return useStoreRouteInfo().params as Partial<TParams>;
-}
-
-/** @deprecated renamed to `useGlobalSearchParams` */
-export function useSearchParams<TParams extends SearchParams = SearchParams>(): Partial<TParams> {
-  return useGlobalSearchParams<TParams>();
 }
 
 /**

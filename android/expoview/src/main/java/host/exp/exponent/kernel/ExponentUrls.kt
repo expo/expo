@@ -2,8 +2,10 @@
 package host.exp.exponent.kernel
 
 import android.net.Uri
+import expo.modules.jsonutils.require
 import host.exp.exponent.Constants
 import okhttp3.Request
+import org.json.JSONObject
 
 object ExponentUrls {
   private val HTTPS_HOSTS = setOf(
@@ -37,5 +39,16 @@ object ExponentUrls {
       builder.header("Exponent-Version", versionName)
     }
     return builder
+  }
+
+  fun Request.Builder.addHeadersFromJSONObject(headers: JSONObject?): Request.Builder {
+    if (headers == null) {
+      return this
+    }
+
+    headers.keys().asSequence().forEach { key ->
+      header(key, headers.require<Any>(key).toString())
+    }
+    return this
   }
 }

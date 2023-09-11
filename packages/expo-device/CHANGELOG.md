@@ -6,11 +6,17 @@
 
 ### 🎉 New features
 
-- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 5.6.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
 
 ## 5.5.0 — 2023-08-02
 

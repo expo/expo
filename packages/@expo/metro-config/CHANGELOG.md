@@ -10,9 +10,19 @@
 
 ### 🐛 Bug fixes
 
-- Use stable hashing for static CSS asset names. ([#23890](https://github.com/expo/expo/pull/23890) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 💡 Others
+
+- Fix build. ([#24309](https://github.com/expo/expo/pull/24309) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.12.0 — 2023-09-04
+
+### 🎉 New features
+
+- Add source map support with static Metro web exports. ([#24213](https://github.com/expo/expo/pull/24213) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+- Use stable hashing for static CSS asset names. ([#23890](https://github.com/expo/expo/pull/23890) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.11.1 — 2023-08-02
 

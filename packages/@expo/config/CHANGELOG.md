@@ -4,13 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- Remove classic manifest types. ([#24054](https://github.com/expo/expo/pull/24054) by [@wschurman](https://github.com/wschurman))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 8.3.0 — 2023-09-04
+
+### 🛠 Breaking changes
+
+- Remove classic manifest types. ([#24054](https://github.com/expo/expo/pull/24054) by [@wschurman](https://github.com/wschurman))
 
 ## 8.2.1 — 2023-08-02
 

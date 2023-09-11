@@ -6,14 +6,23 @@
 
 ### 🎉 New features
 
-- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
-- Add static font extraction support with `expo-router`. ([#24027](https://github.com/expo/expo/pull/24027) by [@EvanBacon](https://github.com/EvanBacon))
+- Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
 - Updated types for server functions. ([#23911](https://github.com/expo/expo/pull/23911) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 11.6.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- Add static font extraction support with `expo-router`. ([#24027](https://github.com/expo/expo/pull/24027) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
 - Migrated `FontLoaderModule` to use Expo Modules API. ([#24015](https://github.com/expo/expo/pull/24015) by [@lukmccall](https://github.com/lukmccall))
 
 ## 11.5.1 — 2023-08-02

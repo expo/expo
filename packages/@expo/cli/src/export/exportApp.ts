@@ -117,9 +117,9 @@ export async function exportAppAsync(
     if (useWebSSG) {
       await unstable_exportStaticAsync(projectRoot, {
         outputDir: outputPath,
-        // TODO: Expose
         minify,
         basePath,
+        includeMaps: dumpSourcemap,
       });
       Log.log('Finished saving static files');
     } else {
