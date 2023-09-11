@@ -33,7 +33,7 @@ async function listExamplesAsync() {
   }
 
   const data: GithubContent[] = await response.json();
-  return data.filter(item => item.type === 'dir' && !item.name.startsWith('.'));
+  return data.filter((item) => item.type === 'dir' && !item.name.startsWith('.'));
 }
 
 /** Determine if an example exists, using only its name */
@@ -67,7 +67,7 @@ export async function promptExamplesAsync() {
     type: 'select',
     name: 'answer',
     message: 'Choose an example:',
-    choices: examples.map(example => ({
+    choices: examples.map((example) => ({
       title: example.name,
       value: example.path,
     })),
@@ -110,7 +110,9 @@ export async function downloadAndExtractExampleAsync(root: string, name: string)
 }
 
 function exampleHasNativeCode(root: string): boolean {
-  return [path.join(root, 'android'), path.join(root, 'ios')].some(folder => fs.existsSync(folder));
+  return [path.join(root, 'android'), path.join(root, 'ios')].some((folder) =>
+    fs.existsSync(folder)
+  );
 }
 
 export async function sanitizeScriptsAsync(root: string) {

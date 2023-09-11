@@ -3,7 +3,10 @@
  * level where it can be tracked through telemetry asynchronously, before exiting.
  */
 export class ExitError extends Error {
-  constructor(public cause: string | Error, public code: number) {
+  constructor(
+    public cause: string | Error,
+    public code: number
+  ) {
     super(cause instanceof Error ? cause.message : cause);
   }
 }

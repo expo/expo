@@ -151,13 +151,13 @@ export async function flushAsync() {
       authorization: 'Basic ' + Buffer.from(`${xdlUnifiedWriteKey}:`).toString('base64'),
     },
     body: JSON.stringify({
-      batch: messageBatch.map(message => ({ ...message, sentAt: new Date() })),
+      batch: messageBatch.map((message) => ({ ...message, sentAt: new Date() })),
       sentAt: new Date(),
     }),
   };
   try {
     await fetch(analyticsEndpoint, request);
-  } catch (error) {
+  } catch {
     // supress errors - likely due to network connectivity or endpoint health
   }
   // clear array so we don't resend events in subsequent flushes
@@ -187,7 +187,7 @@ function uuidv4() {
     // available on node 14+
     // https://github.com/denoland/deno/issues/12754
     return (crypto as any).randomUUID();
-  } catch (error) {
+  } catch {
     // supress errors due to node 13 or less not having randomUUID
     return null;
   }

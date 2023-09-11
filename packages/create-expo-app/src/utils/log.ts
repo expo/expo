@@ -22,11 +22,11 @@ export function withSectionLog<T>(
   spinner.start();
 
   return action(spinner).then(
-    result => {
+    (result) => {
       spinner.succeed(message.success);
       return result;
     },
-    error => {
+    (error) => {
       spinner.fail(message.error(error));
       throw error;
     }
