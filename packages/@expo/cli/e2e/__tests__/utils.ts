@@ -6,6 +6,7 @@ import assert from 'assert';
 import execa from 'execa';
 import findProcess from 'find-process';
 import fs from 'fs';
+import * as htmlParser from 'node-html-parser';
 import os from 'os';
 import path from 'path';
 import treeKill from 'tree-kill';
@@ -227,4 +228,17 @@ export async function ensurePortFreeAsync(port: number) {
   } catch (error: any) {
     console.log(`Failed to kill process ${portProcess.name} on port ${port}: ${error.message}`);
   }
+}
+
+export async function getPage(output: string, route: string): Promise<string> {
+  return await fs.promises.readFile(path.join(output, route), 'utf8');
+}
+
+export async function getPageHtml(output: string, route: string) {
+  return htmlParser.parse(await getPage(output, route));
+}
+
+export function getRouterE2ERoot(): string {
+  const root = path.join(__dirname, '../../../../../apps/router-e2e');
+  return root;
 }

@@ -15,6 +15,8 @@
 
 ### 💡 Others
 
+- Refactor e2e tests.
+
 ## 0.10.12 — 2023-09-11
 
 ### 🎉 New features
