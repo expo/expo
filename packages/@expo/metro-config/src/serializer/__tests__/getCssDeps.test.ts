@@ -6,6 +6,11 @@ describe(fileNameFromContents, () => {
       `"-1effb2475fcfba4f9e8b8a1dbc8f3caf"`
     );
   });
+  it('returns the filename from the filepath with encoded path', () => {
+    expect(
+      fileNameFromContents({ filepath: 'node_modules%5Cexpo-router%5Centry.js', src: 'foo' })
+    ).toBe('entry-cee888899be3eec9e9f3f1adf89597b8');
+  });
 });
 
 const fooModule: JSModule = {
