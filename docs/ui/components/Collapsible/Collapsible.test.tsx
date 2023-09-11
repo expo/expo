@@ -1,23 +1,36 @@
-import { jest } from '@jest/globals';
 import { fireEvent, render, screen } from '@testing-library/react';
+import { PropsWithChildren } from 'react';
 
 import { Collapsible } from '.';
 
-jest.mock('~/components/page-higher-order/withHeadingManager', () => ({
-  __esModule: true,
-  default: (Component: React.FC) => (props: any) =>
-    <Component headingManager={{ addHeading: jest.fn() }} {...props} />,
-}));
+import { HeadingsContext } from '~/components/page-higher-order/withHeadingManager';
 
-describe(Collapsible, () => {
+const WrapWithContext = ({ children }: PropsWithChildren) => {
+  return (
+    // @ts-ignore
+    <HeadingsContext.Provider value={{ addHeading: () => ({ slug: 'blah' }) }}>
+      {children}
+    </HeadingsContext.Provider>
+  );
+};
+
+describe('Collapsible', () => {
   it('hides content by default', () => {
-    render(<Collapsible summary="Summary">Content</Collapsible>);
+    render(
+      <WrapWithContext>
+        <Collapsible summary="Summary">Content</Collapsible>
+      </WrapWithContext>
+    );
     expect(screen.getByText('Summary')).toBeVisible();
     expect(screen.getByText('Content')).not.toBeVisible();
   });
 
   it('shows content when opened', () => {
-    render(<Collapsible summary="Summary">Content</Collapsible>);
+    render(
+      <WrapWithContext>
+        <Collapsible summary="Summary">Content</Collapsible>
+      </WrapWithContext>
+    );
     fireEvent.click(screen.getByText('Summary'));
     expect(screen.getByText('Summary')).toBeVisible();
     expect(screen.getByText('Content')).toBeVisible();
@@ -25,9 +38,11 @@ describe(Collapsible, () => {
 
   it('shows content when rendered with open', () => {
     render(
-      <Collapsible summary="Summary" open>
-        Content
-      </Collapsible>
+      <WrapWithContext>
+        <Collapsible summary="Summary" open>
+          Content
+        </Collapsible>
+      </WrapWithContext>
     );
     expect(screen.getByText('Summary')).toBeVisible();
     expect(screen.getByText('Content')).toBeVisible();
