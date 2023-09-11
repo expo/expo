@@ -27,29 +27,6 @@ export async function runExpoCliAsync(
   });
 }
 
-/**
- * Added to support tools that require the `expo publish` command
- * that is only available in the old global expo-cli
- */
-export async function runLegacyExpoCliAsync(
-  command: string,
-  args: string[] = [],
-  options: Options = {}
-): Promise<void> {
-  // Don't handle SIGINT/SIGTERM in this process...defer to expo-cli
-  process.on('SIGINT', () => {});
-  process.on('SIGTERM', () => {});
-
-  await spawnAsync('expo', [command, ...args], {
-    cwd: options.cwd || EXPO_DIR,
-    stdio: options.stdio || 'inherit',
-    env: {
-      ...process.env,
-      EXPO_NO_DOCTOR: 'true',
-    },
-  });
-}
-
 export async function runCreateExpoAppAsync(
   name: string,
   args: string[] = [],
