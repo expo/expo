@@ -4,15 +4,15 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.Config = void 0;
-exports.applyRuntimeVersionFromConfig = applyRuntimeVersionFromConfig;
-exports.areVersionsSynced = areVersionsSynced;
+exports.applyRuntimeVersionFromConfigAsync = applyRuntimeVersionFromConfigAsync;
+exports.areVersionsSyncedAsync = areVersionsSyncedAsync;
 exports.ensureBuildGradleContainsConfigurationScript = ensureBuildGradleContainsConfigurationScript;
 exports.formatApplyLineForBuildGradle = formatApplyLineForBuildGradle;
 exports.isBuildGradleConfigured = isBuildGradleConfigured;
 exports.isMainApplicationMetaDataSet = isMainApplicationMetaDataSet;
-exports.isMainApplicationMetaDataSynced = isMainApplicationMetaDataSynced;
-exports.setUpdatesConfig = setUpdatesConfig;
-exports.setVersionsConfig = setVersionsConfig;
+exports.isMainApplicationMetaDataSyncedAsync = isMainApplicationMetaDataSyncedAsync;
+exports.setUpdatesConfigAsync = setUpdatesConfigAsync;
+exports.setVersionsConfigAsync = setVersionsConfigAsync;
 exports.withUpdates = void 0;
 function _path() {
   const data = _interopRequireDefault(require("path"));
@@ -92,16 +92,17 @@ const withUpdates = config => {
 };
 exports.withUpdates = withUpdates;
 const withUpdatesManifest = config => {
-  return (0, _androidPlugins().withAndroidManifest)(config, config => {
+  return (0, _androidPlugins().withAndroidManifest)(config, async config => {
     const projectRoot = config.modRequest.projectRoot;
     const expoUpdatesPackageVersion = (0, _Updates().getExpoUpdatesPackageVersion)(projectRoot);
-    config.modResults = setUpdatesConfig(projectRoot, config, config.modResults, expoUpdatesPackageVersion);
+    config.modResults = await setUpdatesConfigAsync(projectRoot, config, config.modResults, expoUpdatesPackageVersion);
     return config;
   });
 };
-const withRuntimeVersionResource = (0, _androidPlugins().createStringsXmlPlugin)(applyRuntimeVersionFromConfig, 'withRuntimeVersionResource');
-function applyRuntimeVersionFromConfig(config, stringsJSON) {
-  const runtimeVersion = (0, _Updates().getRuntimeVersionNullable)(config, 'android');
+const withRuntimeVersionResource = (0, _androidPlugins().createStringsXmlPlugin)(applyRuntimeVersionFromConfigAsync, 'withRuntimeVersionResource');
+async function applyRuntimeVersionFromConfigAsync(config, stringsJSON) {
+  const projectRoot = config.modRequest.projectRoot;
+  const runtimeVersion = await (0, _Updates().getRuntimeVersionNullableAsync)(projectRoot, config, 'android');
   if (runtimeVersion) {
     return (0, _Strings().setStringItem)([(0, _Resources().buildResourceItem)({
       name: 'expo_runtime_version',
@@ -110,7 +111,7 @@ function applyRuntimeVersionFromConfig(config, stringsJSON) {
   }
   return (0, _Strings().removeStringItem)('expo_runtime_version', stringsJSON);
 }
-function setUpdatesConfig(projectRoot, config, androidManifest, expoUpdatesPackageVersion) {
+async function setUpdatesConfigAsync(projectRoot, config, androidManifest, expoUpdatesPackageVersion) {
   const mainApplication = (0, _Manifest().getMainApplicationOrThrow)(androidManifest);
   (0, _Manifest().addMetaDataItemToMainApplication)(mainApplication, Config.ENABLED, String((0, _Updates().getUpdatesEnabled)(config)));
   (0, _Manifest().addMetaDataItemToMainApplication)(mainApplication, Config.CHECK_ON_LAUNCH, (0, _Updates().getUpdatesCheckOnLaunch)(config, expoUpdatesPackageVersion));
@@ -139,11 +140,11 @@ function setUpdatesConfig(projectRoot, config, androidManifest, expoUpdatesPacka
   } else {
     (0, _Manifest().removeMetaDataItemFromMainApplication)(mainApplication, Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY);
   }
-  return setVersionsConfig(config, androidManifest);
+  return await setVersionsConfigAsync(projectRoot, config, androidManifest);
 }
-function setVersionsConfig(config, androidManifest) {
+async function setVersionsConfigAsync(projectRoot, config, androidManifest) {
   const mainApplication = (0, _Manifest().getMainApplicationOrThrow)(androidManifest);
-  const runtimeVersion = (0, _Updates().getRuntimeVersionNullable)(config, 'android');
+  const runtimeVersion = await (0, _Updates().getRuntimeVersionNullableAsync)(projectRoot, config, 'android');
   if (!runtimeVersion && (0, _Manifest().findMetaDataItem)(mainApplication, Config.RUNTIME_VERSION) > -1) {
     throw new Error('A runtime version is set in your AndroidManifest.xml, but is missing from your app.json/app.config.js. Please either set runtimeVersion in your app.json/app.config.js or remove expo.modules.updates.EXPO_RUNTIME_VERSION from your AndroidManifest.xml.');
   }
@@ -200,11 +201,11 @@ function isMainApplicationMetaDataSet(androidManifest) {
   const sdkVersion = (0, _Manifest().getMainApplicationMetaDataValue)(androidManifest, Config.SDK_VERSION);
   return Boolean(updateUrl && (sdkVersion || runtimeVersion));
 }
-function isMainApplicationMetaDataSynced(projectRoot, config, androidManifest) {
-  return (0, _Updates().getUpdateUrl)(config) === (0, _Manifest().getMainApplicationMetaDataValue)(androidManifest, Config.UPDATE_URL) && String((0, _Updates().getUpdatesEnabled)(config)) === (0, _Manifest().getMainApplicationMetaDataValue)(androidManifest, Config.ENABLED) && String((0, _Updates().getUpdatesTimeout)(config)) === (0, _Manifest().getMainApplicationMetaDataValue)(androidManifest, Config.LAUNCH_WAIT_MS) && (0, _Updates().getUpdatesCheckOnLaunch)(config) === (0, _Manifest().getMainApplicationMetaDataValue)(androidManifest, Config.CHECK_ON_LAUNCH) && (0, _Updates().getUpdatesCodeSigningCertificate)(projectRoot, config) === (0, _Manifest().getMainApplicationMetaDataValue)(androidManifest, Config.CODE_SIGNING_CERTIFICATE) && (0, _Updates().getUpdatesCodeSigningMetadataStringified)(config) === (0, _Manifest().getMainApplicationMetaDataValue)(androidManifest, Config.CODE_SIGNING_METADATA) && areVersionsSynced(config, androidManifest);
+async function isMainApplicationMetaDataSyncedAsync(projectRoot, config, androidManifest) {
+  return (0, _Updates().getUpdateUrl)(config) === (0, _Manifest().getMainApplicationMetaDataValue)(androidManifest, Config.UPDATE_URL) && String((0, _Updates().getUpdatesEnabled)(config)) === (0, _Manifest().getMainApplicationMetaDataValue)(androidManifest, Config.ENABLED) && String((0, _Updates().getUpdatesTimeout)(config)) === (0, _Manifest().getMainApplicationMetaDataValue)(androidManifest, Config.LAUNCH_WAIT_MS) && (0, _Updates().getUpdatesCheckOnLaunch)(config) === (0, _Manifest().getMainApplicationMetaDataValue)(androidManifest, Config.CHECK_ON_LAUNCH) && (0, _Updates().getUpdatesCodeSigningCertificate)(projectRoot, config) === (0, _Manifest().getMainApplicationMetaDataValue)(androidManifest, Config.CODE_SIGNING_CERTIFICATE) && (0, _Updates().getUpdatesCodeSigningMetadataStringified)(config) === (0, _Manifest().getMainApplicationMetaDataValue)(androidManifest, Config.CODE_SIGNING_METADATA) && (await areVersionsSyncedAsync(projectRoot, config, androidManifest));
 }
-function areVersionsSynced(config, androidManifest) {
-  const expectedRuntimeVersion = (0, _Updates().getRuntimeVersionNullable)(config, 'android');
+async function areVersionsSyncedAsync(projectRoot, config, androidManifest) {
+  const expectedRuntimeVersion = await (0, _Updates().getRuntimeVersionNullableAsync)(projectRoot, config, 'android');
   const expectedSdkVersion = (0, _Updates().getSDKVersion)(config);
   const currentRuntimeVersion = (0, _Manifest().getMainApplicationMetaDataValue)(androidManifest, Config.RUNTIME_VERSION);
   const currentSdkVersion = (0, _Manifest().getMainApplicationMetaDataValue)(androidManifest, Config.SDK_VERSION);

@@ -4,7 +4,7 @@ import path from 'path';
 
 import {
   getNativeVersion,
-  getRuntimeVersion,
+  getRuntimeVersionAsync,
   getSDKVersion,
   getUpdatesCheckOnLaunch,
   getUpdatesCodeSigningCertificate,
@@ -178,48 +178,50 @@ describe(getNativeVersion, () => {
   });
 });
 
-describe(getRuntimeVersion, () => {
-  it('works if the top level runtimeVersion is a string', () => {
+describe(getRuntimeVersionAsync, () => {
+  it('works if the top level runtimeVersion is a string', async () => {
     const runtimeVersion = '42';
-    expect(getRuntimeVersion({ runtimeVersion }, 'ios')).toBe(runtimeVersion);
+    expect(await getRuntimeVersionAsync('', { runtimeVersion }, 'ios')).toBe(runtimeVersion);
   });
-  it('works if the platform specific runtimeVersion is a string', () => {
+  it('works if the platform specific runtimeVersion is a string', async () => {
     const runtimeVersion = '42';
-    expect(getRuntimeVersion({ ios: { runtimeVersion } }, 'ios')).toBe(runtimeVersion);
+    expect(await getRuntimeVersionAsync('', { ios: { runtimeVersion } }, 'ios')).toBe(
+      runtimeVersion
+    );
   });
-  it('works if the runtimeVersion is a nativeVersion policy', () => {
+  it('works if the runtimeVersion is a nativeVersion policy', async () => {
     const version = '1';
     const buildNumber = '2';
     expect(
-      getRuntimeVersion(
+      await getRuntimeVersionAsync(
+        '',
         { version, runtimeVersion: { policy: 'nativeVersion' }, ios: { buildNumber } },
         'ios'
       )
     ).toBe(`${version}(${buildNumber})`);
   });
-  it('works if the runtimeVersion is an appVersion policy', () => {
+  it('works if the runtimeVersion is an appVersion policy', async () => {
     const version = '1';
     const buildNumber = '2';
     expect(
-      getRuntimeVersion(
+      await getRuntimeVersionAsync(
+        '',
         { version, runtimeVersion: { policy: 'appVersion' }, ios: { buildNumber } },
         'ios'
       )
     ).toBe(version);
   });
-  it('returns null if no runtime version is supplied', () => {
-    expect(getRuntimeVersion({}, 'ios')).toEqual(null);
+  it('returns null if no runtime version is supplied', async () => {
+    expect(await getRuntimeVersionAsync('', {}, 'ios')).toEqual(null);
   });
-  it('throws if runtime version is not parseable', () => {
-    expect(() => {
-      getRuntimeVersion({ runtimeVersion: 1 } as any, 'ios');
-    }).toThrow(
-      `"1" is not a valid runtime version. getRuntimeVersion only supports a string, "sdkVersion", "appVersion", or "nativeVersion" policy.`
+  it('throws if runtime version is not parseable', async () => {
+    await expect(getRuntimeVersionAsync('', { runtimeVersion: 1 } as any, 'ios')).rejects.toThrow(
+      `"1" is not a valid runtime version. getRuntimeVersionAsync only supports a string, "sdkVersion", "appVersion", "nativeVersion" or "fingerprintExperimental" policy.`
     );
-    expect(() => {
-      getRuntimeVersion({ runtimeVersion: { policy: 'unsupportedPlugin' } } as any, 'ios');
-    }).toThrow(
-      `"{"policy":"unsupportedPlugin"}" is not a valid runtime version. getRuntimeVersion only supports a string, "sdkVersion", "appVersion", or "nativeVersion" policy.`
+    await expect(
+      getRuntimeVersionAsync('', { runtimeVersion: { policy: 'unsupportedPlugin' } } as any, 'ios')
+    ).rejects.toThrow(
+      `"{"policy":"unsupportedPlugin"}" is not a valid runtime version. getRuntimeVersionAsync only supports a string, "sdkVersion", "appVersion", "nativeVersion" or "fingerprintExperimental" policy.`
     );
   });
 });
