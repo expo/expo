@@ -9,12 +9,18 @@ public final class FileSystemModule: Module {
   private lazy var sessionTaskDispatcher = EXSessionTaskDispatcher(sessionHandler: ExpoAppDelegate.getSubscriberOfType(FileSystemBackgroundSessionHandler.self))
   private lazy var taskHandlersManager = EXTaskHandlersManager()
 
-  private lazy var documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
-  private lazy var cacheDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first
-
   private lazy var backgroundSession = createUrlSession(type: .background, delegate: sessionTaskDispatcher)
   private lazy var foregroundSession = createUrlSession(type: .foreground, delegate: sessionTaskDispatcher)
 
+  private var documentDirectory: URL? {
+    return appContext?.config.documentDirectory
+  }
+
+  private var cacheDirectory: URL? {
+    return appContext?.config.cacheDirectory
+  }
+
+  // swiftlint:disable:next cyclomatic_complexity
   public func definition() -> ModuleDefinition {
     Name("ExponentFileSystem")
 
@@ -181,6 +187,7 @@ public final class FileSystemModule: Module {
       task.resume()
     }
 
+    // swiftlint:disable:next line_length closure_body_length
     AsyncFunction("downloadResumableStartAsync") { (sourceUrl: URL, localUrl: URL, uuid: String, options: DownloadOptions, resumeDataString: String?, promise: Promise) in
       try ensureFileDirectoryExists(localUrl)
       try ensurePathPermission(path: localUrl.path, flag: .write)
@@ -235,10 +242,10 @@ public final class FileSystemModule: Module {
       taskHandlersManager.task(forId: id)?.cancel()
     }
 
-    AsyncFunction("getFreeDiskStorageAsync") { () -> Int64 in
-      let resourceValues = try getResourceValues(from: documentDirectory, forKeys: [.volumeAvailableCapacityForImportantUsageKey])
+    AsyncFunction("getFreeDiskStorageAsync") { () -> Int in
+      let resourceValues = try getResourceValues(from: documentDirectory, forKeys: [.volumeAvailableCapacityKey])
 
-      guard let availableCapacity = resourceValues?.volumeAvailableCapacityForImportantUsage else {
+      guard let availableCapacity = resourceValues?.volumeAvailableCapacity else {
         throw CannotDetermineDiskCapacity()
       }
       return availableCapacity

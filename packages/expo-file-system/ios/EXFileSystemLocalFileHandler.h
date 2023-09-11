@@ -1,5 +1,6 @@
+// Copyright 2023-present 650 Industries. All rights reserved.
 
-#import <ExpoFileSystem/EXFileSystem.h>
+#import <ExpoFileSystem/EXFileSystemHandler.h>
 
 @interface EXFileSystemLocalFileHandler : NSObject <EXFileSystemHandler>
 
