@@ -10,6 +10,12 @@
     "expo-modules-core",
     "expo-modules-test-core"
   ],
+  "scripts": {
+    "build": "tsc"
+  },
+  "bin": {
+    "expo-modules-test-core": "./bin/cli.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
@@ -20,5 +26,11 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-modules-test-core"
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-modules-test-core",
+  "dependencies": {
+    "@types/node": "^20.5.7",
+    "glob": "^10.3.4",
+    "prettier": "^3.0.3",
+    "yaml": "^2.3.2"
+  }
 }
