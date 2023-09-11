@@ -31,12 +31,12 @@ export default function App() {
 function UpdatesStatusView(props: { index: number }) {
   const [updateMessage, setUpdateMessage] = React.useState('');
   const [isRollback, setIsRollback] = React.useState(false);
+  const [noUpdateReason, setNoUpdateReason] = React.useState('');
 
   // Displays a message showing whether or not the app is running
   // a downloaded update
   const runTypeMessage =
-    `isEmbeddedLaunch = ${Updates.isEmbeddedLaunch}\n` +
-    `isUsingEmbeddedAssets = ${Updates.isUsingEmbeddedAssets}`;
+    `isEmbeddedLaunch = ${Updates.isEmbeddedLaunch}\n` + `noUpdateReason = ${noUpdateReason}`;
 
   const checkAutomaticallyMessage = `Automatic check setting = ${Updates.checkAutomatically}`;
 
@@ -53,7 +53,6 @@ function UpdatesStatusView(props: { index: number }) {
 
   useEffect(() => {
     const handleAsync = async () => {
-      const state = await Updates.getNativeStateMachineContextAsync();
       setIsRollback(availableUpdate?.type === Updates.UpdateInfoType.ROLLBACK);
     };
     if (isUpdateAvailable) {
@@ -111,7 +110,11 @@ function UpdatesStatusView(props: { index: number }) {
   }, [isUpdatePending]);
 
   const handleCheckButtonPress = () => {
-    Updates.checkForUpdateAsync();
+    Updates.checkForUpdateAsync().then((result) => {
+      if (result.isAvailable === false) {
+        setNoUpdateReason(result.reason ?? '');
+      }
+    });
   };
 
   const handleDownloadButtonPress = () => {

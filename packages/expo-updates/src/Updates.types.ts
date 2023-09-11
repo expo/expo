@@ -22,7 +22,36 @@ export enum UpdateEventType {
   ERROR = 'error',
 }
 
-type UpdateCheckResultRollBackToEmbedded = {
+enum UpdateCheckResultNotAvailableReason {
+  /**
+   * No update manifest or rollback directive received from the update server.
+   */
+  NO_UPDATE_AVAILABLE_ON_SERVER = 'noUpdateAvailableOnServer',
+  /**
+   * An update manifest was received from the update server, but the update is not launchable,
+   * or does not pass the configured selection policy.
+   */
+  UPDATE_REJECTED_BY_SELECTION_POLICY = 'updateRejectedBySelectionPolicy',
+  /**
+   * An update manifest was received from the update server, but the update has been previously
+   * launched on this device and never successfully launched.
+   */
+  UPDATE_PREVIOUSLY_FAILED = 'updatePreviouslyFailed',
+  /**
+   * A rollback directive was received from the update server, but the directive does not pass
+   * the configured selection policy.
+   */
+  ROLLBACK_REJECTED_BY_SELECTION_POLICY = 'rollbackRejectedBySelectionPolicy',
+  /**
+   * A rollback directive was received from the update server, but this app has no embedded update.
+   */
+  ROLLBACK_NO_EMBEDDED = 'rollbackNoEmbeddedConfiguration',
+}
+
+/**
+ * The update check result when a rollback directive is received.
+ */
+export type UpdateCheckResultRollBack = {
   /**
    * Whether an update is available. This property is false for a roll back update.
    */
@@ -35,12 +64,16 @@ type UpdateCheckResultRollBackToEmbedded = {
    * Whether a roll back to embedded update is available.
    */
   isRollBackToEmbedded: true;
+  /**
+   * If no new update is found, this contains one of several enum values indicating the reason.
+   */
+  reason: undefined;
 };
 
 /**
- * The successful result of checking for a new update.
+ * The update check result when a new update is found on the server.
  */
-export type UpdateCheckResultSuccess = {
+export type UpdateCheckResultAvailable = {
   /**
    * Whether an update is available. This property is false for a roll back update.
    */
@@ -53,12 +86,16 @@ export type UpdateCheckResultSuccess = {
    * Whether a roll back to embedded update is available.
    */
   isRollBackToEmbedded: false;
+  /**
+   * If no new update is found, this contains one of several enum values indicating the reason.
+   */
+  reason: undefined;
 };
 
 /**
- * The failed result of checking for a new update.
+ * The update check result if no new update was found.
  */
-export type UpdateCheckResultFailure = {
+export type UpdateCheckResultNotAvailable = {
   /**
    * Whether an update is available. This property is false for a roll back update.
    */
@@ -71,15 +108,29 @@ export type UpdateCheckResultFailure = {
    * Whether a roll back to embedded update is available.
    */
   isRollBackToEmbedded: false;
+  /**
+   * If no new update is found, this contains one of several enum values indicating the reason.
+   */
+  reason: UpdateCheckResultNotAvailableReason;
 };
 
 /**
  * The result of checking for a new update.
  */
 export type UpdateCheckResult =
-  | UpdateCheckResultRollBackToEmbedded
-  | UpdateCheckResultSuccess
-  | UpdateCheckResultFailure;
+  | UpdateCheckResultRollBack
+  | UpdateCheckResultAvailable
+  | UpdateCheckResultNotAvailable;
+
+/**
+ * @deprecated
+ */
+export type UpdateCheckResultSuccess = UpdateCheckResultAvailable;
+
+/**
+ * @deprecated
+ */
+export type UpdateCheckResultFailure = UpdateCheckResultNotAvailable;
 
 /**
  * The successful result of fetching a new update.

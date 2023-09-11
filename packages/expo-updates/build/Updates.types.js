@@ -18,6 +18,32 @@ export var UpdateEventType;
      */
     UpdateEventType["ERROR"] = "error";
 })(UpdateEventType || (UpdateEventType = {}));
+var UpdateCheckResultNotAvailableReason;
+(function (UpdateCheckResultNotAvailableReason) {
+    /**
+     * No update manifest or rollback directive received from the update server.
+     */
+    UpdateCheckResultNotAvailableReason["NO_UPDATE_AVAILABLE_ON_SERVER"] = "noUpdateAvailableOnServer";
+    /**
+     * An update manifest was received from the update server, but the update is not launchable,
+     * or does not pass the configured selection policy.
+     */
+    UpdateCheckResultNotAvailableReason["UPDATE_REJECTED_BY_SELECTION_POLICY"] = "updateRejectedBySelectionPolicy";
+    /**
+     * An update manifest was received from the update server, but the update has been previously
+     * launched on this device and never successfully launched.
+     */
+    UpdateCheckResultNotAvailableReason["UPDATE_PREVIOUSLY_FAILED"] = "updatePreviouslyFailed";
+    /**
+     * A rollback directive was received from the update server, but the directive does not pass
+     * the configured selection policy.
+     */
+    UpdateCheckResultNotAvailableReason["ROLLBACK_REJECTED_BY_SELECTION_POLICY"] = "rollbackRejectedBySelectionPolicy";
+    /**
+     * A rollback directive was received from the update server, but this app has no embedded update.
+     */
+    UpdateCheckResultNotAvailableReason["ROLLBACK_NO_EMBEDDED"] = "rollbackNoEmbeddedConfiguration";
+})(UpdateCheckResultNotAvailableReason || (UpdateCheckResultNotAvailableReason = {}));
 /**
  * The possible code values for expo-updates log entries
  */

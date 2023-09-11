@@ -99,13 +99,19 @@ public final class UpdatesUtils: NSObject {
             return
           case let rollBackUpdateDirective as RollBackToEmbeddedUpdateDirective:
             if !constants.config.hasEmbeddedUpdate {
-              block([:])
+              let reason = RemoteCheckResultNotAvailableReason.rollbackNoEmbedded
+              block([
+                "reason": "\(reason)"
+              ])
               sendStateEvent(UpdatesStateEventCheckComplete())
               return
             }
 
             guard let embeddedManifest = EmbeddedAppLoader.embeddedManifest(withConfig: constants.config, database: constants.database) else {
-              block([:])
+              let reason = RemoteCheckResultNotAvailableReason.rollbackNoEmbedded
+              block([
+                "reason": "\(reason)"
+              ])
               sendStateEvent(UpdatesStateEventCheckComplete())
               return
             }
@@ -116,7 +122,10 @@ public final class UpdatesUtils: NSObject {
               launchedUpdate: launchedUpdate,
               filters: manifestFilters
             ) {
-              block([:])
+              let reason = RemoteCheckResultNotAvailableReason.rollbackRejectedBySelectionPolicy
+              block([
+                "reason": "\(reason)"
+              ])
               sendStateEvent(UpdatesStateEventCheckComplete())
               return
             }
@@ -136,22 +145,50 @@ public final class UpdatesUtils: NSObject {
         }
 
         guard let update = updateResponse.manifestUpdateResponsePart?.updateManifest else {
-          block([:])
+          let reason = RemoteCheckResultNotAvailableReason.noUpdateAvailableOnServer
+          block([
+            "reason": "\(reason)"
+          ])
           sendStateEvent(UpdatesStateEventCheckComplete())
           return
         }
 
+        var shouldLaunch = false
+        var failedPreviously = false
         if constants.selectionPolicy.shouldLoadNewUpdate(
           update,
           withLaunchedUpdate: launchedUpdate,
           filters: manifestFilters
         ) {
+          // If "update" has failed to launch previously, then
+          // "launchedUpdate" will be an earlier update, and the test above
+          // will return true (incorrectly).
+          // We check to see if the new update is already in the DB, and if so,
+          // only allow the update if it has had no launch failures.
+          shouldLaunch = true
+          constants.database.databaseQueue.sync {
+            do {
+              let storedUpdate = try constants.database.update(withId: update.updateId, config: constants.config)
+              if let storedUpdate = storedUpdate {
+                shouldLaunch = storedUpdate.failedLaunchCount == 0 || storedUpdate.successfulLaunchCount > 0
+                failedPreviously = !shouldLaunch
+                AppController.sharedInstance.logger.info(message: "Stored update found: ID = \(update.updateId), failureCount = \(storedUpdate.failedLaunchCount)")
+              }
+            } catch {}
+          }
+        }
+        if shouldLaunch {
           block([
             "manifest": update.manifest.rawManifestJSON()
           ])
           sendStateEvent(UpdatesStateEventCheckCompleteWithUpdate(manifest: update.manifest.rawManifestJSON()))
         } else {
-          block([:])
+          let reason = failedPreviously ?
+            RemoteCheckResultNotAvailableReason.updatePreviouslyFailed :
+            RemoteCheckResultNotAvailableReason.updateRejectedBySelectionPolicy
+          block([
+            "reason": "\(reason)"
+          ])
           sendStateEvent(UpdatesStateEventCheckComplete())
         }
       } errorBlock: { error in
