@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix exporting paths on Windows machines.
+
 ### 💡 Others
 
 - Fix build. ([#24309](https://github.com/expo/expo/pull/24309) by [@EvanBacon](https://github.com/EvanBacon))
