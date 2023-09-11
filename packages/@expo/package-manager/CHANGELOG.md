@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Remove console log. ([#24355](https://github.com/expo/expo/pull/24355) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 1.1.0 — 2023-09-11
