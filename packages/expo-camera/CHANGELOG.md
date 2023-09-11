@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 13.4.4 — 2023-09-11
+
+### 🐛 Bug fixes
+
+- Remove @koale/useworker. ([#23967](https://github.com/expo/expo/pull/23967) by [@marklawlor](https://github.com/marklawlor))
+
 ## 13.6.0 — 2023-09-04
 
 ### 🎉 New features
