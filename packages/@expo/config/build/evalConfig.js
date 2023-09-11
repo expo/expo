@@ -132,6 +132,8 @@ function isSyntaxError(error) {
  */
 function resolveConfigExport(result, configFile, request) {
   var _result, _request$config, _result2;
+  // add key to static config that we'll check for after the dynamic is evaluated
+  // to see if the static config was used in determining the dynamic
   if (request !== null && request !== void 0 && request.config) {
     // @ts-ignore
     request.config._hasBaseStaticConfig = true;
@@ -153,6 +155,11 @@ function resolveConfigExport(result, configFile, request) {
   } else {
     result = (0, _Serialize().serializeSkippingMods)(result);
   }
+
+  // If the key is not added, it suggests that the static config was not used as the base for the dynamic.
+  // note(Keith): This is the most common way to use static and dynamic config together, but not the only way.
+  // Hence, this is only output from getConfig() for informational purposes for use by tools like Expo Doctor
+  // to suggest that there *may* be a problem.
   const mayHaveUnusedStaticConfig =
   // @ts-ignore
   (request === null || request === void 0 ? void 0 : (_request$config = request.config) === null || _request$config === void 0 ? void 0 : _request$config._hasBaseStaticConfig) && !((_result2 = result) !== null && _result2 !== void 0 && _result2._hasBaseStaticConfig);
