@@ -5,11 +5,13 @@ import klawSync from 'klaw-sync';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { bin, getPageHtml, getRouterE2ERoot } from '../utils';
+import { bin, ensurePortFreeAsync, getPageHtml, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
 
-describe('exports static without sourcemaps', () => {
+beforeEach(() => ensurePortFreeAsync(19000));
+
+describe('exports static', () => {
   const projectRoot = getRouterE2ERoot();
   const outputName = 'dist-static-rendering';
   const outputDir = path.join(projectRoot, outputName);
@@ -33,6 +35,51 @@ describe('exports static without sourcemaps', () => {
     // Could take 45s depending on how fast the bundler resolves
     560 * 1000
   );
+
+  describe('server', () => {
+    let server: execa.ExecaChildProcess<string> | undefined;
+    const serverUrl = 'http://localhost:3000';
+
+    beforeAll(
+      async () => {
+        await ensurePortFreeAsync(3000);
+        // Start a server instance that we can test against then kill it.
+        server = execa('npx', ['serve', outputName, '-l', '3000'], {
+          cwd: projectRoot,
+
+          stderr: 'inherit',
+
+          env: {
+            NODE_ENV: 'production',
+            TEST_SECRET_KEY: 'test-secret-key',
+          },
+        });
+        // Wait for the server to start
+        await new Promise((resolve) => {
+          const listener = server!.stdout?.on('data', (data) => {
+            if (data.toString().includes('Accepting connections at')) {
+              resolve(null);
+              listener?.removeAllListeners();
+            }
+          });
+        });
+      },
+      // 5 seconds to drop a port and start a server.
+      5 * 1000
+    );
+
+    afterAll(async () => {
+      server?.kill();
+      server?.unref();
+    });
+
+    it(`can serve up index html`, async () => {
+      expect(await fetch(serverUrl).then((res) => res.text())).toMatch(/<div id="root">/);
+    });
+    it(`gets a 404`, async () => {
+      expect(await fetch(serverUrl + '/missing-route').then((res) => res.status)).toBe(404);
+    });
+  });
 
   it('has expected files', async () => {
     // List output files with sizes for snapshotting.
