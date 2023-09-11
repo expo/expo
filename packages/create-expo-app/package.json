@@ -29,7 +29,7 @@
     "watch": "yarn run build -w",
     "build": "ncc build ./src/index.ts -o build/",
     "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
-    "clean": "rimraf ./build/"
+    "clean": "git clean -xdf ./build"
   },
   "devDependencies": {
     "@expo/json-file": "8.2.37",
