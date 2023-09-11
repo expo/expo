@@ -38,8 +38,8 @@ describe('hooks only', () => {
       fireEvent.press(text);
     });
 
-    expect(await screen.findByText('test-name')).toBeOnTheScreen();
     expect(screen).toHavePathname('/profile/test-name');
+    expect(await screen.findByText('test-name')).toBeOnTheScreen();
   });
 });
 
@@ -157,7 +157,7 @@ it('preserves history when replacing screens within the same navigator', () => {
         return <Redirect href="/permissions" />;
       }
 
-      return <Text>protexted</Text>;
+      return <Text>protected</Text>;
     },
   });
 
