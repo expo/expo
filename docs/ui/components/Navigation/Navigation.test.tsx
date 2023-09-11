@@ -8,6 +8,8 @@ import { visit } from 'unist-util-visit';
 import { findActiveRoute, Navigation } from './Navigation';
 import { NavigationNode } from './types';
 
+import { HeadingsContext } from '~/components/page-higher-order/withHeadingManager';
+
 jest.mock('next/router', () => mockRouter);
 
 /** A set of navigation nodes to test with */
@@ -65,9 +67,13 @@ describe(Navigation, () => {
 
   it('renders pages inside groups inside sections', () => {
     render(
-      <MemoryRouterProvider>
-        <Navigation routes={nodes} />
-      </MemoryRouterProvider>
+      // Need context due to withHeadingManager in Collapsible, which enables anchor links
+      // @ts-ignore
+      <HeadingsContext.Provider value={{ addHeading: () => ({ slug: 'blah' }) }}>
+        <MemoryRouterProvider>
+          <Navigation routes={nodes} />
+        </MemoryRouterProvider>
+      </HeadingsContext.Provider>
     );
     // Get started ->
     expect(screen.getByText('Introduction')).toBeInTheDocument();
