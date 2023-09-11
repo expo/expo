@@ -2350,7 +2350,6 @@ PODS:
     - ExpoModulesCore
     - UMAppLoader
   - EXUpdates (0.20.0):
-    - ASN1Decoder (~> 1.8)
     - EASClient
     - EXManifests
     - ExpoModulesCore
@@ -2360,7 +2359,6 @@ PODS:
     - ReachabilitySwift
     - React-Core
   - EXUpdates/Tests (0.20.0):
-    - ASN1Decoder (~> 1.8)
     - EASClient
     - EXManifests
     - ExpoModulesCore
@@ -4905,26 +4903,26 @@ SPEC CHECKSUMS:
   Branch: 23b6b9351d5574377e7a764841cfb13a70c2799b
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
-  EASClient: b3dcce6da9a5c9ecd70077458830c7b44b1ba87f
-  EXApplication: 2a0d9abd4feace9c6faedfe541c1dec02e3702cd
+  EASClient: f753a5789e9b41b9103eb508078bc3d03fdc5f7b
+  EXApplication: f0c9b72e41dab55921b3fe712d498f8fb5ecaed4
   EXAV: 523cd6969ca53b3b2762f18fb5450b76f84df44f
   EXBackgroundFetch: 1c3a6b4935ba2c401cfcdece8da10030c881952b
   EXBarCodeScanner: 296dd50f6c03928d1d71d37ea17473b304cfdb00
   EXBranch: 42d596fd1f7683b6591980ca4453b35ba13a83b5
   EXCalendar: f4dac0aa190d359f20652659707f5cc307656b6d
   EXCamera: 2dc2bd2828bca4e283018a0b5a84aec6639ff0b4
-  EXConstants: a22d1979533bac7b45a79b206e1865fec3abf156
+  EXConstants: f7ac442bf810dd8605f7eff9a44b2ff0d8a45b40
   EXContacts: afd38f7adacef9a76d6d0bc479f30051736f068f
-  EXFileSystem: aec89226b638b82cdd6d6c15d75a8b7f0696226d
-  EXFont: b3ca70589cdbdfd725b154f280dc507c3b56749a
+  EXFileSystem: f601bc6950ff42ec66d89aab5601750f9c5b07bb
+  EXFont: 184302793457ce7c6a8260b729c408beb659c2cc
   EXImageLoader: 03063370bc06ea1825713d3f55fe0455f7c88d04
-  EXJSONUtils: 7fd9cb366856cc187a567dc2938ada28f9170291
+  EXJSONUtils: adddef895cae6148f1083c8a2a4b7300701ecc6b
   EXLocation: e5dd52bdf61ccb6153c9e46ad4cb2686c96a35f9
-  EXManifests: 50b22c1f15ce6e909457a0ede7ce21b084916099
+  EXManifests: 1b13501056f121b014dde85a8d6d082468b28042
   EXMediaLibrary: 802eee8ef888ee16ef80f1b79005d3d611793e14
   EXNotifications: 40f334ce2b713e180e13beff9a16cab170a0c70c
   EXPermissions: 51c6115893689c3e9787f4819aa67ceeae601038
-  Expo: ce103e6ea63ed61e83ef85c89fb0811b035ed9ec
+  Expo: 64fd9c4f5aea10e4f326a3afc8e5b2af5e27bf7e
   ExpoAppleAuthentication: 8c95178a99e7fdb8aea1e3f6385843708471c3df
   ExpoBattery: 5f17ec31ec27b8a59f4c87ffe6e69fdbbf4a7cc0
   ExpoBlur: 9e6da7c2bd4a0c5de7e57124694d0a380d7962f7
@@ -4940,12 +4938,12 @@ SPEC CHECKSUMS:
   ExpoImage: dce8ac4d8297d29f43f259755cd66e28ffa57a7a
   ExpoImageManipulator: 6d37f811d47a89afb34c0ec2521c6a6ea5f5a5be
   ExpoImagePicker: 9e5c745cb3e56ee00e1cfe5d6af59caab66ecf1a
-  ExpoKeepAwake: 94617f898cf9048c220fad71620e36a4da296857
+  ExpoKeepAwake: 3d88ab020efd9cd41988a00cfdf82a447e358b1b
   ExpoLinearGradient: 5d18293f89c063036121281175c4653d6a7c34a2
   ExpoLocalAuthentication: 2fed4b25cf8e54d36d5d1ebc9917e8325b3b5911
   ExpoLocalization: 2d5f47577d67ce991ebdd951edf14fe1db85fa06
   ExpoMailComposer: f88bdf18939c94eb965db28c13ba2d85cba70112
-  ExpoModulesCore: a48edc69d9f7c3a5c61d86822e556fa10f81c574
+  ExpoModulesCore: a5a7e0dedd64bf0842e50c01e896fdcc47723411
   ExpoModulesTestCore: e1bbe3bfa5ee4faa761ef255bafcb92383dcf86f
   ExpoNetwork: 1a591f426290be254a8ceaf56fd2a5b7c00111e1
   ExpoPrint: c048657854ad4315be943e1d6a5cf50d94df74f8
@@ -4963,11 +4961,11 @@ SPEC CHECKSUMS:
   ExpoVideoThumbnails: d2ded9402b7f8ac10f148238e352eaa4026f2865
   ExpoWebBrowser: b6e56949734089d75f758f21cfe93fad02bd828c
   EXScreenCapture: 6ba7b396fd8afd19cb9a5e0ac8820188baf5415e
-  EXSplashScreen: 5ed09ea490155ef603d007d9f194c9e04a4b7980
-  EXStructuredHeaders: 41cf143da0aa1f93cc29c486103728cf37bc8710
+  EXSplashScreen: a906ff3babc76cad7ad7482255f043e9e5b9b5d4
+  EXStructuredHeaders: 8dd6bab97912194ee7641c329feca89321140318
   EXTaskManager: aae3b3c8144af1e0bfdbe8a3cc19fb116a01368d
-  EXUpdates: 30c6c1eb2bb6fca39450260c4aeae9024c080c08
-  EXUpdatesInterface: 1f9cdd9e1e1026de7488ac537e9c40bc6b6fb872
+  EXUpdates: 2a2b560639dbc2424bc13f4010b7212c82a2b63f
+  EXUpdatesInterface: 376edcf7e762dcf8f55552804944dac004fa3349
   FBAEMKit: af2972f39bb0f3f7c45998f435b007833c32ffb2
   FBAudienceNetwork: 03e273f66b70756be7d060927111af97b7641b06
   FBLazyVector: 5d4a3b7f411219a45a6d952f77d2c0a6c9989da5
