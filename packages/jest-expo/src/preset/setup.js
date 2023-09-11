@@ -162,7 +162,7 @@ jest.doMock('react-native/Libraries/LogBox/LogBox', () => ({
   },
 }));
 
-const attemptLookup = (moduleName) => {
+function attemptLookup(moduleName) {
   // hack to get the package name from the module name
   const filePath = stackTrace.getSync().find((line) => line.fileName.includes(moduleName));
   const modulePath = findUp.sync('package.json', { cwd: filePath.fileName });
@@ -174,7 +174,7 @@ const attemptLookup = (moduleName) => {
   } catch {
     return null;
   }
-};
+}
 
 try {
   jest.doMock('expo-modules-core', () => {
