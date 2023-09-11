@@ -5,14 +5,14 @@ description: Learn how to compile and build your app locally when using Expo.
 
 import { Terminal } from '~/ui/components/Snippet';
 import { BoxLink } from '~/ui/components/BoxLink';
-import { DocsLogo } from '@expo/styleguide';
+import { BookOpen02Icon, BuildIcon } from '@expo/styleguide-icons';
 import { CODE } from '~/ui/components/Text';
 
-To build your project into an app locally using your machine, you have to manually generate native code before you can test the debug build or create a production build for it to submit to the app store. There are two ways you can build your app locally. This guide provides a brief introduction to both methods and references to other guides that are necessary to create this workflow.
+To build your project into an app locally using your machine, you have to manually generate native code before testing the debug build or creating a production build for it to submit to the app store. There are two ways you can build your app locally. This guide provides a brief introduction to both methods and references to other guides that are necessary to create this workflow.
 
 ## Prerequisites
 
-To follow the steps described in this guide, you need the following installed on your local machine:
+To follow the steps described in this guide, install the following tools on your local machine:
 
 - [Android Studio](/workflow/android-studio-emulator/) to build for Android
 - [Xcode](/workflow/ios-simulator/) on macOS to build for iOS
@@ -32,9 +32,7 @@ To build your project locally you can use compile commands from Expo CLI which g
 
 The above commands compile your project into an app locally. You can also add the `--device` flag to create a debug build of your project and run it on a connected device. These compilation commands initially run `npx expo prebuild` to generate native directories (**android** and **ios**) before building.
 
-After building your project for the first time you can make modifications to your project's configuration or native code. However, it is recommended to make these modifications using [app config](/workflow/configuration/) or by creating a [config plugin](/config-plugins/introduction/).
-
-Generating native directories will help with the app development in scenarios where you need to add custom native code to your app.
+After building your project for the first time, you can modify your project's configuration or native code. However, it is recommended to make these modifications using [app config](/workflow/configuration/) or by creating a [config plugin](/config-plugins/introduction/).
 
 To learn more about how compilation and prebuild works, see the following guides:
 
@@ -47,19 +45,17 @@ To learn more about how compilation and prebuild works, see the following guides
     </>
   }
   href="/more/expo-cli/#compiling"
-  Icon={DocsLogo}
+  Icon={BookOpen02Icon}
 />
 
 <BoxLink
   title="Prebuild"
   description="Learn how Expo CLI generates native code of your project before compiling it."
   href="/workflow/prebuild"
-  Icon={DocsLogo}
+  Icon={BookOpen02Icon}
 />
 
 ## Local builds with EAS
-
-You can run the same build process that EAS Build uses locally on your machine with the `--local` flag.
 
 <BoxLink
   title="Run builds on your infrastructure"
@@ -70,7 +66,7 @@ You can run the same build process that EAS Build uses locally on your machine w
     </>
   }
   href="/build-reference/local-builds"
-  Icon={DocsLogo}
+  Icon={BuildIcon}
 />
 
 ## Next steps
@@ -79,5 +75,5 @@ You can run the same build process that EAS Build uses locally on your machine w
   title="Production builds"
   description="Learn how to create a production build for your app that is ready to be submitted to app stores."
   href="/deploy/build-project/"
-  Icon={DocsLogo}
+  Icon={BookOpen02Icon}
 />
