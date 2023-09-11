@@ -6,9 +6,16 @@
 
 ### 🎉 New features
 
+- Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Remove deprecated `RCTDeviceEventEmitter`. ([#24298](https://github.com/expo/expo/pull/24298) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove `deprecate` utility function. ([#24298](https://github.com/expo/expo/pull/24298) by [@EvanBacon](https://github.com/EvanBacon))
+- Deprecate `SyntheticPlatformEmitter` in favor of `DeviceEventEmitter`. ([#24298](https://github.com/expo/expo/pull/24298) by [@EvanBacon](https://github.com/EvanBacon))
+- Introduced an AppContext config to provide things like documents and caches directories for the modules. ([#24292](https://github.com/expo/expo/pull/24292) by [@tsapeta](https://github.com/tsapeta))
 
 ## 1.7.0 — 2023-09-04
 
@@ -28,6 +35,7 @@
 - Fixed Fabric setup error on iOS. ([#24004](https://github.com/expo/expo/pull/24004) by [@kudo](https://github.com/kudo))
 - Fixed uuid v4 generation. ([#24123](https://github.com/expo/expo/pull/24123) by [@tsapeta](https://github.com/tsapeta))
 - [Android] Fixed owner type of view functions. ([#24135](https://github.com/expo/expo/pull/24135) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixed IOException `No space left on device` when saving persistent log. ([#24247](https://github.com/expo/expo/pull/24247) by [@RodolfoGS](https://github.com/RodolfoGS))
 
 ### 💡 Others
 

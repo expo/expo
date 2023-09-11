@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 0.2.0 — 2023-09-08
+
+### 🛠 Breaking changes
+
+- Normalize Expo config and remove `runtimeVersion` from fingerprint. Note that the fingerprint result will be changed from this version. ([#24290](https://github.com/expo/expo/pull/24290) by [@Kudo](https://github.com/kudo))
+
+### 🎉 New features
+
+- Added `options.ignorePaths` and **.fingerprintignore** to support. ([#24265](https://github.com/expo/expo/pull/24265) by [@Kudo](https://github.com/kudo))
+
 ## 0.1.0 — 2023-08-29
 
 ### 🛠 Breaking changes

@@ -26,8 +26,6 @@ export default {
   addHistoryItem(manifestUrl: string, manifest: Manifest): AppThunk {
     return async (dispatch: AppDispatch) => {
       const historyItem: HistoryItem = {
-        // TODO(wschurman): audit for new manifests
-        bundleUrl: manifest && 'bundleUrl' in manifest ? manifest.bundleUrl : '',
         manifestUrl,
         manifest,
         url: manifestUrl,

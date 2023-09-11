@@ -5,9 +5,6 @@
 #import "EXFileDownloader.h"
 #import "EXKernel.h"
 #import "EXAppFetcher.h"
-#import "EXAppFetcherDevelopmentMode.h"
-#import "EXAppFetcherCacheOnly.h"
-#import "EXAppFetcherWithTimeout.h"
 #import "EXAbstractLoader.h"
 #import "EXKernelAppRecord.h"
 #import "EXKernelAppRegistry.h"
@@ -19,6 +16,9 @@
 @import EXManifests;
 
 NS_ASSUME_NONNULL_BEGIN
+
+NSTimeInterval const kEXAppLoaderDefaultTimeout = 30;
+NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
 @implementation EXAbstractLoader
 

@@ -50,19 +50,19 @@ There are some URL schemes for core functionality that exist on every platform. 
 On newer Android versions, include the appropriate queries in the **AndroidManifest.xml** to open links. This can be done by [creating a config plugin](/config-plugins/plugins-and-mods/#create-a-plugin). For example, the config plugin below will enable linking to phone and email apps:
 
 ```js my-plugin.js
-const { withAndroidManifest } = require("@expo/config-plugins");
+const { withAndroidManifest } = require('@expo/config-plugins');
 
-const withAndroidQueries = (config) => {
-  return withAndroidManifest(config, (config) => {
+const withAndroidQueries = config => {
+  return withAndroidManifest(config, config => {
     config.modResults.manifest.queries = [
       {
         intent: [
           {
-            action: [{ $: { "android:name": "android.intent.action.SENDTO" } }],
-            data: [{ $: { "android:scheme": "mailto" } }],
+            action: [{ $: { 'android:name': 'android.intent.action.SENDTO' } }],
+            data: [{ $: { 'android:scheme': 'mailto' } }],
           },
           {
-            action: [{ $: { "android:name": "android.intent.action.DIAL" } }],
+            action: [{ $: { 'android:name': 'android.intent.action.DIAL' } }],
           },
         ],
       },
@@ -112,8 +112,6 @@ To save you the trouble of inserting a bunch of conditionals based on the enviro
 - _Published app in Expo Go_: `exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]`
 
 You can also change the returned url by passing optional parameters into `Linking.createURL()`. These will be used by your app to receive data, which we will talk about in the next section.
-
-> `Linking.createURL()` is available in `expo-linking@2.0.1` and higher. If you are using an older version, use `Linking.makeUrl()` instead.
 
 To pass some data to an app, you can append it as a path or query string on your url. `Linking.createURL(path, { queryParams })` will construct a working url automatically for you. Example:
 

@@ -3,7 +3,7 @@ import fs from 'fs';
 import { vol } from 'memfs';
 import path from 'path';
 
-import { normalizeOptions } from '../../Options';
+import { normalizeOptionsAsync } from '../../Options';
 import {
   getBareAndroidSourcesAsync,
   getBareIosSourcesAsync,
@@ -21,10 +21,10 @@ describe('getBareSourcesAsync', () => {
 
   it('should contain android and ios folders in bare react-native project', async () => {
     vol.fromJSON(require('./fixtures/BareReactNative70Project.json'));
-    let sources = await getBareAndroidSourcesAsync('/app', normalizeOptions());
+    let sources = await getBareAndroidSourcesAsync('/app', await normalizeOptionsAsync('/app'));
     expect(sources).toContainEqual(expect.objectContaining({ filePath: 'android', type: 'dir' }));
 
-    sources = await getBareIosSourcesAsync('/app', normalizeOptions());
+    sources = await getBareIosSourcesAsync('/app', await normalizeOptionsAsync('/app'));
     expect(sources).toContainEqual(expect.objectContaining({ filePath: 'ios', type: 'dir' }));
   });
 });
@@ -47,7 +47,10 @@ describe(getRncliAutolinkingSourcesAsync, () => {
       signal: null,
       output: [fixture, ''],
     });
-    const sources = await getRncliAutolinkingSourcesAsync('/root/apps/demo', normalizeOptions());
+    const sources = await getRncliAutolinkingSourcesAsync(
+      '/root/apps/demo',
+      await normalizeOptionsAsync('/app')
+    );
     expect(sources).toContainEqual(
       expect.objectContaining({
         type: 'dir',
@@ -70,7 +73,10 @@ describe(getRncliAutolinkingSourcesAsync, () => {
       signal: null,
       output: [fixture, ''],
     });
-    const sources = await getRncliAutolinkingSourcesAsync('/root/apps/demo', normalizeOptions());
+    const sources = await getRncliAutolinkingSourcesAsync(
+      '/root/apps/demo',
+      await normalizeOptionsAsync('/app')
+    );
     for (const source of sources) {
       if (source.type === 'dir' || source.type === 'file') {
         expect(source.filePath).not.toMatch(/^\/root/);

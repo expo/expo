@@ -3,7 +3,7 @@
 import Foundation
 import EXManifests
 
-internal final class LegacyUpdate: Update {
+public final class LegacyUpdate: Update {
   /**
    * Method for initializing updates with manifests in the classic format (i.e. come from Expo's
    * classic updates service or a self-hosted service following the classic updates format, such as
@@ -12,7 +12,7 @@ internal final class LegacyUpdate: Update {
    * Asset URLs are relative in this format, and we assume that if no base URL is explicitly provided,
    * the base URL is Expo's classic asset CDN.
    */
-  static func update(
+  public static func update(
     withLegacyManifest: LegacyManifest,
     config: UpdatesConfig,
     database: UpdatesDatabase?
