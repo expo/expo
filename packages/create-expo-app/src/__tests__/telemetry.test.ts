@@ -19,7 +19,7 @@ jest.mock('crypto', () => {
   return { ...actual, randomUUID: jest.fn(actual.randomUUID) };
 });
 
-const fetchAsMock = (fetch as any) as jest.Mock;
+const fetchAsMock = fetch as any as jest.Mock;
 const randomUUIDAsMock = (crypto as any).randomUUID as jest.Mock;
 
 function clearGlobals() {
@@ -259,7 +259,8 @@ describe('telemetry', () => {
       const [, request] = fetchRequestArgs;
       const { batch }: { batch: any[] } = JSON.parse(request.body);
       batch.every(
-        message => message.anonymousId === existingAnonymousId && message.userId === existingUserId
+        (message) =>
+          message.anonymousId === existingAnonymousId && message.userId === existingUserId
       );
     });
   });

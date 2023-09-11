@@ -39,7 +39,7 @@ function deepMerge(target: any, source: any) {
   if (Array.isArray(target) && Array.isArray(source)) {
     return target.concat(source);
   }
-  Object.keys(source).forEach(key => {
+  Object.keys(source).forEach((key) => {
     if (typeof source[key] === 'object' && source[key] !== null) {
       target[key] = deepMerge(target[key], source[key]);
     } else {

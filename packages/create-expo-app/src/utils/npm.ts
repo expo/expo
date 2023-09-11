@@ -6,10 +6,10 @@ import { Stream } from 'stream';
 import tar from 'tar';
 import { promisify } from 'util';
 
+import { env } from './env';
 import { createEntryResolver, createFileTransform } from '../createFileTransform';
 import { ALIASES } from '../legacyTemplates';
 import { Log } from '../log';
-import { env } from './env';
 
 const debug = require('debug')('expo:init:npm') as typeof console.log;
 

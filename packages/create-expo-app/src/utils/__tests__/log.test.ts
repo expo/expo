@@ -63,7 +63,7 @@ describe(withSectionLog, () => {
   });
 
   it('it sets success message', async () => {
-    const spinner = await withSectionLog(ora => Promise.resolve(ora), {
+    const spinner = await withSectionLog((ora) => Promise.resolve(ora), {
       pending: 'pending',
       success: 'success',
       error: () => 'error',
@@ -88,11 +88,11 @@ describe(withSectionLog, () => {
   });
 
   it('it sets error message', async () => {
-    const spinner = await withSectionLog(ora => Promise.reject(ora), {
+    const spinner = await withSectionLog((ora) => Promise.reject(ora), {
       pending: 'pending',
       success: 'success',
       error: () => 'error',
-    }).catch(ora => ora);
+    }).catch((ora) => ora);
 
     expect(spinner.fail).toHaveBeenCalledWith('error');
   });
