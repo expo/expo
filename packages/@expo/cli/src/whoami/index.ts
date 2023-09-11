@@ -8,6 +8,7 @@ export const expoWhoami: Command = async (argv) => {
     {
       // Types
       '--help': Boolean,
+      '--username': Boolean,
       // Aliases
       '-h': '--help',
     },
@@ -16,12 +17,15 @@ export const expoWhoami: Command = async (argv) => {
 
   if (args['--help']) {
     printHelp(
-      `Show the currently authenticated username`,
+      `Show the currently authenticated user information`,
       `npx expo whoami`,
-      `-h, --help    Usage info`
+      [
+        `-h, --help    Usage info`,
+        `--username    Print only the username of the authenticated user`,
+      ].join('\n')
     );
   }
 
   const { whoamiAsync } = await import('./whoamiAsync');
-  return whoamiAsync().catch(logCmdError);
+  return whoamiAsync({ printOnlyUsername: args['--username'] }).catch(logCmdError);
 };

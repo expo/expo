@@ -4,12 +4,16 @@ import { Actor, getActorDisplayName, getUserAsync } from '../api/user/user';
 import { Role } from '../graphql/generated';
 import * as Log from '../log';
 
-export async function whoamiAsync() {
+export async function whoamiAsync({ printOnlyUsername = false }: { printOnlyUsername?: boolean }) {
   const actor = await getUserAsync();
 
-  if (actor) {
-    Log.log(chalk.green(getActorDisplayName(actor)));
+  if (!actor) {
+    Log.exit('Not logged in');
+  }
 
+  Log.log(chalk.green(getActorDisplayName(actor)));
+
+  if (!printOnlyUsername) {
     // personal account is included, only show if more accounts that personal account
     // but do show personal account in list if there are more
     const accountExcludingPersonalAccount = actor.accounts.filter(
@@ -23,10 +27,9 @@ export async function whoamiAsync() {
         Log.log(`• ${account.name} (Role: ${getLabelForRole(roleOnAccount)})`);
       });
     }
-    process.exit(0);
-  } else {
-    Log.exit('Not logged in');
   }
+
+  process.exit(0);
 }
 
 function getRoleOnAccount({
