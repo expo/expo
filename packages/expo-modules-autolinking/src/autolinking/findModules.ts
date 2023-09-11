@@ -21,11 +21,13 @@ export async function findModulesAsync(providedOptions: SearchOptions): Promise<
   const nativeModuleNames = new Set<string>();
 
   // custom native modules should be resolved first so that they can override other modules
-  const searchPaths =
+  const searchPaths = new Set(
     options.nativeModulesDir && fs.existsSync(options.nativeModulesDir)
       ? [options.nativeModulesDir, ...options.searchPaths]
-      : options.searchPaths;
+      : options.searchPaths
+  );
 
+  // `searchPaths` can be mutated to discover all "isolated modules groups", when using isolated modules
   for (const searchPath of searchPaths) {
     const isNativeModulesDir = searchPath === options.nativeModulesDir;
 
@@ -40,6 +42,23 @@ export async function findModulesAsync(providedOptions: SearchOptions): Promise<
       const { name, version } = resolvePackageNameAndVersion(packagePath, {
         fallbackToDirName: isNativeModulesDir,
       });
+
+      // Check if the project is using isolated modules, by checking
+      // if the parent dir of `packagePath` is a `node_modules` folder.
+      // Isolated modules installs dependencies in small groups such as:
+      //   - /.pnpm/expo@50.x.x(...)/node_modules/@expo/cli
+      //   - /.pnpm/expo@50.x.x(...)/node_modules/expo
+      //   - /.pnpm/expo@50.x.x(...)/node_modules/expo-application
+      // When isolated modules are detected, expand the `searchPaths`
+      // to include possible nested dependencies.
+      const maybeIsolatedModulesPath = path.join(
+        packagePath,
+        name.startsWith('@') && name.includes('/') ? '../..' : '..' // scoped packages are nested deeper
+      );
+      const isIsolatedModulesPath = path.basename(maybeIsolatedModulesPath) === 'node_modules';
+      if (isIsolatedModulesPath && !searchPaths.has(maybeIsolatedModulesPath)) {
+        searchPaths.add(maybeIsolatedModulesPath);
+      }
 
       // we ignore the `exclude` option for custom native modules
       if (
@@ -132,13 +151,7 @@ function addRevisionToResults(
 async function findPackagesConfigPathsAsync(searchPath: string): Promise<string[]> {
   const bracedFilenames = '{' + EXPO_MODULE_CONFIG_FILENAMES.join(',') + '}';
   const paths = await glob(
-    [
-      `*/${bracedFilenames}`,
-      `@*/*/${bracedFilenames}`,
-      `./${bracedFilenames}`,
-      `.pnpm/*/node_modules/*/${bracedFilenames}`,
-      `.pnpm/*/node_modules/@*/*/${bracedFilenames}`,
-    ],
+    [`*/${bracedFilenames}`, `@*/*/${bracedFilenames}`, `./${bracedFilenames}`],
     {
       cwd: searchPath,
     }

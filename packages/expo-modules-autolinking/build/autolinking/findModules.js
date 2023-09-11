@@ -21,9 +21,10 @@ async function findModulesAsync(providedOptions) {
     const results = new Map();
     const nativeModuleNames = new Set();
     // custom native modules should be resolved first so that they can override other modules
-    const searchPaths = options.nativeModulesDir && fs_extra_1.default.existsSync(options.nativeModulesDir)
+    const searchPaths = new Set(options.nativeModulesDir && fs_extra_1.default.existsSync(options.nativeModulesDir)
         ? [options.nativeModulesDir, ...options.searchPaths]
-        : options.searchPaths;
+        : options.searchPaths);
+    // `searchPaths` can be mutated to discover all "isolated modules groups", when using isolated modules
     for (const searchPath of searchPaths) {
         const isNativeModulesDir = searchPath === options.nativeModulesDir;
         const packageConfigPaths = await findPackagesConfigPathsAsync(searchPath);
@@ -33,6 +34,20 @@ async function findModulesAsync(providedOptions) {
             const { name, version } = resolvePackageNameAndVersion(packagePath, {
                 fallbackToDirName: isNativeModulesDir,
             });
+            // Check if the project is using isolated modules, by checking
+            // if the parent dir of `packagePath` is a `node_modules` folder.
+            // Isolated modules installs dependencies in small groups such as:
+            //   - /.pnpm/expo@50.x.x(...)/node_modules/@expo/cli
+            //   - /.pnpm/expo@50.x.x(...)/node_modules/expo
+            //   - /.pnpm/expo@50.x.x(...)/node_modules/expo-application
+            // When isolated modules are detected, expand the `searchPaths`
+            // to include possible nested dependencies.
+            const maybeIsolatedModulesPath = path_1.default.join(packagePath, name.startsWith('@') && name.includes('/') ? '../..' : '..' // scoped packages are nested deeper
+            );
+            const isIsolatedModulesPath = path_1.default.basename(maybeIsolatedModulesPath) === 'node_modules';
+            if (isIsolatedModulesPath && !searchPaths.has(maybeIsolatedModulesPath)) {
+                searchPaths.add(maybeIsolatedModulesPath);
+            }
             // we ignore the `exclude` option for custom native modules
             if ((!isNativeModulesDir && options.exclude?.includes(name)) ||
                 !expoModuleConfig.supportsPlatform(options.platform)) {
@@ -109,13 +124,7 @@ function addRevisionToResults(results, name, revision) {
  */
 async function findPackagesConfigPathsAsync(searchPath) {
     const bracedFilenames = '{' + EXPO_MODULE_CONFIG_FILENAMES.join(',') + '}';
-    const paths = await (0, fast_glob_1.default)([
-        `*/${bracedFilenames}`,
-        `@*/*/${bracedFilenames}`,
-        `./${bracedFilenames}`,
-        `.pnpm/*/node_modules/*/${bracedFilenames}`,
-        `.pnpm/*/node_modules/@*/*/${bracedFilenames}`,
-    ], {
+    const paths = await (0, fast_glob_1.default)([`*/${bracedFilenames}`, `@*/*/${bracedFilenames}`, `./${bracedFilenames}`], {
         cwd: searchPath,
     });
     // If the package has multiple configs (e.g. `unimodule.json` and `expo-module.config.json` during the transition time)
