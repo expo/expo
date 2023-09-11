@@ -5,7 +5,7 @@
 ### 🛠 Breaking changes
 
 - Drop `/logs` and remove `@expo/dev-server` package. ([#24272](https://github.com/expo/expo/pull/24272) by [@EvanBacon](https://github.com/EvanBacon))
-- Updated `npx expo whoami` output to show not only currently signed in user, but also accounts they have access to. ([#22733](https://github.com/expo/expo/pull/22733) by [@sjchmiela](https://github.com/sjchmiela))
+- Updated `npx expo whoami` output to show not only currently signed in user, but also accounts they have access to. Add `--username` to bring back old behavior of only printing username. ([#22733](https://github.com/expo/expo/pull/22733) by [@sjchmiela](https://github.com/sjchmiela))
 
 ### 🎉 New features
 
