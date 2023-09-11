@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Read mocks for native code from individual modules.
+- Read mocks for native code from individual modules. ([#24065](https://github.com/expo/expo/pull/24065) by [@aleqsio](https://github.com/aleqsio))
 
 ### 🐛 Bug fixes
 
