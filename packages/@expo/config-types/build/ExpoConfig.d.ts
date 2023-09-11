@@ -273,7 +273,6 @@ export interface ExpoConfig {
         };
         [k: string]: any;
     };
-    _hasBaseStaticConfig?: boolean;
 }
 /**
  * Configuration for loading and splash screen for standalone apps.

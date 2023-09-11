@@ -8,7 +8,11 @@ import { serializeSkippingMods } from './Serialize';
 
 type RawDynamicConfig = AppJSONConfig | Partial<ExpoConfig> | null;
 
-export type DynamicConfigResults = { config: RawDynamicConfig; exportedObjectType: string };
+export type DynamicConfigResults = {
+  config: RawDynamicConfig;
+  exportedObjectType: string;
+  mayHaveUnusedStaticConfig: boolean;
+};
 
 /**
  * Transpile and evaluate the dynamic config object.
@@ -102,6 +106,10 @@ export function resolveConfigExport(
   configFile: string,
   request: ConfigContext | null
 ) {
+  if (request?.config) {
+    // @ts-ignore
+    request.config._hasBaseStaticConfig = true;
+  }
   if (result.default != null) {
     result = result.default;
   }
@@ -121,5 +129,12 @@ export function resolveConfigExport(
     result = serializeSkippingMods(result);
   }
 
-  return { config: result, exportedObjectType };
+  const mayHaveUnusedStaticConfig =
+    // @ts-ignore
+    request?.config?._hasBaseStaticConfig && !result?._hasBaseStaticConfig;
+  if (result) {
+    delete result._hasBaseStaticConfig;
+  }
+
+  return { config: result, exportedObjectType, mayHaveUnusedStaticConfig };
 }

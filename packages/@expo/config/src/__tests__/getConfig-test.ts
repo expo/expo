@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 
-import { AppJSONConfig, ExpoConfig, getConfigFilePaths, modifyConfigAsync } from '../Config';
+import { getConfigFilePaths, modifyConfigAsync } from '../Config';
 import { getDynamicConfig, getStaticConfig } from '../getConfig';
 
 const mockConfigContext = {} as any;
@@ -183,20 +183,6 @@ describe(getStaticConfig, () => {
       },
       'static-override'
     );
-    vol.fromJSON(
-      {
-        'package.json': JSON.stringify({}),
-        'app.config.json': JSON.stringify({ expo: {} }),
-      },
-      'static-with-expo-obj'
-    );
-    vol.fromJSON(
-      {
-        'package.json': JSON.stringify({}),
-        'app.config.json': JSON.stringify({}),
-      },
-      'static-without-expo-obj'
-    );
   });
 
   afterAll(() => {
@@ -210,19 +196,5 @@ describe(getStaticConfig, () => {
     expect(paths.staticConfigPath).toMatch(/app\.config\.json/);
 
     expect(getStaticConfig(paths.staticConfigPath!).name).toBe('app-config-json');
-  });
-
-  it(`Adds _hasBaseStaticConfig to static config when static config has expo object`, () => {
-    const paths = getConfigFilePaths('static-with-expo-obj');
-    const config = getStaticConfig(paths.staticConfigPath!);
-
-    expect((config as AppJSONConfig).expo._hasBaseStaticConfig).toBe(true);
-  });
-
-  it(`Adds _hasBaseStaticConfig to static config when static config doesn't have an expo object`, () => {
-    const paths = getConfigFilePaths('static-without-expo-obj');
-    const config = getStaticConfig(paths.staticConfigPath!);
-
-    expect((config as ExpoConfig)._hasBaseStaticConfig).toBe(true);
   });
 });
