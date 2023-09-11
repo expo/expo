@@ -52,8 +52,5 @@
     "prompts": "^2.4.2",
     "tar": "^6.1.13",
     "update-check": "^1.5.4"
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }
