@@ -4,7 +4,9 @@
 
 @protocol EXCameraInterface
 
+#if !TARGET_OS_TV
 @property (nonatomic, strong) dispatch_queue_t sessionQueue;
 @property (nonatomic, strong) AVCaptureSession *session;
+#endif
 
 @end

@@ -27,9 +27,20 @@ public final class UpdatesUtils: NSObject {
 
   // MARK: - Public methods
 
+  // Refactored to a common method used by both UpdatesUtils and ErrorRecovery
+  public static func updatesApplicationDocumentsDirectory() -> URL {
+    let fileManager = FileManager.default
+#if os(tvOS)
+    let applicationDocumentsDirectory = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).last!
+#else
+    let applicationDocumentsDirectory = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).last!
+#endif
+    return applicationDocumentsDirectory
+  }
+
   public static func initializeUpdatesDirectory() throws -> URL {
     let fileManager = FileManager.default
-    let applicationDocumentsDirectory = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).last!
+    let applicationDocumentsDirectory = UpdatesUtils.updatesApplicationDocumentsDirectory()
     let updatesDirectory = applicationDocumentsDirectory.appendingPathComponent(".expo-internal")
     let updatesDirectoryPath = updatesDirectory.path
 
@@ -330,11 +341,11 @@ public final class UpdatesUtils: NSObject {
   }
 
   internal static func isNativeDebuggingEnabled() -> Bool {
-    #if EX_UPDATES_NATIVE_DEBUG
+#if EX_UPDATES_NATIVE_DEBUG
     return true
-    #else
+#else
     return false
-    #endif
+#endif
   }
 
   internal static func runBlockOnMainThread(_ block: @escaping () -> Void) {

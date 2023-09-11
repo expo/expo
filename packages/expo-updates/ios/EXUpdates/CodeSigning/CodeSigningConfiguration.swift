@@ -2,7 +2,6 @@
 
 import Foundation
 import CommonCrypto
-import ASN1Decoder
 
 internal struct CodeSigningMetadataFields {
   static let KeyIdFieldKey = "keyid"

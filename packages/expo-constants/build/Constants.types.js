@@ -23,13 +23,14 @@ export var ExecutionEnvironment;
 })(ExecutionEnvironment || (ExecutionEnvironment = {}));
 // @needsAudit
 /**
- * Current supported values are `handset` and `tablet`. Apple TV and CarPlay will show up
+ * Current supported values are `handset`, `tablet`, and `tv`. CarPlay will show up
  * as `unsupported`.
  */
 export var UserInterfaceIdiom;
 (function (UserInterfaceIdiom) {
     UserInterfaceIdiom["Handset"] = "handset";
     UserInterfaceIdiom["Tablet"] = "tablet";
+    UserInterfaceIdiom["TV"] = "tv";
     UserInterfaceIdiom["Unsupported"] = "unsupported";
 })(UserInterfaceIdiom || (UserInterfaceIdiom = {}));
 //# sourceMappingURL=Constants.types.js.map

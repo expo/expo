@@ -439,7 +439,7 @@ public final class ErrorRecovery: NSObject {
   }
 
   private static func errorLogFile() -> URL {
-    let applicationDocumentsDirectory = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).last
-    return applicationDocumentsDirectory!.appendingPathComponent(ErrorLogFile)
+    let applicationDocumentsDirectory = UpdatesUtils.updatesApplicationDocumentsDirectory()
+    return applicationDocumentsDirectory.appendingPathComponent(ErrorLogFile)
   }
 }
